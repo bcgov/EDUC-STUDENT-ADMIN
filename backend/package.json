@@ -1,0 +1,151 @@
+{
+  "name": "student-admin-backend",
+  "version": "0.0.1",
+  "description": "The backend portion of the Student Administration ruest web app",
+  "scripts": {
+    "build": "babel /opt/app-root/src/ --out-dir dist --ignore 'node_modules/**/*.js'",
+    "serve": "npm run setlocal && npm run servecmd",
+    "setlocal": "set NODE_ENV='local'",
+    "servecmd": "nodemon ./src/server.js",
+    "start": "node ./src/server.js",
+    "lint": "node_modules/.bin/eslint . --no-fix --ignore-pattern 'node_modules' --ext .js",
+    "lint:fix": "node_modules/.bin/eslint . --fix --ignore-pattern 'node_modules' --ext .js",
+    "test": "node_modules/.bin/jest",
+    "clean": "rm -rf coverage dist",
+    "pretest": "npm run lint",
+    "purge": "rm -rf node_modules",
+    "rebuild": "npm run clean && npm run build",
+    "reinstall": "npm run purge && npm install"
+  },
+  "dependencies": {
+    "atob": "^2.1.2",
+    "axios": "^0.19.0",
+    "@babel/runtime": "^7.1.5",
+    "express": "^4.17.0",
+    "express-session": "^1.16.1",
+    "express-validator": "^6.0.0",
+    "morgan": "^1.9.1",
+    "npmlog": "^4.1.2",
+    "passport": "^0.4.0",
+    "nconf": "^0.10.0",
+    "dotenv": "^8.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "passport-openidconnect": "^0.0.2",
+    "cors": "^2.8.5",
+    "helmet": "^3.20.0",
+    "jest-junit": "^7.0.0",
+    "passport-jwt": "^4.0.0",
+    "path": "0.12.7",
+    "querystring": "0.2.0",
+    "config": "^3.2.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.1.5",
+    "@babel/core": "^7.1.6",
+    "@babel/helper-plugin-utils": "^7.0.0",
+    "@babel/node": "^7.2.0",
+    "@babel/plugin-transform-async-to-generator": "^7.1.0",
+    "@babel/plugin-transform-runtime": "^7.1.0",
+    "@babel/plugin-proposal-class-properties": "7.4.4",
+    "@babel/polyfill": "^7.0.0",
+    "@babel/preset-env": "^7.1.6",
+    "@babel/preset-stage-2": "^7.0.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-eslint": "^10.0.1",
+    "babel-jest": "^24.5.0",
+    "babel-preset-airbnb": "^3.0.1",
+    "eslint": "^5.16.0",
+    "jest": "^24.8.0",
+    "jest-sonar-reporter": "^2.0.0",
+    "nodemon": "^1.19.0",
+    "supertest": "^4.0.2",
+    "axios-mock-adapter": "^1.17.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "commonjs": true,
+      "es6": true,
+      "jest": true,
+      "node": true
+    },
+    "extends": [
+      "eslint:recommended"
+    ],
+    "globals": {
+      "Atomics": "readonly",
+      "SharedArrayBuffer": "readonly",
+      "_": false
+    },
+    "parserOptions": {
+      "ecmaVersion": 9
+    },
+    "rules": {
+      "eol-last": [
+        "error",
+        "always"
+      ],
+      "indent": [
+        "error",
+        2
+      ],
+      "linebreak-style": [
+        "error",
+        "windows"
+      ],
+      "quotes": [
+        "error",
+        "single"
+      ],
+      "semi": [
+        "error",
+        "always"
+      ]
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ],
+  "jest": {
+    "reporters": [
+      "default",
+      "jest-junit"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "json"
+    ],
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    },
+    "testMatch": [
+      "**/tests/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)"
+    ],
+    "testURL": "http://localhost",
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ],
+    "testResultsProcessor": "jest-sonar-reporter"
+  },
+  "jest-junit": {
+    "outputDirectory": "./tests/unit/reports/",
+    "outputName": "./junit.xml",
+    "usePathForSuitName": true
+  },
+  "jestSonar": {
+    "reportPath": "coverage",
+    "reportFile": "test-report.xml",
+    "indent": 2
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bcgov/EDUC-UMU.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bcgov/EDUC-UMU/issues"
+  }
+}

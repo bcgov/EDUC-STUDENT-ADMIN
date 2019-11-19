@@ -1,0 +1,29 @@
+*:2015 {
+    root /var/www/html
+
+    header / {
+        X-Frame-Options "SAMEORIGIN"
+        X-XSS-Protection "1;mode=block"
+        Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate"
+        X-Content-Type-Options "nosniff"
+        Strict-Transport-Security "max-age=31536000"
+        Content-Security-Policy "default-src 'self' https://restcountries.eu/rest/v2/all; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.fontawesome.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https://fonts.googleapis.com http://www.w3.org https://unsplash.com https://images.unsplash.com"
+        Referrer-Policy "same-origin"
+        Feature-Policy "fullscreen 'self'; camera 'none'; microphone 'none'"
+    }
+
+    rewrite {
+        if  {path} not_match ^\/0.0.0.0
+        to  {path} {path}/ /?_url={uri}
+    }
+
+    gzip {
+        level 7
+    }
+    log stdout
+
+    proxy /api {$HOST_ROUTE}
+
+    errors stdout
+}
+    
