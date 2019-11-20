@@ -69,7 +69,7 @@ utils.getOidcDiscovery().then(discovery => {
     authorizationURL: discovery.authorization_endpoint,
     tokenURL: discovery.token_endpoint,
     userInfoURL: discovery.userinfo_endpoint,
-    clientID: 'student-admin',
+    clientID: config.get('oidc:clientId'),
     clientSecret: config.get('oidc:clientSecret'),
     callbackURL: config.get('server:frontend') + '/api/auth/callback',
     scope: discovery.scopes_supported
