@@ -15,7 +15,7 @@ dotenv.config();
 
 const JWTStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
-const OidcStrategy = require('passport-openidconnect').Strategy;
+const OidcStrategy = require('passport-openidconnect-kc-idp').Strategy;
 
 const apiRouter = express.Router();
 const authRouter = require('./routes/auth');
@@ -73,7 +73,8 @@ utils.getOidcDiscovery().then(discovery => {
     clientID: config.get('oidc:clientId'),
     clientSecret: config.get('oidc:clientSecret'),
     callbackURL: config.get('server:frontend') + '/api/auth/callback',
-    scope: discovery.scopes_supported
+    scope: discovery.scopes_supported,
+    kc_idp_hint: 'keycloak_bcdevexchange'
   }, (_issuer, _sub, profile, accessToken, refreshToken, done) => {
     if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
       (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
@@ -117,7 +118,7 @@ passport.deserializeUser((obj, next) => next(null, obj));
 
 function checkRoles(req, res, next){
   log(req);
-  if(req.user.jwt.resource_access.realm-management.roles.includes(config.get("oidc:staff-role"))){
+  if(req.user.jwt.resource_access.realm-management.roles.includes(config.get("oidc:staffRole"))){
     return next();
   }
   return res.status(401).json({

@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const path = require('path');
 dotenv.config();
 
-const env = 'local';//process.env.NODE_ENV;
+const env = process.env.NODE_ENV;
 
 //injects environment variables into the json file
 nconf.overrides({
@@ -12,15 +12,24 @@ nconf.overrides({
   logoutEndpoint: process.env.KC_DOMAIN + '/protocol/openid-connect/logout',
   server: {
     frontend: process.env.SERVER_FRONTEND,
+    backend: process.env.SERVER_FRONTEND + '/api',
     logLevel: 'silent',
     morganFormat: 'dev',
-    port: '8080'
+    port: '8080',
+    codeTableURL: process.env.CODETABLE_API_URL,
+    penRequestURL: process.env.PEN_REQUEST_API_URL
   },
   oidc: {
     publicKey: process.env.PUBLIC_KEY,
     clientId: process.env.ID,
     clientSecret: process.env.SECRET,
-    discovery: process.env.DISCOVERY
+    serviceClientId: process.env.serviceID,
+    serviceClientSecret: process.env.serviceSecret,
+    discovery: process.env.DISCOVERY,
+    codetableRead: "READ_CODETABLE_SET",
+    penrequestRead: "READ_PEN_REQUEST",
+    penrequestWrite: "WRITE_PEN_REQUEST",
+    staffRole: "STUDENT_ADMIN"
   }
 });
 

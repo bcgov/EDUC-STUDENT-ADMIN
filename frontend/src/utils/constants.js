@@ -21,9 +21,8 @@ if(process.env.NODE_ENV === 'development'){
 //Authentication endpoints
 export const AuthRoutes = Object.freeze(object);
 
-let backendRoot = 'http://localhost:8080';//process.env.BACKEND_ROOT;
-const penRequestUrl = backendRoot + '/api/penRequest/search';
-const codeTableUrl = backendRoot + '/api/penRequest/status';
+const penRequestUrl = '/api/penRequest/search';
+const codeTableUrl = '/api/penRequest/status';
 
 export default {
   penRequestUrl: penRequestUrl,
