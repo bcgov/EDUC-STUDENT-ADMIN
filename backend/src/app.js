@@ -142,10 +142,10 @@ apiRouter.get('/', (_req, res) => {
 app.use(/(\/api)?/, apiRouter);
 
 apiRouter.use('/auth', authRouter);
-apiRouter.use('/penRequest', penRequestRouter);
-/*apiRouter.use('/penRequest', passport.authenticate('jwt', {
+//apiRouter.use('/penRequest', penRequestRouter);
+apiRouter.use('/penRequest', passport.authenticate('jwt', {
   session: false
-}), checkRoles, penRequestRouter);*/
+}), checkRoles, penRequestRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {
