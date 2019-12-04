@@ -96,7 +96,7 @@ pipeline{
                             parallel(
                                 Backend: {
                                     try{
-                                        echo "Building frontend..."
+                                        echo "Building backend..."
                                         def bcBackend = openshift.process('-f', 'tools/openshift/backend.bc.yaml', "REPO_NAME=${REPO_NAME}", "JOB_NAME=${JOB_NAME}", "SOURCE_REPO_URL=${SOURCE_REPO_URL}", "SOURCE_REPO_REF=${SOURCE_REPO_REF}")
                                         openshift.apply(bcBackend).narrow('bc').startBuild('-w').logs('-f')
 
@@ -108,6 +108,7 @@ pipeline{
                                 },
                                 Frontend: {
                                     try {
+                                        echo "Building frontend..."
                                         def bcFrontend = openshift.process('-f', 'tools/openshift/frontend.bc.yaml', "REPO_NAME=${REPO_NAME}", "JOB_NAME=${JOB_NAME}", "SOURCE_REPO_URL=${SOURCE_REPO_URL}", "SOURCE_REPO_REF=${SOURCE_REPO_REF}")
 
                                         openshift.apply(bcFrontend).narrow('bc').startBuild('-w').logs('-f')

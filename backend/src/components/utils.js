@@ -19,6 +19,7 @@ const utils = {
     }
     return discovery;
   },
+  prettyStringify: (obj, indent = 2) => JSON.stringify(obj, null, indent),
 };
 
 module.exports = utils;

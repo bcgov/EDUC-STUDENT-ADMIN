@@ -9,9 +9,9 @@
     </article>
   </v-container>
   <v-container fluid class="full-height" v-else>
-    <article id="welcome-container" class="top-banner full-height">
+    <article id="penRequests-container" class="top-banner full-height">
       <v-row align="center" justify="center">
-        <Welcome></Welcome>
+        <PenRequestsDisplay></PenRequestsDisplay>
       </v-row>
     </article>
   </v-container>
@@ -19,13 +19,13 @@
 
 <script>
 import Login from './Login';
-import Welcome from './Welcome';
+import PenRequestsDisplay from './PenRequestsDisplay';
 import { mapGetters } from 'vuex';
 export default {
   name: 'home',
   components: {
     Login,
-    Welcome
+    PenRequestsDisplay
   },
   computed: {
     ...mapGetters('auth', ['isAuthenticated'])
