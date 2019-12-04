@@ -73,7 +73,9 @@ export default {
     ApiService.apiAxios
       .get(Constants.codeTableUrl)
       .then(response => {
+        console.log(Constants.codeTableUrl);
         this.codeTable = response.data;
+        console.log(response);
         this.statusCodes = this.getStatusCodes();
 
         if(this.statusCodes.includes('First Review')){
@@ -105,6 +107,7 @@ export default {
     },
     getStatusCodes() {
       var labels = [];
+      console.log(this.codeTable);
       this.codeTable.forEach(element => {
         labels.push(element.label);
       });

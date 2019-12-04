@@ -37,7 +37,8 @@ router.get('/', (_req, res) => {
 router.get('/search',
 async (req, res) => {
   try{
-
+    console.log(config.get("server:codeTableURL"));
+    console.log(config.get("oidc:clientId"));
     const newJwt = await auth.getApiJwt(config.get("oidc:clientId"), config.get("oidc:clientSecret"), config.get("oidc:codetableRead") + " " + config.get("oidc:penrequestRead"));
     axios.defaults.headers.common['Authorization'] = `Bearer ${newJwt.jwt}`;
     const codeTableResponse = await axios.get(config.get("server:codeTableURL"));
