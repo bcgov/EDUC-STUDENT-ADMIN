@@ -19,6 +19,7 @@ const OidcStrategy = require('passport-openidconnect').Strategy;
 
 const apiRouter = express.Router();
 const authRouter = require('./routes/auth');
+const penRequestRouter = require('./routes/penRequest');
 
 //initialize app
 const app = express();
@@ -114,13 +115,22 @@ utils.getOidcDiscovery().then(discovery => {
 passport.serializeUser((user, next) => next(null, user));
 passport.deserializeUser((obj, next) => next(null, obj));
 
+function checkRoles(req, res, next){
+  log(req);
+  if(req.user.jwt.resource_access.realm-management.roles.includes(config.get("oidc:staff-role"))){
+    return next();
+  }
+  return res.status(401).json({
+    message: 'Unauthorized user'
+  })
+};
 
 // GetOK Base API Directory
 apiRouter.get('/', (_req, res) => {
   res.status(200).json({
     endpoints: [
       '/api/auth',
-      '/api/main'
+      '/api/penRequest'
     ],
     versions: [
       1
@@ -132,6 +142,10 @@ apiRouter.get('/', (_req, res) => {
 app.use(/(\/api)?/, apiRouter);
 
 apiRouter.use('/auth', authRouter);
+apiRouter.use('/penRequest', penRequestRouter);
+apiRouter.use('/penRequest', passport.authenticate('jwt', {
+  session: false
+}), checkRoles, penRequestRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {

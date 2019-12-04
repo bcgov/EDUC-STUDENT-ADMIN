@@ -114,7 +114,7 @@ export default {
           }
         } else {
           if(process.env.NODE_ENV === 'development'){
-            context.commit('setJwtToken', 'testToken');
+            context.commit('setJwtToken', "{'resource_access': {'realm-management': {'roles': ['STUDENT_ADMIN']}}}");
             context.commit('setRefreshToken', 'fakeRefreshToken');
           } else {
             const response = await AuthService.getAuthToken();
