@@ -38,7 +38,7 @@ router.get('/search',
 async (req, res) => {
   try{
 
-    const newJwt = await auth.getApiJwt(config.get("oidc:clientId"), config.get("oidc:clientSecret"), config.get("oidc:codetable-read") + " " + config.get("oidc:penrequest-read"));
+    const newJwt = await auth.getApiJwt(config.get("oidc:clientId"), config.get("oidc:clientSecret"), config.get("oidc:codetableRead") + " " + config.get("oidc:penrequestRead"));
     axios.defaults.headers.common['Authorization'] = `Bearer ${newJwt.jwt}`;
     const codeTableResponse = await axios.get(config.get("server:codeTableURL"));
     const penRetreivalResponse = await axios.get(config.get("server:penRequestURL"));
@@ -70,7 +70,7 @@ async (req, res) => {
 router.get('/status', cacheMiddleware(),
   async (req, res) => {
     try{
-      const newJwt = await auth.getApiJwt(config.get("oidc:clientId"), config.get("oidc:clientSecret"), config.get("oidc:codetable-read"));
+      const newJwt = await auth.getApiJwt(config.get("oidc:clientId"), config.get("oidc:clientSecret"), config.get("oidc:codetableRead"));
       axios.defaults.headers.common['Authorization'] = `Bearer ${newJwt.jwt}`;
       const response = await axios.get(config.get("server:codeTableURL"));
 

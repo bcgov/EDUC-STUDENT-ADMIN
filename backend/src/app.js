@@ -117,7 +117,7 @@ passport.deserializeUser((obj, next) => next(null, obj));
 
 function checkRoles(req, res, next){
   log(req);
-  if(req.user.jwt.resource_access.realm-management.roles.includes(config.get("oidc:staff-role"))){
+  if(req.user.jwt.resource_access.realm-management.roles.includes(config.get("oidc:staffRole"))){
     return next();
   }
   return res.status(401).json({
@@ -142,10 +142,10 @@ apiRouter.get('/', (_req, res) => {
 app.use(/(\/api)?/, apiRouter);
 
 apiRouter.use('/auth', authRouter);
-//apiRouter.use('/penRequest', penRequestRouter);
-apiRouter.use('/penRequest', passport.authenticate('jwt', {
+apiRouter.use('/penRequest', penRequestRouter);
+/*apiRouter.use('/penRequest', passport.authenticate('jwt', {
   session: false
-}), checkRoles, penRequestRouter);
+}), checkRoles, penRequestRouter);*/
 
 //Handle 500 error
 app.use((err, _req, res, next) => {
