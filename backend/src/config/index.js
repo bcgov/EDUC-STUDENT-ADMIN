@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const path = require('path');
 dotenv.config();
 
-const env = 'local';//process.env.NODE_ENV;
+const env = process.env.NODE_ENV;
 
 //injects environment variables into the json file
 nconf.overrides({
