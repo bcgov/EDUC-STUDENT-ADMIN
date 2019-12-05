@@ -23,8 +23,6 @@ nconf.overrides({
     publicKey: process.env.PUBLIC_KEY,
     clientId: process.env.ID,
     clientSecret: process.env.SECRET,
-    serviceClientId: process.env.serviceID,
-    serviceClientSecret: process.env.serviceSecret,
     discovery: process.env.DISCOVERY,
     codetableRead: "READ_CODETABLE_SET",
     penrequestRead: "READ_PEN_REQUEST",
