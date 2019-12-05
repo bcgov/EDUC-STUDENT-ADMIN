@@ -124,6 +124,7 @@ function checkRoles(req, res, next){
     console.log("HERE");
     return next();
   }
+  console.log("SHIT");
   return res.status(401).json({
     message: 'Unauthorized user'
   })
