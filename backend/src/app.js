@@ -117,7 +117,8 @@ passport.serializeUser((user, next) => next(null, user));
 passport.deserializeUser((obj, next) => next(null, obj));
 
 function checkRoles(req, res, next){
-  console.log(req);
+  console.log("HERE");
+  console.log(req.user.jwt);
   console.log(req.user.jwt.resource_access.realm-management.roles);
   console.log(config.get("oidc:staffRole"));
   if(req.user.jwt.resource_access.realm-management.roles.includes(config.get("oidc:staffRole"))){
