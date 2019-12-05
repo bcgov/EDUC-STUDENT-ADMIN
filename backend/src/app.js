@@ -121,6 +121,7 @@ function checkRoles(req, res, next){
   console.log(req.user.jwt.realm_access.roles);
   console.log(config.get("oidc:staffRole"));
   if(req.user.jwt.realm_access.roles.includes(config.get("oidc:staffRole"))){
+    console.log("HERE");
     return next();
   }
   return res.status(401).json({
