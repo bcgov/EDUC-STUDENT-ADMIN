@@ -100,7 +100,7 @@ utils.getOidcDiscovery().then(discovery => {
     if ((typeof (jwtPayload) === 'undefined') || (jwtPayload === null)) {
       return done('No JWT token', null);
     }
-
+    console.log(config.get('oidc:publicKey'));
     done(null, {
       email: jwtPayload.email,
       familyName: jwtPayload.family_name,
@@ -117,7 +117,9 @@ passport.serializeUser((user, next) => next(null, user));
 passport.deserializeUser((obj, next) => next(null, obj));
 
 function checkRoles(req, res, next){
-  log(req);
+  console.log(req);
+  console.log(req.user.jwt.resource_access.realm-management.roles);
+  console.log(config.get("oidc:staffRole"));
   if(req.user.jwt.resource_access.realm-management.roles.includes(config.get("oidc:staffRole"))){
     return next();
   }
@@ -160,6 +162,7 @@ app.use((err, _req, res, next) => {
 
 // Handle 404 error
 app.use((_req, res) => {
+  console.log("In 404");
   res.status(404).json({
     status: 404,
     message: 'Page Not Found'
