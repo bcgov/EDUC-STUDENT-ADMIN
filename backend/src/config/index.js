@@ -13,7 +13,7 @@ nconf.overrides({
   server: {
     frontend: process.env.SERVER_FRONTEND,
     backend: process.env.SERVER_FRONTEND + '/api',
-    logLevel: 'silent',
+    logLevel: 'verbose',
     morganFormat: 'dev',
     port: '8080',
     codeTableURL: process.env.CODETABLE_API_URL,

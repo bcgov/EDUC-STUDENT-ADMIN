@@ -67,7 +67,7 @@ router.post('/refresh', [
   body('refreshToken').exists()
 ], async (req, res) => {
   const errors = validationResult(req);
-
+  console.log("YO");
   if (!errors.isEmpty()) {
     return res.status(400).json({
       errors: errors.array()

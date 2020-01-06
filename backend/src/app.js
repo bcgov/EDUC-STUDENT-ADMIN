@@ -3,7 +3,7 @@
 const config = require('./config/index');
 const dotenv = require('dotenv');
 const log = require('npmlog');
-//const morgan = require('morgan');
+const morgan = require('morgan');
 const session = require('express-session');
 const express = require('express');
 const passport = require('passport');
@@ -39,11 +39,13 @@ app.use(express.urlencoded({
 /*if(process.env.NODE_ENV !== 'test'){
   app.use(morgan(config.get('server:morganFormat')));
 }*/
+app.use(morgan(config.get('server:morganFormat')));
 
 //app.use(keycloak.middleware());
 //sets cookies for security purposes (prevent cookie access, allow secure connections only, etc)
 var expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 app.use(session({
+  name: 'student-admin-cookie',
   secret: config.get('oidc:clientSecret'),
   resave: true,
   saveUninitialized: true,
@@ -76,6 +78,7 @@ utils.getOidcDiscovery().then(discovery => {
     scope: discovery.scopes_supported,
     kc_idp_hint: 'keycloak_bcdevexchange'
   }, (_issuer, _sub, profile, accessToken, refreshToken, done) => {
+    console.log("TIMES UP OVER PLOW");
     if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
       (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
       return done('No access token', null);
@@ -97,6 +100,7 @@ utils.getOidcDiscovery().then(discovery => {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: config.get('oidc:publicKey')
   }, (jwtPayload, done) => {
+    console.log("MOFO");
     if ((typeof (jwtPayload) === 'undefined') || (jwtPayload === null)) {
       return done('No JWT token', null);
     }
@@ -173,6 +177,7 @@ app.use((_req, res) => {
 
 // Prevent unhandled errors from crashing application
 process.on('unhandledRejection', err => {
+  console.log("FINALLYd");
   log.error(err.stack);
 });
 
