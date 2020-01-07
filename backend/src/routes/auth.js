@@ -69,9 +69,7 @@ router.post('/refresh', [
   const errors = validationResult(req);
   console.log(req);
   console.log("YO");
-  errors.forEach(error => {
-    console.log(error);
-  });
+  console.log(errors);
   if (!errors.isEmpty()) {
     return res.status(400).json({
       errors: errors.array()
