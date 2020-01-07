@@ -32,12 +32,15 @@ const auth = {
 
     try {
       const discovery = await utils.getOidcDiscovery();
-      log.verbose(config.get('oidc:clientID'));
+      if(!discovery){
+        log.verbose('shit');
+      }
+      log.verbose(config.get('oidc:clientId'));
       log.verbose(config.get(discovery.token_endpoint))
       log.verbose(config.get('oidc:clientSecret'));
       const response = await axios.post(discovery.token_endpoint,
         qs.stringify({
-          client_id: config.get('oidc:clientID'),
+          client_id: config.get('oidc:clientId'),
           client_secret: config.get('oidc:clientSecret'),
           grant_type: 'refresh_token',
           refresh_token: refreshToken,
