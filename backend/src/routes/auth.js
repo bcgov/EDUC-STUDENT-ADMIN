@@ -69,7 +69,7 @@ router.post('/refresh', [
   const errors = validationResult(req);
   console.log(req);
   console.log("YO");
-  erros.forEach(error => {
+  errors.forEach(error => {
     console.log(error);
   });
   if (!errors.isEmpty()) {
