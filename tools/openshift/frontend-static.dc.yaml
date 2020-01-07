@@ -59,9 +59,6 @@ objects:
             successThreshold: 1
             timeoutSeconds: 1
           resources: {}
-          env:
-          - name: HOST_ROUTE
-            value: "${HOST_ROUTE}"
     test: false
     triggers:
     - type: ConfigChange
