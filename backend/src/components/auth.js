@@ -32,6 +32,9 @@ const auth = {
 
     try {
       const discovery = await utils.getOidcDiscovery();
+      log.verbose(config.get('oidc:clientID'));
+      log.verbose(config.get(discovery.token_endpoint))
+      log.verbose(config.get('oidc:clientSecret'));
       const response = await axios.post(discovery.token_endpoint,
         qs.stringify({
           client_id: config.get('oidc:clientID'),
@@ -48,7 +51,7 @@ const auth = {
         }
       );
 
-      log.verbose('renew', utils.prettyStringify(response.data));
+      log.verbose('renew-response ->', utils.prettyStringify(response.data));
       result.jwt = response.data.access_token;
       result.refreshToken = response.data.refresh_token;
     } catch (error) {
