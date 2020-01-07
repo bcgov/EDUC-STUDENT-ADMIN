@@ -71,11 +71,12 @@ router.post('/refresh', [
   console.log("YO");
   console.log(errors);
   if (!errors.isEmpty()) {
+    console.log('HERE1');
     return res.status(400).json({
       errors: errors.array()
     });
   }
-
+  console.log('HERE2');
   const refresh = await auth.renew(req.body.refreshToken);
   return res.status(200).json(refresh);
 });
