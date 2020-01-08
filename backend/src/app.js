@@ -77,7 +77,6 @@ utils.getOidcDiscovery().then(discovery => {
     scope: discovery.scopes_supported,
     kc_idp_hint: 'keycloak_bcdevexchange'
   }, (_issuer, _sub, profile, accessToken, refreshToken, done) => {
-    console.log("TIMES UP OVER PLOW");
     console.log(discovery.token_endpoint_auth_signing_alg_values_supported)
     if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
       (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
@@ -151,10 +150,10 @@ apiRouter.get('/', (_req, res) => {
 app.use(/(\/api)?/, apiRouter);
 
 apiRouter.use('/auth', authRouter);
-//apiRouter.use('/penRequest', penRequestRouter);
-apiRouter.use('/penRequest', passport.authenticate('jwt', {
+apiRouter.use('/penRequest', penRequestRouter);
+/*apiRouter.use('/penRequest', passport.authenticate('jwt', {
   session: false
-}), checkRoles, penRequestRouter);
+}), checkRoles, penRequestRouter);*/
 
 //Handle 500 error
 app.use((err, _req, res, next) => {
