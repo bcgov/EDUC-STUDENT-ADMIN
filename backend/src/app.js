@@ -78,6 +78,7 @@ utils.getOidcDiscovery().then(discovery => {
     kc_idp_hint: 'keycloak_bcdevexchange'
   }, (_issuer, _sub, profile, accessToken, refreshToken, done) => {
     console.log("TIMES UP OVER PLOW");
+    console.log(discovery.token_endpoint_auth_signing_alg_values_supported)
     if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
       (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
       return done('No access token', null);
