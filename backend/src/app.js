@@ -45,7 +45,6 @@ app.use(morgan(config.get('server:morganFormat')));
 //sets cookies for security purposes (prevent cookie access, allow secure connections only, etc)
 var expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 app.use(session({
-  name: 'student-admin-cookie',
   secret: config.get('oidc:clientSecret'),
   resave: true,
   saveUninitialized: true,
@@ -91,15 +90,14 @@ utils.getOidcDiscovery().then(discovery => {
   }));
   //JWT strategy is used for authorization
   passport.use('jwt', new JWTStrategy({
-    algorithms: ['RS256'],
+    algorithms: discovery.token_endpoint_auth_signing_alg_values_supported,
     // Keycloak 7.3.0 no longer automatically supplies matching client_id audience.
     // If audience checking is needed, check the following SO to update Keycloak first.
     // Ref: https://stackoverflow.com/a/53627747
     //audience: config.get('oidc:clientID'),
-    audience: config.get('server:frontend'),
-    issuer: config.get('tokenGenerate:issuer'),
+    issuer: discovery.issuer,
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: config.get('tokenGenerate:publicKey')
+    secretOrKey: config.get('oidc:publicKey')
   }, (jwtPayload, done) => {
     console.log("MOFO");
     if ((typeof (jwtPayload) === 'undefined') || (jwtPayload === null)) {
