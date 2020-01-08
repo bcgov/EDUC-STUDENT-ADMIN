@@ -70,12 +70,15 @@ async (req, res) => {
 router.get('/status', cacheMiddleware(),
   async (req, res) => {
     try{
-      console.log("THERE");
-      console.log(config.get("oidc:clientId")+" "+config.get("oidc:clientSecret")+" "+config.get("oidc:codetableRead"));
-      const newJwt = await auth.getApiJwt(config.get("oidc:clientId"), config.get("oidc:clientSecret"), config.get("oidc:codetableRead"));
-      console.log(config.get("server:codeTableURL"));
-      console.log(newJwt);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${newJwt.jwt}`;
+      var sessID = req.sessionID;
+
+      // eslint-disable-next-line no-console
+      console.log(req.sessionStore.sessions[sessID]);
+      var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
+      var userToken = thisSession.passport.user.jwt;
+      // eslint-disable-next-line no-console
+      console.log(userToken);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;
       const response = await axios.get(config.get("server:codeTableURL"));      
 
       if(response.status !== 200){
