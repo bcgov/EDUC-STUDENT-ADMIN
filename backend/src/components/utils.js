@@ -13,9 +13,6 @@ const utils = {
       try {
         const response = await axios.get(config.get('oidc:discovery'));
         discovery = response.data;
-        console.log('TOTS');
-        console.log(discovery);
-        console.log(config.get('oidc:discovery'));
       } catch (error) {
         log.error('getOidcDiscovery', `OIDC Discovery failed - ${error.message}`);
       }

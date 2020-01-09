@@ -77,35 +77,33 @@ utils.getOidcDiscovery().then(discovery => {
     scope: discovery.scopes_supported,
     kc_idp_hint: 'keycloak_bcdevexchange'
   }, (_issuer, _sub, profile, accessToken, refreshToken, done) => {
-    console.log(config.get('oidc:publicKey'));
-    console.log(ExtractJwt.fromAuthHeaderAsBearerToken());
-    console.log(discovery.issuer);
     if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
       (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
       return done('No access token', null);
     }
+    //Generate token for frontend validation
+    var token = auth.generateUiToken();
 
     //set access and refresh tokens
+    profile.jwtFrontend = token;
     profile.jwt = accessToken;
     profile.refreshToken = refreshToken;
     return done(null, profile);
   }));
   //JWT strategy is used for authorization
   passport.use('jwt', new JWTStrategy({
-    algorithms: discovery.token_endpoint_auth_signing_alg_values_supported,
+    algorithms: ['RS256'],
     // Keycloak 7.3.0 no longer automatically supplies matching client_id audience.
     // If audience checking is needed, check the following SO to update Keycloak first.
     // Ref: https://stackoverflow.com/a/53627747
-    //audience: config.get('oidc:clientID'),
-    issuer: discovery.issuer,
+    audience: config.get('tokenGenerate:audience'),
+    issuer: config.get('tokenGenerate:issuer'),
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: config.get('oidc:publicKey')
+    secretOrKey: config.get('tokenGenerate:publicKey')
   }, (jwtPayload, done) => {
-    console.log("MOFO");
     if ((typeof (jwtPayload) === 'undefined') || (jwtPayload === null)) {
       return done('No JWT token', null);
     }
-    console.log(config.get('oidc:publicKey'));
     done(null, {
       email: jwtPayload.email,
       familyName: jwtPayload.family_name,
@@ -122,14 +120,9 @@ passport.serializeUser((user, next) => next(null, user));
 passport.deserializeUser((obj, next) => next(null, obj));
 
 function checkRoles(req, res, next){
-  console.log(req.user.jwt);
-  console.log(req.user.jwt.realm_access.roles);
-  console.log(config.get("oidc:staffRole"));
   if(req.user.jwt.realm_access.roles.includes(config.get("oidc:staffRole"))){
-    console.log("HERE");
     return next();
   }
-  console.log("SHIT");
   return res.status(401).json({
     message: 'Unauthorized user'
   })
@@ -152,7 +145,6 @@ apiRouter.get('/', (_req, res) => {
 app.use(/(\/api)?/, apiRouter);
 
 apiRouter.use('/auth', authRouter);
-//apiRouter.use('/penRequest', penRequestRouter);
 apiRouter.use('/penRequest', passport.authenticate('jwt', {
   session: false
 }), checkRoles, penRequestRouter);

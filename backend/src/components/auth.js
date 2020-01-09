@@ -32,12 +32,6 @@ const auth = {
 
     try {
       const discovery = await utils.getOidcDiscovery();
-      if(!discovery){
-        log.verbose('shit');
-      }
-      log.verbose(config.get('oidc:clientId'));
-      log.verbose(config.get(discovery.token_endpoint))
-      log.verbose(config.get('oidc:clientSecret'));
       const response = await axios.post(discovery.token_endpoint,
         qs.stringify({
           client_id: config.get('oidc:clientId'),
@@ -96,35 +90,23 @@ const auth = {
     next();
     return;
   },
-  //this is used to get JWTs for API consumption (eg. PEN Request API, Digital ID API, etc)
-  async getApiJwt(client, secret, optionalScope){
-    let result ={};
-    try {
-      const discovery = await utils.getOidcDiscovery();
-      const response = await axios.post(discovery.token_endpoint,
-        qs.stringify({
-          client_id: client,
-          client_secret: secret,
-          grant_type: 'client_credentials',
-          scope: optionalScope
-        }), {
-          headers: {
-            Accept: 'application/json',
-            'Cache-Control': 'no-cache',
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }
-      );
 
-      log.verbose('api jwt', utils.prettyStringify(response.data));
-      result.jwt = response.data.access_token;
-      result.refreshToken = response.data.refresh_token;
-    } catch (error) {
-      log.error('api jwt', error.message);
-      result = error.response.data;
-    }
+  generateUiToken() {
+    var i  = config.get('tokenGenerate:issuer');
+    var s = 'user@penrequest.ca';
+    var a  = config.get('tokenGenerate:audience');
+    var signOptions = {
+      issuer:  i,
+      subject: s,
+      audience:  a,
+      expiresIn:  '12h',
+      algorithm:  'RS256'
+    };
 
-    return result;
+    const privateKey = config.get('tokenGenerate:privateKey');
+    const uiToken = jsonwebtoken.sign({}, privateKey, signOptions);
+    log.verbose('Generated JWT', uiToken);
+    return uiToken;
   }
 };
 

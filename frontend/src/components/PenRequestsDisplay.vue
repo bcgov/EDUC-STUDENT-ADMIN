@@ -86,7 +86,6 @@ export default {
         this.getPenRequests(this.defaultSelected);
       })
       .catch(error => {
-        console.log("HERE");
         console.log(error);
         this.errored = true;
       })

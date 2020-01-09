@@ -6,8 +6,10 @@ dotenv.config();
 
 const env = process.env.NODE_ENV;
 
-//injects environment variables into the json file
-nconf.overrides({
+nconf.argv()
+  .file({ file: path.join(__dirname, `${env}.json`) });
+
+nconf.defaults({
   environment: env,
   logoutEndpoint: process.env.KC_DOMAIN + '/protocol/openid-connect/logout',
   server: {
@@ -16,11 +18,11 @@ nconf.overrides({
     logLevel: 'verbose',
     morganFormat: 'dev',
     port: '8080',
-    codeTableURL: process.env.CODETABLE_API_URL,
-    penRequestURL: process.env.PEN_REQUEST_API_URL
+    codeTableURL: process.env.CODETABLE_API_URL + '/penRequestStatus',
+    penRequestURL: process.env.PEN_REQUEST_API_URL + '/all'
   },
   oidc: {
-    publicKey: process.env.PUBLIC_KEY,
+    publicKey: process.env.SOAM_PUBLIC_KEY,
     clientId: process.env.ID,
     clientSecret: process.env.SECRET,
     discovery: process.env.DISCOVERY,
@@ -28,16 +30,13 @@ nconf.overrides({
     penrequestRead: "READ_PEN_REQUEST",
     penrequestWrite: "WRITE_PEN_REQUEST",
     staffRole: "STUDENT_ADMIN"
+  },
+  tokenGenerate: {
+    privateKey: process.env.UI_PRIVATE_KEY,
+    publicKey: process.env.UI_PUBLIC_KEY,
+    audience: process.env.SERVER_FRONTEND,
+    issuer: process.env.ISSUER
   }
-});
-
-
-nconf.argv()
-  .env()
-  .file({ file: path.join(__dirname, `${env}.json`) });
-
-nconf.defaults({
-
 });
 
 module.exports = nconf;

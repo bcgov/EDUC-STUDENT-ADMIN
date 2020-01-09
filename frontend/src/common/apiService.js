@@ -38,24 +38,20 @@ const intercept = apiAxios.interceptors.response.use(config => config, error => 
     isRefreshing = true;
 
     return new Promise((resolve, reject) => {
-      AuthService.refreshAuthToken(localStorage.getItem('refreshToken'))
+      AuthService.refreshAuthToken(localStorage.getItem('jwtToken'))
         .then(response => {
-          if (response.jwt) {
-            localStorage.setItem('jwtToken', response.jwt);
-            apiAxios.defaults.headers.common['Authorization'] = `Bearer ${response.jwt}`;
-            originalRequest.headers['Authorization'] = `Bearer ${response.jwt}`;
-          }
-          if (response.refreshToken) {
-            localStorage.setItem('refreshToken', response.refreshToken);
+          if (response.jwtFrontend) {
+            localStorage.setItem('jwtToken', response.jwtFrontend);
+            apiAxios.defaults.headers.common['Authorization'] = `Bearer ${response.jwtFrontend}`;
+            originalRequest.headers['Authorization'] = `Bearer ${response.jwtFrontend}`;
           }
 
-          processQueue(null, response.jwt);
+          processQueue(null, response.jwtFrontend);
           resolve(axios(originalRequest));
         })
         .catch(e => {
           processQueue(e, null);
           localStorage.removeItem('jwtToken');
-          localStorage.removeItem('refreshToken');
           reject(e);
         })
         .finally(() => isRefreshing = false);
