@@ -37,8 +37,15 @@ router.get('/', (_req, res) => {
 router.get('/search',
 async (req, res) => {
   try{
-    const newJwt = await auth.getApiJwt(config.get("oidc:clientId"), config.get("oidc:clientSecret"), config.get("oidc:codetableRead") + " " + config.get("oidc:penrequestRead"));
-    axios.defaults.headers.common['Authorization'] = `Bearer ${newJwt.jwt}`;
+    var sessID = req.sessionID;
+
+    // eslint-disable-next-line no-console
+    console.log(req.sessionStore.sessions[sessID]);
+    var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
+    var userToken = thisSession.passport.user.jwt;
+    // eslint-disable-next-line no-console
+    console.log(userToken);
+    axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;    
 
     const codeTableResponse = await axios.get(config.get("server:codeTableURL"));
     const penRetreivalResponse = await axios.get(config.get("server:penRequestURL"));
