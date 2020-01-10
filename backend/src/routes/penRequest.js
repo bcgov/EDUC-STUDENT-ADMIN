@@ -3,7 +3,7 @@ const config = require('../config/index');
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
-const auth = require('../components/auth');
+//const auth = require('../components/auth');
 const cache = require('memory-cache');
 
 let memCache = new cache.Cache();
@@ -34,7 +34,16 @@ router.get('/', (_req, res) => {
   });
 });
 
-router.get('/search',
+function checkRoles(req, res, next){
+  if(req.user.jwt.realm_access.roles.includes(config.get("oidc:staffRole"))){
+    return next();
+  }
+  return res.status(401).json({
+    message: 'Unauthorized user'
+  })
+};
+
+router.get('/search', passport.authenticate('jwt', {session: false}), checkRoles,
 async (req, res) => {
   try{
     var sessID = req.sessionID;
@@ -72,7 +81,7 @@ async (req, res) => {
   }
 });
 
-router.get('/status', cacheMiddleware(),
+router.get('/status', passport.authenticate('jwt', {session: false}), checkRoles, cacheMiddleware(),
   async (req, res) => {
     try{
       var sessID = req.sessionID;

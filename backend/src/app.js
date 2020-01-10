@@ -120,15 +120,6 @@ utils.getOidcDiscovery().then(discovery => {
 passport.serializeUser((user, next) => next(null, user));
 passport.deserializeUser((obj, next) => next(null, obj));
 
-function checkRoles(req, res, next){
-  if(req.user.jwt.realm_access.roles.includes(config.get("oidc:staffRole"))){
-    return next();
-  }
-  return res.status(401).json({
-    message: 'Unauthorized user'
-  })
-};
-
 // GetOK Base API Directory
 apiRouter.get('/', (_req, res) => {
   res.status(200).json({
@@ -146,9 +137,7 @@ apiRouter.get('/', (_req, res) => {
 app.use(/(\/api)?/, apiRouter);
 
 apiRouter.use('/auth', authRouter);
-apiRouter.use('/penRequest', passport.authenticate('jwt', {
-  session: false
-}), checkRoles, penRequestRouter);
+apiRouter.use('/penRequest', penRequestRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {
@@ -171,7 +160,6 @@ app.use((_req, res) => {
 
 // Prevent unhandled errors from crashing application
 process.on('unhandledRejection', err => {
-  console.log("FINALLYd");
   log.error(err.stack);
 });
 
