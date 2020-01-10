@@ -47,10 +47,9 @@ function checkRoles(req, res, next){
 
   // eslint-disable-next-line no-console
   var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
-  var userToken = thisSession.passport.user.jwt;
   // eslint-disable-next-line no-console
   console.log(userToken);
-  if(userToken.realm_access.roles.includes(config.get("oidc:staffRole"))){
+  if(thisSession.passport.user.jwt.realm_access.roles.includes(config.get("oidc:staffRole"))){
     return next();
   }
   return res.status(401).json({
