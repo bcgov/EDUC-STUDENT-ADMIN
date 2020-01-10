@@ -34,8 +34,16 @@ router.get('/', (_req, res) => {
   });
 });
 
+function getJwt(req,res,next){
+  //TODO: add check for null
+  var sessID = req.sessionID;
+  var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
+  return thisSession.passport.user.jwt;
+};
+
 function checkRoles(req, res, next){
-  if(req.user.jwt.realm_access.roles.includes(config.get("oidc:staffRole"))){
+  var userToken = getJwt;
+  if(userToken.realm_access.roles.includes(config.get("oidc:staffRole"))){
     return next();
   }
   return res.status(401).json({
@@ -46,12 +54,7 @@ function checkRoles(req, res, next){
 router.get('/search', passport.authenticate('jwt', {session: false}), checkRoles,
 async (req, res) => {
   try{
-    var sessID = req.sessionID;
-
-    // eslint-disable-next-line no-console
-    var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
-    var userToken = thisSession.passport.user.jwt;
-    // eslint-disable-next-line no-console
+    var userToken = getJwt;
     axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;    
 
     const codeTableResponse = await axios.get(config.get("server:codeTableURL"));
@@ -84,12 +87,7 @@ async (req, res) => {
 router.get('/status', passport.authenticate('jwt', {session: false}), checkRoles, cacheMiddleware(),
   async (req, res) => {
     try{
-      var sessID = req.sessionID;
-
-      // eslint-disable-next-line no-console
-      var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
-      var userToken = thisSession.passport.user.jwt;
-      // eslint-disable-next-line no-console
+      var userToken = getJwt;
       axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;
       const response = await axios.get(config.get("server:codeTableURL"));      
 
