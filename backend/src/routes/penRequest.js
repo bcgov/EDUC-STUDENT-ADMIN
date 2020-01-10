@@ -42,7 +42,9 @@ function getJwt(req,res,next){
 };
 
 function checkRoles(req, res, next){
+  console.log("THERE");
   var userToken = getJwt;
+  console.log(userToken);
   if(userToken.realm_access.roles.includes(config.get("oidc:staffRole"))){
     return next();
   }
@@ -87,6 +89,7 @@ async (req, res) => {
 router.get('/status', passport.authenticate('jwt', {session: false}), checkRoles, cacheMiddleware(),
   async (req, res) => {
     try{
+      console.log("HERE");
       var userToken = getJwt;
       axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;
       const response = await axios.get(config.get("server:codeTableURL"));      
