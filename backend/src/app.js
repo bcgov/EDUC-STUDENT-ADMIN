@@ -97,7 +97,7 @@ utils.getOidcDiscovery().then(discovery => {
     // Keycloak 7.3.0 no longer automatically supplies matching client_id audience.
     // If audience checking is needed, check the following SO to update Keycloak first.
     // Ref: https://stackoverflow.com/a/53627747
-    audience: config.get('tokenGenerate:audience'),
+    //audience: config.get('tokenGenerate:audience'),
     issuer: config.get('tokenGenerate:issuer'),
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: config.get('tokenGenerate:publicKey')
