@@ -61,6 +61,7 @@ router.get('/search', passport.authenticate('jwt', {session: false}), checkRoles
 async (req, res) => {
   try{
     var sessID = req.sessionID;
+    console.log(req);
 
     // eslint-disable-next-line no-console
     var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
