@@ -42,8 +42,9 @@ function getJwt(req,res,next){
 };
 
 function checkRoles(req, res, next){
-  console.log("THERE");
+  console.log(req);
   var sessID = req.sessionID;
+  console.log(req.sessionStore.sessions[sessID]);
 
   // eslint-disable-next-line no-console
   var userToken = req.sessionStore.sessions[sessID].passport.user.jwt.realm_access.roles;
