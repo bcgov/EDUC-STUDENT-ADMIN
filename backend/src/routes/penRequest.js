@@ -74,7 +74,6 @@ async (req, res) => {
 router.get('/status', passport.authenticate('jwt', {session: false}), auth.isValidAdminToken, cacheMiddleware(),
   async (req, res) => {
     try{
-      console.log("HERE");
       var sessID = req.sessionID;
 
       // eslint-disable-next-line no-console
