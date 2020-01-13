@@ -91,7 +91,7 @@ const auth = {
     return;
   },
 
-  isValidAdminToken() {
+  isValidAdminToken(req, _res) {
     var sessID = req.sessionID;
     var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
     try{
