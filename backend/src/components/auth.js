@@ -91,7 +91,7 @@ const auth = {
     return;
   },
 
-  isValidAdminToken(req, _res) {
+  isValidAdminToken(req, res, next) {
     var sessID = req.sessionID;
     var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
     try{
@@ -105,7 +105,7 @@ const auth = {
       })
     }catch(e){
       log.error(e);
-      return _res.status(500);
+      return next(res.status(500));
     }
   },
 
