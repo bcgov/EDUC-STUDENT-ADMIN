@@ -3,13 +3,14 @@
 const config = require('./config/index');
 const dotenv = require('dotenv');
 const log = require('npmlog');
-//const morgan = require('morgan');
+const morgan = require('morgan');
 const session = require('express-session');
 const express = require('express');
 const passport = require('passport');
 const helmet = require('helmet');
 const cors = require('cors');
 const utils = require('./components/utils');
+const auth = require('./components/auth');
 
 dotenv.config();
 
@@ -39,6 +40,7 @@ app.use(express.urlencoded({
 /*if(process.env.NODE_ENV !== 'test'){
   app.use(morgan(config.get('server:morganFormat')));
 }*/
+app.use(morgan(config.get('server:morganFormat')));
 
 //app.use(keycloak.middleware());
 //sets cookies for security purposes (prevent cookie access, allow secure connections only, etc)
@@ -80,27 +82,29 @@ utils.getOidcDiscovery().then(discovery => {
       (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
       return done('No access token', null);
     }
+    //Generate token for frontend validation
+    var token = auth.generateUiToken();
 
     //set access and refresh tokens
+    profile.jwtFrontend = token;
     profile.jwt = accessToken;
     profile.refreshToken = refreshToken;
     return done(null, profile);
   }));
   //JWT strategy is used for authorization
   passport.use('jwt', new JWTStrategy({
-    algorithms: discovery.token_endpoint_auth_signing_alg_values_supported,
+    algorithms: ['RS256'],
     // Keycloak 7.3.0 no longer automatically supplies matching client_id audience.
     // If audience checking is needed, check the following SO to update Keycloak first.
     // Ref: https://stackoverflow.com/a/53627747
-    //audience: config.get('oidc:clientID'),
-    issuer: discovery.issuer,
+    //audience: config.get('tokenGenerate:audience'),
+    issuer: config.get('tokenGenerate:issuer'),
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: config.get('oidc:publicKey')
+    secretOrKey: config.get('tokenGenerate:publicKey')
   }, (jwtPayload, done) => {
     if ((typeof (jwtPayload) === 'undefined') || (jwtPayload === null)) {
       return done('No JWT token', null);
     }
-
     done(null, {
       email: jwtPayload.email,
       familyName: jwtPayload.family_name,
@@ -115,16 +119,6 @@ utils.getOidcDiscovery().then(discovery => {
 //functions for serializing/deserializing users
 passport.serializeUser((user, next) => next(null, user));
 passport.deserializeUser((obj, next) => next(null, obj));
-
-function checkRoles(req, res, next){
-  log(req);
-  if(req.user.jwt.resource_access.realm-management.roles.includes(config.get("oidc:staffRole"))){
-    return next();
-  }
-  return res.status(401).json({
-    message: 'Unauthorized user'
-  })
-};
 
 // GetOK Base API Directory
 apiRouter.get('/', (_req, res) => {
@@ -143,10 +137,7 @@ apiRouter.get('/', (_req, res) => {
 app.use(/(\/api)?/, apiRouter);
 
 apiRouter.use('/auth', authRouter);
-//apiRouter.use('/penRequest', penRequestRouter);
-apiRouter.use('/penRequest', passport.authenticate('jwt', {
-  session: false
-}), checkRoles, penRequestRouter);
+apiRouter.use('/penRequest', penRequestRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {
@@ -160,6 +151,7 @@ app.use((err, _req, res, next) => {
 
 // Handle 404 error
 app.use((_req, res) => {
+  console.log("In 404");
   res.status(404).json({
     status: 404,
     message: 'Page Not Found'

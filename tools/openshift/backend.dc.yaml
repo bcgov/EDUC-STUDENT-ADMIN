@@ -61,9 +61,6 @@ objects:
             successThreshold: 1
             timeoutSeconds: 1
           resources: {}
-          env:
-          - name: SERVER_FRONTEND
-            value: "https://${HOST_ROUTE}"
     test: false
     triggers:
     - type: ConfigChange

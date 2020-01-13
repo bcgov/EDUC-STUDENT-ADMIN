@@ -34,11 +34,15 @@ router.get('/', (_req, res) => {
   });
 });
 
-router.get('/search',
+router.get('/search', passport.authenticate('jwt', {session: false}), auth.isValidAdminToken,
 async (req, res) => {
   try{
-    const newJwt = await auth.getApiJwt(config.get("oidc:serviceClientId"), config.get("oidc:serviceClientSecret"), config.get("oidc:codetableRead") + " " + config.get("oidc:penrequestRead"));
-    axios.defaults.headers.common['Authorization'] = `Bearer ${newJwt.jwt}`;
+    var sessID = req.sessionID;
+    // eslint-disable-next-line no-console
+    var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
+    var userToken = thisSession.passport.user.jwt;
+    // eslint-disable-next-line no-console
+    axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;    
 
     const codeTableResponse = await axios.get(config.get("server:codeTableURL"));
     const penRetreivalResponse = await axios.get(config.get("server:penRequestURL"));
@@ -67,12 +71,17 @@ async (req, res) => {
   }
 });
 
-router.get('/status', cacheMiddleware(),
+router.get('/status', passport.authenticate('jwt', {session: false}), auth.isValidAdminToken, cacheMiddleware(),
   async (req, res) => {
     try{
-      const newJwt = await auth.getApiJwt(config.get("oidc:serviceClientId"), config.get("oidc:serviceClientSecret"), config.get("oidc:codetableRead"));
-      axios.defaults.headers.common['Authorization'] = `Bearer ${newJwt.jwt}`;
-      const response = await axios.get(config.get("server:codeTableURL"));
+      var sessID = req.sessionID;
+
+      // eslint-disable-next-line no-console
+      var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
+      var userToken = thisSession.passport.user.jwt;
+      // eslint-disable-next-line no-console
+      axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;
+      const response = await axios.get(config.get("server:codeTableURL"));      
 
       if(response.status !== 200){
         return res.status(response.status).json({
