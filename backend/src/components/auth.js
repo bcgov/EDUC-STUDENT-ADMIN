@@ -91,6 +91,24 @@ const auth = {
     return;
   },
 
+  isValidAdminToken() {
+    var sessID = req.sessionID;
+    var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
+    try{
+      var userToken = jsonwebtoken.verify(thisSession.passport.user.jwt, config.get("oidc:publicKey"));
+      console.log(userToken);
+      if(userToken.includes(config.get("oidc:staffRole"))){
+        return next();
+      }
+      return res.status(401).json({
+        message: 'Unauthorized user'
+      })
+    }catch(e){
+      log.error(e);
+      return;
+    }
+  },
+
   generateUiToken() {
     var i  = config.get('tokenGenerate:issuer');
     var s = 'user@penrequest.ca';

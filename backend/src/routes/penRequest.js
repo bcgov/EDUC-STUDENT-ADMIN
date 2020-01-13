@@ -3,7 +3,7 @@ const config = require('../config/index');
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
-//const auth = require('../components/auth');
+const auth = require('../components/auth');
 const cache = require('memory-cache');
 
 let memCache = new cache.Cache();
@@ -34,36 +34,10 @@ router.get('/', (_req, res) => {
   });
 });
 
-function getJwt(req,res,next){
-  //TODO: add check for null
-  var sessID = req.sessionID;
-  var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
-  return thisSession.passport.user.jwt;
-};
-
-function checkRoles(req, res, next){
-  console.log(req);
-  var sessID = req.sessionID;
-  console.log(req.sessionStore.sessions[sessID]);
-
-  // eslint-disable-next-line no-console
-  var userToken = req.sessionStore.sessions[sessID].passport.user.jwt.realm_access.roles;
-  // eslint-disable-next-line no-console
-  console.log(userToken);
-  if(userToken.includes(config.get("oidc:staffRole"))){
-    return next();
-  }
-  return res.status(401).json({
-    message: 'Unauthorized user'
-  })
-};
-
-router.get('/search', passport.authenticate('jwt', {session: false}), checkRoles,
+router.get('/search', passport.authenticate('jwt', {session: false}), auth.isValidAdminToken,
 async (req, res) => {
   try{
     var sessID = req.sessionID;
-    console.log(req);
-
     // eslint-disable-next-line no-console
     var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
     var userToken = thisSession.passport.user.jwt;
@@ -97,7 +71,7 @@ async (req, res) => {
   }
 });
 
-router.get('/status', passport.authenticate('jwt', {session: false}), checkRoles, cacheMiddleware(),
+router.get('/status', passport.authenticate('jwt', {session: false}), auth.isValidAdminToken, cacheMiddleware(),
   async (req, res) => {
     try{
       console.log("HERE");
