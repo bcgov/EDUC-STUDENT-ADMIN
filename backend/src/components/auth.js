@@ -97,7 +97,7 @@ const auth = {
     try{
       var userToken = jsonwebtoken.verify(thisSession.passport.user.jwt, config.get("oidc:publicKey"));
       console.log(userToken);
-      if(userToken.includes(config.get("oidc:staffRole"))){
+      if(userToken.realm_access.roles.includes(config.get("oidc:staffRole"))){
         return next();
       }
       return res.status(401).json({
@@ -105,7 +105,7 @@ const auth = {
       })
     }catch(e){
       log.error(e);
-      return;
+      return _res.status(500);
     }
   },
 
