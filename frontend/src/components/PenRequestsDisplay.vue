@@ -1,50 +1,62 @@
 <template>
-    <v-card class="table1">
-   <v-card-title>
-    <v-flex class="text-xs-center">
-      <v-combobox
-        :key="comboboxKey"
-        :mandatory="false"
-        :items="statusCodes"
-        label="Select PEN Request Status to View"
-        v-model="defaultSelected"
-        multiple
-        small-chips
-        auto-select-first
-        hide-selected
-        :loading="loadingSelect">
-        <template v-slot:selection="{ attrs, item, select, selected }">
-          <v-chip
-            v-bind="attrs"
-            :input-value="selected"
-            label
-            small
-            @click="select"
-          >
-            <span class="pr-2">
-              {{ item }}
-            </span>
-            <v-icon
-              small
-              @click="remove(item)"
-            >close</v-icon>
-          </v-chip>
-        </template>
-      </v-combobox>
-    </v-flex>
-  </v-card-title>
-      <v-data-table
-        :headers="headers"
-        :items="filteredResults"
-        :sort-by="['createDate']"
-        :items-per-page="5"
-        :loading="loadingTable"
-        class="elevation-1">
-          <template v-slot:item.createDate="{ item }">
-           <span>{{new Date(item.createDate).toISOString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
-         </template>
-      </v-data-table>
-    </v-card>
+  <v-container class="fill-height" fluid>
+    <v-row style="border: 1px solid red" class="fill-height">
+      <v-col cols="12" elevated=4 class="d-flex flex-column grow-shrink-0">
+        <v-row no-gutters style="border: 1px solid green" class="flex-grow-0">
+          <v-card height="100%" width="100%" elevation=0>
+            <v-card-title class="pa-0">PEN Retreival Requests</v-card-title>
+            <v-divider/>
+            <v-combobox
+              :key="comboboxKey"
+              :mandatory="false"
+              :items="statusCodes"
+              label="Select PEN request statuses to view"
+              v-model="defaultSelected"
+              multiple
+              small-chips
+              auto-select-first
+              hide-selected
+              :loading="loadingSelect"
+              class="pa-0">
+              <template v-slot:selection="{ attrs, item, select, selected }">
+                <v-chip
+                  v-bind="attrs"
+                  :input-value="selected"
+                  label
+                  small
+                  @click="select"
+                >
+                  <span class="pr-2">
+                    {{ item }}
+                  </span>
+                  <v-icon
+                    small
+                    @click="remove(item)"
+                  >close</v-icon>
+                </v-chip>
+              </template>
+            </v-combobox>
+          </v-card>
+        </v-row>
+        <v-row no-gutters style="border: 1px solid yellow">
+          <v-card height="100%" width="100%" elevation=0>
+            <v-data-table
+                :headers="headers"
+                :items="filteredResults"
+                :sort-by="['createDate']"
+                :items-per-page="15"
+                :loading="loadingTable"
+                style="border: 1px solid black"
+                class="fill-height">
+                <template v-slot:item.createDate="{ item }">
+                  <span>{{new Date(item.createDate).toISOString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
+                </template>
+              </v-data-table>
+          </v-card>
+        </v-row>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -76,12 +88,11 @@ export default {
         this.codeTable = response.data;
         this.statusCodes = this.getStatusCodes();
 
-        if(this.statusCodes.includes('First Review')){
+        if(this.statusCodes.includes('First Review') && this.statusCodes.includes('Subsequent Review')){
           this.defaultSelected[0] = 'First Review';
+          this.defaultSelected[1] = 'Subsequent Review';
         }
-        else{
-          this.defaultSelected[0] = this.statusCodes[0];
-        }
+
         this.comboboxKey+=1;//force component to re-render
         this.getPenRequests(this.defaultSelected);
       })
@@ -129,3 +140,10 @@ export default {
   },
 };
 </script>
+<style scoped>
+  .theme--light.v-data-table .v-data-table__actions .v-data-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+</style>
