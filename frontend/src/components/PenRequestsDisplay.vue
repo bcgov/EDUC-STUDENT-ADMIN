@@ -1,23 +1,29 @@
 <template>
   <v-container class="fill-height" fluid>
-    <v-row style="border: 1px solid red" class="fill-height">
-      <v-col cols="12" elevated=4 class="d-flex flex-column grow-shrink-0">
-        <v-row no-gutters style="border: 1px solid green" class="flex-grow-0">
+    <v-row class="fill-height">
+      <v-col cols="12" elevated=4 class="">
+        <v-row no-gutters class="flex-grow-0">
           <v-card height="100%" width="100%" elevation=0>
-            <v-card-title class="pa-0">PEN Retreival Requests</v-card-title>
+            <v-card-title class="pb-0 px-0">PEN Retreival Requests</v-card-title>
             <v-divider/>
+            <v-card-subtitle class="px-0">Use the table below to search, filter, view, and action requests.  The drop down box searches by status then the results can be filtered by column.<br/>Click a row to view details and action a request.</v-card-subtitle>
+          </v-card>
+        </v-row>
+        <v-row no-gutters>
+          <v-card height="100%" width="100%"  style="background-color:#38598a;">
             <v-combobox
               :key="comboboxKey"
               :mandatory="false"
               :items="statusCodes"
-              label="Select PEN request statuses to view"
               v-model="defaultSelected"
+              label="Select PEN request statuses to view"
               multiple
               small-chips
               auto-select-first
               hide-selected
+              solo
               :loading="loadingSelect"
-              class="pa-0">
+              class="mx-6 mt-6 pa-0">
               <template v-slot:selection="{ attrs, item, select, selected }">
                 <v-chip
                   v-bind="attrs"
@@ -36,22 +42,31 @@
                 </v-chip>
               </template>
             </v-combobox>
-          </v-card>
-        </v-row>
-        <v-row no-gutters style="border: 1px solid yellow">
-          <v-card height="100%" width="100%" elevation=0>
             <v-data-table
-                :headers="headers"
-                :items="filteredResults"
-                :sort-by="['createDate']"
-                :items-per-page="15"
-                :loading="loadingTable"
-                style="border: 1px solid black"
-                class="fill-height">
-                <template v-slot:item.createDate="{ item }">
-                  <span>{{new Date(item.createDate).toISOString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
-                </template>
-              </v-data-table>
+              :headers="headers"
+              :items="filteredResults"
+              :sort-by="['createDate']"
+              :items-per-page="15"
+              :loading="loadingTable"
+              class="fill-height">
+              <template slot="headers" slot-scope="props">
+        <tr>
+          <th
+            v-for="header in props.headers"
+            :key="header.text"
+            :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
+            @click="changeSort(header.value)"
+          >
+            <v-icon small>arrow_upward</v-icon>
+            <v-icon small>filter_list</v-icon>
+            {{ header.text }}
+          </th>
+        </tr>
+      </template>
+              <template v-slot:item.createDate="{ item }">
+                <span>{{new Date(item.createDate).toISOString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
+              </template>
+            </v-data-table>
           </v-card>
         </v-row>
       </v-col>
@@ -141,9 +156,20 @@ export default {
 };
 </script>
 <style scoped>
-  .theme--light.v-data-table .v-data-table__actions .v-data-footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-}
+  .header {
+    background-color: #96c0e6;
+    top:-24px;
+  }
+  label {
+    color:white;
+  }
+  .v-card {
+    background-color:#fafafa;
+  }
+  .v-combobox {
+    background-color:#5475a7 !important;
+  }
+  .theme--light  .v-label {
+    color: white;
+  }
 </style>
