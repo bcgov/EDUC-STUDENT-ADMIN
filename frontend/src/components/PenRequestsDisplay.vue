@@ -49,20 +49,6 @@
               :items-per-page="15"
               :loading="loadingTable"
               class="fill-height">
-              <template slot="headers" slot-scope="props">
-        <tr>
-          <th
-            v-for="header in props.headers"
-            :key="header.text"
-            :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
-            @click="changeSort(header.value)"
-          >
-            <v-icon small>arrow_upward</v-icon>
-            <v-icon small>filter_list</v-icon>
-            {{ header.text }}
-          </th>
-        </tr>
-      </template>
               <template v-slot:item.createDate="{ item }">
                 <span>{{new Date(item.createDate).toISOString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
               </template>
