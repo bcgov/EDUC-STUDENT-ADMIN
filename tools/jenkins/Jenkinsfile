@@ -11,13 +11,13 @@ pipeline{
 
         REPO_NAME = 'educ-student-admin'
         OWNER = 'bcgov'
-        JOB_NAME = 'feature/pen-177'
+        JOB_NAME = 'master'
         
         APP_NAME = 'student-admin'
         APP_DOMAIN = 'pathfinder.gov.bc.ca'
 
         SOURCE_REPO_RAW = 'https://github.com/${OWNER}/${REPO_NAME}/master'
-        SOURCE_REPO_REF = 'master'
+        SOURCE_REPO_REF = 'feature/pen-177'
         SOURCE_REPO_URL = 'https://github.com/${OWNER}/${REPO_NAME}.git'
 
         TOOLS_HOST_ROUTE = "${APP_NAME}-${TOOLS}.${APP_DOMAIN}"
