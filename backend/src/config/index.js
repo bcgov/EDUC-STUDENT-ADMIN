@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const path = require('path');
 dotenv.config();
 
-const env = process.env.NODE_ENV;
+const env = 'local';//process.env.NODE_ENV;
 
 nconf.argv()
   .file({ file: path.join(__dirname, `${env}.json`) });
@@ -18,15 +18,14 @@ nconf.defaults({
     logLevel: 'verbose',
     morganFormat: 'dev',
     port: '8080',
-    codeTableURL: process.env.CODETABLE_API_URL + '/penRequestStatus',
-    penRequestURL: process.env.PEN_REQUEST_API_URL + '/all'
+    penRequestStatus: process.env.PEN_REQUEST_API_URL + '/statuses',
+    penRequestURL: process.env.PEN_REQUEST_API_URL
   },
   oidc: {
     publicKey: process.env.SOAM_PUBLIC_KEY,
     clientId: process.env.ID,
     clientSecret: process.env.SECRET,
     discovery: process.env.DISCOVERY,
-    codetableRead: "READ_CODETABLE_SET",
     penrequestRead: "READ_PEN_REQUEST",
     penrequestWrite: "WRITE_PEN_REQUEST",
     staffRole: "STUDENT_ADMIN"
