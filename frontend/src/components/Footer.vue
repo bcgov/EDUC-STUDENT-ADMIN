@@ -22,13 +22,13 @@ export default {};
     min-height: 45px;
     min-width: 100%;
   }
-  /*
+  
   .footer {
     position: fixed;
     width: 100%;
     bottom: 0;
   }
-  */
+  
   .v-btn--active.footer:before,
   .v-btn.footer:focus:before,
   .v-btn.footer:hover:before {

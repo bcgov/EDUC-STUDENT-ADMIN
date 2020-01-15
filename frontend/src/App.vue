@@ -34,10 +34,4 @@ export default {
 .v-application {
   font-family: 'BCSans', Verdana, Arial, sans-serif !important;
 }
-.v-card--flat {
-  background-color: transparent !important;
-}
-.theme--light.application{
-  background: #f1f1f1;
-}
 </style>
