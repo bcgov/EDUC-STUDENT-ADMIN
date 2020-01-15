@@ -84,9 +84,9 @@ export default {
   },
   mounted() {
     ApiService.apiAxios
-      .get(Constants.codeTableUrl)
+      .get(Constants.statusesUrl)
       .then(response => {
-        this.codeTable = response.data;
+        this.statuses = response.data;
         this.statusCodes = this.getStatusCodes();
 
         if(this.statusCodes.includes('First Review') && this.statusCodes.includes('Subsequent Review')){
@@ -117,7 +117,7 @@ export default {
     },
     getStatusCodes() {
       var labels = [];
-      this.codeTable.forEach(element => {
+      this.statuses.forEach(element => {
         labels.push(element.label);
       });
       return labels.sort();
