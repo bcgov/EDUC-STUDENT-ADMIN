@@ -17,7 +17,7 @@ pipeline{
         APP_DOMAIN = 'pathfinder.gov.bc.ca'
 
         SOURCE_REPO_RAW = 'https://github.com/${OWNER}/${REPO_NAME}/master'
-        SOURCE_REPO_REF = 'feature/pen-117'
+        SOURCE_REPO_REF = 'master'
         SOURCE_REPO_URL = 'https://github.com/${OWNER}/${REPO_NAME}.git'
 
         TOOLS_HOST_ROUTE = "${APP_NAME}-${TOOLS}.${APP_DOMAIN}"
