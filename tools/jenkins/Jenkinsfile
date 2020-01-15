@@ -11,7 +11,7 @@ pipeline{
 
         REPO_NAME = 'educ-student-admin'
         OWNER = 'bcgov'
-        JOB_NAME = 'master'
+        JOB_NAME = 'feature/pen-177'
         
         APP_NAME = 'student-admin'
         APP_DOMAIN = 'pathfinder.gov.bc.ca'

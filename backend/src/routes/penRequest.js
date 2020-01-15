@@ -44,10 +44,10 @@ async (req, res) => {
     // eslint-disable-next-line no-console
     axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;    
 
-    const statusesResponse = await axios.get(config.get("server:penRequestStatus"));
+    const codeTableResponse = await axios.get(config.get("server:codeTableURL"));
     const penRetreivalResponse = await axios.get(config.get("server:penRequestURL"));
-    if(statusesResponse.status !== 200){
-      return res.status(statusesResponse.status).json({
+    if(codeTableResponse.status !== 200){
+      return res.status(codeTableResponse.status).json({
         message: 'API error'
       });
     }
@@ -58,7 +58,7 @@ async (req, res) => {
     }
     penRetreivalResponse.data.forEach(element => {
       if(element.penRequestStatusCode){
-        var temp = statusesResponse.data.find(codeStatus => codeStatus.penRequestStatusCode === element.penRequestStatusCode);
+        var temp = codeTableResponse.data.find(codeStatus => codeStatus.penRequestStatusCode === element.penRequestStatusCode);
         if(temp){
           element.penRequestStatusCode = temp;
         }
@@ -81,7 +81,7 @@ router.get('/status', passport.authenticate('jwt', {session: false}), auth.isVal
       var userToken = thisSession.passport.user.jwt;
       // eslint-disable-next-line no-console
       axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;
-      const response = await axios.get(config.get("server:penRequestStatus"));      
+      const response = await axios.get(config.get("server:codeTableURL"));      
 
       if(response.status !== 200){
         return res.status(response.status).json({

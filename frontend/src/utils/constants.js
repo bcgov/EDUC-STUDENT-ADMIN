@@ -22,9 +22,9 @@ if(process.env.NODE_ENV === 'development'){
 export const AuthRoutes = Object.freeze(object);
 
 const penRequestUrl = '/api/penRequest/search';
-const statusesUrl = '/api/penRequest/status';
+const codeTableUrl = '/api/penRequest/status';
 
 export default {
   penRequestUrl: penRequestUrl,
-  statusesUrl: statusesUrl
+  codeTableUrl: codeTableUrl
 };
