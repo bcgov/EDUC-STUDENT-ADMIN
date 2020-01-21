@@ -44,22 +44,11 @@ export default {
 
     async getUserInfo(context){
       try{
-        if(process.env.NODE_ENV === 'development'){
-          context.commit('setUserInfo', {
-            displayName: 'Nathan Denny',
-            firstName: 'Nathan',
-            lastName: 'Denny',
-            email: 'fake-email@not.real',
-            accountType: 'BCEID',
-            pen: null
-          });
-        } else {
-          var token = await AuthService.getAuthToken();
-          console.log(token);
-          var tokenJson = token._json;
-          console.log(tokenJson);
-          context.commit('setUserInfo', tokenJson);
-        }
+        var token = await AuthService.getAuthToken();
+        console.log(token);
+        var tokenJson = token._json;
+        console.log(tokenJson);
+        context.commit('setUserInfo', tokenJson);
       } catch(e) {
         throw e;
       }
@@ -69,33 +58,25 @@ export default {
     async getJwtToken(context) {
       try {
         if (context.getters.isAuthenticated && !!context.getters.jwtToken) {
-          if(process.env.NODE_ENV === 'development'){
-            context.commit('setJwtToken', 'testToken');
-          } else{
-            const now = Date.now().valueOf() / 1000;
-            const jwtPayload = context.getters.jwtToken.split('.')[1];
-            const payload = JSON.parse(window.atob(jwtPayload));
+          const now = Date.now().valueOf() / 1000;
+          const jwtPayload = context.getters.jwtToken.split('.')[1];
+          const payload = JSON.parse(window.atob(jwtPayload));
 
-            if (payload.exp > now) {
-              const response = await AuthService.refreshAuthToken(context.getters.jwtToken);
-
-              if (response.jwtFrontend) {
-                context.commit('setJwtToken', response.jwtFrontend);
-              }
-              ApiService.setAuthHeader(response.jwtFrontend);
-            }
-          }
-        } else {
-          if(process.env.NODE_ENV === 'development'){
-            context.commit('setJwtToken', 'testToken');
-          } else {
-            const response = await AuthService.getAuthToken();
+          if (payload.exp > now) {
+            const response = await AuthService.refreshAuthToken(context.getters.jwtToken);
 
             if (response.jwtFrontend) {
               context.commit('setJwtToken', response.jwtFrontend);
             }
             ApiService.setAuthHeader(response.jwtFrontend);
           }
+        } else {
+          const response = await AuthService.getAuthToken();
+
+          if (response.jwtFrontend) {
+            context.commit('setJwtToken', response.jwtFrontend);
+          }
+          ApiService.setAuthHeader(response.jwtFrontend);
         }
       } catch (e) {
         // Remove tokens from localStorage and update state

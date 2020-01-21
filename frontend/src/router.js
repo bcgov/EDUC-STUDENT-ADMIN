@@ -2,7 +2,10 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 
 import Home from '@/components/Home.vue';
-//import store from '@/store/index.js';
+import PenRequestDetail from '@/components/PenRequestDetail.vue';
+import moment from 'moment';
+
+Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
 
@@ -14,6 +17,11 @@ const router = new VueRouter({
       path: '/',
       name: 'home',
       component: Home
+    },
+    {
+      path: '/penrequestdetail/:id',
+      name: 'penrequestdetail',
+      component: PenRequestDetail
     },
     {
       path: '*',

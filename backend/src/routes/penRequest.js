@@ -28,8 +28,9 @@ let cacheMiddleware = () => {
 router.get('/', (_req, res) => {
   res.status(200).json({
     endpoints: [
-    '/search',
-    '/status'
+      '/search',
+      '/status',
+      '/:id',
     ]
   });
 });
@@ -95,5 +96,28 @@ router.get('/status', passport.authenticate('jwt', {session: false}), auth.isVal
     }
   }
 );
+
+router.get('/:id', passport.authenticate('jwt', {session: false}), auth.isValidAdminToken,
+async (req, res) => {
+  try{
+    var sessID = req.sessionID;
+    // eslint-disable-next-line no-console
+    var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
+    var userToken = thisSession.passport.user.jwt;
+    // eslint-disable-next-line no-console
+    axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;    
+    const penRetreivalResponse = await axios.get(config.get("server:penRequestURL") + "/" + req.params.id);
+
+    if(penRetreivalResponse.status !== 200){
+      return res.status(penRetreivalResponse.status).json({
+        message: 'API error'
+      });
+    }
+    return res.status(200).json(penRetreivalResponse.data);
+  } catch(e) {
+    console.log(e);
+    return res.status(500).json(e);
+  }
+});
 
 module.exports = router;

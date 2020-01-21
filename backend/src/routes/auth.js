@@ -30,10 +30,6 @@ router.get('/callback',
     failureRedirect: 'error'
   }),
   (_req, res) => {
-    //redirect to localhost if running locally
-    if(process.env.NODE_ENV === 'local'){
-      res.redirect('localhost:8080');
-    }
     res.redirect(config.get('server:frontend'));
   }
 );
@@ -52,25 +48,21 @@ router.get('/login', passport.authenticate('oidc', {
 
 //removes tokens and destroys session
 router.get('/logout', async (req, res) => {
-  if(process.env.NODE_ENV === 'local'){
-    res.redirect(config.get('server:frontend'));
+  if(req.user.jwt){
+    const token = req.user.jwt;
+    req.logout();
+    req.session.destroy();
+    res.redirect(config.get('logoutEndpoint') + '?id_token_hint=' + token + '&post_logout_redirect_uri=' + config.get('server:frontend'));
   } else {
-    if(req.user.jwt){
-      const token = req.user.jwt;
+    const refresh = await auth.renew(req.user.refreshToken);
+    if(req.user){
       req.logout();
       req.session.destroy();
-      res.redirect(config.get('logoutEndpoint') + '?id_token_hint=' + token + '&post_logout_redirect_uri=' + config.get('server:frontend'));
-    } else {
-      const refresh = await auth.renew(req.user.refreshToken);
-      if(req.user){
-        req.logout();
-        req.session.destroy();
-        res.redirect(config.get('logoutEndpoint') + '?id_token_hint=' + refresh.jwt + '&post_logout_redirect_uri=' + config.get('server:frontend'));
-      } else{
-        req.logout();
-        req.session.destroy();
-        res.redirect(config.get('server:frontend'));
-      }
+      res.redirect(config.get('logoutEndpoint') + '?id_token_hint=' + refresh.jwt + '&post_logout_redirect_uri=' + config.get('server:frontend'));
+    } else{
+      req.logout();
+      req.session.destroy();
+      res.redirect(config.get('server:frontend'));
     }
   }
 });

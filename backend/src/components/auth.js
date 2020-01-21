@@ -70,7 +70,6 @@ const auth = {
 
           if (!!req.user.refreshToken && auth.isRenewable(req.user.refreshToken)) {
             log.verbose('refreshJWT', 'Can refresh JWT token');
-
             // Get new JWT and Refresh Tokens and update the request
             const result = await auth.renew(req.user.refreshToken);
             req.user.jwt = result.jwt; // eslint-disable-line require-atomic-updates
@@ -96,7 +95,7 @@ const auth = {
     var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
     try{
       var userToken = jsonwebtoken.verify(thisSession.passport.user.jwt, config.get("oidc:publicKey"));
-      console.log(userToken);
+      console.log("YOMOFO");
       if(userToken.realm_access.roles.includes(config.get("oidc:staffRole"))){
         return next();
       }

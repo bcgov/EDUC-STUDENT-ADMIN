@@ -1,7 +1,7 @@
 <template>
-  <v-container class="fill-height" fluid>
+  <v-container class="fill-height">
     <v-row class="fill-height">
-      <v-col cols="12" elevated=4 class="">
+      <v-col cols="12">
         <v-row no-gutters class="flex-grow-0">
           <v-card height="100%" width="100%" elevation=0>
             <v-card-title class="pb-0 px-0">PEN Retreival Requests</v-card-title>
@@ -48,9 +48,22 @@
               :sort-by="['createDate']"
               :items-per-page="15"
               :loading="loadingTable"
+              @click:row="viewRequestDetails"
               class="fill-height">
               <template v-slot:item.createDate="{ item }">
                 <span>{{new Date(item.createDate).toISOString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
+              </template>
+              <template v-slot:item.action="{ item }">
+                <v-icon
+                  small
+                  class="mr-2"
+                  @click="editItem(item)"
+                >
+                  edit
+                </v-icon>
+              </template>
+              <template v-slot:no-data>
+                There are no requests with the selected statuses.
               </template>
             </v-data-table>
           </v-card>
@@ -72,6 +85,18 @@ export default {
         { text: 'Last Name', value: 'legalLastName' },
         { text: 'First Name', value: 'legalFirstName' },
         { text: 'Reviewer', value: 'REVIEWER' },
+      ],
+      fakeData:[
+        {
+          createDate: '2020-12-02',
+          penRequestStatusCode: {
+            label: 'Submitted'
+          },
+          legalLastName: 'Cox',
+          legalFirstName: 'John',
+          REVIEWER: 'JC',
+          penRequestID: '12920158-3978-11ea-a137-2e728ce88125'
+        },
       ],
       statusCodes:[],
       defaultSelected:[],
@@ -115,7 +140,7 @@ export default {
       this.defaultSelected = [...this.defaultSelected];
       this.getPenRequests(this.defaultSelected);
     },
-    getStatusCodes() {
+    getStatusCodes () {
       var labels = [];
       this.codeTable.forEach(element => {
         labels.push(element.label);
@@ -124,7 +149,7 @@ export default {
     },
     getPenRequests (searchStatuses) {
       ApiService.apiAxios
-        .get(Constants.penRequestUrl, {
+        .get(Constants.penRequestSearchUrl, {
           params: {
             queryParams: searchStatuses
           }
@@ -138,6 +163,10 @@ export default {
         })
         .finally(() => this.loadingTable = false);
     },
+    viewRequestDetails (request) {
+      const id = request.penRequestID;
+      this.$router.push({name: 'penrequestdetail', params: { id } });
+    }
   },
 };
 </script>

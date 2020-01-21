@@ -36,13 +36,8 @@ app.use(express.urlencoded({
   extended: false
 }));
 
-//initialize logging middleware
-/*if(process.env.NODE_ENV !== 'test'){
-  app.use(morgan(config.get('server:morganFormat')));
-}*/
 app.use(morgan(config.get('server:morganFormat')));
 
-//app.use(keycloak.middleware());
 //sets cookies for security purposes (prevent cookie access, allow secure connections only, etc)
 var expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 app.use(session({
@@ -82,6 +77,7 @@ utils.getOidcDiscovery().then(discovery => {
       (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
       return done('No access token', null);
     }
+    console.log("DONE");
     //Generate token for frontend validation
     var token = auth.generateUiToken();
 
@@ -105,6 +101,7 @@ utils.getOidcDiscovery().then(discovery => {
     if ((typeof (jwtPayload) === 'undefined') || (jwtPayload === null)) {
       return done('No JWT token', null);
     }
+    console.log("THERE");
     done(null, {
       email: jwtPayload.email,
       familyName: jwtPayload.family_name,
