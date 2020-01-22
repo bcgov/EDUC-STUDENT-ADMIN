@@ -19,7 +19,8 @@ nconf.defaults({
     morganFormat: 'dev',
     port: '8080',
     codeTableURL: process.env.PEN_REQUEST_API_URL + '/statuses',
-    penRequestURL: process.env.PEN_REQUEST_API_URL
+    penRequestURL: process.env.PEN_REQUEST_API_URL,
+    penEmails: process.env.PEN_REQUEST_EMAIL_API_URL
   },
   oidc: {
     publicKey: process.env.SOAM_PUBLIC_KEY,

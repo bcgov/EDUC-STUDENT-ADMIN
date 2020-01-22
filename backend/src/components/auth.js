@@ -47,8 +47,6 @@ const auth = {
           }
         }
       );
-
-      log.verbose('renew-response ->', utils.prettyStringify(response.data));
       result.jwt = response.data.access_token;
       result.refreshToken = response.data.refresh_token;
     } catch (error) {
@@ -95,7 +93,6 @@ const auth = {
     var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
     try{
       var userToken = jsonwebtoken.verify(thisSession.passport.user.jwt, config.get("oidc:publicKey"));
-      console.log("YOMOFO");
       if(userToken.realm_access.roles.includes(config.get("oidc:staffRole"))){
         return next();
       }

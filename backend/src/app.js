@@ -21,6 +21,7 @@ const OidcStrategy = require('passport-openidconnect-kc-idp').Strategy;
 const apiRouter = express.Router();
 const authRouter = require('./routes/auth');
 const penRequestRouter = require('./routes/penRequest');
+const emailsRouter = require('./routes/emails');
 
 //initialize app
 const app = express();
@@ -77,7 +78,6 @@ utils.getOidcDiscovery().then(discovery => {
       (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
       return done('No access token', null);
     }
-    console.log("DONE");
     //Generate token for frontend validation
     var token = auth.generateUiToken();
 
@@ -101,7 +101,6 @@ utils.getOidcDiscovery().then(discovery => {
     if ((typeof (jwtPayload) === 'undefined') || (jwtPayload === null)) {
       return done('No JWT token', null);
     }
-    console.log("THERE");
     done(null, {
       email: jwtPayload.email,
       familyName: jwtPayload.family_name,
@@ -122,7 +121,8 @@ apiRouter.get('/', (_req, res) => {
   res.status(200).json({
     endpoints: [
       '/api/auth',
-      '/api/penRequest'
+      '/api/penRequest',
+      '/api/emails'
     ],
     versions: [
       1
@@ -135,6 +135,7 @@ app.use(/(\/api)?/, apiRouter);
 
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/penRequest', penRequestRouter);
+apiRouter.use('/emails', emailsRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {

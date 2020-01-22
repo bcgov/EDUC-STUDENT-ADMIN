@@ -84,7 +84,7 @@ export default {
         { text: 'Status', value: 'penRequestStatusCode.label' },
         { text: 'Last Name', value: 'legalLastName' },
         { text: 'First Name', value: 'legalFirstName' },
-        { text: 'Reviewer', value: 'REVIEWER' },
+        { text: 'Reviewer', value: 'reviewer' },
       ],
       fakeData:[
         {

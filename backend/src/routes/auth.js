@@ -4,6 +4,7 @@ const config =require('../config/index');
 const passport = require('passport');
 const express = require('express');
 const auth = require('../components/auth');
+const jsonwebtoken = require('jsonwebtoken');
 const {
   body,
   validationResult
@@ -19,7 +20,8 @@ router.get('/', (_req, res) => {
       '/login',
       '/logout',
       '/refresh',
-      '/token'
+      '/token',
+      '/user'
     ]
   });
 });
@@ -102,6 +104,23 @@ router.use('/token', auth.refreshJWT, (req, res) => {
       message: 'Not logged in'
     });
   }
+});
+
+router.use('/user',  passport.authenticate('jwt', {session: false}), (req, res) => {
+  var sessID = req.sessionID;
+  var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
+  var userToken = jsonwebtoken.verify(thisSession.passport.user.jwt, config.get("oidc:publicKey"));
+  var userName = {
+    userName: userToken.idir_username
+  };
+  
+  if(userName) {
+    return res.status(200).json(userName);
+  }
+  else {
+    return res.status(500);
+  }
+  
 });
 
 module.exports = router;
