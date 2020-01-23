@@ -18,16 +18,15 @@ nconf.defaults({
     logLevel: 'verbose',
     morganFormat: 'dev',
     port: '8080',
-    penRequestStatus: process.env.PEN_REQUEST_API_URL + '/statuses',
-    penRequestURL: process.env.PEN_REQUEST_API_URL
+    codeTableURL: process.env.PEN_REQUEST_API_URL + '/statuses',
+    penRequestURL: process.env.PEN_REQUEST_API_URL,
+    penEmails: process.env.PEN_REQUEST_EMAIL_API_URL
   },
   oidc: {
     publicKey: process.env.SOAM_PUBLIC_KEY,
     clientId: process.env.ID,
     clientSecret: process.env.SECRET,
     discovery: process.env.DISCOVERY,
-    penrequestRead: "READ_PEN_REQUEST",
-    penrequestWrite: "WRITE_PEN_REQUEST",
     staffRole: "STUDENT_ADMIN"
   },
   tokenGenerate: {

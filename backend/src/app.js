@@ -21,6 +21,7 @@ const OidcStrategy = require('passport-openidconnect-kc-idp').Strategy;
 const apiRouter = express.Router();
 const authRouter = require('./routes/auth');
 const penRequestRouter = require('./routes/penRequest');
+const emailsRouter = require('./routes/emails');
 
 //initialize app
 const app = express();
@@ -36,13 +37,8 @@ app.use(express.urlencoded({
   extended: false
 }));
 
-//initialize logging middleware
-/*if(process.env.NODE_ENV !== 'test'){
-  app.use(morgan(config.get('server:morganFormat')));
-}*/
 app.use(morgan(config.get('server:morganFormat')));
 
-//app.use(keycloak.middleware());
 //sets cookies for security purposes (prevent cookie access, allow secure connections only, etc)
 var expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 app.use(session({
@@ -125,7 +121,8 @@ apiRouter.get('/', (_req, res) => {
   res.status(200).json({
     endpoints: [
       '/api/auth',
-      '/api/penRequest'
+      '/api/penRequest',
+      '/api/emails'
     ],
     versions: [
       1
@@ -138,6 +135,7 @@ app.use(/(\/api)?/, apiRouter);
 
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/penRequest', penRequestRouter);
+apiRouter.use('/emails', emailsRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {

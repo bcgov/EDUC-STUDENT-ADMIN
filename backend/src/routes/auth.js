@@ -4,6 +4,7 @@ const config =require('../config/index');
 const passport = require('passport');
 const express = require('express');
 const auth = require('../components/auth');
+const jsonwebtoken = require('jsonwebtoken');
 const {
   body,
   validationResult
@@ -19,7 +20,8 @@ router.get('/', (_req, res) => {
       '/login',
       '/logout',
       '/refresh',
-      '/token'
+      '/token',
+      '/user'
     ]
   });
 });
@@ -30,10 +32,6 @@ router.get('/callback',
     failureRedirect: 'error'
   }),
   (_req, res) => {
-    //redirect to localhost if running locally
-    if(process.env.NODE_ENV === 'local'){
-      res.redirect('localhost:8080');
-    }
     res.redirect(config.get('server:frontend'));
   }
 );
@@ -52,25 +50,21 @@ router.get('/login', passport.authenticate('oidc', {
 
 //removes tokens and destroys session
 router.get('/logout', async (req, res) => {
-  if(process.env.NODE_ENV === 'local'){
-    res.redirect(config.get('server:frontend'));
+  if(req.user.jwt){
+    const token = req.user.jwt;
+    req.logout();
+    req.session.destroy();
+    res.redirect(config.get('logoutEndpoint') + '?id_token_hint=' + token + '&post_logout_redirect_uri=' + config.get('server:frontend'));
   } else {
-    if(req.user.jwt){
-      const token = req.user.jwt;
+    const refresh = await auth.renew(req.user.refreshToken);
+    if(req.user){
       req.logout();
       req.session.destroy();
-      res.redirect(config.get('logoutEndpoint') + '?id_token_hint=' + token + '&post_logout_redirect_uri=' + config.get('server:frontend'));
-    } else {
-      const refresh = await auth.renew(req.user.refreshToken);
-      if(req.user){
-        req.logout();
-        req.session.destroy();
-        res.redirect(config.get('logoutEndpoint') + '?id_token_hint=' + refresh.jwt + '&post_logout_redirect_uri=' + config.get('server:frontend'));
-      } else{
-        req.logout();
-        req.session.destroy();
-        res.redirect(config.get('server:frontend'));
-      }
+      res.redirect(config.get('logoutEndpoint') + '?id_token_hint=' + refresh.jwt + '&post_logout_redirect_uri=' + config.get('server:frontend'));
+    } else{
+      req.logout();
+      req.session.destroy();
+      res.redirect(config.get('server:frontend'));
     }
   }
 });
@@ -110,6 +104,23 @@ router.use('/token', auth.refreshJWT, (req, res) => {
       message: 'Not logged in'
     });
   }
+});
+
+router.use('/user',  passport.authenticate('jwt', {session: false}), (req, res) => {
+  var sessID = req.sessionID;
+  var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
+  var userToken = jsonwebtoken.verify(thisSession.passport.user.jwt, config.get("oidc:publicKey"));
+  var userName = {
+    userName: userToken.idir_username
+  };
+  
+  if(userName) {
+    return res.status(200).json(userName);
+  }
+  else {
+    return res.status(500);
+  }
+  
 });
 
 module.exports = router;

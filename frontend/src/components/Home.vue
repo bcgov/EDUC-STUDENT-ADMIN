@@ -31,9 +31,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.container{
-  padding: 0px;
-}
 .top-banner{
   min-height: 500px;
   background-size: cover;
