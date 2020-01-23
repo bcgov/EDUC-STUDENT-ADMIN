@@ -193,8 +193,8 @@
               </v-row>
               <v-row>
                   <v-card width="100%">
-                      <v-toolbar flat color="#38598a" dark>
-                          <v-toolbar-title>Actions</v-toolbar-title>
+                      <v-toolbar flat color="#38598a" dark class="tester">
+                          <v-toolbar-title class="pa-0">Actions</v-toolbar-title>
                       </v-toolbar>
                       <v-tabs vertical>
                           <v-tab>Provide PEN</v-tab>
@@ -262,13 +262,13 @@
                               </v-card>
                           </v-tab-item>
                           <v-tab-item>
-                          <v-card flat height="100%">
-                              <v-card-text>
-                                  <v-row class="flex-grow-0">
-                                  <ol>
-                                      <li>Enter a message for the student in the panel above.</li>
-                                      <li>Return the request with the button below.</li>
-                                  </ol>
+                          <v-card flat height="100%" class="mx-3">
+                              <v-card-text class="fill-height">
+                                  <v-row>
+                                    <ol>
+                                        <li>Enter a message for the student in the panel above.</li>
+                                        <li>Return the request with the button below.</li>
+                                    </ol>
                                   </v-row>
                                   <v-row justify="end" align-content="end">
                                       <v-btn small color="#38598a" dark>Return to Student</v-btn>
@@ -277,7 +277,7 @@
                           </v-card>
                           </v-tab-item>
                           <v-tab-item>
-                              <v-card flat>
+                              <v-card flat class="pa-3">
                                 <v-alert 
                                   :value="rejectAlertSuccess"
                                   type="success"
@@ -305,39 +305,40 @@
                                   transition="scale-transition">
                                   PEN Request updated, but email to student failed. Please contact support.
                                 </v-alert>
-                                  <v-form ref="form" v-model="validForm">
-                                      <v-card-text>
-                                          <v-row class="flex-grow-0">
-                                              <ol>
-                                                  <li>Enter the type of failure and provide a detailed reason to the student.</li>
-                                                  <li>Complete the action with the button below.</li>
-                                              </ol>
-                                          </v-row>
-                                          <v-row>
-                                              <v-radio-group 
-                                                  class="mt-0" 
-                                                  v-model="failedForm.penRequestStatusCode"
-                                                  :rules="requiredRules" 
-                                                  row>
-                                                  <v-radio label="Reject" value="REJECTED"></v-radio>
-                                                  <v-radio label="Unable to complete" value="UNMATCHED"></v-radio>
-                                              </v-radio-group>
-                                          </v-row>
-                                          <v-row>
-                                              <v-textarea
-                                                  name="description"
-                                                  label="Enter reason"
-                                                  v-model="failedForm.failureReason"
-                                                  :rules="requiredRules"
-                                                  filled
-                                                  auto-grow
-                                              ></v-textarea>
-                                          </v-row>
-                                          <v-row justify="end" align-content="end">
-                                              <v-btn small color="#38598a" dark @click="submitReject">Complete</v-btn>
-                                          </v-row>
-                                      </v-card-text>
-                                  </v-form>
+                                <v-form ref="form" v-model="validForm">
+                                    <v-card-text class="pa-0">
+                                        <v-row class="flex-grow-0 ma-0">
+                                            <ol>
+                                                <li>Enter the type of failure and provide a detailed reason to the student.</li>
+                                                <li>Complete the action with the button below.</li>
+                                            </ol>
+                                        </v-row>
+                                        <v-row class="ma-0">
+                                            <v-radio-group 
+                                                class="mt-0" 
+                                                v-model="failedForm.penRequestStatusCode"
+                                                :rules="requiredRules" 
+                                                row>
+                                                <v-radio label="Reject" value="REJECTED"></v-radio>
+                                                <v-radio label="Unable to complete" value="UNMATCHED"></v-radio>
+                                            </v-radio-group>
+                                        </v-row>
+                                        <v-row class="ma-0">
+                                            <v-textarea
+                                                name="description"
+                                                label="Enter reason"
+                                                v-model="failedForm.failureReason"
+                                                :rules="requiredRules"
+                                                filled
+                                                auto-grow
+                                                class="pa-0 ma-0"
+                                            ></v-textarea>
+                                        </v-row>
+                                        <v-row justify="end" align-content="end" class="ma-0">
+                                            <v-btn small color="#38598a" dark @click="submitReject">Complete</v-btn>
+                                        </v-row>
+                                    </v-card-text>
+                                </v-form>
                               </v-card>
                           </v-tab-item>
                       </v-tabs>
@@ -380,7 +381,7 @@ export default {
         this.userName = response.data.userName;
       })
       .catch(error => {
-        this.errored = true;
+        console.log(error);
       });
     ApiService.apiAxios
       .get(Constants.penRequestUrl + '/' + this.$route.params.id)
@@ -407,7 +408,7 @@ export default {
             this.sendEmail(Constants.rejectEmailsUrl, {
               emailAddress: this.request.email,
               rejectionReason: this.request.failureReason
-            })         
+            }); 
           })
           .catch(error => {
             console.log(error);
@@ -430,7 +431,7 @@ export default {
     claimRequest() {
       var body = this.prepPut();
       if(this.request.reviewer !== this.userName) {
-        body.reviewer = this.userName
+        body.reviewer = this.userName;
       }
       else {
         body.reviewer = null;
@@ -457,16 +458,25 @@ export default {
 };
 </script>
 <style scoped>
+  .v-toolbar /deep/ .v-toolbar__content {
+    padding-left: 20px !important;
+  }
+  .v-textarea /deep/ .v-text-field__details {
+    margin-bottom: 0px !important;
+  }
+  .v-textarea /deep/ .v-input__slot {
+    margin-bottom: 0px !important;
+  }
+  .v-card /deep/ .v-window__container {
+    height:100% !important;
+    background-color:#fafafa !important;
+  }
+  .v-card /deep/ .v-window-item--active {
+    height:100% !important;
+    background-color:#fafafa !important;
+  }
   .v-card {
     background-color:#fafafa;
-  }
-  .v-window__container {
-    width:100%;
-    height:100%;
-  }
-  .v-window-item {
-    width:100%;
-    height:100%;
   }
 </style>
 
