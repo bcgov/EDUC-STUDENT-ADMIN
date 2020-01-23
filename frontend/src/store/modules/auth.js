@@ -45,9 +45,7 @@ export default {
     async getUserInfo(context){
       try{
         var token = await AuthService.getAuthToken();
-        console.log(token);
         var tokenJson = token._json;
-        console.log(tokenJson);
         context.commit('setUserInfo', tokenJson);
       } catch(e) {
         throw e;
