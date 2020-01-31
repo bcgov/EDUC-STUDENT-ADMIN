@@ -49,7 +49,7 @@
                               <p class="blue--text"><b>No one is working on this request</b></p>
                               <v-btn small color="#38598a" dark class="ml-2" @click="claimRequest">Claim</v-btn>
                           </v-row>
-                          <v-row v-else-if="this.request.reviewer === this.userName" no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
+                          <v-row v-else-if="this.request.reviewer === this.myself.name" no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
                               <p class="green--text"><b>You are working on this request</b></p>
                               <v-btn small color="#38598a" dark class="ml-2" @click="claimRequest">Release</v-btn>
                           </v-row>
@@ -66,7 +66,7 @@
               <v-row>
                   <v-col cols="12" xl="6" lg="6" md="6" class="pa-0">
                       <v-card height="100%" width="99%">
-                          <v-toolbar flat color="#38598a" class="white--text">
+                          <v-toolbar flat color="#036" class="white--text">
                               <v-toolbar-title>PEN Request Data</v-toolbar-title>
                           </v-toolbar>
                           <v-row no-gutters class="pt-2 px-2">
@@ -163,18 +163,18 @@
                       </v-card>
                   </v-col>
                   <v-col cols="12" xl="6" lg="6" md="6" class="pa-0">
-                      <v-card height="100%" width="100%">
-                          <v-toolbar flat color="#38598a" class="white--text">
+                      <v-card height="100%" width="100%" >
+                          <v-toolbar flat color="#036" class="white--text">
                               <v-toolbar-title>Discussion</v-toolbar-title>
                           </v-toolbar>
-                          <v-card-title>Comment widget will go here</v-card-title>
+                          <Chat id="chat-box" :myselfProp="myself"></Chat>
                       </v-card>
                   </v-col>
               </v-row>
               <v-row>
                   <v-col col="12" class="px-0">
                       <v-card>
-                          <v-toolbar flat color="#38598a" class="white--text">
+                          <v-toolbar flat color="#036" class="white--text">
                               <v-toolbar-title>Documents</v-toolbar-title>
                           </v-toolbar>
                           <v-data-table
@@ -193,7 +193,7 @@
               </v-row>
               <v-row>
                   <v-card width="100%">
-                      <v-toolbar flat color="#38598a" dark class="tester">
+                      <v-toolbar flat color="#036" dark class="tester">
                           <v-toolbar-title class="pa-0">Actions</v-toolbar-title>
                       </v-toolbar>
                       <v-tabs vertical>
@@ -349,9 +349,13 @@
   </v-content>
 </template>
 <script>
-import ApiService from '@/common/apiService.js';
-import Constants from '@/utils/constants.js';
+import Chat from './Chat';
+import ApiService from '@/common/apiService';
+import { Routes } from '@/utils/constants';
 export default {
+  components: {
+    Chat
+  },
   data () {
     return {
       headers: [
@@ -363,7 +367,10 @@ export default {
       request: [],
       statusCodes: [],
       requiredRules: [v => !!v || 'Required'],
-      userName: null,
+      myself: {
+        name: null,
+        id: null,
+      },
       rejectAlertSuccess: false,
       rejectAlertFailure: false,
       rejectAlertWarning: false,
@@ -376,15 +383,17 @@ export default {
   },
   mounted() {
     ApiService.apiAxios
-      .get(Constants.user)
+      .get(Routes.USER)
       .then(response => {
-        this.userName = response.data.userName;
+        this.myself.name = response.data.userName;
+        this.myself.id = response.data.userGuid;
+        console.log(response.data);
       })
       .catch(error => {
         console.log(error);
       });
     ApiService.apiAxios
-      .get(Constants.penRequestUrl + '/' + this.$route.params.id)
+      .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.$route.params.id)
       .then(response => {
         this.request = response.data;
         this.failedForm.penRequestID = response.data.penRequestID;
@@ -403,9 +412,9 @@ export default {
         this.request.failureReason = this.failedForm.failureReason;
         
         ApiService.apiAxios
-          .put(Constants.penRequestUrl, this.prepPut())
+          .put(Routes.PEN_REQUEST_ENDPOINT, this.prepPut())
           .then(response => {
-            this.sendEmail(Constants.rejectEmailsUrl, {
+            this.sendEmail(Routes.EMAILS_REJECT_URL, {
               emailAddress: this.request.email,
               rejectionReason: this.request.failureReason
             }); 
@@ -429,15 +438,15 @@ export default {
         });
     },
     claimRequest() {
-      var body = this.prepPut();
-      if(this.request.reviewer !== this.userName) {
-        body.reviewer = this.userName;
+      let body = this.prepPut();
+      if(this.request.reviewer !== this.myself.name) {
+        body.reviewer = this.myself.name;
       }
       else {
         body.reviewer = null;
       }
       ApiService.apiAxios
-        .put(Constants.penRequestUrl, body)
+        .put(Routes.PEN_REQUEST_ENDPOINT, body)
         .then(response => {
           this.request.reviewer = response.data.reviewer;
         })
@@ -451,13 +460,15 @@ export default {
       delete body['createDate'];
       delete body['updateUser'];
       delete body['updateDate'];
-      delete body['initialSubmitDate'];
       return body;
     }
   }
 };
 </script>
 <style scoped>
+  #chat-box {
+    height:425px;
+  }
   .v-toolbar /deep/ .v-toolbar__content {
     padding-left: 20px !important;
   }

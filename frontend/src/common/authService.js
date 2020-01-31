@@ -1,12 +1,12 @@
 import axios from 'axios';
-import { AuthRoutes } from '@/utils/constants.js';
+import { Routes } from '@/utils/constants.js';
 
 export default {
 
   //Retrieves an auth token from the API endpoint
   async getAuthToken() {
     try {
-      const response = await axios.get(AuthRoutes.TOKEN);
+      const response = await axios.get(Routes.TOKEN);
 
       return response.data;
     } catch (e) {
@@ -18,7 +18,7 @@ export default {
   //Refreshes the users auth token
   async refreshAuthToken(token) {
     try {
-      const response = await axios.post(AuthRoutes.REFRESH, {
+      const response = await axios.post(Routes.REFRESH, {
         refreshToken: token
       });
 

@@ -4,9 +4,8 @@
       <v-col cols="12">
         <v-row no-gutters class="flex-grow-0">
           <v-card height="100%" width="100%" elevation=0>
-            <v-card-title class="pb-0 px-0">PEN Retreival Requests</v-card-title>
-            <v-divider/>
-            <v-card-subtitle class="px-0">Use the table below to search, filter, view, and action requests.  The drop down box searches by status then the results can be filtered by column.<br/>Click a row to view details and action a request.</v-card-subtitle>
+            <v-card-title class="pb-0 px-0">PEN Retrieval Requests</v-card-title>
+            <v-divider class="pb-4"/>
           </v-card>
         </v-row>
         <v-row no-gutters>
@@ -45,13 +44,13 @@
             <v-data-table
               :headers="headers"
               :items="filteredResults"
-              :sort-by="['createDate']"
+              :sort-by="['initialSubmitDate']"
               :items-per-page="15"
               :loading="loadingTable"
               @click:row="viewRequestDetails"
               class="fill-height">
-              <template v-slot:item.createDate="{ item }">
-                <span>{{new Date(item.createDate).toISOString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
+              <template v-slot:item.initialSubmitDate="{ item }">
+                <span>{{moment(item.initialSubmitDate).format('YYYY-MM-DD LT') }}</span>
               </template>
               <template v-slot:item.action="{ item }">
                 <v-icon
@@ -75,12 +74,12 @@
 
 <script>
 import ApiService from '@/common/apiService.js';
-import Constants from '@/utils/constants.js';
+import { Routes } from '@/utils/constants';
 export default {
   data () {
     return {
       headers: [
-        { text: 'Submitted Time', value: 'createDate',  },
+        { text: 'Submitted Time', value: 'initialSubmitDate',  },
         { text: 'Status', value: 'penRequestStatusCode.label' },
         { text: 'Last Name', value: 'legalLastName' },
         { text: 'First Name', value: 'legalFirstName' },
@@ -88,7 +87,7 @@ export default {
       ],
       fakeData:[
         {
-          createDate: '2020-12-02',
+          initialSubmitDate: '2020-12-02',
           penRequestStatusCode: {
             label: 'Submitted'
           },
@@ -109,7 +108,7 @@ export default {
   },
   mounted() {
     ApiService.apiAxios
-      .get(Constants.codeTableUrl)
+      .get(Routes.PEN_REQUEST_STATUSES_URL)
       .then(response => {
         this.codeTable = response.data;
         this.statusCodes = this.getStatusCodes();
@@ -141,7 +140,7 @@ export default {
       this.getPenRequests(this.defaultSelected);
     },
     getStatusCodes () {
-      var labels = [];
+      const labels = [];
       this.codeTable.forEach(element => {
         labels.push(element.label);
       });
@@ -149,7 +148,7 @@ export default {
     },
     getPenRequests (searchStatuses) {
       ApiService.apiAxios
-        .get(Constants.penRequestSearchUrl, {
+        .get(Routes.PEN_REQUEST_ENDPOINT, {
           params: {
             queryParams: searchStatuses
           }

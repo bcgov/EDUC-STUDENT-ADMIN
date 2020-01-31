@@ -107,11 +107,12 @@ router.use('/token', auth.refreshJWT, (req, res) => {
 });
 
 router.use('/user',  passport.authenticate('jwt', {session: false}), (req, res) => {
-  var sessID = req.sessionID;
-  var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
-  var userToken = jsonwebtoken.verify(thisSession.passport.user.jwt, config.get("oidc:publicKey"));
-  var userName = {
-    userName: userToken.idir_username
+  const sessID = req.sessionID;
+  const thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
+  const userToken = jsonwebtoken.verify(thisSession.passport.user.jwt, config.get("oidc:publicKey"));
+  const userName = {
+    userName: userToken.idir_username,
+    userGuid: userToken.preferred_username
   };
   
   if(userName) {

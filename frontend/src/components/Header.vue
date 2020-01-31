@@ -30,7 +30,7 @@
             </v-chip>
           </template>
           <v-list dark color="#003366">
-            <v-list-item id="logout_button" @click="clearStorage" :href='authRoutes.LOGOUT'><v-list-title>Logout</v-list-title></v-list-item>
+            <v-list-item id="logout_button" @click="clearStorage" :href='routes.LOGOUT'><v-list-title>Logout</v-list-title></v-list-item>
           </v-list>
         </v-menu>
 
@@ -45,13 +45,13 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { AuthRoutes } from '@/utils/constants';
+import { Routes } from '@/utils/constants';
 export default {
   data(){
     return {
       appTitle: process.env.VUE_APP_TITLE,
       secureAppTitle: process.env.VUE_APP_SECURED_TITLE,
-      authRoutes: AuthRoutes
+      routes: Routes
     };
   },
   computed: {
