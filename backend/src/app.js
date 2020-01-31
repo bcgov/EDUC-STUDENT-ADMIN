@@ -99,6 +99,7 @@ utils.getOidcDiscovery().then(discovery => {
     // If audience checking is needed, check the following SO to update Keycloak first.
     // Ref: https://stackoverflow.com/a/53627747
     //audience: config.get('tokenGenerate:audience'),
+    audience: config.get('server:frontend'),
     issuer: config.get('tokenGenerate:issuer'),
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: config.get('tokenGenerate:publicKey')
@@ -109,14 +110,15 @@ utils.getOidcDiscovery().then(discovery => {
       console.log('fail');
       return done('No JWT token', null);
     }
-    console.log('JWTPAYLOAD------------->' + jwtPayload);
+    console.log('email------------->' + jwtPayload.email);
+    console.log('family_name------------->' + jwtPayload.family_name);
+    console.log('given_name------------->' + jwtPayload.given_name);
+    console.log('name------------->' + jwtPayload.name);
+    console.log('preferred_username------------->' + jwtPayload.preferred_username);
+    console.log('realm_role------------->' + jwtPayload.realm_role);
+    console.log('jwtPayload------------->' + jwtPayload);
     done(null, {
-      email: jwtPayload.email,
-      familyName: jwtPayload.family_name,
-      givenName: jwtPayload.given_name,
       jwt: jwtPayload,
-      name: jwtPayload.name,
-      preferredUsername: jwtPayload.preferred_username,
       realmRole: jwtPayload.realm_role
     });
   }));
