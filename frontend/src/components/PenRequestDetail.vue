@@ -413,7 +413,7 @@ export default {
         
         ApiService.apiAxios
           .put(Routes.PEN_REQUEST_ENDPOINT, this.prepPut())
-          .then(response => {
+          .then(() => {
             this.sendEmail(Routes.EMAILS_REJECT_URL, {
               emailAddress: this.request.email,
               rejectionReason: this.request.failureReason
@@ -428,7 +428,7 @@ export default {
     sendEmail(url, body) {
       ApiService.apiAxios
         .post(url, body)
-        .then(response => {
+        .then(() => {
           this.rejectAlertSuccess=true;
         })
         .catch(error => {
