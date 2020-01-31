@@ -95,12 +95,15 @@ const auth = {
     try{
       var userToken = jsonwebtoken.verify(thisSession.passport.user.jwt, config.get("oidc:publicKey"));
       if(userToken.realm_access.roles.includes(config.get("oidc:staffRole"))){
+        console.log('YA');
         return next();
       }
+      console.log('dang');
       return res.status(401).json({
         message: 'Unauthorized user'
       })
     }catch(e){
+      console.log('IN ERROR');
       log.error(e);
       return next(res.status(500));
     }
