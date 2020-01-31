@@ -80,11 +80,16 @@ utils.getOidcDiscovery().then(discovery => {
     }
     //Generate token for frontend validation
     var token = auth.generateUiToken();
-
+    console.log('PUBLIC----->' + config.get('tokenGenerate:publicKey'));
+    console.log('PRIVATE----->' + config.get('tokenGenerate:publicKey'));
     //set access and refresh tokens
     profile.jwtFrontend = token;
     profile.jwt = accessToken;
     profile.refreshToken = refreshToken;
+    console.log('FRONTEND----->' + profile.jwtFrontend);
+    console.log('JWT----->' + profile.jwt);
+    console.log('REFRESH----->' + profile.refreshToken);
+
     return done(null, profile);
   }));
   //JWT strategy is used for authorization
@@ -98,9 +103,13 @@ utils.getOidcDiscovery().then(discovery => {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: config.get('tokenGenerate:publicKey')
   }, (jwtPayload, done) => {
+    console.log('HERE----->' + config.get('tokenGenerate:publicKey'));
+    console.log('HERE----->' + config.get('tokenGenerate:issuer'));
     if ((typeof (jwtPayload) === 'undefined') || (jwtPayload === null)) {
+      console.log('fail');
       return done('No JWT token', null);
     }
+    console.log('JWTPAYLOAD------------->' + jwtPayload);
     done(null, {
       email: jwtPayload.email,
       familyName: jwtPayload.family_name,
