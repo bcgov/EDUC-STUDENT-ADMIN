@@ -2,7 +2,7 @@ import axios from 'axios';
 import ApiService from '@/common/apiService';
 import AuthService from '@/common/authService';
 import MockAdapter from 'axios-mock-adapter';
-import { AuthRoutes } from '@/utils/constants.js';
+import { Routes } from '@/utils/constants.js';
 
 const mockAxios = new MockAdapter(axios);
 
@@ -15,7 +15,7 @@ describe('authService.js', () => {
   });
 
   it('Call get token endpoint', async () => {
-    mockAxios.onGet(AuthRoutes.TOKEN).reply(200, {
+    mockAxios.onGet(Routes.TOKEN).reply(200, {
       token: 'fakeToken'
     });
     const res = await AuthService.getAuthToken();
@@ -23,7 +23,7 @@ describe('authService.js', () => {
   });
 
   it('Call refresh token endpoint', async () => {
-    mockAxios.onPost(AuthRoutes.REFRESH).reply(200, {
+    mockAxios.onPost(Routes.REFRESH).reply(200, {
       refreshToken: 'token',
       error: false
     });
@@ -33,7 +33,7 @@ describe('authService.js', () => {
 
 
   it('Expect refreshToken to fail', async () => {
-    mockAxios.onPost(AuthRoutes.REFRESH).reply(200, {
+    mockAxios.onPost(Routes.REFRESH).reply(200, {
       refreshToken: 'token',
       error: true,
       error_description: 'test error'
@@ -45,13 +45,13 @@ describe('authService.js', () => {
     }
   });
   it('Expect getAuthToken to throw error', async () => {
-    mockAxios.onGet(AuthRoutes.TOKEN).reply(function() {
+    mockAxios.onGet(Routes.TOKEN).reply(function() {
       throw new Error('error');
     });
     expect(AuthService.getAuthToken()).rejects.toThrowError();
   });
   it('Expect getRefreshToken to throw error', async () => {
-    mockAxios.onPost(AuthRoutes.REFRESH).reply(function() {
+    mockAxios.onPost(Routes.REFRESH).reply(function() {
       throw Error;
     });
     expect(AuthService.refreshAuthToken('testToken')).rejects.toThrowError();

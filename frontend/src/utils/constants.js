@@ -1,27 +1,18 @@
 let baseRoot = '/api';
 const authRoot = baseRoot + '/auth';
+const penRequestRoot = baseRoot + '/penRequest';
+const emailsRoot = baseRoot + '/emails';
 let object = {
   LOGIN: authRoot + '/login',
   LOGOUT: authRoot + '/logout',
   REFRESH: authRoot + '/refresh',
   TOKEN: authRoot + '/token',
   USER: authRoot + '/user',
-  PEN_REQUEST_ENDPOINT: baseRoot + '/pen-request', 
+  PEN_REQUEST_ENDPOINT: penRequestRoot,
+  PEN_REQUEST_SEARCH_URL: penRequestRoot + '/',
+  PEN_REQUEST_STATUSES_URL: penRequestRoot + '/statuses',
+  EMAILS_REJECT_URL: emailsRoot + '/reject'
 };
 
-//Authentication endpoints
-export const AuthRoutes = Object.freeze(object);
-
-const penRequestUrl = '/api/penRequest';
-const penRequestSearchUrl = '/api/penRequest/search';
-const codeTableUrl = '/api/penRequest/status';
-const rejectEmailsUrl = '/api/emails/reject';
-const user = authRoot + '/user';
-
-export default {
-  penRequestUrl: penRequestUrl,
-  penRequestSearchUrl: penRequestSearchUrl,
-  codeTableUrl: codeTableUrl,
-  rejectEmailsUrl:rejectEmailsUrl,
-  user:user
-};
+//endpoints
+export const Routes = Object.freeze(object);
