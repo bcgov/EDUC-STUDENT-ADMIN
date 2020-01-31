@@ -89,6 +89,7 @@ const auth = {
   },
 
   isValidAdminToken(req, res, next) {
+    console.log('THERE');
     var sessID = req.sessionID;
     var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
     try{
