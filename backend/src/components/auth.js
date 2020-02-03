@@ -89,10 +89,16 @@ const auth = {
   },
 
   isValidAdminToken(req, res, next) {
-    console.log('THERE');
-    var sessID = req.sessionID;
-    var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
+    console.log('REQUEST----------> ' + req);
+    const sessID = req.sessionID;
+    console.log('SESS_ID----------> '+ sessID);
+
+    const thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
+    console.log('SESSION----------> '+ thisSession);
     try{
+      console.log('PASSPORT-----------> ' + thisSession.passport);
+      console.log('USER-----------> ' + thisSession.passport.user);
+      console.log('JWT----------> ' + thisSession.passport.user.jwt);
       var userToken = jsonwebtoken.verify(thisSession.passport.user.jwt, config.get("oidc:publicKey"));
       if(userToken.realm_access.roles.includes(config.get("oidc:staffRole"))){
         console.log('YA');
