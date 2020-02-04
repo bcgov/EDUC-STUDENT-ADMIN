@@ -162,8 +162,8 @@ router.get('/:id/comments', passport.authenticate('jwt', {session: false}), auth
 
       penRetrievalResponse.data.forEach(element => {
         const participant = {
-          name: element.staffMemberName,
-          id: element.staffMemberIDIRGUID
+          name: (element.staffMemberName ? element.staffMemberName : 'Student'),
+          id: (element.staffMemberIDIRGUID ? element.staffMemberIDIRGUID : '1')
         };
         console.log(participant.id);
         console.log(response.myself.id);
@@ -180,7 +180,7 @@ router.get('/:id/comments', passport.authenticate('jwt', {session: false}), auth
        console.log(timestamp);
         response.messages.push({
           content: element.commentContent,
-          participantId: element.staffMemberIDIRGUID,
+          participantId: (element.staffMemberIDIRGUID ? element.staffMemberIDIRGUID : '1'),
           timestamp: {
             year: timestamp.getFullYear(),
             month: timestamp.getMonth() + 1,

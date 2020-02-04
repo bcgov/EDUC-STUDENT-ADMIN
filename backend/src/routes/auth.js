@@ -5,26 +5,7 @@ const passport = require('passport');
 const express = require('express');
 const auth = require('../components/auth');
 const jsonwebtoken = require('jsonwebtoken');
-const cache = require('memory-cache');
 
-let memCache = new cache.Cache();
-let cacheMiddleware = () => {
-  return (req, res, next) => {
-    let key =  '__express__' + req.originalUrl || req.url;
-    let cacheContent = memCache.get(key);
-    if(cacheContent){
-      res.send( cacheContent );
-
-    }else{
-      res.sendResponse = res.send;
-      res.send = (body) => {
-        memCache.put(key,body);
-        res.sendResponse(body)
-      };
-      next()
-    }
-  }
-};
 const {
   body,
   validationResult
@@ -129,7 +110,7 @@ router.use('/token', auth.refreshJWT, (req, res) => {
   }
 });
 
-router.use('/user',  passport.authenticate('jwt', {session: false}), cacheMiddleware(), (req, res) => {
+router.use('/user',  passport.authenticate('jwt', {session: false}), (req, res) => {
   const sessID = req.sessionID;
   const thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
   const userToken = jsonwebtoken.verify(thisSession.passport.user.jwt, config.get("oidc:publicKey"));
