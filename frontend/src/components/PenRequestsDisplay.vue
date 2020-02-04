@@ -50,7 +50,8 @@
               @click:row="viewRequestDetails"
               class="fill-height">
               <template v-slot:item.initialSubmitDate="{ item }">
-                <span>{{moment(item.initialSubmitDate).format('YYYY-MM-DD LT') }}</span>
+                <span v-if="item.initialSubmitDate == null"></span>
+                <span v-else>{{moment(item.initialSubmitDate).format('YYYY-MM-DD LT') }}</span>
               </template>
               <template v-slot:item.action="{ item }">
                 <v-icon

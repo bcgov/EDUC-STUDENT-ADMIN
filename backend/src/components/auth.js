@@ -99,7 +99,7 @@ const auth = {
       console.log('PASSPORT-----------> ' + thisSession.passport);
       console.log('USER-----------> ' + thisSession.passport.user);
       console.log('JWT----------> ' + thisSession.passport.user.jwt);
-      var userToken = jsonwebtoken.verify(thisSession.passport.user.jwt, config.get("oidc:publicKey"));
+      const userToken = jsonwebtoken.verify(thisSession.passport.user.jwt, config.get("oidc:publicKey"));
       if(userToken.realm_access.roles.includes(config.get("oidc:staffRole"))){
         console.log('YA');
         return next();

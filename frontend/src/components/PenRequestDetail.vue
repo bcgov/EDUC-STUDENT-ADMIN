@@ -26,20 +26,22 @@
                               </v-col>
                           </v-row>
                           <v-row no-gutters>
-                              <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                                  <p class="mb-2">As of:</p>
-                              </v-col>
-                              <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                                  <p class="mb-2"><b>{{ this.request.statusUpdateDate ? moment(this.request.statusUpdateDate).fromNow():'' }}</b>, at {{ this.request.statusUpdateDate ? moment(this.request.statusUpdateDate).format('YYYY-MM-DD LT'):'' }}</p>
-                              </v-col>
+                            <v-col cols="12" xl="3" lg="3" md="3" sm="3">
+                                <p class="mb-2">As of:</p>
+                            </v-col>
+                            <v-col cols="12" xl="9" lg="9" md="9" sm="9">
+                              <p v-if="this.request.statusUpdateDate == null" class="mb-2"></p>
+                              <p v-else class="mb-2"><b>{{ this.request.statusUpdateDate ? moment(this.request.statusUpdateDate).fromNow():'' }}</b>, at {{ this.request.statusUpdateDate ? moment(this.request.statusUpdateDate).format('YYYY-MM-DD LT'):'' }}</p>
+                            </v-col>
                           </v-row>
                           <v-row no-gutters>
-                              <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                                  <p>Submitted:</p>
-                              </v-col>
-                              <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                                  <p><b>{{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).fromNow():'' }}</b>, at {{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).format('YYYY-MM-DD LT'):'' }}</p>
-                              </v-col>
+                            <v-col cols="12" xl="3" lg="3" md="3" sm="3">
+                              <p>Submitted:</p>
+                            </v-col>
+                            <v-col cols="12" xl="9" lg="9" md="9" sm="9">
+                              <p v-if="this.request.initialSubmitDate == null" class="mb-2"></p>
+                              <p v-else><b>{{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).fromNow():'' }}</b>, at {{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).format('YYYY-MM-DD LT'):'' }}</p>
+                            </v-col>
                           </v-row>
                       </v-card>
                   </v-col>
@@ -157,7 +159,8 @@
                                   <p class="mb-0">ID Type:</p>
                               </v-col>
                               <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                                  <p class="mb-0"><b>{{ this.request.dataSourceCode }}</b></p>
+                                  <p v-if="this.request.dataSourceCode === 'DIRECT'" class="mb-0"><b>BCEID</b></p>
+                                  <p v-else class="mb-0"><b>{{ this.request.dataSourceCode }}</b></p>
                               </v-col>
                           </v-row>
                       </v-card>
@@ -167,7 +170,7 @@
                           <v-toolbar flat color="#036" class="white--text">
                               <v-toolbar-title>Discussion</v-toolbar-title>
                           </v-toolbar>
-                          <Chat id="chat-box" :myselfProp="myself"></Chat>
+                          <Chat id="chat-box" :myself="myself" :participants="participants" :messages="messages"></Chat>
                       </v-card>
                   </v-col>
               </v-row>
@@ -371,6 +374,8 @@ export default {
         name: null,
         id: null,
       },
+      participants: [],
+      messages: [],
       rejectAlertSuccess: false,
       rejectAlertFailure: false,
       rejectAlertWarning: false,
@@ -399,6 +404,15 @@ export default {
         this.failedForm.penRequestID = response.data.penRequestID;
         this.failedForm.penRequestStatusCode = response.data.penRequestStatusCode;
         this.failedForm.failureReason = response.data.failureReason;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    ApiService.apiAxios
+      .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.$route.params.id + '/comments')
+      .then(response => {
+        this.participants = response.data.participants;
+        this.messages = response.data.messages;
       })
       .catch(error => {
         console.log(error);
