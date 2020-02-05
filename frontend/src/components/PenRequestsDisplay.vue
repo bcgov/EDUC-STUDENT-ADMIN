@@ -86,18 +86,6 @@ export default {
         { text: 'First Name', value: 'legalFirstName' },
         { text: 'Reviewer', value: 'reviewer' },
       ],
-      fakeData:[
-        {
-          initialSubmitDate: '2020-12-02',
-          penRequestStatusCode: {
-            label: 'Submitted'
-          },
-          legalLastName: 'Cox',
-          legalFirstName: 'John',
-          REVIEWER: 'JC',
-          penRequestID: '12920158-3978-11ea-a137-2e728ce88125'
-        },
-      ],
       statusCodes:[],
       defaultSelected:[],
       penRequests: [],

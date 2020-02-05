@@ -185,7 +185,7 @@
                               :items="filteredResults"
                               sort-by="['createDate']"
                               :items-per-page="15"
-                              
+
                               class="fill-height">
                               <template v-slot:item.createDate="{ item }">
                                   <span>{{new Date(item.createDate).toISOString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
@@ -281,7 +281,7 @@
                           </v-tab-item>
                           <v-tab-item>
                               <v-card flat class="pa-3">
-                                <v-alert 
+                                <v-alert
                                   :value="rejectAlertSuccess"
                                   type="success"
                                   dense
@@ -290,7 +290,7 @@
                                   transition="scale-transition">
                                   PEN Request updated and email sent to student.
                                 </v-alert>
-                                <v-alert 
+                                <v-alert
                                   :value="rejectAlertFailure"
                                   type="error"
                                   dense
@@ -299,7 +299,7 @@
                                   transition="scale-transition">
                                   PEN Request failed to update. Please contact support.
                                 </v-alert>
-                                <v-alert 
+                                <v-alert
                                   :value="rejectAlertWarning"
                                   type="warning"
                                   dense
@@ -317,10 +317,10 @@
                                             </ol>
                                         </v-row>
                                         <v-row class="ma-0">
-                                            <v-radio-group 
-                                                class="mt-0" 
+                                            <v-radio-group
+                                                class="mt-0"
                                                 v-model="failedForm.penRequestStatusCode"
-                                                :rules="requiredRules" 
+                                                :rules="requiredRules"
                                                 row>
                                                 <v-radio label="Reject" value="REJECTED"></v-radio>
                                                 <v-radio label="Unable to complete" value="UNMATCHED"></v-radio>
@@ -424,14 +424,14 @@ export default {
         this.request.penRequestID = this.failedForm.penRequestID;
         this.request.penRequestStatusCode = this.failedForm.penRequestStatusCode;
         this.request.failureReason = this.failedForm.failureReason;
-        
+
         ApiService.apiAxios
           .put(Routes.PEN_REQUEST_ENDPOINT, this.prepPut())
           .then(() => {
             this.sendEmail(Routes.EMAILS_REJECT_URL, {
               emailAddress: this.request.email,
               rejectionReason: this.request.failureReason
-            }); 
+            });
           })
           .catch(error => {
             console.log(error);

@@ -89,19 +89,12 @@ const auth = {
   },
 
   isValidAdminToken(req, res, next) {
-    console.log('REQUEST----------> ' + req);
     const sessID = req.sessionID;
-    console.log('SESS_ID----------> '+ sessID);
 
     const thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
-    console.log('SESSION----------> '+ thisSession);
     try{
-      console.log('PASSPORT-----------> ' + thisSession.passport);
-      console.log('USER-----------> ' + thisSession.passport.user);
-      console.log('JWT----------> ' + thisSession.passport.user.jwt);
       const userToken = jsonwebtoken.verify(thisSession.passport.user.jwt, config.get("oidc:publicKey"));
       if(userToken.realm_access.roles.includes(config.get("oidc:staffRole"))){
-        console.log('YA');
         return next();
       }
       console.log('dang');
@@ -109,17 +102,16 @@ const auth = {
         message: 'Unauthorized user'
       })
     }catch(e){
-      console.log('IN ERROR');
       log.error(e);
       return next(res.status(500));
     }
   },
 
   generateUiToken() {
-    var i  = config.get('tokenGenerate:issuer');
-    var s = 'user@penrequest.ca';
-    var a  = config.get('tokenGenerate:audience');
-    var signOptions = {
+    const i  = config.get('tokenGenerate:issuer');
+    const s = 'user@penrequest.ca';
+    const a  = config.get('tokenGenerate:audience');
+    const signOptions = {
       issuer:  i,
       subject: s,
       audience:  a,

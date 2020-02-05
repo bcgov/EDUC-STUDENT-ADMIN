@@ -104,15 +104,8 @@ export default {
       }, 1000);
     },
     onMessageSubmit: function (message) {
-      const request = {
-        penRetrievalRequestID: this.$route.params.id,
-        staffMemberIDIRGUID: this.myself.id,
-        staffMemberName: this.myself.name,
-        commentContent: message.content,
-        commentTimestamp: message.timestamp
-      };
       ApiService.apiAxios
-        .post(Routes.PEN_REQUEST_ENDPOINT + '/' + this.$route.params.id + '/comments', request)
+        .post(Routes.PEN_REQUEST_ENDPOINT + '/' + this.$route.params.id + '/comments', message)
         .then(() => {
           this.messages.push(message);
         })

@@ -79,17 +79,11 @@ utils.getOidcDiscovery().then(discovery => {
       return done('No access token', null);
     }
     //Generate token for frontend validation
-    var token = auth.generateUiToken();
-    console.log('PUBLIC----->' + config.get('tokenGenerate:publicKey'));
-    console.log('PRIVATE----->' + config.get('tokenGenerate:publicKey'));
+    const token = auth.generateUiToken();
     //set access and refresh tokens
     profile.jwtFrontend = token;
     profile.jwt = accessToken;
     profile.refreshToken = refreshToken;
-    console.log('FRONTEND----->' + profile.jwtFrontend);
-    console.log('JWT----->' + profile.jwt);
-    console.log('REFRESH----->' + profile.refreshToken);
-
     return done(null, profile);
   }));
   //JWT strategy is used for authorization
@@ -104,19 +98,10 @@ utils.getOidcDiscovery().then(discovery => {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: config.get('tokenGenerate:publicKey')
   }, (jwtPayload, done) => {
-    console.log('HERE----->' + config.get('tokenGenerate:publicKey'));
-    console.log('HERE----->' + config.get('tokenGenerate:issuer'));
     if ((typeof (jwtPayload) === 'undefined') || (jwtPayload === null)) {
       console.log('fail');
       return done('No JWT token', null);
     }
-    console.log('email------------->' + jwtPayload.email);
-    console.log('family_name------------->' + jwtPayload.family_name);
-    console.log('given_name------------->' + jwtPayload.given_name);
-    console.log('name------------->' + jwtPayload.name);
-    console.log('preferred_username------------->' + jwtPayload.preferred_username);
-    console.log('realm_role------------->' + jwtPayload.realm_role);
-    console.log('jwtPayload------------->' + jwtPayload);
     done(null, {
       jwt: jwtPayload,
       realmRole: jwtPayload.realm_role

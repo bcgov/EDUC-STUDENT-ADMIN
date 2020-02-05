@@ -27,7 +27,12 @@ let cacheMiddleware = () => {
   }
 };
 
-router.put('/', passport.authenticate('jwt', {session: false}), auth.isValidAdminToken,
+/**
+ * Updates a pen retrieval request
+ * */
+router.put('/',
+  passport.authenticate('jwt', {session: false}),
+  auth.isValidAdminToken,
   async (req, res) => {
     try{
       const sessID = req.sessionID;
@@ -36,6 +41,7 @@ router.put('/', passport.authenticate('jwt', {session: false}), auth.isValidAdmi
       const userToken = thisSession.passport.user.jwt;
       // eslint-disable-next-line no-console
       axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;
+
       const penRetrievalResponse = await axios.put(config.get("server:penRequestURL"), req.body);
       if(penRetrievalResponse.status !== 200){
         return res.status(penRetrievalResponse.status).json({
@@ -48,7 +54,9 @@ router.put('/', passport.authenticate('jwt', {session: false}), auth.isValidAdmi
       return res.status(500);
     }
 });
-
+/*
+ * Get all pen retrieval requests
+ */
 router.get('/', passport.authenticate('jwt', {session: false}), auth.isValidAdminToken,
 async (req, res) => {
   try{
@@ -78,6 +86,7 @@ async (req, res) => {
           element.penRequestStatusCode = temp;
         }
       }
+      delete element['digitalID'];
     });
     return res.status(200).json(penRetreivalResponse.data);
   } catch(e) {
@@ -116,10 +125,19 @@ router.post('/:id/comments', passport.authenticate('jwt', {session: false}), aut
       const sessID = req.sessionID;
       // eslint-disable-next-line no-console
       const thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
-      const userToken = thisSession.passport.user.jwt;
+      const token = thisSession.passport.user.jwt;
+      const userToken = jsonwebtoken.verify(thisSession.passport.user.jwt, config.get("oidc:publicKey"));
       // eslint-disable-next-line no-console
-      axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;
-      const penRetrievalResponse = await axios.post(config.get("server:penRequestURL") + "/" + req.params.id + '/comments', req.body);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      const request = {
+        penRetrievalRequestID: req.params.id,
+        staffMemberIDIRGUID: userToken.preferred_username.toUpperCase(),
+        staffMemberName: userToken.idir_username,
+        commentContent: req.body.content,
+        commentTimestamp: req.body.timestamp
+      };
+
+      const penRetrievalResponse = await axios.post(config.get("server:penRequestURL") + "/" + req.params.id + '/comments', request);
 
       if(penRetrievalResponse.status !== 200){
         return res.status(penRetrievalResponse.status).json({
@@ -218,6 +236,7 @@ async (req, res) => {
         message: 'API error'
       });
     }
+    //delete penRetreivalResponse.data['digitalID'];
     return res.status(200).json(penRetreivalResponse.data);
   } catch(e) {
     console.log(e);
