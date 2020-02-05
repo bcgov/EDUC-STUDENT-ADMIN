@@ -72,7 +72,7 @@ utils.getOidcDiscovery().then(discovery => {
     clientSecret: config.get('oidc:clientSecret'),
     callbackURL: config.get('server:frontend') + '/api/auth/callback',
     scope: discovery.scopes_supported,
-    kc_idp_hint: 'keycloak_bcdevexchange'
+    kc_idp_hint: 'keycloak_bcdevexchange_idir'
   }, (_issuer, _sub, profile, accessToken, refreshToken, done) => {
     if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
       (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {

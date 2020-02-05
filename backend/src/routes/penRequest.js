@@ -184,8 +184,6 @@ router.get('/:id/comments', passport.authenticate('jwt', {session: false}), auth
           name: (element.staffMemberName ? element.staffMemberName : 'Student'),
           id: (element.staffMemberIDIRGUID ? element.staffMemberIDIRGUID : '1')
         };
-        console.log(participant.id);
-        console.log(response.myself.id);
        if (participant.id.toUpperCase() !== response.myself.id.toUpperCase()) {
           const index = response.participants.findIndex((e) => e.id === participant.id);
 
@@ -194,9 +192,6 @@ router.get('/:id/comments', passport.authenticate('jwt', {session: false}), auth
           }
         }
        let timestamp = new Date(element.commentTimestamp);
-       console.log(element.commentContent);
-       console.log(element.commentTimestamp);
-       console.log(timestamp);
         response.messages.push({
           content: element.commentContent,
           participantId: (element.staffMemberIDIRGUID ? element.staffMemberIDIRGUID : '1'),
@@ -210,10 +205,7 @@ router.get('/:id/comments', passport.authenticate('jwt', {session: false}), auth
             millisecond: timestamp.getMilliseconds()
           }
         });
-        console.log(response.messages.timestamp);
       });
-
-
       return res.status(200).json(response);
     } catch(e) {
       console.log(e);
