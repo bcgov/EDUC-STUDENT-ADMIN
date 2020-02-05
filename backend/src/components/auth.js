@@ -89,13 +89,15 @@ const auth = {
   },
 
   isValidAdminToken(req, res, next) {
-    var sessID = req.sessionID;
-    var thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
+    const sessID = req.sessionID;
+
+    const thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
     try{
-      var userToken = jsonwebtoken.verify(thisSession.passport.user.jwt, config.get("oidc:publicKey"));
+      const userToken = jsonwebtoken.verify(thisSession.passport.user.jwt, config.get("oidc:publicKey"));
       if(userToken.realm_access.roles.includes(config.get("oidc:staffRole"))){
         return next();
       }
+      console.log('dang');
       return res.status(401).json({
         message: 'Unauthorized user'
       })
@@ -106,10 +108,10 @@ const auth = {
   },
 
   generateUiToken() {
-    var i  = config.get('tokenGenerate:issuer');
-    var s = 'user@penrequest.ca';
-    var a  = config.get('tokenGenerate:audience');
-    var signOptions = {
+    const i  = config.get('tokenGenerate:issuer');
+    const s = 'user@penrequest.ca';
+    const a  = config.get('tokenGenerate:audience');
+    const signOptions = {
       issuer:  i,
       subject: s,
       audience:  a,

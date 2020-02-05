@@ -50,7 +50,8 @@
               @click:row="viewRequestDetails"
               class="fill-height">
               <template v-slot:item.initialSubmitDate="{ item }">
-                <span>{{moment(item.initialSubmitDate).format('YYYY-MM-DD LT') }}</span>
+                <span v-if="item.initialSubmitDate == null"></span>
+                <span v-else>{{moment(item.initialSubmitDate).format('YYYY-MM-DD LT') }}</span>
               </template>
               <template v-slot:item.action="{ item }">
                 <v-icon
@@ -84,18 +85,6 @@ export default {
         { text: 'Last Name', value: 'legalLastName' },
         { text: 'First Name', value: 'legalFirstName' },
         { text: 'Reviewer', value: 'reviewer' },
-      ],
-      fakeData:[
-        {
-          initialSubmitDate: '2020-12-02',
-          penRequestStatusCode: {
-            label: 'Submitted'
-          },
-          legalLastName: 'Cox',
-          legalFirstName: 'John',
-          REVIEWER: 'JC',
-          penRequestID: '12920158-3978-11ea-a137-2e728ce88125'
-        },
       ],
       statusCodes:[],
       defaultSelected:[],

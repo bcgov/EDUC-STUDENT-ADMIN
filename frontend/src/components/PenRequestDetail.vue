@@ -16,45 +16,47 @@
                                   <p class="mb-2">Status:</p>
                               </v-col>
                               <v-col v-if="this.request.penRequestStatusCode === 'INITREV' || this.request.penRequestStatusCode === 'SUBSREV'" cols="12" xl="9" lg="9" md="9" sm="9">
-                                  <p class="mb-2 green--text"><b>{{this.request.penRequestStatusCode}}</b></p>
+                                  <p class="mb-2 green--text"><strong>{{this.request.penRequestStatusCode}}</strong></p>
                               </v-col>
                               <v-col v-else-if="this.request.penRequestStatusCode === 'RETURNED'" cols="12" xl="9" lg="9" md="9" sm="9">
-                                  <p class="mb-2 orange--text"><b>{{this.request.penRequestStatusCode}}</b></p>
+                                  <p class="mb-2 orange--text"><strong>{{this.request.penRequestStatusCode}}</strong></p>
                               </v-col>
                               <v-col v-else cols="12" xl="9" lg="9" md="9" sm="9">
-                                  <p class="mb-2 grey--text"><b>{{this.request.penRequestStatusCode}}</b></p>
+                                  <p class="mb-2 grey--text"><strong>{{this.request.penRequestStatusCode}}</strong></p>
                               </v-col>
                           </v-row>
                           <v-row no-gutters>
-                              <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                                  <p class="mb-2">As of:</p>
-                              </v-col>
-                              <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                                  <p class="mb-2"><b>{{ this.request.statusUpdateDate ? moment(this.request.statusUpdateDate).fromNow():'' }}</b>, at {{ this.request.statusUpdateDate ? moment(this.request.statusUpdateDate).format('YYYY-MM-DD LT'):'' }}</p>
-                              </v-col>
+                            <v-col cols="12" xl="3" lg="3" md="3" sm="3">
+                                <p class="mb-2">As of:</p>
+                            </v-col>
+                            <v-col cols="12" xl="9" lg="9" md="9" sm="9">
+                              <p v-if="this.request.statusUpdateDate == null" class="mb-2"></p>
+                              <p v-else class="mb-2"><strong>{{ this.request.statusUpdateDate ? moment(this.request.statusUpdateDate).fromNow():'' }}</strong>, at {{ this.request.statusUpdateDate ? moment(this.request.statusUpdateDate).format('YYYY-MM-DD LT'):'' }}</p>
+                            </v-col>
                           </v-row>
                           <v-row no-gutters>
-                              <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                                  <p>Submitted:</p>
-                              </v-col>
-                              <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                                  <p><b>{{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).fromNow():'' }}</b>, at {{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).format('YYYY-MM-DD LT'):'' }}</p>
-                              </v-col>
+                            <v-col cols="12" xl="3" lg="3" md="3" sm="3">
+                              <p>Submitted:</p>
+                            </v-col>
+                            <v-col cols="12" xl="9" lg="9" md="9" sm="9">
+                              <p v-if="this.request.initialSubmitDate == null" class="mb-2"></p>
+                              <p v-else><strong>{{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).fromNow():'' }}</strong>, at {{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).format('YYYY-MM-DD LT'):'' }}</p>
+                            </v-col>
                           </v-row>
                       </v-card>
                   </v-col>
                   <v-col cols="12" xl="6" lg="6" md="6" sm="6" class="pa-0">
                       <v-card height="100%" width="100%" elevation=0>
                           <v-row v-if="!this.request.reviewer" no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
-                              <p class="blue--text"><b>No one is working on this request</b></p>
+                              <p class="blue--text"><strong>No one is working on this request</strong></p>
                               <v-btn small color="#38598a" dark class="ml-2" @click="claimRequest">Claim</v-btn>
                           </v-row>
                           <v-row v-else-if="this.request.reviewer === this.myself.name" no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
-                              <p class="green--text"><b>You are working on this request</b></p>
+                              <p class="green--text"><strong>You are working on this request</strong></p>
                               <v-btn small color="#38598a" dark class="ml-2" @click="claimRequest">Release</v-btn>
                           </v-row>
                           <v-row v-else no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
-                              <p class="orange--text"><b>{{ this.request.reviewer }} is working on this request</b></p>
+                              <p class="orange--text"><strong>{{ this.request.reviewer }} is working on this request</strong></p>
                               <v-btn small color="#38598a" dark class="ml-2" @click="claimRequest">Claim</v-btn>
                           </v-row>
                           <v-row no-gutters justify="end" class="pb-5">
@@ -74,7 +76,7 @@
                                   <p class="mb-2" color="green">Legal:</p>
                               </v-col>
                               <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                                  <p class="mb-2"><b>{{ this.request.legalLastName ? this.request.legalLastName: '(none)'}}, {{ this.request.legalFirstName ? this.request.legalFirstName: '(none)'}}, {{ this.request.legalMiddleNames ? this.request.legalMiddleNames: '(none)'}}</b></p>
+                                  <p class="mb-2"><strong>{{ this.request.legalLastName ? this.request.legalLastName: '(none)'}}, {{ this.request.legalFirstName ? this.request.legalFirstName: '(none)'}}, {{ this.request.legalMiddleNames ? this.request.legalMiddleNames: '(none)'}}</strong></p>
                               </v-col>
                           </v-row>
                           <v-row no-gutters class="px-2">
@@ -85,7 +87,7 @@
                                   <p class="mb-2"></p>
                               </v-col>
                               <v-col v-else cols="12" xl="9" lg="9" md="9" sm="9">
-                                  <p class="mb-2"><b>{{ this.request.usualLastName ? this.request.usualLastName: '(none)'}}, {{ this.request.usualFirstName ? this.request.usualFirstName: '(none)'}}, {{ this.request.usualMiddleName ? this.request.usualMiddleName: '(none)'}}</b></p>
+                                  <p class="mb-2"><strong>{{ this.request.usualLastName ? this.request.usualLastName: '(none)'}}, {{ this.request.usualFirstName ? this.request.usualFirstName: '(none)'}}, {{ this.request.usualMiddleName ? this.request.usualMiddleName: '(none)'}}</strong></p>
                               </v-col>
                           </v-row>
                           <v-row no-gutters class="px-2">
@@ -93,7 +95,7 @@
                                   <p>Maiden:</p>
                               </v-col>
                               <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                                  <p><b>{{ this.request.maidenName }}</b></p>
+                                  <p><strong>{{ this.request.maidenName }}</strong></p>
                               </v-col>
                           </v-row>
                           <v-row no-gutters class="px-2">
@@ -101,7 +103,7 @@
                                   <p class="mb-2" color="green">Past:</p>
                               </v-col>
                               <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                                  <p class="mb-2"><b>{{ this.request.pastNames }}</b></p>
+                                  <p class="mb-2"><strong>{{ this.request.pastNames }}</strong></p>
                               </v-col>
                           </v-row>
                           <v-row no-gutters class="px-2">
@@ -109,7 +111,7 @@
                                   <p class="mb-2">DOB (yyyy/mm/dd):</p>
                               </v-col>
                               <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                                  <p class="mb-2"><b>{{ this.request.dob ? moment(this.request.dob).format('YYYY-MM-DD'):'' }}</b></p>
+                                  <p class="mb-2"><strong>{{ this.request.dob ? moment(this.request.dob).format('YYYY-MM-DD'):'' }}</strong></p>
                               </v-col>
                           </v-row>
                           <v-row no-gutters class="px-2">
@@ -117,7 +119,7 @@
                                   <p>Gender:</p>
                               </v-col>
                               <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                                  <p><b>{{ this.request.genderCode }}</b></p>
+                                  <p><strong>{{ this.request.genderCode }}</strong></p>
                               </v-col>
                           </v-row>
                           <v-row no-gutters class="px-2">
@@ -125,7 +127,7 @@
                                   <p class="mb-2" color="green">Current Sch:</p>
                               </v-col>
                               <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                                  <p class="mb-2"><b>{{ this.request.currentSchool }}</b></p>
+                                  <p class="mb-2"><strong>{{ this.request.currentSchool }}</strong></p>
                               </v-col>
                           </v-row>
                           <v-row no-gutters class="px-2">
@@ -133,7 +135,7 @@
                                   <p class="mb-2">Last BC Sch:</p>
                               </v-col>
                               <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                                  <p class="mb-2"><b>{{ this.request.lastBCSchool }}</b></p>
+                                  <p class="mb-2"><strong>{{ this.request.lastBCSchool }}</strong></p>
                               </v-col>
                           </v-row>
                           <v-row no-gutters class="px-2">
@@ -141,7 +143,7 @@
                                   <p>Student#</p>
                               </v-col>
                               <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                                  <p><b>{{ this.request.lastBCSchoolStudentNumber }}</b></p>
+                                  <p><strong>{{ this.request.lastBCSchoolStudentNumber }}</strong></p>
                               </v-col>
                           </v-row>
                           <v-row no-gutters class="px-2">
@@ -149,7 +151,7 @@
                                   <p class="mb-2">Email:</p>
                               </v-col>
                               <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                                  <p class="mb-2"><b>{{ this.request.email }}</b></p>
+                                  <p class="mb-2"><strong>{{ this.request.email }}</strong></p>
                               </v-col>
                           </v-row>
                           <v-row no-gutters class="pb-2 px-2">
@@ -157,7 +159,8 @@
                                   <p class="mb-0">ID Type:</p>
                               </v-col>
                               <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                                  <p class="mb-0"><b>{{ this.request.dataSourceCode }}</b></p>
+                                  <p v-if="this.request.dataSourceCode === 'DIRECT'" class="mb-0"><strong>BCEID</strong></p>
+                                  <p v-else class="mb-0"><strong>{{ this.request.dataSourceCode }}</strong></p>
                               </v-col>
                           </v-row>
                       </v-card>
@@ -167,7 +170,7 @@
                           <v-toolbar flat color="#036" class="white--text">
                               <v-toolbar-title>Discussion</v-toolbar-title>
                           </v-toolbar>
-                          <Chat id="chat-box" :myselfProp="myself"></Chat>
+                          <Chat id="chat-box" :myself="myself" :participants="participants" :messages="messages"></Chat>
                       </v-card>
                   </v-col>
               </v-row>
@@ -182,7 +185,7 @@
                               :items="filteredResults"
                               sort-by="['createDate']"
                               :items-per-page="15"
-                              
+
                               class="fill-height">
                               <template v-slot:item.createDate="{ item }">
                                   <span>{{new Date(item.createDate).toISOString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
@@ -221,7 +224,7 @@
                                                   <p class="mb-2" color="green">Legal:</p>
                                               </v-col>
                                               <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                                                  <p class="mb-2"><b>Doe, Jane Marie, (none)</b></p>
+                                                  <p class="mb-2"><strong>Doe, Jane Marie, (none)</strong></p>
                                               </v-col>
                                           </v-row>
                                           <v-row no-gutters class="pt-2 px-2">
@@ -229,7 +232,7 @@
                                                   <p class="mb-2" color="green">Usual:</p>
                                               </v-col>
                                               <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                                                  <p class="mb-2"><b>Doe, Lizzie</b></p>
+                                                  <p class="mb-2"><strong>Doe, Lizzie</strong></p>
                                               </v-col>
                                           </v-row>
                                           <v-row no-gutters class="pt-2 px-2">
@@ -237,7 +240,7 @@
                                                   <p class="mb-2" color="green">DOB:</p>
                                               </v-col>
                                               <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                                                  <p class="mb-2"><b>2000-04-12</b></p>
+                                                  <p class="mb-2"><strong>2000-04-12</strong></p>
                                               </v-col>
                                           </v-row>
                                           <v-row no-gutters class="pt-2 px-2">
@@ -245,7 +248,7 @@
                                                   <p class="mb-2" color="green">Gender:</p>
                                               </v-col>
                                               <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                                                  <p class="mb-2"><b>Female</b></p>
+                                                  <p class="mb-2"><strong>Female</strong></p>
                                               </v-col>
                                           </v-row>
                                           <v-row no-gutters class="pt-2 px-2">
@@ -253,7 +256,7 @@
                                                   <p class="mb-2" color="green">Last BC Sch:</p>
                                               </v-col>
                                               <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                                                  <p class="mb-2"><b>Henry James Senior Secondary</b></p>
+                                                  <p class="mb-2"><strong>Henry James Senior Secondary</strong></p>
                                               </v-col>
                                           </v-row>
                                       </v-card>
@@ -278,7 +281,7 @@
                           </v-tab-item>
                           <v-tab-item>
                               <v-card flat class="pa-3">
-                                <v-alert 
+                                <v-alert
                                   :value="rejectAlertSuccess"
                                   type="success"
                                   dense
@@ -287,7 +290,7 @@
                                   transition="scale-transition">
                                   PEN Request updated and email sent to student.
                                 </v-alert>
-                                <v-alert 
+                                <v-alert
                                   :value="rejectAlertFailure"
                                   type="error"
                                   dense
@@ -296,7 +299,7 @@
                                   transition="scale-transition">
                                   PEN Request failed to update. Please contact support.
                                 </v-alert>
-                                <v-alert 
+                                <v-alert
                                   :value="rejectAlertWarning"
                                   type="warning"
                                   dense
@@ -314,10 +317,10 @@
                                             </ol>
                                         </v-row>
                                         <v-row class="ma-0">
-                                            <v-radio-group 
-                                                class="mt-0" 
+                                            <v-radio-group
+                                                class="mt-0"
                                                 v-model="failedForm.penRequestStatusCode"
-                                                :rules="requiredRules" 
+                                                :rules="requiredRules"
                                                 row>
                                                 <v-radio label="Reject" value="REJECTED"></v-radio>
                                                 <v-radio label="Unable to complete" value="UNMATCHED"></v-radio>
@@ -371,6 +374,8 @@ export default {
         name: null,
         id: null,
       },
+      participants: [],
+      messages: [],
       rejectAlertSuccess: false,
       rejectAlertFailure: false,
       rejectAlertWarning: false,
@@ -403,6 +408,15 @@ export default {
       .catch(error => {
         console.log(error);
       });
+    ApiService.apiAxios
+      .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.$route.params.id + '/comments')
+      .then(response => {
+        this.participants = response.data.participants;
+        this.messages = response.data.messages;
+      })
+      .catch(error => {
+        console.log(error);
+      });
   },
   methods: {
     submitReject() {
@@ -410,14 +424,14 @@ export default {
         this.request.penRequestID = this.failedForm.penRequestID;
         this.request.penRequestStatusCode = this.failedForm.penRequestStatusCode;
         this.request.failureReason = this.failedForm.failureReason;
-        
+
         ApiService.apiAxios
           .put(Routes.PEN_REQUEST_ENDPOINT, this.prepPut())
           .then(() => {
             this.sendEmail(Routes.EMAILS_REJECT_URL, {
               emailAddress: this.request.email,
               rejectionReason: this.request.failureReason
-            }); 
+            });
           })
           .catch(error => {
             console.log(error);

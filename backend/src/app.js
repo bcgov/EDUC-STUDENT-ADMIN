@@ -79,8 +79,7 @@ utils.getOidcDiscovery().then(discovery => {
       return done('No access token', null);
     }
     //Generate token for frontend validation
-    var token = auth.generateUiToken();
-
+    const token = auth.generateUiToken();
     //set access and refresh tokens
     profile.jwtFrontend = token;
     profile.jwt = accessToken;
@@ -94,20 +93,17 @@ utils.getOidcDiscovery().then(discovery => {
     // If audience checking is needed, check the following SO to update Keycloak first.
     // Ref: https://stackoverflow.com/a/53627747
     //audience: config.get('tokenGenerate:audience'),
+    audience: config.get('server:frontend'),
     issuer: config.get('tokenGenerate:issuer'),
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: config.get('tokenGenerate:publicKey')
   }, (jwtPayload, done) => {
     if ((typeof (jwtPayload) === 'undefined') || (jwtPayload === null)) {
+      console.log('fail');
       return done('No JWT token', null);
     }
     done(null, {
-      email: jwtPayload.email,
-      familyName: jwtPayload.family_name,
-      givenName: jwtPayload.given_name,
       jwt: jwtPayload,
-      name: jwtPayload.name,
-      preferredUsername: jwtPayload.preferred_username,
       realmRole: jwtPayload.realm_role
     });
   }));

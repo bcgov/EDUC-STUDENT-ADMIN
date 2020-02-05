@@ -26,8 +26,9 @@ router.post('/reject', passport.authenticate('jwt', {session: false}), auth.isVa
       axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;
       const penEmailsResponse = await axios.post(config.get("server:penEmails") + '/reject', req.body);
       if(penEmailsResponse.status !== 200){
-        return res.status(penEmailsResponse.status).json({
-          message: 'API error'
+        console.log('Error calling email service.  Check the PEN-REQUEST-EMAIL-API logs.');
+        return res.status(500).json({
+          message: 'Error calling email service'
         });
       }
       return res.status(200).json({

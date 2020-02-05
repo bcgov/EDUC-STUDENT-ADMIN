@@ -5,6 +5,7 @@ const passport = require('passport');
 const express = require('express');
 const auth = require('../components/auth');
 const jsonwebtoken = require('jsonwebtoken');
+
 const {
   body,
   validationResult
@@ -85,9 +86,13 @@ router.post('/refresh', [
   } else{
     await auth.renew(req.user.refreshToken);
     if(req.user){
-      var newUiToken = auth.generateUiToken();
+      const newUiToken = auth.generateUiToken();
+      let responseJson = {
+        jwtFrontend: newUiToken
+      };
+      return res.status(200).json(responseJson);
     }
-    return res.status(200).json(newUiToken);
+    res.redirect('/logout');
   }
 });
 
@@ -95,7 +100,6 @@ router.post('/refresh', [
 router.use('/token', auth.refreshJWT, (req, res) => {
   if (req.user && req.user.jwtFrontend && req.user.refreshToken) {
     const responseJson = {
-      _json: req.user._json,
       jwtFrontend: req.user.jwtFrontend
     };
     res.status(200).json(responseJson);
@@ -112,9 +116,9 @@ router.use('/user',  passport.authenticate('jwt', {session: false}), (req, res) 
   const userToken = jsonwebtoken.verify(thisSession.passport.user.jwt, config.get("oidc:publicKey"));
   const userName = {
     userName: userToken.idir_username,
-    userGuid: userToken.preferred_username
+    userGuid: userToken.preferred_username.toUpperCase()
   };
-  
+
   if(userName) {
     return res.status(200).json(userName);
   }
