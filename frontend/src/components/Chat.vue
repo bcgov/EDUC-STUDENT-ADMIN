@@ -88,17 +88,6 @@ export default {
   mounted() {
   },
   methods: {
-    /*onType: function (event) {
-      //here you can set any behavior
-    },*/
-    loadMoreMessages(resolve) {
-      setTimeout(() => {
-        resolve(this.toLoad); //We end the loading state and add the messages
-        //Make sure the loaded messages are also added to our local messages copy or they will be lost
-        this.messages.unshift(...this.toLoad);
-        this.toLoad = [];
-      }, 1000);
-    },
     onMessageSubmit: function (message) {
       ApiService.apiAxios
         .post(Routes.PEN_REQUEST_ENDPOINT + '/' + this.$route.params.id + '/comments', message)
