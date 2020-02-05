@@ -86,10 +86,6 @@ export default {
     };
   },
   mounted() {
-    console.log('HERE');
-    console.log(this.participants);
-    console.log('THERE');
-    console.log(this.myself.name);
   },
   methods: {
     /*onType: function (event) {
