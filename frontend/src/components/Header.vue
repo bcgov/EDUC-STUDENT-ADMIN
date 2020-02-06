@@ -58,12 +58,7 @@ export default {
     ...mapGetters('auth', ['isAuthenticated']),
     ...mapGetters('auth', ['userInfo']),
     dataReady: function() {
-      if(!(this.userInfo)){
-        return false;
-      } else {
-        console.log(this.userInfo);
-        return true;
-      }
+      return this.userInfo;
     }
   },
   methods: {

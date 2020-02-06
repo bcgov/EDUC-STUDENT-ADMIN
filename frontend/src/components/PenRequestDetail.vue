@@ -22,7 +22,7 @@
                   <p class="mb-2 orange--text"><strong>{{this.request.penRequestStatusCode}}</strong></p>
                 </v-col>
                 <v-col v-else cols="12" xl="9" lg="9" md="9" sm="9">
-                  <p class="mb-2 grey--text"><strong>{{this.request.penRequestStatusCode}}</strong></p>
+                  <p class="mb-2 grey--text text--darken-1"><strong>{{this.request.penRequestStatusCode}}</strong></p>
                 </v-col>
               </v-row>
               <v-row no-gutters>
@@ -69,7 +69,7 @@
           <v-col cols="12" xl="6" lg="6" md="6" class="pa-0">
             <v-card height="100%" width="99%">
               <v-toolbar flat color="#036" class="white--text">
-                <v-toolbar-title>PEN Request Data</v-toolbar-title>
+                <v-toolbar-title><h2>PEN Request Data</h2></v-toolbar-title>
               </v-toolbar>
               <v-row no-gutters class="pt-2 px-2">
                 <v-col cols="12" xl="3" lg="3" md="3" sm="3">
@@ -86,8 +86,8 @@
                 <v-col v-if="!this.request.usualLastName && !this.request.usualFirstName && !this.request.usualMiddleName" cols="12" xl="9" lg="9" md="9" sm="9">
                   <p class="mb-2"></p>
                 </v-col>
-                <v-col v-else cols="12" xl="9" lg="9" md="9" sm="9">
-                  <p class="mb-2"><strong>{{ this.request.usualLastName ? this.request.usualLastName: '(none)'}}, {{ this.request.usualFirstName ? this.request.usualFirstName: '(none)'}}, {{ this.request.usualMiddleName ? this.request.usualMiddleName: '(none)'}}</strong></p>
+                <v-col v-else-if="this.request.usualLastName === this.request.legalLastName && this.request.usualFirstName === this.request.legalFirstName && this.request.usualMiddleName === this.request.legalMiddleNames" cols="12" xl="9" lg="9" md="9" sm="9">
+                  <p class="mb-2 grey--text text--darken-1"><strong>{{ this.request.usualLastName ? this.request.usualLastName: '(none)'}}, {{ this.request.usualFirstName ? this.request.usualFirstName: '(none)'}}, {{ this.request.usualMiddleName ? this.request.usualMiddleName: '(none)'}}</strong></p>
                 </v-col>
               </v-row>
               <v-row no-gutters class="px-2">
@@ -108,7 +108,7 @@
               </v-row>
               <v-row no-gutters class="px-2">
                 <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                  <p class="mb-2">DOB (yyyy/mm/dd):</p>
+                  <p class="mb-2">DOB:</p>
                 </v-col>
                 <v-col cols="12" xl="9" lg="9" md="9" sm="9">
                   <p class="mb-2"><strong>{{ this.request.dob ? moment(this.request.dob).format('YYYY-MM-DD'):'' }}</strong></p>
@@ -140,7 +140,7 @@
               </v-row>
               <v-row no-gutters class="px-2">
                 <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                  <p>Student#</p>
+                  <p>Student ID:</p>
                 </v-col>
                 <v-col cols="12" xl="9" lg="9" md="9" sm="9">
                   <p><strong>{{ this.request.lastBCSchoolStudentNumber }}</strong></p>
@@ -168,7 +168,7 @@
           <v-col cols="12" xl="6" lg="6" md="6" class="pa-0">
             <v-card height="100%" width="100%" >
               <v-toolbar flat color="#036" class="white--text">
-                <v-toolbar-title>Discussion</v-toolbar-title>
+                <v-toolbar-title><h2>Discussion</h2></v-toolbar-title>
               </v-toolbar>
               <Chat id="chat-box" :myself="myself" :participants="participants" :messages="messages"></Chat>
             </v-card>
@@ -178,7 +178,7 @@
           <v-col col="12" class="px-0">
             <v-card>
               <v-toolbar flat color="#036" class="white--text">
-                <v-toolbar-title>Documents</v-toolbar-title>
+                <v-toolbar-title><h2>Documents</h2></v-toolbar-title>
               </v-toolbar>
               <v-data-table
                       :headers="headers"
@@ -197,12 +197,12 @@
         <v-row>
           <v-card width="100%">
             <v-toolbar flat color="#036" dark class="tester">
-              <v-toolbar-title class="pa-0">Actions</v-toolbar-title>
+              <v-toolbar-title class="pa-0"><h2>Actions</h2></v-toolbar-title>
             </v-toolbar>
             <v-tabs vertical>
               <v-tab>Provide PEN</v-tab>
-              <v-tab>Return</v-tab>
-              <v-tab>Fail</v-tab>
+              <v-tab>Request Info</v-tab>
+              <v-tab>Reject</v-tab>
               <v-tab-item>
                 <v-alert
                         :value="completedAlertSuccess"
@@ -276,14 +276,6 @@
                           </v-col>
                           <v-col cols="12" xl="9" lg="9" md="9" sm="9">
                             <p class="mb-2"><strong>Female</strong></p>
-                          </v-col>
-                        </v-row>
-                        <v-row no-gutters class="pt-2 px-2">
-                          <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                            <p class="mb-2">Last BC Sch:</p>
-                          </v-col>
-                          <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                            <p class="mb-2"><strong>Henry James Senior Secondary</strong></p>
                           </v-col>
                         </v-row>
                       </v-card>
@@ -572,8 +564,15 @@ export default {
     height:100% !important;
     background-color:#fafafa !important;
   }
+  .v-tab--active {
+    background-color: aliceblue;
+    font-weight: bold;
+  }
   .v-card {
     background-color:#fafafa;
+  }
+  h2 {
+    font-size: 1.25rem
   }
 </style>
 
