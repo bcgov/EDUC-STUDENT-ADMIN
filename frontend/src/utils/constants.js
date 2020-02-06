@@ -11,9 +11,7 @@ let object = {
   PEN_REQUEST_ENDPOINT: penRequestRoot,
   PEN_REQUEST_SEARCH_URL: penRequestRoot + '/',
   PEN_REQUEST_STATUSES_URL: penRequestRoot + '/statuses',
-  EMAILS_REJECT_URL: emailsRoot + '/reject',
-  EMAILS_RETURN_URL: emailsRoot + '/info',
-  EMAILS_COMPLETED_URL: emailsRoot + '/complete'
+  EMAILS_URL: emailsRoot
 };
 
 //endpoints
