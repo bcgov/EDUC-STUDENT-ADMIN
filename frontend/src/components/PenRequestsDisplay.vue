@@ -49,18 +49,49 @@
               :loading="loadingTable"
               @click:row="viewRequestDetails"
               class="fill-height">
+              <template v-slot:header.initialSubmitDate="{ header }">
+                <v-menu
+                  ref="dateMenu"
+                  v-model="dateMenu"
+                  :close-on-content-click="false"
+                  :nudge-right="40"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="290px"
+                >
+                  <template v-slot:activator="{ on }">
+                    <v-text-field
+                      v-model="initialSubmitDate"
+                      v-bind:label="header.text"
+                      outlined
+                      dense
+                      placeholder=" "
+                      readonly
+                      v-on="on"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker v-model="initialSubmitDate" no-title range>
+                    <v-spacer></v-spacer>
+                    <v-btn text color="primary" @click="dateMenu = false">Cancel</v-btn>
+                    <v-btn text color="primary" @click="$refs.dateMenu.save(initialSubmitDate)">OK</v-btn>
+                  </v-date-picker>
+                </v-menu>
+              </template>
+              <template v-slot:header.penRequestStatusCode.label="{ header }">
+                <v-text-field v-model="status" v-bind:label="header.text" placeholder=" " outlined dense></v-text-field>
+              </template>
+              <template v-slot:header.legalLastName="{ header }">
+                <v-text-field v-model="legalLastName" v-bind:label="header.text" placeholder=" " outlined dense></v-text-field>
+              </template>
+              <template v-slot:header.legalFirstName="{ header }">
+                <v-text-field v-model="legalFirstName" v-bind:label="header.text" placeholder=" " outlined dense></v-text-field>
+              </template>
+              <template v-slot:header.reviewer="{ header }">
+                <v-text-field v-model="reviewer" v-bind:label="header.text" placeholder=" " outlined dense></v-text-field>
+              </template>
               <template v-slot:item.initialSubmitDate="{ item }">
                 <span v-if="item.initialSubmitDate == null"></span>
                 <span v-else>{{moment(item.initialSubmitDate).format('YYYY-MM-DD LT') }}</span>
-              </template>
-              <template v-slot:item.action="{ item }">
-                <v-icon
-                  small
-                  class="mr-2"
-                  @click="editItem(item)"
-                >
-                  edit
-                </v-icon>
               </template>
               <template v-slot:no-data>
                 There are no requests with the selected statuses.
@@ -80,12 +111,66 @@ export default {
   data () {
     return {
       headers: [
-        { text: 'Submitted Time', value: 'initialSubmitDate',  },
-        { text: 'Status', value: 'penRequestStatusCode.label' },
-        { text: 'Last Name', value: 'legalLastName' },
-        { text: 'First Name', value: 'legalFirstName' },
-        { text: 'Reviewer', value: 'reviewer' },
+        { text: 'Submitted Time',
+          value: 'initialSubmitDate',
+          sortable: false,
+          filter: value => {
+            if(this.initialSubmitDate.length < 2) return true;
+            if(!value) return false;
+            const start = this.initialSubmitDate[0].split('-');
+            const end = this.initialSubmitDate[1].split('-');
+            const check = value.substr(0, 10).split('-');
+
+            const startDate = new Date(start[2], parseInt(start[1])-1, start[0]);
+            const endDate = new Date(end[2], parseInt(end[1])-1, end[0]);
+            const checkDate = new Date(check[2], parseInt(check[1])-1, check[0]);
+
+            return startDate < checkDate && checkDate > endDate;
+          }
+        },
+        { text: 'Status',
+          value: 'penRequestStatusCode.label',
+          sortable: false,
+          filter: value => {
+            if(!this.status) return true;
+            if(!value) return false;
+            return value.toUpperCase().includes(this.status.toUpperCase());
+          }
+        },
+        { text: 'Last Name',
+          value: 'legalLastName',
+          sortable: false,
+          filter: value => {
+            if(!this.legalLastName) return true;
+            if(!value) return false;
+            return value.toUpperCase().includes(this.legalLastName.toUpperCase());
+          }
+        },
+        { text: 'First Name',
+          value: 'legalFirstName',
+          sortable: false,
+          filter: value => {
+            if(!this.legalFirstName) return true;
+            if(!value) return false;
+            return value.toUpperCase().includes(this.legalFirstName.toUpperCase());
+          }
+        },
+        { text: 'Reviewer',
+          value: 'reviewer',
+          sortable: false,
+          filter: value => {
+            if(!this.reviewer) return true;
+            if(!value) return false;
+            return value.toUpperCase().includes(this.reviewer.toUpperCase());
+          }
+        },
       ],
+      dateMenu: false,
+      initialSubmitDate: [],
+      status: '',
+      legalLastName: '',
+      legalFirstName: '',
+      reviewer: '',
       statusCodes:[],
       defaultSelected:[],
       penRequests: [],
@@ -162,6 +247,13 @@ export default {
   .header {
     background-color: #96c0e6;
     top:-24px;
+  }
+  .v-input {
+    padding-bottom: 15px;
+    padding-top: 20px;
+  }
+  .v-data-table /deep/ .v-text-field__details {
+    display: none;
   }
   label {
     color:white;
