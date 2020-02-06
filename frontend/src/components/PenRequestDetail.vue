@@ -73,7 +73,7 @@
               </v-toolbar>
               <v-row no-gutters class="pt-2 px-2">
                 <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                  <p class="mb-2" color="green">Legal:</p>
+                  <p class="mb-2">Legal:</p>
                 </v-col>
                 <v-col cols="12" xl="9" lg="9" md="9" sm="9">
                   <p class="mb-2"><strong>{{ this.request.legalLastName ? this.request.legalLastName: '(none)'}}, {{ this.request.legalFirstName ? this.request.legalFirstName: '(none)'}}, {{ this.request.legalMiddleNames ? this.request.legalMiddleNames: '(none)'}}</strong></p>
@@ -100,7 +100,7 @@
               </v-row>
               <v-row no-gutters class="px-2">
                 <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                  <p class="mb-2" color="green">Past:</p>
+                  <p class="mb-2">Past:</p>
                 </v-col>
                 <v-col cols="12" xl="9" lg="9" md="9" sm="9">
                   <p class="mb-2"><strong>{{ this.request.pastNames }}</strong></p>
@@ -124,7 +124,7 @@
               </v-row>
               <v-row no-gutters class="px-2">
                 <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                  <p class="mb-2" color="green">Current Sch:</p>
+                  <p class="mb-2">Current Sch:</p>
                 </v-col>
                 <v-col cols="12" xl="9" lg="9" md="9" sm="9">
                   <p class="mb-2"><strong>{{ this.request.currentSchool }}</strong></p>
@@ -211,7 +211,7 @@
                         text
                         dismissible
                         transition="scale-transition">
-                  PEN Request updated and email sent to student.
+                  PEN Request completed and email sent to student.
                 </v-alert>
                 <v-alert
                         :value="completedAlertFailure"
@@ -229,7 +229,7 @@
                         text
                         dismissible
                         transition="scale-transition">
-                  PEN Request updated, but email to student failed. Please contact support.
+                  PEN Request completed, but email to student failed. Please contact support.
                 </v-alert>
                 <v-card flat>
                   <v-row class="mx-0" justify="space-between">
@@ -248,7 +248,7 @@
                       <v-card class="mx-3">
                         <v-row no-gutters class="pt-2 px-2">
                           <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                            <p class="mb-2" color="green">Legal:</p>
+                            <p class="mb-2">Legal:</p>
                           </v-col>
                           <v-col cols="12" xl="9" lg="9" md="9" sm="9">
                             <p class="mb-2"><strong>Doe, Jane Marie, (none)</strong></p>
@@ -256,7 +256,7 @@
                         </v-row>
                         <v-row no-gutters class="pt-2 px-2">
                           <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                            <p class="mb-2" color="green">Usual:</p>
+                            <p class="mb-2">Usual:</p>
                           </v-col>
                           <v-col cols="12" xl="9" lg="9" md="9" sm="9">
                             <p class="mb-2"><strong>Doe, Lizzie</strong></p>
@@ -264,7 +264,7 @@
                         </v-row>
                         <v-row no-gutters class="pt-2 px-2">
                           <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                            <p class="mb-2" color="green">DOB:</p>
+                            <p class="mb-2">DOB:</p>
                           </v-col>
                           <v-col cols="12" xl="9" lg="9" md="9" sm="9">
                             <p class="mb-2"><strong>2000-04-12</strong></p>
@@ -272,7 +272,7 @@
                         </v-row>
                         <v-row no-gutters class="pt-2 px-2">
                           <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                            <p class="mb-2" color="green">Gender:</p>
+                            <p class="mb-2">Gender:</p>
                           </v-col>
                           <v-col cols="12" xl="9" lg="9" md="9" sm="9">
                             <p class="mb-2"><strong>Female</strong></p>
@@ -280,7 +280,7 @@
                         </v-row>
                         <v-row no-gutters class="pt-2 px-2">
                           <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                            <p class="mb-2" color="green">Last BC Sch:</p>
+                            <p class="mb-2">Last BC Sch:</p>
                           </v-col>
                           <v-col cols="12" xl="9" lg="9" md="9" sm="9">
                             <p class="mb-2"><strong>Henry James Senior Secondary</strong></p>
@@ -483,9 +483,15 @@ export default {
       ApiService.apiAxios
         .put(Routes.PEN_REQUEST_ENDPOINT, this.prepPut())
         .then(() => {
-          this.sendEmail(Routes.EMAILS_RETURN_URL, {
-            emailAddress: this.request.email
-          });
+          ApiService.apiAxios
+            .post(Routes.EMAILS_URL, { emailAddress: this.request.email }, { params: {type: 'info'}})
+            .then(() => {
+              this.returnAlertSuccess=true;
+            })
+            .catch(error => {
+              console.log(error);
+              this.returnAlertWarning=true;
+            });
         })
         .catch(error => {
           console.log(error);
@@ -501,49 +507,21 @@ export default {
         ApiService.apiAxios
           .put(Routes.PEN_REQUEST_ENDPOINT, this.prepPut())
           .then(() => {
-            this.sendEmail(Routes.EMAILS_REJECT_URL, {
-              emailAddress: this.request.email,
-              rejectionReason: this.request.failureReason
-            });
+            ApiService.apiAxios
+              .post(Routes.EMAILS_URL, { emailAddress: this.request.email, rejectionReason: this.request.failureReason }, { params: {type: 'reject'}})
+              .then(() => {
+                this.rejectAlertSuccess=true;
+              })
+              .catch(error => {
+                console.log(error);
+                this.rejectAlertWarning=true;
+              });
           })
           .catch(error => {
             console.log(error);
             this.rejectAlertFailure=true;
           });
       }
-    },
-    sendEmail(url, body) {
-      ApiService.apiAxios
-        .post(url, body)
-        .then(() => {
-          switch(url) {
-          case Routes.EMAILS_REJECT_URL:
-            this.rejectAlertSuccess=true;
-            break;
-          case Routes.EMAILS_RETURN_URL:
-            this.returnAlertSuccess=true;
-            break;
-          case Routes.EMAILS_COMPLETED_URL:
-            this.completedAlertSuccess=true;
-            break;
-          }
-
-        })
-        .catch(error => {
-          console.log(error);
-          switch(url) {
-          case Routes.EMAILS_REJECT_URL:
-            this.rejectAlertWarning=true;
-            break;
-          case Routes.EMAILS_RETURN_URL:
-            this.returnAlertWarning=true;
-            break;
-          case Routes.EMAILS_COMPLETED_URL:
-            this.completedAlertWarning=true;
-            break;
-          }
-          return false;
-        });
     },
     claimRequest() {
       let body = this.prepPut();
@@ -581,10 +559,10 @@ export default {
     padding-left: 20px !important;
   }
   .v-textarea /deep/ .v-text-field__details {
-    margin-bottom: 0px !important;
+    margin-bottom: 0 !important;
   }
   .v-textarea /deep/ .v-input__slot {
-    margin-bottom: 0px !important;
+    margin-bottom: 0 !important;
   }
   .v-card /deep/ .v-window__container {
     height:100% !important;

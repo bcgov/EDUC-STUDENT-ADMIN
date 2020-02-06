@@ -5,7 +5,7 @@ const router = express.Router();
 const axios = require('axios');
 const auth = require('../components/auth');
 
-router.post('/:id', passport.authenticate('jwt', {session: false}), auth.isValidAdminToken,
+router.post('/', passport.authenticate('jwt', {session: false}), auth.isValidAdminToken,
   async (req, res) => {
     try{
       const sessID = req.sessionID;
@@ -14,7 +14,7 @@ router.post('/:id', passport.authenticate('jwt', {session: false}), auth.isValid
       const userToken = thisSession.passport.user.jwt;
       // eslint-disable-next-line no-console
       axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;
-      const penEmailsResponse = await axios.post(config.get("server:penEmails") + '/' + req.params.id, req.body);
+      const penEmailsResponse = await axios.post(config.get("server:penEmails") + '/' + req.query.type, req.body);
       if(penEmailsResponse.status !== 200){
         console.log('Error calling email service.  Check the PEN-REQUEST-EMAIL-API logs.');
         return res.status(500).json({
