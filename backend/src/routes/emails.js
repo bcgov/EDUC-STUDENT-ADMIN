@@ -17,7 +17,6 @@ router.post('/', passport.authenticate('jwt', {session: false}), auth.isValidAdm
       const penEmailsResponse = await axios.post(config.get("server:penEmails") + '/' + req.query.type, req.body);
       console.log(penEmailsResponse);
       if(penEmailsResponse.status >= 200 && penEmailsResponse.status <= 300){
-        console.log(penEmailsResponse);
         return res.status(200).json({
           message: 'success'
         });
