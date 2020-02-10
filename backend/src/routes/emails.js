@@ -15,15 +15,19 @@ router.post('/', passport.authenticate('jwt', {session: false}), auth.isValidAdm
       // eslint-disable-next-line no-console
       axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;
       const penEmailsResponse = await axios.post(config.get("server:penEmails") + '/' + req.query.type, req.body);
-      if(penEmailsResponse.status !== 200){
+      console.log(penEmailsResponse);
+      if(penEmailsResponse.status >= 200 && penEmailsResponse.status <= 300){
+        console.log(penEmailsResponse);
+        return res.status(200).json({
+          message: 'success'
+        });
+      }
+      else {
         console.log('Error calling email service.  Check the PEN-REQUEST-EMAIL-API logs.');
         return res.status(500).json({
           message: 'Error calling email service'
         });
       }
-      return res.status(200).json({
-        message: 'success'
-      });
     } catch(e) {
       console.log(e);
       return res.status(500).json({
