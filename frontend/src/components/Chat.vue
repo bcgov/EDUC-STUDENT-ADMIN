@@ -13,7 +13,6 @@
       :close-button-icon-size="closeButtonIconSize"
       :on-close="onClose"
       :submit-icon-size="submitIconSize"
-      :load-more-messages="toLoad.length > 0 ? loadMoreMessages : null"
       :async-mode="asyncMode"
       :scroll-bottom="scrollBottom"
       :display-header="displayHeader">
@@ -23,8 +22,8 @@
 <script>
 import { Chat } from 'vue-quick-chat';
 import 'vue-quick-chat/dist/vue-quick-chat.css';
-import { Routes } from '@/utils/constants';
-import ApiService from '@/common/apiService';
+import { Routes } from '../utils/constants';
+import ApiService from '../common/apiService';
 export default {
   components: {
     Chat

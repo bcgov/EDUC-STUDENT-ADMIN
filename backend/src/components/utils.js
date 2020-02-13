@@ -2,6 +2,7 @@
 
 const axios = require('axios');
 const config = require('../config/index');
+const jsonwebtoken = require('jsonwebtoken');
 const log = require('npmlog');
 
 let discovery = null;
@@ -20,6 +21,15 @@ const utils = {
     return discovery;
   },
   prettyStringify: (obj, indent = 2) => JSON.stringify(obj, null, indent),
+
+  getBackendToken(req) {
+    const thisSession = req.session;
+    return thisSession['passport'].user.jwt;
+  },
+  getUser(req) {
+    const thisSession = req.session;
+    return jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
+  }
 };
 
 module.exports = utils;

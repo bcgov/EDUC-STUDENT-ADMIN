@@ -13,7 +13,7 @@ const auth = {
     const now = Date.now().valueOf() / 1000;
     const payload = jsonwebtoken.decode(token);
 
-    return (!!payload.exp && payload.exp < now);
+    return (!!payload['exp'] && payload['exp'] < now);
   },
 
   // Check if JWT Refresh Token has expired
@@ -22,8 +22,8 @@ const auth = {
     const payload = jsonwebtoken.decode(token);
 
     // Check if expiration exists, or lacks expiration
-    return (typeof (payload.exp) !== 'undefined' && payload.exp !== null &&
-      payload.exp == 0 || payload.exp > now);
+    return (typeof (payload['exp']) !== 'undefined' && payload['exp'] !== null &&
+      payload['exp'] === 0 || payload['exp'] > now);
   },
 
   // Get new JWT and Refresh tokens
@@ -85,7 +85,6 @@ const auth = {
       log.error('refreshJWT', error.message);
     }
     next();
-    return;
   },
 
   isValidAdminToken(req, res, next) {
@@ -93,14 +92,13 @@ const auth = {
 
     const thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
     try{
-      const userToken = jsonwebtoken.verify(thisSession.passport.user.jwt, config.get("oidc:publicKey"));
-      if(userToken.realm_access.roles.includes(config.get("oidc:staffRole"))){
+      const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
+      if(userToken['realm_access'].roles['includes'](config.get('oidc:staffRole'))){
         return next();
       }
-      console.log('dang');
       return res.status(401).json({
         message: 'Unauthorized user'
-      })
+      });
     }catch(e){
       log.error(e);
       return next(res.status(500));

@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
-import Home from '@/components/Home.vue';
-import PenRequestDetail from '@/components/PenRequestDetail.vue';
+import Home from './components/Home.vue';
+import PenRequestDetail from './components/PenRequestDetail.vue';
 import moment from 'moment';
 
 Vue.prototype.moment = moment;
