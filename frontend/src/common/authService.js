@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Routes } from '@/utils/constants.js';
+import { Routes } from '../utils/constants';
 
 export default {
 

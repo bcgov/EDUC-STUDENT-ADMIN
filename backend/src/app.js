@@ -21,7 +21,6 @@ const OidcStrategy = require('passport-openidconnect-kc-idp').Strategy;
 const apiRouter = express.Router();
 const authRouter = require('./routes/auth');
 const penRequestRouter = require('./routes/penRequest');
-const emailsRouter = require('./routes/emails');
 
 //initialize app
 const app = express();
@@ -40,7 +39,7 @@ app.use(express.urlencoded({
 app.use(morgan(config.get('server:morganFormat')));
 
 //sets cookies for security purposes (prevent cookie access, allow secure connections only, etc)
-var expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+const expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 app.use(session({
   secret: config.get('oidc:clientSecret'),
   resave: true,
@@ -67,7 +66,7 @@ utils.getOidcDiscovery().then(discovery => {
     issuer: discovery.issuer,
     authorizationURL: discovery.authorization_endpoint,
     tokenURL: discovery.token_endpoint,
-    userInfoURL: discovery.userinfo_endpoint,
+    userInfoURL: discovery['userinfo_endpoint'],
     clientID: config.get('oidc:clientId'),
     clientSecret: config.get('oidc:clientSecret'),
     callbackURL: config.get('server:frontend') + '/api/auth/callback',
@@ -79,9 +78,8 @@ utils.getOidcDiscovery().then(discovery => {
       return done('No access token', null);
     }
     //Generate token for frontend validation
-    const token = auth.generateUiToken();
     //set access and refresh tokens
-    profile.jwtFrontend = token;
+    profile.jwtFrontend = auth.generateUiToken();
     profile.jwt = accessToken;
     profile.refreshToken = refreshToken;
     return done(null, profile);
@@ -99,58 +97,23 @@ utils.getOidcDiscovery().then(discovery => {
     secretOrKey: config.get('tokenGenerate:publicKey')
   }, (jwtPayload, done) => {
     if ((typeof (jwtPayload) === 'undefined') || (jwtPayload === null)) {
-      console.log('fail');
       return done('No JWT token', null);
     }
     done(null, {
       jwt: jwtPayload,
-      realmRole: jwtPayload.realm_role
+      realmRole: jwtPayload['realm_role']
     });
   }));
 });
-//functions for serializing/deserializing users
+//functions to serialize/deserialize users
 passport.serializeUser((user, next) => next(null, user));
 passport.deserializeUser((obj, next) => next(null, obj));
-
-// GetOK Base API Directory
-apiRouter.get('/', (_req, res) => {
-  res.status(200).json({
-    endpoints: [
-      '/api/auth',
-      '/api/penRequest',
-      '/api/emails'
-    ],
-    versions: [
-      1
-    ]
-  });
-});
 
 //set up routing to auth and main API
 app.use(/(\/api)?/, apiRouter);
 
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/penRequest', penRequestRouter);
-apiRouter.use('/emails', emailsRouter);
-
-//Handle 500 error
-app.use((err, _req, res, next) => {
-  log.error(err.stack);
-  res.status(500).json({
-    status: 500,
-    message: 'Internal Server Error: ' + err.stack.split('\n', 1)[0]
-  });
-  next();
-});
-
-// Handle 404 error
-app.use((_req, res) => {
-  console.log("In 404");
-  res.status(404).json({
-    status: 404,
-    message: 'Page Not Found'
-  });
-});
 
 // Prevent unhandled errors from crashing application
 process.on('unhandledRejection', err => {

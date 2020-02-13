@@ -1,5 +1,5 @@
-import ApiService from '@/common/apiService';
-import AuthService from '@/common/authService';
+import ApiService from '../../common/apiService';
+import AuthService from '../../common/authService';
 
 export default {
   namespaced: true,
@@ -33,7 +33,7 @@ export default {
       }
     },
 
-    //sets the token required for refresing expired json web tokens
+    //sets the token required for refreshing expired json web tokens
     logoutState: (state) => {
       localStorage.removeItem('jwtToken');
       state.userInfo = false;

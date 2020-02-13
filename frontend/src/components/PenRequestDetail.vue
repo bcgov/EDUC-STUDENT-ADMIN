@@ -30,8 +30,8 @@
                   <p class="mb-2">As of:</p>
                 </v-col>
                 <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                  <p v-if="this.request.statusUpdateDate == null" class="mb-2"></p>
-                  <p v-else class="mb-2"><strong>{{ this.request.statusUpdateDate ? moment(this.request.statusUpdateDate).fromNow():'' }}</strong>, at {{ this.request.statusUpdateDate ? moment(this.request.statusUpdateDate).format('YYYY-MM-DD LT'):'' }}</p>
+                  <p v-if="this.request['statusUpdateDate'] == null" class="mb-2"></p>
+                  <p v-else class="mb-2"><strong>{{ this.request['statusUpdateDate'] ? moment(this.request['statusUpdateDate']).fromNow():'' }}</strong>, at {{ this.request['statusUpdateDate'] ? moment(this.request['statusUpdateDate']).format('YYYY-MM-DD LT'):'' }}</p>
                 </v-col>
               </v-row>
               <v-row no-gutters>
@@ -353,6 +353,15 @@
                         transition="scale-transition">
                   PEN Request updated, but email to student failed. Please contact support.
                 </v-alert>
+                <v-alert
+                  :value="rejectInvalidWarning"
+                  type="warning"
+                  dense
+                  text
+                  dismissible
+                  transition="scale-transition">
+                  You cannot reject a request that is already in rejected state.
+                </v-alert>
                 <v-card flat class="pa-3">
                   <v-form ref="form" v-model="validForm">
                     <v-card-text class="pa-0">
@@ -399,8 +408,8 @@
 </template>
 <script>
 import Chat from './Chat';
-import ApiService from '@/common/apiService';
-import { Routes } from '@/utils/constants';
+import ApiService from '../common/apiService';
+import { Routes } from '../utils/constants';
 export default {
   components: {
     Chat
@@ -425,6 +434,7 @@ export default {
       rejectAlertSuccess: false,
       rejectAlertFailure: false,
       rejectAlertWarning: false,
+      rejectInvalidWarning: false,
       returnAlertSuccess: false,
       returnAlertFailure: false,
       returnAlertWarning: false,
@@ -473,21 +483,17 @@ export default {
     returnToStudent() {
       this.request.penRequestStatusCode = 'RETURNED';
       ApiService.apiAxios
-        .put(Routes.PEN_REQUEST_ENDPOINT, this.prepPut())
-        .then(() => {
-          ApiService.apiAxios
-            .post(Routes.EMAILS_URL, { emailAddress: this.request.email }, { params: {type: 'info'}})
-            .then(() => {
-              this.returnAlertSuccess=true;
-            })
-            .catch(error => {
-              console.log(error);
-              this.returnAlertWarning=true;
-            });
+        .post(Routes.PEN_REQUEST_UPDATE_AND_EMAIL_URL, { penRetrievalRequest: this.prepPut(), penEmailRequest: { type: 'info'}})
+        .then(response => {
+          this.request = response.data;
+          this.returnAlertSuccess=true;
         })
         .catch(error => {
           console.log(error);
-          this.returnAlertFailure=true;
+          if(error.response.data)
+            this.returnAlertWarning=true;
+          else
+            this.returnAlertFailure=true;
         });
     },
     submitReject() {
@@ -497,21 +503,19 @@ export default {
         this.request.failureReason = this.failedForm.failureReason;
 
         ApiService.apiAxios
-          .put(Routes.PEN_REQUEST_ENDPOINT, this.prepPut())
-          .then(() => {
-            ApiService.apiAxios
-              .post(Routes.EMAILS_URL, { emailAddress: this.request.email, rejectionReason: this.request.failureReason }, { params: {type: 'reject'}})
-              .then(() => {
-                this.rejectAlertSuccess=true;
-              })
-              .catch(error => {
-                console.log(error);
-                this.rejectAlertWarning=true;
-              });
+          .post(Routes.PEN_REQUEST_UPDATE_AND_EMAIL_URL, { penRetrievalRequest: this.prepPut(), penEmailRequest: { message: this.failedForm.failureReason, type: 'reject'}})
+          .then(response => {
+            this.request = response.data;
+            this.rejectAlertSuccess=true;
           })
           .catch(error => {
             console.log(error);
-            this.rejectAlertFailure=true;
+            if(error.response.status === 409)
+              this.rejectInvalidWarning=true;
+            else if(error.response.data)
+              this.rejectAlertWarning=true;
+            else
+              this.rejectAlertFailure=true;
           });
       }
     },

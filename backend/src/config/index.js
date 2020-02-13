@@ -18,7 +18,7 @@ nconf.defaults({
     logLevel: 'verbose',
     morganFormat: 'dev',
     port: '8080',
-    codeTableURL: process.env.PEN_REQUEST_API_URL + '/statuses',
+    statusCodeURL: process.env.PEN_REQUEST_API_URL + '/statuses',
     penRequestURL: process.env.PEN_REQUEST_API_URL,
     penEmails: process.env.PEN_REQUEST_EMAIL_API_URL
   },
@@ -27,7 +27,7 @@ nconf.defaults({
     clientId: process.env.ID,
     clientSecret: process.env.SECRET,
     discovery: process.env.DISCOVERY,
-    staffRole: "STUDENT_ADMIN"
+    staffRole: 'STUDENT_ADMIN'
   },
   tokenGenerate: {
     privateKey: process.env.UI_PRIVATE_KEY,

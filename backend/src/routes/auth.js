@@ -81,11 +81,11 @@ router.post('/refresh', [
       errors: errors.array()
     });
   }
-  if(!req.user.refreshToken){
+  if(!req['user'].refreshToken){
     res.redirect('/logout');
   } else{
-    await auth.renew(req.user.refreshToken);
-    if(req.user){
+    await auth.renew(req['user'].refreshToken);
+    if(req['user']){
       const newUiToken = auth.generateUiToken();
       let responseJson = {
         jwtFrontend: newUiToken
@@ -100,7 +100,7 @@ router.post('/refresh', [
 router.use('/token', auth.refreshJWT, (req, res) => {
   if (req.user && req.user.jwtFrontend && req.user.refreshToken) {
     const responseJson = {
-      _json: { displayName: req.user._json.idir_username, accountType: req.user._json.accountType },
+      _json: { displayName: req.user._json['idir_username'], accountType: req.user._json.accountType },
       jwtFrontend: req.user.jwtFrontend
     };
     res.status(200).json(responseJson);
@@ -114,13 +114,13 @@ router.use('/token', auth.refreshJWT, (req, res) => {
 router.use('/user',  passport.authenticate('jwt', {session: false}), (req, res) => {
   const sessID = req.sessionID;
   const thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
-  const userToken = jsonwebtoken.verify(thisSession.passport.user.jwt, config.get("oidc:publicKey"));
+  const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
   const userName = {
-    userName: userToken.idir_username,
+    userName: userToken['idir_username'],
     userGuid: userToken.preferred_username.toUpperCase()
   };
 
-  if(userName) {
+  if(userName.userName && userName.userGuid) {
     return res.status(200).json(userName);
   }
   else {
