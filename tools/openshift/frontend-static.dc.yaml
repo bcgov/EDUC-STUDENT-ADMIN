@@ -36,6 +36,10 @@ objects:
         containers:
         - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend-static:${JOB_NAME}
           imagePullPolicy: IfNotPresent
+          volumeMounts:
+          - name: tls-certs
+            mountPath: "/etc/tls-certs"
+            readOnly: true
           livenessProbe:
             failureThreshold: 3
             httpGet:
@@ -59,6 +63,10 @@ objects:
             successThreshold: 1
             timeoutSeconds: 1
           resources: {}
+        volumes:
+        - name: tls-certs
+          secret:
+            secretName: student-admin-frontend-cert
     test: false
     triggers:
     - type: ConfigChange
@@ -93,6 +101,7 @@ objects:
   kind: Route
   metadata:
     annotations:
+      service.alpha.openshift.io/serving-cert-secret-name: "student-admin-frontend-cert"
       openshift.io/host.generated: 'true'
     labels:
       app: "${APP_NAME}-${JOB_NAME}"
