@@ -84,6 +84,7 @@ objects:
   metadata:
     annotations:
       openshift.io/generated-by: OpenShiftNewApp
+      service.alpha.openshift.io/serving-cert-secret-name: "student-admin-frontend-cert"
     creationTimestamp:
     labels:
       app: "${APP_NAME}-${JOB_NAME}"
@@ -101,7 +102,6 @@ objects:
   kind: Route
   metadata:
     annotations:
-      service.alpha.openshift.io/serving-cert-secret-name: "student-admin-frontend-cert"
       openshift.io/host.generated: 'true'
     labels:
       app: "${APP_NAME}-${JOB_NAME}"
