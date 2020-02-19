@@ -29,6 +29,10 @@ const utils = {
   getUser(req) {
     const thisSession = req.session;
     return jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
+  },
+  saveSession(req, res, penRequest) {
+    req['session'].penRequest = Object.assign({},penRequest);
+    //req['session'].save();
   }
 };
 

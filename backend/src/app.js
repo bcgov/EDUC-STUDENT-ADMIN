@@ -21,6 +21,7 @@ const OidcStrategy = require('passport-openidconnect-kc-idp').Strategy;
 const apiRouter = express.Router();
 const authRouter = require('./routes/auth');
 const penRequestRouter = require('./routes/penRequest');
+const penRequestStatusesRouter = require('./routes/penRequestStatuses');
 
 //initialize app
 const app = express();
@@ -29,6 +30,7 @@ const app = express();
 app.use(cors());
 app.use(helmet());
 app.use(helmet.noCache());
+
 
 //tells the app to use json as means of transporting data
 app.use(express.json());
@@ -42,7 +44,7 @@ app.use(morgan(config.get('server:morganFormat')));
 const expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 app.use(session({
   secret: config.get('oidc:clientSecret'),
-  resave: true,
+  resave: false,
   saveUninitialized: true,
   httpOnly: true,
   secure: true,
@@ -77,6 +79,7 @@ utils.getOidcDiscovery().then(discovery => {
       (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
       return done('No access token', null);
     }
+    console.log(profile);
     //Generate token for frontend validation
     //set access and refresh tokens
     profile.jwtFrontend = auth.generateUiToken();
@@ -119,6 +122,7 @@ app.use(/(\/api)?/, apiRouter);
 
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/penRequest', penRequestRouter);
+apiRouter.use('/penRequestStatuses', penRequestStatusesRouter);
 
 // Prevent unhandled errors from crashing application
 process.on('unhandledRejection', err => {

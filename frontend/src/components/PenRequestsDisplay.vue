@@ -177,7 +177,7 @@ export default {
       loadingTable: true,
       loadingSelect: true,
       errored: false,
-      comboboxKey:0,
+      comboboxKey:0
     };
   },
   mounted() {
@@ -237,8 +237,10 @@ export default {
         .finally(() => this.loadingTable = false);
     },
     viewRequestDetails (request) {
-      const id = request.penRequestID;
-      this.$router.push({name: 'penrequestdetail', params: { id } });
+      this.$store.state['penRequest'].selectedRequest = request['penRequestID'];
+      /*
+      const id = request['penRequestID'];
+      this.$router.push({name: 'penrequestdetail', params: { id } });*/
     }
   },
 };

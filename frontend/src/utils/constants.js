@@ -9,7 +9,7 @@ let object = {
   USER: authRoot + '/user',
   PEN_REQUEST_ENDPOINT: penRequestRoot,
   PEN_REQUEST_SEARCH_URL: penRequestRoot + '/',
-  PEN_REQUEST_STATUSES_URL: penRequestRoot + '/codes/statuses',
+  PEN_REQUEST_STATUSES_URL: baseRoot + '/penrequeststatuses',
   PEN_REQUEST_UPDATE_AND_EMAIL_URL: penRequestRoot + '/update-and-email'
 };
 

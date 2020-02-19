@@ -27,7 +27,7 @@
     "express": "^4.17.0",
     "express-session": "^1.16.1",
     "express-validator": "^6.0.0",
-    "helmet": "3.20.0",
+    "helmet": "^3.21.2",
     "jest-junit": "^7.0.0",
     "jsonwebtoken": "^8.5.1",
     "memory-cache": "^0.2.0",

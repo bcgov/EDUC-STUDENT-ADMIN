@@ -24,9 +24,9 @@
           <template v-slot:activator="{ on }">
             <v-chip tabindex="0" v-on="on" pill color="#003366" dark>
               <v-avatar left color="info">
-                {{ userInfo.displayName[0] }}
+                {{ userInfo.userName[0] }}
               </v-avatar>
-              {{ userInfo.displayName }}
+              {{ userInfo.userName }}
             </v-chip>
           </template>
           <v-list dark color="#003366">

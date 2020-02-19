@@ -60,7 +60,7 @@
                 <v-btn small color="#38598a" dark class="ml-2" @click="claimRequest">Claim</v-btn>
               </v-row>
               <v-row no-gutters justify="end" class="pb-5">
-                <v-btn small color="#38598a" dark class="ml-2" to="/">Back to List</v-btn>
+                <v-btn small color="#38598a" dark class="ml-2" @click="backToList">Back to List</v-btn>
               </v-row>
             </v-card>
           </v-col>
@@ -372,16 +372,6 @@
                         </ol>
                       </v-row>
                       <v-row class="ma-0">
-                        <v-radio-group
-                                class="mt-0"
-                                v-model="failedForm.penRequestStatusCode"
-                                :rules="requiredRules"
-                                row>
-                          <v-radio label="Reject" value="REJECTED"></v-radio>
-                          <v-radio label="Unable to complete" value="UNMATCHED"></v-radio>
-                        </v-radio-group>
-                      </v-row>
-                      <v-row class="ma-0">
                         <v-textarea
                                 name="description"
                                 label="Enter reason"
@@ -410,6 +400,8 @@
 import Chat from './Chat';
 import ApiService from '../common/apiService';
 import { Routes } from '../utils/constants';
+import { mapGetters } from 'vuex';
+
 export default {
   components: {
     Chat
@@ -442,35 +434,30 @@ export default {
       completedAlertFailure: false,
       completedAlertWarning: false,
       failedForm: {
-        penRequestID: null,
-        penRequestStatusCode: null,
         failureReason: null
-      }
+      },
+      penRequestId: null
     };
   },
+  computed: {
+    ...mapGetters('auth', ['userInfo']),
+  },
   mounted() {
+    this.myself.name = this.userInfo.userName;
+    this.myself.id = this.userInfo.userGuid;
+    this.penRequestId = this.$store.state['penRequest'].selectedRequest;
+
     ApiService.apiAxios
-      .get(Routes.USER)
-      .then(response => {
-        this.myself.name = response.data.userName;
-        this.myself.id = response.data.userGuid;
-      })
-      .catch(error => {
-        console.log(error);
-      });
-    ApiService.apiAxios
-      .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.$route.params.id)
+      .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.penRequestId)
       .then(response => {
         this.request = response.data;
-        this.failedForm.penRequestID = response.data.penRequestID;
-        this.failedForm.penRequestStatusCode = response.data.penRequestStatusCode;
         this.failedForm.failureReason = response.data.failureReason;
       })
       .catch(error => {
         console.log(error);
       });
     ApiService.apiAxios
-      .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.$route.params.id + '/comments')
+      .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.penRequestId + '/comments')
       .then(response => {
         this.participants = response.data.participants;
         this.messages = response.data.messages;
@@ -498,12 +485,11 @@ export default {
     },
     submitReject() {
       if(this.$refs.form.validate()){
-        this.request.penRequestID = this.failedForm.penRequestID;
-        this.request.penRequestStatusCode = this.failedForm.penRequestStatusCode;
+        this.request.penRequestStatusCode = 'REJECTED';
         this.request.failureReason = this.failedForm.failureReason;
 
         ApiService.apiAxios
-          .post(Routes.PEN_REQUEST_UPDATE_AND_EMAIL_URL, { penRetrievalRequest: this.prepPut(), penEmailRequest: { message: this.failedForm.failureReason, type: 'reject'}})
+          .post(Routes.PEN_REQUEST_UPDATE_AND_EMAIL_URL, { penRetrievalRequest: this.prepPut(), penEmailRequest: { message: this.request.failureReason, type: 'reject'}})
           .then(response => {
             this.request = response.data;
             this.rejectAlertSuccess=true;
@@ -535,6 +521,10 @@ export default {
         .catch(error => {
           console.log(error);
         });
+    },
+    backToList() {
+      this.penRequestId = null;
+      this.$store.state['penRequest'].selectedRequest = null;
     },
     prepPut() {
       const body = JSON.parse(JSON.stringify(this.request));

@@ -1,5 +1,6 @@
 import ApiService from '../../common/apiService';
 import AuthService from '../../common/authService';
+import { Routes } from '../../utils/constants';
 
 export default {
   namespaced: true,
@@ -43,13 +44,14 @@ export default {
   actions: {
 
     async getUserInfo(context){
-      try{
-        const token = await AuthService.getAuthToken();
-        const tokenJson = token._json;
-        context.commit('setUserInfo', tokenJson);
-      } catch(e) {
-        throw e;
-      }
+      ApiService.apiAxios
+        .get(Routes.USER)
+        .then(response => {
+          context.commit('setUserInfo', response.data);
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
 
     //retrieves the json web token from local storage. If not in local storage, retrieves it from API
