@@ -6,7 +6,7 @@ export default {
   //Retrieves an auth token from the API endpoint
   async getAuthToken() {
     try {
-      const response = await axios.get(Routes.TOKEN);
+      const response = await axios.get(Routes.LOGIN);
 
       return response.data;
     } catch (e) {
