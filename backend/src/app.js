@@ -22,6 +22,7 @@ const apiRouter = express.Router();
 const authRouter = require('./routes/auth');
 const penRequestRouter = require('./routes/penRequest');
 const penRequestStatusesRouter = require('./routes/penRequestStatuses');
+const studentDemographicsRouter = require('./routes/studentDemographics');
 
 //initialize app
 const app = express();
@@ -123,6 +124,7 @@ app.use(/(\/api)?/, apiRouter);
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/penRequest', penRequestRouter);
 apiRouter.use('/penRequestStatuses', penRequestStatusesRouter);
+apiRouter.use('/studentDemographics', studentDemographicsRouter);
 
 // Prevent unhandled errors from crashing application
 process.on('unhandledRejection', err => {

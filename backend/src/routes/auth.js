@@ -67,7 +67,7 @@ router.post('/refresh', [
     });
   }
   if(!req['user'] || !req['user'].refreshToken){
-    res.redirect('/api/auth/logout');
+    res.status(401).json();
   } else{
     await auth.renew(req['user'].refreshToken);  //need to update req.user?
     if(req['user']){
@@ -77,7 +77,7 @@ router.post('/refresh', [
       };
       return res.status(200).json(responseJson);
     } else {
-      res.redirect('/api/auth/logout');
+      res.status(401).json();
     }
   }
 });

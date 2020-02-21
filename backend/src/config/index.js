@@ -20,7 +20,10 @@ nconf.defaults({
     port: '8080',
     statusCodeURL: process.env.PEN_REQUEST_API_URL + '/statuses',
     penRequestURL: process.env.PEN_REQUEST_API_URL,
-    penEmails: process.env.PEN_REQUEST_EMAIL_API_URL
+    demographicsURL: process.env.PEN_DEMOGRAPHICS_URL,
+    digitalIdURL: process.env.DIGITAL_ID_URL,
+    studentURL: process.env.STUDENT_API_URL,
+    penEmails: process.env.PEN_REQUEST_EMAIL_API_URL,
   },
   oidc: {
     publicKey: process.env.SOAM_PUBLIC_KEY,

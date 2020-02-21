@@ -258,5 +258,32 @@ router.post('/update-and-email', passport.authenticate('jwt', {session: false}),
   }
 );
 
+router.get('/complete-pen-request', passport.authenticate('jwt', {session: false}), auth.isValidAdminToken,
+  async  (req, res) => {
+
+    /*const studentBody = {
+      pen: req['session'].studentDemographics.pen,
+      legalFirstName: req['session'].studentDemographics['studGiven'],
+      legalMiddleNames: req['session'].studentDemographics['studMiddle'],
+      legalLastName: req['session'].studentDemographics['studSurname'],
+      dob: req['session'].studentDemographics['studBirth'],
+      sexCode: req['session'].studentDemographics['studSex'],
+      dataSourceCode: req['session'].penRequest.dataSourceCode,
+      usualFirstName: req['session'].studentDemographics['usualGiven'],
+      usualMiddleNames: req['session'].studentDemographics['usualMiddle'],
+      usualLastName: req['session'].studentDemographics['usualSurname'],
+      email: req['session'].penRequest.email,
+    };
+
+    req['session'].penRequest.penRequestStatusCode = 'MANUAL'
+
+    Promise.allSettled([
+      axios.post(config.get('server:studentURL'), studentBody),
+      axios.put(config.get('server:penRequestURL')),
+      axios.put(config.get('server:digitalIdURL')),
+      axios.post(config.get('server:penEmails'))
+    ]);*/
+  });
+
 
 module.exports = router;

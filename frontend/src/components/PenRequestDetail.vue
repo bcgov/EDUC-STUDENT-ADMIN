@@ -214,6 +214,15 @@
                   PEN Request completed and email sent to student.
                 </v-alert>
                 <v-alert
+                        :value="notAPenError"
+                        type="error"
+                        dense
+                        text
+                        dismissible
+                        transition="scale-transition">
+                  The provided PEN is not valid.
+                </v-alert>
+                <v-alert
                         :value="completedAlertFailure"
                         type="error"
                         dense
@@ -235,12 +244,14 @@
                   <v-row class="mx-0" justify="space-between">
                     <v-col cols="12" xl="4" lg="4" md="4">
                       <v-text-field
-                              value="1234567"
+                              v-model="penSearchId"
                               label="PEN:"
+                              clearable
+                              @input="validatePen"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12" xl="5" lg="5" md="5">
-                      <v-btn color="#38598a" justify="center" width="100%" dark>Provide PEN to Student</v-btn>
+                      <v-btn :disabled="!enableCompleteButton" color="#38598a" justify="center" width="100%" :dark="enableCompleteButton">Provide PEN to Student</v-btn>
                     </v-col>
                   </v-row>
                   <v-row>
@@ -251,7 +262,8 @@
                             <p class="mb-2">Legal:</p>
                           </v-col>
                           <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                            <p class="mb-2"><strong>Doe, Jane Marie, (none)</strong></p>
+                            <p v-if="!this.demographics.legalLast && !this.demographics.legalFirst && !this.demographics.legalMiddle" class="mb-2"></p>
+                            <p v-else class="mb-2"><strong>{{ this.demographics.legalLast ? this.demographics.legalLast: '(none)'}}, {{ this.demographics.legalFirst ? this.demographics.legalFirst: '(none)'}}, {{ this.demographics.legalMiddle ? this.demographics.legalMiddle: '(none)'}}</strong></p>
                           </v-col>
                         </v-row>
                         <v-row no-gutters class="pt-2 px-2">
@@ -259,7 +271,8 @@
                             <p class="mb-2">Usual:</p>
                           </v-col>
                           <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                            <p class="mb-2"><strong>Doe, Lizzie</strong></p>
+                            <p v-if="!this.demographics.usualLast && !this.demographics.usualFirst && !this.demographics.usualMiddle" class="mb-2"></p>
+                            <p v-else class="mb-2"><strong>{{ this.demographics.usualLast ? this.demographics.usualLast: '(none)'}}, {{ this.demographics.usualFirst ? this.demographics.usualFirst: '(none)'}}, {{ this.demographics.usualMiddle ? this.demographics.usualMiddle: '(none)'}}</strong></p>
                           </v-col>
                         </v-row>
                         <v-row no-gutters class="pt-2 px-2">
@@ -267,7 +280,7 @@
                             <p class="mb-2">DOB:</p>
                           </v-col>
                           <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                            <p class="mb-2"><strong>2000-04-12</strong></p>
+                            <p class="mb-2"><strong>{{ this.demographics.dob ? moment(this.demographics.dob).format('YYYY-MM-DD'):'' }}</strong></p>
                           </v-col>
                         </v-row>
                         <v-row no-gutters class="pt-2 px-2">
@@ -275,7 +288,7 @@
                             <p class="mb-2">Gender:</p>
                           </v-col>
                           <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                            <p class="mb-2"><strong>Female</strong></p>
+                            <p class="mb-2"><strong>{{ this.demographics.gender }}</strong></p>
                           </v-col>
                         </v-row>
                       </v-card>
@@ -433,10 +446,23 @@ export default {
       completedAlertSuccess: false,
       completedAlertFailure: false,
       completedAlertWarning: false,
+      notAPenError: false,
       failedForm: {
         failureReason: null
       },
-      penRequestId: null
+      penRequestId: 123456789,
+      penSearchId: null,
+      demographics: {
+        legalFirst: null,
+        legalMiddle: null,
+        legalLast: null,
+        usualFirst: null,
+        usualMiddle: null,
+        usualLast: null,
+        dob: null,
+        gender: null
+      },
+      enableCompleteButton: false
     };
   },
   computed: {
@@ -522,8 +548,61 @@ export default {
           console.log(error);
         });
     },
+    validatePen() {
+      this.demographics.legalFirst = null;
+      this.demographics.legalMiddle = null;
+      this.demographics.legalLast = null;
+      this.demographics.usualFirst = null;
+      this.demographics.usualMiddle = null;
+      this.demographics.usualLast = null;
+      this.demographics.dob = null;
+      this.demographics.gender = null;
+      this.enableCompleteButton = false;
+      if(this.penSearchId) {
+        if (this.penSearchId.length === 9) {
+          if (this.checkDigit()) {
+            this.searchByPen();
+          } else {
+            this.notAPenError = true;
+          }
+        }
+      }
+    },
+    checkDigit() {
+      const penDigits = [];
+      for(let i = 0; i < this.penSearchId.length; i++) {
+        penDigits[i] = parseInt(this.penSearchId.charAt(i), 10);
+      }
+      const S1 = penDigits.slice(0,-1).filter((element,index) => {return index % 2 === 0;}).reduce((a,b) => a+b,0);
+      const A = parseInt(penDigits.slice(0,-1).filter((element,index) => {return index % 2 === 1;}).join(''), 10);
+      const B = 2 * A;
+      let S2 = B.toString().split('').map(Number).reduce(function (a, b) {return a + b;}, 0);
+      const S3 = S1 + S2;
+      if(S3 % 10 === 0) {
+        return this.penSearchId === 0;
+      }
+      return penDigits.pop() === (10 - (S3%10));
+    },
+    searchByPen() {
+      ApiService.apiAxios
+        .get(Routes.SEARCH_BY_PEN + '/' + this.penSearchId)
+        .then(response => {
+          this.demographics.legalFirst = response.data.legalFirst;
+          this.demographics.legalMiddle = response.data.legalMiddle;
+          this.demographics.legalLast = response.data.legalLast;
+          this.demographics.usualFirst = response.data.legalFirst;
+          this.demographics.usualMiddle = response.data.usualMiddle;
+          this.demographics.usualLast = response.data.usualLast;
+          this.demographics.dob = response.data.dob;
+          this.demographics.gender = response.data.gender;
+          this.enableCompleteButton = true;
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     backToList() {
-      this.penRequestId = null;
+      this.penRequestId = '';
       this.$store.state['penRequest'].selectedRequest = null;
     },
     prepPut() {
