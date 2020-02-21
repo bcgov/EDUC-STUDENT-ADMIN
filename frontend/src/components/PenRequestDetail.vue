@@ -587,14 +587,7 @@ export default {
       ApiService.apiAxios
         .get(Routes.SEARCH_BY_PEN + '/' + this.penSearchId)
         .then(response => {
-          this.demographics.legalFirst = response.data.legalFirst;
-          this.demographics.legalMiddle = response.data.legalMiddle;
-          this.demographics.legalLast = response.data.legalLast;
-          this.demographics.usualFirst = response.data.legalFirst;
-          this.demographics.usualMiddle = response.data.usualMiddle;
-          this.demographics.usualLast = response.data.usualLast;
-          this.demographics.dob = response.data.dob;
-          this.demographics.gender = response.data.gender;
+          this.demographics = response.data;
           this.enableCompleteButton = true;
         })
         .catch(error => {
