@@ -29,6 +29,23 @@ const utils = {
   getUser(req) {
     const thisSession = req.session;
     return jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
+  },
+  saveSession(req, res, penRequest) {
+    req['session'].penRequest = Object.assign({},penRequest);
+    //req['session'].save();
+  },
+  formatDate(date) {
+    if(date && (date.length === 8)) {
+      const year = date.substring(0, 4);
+      const month = date.substring(4, 6);
+      const day = date.substring(6, 8);
+
+      return new Date(year, month - 1, day);
+    }
+    else {
+      log.error('Invalid date received from VMS. Using null instead. Check the data.');
+      return null;
+    }
   }
 };
 

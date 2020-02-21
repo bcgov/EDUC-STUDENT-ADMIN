@@ -5,46 +5,8 @@ const router = express.Router();
 const axios = require('axios');
 const auth = require('../components/auth');
 const utils = require('../components/utils');
-const cache = require('memory-cache');
+
 const log = require('npmlog');
-
-let memCache = new cache.Cache();
-let cacheMiddleware = () => {
-  return (req, res, next) => {
-    let key =  '__express__' + req.originalUrl || req.url;
-    let cacheContent = memCache.get(key);
-    if(cacheContent){
-      res.send( cacheContent );
-      
-    }else{
-      res.sendResponse = res.send;
-      res.send = (body) => {
-        memCache.put(key,body);
-        res.sendResponse(body);
-      };
-      next();
-    }
-  };
-};
-router.get('/codes/statuses', passport.authenticate('jwt', {session: false}), auth.isValidAdminToken, cacheMiddleware(),
-  async (req, res) => {
-    try{
-      const token = utils.getBackendToken(req);
-      axios.defaults.headers['common']['Authorization'] = `Bearer ${token}`;
-      const response = await axios.get(config.get('server:statusCodeURL'));
-
-      if(response.status >= 200 && response.status < 300){
-        return res.status(200).json(response.data);
-      }
-      log.error('Invalid status code received from pen-request-api.  Check pen-request-api logs.');
-      return res.status(response.status).json();
-    } catch(e) {
-      log.error('Error occurred while attempting to GET pen request status codes.');
-      log.error(e);
-      return res.status(500);
-    }
-  }
-);
 
 router.post('/:id/comments', passport.authenticate('jwt', {session: false}), auth.isValidAdminToken,
   async (req, res) => {
@@ -159,7 +121,7 @@ router.put('/',
       const penRetrievalResponse = await axios.put(config.get('server:penRequestURL'), penRequest);
 
       if(penRetrievalResponse.status >= 200 && penRetrievalResponse.status < 300){
-        req['session'].penRequest = Object.assign({},penRequest);
+        utils.saveSession(req, res, penRequest);
         delete penRetrievalResponse['digitalID'];
         return res.status(200).json(penRetrievalResponse.data);
       }
@@ -220,7 +182,7 @@ router.get('/:id', passport.authenticate('jwt', {session: false}), auth.isValidA
       const penRetrievalResponse = await axios.get(config.get('server:penRequestURL') + '/' + req.params.id);
 
       if(penRetrievalResponse.status >= 200 && penRetrievalResponse.status < 300){
-        req['session'].penRequest = Object.assign({},penRetrievalResponse.data);
+        utils.saveSession(req, res, penRetrievalResponse.data);
         delete penRetrievalResponse.data['digitalID'];
         return res.status(200).json(penRetrievalResponse.data);
       }
@@ -237,7 +199,6 @@ router.post('/update-and-email', passport.authenticate('jwt', {session: false}),
   async  (req, res) => {
 
     let thisSession = req['session'];
-
     const penRequest = req.body.penRetrievalRequest;
 
     //Check that request stored in session is valid. This is used to reinsert the digitalId
@@ -263,7 +224,7 @@ router.post('/update-and-email', passport.authenticate('jwt', {session: false}),
         axios.defaults.headers['common']['Authorization'] = `Bearer ${token}`;
         axios.put(config.get('server:penRequestURL'), penRequest)
           .then(penResponse => {
-            req['session'].penRequest = Object.assign({},penRequest);
+            utils.saveSession(req, res, penRequest);
             delete penResponse['digitalID'];
             let emailBody = { emailAddress: penRequest['email'] };
             if(req.body.penEmailRequest.type.toLowerCase() === 'reject') {
@@ -296,6 +257,33 @@ router.post('/update-and-email', passport.authenticate('jwt', {session: false}),
     }
   }
 );
+
+router.get('/complete-pen-request', passport.authenticate('jwt', {session: false}), auth.isValidAdminToken,
+  async  (req, res) => {
+
+    /*const studentBody = {
+      pen: req['session'].studentDemographics.pen,
+      legalFirstName: req['session'].studentDemographics['studGiven'],
+      legalMiddleNames: req['session'].studentDemographics['studMiddle'],
+      legalLastName: req['session'].studentDemographics['studSurname'],
+      dob: req['session'].studentDemographics['studBirth'],
+      sexCode: req['session'].studentDemographics['studSex'],
+      dataSourceCode: req['session'].penRequest.dataSourceCode,
+      usualFirstName: req['session'].studentDemographics['usualGiven'],
+      usualMiddleNames: req['session'].studentDemographics['usualMiddle'],
+      usualLastName: req['session'].studentDemographics['usualSurname'],
+      email: req['session'].penRequest.email,
+    };
+
+    req['session'].penRequest.penRequestStatusCode = 'MANUAL'
+
+    Promise.allSettled([
+      axios.post(config.get('server:studentURL'), studentBody),
+      axios.put(config.get('server:penRequestURL')),
+      axios.put(config.get('server:digitalIdURL')),
+      axios.post(config.get('server:penEmails'))
+    ]);*/
+  });
 
 
 module.exports = router;

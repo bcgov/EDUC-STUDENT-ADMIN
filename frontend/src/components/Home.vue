@@ -8,8 +8,11 @@
       </v-row>
     </article>
   </v-container>
-  <v-content v-else class="ma-5">
+  <v-content v-else-if="!this.$store.state['penRequest'].selectedRequest && isAuthenticated">
     <PenRequestsDisplay></PenRequestsDisplay>
+  </v-content>
+  <v-content v-else>
+    <PenRequestDetail></PenRequestDetail>
   </v-content>
 </template>
 
@@ -17,11 +20,13 @@
 import Login from './Login';
 import PenRequestsDisplay from './PenRequestsDisplay';
 import { mapGetters } from 'vuex';
+import PenRequestDetail from './PenRequestDetail';
 export default {
   name: 'home',
   components: {
     Login,
-    PenRequestsDisplay
+    PenRequestsDisplay,
+    PenRequestDetail
   },
   computed: {
     ...mapGetters('auth', ['isAuthenticated'])

@@ -19,11 +19,6 @@ const router = new VueRouter({
       component: Home
     },
     {
-      path: '/penrequestdetail/:id',
-      name: 'penrequestdetail',
-      component: PenRequestDetail
-    },
-    {
       path: '*',
       name: 'notfound',
       redirect: '/'

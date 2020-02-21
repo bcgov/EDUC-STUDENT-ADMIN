@@ -13,20 +13,6 @@ const {
 
 const router = express.Router();
 
-
-router.get('/', (_req, res) => {
-  res.status(200).json({
-    endpoints: [
-      '/callback',
-      '/login',
-      '/logout',
-      '/refresh',
-      '/token',
-      '/user'
-    ]
-  });
-});
-
 //provides a callback location for the auth service
 router.get('/callback',
   passport.authenticate('oidc', {
@@ -75,33 +61,32 @@ router.post('/refresh', [
   body('refreshToken').exists()
 ], async (req, res) => {
   const errors = validationResult(req);
-
   if (!errors.isEmpty()) {
     return res.status(400).json({
       errors: errors.array()
     });
   }
-  if(!req['user'].refreshToken){
-    res.redirect('/logout');
+  if(!req['user'] || !req['user'].refreshToken){
+    res.status(401).json();
   } else{
-    await auth.renew(req['user'].refreshToken);
+    await auth.renew(req['user'].refreshToken);  //need to update req.user?
     if(req['user']){
       const newUiToken = auth.generateUiToken();
-      let responseJson = {
+      const responseJson = {
         jwtFrontend: newUiToken
       };
       return res.status(200).json(responseJson);
+    } else {
+      res.status(401).json();
     }
-    res.redirect('/logout');
   }
 });
 
 //provides a jwt to authenticated users
-router.use('/token', auth.refreshJWT, (req, res) => {
-  if (req.user && req.user.jwtFrontend && req.user.refreshToken) {
+router.get('/token', auth.refreshJWT, (req, res) => {
+  if (req['user'] && req['user'].jwtFrontend && req['user'].refreshToken) {
     const responseJson = {
-      _json: { displayName: req.user._json['idir_username'], accountType: req.user._json.accountType },
-      jwtFrontend: req.user.jwtFrontend
+      jwtFrontend: req['user'].jwtFrontend
     };
     res.status(200).json(responseJson);
   } else {
@@ -111,9 +96,8 @@ router.use('/token', auth.refreshJWT, (req, res) => {
   }
 });
 
-router.use('/user',  passport.authenticate('jwt', {session: false}), (req, res) => {
-  const sessID = req.sessionID;
-  const thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
+router.get('/user',  passport.authenticate('jwt', {session: false}), (req, res) => {
+  const thisSession = req['session'];
   const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
   const userName = {
     userName: userToken['idir_username'],
