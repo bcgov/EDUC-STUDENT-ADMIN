@@ -22,6 +22,7 @@
     "@babel/polyfill": "^7.8.3",
     "@babel/preset-env": "7.3.4",
     "@fortawesome/fontawesome-free": "5.11.2",
+    "@js-joda/core": "^2.0.0",
     "axios": "^0.19.1",
     "axios-mock-adapter": "1.17.0",
     "chromedriver": "^76.0.0",
@@ -41,8 +42,8 @@
     "testcafe": "1.6.0",
     "vue": "^2.6.11",
     "vue-clipboard2": "^0.3.1",
-    "vue-router": "^3.1.5",
     "vue-quick-chat": "^1.0.9",
+    "vue-router": "^3.1.5",
     "vuetify": "^2.2.4",
     "vuex": "^3.1.2"
   },
