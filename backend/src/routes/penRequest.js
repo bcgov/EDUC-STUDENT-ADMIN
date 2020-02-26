@@ -20,7 +20,7 @@ router.post('/:id/comments', passport.authenticate('jwt', {session: false}, unde
         staffMemberIDIRGUID: userToken['preferred_username'].toUpperCase(),
         staffMemberName: userToken['idir_username'],
         commentContent: req.body.content,
-        commentTimestamp: req.body.timestamp
+        commentTimestamp: req.body.timestamp.length>23?req.body.timestamp.substring(0,23):req.body.timestamp
       };
 
       axios.defaults.headers['common']['Authorization'] = `Bearer ${token}`;
