@@ -89,7 +89,7 @@ export default {
   methods: {
     onMessageSubmit: function (message) {
       ApiService.apiAxios
-        .post(Routes.PEN_REQUEST_ENDPOINT + '/' + this.$route.params.id + '/comments', message)
+        .post(Routes.PEN_REQUEST_ENDPOINT + '/' + this.$store.state['penRequest'].selectedRequest + '/comments', message)
         .then(() => {
           this.messages.push(message);
         })
