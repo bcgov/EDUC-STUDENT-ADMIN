@@ -589,8 +589,8 @@ export default {
       const B = 2 * A;
       let S2 = B.toString().split('').map(Number).reduce(function (a, b) {return a + b;}, 0);
       const S3 = S1 + S2;
-      if(S3 % 10 === 0) {
-        return this.penSearchId === 0;
+      if((S3 % 10) === 0) {
+        return penDigits.pop() === 0;
       }
       return penDigits.pop() === (10 - (S3%10));
     },
