@@ -44,12 +44,20 @@
             <v-data-table
               :headers="headers"
               :items="filteredResults"
-              :sort-by="['initialSubmitDate']"
+              :sort-by.sync="currentSort"
+              :sort-desc.sync="currentSortDir"
               :items-per-page="15"
               :loading="loadingTable"
               @click:row="viewRequestDetails"
               class="fill-height">
               <template v-slot:header.initialSubmitDate="{ header }">
+                <th id="submit-date-header" :class="['table-header ', header.value === currentSort ? 'active' : '']" @click="sort(header.value)">
+                  {{ header.text }}
+                  <em
+                          @click="column.order = column.order * (-1)"
+                          :class="['v-icon v-data-table-header__icon fas ', currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === currentSort ? 'active' : '']">
+                  </em>
+                </th>
                 <v-menu
                   ref="dateMenu"
                   v-model="dateMenu"
@@ -62,12 +70,11 @@
                   <template v-slot:activator="{ on }">
                     <v-text-field
                       v-model="initialSubmitDate"
-                      v-bind:label="header.text"
                       outlined
                       dense
-                      placeholder=" "
                       readonly
                       v-on="on"
+                      class="header-text"
                     ></v-text-field>
                   </template>
                   <v-date-picker v-model="initialSubmitDate" no-title range>
@@ -78,16 +85,44 @@
                 </v-menu>
               </template>
               <template v-slot:header.penRequestStatusCode.label="{ header }">
-                <v-text-field v-model="status" v-bind:label="header.text" placeholder=" " outlined dense></v-text-field>
+                <th id="status-header" :class="['table-header ', header.value === currentSort ? 'active' : '']" @click="sort(header.value)">
+                  {{ header.text }}
+                  <em
+                          @click="column.order = column.order * (-1)"
+                          :class="['v-icon v-data-table-header__icon fas ', currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === currentSort ? 'active' : '']">
+                  </em>
+                </th>
+                <v-text-field v-model="status" class="header-text" outlined dense>></v-text-field>
               </template>
               <template v-slot:header.legalLastName="{ header }">
-                <v-text-field v-model="legalLastName" v-bind:label="header.text" placeholder=" " outlined dense></v-text-field>
+                <th id="last-name-header" :class="['table-header ', header.value === currentSort ? 'active' : '']" @click="sort(header.value)">
+                  {{ header.text }}
+                  <em
+                    @click="column.order = column.order * (-1)"
+                    :class="['v-icon v-data-table-header__icon fas ', currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === currentSort ? 'active' : '']">
+                  </em>
+                </th>
+                <v-text-field v-model="legalLastName" class="header-text" outlined dense></v-text-field>
               </template>
               <template v-slot:header.legalFirstName="{ header }">
-                <v-text-field v-model="legalFirstName" v-bind:label="header.text" placeholder=" " outlined dense></v-text-field>
+                <th id="first-name-header" :class="['table-header ', header.value === currentSort ? 'active' : '']" @click="sort(header.value)">
+                  {{ header.text }}
+                  <em
+                          @click="column.order = column.order * (-1)"
+                          :class="['v-icon v-data-table-header__icon fas ', currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === currentSort ? 'active' : '']">
+                  </em>
+                </th>
+                <v-text-field v-model="legalFirstName" class="header-text" outlined dense></v-text-field>
               </template>
               <template v-slot:header.reviewer="{ header }">
-                <v-text-field v-model="reviewer" v-bind:label="header.text" placeholder=" " outlined dense></v-text-field>
+                <th id="reviewer-header" :class="['table-header ', header.value === currentSort ? 'active' : '']" @click="sort(header.value)">
+                  {{ header.text }}
+                  <em
+                          @click="column.order = column.order * (-1)"
+                          :class="['v-icon v-data-table-header__icon fas ', currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === currentSort ? 'active' : '']">
+                  </em>
+                </th>
+                <v-text-field v-model="reviewer" class="header-text" outlined dense></v-text-field>
               </template>
               <template v-slot:item.initialSubmitDate="{ item }">
                 <span v-if="item.initialSubmitDate == null"></span>
@@ -105,8 +140,8 @@
 </template>
 
 <script>
-import ApiService from '@/common/apiService.js';
-import { Routes } from '@/utils/constants';
+import ApiService from '../common/apiService';
+import { Routes } from '../utils/constants';
 export default {
   data () {
     return {
@@ -177,7 +212,9 @@ export default {
       loadingTable: true,
       loadingSelect: true,
       errored: false,
-      comboboxKey:0
+      comboboxKey:0,
+      currentSort:'initialSubmitDate',
+      currentSortDir: false
     };
   },
   mounted() {
@@ -203,7 +240,7 @@ export default {
   },
   computed: {
     filteredResults() {
-      if(!Array.isArray(this.defaultSelected) || !this.defaultSelected.length || !Array.isArray(this.penRequests) || !this.penRequests.length) {return this.penRequests;}   
+      if(!Array.isArray(this.defaultSelected) || !this.defaultSelected.length || !Array.isArray(this.penRequests) || !this.penRequests.length) {return this.penRequests;}
       return this.penRequests.filter((request) => this.defaultSelected.includes(request.penRequestStatusCode.label));
     }
   },
@@ -241,6 +278,12 @@ export default {
       /*
       const id = request['penRequestID'];
       this.$router.push({name: 'penrequestdetail', params: { id } });*/
+    },
+    sort(sortHeader) {
+      if(sortHeader === this.currentSort) {
+        this.currentSortDir = !this.currentSortDir;
+      }
+      this.currentSort = sortHeader;
     }
   },
 };
@@ -268,5 +311,23 @@ export default {
   }
   .theme--light  .v-label {
     color: white;
+  }
+  .header-text {
+    padding-top: 0;
+  }
+  th {
+    border: none !important;
+    padding: 0 !important;
+  }
+  .active {
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+  .table-header {
+    cursor:pointer;
+    padding-top: 10px;
+    margin-bottom: 0;
+  }
+  .v-icon {
+    font-size: 18px;
   }
 </style>

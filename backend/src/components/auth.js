@@ -88,9 +88,7 @@ const auth = {
   },
 
   isValidAdminToken(req, res, next) {
-    const sessID = req.sessionID;
-
-    const thisSession = JSON.parse(req.sessionStore.sessions[sessID]);
+    const thisSession = req['session'];
     try{
       const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
       if(userToken['realm_access'].roles['includes'](config.get('oidc:staffRole'))){

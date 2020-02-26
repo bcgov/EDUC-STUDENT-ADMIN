@@ -205,7 +205,7 @@
               <v-tab>Reject</v-tab>
               <v-tab-item>
                 <v-alert
-                        :value="completedAlertSuccess"
+                        :value="completedRequestSuccess && completedUpdateSuccess"
                         type="success"
                         dense
                         text
@@ -223,22 +223,13 @@
                   The provided PEN is not valid.
                 </v-alert>
                 <v-alert
-                        :value="completedAlertFailure"
+                        :value="completedRequestSuccess === false || completedUpdateSuccess === false"
                         type="error"
                         dense
                         text
                         dismissible
                         transition="scale-transition">
-                  PEN Request failed to update. Please contact support.
-                </v-alert>
-                <v-alert
-                        :value="completedAlertWarning"
-                        type="warning"
-                        dense
-                        text
-                        dismissible
-                        transition="scale-transition">
-                  PEN Request completed, but email to student failed. Please contact support.
+                  An error occured while attempting to complete the PEN request.  Depending on the failure, the request may be in a partially completed state. Please contact support.
                 </v-alert>
                 <v-card flat>
                   <v-row class="mx-0" justify="space-between">
@@ -251,7 +242,7 @@
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12" xl="5" lg="5" md="5">
-                      <v-btn :disabled="!enableCompleteButton" color="#38598a" justify="center" width="100%" :dark="enableCompleteButton">Provide PEN to Student</v-btn>
+                      <v-btn :disabled="!enableCompleteButton" color="#38598a" justify="center" width="100%" :dark="enableCompleteButton" @click="completeRequest">Provide PEN to Student</v-btn>
                     </v-col>
                   </v-row>
                   <v-row>
@@ -366,15 +357,6 @@
                         transition="scale-transition">
                   PEN Request updated, but email to student failed. Please contact support.
                 </v-alert>
-                <v-alert
-                  :value="rejectInvalidWarning"
-                  type="warning"
-                  dense
-                  text
-                  dismissible
-                  transition="scale-transition">
-                  You cannot reject a request that is already in rejected state.
-                </v-alert>
                 <v-card flat class="pa-3">
                   <v-form ref="form" v-model="validForm">
                     <v-card-text class="pa-0">
@@ -439,13 +421,11 @@ export default {
       rejectAlertSuccess: false,
       rejectAlertFailure: false,
       rejectAlertWarning: false,
-      rejectInvalidWarning: false,
       returnAlertSuccess: false,
       returnAlertFailure: false,
       returnAlertWarning: false,
-      completedAlertSuccess: false,
-      completedAlertFailure: false,
-      completedAlertWarning: false,
+      completedRequestSuccess: null,
+      completedUpdateSuccess:null,
       notAPenError: false,
       failedForm: {
         failureReason: null
@@ -494,6 +474,9 @@ export default {
   },
   methods: {
     returnToStudent() {
+      this.returnAlertWarning = false;
+      this.returnAlertSuccess = false;
+      this.returnAlertFailure = false;
       this.request.penRequestStatusCode = 'RETURNED';
       ApiService.apiAxios
         .post(Routes.PEN_REQUEST_UPDATE_AND_EMAIL_URL, { penRetrievalRequest: this.prepPut(), penEmailRequest: { type: 'info'}})
@@ -510,6 +493,9 @@ export default {
         });
     },
     submitReject() {
+      this.rejectAlertWarning = false;
+      this.rejectAlertSuccess = false;
+      this.rejectAlertFailure = false;
       if(this.$refs.form.validate()){
         this.request.penRequestStatusCode = 'REJECTED';
         this.request.failureReason = this.failedForm.failureReason;
@@ -522,14 +508,38 @@ export default {
           })
           .catch(error => {
             console.log(error);
-            if(error.response.status === 409)
-              this.rejectInvalidWarning=true;
-            else if(error.response.data)
+            if(error.response.data)
               this.rejectAlertWarning=true;
             else
               this.rejectAlertFailure=true;
           });
       }
+    },
+    completeRequest() {
+      this.completedRequestSuccess = null;
+      this.completedUpdateSuccess = null;
+      ApiService.apiAxios
+        .post(Routes.PEN_REQUEST_COMPLETE_REQUEST_URL)
+        .then(() => {
+          this.completedRequestSuccess = true;
+        })
+        .catch(error => {
+          console.log(error);
+          this.completedRequestSuccess = false;
+        });
+
+      this.request.penRequestStatusCode = 'MANUAL';
+      ApiService.apiAxios
+        .post(Routes.PEN_REQUEST_UPDATE_AND_EMAIL_URL, { penRetrievalRequest: this.prepPut(), penEmailRequest: { type: 'complete'}})
+        .then(response => {
+          this.request = response.data;
+          this.completedUpdateSuccess=true;
+        })
+        .catch(error => {
+          console.log(error);
+          this.completedUpdateSuccess=false;
+        });
+
     },
     claimRequest() {
       let body = this.prepPut();
@@ -549,6 +559,7 @@ export default {
         });
     },
     validatePen() {
+      this.notAPenError = false;
       this.demographics.legalFirst = null;
       this.demographics.legalMiddle = null;
       this.demographics.legalLast = null;
