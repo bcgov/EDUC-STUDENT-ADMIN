@@ -40,7 +40,7 @@ const utils = {
       const month = date.substring(4, 6);
       const day = date.substring(6, 8);
 
-      return new Date(year, month - 1, day);
+      return `${year}-${month}-${day}`;
     }
     else {
       log.error('Invalid date received from VMS. Using null instead. Check the data.');
