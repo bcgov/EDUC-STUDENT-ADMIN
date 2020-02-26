@@ -259,7 +259,7 @@ router.post('/complete-pen-request', passport.authenticate('jwt', {session: fals
       legalFirstName: req['session'].studentDemographics['studGiven'],
       legalMiddleNames: req['session'].studentDemographics['studMiddle'],
       legalLastName: req['session'].studentDemographics['studSurname'],
-      dob: req['session'].studentDemographics['studBirth'],
+      dob: req['session'].studentDemographics['dob'],
       sexCode: req['session'].studentDemographics['studSex'],
       genderCode: req['session'].studentDemographics['studSex'],
       dataSourceCode: req['session'].penRequest.dataSourceCode,
@@ -268,6 +268,7 @@ router.post('/complete-pen-request', passport.authenticate('jwt', {session: fals
       usualLastName: req['session'].studentDemographics['usualSurname'],
       email: req['session'].penRequest.email,
     };
+
     axios.get(config.get('server:studentURL'), {params: { pen: studentBody.pen }})
       .then(async studentGetResponse => {
         if(studentGetResponse.status >= 200 && studentGetResponse.status < 300) {
