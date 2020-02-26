@@ -69,7 +69,9 @@ router.post('/refresh', [
   if(!req['user'] || !req['user'].refreshToken){
     res.status(401).json();
   } else{
-    await auth.renew(req['user'].refreshToken);  //need to update req.user?
+    const newTokens = await auth.renew(req['user'].refreshToken);
+    req['user'].jwt = newTokens.jwt;
+    req['user'].refreshToken = newTokens.refreshToken;
     if(req['user']){
       const newUiToken = auth.generateUiToken();
       const responseJson = {
@@ -110,7 +112,7 @@ router.get('/user',  passport.authenticate('jwt', {session: false}), (req, res) 
   else {
     return res.status(500);
   }
-  
+
 });
 
 module.exports = router;

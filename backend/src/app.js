@@ -80,7 +80,6 @@ utils.getOidcDiscovery().then(discovery => {
       (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
       return done('No access token', null);
     }
-    console.log(profile);
     //Generate token for frontend validation
     //set access and refresh tokens
     profile.jwtFrontend = auth.generateUiToken();

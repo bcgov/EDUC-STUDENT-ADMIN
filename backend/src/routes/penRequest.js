@@ -8,7 +8,7 @@ const utils = require('../components/utils');
 
 const log = require('npmlog');
 
-router.post('/:id/comments', passport.authenticate('jwt', {session: false}), auth.isValidAdminToken,
+router.post('/:id/comments', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken,
   async (req, res) => {
     try{
       const token = utils.getBackendToken(req);
@@ -38,7 +38,7 @@ router.post('/:id/comments', passport.authenticate('jwt', {session: false}), aut
     }
   });
 
-router.get('/:id/comments', passport.authenticate('jwt', {session: false}), auth.isValidAdminToken,
+router.get('/:id/comments', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken,
   async (req, res) => {
     try{
       const token = utils.getBackendToken(req);
@@ -103,7 +103,7 @@ router.get('/:id/comments', passport.authenticate('jwt', {session: false}), auth
  * Updates a pen retrieval request
  * */
 router.put('/',
-  passport.authenticate('jwt', {session: false}),
+  passport.authenticate('jwt', {session: false}, undefined),
   auth.isValidAdminToken,
   async (req, res) => {
     try{
@@ -137,7 +137,7 @@ router.put('/',
 /*
  * Get all pen retrieval requests
  */
-router.get('/', passport.authenticate('jwt', {session: false}), auth.isValidAdminToken,
+router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken,
   async (req, res) => {
     try{
       const token = utils.getBackendToken(req);
@@ -172,7 +172,7 @@ router.get('/', passport.authenticate('jwt', {session: false}), auth.isValidAdmi
     }
   });
 
-router.get('/:id', passport.authenticate('jwt', {session: false}), auth.isValidAdminToken,
+router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken,
   async (req, res) => {
     try{
       let thisSession = req['session'];
@@ -195,7 +195,7 @@ router.get('/:id', passport.authenticate('jwt', {session: false}), auth.isValidA
     }
   });
 
-router.post('/update-and-email', passport.authenticate('jwt', {session: false}), auth.isValidAdminToken,
+router.post('/update-and-email', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken,
   async  (req, res) => {
 
     let thisSession = req['session'];
@@ -210,80 +210,129 @@ router.post('/update-and-email', passport.authenticate('jwt', {session: false}),
       log.error('Error attempting to update pen request.  The request stored in session is different from the one being updated.');
       return res.status(500).json();
     }
-    const penRequestStatusCode = thisSession.penRequest.penRequestStatusCode;
 
-    if (penRequestStatusCode) {
-      if (penRequestStatusCode.toUpperCase() !== 'REJECTED') {
-        const token = thisSession['passport'].user.jwt;
-        penRequest.digitalID = thisSession.penRequest.digitalID;
-        if(!penRequest.digitalID) {
-          log.error('Error attempting to update pen request.  The request stored in session did not have a digitalId.');
-          return res.status(500).json();
-        }
-
-        axios.defaults.headers['common']['Authorization'] = `Bearer ${token}`;
-        axios.put(config.get('server:penRequestURL'), penRequest)
-          .then(penResponse => {
-            utils.saveSession(req, res, penRequest);
-            delete penResponse['digitalID'];
-            let emailBody = { emailAddress: penRequest['email'] };
-            if(req.body.penEmailRequest.type.toLowerCase() === 'reject') {
-              emailBody.rejectionReason = req.body.penEmailRequest.message;
-            }
-            axios.post(config.get('server:penEmails') + '/' + req.body.penEmailRequest.type, emailBody)
-              .then(() => {
-                return res.status(200).json(penResponse.data);
-              })
-              .catch(error => {
-                log.error('Error calling email service.  Check the PEN-REQUEST-EMAIL-API logs.');
-                log.error(error);
-                return res.status(500).json('Error calling email service.');
-              });
-          })
-          .catch(error => {
-            log.error('Error occurred while attempting a PUT to pen request. Check pen-request-api logs.');
-            log.error(error);
-            return res.status(500).json();
-          });
-      }
-      else {
-        log.error('Cannot update or email when pen request is in REJECTED state.');
-        return res.status(409).json('Cannot update request in REJECTED status.');
-      }
-    }
-    else {
-      log.error('Error attempting to update pen request and send email. Missing penRequestStatusCode.');
+    const token = thisSession['passport'].user.jwt;
+    penRequest.digitalID = thisSession.penRequest.digitalID;
+    if(!penRequest.digitalID) {
+      log.error('Error attempting to update pen request.  The request stored in session did not have a digitalId.');
       return res.status(500).json();
     }
+
+    axios.defaults.headers['common']['Authorization'] = `Bearer ${token}`;
+    axios.put(config.get('server:penRequestURL'), penRequest)
+      .then(penResponse => {
+        utils.saveSession(req, res, penRequest);
+        delete penResponse['digitalID'];
+        let emailBody = { emailAddress: penRequest['email'] };
+        if(!req.body.penEmailRequest.type) {
+          return res.status(400).json();
+        }
+        if(req.body.penEmailRequest.type.toLowerCase() === 'reject') {
+          emailBody.rejectionReason = req.body.penEmailRequest.message;
+        }
+        else if(req.body.penEmailRequest.type.toLowerCase() === 'complete') {
+          emailBody.firstName = req['session'].studentDemographics['studGiven'];
+        }
+        axios.post(config.get('server:penEmails') + '/' + req.body.penEmailRequest.type, emailBody)
+          .then(() => {
+            return res.status(200).json(penResponse.data);
+          })
+          .catch(error => {
+            log.error('Error calling email service.  Check the PEN-REQUEST-EMAIL-API logs.');
+            log.error(error);
+            return res.status(500).json('Error calling email service.');
+          });
+      })
+      .catch(error => {
+        log.error('Error occurred while attempting a PUT to pen request. Check pen-request-api logs.');
+        log.error(error);
+        return res.status(500).json();
+      });
   }
 );
 
-router.get('/complete-pen-request', passport.authenticate('jwt', {session: false}), auth.isValidAdminToken,
+router.post('/complete-pen-request', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken,
   async  (req, res) => {
 
-    /*const studentBody = {
+    const studentBody = {
       pen: req['session'].studentDemographics.pen,
       legalFirstName: req['session'].studentDemographics['studGiven'],
       legalMiddleNames: req['session'].studentDemographics['studMiddle'],
       legalLastName: req['session'].studentDemographics['studSurname'],
       dob: req['session'].studentDemographics['studBirth'],
       sexCode: req['session'].studentDemographics['studSex'],
+      genderCode: req['session'].studentDemographics['studSex'],
       dataSourceCode: req['session'].penRequest.dataSourceCode,
       usualFirstName: req['session'].studentDemographics['usualGiven'],
       usualMiddleNames: req['session'].studentDemographics['usualMiddle'],
       usualLastName: req['session'].studentDemographics['usualSurname'],
       email: req['session'].penRequest.email,
     };
+    axios.get(config.get('server:studentURL'), {params: { pen: studentBody.pen }})
+      .then(async studentGetResponse => {
+        if(studentGetResponse.status >= 200 && studentGetResponse.status < 300) {
+          let studentResponse = null;
 
-    req['session'].penRequest.penRequestStatusCode = 'MANUAL'
+          if (Array.isArray(studentGetResponse.data) && studentGetResponse.data.length === 1) {
+            studentBody.studentID = studentGetResponse.data[0].studentID;
+            studentResponse = await axios.put(config.get('server:studentURL'), studentBody);
+          } else if (Array.isArray(studentGetResponse.data) && !studentGetResponse.data.length) {
+            studentResponse = await axios.post(config.get('server:studentURL'), studentBody);
+          } else {
+            log.error('Failed to create student record. Invalid response data from student api. Complete pen transaction will be out of sync. Student record still needs to be created.');
+            return res.status(500).json();
+          }
+          if(studentResponse['status'] >= 200 && studentResponse['status'] < 300) {
+            axios.get(config.get('server:digitalIdURL') + '/' + req['session'].penRequest.digitalID)
+              .then(digitalIdResponse => {
+                if (digitalIdResponse.data) {
+                  let digitalIdBody = digitalIdResponse.data;
+                  digitalIdBody.studentID = studentResponse['data'].studentID;
+                  delete digitalIdBody['updateUser'];
+                  delete digitalIdBody['updateDate'];
+                  delete digitalIdBody['createDate'];
 
-    Promise.allSettled([
-      axios.post(config.get('server:studentURL'), studentBody),
-      axios.put(config.get('server:penRequestURL')),
-      axios.put(config.get('server:digitalIdURL')),
-      axios.post(config.get('server:penEmails'))
-    ]);*/
+                  axios.put(config.get('server:digitalIdURL'), digitalIdBody)
+                    .then(() => {
+                      return res.status(204).json();
+                    })
+                    .catch(putDigitalIdError => {
+                      log.error('Failed to update digitalid. Complete pen transaction will be out of sync. StudentId in DigitalId record still needs to be updated.');
+                      log.error(putDigitalIdError);
+                      log.error(JSON.stringify(putDigitalIdError.response.data));
+                      return res.status(500).json();
+                    });
+                }
+              })
+              .catch(digitalIdError => {
+                log.error('Failed to get digitalid. Complete pen transaction will be out of sync. StudentId in DigitalId record still needs to be updated.');
+                log.error(digitalIdError);
+                log.error(JSON.stringify(digitalIdError.response.data));
+                return res.status(500).json();
+              });
+          } else {
+            log.error('Failed to create student record. Complete pen transaction will be out of sync. Student record still needs to be created.');
+            log.error(studentResponse['status']);
+            log.error(JSON.stringify(studentResponse['data']));
+            return res.status(500).json();
+          }
+        }
+        else {
+          log.error('Failed to get student record. Complete pen transaction will be out of sync. Student record still needs to be created.');
+          log.error(studentGetResponse.status);
+          log.error(JSON.stringify(studentGetResponse.data));
+        }
+
+      })
+      .catch(error => {
+        log.error('An error occurred attempting to complete pen request.  Complete pen transaction may be out of sync.');
+        log.error(error);
+        log.error(JSON.stringify(error.response.data));
+        return res.status(500).json();
+      });
+
+
+
   });
-
 
 module.exports = router;
