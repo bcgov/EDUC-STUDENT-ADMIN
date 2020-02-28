@@ -32,6 +32,9 @@ export default {
       if(isAdminUser){
         state.isAdmin=true;
         localStorage.setItem('isAdmin','true');
+      } else {
+        state.isAdmin=false;
+        localStorage.removeItem(('isAdmin'));
       }
     },
     setUserInfo: (state, userInf) => {
@@ -76,9 +79,7 @@ export default {
             if (response.jwtFrontend) {
               context.commit('setJwtToken', response.jwtFrontend);
             }
-            if(response.isAdminUser){
-              context.commit('setAdminUser', response.isAdminUser);
-            }
+            context.commit('setAdminUser', response.isAdminUser);
             ApiService.setAuthHeader(response.jwtFrontend);
           }
         } else {
@@ -87,9 +88,7 @@ export default {
           if (response.jwtFrontend) {
             context.commit('setJwtToken', response.jwtFrontend);
           }
-          if(response.isAdminUser){
-            context.commit('setAdminUser', response.isAdminUser);
-          }
+          context.commit('setAdminUser', response.isAdminUser);
           ApiService.setAuthHeader(response.jwtFrontend);
         }
       } catch (e) {
