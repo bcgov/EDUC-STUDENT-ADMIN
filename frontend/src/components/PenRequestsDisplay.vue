@@ -44,18 +44,17 @@
             <v-data-table
               :headers="headers"
               :items="filteredResults"
-              :sort-by.sync="currentSort"
-              :sort-desc.sync="currentSortDir"
+              :sort-by.sync="headerSortParams.currentSort"
+              :sort-desc.sync="headerSortParams.currentSortDir"
               :items-per-page="15"
               :loading="loadingTable"
               @click:row="viewRequestDetails"
               class="fill-height">
               <template v-slot:header.initialSubmitDate="{ header }">
-                <th id="submit-date-header" :class="['table-header ', header.value === currentSort ? 'active' : '']" @click="sort(header.value)">
+                <th id="submit-date-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
                   {{ header.text }}
                   <em
-                          @click="column.order = column.order * (-1)"
-                          :class="['v-icon v-data-table-header__icon fas ', currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === currentSort ? 'active' : '']">
+                          :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
                   </em>
                 </th>
                 <v-menu
@@ -69,7 +68,7 @@
                 >
                   <template v-slot:activator="{ on }">
                     <v-text-field
-                      v-model="initialSubmitDate"
+                      v-model="headerSearchParams.initialSubmitDate"
                       outlined
                       dense
                       readonly
@@ -77,52 +76,48 @@
                       class="header-text"
                     ></v-text-field>
                   </template>
-                  <v-date-picker v-model="initialSubmitDate" no-title range>
+                  <v-date-picker v-model="headerSearchParams.initialSubmitDate" no-title range>
                     <v-spacer></v-spacer>
                     <v-btn text color="primary" @click="dateMenu = false">Cancel</v-btn>
-                    <v-btn text color="primary" @click="$refs.dateMenu.save(initialSubmitDate)">OK</v-btn>
+                    <v-btn text color="primary" @click="$refs.dateMenu.save(headerSearchParams.initialSubmitDate)">OK</v-btn>
                   </v-date-picker>
                 </v-menu>
               </template>
               <template v-slot:header.penRequestStatusCode.label="{ header }">
-                <th id="status-header" :class="['table-header ', header.value === currentSort ? 'active' : '']" @click="sort(header.value)">
+                <th id="status-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
                   {{ header.text }}
                   <em
-                          @click="column.order = column.order * (-1)"
-                          :class="['v-icon v-data-table-header__icon fas ', currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === currentSort ? 'active' : '']">
+                          :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
                   </em>
                 </th>
-                <v-text-field v-model="status" class="header-text" outlined dense>></v-text-field>
+                <v-text-field v-model="headerSearchParams.status" class="header-text" outlined dense>></v-text-field>
               </template>
               <template v-slot:header.legalLastName="{ header }">
-                <th id="last-name-header" :class="['table-header ', header.value === currentSort ? 'active' : '']" @click="sort(header.value)">
+                <th id="last-name-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
                   {{ header.text }}
                   <em
-                    @click="column.order = column.order * (-1)"
-                    :class="['v-icon v-data-table-header__icon fas ', currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === currentSort ? 'active' : '']">
+                    :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
                   </em>
                 </th>
-                <v-text-field v-model="legalLastName" class="header-text" outlined dense></v-text-field>
+                <v-text-field v-model="headerSearchParams.legalLastName" class="header-text" outlined dense></v-text-field>
               </template>
               <template v-slot:header.legalFirstName="{ header }">
-                <th id="first-name-header" :class="['table-header ', header.value === currentSort ? 'active' : '']" @click="sort(header.value)">
+                <th id="first-name-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
                   {{ header.text }}
                   <em
-                          @click="column.order = column.order * (-1)"
-                          :class="['v-icon v-data-table-header__icon fas ', currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === currentSort ? 'active' : '']">
+                          :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
                   </em>
                 </th>
-                <v-text-field v-model="legalFirstName" class="header-text" outlined dense></v-text-field>
+                <v-text-field v-model="headerSearchParams.legalFirstName" class="header-text" outlined dense></v-text-field>
               </template>
               <template v-slot:header.reviewer="{ header }">
-                <th id="reviewer-header" :class="['table-header ', header.value === currentSort ? 'active' : '']" @click="sort(header.value)">
+                <th id="reviewer-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
                   {{ header.text }}
                   <em
-                          @click="column.order = column.order * (-1)"
-                          :class="['v-icon v-data-table-header__icon fas ', currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === currentSort ? 'active' : '']">
+                          :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
                   </em>
                 </th>
-                <v-text-field v-model="reviewer" class="header-text" outlined dense></v-text-field>
+                <v-text-field v-model="headerSearchParams.reviewer" class="header-text" outlined dense></v-text-field>
               </template>
               <template v-slot:item.initialSubmitDate="{ item }">
                 <span v-if="item.initialSubmitDate == null"></span>
@@ -150,10 +145,10 @@ export default {
           value: 'initialSubmitDate',
           sortable: false,
           filter: value => {
-            if(this.initialSubmitDate.length < 2) return true;
+            if(this.headerSearchParams.initialSubmitDate.length < 2) return true;
             if(!value) return false;
-            const start = this.initialSubmitDate[0].split('-');
-            const end = this.initialSubmitDate[1].split('-');
+            const start = this.headerSearchParams.initialSubmitDate[0].split('-');
+            const end = this.headerSearchParams.initialSubmitDate[1].split('-');
             const check = value.substr(0, 10).split('-');
 
             const startDate = new Date(start[2], parseInt(start[1])-1, start[0]);
@@ -167,54 +162,49 @@ export default {
           value: 'penRequestStatusCode.label',
           sortable: false,
           filter: value => {
-            if(!this.status) return true;
+            if(!this.headerSearchParams.status) return true;
             if(!value) return false;
-            return value.toUpperCase().includes(this.status.toUpperCase());
+            return value.toUpperCase().includes(this.headerSearchParams.status.toUpperCase());
           }
         },
         { text: 'Last Name',
           value: 'legalLastName',
           sortable: false,
           filter: value => {
-            if(!this.legalLastName) return true;
+            if(!this.headerSearchParams.legalLastName) return true;
             if(!value) return false;
-            return value.toUpperCase().includes(this.legalLastName.toUpperCase());
+            return value.toUpperCase().includes(this.headerSearchParams.legalLastName.toUpperCase());
           }
         },
         { text: 'First Name',
           value: 'legalFirstName',
           sortable: false,
           filter: value => {
-            if(!this.legalFirstName) return true;
+            if(!this.headerSearchParams.legalFirstName) return true;
             if(!value) return false;
-            return value.toUpperCase().includes(this.legalFirstName.toUpperCase());
+            return value.toUpperCase().includes(this.headerSearchParams.legalFirstName.toUpperCase());
           }
         },
         { text: 'Reviewer',
           value: 'reviewer',
           sortable: false,
           filter: value => {
-            if(!this.reviewer) return true;
+            if(!this.headerSearchParams.reviewer) return true;
             if(!value) return false;
-            return value.toUpperCase().includes(this.reviewer.toUpperCase());
+            return value.toUpperCase().includes(this.headerSearchParams.reviewer.toUpperCase());
           }
         },
       ],
       dateMenu: false,
-      initialSubmitDate: [],
-      status: '',
-      legalLastName: '',
-      legalFirstName: '',
-      reviewer: '',
+      headerSearchParams: {},
+      headerSortParams: {},
       statusCodes:[],
       defaultSelected:[],
       penRequests: [],
       loadingTable: true,
       loadingSelect: true,
       errored: false,
-      comboboxKey:0,
-      currentSort:'initialSubmitDate',
-      currentSortDir: false
+      comboboxKey:0
     };
   },
   mounted() {
@@ -224,7 +214,9 @@ export default {
         this.codeTable = response.data;
         this.statusCodes = this.getStatusCodes();
 
-        if(this.statusCodes.includes('First Review') && this.statusCodes.includes('Subsequent Review')){
+        if(this.$store.state['penRequest'].defaultSelected.length) {
+          this.defaultSelected = this.$store.state['penRequest'].defaultSelected;
+        } else if(this.statusCodes.includes('First Review') && this.statusCodes.includes('Subsequent Review')){
           this.defaultSelected[0] = 'First Review';
           this.defaultSelected[1] = 'Subsequent Review';
         }
@@ -237,6 +229,9 @@ export default {
         this.errored = true;
       })
       .finally(() => this.loadingSelect = false);
+
+    this.headerSearchParams = this.$store.state['penRequest'].headerSearchParams;
+    this.headerSortParams = this.$store.state['penRequest'].headerSortParams;
   },
   computed: {
     filteredResults() {
@@ -275,15 +270,13 @@ export default {
     },
     viewRequestDetails (request) {
       this.$store.state['penRequest'].selectedRequest = request['penRequestID'];
-      /*
-      const id = request['penRequestID'];
-      this.$router.push({name: 'penrequestdetail', params: { id } });*/
+      this.$store.state['penRequest'].defaultSelected = this.defaultSelected;
     },
     sort(sortHeader) {
-      if(sortHeader === this.currentSort) {
-        this.currentSortDir = !this.currentSortDir;
+      if(sortHeader === this.headerSortParams.currentSort) {
+        this.headerSortParams.currentSortDir = !this.headerSortParams.currentSortDir;
       }
-      this.currentSort = sortHeader;
+      this.headerSortParams.currentSort = sortHeader;
     }
   },
 };
