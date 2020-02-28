@@ -8,6 +8,15 @@
       </v-row>
     </article>
   </v-container>
+  <v-container fluid class="full-height" v-else-if="isAuthenticated && !isAdmin">
+
+    <!-- login article -->
+    <article name="login-banner" class="top-banner">
+      <v-row align="center" justify="center" width="100%">
+        <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12"><v-content><UnAuthorized/></v-content></v-col>
+      </v-row>
+    </article>
+  </v-container>
   <v-content v-else-if="!this.$store.state['penRequest'].selectedRequest && isAuthenticated">
     <PenRequestsDisplay></PenRequestsDisplay>
   </v-content>
@@ -21,15 +30,17 @@ import Login from './Login';
 import PenRequestsDisplay from './PenRequestsDisplay';
 import { mapGetters } from 'vuex';
 import PenRequestDetail from './PenRequestDetail';
+import UnAuthorized from './UnAuthorized';
 export default {
   name: 'home',
   components: {
     Login,
     PenRequestsDisplay,
-    PenRequestDetail
+    PenRequestDetail,
+    UnAuthorized  
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated'])
+    ...mapGetters('auth', ['isAuthenticated','isAdmin'])
   },
 };
 </script>

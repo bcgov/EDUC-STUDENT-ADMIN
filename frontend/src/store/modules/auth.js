@@ -7,6 +7,7 @@ export default {
   state: {
     acronyms: [],
     isAuthenticated: localStorage.getItem('jwtToken') !== null,
+    isAdmin: localStorage.getItem('isAdmin'),
     userInfo: false,
   },
   getters: {
@@ -14,6 +15,7 @@ export default {
     isAuthenticated: state => state.isAuthenticated,
     jwtToken: () => localStorage.getItem('jwtToken'),
     userInfo: state => state.userInfo,
+    isAdmin: state => state.isAdmin
   },
   mutations: {
     //sets Json web token and determines whether user is authenticated
@@ -24,6 +26,12 @@ export default {
       } else {
         state.isAuthenticated = false;
         localStorage.removeItem('jwtToken');
+      }
+    },
+    setAdminUser:(state, isAdminUser) =>{
+      if(isAdminUser){
+        state.isAdmin=true;
+        localStorage.setItem('isAdmin','true');
       }
     },
     setUserInfo: (state, userInf) => {
@@ -68,6 +76,9 @@ export default {
             if (response.jwtFrontend) {
               context.commit('setJwtToken', response.jwtFrontend);
             }
+            if(response.isAdminUser){
+              context.commit('setAdminUser', response.isAdminUser);
+            }
             ApiService.setAuthHeader(response.jwtFrontend);
           }
         } else {
@@ -75,6 +86,9 @@ export default {
 
           if (response.jwtFrontend) {
             context.commit('setJwtToken', response.jwtFrontend);
+          }
+          if(response.isAdminUser){
+            context.commit('setAdminUser', response.isAdminUser);
           }
           ApiService.setAuthHeader(response.jwtFrontend);
         }
