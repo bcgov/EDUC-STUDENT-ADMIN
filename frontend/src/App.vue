@@ -22,7 +22,7 @@ export default {
     ...mapGetters('auth', ['getJwtToken']),
     ...mapGetters('auth', ['userInfo'])
   },
-  async mounted() {
+  async created() {
     this.$store.dispatch('auth/getJwtToken').then(() => {
       this.$store.dispatch('auth/getUserInfo');
     });

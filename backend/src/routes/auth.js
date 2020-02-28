@@ -66,6 +66,9 @@ router.post('/refresh', [
       errors: errors.array()
     });
   }
+
+
+  let isAdminUser = auth.isAdminUser(req);
   if(!req['user'] || !req['user'].refreshToken){
     res.status(401).json();
   } else{
@@ -75,7 +78,8 @@ router.post('/refresh', [
     if(req['user']){
       const newUiToken = auth.generateUiToken();
       const responseJson = {
-        jwtFrontend: newUiToken
+        jwtFrontend: newUiToken,
+        isAdminUser: isAdminUser
       };
       return res.status(200).json(responseJson);
     } else {
@@ -87,15 +91,7 @@ router.post('/refresh', [
 //provides a jwt to authenticated users
 router.get('/token', auth.refreshJWT, (req, res) => {
 
-  let isAdminUser = false;
-  const thisSession = req['session'];
-  if(thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt){
-    const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
-    if(userToken && userToken.realm_access && userToken.realm_access.roles
-      && userToken.realm_access.roles.indexOf('STUDENT_ADMIN') !== -1){
-      isAdminUser = true;
-    }
-  }
+  let isAdminUser = auth.isAdminUser(req);
 
   if (req['user'] && req['user'].jwtFrontend && req['user'].refreshToken) {
     const responseJson = {

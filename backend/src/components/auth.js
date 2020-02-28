@@ -119,6 +119,17 @@ const auth = {
     const uiToken = jsonwebtoken.sign({}, privateKey, signOptions);
     log.verbose('Generated JWT', uiToken);
     return uiToken;
+  },
+  isAdminUser(req){
+    const thisSession = req['session'];
+    if(thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt){
+      const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
+      if(userToken && userToken.realm_access && userToken.realm_access.roles
+        && userToken.realm_access.roles.indexOf('STUDENT_ADMIN') !== -1){
+        return  true;
+      }
+    }
+    return false;
   }
 };
 
