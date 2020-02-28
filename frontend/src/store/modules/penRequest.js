@@ -1,5 +1,17 @@
 export default {
   state: {
-    selectedRequest: null
+    selectedRequest: null,
+    headerSearchParams: {
+      initialSubmitDate: [],
+      status: '',
+      legalLastName: '',
+      legalFirstName: '',
+      reviewer: '',
+    },
+    headerSortParams: {
+      currentSort:'initialSubmitDate',
+      currentSortDir: false
+    },
+    defaultSelected:[]
   }
 };
