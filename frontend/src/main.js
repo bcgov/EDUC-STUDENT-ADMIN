@@ -3,9 +3,18 @@ import vuetify from './plugins/vuetify';
 import App from './App';
 import router from './router';
 import store from './store';
-
+import IdleVue from 'idle-vue';
 Vue.config.productionTip = false;
 
+const eventsHub = new Vue();
+
+Vue.use(IdleVue, {
+  eventEmitter: eventsHub,
+  store,
+  idleTime: process.env.VUE_APP_IDLE_TIMEOUT, // 3 seconds
+  startAtIdle: false
+});
+console.log('process.env.idleTimeOut :: '+process.env.VUE_APP_IDLE_TIMEOUT);
 new Vue({
   vuetify,
   router,
