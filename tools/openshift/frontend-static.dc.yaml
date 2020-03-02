@@ -63,6 +63,9 @@ objects:
             successThreshold: 1
             timeoutSeconds: 1
           resources: {}
+          env:
+          - name: TZ
+            value: "America/Vancouver"
         volumes:
         - name: tls-certs
           secret:
