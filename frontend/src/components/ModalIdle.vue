@@ -13,15 +13,9 @@ export default {
     };
   },
   mounted() {
-    this.logout();
     window.location = document.getElementById('logout_href').href;
   },
   methods: {
-    logout() {
-      this.$store.commit('auth/setJwtToken');
-      this.$store.commit('auth/setRefreshToken');
-      this.$store.commit('auth/setAdminUser',false);
-    }
   }
 
 };
