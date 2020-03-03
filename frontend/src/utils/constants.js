@@ -5,6 +5,7 @@ const demographicRoot = baseRoot + '/studentDemographics';
 let object = {
   LOGIN: authRoot + '/login',
   LOGOUT: authRoot + '/logout',
+  SESSION_EXPIRED: authRoot + '/logout?sessionExpired=true',
   REFRESH: authRoot + '/refresh',
   TOKEN: authRoot + '/token',
   USER: authRoot + '/user',

@@ -37,21 +37,40 @@ router.get('/login', passport.authenticate('oidc', {
 
 //removes tokens and destroys session
 router.get('/logout', async (req, res) => {
-  if(req.user.jwt){
+  if(req.user && req.user.jwt){
     const token = req.user.jwt;
     req.logout();
     req.session.destroy();
-    res.redirect(config.get('logoutEndpoint') + '?id_token_hint=' + token + '&post_logout_redirect_uri=' + config.get('server:frontend'));
+    let siteMinderRetUrl;
+    if(req.query.sessionExpired){
+      siteMinderRetUrl = encodeURIComponent(config.get('logoutEndpoint') + '?id_token_hint=' + token + '&post_logout_redirect_uri=' + config.get('server:frontend')+'/session-expired');
+    }else {
+      siteMinderRetUrl = encodeURIComponent(config.get('logoutEndpoint') + '?id_token_hint=' + token + '&post_logout_redirect_uri=' + config.get('server:frontend')+'/logout');
+    }
+    const siteMinderLogoutUrl = config.get('siteMinder_logout_endpoint');
+    res.redirect(`${siteMinderLogoutUrl}${siteMinderRetUrl}`);
+
   } else {
-    const refresh = await auth.renew(req.user.refreshToken);
     if(req.user){
+      const refresh = await auth.renew(req.user.refreshToken);
       req.logout();
       req.session.destroy();
-      res.redirect(config.get('logoutEndpoint') + '?id_token_hint=' + refresh.jwt + '&post_logout_redirect_uri=' + config.get('server:frontend'));
+      let siteMinderRetUrl;
+      if(req.query.sessionExpired){
+        siteMinderRetUrl = encodeURIComponent(config.get('logoutEndpoint') + '?id_token_hint=' + refresh.jwt + '&post_logout_redirect_uri=' + config.get('server:frontend')+'/session-expired');
+      }else {
+        siteMinderRetUrl = encodeURIComponent(config.get('logoutEndpoint') + '?id_token_hint=' + refresh.jwt + '&post_logout_redirect_uri=' + config.get('server:frontend')+'/logout');
+      }
+      const siteMinderLogoutUrl = config.get('siteMinder_logout_endpoint');
+      res.redirect(`${siteMinderLogoutUrl}${siteMinderRetUrl}`);
     } else{
       req.logout();
       req.session.destroy();
-      res.redirect(config.get('server:frontend'));
+      if(req.query.sessionExpired){
+        res.redirect(config.get('server:frontend')+'/session-expired');
+      }else {
+        res.redirect( config.get('server:frontend')+'/logout');
+      }
     }
   }
 });
@@ -92,7 +111,6 @@ router.post('/refresh', [
 router.get('/token', auth.refreshJWT, (req, res) => {
 
   let isAdminUser = auth.isAdminUser(req);
-
   if (req['user'] && req['user'].jwtFrontend && req['user'].refreshToken) {
     const responseJson = {
       jwtFrontend: req['user'].jwtFrontend,

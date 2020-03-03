@@ -2,8 +2,9 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 
 import Home from './components/Home.vue';
-import PenRequestDetail from './components/PenRequestDetail.vue';
 import moment from 'moment';
+import Logout from './components/Logout';
+import SessionExpired from './components/SessionExpired';
 
 Vue.prototype.moment = moment;
 
@@ -17,6 +18,16 @@ const router = new VueRouter({
       path: '/',
       name: 'home',
       component: Home
+    },
+    {
+      path: '/logout',
+      name: 'logout',
+      component: Logout
+    },
+    {
+      path: '/session-expired',
+      name: 'session-expired',
+      component: SessionExpired
     },
     {
       path: '*',
