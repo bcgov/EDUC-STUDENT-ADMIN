@@ -11,10 +11,9 @@ const eventsHub = new Vue();
 Vue.use(IdleVue, {
   eventEmitter: eventsHub,
   store,
-  idleTime: process.env.VUE_APP_IDLE_TIMEOUT, // 3 seconds
+  idleTime: process.env.VUE_APP_IDLE_TIMEOUT_IN_MILLIS,
   startAtIdle: false
 });
-console.log('process.env.idleTimeOut :: '+process.env.VUE_APP_IDLE_TIMEOUT);
 new Vue({
   vuetify,
   router,
