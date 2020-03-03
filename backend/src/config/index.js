@@ -12,6 +12,7 @@ nconf.argv()
 nconf.defaults({
   environment: env,
   logoutEndpoint: process.env.KC_DOMAIN + '/protocol/openid-connect/logout',
+  siteMinder_logout_endpoint: process.env.SITEMINDER_LOGOUT_ENDPOINT,
   server: {
     frontend: process.env.SERVER_FRONTEND,
     backend: process.env.SERVER_FRONTEND + '/api',

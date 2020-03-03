@@ -30,7 +30,7 @@
             </v-chip>
           </template>
           <v-list dark color="#003366">
-            <v-list-item id="logout_button" @click="clearStorage" :href='routes.LOGOUT'><v-list-item-title>Logout</v-list-item-title></v-list-item>
+            <v-list-item id="logout_button" :href='routes.LOGOUT'><v-list-item-title>Logout</v-list-item-title></v-list-item>
           </v-list>
         </v-menu>
 
@@ -62,10 +62,6 @@ export default {
     }
   },
   methods: {
-    clearStorage() {
-      this.$store.commit('auth/setJwtToken');
-      this.$store.commit('auth/setRefreshToken');
-    }
   }
 };
 </script>

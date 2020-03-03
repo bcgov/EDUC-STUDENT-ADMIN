@@ -34,26 +34,22 @@ export default {
     });
   },
   mounted() {
-    window.addEventListener('beforeunload', function(e){
+    /* window.addEventListener('beforeunload', function(e){
       this.closeSessionOnBrowserClose(e);
-    });
+    });*/
   },
   methods:{
-    closeSessionOnBrowserClose(event){
-      alert(123);
+    /*closeSessionOnBrowserClose(event){
+        event.
       if(this.$store.state.isAuthenticated){
-        event.preventDefault();
-        e.returnValue = '';
-        alert(234);
         this.$store.commit('auth/setJwtToken');
         this.$store.commit('auth/setRefreshToken');
         this.$store.commit('auth/setAdminUser',false);
         window.location = document.getElementById('logout_href').href;
-        alert(345);
         return null;
       }
       return null;
-    }
+    }*/
   }
 
 };
