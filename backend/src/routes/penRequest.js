@@ -110,6 +110,8 @@ router.put('/',
       let thisSession = req['session'];
       const token = thisSession['passport'].user.jwt;
       const penRequest = req.body;
+      delete penRequest.dataSourceCode;
+      delete penRequest.penRequestStatusCodeLabel;
 
       if(!thisSession.penRequest) {
         log.error('Error attempting to update pen request.  There is no pen request stored in session.');
@@ -208,6 +210,8 @@ router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), au
                   }
                 });
               }
+              utils.saveSession(req, res, penRetrievalResponse.data);
+              delete penRetrievalResponse.data['digitalID'];
               return res.status(200).json(penRetrievalResponse.data);
             })
             .catch(digitalIdError => {
@@ -233,6 +237,8 @@ router.post('/update-and-email', passport.authenticate('jwt', {session: false}, 
 
     let thisSession = req['session'];
     const penRequest = req.body.penRetrievalRequest;
+    delete penRequest.dataSourceCode;
+    delete penRequest.penRequestStatusCodeLabel;
 
     //Check that request stored in session is valid. This is used to reinsert the digitalId
     if(!thisSession.penRequest) {
