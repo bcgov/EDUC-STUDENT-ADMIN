@@ -4,8 +4,11 @@ const axios = require('axios');
 const config = require('../config/index');
 const jsonwebtoken = require('jsonwebtoken');
 const log = require('npmlog');
+const cache = require('memory-cache');
+const { ServiceError } = require('./error');
 
 let discovery = null;
+let memCache = new cache.Cache();
 
 const utils = {
   // Returns OIDC Discovery values
@@ -45,6 +48,29 @@ const utils = {
     else {
       log.error('Invalid date received from VMS. Using null instead. Check the data.');
       return null;
+    }
+  },
+  //keys = ['identityTypeCodes', 'penStatusCodes']
+  getCodeTable(key, url) {
+    try {
+      let cacheContent = memCache.get(key);
+      if (cacheContent) {
+        return cacheContent;
+      } else {
+        return axios.get(url)
+          .then(response => {
+            memCache.put(key, response.data);
+            return response.data;
+          })
+          .catch(error => {
+            log.error('Error attempting to get status codes from digitalId-api.');
+            log.error(error);
+            log.error(JSON.stringify(error.response.data));
+            return null;
+          });
+      }
+    } catch (e) {
+      throw new ServiceError('getCodeTable error', e);
     }
   }
 };

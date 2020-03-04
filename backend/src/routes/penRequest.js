@@ -177,17 +177,50 @@ router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), au
     try{
       let thisSession = req['session'];
       const userToken = thisSession['passport'].user.jwt;
-
       axios.defaults.headers['common']['Authorization'] = `Bearer ${userToken}`;
-      const penRetrievalResponse = await axios.get(config.get('server:penRequestURL') + '/' + req.params.id);
 
-      if(penRetrievalResponse.status >= 200 && penRetrievalResponse.status < 300){
-        utils.saveSession(req, res, penRetrievalResponse.data);
-        delete penRetrievalResponse.data['digitalID'];
-        return res.status(200).json(penRetrievalResponse.data);
-      }
-      log.error('Invalid status code received from pen-request-api. Check pen-request-api logs');
-      return res.status(500).json();
+      Promise.all([
+        axios.get(config.get('server:penRequestURL') + '/' + req.params.id),
+        utils.getCodeTable('identityTypeCodes', config.get('server:digitalIdIdentityTypeCodesURL')),
+        utils.getCodeTable('penStatusCodes', config.get('server:statusCodeURL'))
+      ])
+        .then(async ([penRetrievalResponse, digitalIdIdentityTypeCodesResponse, statusCodesResponse]) => {
+          axios.get(config.get('server:digitalIdURL') + '/' + penRetrievalResponse.data['digitalID'])
+            .then(response => {
+              if(!digitalIdIdentityTypeCodesResponse) {
+                log.error('Failed to get digitalId identity type codes. Using code value instead of label.');
+                penRetrievalResponse.data['dataSourceCode'] = response.data['identityTypeCode'];
+              } else {
+                digitalIdIdentityTypeCodesResponse.some(function (item) {
+                  if (item['identityTypeCode'] === response.data['identityTypeCode']) {
+                    penRetrievalResponse.data['dataSourceCode'] = item.label;
+                    return true;
+                  }
+                });
+              }
+              if(!statusCodesResponse) {
+                log.error('Failed to get pen request status codes.  Using code value instead of label.');
+              } else {
+                statusCodesResponse.some(function (item) {
+                  if (item['penRequestStatusCode'] === penRetrievalResponse.data['penRequestStatusCode']) {
+                    penRetrievalResponse.data['penRequestStatusCodeLabel'] = item.label;
+                    return true;
+                  }
+                });
+              }
+              return res.status(200).json(penRetrievalResponse.data);
+            })
+            .catch(digitalIdError => {
+              log.error('An error occurred attempting to retrieve digitalid details from digitalid api.');
+              log.error(digitalIdError);
+              log.error(JSON.stringify(digitalIdError.response.data));
+            });
+        })
+        .catch(error => {
+          log.error('An error occurred attempting to retrieve pen request details from pen request api.');
+          log.error(error);
+          log.error(JSON.stringify(error.response.data));
+        });
     } catch(e) {
       log.error('Error occurred while attempting to GET pen request');
       log.error(e);
