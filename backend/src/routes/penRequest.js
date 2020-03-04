@@ -193,22 +193,18 @@ router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), au
                 log.error('Failed to get digitalId identity type codes. Using code value instead of label.');
                 penRetrievalResponse.data['dataSourceCode'] = response.data['identityTypeCode'];
               } else {
-                digitalIdIdentityTypeCodesResponse.some(function (item) {
-                  if (item['identityTypeCode'] === response.data['identityTypeCode']) {
-                    penRetrievalResponse.data['dataSourceCode'] = item.label;
-                    return true;
-                  }
-                });
+                let label = utils.getCodeLabel(digitalIdIdentityTypeCodesResponse, 'identityTypeCode', response.data['identityTypeCode']);
+                if(label) {
+                  penRetrievalResponse.data['dataSourceCode'] = label;
+                } else {
+                  log.error('Failed to get digitalId identity type codes. Using code value instead of label.');
+                  penRetrievalResponse.data['dataSourceCode'] = response.data['identityTypeCode'];
+                }
               }
               if(!statusCodesResponse) {
                 log.error('Failed to get pen request status codes.  Using code value instead of label.');
               } else {
-                statusCodesResponse.some(function (item) {
-                  if (item['penRequestStatusCode'] === penRetrievalResponse.data['penRequestStatusCode']) {
-                    penRetrievalResponse.data['penRequestStatusCodeLabel'] = item.label;
-                    return true;
-                  }
-                });
+                penRetrievalResponse.data['penRequestStatusCodeLabel'] = utils.getCodeLabel(statusCodesResponse, 'penRequestStatusCode', penRetrievalResponse.data['penRequestStatusCode']);
               }
               utils.saveSession(req, res, penRetrievalResponse.data);
               delete penRetrievalResponse.data['digitalID'];
@@ -260,6 +256,12 @@ router.post('/update-and-email', passport.authenticate('jwt', {session: false}, 
     axios.defaults.headers['common']['Authorization'] = `Bearer ${token}`;
     axios.put(config.get('server:penRequestURL'), penRequest)
       .then(penResponse => {
+
+        //Get new status code label
+        let statusCodes = utils.getCodeTable('penStatusCodes', config.get('server:statusCodeURL'));
+        let label = utils.getCodeLabel(statusCodes, 'penRequestStatusCode', penResponse.data.penRequestStatusCode);
+        penRequest.penRequestStatusCodeLabel = label;
+        penRequest.dataSourceCode = thisSession.penRequest.dataSourceCode;
         utils.saveSession(req, res, penRequest);
         delete penResponse['digitalID'];
         let emailBody = { emailAddress: penRequest['email'] };
@@ -274,6 +276,8 @@ router.post('/update-and-email', passport.authenticate('jwt', {session: false}, 
         }
         axios.post(config.get('server:penEmails') + '/' + req.body.penEmailRequest.type, emailBody)
           .then(() => {
+            penResponse.data.dataSourceCode = thisSession.penRequest.dataSourceCode;
+            penResponse.data.penRequestStatusCodeLabel = label;
             return res.status(200).json(penResponse.data);
           })
           .catch(error => {
