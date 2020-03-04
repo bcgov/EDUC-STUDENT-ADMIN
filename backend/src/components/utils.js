@@ -72,6 +72,16 @@ const utils = {
     } catch (e) {
       throw new ServiceError('getCodeTable error', e);
     }
+  },
+  getCodeLabel(codes, codeKey, codeValue) {
+    let label = null;
+    codes.some(function (item) {
+      if (item[codeKey] === codeValue) {
+        label = item.label;
+        return true;
+      }
+    });
+    return label;
   }
 };
 
