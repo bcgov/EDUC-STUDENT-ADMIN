@@ -7,11 +7,10 @@ import IdleVue from 'idle-vue';
 Vue.config.productionTip = false;
 
 const eventsHub = new Vue();
-console.log(process.env.VUE_APP_IDLE_TIMEOUT_IN_MILLIS);
 Vue.use(IdleVue, {
   eventEmitter: eventsHub,
   store,
-  idleTime: process.env.VUE_APP_IDLE_TIMEOUT_IN_MILLIS,
+  idleTime: 900000, // 15 minutes
   startAtIdle: false
 });
 new Vue({
