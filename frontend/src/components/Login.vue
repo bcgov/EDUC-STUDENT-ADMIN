@@ -8,7 +8,7 @@
         </v-card-text>
         <v-card-actions>
             <v-row align="center" justify="center">
-                <v-btn id="login-button" @click="clearStorage" :href="routes.LOGIN" class="ma-2" dark color='#003366'>Log In <v-icon>$sign_in</v-icon></v-btn>
+                <v-btn id="login-button" @click="clearStorage" :href="routes.LOGIN" class="ma-2" dark color='#003366'>Log In <v-icon>mdi-login</v-icon></v-btn>
             </v-row>
         </v-card-actions>
     </v-card>

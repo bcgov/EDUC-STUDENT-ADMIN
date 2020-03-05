@@ -33,7 +33,9 @@ router.get('/:id', passport.authenticate('jwt', {session: false}), auth.isValidA
         return res.status(200).json(formattedResponse);
       }
       log.error('Invalid status code received from pen-demog-api.  Check pen-demog-api logs.');
-      return res.status(response.status).json();
+      log.error(response.status);
+      log.error(response.data);
+      return res.status(500).json();
     } catch(e) {
       log.error('Error occurred while attempting to GET pen demographics.');
       log.error(e);

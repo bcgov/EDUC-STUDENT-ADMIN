@@ -16,13 +16,13 @@
                   <p class="mb-2">Status:</p>
                 </v-col>
                 <v-col v-if="this.request.penRequestStatusCode === 'INITREV' || this.request.penRequestStatusCode === 'SUBSREV'" cols="12" xl="9" lg="9" md="9" sm="9">
-                  <p class="mb-2 green--text"><strong>{{this.request.penRequestStatusCode}}</strong></p>
+                  <p class="mb-2 green--text"><strong>{{this.request.penRequestStatusCodeLabel}}</strong></p>
                 </v-col>
                 <v-col v-else-if="this.request.penRequestStatusCode === 'RETURNED'" cols="12" xl="9" lg="9" md="9" sm="9">
-                  <p class="mb-2 orange--text"><strong>{{this.request.penRequestStatusCode}}</strong></p>
+                  <p class="mb-2 orange--text"><strong>{{this.request.penRequestStatusCodeLabel}}</strong></p>
                 </v-col>
                 <v-col v-else cols="12" xl="9" lg="9" md="9" sm="9">
-                  <p class="mb-2 grey--text text--darken-1"><strong>{{this.request.penRequestStatusCode}}</strong></p>
+                  <p class="mb-2 grey--text text--darken-1"><strong>{{this.request.penRequestStatusCodeLabel}}</strong></p>
                 </v-col>
               </v-row>
               <v-row no-gutters>
@@ -162,8 +162,7 @@
                   <p class="mb-0">ID Type:</p>
                 </v-col>
                 <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                  <p v-if="this.request.dataSourceCode === 'DIRECT'" class="mb-0"><strong>BCEID</strong></p>
-                  <p v-else class="mb-0"><strong>{{ this.request.dataSourceCode }}</strong></p>
+                  <p class="mb-0"><strong>{{ this.request.dataSourceCode }}</strong></p>
                 </v-col>
               </v-row>
             </v-card>
@@ -235,21 +234,38 @@
                   An error occurred while attempting to complete the PEN request.  Depending on the failure, the request may be in a partially completed state. Please contact support.
                 </v-alert>
                 <v-card flat>
-                  <v-row class="mx-0" justify="space-between">
-                    <v-col cols="12" xl="4" lg="4" md="4">
+                  <v-row class="mx-0">
+                    <v-col cols="12" xl="4" lg="4" md="4" class="py-0">
                       <v-text-field
                               v-model="penSearchId"
                               label="PEN:"
                               clearable
+                              class="pt-0"
                               @input="validatePen"
                       ></v-text-field>
                     </v-col>
-                    <v-col cols="12" xl="5" lg="5" md="5">
-                      <v-btn :disabled="!enableCompleteButton" color="#38598a" justify="center" width="100%" :dark="enableCompleteButton" @click="completeRequest">Provide PEN to Student</v-btn>
+                    <v-col v-if="this.request.dataSourceCode === 'BC Services Card'" cols="12" xl="8" lg="8" md="8" align-self="top" class="py-0">
+                      <v-row>
+                        <v-col cols="2">
+                          <v-btn color="success" dark class="mr-4">
+                            <v-icon class="pa-0" large>mdi-arrow-left-bold</v-icon>
+                          </v-btn>
+                        </v-col>
+                        <v-col align-self="center">
+                          <p class="pa-0 ma-0">HERE IS SOME STUFF ABOUT STUFF</p>
+                        </v-col>
+                      </v-row>
+                    </v-col>
+                    <v-col v-else cols="12" xl="8" lg="8" md="8" align-self="center" class="py-0">
+                      <v-row>
+                        <v-col>
+                          <p class="text--darken-1 grey--text pa-0 ma-0">No auto-match performed for Basic BCeID</p>
+                        </v-col>
+                      </v-row>
                     </v-col>
                   </v-row>
                   <v-row>
-                    <v-col>
+                    <v-col class="pt-0">
                       <v-card class="mx-3">
                         <v-row no-gutters class="pt-2 px-2">
                           <v-col cols="12" xl="3" lg="3" md="3" sm="3">
@@ -288,6 +304,11 @@
                       </v-card>
                     </v-col>
                   </v-row>
+                  <v-row justify="end" class="px-3">
+                    <v-col cols="12" xl="3" lg="5" md="5" class="pt-0">
+                      <v-btn :disabled="!enableCompleteButton" color="#38598a" justify="center" width="100%" :dark="enableCompleteButton" @click="completeRequest">Provide PEN to Student</v-btn>
+                    </v-col>
+                  </v-row>
                 </v-card>
               </v-tab-item>
               <v-tab-item>
@@ -318,18 +339,22 @@
                         transition="scale-transition">
                   PEN Request status updated, but email to student failed. Please contact support.
                 </v-alert>
-                <v-card flat height="100%" class="mx-3">
-                  <v-card-text class="fill-height">
-                    <v-row>
-                      <ol>
-                        <li>Enter a message for the student in the panel above.</li>
-                        <li>Return the request with the button below.</li>
-                      </ol>
-                    </v-row>
-                    <v-row justify="end" align-content="end">
-                      <v-btn small color="#38598a" dark @click="returnToStudent">Return to Student</v-btn>
-                    </v-row>
-                  </v-card-text>
+                <v-card flat class="mx-3">
+                  <v-row>
+                    <v-card-text class="fill-height">
+                      <v-row>
+                        <ol>
+                          <li>Enter a message for the student in the discussion panel above.</li>
+                          <li>Return the request with the button below.</li>
+                        </ol>
+                      </v-row>
+                    </v-card-text>
+                  </v-row>
+                  <v-row justify="end" align-content="end">
+                    <v-col cols="12" xl="3" lg="5" md="5" class="pt-0" justify="end" align-content="end">
+                      <v-btn color="#38598a" dark justify="center" width="100%" @click="returnToStudent">Return to Student</v-btn>
+                    </v-col>
+                  </v-row>
                 </v-card>
               </v-tab-item>
               <v-tab-item>
@@ -380,8 +405,10 @@
                                 class="pa-0 ma-0"
                         ></v-textarea>
                       </v-row>
-                      <v-row justify="end" align-content="end" class="ma-0">
-                        <v-btn small color="#38598a" dark @click="submitReject">Complete</v-btn>
+                      <v-row justify="end" align-content="end">
+                        <v-col cols="12" xl="3" lg="5" md="5" class="py-0" justify="end" align-content="end">
+                          <v-btn color="#38598a" dark justify="center" width="100%" @click="submitReject">Reject</v-btn>
+                        </v-col>
                       </v-row>
                     </v-card-text>
                   </v-form>

@@ -110,6 +110,8 @@ router.put('/',
       let thisSession = req['session'];
       const token = thisSession['passport'].user.jwt;
       const penRequest = req.body;
+      delete penRequest.dataSourceCode;
+      delete penRequest.penRequestStatusCodeLabel;
 
       if(!thisSession.penRequest) {
         log.error('Error attempting to update pen request.  There is no pen request stored in session.');
@@ -177,17 +179,48 @@ router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), au
     try{
       let thisSession = req['session'];
       const userToken = thisSession['passport'].user.jwt;
-
       axios.defaults.headers['common']['Authorization'] = `Bearer ${userToken}`;
-      const penRetrievalResponse = await axios.get(config.get('server:penRequestURL') + '/' + req.params.id);
 
-      if(penRetrievalResponse.status >= 200 && penRetrievalResponse.status < 300){
-        utils.saveSession(req, res, penRetrievalResponse.data);
-        delete penRetrievalResponse.data['digitalID'];
-        return res.status(200).json(penRetrievalResponse.data);
-      }
-      log.error('Invalid status code received from pen-request-api. Check pen-request-api logs');
-      return res.status(500).json();
+      Promise.all([
+        axios.get(config.get('server:penRequestURL') + '/' + req.params.id),
+        utils.getCodeTable('identityTypeCodes', config.get('server:digitalIdIdentityTypeCodesURL')),
+        utils.getCodeTable('penStatusCodes', config.get('server:statusCodeURL'))
+      ])
+        .then(async ([penRetrievalResponse, digitalIdIdentityTypeCodesResponse, statusCodesResponse]) => {
+          axios.get(config.get('server:digitalIdURL') + '/' + penRetrievalResponse.data['digitalID'])
+            .then(response => {
+              if(!digitalIdIdentityTypeCodesResponse) {
+                log.error('Failed to get digitalId identity type codes. Using code value instead of label.');
+                penRetrievalResponse.data['dataSourceCode'] = response.data['identityTypeCode'];
+              } else {
+                let label = utils.getCodeLabel(digitalIdIdentityTypeCodesResponse, 'identityTypeCode', response.data['identityTypeCode']);
+                if(label) {
+                  penRetrievalResponse.data['dataSourceCode'] = label;
+                } else {
+                  log.error('Failed to get digitalId identity type codes. Using code value instead of label.');
+                  penRetrievalResponse.data['dataSourceCode'] = response.data['identityTypeCode'];
+                }
+              }
+              if(!statusCodesResponse) {
+                log.error('Failed to get pen request status codes.  Using code value instead of label.');
+              } else {
+                penRetrievalResponse.data['penRequestStatusCodeLabel'] = utils.getCodeLabel(statusCodesResponse, 'penRequestStatusCode', penRetrievalResponse.data['penRequestStatusCode']);
+              }
+              utils.saveSession(req, res, penRetrievalResponse.data);
+              delete penRetrievalResponse.data['digitalID'];
+              return res.status(200).json(penRetrievalResponse.data);
+            })
+            .catch(digitalIdError => {
+              log.error('An error occurred attempting to retrieve digitalid details from digitalid api.');
+              log.error(digitalIdError);
+              log.error(JSON.stringify(digitalIdError.response.data));
+            });
+        })
+        .catch(error => {
+          log.error('An error occurred attempting to retrieve pen request details from pen request api.');
+          log.error(error);
+          log.error(JSON.stringify(error.response.data));
+        });
     } catch(e) {
       log.error('Error occurred while attempting to GET pen request');
       log.error(e);
@@ -200,6 +233,8 @@ router.post('/update-and-email', passport.authenticate('jwt', {session: false}, 
 
     let thisSession = req['session'];
     const penRequest = req.body.penRetrievalRequest;
+    delete penRequest.dataSourceCode;
+    delete penRequest.penRequestStatusCodeLabel;
 
     //Check that request stored in session is valid. This is used to reinsert the digitalId
     if(!thisSession.penRequest) {
@@ -221,6 +256,12 @@ router.post('/update-and-email', passport.authenticate('jwt', {session: false}, 
     axios.defaults.headers['common']['Authorization'] = `Bearer ${token}`;
     axios.put(config.get('server:penRequestURL'), penRequest)
       .then(penResponse => {
+
+        //Get new status code label
+        let statusCodes = utils.getCodeTable('penStatusCodes', config.get('server:statusCodeURL'));
+        let label = utils.getCodeLabel(statusCodes, 'penRequestStatusCode', penResponse.data.penRequestStatusCode);
+        penRequest.penRequestStatusCodeLabel = label;
+        penRequest.dataSourceCode = thisSession.penRequest.dataSourceCode;
         utils.saveSession(req, res, penRequest);
         delete penResponse['digitalID'];
         let emailBody = { emailAddress: penRequest['email'] };
@@ -235,6 +276,8 @@ router.post('/update-and-email', passport.authenticate('jwt', {session: false}, 
         }
         axios.post(config.get('server:penEmails') + '/' + req.body.penEmailRequest.type, emailBody)
           .then(() => {
+            penResponse.data.dataSourceCode = thisSession.penRequest.dataSourceCode;
+            penResponse.data.penRequestStatusCodeLabel = label;
             return res.status(200).json(penResponse.data);
           })
           .catch(error => {
