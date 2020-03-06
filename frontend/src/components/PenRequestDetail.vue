@@ -187,10 +187,12 @@
                       :items="filteredResults"
                       sort-by="['createDate']"
                       :items-per-page="15"
-
                       class="fill-height">
                 <template v-slot:item.createDate="{ item }">
-                  <span>{{new Date(item.createDate).toISOString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
+                  <span>{{item.createDate.toString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
+                </template>
+                <template v-slot:item.fileName="{item: document}">
+                  <router-link :to="{ path: documentUrl(request.penRequestID, document) }" target="_blank">{{document.fileName}}</router-link>
                 </template>
               </v-data-table>
             </v-card>
@@ -426,7 +428,7 @@ import Chat from './Chat';
 import ApiService from '../common/apiService';
 import { Routes } from '../utils/constants';
 import { mapGetters } from 'vuex';
-
+import { humanFileSize } from '../utils/file';
 export default {
   components: {
     Chat
@@ -434,9 +436,11 @@ export default {
   data () {
     return {
       headers: [
-        { text: 'Type', value: 'createDate',  },
-        { text: 'File Name', value: 'penRequestStatusCode.label' },
-        { text: 'Size', value: 'legalLastName' },
+        { text: 'Type', value: 'documentTypeCode',  },
+        { text: 'File Name', value: 'fileName' },
+        { text: 'Upload Date/time', value: 'createDate' },
+        { text: 'Size', value: 'fileSize' },
+        { text: '', value: 'action', sortable: false }
       ],
       validForm: false,
       request: [],
@@ -457,6 +461,7 @@ export default {
       completedRequestSuccess: null,
       completedUpdateSuccess:null,
       notAPenError: false,
+      fileSizeConverter:humanFileSize,
       failedForm: {
         failureReason: null
       },
@@ -472,7 +477,8 @@ export default {
         dob: null,
         gender: null
       },
-      enableCompleteButton: false
+      enableCompleteButton: false,
+      filteredResults:[]
     };
   },
   computed: {
@@ -501,8 +507,20 @@ export default {
       .catch(error => {
         console.log(error);
       });
+    ApiService.apiAxios
+      .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.penRequestId + '/documents')
+      .then(response => {
+        console.log(response);
+        this.filteredResults = response.data;
+      })
+      .catch(error => {
+        console.log(error);
+      });
   },
   methods: {
+    documentUrl(penRequestID, document) {
+      return `${Routes.PEN_REQUEST_ENDPOINT}/${penRequestID}/documents/${document.documentID}`;
+    },
     returnToStudent() {
       this.returnAlertWarning = false;
       this.returnAlertSuccess = false;

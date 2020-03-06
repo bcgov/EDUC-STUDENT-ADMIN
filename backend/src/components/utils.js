@@ -27,11 +27,15 @@ const utils = {
 
   getBackendToken(req) {
     const thisSession = req.session;
-    return thisSession['passport'].user.jwt;
+    return thisSession && thisSession['passport']&& thisSession['passport'].user && thisSession['passport'].user.jwt;
   },
   getUser(req) {
     const thisSession = req.session;
-    return jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
+    if(thisSession && thisSession['passport']&& thisSession['passport'].user && thisSession['passport'].user.jwt) {
+      return jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
+    }else {
+      return false;
+    }
   },
   saveSession(req, res, penRequest) {
     req['session'].penRequest = Object.assign({},penRequest);
