@@ -9,7 +9,7 @@
             <v-progress-linear
                     indeterminate
                     color="blue"
-                    :active="loadingPen"
+                    :active="loadingPen || loadingClaimAction"
             ></v-progress-linear>
           </v-card>
         </v-row>
@@ -197,6 +197,11 @@
               <v-toolbar flat color="#036" class="white--text">
                 <v-toolbar-title><h2>Documents</h2></v-toolbar-title>
               </v-toolbar>
+              <v-progress-linear
+                      indeterminate
+                      color="blue"
+                      :active="loadingPen"
+              ></v-progress-linear>
               <v-data-table
                       :headers="headers"
                       :items="filteredResults"
@@ -218,6 +223,11 @@
             <v-toolbar flat color="#036" dark class="tester">
               <v-toolbar-title class="pa-0"><h2>Actions</h2></v-toolbar-title>
             </v-toolbar>
+            <v-progress-linear
+                    indeterminate
+                    color="blue"
+                    :active="loadingActionResults"
+            ></v-progress-linear>
             <v-tabs vertical>
               <v-tab>Provide PEN</v-tab>
               <v-tab>Request Info</v-tab>
@@ -440,6 +450,7 @@ import ApiService from '../common/apiService';
 import { Routes, Statuses } from '../utils/constants';
 import { mapGetters } from 'vuex';
 import { humanFileSize } from '../utils/file';
+import {LocalDateTime} from '@js-joda/core';
 export default {
   components: {
     Chat
@@ -491,6 +502,8 @@ export default {
       enableCompleteButton: false,
       loadingPen: true,
       loadingComments: true,
+      loadingActionResults: false,
+      loadingClaimAction: false,
       statusCodes: Statuses.PEN_STATUS_CODES,
       autoMatchCodes: Statuses.AUTO_MATCH_RESULT_CODES,
       filteredResults:[]
@@ -511,7 +524,10 @@ export default {
       .then(response => {
         this.request = response.data;
         this.failedForm.failureReason = response.data.failureReason;
-        this.autoPenResults = this.request.bcscAutoMatchDetails.split(' ')[0];
+
+        if(this.request.bcscAutoMatchDetails) {
+          this.autoPenResults = this.request.bcscAutoMatchDetails.split(' ')[0];
+        }
       })
       .catch(error => {
         console.log(error);
@@ -534,7 +550,6 @@ export default {
     ApiService.apiAxios
       .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.penRequestId + '/documents')
       .then(response => {
-        console.log(response);
         this.filteredResults = response.data;
       })
       .catch(error => {
@@ -546,10 +561,12 @@ export default {
       return `${Routes.PEN_REQUEST_ENDPOINT}/${penRequestID}/documents/${document.documentID}`;
     },
     returnToStudent() {
+      this.loadingActionResults = true;
       this.returnAlertWarning = false;
       this.returnAlertSuccess = false;
       this.returnAlertFailure = false;
       this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.RETURNED;
+      this.request.statusUpdateDate = LocalDateTime.now();
       ApiService.apiAxios
         .post(Routes.PEN_REQUEST_UPDATE_AND_EMAIL_URL, { penRetrievalRequest: this.prepPut(), penEmailRequest: { type: 'info'}})
         .then(response => {
@@ -562,12 +579,17 @@ export default {
             this.returnAlertWarning=true;
           else
             this.returnAlertFailure=true;
+        })
+        .finally(() => {
+          this.loadingActionResults = false;
         });
     },
     submitReject() {
+      this.loadingActionResults = true;
       this.rejectAlertWarning = false;
       this.rejectAlertSuccess = false;
       this.rejectAlertFailure = false;
+      this.request.statusUpdateDate = LocalDateTime.now();
       if(this.$refs.form.validate()){
         this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.REJECTED;
         this.request.failureReason = this.failedForm.failureReason;
@@ -584,17 +606,21 @@ export default {
               this.rejectAlertWarning=true;
             else
               this.rejectAlertFailure=true;
+          })
+          .finally(() => {
+            this.loadingActionResults = false;
           });
       }
     },
     completeRequest() {
+      this.loadingActionResults = true;
       this.completedRequestSuccess = null;
       this.completedUpdateSuccess = null;
-
-      if(this.request.bcscAutoMatchOutcome === Statuses.AUTO_MATCH_RESULT_CODES.ONE_MATCH && this.request.autoPenResults === this.penSearchId) {
+      this.request.statusUpdateDate = LocalDateTime.now();
+      if(this.request.bcscAutoMatchOutcome === Statuses.AUTO_MATCH_RESULT_CODES.ONE_MATCH && this.autoPenResults === this.penSearchId) {
         this.request.bcscAutoMatchOutcome = Statuses.AUTO_MATCH_RESULT_CODES.RIGHT_PEN;
         this.request.bcscAutoMatchDetails = 'CORRECT auto-match to: ' + this.request.bcscAutoMatchDetails;
-      } else if(this.request.bcscAutoMatchOutcome === Statuses.AUTO_MATCH_RESULT_CODES.ONE_MATCH && this.request.autoPenResults !== this.penSearchId){
+      } else if(this.request.bcscAutoMatchOutcome === Statuses.AUTO_MATCH_RESULT_CODES.ONE_MATCH && this.autoPenResults !== this.penSearchId){
         this.request.bcscAutoMatchOutcome = Statuses.AUTO_MATCH_RESULT_CODES.WRONG_PEN;
         this.request.bcscAutoMatchDetails = 'WRONG auto-match to: ' + this.request.bcscAutoMatchDetails;
       }
@@ -607,6 +633,9 @@ export default {
         .catch(error => {
           console.log(error);
           this.completedRequestSuccess = false;
+        })
+        .finally(() => {
+          this.loadingActionResults = false;
         });
 
       this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.MANUAL_MATCH;
@@ -619,10 +648,14 @@ export default {
         .catch(error => {
           console.log(error);
           this.completedUpdateSuccess=false;
+        })
+        .finally(() => {
+          this.loadingActionResults = false;
         });
 
     },
     claimRequest() {
+      this.loadingClaimAction = true;
       let body = this.prepPut();
       if(this.request.reviewer !== this.myself.name) {
         body.reviewer = this.myself.name;
@@ -637,6 +670,9 @@ export default {
         })
         .catch(error => {
           console.log(error);
+        })
+        .finally(() => {
+          this.loadingClaimAction = false;
         });
     },
     validatePen() {
@@ -676,6 +712,7 @@ export default {
       return penDigits.pop() === (10 - (S3%10));
     },
     searchByPen() {
+      this.loadingActionResults = true;
       ApiService.apiAxios
         .get(Routes.SEARCH_BY_PEN + '/' + this.penSearchId)
         .then(response => {
@@ -684,6 +721,9 @@ export default {
         })
         .catch(error => {
           console.log(error);
+        })
+        .finally(() => {
+          this.loadingActionResults = false;
         });
     },
     backToList() {
