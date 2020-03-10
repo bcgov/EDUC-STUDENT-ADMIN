@@ -305,7 +305,6 @@ router.post('/complete-pen-request', passport.authenticate('jwt', {session: fals
       dob: req['session'].studentDemographics['dob'],
       sexCode: req['session'].studentDemographics['studSex'],
       genderCode: req['session'].studentDemographics['studSex'],
-      dataSourceCode: req['session'].penRequest.dataSourceCode,
       usualFirstName: req['session'].studentDemographics['usualGiven'],
       usualMiddleNames: req['session'].studentDemographics['usualMiddle'],
       usualLastName: req['session'].studentDemographics['usualSurname'],

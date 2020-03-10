@@ -6,6 +6,11 @@
           <v-card height="100%" width="100%" elevation=0>
             <v-card-title class="pb-0 px-0">GetMyPen Request Details</v-card-title>
             <v-divider/>
+            <v-progress-linear
+                    indeterminate
+                    color="blue"
+                    :active="loadingPen"
+            ></v-progress-linear>
           </v-card>
         </v-row>
         <v-row>
@@ -15,10 +20,10 @@
                 <v-col cols="12" xl="3" lg="3" md="3" sm="3">
                   <p class="mb-2">Status:</p>
                 </v-col>
-                <v-col v-if="this.request.penRequestStatusCode === 'INITREV' || this.request.penRequestStatusCode === 'SUBSREV'" cols="12" xl="9" lg="9" md="9" sm="9">
+                <v-col v-if="this.request.penRequestStatusCode === this.statusCodes.FIRST_REVIEW || this.request.penRequestStatusCode === this.statusCodes.SECOND_REVIEW" cols="12" xl="9" lg="9" md="9" sm="9">
                   <p class="mb-2 green--text"><strong>{{this.request.penRequestStatusCodeLabel}}</strong></p>
                 </v-col>
-                <v-col v-else-if="this.request.penRequestStatusCode === 'RETURNED'" cols="12" xl="9" lg="9" md="9" sm="9">
+                <v-col v-else-if="this.request.penRequestStatusCode === this.statusCodes.RETURNED" cols="12" xl="9" lg="9" md="9" sm="9">
                   <p class="mb-2 orange--text"><strong>{{this.request.penRequestStatusCodeLabel}}</strong></p>
                 </v-col>
                 <v-col v-else cols="12" xl="9" lg="9" md="9" sm="9">
@@ -71,6 +76,11 @@
               <v-toolbar flat color="#036" class="white--text">
                 <v-toolbar-title><h2>PEN Request Data</h2></v-toolbar-title>
               </v-toolbar>
+              <v-progress-linear
+                      indeterminate
+                      color="blue"
+                      :active="loadingPen"
+              ></v-progress-linear>
               <v-row no-gutters class="pt-2 px-2">
                 <v-col cols="12" xl="3" lg="3" md="3" sm="3">
                   <p class="mb-2">Legal:</p>
@@ -172,6 +182,11 @@
               <v-toolbar flat color="#036" class="white--text">
                 <v-toolbar-title><h2>Discussion</h2></v-toolbar-title>
               </v-toolbar>
+              <v-progress-linear
+                      indeterminate
+                      color="blue"
+                      :active="loadingComments"
+              ></v-progress-linear>
               <Chat id="chat-box" :myself="myself" :participants="participants" :messages="messages"></Chat>
             </v-card>
           </v-col>
@@ -244,22 +259,18 @@
                               @input="validatePen"
                       ></v-text-field>
                     </v-col>
-                    <v-col v-if="this.request.dataSourceCode === 'BC Services Card'" cols="12" xl="8" lg="8" md="8" align-self="top" class="py-0">
+                    <v-col cols="12" xl="8" lg="8" md="8" class="py-0">
                       <v-row>
-                        <v-col cols="2">
-                          <v-btn color="success" dark class="mr-4">
+                        <v-col v-if="this.request.bcscAutoMatchOutcome === this.autoMatchCodes.ONE_MATCH" cols="2">
+                          <v-btn color="success" dark class="mr-4" @click="populateAutoMatchedPen">
                             <v-icon class="pa-0" large>mdi-arrow-left-bold</v-icon>
                           </v-btn>
                         </v-col>
                         <v-col align-self="center">
-                          <p class="pa-0 ma-0">HERE IS SOME STUFF ABOUT STUFF</p>
-                        </v-col>
-                      </v-row>
-                    </v-col>
-                    <v-col v-else cols="12" xl="8" lg="8" md="8" align-self="center" class="py-0">
-                      <v-row>
-                        <v-col>
-                          <p class="text--darken-1 grey--text pa-0 ma-0">No auto-match performed for Basic BCeID</p>
+                          <p v-if="this.request.pen || this.request.penRequestStatusCode === this.statusCodes.AUTO_MATCH || this.request.penRequestStatusCode === this.statusCodes.MANUAL_MATCH"></p>
+                          <p v-else-if="!this.request.bcscAutoMatchOutcome" class="text--darken-1 grey--text pa-0 ma-0">No auto-match performed for Basic BCeID</p>
+                          <p v-else-if="this.request.bcscAutoMatchOutcome === this.autoMatchCodes.ONE_MATCH" class="green--text pa-0 ma-0"><strong>{{ this.autoPenResults }}</strong> {{ this.request.bcscAutoMatchDetails.split(' ').slice(1).join(' ') }}</p>
+                          <p v-else class="orange--text pa-0 ma-0"><strong>{{ this.autoPenResults }}</strong> {{ this.request.bcscAutoMatchDetails.split(' ').slice(1).join(' ') }}</p>
                         </v-col>
                       </v-row>
                     </v-col>
@@ -440,7 +451,6 @@ export default {
       ],
       validForm: false,
       request: [],
-      statusCodes: [],
       requiredRules: [v => !!v || 'Required'],
       myself: {
         name: null,
@@ -460,8 +470,9 @@ export default {
       failedForm: {
         failureReason: null
       },
-      penRequestId: 123456789,
+      penRequestId: null,
       penSearchId: null,
+      autoPenResults: null,
       demographics: {
         legalFirst: null,
         legalMiddle: null,
@@ -472,13 +483,19 @@ export default {
         dob: null,
         gender: null
       },
-      enableCompleteButton: false
+      enableCompleteButton: false,
+      loadingPen: true,
+      loadingComments: true,
+      statusCodes: Routes.PEN_STATUS_CODES,
+      autoMatchCodes: Routes.AUTO_MATCH_RESULT_CODES
     };
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
   },
   mounted() {
+    this.loadingPen = true;
+    this.loadingComments = true;
     this.myself.name = this.userInfo.userName;
     this.myself.id = this.userInfo.userGuid;
     this.penRequestId = this.$store.state['penRequest'].selectedRequest;
@@ -488,9 +505,13 @@ export default {
       .then(response => {
         this.request = response.data;
         this.failedForm.failureReason = response.data.failureReason;
+        this.autoPenResults = this.request.bcscAutoMatchDetails.split(' ')[0];
       })
       .catch(error => {
         console.log(error);
+      })
+      .finally(() => {
+        this.loadingPen = false;
       });
     ApiService.apiAxios
       .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.penRequestId + '/comments')
@@ -500,14 +521,18 @@ export default {
       })
       .catch(error => {
         console.log(error);
+      })
+      .finally(() => {
+        this.loadingComments = false;
       });
+
   },
   methods: {
     returnToStudent() {
       this.returnAlertWarning = false;
       this.returnAlertSuccess = false;
       this.returnAlertFailure = false;
-      this.request.penRequestStatusCode = 'RETURNED';
+      this.request.penRequestStatusCode = Routes.PEN_STATUS_CODES.RETURNED;
       ApiService.apiAxios
         .post(Routes.PEN_REQUEST_UPDATE_AND_EMAIL_URL, { penRetrievalRequest: this.prepPut(), penEmailRequest: { type: 'info'}})
         .then(response => {
@@ -527,7 +552,7 @@ export default {
       this.rejectAlertSuccess = false;
       this.rejectAlertFailure = false;
       if(this.$refs.form.validate()){
-        this.request.penRequestStatusCode = 'REJECTED';
+        this.request.penRequestStatusCode = Routes.PEN_STATUS_CODES.REJECTED;
         this.request.failureReason = this.failedForm.failureReason;
 
         ApiService.apiAxios
@@ -548,6 +573,15 @@ export default {
     completeRequest() {
       this.completedRequestSuccess = null;
       this.completedUpdateSuccess = null;
+
+      if(this.request.bcscAutoMatchOutcome === Routes.AUTO_MATCH_RESULT_CODES.ONE_MATCH && this.request.autoPenResults === this.penSearchId) {
+        this.request.bcscAutoMatchOutcome = Routes.AUTO_MATCH_RESULT_CODES.RIGHT_PEN;
+        this.request.bcscAutoMatchDetails = 'CORRECT auto-match to: ' + this.request.bcscAutoMatchDetails;
+      } else if(this.request.bcscAutoMatchOutcome === Routes.AUTO_MATCH_RESULT_CODES.ONE_MATCH && this.request.autoPenResults !== this.penSearchId){
+        this.request.bcscAutoMatchOutcome = Routes.AUTO_MATCH_RESULT_CODES.WRONG_PEN;
+        this.request.bcscAutoMatchDetails = 'WRONG auto-match to: ' + this.request.bcscAutoMatchDetails;
+      }
+
       ApiService.apiAxios
         .post(Routes.PEN_REQUEST_COMPLETE_REQUEST_URL)
         .then(() => {
@@ -558,7 +592,7 @@ export default {
           this.completedRequestSuccess = false;
         });
 
-      this.request.penRequestStatusCode = 'MANUAL';
+      this.request.penRequestStatusCode = Routes.PEN_STATUS_CODES.MANUAL_MATCH;
       ApiService.apiAxios
         .post(Routes.PEN_REQUEST_UPDATE_AND_EMAIL_URL, { penRetrievalRequest: this.prepPut(), penEmailRequest: { type: 'complete'}})
         .then(response => {
@@ -638,6 +672,10 @@ export default {
     backToList() {
       this.penRequestId = '';
       this.$store.state['penRequest'].selectedRequest = null;
+    },
+    populateAutoMatchedPen() {
+      this.penSearchId = this.autoPenResults;
+      this.validatePen();
     },
     prepPut() {
       const body = JSON.parse(JSON.stringify(this.request));
