@@ -19,3 +19,25 @@ let object = {
 
 //endpoints
 export const Routes = Object.freeze(object);
+
+export const Statuses = Object.freeze(
+  {
+    PEN_STATUS_CODES: {
+      DRAFT: 'DRAFT',
+      FIRST_REVIEW: 'INITREV',
+      RETURNED: 'RETURNED',
+      SECOND_REVIEW: 'SUBSREV',
+      AUTO_MATCH: 'AUTO',
+      MANUAL_MATCH: 'MANUAL',
+      REJECTED: 'REJECTED',
+      UNMATCHED: 'UNMATCHED'
+    },
+    AUTO_MATCH_RESULT_CODES: {
+      ONE_MATCH: 'ONEMATCH',
+      MANY_MATCHES: 'MANYMATCHES',
+      ZERO_MATCHES: 'ZEROMATCHES',
+      RIGHT_PEN: 'RIGHTPEN',
+      WRONG_PEN: 'WRONGPEN'
+    }
+  }
+);
