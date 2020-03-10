@@ -1,3 +1,4 @@
+const LocalDateTime = require('@js-joda/core').LocalDateTime;
 const file =require('../components/file');
 const passport = require('passport');
 const config = require('../config/index');
@@ -21,7 +22,7 @@ router.post('/:id/comments', passport.authenticate('jwt', {session: false}, unde
         staffMemberIDIRGUID: userToken['preferred_username'].toUpperCase(),
         staffMemberName: userToken['idir_username'],
         commentContent: req.body.content,
-        commentTimestamp: req.body.timestamp.length>23?req.body.timestamp.substring(0,23):req.body.timestamp
+        commentTimestamp: LocalDateTime.now().toString()
       };
 
       axios.defaults.headers['common']['Authorization'] = `Bearer ${token}`;
