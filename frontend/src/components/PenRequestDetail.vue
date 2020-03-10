@@ -437,7 +437,7 @@
 <script>
 import Chat from './Chat';
 import ApiService from '../common/apiService';
-import { Routes } from '../utils/constants';
+import { Routes, Statuses } from '../utils/constants';
 import { mapGetters } from 'vuex';
 import { humanFileSize } from '../utils/file';
 export default {
@@ -491,8 +491,8 @@ export default {
       enableCompleteButton: false,
       loadingPen: true,
       loadingComments: true,
-      statusCodes: Routes.PEN_STATUS_CODES,
-      autoMatchCodes: Routes.AUTO_MATCH_RESULT_CODES,
+      statusCodes: Statuses.PEN_STATUS_CODES,
+      autoMatchCodes: Statuses.AUTO_MATCH_RESULT_CODES,
       filteredResults:[]
     };
   },
@@ -549,7 +549,7 @@ export default {
       this.returnAlertWarning = false;
       this.returnAlertSuccess = false;
       this.returnAlertFailure = false;
-      this.request.penRequestStatusCode = Routes.PEN_STATUS_CODES.RETURNED;
+      this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.RETURNED;
       ApiService.apiAxios
         .post(Routes.PEN_REQUEST_UPDATE_AND_EMAIL_URL, { penRetrievalRequest: this.prepPut(), penEmailRequest: { type: 'info'}})
         .then(response => {
@@ -569,7 +569,7 @@ export default {
       this.rejectAlertSuccess = false;
       this.rejectAlertFailure = false;
       if(this.$refs.form.validate()){
-        this.request.penRequestStatusCode = Routes.PEN_STATUS_CODES.REJECTED;
+        this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.REJECTED;
         this.request.failureReason = this.failedForm.failureReason;
 
         ApiService.apiAxios
@@ -591,11 +591,11 @@ export default {
       this.completedRequestSuccess = null;
       this.completedUpdateSuccess = null;
 
-      if(this.request.bcscAutoMatchOutcome === Routes.AUTO_MATCH_RESULT_CODES.ONE_MATCH && this.request.autoPenResults === this.penSearchId) {
-        this.request.bcscAutoMatchOutcome = Routes.AUTO_MATCH_RESULT_CODES.RIGHT_PEN;
+      if(this.request.bcscAutoMatchOutcome === Statuses.AUTO_MATCH_RESULT_CODES.ONE_MATCH && this.request.autoPenResults === this.penSearchId) {
+        this.request.bcscAutoMatchOutcome = Statuses.AUTO_MATCH_RESULT_CODES.RIGHT_PEN;
         this.request.bcscAutoMatchDetails = 'CORRECT auto-match to: ' + this.request.bcscAutoMatchDetails;
-      } else if(this.request.bcscAutoMatchOutcome === Routes.AUTO_MATCH_RESULT_CODES.ONE_MATCH && this.request.autoPenResults !== this.penSearchId){
-        this.request.bcscAutoMatchOutcome = Routes.AUTO_MATCH_RESULT_CODES.WRONG_PEN;
+      } else if(this.request.bcscAutoMatchOutcome === Statuses.AUTO_MATCH_RESULT_CODES.ONE_MATCH && this.request.autoPenResults !== this.penSearchId){
+        this.request.bcscAutoMatchOutcome = Statuses.AUTO_MATCH_RESULT_CODES.WRONG_PEN;
         this.request.bcscAutoMatchDetails = 'WRONG auto-match to: ' + this.request.bcscAutoMatchDetails;
       }
 
@@ -609,7 +609,7 @@ export default {
           this.completedRequestSuccess = false;
         });
 
-      this.request.penRequestStatusCode = Routes.PEN_STATUS_CODES.MANUAL_MATCH;
+      this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.MANUAL_MATCH;
       ApiService.apiAxios
         .post(Routes.PEN_REQUEST_UPDATE_AND_EMAIL_URL, { penRetrievalRequest: this.prepPut(), penEmailRequest: { type: 'complete'}})
         .then(response => {
