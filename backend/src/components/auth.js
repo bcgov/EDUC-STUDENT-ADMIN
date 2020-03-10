@@ -88,10 +88,15 @@ const auth = {
   },
 
   isValidAdminToken(req, res, next) {
-    const thisSession = req['session'];
     try{
-      const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
-      if(userToken['realm_access'].roles['includes'](config.get('oidc:staffRole'))){
+      const jwtToken  =utils.getBackendToken(req);
+      if(!jwtToken){
+        return res.status(401).json({
+          message: 'Unauthorized user'
+        });
+      }
+      const userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
+      if(userToken['realm_access'] && userToken['realm_access'].roles['includes'](config.get('oidc:staffRole'))){
         return next();
       }
       return res.status(401).json({
