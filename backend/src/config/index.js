@@ -16,7 +16,7 @@ nconf.defaults({
   server: {
     frontend: process.env.SERVER_FRONTEND,
     backend: process.env.SERVER_FRONTEND + '/api',
-    logLevel: 'verbose',
+    logLevel: process.env.LOG_LEVEL,
     morganFormat: 'dev',
     port: '8080',
     statusCodeURL: process.env.PEN_REQUEST_API_URL + '/statuses',

@@ -4,6 +4,9 @@ const config = require('./config/index');
 const http = require('http');
 const log = require('npmlog');
 const dotenv = require('dotenv');
+const localDateTime = require('@js-joda/core').LocalDateTime;
+//Add timestamp to log
+Object.defineProperty(log, 'heading', { get: () => { return localDateTime.now().toString(); } });
 dotenv.config();
 
 const app = require('./app');
