@@ -255,10 +255,12 @@ router.post('/update-and-email', passport.authenticate('jwt', {session: false}, 
       return res.status(500).json();
     }
 
+    log.silly('pen-request-api put body: ' + penRequest);
+
     axios.defaults.headers['common']['Authorization'] = `Bearer ${token}`;
     axios.put(config.get('server:penRequestURL'), penRequest)
       .then(penResponse => {
-
+        log.silly('pen-request-api response data: ' + penResponse.data);
         //Get new status code label
         let statusCodes = utils.getCodeTable('penStatusCodes', config.get('server:statusCodeURL'));
         let label = utils.getCodeLabel(statusCodes, 'penRequestStatusCode', penResponse.data.penRequestStatusCode);
