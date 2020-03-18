@@ -233,6 +233,8 @@ router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), au
 router.post('/update-and-email', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken,
   async  (req, res) => {
 
+    log.silly('request body from vue: ' + req.body);
+
     let thisSession = req['session'];
     const penRequest = req.body.penRetrievalRequest;
     delete penRequest.dataSourceCode;
@@ -282,6 +284,7 @@ router.post('/update-and-email', passport.authenticate('jwt', {session: false}, 
           .then(() => {
             penResponse.data.dataSourceCode = thisSession.penRequest.dataSourceCode;
             penResponse.data.penRequestStatusCodeLabel = label;
+            log.silly('response body sent to vue: ' + penResponse.data);
             return res.status(200).json(penResponse.data);
           })
           .catch(error => {
