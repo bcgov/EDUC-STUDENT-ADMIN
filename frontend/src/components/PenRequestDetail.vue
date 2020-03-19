@@ -234,7 +234,7 @@
               <v-tab>Reject</v-tab>
               <v-tab-item>
                 <v-alert
-                        :value="completedRequestSuccess && completedUpdateSuccess"
+                        :value="completedUpdateSuccess"
                         type="success"
                         dense
                         text
@@ -252,7 +252,7 @@
                   The provided PEN is not valid.
                 </v-alert>
                 <v-alert
-                        :value="completedRequestSuccess === false || completedUpdateSuccess === false"
+                        :value="completedUpdateSuccess === false"
                         type="error"
                         dense
                         text
@@ -479,7 +479,6 @@ export default {
       returnAlertSuccess: false,
       returnAlertFailure: false,
       returnAlertWarning: false,
-      completedRequestSuccess: null,
       completedUpdateSuccess:null,
       notAPenError: false,
       fileSizeConverter:humanFileSize,
@@ -568,7 +567,7 @@ export default {
       this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.RETURNED;
       this.request.statusUpdateDate = LocalDateTime.now();
       ApiService.apiAxios
-        .post(Routes.PEN_REQUEST_UPDATE_AND_EMAIL_URL, { penRetrievalRequest: this.prepPut(), penEmailRequest: { type: 'info'}})
+        .post(Routes.PEN_REQUEST_RETURN_URL, this.prepPut())
         .then(response => {
           this.request = response.data;
           this.returnAlertSuccess=true;
@@ -595,14 +594,14 @@ export default {
         this.request.failureReason = this.failedForm.failureReason;
 
         ApiService.apiAxios
-          .post(Routes.PEN_REQUEST_UPDATE_AND_EMAIL_URL, { penRetrievalRequest: this.prepPut(), penEmailRequest: { message: this.request.failureReason, type: 'reject'}})
+          .post(Routes.PEN_REQUEST_REJECT_URL, this.prepPut())
           .then(response => {
             this.request = response.data;
             this.rejectAlertSuccess=true;
           })
           .catch(error => {
             console.log(error);
-            if(error.response.data)
+            if(error.response.data && error.response.data.message.includes('email service'))
               this.rejectAlertWarning=true;
             else
               this.rejectAlertFailure=true;
@@ -625,22 +624,9 @@ export default {
         this.request.bcscAutoMatchDetails = 'WRONG auto-match to: ' + this.request.bcscAutoMatchDetails;
       }
 
-      ApiService.apiAxios
-        .post(Routes.PEN_REQUEST_COMPLETE_REQUEST_URL)
-        .then(() => {
-          this.completedRequestSuccess = true;
-        })
-        .catch(error => {
-          console.log(error);
-          this.completedRequestSuccess = false;
-        })
-        .finally(() => {
-          this.loadingActionResults = false;
-        });
-
       this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.MANUAL_MATCH;
       ApiService.apiAxios
-        .post(Routes.PEN_REQUEST_UPDATE_AND_EMAIL_URL, { penRetrievalRequest: this.prepPut(), penEmailRequest: { type: 'complete'}})
+        .post(Routes.PEN_REQUEST_COMPLETE_URL, this.prepPut())
         .then(response => {
           this.request = response.data;
           this.completedUpdateSuccess=true;

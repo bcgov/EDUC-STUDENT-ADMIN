@@ -12,6 +12,9 @@ let object = {
   PEN_REQUEST_ENDPOINT: penRequestRoot,
   PEN_REQUEST_SEARCH_URL: penRequestRoot + '/',
   PEN_REQUEST_STATUSES_URL: baseRoot + '/penrequeststatuses',
+  PEN_REQUEST_COMPLETE_URL: penRequestRoot + '/complete',
+  PEN_REQUEST_REJECT_URL: penRequestRoot + '/reject',
+  PEN_REQUEST_RETURN_URL: penRequestRoot + '/return',
   PEN_REQUEST_UPDATE_AND_EMAIL_URL: penRequestRoot + '/update-and-email',
   PEN_REQUEST_COMPLETE_REQUEST_URL: penRequestRoot + '/complete-pen-request',
   SEARCH_BY_PEN: demographicRoot
