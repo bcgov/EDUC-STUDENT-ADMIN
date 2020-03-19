@@ -616,6 +616,7 @@ export default {
       this.completedRequestSuccess = null;
       this.completedUpdateSuccess = null;
       this.request.statusUpdateDate = LocalDateTime.now();
+      this.request.pen = this.penSearchId;
       if(this.request.bcscAutoMatchOutcome === Statuses.AUTO_MATCH_RESULT_CODES.ONE_MATCH && this.autoPenResults === this.penSearchId) {
         this.request.bcscAutoMatchOutcome = Statuses.AUTO_MATCH_RESULT_CODES.RIGHT_PEN;
         this.request.bcscAutoMatchDetails = 'CORRECT auto-match to: ' + this.request.bcscAutoMatchDetails;
