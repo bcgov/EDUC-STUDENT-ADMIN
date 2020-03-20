@@ -1,5 +1,5 @@
 'use strict';
-const { getBackendToken, getData, postData, putData } = require('./utils');
+const { getBackendToken, getData, postData, putData, logApiError } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const LocalDateTime = require('@js-joda/core').LocalDateTime;
 const log = require('npmlog');
@@ -19,15 +19,13 @@ async function completePenRequest(req, res) {
         return res.status(200).json(response[0]);
       })
       .catch(e => {
-        log.error('Error occurred while attempting to PUT a pen request.');
-        log.error('completePenRequest Error', e.stack);
+        logApiError(e, 'completePenRequest', 'Error occurred while attempting to PUT a pen request.');
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
           message: 'INTERNAL SERVER ERROR'
         });
       });
   } catch(e) {
-    log.error('Error occurred while attempting to PUT a pen request.');
-    log.error('completePenRequest Error', e.stack);
+    logApiError(e, 'completePenRequest', 'Error occurred while attempting to PUT a pen request.');
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       message: 'INTERNAL SERVER ERROR'
     });
@@ -59,8 +57,7 @@ async function getAllPenRequests(req, res) {
       });
       return res.status(200).json(penRetrievalResponse);
     }).catch(e => {
-      log.error('Error occurred while attempting to GET all pen requests.');
-      log.error('getAllPenRequests Error', e.stack);
+      logApiError(e, 'getAllPenRequests', 'Error occurred while attempting to GET all pen requests.');
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: 'INTERNAL SERVER ERROR'
       });
@@ -128,8 +125,7 @@ async function getPenRequestCommentById(req, res) {
     });
     return res.status(200).json(response);
   } catch(e) {
-    log.error('Error occurred while attempting to GET all comments.');
-    log.error('getPenRequestCommentById Error', e.stack);
+    logApiError(e, 'getPenRequestCommentById', 'Error occurred while attempting to GET all comments.');
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       message: 'INTERNAL SERVER ERROR'
     });
@@ -151,8 +147,7 @@ async function getPenRequestStatusCodes(req, res) {
     return res.status(HttpStatus.OK).json(statusCodes);
 
   } catch (e) {
-    log.error('Error occurred while attempting to GET pen request status codes.');
-    log.error('getPenRequestStatusCodes Error', e.stack);
+    logApiError(e, 'getPenRequestStatusCodes', 'Error occurred while attempting to GET pen request status codes.');
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       message: 'INTERNAL SERVER ERROR'
     });
@@ -191,15 +186,13 @@ async function getPenRequestById(req, res) {
         return res.status(200).json(penRetrievalResponse);
       })
       .catch(e => {
-        log.error('Error occurred while attempting to GET pen request');
-        log.error('getPenRequestById Error', e.stack);
+        logApiError(e, 'getPenRequestById', 'Error occurred while attempting to GET pen request.');
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
           message: 'INTERNAL SERVER ERROR'
         });
       });
   } catch(e) {
-    log.error('Error occurred while attempting to GET pen request');
-    log.error('getPenRequestById Error', e.stack);
+    logApiError(e, 'getPenRequestById', 'Error occurred while attempting to GET pen request.');
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       message: 'INTERNAL SERVER ERROR'
     });
@@ -227,8 +220,7 @@ async function getStudentDemographicsById(req, res) {
     };
     return res.status(200).json(formattedResponse);
   } catch(e) {
-    log.error('Error occurred while attempting to GET pen demographics.');
-    log.error('getPenRequestStatusCodes Error', e.stack);
+    logApiError(e, 'getPenRequestStatusCodes', 'Error occurred while attempting to GET pen demographics.');
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       message: 'INTERNAL SERVER ERROR'
     });
@@ -236,25 +228,20 @@ async function getStudentDemographicsById(req, res) {
 }
 
 async function sendPenRequestEmail(req, res, emailType) {
+  if (!req.body.failureReason) {
+    throw new ServiceError('400', 'Failure reason is required.');
+  }
   try {
     const token = utils.getBackendToken(req);
     let emailBody = {emailAddress: req.body['email']};
     if (emailType.toLowerCase() === 'reject') {
-      if (!req.body.failureReason) {
-        throw new ServiceError('400', 'Failure reason is required.');
-      }
       emailBody.rejectionReason = req.body.failureReason;
     } else if (emailType.toLowerCase() === 'complete') {
       emailBody.firstName = req['session'].studentDemographics['studGiven'];
     }
     await postData(token, config.get('server:penEmails') + '/' + emailType.toLowerCase(), emailBody);
-    //return res.status(204).json();
   } catch(e) {
-    log.error('Error calling email service.');
-    log.error('sendPenRequestEmail Error', e.response ? e.response.status : e.message);
-    if(e.response && e.response.data){
-      log.error(JSON.stringify(e.response.data));
-    }
+    logApiError(e, 'sendPenRequestEmail', 'Error calling email service.');
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
     throw new ApiError(status, { message: 'API Post error'}, e);
   }
@@ -278,8 +265,7 @@ async function postPenRequestComment(req, res) {
 
     return res.status(200).json(penRetrievalResponse);
   } catch(e) {
-    log.error('Error occurred while attempting to POST pen request comment.');
-    log.error('postPenRequestComment Error', e.stack);
+    logApiError(e, 'postPenRequestComment', 'Error occurred while attempting to POST pen request comment.');
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       message: 'INTERNAL SERVER ERROR'
     });
@@ -291,8 +277,7 @@ async function putPenRequest(req, res) {
     const penRetrievalResponse = await updatePenRequest(req, res);
     return res.status(200).json(penRetrievalResponse);
   } catch(e) {
-    log.error('Error occurred while attempting a PUT to pen request.');
-    log.error('putPenRequest Error', e.stack);
+    logApiError(e, 'putPenRequest', 'Error occurred while attempting a PUT to pen request.');
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       message: 'INTERNAL SERVER ERROR'
     });
@@ -307,15 +292,13 @@ async function rejectPenRequest(req, res) {
       await sendPenRequestEmail(req, res, 'REJECT');
       return res.status(200).json(penResponse);
     } catch(e) {
-      log.error('Error occurred while attempting to call the email service.');
-      log.error('rejectPenRequest Error', e.stack);
+      logApiError(e, 'rejectPenRequest', 'Error occurred while attempting to call the email service.');
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: 'INTERNAL SERVER ERROR calling email service'
       });
     }
   } catch(e) {
-    log.error('Error occurred while attempting to PUT a pen request.');
-    log.error('rejectPenRequest Error', e.stack);
+    logApiError(e, 'rejectPenRequest', 'Error occurred while attempting to PUT a pen request.');
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       message: 'INTERNAL SERVER ERROR'
     });
@@ -330,15 +313,13 @@ async function returnPenRequest(req, res) {
       await sendPenRequestEmail(req, res, 'INFO');
       return res.status(200).json(penResponse);
     } catch(e) {
-      log.error('Error occurred while attempting to call the email service.');
-      log.error('returnPenRequest Error', e.stack);
+      logApiError(e, 'returnPenRequest', 'Error occurred while attempting to call the email service.');
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: 'INTERNAL SERVER ERROR calling email service'
       });
     }
   } catch(e) {
-    log.error('Error occurred while attempting to PUT a pen request.');
-    log.error('returnPenRequest Error', e.stack);
+    logApiError(e, 'returnPenRequest', 'Error occurred while attempting to PUT a pen request.');
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       message: 'INTERNAL SERVER ERROR'
     });
@@ -346,18 +327,19 @@ async function returnPenRequest(req, res) {
 }
 
 async function updatePenRequest(req, res) {
+  let thisSession = req['session'];
+  if (!thisSession.penRequest) {
+    log.error('Error attempting to update pen request.  There is no pen request stored in session.');
+    throw new ApiError();
+  }
   try {
-    let thisSession = req['session'];
     const token = utils.getBackendToken(req);
     const penRequest = req.body;
     const dataSourceCode = req.body.dataSourceCode;
     delete penRequest.dataSourceCode;
     delete penRequest.penRequestStatusCodeLabel;
 
-    if (!thisSession.penRequest) {
-      log.error('Error attempting to update pen request.  There is no pen request stored in session.');
-      throw new ApiError();
-    }
+
     penRequest.digitalID = thisSession.penRequest.digitalID;
 
     return Promise.all([
@@ -378,11 +360,7 @@ async function updatePenRequest(req, res) {
         return penRetrievalResponse;
       })
       .catch(e =>{
-        log.error('Error updating a pen request.');
-        log.error('sendPenRequestEmail Error', e.response ? e.response.status : e.message);
-        if(e.response && e.response.data){
-          log.error(JSON.stringify(e.response.data));
-        }
+        logApiError(e, 'sendPenRequestEmail', 'Error updating a pen request.');
         const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
         throw new ApiError(status, { message: 'API PUT error'}, e);
       });
@@ -409,7 +387,7 @@ async function updateStudentAndDigitalId(req){
     email: req['session'].penRequest.email,
   };
   try {
-    const studentAndDigitalIdResponse = await utils.getDataWithParams(token, url, {params: {pen: studentBody.pen}});
+    const studentAndDigitalIdResponse = await utils.getData(token, url, {params: {pen: studentBody.pen}});
 
     if (Array.isArray(studentAndDigitalIdResponse) && studentAndDigitalIdResponse.length === 1) {
       studentBody.studentID = studentAndDigitalIdResponse[0].studentID;
@@ -417,23 +395,22 @@ async function updateStudentAndDigitalId(req){
     } else if (Array.isArray(studentAndDigitalIdResponse) && !studentAndDigitalIdResponse.length) {
       studentResponse = await postData(token, config.get('server:studentURL'), studentBody);
     } else {
-      log.error('Failed to create student record. Invalid response data from student api. Complete pen transaction will be out of sync. Student record still needs to be created.');
-      throw new ApiError(500, {message: 'API Get error'});
+      log.error('Failed to create student record. Invalid response data from student api, there should not be more than one student with the same pen. Complete pen transaction will be out of sync. Student record still needs to be created.');
     }
   }catch(e) {
-    log.error('Failed to update student. Complete pen transaction will be out of sync. Student record still needs to be created.');
-    log.error('updateStudentAndDigitalId Error', e.response ? e.response.status : e.message);
-    if (e.response && e.response.data) {
-      log.error(JSON.stringify(e.response.data));
-    }
+    logApiError(e, 'updateStudentAndDigitalId', 'Failed to update student. Complete pen transaction will be out of sync. Student record still needs to be created.');
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
     throw new ApiError(status, {message: 'API error'}, e);
+  }
+  if(!studentResponse) {
+    log.error('Null response from student api. Complete pen transaction will be out of sync. StudentId in DigitalId record still needs to be updated.');
+    throw new ApiError(500, {message: 'API error'});
   }
   try {
     const digitalIdResponse = await getData(token, config.get('server:digitalIdURL') + '/' + req['session'].penRequest.digitalID);
     if (digitalIdResponse) {
       let digitalIdBody = digitalIdResponse;
-      digitalIdBody.studentID = studentResponse.studentID;
+      digitalIdBody.studentID = studentResponse['studentID'];
       delete digitalIdBody['updateUser'];
       delete digitalIdBody['updateDate'];
       delete digitalIdBody['createDate'];
@@ -441,11 +418,7 @@ async function updateStudentAndDigitalId(req){
       return await putData(token, config.get('server:digitalIdURL'), digitalIdBody);
     }
   }catch(e) {
-    log.error('Failed to update digitalid. Complete pen transaction will be out of sync. StudentId in DigitalId record still needs to be updated.');
-    log.error('updateStudentAndDigitalId Error', e.response ? e.response.status : e.message);
-    if (e.response && e.response.data) {
-      log.error(JSON.stringify(e.response.data));
-    }
+    logApiError(e, 'updateStudentAndDigitalId', 'Failed to update digitalid. Complete pen transaction will be out of sync. StudentId in DigitalId record still needs to be updated.');
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
     throw new ApiError(status, {message: 'API error'}, e);
   }

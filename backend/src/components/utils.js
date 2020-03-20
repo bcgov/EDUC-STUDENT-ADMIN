@@ -17,35 +17,19 @@ function getBackendToken(req) {
   return thisSession && thisSession['passport']&& thisSession['passport'].user && thisSession['passport'].user.jwt;
 }
 
-async function getData(token, url) {
+async function getData(token, url, params) {
   try{
-    const getDataConfig = {
-      headers: {
+    if(params) {
+      params.headers = {
         Authorization: `Bearer ${token}`,
-      }
-    };
-
-    log.info('get Data Url', url);
-    const response = await axios.get(url, getDataConfig);
-    log.info('get Data Status', response.status);
-    log.info('get Data StatusText', response.statusText);
-    log.verbose('get Data Res', minify(response.data));
-
-    return response.data;
-  } catch (e) {
-    log.error('getData Error', e.response ? e.response.status : e.message);
-    log.error(JSON.stringify(e.response.data));
-    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ApiError(status, { message: 'API Get error'}, e);
-  }
-}
-
-async function getDataWithParams(token, url, params) {
-  try{
-    params.headers = {
-      Authorization: `Bearer ${token}`,
-    };
-
+      };
+    } else {
+      params = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      };
+    }
     log.info('get Data Url', url);
     const response = await axios.get(url, params);
     log.info('get Data Status', response.status);
@@ -54,9 +38,19 @@ async function getDataWithParams(token, url, params) {
 
     return response.data;
   } catch (e) {
-    log.error('getDataWithParams Error', e.response ? e.response.status : e.message);
+    logApiError(e, 'getData', 'Error during GET on ' + url);
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
     throw new ApiError(status, { message: 'API Get error'}, e);
+  }
+}
+
+function logApiError(e, functionName, message) {
+  if(message) {
+    log.error(message);
+  }
+  log.error(functionName, ' Error', e.stack);
+  if(e.response && e.response.data){
+    log.error(JSON.stringify(e.response.data));
   }
 }
 
@@ -85,10 +79,7 @@ async function postData(token, url, data) {
 
     return response.data;
   } catch(e) {
-    log.error('postData Error', e.response ? e.response.status : e.message);
-    if(e.response && e.response.data) {
-      log.error(JSON.stringify(e.response.data));
-    }
+    logApiError(e, 'postData', 'Error during POST on ' + url);
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
     throw new ApiError(status, { message: 'API Post error'}, e);
   }
@@ -114,10 +105,7 @@ async function putData(token, url, data) {
 
     return response.data;
   } catch(e) {
-    log.error('putData Error on ', url,  e.response ? e.response.status : e.message);
-    if(e.response && e.response.data) {
-      log.error(JSON.stringify(e.response.data));
-    }
+    logApiError(e, 'putData', 'Error during PUT on ' + url);
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
     throw new ApiError(status, { message: 'API Put error'}, e);
   }
@@ -181,11 +169,7 @@ const utils = {
             return response.data;
           })
           .catch(e => {
-            log.error('Error attempting to get status codes.');
-            log.error('getCodeTable Error',  e.response ? e.response.status : e.message);
-            if(e.response && e.response.data) {
-              log.error(JSON.stringify(e.response.data));
-            }
+            logApiError(e, 'getCodeTable', 'Error during get on ' + url);
             const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
             throw new ApiError(status, { message: 'API get error'}, e);
           });
@@ -206,7 +190,7 @@ const utils = {
   },
   getBackendToken,
   getData,
-  getDataWithParams,
+  logApiError,
   postData,
   putData
 };
