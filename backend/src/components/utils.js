@@ -1,14 +1,115 @@
 'use strict';
 
+const HttpStatus = require('http-status-codes');
 const axios = require('axios');
 const config = require('../config/index');
 const jsonwebtoken = require('jsonwebtoken');
+const lodash = require('lodash');
 const log = require('npmlog');
 const cache = require('memory-cache');
-const { ServiceError } = require('./error');
+const { ServiceError, ApiError } = require('./error');
 
 let discovery = null;
 let memCache = new cache.Cache();
+
+function getBackendToken(req) {
+  const thisSession = req.session;
+  return thisSession && thisSession['passport']&& thisSession['passport'].user && thisSession['passport'].user.jwt;
+}
+
+async function getData(token, url, params) {
+  try{
+    if(params) {
+      params.headers = {
+        Authorization: `Bearer ${token}`,
+      };
+    } else {
+      params = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      };
+    }
+    log.info('get Data Url', url);
+    const response = await axios.get(url, params);
+    log.info('get Data Status', response.status);
+    log.info('get Data StatusText', response.statusText);
+    log.verbose('get Data Res', minify(response.data));
+
+    return response.data;
+  } catch (e) {
+    logApiError(e, 'getData', 'Error during GET on ' + url);
+    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
+    throw new ApiError(status, { message: 'API Get error'}, e);
+  }
+}
+
+function logApiError(e, functionName, message) {
+  if(message) {
+    log.error(message);
+  }
+  log.error(functionName, ' Error', e.stack);
+  if(e.response && e.response.data){
+    log.error(JSON.stringify(e.response.data));
+  }
+}
+
+function minify(obj, keys=['documentData']) {
+  return lodash.transform(obj, (result, value, key) =>
+    result[key] = keys.includes(key) && lodash.isString(value) ? value.substring(0,1) + ' ...' : value );
+}
+
+async function postData(token, url, data) {
+  try{
+    const postDataConfig = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    };
+
+    log.info('post Data Url', url);
+    log.verbose('post Data Req', minify(data));
+
+    const response = await axios.post(url, data, postDataConfig);
+
+    log.info('post Data Status', response.status);
+    log.info('post Data StatusText', response.statusText);
+
+    log.verbose('post Data Res', response.data);
+
+    return response.data;
+  } catch(e) {
+    logApiError(e, 'postData', 'Error during POST on ' + url);
+    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
+    throw new ApiError(status, { message: 'API Post error'}, e);
+  }
+}
+
+async function putData(token, url, data) {
+  try{
+    const putDataConfig = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    };
+
+    log.info('put Data Url', url);
+    log.verbose('put Data Req', data);
+
+    const response = await axios.put(url, data, putDataConfig);
+
+    log.info('put Data Status', response.status);
+    log.info('put Data StatusText', response.statusText);
+
+    log.verbose('put Data Res', response.data);
+
+    return response.data;
+  } catch(e) {
+    logApiError(e, 'putData', 'Error during PUT on ' + url);
+    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
+    throw new ApiError(status, { message: 'API Put error'}, e);
+  }
+}
 
 const utils = {
   // Returns OIDC Discovery values
@@ -25,10 +126,6 @@ const utils = {
   },
   prettyStringify: (obj, indent = 2) => JSON.stringify(obj, null, indent),
 
-  getBackendToken(req) {
-    const thisSession = req.session;
-    return thisSession && thisSession['passport']&& thisSession['passport'].user && thisSession['passport'].user.jwt;
-  },
   getUser(req) {
     const thisSession = req.session;
     if(thisSession && thisSession['passport']&& thisSession['passport'].user && thisSession['passport'].user.jwt) {
@@ -55,22 +152,26 @@ const utils = {
     }
   },
   //keys = ['identityTypeCodes', 'penStatusCodes']
-  getCodeTable(key, url) {
+  getCodeTable(token, key, url) {
     try {
       let cacheContent = memCache.get(key);
       if (cacheContent) {
         return cacheContent;
       } else {
-        return axios.get(url)
+        const getDataConfig = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        };
+        return axios.get(url, getDataConfig)
           .then(response => {
             memCache.put(key, response.data);
             return response.data;
           })
-          .catch(error => {
-            log.error('Error attempting to get status codes from digitalId-api.');
-            log.error(error);
-            log.error(JSON.stringify(error.response.data));
-            return null;
+          .catch(e => {
+            logApiError(e, 'getCodeTable', 'Error during get on ' + url);
+            const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
+            throw new ApiError(status, { message: 'API get error'}, e);
           });
       }
     } catch (e) {
@@ -86,7 +187,12 @@ const utils = {
       }
     });
     return label;
-  }
+  },
+  getBackendToken,
+  getData,
+  logApiError,
+  postData,
+  putData
 };
 
 module.exports = utils;
