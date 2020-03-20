@@ -8,21 +8,30 @@ const utils = require('../components/utils');
 const { ApiError, ServiceError } = require('./error');
 
 async function completePenRequest(req, res) {
-  return Promise.all([
-    updatePenRequest(req, res),
-    sendPenRequestEmail(req, res, 'COMPLETE'),
-    updateStudentAndDigitalId(req)
-  ])
-    .then(async (response) => {
-      return res.status(200).json(response[0]);
-    })
-    .catch(e => {
-      log.error('Error occurred while attempting to PUT a pen request.');
-      log.error('completePenRequest Error', e.stack);
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'INTERNAL SERVER ERROR'
+  try {
+    req.body.statusUpdateDate = LocalDateTime.now();
+    return Promise.all([
+      updatePenRequest(req, res),
+      sendPenRequestEmail(req, res, 'COMPLETE'),
+      updateStudentAndDigitalId(req)
+    ])
+      .then(async (response) => {
+        return res.status(200).json(response[0]);
+      })
+      .catch(e => {
+        log.error('Error occurred while attempting to PUT a pen request.');
+        log.error('completePenRequest Error', e.stack);
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          message: 'INTERNAL SERVER ERROR'
+        });
       });
+  } catch(e) {
+    log.error('Error occurred while attempting to PUT a pen request.');
+    log.error('completePenRequest Error', e.stack);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'INTERNAL SERVER ERROR'
     });
+  }
 }
 
 async function getAllPenRequests(req, res) {
@@ -292,6 +301,7 @@ async function putPenRequest(req, res) {
 
 async function rejectPenRequest(req, res) {
   try {
+    req.body.statusUpdateDate = LocalDateTime.now();
     const penResponse = await updatePenRequest(req, res);
     try {
       await sendPenRequestEmail(req, res, 'REJECT');
@@ -314,6 +324,7 @@ async function rejectPenRequest(req, res) {
 
 async function returnPenRequest(req, res) {
   try {
+    req.body.statusUpdateDate = LocalDateTime.now();
     const penResponse = await updatePenRequest(req, res);
     try {
       await sendPenRequestEmail(req, res, 'INFO');

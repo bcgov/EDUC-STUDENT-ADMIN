@@ -114,7 +114,7 @@ async function putData(token, url, data) {
 
     return response.data;
   } catch(e) {
-    log.error('putData Error',  e.response ? e.response.status : e.message);
+    log.error('putData Error on ', url,  e.response ? e.response.status : e.message);
     if(e.response && e.response.data) {
       log.error(JSON.stringify(e.response.data));
     }
@@ -182,7 +182,7 @@ const utils = {
           })
           .catch(e => {
             log.error('Error attempting to get status codes.');
-            log.error('putData Error',  e.response ? e.response.status : e.message);
+            log.error('getCodeTable Error',  e.response ? e.response.status : e.message);
             if(e.response && e.response.data) {
               log.error(JSON.stringify(e.response.data));
             }

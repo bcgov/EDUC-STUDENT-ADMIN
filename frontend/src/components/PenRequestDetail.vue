@@ -450,7 +450,6 @@ import ApiService from '../common/apiService';
 import { Routes, Statuses } from '../utils/constants';
 import { mapGetters } from 'vuex';
 import { humanFileSize } from '../utils/file';
-import {LocalDateTime} from '@js-joda/core';
 export default {
   components: {
     Chat
@@ -565,7 +564,6 @@ export default {
       this.returnAlertSuccess = false;
       this.returnAlertFailure = false;
       this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.RETURNED;
-      this.request.statusUpdateDate = LocalDateTime.now();
       ApiService.apiAxios
         .post(Routes.PEN_REQUEST_RETURN_URL, this.prepPut())
         .then(response => {
@@ -588,7 +586,6 @@ export default {
       this.rejectAlertWarning = false;
       this.rejectAlertSuccess = false;
       this.rejectAlertFailure = false;
-      this.request.statusUpdateDate = LocalDateTime.now();
       if(this.$refs.form.validate()){
         this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.REJECTED;
         this.request.failureReason = this.failedForm.failureReason;
@@ -615,7 +612,6 @@ export default {
       this.loadingActionResults = true;
       this.completedRequestSuccess = null;
       this.completedUpdateSuccess = null;
-      this.request.statusUpdateDate = LocalDateTime.now();
       this.request.pen = this.penSearchId;
       if(this.request.bcscAutoMatchOutcome === Statuses.AUTO_MATCH_RESULT_CODES.ONE_MATCH && this.autoPenResults === this.penSearchId) {
         this.request.bcscAutoMatchOutcome = Statuses.AUTO_MATCH_RESULT_CODES.RIGHT_PEN;
