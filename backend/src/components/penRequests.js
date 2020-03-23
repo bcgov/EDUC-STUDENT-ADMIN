@@ -9,10 +9,16 @@ const { ApiError, ServiceError } = require('./error');
 
 async function completePenRequest(req, res) {
   try {
+    const token = getBackendToken(req, res);
+    if(!token) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'No access token'
+      });
+    }
     req.body.statusUpdateDate = LocalDateTime.now();
     return Promise.all([
       updatePenRequest(req, res),
-      sendPenRequestEmail(req, res, 'COMPLETE'),
+      sendPenRequestEmail(req, token, 'COMPLETE'),
       updateStudentAndDigitalId(req)
     ])
       .then(async (response) => {
@@ -156,8 +162,12 @@ async function getPenRequestStatusCodes(req, res) {
 async function getPenRequestById(req, res) {
   try{
     const token = getBackendToken(req, res);
-
-    Promise.all([
+    if(!token) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'No access token'
+      });
+    }
+    return Promise.all([
       getData(token,config.get('server:penRequestURL') + '/' + req.params.id),
       utils.getCodeTable(token, 'identityTypeCodes', config.get('server:digitalIdIdentityTypeCodesURL')),
       utils.getCodeTable(token, 'penStatusCodes', config.get('server:statusCodeURL'))
@@ -203,7 +213,6 @@ async function getStudentDemographicsById(req, res) {
   try{
     const token = utils.getBackendToken(req);
     const response = await getData(token,config.get('server:demographicsURL') + '/' + req.params.id);
-
     const birthDate = utils.formatDate(response['studBirth']);
 
     req['session'].studentDemographics = response;
@@ -227,19 +236,22 @@ async function getStudentDemographicsById(req, res) {
   }
 }
 
-async function sendPenRequestEmail(req, res, emailType) {
-  if (!req.body.failureReason) {
-    throw new ServiceError('400', 'Failure reason is required.');
+async function sendPenRequestEmail(req, token, emailType) {
+  const lowerCaseEmail = emailType.toLowerCase();
+  let emailBody = {emailAddress: req.body['email']};
+  if (lowerCaseEmail === 'reject') {
+    if (!req.body.failureReason) {
+      throw new ServiceError('400', 'Failure reason is required.');
+    }
+    emailBody.rejectionReason = req.body.failureReason;
+  } else if (lowerCaseEmail === 'complete') {
+    if(!req['session'].studentDemographics || !req['session'].studentDemographics['studGiven']) {
+      throw new ServiceError('500', 'There are no student demographics in session.');
+    }
+    emailBody.firstName = req['session'].studentDemographics['studGiven'];
   }
   try {
-    const token = utils.getBackendToken(req);
-    let emailBody = {emailAddress: req.body['email']};
-    if (emailType.toLowerCase() === 'reject') {
-      emailBody.rejectionReason = req.body.failureReason;
-    } else if (emailType.toLowerCase() === 'complete') {
-      emailBody.firstName = req['session'].studentDemographics['studGiven'];
-    }
-    await postData(token, config.get('server:penEmails') + '/' + emailType.toLowerCase(), emailBody);
+    await postData(token, config.get('server:penEmails') + '/' + lowerCaseEmail, emailBody);
   } catch(e) {
     logApiError(e, 'sendPenRequestEmail', 'Error calling email service.');
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
@@ -286,10 +298,16 @@ async function putPenRequest(req, res) {
 
 async function rejectPenRequest(req, res) {
   try {
+    const token = getBackendToken(req, res);
+    if(!token) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'No access token'
+      });
+    }
     req.body.statusUpdateDate = LocalDateTime.now();
     const penResponse = await updatePenRequest(req, res);
     try {
-      await sendPenRequestEmail(req, res, 'REJECT');
+      await sendPenRequestEmail(req, token, 'REJECT');
       return res.status(200).json(penResponse);
     } catch(e) {
       logApiError(e, 'rejectPenRequest', 'Error occurred while attempting to call the email service.');
@@ -307,10 +325,16 @@ async function rejectPenRequest(req, res) {
 
 async function returnPenRequest(req, res) {
   try {
+    const token = getBackendToken(req, res);
+    if(!token) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'No access token'
+      });
+    }
     req.body.statusUpdateDate = LocalDateTime.now();
     const penResponse = await updatePenRequest(req, res);
     try {
-      await sendPenRequestEmail(req, res, 'INFO');
+      await sendPenRequestEmail(req, token, 'INFO');
       return res.status(200).json(penResponse);
     } catch(e) {
       logApiError(e, 'returnPenRequest', 'Error occurred while attempting to call the email service.');
@@ -360,7 +384,7 @@ async function updatePenRequest(req, res) {
         return penRetrievalResponse;
       })
       .catch(e =>{
-        logApiError(e, 'sendPenRequestEmail', 'Error updating a pen request.');
+        logApiError(e, 'updatePenRequest', 'Error updating a pen request.');
         const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
         throw new ApiError(status, { message: 'API PUT error'}, e);
       });
