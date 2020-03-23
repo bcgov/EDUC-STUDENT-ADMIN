@@ -71,6 +71,68 @@
           </v-col>
         </v-row>
         <v-row>
+          <v-alert v-if="this.request.pen && (this.request.penRequestStatusCode === this.statusCodes.MANUAL_MATCH || this.request.penRequestStatusCode === this.statusCodes.AUTO_MATCH)"
+            width="100%"
+            outlined
+            transition="scale-transition"
+            class="bootstrap-success">
+            <v-row no-gutters class="px-2">
+              <v-col cols="12" xl="1" lg="1" md="1" sm="1">
+                <p class="mb-0">PEN:</p>
+              </v-col>
+              <v-col cols="12" xl="11" lg="11" md="11" sm="11">
+                <p class="mb-0"><strong>{{ this.request.pen }}</strong></p>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="px-2">
+              <v-col cols="12" xl="1" lg="1" md="1" sm="1">
+                <p class="mb-0">Legal:</p>
+              </v-col>
+              <v-col cols="12" xl="11" lg="11" md="11" sm="11">
+                <p class="mb-0"><strong>{{ this.request.legalLastName ? this.request.legalLastName: '(none)'}}, {{ this.request.legalFirstName ? this.request.legalFirstName: '(none)'}}, {{ this.request.legalMiddleNames ? this.request.legalMiddleNames: '(none)'}}</strong></p>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="px-2">
+              <v-col cols="12" xl="1" lg="1" md="1" sm="1">
+                <p class="mb-0">Usual:</p>
+              </v-col>
+              <v-col v-if="!this.request.usualLastName && !this.request.usualFirstName && !this.request.usualMiddleName" cols="12" xl="11" lg="11" md="11" sm="11">
+                <p class="mb-0"></p>
+              </v-col>
+              <v-col v-else-if="this.request.usualLastName === this.request.legalLastName && this.request.usualFirstName === this.request.legalFirstName && this.request.usualMiddleName === this.request.legalMiddleNames" cols="12" xl="11" lg="11" md="11" sm="11">
+                <p class="mb-0 grey--text text--darken-1"><strong>{{ this.request.usualLastName ? this.request.usualLastName: '(none)'}}, {{ this.request.usualFirstName ? this.request.usualFirstName: '(none)'}}, {{ this.request.usualMiddleName ? this.request.usualMiddleName: '(none)'}}</strong></p>
+              </v-col>
+              <v-col v-else cols="12" xl="11" lg="11" md="11" sm="11">>
+                <p class="mb-0"><strong>{{ this.request.usualLastName ? this.request.usualLastName: '(none)'}}, {{ this.request.usualFirstName ? this.request.usualFirstName: '(none)'}}, {{ this.request.usualMiddleName ? this.request.usualMiddleName: '(none)'}}</strong></p>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="px-2">
+              <v-col cols="12" xl="1" lg="1" md="1" sm="1">
+                <p class="mb-0">DOB:</p>
+              </v-col>
+              <v-col cols="12" xl="11" lg="11" md="11" sm="11">
+                <p class="mb-0"><strong>{{ this.request.dob ? moment(this.request.dob).format('YYYY-MM-DD'):'' }}</strong></p>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="px-2">
+              <v-col cols="12" xl="1" lg="1" md="1" sm="1">
+                <p class="mb-0">Gender:</p>
+              </v-col>
+              <v-col cols="12" xl="11" lg="11" md="11" sm="11">
+                <p class="mb-0"><strong>{{ this.request.genderCode }}</strong></p>
+              </v-col>
+            </v-row>
+            <v-row v-if="this.request.dataSourceCode === 'BC Services Card' || this.request.dataSourceCode === 'BCSC'" no-gutters class="px-2">
+              <v-col cols="12" xl="1" lg="1" md="1" sm="1">
+                <p class="mb-0">BCSC:</p>
+              </v-col>
+              <v-col cols="12" xl="11" lg="11" md="11" sm="11">
+                <p class="mb-0"><strong>{{ this.request.bcscAutoMatchDetails }}</strong></p>
+              </v-col>
+            </v-row>
+          </v-alert>
+        </v-row>
+        <v-row>
           <v-col cols="12" xl="6" lg="6" md="6" class="pa-0">
             <v-card height="100%" width="99%">
               <v-toolbar flat color="#036" class="white--text">
@@ -235,29 +297,32 @@
               <v-tab-item>
                 <v-alert
                         :value="completedUpdateSuccess"
-                        type="success"
                         dense
                         text
                         dismissible
-                        transition="scale-transition">
+                        outlined
+                        transition="scale-transition"
+                        class="bootstrap-success">
                   PEN Request completed and email sent to student.
                 </v-alert>
                 <v-alert
                         :value="notAPenError"
-                        type="error"
                         dense
                         text
                         dismissible
-                        transition="scale-transition">
+                        outlined
+                        transition="scale-transition"
+                        class="bootstrap-error">
                   The provided PEN is not valid.
                 </v-alert>
                 <v-alert
                         :value="completedUpdateSuccess === false"
-                        type="error"
                         dense
                         text
                         dismissible
-                        transition="scale-transition">
+                        outlined
+                        transition="scale-transition"
+                        class="bootstrap-error">
                   An error occurred while attempting to complete the PEN request.  Depending on the failure, the request may be in a partially completed state. Please contact support.
                 </v-alert>
                 <v-card flat>
@@ -337,29 +402,32 @@
               <v-tab-item>
                 <v-alert
                         :value="returnAlertSuccess"
-                        type="success"
                         dense
                         text
                         dismissible
-                        transition="scale-transition">
+                        outlined
+                        transition="scale-transition"
+                        class="bootstrap-success">
                   PEN Request status updated and email sent to student.
                 </v-alert>
                 <v-alert
                         :value="returnAlertFailure"
-                        type="error"
                         dense
                         text
                         dismissible
-                        transition="scale-transition">
+                        outlined
+                        transition="scale-transition"
+                        class="bootstrap-error">
                   PEN Request failed to update status. Please contact support.
                 </v-alert>
                 <v-alert
                         :value="returnAlertWarning"
-                        type="warning"
                         dense
                         text
                         dismissible
-                        transition="scale-transition">
+                        outlined
+                        transition="scale-transition"
+                        class="bootstrap-warning">
                   PEN Request status updated, but email to student failed. Please contact support.
                 </v-alert>
                 <v-card flat class="mx-3">
@@ -383,29 +451,32 @@
               <v-tab-item>
                 <v-alert
                         :value="rejectAlertSuccess"
-                        type="success"
                         dense
                         text
                         dismissible
-                        transition="scale-transition">
+                        outlined
+                        transition="scale-transition"
+                        class="bootstrap-success">
                   PEN Request updated and email sent to student.
                 </v-alert>
                 <v-alert
                         :value="rejectAlertFailure"
-                        type="error"
                         dense
                         text
                         dismissible
-                        transition="scale-transition">
+                        outlined
+                        transition="scale-transition"
+                        class="bootstrap-error">
                   PEN Request failed to update. Please contact support.
                 </v-alert>
                 <v-alert
                         :value="rejectAlertWarning"
-                        type="warning"
                         dense
                         text
                         dismissible
-                        transition="scale-transition">
+                        outlined
+                        transition="scale-transition"
+                        class="bootstrap-warning">
                   PEN Request updated, but email to student failed. Please contact support.
                 </v-alert>
                 <v-card flat class="pa-3">
