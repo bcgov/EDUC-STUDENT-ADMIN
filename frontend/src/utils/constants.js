@@ -2,6 +2,7 @@ let baseRoot = '/api';
 const authRoot = baseRoot + '/auth';
 const penRequestRoot = baseRoot + '/penRequest';
 const demographicRoot = baseRoot + '/studentDemographics';
+const studentRoot = baseRoot + '/students';
 let object = {
   LOGIN: authRoot + '/login',
   LOGOUT: authRoot + '/logout',
@@ -15,6 +16,7 @@ let object = {
   PEN_REQUEST_COMPLETE_URL: penRequestRoot + '/complete',
   PEN_REQUEST_REJECT_URL: penRequestRoot + '/reject',
   PEN_REQUEST_RETURN_URL: penRequestRoot + '/return',
+  STUDENT_DATA_URL: studentRoot,
   SEARCH_BY_PEN: demographicRoot
 };
 

@@ -151,7 +151,7 @@ const utils = {
       return null;
     }
   },
-  //keys = ['identityTypeCodes', 'penStatusCodes']
+  //keys = ['identityTypeCodes', 'penStatusCodes', 'genderCodes']
   getCodeTable(token, key, url) {
     try {
       let cacheContent = memCache.get(key);

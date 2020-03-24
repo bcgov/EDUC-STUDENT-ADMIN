@@ -71,7 +71,21 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-alert v-if="this.request.pen && (this.request.penRequestStatusCode === this.statusCodes.MANUAL_MATCH || this.request.penRequestStatusCode === this.statusCodes.AUTO_MATCH)"
+          <v-progress-linear
+                  indeterminate
+                  color="blue"
+                  :active="loadingDemographics"
+          ></v-progress-linear>
+          <v-alert
+            :value="studentError"
+            width="100%"
+            outlined
+            transition="scale-transition"
+            class="bootstrap-error">
+            There was an error while attempting to load student demographics.
+          </v-alert>
+          <v-alert
+            :value="showDemographics"
             width="100%"
             outlined
             transition="scale-transition"
@@ -89,21 +103,17 @@
                 <p class="mb-0">Legal:</p>
               </v-col>
               <v-col cols="12" xl="11" lg="11" md="11" sm="11">
-                <p class="mb-0"><strong>{{ this.request.legalLastName ? this.request.legalLastName: '(none)'}}, {{ this.request.legalFirstName ? this.request.legalFirstName: '(none)'}}, {{ this.request.legalMiddleNames ? this.request.legalMiddleNames: '(none)'}}</strong></p>
+                <p v-if="!this.student.legalLastName && !this.student.legalFirstName && !this.student.legalMiddleNames" class="mb-2"></p>
+                <p v-else class="mb-0"><strong>{{ this.student.legalLastName ? this.student.legalLastName: '(none)'}}, {{ this.student.legalFirstName ? this.student.legalFirstName: '(none)'}}, {{ this.student.legalMiddleNames ? this.student.legalMiddleNames: '(none)'}}</strong></p>
               </v-col>
             </v-row>
             <v-row no-gutters class="px-2">
               <v-col cols="12" xl="1" lg="1" md="1" sm="1">
                 <p class="mb-0">Usual:</p>
               </v-col>
-              <v-col v-if="!this.request.usualLastName && !this.request.usualFirstName && !this.request.usualMiddleName" cols="12" xl="11" lg="11" md="11" sm="11">
-                <p class="mb-0"></p>
-              </v-col>
-              <v-col v-else-if="this.request.usualLastName === this.request.legalLastName && this.request.usualFirstName === this.request.legalFirstName && this.request.usualMiddleName === this.request.legalMiddleNames" cols="12" xl="11" lg="11" md="11" sm="11">
-                <p class="mb-0 grey--text text--darken-1"><strong>{{ this.request.usualLastName ? this.request.usualLastName: '(none)'}}, {{ this.request.usualFirstName ? this.request.usualFirstName: '(none)'}}, {{ this.request.usualMiddleName ? this.request.usualMiddleName: '(none)'}}</strong></p>
-              </v-col>
-              <v-col v-else cols="12" xl="11" lg="11" md="11" sm="11">>
-                <p class="mb-0"><strong>{{ this.request.usualLastName ? this.request.usualLastName: '(none)'}}, {{ this.request.usualFirstName ? this.request.usualFirstName: '(none)'}}, {{ this.request.usualMiddleName ? this.request.usualMiddleName: '(none)'}}</strong></p>
+              <v-col cols="12" xl="11" lg="11" md="11" sm="11">
+                <p v-if="!this.student.usualLastName && !this.student.usualFirstName && !this.student.usualMiddleNames" class="mb-2"></p>
+                <p v-else class="mb-0"><strong>{{ this.student.usualLastName ? this.student.usualLastName: '(none)'}}, {{ this.student.usualFirstName ? this.student.usualFirstName: '(none)'}}, {{ this.student.usualMiddleNames ? this.student.usualMiddleNames: '(none)'}}</strong></p>
               </v-col>
             </v-row>
             <v-row no-gutters class="px-2">
@@ -111,7 +121,7 @@
                 <p class="mb-0">DOB:</p>
               </v-col>
               <v-col cols="12" xl="11" lg="11" md="11" sm="11">
-                <p class="mb-0"><strong>{{ this.request.dob ? moment(this.request.dob).format('YYYY-MM-DD'):'' }}</strong></p>
+                <p class="mb-0"><strong>{{ this.student.dob }}</strong></p>
               </v-col>
             </v-row>
             <v-row no-gutters class="px-2">
@@ -119,7 +129,7 @@
                 <p class="mb-0">Gender:</p>
               </v-col>
               <v-col cols="12" xl="11" lg="11" md="11" sm="11">
-                <p class="mb-0"><strong>{{ this.request.genderCode }}</strong></p>
+                <p class="mb-0"><strong>{{ this.student.genderCode }}</strong></p>
               </v-col>
             </v-row>
             <v-row v-if="this.request.dataSourceCode === 'BC Services Card' || this.request.dataSourceCode === 'BCSC'" no-gutters class="px-2">
@@ -575,7 +585,20 @@ export default {
       loadingClaimAction: false,
       statusCodes: Statuses.PEN_STATUS_CODES,
       autoMatchCodes: Statuses.AUTO_MATCH_RESULT_CODES,
-      filteredResults:[]
+      filteredResults:[],
+      student: {
+        legalFirstName: null,
+        legalMiddleNames: null,
+        legalLastName: null,
+        usualFirstName: null,
+        usualMiddleNames: null,
+        usualLastName: null,
+        dob: null,
+        genderCode: null
+      },
+      showDemographics:false,
+      studentError: false,
+      loadingDemographics:false
     };
   },
   computed: {
@@ -596,6 +619,20 @@ export default {
 
         if(this.request.bcscAutoMatchDetails) {
           this.autoPenResults = this.request.bcscAutoMatchDetails.split(' ')[0];
+        }
+        if(this.request.pen && (this.request.penRequestStatusCode === this.statusCodes.MANUAL_MATCH || this.request.penRequestStatusCode === this.statusCodes.AUTO_MATCH)) {
+          this.showDemographics = true;
+          this.loadingDemographics = true;
+          ApiService.apiAxios
+            .get(Routes.STUDENT_DATA_URL + '/' + this.request.pen)
+            .then(demographicsResponse => {
+              this.student = demographicsResponse.data;
+            })
+            .catch(error => {
+              this.studentError = true;
+              console.log(error);
+            })
+            .finally(()=>{this.loadingDemographics = false;});
         }
       })
       .catch(error => {
