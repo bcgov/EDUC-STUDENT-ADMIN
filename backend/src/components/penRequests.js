@@ -209,6 +209,45 @@ async function getPenRequestById(req, res) {
   }
 }
 
+async function getStudentById(req, res) {
+  const token = utils.getBackendToken(req);
+  if (!token) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No access token'
+    });
+  }
+  const id = req.params.id;
+  return Promise.all([
+    utils.getData(token, config.get('server:studentURL'), {params: {pen: id}}),
+    utils.getCodeTable(token, 'genderCodes', config.get('server:studentGenderCodesURL'))
+  ])
+    .then(async ([dataResponse, genderCodesResponse]) => {
+      if(Array.isArray(dataResponse) && dataResponse.length === 1) {
+        const formattedResponse = {
+          legalFirstName: dataResponse[0].legalFirstName,
+          legalMiddleNames: dataResponse[0].legalMiddleNames,
+          legalLastName: dataResponse[0].legalLastName,
+          usualFirstName: dataResponse[0].usualFirstName,
+          usualMiddleNames: dataResponse[0].usualMiddleNames,
+          usualLastName: dataResponse[0].usualLastName,
+          dob: dataResponse[0].dob,
+          genderCode: utils.getCodeLabel(genderCodesResponse, 'genderCode', dataResponse[0].genderCode)
+        };
+        return res.status(200).json(formattedResponse);
+      } else {
+        log.error('An invalid number of students was returned from the student api.  There should be exactly one result returned.');
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          message: 'INTERNAL SERVER ERROR'
+        });
+      }
+    }).catch((e) => {
+      logApiError(e, 'getStudentById', 'Error occurred while attempting to GET student.');
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'INTERNAL SERVER ERROR'
+      });
+    });
+}
+
 async function getStudentDemographicsById(req, res) {
   try{
     const token = utils.getBackendToken(req);
@@ -456,6 +495,7 @@ module.exports = {
   getPenRequestCommentById,
   getPenRequestStatusCodes,
   getPenRequestById,
+  getStudentById,
   getStudentDemographicsById,
   postPenRequestComment,
   putPenRequest,

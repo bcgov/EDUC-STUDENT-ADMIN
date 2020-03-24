@@ -25,6 +25,7 @@ nconf.defaults({
     digitalIdURL: process.env.DIGITAL_ID_URL,
     digitalIdIdentityTypeCodesURL: process.env.DIGITAL_ID_URL + '/identityTypeCodes',
     studentURL: process.env.STUDENT_API_URL,
+    studentGenderCodesURL: process.env.STUDENT_API_URL + '/gender-codes',
     penEmails: process.env.PEN_REQUEST_EMAIL_API_URL,
   },
   oidc: {
