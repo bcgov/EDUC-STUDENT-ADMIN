@@ -498,7 +498,7 @@ async function findPenRequestsByPen(req, res){
     }
     const url = `${config.get('server:penRequestURL')}/?pen=${req.query.pen}`;
     const response = await getData(token, url);
-    return res.status(200).json(response.data);
+    return res.status(200).json(response);
   }catch (e) {
     logApiError(e, 'findPenRequestsByPen', 'Failed to get pen requests for the given pen.');
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
