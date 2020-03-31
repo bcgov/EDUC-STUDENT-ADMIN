@@ -404,7 +404,7 @@
                   </v-row>
                   <v-row justify="end" class="px-3">
                     <v-col justify="right" style="text-align: right;" cols="8" xl="3" lg="5" md="5" class="pt-0">
-                      <span  v-if="this.numberOfDuplicatePenRequests > 0"><span style="color: red;font-weight: bold;font-size: 1.2rem;">{{this.numberOfDuplicatePenRequests}}</span><span style="color: red;font-weight: normal;font-size: 1rem;"> prior PEN Requests</span></span>
+                      <span  v-if="this.numberOfDuplicatePenRequests > 0"><span class="red--text font-weight-bold">{{this.numberOfDuplicatePenRequests}}</span><span class="red--text"> prior PEN Requests</span></span>
                     </v-col>
                       <v-col cols="4" xl="3" lg="5" md="5" class="pt-0">
                       <v-btn :disabled="!enableCompleteButton" color="#38598a" justify="center" width="100%" :dark="enableCompleteButton" @click="completeRequest">Provide PEN to Student</v-btn>
@@ -826,11 +826,12 @@ export default {
     },
     searchDuplicatePenRequestsByPen() {
       this.loadingDuplicatePenRequests = true;
+      const params={
+        pen :this.penSearchId
+      };
       ApiService.apiAxios
-        .get(`${Routes.PEN_REQUEST_SEARCH_URL}duplicatePenRequests?pen=${this.penSearchId}`)
+        .get(`${Routes.DUPLICATE_PEN_REQUESTS_URL}`,{params})
         .then(response => {
-          console.log(response.data);
-          console.log(response.data.length);
           if(response && response.data && response.data.length > 0){
             this.numberOfDuplicatePenRequests=response.data.length;
           }
