@@ -6,7 +6,6 @@ const log = require('npmlog');
 const config = require('../config/index');
 const utils = require('../components/utils');
 const { ApiError, ServiceError } = require('./error');
-const axios = require('axios');
 async function completePenRequest(req, res) {
   try {
     const token = getBackendToken(req, res);
