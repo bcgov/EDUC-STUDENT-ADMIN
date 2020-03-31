@@ -12,6 +12,7 @@ let object = {
   USER: authRoot + '/user',
   PEN_REQUEST_ENDPOINT: penRequestRoot,
   PEN_REQUEST_SEARCH_URL: penRequestRoot + '/',
+  DUPLICATE_PEN_REQUESTS_URL:penRequestRoot + '/duplicatePenRequests',
   PEN_REQUEST_STATUSES_URL: baseRoot + '/penrequeststatuses',
   PEN_REQUEST_COMPLETE_URL: penRequestRoot + '/complete',
   PEN_REQUEST_REJECT_URL: penRequestRoot + '/reject',
