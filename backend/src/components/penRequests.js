@@ -491,22 +491,14 @@ async function updateStudentAndDigitalId(req){
 
 async function findPenRequestsByPen(req, res){
   try {
-    const token = getBackendToken(req, res);
+    const token = utils.getBackendToken(req);
     if (!token) {
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'No access token'
       });
     }
-     const params = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      };
     const url = config.get('server:penRequestURL') + `/?pen=${req.query.pen}`;
-    log.silly(`url is ${url}`);
-
-    const response = await axios.get( url, params);
-    log.silly(`response is ${JSON.stringify(response.data)}`);
+    const response = await getData(token, url);
     return res.status(200).json(response.data);
   }catch (e) {
     logApiError(e, 'findPenRequestsByPen', 'Failed to get pen requests for the given pen.');
