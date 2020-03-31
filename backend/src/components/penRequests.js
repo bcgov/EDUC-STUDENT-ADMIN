@@ -6,7 +6,7 @@ const log = require('npmlog');
 const config = require('../config/index');
 const utils = require('../components/utils');
 const { ApiError, ServiceError } = require('./error');
-
+const axios = require('axios');
 async function completePenRequest(req, res) {
   try {
     const token = getBackendToken(req, res);
@@ -489,6 +489,32 @@ async function updateStudentAndDigitalId(req){
 
 }
 
+async function findPenRequestsByPen(req, res){
+  try {
+    const token = getBackendToken(req, res);
+    if (!token) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'No access token'
+      });
+    }
+     const params = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      };
+    const url = config.get('server:penRequestURL') + `/?pen=${req.query.pen}`;
+    log.silly(`url is ${url}`);
+
+    const response = await axios.get( url, params);
+    log.silly(`response is ${JSON.stringify(response.data)}`);
+    return res.status(200).json(response.data);
+  }catch (e) {
+    logApiError(e, 'findPenRequestsByPen', 'Failed to get pen requests for the given pen.');
+    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
+    throw new ApiError(status, {message: 'API error'}, e);
+  }
+}
+
 module.exports = {
   completePenRequest,
   getAllPenRequests,
@@ -500,5 +526,6 @@ module.exports = {
   postPenRequestComment,
   putPenRequest,
   rejectPenRequest,
-  returnPenRequest
+  returnPenRequest,
+  findPenRequestsByPen
 };

@@ -1,3 +1,4 @@
+
 const file =require('../components/file');
 const passport = require('passport');
 const config = require('../config/index');
@@ -6,7 +7,7 @@ const router = express.Router();
 const axios = require('axios');
 const auth = require('../components/auth');
 const utils = require('../components/utils');
-const { completePenRequest, getAllPenRequests, getPenRequestById, getPenRequestCommentById, postPenRequestComment, putPenRequest, rejectPenRequest, returnPenRequest } = require('../components/penRequests');
+const { completePenRequest, getAllPenRequests, getPenRequestById, getPenRequestCommentById, postPenRequestComment, putPenRequest, rejectPenRequest, returnPenRequest,findPenRequestsByPen } = require('../components/penRequests');
 
 const log = require('npmlog');
 
@@ -29,6 +30,11 @@ router.put('/', passport.authenticate('jwt', {session: false}, undefined), auth.
  * Get all pen retrieval requests
  */
 router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, getAllPenRequests);
+
+/*
+ * Get all pen retrieval requests for a given pen number in the query parameter.
+ */
+router.get('/duplicatePenRequests', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, findPenRequestsByPen);
 
 /*
  * Get a pen request by id
