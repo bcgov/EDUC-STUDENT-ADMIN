@@ -298,7 +298,7 @@
             <v-progress-linear
                     indeterminate
                     color="blue"
-                    :active="loadingActionResults"
+                    :active="loadingActionResults && loadingDuplicatePenRequests"
             ></v-progress-linear>
             <v-tabs vertical>
               <v-tab>Provide PEN</v-tab>
@@ -403,7 +403,10 @@
                     </v-col>
                   </v-row>
                   <v-row justify="end" class="px-3">
-                    <v-col cols="12" xl="3" lg="5" md="5" class="pt-0">
+                    <v-col justify="right" style="text-align: right;" cols="8" xl="3" lg="5" md="5" class="pt-0">
+                      <span  v-if="this.numberOfDuplicatePenRequests > 0"><span class="red--text font-weight-bold">{{this.numberOfDuplicatePenRequests}}</span><span class="red--text"> prior PEN Requests</span></span>
+                    </v-col>
+                      <v-col cols="4" xl="3" lg="5" md="5" class="pt-0">
                       <v-btn :disabled="!enableCompleteButton" color="#38598a" justify="center" width="100%" :dark="enableCompleteButton" @click="completeRequest">Provide PEN to Student</v-btn>
                     </v-col>
                   </v-row>
@@ -582,7 +585,9 @@ export default {
       loadingPen: true,
       loadingComments: true,
       loadingActionResults: false,
+      loadingDuplicatePenRequests:false,
       loadingClaimAction: false,
+      numberOfDuplicatePenRequests:0,
       statusCodes: Statuses.PEN_STATUS_CODES,
       autoMatchCodes: Statuses.AUTO_MATCH_RESULT_CODES,
       filteredResults:[],
@@ -777,10 +782,12 @@ export default {
       this.demographics.dob = null;
       this.demographics.gender = null;
       this.enableCompleteButton = false;
+      this.numberOfDuplicatePenRequests=0;
       if(this.penSearchId) {
         if (this.penSearchId.length === 9) {
           if (this.checkDigit()) {
             this.searchByPen();
+            this.searchDuplicatePenRequestsByPen();
           } else {
             this.notAPenError = true;
           }
@@ -815,6 +822,23 @@ export default {
         })
         .finally(() => {
           this.loadingActionResults = false;
+        });
+    },
+    searchDuplicatePenRequestsByPen() {
+      this.loadingDuplicatePenRequests = true;
+      const params={
+        pen :this.penSearchId
+      };
+      ApiService.apiAxios
+        .get(`${Routes.DUPLICATE_PEN_REQUESTS_URL}`,{params})
+        .then(response => {
+          if(response && response.data && response.data.length > 0){
+            this.numberOfDuplicatePenRequests=response.data.length;
+          }
+        }).catch(error => {
+          console.log(error);
+        }).finally(() => {
+          this.loadingDuplicatePenRequests = false;
         });
     },
     backToList() {
