@@ -497,7 +497,7 @@ async function findPenRequestsByPen(req, res){
         message: 'No access token'
       });
     }
-    const url = config.get('server:penRequestURL') + `/?pen=${req.query.pen}`;
+    const url = `${config.get('server:penRequestURL')}/?pen=${req.query.pen}`;
     const response = await getData(token, url);
     return res.status(200).json(response.data);
   }catch (e) {
