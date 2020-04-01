@@ -16,7 +16,8 @@ const router = express.Router();
 //provides a callback location for the auth service
 router.get('/callback',
   passport.authenticate('oidc', {
-    failureRedirect: 'error'
+    failureRedirect: 'error',
+    failureFlash: true
   }),
   (_req, res) => {
     res.redirect(config.get('server:frontend'));
