@@ -688,7 +688,7 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          if(error.response.data)
+          if(error.response.data && error.response.data.message.includes('email service'))
             this.returnAlertWarning=true;
           else
             this.returnAlertFailure=true;

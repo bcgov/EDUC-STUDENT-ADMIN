@@ -173,6 +173,7 @@ async function getPenRequestById(req, res) {
     ])
       .then(async ([penRetrievalResponse, digitalIdIdentityTypeCodesResponse, statusCodesResponse]) => {
         const response = await getData(token,config.get('server:digitalIdURL') + '/' + penRetrievalResponse['digitalID']);
+        req['session'].identityType= response['identityTypeCode']; // add this to session for next use while triggering email.
         if(!digitalIdIdentityTypeCodesResponse) {
           log.error('Failed to get digitalId identity type codes. Using code value instead of label.');
           penRetrievalResponse['dataSourceCode'] = response['identityTypeCode'];
@@ -276,7 +277,10 @@ async function getStudentDemographicsById(req, res) {
 
 async function sendPenRequestEmail(req, token, emailType) {
   const lowerCaseEmail = emailType.toLowerCase();
-  let emailBody = {emailAddress: req.body['email']};
+  const emailBody = {
+    emailAddress: req.body['email'],
+    identityType: req['session'].identityType
+  };
   if (lowerCaseEmail === 'reject') {
     if (!req.body.failureReason) {
       throw new ServiceError('400', 'Failure reason is required.');
