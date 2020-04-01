@@ -300,7 +300,7 @@
                     color="blue"
                     :active="loadingActionResults && loadingDuplicatePenRequests"
             ></v-progress-linear>
-            <v-tabs vertical>
+            <v-tabs vertical v-model="activeTab">
               <v-tab>Provide PEN</v-tab>
               <v-tab>Request Info</v-tab>
               <v-tab>Reject</v-tab>
@@ -603,7 +603,8 @@ export default {
       },
       showDemographics:false,
       studentError: false,
-      loadingDemographics:false
+      loadingDemographics:false,
+      activeTab: 0
     };
   },
   computed: {
@@ -638,6 +639,8 @@ export default {
               console.log(error);
             })
             .finally(()=>{this.loadingDemographics = false;});
+        } else if(this.request.penRequestStatusCode === this.statusCodes.REJECTED) {
+          this.activeTab = 2;
         }
       })
       .catch(error => {
