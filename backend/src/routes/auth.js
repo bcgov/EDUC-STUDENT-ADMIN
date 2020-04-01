@@ -3,6 +3,8 @@
 const config =require('../config/index');
 const passport = require('passport');
 const express = require('express');
+const EE = require('events').EventEmitter;
+const log = exports = module.exports = new EE();
 const auth = require('../components/auth');
 const jsonwebtoken = require('jsonwebtoken');
 
@@ -34,6 +36,15 @@ router.get('/error', (_req, res) => {
 //redirects to the SSO login screen
 router.get('/login', passport.authenticate('oidc', {
   failureRedirect: 'error'
+},function (err,user,info) {
+  if (err) {
+    log.debug(err);
+    return next(err);
+  }
+
+  log.info(user);
+  log.info(info);
+  next(user);
 }));
 
 //removes tokens and destroys session
