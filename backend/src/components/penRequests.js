@@ -416,7 +416,6 @@ async function updatePenRequest(req, res) {
   try {
     const token = utils.getBackendToken(req);
     const penRequest = thisSession.penRequest;
-    const dataSourceCode = req.body.dataSourceCode;
     penRequest.pen = req.body.pen;
     penRequest.penRequestStatusCode = req.body.penRequestStatusCode;
     penRequest.reviewer = req.body.reviewer;
@@ -430,7 +429,7 @@ async function updatePenRequest(req, res) {
       utils.getCodeTable(token, 'penStatusCodes', config.get('server:statusCodeURL'))
     ])
       .then(async ([penRetrievalResponse, statusCodesResponse]) => {
-        penRetrievalResponse.dataSourceCode = dataSourceCode;
+        penRetrievalResponse.dataSourceCode = penRequest.dataSourceCode;
         if(!statusCodesResponse) {
           log.error('Failed to get pen request status codes.  Using code value instead of label.');
           penRetrievalResponse.penRequestStatusCodeLabel = penRequest.penRequestStatusCode;

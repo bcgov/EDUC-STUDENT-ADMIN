@@ -861,8 +861,7 @@ export default {
         'reviewer': body.reviewer,
         'failureReason': body.failureReason,
         'bcscAutoMatchOutcome': body.bcscAutoMatchOutcome,
-        'bcscAutoMatchDetails': body.bcscAutoMatchDetails,
-        'dataSourceCode': body.dataSourceCode
+        'bcscAutoMatchDetails': body.bcscAutoMatchDetails
       };
     }
   }
