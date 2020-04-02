@@ -19,7 +19,6 @@ const router = express.Router();
 router.get('/callback',
   passport.authenticate('oidc', {
     failureRedirect: 'error',
-    failureFlash: true
   }),
   (_req, res) => {
     res.redirect(config.get('server:frontend'));
@@ -28,6 +27,11 @@ router.get('/callback',
 
 //a prettier way to handle errors
 router.get('/error', (_req, res) => {
+  log.silly(`req is ${JSON.stringify(_req)}`);
+  if(res.data){
+    log.silly(`res data is ${JSON.stringify(res.data)}`);
+  }
+  log.silly(`res status code is ::  ${res.statusCode} , status message is :: ${res.statusMessage} , status Text is :: ${res.statusText}`);
   res.status(401).json({
     message: 'Error: Unable to authenticate'
   });
