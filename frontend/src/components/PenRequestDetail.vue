@@ -298,7 +298,7 @@
             <v-progress-linear
                     indeterminate
                     color="blue"
-                    :active="loadingActionResults && loadingDuplicatePenRequests"
+                    :active="loadingActionResults || loadingDuplicatePenRequests"
             ></v-progress-linear>
             <v-tabs vertical v-model="activeTab">
               <v-tab>Provide PEN</v-tab>
@@ -728,7 +728,6 @@ export default {
     },
     completeRequest() {
       this.loadingActionResults = true;
-      this.completedRequestSuccess = null;
       this.completedUpdateSuccess = null;
       this.request.pen = this.penSearchId;
       if(this.request.bcscAutoMatchOutcome === Statuses.AUTO_MATCH_RESULT_CODES.ONE_MATCH && this.autoPenResults === this.penSearchId) {
@@ -856,11 +855,14 @@ export default {
     },
     prepPut() {
       const body = JSON.parse(JSON.stringify(this.request));
-      delete body['createUser'];
-      delete body['createDate'];
-      delete body['updateUser'];
-      delete body['updateDate'];
-      return body;
+      return {
+        'pen': body.pen,
+        'penRequestStatusCode': body.penRequestStatusCode,
+        'reviewer': body.reviewer,
+        'failureReason': body.failureReason,
+        'bcscAutoMatchOutcome': body.bcscAutoMatchOutcome,
+        'bcscAutoMatchDetails': body.bcscAutoMatchDetails
+      };
     }
   }
 };

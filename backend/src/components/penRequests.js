@@ -282,7 +282,7 @@ async function getStudentDemographicsById(req, res) {
 async function sendPenRequestEmail(req, token, emailType) {
   const lowerCaseEmail = emailType.toLowerCase();
   const emailBody = {
-    emailAddress: req.body['email'],
+    emailAddress: req['session'].penRequest['email'],
     identityType: req['session'].identityType
   };
   if (lowerCaseEmail === 'reject') {
@@ -415,20 +415,21 @@ async function updatePenRequest(req, res) {
   }
   try {
     const token = utils.getBackendToken(req);
-    const penRequest = req.body;
-    const dataSourceCode = req.body.dataSourceCode;
-    delete penRequest.dataSourceCode;
-    delete penRequest.penRequestStatusCodeLabel;
-
-
-    penRequest.digitalID = thisSession.penRequest.digitalID;
+    const penRequest = thisSession.penRequest;
+    penRequest.pen = req.body.pen;
+    penRequest.penRequestStatusCode = req.body.penRequestStatusCode;
+    penRequest.reviewer = req.body.reviewer;
+    penRequest.failureReason = req.body.failureReason;
+    penRequest.bcscAutoMatchOutcome = req.body.bcscAutoMatchOutcome;
+    penRequest.bcscAutoMatchDetails = req.body.bcscAutoMatchDetails;
+    penRequest.statusUpdateDate = req.body.statusUpdateDate;
 
     return Promise.all([
       putData(token, config.get('server:penRequestURL'), penRequest),
       utils.getCodeTable(token, 'penStatusCodes', config.get('server:statusCodeURL'))
     ])
       .then(async ([penRetrievalResponse, statusCodesResponse]) => {
-        penRetrievalResponse.dataSourceCode = dataSourceCode;
+        penRetrievalResponse.dataSourceCode = penRequest.dataSourceCode;
         if(!statusCodesResponse) {
           log.error('Failed to get pen request status codes.  Using code value instead of label.');
           penRetrievalResponse.penRequestStatusCodeLabel = penRequest.penRequestStatusCode;
