@@ -27,7 +27,7 @@ router.get('/callback',
 
 //a prettier way to handle errors
 router.get('/error', (_req, res) => {
-  log.silly(`req is ${JSON.stringify(_req)}`);
+  log.silly(`req is ${JSON.stringify(_req.session)}`);
   if(res.data){
     log.silly(`res data is ${JSON.stringify(res.data)}`);
   }
