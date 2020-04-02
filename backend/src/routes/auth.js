@@ -3,8 +3,7 @@
 const config =require('../config/index');
 const passport = require('passport');
 const express = require('express');
-const EE = require('events').EventEmitter;
-const log = exports = module.exports = new EE();
+const log = require('npmlog');
 const auth = require('../components/auth');
 const jsonwebtoken = require('jsonwebtoken');
 
