@@ -15,7 +15,11 @@ const {
 const router = express.Router();
 
 //provides a callback location for the auth service
-router.get('/callback',
+router.get('/callback', function(req,res,next){
+      console.dir(req);
+      console.dir(res);
+      next();
+    },
   passport.authenticate('oidc', {
     failureRedirect: 'error',
   }),
@@ -26,8 +30,6 @@ router.get('/callback',
 
 //a prettier way to handle errors
 router.get('/error', (_req, res) => {
-  console.dir(_req);
-  console.dir(res);
   log.silly(`req is ${JSON.stringify(_req.session)}`);
   if(res.data){
     log.silly(`res data is ${JSON.stringify(res.data)}`);
