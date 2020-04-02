@@ -617,6 +617,8 @@ export default {
     this.myself.id = this.userInfo.userGuid;
     this.penRequestId = this.$store.state['penRequest'].selectedRequest;
 
+
+
     ApiService.apiAxios
       .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.penRequestId)
       .then(response => {

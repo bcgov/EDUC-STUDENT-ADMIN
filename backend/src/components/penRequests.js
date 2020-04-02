@@ -251,9 +251,13 @@ async function getStudentById(req, res) {
 async function getStudentDemographicsById(req, res) {
   try{
     const token = utils.getBackendToken(req);
-    const response = await getData(token,config.get('server:demographicsURL') + '/' + req.params.id);
+    if (!token) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'No access token'
+      });
+    }
+    const response = await utils.getData(token,config.get('server:demographicsURL') + '/' + req.params.id);
     const birthDate = utils.formatDate(response['studBirth']);
-
     req['session'].studentDemographics = response;
     req['session'].studentDemographics.dob = birthDate;
     const formattedResponse = {
@@ -304,7 +308,18 @@ async function sendPenRequestEmail(req, token, emailType) {
 async function postPenRequestComment(req, res) {
   try{
     const token = utils.getBackendToken(req);
+    if(!token) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'No access token'
+      });
+    }
     const userToken = utils.getUser(req);
+    if(!userToken || !userToken['idir_username'] || !userToken['preferred_username']) {
+      log.error('getPenRequestCommentById Error: could not get user info');
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'INTERNAL SERVER ERROR'
+      });
+    }
 
     //mapping from what comment widget needs to what the comments api needs
     const request = {
@@ -522,5 +537,6 @@ module.exports = {
   putPenRequest,
   rejectPenRequest,
   returnPenRequest,
-  findPenRequestsByPen
+  findPenRequestsByPen,
+  updatePenRequest
 };
