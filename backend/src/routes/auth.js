@@ -16,6 +16,7 @@ const router = express.Router();
 
 //provides a callback location for the auth service
 router.get('/callback', function(req,res,next){
+      log.info(`CALLBACK PID IS::${process.pid}`);
       console.dir(req);
       console.dir(res);
       next();
@@ -41,7 +42,10 @@ router.get('/error', (_req, res) => {
 });
 
 //redirects to the SSO login screen
-router.get('/login', passport.authenticate('oidc', {
+router.get('/login', (req,res,next) =>{
+  log.info(`LOGIN PID IS::${process.pid}`);
+  next();
+}, passport.authenticate('oidc', {
   failureRedirect: 'error'
 },function (err,user,info) {
   if (err) {
