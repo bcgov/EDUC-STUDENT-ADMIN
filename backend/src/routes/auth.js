@@ -17,8 +17,8 @@ const router = express.Router();
 //provides a callback location for the auth service
 router.get('/callback', function(req,res,next){
       log.info(`CALLBACK PID IS::${process.pid}`);
-      console.dir(req);
-      console.dir(res);
+      log.silly(`session id is ${JSON.stringify(req.sessionID)}`);
+      log.silly(`session is ${JSON.stringify(req.session)}`);
       next();
     },
   passport.authenticate('oidc', {
