@@ -52,7 +52,8 @@ const redisClient = redis.createClient({
 const RedisStore = connectRedis(session);
 const dbSession = new RedisStore({
     client: redisClient,
-    prefix: 'student-admin-sess:'
+    prefix: 'student-admin-sess:',
+    ttl: 1800 // 30 minutes after which key will be deleted from redis, if user is active key life will be automatically extended.
 });
 redisClient.on('error', (error)=>{
   log.error(`error occurred in redis client. ${error}`);
