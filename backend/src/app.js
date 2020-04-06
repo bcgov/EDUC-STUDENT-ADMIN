@@ -53,20 +53,23 @@ const RedisStore = connectRedis(session);
 const dbSession = new RedisStore({
     client: redisClient,
     prefix: 'student-admin-sess:',
-    ttl: 1800 // 30 minutes after which key will be deleted from redis, if user is active key life will be automatically extended.
 });
-redisClient.on('error', (error)=>{
-  log.error(`error occurred in redis client. ${error}`);
+redisClient.on('error', (error) => {
+    log.error(`error occurred in redis client. ${error}`);
 });
-//sets cookies for security purposes (prevent cookie access, allow secure connections only, etc)
-const expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+const cookie = {
+    secure: true,
+    httpOnly: true,
+    maxAge: 1800000 //30 minutes in ms. this is same as session time. DO NOT MODIFY, IF MODIFIED, MAKE SURE SAME AS SESSION TIME OUT VALUE.
+};
+if (config.get('environment') !== undefined && config.get('environment') === 'local') {
+    cookie.secure = false;
+}
 app.use(session({
     secret: config.get('oidc:clientSecret'),
     resave: false,
     saveUninitialized: true,
-    httpOnly: true,
-    secure: true,
-    expires: expiryDate,
+    cookie: cookie,
     store: dbSession
 }));
 
