@@ -29,7 +29,7 @@ const studentsRouter = require('./routes/students');
 
 //initialize app
 const app = express();
-
+app.set('trust proxy', 1);
 //sets security measures (headers, etc)
 app.use(cors());
 app.use(helmet());
