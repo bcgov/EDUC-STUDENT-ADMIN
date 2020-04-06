@@ -3,29 +3,7 @@ const { getBackendToken, getData, getCodeTable, getCodeLabel, logApiError } = re
 const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const file = require('./file');
-const axios = require('axios');
 const log = require('npmlog');
-
-// async function getDocuments(req, res) {
-//   const token = getBackendToken(req);
-//   axios.defaults.headers['common']['Authorization'] = `Bearer ${token}`;
-//   const url = `${config.get('server:penRequestURL')}/${req.params.id}/documents`;
-//   log.debug(`url is ${url}`);
-//   axios.get(url).then(documentResponse =>{
-//     const results=[];
-//     for(const element of documentResponse.data)  {
-//       if(element.fileSize)
-//         element.fileSize = file.humanFileSize(element.fileSize);
-//       results.push(element);
-//     }
-//     return res.status(200).json(results);
-//   }).catch(error=>{
-//     log.error('An error occurred attempting to get documents.');
-//     log.error(error);
-//     log.error(JSON.stringify(error.response.data));
-//     return res.status(500).json();
-//   });
-// }
 
 function getDocuments(req, res) {
   try{
@@ -83,13 +61,11 @@ async function getDocumentById(req, res) {
       message: 'You are not authorised to access this page.'
     });
   }
-  axios.defaults.headers['common']['Authorization'] = `Bearer ${token}`;
   const url = `${config.get('server:penRequestURL')}/${req.params.id}/documents/${req.params.documentId}`;
-  log.debug(`url is ${url}`);
-  axios.get(url).then(resData =>{
-    res.setHeader('Content-disposition', 'attachment; filename=' + resData.data.fileName);
-    res.setHeader('Content-type', resData.data.fileExtension);
-    return res.status(200).send(Buffer.from(resData.data.documentData, 'base64'));
+  getData(token, url).then(resData =>{
+    res.setHeader('Content-disposition', 'attachment; filename=' + resData.fileName);
+    res.setHeader('Content-type', resData.fileExtension);
+    return res.status(200).send(Buffer.from(resData.documentData, 'base64'));
   }).catch(error=>{
     log.error('An error occurred attempting to get documents.');
     log.error(error);
