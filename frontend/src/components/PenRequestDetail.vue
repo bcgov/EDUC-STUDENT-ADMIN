@@ -541,7 +541,7 @@ export default {
   data () {
     return {
       headers: [
-        { text: 'Type', value: 'documentTypeCode',  },
+        { text: 'Type', value: 'documentTypeLabel',  },
         { text: 'File Name', value: 'fileName' },
         { text: 'Upload Date/time', value: 'createDate' },
         { text: 'Size', value: 'fileSize' },

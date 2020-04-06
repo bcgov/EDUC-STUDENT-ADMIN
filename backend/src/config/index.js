@@ -20,6 +20,7 @@ nconf.defaults({
     morganFormat: 'dev',
     port: '8080',
     statusCodeURL: process.env.PEN_REQUEST_API_URL + '/statuses',
+    documentTypeCodesURL: process.env.PEN_REQUEST_API_URL + '/document-types',
     penRequestURL: process.env.PEN_REQUEST_API_URL,
     demographicsURL: process.env.PEN_DEMOGRAPHICS_URL,
     digitalIdURL: process.env.DIGITAL_ID_URL,
