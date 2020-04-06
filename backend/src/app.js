@@ -39,38 +39,38 @@ app.use(helmet.noCache());
 //tells the app to use json as means of transporting data
 app.use(express.json());
 app.use(express.urlencoded({
-    extended: false
+  extended: false
 }));
 
 app.use(morgan(config.get('server:morganFormat')));
 
 const redisClient = redis.createClient({
-    host: config.get('redis:host'),
-    port: config.get('redis:port'),
-    password: config.get('redis:password')
+  host: config.get('redis:host'),
+  port: config.get('redis:port'),
+  password: config.get('redis:password')
 });
 const RedisStore = connectRedis(session);
 const dbSession = new RedisStore({
-    client: redisClient,
-    prefix: 'student-admin-sess:',
+  client: redisClient,
+  prefix: 'student-admin-sess:',
 });
 redisClient.on('error', (error) => {
-    log.error(`error occurred in redis client. ${error}`);
+  log.error(`error occurred in redis client. ${error}`);
 });
 const cookie = {
-    secure: true,
-    httpOnly: true,
-    maxAge: 1800000 //30 minutes in ms. this is same as session time. DO NOT MODIFY, IF MODIFIED, MAKE SURE SAME AS SESSION TIME OUT VALUE.
+  secure: true,
+  httpOnly: true,
+  maxAge: 1800000 //30 minutes in ms. this is same as session time. DO NOT MODIFY, IF MODIFIED, MAKE SURE SAME AS SESSION TIME OUT VALUE.
 };
 if (config.get('environment') !== undefined && config.get('environment') === 'local') {
-    cookie.secure = false;
+  cookie.secure = false;
 }
 app.use(session({
-    secret: config.get('oidc:clientSecret'),
-    resave: false,
-    saveUninitialized: true,
-    cookie: cookie,
-    store: dbSession
+  secret: config.get('oidc:clientSecret'),
+  resave: false,
+  saveUninitialized: true,
+  cookie: cookie,
+  store: dbSession
 }));
 
 //initialize routing and session. Cookies are now only reachable via requests (not js)
@@ -80,62 +80,62 @@ app.use(passport.session());
 //configure logging
 log.level = config.get('server:logLevel');
 log.addLevel('debug', 1500, {
-    fg: 'cyan'
+  fg: 'cyan'
 });
 
 //initialize our authentication strategy
 utils.getOidcDiscovery().then(discovery => {
-    log.debug('issuer: ', discovery.issuer);
-    log.debug('authorizationURL: ', discovery.authorization_endpoint);
-    log.debug('tokenURL: ', discovery.token_endpoint);
-    log.debug('userInfoURL: ', discovery['userinfo_endpoint']);
-    log.debug('clientID: ', config.get('oidc:clientId'));
-    log.debug('clientSecret: ', config.get('oidc:clientSecret'));
-    log.debug('callbackURL: ', config.get('server:frontend') + '/api/auth/callback');
-    log.debug('scope: ', discovery.scopes_supported);
-    //OIDC Strategy is used for authorization
-    passport.use('oidc', new OidcStrategy({
-        issuer: discovery.issuer,
-        authorizationURL: discovery.authorization_endpoint,
-        tokenURL: discovery.token_endpoint,
-        userInfoURL: discovery['userinfo_endpoint'],
-        clientID: config.get('oidc:clientId'),
-        clientSecret: config.get('oidc:clientSecret'),
-        callbackURL: config.get('server:frontend') + '/api/auth/callback',
-        scope: discovery.scopes_supported,
-        kc_idp_hint: 'keycloak_bcdevexchange_idir'
-    }, (_issuer, _sub, profile, accessToken, refreshToken, done) => {
-        if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
-            (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
-            return done('No access token', null);
-        }
-        //Generate token for frontend validation
-        //set access and refresh tokens
-        profile.jwtFrontend = auth.generateUiToken();
-        profile.jwt = accessToken;
-        profile.refreshToken = refreshToken;
-        return done(null, profile);
-    }));
-    //JWT strategy is used for authorization
-    passport.use('jwt', new JWTStrategy({
-        algorithms: ['RS256'],
-        // Keycloak 7.3.0 no longer automatically supplies matching client_id audience.
-        // If audience checking is needed, check the following SO to update Keycloak first.
-        // Ref: https://stackoverflow.com/a/53627747
-        //audience: config.get('tokenGenerate:audience'),
-        audience: config.get('server:frontend'),
-        issuer: config.get('tokenGenerate:issuer'),
-        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-        secretOrKey: config.get('tokenGenerate:publicKey')
-    }, (jwtPayload, done) => {
-        if ((typeof (jwtPayload) === 'undefined') || (jwtPayload === null)) {
-            return done('No JWT token', null);
-        }
-        done(null, {
-            jwt: jwtPayload,
-            realmRole: jwtPayload['realm_role']
-        });
-    }));
+  log.debug('issuer: ', discovery.issuer);
+  log.debug('authorizationURL: ', discovery.authorization_endpoint);
+  log.debug('tokenURL: ', discovery.token_endpoint);
+  log.debug('userInfoURL: ', discovery['userinfo_endpoint']);
+  log.debug('clientID: ', config.get('oidc:clientId'));
+  log.debug('clientSecret: ', config.get('oidc:clientSecret'));
+  log.debug('callbackURL: ', config.get('server:frontend') + '/api/auth/callback');
+  log.debug('scope: ', discovery.scopes_supported);
+  //OIDC Strategy is used for authorization
+  passport.use('oidc', new OidcStrategy({
+    issuer: discovery.issuer,
+    authorizationURL: discovery.authorization_endpoint,
+    tokenURL: discovery.token_endpoint,
+    userInfoURL: discovery['userinfo_endpoint'],
+    clientID: config.get('oidc:clientId'),
+    clientSecret: config.get('oidc:clientSecret'),
+    callbackURL: config.get('server:frontend') + '/api/auth/callback',
+    scope: discovery.scopes_supported,
+    kc_idp_hint: 'keycloak_bcdevexchange_idir'
+  }, (_issuer, _sub, profile, accessToken, refreshToken, done) => {
+    if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
+      (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
+      return done('No access token', null);
+    }
+    //Generate token for frontend validation
+    //set access and refresh tokens
+    profile.jwtFrontend = auth.generateUiToken();
+    profile.jwt = accessToken;
+    profile.refreshToken = refreshToken;
+    return done(null, profile);
+  }));
+  //JWT strategy is used for authorization
+  passport.use('jwt', new JWTStrategy({
+    algorithms: ['RS256'],
+    // Keycloak 7.3.0 no longer automatically supplies matching client_id audience.
+    // If audience checking is needed, check the following SO to update Keycloak first.
+    // Ref: https://stackoverflow.com/a/53627747
+    //audience: config.get('tokenGenerate:audience'),
+    audience: config.get('server:frontend'),
+    issuer: config.get('tokenGenerate:issuer'),
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: config.get('tokenGenerate:publicKey')
+  }, (jwtPayload, done) => {
+    if ((typeof (jwtPayload) === 'undefined') || (jwtPayload === null)) {
+      return done('No JWT token', null);
+    }
+    done(null, {
+      jwt: jwtPayload,
+      realmRole: jwtPayload['realm_role']
+    });
+  }));
 });
 //functions to serialize/deserialize users
 passport.serializeUser((user, next) => next(null, user));
@@ -143,7 +143,7 @@ passport.deserializeUser((obj, next) => next(null, obj));
 
 // GetOK Base API for readiness and liveness probe
 apiRouter.get('/health', (_req, res) => {
-    res.status(200).json();
+  res.status(200).json();
 });
 
 //set up routing to auth and main API
@@ -157,7 +157,7 @@ apiRouter.use('/students', studentsRouter);
 
 // Prevent unhandled errors from crashing application
 process.on('unhandledRejection', err => {
-    log.error(err.stack);
+  log.error(err.stack);
 });
 
 module.exports = app;
