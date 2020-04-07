@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../components/auth');
 const { completePenRequest, getAllPenRequests, getPenRequestById, getPenRequestCommentById, postPenRequestComment, putPenRequest, rejectPenRequest, returnPenRequest,findPenRequestsByPen } = require('../components/penRequests');
-const { getDocuments, getDocumentById } = require('../components/documents');
+const { getDocuments, getDocumentById, updateDocumentTypeById } = require('../components/documents');
 
 /**
  * Creates a comment for a pen request given a pen request id
@@ -46,4 +46,8 @@ router.get('/:id/documents', passport.authenticate('jwt', {session: false}, unde
 
 // retrieve the document by its id.
 router.get('/:id/documents/:documentId', auth.isValidAdminToken, getDocumentById);
+
+// Updates the type of a document by its id.
+router.put('/:id/documents/:documentId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, updateDocumentTypeById);
+
 module.exports = router;

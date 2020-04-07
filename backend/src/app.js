@@ -151,7 +151,7 @@ app.use(/(\/api)?/, apiRouter);
 
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/penRequest', penRequestRouter);
-apiRouter.use('/penRequestStatuses', penRequestStatusesRouter);
+apiRouter.use('/codes', penRequestStatusesRouter);
 apiRouter.use('/studentDemographics', studentDemographicsRouter);
 apiRouter.use('/students', studentsRouter);
 

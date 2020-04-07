@@ -1,5 +1,5 @@
 'use strict';
-const { getBackendToken, getData, getCodeTable, getCodeLabel, logApiError } = require('./utils');
+const { getBackendToken, getData, putData, logApiError } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const file = require('./file');
@@ -13,27 +13,13 @@ function getDocuments(req, res) {
         message: 'No access token'
       });
     }
-    return Promise.all([
-      getData(token,`${config.get('server:penRequestURL')}/${req.params.id}/documents`),
-      getCodeTable(token, 'documentTypeCodes', config.get('server:documentTypeCodesURL')),
-    ])
-      .then(([documentsResponse, documentTypeCodesResponse]) => {
+    
+    getData(token,`${config.get('server:penRequestURL')}/${req.params.id}/documents`)
+      .then((documentsResponse) => {
         const results=[];
         for(const element of documentsResponse)  {
           if(element.fileSize) {
             element.fileSize = file.humanFileSize(element.fileSize);
-          }
-          if(!documentTypeCodesResponse) {
-            log.error('Failed to get document type codes. Using code value instead of label.');
-            element['documentTypeLabel'] = element['documentTypeCode'];
-          } else {
-            let label = getCodeLabel(documentTypeCodesResponse, 'documentTypeCode', element['documentTypeCode']);
-            if(label) {
-              element['documentTypeLabel'] = label;
-            } else {
-              log.error('Failed to get document type codes. Using code value instead of label.');
-              element['documentTypeLabel'] = element['documentTypeCode'];
-            }
           }
           results.push(element);
         }
@@ -73,7 +59,47 @@ async function getDocumentById(req, res) {
   });
 }
 
+async function updateDocumentTypeById(req, res) {
+  const token = getBackendToken(req, res);
+  if(!token) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No access token'
+    });
+  }
+
+  const thisSession = req['session'];
+  if (!thisSession.penRequest || thisSession.penRequest.penRequestID !== req.params.id) {
+    log.error('Error attempting to update pen request.  There is no pen request or different pen request stored in session.');
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'INTERNAL SERVER ERROR'
+    });
+  }
+
+  try {
+    const url = `${config.get('server:penRequestURL')}/${req.params.id}/documents/${req.params.documentId}`;
+
+    let documentMetaData = await getData(token, url + '?includeDocData=N');
+
+    const documentReq = {
+      documentID: documentMetaData.documentID,
+      documentTypeCode: req.body.documentTypeCode,
+      fileName: documentMetaData.fileName,
+      fileExtension: documentMetaData.fileExtension,
+      fileSize: documentMetaData.fileSize
+    };
+
+    const documentRes = await putData(token, url, documentReq);
+    return res.status(200).json(documentRes);
+  } catch(e) {
+    logApiError(e, 'updateDocumentTypeById', 'Error updating a document.');
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'INTERNAL SERVER ERROR'
+    });
+  }
+}
+
 module.exports = {
   getDocuments,
-  getDocumentById
+  getDocumentById,
+  updateDocumentTypeById
 };

@@ -274,10 +274,21 @@
                       color="blue"
                       :active="loadingPen"
               ></v-progress-linear>
+              <v-alert
+                :value="documentError"
+                dense
+                text
+                dismissible
+                outlined
+                transition="scale-transition"
+                class="bootstrap-error"
+              >
+                {{ documentErrorMessage }}
+              </v-alert>
               <v-data-table
                       :headers="headers"
                       :items="filteredResults"
-                      sort-by="['createDate']"
+                      :sort-by="['createDate']"
                       :items-per-page="15"
                       class="fill-height">
                 <template v-slot:item.createDate="{ item }">
@@ -285,6 +296,24 @@
                 </template>
                 <template v-slot:item.fileName="{item: document}">
                   <router-link :to="{ path: documentUrl(request.penRequestID, document) }" target="_blank">{{document.fileName}}</router-link>
+                </template>
+                <template v-slot:item.documentTypeLabel="{item: document}">
+                  <v-edit-dialog
+                    :return-value.sync="document.documentTypeCode"
+                    large
+                    persistent
+                    @open="oldDocumentTypeCode=document.documentTypeCode"
+                    @save="saveDocumentType(document)"
+                  >
+                    <div>{{ document.documentTypeLabel }}</div>
+                    <template v-slot:input>
+                      <v-select
+                        v-model="document.documentTypeCode"
+                        style="max-width: 20em;"
+                        :items="documentTypes"
+                      ></v-select>
+                    </template>
+                  </v-edit-dialog>
                 </template>
               </v-data-table>
             </v-card>
@@ -604,7 +633,11 @@ export default {
       showDemographics:false,
       studentError: false,
       loadingDemographics:false,
-      activeTab: 0
+      activeTab: 0,
+      documentTypes: [],
+      oldDocumentTypeCode: '',
+      documentError: false,
+      documentErrorMessage: '',
     };
   },
   computed: {
@@ -616,7 +649,9 @@ export default {
     this.myself.name = this.userInfo.userName;
     this.myself.id = this.userInfo.userGuid;
     this.penRequestId = this.$store.state['penRequest'].selectedRequest;
-
+    this.documentTypes = this.$store.state['penRequest'].documentTypes
+      .sort((a, b) => a.displayOrder - b.displayOrder)
+      .map(code => ({text: code.label, value: code.documentTypeCode}));
 
 
     ApiService.apiAxios
@@ -666,9 +701,10 @@ export default {
     ApiService.apiAxios
       .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.penRequestId + '/documents')
       .then(response => {
-        this.filteredResults = response.data;
+        this.filteredResults = response.data.map((document) => this.setDocumentTypeLabel(document));
       })
       .catch(error => {
+        this.setDocumentError('An error occurred while loading the document list. Please try again later.');
         console.log(error);
       });
   },
@@ -863,6 +899,29 @@ export default {
         'bcscAutoMatchOutcome': body.bcscAutoMatchOutcome,
         'bcscAutoMatchDetails': body.bcscAutoMatchDetails
       };
+    },
+    setDocumentError(message) {
+      this.documentError = true;
+      this.documentErrorMessage = message;
+    },
+    setDocumentTypeLabel(document) {
+      const documentTypeInfo = this.$store.state['penRequest'].documentTypes.find(typeInfo => 
+        typeInfo.documentTypeCode === document.documentTypeCode
+      );
+      document.documentTypeLabel = documentTypeInfo ? documentTypeInfo.label : document.documentTypeCode;
+      return document;
+    },
+    saveDocumentType(document) {
+      ApiService.apiAxios
+        .put(this.documentUrl(this.request.penRequestID, document), document)
+        .catch(error => {
+          document.documentTypeCode = this.oldDocumentTypeCode;
+          this.setDocumentError('An error occurred while attempting to update the document type. Please try again later.');
+          console.log(error);
+        })
+        .finally(() => {
+          this.setDocumentTypeLabel(document);
+        });
     }
   }
 };

@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const cache = require('memory-cache');
 const auth = require('../components/auth');
-const { getPenRequestStatusCodes } = require('../components/penRequests');
+const { getPenRequestCodes } = require('../components/penRequests');
 
 let memCache = new cache.Cache();
 let cacheMiddleware = () => {
@@ -23,6 +23,8 @@ let cacheMiddleware = () => {
     }
   };
 };
-router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, cacheMiddleware(), getPenRequestStatusCodes);
+router.get('/penRequestStatuses', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, cacheMiddleware(), getPenRequestCodes('server:statusCodeURL', 'penStatusCodes'));
+
+router.get('/documentTypes', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, cacheMiddleware(), getPenRequestCodes('server:documentTypeCodesURL', 'documentTypeCodes'));
 
 module.exports = router;
