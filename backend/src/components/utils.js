@@ -173,6 +173,13 @@ const utils = {
       return null;
     }
   },
+  stripAuditColumns(data) {
+    delete data.createUser;
+    delete data.updateUser;
+    delete data.createDate;
+    delete data.updateDate;
+    return data;
+  },
   //keys = ['identityTypeCodes', 'penStatusCodes', 'genderCodes']
   getCodeTable(token, key, url) {
     try {

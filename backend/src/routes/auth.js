@@ -15,11 +15,7 @@ const {
 const router = express.Router();
 
 //provides a callback location for the auth service
-router.get('/callback', function(req,res,next){
-      console.dir(req);
-      console.dir(res);
-      next();
-    },
+router.get('/callback',
   passport.authenticate('oidc', {
     failureRedirect: 'error',
   }),
@@ -43,15 +39,6 @@ router.get('/error', (_req, res) => {
 //redirects to the SSO login screen
 router.get('/login', passport.authenticate('oidc', {
   failureRedirect: 'error'
-},function (err,user,info) {
-  if (err) {
-    log.debug(err);
-    return next(err);
-  }
-
-  log.info(user);
-  log.info(info);
-  next(user);
 }));
 
 //removes tokens and destroys session

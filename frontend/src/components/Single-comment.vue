@@ -45,15 +45,6 @@ export default {
       }
     }
   },
-  created() {
-    if(this.comment.participantId === '1'){
-      this.comment.color = 'studentBlue';
-      this.comment.icon = '$info';
-    } else {
-      this.comment.color = 'adminGreen';
-      this.comment.icon = '$question';
-    }
-  }
 };
 </script>
 

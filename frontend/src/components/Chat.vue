@@ -13,7 +13,7 @@
                 v-if="loading"
         ></v-progress-linear>
         <SingleComment
-                v-for="comment in messages"
+                v-for="comment in comments"
                 :comment="comment"
                 :key="comment.id"
         ></SingleComment>
@@ -23,8 +23,8 @@
 </template>
 <script>
 import SingleComment from './Single-comment.vue';
-import ApiService from '@/common/apiService';
-import { mapGetters } from 'vuex';
+import ApiService from '../common/apiService';
+import {mapGetters, mapMutations} from 'vuex';
 import {Routes} from '../utils/constants';
 
 export default {
@@ -33,29 +33,29 @@ export default {
   },
   data() {
     return {
-      participants: [],
-      messages: [],
       toLoad: [],
       loading: true,
     };
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
+    ...mapGetters('penRequest', ['messages']),
     penRequestId() {
       return this.$store.state['penRequest'].selectedRequest;
     },
     myself() {
       return { name: this.userInfo.userName, id: this.userInfo.userGuid };
+    },
+    comments() {
+      return this.messages;
     }
   },
   created() {
     ApiService.apiAxios
       .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.penRequestId + '/comments')
       .then(response => {
-        this.participants = response.data.participants;
-        this.$store.state['penRequest'].participants = this.participants;
-        this.messages = response.data.messages;
-        this.$store.state['penRequest'].messages = this.messages;
+        this.setParticipants(response.data.participants);
+        this.setMessages(response.data.messages);
       })
       .catch(error => {
         console.log(error);
@@ -64,6 +64,10 @@ export default {
       .finally(() => {
         this.loading = false;
       });
+  },
+  methods: {
+    ...mapMutations('penRequest', ['setMessages']),
+    ...mapMutations('penRequest', ['setParticipants'])
   }
 };
 </script>

@@ -69,6 +69,37 @@ async function getAllPenRequests(req, res) {
     });
 }
 
+async function getMacros(req, res) {
+  const token = await utils.getBackendToken(req);
+  if(!token) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No access token'
+    });
+  }
+  return Promise.all([
+    getData(token,config.get('server:penRequestMacrosURL'), {params: { macroTypeCode: 'MOREINFO' }}),
+    getData(token,config.get('server:penRequestMacrosURL'), {params: { macroTypeCode: 'REJECT' }})
+  ]).then(([returnResponse, rejectResponse]) => {
+    returnResponse.forEach((element, i) => {
+      returnResponse[i] = utils.stripAuditColumns(element);
+      delete returnResponse[i]['macroId'];
+    });
+    rejectResponse.forEach((element, i) => {
+      rejectResponse[i] = utils.stripAuditColumns(element);
+      delete rejectResponse[i]['macroId'];
+    });
+    return res.status(200).json({
+      returnMacros: returnResponse,
+      rejectMacros: rejectResponse
+    });
+  }).catch((e) => {
+    logApiError(e, 'getMacros', 'Error occurred while attempting to GET macros.');
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'INTERNAL SERVER ERROR'
+    });
+  });
+}
+
 async function getPenRequestCommentById(req, res) {
   try{
     const token = await utils.getBackendToken(req);
@@ -91,7 +122,9 @@ async function getPenRequestCommentById(req, res) {
         content: element.commentContent,
         participantId: (element.staffMemberIDIRGUID ? element.staffMemberIDIRGUID : '1'),
         name: (element.staffMemberName ? element.staffMemberName : 'Student'),
-        timestamp: readableTime
+        timestamp: readableTime,
+        color: (element.staffMemberIDIRGUID ? 'adminGreen' : 'studentBlue'),
+        icon: (element.staffMemberIDIRGUID ? '$question' : '$info')
       });
     });
     return res.status(200).json(response);
@@ -297,7 +330,9 @@ async function postPenRequestComment(req) {
       content: commentResponse.commentContent,
       participantId: (commentResponse.staffMemberIDIRGUID ? commentResponse.staffMemberIDIRGUID : '1'),
       name: (commentResponse.staffMemberName ? commentResponse.staffMemberName : 'Student'),
-      timestamp: readableTime
+      timestamp: readableTime,
+      color: (commentResponse.staffMemberIDIRGUID ? 'adminGreen' : 'studentBlue'),
+      icon: (commentResponse.staffMemberIDIRGUID ? '$question' : '$info')
     };
   } catch(e) {
     logApiError(e, 'postPenRequestComment', 'Error occurred while attempting to POST pen request comment.');
@@ -501,6 +536,7 @@ async function findPenRequestsByPen(req, res){
 module.exports = {
   completePenRequest,
   getAllPenRequests,
+  getMacros,
   getPenRequestCommentById,
   getPenRequestStatusCodes,
   getPenRequestById,

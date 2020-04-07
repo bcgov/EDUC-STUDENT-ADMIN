@@ -7,9 +7,28 @@ const router = express.Router();
 const axios = require('axios');
 const auth = require('../components/auth');
 const utils = require('../components/utils');
-const { completePenRequest, getAllPenRequests, getPenRequestById, getPenRequestCommentById, putPenRequest, rejectPenRequest, returnPenRequest,findPenRequestsByPen } = require('../components/penRequests');
-
+const { completePenRequest, getAllPenRequests, getMacros, getPenRequestById, getPenRequestCommentById, putPenRequest, rejectPenRequest, returnPenRequest,findPenRequestsByPen } = require('../components/penRequests');
 const log = require('npmlog');
+const cache = require('memory-cache');
+
+let memCache = new cache.Cache();
+let cacheMiddleware = () => {
+  return (req, res, next) => {
+    let key =  '__express__' + req.originalUrl || req.url;
+    let cacheContent = memCache.get(key);
+    if(cacheContent){
+      res.send( cacheContent );
+
+    }else{
+      res.sendResponse = res.send;
+      res.send = (body) => {
+        memCache.put(key,body);
+        res.sendResponse(body);
+      };
+      next();
+    }
+  };
+};
 
 /**
  * Gets all the comments for a pen request by pen request id
@@ -30,6 +49,8 @@ router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.
  * Get all pen retrieval requests for a given pen number in the query parameter.
  */
 router.get('/duplicatePenRequests', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, findPenRequestsByPen);
+
+router.get('/macros', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, cacheMiddleware(), getMacros);
 
 /*
  * Get a pen request by id
