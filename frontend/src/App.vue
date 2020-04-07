@@ -79,7 +79,21 @@ export default {
     background-color: #f7d8da !important;
     border-color: #eeaaad !important;
   }
-.v-application {
-  font-family: 'BCSans', Verdana, Arial, sans-serif !important;
-}
+
+  .v-application {
+    font-family: 'BCSans', Verdana, Arial, sans-serif !important;
+  }
+
+  .v-menu__content .v-btn {
+    background-color: #38598a !important;
+    margin-left: 1rem;
+  }
+
+  .v-menu__content .v-btn .v-btn__content {
+    color: #FFFFFF !important;
+  }
+
+  .v-alert .v-icon {
+    padding-left: 0;
+  }
 </style>

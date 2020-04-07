@@ -1,15 +1,12 @@
-
-const file =require('../components/file');
 const passport = require('passport');
-const config = require('../config/index');
 const express = require('express');
 const router = express.Router();
-const axios = require('axios');
 const auth = require('../components/auth');
 const utils = require('../components/utils');
-const { completePenRequest, getAllPenRequests, getMacros, getPenRequestById, getPenRequestCommentById, putPenRequest, rejectPenRequest, returnPenRequest,findPenRequestsByPen } = require('../components/penRequests');
-const log = require('npmlog');
+const { completePenRequest, getAllPenRequests, getMacros, getPenRequestById, getPenRequestCommentById, postPenRequestComment, putPenRequest, rejectPenRequest, returnPenRequest,findPenRequestsByPen } = require('../components/penRequests');
+const { getDocuments, getDocumentById, updateDocumentTypeById } = require('../components/documents');
 const cache = require('memory-cache');
+
 
 let memCache = new cache.Cache();
 let cacheMiddleware = () => {
@@ -64,48 +61,12 @@ router.post('/reject', passport.authenticate('jwt', {session: false}, undefined)
 router.post('/:id/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, returnPenRequest);
 
 // retrieve all the documents.
-router.get('/:id/documents', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken,
-  async (req, res) => {
-    const token = utils.getBackendToken(req);
-    axios.defaults.headers['common']['Authorization'] = `Bearer ${token}`;
-    const url = `${config.get('server:penRequestURL')}/${req.params.id}/documents`;
-    log.debug(`url is ${url}`);
-    axios.get(url).then(documentResponse =>{
-      const results=[];
-      for(const element of documentResponse.data)  {
-        if(element.fileSize)
-          element.fileSize = file.humanFileSize(element.fileSize);
-        results.push(element);
-      }
-      return res.status(200).json(results);
-    }).catch(error=>{
-      log.error('An error occurred attempting to get documents.');
-      log.error(error);
-      log.error(JSON.stringify(error.response.data));
-      return res.status(500).json();
-    });
-  });
+router.get('/:id/documents', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, getDocuments);
+
 // retrieve the document by its id.
-router.get('/:id/documents/:documentId', auth.isValidAdminToken,
-  async (req, res) => {
-    const token = utils.getBackendToken(req);
-    if(!token){
-      return res.status(401).json({
-        status: 401,
-        message: 'You are not authorised to access this page.'
-      });
-    }
-    axios.defaults.headers['common']['Authorization'] = `Bearer ${token}`;
-    const url = `${config.get('server:penRequestURL')}/${req.params.id}/documents/${req.params.documentId}`;
-    log.debug(`url is ${url}`);
-    axios.get(url).then(resData =>{
-      res.setHeader('Content-disposition', 'attachment; filename=' + resData.data.fileName);
-      res.setHeader('Content-type', resData.data.fileExtension);
-      return res.status(200).send(Buffer.from(resData.data.documentData, 'base64'));
-    }).catch(error=>{
-      log.error('An error occurred attempting to get documents.');
-      log.error(error);
-      return res.status(500).json();
-    });
-  });
+router.get('/:id/documents/:documentId', auth.isValidAdminToken, getDocumentById);
+
+// Updates the type of a document by its id.
+router.put('/:id/documents/:documentId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, updateDocumentTypeById);
+
 module.exports = router;

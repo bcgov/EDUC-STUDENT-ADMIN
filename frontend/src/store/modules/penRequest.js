@@ -11,6 +11,7 @@ export default {
       legalLastName: '',
       legalFirstName: '',
       reviewer: '',
+      documentTypes: [],
     },
     headerSortParams: {
       currentSort:'initialSubmitDate',

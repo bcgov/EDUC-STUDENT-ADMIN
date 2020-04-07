@@ -20,6 +20,7 @@ nconf.defaults({
     morganFormat: 'dev',
     port: '8080',
     statusCodeURL: process.env.PEN_REQUEST_API_URL + '/statuses',
+    documentTypeCodesURL: process.env.PEN_REQUEST_API_URL + '/document-types',
     penRequestURL: process.env.PEN_REQUEST_API_URL,
     penRequestMacrosURL: process.env.PEN_REQUEST_API_URL + '/pen-request-macro',
     demographicsURL: process.env.PEN_DEMOGRAPHICS_URL,
@@ -41,6 +42,11 @@ nconf.defaults({
     publicKey: process.env.UI_PUBLIC_KEY,
     audience: process.env.SERVER_FRONTEND,
     issuer: process.env.ISSUER
+  },
+  redis:{
+    host:process.env.REDIS_HOST,
+    port:process.env.REDIS_PORT,
+    password:process.env.REDIS_PASSWORD
   }
 });
 

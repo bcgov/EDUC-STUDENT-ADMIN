@@ -611,7 +611,7 @@ describe('getPenRequestCommentById', () => {
   });
 });
 
-describe('getPenRequestStatusCodes', () => {
+describe('getPenRequestCodes', () => {
   const codeTableData = [
     {
       'penRequestStatusCode': 'DRAFT',
@@ -695,18 +695,18 @@ describe('getPenRequestStatusCodes', () => {
     jest.clearAllMocks();
   });
   it('should return codeTableData', async () => {
-    await penRequests.getPenRequestStatusCodes(req, res);
+    await penRequests.getPenRequestCodes('urlKey, cacheKey')(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(codeTableData);
   });
   it('should return unauthorized error if no token', async () => {
     utils.getBackendToken.mockReturnValue(null);
-    await penRequests.getPenRequestStatusCodes(req, res);
+    await penRequests.getPenRequestCodes('urlKey, cacheKey')(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
   });
   it('should return INTERNAL_SERVER_ERROR if getCodeTable exceptions thrown', async () => {
     utils.getCodeTable.mockRejectedValue(new Error('test error'));
-    await penRequests.getPenRequestStatusCodes(req, res);
+    await penRequests.getPenRequestCodes('urlKey, cacheKey')(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
 });

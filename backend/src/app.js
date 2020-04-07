@@ -5,6 +5,8 @@ const dotenv = require('dotenv');
 const log = require('npmlog');
 const morgan = require('morgan');
 const session = require('express-session');
+const redis = require('redis');
+const connectRedis = require('connect-redis');
 const express = require('express');
 const passport = require('passport');
 const helmet = require('helmet');
@@ -27,7 +29,7 @@ const studentsRouter = require('./routes/students');
 
 //initialize app
 const app = express();
-
+app.set('trust proxy', 1);
 //sets security measures (headers, etc)
 app.use(cors());
 app.use(helmet());
@@ -42,15 +44,33 @@ app.use(express.urlencoded({
 
 app.use(morgan(config.get('server:morganFormat')));
 
-//sets cookies for security purposes (prevent cookie access, allow secure connections only, etc)
-const expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+const redisClient = redis.createClient({
+  host: config.get('redis:host'),
+  port: config.get('redis:port'),
+  password: config.get('redis:password')
+});
+const RedisStore = connectRedis(session);
+const dbSession = new RedisStore({
+  client: redisClient,
+  prefix: 'student-admin-sess:',
+});
+redisClient.on('error', (error) => {
+  log.error(`error occurred in redis client. ${error}`);
+});
+const cookie = {
+  secure: true,
+  httpOnly: true,
+  maxAge: 1800000 //30 minutes in ms. this is same as session time. DO NOT MODIFY, IF MODIFIED, MAKE SURE SAME AS SESSION TIME OUT VALUE.
+};
+if (config.get('environment') !== undefined && config.get('environment') === 'local') {
+  cookie.secure = false;
+}
 app.use(session({
   secret: config.get('oidc:clientSecret'),
   resave: false,
   saveUninitialized: true,
-  httpOnly: true,
-  secure: true,
-  expires: expiryDate
+  cookie: cookie,
+  store: dbSession
 }));
 
 //initialize routing and session. Cookies are now only reachable via requests (not js)
@@ -123,7 +143,7 @@ app.use(/(\/api)?/, apiRouter);
 
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/penRequest', penRequestRouter);
-apiRouter.use('/penRequestStatuses', penRequestStatusesRouter);
+apiRouter.use('/codes', penRequestStatusesRouter);
 apiRouter.use('/studentDemographics', studentDemographicsRouter);
 apiRouter.use('/students', studentsRouter);
 

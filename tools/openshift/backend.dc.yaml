@@ -68,6 +68,11 @@ objects:
           env:
           - name: TZ
             value: "America/Vancouver"
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                 name: redis
+                 key: database-password
         volumes:
         - name: tls-certs
           secret:

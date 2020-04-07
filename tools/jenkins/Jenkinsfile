@@ -174,19 +174,6 @@ pipeline{
                 }
             }
         }
-        stage('Deploy to Test'){
-            steps{
-                deployStage('Test', TEST, TEST_HOST_ROUTE)
-            } 
-            post {
-                success{
-                    echo 'Deployment to Test was successful'
-                }
-                failure{
-                    echo 'Deployment to Test failed'
-                }
-            }
-        }
         stage('e2e tests'){
             agent{
                 node{

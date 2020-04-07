@@ -37,7 +37,10 @@ router.get('/error', (_req, res) => {
 });
 
 //redirects to the SSO login screen
-router.get('/login', passport.authenticate('oidc', {
+router.get('/login', (req,res,next) =>{
+  log.info(`LOGIN PID IS::${process.pid}`);
+  next();
+}, passport.authenticate('oidc', {
   failureRedirect: 'error'
 }));
 
