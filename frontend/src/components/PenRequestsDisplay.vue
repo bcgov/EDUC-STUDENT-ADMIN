@@ -223,6 +223,7 @@ export default {
 
         this.comboboxKey+=1;//force component to re-render
         this.getPenRequests(this.defaultSelected);
+        this.getDocumentTypes();
       })
       .catch(error => {
         console.log(error);
@@ -277,6 +278,18 @@ export default {
         this.headerSortParams.currentSortDir = !this.headerSortParams.currentSortDir;
       }
       this.headerSortParams.currentSort = sortHeader;
+    },
+    getDocumentTypes() {
+      ApiService.apiAxios
+        .get(Routes.DOCUMENT_TYPES_URL)
+        .then(response => {
+          if(response && response.data) {
+            this.$store.state['penRequest'].documentTypes = response.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
   },
 };

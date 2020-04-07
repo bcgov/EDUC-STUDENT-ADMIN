@@ -138,25 +138,27 @@ async function getPenRequestCommentById(req, res) {
 }
 
 //keys = ['identityTypeCodes', 'penStatusCodes']
-async function getPenRequestStatusCodes(req, res) {
-  try{
-    const token = getBackendToken(req);
-    if(!token) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
+function getPenRequestCodes(urlKey, cacheKey) {
+  return async (req, res) => {
+    try{
+      const token = getBackendToken(req);
+      if(!token) {
+        return res.status(HttpStatus.UNAUTHORIZED).json({
+          message: 'No access token'
+        });
+      }
+      const url = config.get(urlKey);
+      const statusCodes = await utils.getCodeTable(token, cacheKey, url);
+
+      return res.status(HttpStatus.OK).json(statusCodes);
+
+    } catch (e) {
+      logApiError(e, 'getPenRequestCodes', 'Error occurred while attempting to GET pen request status codes.');
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'INTERNAL SERVER ERROR'
       });
     }
-    const url = config.get('server:statusCodeURL');
-    const statusCodes = await utils.getCodeTable(token,'penStatusCodes', url);
-
-    return res.status(HttpStatus.OK).json(statusCodes);
-
-  } catch (e) {
-    logApiError(e, 'getPenRequestStatusCodes', 'Error occurred while attempting to GET pen request status codes.');
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'INTERNAL SERVER ERROR'
-    });
-  }
+  };
 }
 async function getPenRequestById(req, res) {
   try{
@@ -272,7 +274,7 @@ async function getStudentDemographicsById(req, res) {
     };
     return res.status(200).json(formattedResponse);
   } catch(e) {
-    logApiError(e, 'getPenRequestStatusCodes', 'Error occurred while attempting to GET pen demographics.');
+    logApiError(e, 'getStudentDemographicsById', 'Error occurred while attempting to GET pen demographics.');
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       message: 'INTERNAL SERVER ERROR'
     });
@@ -530,7 +532,7 @@ module.exports = {
   completePenRequest,
   getAllPenRequests,
   getPenRequestCommentById,
-  getPenRequestStatusCodes,
+  getPenRequestCodes,
   getPenRequestById,
   getStudentById,
   getStudentDemographicsById,
