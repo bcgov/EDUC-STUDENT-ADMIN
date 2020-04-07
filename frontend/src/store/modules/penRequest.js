@@ -12,6 +12,8 @@ export default {
       currentSort:'initialSubmitDate',
       currentSortDir: false
     },
-    defaultSelected:[]
+    defaultSelected:[],
+    messages:[],
+    participants:[]
   }
 };

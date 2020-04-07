@@ -250,17 +250,7 @@
             </v-card>
           </v-col>
           <v-col cols="12" xl="6" lg="6" md="6" class="pa-0">
-            <v-card height="100%" width="100%" >
-              <v-toolbar flat color="#036" class="white--text">
-                <v-toolbar-title><h2>Discussion</h2></v-toolbar-title>
-              </v-toolbar>
-              <v-progress-linear
-                      indeterminate
-                      color="blue"
-                      :active="loadingComments"
-              ></v-progress-linear>
-              <Chat id="chat-box" :myself="myself" :participants="participants" :messages="messages"></Chat>
-            </v-card>
+            <Chat></Chat>
           </v-col>
         </v-row>
         <v-row>
@@ -441,24 +431,27 @@
                         outlined
                         transition="scale-transition"
                         class="bootstrap-warning">
-                  PEN Request status updated, but email to student failed. Please contact support.
+                  PEN Request status and comment updated, but email to student failed. Please contact support.
                 </v-alert>
-                <v-card flat class="mx-3">
-                  <v-row>
-                    <v-card-text class="fill-height">
-                      <v-row>
-                        <ol>
-                          <li>Enter a message for the student in the discussion panel above.</li>
-                          <li>Return the request with the button below.</li>
-                        </ol>
-                      </v-row>
-                    </v-card-text>
-                  </v-row>
-                  <v-row justify="end" align-content="end">
-                    <v-col cols="12" xl="3" lg="5" md="5" class="pt-0" justify="end" align-content="end">
-                      <v-btn color="#38598a" dark justify="center" width="100%" @click="returnToStudent">Return to Student</v-btn>
-                    </v-col>
-                  </v-row>
+                <v-card flat class="pa-3">
+                  <v-card-text class="pa-0">
+                    <v-row class="ma-0">
+                      <v-textarea
+                              name="description"
+                              label="Enter return reason"
+                              v-model="returnComment"
+                              :rules="requiredRules"
+                              filled
+                              auto-grow
+                              class="pa-0 ma-0"
+                      ></v-textarea>
+                    </v-row>
+                    <v-row justify="end" align-content="end">
+                      <v-col cols="12" xl="3" lg="5" md="5" class="py-0" justify="end" align-content="end">
+                        <v-btn color="#38598a" dark justify="center" width="100%" @click="returnToStudent">Return to Student</v-btn>
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
                 </v-card>
               </v-tab-item>
               <v-tab-item>
@@ -495,16 +488,10 @@
                 <v-card flat class="pa-3">
                   <v-form ref="form" v-model="validForm">
                     <v-card-text class="pa-0">
-                      <v-row class="flex-grow-0 ma-0">
-                        <ol>
-                          <li>Enter the type of failure and provide a detailed reason to the student.</li>
-                          <li>Complete the action with the button below.</li>
-                        </ol>
-                      </v-row>
                       <v-row class="ma-0">
                         <v-textarea
                                 name="description"
-                                label="Enter reason"
+                                label="Enter reject reason"
                                 v-model="failedForm.failureReason"
                                 :rules="requiredRules"
                                 filled
@@ -554,8 +541,6 @@ export default {
         name: null,
         id: null,
       },
-      participants: [],
-      messages: [],
       rejectAlertSuccess: false,
       rejectAlertFailure: false,
       rejectAlertWarning: false,
@@ -568,6 +553,7 @@ export default {
       failedForm: {
         failureReason: null
       },
+      returnComment: null,
       penRequestId: null,
       penSearchId: null,
       autoPenResults: null,
@@ -617,8 +603,6 @@ export default {
     this.myself.id = this.userInfo.userGuid;
     this.penRequestId = this.$store.state['penRequest'].selectedRequest;
 
-
-
     ApiService.apiAxios
       .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.penRequestId)
       .then(response => {
@@ -652,18 +636,6 @@ export default {
         this.loadingPen = false;
       });
     ApiService.apiAxios
-      .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.penRequestId + '/comments')
-      .then(response => {
-        this.participants = response.data.participants;
-        this.messages = response.data.messages;
-      })
-      .catch(error => {
-        console.log(error);
-      })
-      .finally(() => {
-        this.loadingComments = false;
-      });
-    ApiService.apiAxios
       .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.penRequestId + '/documents')
       .then(response => {
         this.filteredResults = response.data;
@@ -682,10 +654,13 @@ export default {
       this.returnAlertSuccess = false;
       this.returnAlertFailure = false;
       this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.RETURNED;
+      let body = this.prepPut();
+      body.content = this.returnComment;
       ApiService.apiAxios
-        .post(Routes.PEN_REQUEST_RETURN_URL, this.prepPut())
+        .post(Routes.PEN_REQUEST_ENDPOINT + '/' + this.penRequestId + '/return', body)
         .then(response => {
-          this.request = response.data;
+          this.request = response.data.penResponse;
+          this.$store.state['penRequest'].messages = this.$store.state['penRequest'].messages.push(response.data.commentResponse);
           this.returnAlertSuccess=true;
         })
         .catch(error => {
@@ -868,9 +843,6 @@ export default {
 };
 </script>
 <style scoped>
-  #chat-box {
-    height:425px;
-  }
   .v-toolbar /deep/ .v-toolbar__content {
     padding-left: 20px !important;
   }

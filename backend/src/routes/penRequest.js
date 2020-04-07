@@ -7,14 +7,9 @@ const router = express.Router();
 const axios = require('axios');
 const auth = require('../components/auth');
 const utils = require('../components/utils');
-const { completePenRequest, getAllPenRequests, getPenRequestById, getPenRequestCommentById, postPenRequestComment, putPenRequest, rejectPenRequest, returnPenRequest,findPenRequestsByPen } = require('../components/penRequests');
+const { completePenRequest, getAllPenRequests, getPenRequestById, getPenRequestCommentById, putPenRequest, rejectPenRequest, returnPenRequest,findPenRequestsByPen } = require('../components/penRequests');
 
 const log = require('npmlog');
-
-/**
- * Creates a comment for a pen request given a pen request id
- */
-router.post('/:id/comments', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, postPenRequestComment);
 
 /**
  * Gets all the comments for a pen request by pen request id
@@ -45,7 +40,7 @@ router.post('/complete', passport.authenticate('jwt', {session: false}, undefine
 
 router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, rejectPenRequest);
 
-router.post('/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, returnPenRequest);
+router.post('/:id/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, returnPenRequest);
 
 // retrieve all the documents.
 router.get('/:id/documents', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken,

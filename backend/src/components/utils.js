@@ -8,6 +8,7 @@ const lodash = require('lodash');
 const log = require('npmlog');
 const cache = require('memory-cache');
 const { ServiceError, ApiError } = require('./error');
+const { LocalDateTime, DateTimeFormatter } = require('@js-joda/core');
 
 let discovery = null;
 let memCache = new cache.Cache();
@@ -137,6 +138,27 @@ const utils = {
   saveSession(req, res, penRequest) {
     req['session'].penRequest = Object.assign({},penRequest);
     //req['session'].save();
+  },
+  formatCommentTimestamp(time) {
+    const timestamp = LocalDateTime.parse(time);
+    const formattedTime = timestamp.format(DateTimeFormatter.ofPattern('yyyy-MM-dd h:m'));
+    let hour = timestamp.hour();
+    let minute =  timestamp.minute();
+    if(timestamp.minute() < 10){
+      minute = '0' + timestamp.minute();
+    }
+    let amPm = 'am';
+    //let hours = d.hour;
+    if(hour > 12){
+      amPm = 'pm';
+      hour = hour - 12;
+      //changes from 24 hour to 12 hour
+    }
+    //split the hour/minute object, make fixes, then add it back to the dataTime object
+    let fixTime = (formattedTime).split(' ');
+    fixTime[1] = String(hour) + ':' +  minute;
+    fixTime = fixTime.join(' ');
+    return fixTime + amPm;
   },
   formatDate(date) {
     if(date && (date.length === 8)) {
