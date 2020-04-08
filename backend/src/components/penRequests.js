@@ -49,7 +49,7 @@ async function getAllPenRequests(req, res) {
     getData(token, config.get('server:penRequestURL'))
   ])
     .then(async ([statusCodeResponse, penRetrievalResponse]) => {
-      penRetrievalResponse.forEach(element => {
+      penRetrievalResponse.forEach((element, i) => {
         //replace status code with label
         if (element.penRequestStatusCode) {
           let temp = statusCodeResponse.find(codeStatus => codeStatus.penRequestStatusCode === element.penRequestStatusCode);
@@ -57,7 +57,8 @@ async function getAllPenRequests(req, res) {
             element.penRequestStatusCode = temp;
           }
         }
-        //dont send digital id to frontend
+        //dont send digital id or audit columns to frontend
+        penRetrievalResponse[i] = utils.stripAuditColumns(element);
         delete element['digitalID'];
       });
       return res.status(200).json(penRetrievalResponse);
@@ -193,6 +194,8 @@ async function getPenRequestById(req, res) {
           penRetrievalResponse['penRequestStatusCodeLabel'] = utils.getCodeLabel(statusCodesResponse, 'penRequestStatusCode', penRetrievalResponse['penRequestStatusCode']);
         }
         utils.saveSession(req, res, penRetrievalResponse);
+        //dont send digital id or audit columns to vue
+        penRetrievalResponse = utils.stripAuditColumns(penRetrievalResponse);
         delete penRetrievalResponse['digitalID'];
         return res.status(200).json(penRetrievalResponse);
       })
@@ -346,7 +349,7 @@ async function postPenRequestComment(req) {
 async function putPenRequest(req, res) {
   try{
     const penRetrievalResponse = await updatePenRequest(req, res);
-    return res.status(200).json(penRetrievalResponse);
+    return res.status(200).json(utils.stripAuditColumns(penRetrievalResponse));
   } catch(e) {
     logApiError(e, 'putPenRequest', 'Error occurred while attempting a PUT to pen request.');
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -446,7 +449,8 @@ async function updatePenRequest(req, res) {
           penRetrievalResponse['penRequestStatusCodeLabel'] = utils.getCodeLabel(statusCodesResponse, 'penRequestStatusCode', penRetrievalResponse['penRequestStatusCode']);
         }
         utils.saveSession(req, res, penRetrievalResponse);
-        //dont return digitalid to frontend
+        //dont return digitalid or audit columns to frontend
+        penRetrievalResponse = utils.stripAuditColumns(penRetrievalResponse);
         delete penRetrievalResponse['digitalID'];
         return penRetrievalResponse;
       })
@@ -527,7 +531,7 @@ async function findPenRequestsByPen(req, res){
     }
     const url = `${config.get('server:penRequestURL')}/?pen=${req.query.pen}`;
     const response = await getData(token, url);
-    return res.status(200).json(response);
+    return res.status(200).json(response.length);
   }catch (e) {
     logApiError(e, 'findPenRequestsByPen', 'Failed to get pen requests for the given pen.');
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
