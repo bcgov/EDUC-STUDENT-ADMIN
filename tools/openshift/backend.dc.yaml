@@ -72,7 +72,7 @@ objects:
             valueFrom:
               secretKeyRef:
                  name: redis
-                 key: database-password
+                 key: REDIS_PASSWORD
         volumes:
         - name: tls-certs
           secret:
