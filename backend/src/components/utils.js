@@ -219,7 +219,7 @@ const utils = {
       }else{
         res.sendResponse = res.send;
         res.send = (body) => {
-          if(300 > res.status >= 200) {
+          if(res.status < 300  && res.status >= 200) {
             memCache.put(key, body);
           }
           res.sendResponse(body);
