@@ -207,6 +207,23 @@ const utils = {
       throw new ServiceError('getCodeTable error', e);
     }
   },
+  cacheMiddleware() {
+    return (req, res, next) => {
+      let key =  '__express__' + req.originalUrl || req.url;
+      let cacheContent = memCache.get(key);
+      if(cacheContent){
+        res.send( cacheContent );
+
+      }else{
+        res.sendResponse = res.send;
+        res.send = (body) => {
+          memCache.put(key,body);
+          res.sendResponse(body);
+        };
+        next();
+      }
+    };
+  },
   getCodeLabel(codes, codeKey, codeValue) {
     let label = null;
     codes.some(function (item) {

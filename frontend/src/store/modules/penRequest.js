@@ -10,8 +10,7 @@ export default {
       status: '',
       legalLastName: '',
       legalFirstName: '',
-      reviewer: '',
-      documentTypes: [],
+      reviewer: ''
     },
     headerSortParams: {
       currentSort:'initialSubmitDate',
@@ -21,7 +20,8 @@ export default {
     messages:[],
     participants:[],
     returnMacros: null,
-    rejectMacros: null
+    rejectMacros: null,
+    documentTypes: [],
   },
   getters: {
     messages: state => state.messages,

@@ -70,7 +70,7 @@ async function getAllPenRequests(req, res) {
 }
 
 async function getMacros(req, res) {
-  const token = await utils.getBackendToken(req);
+  const token = utils.getBackendToken(req);
   if(!token) {
     return res.status(HttpStatus.UNAUTHORIZED).json({
       message: 'No access token'
@@ -102,7 +102,7 @@ async function getMacros(req, res) {
 
 async function getPenRequestCommentById(req, res) {
   try{
-    const token = await utils.getBackendToken(req);
+    const token = utils.getBackendToken(req);
     if(!token) {
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'No access token'
