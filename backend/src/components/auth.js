@@ -137,7 +137,7 @@ const auth = {
       }
       return false;
     } catch (e) {
-      log.verbose(e);
+      log.error(e);
       return false;
     }
   }

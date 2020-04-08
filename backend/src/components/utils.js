@@ -213,7 +213,6 @@ const utils = {
       let cacheContent = memCache.get(key);
       if(cacheContent){
         res.send( cacheContent );
-
       }else{
         res.sendResponse = res.send;
         res.send = (body) => {
