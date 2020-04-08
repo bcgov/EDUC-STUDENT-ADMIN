@@ -1,11 +1,11 @@
 'use strict';
 const { getBackendToken, getData, postData, putData, logApiError } = require('./utils');
 const HttpStatus = require('http-status-codes');
-const LocalDateTime = require('@js-joda/core').LocalDateTime;
 const log = require('npmlog');
 const config = require('../config/index');
 const utils = require('../components/utils');
 const { ApiError, ServiceError } = require('./error');
+const { LocalDateTime } = require('@js-joda/core');
 async function completePenRequest(req, res) {
   try {
     const token = getBackendToken(req, res);
@@ -69,63 +69,62 @@ async function getAllPenRequests(req, res) {
     });
 }
 
+async function getMacros(req, res) {
+  const token = utils.getBackendToken(req);
+  if(!token) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No access token'
+    });
+  }
+  return Promise.all([
+    getData(token,config.get('server:penRequestMacrosURL'), {params: { macroTypeCode: 'MOREINFO' }}),
+    getData(token,config.get('server:penRequestMacrosURL'), {params: { macroTypeCode: 'REJECT' }})
+  ]).then(([returnResponse, rejectResponse]) => {
+    returnResponse.forEach((element, i) => {
+      returnResponse[i] = utils.stripAuditColumns(element);
+      delete returnResponse[i]['macroId'];
+    });
+    rejectResponse.forEach((element, i) => {
+      rejectResponse[i] = utils.stripAuditColumns(element);
+      delete rejectResponse[i]['macroId'];
+    });
+    return res.status(200).json({
+      returnMacros: returnResponse,
+      rejectMacros: rejectResponse
+    });
+  }).catch((e) => {
+    logApiError(e, 'getMacros', 'Error occurred while attempting to GET macros.');
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'INTERNAL SERVER ERROR'
+    });
+  });
+}
+
 async function getPenRequestCommentById(req, res) {
   try{
-    const token = await utils.getBackendToken(req);
+    const token = utils.getBackendToken(req);
     if(!token) {
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'No access token'
       });
     }
-    const userToken = await utils.getUser(req);
-
-    if(!userToken || !userToken['idir_username'] || !userToken['preferred_username']) {
-      log.error('getPenRequestCommentById Error: could not get user info');
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'INTERNAL SERVER ERROR'
-      });
-    }
-
     const penRetrievalResponse = await getData(token,config.get('server:penRequestURL') + '/' + req.params.id + '/comments');
 
-    //setting response object to the format required by comments widget
     let response = {
-      participants: [],
-      myself: {
-        name: userToken['idir_username'],
-        id: userToken['preferred_username'].toUpperCase()
-      },
       messages: []
     };
     //sorting comments by date
     penRetrievalResponse.sort((a,b) => (a.commentTimestamp > b.commentTimestamp) ? 1 : ((b.commentTimestamp > a.commentTimestamp) ? -1 : 0));
 
-    //if staffMember fields are null then comment was made by the student
     penRetrievalResponse.forEach(element => {
-      const participant = {
-        name: (element.staffMemberName ? element.staffMemberName : 'Student'),
-        id: (element.staffMemberIDIRGUID ? element.staffMemberIDIRGUID : '1')
-      };
-      //push all unique participants that are not myself
-      if (participant.id.toUpperCase() !== response.myself.id.toUpperCase()) {
-        const index = response.participants.findIndex((e) => e.id === participant.id);
-        if (index === -1) {
-          response.participants.push(participant);
-        }
-      }
-      let timestamp = new Date(element.commentTimestamp);
+      const readableTime = utils.formatCommentTimestamp(element.commentTimestamp);
       response.messages.push({
         content: element.commentContent,
         participantId: (element.staffMemberIDIRGUID ? element.staffMemberIDIRGUID : '1'),
-        timestamp: {
-          year: timestamp.getFullYear(),
-          month: timestamp.getMonth() + 1,
-          day: timestamp.getDate(),
-          hour: timestamp.getHours(),
-          minute: timestamp.getMinutes(),
-          second: timestamp.getSeconds(),
-          millisecond: timestamp.getMilliseconds()
-        }
+        name: (element.staffMemberName ? element.staffMemberName : 'Student'),
+        timestamp: readableTime,
+        color: (element.staffMemberIDIRGUID ? 'adminGreen' : 'studentBlue'),
+        icon: (element.staffMemberIDIRGUID ? '$question' : '$info')
       });
     });
     return res.status(200).json(response);
@@ -289,12 +288,12 @@ async function sendPenRequestEmail(req, token, emailType) {
   };
   if (lowerCaseEmail === 'reject') {
     if (!req.body.failureReason) {
-      throw new ServiceError('400', 'Failure reason is required.');
+      throw new ServiceError('400', 'EMAIL Error: Failure reason is required.');
     }
     emailBody.rejectionReason = req.body.failureReason;
   } else if (lowerCaseEmail === 'complete') {
     if(!req['session'].studentDemographics || !req['session'].studentDemographics['studGiven']) {
-      throw new ServiceError('500', 'There are no student demographics in session.');
+      throw new ServiceError('500', 'EMAIL Error: There are no student demographics in session.');
     }
     emailBody.firstName = req['session'].studentDemographics['studGiven'];
   }
@@ -303,26 +302,22 @@ async function sendPenRequestEmail(req, token, emailType) {
   } catch(e) {
     logApiError(e, 'sendPenRequestEmail', 'Error calling email service.');
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ApiError(status, { message: 'API Post error'}, e);
+    throw new ApiError(status, { message: 'EMAIL error'}, e);
   }
 }
 
-async function postPenRequestComment(req, res) {
-  try{
-    const token = utils.getBackendToken(req);
-    if(!token) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
-      });
-    }
-    const userToken = utils.getUser(req);
-    if(!userToken || !userToken['idir_username'] || !userToken['preferred_username']) {
-      log.error('getPenRequestCommentById Error: could not get user info');
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'INTERNAL SERVER ERROR'
-      });
-    }
-
+async function postPenRequestComment(req) {
+  const token = utils.getBackendToken(req);
+  if(!token) {
+    log.error('postPenRequestComment Error: No access token');
+    throw new ServiceError( 'postPenRequestComment',{ message: 'No access token'});
+  }
+  const userToken = utils.getUser(req);
+  if(!userToken || !userToken['idir_username'] || !userToken['preferred_username']) {
+    log.error('postPenRequestComment Error: could not get user info');
+    throw new ServiceError( 'postPenRequestComment',{ message: 'API Put error'});
+  }
+  try {
     //mapping from what comment widget needs to what the comments api needs
     const request = {
       penRetrievalRequestID: req.params.id,
@@ -331,15 +326,20 @@ async function postPenRequestComment(req, res) {
       commentContent: req.body.content,
       commentTimestamp: LocalDateTime.now().toString()
     };
-
-    const penRetrievalResponse = await postData(token, config.get('server:penRequestURL') + '/' + req.params.id + '/comments', request);
-
-    return res.status(200).json(penRetrievalResponse);
+    const commentResponse = await postData(token, config.get('server:penRequestURL') + '/' + req.params.id + '/comments', request);
+    const readableTime = utils.formatCommentTimestamp(commentResponse.commentTimestamp);
+    return {
+      content: commentResponse.commentContent,
+      participantId: (commentResponse.staffMemberIDIRGUID ? commentResponse.staffMemberIDIRGUID : '1'),
+      name: (commentResponse.staffMemberName ? commentResponse.staffMemberName : 'Student'),
+      timestamp: readableTime,
+      color: (commentResponse.staffMemberIDIRGUID ? 'adminGreen' : 'studentBlue'),
+      icon: (commentResponse.staffMemberIDIRGUID ? '$question' : '$info')
+    };
   } catch(e) {
     logApiError(e, 'postPenRequestComment', 'Error occurred while attempting to POST pen request comment.');
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'INTERNAL SERVER ERROR'
-    });
+    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
+    throw new ApiError(status, { message: 'API Put error'}, e);
   }
 }
 
@@ -383,30 +383,35 @@ async function rejectPenRequest(req, res) {
 }
 
 async function returnPenRequest(req, res) {
-  try {
-    const token = getBackendToken(req, res);
-    if(!token) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
-      });
-    }
-    req.body.statusUpdateDate = LocalDateTime.now();
-    const penResponse = await updatePenRequest(req, res);
-    try {
-      await sendPenRequestEmail(req, token, 'INFO');
-      return res.status(200).json(penResponse);
-    } catch(e) {
-      logApiError(e, 'returnPenRequest', 'Error occurred while attempting to call the email service.');
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'INTERNAL SERVER ERROR calling email service'
-      });
-    }
-  } catch(e) {
-    logApiError(e, 'returnPenRequest', 'Error occurred while attempting to PUT a pen request.');
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'INTERNAL SERVER ERROR'
+  const token = getBackendToken(req, res);
+  if (!token) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No access token'
     });
   }
+  req.body.statusUpdateDate = LocalDateTime.now();
+
+  return Promise.all([
+    updatePenRequest(req, res),
+    postPenRequestComment(req),
+
+  ]).then(async ([penResponse, commentResponse]) => {
+    await sendPenRequestEmail(req, token, 'INFO');
+    const formattedResponse = {
+      penResponse: penResponse,
+      commentResponse: commentResponse
+    };
+    return res.status(200).json(formattedResponse);
+  }).catch(e => {
+    logApiError(e, 'returnPenRequest', 'Error occurred while attempting to PUT a pen request and POST comment.');
+    let message = 'INTERNAL SERVER ERROR';
+    if(e.data.message.includes('EMAIL')) {
+      message = 'INTERNAL SERVER ERROR calling email service';
+    }
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      message: message
+    });
+  });
 }
 
 async function updatePenRequest(req, res) {
@@ -418,6 +423,8 @@ async function updatePenRequest(req, res) {
   try {
     const token = utils.getBackendToken(req);
     const penRequest = thisSession.penRequest;
+    const dataSourceCode = penRequest.dataSourceCode;
+    delete penRequest.dataSourceCode;
     penRequest.pen = req.body.pen;
     penRequest.penRequestStatusCode = req.body.penRequestStatusCode;
     penRequest.reviewer = req.body.reviewer;
@@ -431,7 +438,7 @@ async function updatePenRequest(req, res) {
       utils.getCodeTable(token, 'penStatusCodes', config.get('server:statusCodeURL'))
     ])
       .then(async ([penRetrievalResponse, statusCodesResponse]) => {
-        penRetrievalResponse.dataSourceCode = penRequest.dataSourceCode;
+        penRetrievalResponse.dataSourceCode = dataSourceCode;
         if(!statusCodesResponse) {
           log.error('Failed to get pen request status codes.  Using code value instead of label.');
           penRetrievalResponse.penRequestStatusCodeLabel = penRequest.penRequestStatusCode;
@@ -531,6 +538,7 @@ async function findPenRequestsByPen(req, res){
 module.exports = {
   completePenRequest,
   getAllPenRequests,
+  getMacros,
   getPenRequestCommentById,
   getPenRequestCodes,
   getPenRequestById,

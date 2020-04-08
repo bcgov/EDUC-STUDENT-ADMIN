@@ -8,6 +8,7 @@ const lodash = require('lodash');
 const log = require('npmlog');
 const cache = require('memory-cache');
 const { ServiceError, ApiError } = require('./error');
+const { LocalDateTime, DateTimeFormatter } = require('@js-joda/core');
 
 let discovery = null;
 let memCache = new cache.Cache();
@@ -138,6 +139,27 @@ const utils = {
     req['session'].penRequest = Object.assign({},penRequest);
     //req['session'].save();
   },
+  formatCommentTimestamp(time) {
+    const timestamp = LocalDateTime.parse(time);
+    const formattedTime = timestamp.format(DateTimeFormatter.ofPattern('yyyy-MM-dd h:m'));
+    let hour = timestamp.hour();
+    let minute =  timestamp.minute();
+    if(timestamp.minute() < 10){
+      minute = '0' + timestamp.minute();
+    }
+    let amPm = 'am';
+    //let hours = d.hour;
+    if(hour > 12){
+      amPm = 'pm';
+      hour = hour - 12;
+      //changes from 24 hour to 12 hour
+    }
+    //split the hour/minute object, make fixes, then add it back to the dataTime object
+    let fixTime = (formattedTime).split(' ');
+    fixTime[1] = String(hour) + ':' +  minute;
+    fixTime = fixTime.join(' ');
+    return fixTime + amPm;
+  },
   formatDate(date) {
     if(date && (date.length === 8)) {
       const year = date.substring(0, 4);
@@ -150,6 +172,13 @@ const utils = {
       log.error('Invalid date received from VMS. Using null instead. Check the data.');
       return null;
     }
+  },
+  stripAuditColumns(data) {
+    delete data.createUser;
+    delete data.updateUser;
+    delete data.createDate;
+    delete data.updateDate;
+    return data;
   },
   //keys = ['identityTypeCodes', 'penStatusCodes', 'genderCodes']
   getCodeTable(token, key, url) {
@@ -177,6 +206,23 @@ const utils = {
     } catch (e) {
       throw new ServiceError('getCodeTable error', e);
     }
+  },
+  cacheMiddleware() {
+    return (req, res, next) => {
+      let key =  '__express__' + req.originalUrl || req.url;
+      let cacheContent = memCache.get(key);
+      if(cacheContent){
+        res.send( cacheContent );
+
+      }else{
+        res.sendResponse = res.send;
+        res.send = (body) => {
+          memCache.put(key,body);
+          res.sendResponse(body);
+        };
+        next();
+      }
+    };
   },
   getCodeLabel(codes, codeKey, codeValue) {
     let label = null;

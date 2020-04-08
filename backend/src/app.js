@@ -85,14 +85,6 @@ log.addLevel('debug', 1500, {
 
 //initialize our authentication strategy
 utils.getOidcDiscovery().then(discovery => {
-  log.debug('issuer: ', discovery.issuer);
-  log.debug('authorizationURL: ', discovery.authorization_endpoint);
-  log.debug('tokenURL: ', discovery.token_endpoint);
-  log.debug('userInfoURL: ', discovery['userinfo_endpoint']);
-  log.debug('clientID: ', config.get('oidc:clientId'));
-  log.debug('clientSecret: ', config.get('oidc:clientSecret'));
-  log.debug('callbackURL: ', config.get('server:frontend') + '/api/auth/callback');
-  log.debug('scope: ', discovery.scopes_supported);
   //OIDC Strategy is used for authorization
   passport.use('oidc', new OidcStrategy({
     issuer: discovery.issuer,

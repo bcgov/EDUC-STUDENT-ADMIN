@@ -22,6 +22,7 @@ nconf.defaults({
     statusCodeURL: process.env.PEN_REQUEST_API_URL + '/statuses',
     documentTypeCodesURL: process.env.PEN_REQUEST_API_URL + '/document-types',
     penRequestURL: process.env.PEN_REQUEST_API_URL,
+    penRequestMacrosURL: process.env.PEN_REQUEST_API_URL + '/pen-request-macro',
     demographicsURL: process.env.PEN_DEMOGRAPHICS_URL,
     digitalIdURL: process.env.DIGITAL_ID_URL,
     digitalIdIdentityTypeCodesURL: process.env.DIGITAL_ID_URL + '/identityTypeCodes',

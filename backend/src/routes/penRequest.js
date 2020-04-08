@@ -2,13 +2,9 @@ const passport = require('passport');
 const express = require('express');
 const router = express.Router();
 const auth = require('../components/auth');
-const { completePenRequest, getAllPenRequests, getPenRequestById, getPenRequestCommentById, postPenRequestComment, putPenRequest, rejectPenRequest, returnPenRequest,findPenRequestsByPen } = require('../components/penRequests');
+const utils = require('../components/utils');
+const { completePenRequest, getAllPenRequests, getMacros, getPenRequestById, getPenRequestCommentById, putPenRequest, rejectPenRequest, returnPenRequest,findPenRequestsByPen } = require('../components/penRequests');
 const { getDocuments, getDocumentById, updateDocumentTypeById } = require('../components/documents');
-
-/**
- * Creates a comment for a pen request given a pen request id
- */
-router.post('/:id/comments', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, postPenRequestComment);
 
 /**
  * Gets all the comments for a pen request by pen request id
@@ -30,6 +26,8 @@ router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.
  */
 router.get('/duplicatePenRequests', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, findPenRequestsByPen);
 
+router.get('/macros', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, utils.cacheMiddleware(), getMacros);
+
 /*
  * Get a pen request by id
  */
@@ -39,7 +37,7 @@ router.post('/complete', passport.authenticate('jwt', {session: false}, undefine
 
 router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, rejectPenRequest);
 
-router.post('/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, returnPenRequest);
+router.post('/:id/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, returnPenRequest);
 
 // retrieve all the documents.
 router.get('/:id/documents', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, getDocuments);

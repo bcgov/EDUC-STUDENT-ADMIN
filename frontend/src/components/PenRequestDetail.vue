@@ -250,17 +250,7 @@
             </v-card>
           </v-col>
           <v-col cols="12" xl="6" lg="6" md="6" class="pa-0">
-            <v-card height="100%" width="100%" >
-              <v-toolbar flat color="#036" class="white--text">
-                <v-toolbar-title><h2>Discussion</h2></v-toolbar-title>
-              </v-toolbar>
-              <v-progress-linear
-                      indeterminate
-                      color="blue"
-                      :active="loadingComments"
-              ></v-progress-linear>
-              <Chat id="chat-box" :myself="myself" :participants="participants" :messages="messages"></Chat>
-            </v-card>
+            <Chat></Chat>
           </v-col>
         </v-row>
         <v-row>
@@ -470,24 +460,30 @@
                         outlined
                         transition="scale-transition"
                         class="bootstrap-warning">
-                  PEN Request status updated, but email to student failed. Please contact support.
+                  PEN Request status and comment updated, but email to student failed. Please contact support.
                 </v-alert>
-                <v-card flat class="mx-3">
-                  <v-row>
-                    <v-card-text class="fill-height">
-                      <v-row>
-                        <ol>
-                          <li>Enter a message for the student in the discussion panel above.</li>
-                          <li>Return the request with the button below.</li>
-                        </ol>
+                <v-card flat class="pa-3">
+                  <v-form ref="returnForm">
+                    <v-card-text class="pa-0">
+                      <v-row class="ma-0">
+                        <v-textarea
+                                name="description"
+                                label="Enter return reason"
+                                v-model="returnComment"
+                                :rules="requiredRules"
+                                filled
+                                auto-grow
+                                @input="replaceReturnMacro"
+                                class="pa-0 ma-0"
+                        ></v-textarea>
+                      </v-row>
+                      <v-row justify="end" align-content="end">
+                        <v-col cols="12" xl="3" lg="5" md="5" class="py-0" justify="end" align-content="end">
+                          <v-btn color="#38598a" dark justify="center" width="100%" @click="returnToStudent">Return to Student</v-btn>
+                        </v-col>
                       </v-row>
                     </v-card-text>
-                  </v-row>
-                  <v-row justify="end" align-content="end">
-                    <v-col cols="12" xl="3" lg="5" md="5" class="pt-0" justify="end" align-content="end">
-                      <v-btn color="#38598a" dark justify="center" width="100%" @click="returnToStudent">Return to Student</v-btn>
-                    </v-col>
-                  </v-row>
+                  </v-form>
                 </v-card>
               </v-tab-item>
               <v-tab-item>
@@ -524,20 +520,15 @@
                 <v-card flat class="pa-3">
                   <v-form ref="form" v-model="validForm">
                     <v-card-text class="pa-0">
-                      <v-row class="flex-grow-0 ma-0">
-                        <ol>
-                          <li>Enter the type of failure and provide a detailed reason to the student.</li>
-                          <li>Complete the action with the button below.</li>
-                        </ol>
-                      </v-row>
                       <v-row class="ma-0">
                         <v-textarea
                                 name="description"
-                                label="Enter reason"
+                                label="Enter reject reason"
                                 v-model="failedForm.failureReason"
                                 :rules="requiredRules"
                                 filled
                                 auto-grow
+                                @input="replaceRejectMacro"
                                 class="pa-0 ma-0"
                         ></v-textarea>
                       </v-row>
@@ -561,7 +552,7 @@
 import Chat from './Chat';
 import ApiService from '../common/apiService';
 import { Routes, Statuses } from '../utils/constants';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 import { humanFileSize } from '../utils/file';
 export default {
   components: {
@@ -583,8 +574,6 @@ export default {
         name: null,
         id: null,
       },
-      participants: [],
-      messages: [],
       rejectAlertSuccess: false,
       rejectAlertFailure: false,
       rejectAlertWarning: false,
@@ -597,6 +586,7 @@ export default {
       failedForm: {
         failureReason: null
       },
+      returnComment: null,
       penRequestId: null,
       penSearchId: null,
       autoPenResults: null,
@@ -634,6 +624,7 @@ export default {
       studentError: false,
       loadingDemographics:false,
       activeTab: 0,
+      macroText: null,
       documentTypes: [],
       oldDocumentTypeCode: '',
       documentError: false,
@@ -642,6 +633,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
+    ...mapGetters('penRequest', ['messages', 'returnMacros', 'rejectMacros']),
   },
   mounted() {
     this.loadingPen = true;
@@ -649,6 +641,9 @@ export default {
     this.myself.name = this.userInfo.userName;
     this.myself.id = this.userInfo.userGuid;
     this.penRequestId = this.$store.state['penRequest'].selectedRequest;
+    if(!this.returnMacros || ! this.rejectMacros) {
+      this.$store.dispatch('penRequest/getMacros');
+    }
     this.documentTypes = this.$store.state['penRequest'].documentTypes
       .sort((a, b) => a.displayOrder - b.displayOrder)
       .map(code => ({text: code.label, value: code.documentTypeCode}));
@@ -687,18 +682,6 @@ export default {
         this.loadingPen = false;
       });
     ApiService.apiAxios
-      .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.penRequestId + '/comments')
-      .then(response => {
-        this.participants = response.data.participants;
-        this.messages = response.data.messages;
-      })
-      .catch(error => {
-        console.log(error);
-      })
-      .finally(() => {
-        this.loadingComments = false;
-      });
-    ApiService.apiAxios
       .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.penRequestId + '/documents')
       .then(response => {
         this.filteredResults = response.data.map((document) => this.setDocumentTypeLabel(document));
@@ -709,38 +692,47 @@ export default {
       });
   },
   methods: {
+    ...mapMutations('penRequest', ['pushMessage']),
     documentUrl(penRequestID, document) {
       return `${Routes.PEN_REQUEST_ENDPOINT}/${penRequestID}/documents/${document.documentID}`;
     },
     returnToStudent() {
-      this.loadingActionResults = true;
       this.returnAlertWarning = false;
       this.returnAlertSuccess = false;
       this.returnAlertFailure = false;
-      this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.RETURNED;
-      ApiService.apiAxios
-        .post(Routes.PEN_REQUEST_RETURN_URL, this.prepPut())
-        .then(response => {
-          this.request = response.data;
-          this.returnAlertSuccess=true;
-        })
-        .catch(error => {
-          console.log(error);
-          if(error.response.data && error.response.data.message.includes('email service'))
-            this.returnAlertWarning=true;
-          else
-            this.returnAlertFailure=true;
-        })
-        .finally(() => {
-          this.loadingActionResults = false;
-        });
+      if(this.$refs.returnForm.validate()) {
+        this.loadingActionResults = true;
+        this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.RETURNED;
+        let body = this.prepPut();
+        body.content = this.returnComment;
+        ApiService.apiAxios
+          .post(Routes.PEN_REQUEST_ENDPOINT + '/' + this.penRequestId + '/return', body)
+          .then(response => {
+            this.request = response.data.penResponse;
+            this.pushMessage(response.data.commentResponse);
+            this.returnAlertSuccess = true;
+            this.returnComment = null;
+            this.$refs.returnForm.resetValidation();
+
+          })
+          .catch(error => {
+            console.log(error);
+            if (error.response.data && error.response.data.message.includes('email service'))
+              this.returnAlertWarning = true;
+            else
+              this.returnAlertFailure = true;
+          })
+          .finally(() => {
+            this.loadingActionResults = false;
+          });
+      }
     },
     submitReject() {
-      this.loadingActionResults = true;
       this.rejectAlertWarning = false;
       this.rejectAlertSuccess = false;
       this.rejectAlertFailure = false;
       if(this.$refs.form.validate()){
+        this.loadingActionResults = true;
         this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.REJECTED;
         this.request.failureReason = this.failedForm.failureReason;
 
@@ -810,6 +802,30 @@ export default {
         .finally(() => {
           this.loadingClaimAction = false;
         });
+    },
+    replaceReturnMacro() {
+      if(this.returnComment.includes('!')) {
+        this.macroText = this.returnComment.substring(this.returnComment.indexOf('!'));
+        const macros = this.returnMacros;
+        macros.forEach(element => {
+          if (element['macroCode'] === this.macroText.substring(1)) {
+            this.returnComment = this.returnComment.replace(this.macroText, element.macroText);
+            this.macroText = '';
+          }
+        });
+      }
+    },
+    replaceRejectMacro() {
+      if(this.failedForm.failureReason.includes('!')) {
+        this.macroText = this.failedForm.failureReason.substring(this.failedForm.failureReason.indexOf('!'));
+        const macros = this.rejectMacros;
+        macros.forEach(element => {
+          if (element['macroCode'] === this.macroText.substring(1)) {
+            this.failedForm.failureReason = this.failedForm.failureReason.replace(this.macroText, element.macroText);
+            this.macroText = '';
+          }
+        });
+      }
     },
     validatePen() {
       this.notAPenError = false;
@@ -927,9 +943,6 @@ export default {
 };
 </script>
 <style scoped>
-  #chat-box {
-    height:425px;
-  }
   .v-toolbar /deep/ .v-toolbar__content {
     padding-left: 20px !important;
   }

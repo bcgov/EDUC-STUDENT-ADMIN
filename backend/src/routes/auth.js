@@ -15,16 +15,14 @@ const {
 const router = express.Router();
 
 //provides a callback location for the auth service
-router.get('/callback', function(req,res,next){
-  log.info(`CALLBACK PID IS::${process.pid}`);
-  log.silly(`session id is ${JSON.stringify(req.sessionID)}`);
-  log.silly(`session is ${JSON.stringify(req.session)}`);
-  next();
-}, passport.authenticate('oidc', {
-  failureRedirect: 'error',
-}), (_req, res) => {
-  res.redirect(config.get('server:frontend'));
-});
+router.get('/callback',
+  passport.authenticate('oidc', {
+    failureRedirect: 'error',
+  }),
+  (_req, res) => {
+    res.redirect(config.get('server:frontend'));
+  }
+);
 
 //a prettier way to handle errors
 router.get('/error', (_req, res) => {
@@ -44,14 +42,6 @@ router.get('/login', (req,res,next) =>{
   next();
 }, passport.authenticate('oidc', {
   failureRedirect: 'error'
-},function (err,user,info) {
-  if (err) {
-    log.debug(err);
-    return;
-  }
-
-  log.info(user);
-  log.info(info);
 }));
 
 //removes tokens and destroys session

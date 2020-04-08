@@ -1,105 +1,151 @@
 <template>
-  <div v-if="this.myself.name == null"></div>
-  <div v-else>
-    <Chat
-      :participants="this.participants"
-      :myself="this.myself"
-      :messages="this.messages"
-      :on-message-submit="onMessageSubmit"
-      :placeholder="placeholder"
-      :colors="colors"
-      :border-style="borderStyle"
-      :hide-close-button="hideCloseButton"
-      :close-button-icon-size="closeButtonIconSize"
-      :on-close="onClose"
-      :submit-icon-size="submitIconSize"
-      :async-mode="asyncMode"
-      :scroll-bottom="scrollBottom"
-      :display-header="displayHeader">
-    </Chat>
-  </div>
+  <v-container class="pa-0">
+    <v-card height="100%" width="100%">
+      <v-toolbar flat color="#036" class="white--text">
+        <v-toolbar-title><h2>Discussion</h2></v-toolbar-title>
+      </v-toolbar>
+      <v-card id="chat-box">
+        <v-progress-linear
+                indeterminate
+                absolute
+                top
+                color="indigo darken-2"
+                v-if="loading"
+        ></v-progress-linear>
+        <SingleComment
+                v-for="comment in comments"
+                :comment="comment"
+                :key="comment.id"
+        ></SingleComment>
+      </v-card>
+    </v-card>
+  </v-container>
 </template>
 <script>
-import { Chat } from 'vue-quick-chat';
-import 'vue-quick-chat/dist/vue-quick-chat.css';
-import { Routes } from '../utils/constants';
+import SingleComment from './Single-comment.vue';
 import ApiService from '../common/apiService';
+import {mapGetters, mapMutations} from 'vuex';
+import {Routes} from '../utils/constants';
+
 export default {
   components: {
-    Chat
-  },
-  props: {
-    myself: {
-      type: Object,
-      required: true
-    },
-    participants: {
-      type: Array,
-      required: true
-    },
-    messages: {
-      type: Array,
-      required: true
-    }
+    SingleComment
   },
   data() {
     return {
-      visible: true,
-      placeholder: 'send your message',
-      colors: {
-        header: {
-          bg: '#38598a',
-          text: '#fff'
-        },
-        message: {
-          myself: {
-            bg: '#fff',
-            text: '#38598a'
-          },
-          others: {
-            bg: '#38598a',
-            text: '#fff'
-          },
-          messagesDisplay: {
-            bg: '#fafafa'
-          }
-        },
-        submitIcon: '#036'
-      },
-      borderStyle: {
-        topLeft: '10px',
-        topRight: '10px',
-        bottomLeft: '10px',
-        bottomRight: '10px',
-      },
-      hideCloseButton: true,
-      submitIconSize: '30px',
-      closeButtonIconSize: '20px',
-      asyncMode: false,
       toLoad: [],
-      scrollBottom: {
-        messageSent: true,
-        messageReceived: true
-      },
-      displayHeader:false
+      loading: true,
     };
   },
-  mounted() {
+  computed: {
+    ...mapGetters('auth', ['userInfo']),
+    ...mapGetters('penRequest', ['messages']),
+    penRequestId() {
+      return this.$store.state['penRequest'].selectedRequest;
+    },
+    myself() {
+      return { name: this.userInfo.userName, id: this.userInfo.userGuid };
+    },
+    comments() {
+      return this.messages;
+    }
+  },
+  created() {
+    ApiService.apiAxios
+      .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.penRequestId + '/comments')
+      .then(response => {
+        this.setParticipants(response.data.participants);
+        this.setMessages(response.data.messages);
+      })
+      .catch(error => {
+        console.log(error);
+        this.alert = true;
+      })
+      .finally(() => {
+        this.loading = false;
+      });
   },
   methods: {
-    onMessageSubmit: function (message) {
-      ApiService.apiAxios
-        .post(Routes.PEN_REQUEST_ENDPOINT + '/' + this.$store.state['penRequest'].selectedRequest + '/comments', message)
-        .then(() => {
-          this.messages.push(message);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
-    onClose() {
-      this.visible = false;
-    }
+    ...mapMutations('penRequest', ['setMessages']),
+    ...mapMutations('penRequest', ['setParticipants'])
   }
 };
 </script>
+
+<style scoped>
+  #chat-box {
+    height:385px;
+    overflow-y: auto;
+  }
+  a {
+    text-decoration: none;
+  }
+  hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ececec;
+    margin: 1em;
+    padding: 0;
+  }
+  h2 {
+    font-size: 1.25rem
+  }
+  .comments-outside {
+    /* box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3); */
+    margin-top: 0;
+    max-width: 100%;
+    height:100%;
+    width: 100%;
+    position: relative;
+    overflow-y: hidden;
+
+  }
+  .comments-header {
+    background-color: #C8C8C8;
+    padding: 1rem;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    color: #333;
+    min-height: 80px;
+    font-size: 2rem;
+  }
+  .comments-header .comments-stats span {
+    margin-left: 1rem;
+  }
+  .post-owner {
+    display: flex;
+    align-items: center;
+  }
+
+  .post-owner .username > a {
+    color: #333;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track
+  {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    -moz-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    border-radius: 10px;
+    background-color: #fff;
+  }
+  .custom-scrollbar::-webkit-scrollbar
+  {
+    width: 0.8rem;
+    background-color: #fff;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb
+  {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    -moz-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    background-color: #555;
+  }
+
+  .v-toolbar /deep/ .v-toolbar__content {
+    padding-left: 20px !important;
+  }
+</style>

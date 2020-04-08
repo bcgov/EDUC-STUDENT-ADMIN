@@ -18,6 +18,7 @@ let object = {
   PEN_REQUEST_COMPLETE_URL: penRequestRoot + '/complete',
   PEN_REQUEST_REJECT_URL: penRequestRoot + '/reject',
   PEN_REQUEST_RETURN_URL: penRequestRoot + '/return',
+  PEN_REQUEST_MACRO_URL: penRequestRoot + '/macros',
   STUDENT_DATA_URL: studentRoot,
   SEARCH_BY_PEN: demographicRoot
 };
