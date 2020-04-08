@@ -3,7 +3,6 @@
 const config =require('../config/index');
 const passport = require('passport');
 const express = require('express');
-const log = require('npmlog');
 const auth = require('../components/auth');
 const jsonwebtoken = require('jsonwebtoken');
 
@@ -26,56 +25,49 @@ router.get('/callback',
 
 //a prettier way to handle errors
 router.get('/error', (_req, res) => {
-  log.silly(`req is ${JSON.stringify(_req.session)}`);
-  if(res.data){
-    log.silly(`res data is ${JSON.stringify(res.data)}`);
-  }
-  log.silly(`res status code is ::  ${res.statusCode} , status message is :: ${res.statusMessage} , status Text is :: ${res.statusText}`);
   res.status(401).json({
     message: 'Error: Unable to authenticate'
   });
 });
 
 //redirects to the SSO login screen
-router.get('/login', (req,res,next) =>{
-  log.info(`LOGIN PID IS::${process.pid}`);
-  next();
-}, passport.authenticate('oidc', {
+router.get('/login',passport.authenticate('oidc', {
   failureRedirect: 'error'
 }));
+
+function computeSMRetUrl(req, token) {
+  let siteMinderRetUrl;
+  if (req.query && req.query.sessionExpired) {
+    siteMinderRetUrl = encodeURIComponent(config.get('logoutEndpoint') + '?id_token_hint=' + token + '&post_logout_redirect_uri=' + config.get('server:frontend') + '/session-expired');
+  } else {
+    siteMinderRetUrl = encodeURIComponent(config.get('logoutEndpoint') + '?id_token_hint=' + token + '&post_logout_redirect_uri=' + config.get('server:frontend') + '/logout');
+  }
+  return siteMinderRetUrl;
+}
+
+function logout(req) {
+  req.logout();
+  req.session.destroy();
+}
 
 //removes tokens and destroys session
 router.get('/logout', async (req, res) => {
   if(req.user && req.user.jwt){
     const token = req.user.jwt;
-    req.logout();
-    req.session.destroy();
-    let siteMinderRetUrl;
-    if(req.query.sessionExpired){
-      siteMinderRetUrl = encodeURIComponent(config.get('logoutEndpoint') + '?id_token_hint=' + token + '&post_logout_redirect_uri=' + config.get('server:frontend')+'/session-expired');
-    }else {
-      siteMinderRetUrl = encodeURIComponent(config.get('logoutEndpoint') + '?id_token_hint=' + token + '&post_logout_redirect_uri=' + config.get('server:frontend')+'/logout');
-    }
+    const siteMinderRetUrl= computeSMRetUrl(req, token);
     const siteMinderLogoutUrl = config.get('siteMinder_logout_endpoint');
+    logout(req);
     res.redirect(`${siteMinderLogoutUrl}${siteMinderRetUrl}`);
-
   } else {
     if(req.user){
       const refresh = await auth.renew(req.user.refreshToken);
-      req.logout();
-      req.session.destroy();
-      let siteMinderRetUrl;
-      if(req.query.sessionExpired){
-        siteMinderRetUrl = encodeURIComponent(config.get('logoutEndpoint') + '?id_token_hint=' + refresh.jwt + '&post_logout_redirect_uri=' + config.get('server:frontend')+'/session-expired');
-      }else {
-        siteMinderRetUrl = encodeURIComponent(config.get('logoutEndpoint') + '?id_token_hint=' + refresh.jwt + '&post_logout_redirect_uri=' + config.get('server:frontend')+'/logout');
-      }
+      const siteMinderRetUrl= computeSMRetUrl(req, refresh.jwt);
       const siteMinderLogoutUrl = config.get('siteMinder_logout_endpoint');
+      logout(req);
       res.redirect(`${siteMinderLogoutUrl}${siteMinderRetUrl}`);
     } else{
-      req.logout();
-      req.session.destroy();
-      if(req.query.sessionExpired){
+      logout(req);
+      if(req.query && req.query.sessionExpired){
         res.redirect(config.get('server:frontend')+'/session-expired');
       }else {
         res.redirect( config.get('server:frontend')+'/logout');
