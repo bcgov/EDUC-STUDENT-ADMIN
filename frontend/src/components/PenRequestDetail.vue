@@ -888,8 +888,8 @@ export default {
       ApiService.apiAxios
         .get(`${Routes.DUPLICATE_PEN_REQUESTS_URL}`,{params})
         .then(response => {
-          if(response && response.data && response.data.length > 0){
-            this.numberOfDuplicatePenRequests=response.data.length;
+          if(response && response.data > 0){
+            this.numberOfDuplicatePenRequests=response.data;
           }
         }).catch(error => {
           console.log(error);
