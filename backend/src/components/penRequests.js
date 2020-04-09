@@ -434,8 +434,9 @@ async function updatePenRequest(req, res) {
     penRequest.failureReason = req.body.failureReason;
     penRequest.bcscAutoMatchOutcome = req.body.bcscAutoMatchOutcome;
     penRequest.bcscAutoMatchDetails = req.body.bcscAutoMatchDetails;
-    penRequest.statusUpdateDate = req.body.statusUpdateDate;
-
+    if(req.body.statusUpdateDate) {
+      penRequest.statusUpdateDate = req.body.statusUpdateDate;
+    }
     return Promise.all([
       putData(token, config.get('server:penRequestURL'), penRequest),
       utils.getCodeTable(token, 'penStatusCodes', config.get('server:statusCodeURL'))
