@@ -93,9 +93,9 @@ router.post('/refresh', [
     res.status(401).json();
   } else{
     const newTokens = await auth.renew(req['user'].refreshToken);
-    req['user'].jwt = newTokens.jwt;
-    req['user'].refreshToken = newTokens.refreshToken;
-    if(req['user']){
+    if(newTokens && newTokens.jwt && newTokens.refreshToken){
+      req['user'].jwt = newTokens.jwt;
+      req['user'].refreshToken = newTokens.refreshToken;
       const newUiToken = auth.generateUiToken();
       const responseJson = {
         jwtFrontend: newUiToken,
