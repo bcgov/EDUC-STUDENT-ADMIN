@@ -96,9 +96,8 @@ router.post('/refresh', [
     if(newTokens && newTokens.jwt && newTokens.refreshToken){
       req['user'].jwt = newTokens.jwt;
       req['user'].refreshToken = newTokens.refreshToken;
-      const newUiToken = auth.generateUiToken();
       const responseJson = {
-        jwtFrontend: newUiToken,
+        jwtFrontend: auth.generateUiToken(),
         isAdminUser: isAdminUser
       };
       return res.status(200).json(responseJson);
