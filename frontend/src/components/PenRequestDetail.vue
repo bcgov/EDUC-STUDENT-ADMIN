@@ -805,37 +805,36 @@ export default {
     },
     replaceReturnMacro() {
       if(this.returnComment.includes('!')) {
-        this.macroText = this.returnComment.substring(this.returnComment.indexOf('!'));
+        this.macroText = this.returnComment.match(/![^!]?[^!]?[^!]?/g);
         this.checkForMacro();
       }
     },
     replaceRejectMacro() {
       if(this.failedForm.failureReason.includes('!')) {
-        this.macroText = this.failedForm.failureReason.substring(this.failedForm.failureReason.indexOf('!'));
+        this.macroText = this.failedForm.failureReason.match(/![^!]?[^!]?[^!]?/g);
         this.checkForMacro(true);
       }
     },
     checkForMacro(isReject){
-      if(this.macroText.length > 4){
-        this.macroText = this.macroText.substring(0,4);
-        console.log(this.macroText);
-      }
       let macros = '';
       if(isReject) {
         macros = this.rejectMacros;
       } else {
         macros = this.returnMacros;
       }
-      macros.forEach(element => {
-        if (element['macroCode'] === this.macroText.substring(1)) {
-          if(isReject){
-            this.failedForm.failureReason = this.failedForm.failureReason.replace(this.macroText, element.macroText);
-          } else {
-            this.returnComment = this.returnComment.replace(this.macroText, element.macroText);
+      this.macroText.forEach(text => {
+        macros.forEach(element => {
+          if (element['macroCode'] === text.substring(1)) {
+            if(isReject){
+              this.failedForm.failureReason = this.failedForm.failureReason.replace(text, element.macroText);
+            } else {
+              this.returnComment = this.returnComment.replace(text, element.macroText);
+            }
+
           }
-          this.macroText = '';
-        }
+        });
       });
+      this.macroText = null;
     },
     validatePen() {
       this.notAPenError = false;
