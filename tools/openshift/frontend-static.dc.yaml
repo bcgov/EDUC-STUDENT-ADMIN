@@ -87,7 +87,7 @@ objects:
         - "${APP_NAME}-frontend-${JOB_NAME}"
         from:
           kind: ImageStreamTag
-          name: "${REPO_NAME}-frontend-static:${TAG}"
+          name: "${REPO_NAME}-frontend-static:${JOB_NAME}"
           namespace: "${NAMESPACE}"
       type: ImageChange
 - apiVersion: v1
