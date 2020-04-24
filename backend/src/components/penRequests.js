@@ -58,8 +58,8 @@ async function getAllPenRequests(req, res) {
           }
         }
         //dont send digital id or audit columns to frontend
-        penRetrievalResponse[i] = utils.stripAuditColumns(element);
         delete element['digitalID'];
+        penRetrievalResponse[i] = utils.stripAuditColumns(element);
       });
       return res.status(200).json(penRetrievalResponse);
     }).catch(e => {
