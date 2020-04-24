@@ -41,6 +41,15 @@ pipeline{
                 }
             }
         }
+        stage('Download setup files'){
+            steps{
+                script{
+                    dir('tools/jenkins'){
+                        sh "bash ./download-kc.sh \"${NAMESPACE}\""
+                    }
+                }
+            }
+        }
         /*
         stage('Unit Tests') {
             agent{
@@ -174,6 +183,13 @@ pipeline{
                 }
             }
         }
+        stage('Create/Update Config Maps'){
+            steps{
+                script{
+                    sh "bash ./update-configmap.sh \"dev\""
+                }
+            }
+        }
         stage('e2e tests'){
             agent{
                 node{
@@ -192,6 +208,7 @@ pipeline{
                 }
             }
         }
+
     }
 }
 
