@@ -805,27 +805,36 @@ export default {
     },
     replaceReturnMacro() {
       if(this.returnComment.includes('!')) {
-        this.macroText = this.returnComment.substring(this.returnComment.indexOf('!'));
-        const macros = this.returnMacros;
-        macros.forEach(element => {
-          if (element['macroCode'] === this.macroText.substring(1)) {
-            this.returnComment = this.returnComment.replace(this.macroText, element.macroText);
-            this.macroText = '';
-          }
-        });
+        this.macroText = this.returnComment.match(/![^!]?[^!]?[^!]?/g);
+        this.checkForMacro();
       }
     },
     replaceRejectMacro() {
       if(this.failedForm.failureReason.includes('!')) {
-        this.macroText = this.failedForm.failureReason.substring(this.failedForm.failureReason.indexOf('!'));
-        const macros = this.rejectMacros;
+        this.macroText = this.failedForm.failureReason.match(/![^!]?[^!]?[^!]?/g);
+        this.checkForMacro(true);
+      }
+    },
+    checkForMacro(isReject){
+      let macros = '';
+      if(isReject) {
+        macros = this.rejectMacros;
+      } else {
+        macros = this.returnMacros;
+      }
+      this.macroText.forEach(text => {
         macros.forEach(element => {
-          if (element['macroCode'] === this.macroText.substring(1)) {
-            this.failedForm.failureReason = this.failedForm.failureReason.replace(this.macroText, element.macroText);
-            this.macroText = '';
+          if (element['macroCode'] === text.substring(1)) {
+            if(isReject){
+              this.failedForm.failureReason = this.failedForm.failureReason.replace(text, element.macroText);
+            } else {
+              this.returnComment = this.returnComment.replace(text, element.macroText);
+            }
+
           }
         });
-      }
+      });
+      this.macroText = null;
     },
     validatePen() {
       this.notAPenError = false;
