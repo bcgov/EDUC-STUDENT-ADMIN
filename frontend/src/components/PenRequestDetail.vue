@@ -320,9 +320,9 @@
                     :active="loadingActionResults || loadingDuplicatePenRequests"
             ></v-progress-linear>
             <v-tabs vertical v-model="activeTab">
-              <v-tab>Provide PEN</v-tab>
-              <v-tab>Request Info</v-tab>
-              <v-tab>Reject</v-tab>
+              <v-tab id="complete-tab">Provide PEN</v-tab>
+              <v-tab id="return-tab">Request Info</v-tab>
+              <v-tab id="reject-tab">Reject</v-tab>
               <v-tab-item>
                 <v-alert
                         :value="completedUpdateSuccess"
@@ -358,6 +358,7 @@
                   <v-row class="mx-0">
                     <v-col cols="12" xl="4" lg="4" md="4" class="py-0">
                       <v-text-field
+                              id="pen-search-text-field"
                               v-model="penSearchId"
                               label="PEN:"
                               clearable
@@ -382,8 +383,8 @@
                     </v-col>
                   </v-row>
                   <v-row>
-                    <v-col class="pt-0">
-                      <v-card class="mx-3">
+                    <v-col class="pt-0" cols="6" height="100%">
+                      <v-card class="ml-3">
                         <v-row no-gutters class="pt-2 px-2">
                           <v-col cols="12" xl="3" lg="3" md="3" sm="3">
                             <p class="mb-2">Legal:</p>
@@ -420,12 +421,25 @@
                         </v-row>
                       </v-card>
                     </v-col>
+                    <v-col class="pa-0 pr-6" cols="6">
+                      <v-form ref="completeForm">
+                        <v-textarea
+                          id="complete-comment-textarea"
+                          name="description"
+                          label="Enter comment"
+                          v-model="request.completeComment"
+                          :rules="completedRules"
+                          filled
+                          @input="replaceCompleteMacro"
+                          class="pa-0 ma-0"
+                        ></v-textarea>
+                      </v-form>
+                    </v-col>
                   </v-row>
                   <v-row justify="end" class="px-3">
-                    <v-col justify="right" style="text-align: right;" cols="8" xl="3" lg="5" md="5" class="pt-0">
-                      <span  v-if="this.numberOfDuplicatePenRequests > 0"><span class="red--text font-weight-bold">{{this.numberOfDuplicatePenRequests}}</span><span class="red--text"> prior PEN Requests</span></span>
-                    </v-col>
-                      <v-col cols="4" xl="3" lg="5" md="5" class="pt-0">
+                      <span class="pt-4 pr-1" id="prior-pen-count" v-if="this.numberOfDuplicatePenRequests > 0"><span class="red--text font-weight-bold">{{this.numberOfDuplicatePenRequests}}</span><span class="red--text"> prior PEN Requests</span></span>
+                      <v-checkbox v-model="request.demogChanged" true-value="Y" false-value="N" justify="flex-end" class="pa-0" cols="12" label="Student demographics changed"></v-checkbox>
+                    <v-col cols="4" xl="4" lg="4" md="4" class="pt-2">
                       <v-btn :disabled="!enableCompleteButton" color="#38598a" justify="center" width="100%" :dark="enableCompleteButton" @click="completeRequest">Provide PEN to Student</v-btn>
                     </v-col>
                   </v-row>
@@ -467,6 +481,7 @@
                     <v-card-text class="pa-0">
                       <v-row class="ma-0">
                         <v-textarea
+                                id="return-comment-textarea"
                                 name="description"
                                 label="Enter return reason"
                                 v-model="returnComment"
@@ -522,9 +537,10 @@
                     <v-card-text class="pa-0">
                       <v-row class="ma-0">
                         <v-textarea
+                                id="reject-comment-textarea"
                                 name="description"
                                 label="Enter reject reason"
-                                v-model="failedForm.failureReason"
+                                v-model="rejectComment"
                                 :rules="requiredRules"
                                 filled
                                 auto-grow
@@ -583,9 +599,7 @@ export default {
       completedUpdateSuccess:null,
       notAPenError: false,
       fileSizeConverter:humanFileSize,
-      failedForm: {
-        failureReason: null
-      },
+      rejectComment: null,
       returnComment: null,
       penRequestId: null,
       penSearchId: null,
@@ -633,7 +647,15 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapGetters('penRequest', ['messages', 'returnMacros', 'rejectMacros']),
+    ...mapGetters('penRequest', ['messages', 'returnMacros', 'rejectMacros', 'completeMacros']),
+    completedRules() {
+      const rules = [];
+      if (this.request.demogChanged==='Y') {
+        const rule = v => !!v || 'Required';
+        rules.push(rule);
+      }
+      return rules;
+    }
   },
   mounted() {
     this.loadingPen = true;
@@ -653,7 +675,7 @@ export default {
       .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.penRequestId)
       .then(response => {
         this.request = response.data;
-        this.failedForm.failureReason = response.data.failureReason;
+        this.rejectComment = response.data.failureReason;
 
         if(this.request.bcscAutoMatchDetails) {
           this.autoPenResults = this.request.bcscAutoMatchDetails.split(' ')[0];
@@ -691,8 +713,14 @@ export default {
         console.log(error);
       });
   },
+  watch: {
+    'request.completeComment': 'validateCompleteAction'
+  },
   methods: {
     ...mapMutations('penRequest', ['pushMessage']),
+    validateCompleteAction() {
+      this.$refs.completeForm.validate();
+    },
     documentUrl(penRequestID, document) {
       return `${Routes.PEN_REQUEST_ENDPOINT}/${penRequestID}/documents/${document.documentID}`;
     },
@@ -734,7 +762,7 @@ export default {
       if(this.$refs.form.validate()){
         this.loadingActionResults = true;
         this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.REJECTED;
-        this.request.failureReason = this.failedForm.failureReason;
+        this.request.failureReason = this.rejectComment;
 
         ApiService.apiAxios
           .post(Routes.PEN_REQUEST_REJECT_URL, this.prepPut())
@@ -755,32 +783,33 @@ export default {
       }
     },
     completeRequest() {
-      this.loadingActionResults = true;
-      this.completedUpdateSuccess = null;
-      this.request.pen = this.penSearchId;
-      if(this.request.bcscAutoMatchOutcome === Statuses.AUTO_MATCH_RESULT_CODES.ONE_MATCH && this.autoPenResults === this.penSearchId) {
-        this.request.bcscAutoMatchOutcome = Statuses.AUTO_MATCH_RESULT_CODES.RIGHT_PEN;
-        this.request.bcscAutoMatchDetails = 'CORRECT auto-match to: ' + this.request.bcscAutoMatchDetails;
-      } else if(this.request.bcscAutoMatchOutcome === Statuses.AUTO_MATCH_RESULT_CODES.ONE_MATCH && this.autoPenResults !== this.penSearchId){
-        this.request.bcscAutoMatchOutcome = Statuses.AUTO_MATCH_RESULT_CODES.WRONG_PEN;
-        this.request.bcscAutoMatchDetails = 'WRONG auto-match to: ' + this.request.bcscAutoMatchDetails;
+      if(this.$refs.completeForm.validate()) {
+        this.loadingActionResults = true;
+        this.completedUpdateSuccess = null;
+        this.request.pen = this.penSearchId;
+        if (this.request.bcscAutoMatchOutcome === Statuses.AUTO_MATCH_RESULT_CODES.ONE_MATCH && this.autoPenResults === this.penSearchId) {
+          this.request.bcscAutoMatchOutcome = Statuses.AUTO_MATCH_RESULT_CODES.RIGHT_PEN;
+          this.request.bcscAutoMatchDetails = 'CORRECT auto-match to: ' + this.request.bcscAutoMatchDetails;
+        } else if (this.request.bcscAutoMatchOutcome === Statuses.AUTO_MATCH_RESULT_CODES.ONE_MATCH && this.autoPenResults !== this.penSearchId) {
+          this.request.bcscAutoMatchOutcome = Statuses.AUTO_MATCH_RESULT_CODES.WRONG_PEN;
+          this.request.bcscAutoMatchDetails = 'WRONG auto-match to: ' + this.request.bcscAutoMatchDetails;
+        }
+
+        this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.MANUAL_MATCH;
+        ApiService.apiAxios
+          .post(Routes.PEN_REQUEST_COMPLETE_URL, this.prepPut())
+          .then(response => {
+            this.request = response.data;
+            this.completedUpdateSuccess = true;
+          })
+          .catch(error => {
+            console.log(error);
+            this.completedUpdateSuccess = false;
+          })
+          .finally(() => {
+            this.loadingActionResults = false;
+          });
       }
-
-      this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.MANUAL_MATCH;
-      ApiService.apiAxios
-        .post(Routes.PEN_REQUEST_COMPLETE_URL, this.prepPut())
-        .then(response => {
-          this.request = response.data;
-          this.completedUpdateSuccess=true;
-        })
-        .catch(error => {
-          console.log(error);
-          this.completedUpdateSuccess=false;
-        })
-        .finally(() => {
-          this.loadingActionResults = false;
-        });
-
     },
     claimRequest() {
       this.loadingClaimAction = true;
@@ -806,31 +835,49 @@ export default {
     replaceReturnMacro() {
       if(this.returnComment.includes('!')) {
         this.macroText = this.returnComment.match(/![^!]?[^!]?[^!]?/g);
-        this.checkForMacro();
+        this.checkForMacro('return');
       }
     },
     replaceRejectMacro() {
-      if(this.failedForm.failureReason.includes('!')) {
-        this.macroText = this.failedForm.failureReason.match(/![^!]?[^!]?[^!]?/g);
-        this.checkForMacro(true);
+      if(this.rejectComment.includes('!')) {
+        this.macroText = this.rejectComment.match(/![^!]?[^!]?[^!]?/g);
+        this.checkForMacro('reject');
       }
     },
-    checkForMacro(isReject){
-      let macros = '';
-      if(isReject) {
-        macros = this.rejectMacros;
-      } else {
-        macros = this.returnMacros;
+    replaceCompleteMacro() {
+      if(this.request.completeComment && this.request.completeComment.includes('!')) {
+        this.macroText = this.request.completeComment.match(/![^!]?[^!]?[^!]?/g);
+        this.checkForMacro('complete');
       }
+    },
+    checkForMacro(type){
+      let macros = '';
+      switch(type){
+      case 'reject':
+        macros = this.rejectMacros;
+        break;
+      case 'return':
+        macros = this.returnMacros;
+        break;
+      case 'complete':
+        macros = this.completeMacros;
+        break;
+      }
+
       this.macroText.forEach(text => {
         macros.forEach(element => {
           if (element['macroCode'] === text.substring(1)) {
-            if(isReject){
-              this.failedForm.failureReason = this.failedForm.failureReason.replace(text, element.macroText);
-            } else {
+            switch(type){
+            case 'reject':
               this.returnComment = this.returnComment.replace(text, element.macroText);
+              break;
+            case 'return':
+              this.rejectComment = this.rejectComment.replace(text, element.macroText);
+              break;
+            case 'complete':
+              this.request.completeComment = this.request.completeComment.replace(text, element.macroText);
+              break;
             }
-
           }
         });
       });
@@ -921,6 +968,8 @@ export default {
         'penRequestStatusCode': body.penRequestStatusCode,
         'reviewer': body.reviewer,
         'failureReason': body.failureReason,
+        'completeComment': body.completeComment,
+        'demogChanged': body.demogChanged,
         'bcscAutoMatchOutcome': body.bcscAutoMatchOutcome,
         'bcscAutoMatchDetails': body.bcscAutoMatchDetails
       };
@@ -960,6 +1009,10 @@ export default {
   }
   .v-textarea /deep/ .v-input__slot {
     margin-bottom: 0 !important;
+  }
+  .v-input--checkbox /deep/ .v-input__slot {
+    padding: 0 !important;
+    justify-content: flex-end !important;
   }
   .v-card /deep/ .v-window__container {
     height:100% !important;

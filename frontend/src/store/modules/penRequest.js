@@ -21,13 +21,15 @@ export default {
     participants:[],
     returnMacros: null,
     rejectMacros: null,
+    completeMacros: null,
     documentTypes: [],
   },
   getters: {
     messages: state => state.messages,
     participants: state => state.participants,
     returnMacros: state => state.returnMacros,
-    rejectMacros: state => state.rejectMacros
+    rejectMacros: state => state.rejectMacros,
+    completeMacros: state => state.completeMacros
   },
   mutations: {
     pushMessage: (state, message) => {
@@ -44,6 +46,9 @@ export default {
     },
     setRejectMacros: (state, macros) => {
       state.rejectMacros = macros;
+    },
+    setCompleteMacros: (state, macros) => {
+      state.completeMacros = macros;
     }
   },
   actions: {
@@ -53,6 +58,7 @@ export default {
         .then(response => {
           context.commit('setReturnMacros', response.data.returnMacros);
           context.commit('setRejectMacros', response.data.rejectMacros);
+          context.commit('setCompleteMacros', response.data.completeMacros);
         })
         .catch(error => {
           console.log(error);

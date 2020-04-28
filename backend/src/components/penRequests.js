@@ -79,8 +79,9 @@ async function getMacros(req, res) {
   }
   return Promise.all([
     getData(token,config.get('server:penRequestMacrosURL'), {params: { macroTypeCode: 'MOREINFO' }}),
-    getData(token,config.get('server:penRequestMacrosURL'), {params: { macroTypeCode: 'REJECT' }})
-  ]).then(([returnResponse, rejectResponse]) => {
+    getData(token,config.get('server:penRequestMacrosURL'), {params: { macroTypeCode: 'REJECT' }}),
+    getData(token,config.get('server:penRequestMacrosURL'), {params: { macroTypeCode: 'COMPLETE' }})
+  ]).then(([returnResponse, rejectResponse, completeResponse]) => {
     returnResponse.forEach((element, i) => {
       returnResponse[i] = utils.stripAuditColumns(element);
       delete returnResponse[i]['macroId'];
@@ -89,9 +90,14 @@ async function getMacros(req, res) {
       rejectResponse[i] = utils.stripAuditColumns(element);
       delete rejectResponse[i]['macroId'];
     });
+    completeResponse.forEach((element, i) => {
+      completeResponse[i] = utils.stripAuditColumns(element);
+      delete completeResponse[i]['macroId'];
+    });
     return res.status(200).json({
       returnMacros: returnResponse,
-      rejectMacros: rejectResponse
+      rejectMacros: rejectResponse,
+      completeMacros: completeResponse
     });
   }).catch((e) => {
     logApiError(e, 'getMacros', 'Error occurred while attempting to GET macros.');
@@ -289,6 +295,7 @@ async function sendPenRequestEmail(req, token, emailType) {
     emailAddress: req['session'].penRequest['email'],
     identityType: req['session'].identityType
   };
+  let params;
   if (lowerCaseEmail === 'reject') {
     if (!req.body.failureReason) {
       throw new ServiceError('400', 'EMAIL Error: Failure reason is required.');
@@ -299,9 +306,15 @@ async function sendPenRequestEmail(req, token, emailType) {
       throw new ServiceError('500', 'EMAIL Error: There are no student demographics in session.');
     }
     emailBody.firstName = req['session'].studentDemographics['studGiven'];
+    if(req.body.demogChanged==='Y'){
+      params = {params: {demographicsChanged: true}};
+    }
+    else {
+      params = {params: {demographicsChanged: false}};
+    }
   }
   try {
-    await postData(token, config.get('server:penEmails') + '/' + lowerCaseEmail, emailBody);
+    await postData(token, config.get('server:penEmails') + '/' + lowerCaseEmail, emailBody, params);
   } catch(e) {
     logApiError(e, 'sendPenRequestEmail', 'Error calling email service.');
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
@@ -432,6 +445,8 @@ async function updatePenRequest(req, res) {
     penRequest.penRequestStatusCode = req.body.penRequestStatusCode;
     penRequest.reviewer = req.body.reviewer;
     penRequest.failureReason = req.body.failureReason;
+    penRequest.completeComment = req.body.completeComment;
+    penRequest.demogChanged = req.body.demogChanged;
     penRequest.bcscAutoMatchOutcome = req.body.bcscAutoMatchOutcome;
     penRequest.bcscAutoMatchDetails = req.body.bcscAutoMatchDetails;
     if(req.body.statusUpdateDate) {

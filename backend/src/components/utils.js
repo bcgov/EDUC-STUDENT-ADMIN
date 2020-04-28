@@ -60,20 +60,25 @@ function minify(obj, keys=['documentData']) {
     result[key] = keys.includes(key) && lodash.isString(value) ? value.substring(0,1) + ' ...' : value );
 }
 
-async function postData(token, url, data) {
+async function postData(token, url, data, params) {
   try{
-    const postDataConfig = {
-      headers: {
+    if(params) {
+      params.headers = {
         Authorization: `Bearer ${token}`,
-      }
-    };
-
+      };
+    } else {
+      params = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      };
+    }
     log.info('post Data Url', url);
     log.verbose('post Data Req', minify(data));
 
     data.createUser='STUDENT-ADMIN';
     data.updateUser='STUDENT-ADMIN';
-    const response = await axios.post(url, data, postDataConfig);
+    const response = await axios.post(url, data, params);
 
     log.info('post Data Status', response.status);
     log.info('post Data StatusText', response.statusText);
