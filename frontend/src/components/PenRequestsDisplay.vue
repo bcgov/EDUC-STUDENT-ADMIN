@@ -11,6 +11,7 @@
         <v-row no-gutters>
           <v-card height="100%" width="100%"  style="background-color:#38598a;">
             <v-combobox
+              id="status-dropdown"
               :key="comboboxKey"
               :mandatory="false"
               :items="statusCodes"
@@ -68,6 +69,7 @@
                 >
                   <template v-slot:activator="{ on }">
                     <v-text-field
+                      id="date-picker-text-field"
                       v-model="headerSearchParams.initialSubmitDate"
                       outlined
                       dense
@@ -76,10 +78,10 @@
                       class="header-text"
                     ></v-text-field>
                   </template>
-                  <v-date-picker v-model="headerSearchParams.initialSubmitDate" no-title range>
+                  <v-date-picker id="date-picker" v-model="headerSearchParams.initialSubmitDate" no-title range>
                     <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="dateMenu = false">Cancel</v-btn>
-                    <v-btn text color="primary" @click="$refs.dateMenu.save(headerSearchParams.initialSubmitDate)">OK</v-btn>
+                    <v-btn id="date-picker-cancel-button" text color="primary" @click="dateMenu = false">Cancel</v-btn>
+                    <v-btn id="date-picker-ok-button" text color="primary" @click="$refs.dateMenu.save(headerSearchParams.initialSubmitDate)">OK</v-btn>
                   </v-date-picker>
                 </v-menu>
               </template>
@@ -90,7 +92,7 @@
                           :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
                   </em>
                 </th>
-                <v-text-field v-model="headerSearchParams.status" class="header-text" outlined dense>></v-text-field>
+                <v-text-field id="status-text-field" v-model="headerSearchParams.status" class="header-text" outlined dense>></v-text-field>
               </template>
               <template v-slot:header.legalLastName="{ header }">
                 <th id="last-name-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
@@ -99,7 +101,7 @@
                     :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
                   </em>
                 </th>
-                <v-text-field v-model="headerSearchParams.legalLastName" class="header-text" outlined dense></v-text-field>
+                <v-text-field id="last-name-text-field" v-model="headerSearchParams.legalLastName" class="header-text" outlined dense></v-text-field>
               </template>
               <template v-slot:header.legalFirstName="{ header }">
                 <th id="first-name-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
@@ -108,7 +110,7 @@
                           :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
                   </em>
                 </th>
-                <v-text-field v-model="headerSearchParams.legalFirstName" class="header-text" outlined dense></v-text-field>
+                <v-text-field id="first-name-text-field" v-model="headerSearchParams.legalFirstName" class="header-text" outlined dense></v-text-field>
               </template>
               <template v-slot:header.reviewer="{ header }">
                 <th id="reviewer-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
@@ -117,7 +119,7 @@
                           :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
                   </em>
                 </th>
-                <v-text-field v-model="headerSearchParams.reviewer" class="header-text" outlined dense></v-text-field>
+                <v-text-field id="review-text-field" v-model="headerSearchParams.reviewer" class="header-text" outlined dense></v-text-field>
               </template>
               <template v-slot:item.initialSubmitDate="{ item }">
                 <span v-if="item.initialSubmitDate == null"></span>
