@@ -868,10 +868,10 @@ export default {
         macros.forEach(element => {
           if (element['macroCode'] === text.substring(1)) {
             switch(type){
-            case 'reject':
+            case 'return':
               this.returnComment = this.returnComment.replace(text, element.macroText);
               break;
-            case 'return':
+            case 'reject':
               this.rejectComment = this.rejectComment.replace(text, element.macroText);
               break;
             case 'complete':
