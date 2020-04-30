@@ -8,7 +8,6 @@ const { ApiError, ServiceError } = require('./error');
 const { LocalDateTime } = require('@js-joda/core');
 async function completePenRequest(req, res) {
   try {
-    await new Promise(r => setTimeout(r, 10000));
     const token = getBackendToken(req, res);
     if(!token) {
       return res.status(HttpStatus.UNAUTHORIZED).json({
