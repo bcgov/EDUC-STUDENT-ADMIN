@@ -54,18 +54,18 @@
             <v-card height="100%" width="100%" elevation=0>
               <v-row v-if="!this.request.reviewer" no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
                 <p class="blue--text"><strong>No one is working on this request</strong></p>
-                <v-btn small color="#38598a" dark class="ml-2" @click="claimRequest">Claim</v-btn>
+                <v-btn :disabled="!enableActions" small color="#38598a" :dark="enableActions" class="ml-2" @click="claimRequest">Claim</v-btn>
               </v-row>
               <v-row v-else-if="this.request.reviewer === this.myself.name" no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
                 <p class="green--text"><strong>You are working on this request</strong></p>
-                <v-btn small color="#38598a" dark class="ml-2" @click="claimRequest">Release</v-btn>
+                <v-btn :disabled="!enableActions" small color="#38598a" :dark="enableActions" class="ml-2" @click="claimRequest">Release</v-btn>
               </v-row>
               <v-row v-else no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
                 <p class="orange--text"><strong>{{ this.request.reviewer }} is working on this request</strong></p>
-                <v-btn small color="#38598a" dark class="ml-2" @click="claimRequest">Claim</v-btn>
+                <v-btn :disabled="!enableActions" small color="#38598a" :dark="enableActions" class="ml-2" @click="claimRequest">Claim</v-btn>
               </v-row>
               <v-row no-gutters justify="end" class="pb-5">
-                <v-btn small color="#38598a" dark class="ml-2" @click="backToList">Back to List</v-btn>
+                <v-btn :disabled="!enableActions" small color="#38598a" :dark="enableActions" class="ml-2" @click="backToList">Back to List</v-btn>
               </v-row>
             </v-card>
           </v-col>
@@ -440,7 +440,7 @@
                       <span class="pt-4 pr-1" id="prior-pen-count" v-if="this.numberOfDuplicatePenRequests > 0"><span class="red--text font-weight-bold">{{this.numberOfDuplicatePenRequests}}</span><span class="red--text"> prior PEN Requests</span></span>
                       <v-checkbox v-model="request.demogChanged" true-value="Y" false-value="N" justify="flex-end" class="pa-0" cols="12" label="Student demographics changed"></v-checkbox>
                     <v-col cols="4" xl="4" lg="4" md="4" class="pt-2">
-                      <v-btn :disabled="!enableCompleteButton" color="#38598a" justify="center" width="100%" :dark="enableCompleteButton" @click="completeRequest">Provide PEN to Student</v-btn>
+                      <v-btn :disabled="!enableCompleteButton||!enableActions" color="#38598a" justify="center" width="100%" :dark="enableCompleteButton&&enableActions" @click="completeRequest">Provide PEN to Student</v-btn>
                     </v-col>
                   </v-row>
                 </v-card>
@@ -494,7 +494,7 @@
                       </v-row>
                       <v-row justify="end" align-content="end">
                         <v-col cols="12" xl="3" lg="5" md="5" class="py-0" justify="end" align-content="end">
-                          <v-btn color="#38598a" dark justify="center" width="100%" @click="returnToStudent">Return to Student</v-btn>
+                          <v-btn :disabled="!enableActions" color="#38598a" :dark="enableActions" justify="center" width="100%" @click="returnToStudent">Return to Student</v-btn>
                         </v-col>
                       </v-row>
                     </v-card-text>
@@ -550,7 +550,7 @@
                       </v-row>
                       <v-row justify="end" align-content="end">
                         <v-col cols="12" xl="3" lg="5" md="5" class="py-0" justify="end" align-content="end">
-                          <v-btn color="#38598a" dark justify="center" width="100%" @click="submitReject">Reject</v-btn>
+                          <v-btn color="#38598a" :disabled="!enableActions" :dark="enableActions" justify="center" width="100%" @click="submitReject">Reject</v-btn>
                         </v-col>
                       </v-row>
                     </v-card-text>
@@ -615,6 +615,7 @@ export default {
         gender: null
       },
       enableCompleteButton: false,
+      enableActions: true,
       loadingPen: true,
       loadingComments: true,
       loadingActionResults: false,
@@ -729,6 +730,7 @@ export default {
       this.returnAlertSuccess = false;
       this.returnAlertFailure = false;
       if(this.$refs.returnForm.validate()) {
+        this.disableActionButtons();
         this.loadingActionResults = true;
         this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.RETURNED;
         let body = this.prepPut();
@@ -752,6 +754,7 @@ export default {
           })
           .finally(() => {
             this.loadingActionResults = false;
+            this.enableActionButtons();
           });
       }
     },
@@ -760,6 +763,7 @@ export default {
       this.rejectAlertSuccess = false;
       this.rejectAlertFailure = false;
       if(this.$refs.form.validate()){
+        this.disableActionButtons();
         this.loadingActionResults = true;
         this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.REJECTED;
         this.request.failureReason = this.rejectComment;
@@ -779,11 +783,13 @@ export default {
           })
           .finally(() => {
             this.loadingActionResults = false;
+            this.enableActionButtons();
           });
       }
     },
     completeRequest() {
       if(this.$refs.completeForm.validate()) {
+        this.disableActionButtons();
         this.loadingActionResults = true;
         this.completedUpdateSuccess = null;
         this.request.pen = this.penSearchId;
@@ -808,11 +814,13 @@ export default {
           })
           .finally(() => {
             this.loadingActionResults = false;
+            this.enableActionButtons();
           });
       }
     },
     claimRequest() {
       this.loadingClaimAction = true;
+      this.disableActionButtons();
       let body = this.prepPut();
       if(this.request.reviewer !== this.myself.name) {
         body.reviewer = this.myself.name;
@@ -830,6 +838,7 @@ export default {
         })
         .finally(() => {
           this.loadingClaimAction = false;
+          this.enableActionButtons();
         });
     },
     replaceReturnMacro() {
@@ -920,6 +929,12 @@ export default {
         return penDigits.pop() === 0;
       }
       return penDigits.pop() === (10 - (S3%10));
+    },
+    disableActionButtons() {
+      this.enableActions = false;
+    },
+    enableActionButtons() {
+      this.enableActions = true;
     },
     searchByPen() {
       this.loadingActionResults = true;
