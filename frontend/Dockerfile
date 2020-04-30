@@ -1,5 +1,7 @@
 FROM node:lts-alpine
 
+RUN apk add --no-cache iproute2
+
 WORKDIR /opt/app-root/src
 
 COPY package*.json ./
