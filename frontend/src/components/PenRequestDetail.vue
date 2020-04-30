@@ -731,6 +731,7 @@ export default {
       if(this.$refs.returnForm.validate()) {
         this.loadingActionResults = true;
         this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.RETURNED;
+        this.request.reviewer = this.myself.name;
         let body = this.prepPut();
         body.content = this.returnComment;
         ApiService.apiAxios
@@ -763,7 +764,7 @@ export default {
         this.loadingActionResults = true;
         this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.REJECTED;
         this.request.failureReason = this.rejectComment;
-
+        this.request.reviewer = this.myself.name;
         ApiService.apiAxios
           .post(Routes.PEN_REQUEST_REJECT_URL, this.prepPut())
           .then(response => {
@@ -794,7 +795,7 @@ export default {
           this.request.bcscAutoMatchOutcome = Statuses.AUTO_MATCH_RESULT_CODES.WRONG_PEN;
           this.request.bcscAutoMatchDetails = 'WRONG auto-match to: ' + this.request.bcscAutoMatchDetails;
         }
-
+        this.request.reviewer = this.myself.name;
         this.request.penRequestStatusCode = Statuses.PEN_STATUS_CODES.MANUAL_MATCH;
         ApiService.apiAxios
           .post(Routes.PEN_REQUEST_COMPLETE_URL, this.prepPut())
