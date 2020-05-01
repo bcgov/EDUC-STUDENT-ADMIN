@@ -26,7 +26,8 @@ const penRequestRouter = require('./routes/penRequest');
 const penRequestStatusesRouter = require('./routes/penRequestStatuses');
 const studentDemographicsRouter = require('./routes/studentDemographics');
 const studentsRouter = require('./routes/students');
-
+const promMid = require('express-prometheus-middleware');
+const actuator = require('express-actuator');
 //initialize app
 const app = express();
 app.set('trust proxy', 1);
@@ -34,7 +35,12 @@ app.set('trust proxy', 1);
 app.use(cors());
 app.use(helmet());
 app.use(helmet.noCache());
-
+app.use(actuator());
+app.use(promMid({
+  metricsPath: '/prometheus',
+  collectDefaultMetrics: true,
+  requestDurationBuckets: [0.1, 0.5, 1, 1.5]
+}));
 
 //tells the app to use json as means of transporting data
 app.use(express.json());
@@ -133,10 +139,6 @@ utils.getOidcDiscovery().then(discovery => {
 passport.serializeUser((user, next) => next(null, user));
 passport.deserializeUser((obj, next) => next(null, obj));
 
-// GetOK Base API for readiness and liveness probe
-apiRouter.get('/health', (_req, res) => {
-  res.status(200).json();
-});
 
 //set up routing to auth and main API
 app.use(/(\/api)?/, apiRouter);
