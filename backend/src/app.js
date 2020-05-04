@@ -35,9 +35,14 @@ app.set('trust proxy', 1);
 app.use(cors());
 app.use(helmet());
 app.use(helmet.noCache());
-app.use(actuator());
+const options = {
+  basePath: '/api', // It will set /management/info instead of /info
+  infoGitMode: 'simple', // the amount of git information you want to expose, 'simple' or 'full'
+  customEndpoints: [] // array of extra endpoints
+};
+app.use(actuator(options));
 app.use(promMid({
-  metricsPath: '/prometheus',
+  metricsPath: '/api/prometheus',
   collectDefaultMetrics: true,
   requestDurationBuckets: [0.1, 0.5, 1, 1.5]
 }));
