@@ -67,10 +67,10 @@ objects:
           resources:
             requests:
               cpu: "50m"
-              memory: "300Mi"
+              memory: "100Mi"
             limits:
               cpu: "100m"
-              memory: "500Mi"
+              memory: "200Mi"
         volumes:
         - name: tls-certs
           secret:
