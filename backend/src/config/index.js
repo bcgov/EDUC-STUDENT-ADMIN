@@ -35,7 +35,8 @@ nconf.defaults({
     clientId: process.env.ID,
     clientSecret: process.env.SECRET,
     discovery: process.env.DISCOVERY,
-    staffRole: 'STUDENT_ADMIN'
+    staffRole: 'STUDENT_ADMIN',
+    rolesAllowed: ['STUDENT_ADMIN,STUDENT_ADMIN_READ_ONLY']
   },
   tokenGenerate: {
     privateKey: process.env.UI_PRIVATE_KEY,
