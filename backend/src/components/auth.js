@@ -120,13 +120,16 @@ const auth = {
       if (userToken['realm_access'] && userToken['realm_access'].roles) {
         const roles = userToken['realm_access'] && userToken['realm_access'].roles;
         const rolesAllowed = (config.get('oidc:rolesAllowed'));
+        log.silly(`Roles allowed is${rolesAllowed}`);
         for(const rolesIndex in roles){
           const role = roles[rolesIndex];
+          log.silly(`Role obtained is${role}`);
           if(rolesAllowed.indexOf(role) !== -1){
             return next();
           }
         }
       }
+      log.silly('did not find any roles so returning 401');
       return res.status(401).json({
         message: 'Unauthorized user'
       });
