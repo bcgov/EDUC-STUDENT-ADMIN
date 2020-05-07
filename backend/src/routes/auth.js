@@ -1,6 +1,6 @@
 'use strict';
 
-const config =require('../config/index');
+const config = require('../config/index');
 const passport = require('passport');
 const express = require('express');
 const auth = require('../components/auth');
@@ -31,7 +31,7 @@ router.get('/error', (_req, res) => {
 });
 
 //redirects to the SSO login screen
-router.get('/login',passport.authenticate('oidc', {
+router.get('/login', passport.authenticate('oidc', {
   failureRedirect: 'error'
 }));
 
@@ -52,25 +52,25 @@ function logout(req) {
 
 //removes tokens and destroys session
 router.get('/logout', async (req, res) => {
-  if(req.user && req.user.jwt){
+  if (req.user && req.user.jwt) {
     const token = req.user.jwt;
-    const siteMinderRetUrl= computeSMRetUrl(req, token);
+    const siteMinderRetUrl = computeSMRetUrl(req, token);
     const siteMinderLogoutUrl = config.get('siteMinder_logout_endpoint');
     logout(req);
     res.redirect(`${siteMinderLogoutUrl}${siteMinderRetUrl}`);
   } else {
-    if(req.user){
+    if (req.user) {
       const refresh = await auth.renew(req.user.refreshToken);
-      const siteMinderRetUrl= computeSMRetUrl(req, refresh.jwt);
+      const siteMinderRetUrl = computeSMRetUrl(req, refresh.jwt);
       const siteMinderLogoutUrl = config.get('siteMinder_logout_endpoint');
       logout(req);
       res.redirect(`${siteMinderLogoutUrl}${siteMinderRetUrl}`);
-    } else{
+    } else {
       logout(req);
-      if(req.query && req.query.sessionExpired){
-        res.redirect(config.get('server:frontend')+'/session-expired');
-      }else {
-        res.redirect( config.get('server:frontend')+'/logout');
+      if (req.query && req.query.sessionExpired) {
+        res.redirect(config.get('server:frontend') + '/session-expired');
+      } else {
+        res.redirect(config.get('server:frontend') + '/logout');
       }
     }
   }
@@ -88,17 +88,17 @@ router.post('/refresh', [
   }
 
 
-  let isAdminUser = auth.isAdminUser(req);
-  if(!req['user'] || !req['user'].refreshToken){
+  let isAuthorizedUser = auth.isValidUser(req);
+  if (!req['user'] || !req['user'].refreshToken) {
     res.status(401).json();
-  } else{
+  } else {
     const newTokens = await auth.renew(req['user'].refreshToken);
-    if(newTokens && newTokens.jwt && newTokens.refreshToken){
+    if (newTokens && newTokens.jwt && newTokens.refreshToken) {
       req['user'].jwt = newTokens.jwt;
       req['user'].refreshToken = newTokens.refreshToken;
       const responseJson = {
         jwtFrontend: auth.generateUiToken(),
-        isAdminUser: isAdminUser
+        isAuthorizedUser: isAuthorizedUser
       };
       return res.status(200).json(responseJson);
     } else {
@@ -110,11 +110,11 @@ router.post('/refresh', [
 //provides a jwt to authenticated users
 router.get('/token', auth.refreshJWT, (req, res) => {
 
-  let isAdminUser = auth.isAdminUser(req);
+  let isAuthorizedUser = auth.isValidUser(req);
   if (req['user'] && req['user'].jwtFrontend && req['user'].refreshToken) {
     const responseJson = {
       jwtFrontend: req['user'].jwtFrontend,
-      isAdminUser : isAdminUser
+      isAuthorizedUser: isAuthorizedUser
     };
     res.status(200).json(responseJson);
   } else {
@@ -124,18 +124,18 @@ router.get('/token', auth.refreshJWT, (req, res) => {
   }
 });
 
-router.get('/user',  passport.authenticate('jwt', {session: false}), (req, res) => {
+router.get('/user', passport.authenticate('jwt', {session: false}), (req, res) => {
   const thisSession = req['session'];
   const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
   const userName = {
     userName: userToken['idir_username'],
-    userGuid: userToken.preferred_username.toUpperCase()
+    userGuid: userToken.preferred_username.toUpperCase(),
+    userRoles: userToken.realm_access.roles
   };
 
-  if(userName.userName && userName.userGuid) {
+  if (userName.userName && userName.userGuid) {
     return res.status(200).json(userName);
-  }
-  else {
+  } else {
     return res.status(500);
   }
 

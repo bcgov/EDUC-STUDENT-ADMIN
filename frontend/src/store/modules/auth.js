@@ -7,7 +7,7 @@ export default {
   state: {
     acronyms: [],
     isAuthenticated: localStorage.getItem('jwtToken') !== null,
-    isAdmin: localStorage.getItem('isAdmin'),
+    isAuthorizedUser: localStorage.getItem('isAuthorized'),
     userInfo: false,
   },
   getters: {
@@ -15,7 +15,7 @@ export default {
     isAuthenticated: state => state.isAuthenticated,
     jwtToken: () => localStorage.getItem('jwtToken'),
     userInfo: state => state.userInfo,
-    isAdmin: state => state.isAdmin
+    isAuthorizedUser: state => state.isAuthorizedUser
   },
   mutations: {
     //sets Json web token and determines whether user is authenticated
@@ -28,17 +28,17 @@ export default {
         localStorage.removeItem('jwtToken');
       }
     },
-    setAdminUser:(state, isAdminUser) =>{
-      if(isAdminUser){
-        state.isAdmin=true;
-        localStorage.setItem('isAdmin','true');
+    setAuthorizedUser: (state, isAdminUser) => {
+      if (isAdminUser) {
+        state.isAuthorizedUser = true;
+        localStorage.setItem('isAuthorized', 'true');
       } else {
-        state.isAdmin=false;
-        localStorage.removeItem(('isAdmin'));
+        state.isAuthorizedUser = false;
+        localStorage.removeItem(('isAuthorized'));
       }
     },
     setUserInfo: (state, userInf) => {
-      if(userInf){
+      if (userInf) {
         state.userInfo = userInf;
       } else {
         state.userInfo = null;
@@ -54,7 +54,7 @@ export default {
   },
   actions: {
 
-    async getUserInfo(context){
+    async getUserInfo(context) {
       ApiService.apiAxios
         .get(Routes.USER)
         .then(response => {
@@ -79,7 +79,7 @@ export default {
             if (response.jwtFrontend) {
               context.commit('setJwtToken', response.jwtFrontend);
             }
-            context.commit('setAdminUser', response.isAdminUser);
+            context.commit('setAuthorizedUser', response.isAuthorizedUser);
             ApiService.setAuthHeader(response.jwtFrontend);
           }
         } else {
@@ -88,7 +88,7 @@ export default {
           if (response.jwtFrontend) {
             context.commit('setJwtToken', response.jwtFrontend);
           }
-          context.commit('setAdminUser', response.isAdminUser);
+          context.commit('setAuthorizedUser', response.isAuthorizedUser);
           ApiService.setAuthHeader(response.jwtFrontend);
         }
       } catch (e) {
