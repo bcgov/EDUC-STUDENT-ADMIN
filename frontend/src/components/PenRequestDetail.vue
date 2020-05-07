@@ -54,15 +54,15 @@
             <v-card height="100%" width="100%" elevation=0>
               <v-row v-if="!this.request.reviewer" no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
                 <p class="blue--text"><strong>No one is working on this request</strong></p>
-                <v-btn :disabled="!enableActions" small color="#38598a" :dark="enableActions" class="ml-2" @click="claimRequest">Claim</v-btn>
+                <v-btn :disabled="!enableActions || !isClaimActionEnabledForUser" small color="#38598a" :dark="enableActions && isClaimActionEnabledForUser" class="ml-2" @click="claimRequest">Claim</v-btn>
               </v-row>
               <v-row v-else-if="this.request.reviewer === this.myself.name" no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
                 <p class="green--text"><strong>You are working on this request</strong></p>
-                <v-btn :disabled="!enableActions" small color="#38598a" :dark="enableActions" class="ml-2" @click="claimRequest">Release</v-btn>
+                <v-btn :disabled="!enableActions || !isReleaseActionEnabledForUser" small color="#38598a" :dark="enableActions && isReleaseActionEnabledForUser" class="ml-2" @click="claimRequest">Release</v-btn>
               </v-row>
               <v-row v-else no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
                 <p class="orange--text"><strong>{{ this.request.reviewer }} is working on this request</strong></p>
-                <v-btn :disabled="!enableActions" small color="#38598a" :dark="enableActions" class="ml-2" @click="claimRequest">Claim</v-btn>
+                <v-btn :disabled="!enableActions || !isClaimActionEnabledForUser" small color="#38598a" :dark="enableActions && isClaimActionEnabledForUser" class="ml-2" @click="claimRequest">Claim</v-btn>
               </v-row>
               <v-row no-gutters justify="end" class="pb-5">
                 <v-btn :disabled="!enableActions" small color="#38598a" :dark="enableActions" class="ml-2" @click="backToList">Back to List</v-btn>
@@ -287,30 +287,33 @@
                 <template v-slot:item.fileName="{item: document}">
                   <router-link :to="{ path: documentUrl(request.penRequestID, document) }" target="_blank">{{document.fileName}}</router-link>
                 </template>
-                <template v-slot:item.documentTypeLabel="{item: document}">
-                  <v-edit-dialog
-                    :return-value.sync="document.documentTypeCode"
-                    large
-                    persistent
-                    @open="oldDocumentTypeCode=document.documentTypeCode"
-                    @save="saveDocumentType(document)"
-                  >
-                    <div>{{ document.documentTypeLabel }}</div>
-                    <template v-slot:input>
-                      <v-select
-                        v-model="document.documentTypeCode"
-                        style="max-width: 20em;"
-                        :items="documentTypes"
-                      ></v-select>
+
+                    <template v-if="isDocumentTypeChangeEnabledForUser"  v-slot:item.documentTypeLabel="{item: document}" >
+                      <v-edit-dialog
+
+                        :return-value.sync="document.documentTypeCode"
+                        large
+                        persistent
+                        @open="oldDocumentTypeCode=document.documentTypeCode"
+                        @save="saveDocumentType(document)"
+                      >
+                        <div>{{ document.documentTypeLabel }}</div>
+                        <template v-slot:input>
+                          <v-select
+                            v-model="document.documentTypeCode"
+                            style="max-width: 20em;"
+                            :items="documentTypes"
+                          ></v-select>
+                        </template>
+                      </v-edit-dialog>
                     </template>
-                  </v-edit-dialog>
-                </template>
+
               </v-data-table>
             </v-card>
           </v-col>
         </v-row>
         <v-row>
-          <v-card width="100%">
+          <v-card width="100%" >
             <v-toolbar flat color="#036" dark class="tester">
               <v-toolbar-title class="pa-0"><h2>Actions</h2></v-toolbar-title>
             </v-toolbar>
@@ -354,7 +357,7 @@
                         class="bootstrap-error">
                   An error occurred while attempting to complete the PEN request.  Depending on the failure, the request may be in a partially completed state. Please contact support.
                 </v-alert>
-                <v-card flat>
+                <v-card flat :disabled="!isProvidePenEnabledForUser">
                   <v-row class="mx-0">
                     <v-col cols="12" xl="4" lg="4" md="4" class="py-0">
                       <v-text-field
@@ -440,7 +443,7 @@
                       <span class="pt-4 pr-1" id="prior-pen-count" v-if="this.numberOfDuplicatePenRequests > 0"><span class="red--text font-weight-bold">{{this.numberOfDuplicatePenRequests}}</span><span class="red--text"> prior PEN Requests</span></span>
                       <v-checkbox v-model="request.demogChanged" true-value="Y" false-value="N" justify="flex-end" class="pa-0" cols="12" label="Student demographics changed"></v-checkbox>
                     <v-col cols="4" xl="4" lg="4" md="4" class="pt-2">
-                      <v-btn :disabled="!enableCompleteButton||!enableActions" color="#38598a" justify="center" width="100%" :dark="enableCompleteButton&&enableActions" @click="completeRequest">Provide PEN to Student</v-btn>
+                      <v-btn :disabled="!enableCompleteButton||!enableActions" color="#38598a" justify="center" width="100%" :dark="enableCompleteButton && enableActions" @click="completeRequest">Provide PEN to Student</v-btn>
                     </v-col>
                   </v-row>
                 </v-card>
@@ -476,7 +479,7 @@
                         class="bootstrap-warning">
                   PEN Request status and comment updated, but email to student failed. Please contact support.
                 </v-alert>
-                <v-card flat class="pa-3">
+                <v-card flat class="pa-3" :disabled="!isRequestMoreInfoEnabledForUser">
                   <v-form ref="returnForm">
                     <v-card-text class="pa-0">
                       <v-row class="ma-0">
@@ -532,7 +535,7 @@
                         class="bootstrap-warning">
                   PEN Request updated, but email to student failed. Please contact support.
                 </v-alert>
-                <v-card flat class="pa-3">
+                <v-card flat class="pa-3" :disabled="!isRejectEnabledForUser">
                   <v-form ref="form" v-model="validForm">
                     <v-card-text class="pa-0">
                       <v-row class="ma-0">
@@ -570,6 +573,7 @@ import ApiService from '../common/apiService';
 import { Routes, Statuses } from '../utils/constants';
 import { mapGetters, mapMutations } from 'vuex';
 import { humanFileSize } from '../utils/file';
+import {AccessEnabledForUser, ReadOnlyUser} from '../common/role-based-access'
 export default {
   components: {
     Chat
@@ -616,6 +620,12 @@ export default {
       },
       enableCompleteButton: false,
       enableActions: true,
+      isClaimActionEnabledForUser: false,
+      isProvidePenEnabledForUser:false,
+      isRequestMoreInfoEnabledForUser:false,
+      isRejectEnabledForUser:false,
+      isDocumentTypeChangeEnabledForUser:false,
+      isReleaseActionEnabledForUser:false,
       loadingPen: true,
       loadingComments: true,
       loadingActionResults: false,
@@ -664,6 +674,12 @@ export default {
     this.myself.name = this.userInfo.userName;
     this.myself.id = this.userInfo.userGuid;
     this.penRequestId = this.$store.state['penRequest'].selectedRequest;
+    this.isClaimActionEnabledForUser = AccessEnabledForUser('CLAIM_PEN_REQUEST',this.userInfo);
+    this.isProvidePenEnabledForUser = AccessEnabledForUser('PROVIDE_PEN',this.userInfo);
+    this.isRequestMoreInfoEnabledForUser = AccessEnabledForUser('REQUEST_MORE_INFO',this.userInfo);
+    this.isRejectEnabledForUser = AccessEnabledForUser('REJECT_PEN_REQUEST',this.userInfo);
+    this.isDocumentTypeChangeEnabledForUser =AccessEnabledForUser('CHANGE_DOCUMENT_TYPE',this.userInfo);
+    this.isReleaseActionEnabledForUser = AccessEnabledForUser('RELEASE_PEN_REQUEST',this.userInfo);
     if(!this.returnMacros || ! this.rejectMacros) {
       this.$store.dispatch('penRequest/getMacros');
     }
@@ -995,7 +1011,7 @@ export default {
       this.documentErrorMessage = message;
     },
     setDocumentTypeLabel(document) {
-      const documentTypeInfo = this.$store.state['penRequest'].documentTypes.find(typeInfo => 
+      const documentTypeInfo = this.$store.state['penRequest'].documentTypes.find(typeInfo =>
         typeInfo.documentTypeCode === document.documentTypeCode
       );
       document.documentTypeLabel = documentTypeInfo ? documentTypeInfo.label : document.documentTypeCode;
