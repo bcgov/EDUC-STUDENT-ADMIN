@@ -7,7 +7,7 @@ export default {
     selectedRequest: null,
     headerSearchParams: {
       initialSubmitDate: [],
-      status: '',
+      penRequestStatusCode: '',
       legalLastName: '',
       legalFirstName: '',
       reviewer: ''
@@ -16,7 +16,7 @@ export default {
       currentSort:'initialSubmitDate',
       currentSortDir: false
     },
-    defaultSelected:[],
+    selectedStatuses:['First Review', 'Subsequent Review'],
     messages:[],
     participants:[],
     returnMacros: null,

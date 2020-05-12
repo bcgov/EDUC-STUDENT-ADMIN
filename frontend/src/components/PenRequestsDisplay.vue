@@ -15,7 +15,7 @@
               :key="comboboxKey"
               :mandatory="false"
               :items="statusCodes"
-              v-model="defaultSelected"
+              v-model="selectedStatuses"
               label="Select PEN request statuses to view"
               multiple
               small-chips
@@ -44,13 +44,23 @@
             </v-combobox>
             <v-data-table
               :headers="headers"
-              :items="filteredResults"
-              :sort-by.sync="headerSortParams.currentSort"
-              :sort-desc.sync="headerSortParams.currentSortDir"
-              :items-per-page="15"
+              :items="penRequests"
+              :items-per-page="pageSize"
+              :server-items-length="totalRequests"
               :loading="loadingTable"
               @click:row="viewRequestDetails"
+              @update:page="changePage"
+              @update:items-per-page="changeItemsPerPage"
               class="fill-height">
+              <template v-slot:header.penRequestStatusCode.label="{ header }">
+                <th id="status-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
+                  {{ header.text }}
+                  <em
+                          :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
+                  </em>
+                </th>
+                <p class="pb-11"></p>
+              </template>
               <template v-slot:header.initialSubmitDate="{ header }">
                 <th id="submit-date-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
                   {{ header.text }}
@@ -84,15 +94,6 @@
                     <v-btn id="date-picker-ok-button" text color="primary" @click="$refs.dateMenu.save(headerSearchParams.initialSubmitDate)">OK</v-btn>
                   </v-date-picker>
                 </v-menu>
-              </template>
-              <template v-slot:header.penRequestStatusCode.label="{ header }">
-                <th id="status-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
-                  {{ header.text }}
-                  <em
-                          :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
-                  </em>
-                </th>
-                <v-text-field id="status-text-field" v-model="headerSearchParams.status" class="header-text" outlined dense>></v-text-field>
               </template>
               <template v-slot:header.legalLastName="{ header }">
                 <th id="last-name-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
@@ -143,66 +144,36 @@ export default {
   data () {
     return {
       headers: [
-        { text: 'Submitted Time',
-          value: 'initialSubmitDate',
-          sortable: false,
-          filter: value => {
-            if(this.headerSearchParams.initialSubmitDate.length < 2) return true;
-            if(!value) return false;
-            const start = this.headerSearchParams.initialSubmitDate[0].split('-');
-            const end = this.headerSearchParams.initialSubmitDate[1].split('-');
-            const check = value.substr(0, 10).split('-');
-
-            const startDate = new Date(start[2], parseInt(start[1])-1, start[0]);
-            const endDate = new Date(end[2], parseInt(end[1])-1, end[0]);
-            const checkDate = new Date(check[2], parseInt(check[1])-1, check[0]);
-
-            return startDate < checkDate && checkDate > endDate;
-          }
-        },
         { text: 'Status',
           value: 'penRequestStatusCode.label',
-          sortable: false,
-          filter: value => {
-            if(!this.headerSearchParams.status) return true;
-            if(!value) return false;
-            return value.toUpperCase().includes(this.headerSearchParams.status.toUpperCase());
-          }
+          sortable: false
+        },
+        { text: 'Submitted Time',
+          value: 'initialSubmitDate',
+          sortable: false
         },
         { text: 'Last Name',
           value: 'legalLastName',
-          sortable: false,
-          filter: value => {
-            if(!this.headerSearchParams.legalLastName) return true;
-            if(!value) return false;
-            return value.toUpperCase().includes(this.headerSearchParams.legalLastName.toUpperCase());
-          }
+          sortable: false
         },
         { text: 'First Name',
           value: 'legalFirstName',
-          sortable: false,
-          filter: value => {
-            if(!this.headerSearchParams.legalFirstName) return true;
-            if(!value) return false;
-            return value.toUpperCase().includes(this.headerSearchParams.legalFirstName.toUpperCase());
-          }
+          sortable: false
         },
         { text: 'Reviewer',
           value: 'reviewer',
-          sortable: false,
-          filter: value => {
-            if(!this.headerSearchParams.reviewer) return true;
-            if(!value) return false;
-            return value.toUpperCase().includes(this.headerSearchParams.reviewer.toUpperCase());
-          }
+          sortable: false
         },
       ],
       dateMenu: false,
       headerSearchParams: {},
       headerSortParams: {},
       statusCodes:[],
-      defaultSelected:[],
+      pageNumber: 0,
+      pageSize: 15,
+      selectedStatuses:[],
       penRequests: [],
+      totalRequests: 0,
       loadingTable: true,
       loadingSelect: true,
       errored: false,
@@ -211,20 +182,14 @@ export default {
   },
   mounted() {
     ApiService.apiAxios
-      .get(Routes.PEN_REQUEST_STATUSES_URL)
+      .get(Routes.PEN_REQUEST_STATUSES_URL, )
       .then(response => {
         this.codeTable = response.data;
         this.statusCodes = this.getStatusCodes();
-
-        if(this.$store.state['penRequest'].defaultSelected.length) {
-          this.defaultSelected = this.$store.state['penRequest'].defaultSelected;
-        } else if(this.statusCodes.includes('First Review') && this.statusCodes.includes('Subsequent Review')){
-          this.defaultSelected[0] = 'First Review';
-          this.defaultSelected[1] = 'Subsequent Review';
-        }
+        this.selectedStatuses = this.$store.state['penRequest'].selectedStatuses;
 
         this.comboboxKey+=1;//force component to re-render
-        this.getPenRequests(this.defaultSelected);
+        //this.getPenRequests();
         this.getDocumentTypes();
       })
       .catch(error => {
@@ -238,15 +203,34 @@ export default {
   },
   computed: {
     filteredResults() {
-      if(!Array.isArray(this.defaultSelected) || !this.defaultSelected.length || !Array.isArray(this.penRequests) || !this.penRequests.length) {return this.penRequests;}
-      return this.penRequests.filter((request) => this.defaultSelected.includes(request.penRequestStatusCode.label));
+      if(!Array.isArray(this.selectedStatuses) || !this.selectedStatuses.length || !Array.isArray(this.penRequests) || !this.penRequests.length) {return this.penRequests;}
+      return this.penRequests.filter((request) => this.selectedStatuses.includes(request.penRequestStatusCode.label));
+    }
+  },
+  watch: {
+    headerSortParams: {
+      handler() {
+        this.getPenRequests();
+      }
+    },
+    selectedStatuses: {
+      handler() {
+        this.getPenRequests();
+      }
+    },
+    headerSearchParams: {
+      deep: true,
+      handler() {
+        if(typeof this.headerSearchParams.initialSubmitDate !== 'string')
+          this.getPenRequests();
+      }
     }
   },
   methods: {
     remove (item) {
-      this.defaultSelected.splice(this.defaultSelected.indexOf(item), 1);
-      this.defaultSelected = [...this.defaultSelected];
-      this.getPenRequests(this.defaultSelected);
+      this.selectedStatuses.splice(this.selectedStatuses.indexOf(item), 1);
+      this.selectedStatuses = [...this.selectedStatuses];
+      this.getPenRequests(this.selectedStatuses);
     },
     getStatusCodes () {
       const labels = [];
@@ -255,15 +239,39 @@ export default {
       });
       return labels.sort();
     },
-    getPenRequests (searchStatuses) {
+    changeItemsPerPage(value) {
+      this.pageSize = value;
+      this.getPenRequests();
+    },
+    changePage(value) {
+      this.pageNumber = value-1;
+      this.getPenRequests();
+    },
+    getPenRequests () {
+      this.loadingTable = true;
+      const sort = {};
+      sort[this.headerSortParams.currentSort==='penRequestStatusCode.label'?'penRequestStatusCode':this.headerSortParams.currentSort] = this.headerSortParams.currentSortDir?'DESC':'ASC';
+      const headerKeys = Object.keys(this.headerSearchParams).filter(k => this.headerSearchParams[k].length !== 0);
+      let headerFilters;
+      if(headerKeys.length > 0) {
+        headerFilters = {};
+        headerKeys.forEach(element => {
+          headerFilters[element] = this.headerSearchParams[element];
+        });
+      }
       ApiService.apiAxios
         .get(Routes.PEN_REQUEST_ENDPOINT, {
           params: {
-            queryParams: searchStatuses
+            pageNumber: this.pageNumber,
+            pageSize: this.pageSize,
+            sort: sort,
+            statusFilters: this.selectedStatuses,
+            headerFilters: headerFilters
           }
         })
         .then(response => {
-          this.penRequests = response.data;
+          this.penRequests = response.data['content'];
+          this.totalRequests = response.data['totalElements'];
         })
         .catch(error => {
           console.log(error);
@@ -273,13 +281,14 @@ export default {
     },
     viewRequestDetails (request) {
       this.$store.state['penRequest'].selectedRequest = request['penRequestID'];
-      this.$store.state['penRequest'].defaultSelected = this.defaultSelected;
+      this.$store.state['penRequest'].selectedStatuses = this.selectedStatuses;
     },
     sort(sortHeader) {
       if(sortHeader === this.headerSortParams.currentSort) {
         this.headerSortParams.currentSortDir = !this.headerSortParams.currentSortDir;
       }
       this.headerSortParams.currentSort = sortHeader;
+      this.getPenRequests();
     },
     getDocumentTypes() {
       ApiService.apiAxios
@@ -319,6 +328,9 @@ export default {
   }
   .theme--light  .v-label {
     color: white;
+  }
+  #status-header {
+    margin-bottom: 44px;
   }
   .header-text {
     padding-top: 0;

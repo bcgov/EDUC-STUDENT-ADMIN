@@ -573,7 +573,7 @@ import ApiService from '../common/apiService';
 import { Routes, Statuses } from '../utils/constants';
 import { mapGetters, mapMutations } from 'vuex';
 import { humanFileSize } from '../utils/file';
-import {AccessEnabledForUser, ReadOnlyUser} from '../common/role-based-access'
+import { AccessEnabledForUser } from '../common/role-based-access';
 export default {
   components: {
     Chat
