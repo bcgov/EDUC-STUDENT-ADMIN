@@ -243,6 +243,16 @@ const utils = {
     });
     return label;
   },
+  getCodeFromLabel(codes, codeKey, label) {
+    let code = null;
+    codes.some(function (item) {
+      if(item['label'] === label) {
+        code = item[codeKey];
+        return true;
+      }
+    });
+    return code;
+  },
   getBackendToken,
   getData,
   logApiError,

@@ -44,12 +44,50 @@ async function getAllPenRequests(req, res) {
       message: 'No access token'
     });
   }
+  let searchListCriteria = [];
+  const statusFilters = req.query.statusFilters;
+
+  if(req.query.headerFilters) {
+    let headerFilters = JSON.parse(req.query.headerFilters);
+    Object.keys(headerFilters).forEach(element => {
+      let operation = 'like';
+      let valueType = 'STRING';
+      if(element === 'initialSubmitDate') {
+        headerFilters[element].forEach( (date, index) => {
+          headerFilters[element][index] = date+'T00:00:01';
+        });
+        if(headerFilters[element].length === 1) {
+          headerFilters[element].push(LocalDateTime.now().toString());
+        }
+        headerFilters[element] = headerFilters[element].join(',');
+        operation = 'btn';
+        valueType= 'DATE_TIME';
+      }
+      searchListCriteria.push({key: element, operation: operation, value: headerFilters[element], valueType: valueType});
+    });
+  }
+  const statusCodes = utils.getCodeTable(token, 'penStatusCodes', config.get('server:statusCodeURL'));
+  if(statusFilters){
+    statusFilters.forEach((element, index) => {
+      statusFilters[index] = utils.getCodeFromLabel(statusCodes, 'penRequestStatusCode', element);
+    });
+    searchListCriteria.push({key: 'penRequestStatusCode', operation: 'in', value: statusFilters.join(','), valueType: 'STRING'});
+  }
+  const params = {
+    params: {
+      pageNumber: req.query.pageNumber,
+      pageSize: req.query.pageSize,
+      sort: req.query.sort,
+      searchCriteriaList: JSON.stringify(searchListCriteria)
+    }
+  };
+
   return Promise.all([
     utils.getCodeTable(token, 'penStatusCodes', config.get('server:statusCodeURL')),
-    getData(token, config.get('server:penRequestURL'))
+    getData(token, config.get('server:penRequestURL') + '/paginated', params)
   ])
     .then(async ([statusCodeResponse, penRetrievalResponse]) => {
-      penRetrievalResponse.forEach((element, i) => {
+      penRetrievalResponse['content'].forEach((element, i) => {
         //replace status code with label
         if (element.penRequestStatusCode) {
           let temp = statusCodeResponse.find(codeStatus => codeStatus.penRequestStatusCode === element.penRequestStatusCode);
@@ -59,7 +97,7 @@ async function getAllPenRequests(req, res) {
         }
         //dont send digital id or audit columns to frontend
         delete element['digitalID'];
-        penRetrievalResponse[i] = utils.stripAuditColumns(element);
+        penRetrievalResponse['content'][i] = utils.stripAuditColumns(element);
       });
       return res.status(200).json(penRetrievalResponse);
     }).catch(e => {
