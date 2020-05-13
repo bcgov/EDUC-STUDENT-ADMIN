@@ -50,7 +50,7 @@ async function getAllPenRequests(req, res) {
   if(req.query.headerFilters) {
     let headerFilters = JSON.parse(req.query.headerFilters);
     Object.keys(headerFilters).forEach(element => {
-      let operation = 'like';
+      let operation = 'like_ignore_case';
       let valueType = 'STRING';
       if(element === 'initialSubmitDate') {
         headerFilters[element].forEach( (date, index) => {
