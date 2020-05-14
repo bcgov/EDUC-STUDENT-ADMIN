@@ -46,6 +46,9 @@
               :headers="headers"
               :items="penRequests"
               :items-per-page="pageSize"
+              :footer-props="{
+                'items-per-page-options':itemsPerPageOptions
+              }"
               :server-items-length="totalRequests"
               :loading="loadingTable"
               @click:row="viewRequestDetails"
@@ -171,9 +174,11 @@ export default {
       statusCodes:[],
       pageNumber: 0,
       pageSize: 15,
+      itemsPerPageOptions: [5,10,20,50,100],
       selectedStatuses:[],
       penRequests: [],
       totalRequests: 0,
+      initialLoad: true,
       loadingTable: true,
       loadingSelect: true,
       errored: false,
@@ -181,25 +186,27 @@ export default {
     };
   },
   mounted() {
+    this.initialLoad = true; //stop watch from sending multiple getPenRequests calls on initial page load
+    this.headerSearchParams = this.$store.state['penRequest'].headerSearchParams;
+    this.headerSortParams = this.$store.state['penRequest'].headerSortParams;
     ApiService.apiAxios
       .get(Routes.PEN_REQUEST_STATUSES_URL, )
       .then(response => {
         this.codeTable = response.data;
         this.statusCodes = this.getStatusCodes();
         this.selectedStatuses = this.$store.state['penRequest'].selectedStatuses;
-
         this.comboboxKey+=1;//force component to re-render
-        //this.getPenRequests();
-        this.getDocumentTypes();
       })
       .catch(error => {
         console.log(error);
         this.errored = true;
       })
-      .finally(() => this.loadingSelect = false);
-
-    this.headerSearchParams = this.$store.state['penRequest'].headerSearchParams;
-    this.headerSortParams = this.$store.state['penRequest'].headerSortParams;
+      .finally(() => {
+        this.initialLoad = false;
+        this.getPenRequests();
+        this.getDocumentTypes();
+        this.loadingSelect = false;
+      });
   },
   computed: {
     filteredResults() {
@@ -209,20 +216,26 @@ export default {
   },
   watch: {
     headerSortParams: {
+      deep: true,
       handler() {
-        this.getPenRequests();
+        if(!this.initialLoad) { //stop watch from sending multiple getPenRequests calls on initial page load
+          this.getPenRequests();
+        }
       }
     },
     selectedStatuses: {
       handler() {
-        this.getPenRequests();
+        if(!this.initialLoad) { //stop watch from sending multiple getPenRequests calls on initial page load
+          this.getPenRequests();
+        }
       }
     },
     headerSearchParams: {
       deep: true,
       handler() {
-        if(typeof this.headerSearchParams.initialSubmitDate !== 'string')
+        if(!this.initialLoad) { //stop watch from sending multiple getPenRequests calls on initial page load
           this.getPenRequests();
+        }
       }
     }
   },
@@ -230,7 +243,6 @@ export default {
     remove (item) {
       this.selectedStatuses.splice(this.selectedStatuses.indexOf(item), 1);
       this.selectedStatuses = [...this.selectedStatuses];
-      this.getPenRequests(this.selectedStatuses);
     },
     getStatusCodes () {
       const labels = [];
@@ -250,10 +262,10 @@ export default {
     getPenRequests () {
       this.loadingTable = true;
       const sort = {};
-      sort[this.headerSortParams.currentSort==='penRequestStatusCode.label'?'penRequestStatusCode':this.headerSortParams.currentSort] = this.headerSortParams.currentSortDir?'DESC':'ASC';
+      sort[this.headerSortParams.currentSort === 'penRequestStatusCode.label' ? 'penRequestStatusCode' : this.headerSortParams.currentSort] = this.headerSortParams.currentSortDir ? 'DESC' : 'ASC';
       const headerKeys = Object.keys(this.headerSearchParams).filter(k => this.headerSearchParams[k].length !== 0);
       let headerFilters;
-      if(headerKeys.length > 0) {
+      if (headerKeys.length > 0) {
         headerFilters = {};
         headerKeys.forEach(element => {
           headerFilters[element] = this.headerSearchParams[element];
@@ -288,7 +300,6 @@ export default {
         this.headerSortParams.currentSortDir = !this.headerSortParams.currentSortDir;
       }
       this.headerSortParams.currentSort = sortHeader;
-      this.getPenRequests();
     },
     getDocumentTypes() {
       ApiService.apiAxios
