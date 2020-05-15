@@ -174,7 +174,7 @@ export default {
       statusCodes:[],
       pageNumber: 0,
       pageSize: 15,
-      itemsPerPageOptions: [5,10,20,50,100],
+      itemsPerPageOptions: [5,10,15,20,50,100],
       selectedStatuses:[],
       penRequests: [],
       totalRequests: 0,
