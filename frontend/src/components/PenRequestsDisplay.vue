@@ -62,7 +62,6 @@
                           :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
                   </em>
                 </th>
-                <p class="pb-11"></p>
               </template>
               <template v-slot:header.initialSubmitDate="{ header }">
                 <th id="submit-date-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
@@ -354,15 +353,16 @@ export default {
   .theme--light  .v-label {
     color: white;
   }
-  #status-header {
-    margin-bottom: 44px;
-  }
   .header-text {
     padding-top: 0;
   }
   th {
     border: none !important;
     padding: 0 !important;
+  }
+  /deep/ th.text-start:nth-child(1) {
+    vertical-align: sub;
+    padding-top: 1.2em;
   }
   .active {
     color: rgba(0, 0, 0, 0.87) !important;

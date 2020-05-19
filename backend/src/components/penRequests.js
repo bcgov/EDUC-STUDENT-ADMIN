@@ -70,7 +70,7 @@ async function getAllPenRequests(req, res) {
       searchListCriteria.push({key: element, operation: operation, value: headerFilters[element], valueType: valueType});
     });
   }
-  const statusCodes = utils.getCodeTable(token, 'penStatusCodes', config.get('server:statusCodeURL'));
+  const statusCodes = await utils.getCodeTable(token, 'penStatusCodes', config.get('server:statusCodeURL'));
   if(statusFilters){
     statusFilters.forEach((element, index) => {
       statusFilters[index] = utils.getCodeFromLabel(statusCodes, 'penRequestStatusCode', element);
