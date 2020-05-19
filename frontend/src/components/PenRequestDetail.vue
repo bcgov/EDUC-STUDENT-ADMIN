@@ -364,7 +364,7 @@
                         outlined
                         transition="scale-transition"
                         class="bootstrap-error">
-                  An error occurred while attempting to complete the PEN request.  Depending on the failure, the request may be in a partially completed state. Please contact support.
+                  PEN Request failed to update. Please navigate to the list and select this PEN Request again.
                 </v-alert>
                 <v-card flat>
                   <v-row class="mx-0">
@@ -476,7 +476,7 @@
                         outlined
                         transition="scale-transition"
                         class="bootstrap-error">
-                  PEN Request failed to update status. Please contact support.
+                  PEN Request failed to update status. Please navigate to the list and select this PEN Request again.
                 </v-alert>
                 <v-alert
                         :value="returnAlertWarning"
@@ -532,7 +532,7 @@
                         outlined
                         transition="scale-transition"
                         class="bootstrap-error">
-                  PEN Request failed to update. Please contact support.
+                  PEN Request failed to update. Please navigate to the list and select this PEN Request again.
                 </v-alert>
                 <v-alert
                         :value="rejectAlertWarning"
@@ -998,16 +998,16 @@ export default {
       this.validatePen();
     },
     prepPut() {
-      const body = JSON.parse(JSON.stringify(this.request));
       return {
-        'pen': body.pen,
-        'penRequestStatusCode': body.penRequestStatusCode,
-        'reviewer': body.reviewer,
-        'failureReason': body.failureReason,
-        'completeComment': body.completeComment,
-        'demogChanged': body.demogChanged,
-        'bcscAutoMatchOutcome': body.bcscAutoMatchOutcome,
-        'bcscAutoMatchDetails': body.bcscAutoMatchDetails
+        'penRequestID': this.$store.state['penRequest'].selectedRequest,
+        'pen': this.request.pen,
+        'penRequestStatusCode': this.request.penRequestStatusCode,
+        'reviewer': this.request.reviewer,
+        'failureReason': this.request.failureReason,
+        'completeComment': this.request.completeComment,
+        'demogChanged': this.request.demogChanged,
+        'bcscAutoMatchOutcome': this.request.bcscAutoMatchOutcome,
+        'bcscAutoMatchDetails': this.request.bcscAutoMatchDetails
       };
     },
     setDocumentError(message) {
