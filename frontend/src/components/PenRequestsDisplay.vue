@@ -98,6 +98,15 @@
                   </v-date-picker>
                 </v-menu>
               </template>
+              <template v-slot:header.pen="{ header }">
+                <th id="pen-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
+                  {{ header.text }}
+                  <em
+                          :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
+                  </em>
+                </th>
+                <v-text-field id="pen-text-field" v-model="headerSearchParams.pen" class="header-text" outlined dense></v-text-field>
+              </template>
               <template v-slot:header.legalLastName="{ header }">
                 <th id="last-name-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
                   {{ header.text }}
@@ -155,6 +164,11 @@ export default {
           value: 'initialSubmitDate',
           sortable: false
         },
+        {
+          text: 'PEN',
+          value: 'pen',
+          sortable: false
+        },
         { text: 'Last Name',
           value: 'legalLastName',
           sortable: false
@@ -174,7 +188,7 @@ export default {
       statusCodes:[],
       pageNumber: 0,
       pageSize: 15,
-      itemsPerPageOptions: [5,10,15,20,50,100],
+      itemsPerPageOptions: [5,10,15,20,50],
       selectedStatuses:[],
       penRequests: [],
       totalRequests: 0,
