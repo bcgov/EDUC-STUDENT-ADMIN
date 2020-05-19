@@ -355,7 +355,7 @@
                         outlined
                         transition="scale-transition"
                         class="bootstrap-error">
-                  An error occurred while attempting to complete the PEN request.  Depending on the failure, the request may be in a partially completed state. Please contact support.
+                  PEN Request failed to update. Please navigate to the list and select this PEN Request again.
                 </v-alert>
                 <v-card flat :disabled="!isProvidePenEnabledForUser">
                   <v-row class="mx-0">
@@ -467,7 +467,7 @@
                         outlined
                         transition="scale-transition"
                         class="bootstrap-error">
-                  PEN Request failed to update status. Please contact support.
+                  PEN Request failed to update status. Please navigate to the list and select this PEN Request again.
                 </v-alert>
                 <v-alert
                         :value="returnAlertWarning"
@@ -523,7 +523,7 @@
                         outlined
                         transition="scale-transition"
                         class="bootstrap-error">
-                  PEN Request failed to update. Please contact support.
+                  PEN Request failed to update. Please navigate to the list and select this PEN Request again.
                 </v-alert>
                 <v-alert
                         :value="rejectAlertWarning"

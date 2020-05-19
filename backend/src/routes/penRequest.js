@@ -37,7 +37,7 @@ router.post('/complete', passport.authenticate('jwt', {session: false}, undefine
 
 router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, utils.verifyPenRequestInSession, rejectPenRequest);
 
-router.post('/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, utils.verifyPenRequestInSession, returnPenRequest);
+router.post('/:id/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, utils.verifyPenRequestInSession, returnPenRequest);
 
 // retrieve all the documents.
 router.get('/:id/documents', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getDocuments);
