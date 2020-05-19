@@ -14,7 +14,7 @@ router.get('/:id/comments', passport.authenticate('jwt', {session: false}, undef
 /**
  * Updates a pen retrieval request
  * */
-router.put('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, putPenRequest);
+router.put('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, utils.verifyPenRequestInSession, putPenRequest);
 
 /*
  * Get all pen retrieval requests
@@ -33,11 +33,11 @@ router.get('/macros', passport.authenticate('jwt', {session: false}, undefined),
  */
 router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getPenRequestById);
 
-router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, completePenRequest);
+router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, utils.verifyPenRequestInSession, completePenRequest);
 
-router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, rejectPenRequest);
+router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, utils.verifyPenRequestInSession, rejectPenRequest);
 
-router.post('/:id/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, returnPenRequest);
+router.post('/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, utils.verifyPenRequestInSession, returnPenRequest);
 
 // retrieve all the documents.
 router.get('/:id/documents', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getDocuments);

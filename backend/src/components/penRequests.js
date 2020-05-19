@@ -44,6 +44,10 @@ async function getAllPenRequests(req, res) {
       message: 'No access token'
     });
   }
+  //remove previous pen request from session
+  delete req['session'].penRequest;
+  delete req['session'].identityType;
+
   let searchListCriteria = [];
   const statusFilters = req.query.statusFilters;
 

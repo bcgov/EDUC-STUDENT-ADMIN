@@ -253,6 +253,15 @@ const utils = {
     });
     return code;
   },
+  verifyPenRequestInSession(req, res, next) {
+    if(req.body.penRequestID === req['session'].penRequest.penRequestID) {
+      return next();
+    }
+    log.error('PEN Request Id in request is different than the one in session.  This should NEVER happen!');
+    return res.status(500).json({
+      message: 'INTERNAL SERVER ERROR'
+    });
+  },
   getBackendToken,
   getData,
   logApiError,

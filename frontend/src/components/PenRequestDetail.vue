@@ -994,16 +994,16 @@ export default {
       this.validatePen();
     },
     prepPut() {
-      const body = JSON.parse(JSON.stringify(this.request));
       return {
-        'pen': body.pen,
-        'penRequestStatusCode': body.penRequestStatusCode,
-        'reviewer': body.reviewer,
-        'failureReason': body.failureReason,
-        'completeComment': body.completeComment,
-        'demogChanged': body.demogChanged,
-        'bcscAutoMatchOutcome': body.bcscAutoMatchOutcome,
-        'bcscAutoMatchDetails': body.bcscAutoMatchDetails
+        'penRequestID': this.$store.state['penRequest'].selectedRequest,
+        'pen': this.request.pen,
+        'penRequestStatusCode': this.request.penRequestStatusCode,
+        'reviewer': this.request.reviewer,
+        'failureReason': this.request.failureReason,
+        'completeComment': this.request.completeComment,
+        'demogChanged': this.request.demogChanged,
+        'bcscAutoMatchOutcome': this.request.bcscAutoMatchOutcome,
+        'bcscAutoMatchDetails': this.request.bcscAutoMatchDetails
       };
     },
     setDocumentError(message) {
