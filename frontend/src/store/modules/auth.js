@@ -7,7 +7,7 @@ export default {
   state: {
     acronyms: [],
     isAuthenticated: localStorage.getItem('jwtToken') !== null,
-    isAdmin: localStorage.getItem('isAdmin'),
+    isAdmin: localStorage.getItem('isAdmin') !== null,
     userInfo: false,
   },
   getters: {
@@ -30,10 +30,10 @@ export default {
     },
     setAdminUser: (state, isAdminUser) => {
       if (isAdminUser) {
-        state.isAuthorizedUser = true;
+        state.isAdmin = true;
         localStorage.setItem('isAdmin', 'true');
       } else {
-        state.isAuthorizedUser = false;
+        state.isAdmin = false;
         localStorage.removeItem(('isAdmin'));
       }
     },
