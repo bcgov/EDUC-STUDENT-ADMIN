@@ -9,7 +9,7 @@ const { getDocuments, getDocumentById, updateDocumentTypeById } = require('../co
 /**
  * Gets all the comments for a pen request by pen request id
  */
-router.get('/:id/comments', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getPenRequestCommentById);
+router.get('/:id/comments', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, getPenRequestCommentById);
 
 /**
  * Updates a pen retrieval request
@@ -19,7 +19,7 @@ router.put('/', passport.authenticate('jwt', {session: false}, undefined), auth.
 /*
  * Get all pen retrieval requests
  */
-router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getAllPenRequests);
+router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, getAllPenRequests);
 
 /*
  * Get all pen retrieval requests for a given pen number in the query parameter.
@@ -31,7 +31,7 @@ router.get('/macros', passport.authenticate('jwt', {session: false}, undefined),
 /*
  * Get a pen request by id
  */
-router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getPenRequestById);
+router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, getPenRequestById);
 
 router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, completePenRequest);
 
@@ -40,10 +40,10 @@ router.post('/reject', passport.authenticate('jwt', {session: false}, undefined)
 router.post('/:id/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, returnPenRequest);
 
 // retrieve all the documents.
-router.get('/:id/documents', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getDocuments);
+router.get('/:id/documents', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, getDocuments);
 
 // retrieve the document by its id.
-router.get('/:id/documents/:documentId', auth.isValidUserToken, getDocumentById);
+router.get('/:id/documents/:documentId', auth.isValidAdminToken, getDocumentById);
 
 // Updates the type of a document by its id.
 router.put('/:id/documents/:documentId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, updateDocumentTypeById);

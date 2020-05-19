@@ -7,7 +7,7 @@ export default {
   state: {
     acronyms: [],
     isAuthenticated: localStorage.getItem('jwtToken') !== null,
-    isAuthorizedUser: localStorage.getItem('isAuthorized'),
+    isAdmin: localStorage.getItem('isAdmin'),
     userInfo: false,
   },
   getters: {
@@ -15,7 +15,7 @@ export default {
     isAuthenticated: state => state.isAuthenticated,
     jwtToken: () => localStorage.getItem('jwtToken'),
     userInfo: state => state.userInfo,
-    isAuthorizedUser: state => state.isAuthorizedUser
+    isAdmin: state => state.isAdmin
   },
   mutations: {
     //sets Json web token and determines whether user is authenticated
@@ -28,13 +28,13 @@ export default {
         localStorage.removeItem('jwtToken');
       }
     },
-    setAuthorizedUser: (state, isAdminUser) => {
+    setAdminUser: (state, isAdminUser) => {
       if (isAdminUser) {
         state.isAuthorizedUser = true;
-        localStorage.setItem('isAuthorized', 'true');
+        localStorage.setItem('isAdmin', 'true');
       } else {
         state.isAuthorizedUser = false;
-        localStorage.removeItem(('isAuthorized'));
+        localStorage.removeItem(('isAdmin'));
       }
     },
     setUserInfo: (state, userInf) => {
@@ -79,7 +79,7 @@ export default {
             if (response.jwtFrontend) {
               context.commit('setJwtToken', response.jwtFrontend);
             }
-            context.commit('setAuthorizedUser', response.isAuthorizedUser);
+            context.commit('setAdminUser', response.isAdminUser);
             ApiService.setAuthHeader(response.jwtFrontend);
           }
         } else {
@@ -88,7 +88,7 @@ export default {
           if (response.jwtFrontend) {
             context.commit('setJwtToken', response.jwtFrontend);
           }
-          context.commit('setAuthorizedUser', response.isAuthorizedUser);
+          context.commit('setAdminUser', response.isAdminUser);
           ApiService.setAuthHeader(response.jwtFrontend);
         }
       } catch (e) {

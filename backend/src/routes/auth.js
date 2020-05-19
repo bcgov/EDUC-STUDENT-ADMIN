@@ -88,7 +88,7 @@ router.post('/refresh', [
   }
 
 
-  let isAuthorizedUser = auth.isValidUser(req);
+  let isAdminUser = auth.isAdminUser(req);
   if (!req['user'] || !req['user'].refreshToken) {
     res.status(401).json();
   } else {
@@ -98,7 +98,7 @@ router.post('/refresh', [
       req['user'].refreshToken = newTokens.refreshToken;
       const responseJson = {
         jwtFrontend: auth.generateUiToken(),
-        isAuthorizedUser: isAuthorizedUser
+        isAdminUser: isAdminUser
       };
       return res.status(200).json(responseJson);
     } else {
@@ -110,11 +110,11 @@ router.post('/refresh', [
 //provides a jwt to authenticated users
 router.get('/token', auth.refreshJWT, (req, res) => {
 
-  let isAuthorizedUser = auth.isValidUser(req);
+  let isAdminUser = auth.isAdminUser(req);
   if (req['user'] && req['user'].jwtFrontend && req['user'].refreshToken) {
     const responseJson = {
       jwtFrontend: req['user'].jwtFrontend,
-      isAuthorizedUser: isAuthorizedUser
+      isAdminUser: isAdminUser
     };
     res.status(200).json(responseJson);
   } else {
@@ -129,8 +129,7 @@ router.get('/user', passport.authenticate('jwt', {session: false}), (req, res) =
   const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
   const userName = {
     userName: userToken['idir_username'],
-    userGuid: userToken.preferred_username.toUpperCase(),
-    userRoles: userToken.realm_access.roles
+    userGuid: userToken.preferred_username.toUpperCase()
   };
 
   if (userName.userName && userName.userGuid) {
