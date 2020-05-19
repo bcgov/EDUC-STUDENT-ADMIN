@@ -854,7 +854,7 @@ export default {
         })
         .catch(error => {
           this.claimError = true;
-          this.claimErrorMessage='There was an error trying to claim the pen request, please try again later.';
+          this.claimErrorMessage='There was an error trying to claim the PEN Request, please navigate to the list and select this PEN Request again.';
           console.log(error);
         })
         .finally(() => {
