@@ -25,7 +25,6 @@
   </v-content>
 </template>
 
-
 <script>
 import Login from './Login';
 import PenRequestsDisplay from './PenRequestsDisplay';
