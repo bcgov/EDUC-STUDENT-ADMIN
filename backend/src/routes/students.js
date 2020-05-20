@@ -5,6 +5,6 @@ const auth = require('../components/auth');
 const { getStudentById } = require('../components/penRequests');
 
 
-router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, getStudentById);
+router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getStudentById);
 
 module.exports = router;

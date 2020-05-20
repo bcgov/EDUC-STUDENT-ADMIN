@@ -88,7 +88,7 @@ router.post('/refresh', [
   }
 
 
-  let isAdminUser = auth.isAdminUser(req);
+  let isAuthorizedUser = auth.isValidUser(req);
   if (!req['user'] || !req['user'].refreshToken) {
     res.status(401).json();
   } else {
@@ -98,7 +98,7 @@ router.post('/refresh', [
       req['user'].refreshToken = newTokens.refreshToken;
       const responseJson = {
         jwtFrontend: auth.generateUiToken(),
-        isAdminUser: isAdminUser
+        isAuthorizedUser: isAuthorizedUser
       };
       return res.status(200).json(responseJson);
     } else {
@@ -110,11 +110,11 @@ router.post('/refresh', [
 //provides a jwt to authenticated users
 router.get('/token', auth.refreshJWT, (req, res) => {
 
-  let isAdminUser = auth.isAdminUser(req);
+  let isAuthorizedUser = auth.isValidUser(req);
   if (req['user'] && req['user'].jwtFrontend && req['user'].refreshToken) {
     const responseJson = {
       jwtFrontend: req['user'].jwtFrontend,
-      isAdminUser: isAdminUser
+      isAuthorizedUser: isAuthorizedUser
     };
     res.status(200).json(responseJson);
   } else {
@@ -127,9 +127,13 @@ router.get('/token', auth.refreshJWT, (req, res) => {
 router.get('/user', passport.authenticate('jwt', {session: false}), (req, res) => {
   const thisSession = req['session'];
   const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
+  if(userToken === undefined || userToken.realm_access === undefined || userToken.realm_access.roles === undefined){
+    return res.status(401).json();
+  }
   const userName = {
     userName: userToken['idir_username'],
-    userGuid: userToken.preferred_username.toUpperCase()
+    userGuid: userToken.preferred_username.toUpperCase(),
+    userRoles: userToken.realm_access.roles
   };
 
   if (userName.userName && userName.userGuid) {
