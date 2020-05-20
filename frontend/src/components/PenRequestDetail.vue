@@ -66,12 +66,12 @@
 
               <v-row v-if="this.request.reviewer === this.myself.name" no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
                 <p class="green--text"><strong>You are working on this request</strong></p>
-                <v-btn id="release-pen-request" :disabled="!enableActions" small color="#38598a" :dark="enableActions" class="ml-2" @click="claimRequest">Release</v-btn>
+                <v-btn id="release-pen-request" :disabled="!enableActions|| !isReleaseActionEnabledForUser" small color="#38598a" :dark="enableActions && isReleaseActionEnabledForUser" class="ml-2" @click="claimRequest">Release</v-btn>
               </v-row>
               <v-row v-else no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
                 <p v-if="!this.request.reviewer" class="blue--text"><strong>No one is working on this request</strong></p>
                 <p v-if="this.request.reviewer" class="orange--text"><strong>{{ this.request.reviewer }} is working on this request</strong></p>
-                <v-btn id="claim-pen-request" :disabled="!enableActions" small color="#38598a" :dark="enableActions" class="ml-2" @click="claimRequest">Claim</v-btn>
+                <v-btn id="claim-pen-request" :disabled="!enableActions|| !isClaimActionEnabledForUser" small color="#38598a" :dark="enableActions && isClaimActionEnabledForUser" class="ml-2" @click="claimRequest">Claim</v-btn>
               </v-row>
               <v-row no-gutters justify="end" class="pb-5">
                 <v-btn :disabled="!enableActions" small color="#38598a" :dark="enableActions" class="ml-2" @click="backToList">Back to List</v-btn>
@@ -297,7 +297,7 @@
                   <router-link :to="{ path: documentUrl(request.penRequestID, document) }" target="_blank">{{document.fileName}}</router-link>
                 </template>
 
-                    <template  v-slot:item.documentTypeLabel="{item: document}" >
+                    <template v-if="isDocumentTypeChangeEnabledForUser"  v-slot:item.documentTypeLabel="{item: document}" >
                       <v-edit-dialog
 
                         :return-value.sync="document.documentTypeCode"
@@ -366,7 +366,7 @@
                         class="bootstrap-error">
                   PEN Request failed to update. Please navigate to the list and select this PEN Request again.
                 </v-alert>
-                <v-card flat>
+                <v-card flat :disabled="!isProvidePenEnabledForUser">
                   <v-row class="mx-0">
                     <v-col cols="12" xl="4" lg="4" md="4" class="py-0">
                       <v-text-field
@@ -488,7 +488,7 @@
                         class="bootstrap-warning">
                   PEN Request status and comment updated, but email to student failed. Please contact support.
                 </v-alert>
-                <v-card flat class="pa-3">
+                <v-card flat class="pa-3" :disabled="!isRequestMoreInfoEnabledForUser">
                   <v-form ref="returnForm">
                     <v-card-text class="pa-0">
                       <v-row class="ma-0">
@@ -544,7 +544,7 @@
                         class="bootstrap-warning">
                   PEN Request updated, but email to student failed. Please contact support.
                 </v-alert>
-                <v-card flat class="pa-3">
+                <v-card flat class="pa-3" :disabled="!isRejectEnabledForUser">
                   <v-form ref="form" v-model="validForm">
                     <v-card-text class="pa-0">
                       <v-row class="ma-0">
@@ -582,6 +582,7 @@ import ApiService from '../common/apiService';
 import { Routes, Statuses } from '../utils/constants';
 import { mapGetters, mapMutations } from 'vuex';
 import { humanFileSize } from '../utils/file';
+import {AccessEnabledForUser} from '../common/role-based-access'
 export default {
   components: {
     Chat
@@ -657,7 +658,13 @@ export default {
       documentError: false,
       documentErrorMessage: '',
       claimError: false,
-      claimErrorMessage: ''
+      claimErrorMessage: '',
+      isClaimActionEnabledForUser: false,
+      isProvidePenEnabledForUser:false,
+      isRequestMoreInfoEnabledForUser:false,
+      isRejectEnabledForUser:false,
+      isDocumentTypeChangeEnabledForUser:false,
+      isReleaseActionEnabledForUser:false,
     };
   },
   computed: {
@@ -679,6 +686,12 @@ export default {
     this.myself.name = this.userInfo.userName;
     this.myself.id = this.userInfo.userGuid;
     this.penRequestId = this.$store.state['penRequest'].selectedRequest;
+    this.isClaimActionEnabledForUser = AccessEnabledForUser('CLAIM_PEN_REQUEST',this.userInfo);
+    this.isProvidePenEnabledForUser = AccessEnabledForUser('PROVIDE_PEN',this.userInfo);
+    this.isRequestMoreInfoEnabledForUser = AccessEnabledForUser('REQUEST_MORE_INFO',this.userInfo);
+    this.isRejectEnabledForUser = AccessEnabledForUser('REJECT_PEN_REQUEST',this.userInfo);
+    this.isDocumentTypeChangeEnabledForUser =AccessEnabledForUser('CHANGE_DOCUMENT_TYPE',this.userInfo);
+    this.isReleaseActionEnabledForUser = AccessEnabledForUser('RELEASE_PEN_REQUEST',this.userInfo);
     if(!this.returnMacros || ! this.rejectMacros) {
       this.$store.dispatch('penRequest/getMacros');
     }

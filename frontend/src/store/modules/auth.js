@@ -7,7 +7,7 @@ export default {
   state: {
     acronyms: [],
     isAuthenticated: localStorage.getItem('jwtToken') !== null,
-    isAdmin: localStorage.getItem('isAdmin') !== null,
+    isAuthorizedUser: localStorage.getItem('isAuthorizedUser') !== null,
     userInfo: false,
   },
   getters: {
@@ -15,7 +15,7 @@ export default {
     isAuthenticated: state => state.isAuthenticated,
     jwtToken: () => localStorage.getItem('jwtToken'),
     userInfo: state => state.userInfo,
-    isAdmin: state => state.isAdmin
+    isAuthorizedUser: state => state.isAuthorizedUser
   },
   mutations: {
     //sets Json web token and determines whether user is authenticated
@@ -28,13 +28,13 @@ export default {
         localStorage.removeItem('jwtToken');
       }
     },
-    setAdminUser: (state, isAdminUser) => {
+    setAuthorizedUser: (state, isAdminUser) => {
       if (isAdminUser) {
-        state.isAdmin = true;
-        localStorage.setItem('isAdmin', 'true');
+        state.isAuthorizedUser = true;
+        localStorage.setItem('isAuthorizedUser', 'true');
       } else {
-        state.isAdmin = false;
-        localStorage.removeItem(('isAdmin'));
+        state.isAuthorizedUser = false;
+        localStorage.removeItem(('isAuthorizedUser'));
       }
     },
     setUserInfo: (state, userInf) => {
@@ -79,7 +79,7 @@ export default {
             if (response.jwtFrontend) {
               context.commit('setJwtToken', response.jwtFrontend);
             }
-            context.commit('setAdminUser', response.isAdminUser);
+            context.commit('setAuthorizedUser', response.isAuthorizedUser);
             ApiService.setAuthHeader(response.jwtFrontend);
           }
         } else {
@@ -88,7 +88,7 @@ export default {
           if (response.jwtFrontend) {
             context.commit('setJwtToken', response.jwtFrontend);
           }
-          context.commit('setAdminUser', response.isAdminUser);
+          context.commit('setAuthorizedUser', response.isAuthorizedUser);
           ApiService.setAuthHeader(response.jwtFrontend);
         }
       } catch (e) {
