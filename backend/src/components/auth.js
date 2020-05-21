@@ -107,6 +107,34 @@ const auth = {
       return next(res.status(500));
     }
   },
+  isValidUserToken(req, res, next) {
+    try {
+      const jwtToken = utils.getBackendToken(req);
+      if (!jwtToken) {
+        return res.status(401).json({
+          message: 'Unauthorized user'
+        });
+      }
+      const userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
+
+      if (userToken['realm_access'] && userToken['realm_access'].roles) {
+        const roles = userToken['realm_access'] && userToken['realm_access'].roles;
+        const rolesAllowed = (config.get('oidc:rolesAllowed'));
+        for(const rolesIndex in roles){
+          const role = roles[rolesIndex];
+          if(rolesAllowed.indexOf(role) !== -1){
+            return next();
+          }
+        }
+      }
+      return res.status(401).json({
+        message: 'Unauthorized user'
+      });
+    } catch (e) {
+      log.error(e);
+      return next(res.status(500));
+    }
+  },
 
   generateUiToken() {
     const i = config.get('tokenGenerate:issuer');
@@ -125,13 +153,13 @@ const auth = {
     log.verbose('Generated JWT', uiToken);
     return uiToken;
   },
-  isAdminUser(req) {
+  isValidUser(req) {
     try {
       const thisSession = req['session'];
       if (thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt) {
         const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
         if (userToken && userToken.realm_access && userToken.realm_access.roles
-          && (userToken.realm_access.roles.indexOf('STUDENT_ADMIN') !== -1)) {
+          && (userToken.realm_access.roles.indexOf('STUDENT_ADMIN') !== -1 || userToken.realm_access.roles.indexOf('STUDENT_ADMIN_READ_ONLY') !== -1)) {
           return true;
         }
       }

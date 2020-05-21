@@ -8,7 +8,7 @@
       </v-row>
     </article>
   </v-container>
-  <v-container fluid class="full-height" v-else-if="isAuthenticated && !isAdmin">
+  <v-container fluid class="full-height" v-else-if="isAuthenticated && !isAuthorizedUser">
 
     <!-- login article -->
     <article name="login-banner" class="top-banner">
@@ -40,7 +40,7 @@ export default {
     UnAuthorized  
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','isAdmin'])
+    ...mapGetters('auth', ['isAuthenticated','isAuthorizedUser'])
   },
 };
 </script>
