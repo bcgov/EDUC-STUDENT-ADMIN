@@ -16,7 +16,7 @@ module.exports = {
         (acc, ctx) => ({
           ...acc,
           [ctx]: {
-            target: process.env.VUE_APP_API_ROOT,
+            target: 'http://localhost:8081',//:process.env.VUE_APP_API_ROOT,
             changeOrigin: true,
             ws: false
           }
