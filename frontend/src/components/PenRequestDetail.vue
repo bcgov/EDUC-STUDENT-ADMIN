@@ -71,7 +71,7 @@
               <v-row v-else no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
                 <p v-if="!this.request.reviewer" class="blue--text"><strong>No one is working on this request</strong></p>
                 <p v-if="this.request.reviewer" class="orange--text"><strong>{{ this.request.reviewer }} is working on this request</strong></p>
-                <v-btn id="claim-pen-request" :disabled="!enableActions" small color="#38598a" :dark="enableActions" class="ml-2" @click="claimRequest">Claim</v-btn>
+                <v-btn id="claim-pen-request" :disabled="!enableActions||request.penRequestStatusCode==='DRAFT'" small color="#38598a" :dark="enableActions&&request.penRequestStatusCode!=='DRAFT'" class="ml-2" @click="claimRequest">Claim</v-btn>
               </v-row>
               <v-row no-gutters justify="end" class="pb-5">
                 <v-btn :disabled="!enableActions" small color="#38598a" :dark="enableActions" class="ml-2" @click="backToList">Back to List</v-btn>
@@ -452,7 +452,7 @@
                       <span class="pt-4 pr-1" id="prior-pen-count" v-if="this.numberOfDuplicatePenRequests > 0"><span class="red--text font-weight-bold">{{this.numberOfDuplicatePenRequests}}</span><span class="red--text"> prior PEN Requests</span></span>
                       <v-checkbox v-model="request.demogChanged" true-value="Y" false-value="N" justify="flex-end" class="pa-0" cols="12" label="Student demographics changed"></v-checkbox>
                     <v-col cols="4" xl="4" lg="4" md="4" class="pt-2">
-                      <v-btn :disabled="!enableCompleteButton||!enableActions" color="#38598a" justify="center" width="100%" :dark="enableCompleteButton && enableActions" @click="completeRequest">Provide PEN to Student</v-btn>
+                      <v-btn :disabled="!enableCompleteButton||!enableActions||request.penRequestStatusCode==='DRAFT'" color="#38598a" justify="center" width="100%" :dark="enableCompleteButton && enableActions&&request.penRequestStatusCode!=='DRAFT'" @click="completeRequest">Provide PEN to Student</v-btn>
                     </v-col>
                   </v-row>
                 </v-card>
@@ -506,7 +506,7 @@
                       </v-row>
                       <v-row justify="end" align-content="end">
                         <v-col cols="12" xl="3" lg="5" md="5" class="py-0" justify="end" align-content="end">
-                          <v-btn :disabled="!enableActions" color="#38598a" :dark="enableActions" justify="center" width="100%" @click="returnToStudent">Return to Student</v-btn>
+                          <v-btn :disabled="!enableActions||request.penRequestStatusCode==='DRAFT'" color="#38598a" :dark="enableActions&&request.penRequestStatusCode!=='DRAFT'" justify="center" width="100%" @click="returnToStudent">Return to Student</v-btn>
                         </v-col>
                       </v-row>
                     </v-card-text>

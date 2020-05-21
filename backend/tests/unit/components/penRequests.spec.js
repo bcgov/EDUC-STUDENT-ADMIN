@@ -5,6 +5,7 @@ const penRequests = require('../../../src/components/penRequests');
 jest.mock('../../../src/components/utils');
 const { mockRequest, mockResponse } = require('../helpers');
 const utils = require('../../../src/components/utils');
+const { ServiceError } = require('../../../src/components/error');
 
 describe('getAllPenRequests', () => {
   const penRequestStatusCodesData = [
@@ -73,423 +74,478 @@ describe('getAllPenRequests', () => {
       'expiryDate': '2099-12-31T00:00:00'
     }
   ];
-  const penRequestsData = [
-    {
-      'createUser': 'PEN-REQUEST-API',
-      'updateUser': 'PEN-REQUEST-API',
-      'createDate': null,
-      'updateDate': null,
-      'penRequestID': '1',
-      'digitalID': '1',
-      'penRequestStatusCode': 'DRAFT',
-      'legalFirstName': 'John',
-      'legalMiddleNames': null,
-      'legalLastName': 'Chwelo',
-      'dob': '2008-05-07',
-      'genderCode': 'X',
-      'usualFirstName': null,
-      'usualMiddleName': null,
-      'usualLastName': null,
-      'email': 'email@email.com',
-      'maidenName': null,
-      'pastNames': null,
-      'lastBCSchool': null,
-      'lastBCSchoolStudentNumber': null,
-      'currentSchool': null,
-      'reviewer': null,
-      'failureReason': null,
-      'initialSubmitDate': null,
-      'statusUpdateDate': '2020-03-05T14:45:17',
-      'emailVerified': 'N',
-      'bcscAutoMatchOutcome': null,
-      'bcscAutoMatchDetails': null,
-      'pen': null
-    },
-    {
-      'createUser': 'PEN-REQUEST-API',
-      'updateUser': 'PEN-REQUEST-API',
-      'createDate': null,
-      'updateDate': null,
-      'penRequestID': '2',
-      'digitalID': '2',
-      'penRequestStatusCode': 'MANUAL',
-      'legalFirstName': 'John',
-      'legalMiddleNames': null,
-      'legalLastName': 'Cox',
-      'dob': '1990-07-04',
-      'genderCode': 'M',
-      'usualFirstName': null,
-      'usualMiddleName': null,
-      'usualLastName': null,
-      'email': 'email@email.com',
-      'maidenName': null,
-      'pastNames': null,
-      'lastBCSchool': null,
-      'lastBCSchoolStudentNumber': null,
-      'currentSchool': null,
-      'reviewer': 'null',
-      'failureReason': 'dd',
-      'initialSubmitDate': '2020-03-13T11:11:46',
-      'statusUpdateDate': '2020-03-16T21:26:20',
-      'emailVerified': 'Y',
-      'bcscAutoMatchOutcome': null,
-      'bcscAutoMatchDetails': null,
-      'pen': '123456789'
-    },
-    {
-      'createUser': 'PEN-REQUEST-API',
-      'updateUser': 'PEN-REQUEST-API',
-      'createDate': null,
-      'updateDate': null,
-      'penRequestID': '3',
-      'digitalID': '3',
-      'penRequestStatusCode': 'SUBSREV',
-      'legalFirstName': 'Silent',
-      'legalMiddleNames': null,
-      'legalLastName': 'Sam',
-      'dob': '1960-01-16',
-      'genderCode': 'X',
-      'usualFirstName': null,
-      'usualMiddleName': null,
-      'usualLastName': null,
-      'email': 'email@email.com',
-      'maidenName': null,
-      'pastNames': null,
-      'lastBCSchool': null,
-      'lastBCSchoolStudentNumber': null,
-      'currentSchool': null,
-      'reviewer': null,
-      'failureReason': null,
-      'initialSubmitDate': '2020-03-16T18:32:09',
-      'statusUpdateDate': '2020-03-16T18:47:13',
-      'emailVerified': 'Y',
-      'bcscAutoMatchOutcome': null,
-      'bcscAutoMatchDetails': null,
-      'pen': null
-    },
-    {
-      'createUser': 'PEN-REQUEST-API',
-      'updateUser': 'PEN-REQUEST-API',
-      'createDate': null,
-      'updateDate': null,
-      'penRequestID': '4',
-      'digitalID': '4',
-      'penRequestStatusCode': 'INITREV',
-      'legalFirstName': 'RICHENDA',
-      'legalMiddleNames': null,
-      'legalLastName': 'GRAFTON',
-      'dob': '1974-03-24',
-      'genderCode': 'M',
-      'usualFirstName': null,
-      'usualMiddleName': null,
-      'usualLastName': null,
-      'email': 'email@email.com',
-      'maidenName': null,
-      'pastNames': null,
-      'lastBCSchool': null,
-      'lastBCSchoolStudentNumber': null,
-      'currentSchool': null,
-      'reviewer': null,
-      'failureReason': null,
-      'initialSubmitDate': '2020-03-17T09:29:12',
-      'statusUpdateDate': '2020-03-17T09:29:12',
-      'emailVerified': 'Y',
-      'bcscAutoMatchOutcome': 'ZEROMATCHES',
-      'bcscAutoMatchDetails': 'Zero PEN records found by BCSC auto-match',
-      'pen': null
-    },
-    {
-      'createUser': 'PEN-REQUEST-API',
-      'updateUser': 'PEN-REQUEST-API',
-      'createDate': null,
-      'updateDate': null,
-      'penRequestID': '5',
-      'digitalID': '5',
-      'penRequestStatusCode': 'REJECTED',
-      'legalFirstName': null,
-      'legalMiddleNames': null,
-      'legalLastName': 'Wayne',
-      'dob': '1997-01-01',
-      'genderCode': 'M',
-      'usualFirstName': null,
-      'usualMiddleName': null,
-      'usualLastName': null,
-      'email': 'email@email.com',
-      'maidenName': null,
-      'pastNames': null,
-      'lastBCSchool': null,
-      'lastBCSchoolStudentNumber': null,
-      'currentSchool': null,
-      'reviewer': 'null',
-      'failureReason': 'Can\'t find the record.',
-      'initialSubmitDate': '2020-03-10T11:39:01',
-      'statusUpdateDate': '2020-03-10T13:29:52',
-      'emailVerified': 'Y',
-      'bcscAutoMatchOutcome': null,
-      'bcscAutoMatchDetails': 'No auto-match performed for Basic BCeID',
-      'pen': null
-    },
-    {
-      'createUser': 'PEN-REQUEST-API',
-      'updateUser': 'PEN-REQUEST-API',
-      'createDate': null,
-      'updateDate': null,
-      'penRequestID': '6',
-      'digitalID': '6',
-      'penRequestStatusCode': 'RETURNED',
-      'legalFirstName': null,
-      'legalMiddleNames': null,
-      'legalLastName': 'Wayne',
-      'dob': '1994-02-03',
-      'genderCode': 'M',
-      'usualFirstName': null,
-      'usualMiddleName': null,
-      'usualLastName': null,
-      'email': 'email@email.com',
-      'maidenName': null,
-      'pastNames': null,
-      'lastBCSchool': null,
-      'lastBCSchoolStudentNumber': null,
-      'currentSchool': null,
-      'reviewer': 'null',
-      'failureReason': 'Reject',
-      'initialSubmitDate': '2020-03-02T14:22:41',
-      'statusUpdateDate': '2020-03-11T16:10:31',
-      'emailVerified': 'Y',
-      'bcscAutoMatchOutcome': 'RIGHTPEN',
-      'bcscAutoMatchDetails': 'CORRECT auto-match to: 123456789 Smith, John',
-      'pen': null
-    }
-  ];
-  const penRequstsResponse = [
-    {
-      'createUser': 'PEN-REQUEST-API',
-      'updateUser': 'PEN-REQUEST-API',
-      'createDate': null,
-      'updateDate': null,
-      'penRequestID': '1',
-      'penRequestStatusCode': {
+  const penRequestsData = {
+    'content': [
+      {
+        'createUser': 'PEN-REQUEST-API',
+        'updateUser': 'PEN-REQUEST-API',
+        'createDate': null,
+        'updateDate': null,
+        'penRequestID': '1',
+        'digitalID': '1',
         'penRequestStatusCode': 'DRAFT',
-        'label': 'Draft',
-        'description': 'Request created but not yet submitted.',
-        'displayOrder': 1,
-        'effectiveDate': '2020-01-01T00:00:00',
-        'expiryDate': '2099-12-31T00:00:00'
+        'legalFirstName': 'John',
+        'legalMiddleNames': null,
+        'legalLastName': 'Chwelo',
+        'dob': '2008-05-07',
+        'genderCode': 'X',
+        'usualFirstName': null,
+        'usualMiddleName': null,
+        'usualLastName': null,
+        'email': 'email@email.com',
+        'maidenName': null,
+        'pastNames': null,
+        'lastBCSchool': null,
+        'lastBCSchoolStudentNumber': null,
+        'currentSchool': null,
+        'reviewer': null,
+        'failureReason': null,
+        'initialSubmitDate': null,
+        'statusUpdateDate': '2020-03-05T14:45:17',
+        'emailVerified': 'N',
+        'bcscAutoMatchOutcome': null,
+        'bcscAutoMatchDetails': null,
+        'pen': null
       },
-      'legalFirstName': 'John',
-      'legalMiddleNames': null,
-      'legalLastName': 'Chwelo',
-      'dob': '2008-05-07',
-      'genderCode': 'X',
-      'usualFirstName': null,
-      'usualMiddleName': null,
-      'usualLastName': null,
-      'email': 'email@email.com',
-      'maidenName': null,
-      'pastNames': null,
-      'lastBCSchool': null,
-      'lastBCSchoolStudentNumber': null,
-      'currentSchool': null,
-      'reviewer': null,
-      'failureReason': null,
-      'initialSubmitDate': null,
-      'statusUpdateDate': '2020-03-05T14:45:17',
-      'emailVerified': 'N',
-      'bcscAutoMatchOutcome': null,
-      'bcscAutoMatchDetails': null,
-      'pen': null
-    },
-    {
-      'createUser': 'PEN-REQUEST-API',
-      'updateUser': 'PEN-REQUEST-API',
-      'createDate': null,
-      'updateDate': null,
-      'penRequestID': '2',
-      'penRequestStatusCode': {
+      {
+        'createUser': 'PEN-REQUEST-API',
+        'updateUser': 'PEN-REQUEST-API',
+        'createDate': null,
+        'updateDate': null,
+        'penRequestID': '2',
+        'digitalID': '2',
         'penRequestStatusCode': 'MANUAL',
-        'label': 'Completed by manual match',
-        'description': 'Request was completed by staff determining the matching PEN.',
-        'displayOrder': 6,
-        'effectiveDate': '2020-01-01T00:00:00',
-        'expiryDate': '2099-12-31T00:00:00'
+        'legalFirstName': 'John',
+        'legalMiddleNames': null,
+        'legalLastName': 'Cox',
+        'dob': '1990-07-04',
+        'genderCode': 'M',
+        'usualFirstName': null,
+        'usualMiddleName': null,
+        'usualLastName': null,
+        'email': 'email@email.com',
+        'maidenName': null,
+        'pastNames': null,
+        'lastBCSchool': null,
+        'lastBCSchoolStudentNumber': null,
+        'currentSchool': null,
+        'reviewer': 'null',
+        'failureReason': 'dd',
+        'initialSubmitDate': '2020-03-13T11:11:46',
+        'statusUpdateDate': '2020-03-16T21:26:20',
+        'emailVerified': 'Y',
+        'bcscAutoMatchOutcome': null,
+        'bcscAutoMatchDetails': null,
+        'pen': '123456789'
       },
-      'legalFirstName': 'John',
-      'legalMiddleNames': null,
-      'legalLastName': 'Cox',
-      'dob': '1990-07-04',
-      'genderCode': 'M',
-      'usualFirstName': null,
-      'usualMiddleName': null,
-      'usualLastName': null,
-      'email': 'email@email.com',
-      'maidenName': null,
-      'pastNames': null,
-      'lastBCSchool': null,
-      'lastBCSchoolStudentNumber': null,
-      'currentSchool': null,
-      'reviewer': 'null',
-      'failureReason': 'dd',
-      'initialSubmitDate': '2020-03-13T11:11:46',
-      'statusUpdateDate': '2020-03-16T21:26:20',
-      'emailVerified': 'Y',
-      'bcscAutoMatchOutcome': null,
-      'bcscAutoMatchDetails': null,
-      'pen': '123456789'
-    },
-    {
-      'createUser': 'PEN-REQUEST-API',
-      'updateUser': 'PEN-REQUEST-API',
-      'createDate': null,
-      'updateDate': null,
-      'penRequestID': '3',
-      'penRequestStatusCode': {
+      {
+        'createUser': 'PEN-REQUEST-API',
+        'updateUser': 'PEN-REQUEST-API',
+        'createDate': null,
+        'updateDate': null,
+        'penRequestID': '3',
+        'digitalID': '3',
         'penRequestStatusCode': 'SUBSREV',
-        'label': 'Subsequent Review',
-        'description': 'Request has been resubmitted with more info and is now in another review by staff.',
-        'displayOrder': 4,
-        'effectiveDate': '2020-01-01T00:00:00',
-        'expiryDate': '2099-12-31T00:00:00'
+        'legalFirstName': 'Silent',
+        'legalMiddleNames': null,
+        'legalLastName': 'Sam',
+        'dob': '1960-01-16',
+        'genderCode': 'X',
+        'usualFirstName': null,
+        'usualMiddleName': null,
+        'usualLastName': null,
+        'email': 'email@email.com',
+        'maidenName': null,
+        'pastNames': null,
+        'lastBCSchool': null,
+        'lastBCSchoolStudentNumber': null,
+        'currentSchool': null,
+        'reviewer': null,
+        'failureReason': null,
+        'initialSubmitDate': '2020-03-16T18:32:09',
+        'statusUpdateDate': '2020-03-16T18:47:13',
+        'emailVerified': 'Y',
+        'bcscAutoMatchOutcome': null,
+        'bcscAutoMatchDetails': null,
+        'pen': null
       },
-      'legalFirstName': 'Silent',
-      'legalMiddleNames': null,
-      'legalLastName': 'Sam',
-      'dob': '1960-01-16',
-      'genderCode': 'X',
-      'usualFirstName': null,
-      'usualMiddleName': null,
-      'usualLastName': null,
-      'email': 'email@email.com',
-      'maidenName': null,
-      'pastNames': null,
-      'lastBCSchool': null,
-      'lastBCSchoolStudentNumber': null,
-      'currentSchool': null,
-      'reviewer': null,
-      'failureReason': null,
-      'initialSubmitDate': '2020-03-16T18:32:09',
-      'statusUpdateDate': '2020-03-16T18:47:13',
-      'emailVerified': 'Y',
-      'bcscAutoMatchOutcome': null,
-      'bcscAutoMatchDetails': null,
-      'pen': null
-    },
-    {
-      'createUser': 'PEN-REQUEST-API',
-      'updateUser': 'PEN-REQUEST-API',
-      'createDate': null,
-      'updateDate': null,
-      'penRequestID': '4',
-      'penRequestStatusCode': {
+      {
+        'createUser': 'PEN-REQUEST-API',
+        'updateUser': 'PEN-REQUEST-API',
+        'createDate': null,
+        'updateDate': null,
+        'penRequestID': '4',
+        'digitalID': '4',
         'penRequestStatusCode': 'INITREV',
-        'label': 'First Review',
-        'description': 'Request has been submitted and is now in it\'s first review by staff.',
-        'displayOrder': 2,
-        'effectiveDate': '2020-01-01T00:00:00',
-        'expiryDate': '2099-12-31T00:00:00'
+        'legalFirstName': 'RICHENDA',
+        'legalMiddleNames': null,
+        'legalLastName': 'GRAFTON',
+        'dob': '1974-03-24',
+        'genderCode': 'M',
+        'usualFirstName': null,
+        'usualMiddleName': null,
+        'usualLastName': null,
+        'email': 'email@email.com',
+        'maidenName': null,
+        'pastNames': null,
+        'lastBCSchool': null,
+        'lastBCSchoolStudentNumber': null,
+        'currentSchool': null,
+        'reviewer': null,
+        'failureReason': null,
+        'initialSubmitDate': '2020-03-17T09:29:12',
+        'statusUpdateDate': '2020-03-17T09:29:12',
+        'emailVerified': 'Y',
+        'bcscAutoMatchOutcome': 'ZEROMATCHES',
+        'bcscAutoMatchDetails': 'Zero PEN records found by BCSC auto-match',
+        'pen': null
       },
-      'legalFirstName': 'RICHENDA',
-      'legalMiddleNames': null,
-      'legalLastName': 'GRAFTON',
-      'dob': '1974-03-24',
-      'genderCode': 'M',
-      'usualFirstName': null,
-      'usualMiddleName': null,
-      'usualLastName': null,
-      'email': 'email@email.com',
-      'maidenName': null,
-      'pastNames': null,
-      'lastBCSchool': null,
-      'lastBCSchoolStudentNumber': null,
-      'currentSchool': null,
-      'reviewer': null,
-      'failureReason': null,
-      'initialSubmitDate': '2020-03-17T09:29:12',
-      'statusUpdateDate': '2020-03-17T09:29:12',
-      'emailVerified': 'Y',
-      'bcscAutoMatchOutcome': 'ZEROMATCHES',
-      'bcscAutoMatchDetails': 'Zero PEN records found by BCSC auto-match',
-      'pen': null
-    },
-    {
-      'createUser': 'PEN-REQUEST-API',
-      'updateUser': 'PEN-REQUEST-API',
-      'createDate': null,
-      'updateDate': null,
-      'penRequestID': '5',
-      'penRequestStatusCode': {
+      {
+        'createUser': 'PEN-REQUEST-API',
+        'updateUser': 'PEN-REQUEST-API',
+        'createDate': null,
+        'updateDate': null,
+        'penRequestID': '5',
+        'digitalID': '5',
         'penRequestStatusCode': 'REJECTED',
-        'label': 'Could not be fulfilled',
-        'description': 'Request could not be fullfilled by staff for the reasons provided.',
-        'displayOrder': 7,
-        'effectiveDate': '2020-01-01T00:00:00',
-        'expiryDate': '2099-12-31T00:00:00'
+        'legalFirstName': null,
+        'legalMiddleNames': null,
+        'legalLastName': 'Wayne',
+        'dob': '1997-01-01',
+        'genderCode': 'M',
+        'usualFirstName': null,
+        'usualMiddleName': null,
+        'usualLastName': null,
+        'email': 'email@email.com',
+        'maidenName': null,
+        'pastNames': null,
+        'lastBCSchool': null,
+        'lastBCSchoolStudentNumber': null,
+        'currentSchool': null,
+        'reviewer': 'null',
+        'failureReason': 'Can\'t find the record.',
+        'initialSubmitDate': '2020-03-10T11:39:01',
+        'statusUpdateDate': '2020-03-10T13:29:52',
+        'emailVerified': 'Y',
+        'bcscAutoMatchOutcome': null,
+        'bcscAutoMatchDetails': 'No auto-match performed for Basic BCeID',
+        'pen': null
       },
-      'legalFirstName': null,
-      'legalMiddleNames': null,
-      'legalLastName': 'Wayne',
-      'dob': '1997-01-01',
-      'genderCode': 'M',
-      'usualFirstName': null,
-      'usualMiddleName': null,
-      'usualLastName': null,
-      'email': 'email@email.com',
-      'maidenName': null,
-      'pastNames': null,
-      'lastBCSchool': null,
-      'lastBCSchoolStudentNumber': null,
-      'currentSchool': null,
-      'reviewer': 'null',
-      'failureReason': 'Can\'t find the record.',
-      'initialSubmitDate': '2020-03-10T11:39:01',
-      'statusUpdateDate': '2020-03-10T13:29:52',
-      'emailVerified': 'Y',
-      'bcscAutoMatchOutcome': null,
-      'bcscAutoMatchDetails': 'No auto-match performed for Basic BCeID',
-      'pen': null
-    },
-    {
-      'createUser': 'PEN-REQUEST-API',
-      'updateUser': 'PEN-REQUEST-API',
-      'createDate': null,
-      'updateDate': null,
-      'penRequestID': '6',
-      'penRequestStatusCode': {
+      {
+        'createUser': 'PEN-REQUEST-API',
+        'updateUser': 'PEN-REQUEST-API',
+        'createDate': null,
+        'updateDate': null,
+        'penRequestID': '6',
+        'digitalID': '6',
         'penRequestStatusCode': 'RETURNED',
-        'label': 'Returned for more information',
-        'description': 'Request has been returned to the submitter for more information.',
-        'displayOrder': 3,
-        'effectiveDate': '2020-01-01T00:00:00',
-        'expiryDate': '2099-12-31T00:00:00'
+        'legalFirstName': null,
+        'legalMiddleNames': null,
+        'legalLastName': 'Wayne',
+        'dob': '1994-02-03',
+        'genderCode': 'M',
+        'usualFirstName': null,
+        'usualMiddleName': null,
+        'usualLastName': null,
+        'email': 'email@email.com',
+        'maidenName': null,
+        'pastNames': null,
+        'lastBCSchool': null,
+        'lastBCSchoolStudentNumber': null,
+        'currentSchool': null,
+        'reviewer': 'null',
+        'failureReason': 'Reject',
+        'initialSubmitDate': '2020-03-02T14:22:41',
+        'statusUpdateDate': '2020-03-11T16:10:31',
+        'emailVerified': 'Y',
+        'bcscAutoMatchOutcome': 'RIGHTPEN',
+        'bcscAutoMatchDetails': 'CORRECT auto-match to: 123456789 Smith, John',
+        'pen': null
+      }
+    ],
+    'pageable': {
+      'sort': {
+        'sorted': true,
+        'unsorted': false,
+        'empty': false
       },
-      'legalFirstName': null,
-      'legalMiddleNames': null,
-      'legalLastName': 'Wayne',
-      'dob': '1994-02-03',
-      'genderCode': 'M',
-      'usualFirstName': null,
-      'usualMiddleName': null,
-      'usualLastName': null,
-      'email': 'email@email.com',
-      'maidenName': null,
-      'pastNames': null,
-      'lastBCSchool': null,
-      'lastBCSchoolStudentNumber': null,
-      'currentSchool': null,
-      'reviewer': 'null',
-      'failureReason': 'Reject',
-      'initialSubmitDate': '2020-03-02T14:22:41',
-      'statusUpdateDate': '2020-03-11T16:10:31',
-      'emailVerified': 'Y',
-      'bcscAutoMatchOutcome': 'RIGHTPEN',
-      'bcscAutoMatchDetails': 'CORRECT auto-match to: 123456789 Smith, John',
-      'pen': null
-    }
-  ];
+      'pageSize': 15,
+      'pageNumber': 0,
+      'offset': 0,
+      'paged': true,
+      'unpaged': false
+    },
+    'last': true,
+    'totalPages': 1,
+    'totalElements': 5,
+    'sort': {
+      'sorted': true,
+      'unsorted': false,
+      'empty': false
+    },
+    'first': true,
+    'numberOfElements': 5,
+    'size': 15,
+    'number': 0,
+    'empty': false
+  };
+  const penRetrievalResponse = {
+    'content': [
+      {
+        'createUser': 'PEN-REQUEST-API',
+        'updateUser': 'PEN-REQUEST-API',
+        'createDate': null,
+        'updateDate': null,
+        'penRequestID': '1',
+        'penRequestStatusCode': {
+          'penRequestStatusCode': 'DRAFT',
+          'label': 'Draft',
+          'description': 'Request created but not yet submitted.',
+          'displayOrder': 1,
+          'effectiveDate': '2020-01-01T00:00:00',
+          'expiryDate': '2099-12-31T00:00:00'
+        },
+        'legalFirstName': 'John',
+        'legalMiddleNames': null,
+        'legalLastName': 'Chwelo',
+        'dob': '2008-05-07',
+        'genderCode': 'X',
+        'usualFirstName': null,
+        'usualMiddleName': null,
+        'usualLastName': null,
+        'email': 'email@email.com',
+        'maidenName': null,
+        'pastNames': null,
+        'lastBCSchool': null,
+        'lastBCSchoolStudentNumber': null,
+        'currentSchool': null,
+        'reviewer': null,
+        'failureReason': null,
+        'initialSubmitDate': null,
+        'statusUpdateDate': '2020-03-05T14:45:17',
+        'emailVerified': 'N',
+        'bcscAutoMatchOutcome': null,
+        'bcscAutoMatchDetails': null,
+        'pen': null
+      },
+      {
+        'createUser': 'PEN-REQUEST-API',
+        'updateUser': 'PEN-REQUEST-API',
+        'createDate': null,
+        'updateDate': null,
+        'penRequestID': '2',
+        'penRequestStatusCode': {
+          'penRequestStatusCode': 'MANUAL',
+          'label': 'Completed by manual match',
+          'description': 'Request was completed by staff determining the matching PEN.',
+          'displayOrder': 6,
+          'effectiveDate': '2020-01-01T00:00:00',
+          'expiryDate': '2099-12-31T00:00:00'
+        },
+        'legalFirstName': 'John',
+        'legalMiddleNames': null,
+        'legalLastName': 'Cox',
+        'dob': '1990-07-04',
+        'genderCode': 'M',
+        'usualFirstName': null,
+        'usualMiddleName': null,
+        'usualLastName': null,
+        'email': 'email@email.com',
+        'maidenName': null,
+        'pastNames': null,
+        'lastBCSchool': null,
+        'lastBCSchoolStudentNumber': null,
+        'currentSchool': null,
+        'reviewer': 'null',
+        'failureReason': 'dd',
+        'initialSubmitDate': '2020-03-13T11:11:46',
+        'statusUpdateDate': '2020-03-16T21:26:20',
+        'emailVerified': 'Y',
+        'bcscAutoMatchOutcome': null,
+        'bcscAutoMatchDetails': null,
+        'pen': '123456789'
+      },
+      {
+        'createUser': 'PEN-REQUEST-API',
+        'updateUser': 'PEN-REQUEST-API',
+        'createDate': null,
+        'updateDate': null,
+        'penRequestID': '3',
+        'penRequestStatusCode': {
+          'penRequestStatusCode': 'SUBSREV',
+          'label': 'Subsequent Review',
+          'description': 'Request has been resubmitted with more info and is now in another review by staff.',
+          'displayOrder': 4,
+          'effectiveDate': '2020-01-01T00:00:00',
+          'expiryDate': '2099-12-31T00:00:00'
+        },
+        'legalFirstName': 'Silent',
+        'legalMiddleNames': null,
+        'legalLastName': 'Sam',
+        'dob': '1960-01-16',
+        'genderCode': 'X',
+        'usualFirstName': null,
+        'usualMiddleName': null,
+        'usualLastName': null,
+        'email': 'email@email.com',
+        'maidenName': null,
+        'pastNames': null,
+        'lastBCSchool': null,
+        'lastBCSchoolStudentNumber': null,
+        'currentSchool': null,
+        'reviewer': null,
+        'failureReason': null,
+        'initialSubmitDate': '2020-03-16T18:32:09',
+        'statusUpdateDate': '2020-03-16T18:47:13',
+        'emailVerified': 'Y',
+        'bcscAutoMatchOutcome': null,
+        'bcscAutoMatchDetails': null,
+        'pen': null
+      },
+      {
+        'createUser': 'PEN-REQUEST-API',
+        'updateUser': 'PEN-REQUEST-API',
+        'createDate': null,
+        'updateDate': null,
+        'penRequestID': '4',
+        'penRequestStatusCode': {
+          'penRequestStatusCode': 'INITREV',
+          'label': 'First Review',
+          'description': 'Request has been submitted and is now in it\'s first review by staff.',
+          'displayOrder': 2,
+          'effectiveDate': '2020-01-01T00:00:00',
+          'expiryDate': '2099-12-31T00:00:00'
+        },
+        'legalFirstName': 'RICHENDA',
+        'legalMiddleNames': null,
+        'legalLastName': 'GRAFTON',
+        'dob': '1974-03-24',
+        'genderCode': 'M',
+        'usualFirstName': null,
+        'usualMiddleName': null,
+        'usualLastName': null,
+        'email': 'email@email.com',
+        'maidenName': null,
+        'pastNames': null,
+        'lastBCSchool': null,
+        'lastBCSchoolStudentNumber': null,
+        'currentSchool': null,
+        'reviewer': null,
+        'failureReason': null,
+        'initialSubmitDate': '2020-03-17T09:29:12',
+        'statusUpdateDate': '2020-03-17T09:29:12',
+        'emailVerified': 'Y',
+        'bcscAutoMatchOutcome': 'ZEROMATCHES',
+        'bcscAutoMatchDetails': 'Zero PEN records found by BCSC auto-match',
+        'pen': null
+      },
+      {
+        'createUser': 'PEN-REQUEST-API',
+        'updateUser': 'PEN-REQUEST-API',
+        'createDate': null,
+        'updateDate': null,
+        'penRequestID': '5',
+        'penRequestStatusCode': {
+          'penRequestStatusCode': 'REJECTED',
+          'label': 'Could not be fulfilled',
+          'description': 'Request could not be fullfilled by staff for the reasons provided.',
+          'displayOrder': 7,
+          'effectiveDate': '2020-01-01T00:00:00',
+          'expiryDate': '2099-12-31T00:00:00'
+        },
+        'legalFirstName': null,
+        'legalMiddleNames': null,
+        'legalLastName': 'Wayne',
+        'dob': '1997-01-01',
+        'genderCode': 'M',
+        'usualFirstName': null,
+        'usualMiddleName': null,
+        'usualLastName': null,
+        'email': 'email@email.com',
+        'maidenName': null,
+        'pastNames': null,
+        'lastBCSchool': null,
+        'lastBCSchoolStudentNumber': null,
+        'currentSchool': null,
+        'reviewer': 'null',
+        'failureReason': 'Can\'t find the record.',
+        'initialSubmitDate': '2020-03-10T11:39:01',
+        'statusUpdateDate': '2020-03-10T13:29:52',
+        'emailVerified': 'Y',
+        'bcscAutoMatchOutcome': null,
+        'bcscAutoMatchDetails': 'No auto-match performed for Basic BCeID',
+        'pen': null
+      },
+      {
+        'createUser': 'PEN-REQUEST-API',
+        'updateUser': 'PEN-REQUEST-API',
+        'createDate': null,
+        'updateDate': null,
+        'penRequestID': '6',
+        'penRequestStatusCode': {
+          'penRequestStatusCode': 'RETURNED',
+          'label': 'Returned for more information',
+          'description': 'Request has been returned to the submitter for more information.',
+          'displayOrder': 3,
+          'effectiveDate': '2020-01-01T00:00:00',
+          'expiryDate': '2099-12-31T00:00:00'
+        },
+        'legalFirstName': null,
+        'legalMiddleNames': null,
+        'legalLastName': 'Wayne',
+        'dob': '1994-02-03',
+        'genderCode': 'M',
+        'usualFirstName': null,
+        'usualMiddleName': null,
+        'usualLastName': null,
+        'email': 'email@email.com',
+        'maidenName': null,
+        'pastNames': null,
+        'lastBCSchool': null,
+        'lastBCSchoolStudentNumber': null,
+        'currentSchool': null,
+        'reviewer': 'null',
+        'failureReason': 'Reject',
+        'initialSubmitDate': '2020-03-02T14:22:41',
+        'statusUpdateDate': '2020-03-11T16:10:31',
+        'emailVerified': 'Y',
+        'bcscAutoMatchOutcome': 'RIGHTPEN',
+        'bcscAutoMatchDetails': 'CORRECT auto-match to: 123456789 Smith, John',
+        'pen': null
+      }
+    ],
+    'pageable': {
+      'sort': {
+        'sorted': true,
+        'unsorted': false,
+        'empty': false
+      },
+      'pageSize': 15,
+      'pageNumber': 0,
+      'offset': 0,
+      'paged': true,
+      'unpaged': false
+    },
+    'last': true,
+    'totalPages': 1,
+    'totalElements': 5,
+    'sort': {
+      'sorted': true,
+      'unsorted': false,
+      'empty': false
+    },
+    'first': true,
+    'numberOfElements': 5,
+    'size': 15,
+    'number': 0,
+    'empty': false
+  };
   let req;
   let res;
 
   jest.spyOn(utils, 'getBackendToken');
   jest.spyOn(utils, 'getData');
+  jest.spyOn(utils, 'getCodeTable');
 
   beforeEach(() => {
     utils.getBackendToken.mockReturnValue('token');
@@ -503,9 +559,18 @@ describe('getAllPenRequests', () => {
     jest.clearAllMocks();
   });
   it('should return penRequstsResponse', async () => {
+    req.query = {
+      'pageNumber': '0',
+      'pageSize': '15',
+      'sort': {'initialSubmitDate':'ASC'},
+      'statusFilters': [
+        'First Review',
+        'Subsequent Review'
+      ]
+    };
     await penRequests.getAllPenRequests(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
-    expect(res.json).toHaveBeenCalledWith(penRequstsResponse);
+    expect(res.json).toHaveBeenCalledWith(penRetrievalResponse);
   });
   it('should return unauthorized error if no token', async () => {
     utils.getBackendToken.mockReturnValue(null);
@@ -527,7 +592,7 @@ describe('getAllPenRequests', () => {
 describe('getPenRequestCommentById', () => {
   const userData = {
     idir_username: 'IDIR',
-    preferred_username: '1'
+    preferred_username: '11'
   };
   const penRequestsData = [
     {
@@ -537,31 +602,21 @@ describe('getPenRequestCommentById', () => {
       'updateDate': '2020-03-18T14:23:01',
       'penRetrievalReqCommentID': '1',
       'penRetrievalRequestID': '1',
-      'staffMemberIDIRGUID': '1',
+      'staffMemberIDIRGUID': '11',
       'staffMemberName': 'IDIR',
       'commentContent': 'Sending a comment\n',
       'commentTimestamp': '2020-03-18T14:22:59'
     }
   ];
   const penRequestCommentData = {
-    'participants': [],
-    'myself': {
-      'name': 'IDIR',
-      'id': '1'
-    },
     'messages': [
       {
         'content': 'Sending a comment\n',
-        'participantId': '1',
-        'timestamp': {
-          'year': 2020,
-          'month': 3,
-          'day': 18,
-          'hour': 14,
-          'minute': 22,
-          'second': 59,
-          'millisecond': 0
-        }
+        'participantId': '11',
+        'name': 'IDIR',
+        'color': 'adminGreen',
+        'icon': '$question',
+        'timestamp': '2020-03-18 2:22pm'
       }
     ]
   };
@@ -576,6 +631,7 @@ describe('getPenRequestCommentById', () => {
     utils.getBackendToken.mockReturnValue('token');
     utils.getUser.mockResolvedValue(userData);
     utils.getData.mockResolvedValue(penRequestsData);
+    utils.formatCommentTimestamp.mockReturnValue('2020-03-18 2:22pm');
     req = mockRequest();
     res = mockResponse();
   });
@@ -782,23 +838,24 @@ describe('getStudentDemographicsById', () => {
 describe('postPenRequestComment', () => {
   const userData = {
     idir_username: 'IDIR',
-    preferred_username: '1'
+    preferred_username: '11'
   };
   const dateTime = LocalDateTime.now();
-  const response = {
-    'createUser': 'PEN-REQUEST-API',
-    'updateUser': 'PEN-REQUEST-API',
-    'createDate': '2020-03-31T14:22:23.893',
-    'updateDate': '2020-03-31T14:22:23.893',
-    'penRetrievalReqCommentID': 'ac335eee-711d-13b2-8171-3259533b0000',
-    'penRetrievalRequestID': 'ac336ce7-70b1-1e98-8170-c02506390011',
-    'staffMemberIDIRGUID': 'E6DF3063E5104583AA0477DB775A7216',
+  const postCommentResponse = {
+    'commentContent': 'This is email content',
+    'staffMemberIDIRGUID': '11',
     'staffMemberName': 'IDIR',
-    'commentContent': 'ye boi\n',
     'commentTimestamp': dateTime.toString()
   };
+  const responser = {
+    content: 'This is email content',
+    participantId: '11',
+    name: 'IDIR',
+    timestamp: dateTime.toString(),
+    color: 'adminGreen',
+    icon: '$question'
+  };
   let req;
-  let res;
 
   jest.spyOn(utils, 'getBackendToken');
   jest.spyOn(utils, 'getUser');
@@ -807,10 +864,10 @@ describe('postPenRequestComment', () => {
   beforeEach(() => {
     utils.getBackendToken.mockReturnValue('token');
     utils.getUser.mockReturnValue(userData);
-    utils.postData.mockReturnValue(response);
+    utils.postData.mockReturnValue(postCommentResponse);
+    utils.formatCommentTimestamp.mockReturnValue(dateTime.toString());
     LocalDateTime.now.mockReturnValue(dateTime);
     req = mockRequest();
-    res = mockResponse();
     req.body = {
       content: 'This is email content'
     };
@@ -822,27 +879,260 @@ describe('postPenRequestComment', () => {
     jest.clearAllMocks();
   });
   it('should return demographicsData', async () => {
-    await penRequests.postPenRequestComment(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
-    expect(res.json).toHaveBeenCalledWith(response);
+    expect(await penRequests.postPenRequestComment(req)).toEqual(responser);
   });
-  it('should return unauthorized error if no token', async () => {
+  it('should throw ServiceError error if no token', async () => {
     utils.getBackendToken.mockReturnValue(null);
-    await penRequests.postPenRequestComment(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
+    expect(penRequests.postPenRequestComment(req)).rejects.toThrowError(ServiceError);
   });
-  it('should return INTERNAL_SERVER_ERROR if no user info', async () => {
+  it('should throw ServiceError if no user info', async () => {
     utils.getUser.mockReturnValue(false);
-    await penRequests.postPenRequestComment(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(penRequests.postPenRequestComment(req)).rejects.toThrowError(ServiceError);
   });
-  it('should return INTERNAL_SERVER_ERROR if getData exceptions thrown', async () => {
+  it('should throw ServiceError if postData exceptions thrown', async () => {
     utils.postData.mockRejectedValue(new Error('test error'));
-    await penRequests.postPenRequestComment(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(penRequests.postPenRequestComment(req)).rejects.toThrowError(ServiceError);
   });
 });
 
+describe('updatePenRequest', () => {
+  let req;
+  let res;
+
+  jest.spyOn(utils, 'getBackendToken');
+  jest.spyOn(utils, 'putData');
+  jest.spyOn(utils, 'getCodeTable');
+  jest.spyOn(utils, 'stripAuditColumns');
+  jest.spyOn(utils, 'getCodeLabel');
+
+
+  beforeEach(() => {
+    utils.getBackendToken.mockReturnValue('token');
+    req = mockRequest();
+    res = mockResponse();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  it('should return finalResponse', async () => {
+    req.session.penRequest = {
+      'createUser': 'PEN-REQUEST-API',
+      'updateUser': 'STUDENT-ADMIN',
+      'createDate': null,
+      'updateDate': null,
+      'penRequestID': '1',
+      'digitalID': 'a',
+      'penRequestStatusCode': 'RETURNED',
+      'legalFirstName': 'Peter',
+      'legalMiddleNames': null,
+      'legalLastName': 'Testing',
+      'dob': '1980-02-06',
+      'genderCode': 'M',
+      'usualFirstName': null,
+      'usualMiddleName': null,
+      'usualLastName': null,
+      'email': 'marco.1.villeneuve@gov.bc.ca',
+      'maidenName': null,
+      'pastNames': null,
+      'lastBCSchool': 'asdf',
+      'lastBCSchoolStudentNumber': null,
+      'currentSchool': null,
+      'reviewer': '',
+      'failureReason': null,
+      'initialSubmitDate': '2020-04-08T11:35:06',
+      'statusUpdateDate': '2020-04-30T15:44:29',
+      'emailVerified': 'Y',
+      'bcscAutoMatchOutcome': null,
+      'bcscAutoMatchDetails': null,
+      'pen': '',
+      'demogChanged': null,
+      'completeComment': null,
+      'dataSourceCode': 'Basic BCeID',
+      'penRequestStatusCodeLabel': 'Returned for more information'
+    };
+    req.body = {
+      'penRequestID': '1',
+      'pen': '',
+      'penRequestStatusCode': 'RETURNED',
+      'reviewer': 'JOCOX',
+      'failureReason': null,
+      'completeComment': null,
+      'demogChanged': null,
+      'bcscAutoMatchOutcome': null,
+      'bcscAutoMatchDetails': null,
+      'content': 'I said info',
+      'statusUpdateDate': '2020-05-21T10:35:43.908'
+    };
+
+    const penPutResponse = {
+      'createUser': 'PEN-REQUEST-API',
+      'updateUser': 'STUDENT-ADMIN',
+      'createDate': null,
+      'updateDate': null,
+      'penRequestID': '1',
+      'digitalID': 'a',
+      'penRequestStatusCode': 'RETURNED',
+      'legalFirstName': 'Peter',
+      'legalMiddleNames': null,
+      'legalLastName': 'Testing',
+      'dob': '1980-02-06',
+      'genderCode': 'M',
+      'usualFirstName': null,
+      'usualMiddleName': null,
+      'usualLastName': null,
+      'email': 'marco.1.villeneuve@gov.bc.ca',
+      'maidenName': null,
+      'pastNames': null,
+      'lastBCSchool': 'asdf',
+      'lastBCSchoolStudentNumber': null,
+      'currentSchool': null,
+      'reviewer': 'JOCOX',
+      'failureReason': null,
+      'initialSubmitDate': '2020-04-08T11:35:06',
+      'statusUpdateDate': '2020-05-21T13:08:59.734',
+      'emailVerified': 'Y',
+      'bcscAutoMatchOutcome': null,
+      'bcscAutoMatchDetails': null,
+      'pen': '',
+      'demogChanged': null,
+      'completeComment': null
+    };
+    const statusCodeResponse = [
+      {
+        'penRequestStatusCode': 'DRAFT',
+        'label': 'Draft',
+        'description': 'Request created but not yet submitted.',
+        'displayOrder': 1,
+        'effectiveDate': '2020-01-01T00:00:00',
+        'expiryDate': '2099-12-31T00:00:00'
+      },
+      {
+        'penRequestStatusCode': 'INITREV',
+        'label': 'First Review',
+        'description': 'Request has been submitted and is now in it"s first review by staff.',
+        'displayOrder': 2,
+        'effectiveDate': '2020-01-01T00:00:00',
+        'expiryDate': '2099-12-31T00:00:00'
+      },
+      {
+        'penRequestStatusCode': 'RETURNED',
+        'label': 'Returned for more information',
+        'description': 'Request has been returned to the submitter for more information.',
+        'displayOrder': 3,
+        'effectiveDate': '2020-01-01T00:00:00',
+        'expiryDate': '2099-12-31T00:00:00'
+      },
+      {
+        'penRequestStatusCode': 'SUBSREV',
+        'label': 'Subsequent Review',
+        'description': 'Request has been resubmitted with more info and is now in another review by staff.',
+        'displayOrder': 4,
+        'effectiveDate': '2020-01-01T00:00:00',
+        'expiryDate': '2099-12-31T00:00:00'
+      },
+      {
+        'penRequestStatusCode': 'AUTO',
+        'label': 'Completed by auto-match',
+        'description': 'Request was completed by the auto-match process, without staff review.',
+        'displayOrder': 5,
+        'effectiveDate': '2020-01-01T00:00:00',
+        'expiryDate': '2099-12-31T00:00:00'
+      },
+      {
+        'penRequestStatusCode': 'MANUAL',
+        'label': 'Completed by manual match',
+        'description': 'Request was completed by staff determining the matching PEN.',
+        'displayOrder': 6,
+        'effectiveDate': '2020-01-01T00:00:00',
+        'expiryDate': '2099-12-31T00:00:00'
+      },
+      {
+        'penRequestStatusCode': 'REJECTED',
+        'label': 'Could not be fulfilled',
+        'description': 'Request could not be fullfilled by staff for the reasons provided.',
+        'displayOrder': 7,
+        'effectiveDate': '2020-01-01T00:00:00',
+        'expiryDate': '2099-12-31T00:00:00'
+      },
+      {
+        'penRequestStatusCode': 'UNMATCHED',
+        'label': 'Unable to match',
+        'description': 'Request could not be matched to a PEN.',
+        'displayOrder': 8,
+        'effectiveDate': '2020-01-01T00:00:00',
+        'expiryDate': '2099-12-31T00:00:00'
+      }
+    ];
+
+    const stripedResponse = {
+      'penRequestID': '1',
+      'digitalID': 'a',
+      'penRequestStatusCode': 'RETURNED',
+      'legalFirstName': 'Peter',
+      'legalMiddleNames': null,
+      'legalLastName': 'Testing',
+      'dob': '1980-02-06',
+      'genderCode': 'M',
+      'usualFirstName': null,
+      'usualMiddleName': null,
+      'usualLastName': null,
+      'email': 'marco.1.villeneuve@gov.bc.ca',
+      'maidenName': null,
+      'pastNames': null,
+      'lastBCSchool': 'asdf',
+      'lastBCSchoolStudentNumber': null,
+      'currentSchool': null,
+      'reviewer': 'JOCOX',
+      'failureReason': null,
+      'initialSubmitDate': '2020-04-08T11:35:06',
+      'statusUpdateDate': '2020-05-21T13:27:10.89',
+      'emailVerified': 'Y',
+      'bcscAutoMatchOutcome': null,
+      'bcscAutoMatchDetails': null,
+      'pen': '',
+      'demogChanged': null,
+      'completeComment': null,
+      'dataSourceCode': 'Basic BCeID',
+      'penRequestStatusCodeLabel': 'Returned for more information'
+    };
+    const finalResponse = {
+      'penRequestID': '1',
+      'penRequestStatusCode': 'RETURNED',
+      'legalFirstName': 'Peter',
+      'legalMiddleNames': null,
+      'legalLastName': 'Testing',
+      'dob': '1980-02-06',
+      'genderCode': 'M',
+      'usualFirstName': null,
+      'usualMiddleName': null,
+      'usualLastName': null,
+      'email': 'marco.1.villeneuve@gov.bc.ca',
+      'maidenName': null,
+      'pastNames': null,
+      'lastBCSchool': 'asdf',
+      'lastBCSchoolStudentNumber': null,
+      'currentSchool': null,
+      'reviewer': 'JOCOX',
+      'failureReason': null,
+      'initialSubmitDate': '2020-04-08T11:35:06',
+      'statusUpdateDate': '2020-05-21T13:27:10.89',
+      'emailVerified': 'Y',
+      'bcscAutoMatchOutcome': null,
+      'bcscAutoMatchDetails': null,
+      'pen': '',
+      'demogChanged': null,
+      'completeComment': null,
+      'dataSourceCode': 'Basic BCeID',
+      'penRequestStatusCodeLabel': 'Returned for more information'
+    };
+    utils.putData.mockResolvedValue(penPutResponse);
+    utils.getCodeTable.mockReturnValue(statusCodeResponse);
+    utils.stripAuditColumns.mockReturnValue(stripedResponse);
+    utils.getCodeLabel.mockReturnValue('Returned for more information');
+    expect(await penRequests.updatePenRequest(req, res)).toEqual(finalResponse);
+  });
+});
 /*describe('putPenRequest', () => {
   const penRequestResponse = {
     'createUser': 'PEN-REQUEST-API',
@@ -1049,13 +1339,9 @@ describe('getPenRequestById', () => {
   ];
   const identityCodeLabel = 'Basic BCeID';
   const statusCodeLabel = 'Subsequent Review';
-  const penRequestResponse = {
-    'createUser': 'PEN-REQUEST-API',
-    'updateUser': 'PEN-REQUEST-API',
-    'createDate': null,
-    'updateDate': null,
+  const penRequestStrippedResponse = {
     'penRequestID': '1',
-    'penRequestStatusCode': 'SUBSREV',
+    'penRequestStatusCode': 'Subsequent Review',
     'legalFirstName': 'Silent',
     'legalMiddleNames': null,
     'legalLastName': 'Sam',
@@ -1094,6 +1380,7 @@ describe('getPenRequestById', () => {
     utils.getData.mockResolvedValueOnce(penRequestData).mockResolvedValueOnce(digitalIdData);
     utils.getCodeLabel.mockReturnValueOnce(identityCodeLabel).mockReturnValueOnce(statusCodeLabel);
     utils.saveSession.mockReturnValue(null);
+    utils.stripAuditColumns.mockReturnValue(penRequestStrippedResponse);
     req = mockRequest();
     res = mockResponse();
   });
@@ -1108,7 +1395,7 @@ describe('getPenRequestById', () => {
     utils.getCodeTable.mockResolvedValueOnce(identityCodeTableData).mockResolvedValueOnce(statusesCodeTableData);
     await penRequests.getPenRequestById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
-    expect(res.json).toHaveBeenCalledWith(penRequestResponse);
+    expect(res.json).toHaveBeenCalledWith(penRequestStrippedResponse);
   });
   it('should return unauthorized error if no token', async () => {
     req.params = {
