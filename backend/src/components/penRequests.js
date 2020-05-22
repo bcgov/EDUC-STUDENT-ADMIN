@@ -476,50 +476,50 @@ async function updatePenRequest(req, res) {
   let thisSession = req['session'];
   if (!thisSession.penRequest) {
     log.error('Error attempting to update pen request.  There is no pen request stored in session.');
-    throw new ApiError();
+    throw new ServiceError('updatePenRequest', {message: 'Empty session'});
   }
-  try {
-    const token = utils.getBackendToken(req);
-    const penRequest = thisSession.penRequest;
-    const dataSourceCode = penRequest.dataSourceCode;
-    delete penRequest.dataSourceCode;
-    penRequest.pen = req.body.pen;
-    penRequest.penRequestStatusCode = req.body.penRequestStatusCode;
-    penRequest.reviewer = req.body.reviewer;
-    penRequest.failureReason = req.body.failureReason;
-    penRequest.completeComment = req.body.completeComment;
-    penRequest.demogChanged = req.body.demogChanged;
-    penRequest.bcscAutoMatchOutcome = req.body.bcscAutoMatchOutcome;
-    penRequest.bcscAutoMatchDetails = req.body.bcscAutoMatchDetails;
-    if(req.body.statusUpdateDate) {
-      penRequest.statusUpdateDate = req.body.statusUpdateDate;
-    }
-    return Promise.all([
-      putData(token, config.get('server:penRequestURL'), penRequest),
-      utils.getCodeTable(token, 'penStatusCodes', config.get('server:statusCodeURL'))
-    ])
-      .then(async ([penRetrievalResponse, statusCodesResponse]) => {
-        penRetrievalResponse.dataSourceCode = dataSourceCode;
-        if(!statusCodesResponse) {
-          log.error('Failed to get pen request status codes.  Using code value instead of label.');
-          penRetrievalResponse.penRequestStatusCodeLabel = penRequest.penRequestStatusCode;
-        } else {
-          penRetrievalResponse['penRequestStatusCodeLabel'] = utils.getCodeLabel(statusCodesResponse, 'penRequestStatusCode', penRetrievalResponse['penRequestStatusCode']);
-        }
-        utils.saveSession(req, res, penRetrievalResponse);
-        //dont return digitalid or audit columns to frontend
-        penRetrievalResponse = utils.stripAuditColumns(penRetrievalResponse);
-        delete penRetrievalResponse['digitalID'];
-        return penRetrievalResponse;
-      })
-      .catch(e =>{
-        logApiError(e, 'updatePenRequest', 'Error updating a pen request.');
-        const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-        throw new ApiError(status, { message: 'API PUT error'}, e);
-      });
-  } catch(e) {
-    throw new ServiceError('updatePenRequest error', e);
+  const token = utils.getBackendToken(req);
+  if (!token) {
+    log.error('Error attempting to update pen request.  Unable to get token.');
+    throw new ServiceError( 'updatePenRequest',{ message: 'No access token'});
   }
+  const penRequest = thisSession.penRequest;
+  const dataSourceCode = penRequest.dataSourceCode;
+  delete penRequest.dataSourceCode;
+  penRequest.pen = req.body.pen;
+  penRequest.penRequestStatusCode = req.body.penRequestStatusCode;
+  penRequest.reviewer = req.body.reviewer;
+  penRequest.failureReason = req.body.failureReason;
+  penRequest.completeComment = req.body.completeComment;
+  penRequest.demogChanged = req.body.demogChanged;
+  penRequest.bcscAutoMatchOutcome = req.body.bcscAutoMatchOutcome;
+  penRequest.bcscAutoMatchDetails = req.body.bcscAutoMatchDetails;
+  if(req.body.statusUpdateDate) {
+    penRequest.statusUpdateDate = req.body.statusUpdateDate;
+  }
+  return Promise.all([
+    putData(token, config.get('server:penRequestURL'), penRequest),
+    utils.getCodeTable(token, 'penStatusCodes', config.get('server:statusCodeURL')+'p')
+  ])
+    .then(async ([penRetrievalResponse, statusCodesResponse]) => {
+      penRetrievalResponse.dataSourceCode = dataSourceCode;
+      if(!statusCodesResponse) {
+        log.error('Failed to get pen request status codes.  Using code value instead of label.');
+        penRetrievalResponse.penRequestStatusCodeLabel = penRequest.penRequestStatusCode;
+      } else {
+        penRetrievalResponse['penRequestStatusCodeLabel'] = utils.getCodeLabel(statusCodesResponse, 'penRequestStatusCode', penRetrievalResponse['penRequestStatusCode']);
+      }
+      utils.saveSession(req, res, penRetrievalResponse);
+      //dont return digitalid or audit columns to frontend
+      penRetrievalResponse = utils.stripAuditColumns(penRetrievalResponse);
+      delete penRetrievalResponse['digitalID'];
+      return penRetrievalResponse;
+    })
+    .catch(e =>{
+      logApiError(e, 'updatePenRequest', 'Error updating a pen request.');
+      const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
+      throw new ApiError(status, { message: 'API PUT error'}, e);
+    });
 }
 
 async function updateStudentAndDigitalId(req){
