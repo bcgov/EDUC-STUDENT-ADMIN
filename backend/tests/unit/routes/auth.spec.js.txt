@@ -1,7 +1,20 @@
 const request = require('supertest');
-
+const redis = require('redis-mock');
+const express = require('express');
 //const auth = require('../../../src/components/auth');
 const app = require('../../../src/app');
+
+jest.doMock('redis', () => {
+  return redis;
+});
+
+jest.doMock('../../../src/app', () => {
+  return express();
+});
+
+afterAll(async () => {
+  app.close();
+});
 
 //const endlessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjB9.JWKPB-5Q8rTYzl-MfhRGpP9WpDpQxC7JkIAGFMDZnpg';
 //const validToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjk5OTk5OTk5OTl9.Vg30C57s3l90JNap_VgMhKZjfc-p7SoBXaSAy8c28HA';
