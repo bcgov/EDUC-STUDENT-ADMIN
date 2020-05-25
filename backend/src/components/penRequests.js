@@ -397,7 +397,7 @@ async function postPenRequestComment(req) {
   } catch(e) {
     logApiError(e, 'postPenRequestComment', 'Error occurred while attempting to POST pen request comment.');
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ApiError(status, { message: 'API Put error'}, e);
+    throw new ServiceError(status, { message: 'API Put error'}, e);
   }
 }
 

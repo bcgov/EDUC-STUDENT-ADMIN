@@ -41,8 +41,8 @@ describe('onError', () => {
   });
 });
 
-describe('onListening', () => {
+/*describe('onListening', () => {
   it('should execute without errors', () => {
     server.onListening();
   });
-});
+});*/
