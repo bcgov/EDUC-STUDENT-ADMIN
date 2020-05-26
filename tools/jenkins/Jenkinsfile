@@ -42,15 +42,6 @@ pipeline{
                 }
             }
         }
-        stage('Download setup files'){
-            steps{
-                script{
-                    dir('tools/jenkins'){
-                        sh "bash ./download-kc.sh \"${NAMESPACE}\""
-                    }
-                }
-            }
-        }
         stage('Build'){
             steps{
                 script {
