@@ -699,7 +699,6 @@ export default {
       .sort((a, b) => a.displayOrder - b.displayOrder)
       .map(code => ({text: code.label, value: code.documentTypeCode}));
 
-
     ApiService.apiAxios
       .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.penRequestId)
       .then(response => {
