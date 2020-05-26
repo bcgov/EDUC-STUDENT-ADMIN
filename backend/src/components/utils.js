@@ -224,7 +224,7 @@ const utils = {
       }else{
         res.sendResponse = res.send;
         res.send = (body) => {
-          if(res.status < 300  && res.status >= 200) {
+          if(res.statusCode < 300  && res.statusCode >= 200) {
             memCache.put(key, body);
           }
           res.sendResponse(body);
@@ -246,7 +246,7 @@ const utils = {
   getCodeFromLabel(codes, codeKey, label) {
     let code = null;
     codes.some(function (item) {
-      if(item['label'] === label) {
+      if (item['label'] === label) {
         code = item[codeKey];
         return true;
       }
