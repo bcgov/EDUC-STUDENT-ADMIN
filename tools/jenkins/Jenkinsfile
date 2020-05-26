@@ -4,6 +4,7 @@ pipeline{
     environment{
         DEBUG_OUTPUT = 'false'
 
+		NAMESPACE='c2mvws'
         TOOLS = 'c2mvws-tools'
         DEV = 'c2mvws-dev'
         TEST = 'c2mvws-test'
