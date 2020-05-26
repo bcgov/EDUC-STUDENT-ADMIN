@@ -582,7 +582,7 @@ import ApiService from '../common/apiService';
 import { Routes, Statuses } from '../utils/constants';
 import { mapGetters, mapMutations } from 'vuex';
 import { humanFileSize } from '../utils/file';
-import {AccessEnabledForUser} from '../common/role-based-access'
+import {AccessEnabledForUser} from '../common/role-based-access';
 export default {
   components: {
     Chat
@@ -772,7 +772,6 @@ export default {
             this.returnAlertSuccess = true;
             this.returnComment = null;
             this.$refs.returnForm.resetValidation();
-
           })
           .catch(error => {
             console.log(error);
