@@ -82,6 +82,9 @@ export default {
             context.commit('setAuthorizedUser', response.isAuthorizedUser);
             ApiService.setAuthHeader(response.jwtFrontend);
           }
+          else {
+            context.commit('logoutState');
+          }
         } else {
           const response = await AuthService.getAuthToken();
 
