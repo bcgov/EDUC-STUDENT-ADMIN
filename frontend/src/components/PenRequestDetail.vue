@@ -679,6 +679,7 @@ export default {
       return rules;
     }
   },
+
   mounted() {
     this.enableActions = false;
     this.loadingPen = true;
