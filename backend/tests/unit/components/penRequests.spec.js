@@ -1265,6 +1265,39 @@ describe('updatePenRequest', () => {
     expect(await penRequests.updatePenRequest(req, res)).toEqual(finalResponse);
   });
 });
+
+describe('putPenRequest', () => {
+  const updatePenRequestRes = {
+    penRequestID: 'penRequestID'
+  };
+  let req;
+  let res;
+
+  beforeEach(() => {
+    utils.getBackendToken.mockReturnValue('token');
+    utils.stripAuditColumns.mockReturnValue(updatePenRequestRes);
+    req = mockRequest();
+    res = mockResponse();
+    req.body = {};
+    penRequests.__Rewire__('updatePenRequest', () => Promise.resolve(updatePenRequestRes));
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    penRequests.__ResetDependency__('updatePenRequest');
+  });
+  it('should return penrequest data', async () => {
+    await penRequests.__get__('putPenRequest')(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+    expect(res.json).toHaveBeenCalledWith(updatePenRequestRes);
+  });
+  it('should return 500 error if updatePenRequest fails', async () => {
+    penRequests.__Rewire__('updatePenRequest', () => Promise.reject(new ServiceError('updatePenRequest',{ message: 'No access token'})));
+    await penRequests.__get__('putPenRequest')(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.json).toHaveBeenCalledWith({ message: 'INTERNAL SERVER ERROR'});
+  });
+});
 /*describe('putPenRequest', () => {
   const penRequestResponse = {
     'createUser': 'PEN-REQUEST-API',
