@@ -51,53 +51,6 @@ pipeline{
                 }
             }
         }
-        /*
-        stage('Unit Tests') {
-            agent{
-                node{
-                    label 'nodejs10'
-                }
-            }
-            steps {
-                script {
-                   parallel(
-                        Backend: {
-                            dir('backend') {
-                                try {
-                                    timeout(10){
-                                        echo 'Running backend lint checks and tests...'
-                                        sh 'npm ci'
-                                        sh 'npm run lint:fix'
-                                        sh 'npm run setlocal'
-                                        sh 'npm run test'
-                                        echo 'Backend lint checks and tests passed!'
-                                    }
-                                } catch(e) {
-                                    echo 'Backend lint checks and tests failed'
-                                    throw e
-                                }
-                            }
-                        },
-                        Frontend: {
-                            dir('frontend') {
-                                try {
-                                    timeout(10){
-                                        echo 'Running frontend lint checks and tests...'
-                                        sh 'npm ci'
-                                        sh 'npm run lint:fix'
-                                        sh 'npm run test:unit'
-                                        echo 'Frontend lint checks and tests passed!'
-                                    }
-                                } catch(e) {
-                                    echo 'Frontend lint checks and tests failed'
-                                    throw e
-                                }
-                            }
-                        }
-                    )
-                }
-            }
-        }*/
         stage('Build'){
             steps{
                 script {
