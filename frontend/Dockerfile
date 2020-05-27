@@ -3,7 +3,7 @@ FROM node:lts-alpine
 WORKDIR /opt/app-root/src
 
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --cache .npm  --prefer-offline --no-audit
 # --no-optional --production
 
 # Build Application

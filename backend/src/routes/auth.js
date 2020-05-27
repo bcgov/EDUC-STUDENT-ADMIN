@@ -87,7 +87,6 @@ router.post('/refresh', [
     });
   }
 
-
   let isAuthorizedUser = auth.isValidUser(req);
   if (!req['user'] || !req['user'].refreshToken) {
     res.status(401).json();
