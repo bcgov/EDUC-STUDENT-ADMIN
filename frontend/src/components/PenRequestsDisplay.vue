@@ -273,17 +273,13 @@ export default {
       this.pageNumber = value-1;
       this.getPenRequests();
     },
-    removeDateFilter() {
-      this.dateMenu = false;
-      this.getPenRequests();
-    },
     getPenRequests () {
       this.loadingTable = true;
       const sort = {};
       sort[this.headerSortParams.currentSort === 'penRequestStatusCode.label' ? 'penRequestStatusCode' : this.headerSortParams.currentSort] = this.headerSortParams.currentSortDir ? 'DESC' : 'ASC';
       const headerKeys = Object.keys(this.headerSearchParams).filter(k => this.headerSearchParams[k]!== undefined && this.headerSearchParams[k] !== null && this.headerSearchParams[k].length !== 0);
       let headerFilters;
-      if (headerKeys != null && headerKeys.length > 0) {
+      if (headerKeys && headerKeys.length > 0) {
         headerFilters = {};
         headerKeys.forEach(element => {
           headerFilters[element] = this.headerSearchParams[element];
