@@ -11,12 +11,13 @@ module.exports = {
     }
   },
   devServer: {
+    port:8082,
     proxy: {
       ...['/api'].reduce(
         (acc, ctx) => ({
           ...acc,
           [ctx]: {
-            target: process.env.VUE_APP_API_ROOT,
+            target: 'http://localhost:8083',
             changeOrigin: true,
             ws: false
           }
