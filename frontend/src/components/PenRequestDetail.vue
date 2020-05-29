@@ -442,6 +442,7 @@
                           v-model="request.completeComment"
                           :rules="completedRules"
                           filled
+                          clearable
                           @input="replaceCompleteMacro"
                           class="pa-0 ma-0"
                         ></v-textarea>
@@ -499,6 +500,7 @@
                                 v-model="returnComment"
                                 :rules="requiredRules"
                                 filled
+                                clearable
                                 auto-grow
                                 @input="replaceReturnMacro"
                                 class="pa-0 ma-0"
@@ -555,6 +557,7 @@
                                 v-model="rejectComment"
                                 :rules="requiredRules"
                                 filled
+                                clearable
                                 auto-grow
                                 @input="replaceRejectMacro"
                                 class="pa-0 ma-0"
