@@ -1,195 +1,250 @@
 pipeline{
-    agent any
+  agent any
 
-    environment{
-        DEBUG_OUTPUT = 'false'
+  environment{
+    DEBUG_OUTPUT = 'false'
 
-		NAMESPACE='c2mvws'
-        TOOLS = 'c2mvws-tools'
-        DEV = 'c2mvws-dev'
-        TEST = 'c2mvws-test'
-        PROD = 'c2mvws-prod'
+    TOOLS = 'c2mvws-tools'
+    DEV = 'c2mvws-dev'
+    TEST = 'c2mvws-test'
+    PROD = 'c2mvws-prod'
 
-        REPO_NAME = 'educ-student-admin'
-        OWNER = 'bcgov'
-        JOB_NAME = 'master'
-        
-        APP_NAME = 'student-admin'
-        APP_DOMAIN = 'pathfinder.gov.bc.ca'
+    REPO_NAME = 'educ-student-admin'
+    TESTS_REPO_NAME = 'educ-e2e-pen-registry'
+    OWNER = 'bcgov'
+    JOB_NAME = 'master'
 
-        SOURCE_REPO_RAW = 'https://github.com/${OWNER}/${REPO_NAME}/master'
-        SOURCE_REPO_REF = 'master'
-        SOURCE_REPO_URL = 'https://github.com/${OWNER}/${REPO_NAME}.git'
+    APP_NAME = 'student-admin'
+    APP_DOMAIN = 'pathfinder.gov.bc.ca'
 
-        TOOLS_HOST_ROUTE = "${APP_NAME}-${TOOLS}.${APP_DOMAIN}"
-        DEV_HOST_ROUTE = "${APP_NAME}-${DEV}.${APP_DOMAIN}"
-        TEST_HOST_ROUTE = "${APP_NAME}-${TEST}.${APP_DOMAIN}"
-        PROD_HOST_ROUTE = "${APP_NAME}-${PROD}.${APP_DOMAIN}"
-    }
+    SOURCE_REPO_RAW = 'https://github.com/${OWNER}/${REPO_NAME}/master'
+    SOURCE_REPO_REF = 'master'
+    SOURCE_REPO_URL = 'https://github.com/${OWNER}/${REPO_NAME}.git'
 
-    stages {
-        stage('Initialize') {
-            steps {
-                script {
-                    if(DEBUG_OUTPUT.equalsIgnoreCase('true')) {
-                        // Force OpenShift Plugin directives to be verbose
-                        openshift.logLevel(1)
+    TOOLS_HOST_ROUTE = "${APP_NAME}-${TOOLS}.${APP_DOMAIN}"
+    DEV_HOST_ROUTE = "${APP_NAME}-${DEV}.${APP_DOMAIN}"
+    TEST_HOST_ROUTE = "${APP_NAME}-${TEST}.${APP_DOMAIN}"
+    PROD_HOST_ROUTE = "${APP_NAME}-${PROD}.${APP_DOMAIN}"
+  }
 
-                        // Print all environment variables
-                        echo 'DEBUG - All pipeline environment variables:'
-                        echo sh(returnStdout: true, script: 'env')
-                    }
-                }
-            }
-        }
-        stage('Build'){
-            steps{
-                script {
-                    openshift.withCluster(){
-                        openshift.withProject(TOOLS){
-                            parallel(
-                                Backend: {
-                                    try{
-                                        echo "Building backend..."
-                                        def bcBackend = openshift.process('-f', 'tools/openshift/backend.bc.yaml', "REPO_NAME=${REPO_NAME}", "JOB_NAME=${JOB_NAME}", "SOURCE_REPO_URL=${SOURCE_REPO_URL}", "SOURCE_REPO_REF=${SOURCE_REPO_REF}")
-                                        openshift.apply(bcBackend).narrow('bc').startBuild('-w').logs('-f')
+  stages {
+    stage('Initialize') {
+      steps {
+        script {
+          if(DEBUG_OUTPUT.equalsIgnoreCase('true')) {
+            // Force OpenShift Plugin directives to be verbose
+            openshift.logLevel(1)
 
-                                        openshift.tag("${REPO_NAME}-backend:latest", "${REPO_NAME}-backend:${JOB_NAME}")
-                                    } catch(e) {
-                                        echo "Backend build failed"
-                                        throw e
-                                    }
-                                },
-                                Frontend: {
-                                    try {
-                                        echo "Building frontend..."
-                                        def bcFrontend = openshift.process('-f', 'tools/openshift/frontend.bc.yaml', "REPO_NAME=${REPO_NAME}", "JOB_NAME=${JOB_NAME}", "SOURCE_REPO_URL=${SOURCE_REPO_URL}", "SOURCE_REPO_REF=${SOURCE_REPO_REF}")
-
-                                        openshift.apply(bcFrontend).narrow('bc').startBuild('-w').logs('-f')
-                                        openshift.tag("${REPO_NAME}-frontend:latest", "${REPO_NAME}-frontend:${JOB_NAME}")
-
-                                        def bcFrontendStatic = openshift.process('-f', 'tools/openshift/frontend-static.bc.yaml', "REPO_NAME=${REPO_NAME}", "JOB_NAME=${JOB_NAME}", "NAMESPACE=${TOOLS}")
-                                        openshift.apply(bcFrontendStatic).narrow('bc').startBuild('-w').logs('-f')
-                                        openshift.tag("${REPO_NAME}-frontend-static:latest", "${REPO_NAME}-frontend-static:${JOB_NAME}")
-                                    } catch(e) {
-                                        echo "Frontend build failed"
-                                        throw e
-                                    }
-                                })
-                        }
-                    }
-                }
-            }
-            post {
-                success {
-                    echo 'Cleanup BuildConfigs...'
-                    script {
-                        openshift.withCluster() {
-                        openshift.withProject(TOOLS) {
-                            if(DEBUG_OUTPUT.equalsIgnoreCase('true')) {
-                                echo "DEBUG - Using project: ${openshift.project()}"
-                            } else {
-                                def bcBackend = openshift.selector('bc', "${REPO_NAME}-backend-${JOB_NAME}")
-                                def bcFrontend = openshift.selector('bc', "${REPO_NAME}-frontend-${JOB_NAME}")
-                                def bcFrontendStatic = openshift.selector('bc', "${REPO_NAME}-frontend-static-${JOB_NAME}")
-
-                                if(bcBackend.exists()){
-                                    echo "Removing BuildConfig ${REPO_NAME}-backend-${JOB_NAME}..."
-                                    bcBackend.delete()
-                                }
-                                if(bcFrontend.exists()) {
-                                    echo "Removing BuildConfig ${REPO_NAME}-frontend-${JOB_NAME}..."
-                                    bcFrontend.delete()
-                                }
-                                if(bcFrontendStatic.exists()) {
-                                    echo "Removing BuildConfig ${REPO_NAME}-frontend-static-${JOB_NAME}..."
-                                    bcFrontendStatic.delete()
-                                }
-                            }
-                            }
-                        }
-                    }
-                }
-                failure {
-                    echo 'Build stage failed'
-                }
-            }
-        }
-        stage('Deploy to Dev'){
-			environment {
-			   APP_NAME = "student-admin"
-			   DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST/master/tools/openshift/frontend-static.dc.yaml"
-			   DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST/master/tools/openshift/backend.dc.yaml"
-            }
-            steps{
-                deployStage('Dev', DEV, 'educ-student-admin', 'student-admin', 'master', 'dev', TOOLS, DEV, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}")
-            }
-            post{
-                success{
-                    echo 'Deployment to Dev was successful'
-                }
-                failure{
-                    echo 'Deployment to Dev failed'
-                }
-            }
-        }
-        stage('Create/Update Config Maps'){
-          environment {
-	         APP_NAME = "student-admin"
+            // Print all environment variables
+            echo 'DEBUG - All pipeline environment variables:'
+            echo sh(returnStdout: true, script: 'env')
           }
-          steps{
-            script{
-                dir('tools/jenkins'){
-                    sh "bash ./download-kc.sh \"${NAMESPACE}\""
-                }
+        }
+      }
+    }
+    stage('Build'){
+      steps{
+        script {
+          openshift.withCluster(){
+            openshift.withProject(TOOLS){
+              parallel(
+                      Backend: {
+                        try{
+                          echo "Building backend..."
+                          def bcBackend = openshift.process('-f', 'tools/openshift/backend.bc.yaml', "REPO_NAME=${REPO_NAME}", "JOB_NAME=${JOB_NAME}", "SOURCE_REPO_URL=${SOURCE_REPO_URL}", "SOURCE_REPO_REF=${SOURCE_REPO_REF}")
+                          openshift.apply(bcBackend).narrow('bc').startBuild('-w').logs('-f')
+
+                          openshift.tag("${REPO_NAME}-backend:latest", "${REPO_NAME}-backend:${JOB_NAME}")
+                        } catch(e) {
+                          echo "Backend build failed"
+                          throw e
+                        }
+                      },
+                      Frontend: {
+                        try {
+                          echo "Building frontend..."
+                          def bcFrontend = openshift.process('-f', 'tools/openshift/frontend.bc.yaml', "REPO_NAME=${REPO_NAME}", "JOB_NAME=${JOB_NAME}", "SOURCE_REPO_URL=${SOURCE_REPO_URL}", "SOURCE_REPO_REF=${SOURCE_REPO_REF}")
+
+                          openshift.apply(bcFrontend).narrow('bc').startBuild('-w').logs('-f')
+                          openshift.tag("${REPO_NAME}-frontend:latest", "${REPO_NAME}-frontend:${JOB_NAME}")
+
+                          def bcFrontendStatic = openshift.process('-f', 'tools/openshift/frontend-static.bc.yaml', "REPO_NAME=${REPO_NAME}", "JOB_NAME=${JOB_NAME}", "NAMESPACE=${TOOLS}")
+                          openshift.apply(bcFrontendStatic).narrow('bc').startBuild('-w').logs('-f')
+                          openshift.tag("${REPO_NAME}-frontend-static:latest", "${REPO_NAME}-frontend-static:${JOB_NAME}")
+                        } catch(e) {
+                          echo "Frontend build failed"
+                          throw e
+                        }
+                      })
             }
-            script{
-              dir('tools/jenkins'){
-                def configVars
-                sh "bash ./update-configmap.sh \"dev\" ${APP_NAME} ${NAMESPACE}"
+          }
+        }
+      }
+      post {
+        success {
+          echo 'Cleanup BuildConfigs...'
+          script {
+            openshift.withCluster() {
+              openshift.withProject(TOOLS) {
+                if(DEBUG_OUTPUT.equalsIgnoreCase('true')) {
+                  echo "DEBUG - Using project: ${openshift.project()}"
+                } else {
+                  def bcBackend = openshift.selector('bc', "${REPO_NAME}-backend-${JOB_NAME}")
+                  def bcFrontend = openshift.selector('bc', "${REPO_NAME}-frontend-${JOB_NAME}")
+                  def bcFrontendStatic = openshift.selector('bc', "${REPO_NAME}-frontend-static-${JOB_NAME}")
+
+                  if(bcBackend.exists()){
+                    echo "Removing BuildConfig ${REPO_NAME}-backend-${JOB_NAME}..."
+                    bcBackend.delete()
+                  }
+                  if(bcFrontend.exists()) {
+                    echo "Removing BuildConfig ${REPO_NAME}-frontend-${JOB_NAME}..."
+                    bcFrontend.delete()
+                  }
+                  if(bcFrontendStatic.exists()) {
+                    echo "Removing BuildConfig ${REPO_NAME}-frontend-static-${JOB_NAME}..."
+                    bcFrontendStatic.delete()
+                  }
+                }
               }
             }
           }
         }
+        failure {
+          echo 'Build stage failed'
+        }
+      }
     }
+    stage('Deploy to Dev'){
+      steps{
+        deployStage('Dev', DEV, DEV_HOST_ROUTE)
+      }
+      post{
+        success{
+          echo 'Deployment to Dev was successful'
+        }
+        failure{
+          echo 'Deployment to Dev failed'
+        }
+      }
+    }
+    stage('e2e tests'){
+      steps {
+        script {
+          withCredentials([string(credentialsId: 'c2mvws-tools-github-actions-token', variable: 'TOKEN')]) {
+            triggerWorkflow(TOKEN)
+            waitForWorkflowRunComplete(TOKEN)
+          }
+        }
+      }
+    }
+  }
 }
 
-def deployStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURLFrontend, String rawApiDcURLBackend) {
+def triggerWorkflow(String token) {
+  def dispatchRequest = """
+    {
+      "event_type": "smoke-test"
+    }
+  """
+  def response = httpRequest customHeaders: [[name: 'Authorization', value: "token ${token}"], [name: 'Accept', value: "application/vnd.github.ant-man-preview+json"]], contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: dispatchRequest, url: "https://api.github.com/repos/${OWNER}/${TESTS_REPO_NAME}/dispatches"
+  echo "triggerWorkflow Status: ${response.status}"
+  echo "triggered test workflow in Github Actions!"
+}
+
+def getLatestWorkflowRun(String token) {
+  def response = httpRequest customHeaders: [[name: 'Authorization', value: "token ${token}"], [name: 'Accept', value: "application/vnd.github.ant-man-preview+json"]], url: "https://api.github.com/repos/${OWNER}/${TESTS_REPO_NAME}/actions/runs?branch=master&event=repository_dispatch"
+  echo "getLatestWorkflowRun Status: ${response.status}"
+  //echo "Content: ${response.content}"
+  def jsonObj = readJSON text: response.content
+  echo "Total count: ${jsonObj.total_count}"
+  def latestRun = jsonObj.total_count > 0 ? jsonObj.workflow_runs.max { it.created_at } : null
+  latestRun ? latestRun.id : null
+}
+
+def getWorkflowRunById(String token, long runId) {
+  def response = httpRequest customHeaders: [[name: 'Authorization', value: "token ${token}"], [name: 'Accept', value: "application/vnd.github.ant-man-preview+json"]], url: "https://api.github.com/repos/${OWNER}/${TESTS_REPO_NAME}/actions/runs/${runId}"
+  echo "getWorkflowRunById Status: ${response.status}"
+  //echo "Content: ${response.content}"
+  def jsonObj = readJSON text: response.content
+  [jsonObj.status, jsonObj.conclusion]
+}
+
+def waitForWorkflowRunComplete(String token) {
+  sleep(5)
+  def latestRunId = getLatestWorkflowRun(token)
+  if(!latestRunId) {
+    error('No workflow run in Github Actions. Aborting the build!')
+  } else {
+    def count = 60  //timeout (60 * 10) seconds = 10 minutes
+    def status, conclusion
+    while(count-- > 0 && status != 'completed') {
+      (status, conclusion) = getWorkflowRunById(token, latestRunId)
+      if(status != 'completed') {
+        echo "Waiting for workflow run complete: ${count}"
+        sleep(10)
+      }
+    }
+
+    if(status == 'completed' && conclusion != 'success') {
+      error("Workflow run was ${conclusion}. Aborting the build!")
+    } else if(count <= 0) {
+      error('Workflow run query timed out. Aborting the build!')
+    }
+  }
+}
+
+def deployStage(String stageEnv, String projectEnv, String hostRouteEnv) {
+  if (!stageEnv.equalsIgnoreCase('Dev')) {
+    input("Deploy to ${projectEnv}?")
+  }
+
   openshift.withCluster() {
-	openshift.withProject(projectEnv) {
-	  echo "Tagging Image ${repoName}-backend:${jobName} with version ${tag}"
-	  openshift.tag("${toolsEnv}/${repoName}-backend:latest", "${repoName}-backend:${tag}")
+    openshift.withProject(projectEnv) {
+      if(DEBUG_OUTPUT.equalsIgnoreCase('true')) {
+        echo "DEBUG - Using project: ${openshift.project()}"
+      }
+      echo "Tagging Image ${REPO_NAME}-backend:${JOB_NAME}..."
+      openshift.tag("${TOOLS}/${REPO_NAME}-backend:${JOB_NAME}", "${REPO_NAME}-backend:${JOB_NAME}")
 
-	  echo "Tagging Image ${repoName}-frontend-static:${jobName} with version ${tag}"
-	  openshift.tag("${toolsEnv}/${repoName}-frontend-static:latest", "${repoName}-frontend-static:${tag}")
-	
-	
-	  echo "Processing DeploymentConfig ${appName}-backend..."
-	  def dcBackendTemplate = openshift.process('-f',
-		"${rawApiDcURLBackend}",
-		"REPO_NAME=${repoName}",
-		"JOB_NAME=${jobName}",
-		"NAMESPACE=${projectEnv}",
-		"APP_NAME=${appName}",
-		"HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
-		"TAG=${tag}"
-	  )
-		
-	  def dcBackend = openshift.apply(dcBackendTemplate).narrow('dc')
+      echo "Tagging Image ${REPO_NAME}-frontend-static:${JOB_NAME}..."
+      openshift.tag("${TOOLS}/${REPO_NAME}-frontend-static:${JOB_NAME}", "${REPO_NAME}-frontend-static:${JOB_NAME}")
+      echo "Processing DeploymentConfig ${REPO_NAME}-backend..."
+      def dcBackendTemplate = openshift.process('-f',
+              'tools/openshift/backend.dc.yaml',
+              "REPO_NAME=${REPO_NAME}",
+              "JOB_NAME=${JOB_NAME}",
+              "NAMESPACE=${projectEnv}",
+              "APP_NAME=${APP_NAME}",
+              "HOST_ROUTE=${hostRouteEnv}"
+      )
 
-	  echo "Processing DeploymentConfig ${appName}-frontend-static..."
-	  def dcFrontendStaticTemplate = openshift.process('-f',
-		"${rawApiDcURLFrontend}",
-		"REPO_NAME=${repoName}",
-		"JOB_NAME=${jobName}",
-		"NAMESPACE=${projectEnv}",
-		"APP_NAME=${appName}",
-		"HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
-		"TAG=${tag}"
-	  )
+      def dcBackend = openshift.apply(dcBackendTemplate).narrow('dc')
 
-	  echo "Applying Deployment ${appName}-frontend-static..."
-	  def dcFrontendStatic = openshift.apply(dcFrontendStaticTemplate).narrow('dc')
-	}
+      echo "Processing DeploymentConfig ${REPO_NAME}-frontend-static..."
+      def dcFrontendStaticTemplate = openshift.process('-f',
+              'tools/openshift/frontend-static.dc.yaml',
+              "REPO_NAME=${REPO_NAME}",
+              "JOB_NAME=${JOB_NAME}",
+              "NAMESPACE=${projectEnv}",
+              "APP_NAME=${APP_NAME}",
+              "HOST_ROUTE=${hostRouteEnv}"
+      )
+
+      echo "Applying Deployment ${REPO_NAME}-frontend-static..."
+      def dcFrontendStatic = openshift.apply(dcFrontendStaticTemplate).narrow('dc')
+
+      // Wait for deployments to roll out
+      timeout(10) {
+        parallel(
+                Backend: {
+                  dcBackend.rollout().status('--watch=true')
+                },
+                Frontend: {
+                  dcFrontendStatic.rollout().status('--watch=true')
+                }
+        )
+      }
+    }
   }
 }
