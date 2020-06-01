@@ -262,6 +262,15 @@ const utils = {
       message: 'INTERNAL SERVER ERROR'
     });
   },
+  verifyStudentRequestInSession(req, res, next) {
+    if(req.body.requestID === req['session'].penRequest.requestID) {
+      return next();
+    }
+    log.error('Student Profile Request Id in request is different than the one in session.  This should NEVER happen!');
+    return res.status(500).json({
+      message: 'INTERNAL SERVER ERROR'
+    });
+  },
   getBackendToken,
   getData,
   logApiError,
