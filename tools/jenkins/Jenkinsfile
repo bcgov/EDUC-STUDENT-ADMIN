@@ -4,6 +4,7 @@ pipeline{
   environment{
     DEBUG_OUTPUT = 'false'
 
+    NAMESPACE='c2mvws'
     TOOLS = 'c2mvws-tools'
     DEV = 'c2mvws-dev'
     TEST = 'c2mvws-test'
@@ -116,8 +117,13 @@ pipeline{
       }
     }
     stage('Deploy to Dev'){
+      environment {
+        APP_NAME = "student-admin"
+        DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST/master/tools/openshift/frontend-static.dc.yaml"
+        DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST/master/tools/openshift/backend.dc.yaml"
+      }
       steps{
-        deployStage('Dev', DEV, DEV_HOST_ROUTE)
+        deployStage('Dev', DEV, 'educ-student-admin', 'student-admin', 'master', 'dev', TOOLS, DEV, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}")
       }
       post{
         success{
@@ -125,6 +131,24 @@ pipeline{
         }
         failure{
           echo 'Deployment to Dev failed'
+        }
+      }
+    }
+    stage('Create/Update Config Maps'){
+      environment {
+        APP_NAME = "student-admin"
+      }
+      steps{
+        script{
+          dir('tools/jenkins'){
+            sh "bash ./download-kc.sh \"${NAMESPACE}\""
+          }
+        }
+        script{
+          dir('tools/jenkins'){
+            def configVars
+            sh "bash ./update-configmap.sh \"dev\" ${APP_NAME} ${NAMESPACE}"
+          }
         }
       }
     }
@@ -194,57 +218,42 @@ def waitForWorkflowRunComplete(String token) {
   }
 }
 
-def deployStage(String stageEnv, String projectEnv, String hostRouteEnv) {
-  if (!stageEnv.equalsIgnoreCase('Dev')) {
-    input("Deploy to ${projectEnv}?")
-  }
-
+def deployStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURLFrontend, String rawApiDcURLBackend) {
   openshift.withCluster() {
     openshift.withProject(projectEnv) {
-      if(DEBUG_OUTPUT.equalsIgnoreCase('true')) {
-        echo "DEBUG - Using project: ${openshift.project()}"
-      }
-      echo "Tagging Image ${REPO_NAME}-backend:${JOB_NAME}..."
-      openshift.tag("${TOOLS}/${REPO_NAME}-backend:${JOB_NAME}", "${REPO_NAME}-backend:${JOB_NAME}")
+      echo "Tagging Image ${repoName}-backend:${jobName} with version ${tag}"
+      openshift.tag("${toolsEnv}/${repoName}-backend:latest", "${repoName}-backend:${tag}")
 
-      echo "Tagging Image ${REPO_NAME}-frontend-static:${JOB_NAME}..."
-      openshift.tag("${TOOLS}/${REPO_NAME}-frontend-static:${JOB_NAME}", "${REPO_NAME}-frontend-static:${JOB_NAME}")
-      echo "Processing DeploymentConfig ${REPO_NAME}-backend..."
+      echo "Tagging Image ${repoName}-frontend-static:${jobName} with version ${tag}"
+      openshift.tag("${toolsEnv}/${repoName}-frontend-static:latest", "${repoName}-frontend-static:${tag}")
+
+
+      echo "Processing DeploymentConfig ${appName}-backend..."
       def dcBackendTemplate = openshift.process('-f',
-              'tools/openshift/backend.dc.yaml',
-              "REPO_NAME=${REPO_NAME}",
-              "JOB_NAME=${JOB_NAME}",
+              "${rawApiDcURLBackend}",
+              "REPO_NAME=${repoName}",
+              "JOB_NAME=${jobName}",
               "NAMESPACE=${projectEnv}",
-              "APP_NAME=${APP_NAME}",
-              "HOST_ROUTE=${hostRouteEnv}"
+              "APP_NAME=${appName}",
+              "HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
+              "TAG=${tag}"
       )
 
       def dcBackend = openshift.apply(dcBackendTemplate).narrow('dc')
 
-      echo "Processing DeploymentConfig ${REPO_NAME}-frontend-static..."
+      echo "Processing DeploymentConfig ${appName}-frontend-static..."
       def dcFrontendStaticTemplate = openshift.process('-f',
-              'tools/openshift/frontend-static.dc.yaml',
-              "REPO_NAME=${REPO_NAME}",
-              "JOB_NAME=${JOB_NAME}",
+              "${rawApiDcURLFrontend}",
+              "REPO_NAME=${repoName}",
+              "JOB_NAME=${jobName}",
               "NAMESPACE=${projectEnv}",
-              "APP_NAME=${APP_NAME}",
-              "HOST_ROUTE=${hostRouteEnv}"
+              "APP_NAME=${appName}",
+              "HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
+              "TAG=${tag}"
       )
 
-      echo "Applying Deployment ${REPO_NAME}-frontend-static..."
+      echo "Applying Deployment ${appName}-frontend-static..."
       def dcFrontendStatic = openshift.apply(dcFrontendStaticTemplate).narrow('dc')
-
-      // Wait for deployments to roll out
-      timeout(10) {
-        parallel(
-                Backend: {
-                  dcBackend.rollout().status('--watch=true')
-                },
-                Frontend: {
-                  dcFrontendStatic.rollout().status('--watch=true')
-                }
-        )
-      }
     }
   }
 }
