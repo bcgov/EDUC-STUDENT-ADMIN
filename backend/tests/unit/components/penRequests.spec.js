@@ -2,6 +2,7 @@ const {LocalDateTime} = require('@js-joda/core');
 
 const HttpStatus = require('http-status-codes');
 const penRequests = require('../../../src/components/penRequests');
+const requests = require('../../../src/components/requests');
 //const {  updatePenRequest, __RewireAPI__ as rewirePenRequests} =  require('../../../src/components/penRequests');
 jest.mock('../../../src/components/utils');
 const { mockRequest, mockResponse } = require('../helpers');
@@ -602,7 +603,7 @@ const genderCodesData = [
   });
 });*/
 
-describe('completePenRequest', () => {
+describe('completeRequest', () => {
 
   const updatePenRequestRes = {
     penRequestID: 'penRequestID'
@@ -610,6 +611,8 @@ describe('completePenRequest', () => {
   const dateTime = LocalDateTime.now();
   let req;
   let res;
+
+  const completeRequest = requests.__get__('completeRequest')('penRequest', penRequests.createPenRequestApiServiceReq);
 
   jest.spyOn(LocalDateTime, 'now');
 
@@ -619,42 +622,42 @@ describe('completePenRequest', () => {
     res = mockResponse();
     req.body = {};
     LocalDateTime.now.mockReturnValue(dateTime);
-    penRequests.__Rewire__('updatePenRequest', () => Promise.resolve(updatePenRequestRes));
-    penRequests.__Rewire__('sendPenRequestEmail', () => Promise.resolve());
-    penRequests.__Rewire__('updateStudentAndDigitalId', () => Promise.resolve());
+    requests.__Rewire__('updateRequest', () => Promise.resolve(updatePenRequestRes));
+    requests.__Rewire__('sendRequestEmail', () => Promise.resolve());
+    requests.__Rewire__('updateStudentAndDigitalId', () => Promise.resolve());
   });
 
   afterEach(() => {
     jest.clearAllMocks();
-    penRequests.__ResetDependency__('updatePenRequest');
-    penRequests.__ResetDependency__('sendPenRequestEmail');
-    penRequests.__ResetDependency__('updateStudentAndDigitalId');
+    requests.__ResetDependency__('updateRequest');
+    requests.__ResetDependency__('sendRequestEmail');
+    requests.__ResetDependency__('updateStudentAndDigitalId');
   });
   it('should return penrequest data', async () => {
-    await penRequests.__get__('completePenRequest')(req, res);
+    await completeRequest(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(updatePenRequestRes);
   });
   it('should return unauthorized error if no token', async () => {
     utils.getBackendToken.mockReturnValue(null);
-    await penRequests.__get__('completePenRequest')(req, res);
+    await completeRequest(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
   });
   it('should return 500 error if updatePenRequest fails', async () => {
-    penRequests.__Rewire__('updatePenRequest', () => Promise.reject(new ServiceError('updatePenRequest',{ message: 'No access token'})));
-    await penRequests.__get__('completePenRequest')(req, res);
+    requests.__Rewire__('updateRequest', () => Promise.reject(new ServiceError('updatePenRequest',{ message: 'No access token'})));
+    await completeRequest(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).toHaveBeenCalledWith({ message: 'INTERNAL SERVER ERROR'});
   });
   it('should return 500 error if sendPenRequestEmail fails', async () => {
-    penRequests.__Rewire__('sendPenRequestEmail', () => Promise.reject(new ServiceError('updatePenRequest',{ message: 'No access token'})));
-    await penRequests.__get__('completePenRequest')(req, res);
+    requests.__Rewire__('sendRequestEmail', () => Promise.reject(new ServiceError('updatePenRequest',{ message: 'No access token'})));
+    await completeRequest(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).toHaveBeenCalledWith({ message: 'INTERNAL SERVER ERROR'});
   });
   it('should return 500 error if updateStudentAndDigitalId fails', async () => {
-    penRequests.__Rewire__('updateStudentAndDigitalId', () => Promise.reject(new ApiError(500, {message: 'API error'})));
-    await penRequests.__get__('completePenRequest')(req, res);
+    requests.__Rewire__('updateStudentAndDigitalId', () => Promise.reject(new ApiError(500, {message: 'API error'})));
+    await completeRequest(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).toHaveBeenCalledWith({ message: 'INTERNAL SERVER ERROR'});
   });
@@ -672,6 +675,7 @@ describe('getMacroData', () => {
     completeMacros: [{label: 'data'}]
   };
 
+  const getMacros = requests.getMacros('penRequest');
 
   beforeEach(() => {
     utils.getBackendToken.mockReturnValue('token');
@@ -686,7 +690,7 @@ describe('getMacroData', () => {
     utils.getData.mockResolvedValue([macroObject]);
     utils.stripAuditColumns.mockReturnValue(strippedMacroObject);
 
-    await penRequests.getMacros(req,res);
+    await getMacros(req,res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(formattedResponse);
   });
@@ -694,13 +698,13 @@ describe('getMacroData', () => {
     utils.getData.mockResolvedValue(new ApiError());
     utils.stripAuditColumns.mockReturnValue(strippedMacroObject);
 
-    await penRequests.getMacros(req,res);
+    await getMacros(req,res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).toHaveBeenCalledWith({message: 'INTERNAL SERVER ERROR'});
   });
   it('should return unauthorized error if no token', async () => {
     utils.getBackendToken.mockReturnValue(null);
-    await penRequests.getMacros(req, res);
+    await getMacros(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
   });
 });
@@ -749,6 +753,8 @@ describe('getPenRequestCommentById', () => {
     ]
   };
 
+  const getPenRequestCommentById = requests.getRequestCommentById('penRequest');
+
   let req;
   let res;
   jest.spyOn(utils, 'getBackendToken');
@@ -772,18 +778,18 @@ describe('getPenRequestCommentById', () => {
       id: '1'
     };
     utils.formatCommentTimestamp.mockReturnValueOnce('2020-03-18 2:22pm').mockReturnValueOnce('2020-04-18 2:22pm');
-    await penRequests.getPenRequestCommentById(req, res);
+    await getPenRequestCommentById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(penRequestCommentData);
   });
   it('should return unauthorized error if no token', async () => {
     utils.getBackendToken.mockReturnValue(null);
-    await penRequests.getPenRequestCommentById(req, res);
+    await getPenRequestCommentById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
   });
   it('should return INTERNAL_SERVER_ERROR if no user info', async () => {
     utils.getUser.mockReturnValue(false);
-    await penRequests.getPenRequestCommentById(req, res);
+    await getPenRequestCommentById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
   it('should return INTERNAL_SERVER_ERROR if getData exceptions thrown', async () => {
@@ -791,7 +797,7 @@ describe('getPenRequestCommentById', () => {
       id: '1'
     };
     utils.getData.mockRejectedValue(new Error('test error'));
-    await penRequests.getPenRequestCommentById(req, res);
+    await getPenRequestCommentById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
 });
@@ -814,18 +820,18 @@ describe('getPenRequestCodes', () => {
     jest.clearAllMocks();
   });
   it('should return codeTableData', async () => {
-    await penRequests.getPenRequestCodes('urlKey, cacheKey')(req, res);
+    await requests.getRequestCodes('urlKey, cacheKey')(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(penRequestStatusCodesData);
   });
   it('should return unauthorized error if no token', async () => {
     utils.getBackendToken.mockReturnValue(null);
-    await penRequests.getPenRequestCodes('urlKey, cacheKey')(req, res);
+    await requests.getRequestCodes('urlKey, cacheKey')(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
   });
   it('should return INTERNAL_SERVER_ERROR if getCodeTable exceptions thrown', async () => {
     utils.getCodeTable.mockRejectedValue(new Error('test error'));
-    await penRequests.getPenRequestCodes('urlKey, cacheKey')(req, res);
+    await requests.getRequestCodes('urlKey, cacheKey')(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
 });
@@ -930,6 +936,9 @@ describe('getPenRequestById', () => {
     'dataSourceCode': 'Basic BCeID',
     'penRequestStatusCodeLabel': 'Subsequent Review'
   };
+
+  const getPenRequestById = requests.getRequestById('penRequest');
+
   let req;
   let res;
 
@@ -956,7 +965,7 @@ describe('getPenRequestById', () => {
     utils.getData.mockResolvedValueOnce(penRequestData).mockResolvedValueOnce(digitalIdData);
     utils.getCodeLabel.mockReturnValueOnce(identityCodeLabel).mockReturnValueOnce(statusCodeLabel);
     utils.getCodeTable.mockResolvedValueOnce(identityCodeTableData).mockResolvedValueOnce(penRequestStatusCodesData);
-    await penRequests.getPenRequestById(req, res);
+    await getPenRequestById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(penRequestStrippedResponse);
   });
@@ -965,7 +974,7 @@ describe('getPenRequestById', () => {
       id: '1'
     };
     utils.getBackendToken.mockReturnValue(null);
-    await penRequests.getPenRequestById(req, res);
+    await getPenRequestById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
   });
   it('should return INTERNAL_SERVER_ERROR if getCodeTable exceptions thrown', async () => {
@@ -973,7 +982,7 @@ describe('getPenRequestById', () => {
       id: '1'
     };
     utils.getCodeTable.mockRejectedValue(new ServiceError());
-    await penRequests.getPenRequestById(req, res);
+    await getPenRequestById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
   it('should return INTERNAL_SERVER_ERROR if getData exceptions thrown', async () => {
@@ -981,7 +990,7 @@ describe('getPenRequestById', () => {
       id: '1'
     };
     utils.getData.mockRejectedValue(new ServiceError());
-    await penRequests.getPenRequestById(req, res);
+    await getPenRequestById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
   it('should return INTERNAL_SERVER_ERROR if getCodeLabel exceptions thrown', async () => {
@@ -989,7 +998,7 @@ describe('getPenRequestById', () => {
       id: '1'
     };
     utils.getCodeLabel.mockRejectedValue(new ServiceError());
-    await penRequests.getPenRequestById(req, res);
+    await getPenRequestById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
 });
@@ -1035,7 +1044,7 @@ describe('getStudentById', () => {
       id: '1'
     };
     utils.getData.mockResolvedValue(studentData);
-    await penRequests.getStudentById(req, res);
+    await requests.getStudentById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(formattedResponse);
   });
@@ -1044,7 +1053,7 @@ describe('getStudentById', () => {
       id: '1'
     };
     utils.getData.mockResolvedValue([]);
-    await penRequests.getStudentById(req, res);
+    await requests.getStudentById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).toHaveBeenCalledWith({message: 'INTERNAL SERVER ERROR'});
   });
@@ -1053,13 +1062,13 @@ describe('getStudentById', () => {
       id: '1'
     };
     utils.getData.mockResolvedValue(new ApiError());
-    await penRequests.getStudentById(req, res);
+    await requests.getStudentById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).toHaveBeenCalledWith({message: 'INTERNAL SERVER ERROR'});
   });
   it('should return unauthorized error if no token', async () => {
     utils.getBackendToken.mockReturnValue(null);
-    await penRequests.getStudentById(req, res);
+    await requests.getStudentById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
   });
 });
@@ -1116,18 +1125,18 @@ describe('getStudentDemographicsById', () => {
     jest.clearAllMocks();
   });
   it('should return demographicsData', async () => {
-    await penRequests.getStudentDemographicsById(req, res);
+    await requests.getStudentDemographicsById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(formattedResponse);
   });
   it('should return unauthorized error if no token', async () => {
     utils.getBackendToken.mockReturnValue(null);
-    await penRequests.getStudentDemographicsById(req, res);
+    await requests.getStudentDemographicsById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
   });
   it('should return INTERNAL_SERVER_ERROR if getData exceptions thrown', async () => {
     utils.getData.mockRejectedValue(new Error('test error'));
-    await penRequests.getStudentDemographicsById(req, res);
+    await requests.getStudentDemographicsById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
 });
@@ -1176,19 +1185,19 @@ describe('postPenRequestComment', () => {
     jest.clearAllMocks();
   });
   it('should return demographicsData', async () => {
-    expect(await penRequests.postPenRequestComment(req)).toEqual(responser);
+    expect(await requests.postRequestComment(req, 'penRequest', penRequests.createPenRequestCommentApiServiceReq)).toEqual(responser);
   });
   it('should throw ServiceError error if no token', async () => {
     utils.getBackendToken.mockReturnValue(null);
-    expect(penRequests.postPenRequestComment(req)).rejects.toThrowError(ServiceError);
+    expect(requests.postRequestComment(req, 'penRequest', penRequests.createPenRequestCommentApiServiceReq)).rejects.toThrowError(ServiceError);
   });
   it('should throw ServiceError if no user info', async () => {
     utils.getUser.mockReturnValue(false);
-    expect(penRequests.postPenRequestComment(req)).rejects.toThrowError(ServiceError);
+    expect(requests.postRequestComment(req, 'penRequest', penRequests.createPenRequestCommentApiServiceReq)).rejects.toThrowError(ServiceError);
   });
   it('should throw ServiceError if postData exceptions thrown', async () => {
     utils.postData.mockRejectedValue(new Error('test error'));
-    expect(penRequests.postPenRequestComment(req)).rejects.toThrowError(ServiceError);
+    expect(requests.postRequestComment(req, 'penRequest', penRequests.createPenRequestCommentApiServiceReq)).rejects.toThrowError(ServiceError);
   });
 });
 
@@ -1220,11 +1229,11 @@ describe('updatePenRequest', () => {
 
   it('should throw ServiceError error if no token', async () => {
     utils.getBackendToken.mockReturnValue(null);
-    expect(penRequests.updatePenRequest(req, res)).rejects.toThrowError(ServiceError);
+    expect(requests.updateRequest(req, res, 'penRequest', penRequests.createPenRequestApiServiceReq)).rejects.toThrowError(ServiceError);
   });
   it('should return api error if there is no session data', async () => {
     delete req.session.penRequest;
-    expect(penRequests.updatePenRequest(req, res)).rejects.toThrowError(ServiceError);
+    expect(requests.updateRequest(req, res, 'penRequest', penRequests.createPenRequestApiServiceReq)).rejects.toThrowError(ServiceError);
   });
   it('should return successfully updated pen request with removed sensitive data', async () => {
     req.body = {
@@ -1262,7 +1271,7 @@ describe('updatePenRequest', () => {
     utils.getCodeTable.mockReturnValue(statusCodeResponse);
     utils.stripAuditColumns.mockReturnValue(stripedResponse);
     utils.getCodeLabel.mockReturnValue('Returned for more information');
-    expect(await penRequests.updatePenRequest(req, res)).toEqual(finalResponse);
+    expect(await requests.updateRequest(req, res, 'penRequest', penRequests.createPenRequestApiServiceReq)).toEqual(finalResponse);
   });
 });
 
@@ -1279,21 +1288,21 @@ describe('putPenRequest', () => {
     req = mockRequest();
     res = mockResponse();
     req.body = {};
-    penRequests.__Rewire__('updatePenRequest', () => Promise.resolve(updatePenRequestRes));
+    requests.__Rewire__('updateRequest', () => Promise.resolve(updatePenRequestRes));
   });
 
   afterEach(() => {
     jest.clearAllMocks();
-    penRequests.__ResetDependency__('updatePenRequest');
+    requests.__ResetDependency__('updateRequest');
   });
   it('should return penrequest data', async () => {
-    await penRequests.__get__('putPenRequest')(req, res);
+    await requests.__get__('putRequest')('penRequest', requests.createPenRequestApiServiceReq)(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(updatePenRequestRes);
   });
   it('should return 500 error if updatePenRequest fails', async () => {
-    penRequests.__Rewire__('updatePenRequest', () => Promise.reject(new ServiceError('updatePenRequest',{ message: 'No access token'})));
-    await penRequests.__get__('putPenRequest')(req, res);
+    requests.__Rewire__('updateRequest', () => Promise.reject(new ServiceError('updatePenRequest',{ message: 'No access token'})));
+    await requests.__get__('putRequest')('penRequest', requests.createPenRequestApiServiceReq)(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).toHaveBeenCalledWith({ message: 'INTERNAL SERVER ERROR'});
   });
