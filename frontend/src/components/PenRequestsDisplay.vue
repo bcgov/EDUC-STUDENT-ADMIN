@@ -206,7 +206,6 @@ export default {
     this.headerSortParams = this.$store.state['penRequest'].headerSortParams;
     this.pageSize = this.$store.state['penRequest'].pageSize;
     this.pageNumber = this.$store.state['penRequest'].pageNumber;
-    console.log(this.pageNumber);
     ApiService.apiAxios
       .get(Routes.PEN_REQUEST_STATUSES_URL, )
       .then(response => {
@@ -314,7 +313,6 @@ export default {
       this.$store.state['penRequest'].selectedStatuses = this.selectedStatuses;
       this.$store.state['penRequest'].pageSize = this.pageSize;
       this.$store.state['penRequest'].pageNumber = this.pageNumber;
-      console.log(this.pageNumber);
     },
     sort(sortHeader) {
       if(sortHeader === this.headerSortParams.currentSort) {
