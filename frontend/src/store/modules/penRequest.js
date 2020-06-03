@@ -6,7 +6,7 @@ export default {
   state: {
     selectedRequest: null,
     pageSize: 15,
-    pageNumber: 0,
+    pageNumber: 1,
     headerSearchParams: {
       initialSubmitDate: [],
       penRequestStatusCode: '',
