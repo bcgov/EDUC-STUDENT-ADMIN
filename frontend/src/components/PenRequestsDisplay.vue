@@ -44,16 +44,15 @@
             </v-combobox>
             <v-data-table
               :headers="headers"
-              :items="penRequests"
-              :items-per-page="pageSize"
+              :items.sync="penRequests"
+              :items-per-page.sync="pageSize"
+              :page.sync="pageNumber"
               :footer-props="{
                 'items-per-page-options':itemsPerPageOptions
               }"
               :server-items-length="totalRequests"
               :loading="loadingTable"
               @click:row="viewRequestDetails"
-              @update:page="changePage"
-              @update:items-per-page="changeItemsPerPage"
               class="fill-height">
               <template v-slot:header.penRequestStatusCode.label="{ header }">
                 <th id="status-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
@@ -186,7 +185,7 @@ export default {
       headerSearchParams: {},
       headerSortParams: {},
       statusCodes:[],
-      pageNumber: 0,
+      pageNumber: 1,
       pageSize: 15,
       itemsPerPageOptions: [5,10,15,20,50],
       selectedStatuses:[],
@@ -203,6 +202,8 @@ export default {
     this.initialLoad = true; //stop watch from sending multiple getPenRequests calls on initial page load
     this.headerSearchParams = this.$store.state['penRequest'].headerSearchParams;
     this.headerSortParams = this.$store.state['penRequest'].headerSortParams;
+    this.pageSize = this.$store.state['penRequest'].pageSize;
+    this.pageNumber = this.$store.state['penRequest'].pageNumber;
     ApiService.apiAxios
       .get(Routes.PEN_REQUEST_STATUSES_URL, )
       .then(response => {
@@ -229,6 +230,20 @@ export default {
     }
   },
   watch: {
+    pageNumber: {
+      handler() {
+        if(!this.initialLoad) { //stop watch from sending multiple getPenRequests calls on initial page load
+          this.getPenRequests();
+        }
+      }
+    },
+    pageSize: {
+      handler() {
+        if(!this.initialLoad) { //stop watch from sending multiple getPenRequests calls on initial page load
+          this.getPenRequests();
+        }
+      }
+    },
     headerSortParams: {
       deep: true,
       handler() {
@@ -265,14 +280,6 @@ export default {
       });
       return labels.sort();
     },
-    changeItemsPerPage(value) {
-      this.pageSize = value;
-      this.getPenRequests();
-    },
-    changePage(value) {
-      this.pageNumber = value-1;
-      this.getPenRequests();
-    },
     getPenRequests () {
       this.loadingTable = true;
       const sort = {};
@@ -288,7 +295,7 @@ export default {
       ApiService.apiAxios
         .get(Routes.PEN_REQUEST_ENDPOINT, {
           params: {
-            pageNumber: this.pageNumber,
+            pageNumber: this.pageNumber-1,
             pageSize: this.pageSize,
             sort: sort,
             statusFilters: this.selectedStatuses,
@@ -308,6 +315,8 @@ export default {
     viewRequestDetails (request) {
       this.$store.state['penRequest'].selectedRequest = request['penRequestID'];
       this.$store.state['penRequest'].selectedStatuses = this.selectedStatuses;
+      this.$store.state['penRequest'].pageSize = this.pageSize;
+      this.$store.state['penRequest'].pageNumber = this.pageNumber;
     },
     sort(sortHeader) {
       if(sortHeader === this.headerSortParams.currentSort) {
