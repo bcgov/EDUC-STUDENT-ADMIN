@@ -63,15 +63,17 @@
           </v-col>
           <v-col cols="12" xl="6" lg="6" md="6" sm="6" class="pa-0">
             <v-card height="100%" width="100%" elevation=0>
-
               <v-row v-if="this.request.reviewer === this.myself.name" no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
-                <p class="green--text"><strong>You are working on this request</strong></p>
-                <v-btn id="release-pen-request" :disabled="!enableActions|| !isReleaseActionEnabledForUser" small color="#38598a" :dark="enableActions && isReleaseActionEnabledForUser" class="ml-2" @click="claimRequest">Release</v-btn>
+                <p v-if="this.isRequestCompleted" class="grey--text text--darken-1"><strong>{{ this.request.reviewer }} completed this request</strong></p>
+                <p v-if="!this.isRequestCompleted" class="green--text"><strong>You are working on this request</strong></p>
+                <v-btn id="release-pen-request" :disabled="!enableActions || this.isRequestCompleted || !isReleaseActionEnabledForUser" small color="#38598a" :dark="enableActions && !this.isRequestCompleted && isReleaseActionEnabledForUser" class="ml-2" @click="claimRequest">Release</v-btn>
               </v-row>
               <v-row v-else no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
-                <p v-if="!this.request.reviewer" class="blue--text"><strong>No one is working on this request</strong></p>
-                <p v-if="this.request.reviewer" class="orange--text"><strong>{{ this.request.reviewer }} is working on this request</strong></p>
-                <v-btn id="claim-pen-request" :disabled="!enableActions|| !isClaimActionEnabledForUser || request.penRequestStatusCode==='DRAFT'" small color="#38598a" :dark="enableActions && isClaimActionEnabledForUser && request.penRequestStatusCode!=='DRAFT'" class="ml-2" @click="claimRequest">Claim</v-btn>
+                <p v-if="!this.request.reviewer && this.isRequestCompleted" class="grey--text text--darken-1"><strong>This request has been completed</strong></p>
+                <p v-if="this.request.reviewer && this.isRequestCompleted" class="grey--text text--darken-1"><strong>{{ this.request.reviewer }} completed this request</strong></p>
+                <p v-if="!this.request.reviewer && !this.isRequestCompleted" class="blue--text"><strong>No one is working on this request</strong></p>
+                <p v-if="this.request.reviewer && !this.isRequestCompleted" class="orange--text"><strong>{{ this.request.reviewer }} is working on this request</strong></p>
+                <v-btn id="claim-pen-request" :disabled="!enableActions || !isClaimActionEnabledForUser || request.penRequestStatusCode==='DRAFT'" small color="#38598a" :dark="enableActions && isClaimActionEnabledForUser && request.penRequestStatusCode!=='DRAFT'" class="ml-2" @click="claimRequest">Claim</v-btn>
               </v-row>
               <v-row no-gutters justify="end" class="pb-5">
                 <v-btn :disabled="!enableActions" small color="#38598a" :dark="enableActions" class="ml-2" @click="backToList">Back to List</v-btn>
@@ -673,6 +675,11 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('penRequest', ['messages', 'returnMacros', 'rejectMacros', 'completeMacros']),
+    isRequestCompleted() {
+      return this.request.penRequestStatusCode === this.statusCodes.REJECTED ||
+        this.request.penRequestStatusCode === this.statusCodes.MANUAL_MATCH ||
+        this.request.penRequestStatusCode === this.statusCodes.AUTO_MATCH;
+    },
     completedRules() {
       const rules = [];
       if (this.request.demogChanged==='Y') {

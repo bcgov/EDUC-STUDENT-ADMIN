@@ -46,6 +46,7 @@
               :headers="headers"
               :items="penRequests"
               :items-per-page="pageSize"
+              :page="pageNumber+1"
               :footer-props="{
                 'items-per-page-options':itemsPerPageOptions
               }"
@@ -203,6 +204,9 @@ export default {
     this.initialLoad = true; //stop watch from sending multiple getPenRequests calls on initial page load
     this.headerSearchParams = this.$store.state['penRequest'].headerSearchParams;
     this.headerSortParams = this.$store.state['penRequest'].headerSortParams;
+    this.pageSize = this.$store.state['penRequest'].pageSize;
+    this.pageNumber = this.$store.state['penRequest'].pageNumber;
+    console.log(this.pageNumber);
     ApiService.apiAxios
       .get(Routes.PEN_REQUEST_STATUSES_URL, )
       .then(response => {
@@ -308,6 +312,9 @@ export default {
     viewRequestDetails (request) {
       this.$store.state['penRequest'].selectedRequest = request['penRequestID'];
       this.$store.state['penRequest'].selectedStatuses = this.selectedStatuses;
+      this.$store.state['penRequest'].pageSize = this.pageSize;
+      this.$store.state['penRequest'].pageNumber = this.pageNumber;
+      console.log(this.pageNumber);
     },
     sort(sortHeader) {
       if(sortHeader === this.headerSortParams.currentSort) {

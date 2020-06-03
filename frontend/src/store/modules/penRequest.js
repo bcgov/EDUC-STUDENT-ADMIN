@@ -5,6 +5,8 @@ export default {
   namespaced: true,
   state: {
     selectedRequest: null,
+    pageSize: 15,
+    pageNumber: 0,
     headerSearchParams: {
       initialSubmitDate: [],
       penRequestStatusCode: '',
