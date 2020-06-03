@@ -26,6 +26,12 @@ pipeline{
     DEV_HOST_ROUTE = "${APP_NAME}-${DEV}.${APP_DOMAIN}"
     TEST_HOST_ROUTE = "${APP_NAME}-${TEST}.${APP_DOMAIN}"
     PROD_HOST_ROUTE = "${APP_NAME}-${PROD}.${APP_DOMAIN}"
+    MIN_REPLICAS = "1"
+    MAX_REPLICAS = "1"
+    MIN_CPU = "25m"
+    MAX_CPU = "50m"
+    MIN_MEM = "150m"
+    MAX_MEM = "250m"    
   }
 
   stages {
@@ -236,7 +242,13 @@ def deployStage(String stageEnv, String projectEnv, String repoName, String appN
               "NAMESPACE=${projectEnv}",
               "APP_NAME=${appName}",
               "HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
-              "TAG=${tag}"
+              "TAG=${tag}",
+		      "MIN_REPLICAS=${MIN_REPLICAS}",
+	          "MAX_REPLICAS=${MAX_REPLICAS}",
+              "MIN_CPU=${MIN_CPU}",
+		      "MAX_CPU=${MAX_CPU}",
+              "MIN_MEM=${MIN_MEM}",
+		      "MAX_MEM=${MAX_MEM}"
       )
 
       def dcBackend = openshift.apply(dcBackendTemplate).narrow('dc')
@@ -249,7 +261,13 @@ def deployStage(String stageEnv, String projectEnv, String repoName, String appN
               "NAMESPACE=${projectEnv}",
               "APP_NAME=${appName}",
               "HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
-              "TAG=${tag}"
+              "TAG=${tag}",
+		      "MIN_REPLICAS=${MIN_REPLICAS}",
+	          "MAX_REPLICAS=${MAX_REPLICAS}",
+              "MIN_CPU=${MIN_CPU}",
+		      "MAX_CPU=${MAX_CPU}",
+              "MIN_MEM=${MIN_MEM}",
+		      "MAX_MEM=${MAX_MEM}"
       )
 
       echo "Applying Deployment ${appName}-frontend-static..."

@@ -17,7 +17,7 @@ objects:
       app: "${APP_NAME}-${JOB_NAME}"
     name: "${APP_NAME}-backend-${JOB_NAME}"
   spec:
-    replicas: 1
+    replicas: ${{MIN_REPLICAS}}
     selector:
       app: "${APP_NAME}-${JOB_NAME}"
       deploymentconfig: "${APP_NAME}-backend-${JOB_NAME}"
@@ -68,11 +68,11 @@ objects:
             timeoutSeconds: 5
           resources:
             requests:
-              cpu: "25m"
-              memory: "150Mi"
+              cpu: "${MIN_CPU}"
+              memory: "${MIN_MEM}"
             limits:
-              cpu: "50m"
-              memory: "250Mi"
+              cpu: "${MAX_CPU}"
+              memory: "${MAX_MEM}"
         volumes:
         - name: tls-certs
           secret:
@@ -143,8 +143,8 @@ objects:
       kind: DeploymentConfig
       name: "${APP_NAME}-backend-${JOB_NAME}"
       subresource: scale
-    minReplicas: 3
-    maxReplicas: 5
+    minReplicas: ${{MIN_REPLICAS}}
+    maxReplicas: ${{MAX_REPLICAS}}
     metrics:
       - type: Resource
         resource:
@@ -168,4 +168,22 @@ parameters:
   required: true
 - name: TAG
   description: The identifying tag for this specific deployment
+  required: true
+- name: MIN_REPLICAS
+  description: The minimum amount of replicas
+  required: true
+- name: MAX_REPLICAS
+  description: The maximum amount of replicas
+  required: true
+- name: MIN_CPU
+  description: The minimum amount of cpu
+  required: true
+- name: MAX_CPU
+  description: The maximum amount of cpu
+  required: true
+- name: MIN_MEM
+  description: The minimum amount of memory
+  required: true
+- name: MAX_MEM
+  description: The maximum amount of memory
   required: true
