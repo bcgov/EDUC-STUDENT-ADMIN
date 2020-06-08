@@ -9,6 +9,7 @@ const { completeRequest, getAllRequests, getMacros, getRequestById, getRequestCo
 const { getDocuments, getDocumentById, updateDocumentTypeById } = require('../components/documents');
 
 const requestType = 'penRequest';
+const verifyPenRequestInSession = utils.verifyRequestInSession(requestType);
 /**
  * Gets all the comments for a pen request by pen request id
  */
@@ -17,7 +18,7 @@ router.get('/:id/comments', passport.authenticate('jwt', {session: false}, undef
 /**
  * Updates a pen retrieval request
  * */
-router.put('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, utils.verifyPenRequestInSession, putRequest(requestType, createPenRequestApiServiceReq));
+router.put('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, verifyPenRequestInSession, putRequest(requestType, createPenRequestApiServiceReq));
 
 /*
  * Get all pen retrieval requests
@@ -36,11 +37,11 @@ router.get('/macros', passport.authenticate('jwt', {session: false}, undefined),
  */
 router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getRequestById(requestType));
 
-router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, utils.verifyPenRequestInSession, completeRequest(requestType, createPenRequestApiServiceReq));
+router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, verifyPenRequestInSession, completeRequest(requestType, createPenRequestApiServiceReq));
 
-router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, utils.verifyPenRequestInSession, rejectRequest(requestType, createPenRequestApiServiceReq));
+router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, verifyPenRequestInSession, rejectRequest(requestType, createPenRequestApiServiceReq));
 
-router.post('/:id/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, utils.verifyPenRequestInSession, returnRequest(requestType, createPenRequestApiServiceReq, createPenRequestCommentApiServiceReq));
+router.post('/:id/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, verifyPenRequestInSession, returnRequest(requestType, createPenRequestApiServiceReq, createPenRequestCommentApiServiceReq));
 
 // retrieve all the documents.
 router.get('/:id/documents', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getDocuments(requestType));

@@ -9,6 +9,7 @@ const { completeRequest, getAllRequests, getMacros, getRequestById, getRequestCo
 const { getDocuments, getDocumentById, updateDocumentTypeById } = require('../components/documents');
 
 const requestType = 'studentRequest';
+const verifyStudentRequestInSession = utils.verifyRequestInSession(requestType);
 
 /**
  * Gets all the comments for a request by request id
@@ -18,7 +19,7 @@ router.get('/:id/comments', passport.authenticate('jwt', {session: false}, undef
 /**
  * Updates a request
  * */
-router.put('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, utils.verifyStudentRequestInSession, putRequest(requestType, createStudentRequestApiServiceReq));
+router.put('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, verifyStudentRequestInSession, putRequest(requestType, createStudentRequestApiServiceReq));
 
 /*
  * Get all requests
@@ -37,11 +38,11 @@ router.get('/macros', passport.authenticate('jwt', {session: false}, undefined),
  */
 router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getRequestById(requestType));
 
-router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, utils.verifyStudentRequestInSession, completeRequest(requestType, createStudentRequestApiServiceReq));
+router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, verifyStudentRequestInSession, completeRequest(requestType, createStudentRequestApiServiceReq));
 
-router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, utils.verifyStudentRequestInSession, rejectRequest(requestType, createStudentRequestApiServiceReq));
+router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, verifyStudentRequestInSession, rejectRequest(requestType, createStudentRequestApiServiceReq));
 
-router.post('/:id/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, utils.verifyStudentRequestInSession, returnRequest(requestType, createStudentRequestApiServiceReq, createStudentRequestCommentApiServiceReq));
+router.post('/:id/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, verifyStudentRequestInSession, returnRequest(requestType, createStudentRequestApiServiceReq, createStudentRequestCommentApiServiceReq));
 
 // retrieve all the documents.
 router.get('/:id/documents', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getDocuments(requestType));

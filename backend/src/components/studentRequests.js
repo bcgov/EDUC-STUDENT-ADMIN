@@ -2,12 +2,11 @@
 const { LocalDateTime } = require('@js-joda/core');
 
 function createStudentRequestApiServiceReq(studentRequest, req) {
-  studentRequest.pen = req.body.pen;
+  //studentRequest.pen = req.body.pen;
   studentRequest.studentRequestStatusCode = req.body.studentRequestStatusCode;
   studentRequest.reviewer = req.body.reviewer;
   studentRequest.failureReason = req.body.failureReason;
   studentRequest.completeComment = req.body.completeComment;
-  studentRequest.demogChanged = req.body.demogChanged;
   if(req.body.statusUpdateDate) {
     studentRequest.statusUpdateDate = req.body.statusUpdateDate;
   }
@@ -17,7 +16,7 @@ function createStudentRequestApiServiceReq(studentRequest, req) {
 
 function createStudentRequestCommentApiServiceReq(req, userToken) {
   const request = {
-    requestID: req.params.id,
+    studentRequestID: req.params.id,
     staffMemberIDIRGUID: userToken['preferred_username'].toUpperCase(),
     staffMemberName: userToken['idir_username'],
     commentContent: req.body.content,

@@ -1,15 +1,24 @@
 const roleActionMap = {
-  'CLAIM_PEN_REQUEST': ['STUDENT_ADMIN'],
-  'PROVIDE_PEN': ['STUDENT_ADMIN'],
-  'REQUEST_MORE_INFO': ['STUDENT_ADMIN'],
-  'REJECT_PEN_REQUEST': ['STUDENT_ADMIN'],
-  'CHANGE_DOCUMENT_TYPE': ['STUDENT_ADMIN'],
-  'RELEASE_PEN_REQUEST': ['STUDENT_ADMIN']
-
+  penRequest: {
+    'CLAIM_REQUEST': ['STUDENT_ADMIN'],
+    'PROVIDE_PEN': ['STUDENT_ADMIN'],
+    'REQUEST_MORE_INFO': ['STUDENT_ADMIN'],
+    'REJECT_REQUEST': ['STUDENT_ADMIN'],
+    'CHANGE_DOCUMENT_TYPE': ['STUDENT_ADMIN'],
+    'RELEASE_REQUEST': ['STUDENT_ADMIN']
+  },
+  studentRequest: {
+    'CLAIM_REQUEST': ['STUDENT_ADMIN'],
+    'SEND_UPDATE': ['STUDENT_ADMIN'],
+    'REQUEST_MORE_INFO': ['STUDENT_ADMIN'],
+    'REJECT_REQUEST': ['STUDENT_ADMIN'],
+    'CHANGE_DOCUMENT_TYPE': ['STUDENT_ADMIN'],
+    'RELEASE_REQUEST': ['STUDENT_ADMIN']
+  },
 };
 
-function isAccessEnabledForUser(actionName, userInfo) {
-  const rolesAllowed = roleActionMap[actionName];
+function isAccessEnabledForUser(requestType, actionName, userInfo) {
+  const rolesAllowed = roleActionMap[requestType][actionName];
   if (rolesAllowed !== undefined) {
     const userRoles = userInfo.userRoles;
     if (rolesAllowed.indexOf('*') !== -1) {

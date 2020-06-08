@@ -253,23 +253,18 @@ const utils = {
     });
     return code;
   },
-  verifyPenRequestInSession(req, res, next) {
-    if(req.body.penRequestID === req['session'].penRequest.penRequestID) {
-      return next();
-    }
-    log.error('PEN Request Id in request is different than the one in session.  This should NEVER happen!');
-    return res.status(500).json({
-      message: 'INTERNAL SERVER ERROR'
-    });
-  },
-  verifyStudentRequestInSession(req, res, next) {
-    if(req.body.requestID === req['session'].penRequest.requestID) {
-      return next();
-    }
-    log.error('Student Profile Request Id in request is different than the one in session.  This should NEVER happen!');
-    return res.status(500).json({
-      message: 'INTERNAL SERVER ERROR'
-    });
+  verifyRequestInSession(requestType) {
+    const requestIDName = `${requestType}ID`;
+    return function verifyRequestInSessionHandler(req, res, next) {
+      const requestInSession = req['session'].penRequest;
+      if(req.body[requestIDName] === requestInSession[requestIDName]) {
+        return next();
+      }
+      log.error(`${requestType} Id in request is different than the one in session.  This should NEVER happen!`);
+      return res.status(500).json({
+        message: 'INTERNAL SERVER ERROR'
+      });
+    };
   },
   getBackendToken,
   getData,
