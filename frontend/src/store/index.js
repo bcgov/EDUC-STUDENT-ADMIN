@@ -1,13 +1,22 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import auth from './modules/auth';
-import penRequest from './modules/penRequest';
+import request from './modules/request';
+import app from './modules/app';
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
   modules: {
     auth: auth,
-    penRequest: penRequest
+    app,
+    penRequest: request,
+    studentRequest: request,
+
   }
 });
+
+// store.registerModule('studentRequest', createRequestStore());
+// store.registerModule('penRequest', createRequestStore());
+
+export default store;

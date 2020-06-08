@@ -29,7 +29,7 @@ nconf.defaults({
       statusCodeURL: process.env.STUDENT_PROFILE_API_URL + '/statuses',
       documentTypeCodesURL: process.env.STUDENT_PROFILE_API_URL + '/document-types',
       rootURL: process.env.STUDENT_PROFILE_API_URL,
-      macrosURL: process.env.STUDENT_PROFILE_API_URL + '/request-macro',
+      macrosURL: process.env.STUDENT_PROFILE_API_URL + '/student-profile-macro',
     },
     demographicsURL: process.env.PEN_DEMOGRAPHICS_URL,
     digitalIdURL: process.env.DIGITAL_ID_URL,

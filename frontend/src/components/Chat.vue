@@ -39,9 +39,9 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapGetters('penRequest', ['messages']),
-    penRequestId() {
-      return this.$store.state['penRequest'].selectedRequest;
+    ...mapGetters('app', ['requestType', 'messages']),
+    requestId() {
+      return this.$store.state['app'].selectedRequest;
     },
     myself() {
       return { name: this.userInfo.userName, id: this.userInfo.userGuid };
@@ -51,8 +51,10 @@ export default {
     }
   },
   created() {
+    this.setParticipants();
+    this.setMessages();
     ApiService.apiAxios
-      .get(Routes.PEN_REQUEST_ENDPOINT + '/' + this.penRequestId + '/comments')
+      .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId + '/comments')
       .then(response => {
         this.setParticipants(response.data.participants);
         this.setMessages(response.data.messages);
@@ -66,8 +68,8 @@ export default {
       });
   },
   methods: {
-    ...mapMutations('penRequest', ['setMessages']),
-    ...mapMutations('penRequest', ['setParticipants'])
+    ...mapMutations('app', ['setMessages']),
+    ...mapMutations('app', ['setParticipants'])
   }
 };
 </script>

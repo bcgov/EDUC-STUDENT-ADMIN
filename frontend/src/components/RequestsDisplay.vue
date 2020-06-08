@@ -1,13 +1,13 @@
 <template>
-  <v-container class="fill-height">
-    <v-row class="fill-height">
+  <v-container class="fill-height px-0">
+    <!-- <v-row class="fill-height">
       <v-col cols="12">
         <v-row no-gutters class="flex-grow-0">
           <v-card height="100%" width="100%" elevation=0>
             <v-card-title class="pb-0 px-0">PEN Retrieval Requests</v-card-title>
             <v-divider class="pb-4"/>
           </v-card>
-        </v-row>
+        </v-row> -->
         <v-row no-gutters>
           <v-card height="100%" width="100%"  style="background-color:#38598a;">
             <v-combobox
@@ -16,7 +16,7 @@
               :mandatory="false"
               :items="statusCodes"
               v-model="selectedStatuses"
-              label="Select PEN request statuses to view"
+              :label="label"
               multiple
               small-chips
               auto-select-first
@@ -44,7 +44,7 @@
             </v-combobox>
             <v-data-table
               :headers="headers"
-              :items.sync="penRequests"
+              :items.sync="requests"
               :items-per-page.sync="pageSize"
               :page.sync="pageNumber"
               :footer-props="{
@@ -54,7 +54,7 @@
               :loading="loadingTable"
               @click:row="viewRequestDetails"
               class="fill-height">
-              <template v-slot:header.penRequestStatusCode.label="{ header }">
+              <template v-slot:[requestStatusHeaderSlotName]="{ header }">
                 <th id="status-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
                   {{ header.text }}
                   <em
@@ -81,30 +81,29 @@
                   <template v-slot:activator="{ on }">
                     <v-text-field
                       id="date-picker-text-field"
-                      :value="headerSearchParams.initialSubmitDate? headerSearchParams.initialSubmitDate.join(): ''"
+                      v-model="headerSearchParams.initialSubmitDate"
                       outlined
                       dense
                       readonly
-                      clearable
-                      @click:clear="headerSearchParams.initialSubmitDate = []"
                       v-on="on"
                       class="header-text"
                     ></v-text-field>
                   </template>
-                  <v-date-picker id="date-picker" v-model="headerSearchParams.initialSubmitDate" no-title range >
+                  <v-date-picker id="date-picker" v-model="headerSearchParams.initialSubmitDate" no-title range>
                     <v-spacer></v-spacer>
-                    <v-btn id="date-picker-ok-button" text color="primary" @click="dateMenu=false">OK</v-btn>
+                    <v-btn id="date-picker-cancel-button" text color="primary" @click="dateMenu = false">Cancel</v-btn>
+                    <v-btn id="date-picker-ok-button" text color="primary" @click="$refs.dateMenu.save(headerSearchParams.initialSubmitDate)">OK</v-btn>
                   </v-date-picker>
                 </v-menu>
               </template>
-              <template v-slot:header.pen="{ header }">
+              <template v-slot:[penSlotName]="{ header }">
                 <th id="pen-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
                   {{ header.text }}
                   <em
                           :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
                   </em>
                 </th>
-                <v-text-field id="pen-text-field" v-model="headerSearchParams.pen" class="header-text" outlined dense clearable></v-text-field>
+                <v-text-field id="pen-text-field" v-model="headerSearchParams[penName]" class="header-text" outlined dense></v-text-field>
               </template>
               <template v-slot:header.legalLastName="{ header }">
                 <th id="last-name-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
@@ -113,7 +112,7 @@
                     :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
                   </em>
                 </th>
-                <v-text-field id="last-name-text-field" v-model="headerSearchParams.legalLastName" class="header-text" outlined dense clearable></v-text-field>
+                <v-text-field id="last-name-text-field" v-model="headerSearchParams.legalLastName" class="header-text" outlined dense></v-text-field>
               </template>
               <template v-slot:header.legalFirstName="{ header }">
                 <th id="first-name-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
@@ -122,7 +121,7 @@
                           :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
                   </em>
                 </th>
-                <v-text-field id="first-name-text-field" v-model="headerSearchParams.legalFirstName" class="header-text" outlined dense clearable></v-text-field>
+                <v-text-field id="first-name-text-field" v-model="headerSearchParams.legalFirstName" class="header-text" outlined dense></v-text-field>
               </template>
               <template v-slot:header.reviewer="{ header }">
                 <th id="reviewer-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
@@ -131,7 +130,7 @@
                           :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
                   </em>
                 </th>
-                <v-text-field id="review-text-field" v-model="headerSearchParams.reviewer" class="header-text" outlined dense clearable></v-text-field>
+                <v-text-field id="review-text-field" v-model="headerSearchParams.reviewer" class="header-text" outlined dense></v-text-field>
               </template>
               <template v-slot:item.initialSubmitDate="{ item }">
                 <span v-if="item.initialSubmitDate == null"></span>
@@ -143,8 +142,8 @@
             </v-data-table>
           </v-card>
         </v-row>
-      </v-col>
-    </v-row>
+      <!-- </v-col>
+    </v-row> -->
   </v-container>
 </template>
 
@@ -152,11 +151,83 @@
 import ApiService from '../common/apiService';
 import { Routes } from '../utils/constants';
 export default {
+  name: 'requestsDisplay',
+  props: {
+    requestType: {
+      type: String,
+      required: true
+    },
+    label: {
+      type: String,
+      required: true
+    },
+    penName: {
+      type: String,
+      default: 'pen'
+    }
+  },
   data () {
     return {
-      headers: [
+      dateMenu: false,
+      headerSearchParams: {},
+      headerSortParams: {},
+      statusCodes:[],
+      pageNumber: 1,
+      pageSize: 15,
+      itemsPerPageOptions: [5,10,15,20,50],
+      selectedStatuses:[],
+      requests: [],
+      totalRequests: 0,
+      initialLoad: true,
+      loadingTable: true,
+      loadingSelect: true,
+      errored: false,
+      comboboxKey:0,
+    };
+  },
+  mounted() {
+    this.initialLoad = true; //stop watch from sending multiple getRequests calls on initial page load
+    this.headerSearchParams = this.$store.state[this.requestType].headerSearchParams;
+    this.headerSortParams = this.$store.state[this.requestType].headerSortParams;
+    this.pageSize = this.$store.state[this.requestType].pageSize;
+    this.pageNumber = this.$store.state[this.requestType].pageNumber;
+    ApiService.apiAxios
+      .get(Routes[this.requestType].STATUSES_URL, )
+      .then(response => {
+        this.codeTable = response.data;
+        this.statusCodes = this.getStatusCodes();
+        this.selectedStatuses = this.$store.state[this.requestType].selectedStatuses;
+        this.comboboxKey+=1;//force component to re-render
+      })
+      .catch(error => {
+        console.log(error);
+        this.errored = true;
+      })
+      .finally(() => {
+        this.initialLoad = false;
+        this.getRequests();
+        this.getDocumentTypes();
+        this.loadingSelect = false;
+      });
+  },
+  computed: {
+    filteredResults() {
+      if(!Array.isArray(this.selectedStatuses) || !this.selectedStatuses.length || !Array.isArray(this.requests) || !this.requests.length) {return this.requests;}
+      return this.requests.filter((request) => this.selectedStatuses.includes(request[this.requestStatusCodeName].label));
+    },
+    requestStatusCodeName() {
+      return `${this.requestType}StatusCode`;
+    },
+    requestStatusHeaderName() {
+      return `${this.requestStatusCodeName}.label`;
+    },
+    requestStatusHeaderSlotName() {
+      return `header.${this.requestStatusHeaderName}`;
+    },
+    headers() {
+      return [
         { text: 'Status',
-          value: 'penRequestStatusCode.label',
+          value: this.requestStatusHeaderName,
           sortable: false
         },
         { text: 'Submitted Time',
@@ -165,7 +236,7 @@ export default {
         },
         {
           text: 'PEN',
-          value: 'pen',
+          value: this.penName,
           sortable: false
         },
         { text: 'Last Name',
@@ -180,90 +251,53 @@ export default {
           value: 'reviewer',
           sortable: false
         },
-      ],
-      dateMenu: false,
-      headerSearchParams: {},
-      headerSortParams: {},
-      statusCodes:[],
-      pageNumber: 1,
-      pageSize: 15,
-      itemsPerPageOptions: [5,10,15,20,50],
-      selectedStatuses:[],
-      penRequests: [],
-      totalRequests: 0,
-      initialLoad: true,
-      loadingTable: true,
-      loadingSelect: true,
-      errored: false,
-      comboboxKey:0
-    };
-  },
-  mounted() {
-    this.initialLoad = true; //stop watch from sending multiple getPenRequests calls on initial page load
-    this.headerSearchParams = this.$store.state['penRequest'].headerSearchParams;
-    this.headerSortParams = this.$store.state['penRequest'].headerSortParams;
-    this.pageSize = this.$store.state['penRequest'].pageSize;
-    this.pageNumber = this.$store.state['penRequest'].pageNumber;
-    ApiService.apiAxios
-      .get(Routes.PEN_REQUEST_STATUSES_URL, )
-      .then(response => {
-        this.codeTable = response.data;
-        this.statusCodes = this.getStatusCodes();
-        this.selectedStatuses = this.$store.state['penRequest'].selectedStatuses;
-        this.comboboxKey+=1;//force component to re-render
-      })
-      .catch(error => {
-        console.log(error);
-        this.errored = true;
-      })
-      .finally(() => {
-        this.initialLoad = false;
-        this.getPenRequests();
-        this.getDocumentTypes();
-        this.loadingSelect = false;
-      });
-  },
-  computed: {
-    filteredResults() {
-      if(!Array.isArray(this.selectedStatuses) || !this.selectedStatuses.length || !Array.isArray(this.penRequests) || !this.penRequests.length) {return this.penRequests;}
-      return this.penRequests.filter((request) => this.selectedStatuses.includes(request.penRequestStatusCode.label));
+      ];
+    },
+    penSlotName() {
+      return `header.${this.penName}`;
+    },
+    requestIdName() {
+      return `${this.requestType}ID`;
     }
   },
   watch: {
     pageNumber: {
       handler() {
+        this.$store.state[this.requestType].pageNumber = this.pageNumber;
         if(!this.initialLoad) { //stop watch from sending multiple getPenRequests calls on initial page load
-          this.getPenRequests();
+          this.getRequests();
         }
       }
     },
     pageSize: {
       handler() {
+        this.$store.state[this.requestType].pageSize = this.pageSize;
         if(!this.initialLoad) { //stop watch from sending multiple getPenRequests calls on initial page load
-          this.getPenRequests();
+          this.getRequests();
         }
       }
     },
     headerSortParams: {
       deep: true,
       handler() {
-        if(!this.initialLoad) { //stop watch from sending multiple getPenRequests calls on initial page load
-          this.getPenRequests();
+        if(!this.initialLoad) { //stop watch from sending multiple getRequests calls on initial page load
+          this.getRequests();
         }
       }
     },
     selectedStatuses: {
       handler() {
-        if(!this.initialLoad) { //stop watch from sending multiple getPenRequests calls on initial page load
-          this.getPenRequests();
+        this.$store.state[this.requestType].selectedStatuses = this.selectedStatuses;
+        if(!this.initialLoad) { //stop watch from sending multiple getRequests calls on initial page load
+          this.getRequests();
         }
       }
     },
     headerSearchParams: {
       deep: true,
       handler() {
-        if(!this.initialLoad) { //stop watch from sending multiple getPenRequests calls on initial page load
-          this.getPenRequests();
+        if(!this.initialLoad) { //stop watch from sending multiple getRequests calls on initial page load
+          this.getRequests();
         }
       }
     }
@@ -280,20 +314,20 @@ export default {
       });
       return labels.sort();
     },
-    getPenRequests () {
+    getRequests () {
       this.loadingTable = true;
       const sort = {};
-      sort[this.headerSortParams.currentSort === 'penRequestStatusCode.label' ? 'penRequestStatusCode' : this.headerSortParams.currentSort] = this.headerSortParams.currentSortDir ? 'DESC' : 'ASC';
-      const headerKeys = Object.keys(this.headerSearchParams).filter(k => this.headerSearchParams[k]!== undefined && this.headerSearchParams[k] !== null && this.headerSearchParams[k].length !== 0);
+      sort[this.headerSortParams.currentSort === this.requestStatusHeaderSlotName ? this.requestStatusCodeName : this.headerSortParams.currentSort] = this.headerSortParams.currentSortDir ? 'DESC' : 'ASC';
+      const headerKeys = Object.keys(this.headerSearchParams).filter(k => this.headerSearchParams[k].length !== 0);
       let headerFilters;
-      if (headerKeys && headerKeys.length > 0) {
+      if (headerKeys.length > 0) {
         headerFilters = {};
         headerKeys.forEach(element => {
           headerFilters[element] = this.headerSearchParams[element];
         });
       }
       ApiService.apiAxios
-        .get(Routes.PEN_REQUEST_ENDPOINT, {
+        .get(Routes[this.requestType].ROOT_ENDPOINT, {
           params: {
             pageNumber: this.pageNumber-1,
             pageSize: this.pageSize,
@@ -303,7 +337,7 @@ export default {
           }
         })
         .then(response => {
-          this.penRequests = response.data['content'];
+          this.requests = response.data['content'];
           this.totalRequests = response.data['totalElements'];
         })
         .catch(error => {
@@ -313,10 +347,7 @@ export default {
         .finally(() => this.loadingTable = false);
     },
     viewRequestDetails (request) {
-      this.$store.state['penRequest'].selectedRequest = request['penRequestID'];
-      this.$store.state['penRequest'].selectedStatuses = this.selectedStatuses;
-      this.$store.state['penRequest'].pageSize = this.pageSize;
-      this.$store.state['penRequest'].pageNumber = this.pageNumber;
+      this.$store.state['app'].selectedRequest = request[this.requestIdName];
     },
     sort(sortHeader) {
       if(sortHeader === this.headerSortParams.currentSort) {
@@ -326,10 +357,10 @@ export default {
     },
     getDocumentTypes() {
       ApiService.apiAxios
-        .get(Routes.DOCUMENT_TYPES_URL)
+        .get(Routes[this.requestType].DOCUMENT_TYPES_URL)
         .then(response => {
           if(response && response.data) {
-            this.$store.state['penRequest'].documentTypes = response.data;
+            this.$store.state[this.requestType].documentTypes = response.data;
           }
         })
         .catch(error => {

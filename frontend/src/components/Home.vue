@@ -17,30 +17,38 @@
       </v-row>
     </article>
   </v-container>
-  <v-content v-else-if="!this.$store.state['penRequest'].selectedRequest && isAuthenticated">
-    <PenRequestsDisplay></PenRequestsDisplay>
+  <v-content v-else-if="!selectedRequest && isAuthenticated">
+    <RequestsPage></RequestsPage>
   </v-content>
   <v-content v-else>
-    <PenRequestDetail></PenRequestDetail>
+    <PenRequestDetail v-if="requestType === requestTypes.penRequest.name"></PenRequestDetail>
+    <StudentRequestDetail v-else></StudentRequestDetail>
   </v-content>
 </template>
 
 <script>
 import Login from './Login';
-import PenRequestsDisplay from './PenRequestsDisplay';
+import RequestsPage from './RequestsPage';
 import { mapGetters } from 'vuex';
-import PenRequestDetail from './PenRequestDetail';
+import PenRequestDetail from './pen/PenRequestDetail';
+import StudentRequestDetail from './student/StudentRequestDetail';
 import UnAuthorized from './UnAuthorized';
+import { REQUEST_TYPES } from '../utils/constants';
 export default {
   name: 'home',
   components: {
     Login,
-    PenRequestsDisplay,
+    RequestsPage,
     PenRequestDetail,
+    StudentRequestDetail,
     UnAuthorized  
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','isAuthorizedUser'])
+    ...mapGetters('auth', ['isAuthenticated','isAuthorizedUser']),
+    ...mapGetters('app', ['selectedRequest', 'requestType']),
+    requestTypes() {
+      return REQUEST_TYPES;
+    }
   },
 };
 </script>

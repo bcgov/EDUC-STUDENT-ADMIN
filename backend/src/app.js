@@ -26,6 +26,8 @@ const penRequestRouter = require('./routes/penRequest');
 const penRequestStatusesRouter = require('./routes/penRequestStatuses');
 const studentDemographicsRouter = require('./routes/studentDemographics');
 const studentsRouter = require('./routes/students');
+const studentRequestRouter = require('./routes/studentRequest');
+const studentRequestStatusesRouter = require('./routes/studentRequestStatuses');
 const promMid = require('express-prometheus-middleware');
 const actuator = require('express-actuator');
 //initialize app
@@ -150,9 +152,11 @@ app.use(/(\/api)?/, apiRouter);
 
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/penRequest', penRequestRouter);
-apiRouter.use('/codes', penRequestStatusesRouter);
+apiRouter.use('/penRequest/codes', penRequestStatusesRouter);
 apiRouter.use('/studentDemographics', studentDemographicsRouter);
 apiRouter.use('/students', studentsRouter);
+apiRouter.use('/studentRequest', studentRequestRouter);
+apiRouter.use('/studentRequest/codes', studentRequestStatusesRouter);
 
 // Prevent unhandled errors from crashing application
 process.on('unhandledRejection', err => {
