@@ -94,12 +94,6 @@
           </v-card>
           </v-row>
         </v-col>
-      <!-- </v-row>
-      <v-row> -->
-        <!-- <v-col class="pt-0" cols="6">
-          
-        </v-col> -->
-        <!-- <v-col class="pa-0 pr-6" cols="6"> -->
         <v-col cols="12" xl="6" lg="6" md="6" class="pb-0">
           <v-form ref="completeForm">
             <v-textarea
@@ -115,12 +109,10 @@
               rows="6"
             ></v-textarea>
           </v-form>
-        
-      <!-- </v-row> -->
-      <v-row justify="end" class="pr-3 pb-2">
-        <v-btn :disabled="!enableCompleteButton||!enableActions||request.studentRequestStatusCode==='DRAFT'" color="#38598a" :dark="enableCompleteButton && enableActions&&request.studentRequestStatusCode!=='DRAFT'" @click="sendChanges">Send Changes to Student</v-btn>
-      </v-row>
-      </v-col>
+          <v-row justify="end" class="pr-3 pb-2">
+            <v-btn :disabled="!enableCompleteButton||!enableActions||request.studentRequestStatusCode==='DRAFT'" color="#38598a" :dark="enableCompleteButton && enableActions&&request.studentRequestStatusCode!=='DRAFT'" @click="sendChanges">Send Changes to Student</v-btn>
+          </v-row>
+        </v-col>
       </v-row>
     </v-card>
     <v-dialog
@@ -377,15 +369,11 @@ export default {
       }
     },
     differentDemographicsData(request, demographics) {
-      if( request.legalFirstName !== demographics.legalFirst ||
+      return request.legalFirstName !== demographics.legalFirst ||
         request.legalMiddleNames !== demographics.legalMiddle ||
         request.legalLastName !== demographics.legalLast ||
         request.dob !== demographics.dob ||
-        request.gender !== demographics.gender ) {
-        return true;
-      } else {
-        return false;
-      }
+        request.gender !== demographics.gender;
     },
   }
 };

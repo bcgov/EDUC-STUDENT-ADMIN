@@ -1,149 +1,139 @@
 <template>
   <v-container class="fill-height px-0">
-    <!-- <v-row class="fill-height">
-      <v-col cols="12">
-        <v-row no-gutters class="flex-grow-0">
-          <v-card height="100%" width="100%" elevation=0>
-            <v-card-title class="pb-0 px-0">PEN Retrieval Requests</v-card-title>
-            <v-divider class="pb-4"/>
-          </v-card>
-        </v-row> -->
-        <v-row no-gutters>
-          <v-card height="100%" width="100%"  style="background-color:#38598a;">
-            <v-combobox
-              id="status-dropdown"
-              :key="comboboxKey"
-              :mandatory="false"
-              :items="statusCodes"
-              v-model="selectedStatuses"
-              :label="label"
-              multiple
-              small-chips
-              auto-select-first
-              hide-selected
-              solo
-              :loading="loadingSelect"
-              class="mx-6 mt-6 pa-0">
-              <template v-slot:selection="{ attrs, item, select, selected }">
-                <v-chip
-                  v-bind="attrs"
-                  :input-value="selected"
-                  label
-                  small
-                  @click="select"
-                >
-                  <span class="pr-2">
-                    {{ item }}
-                  </span>
-                  <v-icon
-                    small
-                    @click="remove(item)"
-                  >close</v-icon>
-                </v-chip>
+    <v-row no-gutters>
+      <v-card height="100%" width="100%"  style="background-color:#38598a;">
+        <v-combobox
+          id="status-dropdown"
+          :key="comboboxKey"
+          :mandatory="false"
+          :items="statusCodes"
+          v-model="selectedStatuses"
+          :label="label"
+          multiple
+          small-chips
+          auto-select-first
+          hide-selected
+          solo
+          :loading="loadingSelect"
+          class="mx-6 mt-6 pa-0">
+          <template v-slot:selection="{ attrs, item, select, selected }">
+            <v-chip
+              v-bind="attrs"
+              :input-value="selected"
+              label
+              small
+              @click="select"
+            >
+              <span class="pr-2">
+                {{ item }}
+              </span>
+              <v-icon
+                small
+                @click="remove(item)"
+              >close</v-icon>
+            </v-chip>
+          </template>
+        </v-combobox>
+        <v-data-table
+          :headers="headers"
+          :items.sync="requests"
+          :items-per-page.sync="pageSize"
+          :page.sync="pageNumber"
+          :footer-props="{
+            'items-per-page-options':itemsPerPageOptions
+          }"
+          :server-items-length="totalRequests"
+          :loading="loadingTable"
+          @click:row="viewRequestDetails"
+          class="fill-height">
+          <template v-slot:[requestStatusHeaderSlotName]="{ header }">
+            <th id="status-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
+              {{ header.text }}
+              <em
+                      :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
+              </em>
+            </th>
+          </template>
+          <template v-slot:header.initialSubmitDate="{ header }">
+            <th id="submit-date-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
+              {{ header.text }}
+              <em
+                      :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
+              </em>
+            </th>
+            <v-menu
+              ref="dateMenu"
+              v-model="dateMenu"
+              :close-on-content-click="false"
+              :nudge-right="40"
+              transition="scale-transition"
+              offset-y
+              min-width="290px"
+            >
+              <template v-slot:activator="{ on }">
+                <v-text-field
+                  id="date-picker-text-field"
+                  v-model="headerSearchParams.initialSubmitDate"
+                  outlined
+                  dense
+                  readonly
+                  v-on="on"
+                  class="header-text"
+                ></v-text-field>
               </template>
-            </v-combobox>
-            <v-data-table
-              :headers="headers"
-              :items.sync="requests"
-              :items-per-page.sync="pageSize"
-              :page.sync="pageNumber"
-              :footer-props="{
-                'items-per-page-options':itemsPerPageOptions
-              }"
-              :server-items-length="totalRequests"
-              :loading="loadingTable"
-              @click:row="viewRequestDetails"
-              class="fill-height">
-              <template v-slot:[requestStatusHeaderSlotName]="{ header }">
-                <th id="status-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
-                  {{ header.text }}
-                  <em
-                          :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
-                  </em>
-                </th>
-              </template>
-              <template v-slot:header.initialSubmitDate="{ header }">
-                <th id="submit-date-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
-                  {{ header.text }}
-                  <em
-                          :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
-                  </em>
-                </th>
-                <v-menu
-                  ref="dateMenu"
-                  v-model="dateMenu"
-                  :close-on-content-click="false"
-                  :nudge-right="40"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="290px"
-                >
-                  <template v-slot:activator="{ on }">
-                    <v-text-field
-                      id="date-picker-text-field"
-                      v-model="headerSearchParams.initialSubmitDate"
-                      outlined
-                      dense
-                      readonly
-                      v-on="on"
-                      class="header-text"
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker id="date-picker" v-model="headerSearchParams.initialSubmitDate" no-title range>
-                    <v-spacer></v-spacer>
-                    <v-btn id="date-picker-cancel-button" text color="primary" @click="dateMenu = false">Cancel</v-btn>
-                    <v-btn id="date-picker-ok-button" text color="primary" @click="$refs.dateMenu.save(headerSearchParams.initialSubmitDate)">OK</v-btn>
-                  </v-date-picker>
-                </v-menu>
-              </template>
-              <template v-slot:[penSlotName]="{ header }">
-                <th id="pen-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
-                  {{ header.text }}
-                  <em
-                          :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
-                  </em>
-                </th>
-                <v-text-field id="pen-text-field" v-model="headerSearchParams[penName]" class="header-text" outlined dense></v-text-field>
-              </template>
-              <template v-slot:header.legalLastName="{ header }">
-                <th id="last-name-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
-                  {{ header.text }}
-                  <em
-                    :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
-                  </em>
-                </th>
-                <v-text-field id="last-name-text-field" v-model="headerSearchParams.legalLastName" class="header-text" outlined dense></v-text-field>
-              </template>
-              <template v-slot:header.legalFirstName="{ header }">
-                <th id="first-name-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
-                  {{ header.text }}
-                  <em
-                          :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
-                  </em>
-                </th>
-                <v-text-field id="first-name-text-field" v-model="headerSearchParams.legalFirstName" class="header-text" outlined dense></v-text-field>
-              </template>
-              <template v-slot:header.reviewer="{ header }">
-                <th id="reviewer-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
-                  {{ header.text }}
-                  <em
-                          :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
-                  </em>
-                </th>
-                <v-text-field id="review-text-field" v-model="headerSearchParams.reviewer" class="header-text" outlined dense></v-text-field>
-              </template>
-              <template v-slot:item.initialSubmitDate="{ item }">
-                <span v-if="item.initialSubmitDate == null"></span>
-                <span v-else>{{moment(item.initialSubmitDate).format('YYYY-MM-DD LT') }}</span>
-              </template>
-              <template v-slot:no-data>
-                There are no requests with the selected statuses.
-              </template>
-            </v-data-table>
-          </v-card>
-        </v-row>
-      <!-- </v-col>
-    </v-row> -->
+              <v-date-picker id="date-picker" v-model="headerSearchParams.initialSubmitDate" no-title range>
+                <v-spacer></v-spacer>
+                <v-btn id="date-picker-cancel-button" text color="primary" @click="dateMenu = false">Cancel</v-btn>
+                <v-btn id="date-picker-ok-button" text color="primary" @click="$refs.dateMenu.save(headerSearchParams.initialSubmitDate)">OK</v-btn>
+              </v-date-picker>
+            </v-menu>
+          </template>
+          <template v-slot:[penSlotName]="{ header }">
+            <th id="pen-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
+              {{ header.text }}
+              <em
+                      :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
+              </em>
+            </th>
+            <v-text-field id="pen-text-field" v-model="headerSearchParams[penName]" class="header-text" outlined dense></v-text-field>
+          </template>
+          <template v-slot:header.legalLastName="{ header }">
+            <th id="last-name-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
+              {{ header.text }}
+              <em
+                :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
+              </em>
+            </th>
+            <v-text-field id="last-name-text-field" v-model="headerSearchParams.legalLastName" class="header-text" outlined dense></v-text-field>
+          </template>
+          <template v-slot:header.legalFirstName="{ header }">
+            <th id="first-name-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
+              {{ header.text }}
+              <em
+                      :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
+              </em>
+            </th>
+            <v-text-field id="first-name-text-field" v-model="headerSearchParams.legalFirstName" class="header-text" outlined dense></v-text-field>
+          </template>
+          <template v-slot:header.reviewer="{ header }">
+            <th id="reviewer-header" :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']" @click="sort(header.value)">
+              {{ header.text }}
+              <em
+                      :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']">
+              </em>
+            </th>
+            <v-text-field id="review-text-field" v-model="headerSearchParams.reviewer" class="header-text" outlined dense></v-text-field>
+          </template>
+          <template v-slot:item.initialSubmitDate="{ item }">
+            <span v-if="item.initialSubmitDate == null"></span>
+            <span v-else>{{moment(item.initialSubmitDate).format('YYYY-MM-DD LT') }}</span>
+          </template>
+          <template v-slot:no-data>
+            There are no requests with the selected statuses.
+          </template>
+        </v-data-table>
+      </v-card>
+    </v-row>
   </v-container>
 </template>
 
