@@ -57,8 +57,8 @@ export default {
       };
     },
     requestCompleted(request, statusCodes) {
-      return request.penRequestStatusCode === statusCodes.REJECTED ||
-        request.penRequestStatusCode === statusCodes.COMPLETED;
+      return request.studentRequestStatusCode === statusCodes.REJECTED ||
+        request.studentRequestStatusCode === statusCodes.COMPLETED;
     },
   }
 };
