@@ -127,6 +127,7 @@ export default {
     this.isRequestMoreInfoEnabledForUser = AccessEnabledForUser(this.requestType, 'REQUEST_MORE_INFO', this.userInfo);
   },
   methods: {
+    ...mapMutations('app', ['setRequest']),
     ...mapMutations('app', ['pushMessage']),
     replaceReturnMacro() {
       this.returnComment = replaceMacro(this.returnComment, this.returnMacros);
@@ -144,7 +145,7 @@ export default {
         ApiService.apiAxios
           .post(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId + '/return', body)
           .then(response => {
-            this.request = response.data.penResponse;
+            this.setRequest(response.data.penResponse);
             this.pushMessage(response.data.commentResponse);
             this.returnAlertSuccess = true;
             this.returnComment = null;
