@@ -65,7 +65,7 @@
 import ApiService from '../common/apiService';
 import { Routes, Statuses } from '../utils/constants';
 import { replaceMacro } from '../utils/macro';
-import { mapGetters } from 'vuex';
+import {mapGetters, mapMutations} from 'vuex';
 import {AccessEnabledForUser} from '../common/role-based-access';
 export default {
   name: 'requestReject',
@@ -127,6 +127,7 @@ export default {
     this.rejectComment = this.request.failureReason;
   },
   methods: {
+    ...mapMutations('app', ['setRequest']),
     replaceRejectMacro() {
       this.rejectComment = replaceMacro(this.rejectComment, this.rejectMacros);
     },
@@ -142,7 +143,7 @@ export default {
         ApiService.apiAxios
           .post(Routes[this.requestType].REJECT_URL, this.prepPut(this.requestId, this.request))
           .then(response => {
-            this.request = response.data;
+            this.setRequest(response.data);
             this.rejectAlertSuccess=true;
           })
           .catch(error => {

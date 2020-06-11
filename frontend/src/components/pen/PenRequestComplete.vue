@@ -235,6 +235,7 @@ export default {
     'request.completeComment': 'validateCompleteAction'
   },
   methods: {
+    ...mapMutations('app', ['setRequest']),
     ...mapMutations('app', ['pushMessage']),
     validateCompleteAction() {
       this.$refs.completeForm.validate();
@@ -259,7 +260,7 @@ export default {
         ApiService.apiAxios
           .post(Routes[this.requestType].COMPLETE_URL, this.prepPut(this.requestId, this.request))
           .then(response => {
-            this.request = response.data;
+            this.setRequest(response.data);
             this.completedUpdateSuccess = true;
           })
           .catch(error => {

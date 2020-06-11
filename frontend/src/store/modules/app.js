@@ -3,6 +3,7 @@ import { REQUEST_TYPES } from '../../utils/constants';
 export default {
   namespaced: true,
   state: {
+    request: {},
     selectedRequest: null,
     messages:[],
     participants:[],
@@ -10,6 +11,7 @@ export default {
     requestTypeLabel: REQUEST_TYPES.penRequest.label,
   },
   getters: {
+    request: state => state.request,
     selectedRequest: state => state.selectedRequest,
     messages: state => state.messages,
     participants: state => state.participants,
@@ -17,6 +19,9 @@ export default {
     requestTypeLabel: state => state.requestTypeLabel,
   },
   mutations: {
+    setRequest: (state, request) => {
+      state.request = request || {};
+    },
     setSelectedRequest: (state, selectedRequest) => {
       state.selectedRequest = selectedRequest;
     },

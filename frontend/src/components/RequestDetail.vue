@@ -226,7 +226,6 @@ export default {
         { text: '', value: 'action', sortable: false }
       ],
       validForm: false,
-      request: {},
       requiredRules: [v => !!v || 'Required'],
       myself: {
         name: null,
@@ -255,7 +254,7 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('app', ['selectedRequest', 'requestType', 'requestTypeLabel']),
-    //...mapGetters(this.requestType, ['returnMacros', 'rejectMacros', 'completeMacros']),
+    ...mapGetters('app', ['request']),
     isRequestCompleted() {
       return this.requestCompleted(this.request, this.statusCodes);
     },
@@ -298,8 +297,7 @@ export default {
     ApiService.apiAxios
       .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId)
       .then(response => {
-        this.request = response.data;
-
+        this.setRequest(response.data);
         if(this.request[this.requestStatusCodeName] === this.statusCodes.REJECTED) {
           this.activeTab = 2;
         }
@@ -323,6 +321,7 @@ export default {
   },
   methods: {
     ...mapMutations('app', ['setSelectedRequest']),
+    ...mapMutations('app', ['setRequest']),
     documentUrl(requestId, document) {
       return `${Routes[this.requestType].ROOT_ENDPOINT}/${requestId}/documents/${document.documentID}`;
     },
