@@ -106,7 +106,7 @@ export default {
     },
   },
   watch: {
-    'request.recordedPen': function() {
+    'request.studentRequestStatusCode': function() {
       if(this.request.recordedPen && (this.request.studentRequestStatusCode === this.statusCodes.COMPLETED)) {
         this.showDemographics = true;
         this.loadingDemographics = true;

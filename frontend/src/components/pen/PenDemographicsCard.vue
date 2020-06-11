@@ -107,7 +107,7 @@ export default {
     },
   },
   watch: {
-    'request.pen': function() {
+    'request.penRequestStatusCode': function() {
       if(this.request.pen && (this.request.penRequestStatusCode === this.statusCodes.MANUAL_MATCH || this.request.penRequestStatusCode === this.statusCodes.AUTO_MATCH)) {
         this.showDemographics = true;
         this.loadingDemographics = true;
