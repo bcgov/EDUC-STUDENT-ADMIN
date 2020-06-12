@@ -62,7 +62,7 @@ app.use(morgan(config.get('server:morganFormat')));
 //  port: config.get('redis:port'),
 //  password: config.get('redis:password')
 //});
-const redisClient = new Redis.Cluster([
+const redisClient = new redis.Cluster([
   {
     port: config.get('redis:port'),
     host: config.get('redis:host'),
