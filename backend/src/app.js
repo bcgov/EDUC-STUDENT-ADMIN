@@ -57,11 +57,18 @@ app.use(express.urlencoded({
 
 app.use(morgan(config.get('server:morganFormat')));
 
-const redisClient = redis.createClient({
-  host: config.get('redis:host'),
-  port: config.get('redis:port'),
-  password: config.get('redis:password')
-});
+//const redisClient = redis.createClient({
+//  host: config.get('redis:host'),
+//  port: config.get('redis:port'),
+//  password: config.get('redis:password')
+//});
+const redisClient = new Redis.Cluster([
+  {
+    port: config.get('redis:port'),
+    host: config.get('redis:host'),
+  }
+]);
+
 const RedisStore = connectRedis(session);
 const dbSession = new RedisStore({
   client: redisClient,
