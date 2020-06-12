@@ -546,6 +546,7 @@ async function updateStudentAndDigitalId(req){
     usualMiddleNames: req['session'].studentDemographics['usualMiddle'],
     usualLastName: req['session'].studentDemographics['usualSurname'],
     email: req['session'].penRequest.email,
+    emailVerified: req['session'].penRequest.emailVerified,
   };
   try {
     const studentAndDigitalIdResponse = await utils.getData(token, url, {params: {pen: studentBody.pen}});
