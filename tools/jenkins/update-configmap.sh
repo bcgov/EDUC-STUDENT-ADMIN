@@ -68,7 +68,6 @@ oc create -n $PEN_NAMESPACE-$envValue configmap $APP_NAME-backend-config-map --f
 echo
 echo Setting environment variables for $APP_NAME-backend-$SOAM_KC_REALM_ID application
 oc set env --from=configmap/$APP_NAME-backend-config-map dc/$APP_NAME-backend-$SOAM_KC_REALM_ID
-oc set env --from=secret/redis dc/$APP_NAME-backend-$SOAM_KC_REALM_ID
 ###########################################################
 #Setup for student-admin-frontend-config-map
 ###########################################################
