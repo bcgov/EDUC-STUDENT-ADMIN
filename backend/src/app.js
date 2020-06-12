@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 const log = require('npmlog');
 const morgan = require('morgan');
 const session = require('express-session');
-const redis = require('redis');
+const redis = require('ioredis');
 const connectRedis = require('connect-redis');
 const express = require('express');
 const passport = require('passport');
@@ -57,11 +57,18 @@ app.use(express.urlencoded({
 
 app.use(morgan(config.get('server:morganFormat')));
 
-const redisClient = redis.createClient({
-  host: config.get('redis:host'),
-  port: config.get('redis:port'),
-  password: config.get('redis:password')
-});
+//const redisClient = redis.createClient({
+//  host: config.get('redis:host'),
+//  port: config.get('redis:port'),
+//  password: config.get('redis:password')
+//});
+const redisClient = new Redis.Cluster([
+  {
+    port: config.get('redis:port'),
+    host: config.get('redis:host'),
+  }
+]);
+
 const RedisStore = connectRedis(session);
 const dbSession = new RedisStore({
   client: redisClient,
