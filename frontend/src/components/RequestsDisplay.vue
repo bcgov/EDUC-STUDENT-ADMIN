@@ -138,6 +138,7 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
 import ApiService from '../common/apiService';
 import { Routes } from '../utils/constants';
 export default {
@@ -293,6 +294,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations('app', ['setSelectedRequest', 'setRequest']),
     remove (item) {
       this.selectedStatuses.splice(this.selectedStatuses.indexOf(item), 1);
       this.selectedStatuses = [...this.selectedStatuses];
@@ -337,7 +339,8 @@ export default {
         .finally(() => this.loadingTable = false);
     },
     viewRequestDetails (request) {
-      this.$store.state['app'].selectedRequest = request[this.requestIdName];
+      this.setSelectedRequest(request[this.requestIdName]);
+      this.setRequest();
     },
     sort(sortHeader) {
       if(sortHeader === this.headerSortParams.currentSort) {
