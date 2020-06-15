@@ -25,7 +25,7 @@
           <p class="mb-0">PEN:</p>
         </v-col>
         <v-col cols="12" xl="11" lg="11" md="11" sm="11">
-          <p class="mb-0"><strong>{{ this.student.pen }}</strong></p>
+          <p class="mb-0"><strong>{{ this.request.recordedPen }}</strong></p>
         </v-col>
       </v-row>
       <v-row no-gutters class="px-2">
