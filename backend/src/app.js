@@ -5,7 +5,6 @@ const dotenv = require('dotenv');
 const log = require('npmlog');
 const morgan = require('morgan');
 const session = require('express-session');
-const redis = require('ioredis');
 const connectRedis = require('connect-redis');
 const express = require('express');
 const passport = require('passport');
@@ -30,13 +29,14 @@ const studentRequestRouter = require('./routes/studentRequest');
 const studentRequestStatusesRouter = require('./routes/studentRequestStatuses');
 const promMid = require('express-prometheus-middleware');
 const actuator = require('express-actuator');
+const nocache = require('nocache');
 //initialize app
 const app = express();
 app.set('trust proxy', 1);
 //sets security measures (headers, etc)
 app.use(cors());
 app.use(helmet());
-app.use(helmet.noCache());
+app.use(nocache());
 const options = {
   basePath: '/api', // It will set /management/info instead of /info
   infoGitMode: 'simple', // the amount of git information you want to expose, 'simple' or 'full'
@@ -57,29 +57,13 @@ app.use(express.urlencoded({
 
 app.use(morgan(config.get('server:morganFormat')));
 
-let redisClient;
-if (config.get('environment') !== undefined && config.get('environment') === 'local') {
-  redisClient = redis.createClient({
-   host: config.get('redis:host'),
-   port: config.get('redis:port'),
-   password: config.get('redis:password')
-  });
-} else {
-  redisClient = new redis.Cluster([
-    {
-      port: config.get('redis:port'),
-      host: config.get('redis:host'),
-    }
-  ]);
-}
+const Redis = require('./util/redis/redis-client');
+Redis.init(); // call the init to initialize appropriate client, and reuse it across the app.
 
 const RedisStore = connectRedis(session);
 const dbSession = new RedisStore({
-  client: redisClient,
+  client: Redis.getRedisClient(),
   prefix: 'student-admin-sess:',
-});
-redisClient.on('error', (error) => {
-  log.error(`error occurred in redis client. ${error}`);
 });
 const cookie = {
   secure: true,
