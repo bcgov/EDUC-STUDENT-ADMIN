@@ -25,6 +25,7 @@ nconf.defaults({
       rootURL: process.env.PEN_REQUEST_API_URL,
       macrosURL: process.env.PEN_REQUEST_API_URL + '/pen-request-macro',
       emails: process.env.PEN_REQUEST_EMAIL_API_URL,
+      penRequestSaga:process.env.PEN_REQUEST_SAGA_API_URL
     },
     studentRequest: {
       statusCodeURL: process.env.STUDENT_PROFILE_API_URL + '/statuses',
@@ -57,7 +58,10 @@ nconf.defaults({
     host:process.env.REDIS_HOST,
     port:process.env.REDIS_PORT,
     password:process.env.REDIS_PASSWORD
+  },
+  messaging:{
+    natsUrl:process.env.NATS_URL,
+    natsCluster:process.env.NATS_CLUSTER
   }
 });
-
 module.exports = nconf;
