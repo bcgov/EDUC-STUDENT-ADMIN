@@ -283,7 +283,6 @@ export default {
         for (let notification of notifications) {
           notification = JSON.parse(notification);
           if (notification) {
-            const eventPayload = JSON.parse(notification.eventPayload);
             filteredNotifications.push(notification.eventOutcome);
           }
         }
