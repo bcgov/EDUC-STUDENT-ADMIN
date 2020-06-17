@@ -4,6 +4,7 @@ const HttpStatus = require('http-status-codes');
 const log = require('npmlog');
 const config = require('../config/index');
 const utils = require('./utils');
+const redisUtil = require('../util/redis/redis-utils');
 const { ApiError, ServiceError } = require('./error');
 const { LocalDateTime } = require('@js-joda/core');
 
@@ -98,18 +99,34 @@ function getAllRequests(requestType) {
       getData(token, config.get(`server:${requestType}:rootURL`) + '/paginated', params)
     ])
       .then(async ([statusCodeResponse, dataResponse]) => {
+        let filteredList = [];
+        const eventsArrayString = await redisUtil.getPenRequestSagaEvents();
+        const eventsArray = eventsArrayString === null ? []: JSON.parse(eventsArrayString);
         dataResponse['content'].forEach((element, i) => {
-          //replace status code with label
-          if (element[statusCodeKeyName]) {
-            let temp = statusCodeResponse.find(codeStatus => codeStatus[statusCodeKeyName] === element[statusCodeKeyName]);
-            if (temp) {
-              element[statusCodeKeyName] = temp;
+          const penRequestID= element['penRequestID'];
+          let sagaInProgress = false;
+          if(penRequestID && eventsArray){
+            for(const event of eventsArray){
+              if(event && event.penRequestID && event.penRequestID === penRequestID ){
+                sagaInProgress = true;
+              }
             }
           }
-          //dont send digital id or audit columns to frontend
-          delete element['digitalID'];
-          dataResponse['content'][i] = utils.stripAuditColumns(element);
+          if(!sagaInProgress){
+            //replace status code with label
+            if (element[statusCodeKeyName]) {
+              let temp = statusCodeResponse.find(codeStatus => codeStatus[statusCodeKeyName] === element[statusCodeKeyName]);
+              if (temp) {
+                element[statusCodeKeyName] = temp;
+              }
+            }
+            //dont send digital id or audit columns to frontend
+            delete element['digitalID'];
+            dataResponse['content'][i] = utils.stripAuditColumns(element);
+            filteredList.push(dataResponse['content'][i]);
+          }
         });
+        dataResponse['content'] = filteredList;
         return res.status(200).json(dataResponse);
       }).catch(e => {
         logApiError(e, 'getAllRequests', `Error occurred while attempting to GET all ${requestType} requests.`);

@@ -275,6 +275,19 @@ export default {
     },
     completeMacros() {
       return this.$store.getters[`${this.requestType}/completeMacros`];
+    },
+    notifications() {
+      let notifications = this.$store.getters['notifications/getNotifications'];
+      let filteredNotifications = [];
+      if (notifications) {
+        for (let notification of notifications) {
+          notification = JSON.parse(notification);
+          if (notification) {
+            filteredNotifications.push(notification.eventOutcome);
+          }
+        }
+      }
+      return filteredNotifications;
     }
   },
   mounted() {

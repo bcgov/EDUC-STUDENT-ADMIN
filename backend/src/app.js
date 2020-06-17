@@ -29,9 +29,12 @@ const studentRequestRouter = require('./routes/studentRequest');
 const studentRequestStatusesRouter = require('./routes/studentRequestStatuses');
 const promMid = require('express-prometheus-middleware');
 const actuator = require('express-actuator');
-const nocache = require('nocache');
+const messageSubscriber = require('./messaging/message-subscriber');
+messageSubscriber.init();
+messageSubscriber.callbacks();
 //initialize app
 const app = express();
+const nocache = require('nocache');
 app.set('trust proxy', 1);
 //sets security measures (headers, etc)
 app.use(cors());
@@ -56,10 +59,8 @@ app.use(express.urlencoded({
 }));
 
 app.use(morgan(config.get('server:morganFormat')));
-
 const Redis = require('./util/redis/redis-client');
 Redis.init(); // call the init to initialize appropriate client, and reuse it across the app.
-
 const RedisStore = connectRedis(session);
 const dbSession = new RedisStore({
   client: Redis.getRedisClient(),
@@ -136,6 +137,8 @@ utils.getOidcDiscovery().then(discovery => {
       realmRole: jwtPayload['realm_role']
     });
   }));
+}).catch((e) => {
+  log.error(`discovery failed, ${e}`);
 });
 //functions to serialize/deserialize users
 passport.serializeUser((user, next) => next(null, user));
@@ -157,5 +160,8 @@ apiRouter.use('/studentRequest/codes', studentRequestStatusesRouter);
 process.on('unhandledRejection', err => {
   log.error(err.stack);
 });
-
+// Prevent unhandled errors from crashing application
+process.on('error', err => {
+  log.error(err.stack);
+});
 module.exports = app;

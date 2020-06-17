@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../components/auth');
 const utils = require('../components/utils');
-const { findPenRequestsByPen, createPenRequestApiServiceReq, createPenRequestCommentApiServiceReq } = require('../components/penRequests');
+const { findPenRequestsByPen, createPenRequestApiServiceReq, createPenRequestCommentApiServiceReq} = require('../components/penRequests');
 const { completeRequest, getAllRequests, getMacros, getRequestById, getRequestCommentById, putRequest, rejectRequest, returnRequest } = require('../components/requests');
 
 const { getDocuments, getDocumentById, updateDocumentTypeById } = require('../components/documents');
@@ -41,7 +41,7 @@ router.post('/complete', passport.authenticate('jwt', {session: false}, undefine
 
 router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, verifyPenRequestInSession, rejectRequest(requestType, createPenRequestApiServiceReq));
 
-router.post('/:id/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, verifyPenRequestInSession, returnRequest(requestType, createPenRequestApiServiceReq, createPenRequestCommentApiServiceReq));
+router.post('/:id/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, verifyPenRequestInSession,returnRequest(requestType, createPenRequestApiServiceReq, createPenRequestCommentApiServiceReq));/*returnPenRequest*/
 
 // retrieve all the documents.
 router.get('/:id/documents', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getDocuments(requestType));

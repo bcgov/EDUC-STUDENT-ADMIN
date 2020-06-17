@@ -22,6 +22,8 @@ app.set('port', port);
  */
 
 const server = http.createServer(app);
+const WS = require('./socket/web-socket');
+WS.init(app,server);
 
 /**
  * Listen on provided port, on all network interfaces.
