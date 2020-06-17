@@ -64,5 +64,4 @@ nconf.defaults({
     natsCluster:process.env.NATS_CLUSTER
   }
 });
-
 module.exports = nconf;
