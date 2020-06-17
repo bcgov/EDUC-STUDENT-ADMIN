@@ -29,6 +29,9 @@ const studentRequestRouter = require('./routes/studentRequest');
 const studentRequestStatusesRouter = require('./routes/studentRequestStatuses');
 const promMid = require('express-prometheus-middleware');
 const actuator = require('express-actuator');
+const messageSubscriber = require('./messaging/message-subscriber');
+messageSubscriber.init();
+messageSubscriber.callbacks();
 //initialize app
 const app = express();
 const nocache = require('nocache');
@@ -134,6 +137,8 @@ utils.getOidcDiscovery().then(discovery => {
       realmRole: jwtPayload['realm_role']
     });
   }));
+}).catch((e) => {
+  log.error(`discovery failed, ${e}`);
 });
 //functions to serialize/deserialize users
 passport.serializeUser((user, next) => next(null, user));
@@ -155,5 +160,8 @@ apiRouter.use('/studentRequest/codes', studentRequestStatusesRouter);
 process.on('unhandledRejection', err => {
   log.error(err.stack);
 });
-
+// Prevent unhandled errors from crashing application
+process.on('error', err => {
+  log.error(err.stack);
+});
 module.exports = app;

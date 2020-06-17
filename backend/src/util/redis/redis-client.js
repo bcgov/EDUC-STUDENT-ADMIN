@@ -10,14 +10,17 @@ const Redis = {
     const IOREDIS = require('ioredis');
     const config = require('../../config');
     const log = require('npmlog');
-
-
-    redisClient = new IOREDIS.Cluster([{
-      host: config.get('redis:host'),
-      port: config.get('redis:port')
-
-    }]);
-
+    if('local' === config.get('environment')){
+      redisClient = new IOREDIS({
+        host: config.get('redis:host'),
+        port: config.get('redis:port')
+      });
+    } else {
+      redisClient = new IOREDIS.Cluster([{
+        host: config.get('redis:host'),
+        port: config.get('redis:port')
+      }]);
+    }
     redisClient.on('error', (error) => {
       log.error(`error occurred in redis client. ${error}`);
     });
