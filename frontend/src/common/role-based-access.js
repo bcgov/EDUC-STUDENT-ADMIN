@@ -8,12 +8,12 @@ const roleActionMap = {
     'RELEASE_REQUEST': ['STUDENT_ADMIN']
   },
   studentRequest: {
-    'CLAIM_REQUEST': ['STUDENT_ADMIN'],
-    'SEND_UPDATE': ['STUDENT_ADMIN'],
-    'REQUEST_MORE_INFO': ['STUDENT_ADMIN'],
-    'REJECT_REQUEST': ['STUDENT_ADMIN'],
-    'CHANGE_DOCUMENT_TYPE': ['STUDENT_ADMIN'],
-    'RELEASE_REQUEST': ['STUDENT_ADMIN']
+    'CLAIM_REQUEST': ['STUDENT_PROFILE_ADMIN'],
+    'SEND_UPDATE': ['STUDENT_PROFILE_ADMIN'],
+    'REQUEST_MORE_INFO': ['STUDENT_PROFILE_ADMIN'],
+    'REJECT_REQUEST': ['STUDENT_PROFILE_ADMIN'],
+    'CHANGE_DOCUMENT_TYPE': ['STUDENT_PROFILE_ADMIN'],
+    'RELEASE_REQUEST': ['STUDENT_PROFILE_ADMIN']
   },
 };
 
@@ -39,7 +39,7 @@ function userHasRole(rolesAllowed, userRoles) {
   return userHasValidRole;
 }
 
-function isReadonlyUser(userRoles) {
+function isReadonlyUserGMP(userRoles) {
   let isReadOnly = true;
   for (const index in userRoles) {
     if ('STUDENT_ADMIN' === userRoles[index]) {
@@ -50,7 +50,19 @@ function isReadonlyUser(userRoles) {
   return isReadOnly;
 }
 
+function isReadonlyUserUMP(userRoles) {
+  let isReadOnly = true;
+  for (const index in userRoles) {
+    if ('STUDENT_PROFILE_ADMIN' === userRoles[index]) {
+      isReadOnly = false;
+      break;
+    }
+  }
+  return isReadOnly;
+}
+
 module.exports = {
   AccessEnabledForUser: isAccessEnabledForUser,
-  ReadOnlyUser: isReadonlyUser
+  ReadOnlyUserGMP: isReadonlyUserGMP,
+  ReadonlyUserUMP: isReadonlyUserUMP
 };

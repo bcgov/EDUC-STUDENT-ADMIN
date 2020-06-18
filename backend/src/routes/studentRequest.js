@@ -14,43 +14,43 @@ const verifyStudentRequestInSession = utils.verifyRequestInSession(requestType);
 /**
  * Gets all the comments for a request by request id
  */
-router.get('/:id/comments', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getRequestCommentById(requestType));
+router.get('/:id/comments', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPUserToken, getRequestCommentById(requestType));
 
 /**
  * Updates a request
  * */
-router.put('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, verifyStudentRequestInSession, putRequest(requestType, createStudentRequestApiServiceReq));
+router.put('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, verifyStudentRequestInSession, putRequest(requestType, createStudentRequestApiServiceReq));
 
 /*
  * Get all requests
  */
-router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getAllRequests(requestType));
+router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPUserToken, getAllRequests(requestType));
 
 /*
  * Get all requests for a given pen number in the query parameter.
  */
 //router.get('/duplicateRequests', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, findPenRequestsByPen);
 
-router.get('/macros', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, utils.cacheMiddleware(), getMacros(requestType));
+router.get('/macros', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, utils.cacheMiddleware(), getMacros(requestType));
 
 /*
  * Get a request by id
  */
-router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getRequestById(requestType));
+router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPUserToken, getRequestById(requestType));
 
-router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, verifyStudentRequestInSession, completeRequest(requestType, createStudentRequestApiServiceReq));
+router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, verifyStudentRequestInSession, completeRequest(requestType, createStudentRequestApiServiceReq));
 
-router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, verifyStudentRequestInSession, rejectRequest(requestType, createStudentRequestApiServiceReq));
+router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, verifyStudentRequestInSession, rejectRequest(requestType, createStudentRequestApiServiceReq));
 
-router.post('/:id/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, verifyStudentRequestInSession, returnRequest(requestType, createStudentRequestApiServiceReq, createStudentRequestCommentApiServiceReq));
+router.post('/:id/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, verifyStudentRequestInSession, returnRequest(requestType, createStudentRequestApiServiceReq, createStudentRequestCommentApiServiceReq));
 
 // retrieve all the documents.
-router.get('/:id/documents', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getDocuments(requestType));
+router.get('/:id/documents', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPUserToken, getDocuments(requestType));
 
 // retrieve the document by its id.
-router.get('/:id/documents/:documentId', auth.isValidUserToken, getDocumentById(requestType));
+router.get('/:id/documents/:documentId', auth.isValidUMPUserToken, getDocumentById(requestType));
 
 // Updates the type of a document by its id.
-router.put('/:id/documents/:documentId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, updateDocumentTypeById(requestType));
+router.put('/:id/documents/:documentId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, updateDocumentTypeById(requestType));
 
 module.exports = router;

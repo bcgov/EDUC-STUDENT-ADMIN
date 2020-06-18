@@ -276,6 +276,7 @@ export default {
     completeMacros() {
       return this.$store.getters[`${this.requestType}/completeMacros`];
     },
+    /* commented out the below code as a reference point for actual implementation, need some work to show notification only related to this pen request or profile request.
     notifications() {
       let notifications = this.$store.getters['notifications/getNotifications'];
       let filteredNotifications = [];
@@ -288,7 +289,7 @@ export default {
         }
       }
       return filteredNotifications;
-    }
+    }*/
   },
   mounted() {
     this.enableActions = false;

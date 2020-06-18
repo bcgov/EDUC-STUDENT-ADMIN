@@ -266,6 +266,31 @@ const utils = {
       });
     };
   },
+  isUserHasAValidRole(roles) {
+    const validGMPRoles = config.get('server:penRequest:rolesAllowed') || [];
+    const validUMPRoles = config.get('server:studentRequest:rolesAllowed') || [];
+    const validUserRoles = validGMPRoles.concat(validUMPRoles);
+    const isValidUserRole = (element) => Array.isArray(validUserRoles) ? validUserRoles.includes(element) : false;
+    return !!(Array.isArray(roles) && roles.some(isValidUserRole));
+  },
+  isUserHasAGMPRole(roles) {
+    const validGMPRoles = config.get('server:penRequest:rolesAllowed') || [];
+    const isValidUserRole = (element) => Array.isArray(validGMPRoles) ? validGMPRoles.includes(element) : false;
+    return !!(Array.isArray(roles) && roles.some(isValidUserRole));
+  },
+  isUserHasAUMPRole(roles) {
+    const validUMPRoles = config.get('server:studentRequest:rolesAllowed') || [];
+    const isValidUserRole = (element) => Array.isArray(validUMPRoles) ? validUMPRoles.includes(element) : false;
+    return !!(Array.isArray(roles) && roles.some(isValidUserRole));
+  },
+  isUserHasAGMPAdminRole(roles) {
+    const gmpAdminRole = config.get('server:penRequest:roleAdmin') || '';
+    return !!(Array.isArray(roles) && roles.includes(gmpAdminRole));
+  },
+  isUserHasAUMPAdminRole(roles) {
+    const umpAdminRole = config.get('server:studentRequest:roleAdmin') || '';
+    return !!(Array.isArray(roles) && roles.includes(umpAdminRole));
+  },
   getBackendToken,
   getData,
   logApiError,
