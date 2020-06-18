@@ -82,6 +82,10 @@ export const REQUEST_TYPES = Object.freeze(
     studentRequest: {
       name: 'studentRequest',
       label: 'UMPI Request'
+    },
+    studentSearch: {
+      name: 'studentSearch',
+      label: 'Student Search'
     }
   }
 );
