@@ -22,7 +22,8 @@
   </v-content>
   <v-content v-else>
     <PenRequestDetail v-if="requestType === requestTypes.penRequest.name"></PenRequestDetail>
-    <StudentRequestDetail v-else></StudentRequestDetail>
+    <StudentRequestDetail v-else-if="requestType === requestTypes.studentRequest.name"></StudentRequestDetail>
+    <StudentSearchDetail v-else-if="requestType === requestTypes.studentSearch.name"></StudentSearchDetail>
   </v-content>
 </template>
 
