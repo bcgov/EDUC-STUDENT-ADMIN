@@ -20,7 +20,9 @@ const webSocket = {
         ws.close();
       } else {
         const userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
-        if (userToken['realm_access'] && userToken['realm_access'].roles['includes'](config.get('oidc:staffRole'))) {
+        if (userToken['realm_access'] && userToken['realm_access'].roles
+          && (userToken['realm_access'].roles['includes'](config.get('server:penRequest:roleAdmin'))
+            || userToken['realm_access'].roles['includes'](config.get('server:studentRequest:roleAdmin')))) {
           connectedClients.push(ws);
         } else {
           log.warn('attempted socket connection without valid role');

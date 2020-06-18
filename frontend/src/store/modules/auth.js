@@ -9,13 +9,17 @@ export default {
     isAuthenticated: localStorage.getItem('jwtToken') !== null,
     isAuthorizedUser: localStorage.getItem('isAuthorizedUser') !== null,
     userInfo: false,
+    isValidGMPUser: localStorage.getItem('isValidGMPUser') !== null,
+    isValidUMPUser: localStorage.getItem('isValidUMPUser') !== null
   },
   getters: {
     acronyms: state => state.acronyms,
     isAuthenticated: state => state.isAuthenticated,
     jwtToken: () => localStorage.getItem('jwtToken'),
     userInfo: state => state.userInfo,
-    isAuthorizedUser: state => state.isAuthorizedUser
+    isAuthorizedUser: state => state.isAuthorizedUser,
+    isValidGMPUser: state => state.isValidGMPUser,
+    isValidUMPUser: state => state.isValidUMPUser
   },
   mutations: {
     //sets Json web token and determines whether user is authenticated
@@ -35,6 +39,24 @@ export default {
       } else {
         state.isAuthorizedUser = false;
         localStorage.removeItem(('isAuthorizedUser'));
+      }
+    },
+    setGMPUser: (state, isValidGMPUser) => {
+      if (isValidGMPUser) {
+        state.isValidGMPUser = true;
+        localStorage.setItem('isValidGMPUser', 'true');
+      } else {
+        state.isValidGMPUser = false;
+        localStorage.removeItem(('isValidGMPUser'));
+      }
+    },
+    setUMPUser: (state, isValidUMPUser) => {
+      if (isValidUMPUser) {
+        state.isValidUMPUser = true;
+        localStorage.setItem('isValidUMPUser', 'true');
+      } else {
+        state.isValidUMPUser = false;
+        localStorage.removeItem(('isValidUMPUser'));
       }
     },
     setUserInfo: (state, userInf) => {
@@ -80,6 +102,8 @@ export default {
               context.commit('setJwtToken', response.jwtFrontend);
             }
             context.commit('setAuthorizedUser', response.isAuthorizedUser);
+            context.commit('setGMPUser', response.isValidGMPUser);
+            context.commit('setUMPUser', response.isValidUMPUser);
             ApiService.setAuthHeader(response.jwtFrontend);
           }
           else {
@@ -92,6 +116,8 @@ export default {
             context.commit('setJwtToken', response.jwtFrontend);
           }
           context.commit('setAuthorizedUser', response.isAuthorizedUser);
+          context.commit('setGMPUser', response.isValidGMPUser);
+          context.commit('setUMPUser', response.isValidUMPUser);
           ApiService.setAuthHeader(response.jwtFrontend);
         }
       } catch (e) {

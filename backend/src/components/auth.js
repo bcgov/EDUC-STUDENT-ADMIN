@@ -86,8 +86,7 @@ const auth = {
     }
     next();
   },
-
-  isValidAdminToken(req, res, next) {
+  isValidGMPAdmin(req, res, next) {
     try {
       const jwtToken = utils.getBackendToken(req);
       if (!jwtToken) {
@@ -96,7 +95,72 @@ const auth = {
         });
       }
       const userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
-      if (userToken['realm_access'] && userToken['realm_access'].roles['includes'](config.get('oidc:staffRole'))) {
+      if (userToken['realm_access'] && userToken['realm_access'].roles
+        && utils.isUserHasAGMPAdminRole(userToken['realm_access'].roles)) {
+        return next();
+      }
+      return res.status(401).json({
+        message: 'Unauthorized user'
+      });
+    } catch (e) {
+      log.error(e);
+      return next(res.status(500));
+    }
+  },
+  isValidUMPAdmin(req, res, next) {
+    try {
+      const jwtToken = utils.getBackendToken(req);
+      if (!jwtToken) {
+        return res.status(401).json({
+          message: 'Unauthorized user'
+        });
+      }
+      const userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
+      if (userToken['realm_access'] && userToken['realm_access'].roles
+        && utils.isUserHasAUMPAdminRole(userToken['realm_access'].roles)) {
+        return next();
+      }
+      return res.status(401).json({
+        message: 'Unauthorized user'
+      });
+    } catch (e) {
+      log.error(e);
+      return next(res.status(500));
+    }
+  },
+  isValidGMPUserToken(req, res, next) {
+    try {
+      const jwtToken = utils.getBackendToken(req);
+      if (!jwtToken) {
+        return res.status(401).json({
+          message: 'Unauthorized user'
+        });
+      }
+      const userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
+      if (userToken['realm_access'] && userToken['realm_access'].roles
+        && utils.isUserHasAGMPRole(userToken['realm_access'].roles)) {
+        return next();
+      }
+      return res.status(401).json({
+        message: 'Unauthorized user'
+      });
+    } catch (e) {
+      log.error(e);
+      return next(res.status(500));
+    }
+  },
+
+  isValidUMPUserToken(req, res, next) {
+    try {
+      const jwtToken = utils.getBackendToken(req);
+      if (!jwtToken) {
+        return res.status(401).json({
+          message: 'Unauthorized user'
+        });
+      }
+      const userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
+      if (userToken['realm_access'] && userToken['realm_access'].roles
+        && utils.isUserHasAUMPRole(userToken['realm_access'].roles)) {
         return next();
       }
       return res.status(401).json({
@@ -116,16 +180,9 @@ const auth = {
         });
       }
       const userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
-
-      if (userToken['realm_access'] && userToken['realm_access'].roles) {
-        const roles = userToken['realm_access'] && userToken['realm_access'].roles;
-        const rolesAllowed = (config.get('oidc:rolesAllowed'));
-        for(const rolesIndex in roles){
-          const role = roles[rolesIndex];
-          if(rolesAllowed.indexOf(role) !== -1){
-            return next();
-          }
-        }
+      if (userToken['realm_access'] && userToken['realm_access'].roles
+        && utils.isUserHasAValidRole(userToken['realm_access'].roles)) {
+        return next();
       }
       return res.status(401).json({
         message: 'Unauthorized user'
@@ -159,7 +216,7 @@ const auth = {
       if (thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt) {
         const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
         if (userToken && userToken.realm_access && userToken.realm_access.roles
-          && (userToken.realm_access.roles.indexOf('STUDENT_ADMIN') !== -1 || userToken.realm_access.roles.indexOf('STUDENT_ADMIN_READ_ONLY') !== -1)) {
+          && (utils.isUserHasAValidRole(userToken.realm_access.roles))) {
           return true;
         }
       }
@@ -168,7 +225,40 @@ const auth = {
       log.error(e);
       return false;
     }
-  }
+  },
+  isValidGMPUser(req) {
+    try {
+      const thisSession = req['session'];
+      if (thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt) {
+        const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
+        if (userToken && userToken.realm_access && userToken.realm_access.roles
+          && (utils.isUserHasAGMPRole(userToken.realm_access.roles))) {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      log.error(e);
+      return false;
+    }
+  },
+  isValidUMPUser(req) {
+    try {
+      const thisSession = req['session'];
+      if (thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt) {
+        const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
+        if (userToken && userToken.realm_access && userToken.realm_access.roles
+          && (utils.isUserHasAUMPRole(userToken.realm_access.roles))) {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      log.error(e);
+      return false;
+    }
+  },
+
 };
 
 module.exports = auth;
