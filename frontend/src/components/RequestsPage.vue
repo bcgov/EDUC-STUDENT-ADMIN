@@ -5,7 +5,8 @@
       v-model="tab"
     >
       <v-tab :href="`#${requestTypes.penRequest.name}`">PEN Retrieval Requests</v-tab>
-      <v-tab :href="`#${requestTypes.studentRequest.name}`">UMP Requests</v-tab>
+      <v-tab :href="`#${requestTypes.studentRequest.name}`">Update PEN Info Requests</v-tab>
+      <v-tab :href="`#${requestTypes.studentSearch.name}`">Student Search</v-tab>
 
       <v-tab-item
         :value="requestTypes.penRequest.name"
@@ -24,6 +25,15 @@
           penName="recordedPen"
         ></RequestsDisplay>
       </v-tab-item>
+      <v-tab-item
+        :value="requestTypes.studentSearch.name"
+      >
+        <StudentSearch
+          :requestType="requestTypes.studentSearch.name"
+          label="Select UMP request statuses to view"
+          penName="recordedPen"
+        ></StudentSearch>
+      </v-tab-item>
     </v-tabs>
   </v-container>
 </template>
@@ -32,10 +42,12 @@
 import { mapGetters, mapMutations } from 'vuex';
 import { REQUEST_TYPES } from '../utils/constants';
 import RequestsDisplay from './RequestsDisplay';
+import StudentSearch from './penreg/student-search/StudentSearch';
 export default {
   name: 'requestsPage',
   components: {
     RequestsDisplay,
+    StudentSearch
   },
   data() {
     return {

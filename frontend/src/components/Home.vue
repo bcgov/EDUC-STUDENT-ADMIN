@@ -30,8 +30,9 @@
 import Login from './Login';
 import RequestsPage from './RequestsPage';
 import { mapGetters } from 'vuex';
-import PenRequestDetail from './pen/PenRequestDetail';
-import StudentRequestDetail from './student/StudentRequestDetail';
+import PenRequestDetail from './gmp/PenRequestDetail';
+import StudentRequestDetail from './ump/StudentRequestDetail';
+import StudentSearchDetail from './penreg/student-search/StudentSearchDetail';
 import UnAuthorized from './UnAuthorized';
 import { REQUEST_TYPES } from '../utils/constants';
 export default {
@@ -41,6 +42,7 @@ export default {
     RequestsPage,
     PenRequestDetail,
     StudentRequestDetail,
+    StudentSearchDetail,
     UnAuthorized  
   },
   computed: {
