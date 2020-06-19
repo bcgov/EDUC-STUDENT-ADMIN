@@ -25,7 +25,7 @@ nconf.defaults({
       rootURL: process.env.PEN_REQUEST_API_URL,
       macrosURL: process.env.PEN_REQUEST_API_URL + '/pen-request-macro',
       emails: process.env.PEN_REQUEST_EMAIL_API_URL,
-      penRequestSaga:process.env.PEN_REQUEST_SAGA_API_URL,
+      saga:process.env.PEN_REQUEST_SAGA_API_URL,
       rolesAllowed:process.env.GMP_ROLES,
       roleAdmin:process.env.GMP_ROLE_ADMIN
     },

@@ -22,6 +22,7 @@ let object = {
     REJECT_URL: penRequestRoot + '/reject',
     RETURN_URL: penRequestRoot + '/return',
     MACRO_URL: penRequestRoot + '/macros',
+    UNLINK_URL: penRequestRoot + '/unlink',
   },
 
   studentRequest: {
