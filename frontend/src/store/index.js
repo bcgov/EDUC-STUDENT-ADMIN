@@ -4,6 +4,7 @@ import auth from './modules/auth';
 import request from './modules/request';
 import app from './modules/app';
 import notifications from './modules/notifications';
+import penReg from './modules/penReg';
 
 Vue.use(Vuex);
 
@@ -13,7 +14,8 @@ const store = new Vuex.Store({
     app,
     penRequest: request,
     studentRequest: request,
-    notifications
+    notifications,
+    penReg: penReg,
   }
 });
 

@@ -1,13 +1,13 @@
 <template>
   <div id="searchResults" class="px-3" style="width: 100%" :overlay=false>
     <v-row no-gutters>
-      <span class="px-4 pb-2">{{ tableData.numberOfElements }} Results</span>
+      <span class="px-4 pb-2">{{ tableData.totalElements }} Results</span>
     </v-row>
     <v-data-table
             id="dataTable"
             :headers="headers"
             :items="tableData.content"
-            :page.sync="pageNumber"
+            :page.sync="curPage"
             :items-per-page="tableData.pageable.pageSize"
             hide-default-footer
             @page-count="tableData.pageable.pageNumber = $event">
@@ -29,7 +29,7 @@
       </template>
     </v-data-table>
     <div class="text-center pt-2">
-      <v-pagination v-model="pageNumber" :length="tableData.totalPages"></v-pagination>
+      <v-pagination v-model="curPage" :length="tableData.totalPages"></v-pagination>
     </div>
   </div>
 </template>
@@ -53,7 +53,7 @@ export default {
   },
   data () {
     return {
-      pageNumber: 1,
+      curPage: this.$store.state['penReg'].pageNumber,
       pageCount: 0,
       itemsPerPage: 10,
       headers: [
@@ -76,9 +76,10 @@ export default {
     };
   },
   watch: {
-    pageNumber: {
+    curPage: {
       handler() {
-        this.search();
+        this.$store.state['penReg'].pageNumber = this.curPage;
+        this.search(false);
       }
     }
   }
