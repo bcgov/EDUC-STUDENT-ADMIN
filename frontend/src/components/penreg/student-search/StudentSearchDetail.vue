@@ -5,10 +5,8 @@
     :prep-put="prepPut"
     :request-completed="requestCompleted"
   >
-    <template v-slot:request="{ request }">
-      <StudentSearchCard
-        :request="request"
-      >
+    <template>
+      <StudentSearchCard>
       </StudentSearchCard>
     </template>
   </StudentSearch>

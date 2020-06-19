@@ -60,7 +60,7 @@ export default {
       };
     }else {
       return {
-
+        tab: REQUEST_TYPES.studentSearch.name
       };
     }
   },
