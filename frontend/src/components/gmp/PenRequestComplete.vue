@@ -258,15 +258,20 @@ export default {
       }
     },
     notifications() {
+      let outcome = null;
       let notifications = this.$store.getters['notifications/notifications'];
       if (Array.isArray(notifications)) {
         for (let notification of notifications) {
           notification = JSON.parse(notification);
           if (notification && notification.penRequestID === this.requestId && notification.eventOutcome === 'SAGA_COMPLETED') {
             this.loadPenRequest();
+            outcome = 'SAGA_COMPLETED';
+          } else if (notification && notification.penRequestID === this.requestId) {
+            outcome = notification.eventOutcome;
           }
         }
       }
+      return outcome;
     }
   },
   mounted() {
