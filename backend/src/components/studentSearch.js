@@ -36,6 +36,7 @@ async function searchStudent(req, res) {
   ])
     .then(async ([dataResponse]) =>
     {
+      log.info(util.inspect(dataResponse, {showHidden: false, depth: 3}));
       let filteredList = [];
       dataResponse['content'].forEach((element, i) => {
         filteredList.push(dataResponse['content'][i]);

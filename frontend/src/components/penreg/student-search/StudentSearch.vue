@@ -17,61 +17,63 @@
                   v-model="studentSearchParams.pen"
                   color="#003366"
                   label="PEN"
-                  maxlength="40"
+                  maxlength="9"
+                  minglength="9"
                   dense
+                  :rules="validatePen()"
                 ></v-text-field>
             </v-col>
             <v-col class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
               <v-text-field
-                id='legalSurname'
-                v-model="studentSearchParams.legalSurname"
+                id='legalLastName'
+                v-model="studentSearchParams.legalLastName"
                 color="#003366"
                 label="Legal Surname"
-                maxlength="40"
+                maxlength="255"
                 dense
                 ></v-text-field>
               <v-text-field
-                id='usualSurname'
-                v-model="studentSearchParams.usualSurname"
+                id='usualLastName'
+                v-model="studentSearchParams.usualLastName"
                 color="#003366"
                 label="Usual Surname"
-                maxlength="40"
+                maxlength="255"
                 dense
               ></v-text-field>
             </v-col>
             <v-col class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
               <v-text-field
-                id='legalGivenName'
-                v-model="studentSearchParams.legalGivenName"
+                id='legalFirstName'
+                v-model="studentSearchParams.legalFirstName"
                 color="#003366"
                 label="Legal Given"
-                maxlength="40"
+                maxlength="255"
                 dense
               ></v-text-field>
               <v-text-field
-                id='usualGiven'
-                v-model="studentSearchParams.usualGiven"
+                id='usualFirstName'
+                v-model="studentSearchParams.usualFirstName"
                 color="#003366"
                 label="Usual Given"
-                maxlength="40"
+                maxlength="255"
                 dense
                 ></v-text-field>
             </v-col>
             <v-col class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
               <v-text-field
-                id='legalMiddleName'
-                v-model="studentSearchParams.legalMiddleName"
+                id='legalMiddleNames'
+                v-model="studentSearchParams.legalMiddleNames"
                 color="#003366"
                 label="Legal Middle"
-                maxlength="40"
+                maxlength="255"
                 dense
               ></v-text-field>
               <v-text-field
-                id='usualMiddle'
-                v-model="studentSearchParams.usualMiddle"
+                id='usualMiddleNames'
+                v-model="studentSearchParams.usualMiddleNames"
                 color="#003366"
                 label="Usual Middle"
-                maxlength="40"
+                maxlength="255"
                 dense
               ></v-text-field>
             </v-col>
@@ -81,7 +83,7 @@
                 v-model="studentSearchParams.postalCode"
                 color="#003366"
                 label="Postal Code"
-                maxlength="40"
+                maxlength="7"
                 dense
               ></v-text-field>
               <v-text-field
@@ -90,14 +92,14 @@
                 color="#003366"
                 disabled
                 label="Memo"
-                maxlength="40"
+                maxlength="25"
                 dense
               ></v-text-field>
             </v-col>
             <v-col cols="1" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
               <v-text-field
-                id='gender'
-                v-model="studentSearchParams.gender"
+                id='genderCode'
+                v-model="studentSearchParams.genderCode"
                 color="#003366"
                 label="Gender"
                 maxlength="1"
@@ -108,7 +110,7 @@
                 v-model="studentSearchParams.localID"
                 color="#003366"
                 label="Local ID"
-                maxlength="40"
+                maxlength="12"
                 dense
               ></v-text-field>
             </v-col>
@@ -118,7 +120,8 @@
                 v-model="studentSearchParams.dob"
                 color="#003366"
                 label="Birth Date"
-                maxlength="40"
+                maxlength="9"
+                minLength="9"
                 dense
               ></v-text-field>
               <v-text-field
@@ -126,7 +129,8 @@
                 v-model="studentSearchParams.grade"
                 color="#003366"
                 label="Grade"
-                maxlength="40"
+                maxlength="2"
+                minLength="1"
                 dense
               ></v-text-field>
             </v-col>
@@ -136,14 +140,15 @@
                 v-model="studentSearchParams.school"
                 color="#003366"
                 label="School"
-                maxlength="40"
+                maxlength="8"
+                minLength="8"
                 dense
               ></v-text-field>
             </v-col>
           </v-row>
           <v-row align="end" no-gutters style="background-color:white;">
             <v-col align="end" class="py-3 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
-                <v-btn disabled outlined class="mx-2" color="#38598a">Advanced Search</v-btn><v-btn class="white--text" color="#38598a" @click="searchStudent">Search</v-btn>
+                <v-btn disabled outlined class="mx-2" color="#38598a">Advanced Search</v-btn><v-btn class="white--text" :loading="searchLoading" color="#38598a" @click="searchStudent">Search</v-btn>
             </v-col>
           </v-row>
           <v-row no-gutters class="py-2" style="background-color:white;">
@@ -175,23 +180,25 @@ export default {
   },
   data() {
     return {
+      penHint: 'Invalid PEN',
       validForm: false,
       menu: false,
       genderLabels: [],
       localDate:LocalDate,
       studentSearchResponse: null,
+      searchLoading: false,
       studentSearchParams: {
         pen: null,
-        legalSurname: null,
-        legalGivenName: null,
-        legalMiddleName: null,
+        legalLastName: null,
+        legalFirstName: null,
+        legalMiddleNames: null,
         postalCode: null,
-        gender: null,
+        genderCode: null,
         dob: null,
         school: null,
-        usualSurname: null,
-        usualGiven: null,
-        usualMiddle: null,
+        usualLastName: null,
+        usualFirstName: null,
+        usualMiddleNames: null,
         memo: null,
         localID: null,
         grade: null
@@ -200,13 +207,55 @@ export default {
   },
   computed:{
     ...mapGetters('app', ['requestType']),
+    charRules() {
+      return [
+        v => !(/[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u1100-\u11FF\u3040-\u309F\u30A0-\u30FF\u3130-\u318F\u3400-\u4DBF\u4E00-\u9FFF\uAC00-\uD7AF]/.test(v)) || 'Enter English characters only'
+      ];
+    },
   },
   methods: {
+    validatePen() {
+      var validPEN = false;
+      if(this.studentSearchParams) {
+        if (!this.studentSearchParams.pen){
+          validPEN = true;
+        }else if (this.studentSearchParams.pen.length === 9) {
+          if (this.checkDigit()) {
+            validPEN = true;
+          }else{
+            validPEN = false;
+          } 
+        }
+      }
+      if(validPEN){
+        return [];
+      }else{
+        return [
+          this.penHint
+        ];   
+      }
+    },
     requiredRules(hint = 'Required') {
       return [
         v => !!(v && v.trim()) || hint,
         ...this.charRules
       ];
+    },
+    checkDigit() {
+      const penDigits = [];
+      
+      for(let i = 0; i < this.studentSearchParams.pen.length; i++) {
+        penDigits[i] = parseInt(this.studentSearchParams.pen.charAt(i), 10);
+      }
+      const S1 = penDigits.slice(0,-1).filter((element,index) => {return index % 2 === 0;}).reduce((a,b) => a+b,0);
+      const A = parseInt(penDigits.slice(0,-1).filter((element,index) => {return index % 2 === 1;}).join(''), 10);
+      const B = 2 * A;
+      let S2 = B.toString().split('').map(Number).reduce(function (a, b) {return a + b;}, 0);
+      const S3 = S1 + S2;
+      if((S3 % 10) === 0) {
+        return penDigits.pop() === 0;
+      }
+      return penDigits.pop() === (10 - (S3%10));
     },
     focusBirthdateField(event) {
       if(event.key === 'Tab' && event.type === 'keyup') {
@@ -214,6 +263,7 @@ export default {
       }
     },
     searchStudent() {
+      this.searchLoading = true;
       if(this.$refs.studentSearchForm.validate()) {
         const studentSearchKeys = Object.keys(this.studentSearchParams).filter(k => (this.studentSearchParams[k] && this.studentSearchParams[k].length !== 0));
         let studentSearchFilters;
@@ -233,9 +283,10 @@ export default {
             this.completedUpdateSuccess = false;
           })
           .finally(() => {
-            console.log('SUBMITTED');
+            this.searchLoading = false;
           });
       }
+      this.searchLoading = false;
     },    
     prepPut(studentSearchFilters) {
       return {
