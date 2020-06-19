@@ -37,6 +37,11 @@ let object = {
     MACRO_URL: studentRequestRoot + '/macros',
   },
 
+  studentSearch: {
+    ROOT_ENDPOINT: studentRoot,
+    SEARCH_URL: studentRoot + '/search'
+  },
+
   STUDENT_DATA_URL: studentRoot,
   SEARCH_BY_PEN: demographicRoot
 };
