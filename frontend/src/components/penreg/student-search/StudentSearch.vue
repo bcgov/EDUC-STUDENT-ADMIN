@@ -226,6 +226,7 @@ export default {
     prepPut(studentSearchFilters) {
       return {
         params: {
+          pageNumber: 0,
           searchQueries: studentSearchFilters
         }
       };
