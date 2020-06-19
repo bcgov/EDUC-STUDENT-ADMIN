@@ -143,7 +143,7 @@
           </v-row>
           <v-row align="end" no-gutters style="background-color:white;">
             <v-col align="end" class="py-3 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
-                <v-btn disabled outlined class="mx-2" color="#38598a">Advanced Search</v-btn><v-btn class="white--text" color="#38598a" @click="searchStudent">Search</v-btn>
+                <v-btn disabled outlined class="mx-2" color="#38598a">Advanced Search</v-btn><v-btn class="white--text" color="#38598a" @click="searchStudent(true)">Search</v-btn>
             </v-col>
           </v-row>
           <v-row no-gutters class="py-2" style="background-color:white;">
@@ -154,6 +154,7 @@
                     :tableData="this.studentSearchResponse"
                     :searchCriteria="this.studentSearchParams"
                     :search="searchStudent"
+                    :key="studentSearchResultsKey"
             ></StudentSearchResults>
           </v-row>
         </v-card>
@@ -166,7 +167,7 @@
 import {LocalDate} from '@js-joda/core';
 import ApiService from '../../../common/apiService';
 import { Routes } from '../../../utils/constants';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 import StudentSearchResults from './StudentSearchResults';
 
 export default {
@@ -196,12 +197,15 @@ export default {
         localID: null,
         grade: null
       },
+      studentSearchResultsKey: 0
     };
   },
   computed:{
     ...mapGetters('app', ['requestType']),
+    ...mapGetters('penReg', ['pageNumber'])
   },
   methods: {
+    ...mapMutations('penReg', ['setPageNumber']),
     requiredRules(hint = 'Required') {
       return [
         v => !!(v && v.trim()) || hint,
@@ -213,7 +217,11 @@ export default {
         this.menu = true;
       }
     },
-    searchStudent() {
+    searchStudent(isInitialSearch) {
+      this.studentSearchResultsKey += 1; //forces StudentSearchResults to rerender and update curPage
+      if(isInitialSearch){
+        this.setPageNumber(1);
+      }
       if(this.$refs.studentSearchForm.validate()) {
         const studentSearchKeys = Object.keys(this.studentSearchParams).filter(k => (this.studentSearchParams[k] && this.studentSearchParams[k].length !== 0));
         let studentSearchFilters;
@@ -240,7 +248,7 @@ export default {
     prepPut(studentSearchFilters) {
       return {
         params: {
-          pageNumber: this.pageNumber || 0,
+          pageNumber: this.pageNumber-1,
           searchQueries: studentSearchFilters
         }
       };
