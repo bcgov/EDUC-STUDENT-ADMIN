@@ -141,9 +141,6 @@
                 v-model="studentSearchParams.school"
                 color="#003366"
                 label="School"
-                type="number"
-                hide-details
-                single-line
                 counter=false
                 maxlength="8"
                 minLength="8"
@@ -248,12 +245,10 @@ export default {
         }
         else {
           if(this.studentSearchParams.postalCode.match('^[abceghjklmnprstvxyABCEGHJKLMNPRSTVXY][0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ] {0,1}[0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ][0-9]$')){
-            console.log('Postal');
             return [];
           }
         }
       }
-      console.log('InValid postal');
       return [
         this.postalCodeHint
       ];   
