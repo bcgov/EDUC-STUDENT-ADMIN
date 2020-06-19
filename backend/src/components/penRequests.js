@@ -77,7 +77,7 @@ async function returnPenRequest(req, res) {
     penRequest.updateUser = 'STUDENT-ADMIN';
     penRequest.email = req['session'].penRequest['email'];
     penRequest.identityType = req['session'].identityType;
-    const url = `${config.get('server:penRequest:penRequestSaga')}/pen-request-return-saga`;
+    const url = `${config.get('server:penRequest:saga')}/pen-request-return-saga`;
     const sagaId = await utils.postData(token, url, penRequest);
     const event ={
       sagaId:sagaId,
