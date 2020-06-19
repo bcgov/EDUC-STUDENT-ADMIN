@@ -1,10 +1,8 @@
 'use strict';
 const { logApiError } = require('./utils');
 const HttpStatus = require('http-status-codes');
-const log = require('npmlog');
 const config = require('../config/index');
 const utils = require('./utils');
-const util = require('util');
 
 async function searchStudent(req, res) {
   const token = utils.getBackendToken(req);
@@ -15,7 +13,6 @@ async function searchStudent(req, res) {
   }
   let searchListCriteria = [];
 
-  log.info(util.inspect(req.query, {showHidden: false, depth: 3}));
   if(req.query.searchQueries) {
     let searchQueries = JSON.parse(req.query.searchQueries);
     Object.keys(searchQueries).forEach(element => {
@@ -36,7 +33,6 @@ async function searchStudent(req, res) {
   ])
     .then(async ([dataResponse]) =>
     {
-      log.info(util.inspect(dataResponse, {showHidden: false, depth: 3}));
       let filteredList = [];
       dataResponse['content'].forEach((element, i) => {
         filteredList.push(dataResponse['content'][i]);
