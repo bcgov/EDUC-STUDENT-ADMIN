@@ -23,8 +23,8 @@
             </v-col>
             <v-col class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
               <v-text-field
-                id='legalSurame'
-                v-model="studentSearchParams.legalSurame"
+                id='legalSurname'
+                v-model="studentSearchParams.legalSurname"
                 color="#003366"
                 label="Legal Surname"
                 maxlength="40"
@@ -146,6 +146,16 @@
                 <v-btn disabled outlined class="mx-2" color="#38598a">Advanced Search</v-btn><v-btn class="white--text" color="#38598a" @click="searchStudent">Search</v-btn>
             </v-col>
           </v-row>
+          <v-row no-gutters class="py-2" style="background-color:white;">
+            <v-divider class="mx-3"/>
+          </v-row>
+          <v-row v-if="this.studentSearchResponse" id="resultsRow" no-gutters class="py-2" style="background-color:white;">
+            <StudentSearchResults
+                    :tableData="this.studentSearchResponse"
+                    :searchCriteria="this.studentSearchParams"
+                    :search="searchStudent"
+            ></StudentSearchResults>
+          </v-row>
         </v-card>
       </v-row>
     </v-container>
@@ -157,17 +167,22 @@ import {LocalDate} from '@js-joda/core';
 import ApiService from '../../../common/apiService';
 import { Routes } from '../../../utils/constants';
 import { mapGetters } from 'vuex';
+import StudentSearchResults from './StudentSearchResults';
 
 export default {
+  components: {
+    StudentSearchResults
+  },
   data() {
     return {
       validForm: false,
       menu: false,
       genderLabels: [],
       localDate:LocalDate,
+      studentSearchResponse: null,
       studentSearchParams: {
         pen: null,
-        legalSurame: null,
+        legalSurname: null,
         legalGivenName: null,
         legalMiddleName: null,
         postalCode: null,
@@ -211,8 +226,7 @@ export default {
         ApiService.apiAxios
           .get(Routes[this.requestType].SEARCH_URL,this.prepPut(studentSearchFilters))
           .then(response => {
-            console.log('HELLO');
-            console.log(JSON.stringify(response.data));
+            this.studentSearchResponse = response.data;
           })
           .catch(error => {
             console.log(error);
@@ -226,7 +240,7 @@ export default {
     prepPut(studentSearchFilters) {
       return {
         params: {
-          pageNumber: 0,
+          pageNumber: this.pageNumber || 0,
           searchQueries: studentSearchFilters
         }
       };
