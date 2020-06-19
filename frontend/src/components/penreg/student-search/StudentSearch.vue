@@ -84,6 +84,7 @@
                 color="#003366"
                 label="Postal Code"
                 maxlength="7"
+                :rules="validatePostal()"
                 dense
               ></v-text-field>
               <v-text-field
@@ -140,6 +141,10 @@
                 v-model="studentSearchParams.school"
                 color="#003366"
                 label="School"
+                type="number"
+                hide-details
+                single-line
+                counter=false
                 maxlength="8"
                 minLength="8"
                 dense
@@ -181,6 +186,7 @@ export default {
   data() {
     return {
       penHint: 'Invalid PEN',
+      postalCodeHint: 'Invalid Postal Code',
       validForm: false,
       menu: false,
       genderLabels: [],
@@ -235,6 +241,23 @@ export default {
         ];   
       }
     },
+    validatePostal(){
+      if(this.studentSearchParams) {
+        if(!this.studentSearchParams.postalCode){
+          return [];
+        }
+        else {
+          if(this.studentSearchParams.postalCode.match('^[abceghjklmnprstvxyABCEGHJKLMNPRSTVXY][0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ] {0,1}[0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ][0-9]$')){
+            console.log('Postal');
+            return [];
+          }
+        }
+      }
+      console.log('InValid postal');
+      return [
+        this.postalCodeHint
+      ];   
+    },
     requiredRules(hint = 'Required') {
       return [
         v => !!(v && v.trim()) || hint,
@@ -285,8 +308,9 @@ export default {
           .finally(() => {
             this.searchLoading = false;
           });
+      }else{
+        this.searchLoading = false;
       }
-      this.searchLoading = false;
     },    
     prepPut(studentSearchFilters) {
       return {
