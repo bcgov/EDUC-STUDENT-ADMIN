@@ -1,6 +1,27 @@
 <template>
   <div>
     <v-alert
+      :value="unlinkOperationSuccessful"
+      dense
+      text
+      dismissible
+      outlined
+      transition="scale-transition"
+      class="bootstrap-success" >
+      Your request to unlink is accepted.
+    </v-alert>
+    <!-- This alert component is used to refresh the page automatically when saga is completed.-->
+    <v-alert
+      :value="false"
+      dense
+      text
+      dismissible
+      outlined
+      transition="scale-transition"
+      class="bootstrap-success" >
+      {{notifications}}
+    </v-alert>
+    <v-alert
       :value="completedUpdateSuccess"
       dense
       text
@@ -35,16 +56,21 @@
     </v-alert>
     <v-card flat :disabled="!isProvidePenEnabledForUser">
       <v-row class="mx-0">
-        <v-col cols="12" xl="4" lg="4" md="4" class="py-0">
-          <v-text-field
-                  id="pen-search-text-field"
-                  v-model="penSearchId"
-                  label="PEN:"
-                  clearable
-                  class="pt-0"
-                  @input="validatePen"
-          ></v-text-field>
-        </v-col>
+          <v-col cols="12" xl="2" lg="2" md="2" class="py-0">
+              <v-text-field
+                      id="pen-search-text-field"
+                      v-model="penSearchId"
+                      label="PEN:"
+                      clearable
+                      class="pt-0"
+                      @input="validatePen"
+              ></v-text-field>
+          </v-col>
+          <v-col cols="12" xl="2" lg="2" md="2" class="py-0" align-self="center">
+              <span class="pt-4 pr-1" id="prior-pen-count" v-if="this.numberOfDuplicatePenRequests > 0"><span
+                      class="red--text font-weight-bold">{{this.numberOfDuplicatePenRequests}}</span><span
+                      class="red--text"> prior PEN Requests</span></span>
+          </v-col>
         <v-col cols="12" xl="8" lg="8" md="8" class="py-0">
           <v-row>
             <v-col v-if="this.request.bcscAutoMatchOutcome === this.autoMatchCodes.ONE_MATCH" cols="2">
@@ -116,14 +142,17 @@
           </v-form>
         </v-col>
       </v-row>
-      <v-row justify="end" class="px-3">
-          <span class="pt-4 pr-1" id="prior-pen-count" v-if="this.numberOfDuplicatePenRequests > 0"><span class="red--text font-weight-bold">{{this.numberOfDuplicatePenRequests}}</span><span class="red--text"> prior PEN Requests</span></span>
+      <v-row justify="end" class="px-4">
           <v-checkbox v-model="request.demogChanged" true-value="Y" false-value="N" justify="flex-end" class="pa-0" cols="12" label="Student demographics changed"></v-checkbox>
-        <v-col cols="4" xl="4" lg="4" md="4" class="pt-2">
+          <v-col cols="2" xl="2" lg="2" md="2" class="pt-2">
+              <v-btn :disabled="!enableActions || !(request.penRequestStatusCode === 'MANUAL' || request.penRequestStatusCode === 'AUTO')" color="#38598a" justify="center" width="100%" :dark="enableActions && (request.penRequestStatusCode === 'MANUAL' || request.penRequestStatusCode === 'AUTO')" @click="unlinkRequest">Unlink</v-btn>
+          </v-col>
+        <v-col cols="2" xl="2" lg="2" md="2" class="pt-2">
           <v-btn :disabled="!enableCompleteButton||!enableActions||request.penRequestStatusCode==='DRAFT'" color="#38598a" justify="center" width="100%" :dark="enableCompleteButton && enableActions&&request.penRequestStatusCode!=='DRAFT'" @click="completeRequest">Provide PEN to Student</v-btn>
         </v-col>
       </v-row>
     </v-card>
+
   </div>
 </template>
 
@@ -167,6 +196,7 @@ export default {
       validForm: false,
       requiredRules: [v => !!v || 'Required'],
       completedUpdateSuccess:null,
+      unlinkOperationSuccessful: null,
       notAPenError: false,
       penSearchId: null,
       demographics: {
@@ -226,6 +256,22 @@ export default {
       } else {
         return null;
       }
+    },
+    notifications() {
+      let outcome = null;
+      let notifications = this.$store.getters['notifications/notifications'];
+      if (Array.isArray(notifications)) {
+        for (let notification of notifications) {
+          notification = JSON.parse(notification);
+          if (notification && notification.penRequestID === this.requestId && notification.eventOutcome === 'SAGA_COMPLETED') {
+            this.loadPenRequest();
+            outcome = 'SAGA_COMPLETED';
+          } else if (notification && notification.penRequestID === this.requestId) {
+            outcome = notification.eventOutcome;
+          }
+        }
+      }
+      return outcome;
     }
   },
   mounted() {
@@ -271,6 +317,39 @@ export default {
             this.submitted();
           });
       }
+    },
+    unlinkRequest() {
+      this.beforeSubmit();
+      this.unlinkOperationSuccessful = null;
+      this.request.reviewer = this.myself.name;
+      ApiService.apiAxios
+        .post(Routes[this.requestType].UNLINK_URL, this.prepPut(this.requestId, this.request))
+        .then(() => {
+          this.unlinkOperationSuccessful = true;
+        })
+        .catch(error => {
+          console.log(error);
+          this.unlinkOperationSuccessful = false;
+        })
+        .finally(() => {
+          this.submitted();
+        });
+    },
+    loadPenRequest(){
+      ApiService.apiAxios
+        .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId)
+        .then(response => {
+          this.setRequest(response.data);
+          if(this.request[this.requestStatusCodeName] === this.statusCodes.REJECTED) {
+            this.activeTab = 2;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        })
+        .finally(() => {
+          this.submitted();
+        });
     },
     validatePen() {
       this.notAPenError = false;

@@ -10,6 +10,10 @@ const redisUtil = {
      * @returns {Promise<void>}
      */
   async createOrUpdatePenRequestSagaRecordInRedis(event) {
+    let penRequestID;
+    if(event && event.penRequestID){
+      penRequestID =  event.penRequestID;
+    }
     try {
       const redisClient = Redis.getRedisClient();
       if (redisClient) {
@@ -17,26 +21,28 @@ const redisUtil = {
         let eventArray = [];
         if (result) {
           eventArray = JSON.parse(result);
-          log.verbose(eventArray);
+          log.silly(result);
           if (Array.isArray(eventArray) && eventArray.length > 0) {
             for (let i = eventArray.length - 1; i >= 0; --i) {
               const eventArrayElement = eventArray[i];
               if ((eventArrayElement.sagaId && event.sagaId && eventArrayElement.sagaId === event.sagaId) && ('COMPLETED' === event.sagaStatus)) {
-                log.info(`going to delete this event record as it is completed. ${eventArrayElement.sagaId}`);
+                log.silly(`going to delete this event record as it is completed. ${eventArrayElement.sagaId}`);
+                penRequestID = eventArrayElement.penRequestID;
                 eventArray.splice(i, 1); // remove this record as the saga is completed.
               } else if (eventArrayElement.sagaId && event.sagaId && eventArrayElement.sagaId === event.sagaId) { //update the record data.
-                log.info(`going to update this event record . ${eventArrayElement.sagaId}`);
+                log.silly(`going to update this event record . ${eventArrayElement.sagaId}`);
+                penRequestID = eventArrayElement.penRequestID;
                 eventArrayElement.eventType = event.eventType;
                 eventArrayElement.eventOutcome = event.eventOutcome;
                 eventArrayElement.eventPayload = event.eventPayload;
               }
             }
           } else {
-            log.info(`did not find any data in the array adding fresh one . ${event}`);
+            log.silly('did not find any data in the array adding fresh one .');
             eventArray.push(event);
           }
         } else {
-          log.info(`did not find any data in redis for the given key adding fresh one . ${event}`);
+          log.silly('did not find any data in redis for the given key adding fresh one .');
           eventArray.push(event);
         }
         await redisClient.set(penReqSagaEventKey, JSON.stringify(eventArray));
@@ -46,6 +52,7 @@ const redisUtil = {
     } catch (e) {
       log.error(`Error ${e}`);
     }
+    return penRequestID; // return the pen request ID so that it can be passed to frontend.
   },
   async getPenRequestSagaEvents() {
     const redisClient = Redis.getRedisClient();
