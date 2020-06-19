@@ -27,6 +27,7 @@ async function searchStudent(req, res) {
 
   const params = {
     params: {
+      pageNumber: req.query.pageNumber,
       searchCriteriaList: JSON.stringify(searchListCriteria)
     }
   };
