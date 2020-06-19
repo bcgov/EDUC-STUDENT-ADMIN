@@ -1,7 +1,7 @@
 <template>
   <div id="searchResults" class="px-3" style="width: 100%" :overlay=false>
     <v-row no-gutters>
-      <span class="px-4 pb-2">{{ tableData.numberOfElements }}</span>
+      <span class="px-4 pb-2">{{ tableData.numberOfElements }} Results</span>
     </v-row>
       <v-data-table
               id="dataTable"
@@ -12,14 +12,14 @@
               hide-default-footer
               @page-count="tableData.pageable.pageNumber = $event">
         <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-          <span class="top-column-item">{{ header.topText }}</span>
-          <span class="double-column-item">{{header.doubleText}}</span>
-          <br />
-          <span class="bottom-column-item">{{ header.bottomText }}</span>
+          <span :key="h.id" class="top-column-item">{{ header.topText }}</span>
+          <span :key="h.id" class="double-column-item">{{header.doubleText}}</span>
+          <br :key="h.id" />
+          <span :key="h.id" class="bottom-column-item">{{ header.bottomText }}</span>
         </template>
         <template v-slot:item="{ item, headers }">
           <tr>
-            <td v-for="header in headers">
+            <td v-for="header in headers" :key="header.id">
               <span class="top-column-item">{{ item[header.topValue] || '-' }}</span>
               <span class="double-column-item">{{item[header.doubleValue]}}</span>
               <br>
