@@ -1,5 +1,5 @@
 'use strict';
-const log = require('npmlog');
+const log = require('../components/logger');
 const jsonwebtoken = require('jsonwebtoken');
 const config = require('../config/index');
 let connectedClients = [];

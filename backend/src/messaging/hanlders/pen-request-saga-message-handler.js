@@ -1,11 +1,11 @@
 'use strict';
-const log = require('npmlog');
+const log = require('../../components/logger');
 
 const penRequestReturnSagaTopic = 'PEN_REQUEST_RETURN_SAGA_TOPIC';
 const penRequestUnlinkSagaTopic = 'PEN_REQUEST_UNLINK_SAGA_TOPIC';
 const redisUtil = require('../../util/redis/redis-utils');
 const webSocket = require('../../socket/web-socket');
-
+const safeStringify = require('fast-safe-stringify');
 
 const PenRequestSagaMessageHandler = {
   penRequestReturnSagaSubscription(stan, opts) {
@@ -39,15 +39,15 @@ const PenRequestSagaMessageHandler = {
   },
   async handlePenRequestSagaMessage(msg) {
     const event = JSON.parse(msg.getData()); // it is always a JSON string of Event object.
-    log.silly(`received message for SAGA ID :: ${event.sagaId} :: event ${JSON.stringify(event)}`);
+    log.silly(`received message for SAGA ID :: ${event.sagaId} :: event ${safeStringify(event)}`);
     event.penRequestID = await redisUtil.createOrUpdatePenRequestSagaRecordInRedis(event);
-    log.silly(`updated record in Redis for SAGA ID :: ${event.sagaId} :: event ${JSON.stringify(event)}`);
+    log.silly(`updated record in Redis for SAGA ID :: ${event.sagaId} :: event ${safeStringify(event)}`);
     const connectedClients = webSocket.getWebSocketClients();
 
     if (connectedClients && connectedClients.length > 0) {
       for (const connectedClient of connectedClients) {
         try {
-          connectedClient.send(JSON.stringify(event));
+          connectedClient.send(safeStringify(event));
         } catch (e) {
           log.error(`Error while sending message to connected client ${connectedClient} :: ${e}`);
         }

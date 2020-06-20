@@ -1,7 +1,7 @@
 'use strict';
 const { getBackendToken, getData, postData, putData, logApiError } = require('./utils');
 const HttpStatus = require('http-status-codes');
-const log = require('npmlog');
+const log = require('./logger');
 const config = require('../config/index');
 const utils = require('./utils');
 const redisUtil = require('../util/redis/redis-utils');
