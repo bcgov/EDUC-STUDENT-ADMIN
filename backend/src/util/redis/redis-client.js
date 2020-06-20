@@ -9,7 +9,7 @@ const Redis = {
   init() {
     const IOREDIS = require('ioredis');
     const config = require('../../config');
-    const log = require('npmlog');
+    const log = require('../../components/logger');
     if('local' === config.get('environment')){
       redisClient = new IOREDIS({
         host: config.get('redis:host'),

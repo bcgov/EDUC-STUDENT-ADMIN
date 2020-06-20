@@ -5,10 +5,11 @@ const axios = require('axios');
 const config = require('../config/index');
 const jsonwebtoken = require('jsonwebtoken');
 const lodash = require('lodash');
-const log = require('npmlog');
+const log = require('./logger');
 const cache = require('memory-cache');
 const { ServiceError, ApiError } = require('./error');
 const { LocalDateTime, DateTimeFormatter } = require('@js-joda/core');
+const safeStringify = require('fast-safe-stringify');
 
 let discovery = null;
 let memCache = new cache.Cache();
@@ -270,25 +271,30 @@ const utils = {
     const validGMPRoles = config.get('server:penRequest:rolesAllowed') || [];
     const validUMPRoles = config.get('server:studentRequest:rolesAllowed') || [];
     const validUserRoles = validGMPRoles.concat(validUMPRoles);
+    log.silly(`valid User Roles from environment variable are ${safeStringify(validUserRoles)}`);
     const isValidUserRole = (element) => Array.isArray(validUserRoles) ? validUserRoles.includes(element) : false;
     return !!(Array.isArray(roles) && roles.some(isValidUserRole));
   },
   isUserHasAGMPRole(roles) {
     const validGMPRoles = config.get('server:penRequest:rolesAllowed') || [];
+    log.silly(`valid GMP Roles from environment variable are ${safeStringify(validGMPRoles)}`);
     const isValidUserRole = (element) => Array.isArray(validGMPRoles) ? validGMPRoles.includes(element) : false;
     return !!(Array.isArray(roles) && roles.some(isValidUserRole));
   },
   isUserHasAUMPRole(roles) {
     const validUMPRoles = config.get('server:studentRequest:rolesAllowed') || [];
+    log.silly(`valid UMP Roles from environment variable are ${safeStringify(validUMPRoles)}`);
     const isValidUserRole = (element) => Array.isArray(validUMPRoles) ? validUMPRoles.includes(element) : false;
     return !!(Array.isArray(roles) && roles.some(isValidUserRole));
   },
   isUserHasAGMPAdminRole(roles) {
     const gmpAdminRole = config.get('server:penRequest:roleAdmin') || '';
+    log.silly(`valid gmpAdminRole from environment variable is ${gmpAdminRole}`);
     return !!(Array.isArray(roles) && roles.includes(gmpAdminRole));
   },
   isUserHasAUMPAdminRole(roles) {
     const umpAdminRole = config.get('server:studentRequest:roleAdmin') || '';
+    log.silly(`valid umpAdminRole from environment variable is ${umpAdminRole}`);
     return !!(Array.isArray(roles) && roles.includes(umpAdminRole));
   },
   getBackendToken,

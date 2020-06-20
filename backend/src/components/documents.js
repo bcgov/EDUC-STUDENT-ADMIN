@@ -3,7 +3,7 @@ const { getBackendToken, getData, putData, logApiError } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const file = require('./file');
-const log = require('npmlog');
+const log = require('./logger');
 
 function getDocuments(requestType) {
   return function getDocumentsHandler(req, res) {

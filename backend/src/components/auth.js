@@ -2,10 +2,11 @@
 
 const axios = require('axios');
 const config = require('../config/index');
-const log = require('npmlog');
+const log = require('./logger');
 const jsonwebtoken = require('jsonwebtoken');
 const qs = require('querystring');
 const utils = require('./utils');
+const safeStringify = require('fast-safe-stringify');
 
 const auth = {
   // Check if JWT Access Token has expired
@@ -215,6 +216,7 @@ const auth = {
       const thisSession = req['session'];
       if (thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt) {
         const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
+        log.silly(`userToken is ${safeStringify(userToken)}`);
         if (userToken && userToken.realm_access && userToken.realm_access.roles
           && (utils.isUserHasAValidRole(userToken.realm_access.roles))) {
           return true;

@@ -1,6 +1,6 @@
 const axios = require('axios');
 const config = require('../../../src/config/index');
-const log = require('npmlog');
+const log = require('../../../src/components/logger');
 const MockAdapter = require('axios-mock-adapter');
 
 const auth = require('../../../src/components/auth');

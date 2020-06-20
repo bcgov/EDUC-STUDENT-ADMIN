@@ -33,6 +33,8 @@
     "express-session": "^1.16.1",
     "express-validator": "^6.0.0",
     "express-ws": "^4.0.0",
+    "fast-safe-stringify": "^2.0.7",
+    "has-ansi": "^4.0.0",
     "helmet": "^3.23.1",
     "http-status-codes": "^1.4.0",
     "ioredis": "^4.17.3",
@@ -44,13 +46,15 @@
     "nconf": "^0.10.0",
     "nocache": "^2.1.0",
     "node-nats-streaming": "^0.3.2",
-    "npmlog": "^4.1.2",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "passport-openidconnect-kc-idp": "^0.0.7",
     "path": "0.12.7",
     "querystring": "0.2.0",
-    "uuidv4": "^6.1.0"
+    "strip-ansi": "^6.0.0",
+    "uuidv4": "^6.1.0",
+    "winston": "^3.2.1",
+    "winston-daily-rotate-file": "^4.5.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.1",

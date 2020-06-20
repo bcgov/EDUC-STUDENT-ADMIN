@@ -1,6 +1,6 @@
 'use strict';
 const Redis = require('./redis-client');
-const log = require('npmlog');
+const log = require('../../components/logger');
 const penReqSagaEventKey = 'PEN_REQUEST_SAGA_EVENTS';
 const redisUtil = {
 

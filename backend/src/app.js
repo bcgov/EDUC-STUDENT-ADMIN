@@ -2,7 +2,7 @@
 
 const config = require('./config/index');
 const dotenv = require('dotenv');
-const log = require('npmlog');
+const log = require('./components/logger');
 const morgan = require('morgan');
 const session = require('express-session');
 const connectRedis = require('connect-redis');
@@ -57,8 +57,13 @@ app.use(express.json());
 app.use(express.urlencoded({
   extended: false
 }));
+const logStream = {
+  write: (message) => {
+    log.info(message);
+  }
+};
+app.use(morgan(config.get('server:morganFormat'), { 'stream': logStream }));
 
-app.use(morgan(config.get('server:morganFormat')));
 const Redis = require('./util/redis/redis-client');
 Redis.init(); // call the init to initialize appropriate client, and reuse it across the app.
 const RedisStore = connectRedis(session);
@@ -86,11 +91,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-//configure logging
-log.level = config.get('server:logLevel');
-log.addLevel('debug', 1500, {
-  fg: 'cyan'
-});
 
 //initialize our authentication strategy
 utils.getOidcDiscovery().then(discovery => {

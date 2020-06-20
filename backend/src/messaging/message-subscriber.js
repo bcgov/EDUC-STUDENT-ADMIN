@@ -1,6 +1,6 @@
 'use strict';
 const config = require('../config/index');
-const log = require('npmlog');
+const log = require('../components/logger');
 const {uuid} = require('uuidv4');
 const PenRequestSagaMessageHandler = require('./hanlders/pen-request-saga-message-handler');
 let connection={};
