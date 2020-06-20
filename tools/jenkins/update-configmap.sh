@@ -79,7 +79,7 @@ oc set env --from=configmap/$APP_NAME-backend-config-map dc/$APP_NAME-backend-$S
 ###########################################################
 #Setup for student-admin-frontend-config-map
 ###########################################################
-regConfigStaff="var config = (function() {
+regConfigStaff="var studentAdminConfig = (function() {
   return {
     \"VUE_APP_IDLE_TIMEOUT_IN_MILLIS\" : \"1800000\",
     \"WEB_SOCKET_URL\":\"wss://$APP_NAME-$PEN_NAMESPACE-$envValue.pathfinder.gov.bc.ca/api/socket\"
