@@ -8,7 +8,7 @@
       </v-row>
     </article>
   </v-container>
-  <v-container fluid class="full-height" v-else-if="isAuthenticated && !isAuthorizedUser">
+  <v-container fluid class="my-16" v-else-if="isAuthenticated && !isAuthorizedUser">
 
     <!-- login article -->
     <article name="login-banner" class="top-banner">

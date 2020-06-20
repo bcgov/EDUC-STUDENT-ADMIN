@@ -1,5 +1,5 @@
 <template>
-  <v-container class="fill-height">
+  <v-container fluid class="my-10 px-16">
     <v-tabs 
       active-class="active-display"
       v-model="tab"

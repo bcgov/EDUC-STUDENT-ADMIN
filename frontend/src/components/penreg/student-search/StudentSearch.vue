@@ -2,7 +2,7 @@
   <v-form ref="studentSearchForm" id="searchStudentForm"
         v-model="validForm"
       >
-    <v-container class="fill-height px-0">
+    <v-container fluid class="fill-height px-0">
       <v-row no-gutters>
         <v-card height="100%" width="100%"  style="background-color:#d7d7d7;">
           <v-row no-gutters class="mx-5 pa-6">
@@ -228,9 +228,7 @@ export default {
         }else if (this.studentSearchParams.pen.length === 9) {
           if (this.checkDigit()) {
             validPEN = true;
-          }else{
-            validPEN = false;
-          } 
+          }
         }
       }
       if(validPEN){
