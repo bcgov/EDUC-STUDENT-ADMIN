@@ -8,7 +8,7 @@ import webSocketService from './services/web-socket-service'
 Vue.config.productionTip = false;
 Vue.use(webSocketService, {
   store,
-  url: 'wss://'+window.location.href+'/api/socket'
+  url: 'wss://'+window.location.hostname+'/api/socket'
 })
 const eventsHub = new Vue();
 Vue.use(IdleVue, {
