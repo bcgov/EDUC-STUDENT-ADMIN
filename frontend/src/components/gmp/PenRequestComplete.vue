@@ -8,7 +8,17 @@
       outlined
       transition="scale-transition"
       class="bootstrap-success" >
-      Your request to unlink is accepted.
+      {{unlinkMessage}}
+    </v-alert>
+    <v-alert
+      :value="unlinkOperationSuccessful === false"
+      dense
+      text
+      dismissible
+      outlined
+      transition="scale-transition"
+      class="bootstrap-error">
+     Your request to unlink could not be accepted. Please try again.
     </v-alert>
     <!-- This alert component is used to refresh the page automatically when saga is completed.-->
     <v-alert
@@ -144,10 +154,10 @@
       </v-row>
       <v-row justify="end" class="px-4">
           <v-checkbox v-model="request.demogChanged" true-value="Y" false-value="N" justify="flex-end" class="pa-0" cols="12" label="Student demographics changed"></v-checkbox>
-          <v-col cols="2" xl="2" lg="2" md="2" class="pt-2">
+          <v-col cols="2" xl="2" lg="2" md="2" class="pt-3">
               <v-btn :disabled="!enableActions || !(request.penRequestStatusCode === 'MANUAL' || request.penRequestStatusCode === 'AUTO')" color="#38598a" justify="center" width="100%" :dark="enableActions && (request.penRequestStatusCode === 'MANUAL' || request.penRequestStatusCode === 'AUTO')" @click="unlinkRequest">Unlink</v-btn>
           </v-col>
-        <v-col cols="2" xl="2" lg="2" md="2" class="pt-2">
+        <v-col cols="3" xl="3" lg="3" md="3" class="pt-3">
           <v-btn :disabled="!enableCompleteButton||!enableActions||request.penRequestStatusCode==='DRAFT'" color="#38598a" justify="center" width="100%" :dark="enableCompleteButton && enableActions&&request.penRequestStatusCode!=='DRAFT'" @click="completeRequest">Provide PEN to Student</v-btn>
         </v-col>
       </v-row>
@@ -197,6 +207,7 @@ export default {
       requiredRules: [v => !!v || 'Required'],
       completedUpdateSuccess:null,
       unlinkOperationSuccessful: null,
+      unlinkMessage : null,
       notAPenError: false,
       penSearchId: null,
       demographics: {
@@ -266,6 +277,7 @@ export default {
           if (notification && notification.penRequestID === this.requestId && notification.eventOutcome === 'SAGA_COMPLETED') {
             this.loadPenRequest();
             outcome = 'SAGA_COMPLETED';
+            this.unlinkMessage ='Your request to unlink is completed.';
           } else if (notification && notification.penRequestID === this.requestId) {
             outcome = notification.eventOutcome;
           }
@@ -326,6 +338,7 @@ export default {
         .post(Routes[this.requestType].UNLINK_URL, this.prepPut(this.requestId, this.request))
         .then(() => {
           this.unlinkOperationSuccessful = true;
+          this.unlinkMessage ='Your request to unlink is accepted.';
         })
         .catch(error => {
           console.log(error);
