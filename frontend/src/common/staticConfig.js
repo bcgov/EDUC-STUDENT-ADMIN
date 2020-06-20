@@ -1,3 +1,3 @@
 // eslint-disable-next-line
-const StaticConfig = config;
+const StaticConfig = studentAdminConfig;
 export default StaticConfig;
