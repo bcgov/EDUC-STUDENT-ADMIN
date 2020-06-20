@@ -26,7 +26,7 @@ nconf.defaults({
       macrosURL: process.env.PEN_REQUEST_API_URL + '/pen-request-macro',
       emails: process.env.PEN_REQUEST_EMAIL_API_URL,
       saga:process.env.PEN_REQUEST_SAGA_API_URL,
-      rolesAllowed:process.env.GMP_ROLES,
+      rolesAllowed:process.env.GMP_ROLES.split(','), // please provide comma separated values.
       roleAdmin:process.env.GMP_ROLE_ADMIN
     },
     studentRequest: {
@@ -35,7 +35,7 @@ nconf.defaults({
       rootURL: process.env.STUDENT_PROFILE_API_URL,
       macrosURL: process.env.STUDENT_PROFILE_API_URL + '/student-profile-macro',
       emails: process.env.STUDENT_PROFILE_EMAIL_API_URL,
-      rolesAllowed:process.env.UMP_ROLES,
+      rolesAllowed:process.env.UMP_ROLES.split(','), // please provide comma separated values.
       roleAdmin:process.env.UMP_ROLE_ADMIN
     },
     demographicsURL: process.env.PEN_DEMOGRAPHICS_URL,
