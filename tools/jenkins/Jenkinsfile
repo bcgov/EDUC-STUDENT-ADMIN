@@ -125,8 +125,8 @@ pipeline{
     stage('Deploy to Dev'){
       environment {
         APP_NAME = "student-admin"
-        DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST/master/tools/openshift/frontend-static.dc.yaml"
-        DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST/master/tools/openshift/backend.dc.yaml"
+        DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/frontend-static.dc.yaml"
+        DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/backend.dc.yaml"
       }
       steps{
         deployStage('Dev', DEV, 'educ-student-admin', 'student-admin', 'master', 'dev', TOOLS, DEV, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}")
