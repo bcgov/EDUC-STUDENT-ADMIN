@@ -135,7 +135,7 @@
                 dense
               ></v-text-field>
             </v-col>
-            <v-col class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
+            <v-col cols="1" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
               <v-text-field
                 id='school'
                 v-model="studentSearchParams.school"
