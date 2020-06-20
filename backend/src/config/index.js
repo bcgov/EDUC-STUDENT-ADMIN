@@ -25,9 +25,9 @@ nconf.defaults({
       rootURL: process.env.PEN_REQUEST_API_URL,
       macrosURL: process.env.PEN_REQUEST_API_URL + '/pen-request-macro',
       emails: process.env.PEN_REQUEST_EMAIL_API_URL,
-      saga:process.env.PEN_REQUEST_SAGA_API_URL,
-      rolesAllowed:process.env.GMP_ROLES.split(','), // please provide comma separated values.
-      roleAdmin:process.env.GMP_ROLE_ADMIN
+      saga: process.env.PEN_REQUEST_SAGA_API_URL,
+      rolesAllowed: process.env.GMP_ROLES ? process.env.GMP_ROLES.split(',') : '', // please provide comma separated values.
+      roleAdmin: process.env.GMP_ROLE_ADMIN
     },
     studentRequest: {
       statusCodeURL: process.env.STUDENT_PROFILE_API_URL + '/statuses',
@@ -35,8 +35,8 @@ nconf.defaults({
       rootURL: process.env.STUDENT_PROFILE_API_URL,
       macrosURL: process.env.STUDENT_PROFILE_API_URL + '/student-profile-macro',
       emails: process.env.STUDENT_PROFILE_EMAIL_API_URL,
-      rolesAllowed:process.env.UMP_ROLES.split(','), // please provide comma separated values.
-      roleAdmin:process.env.UMP_ROLE_ADMIN
+      rolesAllowed: process.env.UMP_ROLES ? process.env.UMP_ROLES.split(',') : '', // please provide comma separated values.
+      roleAdmin: process.env.UMP_ROLE_ADMIN
     },
     demographicsURL: process.env.PEN_DEMOGRAPHICS_URL,
     digitalIdURL: process.env.DIGITAL_ID_URL,
