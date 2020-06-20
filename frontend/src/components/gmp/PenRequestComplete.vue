@@ -277,6 +277,7 @@ export default {
           if (notification && notification.penRequestID === this.requestId && notification.eventOutcome === 'SAGA_COMPLETED') {
             this.loadPenRequest();
             outcome = 'SAGA_COMPLETED';
+            // eslint-disable-next-line
             this.unlinkMessage ='Your request to unlink is completed.';
           } else if (notification && notification.penRequestID === this.requestId) {
             outcome = notification.eventOutcome;
