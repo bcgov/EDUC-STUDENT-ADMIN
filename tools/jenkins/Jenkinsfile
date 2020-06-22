@@ -150,6 +150,7 @@ pipeline{
             sh "bash ./download-kc.sh \"${NAMESPACE}\""
           }
         }
+        configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
         script{
           dir('tools/jenkins'){
             def configVars
@@ -169,6 +170,32 @@ pipeline{
       }
     }
   }
+}
+
+def configMapSetup(String appName,String appNameUpper, String namespace){
+    script {
+	  
+      try{
+        sh( script: "oc project ${namespace}-dev", returnStdout: true)
+        sh( script: "oc describe configmaps ${appName}-dev-setup-config", returnStdout: true)
+        sh( script: "oc project ${namespace}-tools", returnStdout: true)
+        echo 'Config map already exists. Moving to next stage...'
+      } catch(e){
+          configProperties = input(
+          id: 'configProperties', message: "Please enter the required credentials to allow ${appName} to run:",
+          parameters: [
+              string(defaultValue: "",
+                      description: "Token for ${appName} FluentBit sidecar to connect to the Splunk",
+                      name: "SPLUNK_TOKEN"),
+          ])
+		sh """
+		  set +x
+		  echo Running curl command...
+		  oc create -n ${namespace}-dev configmap ${appName}-dev-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties} --dry-run -o yaml | oc apply -f -
+		  oc project ${namespace}-tools
+		"""
+      }
+    }
 }
 
 def triggerWorkflow(String token) {

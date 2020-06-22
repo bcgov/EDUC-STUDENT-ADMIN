@@ -30,3 +30,8 @@ realm.json
 *.sln
 *.sw*
 *.pem
+
+# log files
+.*-audit.json
+*.log
+logs

@@ -91,7 +91,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-
 //initialize our authentication strategy
 utils.getOidcDiscovery().then(discovery => {
   //OIDC Strategy is used for authorization
