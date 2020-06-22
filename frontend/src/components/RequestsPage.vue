@@ -6,7 +6,7 @@
     >
       <v-tab  :disabled="!isValidGMPUser" :href="`#${requestTypes.penRequest.name}`">PEN Retrieval Requests</v-tab>
       <v-tab :disabled="!isValidUMPUser" :href="`#${requestTypes.studentRequest.name}`">UMP Requests</v-tab>
-      <v-tab :href="`#${requestTypes.studentSearch.name}`">Student Search</v-tab>
+      <v-tab :disabled="!isValidStudentSearchUser" :href="`#${requestTypes.studentSearch.name}`">Student Search</v-tab>
 
       <v-tab-item
         :value="requestTypes.penRequest.name"
@@ -58,6 +58,10 @@ export default {
       return {
         tab: REQUEST_TYPES.studentRequest.name
       };
+    }else if(this.isValidStudentSearchUser){
+      return {
+        tab: REQUEST_TYPES.studentSearch.name
+      };
     }else {
       return {
         tab: REQUEST_TYPES.studentSearch.name
@@ -66,7 +70,7 @@ export default {
   },
   computed: {
     ...mapGetters('app', ['requestType']),
-    ...mapGetters('auth', ['isValidGMPUser','isValidUMPUser']),
+    ...mapGetters('auth', ['isValidGMPUser','isValidUMPUser','isValidStudentSearchUser']),
     requestTypes() {
       return REQUEST_TYPES;
     }

@@ -29,6 +29,8 @@ $KCADM_FILE_BIN_FOLDER/kcadm.sh create roles -r $SOAM_KC_REALM_ID --body "{\"nam
 echo Creating STUDENT_ADMIN_READ_ONLY role
 $KCADM_FILE_BIN_FOLDER/kcadm.sh create roles -r $SOAM_KC_REALM_ID --body "{\"name\" : \"STUDENT_ADMIN_READ_ONLY\",\"description\" : \"Allows read access to staff site\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
+echo Creating STUDENT_SEARCH_ADMIN role
+$KCADM_FILE_BIN_FOLDER/kcadm.sh create roles -r $SOAM_KC_REALM_ID --body "{\"name\" : \"STUDENT_SEARCH_ADMIN\",\"description\" : \"Allows staff to search students\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo Creating STUDENT_PROFILE_ADMIN role
 $KCADM_FILE_BIN_FOLDER/kcadm.sh create roles -r $SOAM_KC_REALM_ID --body "{\"name\" : \"STUDENT_PROFILE_ADMIN\",\"description\" : \"Allows access to staff site as Admin for UMP \",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"

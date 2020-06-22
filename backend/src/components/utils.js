@@ -292,6 +292,11 @@ const utils = {
     log.silly(`valid gmpAdminRole from environment variable is ${gmpAdminRole}`);
     return !!(Array.isArray(roles) && roles.includes(gmpAdminRole));
   },
+  isUserHasAStudentSearchAdminRole(roles) {
+    const studentSearchAdminRole = config.get('server:studentSearch:roleAdmin') || '';
+    log.silly(`valid studentSearchAdminRole from environment variable is ${studentSearchAdminRole}`);
+    return !!(Array.isArray(roles) && roles.includes(studentSearchAdminRole));
+  },
   isUserHasAUMPAdminRole(roles) {
     const umpAdminRole = config.get('server:studentRequest:roleAdmin') || '';
     log.silly(`valid umpAdminRole from environment variable is ${umpAdminRole}`);

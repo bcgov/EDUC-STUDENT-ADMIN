@@ -89,6 +89,7 @@ const auth = {
   },
   isValidGMPAdmin(req, res, next) {
     try {
+      log.info('Search Marco2');
       const jwtToken = utils.getBackendToken(req);
       if (!jwtToken) {
         return res.status(401).json({
@@ -193,6 +194,49 @@ const auth = {
       return next(res.status(500));
     }
   },
+  isValidStudentSearchAdmin(req, res, next) {
+    try {
+      log.info('Search Marco');
+      const jwtToken = utils.getBackendToken(req);
+      if (!jwtToken) {
+        return res.status(401).json({
+          message: 'Unauthorized user'
+        });
+      }
+      const userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
+      if (userToken['realm_access'] && userToken['realm_access'].roles
+        && utils.isUserHasAStudentSearchAdminRole(userToken['realm_access'].roles)) {
+        return next();
+      }
+      return res.status(401).json({
+        message: 'Unauthorized user'
+      });
+    } catch (e) {
+      log.error(e);
+      return next(res.status(500));
+    }
+  },
+  isValidStudentSearchUserToken(req, res, next) {
+    try {
+      const jwtToken = utils.getBackendToken(req);
+      if (!jwtToken) {
+        return res.status(401).json({
+          message: 'Unauthorized user'
+        });
+      }
+      const userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
+      if (userToken['realm_access'] && userToken['realm_access'].roles
+        && utils.isUserHasAStudentSearchAdminRole(userToken['realm_access'].roles)) {
+        return next();
+      }
+      return res.status(401).json({
+        message: 'Unauthorized user'
+      });
+    } catch (e) {
+      log.error(e);
+      return next(res.status(500));
+    }
+  },
 
   generateUiToken() {
     const i = config.get('tokenGenerate:issuer');
@@ -251,6 +295,22 @@ const auth = {
         const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
         if (userToken && userToken.realm_access && userToken.realm_access.roles
           && (utils.isUserHasAUMPRole(userToken.realm_access.roles))) {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      log.error(e);
+      return false;
+    }
+  },
+  isValidStudentSearchUser(req) {
+    try {
+      const thisSession = req['session'];
+      if (thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt) {
+        const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
+        if (userToken && userToken.realm_access && userToken.realm_access.roles
+          && (utils.isUserHasAStudentSearchAdminRole(userToken.realm_access.roles))) {
           return true;
         }
       }
