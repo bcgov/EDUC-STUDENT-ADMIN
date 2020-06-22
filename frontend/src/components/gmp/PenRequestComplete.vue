@@ -70,6 +70,7 @@
               <v-text-field
                       id="pen-search-text-field"
                       v-model="penSearchId"
+                      :disabled="isProvidePenDisabled"
                       label="PEN:"
                       clearable
                       class="pt-0"
@@ -144,6 +145,7 @@
               label="Enter comment"
               v-model="request.completeComment"
               :rules="completedRules"
+              :disabled="isCompleteCommentDisabled"
               filled
               clearable
               @input="replaceCompleteMacro"
@@ -158,7 +160,7 @@
               <v-btn :disabled="!enableActions || !(request.penRequestStatusCode === 'MANUAL' || request.penRequestStatusCode === 'AUTO')" color="#38598a" justify="center" width="100%" :dark="enableActions && (request.penRequestStatusCode === 'MANUAL' || request.penRequestStatusCode === 'AUTO')" @click="unlinkRequest">Unlink</v-btn>
           </v-col>
         <v-col cols="3" xl="3" lg="3" md="3" class="pt-3">
-          <v-btn :disabled="!enableCompleteButton||!enableActions||request.penRequestStatusCode==='DRAFT'" color="#38598a" justify="center" width="100%" :dark="enableCompleteButton && enableActions&&request.penRequestStatusCode!=='DRAFT'" @click="completeRequest">Provide PEN to Student</v-btn>
+          <v-btn :disabled="isCompleteDisabled" color="#38598a" justify="center" width="100%" :dark="isCompleteDark" @click="completeRequest">Provide PEN to Student</v-btn>
         </v-col>
       </v-row>
     </v-card>
@@ -285,6 +287,18 @@ export default {
         }
       }
       return outcome;
+    },
+    isCompleteDisabled() {
+      return !this.enableCompleteButton || !this.enableActions || this.request.penRequestStatusCode === 'DRAFT' || this.request.penRequestStatusCode === 'ABANDONED';
+    },
+    isCompleteDark(){
+      return this.enableCompleteButton && this.enableActions && this.request.penRequestStatusCode!=='DRAFT' && this.request.penRequestStatusCode!=='ABANDONED';
+    },
+    isProvidePenDisabled(){
+      return !this.enableCompleteButton || !this.enableActions || this.request.penRequestStatusCode === 'DRAFT' || this.request.penRequestStatusCode === 'ABANDONED';
+    },
+    isCompleteCommentDisabled(){
+      return !this.enableCompleteButton || !this.enableActions || this.request.penRequestStatusCode === 'DRAFT' || this.request.penRequestStatusCode === 'ABANDONED';
     }
   },
   mounted() {
