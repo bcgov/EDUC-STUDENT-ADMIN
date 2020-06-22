@@ -42,11 +42,12 @@
                       id="pen-search-text-field"
                       v-model="penSearchId"
                       label="PEN:"
+                      :disabled="isPenSearchDisabled"
                       clearable
                       class="pt-0"
                       @input="validatePen"
               ></v-text-field>
-              <v-btn id="refresh-student-info" color="#38598a" dark class="ml-2" @click="refreshStudentInfo">Refresh Student Info</v-btn>
+              <v-btn id="refresh-student-info" :disabled="isRefreshStudInfoDisabled" color="#38598a" :dark="isRefreshStudInfoDark" class="ml-2" @click="refreshStudentInfo">Refresh Student Info</v-btn>
             </div>
           </v-row>
           <v-row class="pr-3">
@@ -110,7 +111,7 @@
             ></v-textarea>
           </v-form>
           <v-row justify="end" class="pr-3 pb-2">
-            <v-btn :disabled="!enableCompleteButton||!enableActions||request.studentRequestStatusCode==='DRAFT'" color="#38598a" :dark="enableCompleteButton && enableActions&&request.studentRequestStatusCode!=='DRAFT'" @click="sendChanges">Send Changes to Student</v-btn>
+            <v-btn :disabled="isCompleteDisabled" color="#38598a" :dark="isCompleteDark" @click="sendChanges">Send Changes to Student</v-btn>
           </v-row>
         </v-col>
       </v-row>
@@ -236,6 +237,21 @@ export default {
         name: this.userInfo.userName,
         id: this.userInfo.userGuid
       };
+    },
+    isCompleteDisabled() {
+      return !this.enableCompleteButton || !this.enableActions || this.request.studentRequestStatusCode === 'DRAFT' || this.request.studentRequestStatusCode === 'ABANDONED';
+    },
+    isCompleteDark(){
+      return this.enableCompleteButton && this.enableActions && this.request.penRequestStatusCode!=='DRAFT' && this.request.penRequestStatusCode!=='ABANDONED';
+    },
+    isRefreshStudInfoDisabled(){
+      return !this.enableCompleteButton || !this.enableActions || this.request.studentRequestStatusCode === 'DRAFT' || this.request.studentRequestStatusCode === 'ABANDONED';
+    },
+    isRefreshStudInfoDark(){
+      return this.enableCompleteButton && this.enableActions && this.request.penRequestStatusCode!=='DRAFT' && this.request.penRequestStatusCode!=='ABANDONED';
+    },
+    isPenSearchDisabled(){
+      return !this.enableCompleteButton || !this.enableActions || this.request.studentRequestStatusCode === 'DRAFT' || this.request.studentRequestStatusCode === 'ABANDONED';
     }
   },
   mounted() {

@@ -52,7 +52,7 @@
           </v-row>
           <v-row justify="end" align-content="end">
             <v-col cols="12" xl="3" lg="5" md="5" class="py-0" justify="end" align-content="end">
-              <v-btn color="#38598a" :disabled="!enableActions" :dark="enableActions" justify="center" width="100%" @click="submitReject">Reject</v-btn>
+              <v-btn color="#38598a" :disabled="isRejectDisabled" :dark="isRejectDark" justify="center" width="100%" @click="submitReject">Reject</v-btn>
             </v-col>
           </v-row>
         </v-card-text>
@@ -120,6 +120,12 @@ export default {
         name: this.userInfo.userName,
         id: this.userInfo.userGuid
       };
+    },
+    isRejectDisabled() {
+      return !this.enableActions || this.request[this.requestStatusCodeName] === 'ABANDONED';
+    },
+    isRejectDark() {
+      return this.enableActions && this.request[this.requestStatusCodeName] !== 'ABANDONED';
     }
   },
   mounted() {

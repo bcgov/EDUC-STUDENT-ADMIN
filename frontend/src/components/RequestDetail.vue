@@ -66,14 +66,14 @@
               <v-row v-if="this.request.reviewer === this.myself.name" no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
                 <p v-if="this.isRequestCompleted" class="grey--text text--darken-1"><strong>{{ this.request.reviewer }} completed this request</strong></p>
                 <p v-if="!this.isRequestCompleted" class="green--text"><strong>You are working on this request</strong></p>
-                <v-btn id="release-pen-request" :disabled="!enableActions || this.isRequestCompleted || !isReleaseActionEnabledForUser" small color="#38598a" :dark="enableActions && !this.isRequestCompleted && isReleaseActionEnabledForUser" class="ml-2" @click="claimRequest">Release</v-btn>
+                <v-btn id="release-pen-request" :disabled="isReleaseDisabled" small color="#38598a" :dark="isDarkForRelease" class="ml-2" @click="claimRequest">Release</v-btn>
               </v-row>
               <v-row v-else no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
                 <p v-if="!this.request.reviewer && this.isRequestCompleted" class="grey--text text--darken-1"><strong>This request has been completed</strong></p>
                 <p v-if="this.request.reviewer && this.isRequestCompleted" class="grey--text text--darken-1"><strong>{{ this.request.reviewer }} completed this request</strong></p>
                 <p v-if="!this.request.reviewer && !this.isRequestCompleted" class="blue--text"><strong>No one is working on this request</strong></p>
                 <p v-if="this.request.reviewer && !this.isRequestCompleted" class="orange--text"><strong>{{ this.request.reviewer }} is working on this request</strong></p>
-                <v-btn id="claim-pen-request" :disabled="!enableActions || !isClaimActionEnabledForUser || request[requestStatusCodeName]==='DRAFT'" small color="#38598a" :dark="enableActions && isClaimActionEnabledForUser && request[requestStatusCodeName]!=='DRAFT'" class="ml-2" @click="claimRequest">Claim</v-btn>
+                <v-btn id="claim-pen-request" :disabled="isClaimDisabled" small color="#38598a" :dark="isDarkForClaim" class="ml-2" @click="claimRequest">Claim</v-btn>
               </v-row>
               <v-row no-gutters justify="end" class="pb-5">
                 <v-btn :disabled="!enableActions" small color="#38598a" :dark="enableActions" class="ml-2" @click="backToList">Back to List</v-btn>
@@ -276,6 +276,18 @@ export default {
     completeMacros() {
       return this.$store.getters[`${this.requestType}/completeMacros`];
     },
+    isClaimDisabled() {
+      return !this.enableActions || !this.isClaimActionEnabledForUser || this.request[this.requestStatusCodeName] === 'DRAFT' || this.request[this.requestStatusCodeName] === 'ABANDONED';
+    },
+    isDarkForClaim() {
+      return this.enableActions && this.isClaimActionEnabledForUser && this.request[this.requestStatusCodeName] !== 'DRAFT' && this.request[this.requestStatusCodeName] !== 'ABANDONED';
+    },
+    isReleaseDisabled() {
+      return !this.enableActions || this.isRequestCompleted || !this.isReleaseActionEnabledForUser
+    },
+    isDarkForRelease() {
+      return this.enableActions && !this.isRequestCompleted && this.isReleaseActionEnabledForUser;
+    }
     /* commented out the below code as a reference point for actual implementation, need some work to show notification only related to this pen request or profile request.
     notifications() {
       let notifications = this.$store.getters['notifications/getNotifications'];
