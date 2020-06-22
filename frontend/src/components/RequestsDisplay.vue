@@ -184,11 +184,11 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
-import ApiService from "../common/apiService";
-import { Routes } from "../utils/constants";
+import { mapMutations } from 'vuex';
+import ApiService from '../common/apiService';
+import { Routes } from '../utils/constants';
 export default {
-  name: "requestsDisplay",
+  name: 'requestsDisplay',
   props: {
     requestType: {
       type: String,
@@ -200,7 +200,7 @@ export default {
     },
     penName: {
       type: String,
-      default: "pen"
+      default: 'pen'
     }
   },
   data() {
@@ -282,19 +282,19 @@ export default {
     headers() {
       return [
         {
-          text: "Status",
+          text: 'Status',
           value: this.requestStatusHeaderName,
           sortable: false
         },
-        { text: "Submitted Time", value: "initialSubmitDate", sortable: false },
+        { text: 'Submitted Time', value: 'initialSubmitDate', sortable: false },
         {
-          text: "PEN",
+          text: 'PEN',
           value: this.penName,
           sortable: false
         },
-        { text: "Last Name", value: "legalLastName", sortable: false },
-        { text: "First Name", value: "legalFirstName", sortable: false },
-        { text: "Reviewer", value: "reviewer", sortable: false }
+        { text: 'Last Name', value: 'legalLastName', sortable: false },
+        { text: 'First Name', value: 'legalFirstName', sortable: false },
+        { text: 'Reviewer', value: 'reviewer', sortable: false }
       ];
     },
     penSlotName() {
@@ -354,7 +354,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations("app", ["setSelectedRequest", "setRequest"]),
+    ...mapMutations('app', ['setSelectedRequest', 'setRequest']),
     remove(item) {
       this.selectedStatuses.splice(this.selectedStatuses.indexOf(item), 1);
       this.selectedStatuses = [...this.selectedStatuses];
@@ -373,7 +373,7 @@ export default {
         this.headerSortParams.currentSort === this.requestStatusHeaderSlotName
           ? this.requestStatusCodeName
           : this.headerSortParams.currentSort
-      ] = this.headerSortParams.currentSortDir ? "DESC" : "ASC";
+      ] = this.headerSortParams.currentSortDir ? 'DESC' : 'ASC';
       const headerKeys = Object.keys(this.headerSearchParams).filter(
         k =>
           this.headerSearchParams[k] && this.headerSearchParams[k].length !== 0
@@ -396,8 +396,8 @@ export default {
           }
         })
         .then(response => {
-          this.requests = response.data["content"];
-          this.totalRequests = response.data["totalElements"];
+          this.requests = response.data['content'];
+          this.totalRequests = response.data['totalElements'];
         })
         .catch(error => {
           console.log(error);
@@ -460,11 +460,13 @@ label {
 }
 th {
   border: none !important;
-  padding: 0 !important;
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
 }
 /deep/ th.text-start:nth-child(1) {
   vertical-align: sub;
-  padding-top: 1.2em;
+  padding-top: 10px;
 }
 .active {
   color: rgba(0, 0, 0, 0.87) !important;
