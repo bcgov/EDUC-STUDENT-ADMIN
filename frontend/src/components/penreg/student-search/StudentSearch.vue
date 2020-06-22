@@ -19,6 +19,7 @@
                   label="PEN"
                   maxlength="9"
                   minglength="9"
+                  tabindex="1"
                   dense
                   :rules="validatePen()"
                 ></v-text-field>
@@ -30,6 +31,7 @@
                 color="#003366"
                 label="Legal Surname"
                 maxlength="255"
+                tabindex="2"
                 dense
                 ></v-text-field>
               <v-text-field
@@ -37,6 +39,7 @@
                 v-model="studentSearchParams.usualLastName"
                 color="#003366"
                 label="Usual Surname"
+                tabindex="9"
                 maxlength="255"
                 dense
               ></v-text-field>
@@ -45,6 +48,7 @@
               <v-text-field
                 id='legalFirstName'
                 v-model="studentSearchParams.legalFirstName"
+                tabindex="3"
                 color="#003366"
                 label="Legal Given"
                 maxlength="255"
@@ -55,6 +59,7 @@
                 v-model="studentSearchParams.usualFirstName"
                 color="#003366"
                 label="Usual Given"
+                tabindex="10"
                 maxlength="255"
                 dense
                 ></v-text-field>
@@ -65,6 +70,7 @@
                 v-model="studentSearchParams.legalMiddleNames"
                 color="#003366"
                 label="Legal Middle"
+                tabindex="4"
                 maxlength="255"
                 dense
               ></v-text-field>
@@ -73,6 +79,7 @@
                 v-model="studentSearchParams.usualMiddleNames"
                 color="#003366"
                 label="Usual Middle"
+                tabindex="11"
                 maxlength="255"
                 dense
               ></v-text-field>
@@ -81,6 +88,7 @@
               <v-text-field
                 id='postalCode'
                 v-model="studentSearchParams.postalCode"
+                tabindex="5"
                 color="#003366"
                 label="Postal Code"
                 maxlength="7"
@@ -91,6 +99,7 @@
                 id='memo'
                 v-model="studentSearchParams.memo"
                 color="#003366"
+                tabindex="12"
                 label="Memo"
                 maxlength="25"
                 dense
@@ -100,6 +109,7 @@
               <v-text-field
                 id='genderCode'
                 v-model="studentSearchParams.genderCode"
+                tabindex="6"
                 color="#003366"
                 label="Gender"
                 maxlength="1"
@@ -110,6 +120,7 @@
                 id='localID'
                 v-model="studentSearchParams.localID"
                 color="#003366"
+                tabindex="13"
                 label="Local ID"
                 maxlength="12"
                 dense
@@ -119,6 +130,7 @@
               <v-text-field
                 id='dob'
                 v-model="studentSearchParams.dob"
+                tabindex="7"
                 color="#003366"
                 label="Birth Date"
                 :rules="validateDOB()"
@@ -131,6 +143,7 @@
                 v-model="studentSearchParams.grade"
                 color="#003366"
                 label="Grade"
+                tabindex="14"
                 maxlength="2"
                 minLength="1"
                 dense
@@ -140,6 +153,7 @@
               <v-text-field
                 id='school'
                 v-model="studentSearchParams.school"
+                tabindex="8"
                 color="#003366"
                 label="School"
                 maxlength="8"
