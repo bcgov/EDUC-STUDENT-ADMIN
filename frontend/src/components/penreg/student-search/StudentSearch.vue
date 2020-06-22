@@ -91,7 +91,6 @@
                 id='memo'
                 v-model="studentSearchParams.memo"
                 color="#003366"
-                disabled
                 label="Memo"
                 maxlength="25"
                 dense
@@ -104,6 +103,7 @@
                 color="#003366"
                 label="Gender"
                 maxlength="1"
+                :rules="validateGender()"
                 dense
               ></v-text-field>
               <v-text-field
@@ -189,9 +189,10 @@ export default {
       postalCodeHint: 'Invalid Postal Code',
       dobHint: 'Invalid Birth Date',
       schoolHint: 'Invalid school number',
+      genderHint: 'Invalid gender',
       validForm: false,
       menu: false,
-      genderLabels: [],
+      genderCodes: [],
       localDate:LocalDate,
       studentSearchResponse: null,
       searchLoading: false,
@@ -217,11 +218,15 @@ export default {
   computed:{
     ...mapGetters('app', ['requestType']),
     ...mapGetters('penReg', ['pageNumber']),
+    ...mapGetters('studentSearch', ['genders']),
     charRules() {
       return [
         v => !(/[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u1100-\u11FF\u3040-\u309F\u30A0-\u30FF\u3130-\u318F\u3400-\u4DBF\u4E00-\u9FFF\uAC00-\uD7AF]/.test(v)) || 'Enter English characters only'
       ];
     },
+  },
+  mounted(){
+    this.genderCodes = this.genders ? this.genders.map(a => a.genderCode):[];
   },
   methods: {
     ...mapMutations('penReg', ['setPageNumber']),
@@ -264,6 +269,21 @@ export default {
       }
       return [
         this.dobHint
+      ];   
+    },
+    validateGender(){
+      if(this.studentSearchParams) {
+        if(!this.studentSearchParams.genderCode){
+          return [];
+        }
+        else {
+          if(this.genderCodes.includes(this.studentSearchParams.genderCode)){
+            return [];
+          }
+        }
+      }
+      return [
+        this.genderHint
       ];   
     },
     validateSchool(){
@@ -323,13 +343,29 @@ export default {
         this.menu = true;
       }
     },
+    searchHasValues(){
+      return (this.studentSearchParams.pen || 
+        this.studentSearchParams.legalLastName || 
+        this.studentSearchParams.legalFirstName || 
+        this.studentSearchParams.legalMiddleNames ||
+        this.studentSearchParams.postalCode ||
+        this.studentSearchParams.genderCode ||
+        this.studentSearchParams.dob ||
+        this.studentSearchParams.school ||
+        this.studentSearchParams.usualLastName ||
+        this.studentSearchParams.usualFirstName ||
+        this.studentSearchParams.usualMiddleNames ||
+        this.studentSearchParams.memo ||
+        this.studentSearchParams.localID ||
+        this.studentSearchParams.grade);
+    },
     searchStudent(isInitialSearch) {
       this.searchLoading = true;
       this.studentSearchResultsKey += 1; //forces StudentSearchResults to rerender and update curPage
       if(isInitialSearch){
         this.setPageNumber(1);
       }
-      if(this.$refs.studentSearchForm.validate()) {
+      if(this.$refs.studentSearchForm.validate() && this.searchHasValues()) {
         const studentSearchKeys = Object.keys(this.studentSearchParams).filter(k => (this.studentSearchParams[k] && this.studentSearchParams[k].length !== 0));
         let studentSearchFilters;
         if (studentSearchKeys && studentSearchKeys.length > 0) {
@@ -365,7 +401,7 @@ export default {
     save(date) {
       this.$refs.menu.save(date);
       this.$refs.birthdate.$el.querySelectorAll('#birthdate')[0].focus();
-    },
+    }
   }
 };
 </script>

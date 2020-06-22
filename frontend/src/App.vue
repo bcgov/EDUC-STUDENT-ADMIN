@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions, mapMutations } from 'vuex';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ModalIdle from './components/ModalIdle';
@@ -29,9 +29,12 @@ export default {
     }
   },
   async created() {
+    this.setLoading(true);
     this.$store.dispatch('auth/getJwtToken').then(() => {
       this.$store.dispatch('auth/getUserInfo');
+      this.$store.dispatch('studentSearch/getCodes');
     });
+    this.setLoading(false);
   },
   mounted() {
     /* window.addEventListener('beforeunload', function(e){
@@ -39,6 +42,8 @@ export default {
     });*/
   },
   methods:{
+    ...mapMutations('auth', ['setLoading']),
+    ...mapActions('studentSearch', ['getCodes']),
     /*closeSessionOnBrowserClose(event){
         event.
       if(this.$store.state.isAuthenticated){
@@ -51,7 +56,6 @@ export default {
       return null;
     }*/
   }
-
 };
 </script>
 

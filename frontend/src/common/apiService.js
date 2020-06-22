@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Routes } from '../utils/constants';
 import AuthService from '@/common/authService';
 
 // Buffer concurrent requests while refresh token is being acquired
@@ -74,5 +75,15 @@ export default {
     } else {
       delete apiAxios.defaults.headers.common['Authorization'];
     }
+  },
+  async getCodes() {
+    try {
+      const response = await apiAxios.get(Routes.studentSearch.GENDERS_URL);
+      return response;
+    } catch (e) {
+      console.log(`Failed to get from Nodejs API - ${e}`);
+      throw e;
+    }
   }
+
 };

@@ -4,6 +4,7 @@ const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const utils = require('./utils');
 const log = require('./logger');
+const { getBackendToken, getData } = require('./utils');
 const util = require('util');
 
 async function searchStudent(req, res) {
@@ -59,6 +60,34 @@ async function searchStudent(req, res) {
     });
 }
 
+async function getStudentGender(req, res) {
+  try {
+    const accessToken = getBackendToken(req);
+    if (!accessToken) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'No access token'
+      });
+    }
+
+    const codeUrls = [
+      `${config.get('server:studentGenderCodesURL')}`
+    ];
+
+    const [genderCodes] = await Promise.all(codeUrls.map(url => getData(accessToken, url)));
+    if (genderCodes) {
+      // forcing sort if API did not return in sorted order.
+      genderCodes.sort((a, b) => a.displayOrder - b.displayOrder);
+    }
+    return res.status(HttpStatus.OK).json({genderCodes});
+  } catch (e) {
+    log.error('getCodes Error', e.stack);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Get codes error'
+    });
+  }
+}
+
 module.exports = {
-  searchStudent
+  searchStudent,
+  getStudentGender
 };

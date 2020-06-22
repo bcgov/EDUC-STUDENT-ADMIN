@@ -39,7 +39,8 @@ let object = {
 
   studentSearch: {
     ROOT_ENDPOINT: studentRoot,
-    SEARCH_URL: studentRoot + '/search'
+    SEARCH_URL: studentRoot + '/search',
+    GENDERS_URL: studentRoot + '/gender'
   },
 
   STUDENT_DATA_URL: studentRoot,
