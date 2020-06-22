@@ -121,8 +121,9 @@
                 v-model="studentSearchParams.dob"
                 color="#003366"
                 label="Birth Date"
-                maxlength="9"
-                minLength="9"
+                :rules="validateDOB()"
+                maxlength="10"
+                minLength="10"
                 dense
               ></v-text-field>
               <v-text-field
@@ -143,6 +144,7 @@
                 label="School"
                 maxlength="8"
                 minLength="8"
+                :rules="validateSchool()"
                 dense
               ></v-text-field>
             </v-col>
@@ -175,6 +177,7 @@ import ApiService from '../../../common/apiService';
 import { Routes } from '../../../utils/constants';
 import { mapGetters, mapMutations } from 'vuex';
 import StudentSearchResults from './StudentSearchResults';
+var JSJoda = require('@js-joda/core');
 
 export default {
   components: {
@@ -184,6 +187,8 @@ export default {
     return {
       penHint: 'Invalid PEN',
       postalCodeHint: 'Invalid Postal Code',
+      dobHint: 'Invalid Birth Date',
+      schoolHint: 'Invalid school number',
       validForm: false,
       menu: false,
       genderLabels: [],
@@ -238,6 +243,43 @@ export default {
           this.penHint
         ];   
       }
+    },
+    validateDOB(){
+      if(this.studentSearchParams) {
+        if(!this.studentSearchParams.dob){
+          return [];
+        }
+        else {
+          var formatter = (new JSJoda.DateTimeFormatterBuilder)
+            .appendPattern('uuuu/MM/dd')
+            .toFormatter(JSJoda.ResolverStyle.STRICT);
+          try {
+            JSJoda.LocalDate.parse(this.studentSearchParams.dob, formatter);
+            return [];
+          }
+          catch(err){
+            //Do nothing
+          }
+        }
+      }
+      return [
+        this.dobHint
+      ];   
+    },
+    validateSchool(){
+      if(this.studentSearchParams) {
+        if(!this.studentSearchParams.school){
+          return [];
+        }
+        else {
+          if(this.studentSearchParams.school.match('^[1-9]\\d*$')){
+            return [];
+          }
+        }
+      }
+      return [
+        this.schoolHint
+      ];   
     },
     validatePostal(){
       if(this.studentSearchParams) {
