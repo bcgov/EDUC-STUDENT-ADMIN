@@ -12,7 +12,6 @@ export default {
     isValidGMPUser: localStorage.getItem('isValidGMPUser') !== null,
     isValidUMPUser: localStorage.getItem('isValidUMPUser') !== null,
     isValidStudentSearchUser: localStorage.getItem('isValidStudentSearchUser') !== null,
-    isLoading: true
   },
   getters: {
     acronyms: state => state.acronyms,
@@ -23,12 +22,8 @@ export default {
     isValidGMPUser: state => state.isValidGMPUser,
     isValidUMPUser: state => state.isValidUMPUser,
     isValidStudentSearchUser: state => state.isValidStudentSearchUser,
-    isLoading: state => state.isLoading
   },
   mutations: {
-    setLoading: (state, isLoading) => {
-      state.isLoading = isLoading;
-    },
     //sets Json web token and determines whether user is authenticated
     setJwtToken: (state, token = null) => {
       if (token) {

@@ -39,8 +39,7 @@ nconf.defaults({
       roleAdmin: process.env.UMP_ROLE_ADMIN
     },
     studentSearch: {
-      rolesAllowed: process.env.STUDENT_SEARCH_ROLES ? process.env.STUDENT_SEARCH_ROLES.split(',') : '', // please provide comma separated values.
-      roleAdmin: process.env.STUDENT_SEARCH_ROLE_ADMIN
+      roleAdmin: process.env.STUDENT_SEARCH_ADMIN
     },
     demographicsURL: process.env.PEN_DEMOGRAPHICS_URL,
     digitalIdURL: process.env.DIGITAL_ID_URL,
