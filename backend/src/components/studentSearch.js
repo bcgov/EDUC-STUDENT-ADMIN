@@ -73,10 +73,6 @@ async function getStudentGender(req, res) {
     ];
 
     const [genderCodes] = await Promise.all(codeUrls.map(url => getData(accessToken, url)));
-    if (genderCodes) {
-      // forcing sort if API did not return in sorted order.
-      genderCodes.sort((a, b) => a.displayOrder - b.displayOrder);
-    }
     return res.status(HttpStatus.OK).json({genderCodes});
   } catch (e) {
     log.error('getCodes Error', e.stack);
