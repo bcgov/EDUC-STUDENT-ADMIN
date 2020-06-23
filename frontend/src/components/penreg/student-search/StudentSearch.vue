@@ -133,7 +133,7 @@
                 label="Gender"
                 maxlength="1"
                 @keyup.enter="enterPushed()"
-                v-on:input="searchHasValues"
+                v-on:input="searchHasValues();uppercaseGender()"
                 :rules="validateGender()"
                 dense
               ></v-text-field>
@@ -233,7 +233,7 @@ export default {
       penHint: 'Invalid PEN',
       postalCodeHint: 'Invalid Postal Code',
       dobHint: 'Invalid Birth Date',
-      schoolHint: 'Invalid school number',
+      schoolHint: 'Not enough digits',
       genderHint: 'Invalid gender',
       validForm: false,
       menu: false,
@@ -279,6 +279,11 @@ export default {
     uppercasePostal(){
       if(this.studentSearchParams.postalCode){
         this.studentSearchParams.postalCode = this.studentSearchParams.postalCode.toUpperCase();
+      }
+    },
+    uppercaseGender(){
+      if(this.studentSearchParams.genderCode){
+        this.studentSearchParams.genderCode = this.studentSearchParams.genderCode.toUpperCase();
       }
     },
     enterPushed() {
@@ -429,7 +434,6 @@ export default {
         this.studentSearchParams.usualLastName ||
         this.studentSearchParams.usualFirstName ||
         this.studentSearchParams.usualMiddleNames ||
-        this.studentSearchParams.memo ||
         this.studentSearchParams.localID ||
         this.studentSearchParams.grade)){
         this.searchEnabled = true;

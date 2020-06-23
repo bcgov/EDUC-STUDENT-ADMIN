@@ -39,7 +39,7 @@ async function searchStudent(req, res) {
     }
   };
 
-  log.info(util.inspect(params, {showHidden: false, depth: null}));
+  //log.info(util.inspect(params, {showHidden: false, depth: null}));
 
   return Promise.all([
     utils.getData(token, config.get('server:studentURL') + '/paginated', params),
