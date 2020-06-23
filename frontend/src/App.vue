@@ -28,7 +28,7 @@ export default {
       return this.$store.state.idleVue.isIdle;
     }
   },
-  async created() {
+  created() {
     this.setLoading(true);
     this.$store.dispatch('auth/getJwtToken').then(() => {
       this.$store.dispatch('auth/getUserInfo');

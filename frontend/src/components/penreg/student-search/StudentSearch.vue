@@ -19,8 +19,10 @@
                   label="PEN"
                   maxlength="9"
                   minglength="9"
+                  v-on:input="searchHasValues();runPENSearchIfPossible();"
                   tabindex="1"
                   dense
+                  autofocus
                   :rules="validatePen()"
                 ></v-text-field>
             </v-col>
@@ -30,6 +32,7 @@
                 v-model="studentSearchParams.legalLastName"
                 color="#003366"
                 label="Legal Surname"
+                v-on:input="searchHasValues"
                 maxlength="255"
                 tabindex="2"
                 dense
@@ -39,6 +42,7 @@
                 v-model="studentSearchParams.usualLastName"
                 color="#003366"
                 label="Usual Surname"
+                v-on:input="searchHasValues"
                 tabindex="9"
                 maxlength="255"
                 dense
@@ -51,6 +55,7 @@
                 tabindex="3"
                 color="#003366"
                 label="Legal Given"
+                v-on:input="searchHasValues"
                 maxlength="255"
                 dense
               ></v-text-field>
@@ -59,6 +64,7 @@
                 v-model="studentSearchParams.usualFirstName"
                 color="#003366"
                 label="Usual Given"
+                v-on:input="searchHasValues"
                 tabindex="10"
                 maxlength="255"
                 dense
@@ -70,6 +76,7 @@
                 v-model="studentSearchParams.legalMiddleNames"
                 color="#003366"
                 label="Legal Middle"
+                v-on:input="searchHasValues"
                 tabindex="4"
                 maxlength="255"
                 dense
@@ -79,6 +86,7 @@
                 v-model="studentSearchParams.usualMiddleNames"
                 color="#003366"
                 label="Usual Middle"
+                v-on:input="searchHasValues"
                 tabindex="11"
                 maxlength="255"
                 dense
@@ -91,6 +99,7 @@
                 tabindex="5"
                 color="#003366"
                 label="Postal Code"
+                v-on:input="searchHasValues(),uppercasePostal()"
                 maxlength="7"
                 :rules="validatePostal()"
                 dense
@@ -101,6 +110,7 @@
                 color="#003366"
                 tabindex="12"
                 label="Memo"
+                v-on:input="searchHasValues"
                 maxlength="25"
                 dense
               ></v-text-field>
@@ -113,6 +123,7 @@
                 color="#003366"
                 label="Gender"
                 maxlength="1"
+                v-on:input="searchHasValues"
                 :rules="validateGender()"
                 dense
               ></v-text-field>
@@ -123,6 +134,7 @@
                 tabindex="13"
                 label="Local ID"
                 maxlength="12"
+                v-on:input="searchHasValues"
                 dense
               ></v-text-field>
             </v-col>
@@ -136,6 +148,7 @@
                 :rules="validateDOB()"
                 maxlength="10"
                 minLength="10"
+                v-on:input="searchHasValues"
                 dense
               ></v-text-field>
               <v-text-field
@@ -145,6 +158,7 @@
                 label="Grade"
                 tabindex="14"
                 maxlength="2"
+                v-on:input="searchHasValues"
                 minLength="1"
                 dense
               ></v-text-field>
@@ -158,6 +172,7 @@
                 label="School"
                 maxlength="8"
                 minLength="8"
+                v-on:input="searchHasValues"
                 :rules="validateSchool()"
                 dense
               ></v-text-field>
@@ -165,7 +180,7 @@
           </v-row>
           <v-row align="end" no-gutters style="background-color:white;">
             <v-col align="end" class="py-3 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
-                <v-btn disabled outlined class="mx-2" color="#38598a">Advanced Search</v-btn><v-btn class="white--text" :loading="searchLoading" color="#38598a" @click="searchStudent(true)">Search</v-btn>
+                <v-btn disabled outlined class="mx-2" color="#38598a">Advanced Search</v-btn><v-btn class="white--text" :disabled="!searchEnabled" :loading="searchLoading" color="#38598a" @click="searchStudent(true)">Search</v-btn>
             </v-col>
           </v-row>
           <v-row no-gutters class="py-2" style="background-color:white;">
@@ -210,6 +225,7 @@ export default {
       localDate:LocalDate,
       studentSearchResponse: null,
       searchLoading: false,
+      searchEnabled: false,
       studentSearchParams: {
         pen: null,
         legalLastName: null,
@@ -239,11 +255,27 @@ export default {
       ];
     },
   },
-  mounted(){
+  created(){
     this.genderCodes = this.genders ? this.genders.map(a => a.genderCode):[];
   },
   methods: {
     ...mapMutations('penReg', ['setPageNumber']),
+    uppercasePostal(){
+      if(this.studentSearchParams.postalCode){
+        this.studentSearchParams.postalCode = this.studentSearchParams.postalCode.toUpperCase();
+      }
+    },
+    isValidPEN(){
+      if(this.studentSearchParams && this.studentSearchParams.pen && this.studentSearchParams.pen.length === 9 && this.checkDigit()) {
+        return true;
+      }
+      return false;
+    },
+    runPENSearchIfPossible(){
+      if(this.isValidPEN()){
+        this.searchStudent(true, false);
+      }
+    },
     validatePen() {
       var validPEN = false;
       if(this.studentSearchParams) {
@@ -258,6 +290,7 @@ export default {
       if(validPEN){
         return [];
       }else{
+        this.searchEnabled = false;
         return [
           this.penHint
         ];   
@@ -273,14 +306,17 @@ export default {
             .appendPattern('uuuu/MM/dd')
             .toFormatter(JSJoda.ResolverStyle.STRICT);
           try {
-            JSJoda.LocalDate.parse(this.studentSearchParams.dob, formatter);
-            return [];
+            var date = JSJoda.LocalDate.parse(this.studentSearchParams.dob, formatter);
+            if(date.isBefore(LocalDate.now())){
+              return [];
+            }
           }
           catch(err){
             //Do nothing
           }
         }
       }
+      this.searchEnabled = false;
       return [
         this.dobHint
       ];   
@@ -296,6 +332,7 @@ export default {
           }
         }
       }
+      this.searchEnabled = false;
       return [
         this.genderHint
       ];   
@@ -306,11 +343,12 @@ export default {
           return [];
         }
         else {
-          if(this.studentSearchParams.school.match('^[1-9]\\d*$')){
+          if(this.studentSearchParams.school.match('^[1-9]\\d*$') && this.studentSearchParams.school.length === 8){
             return [];
           }
         }
       }
+      this.searchEnabled = false;
       return [
         this.schoolHint
       ];   
@@ -326,6 +364,7 @@ export default {
           }
         }
       }
+      this.searchEnabled = false;
       return [
         this.postalCodeHint
       ];   
@@ -358,7 +397,7 @@ export default {
       }
     },
     searchHasValues(){
-      return (this.studentSearchParams.pen || 
+      if((this.studentSearchParams.pen || 
         this.studentSearchParams.legalLastName || 
         this.studentSearchParams.legalFirstName || 
         this.studentSearchParams.legalMiddleNames ||
@@ -371,15 +410,20 @@ export default {
         this.studentSearchParams.usualMiddleNames ||
         this.studentSearchParams.memo ||
         this.studentSearchParams.localID ||
-        this.studentSearchParams.grade);
+        this.studentSearchParams.grade)){
+        this.searchEnabled = true;
+        return true;
+      }else{
+        this.searchEnabled = false;
+      }
     },
-    searchStudent(isInitialSearch) {
+    searchStudent(isInitialSearch, validationRequired=true) {
       this.searchLoading = true;
       this.studentSearchResultsKey += 1; //forces StudentSearchResults to rerender and update curPage
       if(isInitialSearch){
         this.setPageNumber(1);
       }
-      if(this.$refs.studentSearchForm.validate() && this.searchHasValues()) {
+      if(validationRequired === false || (this.$refs.studentSearchForm.validate() && this.searchHasValues())) {
         const studentSearchKeys = Object.keys(this.studentSearchParams).filter(k => (this.studentSearchParams[k] && this.studentSearchParams[k].length !== 0));
         let studentSearchFilters;
         if (studentSearchKeys && studentSearchKeys.length > 0) {
