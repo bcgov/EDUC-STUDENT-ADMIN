@@ -69,7 +69,7 @@ function getDomainWinstonLoggerJsonFormat() {
     format.errors({ stack: true }),
     format.printf((info) => {
       const stackTrace = info.stack || '';
-
+      
       let message;
       // handle single object
       if (!info.message) {

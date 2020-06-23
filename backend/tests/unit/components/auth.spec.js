@@ -1,12 +1,9 @@
 const axios = require('axios');
-const config = require('../../../src/config/index');
-const log = require('../../../src/components/logger');
 const MockAdapter = require('axios-mock-adapter');
 
 const auth = require('../../../src/components/auth');
 const utils = require('../../../src/components/utils');
 
-log.level = config.get('server:logLevel');
 const mockAxios = new MockAdapter(axios);
 
 const expiredToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjF9.2H0EJnt58ApysedXcvNUAy6FhgBIbDmPfq9d79qF4yQ';

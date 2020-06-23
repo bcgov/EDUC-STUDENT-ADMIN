@@ -11,6 +11,7 @@ selenium-debug.log
 junit.xml
 test-report.xml
 .env.development
+/public/js/config
 
 # Editor directories and files
 .idea
