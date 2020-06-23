@@ -19,6 +19,7 @@
                   label="PEN"
                   maxlength="9"
                   minglength="9"
+                  @keyup.enter="enterPushed()"
                   v-on:input="searchHasValues();runPENSearchIfPossible();"
                   tabindex="1"
                   dense
@@ -32,6 +33,7 @@
                 v-model="studentSearchParams.legalLastName"
                 color="#003366"
                 label="Legal Surname"
+                @keyup.enter="enterPushed()"
                 v-on:input="searchHasValues"
                 maxlength="255"
                 tabindex="2"
@@ -42,6 +44,7 @@
                 v-model="studentSearchParams.usualLastName"
                 color="#003366"
                 label="Usual Surname"
+                @keyup.enter="enterPushed()"
                 v-on:input="searchHasValues"
                 tabindex="9"
                 maxlength="255"
@@ -55,6 +58,7 @@
                 tabindex="3"
                 color="#003366"
                 label="Legal Given"
+                @keyup.enter="enterPushed()"
                 v-on:input="searchHasValues"
                 maxlength="255"
                 dense
@@ -64,6 +68,7 @@
                 v-model="studentSearchParams.usualFirstName"
                 color="#003366"
                 label="Usual Given"
+                @keyup.enter="enterPushed()"
                 v-on:input="searchHasValues"
                 tabindex="10"
                 maxlength="255"
@@ -77,6 +82,7 @@
                 color="#003366"
                 label="Legal Middle"
                 v-on:input="searchHasValues"
+                @keyup.enter="enterPushed()"
                 tabindex="4"
                 maxlength="255"
                 dense
@@ -86,6 +92,7 @@
                 v-model="studentSearchParams.usualMiddleNames"
                 color="#003366"
                 label="Usual Middle"
+                @keyup.enter="enterPushed()"
                 v-on:input="searchHasValues"
                 tabindex="11"
                 maxlength="255"
@@ -101,6 +108,7 @@
                 label="Postal Code"
                 v-on:input="searchHasValues(),uppercasePostal()"
                 maxlength="7"
+                @keyup.enter="enterPushed()"
                 :rules="validatePostal()"
                 dense
               ></v-text-field>
@@ -110,6 +118,7 @@
                 color="#003366"
                 tabindex="12"
                 label="Memo"
+                @keyup.enter="enterPushed()"
                 v-on:input="searchHasValues"
                 maxlength="25"
                 dense
@@ -123,6 +132,7 @@
                 color="#003366"
                 label="Gender"
                 maxlength="1"
+                @keyup.enter="enterPushed()"
                 v-on:input="searchHasValues"
                 :rules="validateGender()"
                 dense
@@ -134,6 +144,7 @@
                 tabindex="13"
                 label="Local ID"
                 maxlength="12"
+                @keyup.enter="enterPushed()"
                 v-on:input="searchHasValues"
                 dense
               ></v-text-field>
@@ -148,6 +159,7 @@
                 :rules="validateDOB()"
                 maxlength="10"
                 minLength="10"
+                @keyup.enter="enterPushed()"
                 v-on:input="searchHasValues"
                 dense
               ></v-text-field>
@@ -158,6 +170,7 @@
                 label="Grade"
                 tabindex="14"
                 maxlength="2"
+                @keyup.enter="enterPushed()"
                 v-on:input="searchHasValues"
                 minLength="1"
                 dense
@@ -172,6 +185,7 @@
                 label="School"
                 maxlength="8"
                 minLength="8"
+                @keyup.enter="enterPushed()"
                 v-on:input="searchHasValues"
                 :rules="validateSchool()"
                 dense
@@ -193,10 +207,12 @@
                     :search="searchStudent"
                     :key="studentSearchResultsKey"
             ></StudentSearchResults>
+            <input v-on:keyup.enter="onEnter" />
           </v-row>
         </v-card>
       </v-row>
     </v-container>
+    
   </v-form>
 </template>
 
@@ -263,6 +279,11 @@ export default {
     uppercasePostal(){
       if(this.studentSearchParams.postalCode){
         this.studentSearchParams.postalCode = this.studentSearchParams.postalCode.toUpperCase();
+      }
+    },
+    enterPushed() {
+      if(this.searchHasValues){
+        this.searchStudent(true, true);
       }
     },
     isValidPEN(){
