@@ -89,7 +89,6 @@ const auth = {
   },
   isValidGMPAdmin(req, res, next) {
     try {
-      log.info('Search Marco2');
       const jwtToken = utils.getBackendToken(req);
       if (!jwtToken) {
         return res.status(401).json({
@@ -196,7 +195,6 @@ const auth = {
   },
   isValidStudentSearchAdmin(req, res, next) {
     try {
-      log.info('Search Marco');
       const jwtToken = utils.getBackendToken(req);
       if (!jwtToken) {
         return res.status(401).json({
