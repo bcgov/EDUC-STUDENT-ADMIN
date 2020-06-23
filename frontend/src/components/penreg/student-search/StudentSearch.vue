@@ -328,11 +328,11 @@ export default {
           return [];
         }
         else {
-          var formatter = (new JSJoda.DateTimeFormatterBuilder)
+          const formatter = (new JSJoda.DateTimeFormatterBuilder)
             .appendPattern('uuuu/MM/dd')
             .toFormatter(JSJoda.ResolverStyle.STRICT);
           try {
-            var date = JSJoda.LocalDate.parse(this.studentSearchParams.dob, formatter);
+            const date = JSJoda.LocalDate.parse(this.studentSearchParams.dob, formatter);
             if(date.isBefore(LocalDate.now())){
               return [];
             }
