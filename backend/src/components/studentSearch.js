@@ -5,7 +5,6 @@ const config = require('../config/index');
 const utils = require('./utils');
 const log = require('./logger');
 const { getBackendToken, getData } = require('./utils');
-const util = require('util');
 
 async function searchStudent(req, res) {
   const token = utils.getBackendToken(req);
@@ -26,6 +25,8 @@ async function searchStudent(req, res) {
         searchQueries[element] = searchQueries[element].replace(/\//g, '-');
         operation = 'eq';
         valueType = 'DATE';
+      }else if (element.includes('Name')) {
+        operation = 'starts_with_ignore_case';
       }
 
       searchListCriteria.push({key: element, operation: operation, value: searchQueries[element], valueType: valueType});
@@ -38,8 +39,6 @@ async function searchStudent(req, res) {
       searchCriteriaList: JSON.stringify(searchListCriteria)
     }
   };
-
-  //log.info(util.inspect(params, {showHidden: false, depth: null}));
 
   return Promise.all([
     utils.getData(token, config.get('server:studentURL') + '/paginated', params),
