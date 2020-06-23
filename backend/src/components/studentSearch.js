@@ -3,6 +3,8 @@ const { logApiError } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const utils = require('./utils');
+const log = require('./logger');
+const { getBackendToken, getData } = require('./utils');
 
 async function searchStudent(req, res) {
   const token = utils.getBackendToken(req);
@@ -18,6 +20,15 @@ async function searchStudent(req, res) {
     Object.keys(searchQueries).forEach(element => {
       let operation = 'starts_with_ignore_case';
       let valueType = 'STRING';
+
+      if (element === 'dob') {
+        searchQueries[element] = searchQueries[element].replace(/\//g, '-');
+        operation = 'eq';
+        valueType = 'DATE';
+      }else if (element.includes('Name')) {
+        operation = 'starts_with_ignore_case';
+      }
+
       searchListCriteria.push({key: element, operation: operation, value: searchQueries[element], valueType: valueType});
     });
   }
@@ -41,6 +52,30 @@ async function searchStudent(req, res) {
   });
 }
 
+async function getStudentGender(req, res) {
+  try {
+    const accessToken = getBackendToken(req);
+    if (!accessToken) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'No access token'
+      });
+    }
+
+    const codeUrls = [
+      `${config.get('server:studentGenderCodesURL')}`
+    ];
+
+    const [genderCodes] = await Promise.all(codeUrls.map(url => getData(accessToken, url)));
+    return res.status(HttpStatus.OK).json({genderCodes});
+  } catch (e) {
+    log.error('getCodes Error', e.stack);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Get codes error'
+    });
+  }
+}
+
 module.exports = {
-  searchStudent
+  searchStudent,
+  getStudentGender
 };

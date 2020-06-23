@@ -10,7 +10,9 @@ export default {
     isAuthorizedUser: localStorage.getItem('isAuthorizedUser') !== null,
     userInfo: false,
     isValidGMPUser: localStorage.getItem('isValidGMPUser') !== null,
-    isValidUMPUser: localStorage.getItem('isValidUMPUser') !== null
+    isValidUMPUser: localStorage.getItem('isValidUMPUser') !== null,
+    isValidStudentSearchUser: localStorage.getItem('isValidStudentSearchUser') !== null,
+    isLoading: true
   },
   getters: {
     acronyms: state => state.acronyms,
@@ -19,9 +21,14 @@ export default {
     userInfo: state => state.userInfo,
     isAuthorizedUser: state => state.isAuthorizedUser,
     isValidGMPUser: state => state.isValidGMPUser,
-    isValidUMPUser: state => state.isValidUMPUser
+    isValidUMPUser: state => state.isValidUMPUser,
+    isValidStudentSearchUser: state => state.isValidStudentSearchUser,
+    isLoading: state => state.isLoading
   },
   mutations: {
+    setLoading: (state, isLoading) => {
+      state.isLoading = isLoading;
+    },
     //sets Json web token and determines whether user is authenticated
     setJwtToken: (state, token = null) => {
       if (token) {
@@ -57,6 +64,15 @@ export default {
       } else {
         state.isValidUMPUser = false;
         localStorage.removeItem(('isValidUMPUser'));
+      }
+    },
+    setStudentSearchUser: (state, isValidStudentSearchUser) => {
+      if (isValidStudentSearchUser) {
+        state.isValidStudentSearchUser = true;
+        localStorage.setItem('isValidStudentSearchUser', 'true');
+      } else {
+        state.isValidStudentSearchUser = false;
+        localStorage.removeItem(('isValidStudentSearchUser'));
       }
     },
     setUserInfo: (state, userInf) => {
@@ -104,6 +120,7 @@ export default {
             context.commit('setAuthorizedUser', response.isAuthorizedUser);
             context.commit('setGMPUser', response.isValidGMPUser);
             context.commit('setUMPUser', response.isValidUMPUser);
+            context.commit('setStudentSearchUser', response.isValidStudentSearchUser);
             ApiService.setAuthHeader(response.jwtFrontend);
           }
           else {
@@ -118,6 +135,7 @@ export default {
           context.commit('setAuthorizedUser', response.isAuthorizedUser);
           context.commit('setGMPUser', response.isValidGMPUser);
           context.commit('setUMPUser', response.isValidUMPUser);
+          context.commit('setStudentSearchUser', response.isValidStudentSearchUser);
           ApiService.setAuthHeader(response.jwtFrontend);
         }
       } catch (e) {

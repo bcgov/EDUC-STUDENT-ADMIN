@@ -19,7 +19,11 @@
                   label="PEN"
                   maxlength="9"
                   minglength="9"
+                  @keyup.enter="enterPushed()"
+                  v-on:input="searchHasValues();runPENSearchIfPossible();"
+                  tabindex="1"
                   dense
+                  autofocus
                   :rules="validatePen()"
                 ></v-text-field>
             </v-col>
@@ -29,7 +33,10 @@
                 v-model="studentSearchParams.legalLastName"
                 color="#003366"
                 label="Legal Surname"
+                @keyup.enter="enterPushed()"
+                v-on:input="searchHasValues"
                 maxlength="255"
+                tabindex="2"
                 dense
                 ></v-text-field>
               <v-text-field
@@ -37,6 +44,9 @@
                 v-model="studentSearchParams.usualLastName"
                 color="#003366"
                 label="Usual Surname"
+                @keyup.enter="enterPushed()"
+                v-on:input="searchHasValues"
+                tabindex="9"
                 maxlength="255"
                 dense
               ></v-text-field>
@@ -45,8 +55,11 @@
               <v-text-field
                 id='legalFirstName'
                 v-model="studentSearchParams.legalFirstName"
+                tabindex="3"
                 color="#003366"
                 label="Legal Given"
+                @keyup.enter="enterPushed()"
+                v-on:input="searchHasValues"
                 maxlength="255"
                 dense
               ></v-text-field>
@@ -55,6 +68,9 @@
                 v-model="studentSearchParams.usualFirstName"
                 color="#003366"
                 label="Usual Given"
+                @keyup.enter="enterPushed()"
+                v-on:input="searchHasValues"
+                tabindex="10"
                 maxlength="255"
                 dense
                 ></v-text-field>
@@ -65,6 +81,9 @@
                 v-model="studentSearchParams.legalMiddleNames"
                 color="#003366"
                 label="Legal Middle"
+                v-on:input="searchHasValues"
+                @keyup.enter="enterPushed()"
+                tabindex="4"
                 maxlength="255"
                 dense
               ></v-text-field>
@@ -73,6 +92,9 @@
                 v-model="studentSearchParams.usualMiddleNames"
                 color="#003366"
                 label="Usual Middle"
+                @keyup.enter="enterPushed()"
+                v-on:input="searchHasValues"
+                tabindex="11"
                 maxlength="255"
                 dense
               ></v-text-field>
@@ -81,9 +103,12 @@
               <v-text-field
                 id='postalCode'
                 v-model="studentSearchParams.postalCode"
+                tabindex="5"
                 color="#003366"
                 label="Postal Code"
+                v-on:input="searchHasValues(),uppercasePostal()"
                 maxlength="7"
+                @keyup.enter="enterPushed()"
                 :rules="validatePostal()"
                 dense
               ></v-text-field>
@@ -91,8 +116,10 @@
                 id='memo'
                 v-model="studentSearchParams.memo"
                 color="#003366"
-                disabled
+                tabindex="12"
                 label="Memo"
+                @keyup.enter="enterPushed()"
+                v-on:input="searchHasValues"
                 maxlength="25"
                 dense
               ></v-text-field>
@@ -101,17 +128,24 @@
               <v-text-field
                 id='genderCode'
                 v-model="studentSearchParams.genderCode"
+                tabindex="6"
                 color="#003366"
                 label="Gender"
                 maxlength="1"
+                @keyup.enter="enterPushed()"
+                v-on:input="searchHasValues();uppercaseGender()"
+                :rules="validateGender()"
                 dense
               ></v-text-field>
               <v-text-field
                 id='localID'
                 v-model="studentSearchParams.localID"
                 color="#003366"
+                tabindex="13"
                 label="Local ID"
                 maxlength="12"
+                @keyup.enter="enterPushed()"
+                v-on:input="searchHasValues"
                 dense
               ></v-text-field>
             </v-col>
@@ -119,10 +153,14 @@
               <v-text-field
                 id='dob'
                 v-model="studentSearchParams.dob"
+                tabindex="7"
                 color="#003366"
                 label="Birth Date"
-                maxlength="9"
-                minLength="9"
+                :rules="validateDOB()"
+                maxlength="10"
+                minLength="10"
+                @keyup.enter="enterPushed()"
+                v-on:input="searchHasValues"
                 dense
               ></v-text-field>
               <v-text-field
@@ -130,7 +168,10 @@
                 v-model="studentSearchParams.grade"
                 color="#003366"
                 label="Grade"
+                tabindex="14"
                 maxlength="2"
+                @keyup.enter="enterPushed()"
+                v-on:input="searchHasValues"
                 minLength="1"
                 dense
               ></v-text-field>
@@ -139,17 +180,21 @@
               <v-text-field
                 id='school'
                 v-model="studentSearchParams.school"
+                tabindex="8"
                 color="#003366"
                 label="School"
                 maxlength="8"
                 minLength="8"
+                @keyup.enter="enterPushed()"
+                v-on:input="searchHasValues"
+                :rules="validateSchool()"
                 dense
               ></v-text-field>
             </v-col>
           </v-row>
           <v-row align="end" no-gutters style="background-color:white;">
             <v-col align="end" class="py-3 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
-                <v-btn disabled outlined class="mx-2" color="#38598a">Advanced Search</v-btn><v-btn class="white--text" :loading="searchLoading" color="#38598a" @click="searchStudent(true)">Search</v-btn>
+                <v-btn disabled outlined class="mx-2" color="#38598a">Advanced Search</v-btn><v-btn class="white--text" :disabled="!searchEnabled" :loading="searchLoading" color="#38598a" @click="searchStudent(true)">Search</v-btn>
             </v-col>
           </v-row>
           <v-row no-gutters class="py-2" style="background-color:white;">
@@ -162,10 +207,12 @@
                     :search="searchStudent"
                     :key="studentSearchResultsKey"
             ></StudentSearchResults>
+            <input v-on:keyup.enter="onEnter" />
           </v-row>
         </v-card>
       </v-row>
     </v-container>
+    
   </v-form>
 </template>
 
@@ -175,6 +222,7 @@ import ApiService from '../../../common/apiService';
 import { Routes } from '../../../utils/constants';
 import { mapGetters, mapMutations } from 'vuex';
 import StudentSearchResults from './StudentSearchResults';
+var JSJoda = require('@js-joda/core');
 
 export default {
   components: {
@@ -184,12 +232,16 @@ export default {
     return {
       penHint: 'Invalid PEN',
       postalCodeHint: 'Invalid Postal Code',
+      dobHint: 'Invalid Birth Date',
+      schoolHint: 'Not enough digits',
+      genderHint: 'Invalid gender',
       validForm: false,
       menu: false,
-      genderLabels: [],
+      genderCodes: [],
       localDate:LocalDate,
       studentSearchResponse: null,
       searchLoading: false,
+      searchEnabled: false,
       studentSearchParams: {
         pen: null,
         legalLastName: null,
@@ -212,14 +264,44 @@ export default {
   computed:{
     ...mapGetters('app', ['requestType']),
     ...mapGetters('penReg', ['pageNumber']),
+    ...mapGetters('studentSearch', ['genders']),
     charRules() {
       return [
         v => !(/[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u1100-\u11FF\u3040-\u309F\u30A0-\u30FF\u3130-\u318F\u3400-\u4DBF\u4E00-\u9FFF\uAC00-\uD7AF]/.test(v)) || 'Enter English characters only'
       ];
     },
   },
+  created(){
+    this.genderCodes = this.genders ? this.genders.map(a => a.genderCode):[];
+  },
   methods: {
     ...mapMutations('penReg', ['setPageNumber']),
+    uppercasePostal(){
+      if(this.studentSearchParams.postalCode){
+        this.studentSearchParams.postalCode = this.studentSearchParams.postalCode.toUpperCase();
+      }
+    },
+    uppercaseGender(){
+      if(this.studentSearchParams.genderCode){
+        this.studentSearchParams.genderCode = this.studentSearchParams.genderCode.toUpperCase();
+      }
+    },
+    enterPushed() {
+      if(this.searchHasValues){
+        this.searchStudent(true, true);
+      }
+    },
+    isValidPEN(){
+      if(this.studentSearchParams && this.studentSearchParams.pen && this.studentSearchParams.pen.length === 9 && this.checkDigit()) {
+        return true;
+      }
+      return false;
+    },
+    runPENSearchIfPossible(){
+      if(this.isValidPEN()){
+        this.searchStudent(true, false);
+      }
+    },
     validatePen() {
       var validPEN = false;
       if(this.studentSearchParams) {
@@ -234,10 +316,68 @@ export default {
       if(validPEN){
         return [];
       }else{
+        this.searchEnabled = false;
         return [
           this.penHint
         ];   
       }
+    },
+    validateDOB(){
+      if(this.studentSearchParams) {
+        if(!this.studentSearchParams.dob){
+          return [];
+        }
+        else {
+          const formatter = (new JSJoda.DateTimeFormatterBuilder)
+            .appendPattern('uuuu/MM/dd')
+            .toFormatter(JSJoda.ResolverStyle.STRICT);
+          try {
+            const date = JSJoda.LocalDate.parse(this.studentSearchParams.dob, formatter);
+            if(date.isBefore(LocalDate.now())){
+              return [];
+            }
+          }
+          catch(err){
+            //Do nothing
+          }
+        }
+      }
+      this.searchEnabled = false;
+      return [
+        this.dobHint
+      ];   
+    },
+    validateGender(){
+      if(this.studentSearchParams) {
+        if(!this.studentSearchParams.genderCode){
+          return [];
+        }
+        else {
+          if(this.genderCodes.includes(this.studentSearchParams.genderCode)){
+            return [];
+          }
+        }
+      }
+      this.searchEnabled = false;
+      return [
+        this.genderHint
+      ];   
+    },
+    validateSchool(){
+      if(this.studentSearchParams) {
+        if(!this.studentSearchParams.school){
+          return [];
+        }
+        else {
+          if(this.studentSearchParams.school.match('^[1-9]\\d*$') && this.studentSearchParams.school.length === 8){
+            return [];
+          }
+        }
+      }
+      this.searchEnabled = false;
+      return [
+        this.schoolHint
+      ];   
     },
     validatePostal(){
       if(this.studentSearchParams) {
@@ -250,6 +390,7 @@ export default {
           }
         }
       }
+      this.searchEnabled = false;
       return [
         this.postalCodeHint
       ];   
@@ -281,13 +422,33 @@ export default {
         this.menu = true;
       }
     },
-    searchStudent(isInitialSearch) {
+    searchHasValues(){
+      if((this.studentSearchParams.pen || 
+        this.studentSearchParams.legalLastName || 
+        this.studentSearchParams.legalFirstName || 
+        this.studentSearchParams.legalMiddleNames ||
+        this.studentSearchParams.postalCode ||
+        this.studentSearchParams.genderCode ||
+        this.studentSearchParams.dob ||
+        this.studentSearchParams.school ||
+        this.studentSearchParams.usualLastName ||
+        this.studentSearchParams.usualFirstName ||
+        this.studentSearchParams.usualMiddleNames ||
+        this.studentSearchParams.localID ||
+        this.studentSearchParams.grade)){
+        this.searchEnabled = true;
+        return true;
+      }else{
+        this.searchEnabled = false;
+      }
+    },
+    searchStudent(isInitialSearch, validationRequired=true) {
       this.searchLoading = true;
       this.studentSearchResultsKey += 1; //forces StudentSearchResults to rerender and update curPage
       if(isInitialSearch){
         this.setPageNumber(1);
       }
-      if(this.$refs.studentSearchForm.validate()) {
+      if(validationRequired === false || (this.$refs.studentSearchForm.validate() && this.searchHasValues())) {
         const studentSearchKeys = Object.keys(this.studentSearchParams).filter(k => (this.studentSearchParams[k] && this.studentSearchParams[k].length !== 0));
         let studentSearchFilters;
         if (studentSearchKeys && studentSearchKeys.length > 0) {
@@ -323,7 +484,7 @@ export default {
     save(date) {
       this.$refs.menu.save(date);
       this.$refs.birthdate.$el.querySelectorAll('#birthdate')[0].focus();
-    },
+    }
   }
 };
 </script>

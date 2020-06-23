@@ -90,6 +90,7 @@ router.post('/refresh', [
   const isAuthorizedUser = auth.isValidUser(req);
   const isValidGMPUser = auth.isValidGMPUser(req);
   const isValidUMPUser = auth.isValidUMPUser(req);
+  const isValidStudentSearchUser = auth.isValidStudentSearchUser(req);
   if (!req['user'] || !req['user'].refreshToken) {
     res.status(401).json();
   } else {
@@ -101,7 +102,8 @@ router.post('/refresh', [
         jwtFrontend: auth.generateUiToken(),
         isAuthorizedUser: isAuthorizedUser,
         isValidGMPUser,
-        isValidUMPUser
+        isValidUMPUser,
+        isValidStudentSearchUser
       };
       return res.status(200).json(responseJson);
     } else {
@@ -116,12 +118,14 @@ router.get('/token', auth.refreshJWT, (req, res) => {
   const isAuthorizedUser = auth.isValidUser(req);
   const isValidGMPUser = auth.isValidGMPUser(req);
   const isValidUMPUser = auth.isValidUMPUser(req);
+  const isValidStudentSearchUser = auth.isValidStudentSearchUser(req);
   if (req['user'] && req['user'].jwtFrontend && req['user'].refreshToken) {
     const responseJson = {
       jwtFrontend: req['user'].jwtFrontend,
       isAuthorizedUser: isAuthorizedUser,
       isValidGMPUser,
-      isValidUMPUser
+      isValidUMPUser,
+      isValidStudentSearchUser
     };
     res.status(200).json(responseJson);
   } else {
