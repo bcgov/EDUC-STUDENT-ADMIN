@@ -543,6 +543,10 @@ async function updateStudentAndDigitalId(req) {
     usualFirstName: req['session'].studentDemographics['usualGiven'],
     usualMiddleNames: req['session'].studentDemographics['usualMiddle'],
     usualLastName: req['session'].studentDemographics['usualSurname'],
+    localID: req['session'].studentDemographics['localID'],
+    postalCode: req['session'].studentDemographics['postalCode'],
+    grade: req['session'].studentDemographics['grade'],
+    school: req['session'].studentDemographics['mincode'],
     email: req['session'].penRequest.email,
     emailVerified: req['session'].penRequest.emailVerified,
   };
