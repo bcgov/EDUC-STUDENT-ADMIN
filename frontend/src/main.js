@@ -4,12 +4,12 @@ import App from './App';
 import router from './router';
 import store from './store';
 import IdleVue from 'idle-vue';
-import webSocketService from './services/web-socket-service'
+import webSocketService from './services/web-socket-service';
 Vue.config.productionTip = false;
 Vue.use(webSocketService, {
   store,
   url: 'wss://'+window.location.hostname+'/api/socket'
-})
+});
 const eventsHub = new Vue();
 Vue.use(IdleVue, {
   eventEmitter: eventsHub,
