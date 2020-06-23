@@ -4,7 +4,6 @@ RUN mkdir -p /logs
 RUN chmod 755 /logs
 
 WORKDIR /opt/app-root/src
-RUN ln -s /logs .
 
 RUN ln -s /logs .
 COPY package*.json ./

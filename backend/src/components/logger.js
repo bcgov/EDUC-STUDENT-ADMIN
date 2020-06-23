@@ -29,7 +29,7 @@ function formatWithInspect(val, colors = true) {
  * Handles all the different log formats
  * https://github.com/winstonjs/winston/issues/1427#issuecomment-535297716
  * https://github.com/winstonjs/winston/issues/1427#issuecomment-583199496
- * @param {*} colors 
+ * @param {*} colors
  */
 function getDomainWinstonLoggerFormat(colors = true) {
   const colorize = colors ? format.colorize() : null;
@@ -98,7 +98,7 @@ const logger = createLogger({
   level: config.get('server:logLevel'),
   format: getDomainWinstonLoggerJsonFormat(),
   transports: [
-    new transports.DailyRotateFile({ 
+    new transports.DailyRotateFile({
       filename: 'app-%DATE%.log',
       dirname: './logs',
       datePattern: 'YYYY-MM-DD',
