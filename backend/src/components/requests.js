@@ -104,13 +104,13 @@ function getAllRequests(requestType) {
     ])
       .then(async ([statusCodeResponse, dataResponse]) => {
         let filteredList = [];
-        const eventsArrayString = await redisUtil.getPenRequestSagaEvents();
-        const eventsArray = eventsArrayString === null ? [] : JSON.parse(eventsArrayString);
+        const eventsArrayFromRedis = await redisUtil.getPenRequestSagaEvents();
         dataResponse['content'].forEach((element, i) => {
           const penRequestID = element['penRequestID'];
           let sagaInProgress = false;
-          if (penRequestID && eventsArray) {
-            for (const event of eventsArray) {
+          if (penRequestID && eventsArrayFromRedis) {
+            for (const eventString of eventsArrayFromRedis) {
+              const event = JSON.parse(eventString);
               if (event && event.penRequestID && event.penRequestID === penRequestID) {
                 sagaInProgress = true; // DO NOT show this record in frontend list.
                 break;
