@@ -1,23 +1,27 @@
 let webSocketsService = {}
 
 webSocketsService.install = function (Vue, options) {
-  let ws = new WebSocket(options.url)
+  let ws = null;
   let reconnectInterval = options.reconnectInterval || 1000
 
   Vue.prototype.$webSocketsConnect = () => {
-    if(ws.readyState === WebSocket.OPEN){
+    const token =localStorage.getItem('jwtToken');
+    if(!token){
+      return;
+    }
+    if(ws && ws.readyState === WebSocket.OPEN){
       return;
     }
     ws = new WebSocket(options.url)
 
     ws.onopen = () => {
       // Restart reconnect interval
-      reconnectInterval = options.reconnectInterval || 1000
+      reconnectInterval = options.reconnectInterval || 1000;
     }
 
     ws.onmessage = (event) => {
       // New message from the backend - use JSON.parse(event.data)
-      handleNotification(event)
+      handleNotification(event);
     }
 
     ws.onclose = (event) => {
@@ -30,32 +34,32 @@ webSocketsService.install = function (Vue, options) {
               // Reconnect interval can't be > x seconds
               reconnectInterval += 1000
             }
-            Vue.prototype.$webSocketsConnect()
-          }, reconnectInterval)
+            Vue.prototype.$webSocketsConnect();
+          }, reconnectInterval);
         }
       }
     }
 
     ws.onerror = (error) => {
       console.log(error)
-      ws.close()
+      ws.close();
     }
   }
 
   Vue.prototype.$webSocketsDisconnect = () => {
     // Our custom disconnect event
-    ws.close()
+    ws.close();
   }
 
   Vue.prototype.$webSocketsSend = (data) => {
     // Send data to the backend - use JSON.stringify(data)
-    ws.send(JSON.stringify(data))
+    ws.send(JSON.stringify(data));
   }
   /*
     Here we write our custom functions to not make a mess in one function
   */
   function handleNotification (params) {
-    options.store.dispatch('notifications/setNotifications', params.data)
+    options.store.dispatch('notifications/setNotifications', params.data);
   }
 }
 

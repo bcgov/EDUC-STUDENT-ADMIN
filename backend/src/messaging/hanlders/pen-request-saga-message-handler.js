@@ -9,7 +9,7 @@ const safeStringify = require('fast-safe-stringify');
 
 const PenRequestSagaMessageHandler = {
   penRequestReturnSagaSubscription(stan, opts) {
-    const penReqReturnSagaSubscription = stan.subscribe(penRequestReturnSagaTopic, 'student-admin-pen-request-event', opts);
+    const penReqReturnSagaSubscription = stan.subscribe(penRequestReturnSagaTopic, '', opts);// no queue group as all the pods need the messages to broadcast to websocket clients.
     penReqReturnSagaSubscription.on('error', (err) => {
       log.error(`subscription for ${penRequestReturnSagaTopic} raised an error: ${err}`);
     });
@@ -18,7 +18,7 @@ const PenRequestSagaMessageHandler = {
     });
   },
   penRequestUnlinkSagaSubscription(stan, opts) {
-    const penReqReturnSagaSubscription = stan.subscribe(penRequestUnlinkSagaTopic, 'student-admin-pen-request-event', opts);
+    const penReqReturnSagaSubscription = stan.subscribe(penRequestUnlinkSagaTopic, '', opts); // no queue group as all the pods need the messages to broadcast to websocket clients.
     penReqReturnSagaSubscription.on('error', (err) => {
       log.error(`subscription for ${penRequestReturnSagaTopic} raised an error: ${err}`);
     });
@@ -32,24 +32,24 @@ const PenRequestSagaMessageHandler = {
    */
   subscribe(stan) {
     const opts = stan.subscriptionOptions();
-    opts.setDeliverAllAvailable();
+    opts.setStartTime(new Date(Date.now()));
     opts.setDurableName('student-admin-node-consumer');
     this.penRequestReturnSagaSubscription(stan, opts);
     this.penRequestUnlinkSagaSubscription(stan, opts);
   },
   async handlePenRequestSagaMessage(msg) {
     const event = JSON.parse(msg.getData()); // it is always a JSON string of Event object.
-    log.silly(`received message for SAGA ID :: ${event.sagaId} :: event ${safeStringify(event)}`);
+    log.silly(`received message for SAGA ID :: ${event.sagaId}`);
     event.penRequestID = await redisUtil.createOrUpdatePenRequestSagaRecordInRedis(event);
-    log.silly(`updated record in Redis for SAGA ID :: ${event.sagaId} :: event ${safeStringify(event)}`);
-    const connectedClients = webSocket.getWebSocketClients();
-
-    if (connectedClients && connectedClients.length > 0) {
-      for (const connectedClient of connectedClients) {
-        try {
-          connectedClient.send(safeStringify(event));
-        } catch (e) {
-          log.error(`Error while sending message to connected client ${connectedClient} :: ${e}`);
+    if('COMPLETED' === event.sagaStatus) { // broadcast only when the saga is completed, clients are not interested in each step.
+      const connectedClients = webSocket.getWebSocketClients();
+      if (connectedClients && connectedClients.length > 0) {
+        for (const connectedClient of connectedClients) {
+          try {
+            connectedClient.send(safeStringify(event));
+          } catch (e) {
+            log.error(`Error while sending message to connected client ${connectedClient} :: ${e}`);
+          }
         }
       }
     }
