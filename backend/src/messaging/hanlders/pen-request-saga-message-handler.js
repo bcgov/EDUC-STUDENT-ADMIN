@@ -1,4 +1,5 @@
 'use strict';
+const STAN = require('node-nats-streaming');
 const log = require('../../components/logger');
 
 const penRequestReturnSagaTopic = 'PEN_REQUEST_RETURN_SAGA_TOPIC';
@@ -32,7 +33,7 @@ const PenRequestSagaMessageHandler = {
    */
   subscribe(stan) {
     const opts = stan.subscriptionOptions();
-    opts.setStartTime(new Date(Date.now()));
+    opts.setStartAt(STAN.StartPosition.NEW_ONLY);
     opts.setDurableName('student-admin-node-consumer');
     this.penRequestReturnSagaSubscription(stan, opts);
     this.penRequestUnlinkSagaSubscription(stan, opts);
