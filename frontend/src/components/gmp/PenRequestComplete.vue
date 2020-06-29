@@ -329,7 +329,6 @@ export default {
           this.request.bcscAutoMatchDetails = 'WRONG auto-match to: ' + this.request.bcscAutoMatchDetails;
         }
         this.request.reviewer = this.myself.name;
-        this.request.penRequestStatusCode = Statuses[this.requestType].MANUAL_MATCH;
         ApiService.apiAxios
           .post(Routes[this.requestType].COMPLETE_URL, this.prepPut(this.requestId, this.request))
           .then(response => {

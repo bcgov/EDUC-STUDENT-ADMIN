@@ -37,7 +37,7 @@ router.get('/macros', passport.authenticate('jwt', {session: false}, undefined),
  */
 router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPUserToken, getRequestById(requestType));
 
-router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, verifyPenRequestInSession, completeRequest(requestType, createPenRequestApiServiceReq));
+router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, verifyPenRequestInSession, updatePenReqStatusCodeForComplete, completeRequest(requestType, createPenRequestApiServiceReq));
 
 router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, verifyPenRequestInSession, rejectRequest(requestType, createPenRequestApiServiceReq));
 
@@ -53,4 +53,11 @@ router.get('/:id/documents/:documentId', auth.isValidGMPUserToken, getDocumentBy
 router.put('/:id/documents/:documentId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, updateDocumentTypeById(requestType));
 
 router.post('/unlink', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, verifyPenRequestInSession, unlinkRequest(requestType, createPenRequestApiServiceReq));
+
+function updatePenReqStatusCodeForComplete() {
+  return function (req,res,next) {
+    req.body.penRequestStatusCode = 'MANUAL';
+    return next();
+  };
+}
 module.exports = router;
