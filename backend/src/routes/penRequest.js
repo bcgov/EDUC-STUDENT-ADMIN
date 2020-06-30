@@ -54,10 +54,8 @@ router.put('/:id/documents/:documentId', passport.authenticate('jwt', {session: 
 
 router.post('/unlink', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, verifyPenRequestInSession, unlinkRequest(requestType, createPenRequestApiServiceReq));
 
-function updatePenReqStatusCodeForComplete() {
-  return function (req,res,next) {
-    req.body.penRequestStatusCode = 'MANUAL';
-    return next();
-  };
+function updatePenReqStatusCodeForComplete(req, res, next) {
+  req.body.penRequestStatusCode = 'MANUAL';
+  return next();
 }
 module.exports = router;
