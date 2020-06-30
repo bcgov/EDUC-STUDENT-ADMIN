@@ -27,6 +27,8 @@ async function searchStudent(req, res) {
         valueType = 'DATE';
       }else if (element.includes('Name')) {
         operation = 'starts_with_ignore_case';
+      }else if (element === 'memo') {
+        operation = 'like_ignore_case';
       }
 
       searchListCriteria.push({key: element, operation: operation, value: searchQueries[element], valueType: valueType});
@@ -36,6 +38,7 @@ async function searchStudent(req, res) {
   const params = {
     params: {
       pageNumber: req.query.pageNumber,
+      sort: req.query.sort,
       searchCriteriaList: JSON.stringify(searchListCriteria)
     }
   };
