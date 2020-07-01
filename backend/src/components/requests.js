@@ -596,40 +596,7 @@ function errorResponse(res, msg) {
   });
 }
 
-function unlinkRequest(requestType, createRequestApiServiceReq) {
-  return async function unlinkRequestHandler(req, res) {
-    try {
-      let thisSession = req['session'];
-      if (!thisSession.penRequest) {
-        log.error('Error attempting to unlink request.  There is no request stored in session.');
-        return errorResponse(res);
-      }
-      const token = utils.getBackendToken(req);
-      if (!token) {
-        log.error('Error attempting to unlink request.  Unable to get token.');
-        return unauthorizedError(res);
-      }
-      let request = thisSession.penRequest;
-      delete request.dataSourceCode;
-      req.body.statusUpdateDate = LocalDateTime.now();
-      request = createRequestApiServiceReq(request, req);
-      request.digitalID = req['session'].penRequest.digitalID;
-      request.penRetrievalRequestID= request.penRequestID;
-      request.penRequestStatusCode = 'SUBSREV';
-      const response = await postData(token, `${config.get('server:penRequest:saga')}/pen-request-unlink-saga`, request);
-      const event ={
-        sagaId:response,
-        penRequestID: request.penRequestID,
-        sagaStatus:'INITIATED'
-      };
-      await redisUtil.createOrUpdatePenRequestSagaRecordInRedis(event);
-      return res.status(200).json({sagaId: response});
-    } catch (e) {
-      logApiError(e, 'unlinkRequest', `Error occurred while attempting to unlink a ${requestType}.`);
-      return errorResponse(res);
-    }
-  };
-}
+
 
 module.exports = {
   completeRequest,
@@ -645,6 +612,5 @@ module.exports = {
   returnRequest,
   updateRequest,
   getRequestCodes,
-  sendRequestEmail,
-  unlinkRequest
+  sendRequestEmail
 };

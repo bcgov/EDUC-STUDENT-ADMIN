@@ -33,6 +33,37 @@
     >
       {{`${requestTypeLabel} status and comment updated, but email to student failed. Please contact support.`}}
     </v-alert>
+    <!-- This alert component is used to refresh the page automatically when saga is completed.-->
+    <v-alert
+      :value="false"
+      dense
+      text
+      dismissible
+      outlined
+      transition="scale-transition"
+      class="bootstrap-success" >
+      {{notifications}}
+    </v-alert>
+    <v-alert
+      :value="returnOperationSuccessful"
+      dense
+      text
+      dismissible
+      outlined
+      transition="scale-transition"
+      class="bootstrap-success" >
+      {{returnMessage}}
+    </v-alert>
+    <v-alert
+      :value="returnOperationSuccessful === false"
+      dense
+      text
+      dismissible
+      outlined
+      transition="scale-transition"
+      class="bootstrap-error">
+      Your request to return for more info could not be accepted. Please try again after some time.
+    </v-alert>
     <v-card flat class="pa-3" :disabled="!isRequestMoreInfoEnabledForUser">
       <v-form ref="returnForm">
         <v-card-text class="pa-0">
@@ -101,6 +132,8 @@ export default {
       returnAlertWarning: false,
       returnComment: null,
       isRequestMoreInfoEnabledForUser:false,
+      returnOperationSuccessful: null,
+      returnMessage : null,
     };
   },
   computed: {
@@ -127,6 +160,22 @@ export default {
     },
     isReturnToStudentDark() {
       return this.enableActions && this.request[this.requestStatusCodeName] !== 'DRAFT' && this.request[this.requestStatusCodeName] !== 'ABANDONED';
+    },
+    notifications() {
+      let outcome = null;
+      let notifications = this.$store.getters['notifications/notifications'];
+      if (Array.isArray(notifications)) {
+        for (let notification of notifications) {
+          notification = JSON.parse(notification);
+          if (notification && notification.penRequestID === this.requestId && notification.eventOutcome === 'SAGA_COMPLETED') {
+            outcome = 'SAGA_COMPLETED';
+            // eslint-disable-next-line
+            this.loadPenRequestAndComments();
+            this.returnMessage = 'Your request to return for more info is now completed.'
+          }
+        }
+      }
+      return outcome;
     }
   },
   mounted() {
@@ -134,40 +183,92 @@ export default {
   },
   methods: {
     ...mapMutations('app', ['setRequest']),
-    ...mapMutations('app', ['pushMessage']),
+    ...mapMutations('app', ['pushMessage','setMessages','setParticipants']),
     replaceReturnMacro() {
       this.returnComment = replaceMacro(this.returnComment, this.returnMacros);
     },
+    loadPenRequestAndComments(){
+      ApiService.apiAxios
+        .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId + '/comments')
+        .then(response => {
+          this.setParticipants(response.data.participants);
+          this.setMessages(response.data.messages);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+      ApiService.apiAxios
+        .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId)
+        .then(response => {
+          this.setRequest(response.data);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     returnToStudent() {
-      this.returnAlertWarning = false;
-      this.returnAlertSuccess = false;
-      this.returnAlertFailure = false;
-      if(this.$refs.returnForm.validate()) {
-        this.beforeSubmit();
-        this.request[this.requestStatusCodeName] = Statuses[this.requestType].RETURNED;
-        this.request.reviewer = this.myself.name;
-        let body = this.prepPut(this.requestId, this.request);
-        body.content = this.returnComment;
-        ApiService.apiAxios
-          .post(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId + '/return', body)
-          .then(response => {
-            this.setRequest(response.data.penResponse);
-            this.pushMessage(response.data.commentResponse);
-            this.returnAlertSuccess = true;
-            this.returnComment = null;
-            this.$refs.returnForm.resetValidation();
-          })
-          .catch(error => {
-            console.log(error);
-            if (error.response.data && error.response.data.message.includes('email service'))
-              this.returnAlertWarning = true;
-            else
-              this.returnAlertFailure = true;
-          })
-          .finally(() => {
-            this.submitted();
-          });
+      if(this.requestType === 'penRequest'){
+        this.returnOperationSuccessful = null;
+        this.returnAlertWarning = false;
+        this.returnAlertSuccess = false;
+        this.returnAlertFailure = false;
+        if(this.$refs.returnForm.validate()) {
+          this.beforeSubmit();
+          this.request[this.requestStatusCodeName] = Statuses[this.requestType].RETURNED;
+          this.request.reviewer = this.myself.name;
+          let body = this.prepPut(this.requestId, this.request);
+          body.content = this.returnComment;
+          ApiService.apiAxios
+            .post(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId + '/return', body)
+            .then(response => {
+              /*this.setRequest(response.data.penResponse);
+              this.pushMessage(response.data.commentResponse);
+              this.returnAlertSuccess = true;
+              this.returnComment = null;*/
+              this.returnOperationSuccessful =true;
+              this.returnMessage = 'Your request to return for more info is accepted.'
+              this.$refs.returnForm.resetValidation();
+            })
+            .catch(error => {
+              console.log(error);
+                this.returnOperationSuccessful = false;
+            })
+            .finally(() => {
+              this.submitted();
+            });
+        }
+      }else {
+        this.returnAlertWarning = false;
+        this.returnAlertSuccess = false;
+        this.returnAlertFailure = false;
+        if(this.$refs.returnForm.validate()) {
+          this.beforeSubmit();
+          this.request[this.requestStatusCodeName] = Statuses[this.requestType].RETURNED;
+          this.request.reviewer = this.myself.name;
+          let body = this.prepPut(this.requestId, this.request);
+          body.content = this.returnComment;
+          ApiService.apiAxios
+            .post(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId + '/return', body)
+            .then(response => {
+              this.setRequest(response.data.penResponse);
+              this.pushMessage(response.data.commentResponse);
+              this.returnAlertSuccess = true;
+              this.returnComment = null;
+              this.$refs.returnForm.resetValidation();
+            })
+            .catch(error => {
+              console.log(error);
+              if (error.response.data && error.response.data.message.includes('email service'))
+                this.returnAlertWarning = true;
+              else
+                this.returnAlertFailure = true;
+            })
+            .finally(() => {
+              this.submitted();
+            });
+        }
       }
+
     },
   }
 };
