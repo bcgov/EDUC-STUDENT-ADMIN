@@ -1,5 +1,4 @@
 'use strict';
-const log = require('../components/logger');
 const jsonwebtoken = require('jsonwebtoken');
 const config = require('../config/index');
 let connectedClients = [];
@@ -16,7 +15,6 @@ const webSocket = {
     app.ws('/api/socket', function (ws, req) {
       const jwtToken = utils.getBackendToken(req);
       if (!jwtToken) {
-        log.warn('attempted socket connection without valid jwtToken');
         ws.close();
       } else {
         const userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
@@ -25,7 +23,6 @@ const webSocket = {
             || userToken['realm_access'].roles['includes'](config.get('server:studentRequest:roleAdmin')))) {
           connectedClients.push(ws);
         } else {
-          log.warn('attempted socket connection without valid role');
           ws.close();
         }
       }

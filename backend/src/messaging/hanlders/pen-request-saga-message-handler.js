@@ -41,8 +41,8 @@ const PenRequestSagaMessageHandler = {
   async handlePenRequestSagaMessage(msg) {
     const event = JSON.parse(msg.getData()); // it is always a JSON string of Event object.
     log.silly(`received message for SAGA ID :: ${event.sagaId}`);
-    event.penRequestID = await redisUtil.createOrUpdatePenRequestSagaRecordInRedis(event);
     if('COMPLETED' === event.sagaStatus) { // broadcast only when the saga is completed, clients are not interested in each step.
+      event.penRequestID = await redisUtil.createOrUpdatePenRequestSagaRecordInRedis(event);
       const connectedClients = webSocket.getWebSocketClients();
       if (connectedClients && connectedClients.length > 0) {
         for (const connectedClient of connectedClients) {

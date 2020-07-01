@@ -56,33 +56,20 @@ const redisUtil = {
   async removeSagaRecordFromRedis(sagaId, eventToDelete){
     const redisClient = Redis.getRedisClient();
     try {
-      const redLock = this.getRedLock();
-      const lock = await redLock.lock(`locks:pen-request-saga:deleteFromSet-${sagaId}`, 200);
+      await this.getRedLock().lock(`locks:pen-request-saga:deleteFromSet-${sagaId}`, 500);
       await redisClient.srem(penReqSagaEventKey, safeStringify(eventToDelete));
-      lock.unlock()
-        .catch(function (err) {
-          // we weren't able to reach redis; your lock will eventually
-          // expire, but you probably want to log this error
-          log.info(`Error while trying to release lock ${err}`);
-        });
+
     } catch (e) {
-      log.info(`this pod could not acquire lock, check other pods. ${e}`);
+      log.info(`this pod could not acquire lock for locks:pen-request-saga:deleteFromSet-${sagaId}, check other pods. ${e}`);
     }
   },
   async addElementToSagaRecordInRedis(sagaId, eventToAdd){
     const redisClient = Redis.getRedisClient();
     try {
-      const redLock = this.getRedLock();
-      const lock = await redLock.lock(`locks:pen-request-saga:addToSet-${sagaId}`, 200);
+      await this.getRedLock().lock(`locks:pen-request-saga:addToSet-${sagaId}`, 500);
       await redisClient.sadd(penReqSagaEventKey, safeStringify(eventToAdd));
-      lock.unlock()
-        .catch(function (err) {
-          // we weren't able to reach redis; your lock will eventually
-          // expire, but you probably want to log this error
-          log.info(`Error while trying to release lock ${err}`);
-        });
     } catch (e) {
-      log.info(`this pod could not acquire lock for locks:pen-request-saga:deleteFromSet-${sagaId}, check other pods. ${e}`);
+      log.info(`this pod could not acquire lock for locks:pen-request-saga:addToSet-${sagaId}, check other pods. ${e}`);
     }
   },
   getRedLock(){
@@ -95,10 +82,10 @@ const redisUtil = {
 
         // the max number of times Redlock will attempt
         // to lock a resource before erroring
-        retryCount: 0,
+        retryCount: 4,
 
         // the time in ms between attempts
-        retryDelay: 20, // time in ms
+        retryDelay: 50, // time in ms
 
         // the max time in ms randomly added to retries
         // to improve performance under high contention
