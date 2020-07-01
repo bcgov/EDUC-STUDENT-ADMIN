@@ -123,10 +123,10 @@ export default {
       }
     },
     showingFirstNumber() {
-      return (this.tableData.pageable.pageNumber * this.tableData.pageable.pageSize + 1);
+      return ((this.pageNumber-1) * this.tableData.pageable.pageSize + 1);
     },
     showingEndNumber() {
-      return (this.tableData.pageable.pageNumber * this.tableData.pageable.pageSize + this.tableData.numberOfElements);
+      return ((this.pageNumber-1) * this.tableData.pageable.pageSize + this.tableData.numberOfElements);
     }
   },
   methods: {
