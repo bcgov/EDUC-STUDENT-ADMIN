@@ -1,11 +1,11 @@
 'use strict';
 const STAN = require('node-nats-streaming');
-const log = require('../../components/logger');
+const log = require('../../../components/logger');
 
 const penRequestReturnSagaTopic = 'PEN_REQUEST_RETURN_SAGA_TOPIC';
 const penRequestUnlinkSagaTopic = 'PEN_REQUEST_UNLINK_SAGA_TOPIC';
-const redisUtil = require('../../util/redis/redis-utils');
-const webSocket = require('../../socket/web-socket');
+const redisUtil = require('../../../util/redis/redis-utils');
+const webSocket = require('../../../socket/web-socket');
 const safeStringify = require('fast-safe-stringify');
 
 const PenRequestSagaMessageHandler = {
@@ -40,7 +40,7 @@ const PenRequestSagaMessageHandler = {
   },
   async handlePenRequestSagaMessage(msg) {
     const event = JSON.parse(msg.getData()); // it is always a JSON string of Event object.
-    log.silly(`received message for SAGA ID :: ${event.sagaId}`);
+    log.silly(`received message for SAGA ID :: ${event.sagaId} :: AND EVENT TYPE :: ${event.eventType} :: AND EVENT OUTCOME :: ${event.eventOutcome}`);
     if('COMPLETED' === event.sagaStatus) { // broadcast only when the saga is completed, clients are not interested in each step.
       event.penRequestID = await redisUtil.createOrUpdatePenRequestSagaRecordInRedis(event);
       const connectedClients = webSocket.getWebSocketClients();

@@ -4,7 +4,7 @@ const log = require('../../components/logger');
 const penReqSagaEventKey = 'PEN_REQUEST_SAGA_EVENTS';
 const safeStringify = require('fast-safe-stringify');
 const RedLock = require('redlock');
-
+let redLock;
 const redisUtil = {
   /**
    *
@@ -26,11 +26,9 @@ const redisUtil = {
           for (const element of result) {
             const eventArrayElement = JSON.parse(element);
             if ((eventArrayElement.sagaId && event.sagaId && eventArrayElement.sagaId === event.sagaId) && ('COMPLETED' === event.sagaStatus)) {
-              log.silly(`going to delete this event record as it is completed. ${eventArrayElement.sagaId}`);
+              log.info(`going to delete this event record as it is completed. ${eventArrayElement.sagaId}`);
               penRequestID = eventArrayElement.penRequestID;
               await this.removeSagaRecordFromRedis(event.sagaId, eventArrayElement);
-            } else {
-              penRequestID = eventArrayElement.penRequestID; // just return this, so that it will be broadcast via websocket.
             }
           }
         } else {
@@ -58,7 +56,6 @@ const redisUtil = {
     try {
       await this.getRedLock().lock(`locks:pen-request-saga:deleteFromSet-${sagaId}`, 500);
       await redisClient.srem(penReqSagaEventKey, safeStringify(eventToDelete));
-
     } catch (e) {
       log.info(`this pod could not acquire lock for locks:pen-request-saga:deleteFromSet-${sagaId}, check other pods. ${e}`);
     }
@@ -73,26 +70,31 @@ const redisUtil = {
     }
   },
   getRedLock(){
-    const redLock = new RedLock(
-      [Redis.getRedisClient()],
-      {
-        // the expected clock drift; for more details
-        // see http://redis.io/topics/distlock
-        driftFactor: 0.01, // time in ms
+    if(redLock){
+      return redLock;
+    }else{
+      redLock = new RedLock(
+        [Redis.getRedisClient()],
+        {
+          // the expected clock drift; for more details
+          // see http://redis.io/topics/distlock
+          driftFactor: 0.01, // time in ms
 
-        // the max number of times Redlock will attempt
-        // to lock a resource before erroring
-        retryCount: 4,
+          // the max number of times Redlock will attempt
+          // to lock a resource before erroring
+          retryCount: 4,
 
-        // the time in ms between attempts
-        retryDelay: 50, // time in ms
+          // the time in ms between attempts
+          retryDelay: 50, // time in ms
 
-        // the max time in ms randomly added to retries
-        // to improve performance under high contention
-        // see https://www.awsarchitectureblog.com/2015/03/backoff.html
-        retryJitter: 20 // time in ms
-      }
-    );
+          // the max time in ms randomly added to retries
+          // to improve performance under high contention
+          // see https://www.awsarchitectureblog.com/2015/03/backoff.html
+          retryJitter: 25 // time in ms
+        }
+      );
+    }
+
     redLock.on('clientError', function (err) {
       log.error('A redis connection error has occurred in getRedLock of redis-util:', err);
     });
