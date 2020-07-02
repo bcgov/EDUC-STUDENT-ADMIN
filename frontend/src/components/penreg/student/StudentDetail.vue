@@ -27,12 +27,18 @@
                 </v-col>
               </v-row>
               <v-row cols="1" no-gutters>
-                <v-col>
+                <v-col class="sideCardField">
                   <v-combobox
                     id='demogCode'
+                    v-on:mouseover="hovering = true"
+                    v-on:mouseout="editing ? hovering = true : hovering = false"
+                    v-on:blur="editing = false; hovering = false;"
+                    v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
                     color="#000000"
                     value="Accepted"
+                    :readonly="!hovering || !editing"
+                    :outlined="hovering || editing"
                     dense
                     type="solo"
                   ></v-combobox>
@@ -84,12 +90,18 @@
                 </v-col>
               </v-row>
               <v-row cols="1" no-gutters>
-                <v-col>
+                <v-col class="sideCardField">
                   <v-combobox
                     id='statusCode'
+                    v-on:mouseover="hovering = true"
+                    v-on:mouseout="editing ? hovering = true : hovering = false"
+                    v-on:blur="editing = false; hovering = false;"
+                    v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
                     color="#000000"
                     value="Active"
+                    :readonly="!hovering || !editing"
+                    :outlined="hovering || editing"
                     dense
                     type="solo"
                   ></v-combobox>
@@ -229,7 +241,7 @@
                 <v-col cols="3">
                   <p class="labelField">Gender</p>
                 </v-col>
-                <v-col cols="3" class="textFieldColumn">
+                <v-col cols="2" class="textFieldColumn">
                   <v-combobox
                     v-on:mouseover="hovering = true"
                     v-on:mouseout="editing ? hovering = true : hovering = false"
@@ -241,7 +253,6 @@
                     color="#000000"
                     value="M"
                     dense
-                    append-icon="true"
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing"
                   ></v-combobox>
@@ -509,6 +520,10 @@ export default {
   .textAreaColumn{
      display: table-cell;
      min-height: 11em;
+  }
+  .sideCardField{
+     display: table-cell;
+     min-height: 3em;
   }
   .labelField{
      display: table-cell;
