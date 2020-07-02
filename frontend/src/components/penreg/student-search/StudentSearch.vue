@@ -200,10 +200,8 @@
           </v-row>
           <v-row v-if="this.studentSearchResponse" id="resultsRow" no-gutters class="py-2" style="background-color:white;">
             <StudentSearchResults
-                    :tableData="this.studentSearchResponse"
                     :searchCriteria="this.studentSearchParams"
-                    :search="searchStudent"
-                    :key="studentSearchResultsKey"
+                    :prepPut="prepPut"
             ></StudentSearchResults>
           </v-row>
         </v-card>
@@ -236,7 +234,6 @@ export default {
       menu: false,
       genderCodes: [],
       localDate:LocalDate,
-      studentSearchResponse: null,
       searchLoading: false,
       searchEnabled: false,
       studentSearchParams: {
@@ -261,7 +258,7 @@ export default {
   computed:{
     ...mapGetters('app', ['requestType']),
     ...mapGetters('studentSearch', ['genders']),
-    ...mapState('studentSearch', ['pageNumber', 'headerSortParams']),
+    ...mapState('studentSearch', ['pageNumber', 'headerSortParams', 'studentSearchResponse']),
     charRules() {
       return [
         v => !(/[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u1100-\u11FF\u3040-\u309F\u30A0-\u30FF\u3130-\u318F\u3400-\u4DBF\u4E00-\u9FFF\uAC00-\uD7AF]/.test(v)) || 'Enter English characters only'
@@ -272,7 +269,7 @@ export default {
     this.genderCodes = this.genders ? this.genders.map(a => a.genderCode):[];
   },
   methods: {
-    ...mapMutations('studentSearch', ['setPageNumber', 'setSelectedRecords']),
+    ...mapMutations('studentSearch', ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse']),
     uppercasePostal(){
       if(this.studentSearchParams.postalCode){
         this.studentSearchParams.postalCode = this.studentSearchParams.postalCode.toUpperCase();
@@ -438,13 +435,13 @@ export default {
         this.searchEnabled = false;
       }
     },
-    searchStudent(isInitialSearch, validationRequired=true) {
+    searchStudent(validationRequired=true) {
       this.searchLoading = true;
       this.studentSearchResultsKey += 1; //forces StudentSearchResults to rerender and update curPage
-      if(isInitialSearch){
-        this.setSelectedRecords();
-        this.setPageNumber(1);
-      }
+      this.setSelectedRecords();
+      this.setPageNumber(1);
+      this.headerSortParams['currentSortAsc'] = true;
+
       if(validationRequired === false || (this.$refs.studentSearchForm.validate() && this.searchHasValues())) {
         const studentSearchKeys = Object.keys(this.studentSearchParams).filter(k => (this.studentSearchParams[k] && this.studentSearchParams[k].length !== 0));
         let studentSearchFilters;
@@ -457,7 +454,7 @@ export default {
         ApiService.apiAxios
           .get(Routes[this.requestType].SEARCH_URL,this.prepPut(studentSearchFilters))
           .then(response => {
-            this.studentSearchResponse = response.data;
+            this.setStudentSearchResponse(response.data);
           })
           .catch(error => {
             console.log(error);
