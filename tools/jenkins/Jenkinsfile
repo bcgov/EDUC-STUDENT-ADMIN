@@ -130,12 +130,16 @@ pipeline{
       }
       steps{
         script {
-          def frontendDC = openshift.selector('dc', "${REPO_NAME}-frontend-${JOB_NAME}")
-          def backendDC = openshift.selector('dc', "${REPO_NAME}-backend-${JOB_NAME}")
-          if (!frontendDC.exists() || !backendDC.exists()) {
-            deployStage('Dev', DEV, 'educ-student-admin', 'student-admin', 'master', 'dev', TOOLS, DEV, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}")
-          } else {
-            echo "Deployments already exists, so skipping to config map update"
+          openshift.withCluster() {
+            openshift.withProject(DEV) {
+              def frontendDC = openshift.selector('dc', "${REPO_NAME}-frontend-${JOB_NAME}")
+              def backendDC = openshift.selector('dc', "${REPO_NAME}-backend-${JOB_NAME}")
+              if (!frontendDC.exists() || !backendDC.exists()) {
+                deployStage('Dev', DEV, 'educ-student-admin', 'student-admin', 'master', 'dev', TOOLS, DEV, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}")
+              } else {
+                echo "Deployments already exists, so skipping to config map update"
+              }
+            }
           }
         }
       }
