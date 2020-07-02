@@ -1,15 +1,25 @@
 <template>
   <v-content>
     <v-container class="fill-height">
-      <v-col cols="12" class="fill-height pb-5">
+      <v-col cols="15" class="fill-height pb-5">
         <v-row class="flex-grow-0 pb-5">
-          <v-card height="100%" width="100%" elevation=0>
-            <v-card-title class="pb-0 px-0">{{title}}</v-card-title>
-            <v-divider/>
+          <v-card style="background-color:#d7d7d7;" height="100%" width="100%" elevation=0>
+            <v-row>
+              <v-col cols="1" class="topMenu pl-16 mr-12">
+                <img
+                  src="@/assets/images/hamburger.svg"
+                  alt="Menu"
+                >
+                <p class="pl-2 mb-0">Menu</p>
+              </v-col>
+              <v-col cols="10" class="pl-0">
+                <v-card-title class="bolder px-0">PEN Record</v-card-title>
+              </v-col>
+            </v-row>
           </v-card>
         </v-row>
         <v-row>
-          <v-col cols="2" class="py-0 pl-0">
+          <v-col cols="2" class="py-0 px-3 pl-0">
             <v-card class="px-2 py-2" color="#D7D7D7" width="100%" elevation=0>
               <v-row cols="1" no-gutters>
                 <v-col>
@@ -17,8 +27,15 @@
                 </v-col>
               </v-row>
               <v-row cols="1" no-gutters>
-                <v-col>
-                  <p class="mb-5"><strong>123456789</strong></p>
+                <v-col class="sideCardField">
+                  <v-text-field
+                    id='pen'
+                    class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
+                    color="#000000"
+                    v-model="selectedStudent.pen"
+                    readonly
+                    dense
+                  ></v-text-field>
                 </v-col>
               </v-row>
               <v-row cols="1" no-gutters>
@@ -50,8 +67,15 @@
                 </v-col>
               </v-row>
               <v-row cols="1" no-gutters>
-                <v-col>
-                  <p class="mb-5"><strong>None</strong></p>
+                <v-col class="sideCardField">
+                  <v-text-field
+                    id='traxStatus'
+                    class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
+                    color="#000000"
+                    value="N/A"
+                    readonly
+                    dense
+                  ></v-text-field>
                 </v-col>
               </v-row>
               <v-row cols="1" no-gutters>
@@ -60,8 +84,15 @@
                 </v-col>
               </v-row>
               <v-row cols="1" no-gutters>
-                <v-col>
-                  <p class="mb-5"><strong>2022/06</strong></p>
+                <v-col class="sideCardField">
+                  <v-text-field
+                    id='gradDate'
+                    class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
+                    color="#000000"
+                    value="N/A"
+                    readonly
+                    dense
+                  ></v-text-field>
                 </v-col>
               </v-row>
               <v-row cols="1" no-gutters>
@@ -70,8 +101,15 @@
                 </v-col>
               </v-row>
               <v-row cols="1" no-gutters>
-                <v-col>
-                  <p class="mb-5"><strong>2008/09/10 2:43PM</strong></p>
+                <v-col class="sideCardField">
+                  <v-text-field
+                    id='createdDate'
+                    class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
+                    color="#000000"
+                    v-model="createdDateTime"
+                    readonly
+                    dense
+                  ></v-text-field>
                 </v-col>
               </v-row>
               <v-row cols="1" no-gutters>
@@ -80,8 +118,15 @@
                 </v-col>
               </v-row>
               <v-row cols="1" no-gutters>
-                <v-col>
-                  <p class="mb-5"><strong>2018/09/10 10:13PM</strong></p>
+                <v-col class="sideCardField">
+                  <v-text-field
+                    id='updatedDate'
+                    class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
+                    color="#000000"
+                    v-model="updatedDateTime"
+                    readonly
+                    dense
+                  ></v-text-field>
                 </v-col>
               </v-row>
               <v-row cols="1" no-gutters>
@@ -121,11 +166,11 @@
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
+                    v-model="selectedStudent.legalLastName"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering}"
                     id='legalSurname'
                     color="#000000"
-                    value="Smithe"
                     dense
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing"
@@ -144,9 +189,9 @@
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering}"
+                    v-model="selectedStudent.legalFirstName"
                     id='legal'
                     color="#000000"
-                    value="Nathaniel"
                     dense
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing"
@@ -165,9 +210,9 @@
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering}"
+                    v-model="selectedStudent.legalMiddleNames"
                     id='legalMiddleName'
                     color="#000000"
-                    value="Jacob Alexander"
                     dense
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing"
@@ -185,10 +230,10 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
+                    v-model="selectedStudent.usualLastName"
                     :class="{onhoverPad: !hovering}"
                     id='usualSurname'
                     color="#000000"
-                    value=""
                     dense
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing"
@@ -207,9 +252,9 @@
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering}"
+                    v-model="selectedStudent.usualFirstName"
                     id=''
                     color="#000000"
-                    value="Nate"
                     dense
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing"
@@ -226,11 +271,11 @@
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
+                    v-model="selectedStudent.usualMiddleNames"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering}"
                     id=''
                     color="#000000"
-                    value=""
                     dense
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing"
@@ -249,9 +294,9 @@
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering}"
+                    v-model="selectedStudent.genderCode"
                     id='gender'
                     color="#000000"
-                    value="M"
                     dense
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing"
@@ -270,9 +315,9 @@
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering}"
+                    v-model="selectedStudent.dob"
                     id='dob'
                     color="#000000"
-                    value="2005/04/29"
                     dense
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing"
@@ -291,9 +336,9 @@
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering}"
+                    v-model="selectedStudent.gradeCode"
                     id='grade'
                     color="#000000"
-                    value="10"
                     dense
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing"
@@ -312,9 +357,9 @@
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering}"
+                    v-model="selectedStudent.gradeYear"
                     id='gradeYear'
                     color="#000000"
-                    value="2020"
                     dense
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing"
@@ -329,8 +374,8 @@
                   <v-text-field
                     class="onhoverEdit bolder customNoBorder onhoverPad"
                     id='postalCode'
+                    v-model="selectedStudent.postalCode"
                     color="#000000"
-                    value="V1B2C3"
                     dense
                     readonly
                   ></v-text-field>
@@ -348,9 +393,9 @@
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering}"
+                    v-model="selectedStudent.mincode"
                     id='school'
                     color="#000000"
-                    value="04398256"
                     dense
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing"
@@ -366,7 +411,7 @@
                     class="onhoverEdit bolder customNoBorder onhoverPad"
                     id='localID'
                     color="#000000"
-                    value="823723727"
+                    v-model="selectedStudent.localID"
                     dense
                     readonly
                   ></v-text-field>
@@ -429,9 +474,9 @@
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering}"
+                    v-model="selectedStudent.memo"
                     id='memo'
                     color="#000000"
-                    value="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
                     dense
                     no-resize
                     :readonly="!hovering || !editing"
@@ -447,6 +492,9 @@
   </v-content>
 </template>
 <script>
+import { mapGetters } from 'vuex';
+import moment from 'moment';
+
 export default {
   name: 'studentDetail',
   data(){
@@ -455,6 +503,8 @@ export default {
       editing: false,
       demogEditing: false,
       statusEditing: false,
+      createdDateTime: null,
+      updatedDateTime: null,
       student: {
         studentID: null,
         pen: null,
@@ -481,9 +531,17 @@ export default {
       }
     }
   },
+ computed: {
+    ...mapGetters('student', ['selectedStudent']),
+  },
+  mounted() {
+    this.createdDateTime = this.frontEndDateTimeFormat(this.selectedStudent.createDate);
+    this.updatedDateTime = this.frontEndDateTimeFormat(this.selectedStudent.updateDate);
+  },
   methods: {
-    showEditStyle(readonlyObj){
-      console.log('This object is: ' + readonlyObj);
+    frontEndDateTimeFormat(date){
+      console.log('Date: ' + date); 
+      return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
     },
     prepPut(requestId, request) {
       return {
@@ -503,11 +561,16 @@ export default {
 </script>
 
 <style>
+  .topMenu {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+  }
   .onhoverEdit.v-text-field>.v-input__control>.v-input__slot:before {
-      border-style: none;
+     border-style: none;
   }
   .onhoverEdit.v-text-field>.v-input__control>.v-input__slot:after {
-      border-style: none;
+     border-style: none;
   }
   .onhoverPad {
      padding-left: 12px !important;
@@ -523,7 +586,7 @@ export default {
   }
   .sideCardField{
      display: table-cell;
-     min-height: 3em;
+     height: 3em;
   }
   .labelField{
      display: table-cell;
@@ -531,8 +594,8 @@ export default {
      padding-top: 9px !important;
   }
   .customNoBorder.v-text-field>.v-input__control>.v-input__slot {
-      padding-top: 0px !important;
-      padding-bottom: 0px !important;
+     padding-top: 0px !important;
+     padding-bottom: 0px !important;
   }
   .bolder {   
     color: #000000 !important;
