@@ -2,7 +2,7 @@
   <div id="searchResults" class="px-3" style="width: 100%" :overlay=false>
     <v-row no-gutters>
       <v-col>
-        <span id="numberResults" class="px-4 pb-2">{{ tableData.totalElements }} Results</span>
+        <span id="numberResults" class="px-4 pb-2">{{ studentSearchResponse.totalElements }} Results</span>
       </v-col>
       <v-col>
         <v-btn color="#1976d2" id="compareButton" class="ma-0" small text @click="compare" :disabled="selectedRecords.length!==2">
@@ -14,12 +14,12 @@
             id="dataTable"
             v-model="selectedRecords"
             :headers="headers"
-            :items="tableData.content"
+            :items="studentSearchResponse.content"
             :page.sync="pageNumber"
-            :items-per-page="tableData.pageable.pageSize"
+            :items-per-page="studentSearchResponse.pageable.pageSize"
             hide-default-footer
             item-key="studentID"
-            @page-count="tableData.pageable.pageNumber = $event">
+            @page-count="studentSearchResponse.pageable.pageNumber = $event">
       <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
         <span :key="h.id" class="top-column-item">
           {{ header.topText }}
@@ -47,10 +47,10 @@
     </v-data-table>
     <v-row class="pt-2" justify="end">
       <v-col cols="4">
-        <v-pagination v-model="pageNumber" :length="tableData.totalPages"></v-pagination>
+        <v-pagination v-model="pageNumber" :length="studentSearchResponse.totalPages"></v-pagination>
       </v-col>
       <v-col cols="4" id="currentItemsDisplay">
-        Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ tableData.totalElements }}
+        Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ studentSearchResponse.totalElements }}
       </v-col>
     </v-row>
   </div>
@@ -58,18 +58,16 @@
 
 <script>
 import { mapMutations, mapState } from 'vuex';
+import ApiService from '../../../common/apiService';
+import {Routes} from '../../../utils/constants';
 export default {
   name: 'SearchResults',
   props: {
-    tableData: {
-      type: Object,
-      required: true
-    },
     searchCriteria: {
       type: Object,
       required: true
     },
-    search: {
+    prepPut: {
       type: Function,
       required: true
     }
@@ -94,18 +92,21 @@ export default {
   watch: {
     pageNumber: {
       handler() {
-        this.search(false);
+        this.pagination();
       }
     },
     headerSortParams: {
       handler() {
-        this.search(false);
+        this.pagination();
       },
       deep: true
     }
   },
   computed: {
-    ...mapState('studentSearch', ['headerSortParams']),
+    ...mapState('studentSearch', ['headerSortParams', 'studentSearchResponse']),
+    searchParams() {
+      return JSON.parse(JSON.stringify(this.searchCriteria));
+    },
     pageNumber: {
       get(){
         return this.$store.state['studentSearch'].pageNumber;
@@ -123,17 +124,35 @@ export default {
       }
     },
     showingFirstNumber() {
-      return ((this.pageNumber-1) * this.tableData.pageable.pageSize + 1);
+      return ((this.pageNumber-1) * this.studentSearchResponse.pageable.pageSize + 1);
     },
     showingEndNumber() {
-      return ((this.pageNumber-1) * this.tableData.pageable.pageSize + this.tableData.numberOfElements);
+      return ((this.pageNumber-1) * this.studentSearchResponse.pageable.pageSize + this.studentSearchResponse.numberOfElements);
     }
   },
   methods: {
-    ...mapMutations('studentSearch', ['updateSortParams']),
+    ...mapMutations('studentSearch', ['updateSortParams', 'setStudentSearchResponse']),
     compare() {
       //TODO
-    }
+    },
+    pagination() {
+      const studentSearchKeys = Object.keys(this.searchParams).filter(k => (this.searchParams[k] && this.searchParams[k].length !== 0));
+      let studentSearchFilters;
+      if (studentSearchKeys && studentSearchKeys.length > 0) {
+        studentSearchFilters = {};
+        studentSearchKeys.forEach(element => {
+          studentSearchFilters[element] = this.searchParams[element];
+        });
+      }
+      ApiService.apiAxios
+        .get(Routes.studentSearch.SEARCH_URL,this.prepPut(studentSearchFilters))
+        .then(response => {
+          this.setStudentSearchResponse(response.data);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
   }
 };
 </script>

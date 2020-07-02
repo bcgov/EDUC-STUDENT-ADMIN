@@ -9,7 +9,8 @@ export default {
       currentSort: 'dob',
       currentSortAsc: true
     },
-    selectedRecords: []
+    selectedRecords: [],
+    studentSearchResponse: null
   },
   getters: {
     genders: state => state.genders,
@@ -23,6 +24,9 @@ export default {
     },
     setSelectedRecords: (state, selectedRecords) => {
       state.selectedRecords = selectedRecords || [];
+    },
+    setStudentSearchResponse: (state, studentSearchResponse) => {
+      state.studentSearchResponse = studentSearchResponse;
     },
     updateSortParams: (state, sortHeader) => {
       if (sortHeader === state.headerSortParams.currentSort) {
