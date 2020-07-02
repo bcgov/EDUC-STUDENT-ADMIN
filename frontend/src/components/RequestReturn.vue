@@ -171,6 +171,7 @@ export default {
             outcome = 'SAGA_COMPLETED';
             // eslint-disable-next-line
             this.loadPenRequestAndComments();
+            // eslint-disable-next-line
             this.returnMessage = 'Your request to return for more info is now completed.'
           }
         }
@@ -220,18 +221,14 @@ export default {
           body.content = this.returnComment;
           ApiService.apiAxios
             .post(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId + '/return', body)
-            .then(response => {
-              /*this.setRequest(response.data.penResponse);
-              this.pushMessage(response.data.commentResponse);
-              this.returnAlertSuccess = true;
-              this.returnComment = null;*/
-              this.returnOperationSuccessful =true;
+            .then(() => {
+              this.returnOperationSuccessful = true;
               this.returnMessage = 'Your request to return for more info is accepted.'
               this.$refs.returnForm.resetValidation();
             })
             .catch(error => {
               console.log(error);
-                this.returnOperationSuccessful = false;
+              this.returnOperationSuccessful = false;
             })
             .finally(() => {
               this.submitted();
