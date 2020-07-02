@@ -18,7 +18,7 @@
         <span :key="h.id" class="bottom-column-item">{{ header.bottomText }}</span>
       </template>
       <template v-slot:item="{ item, headers }">
-        <tr>
+        <tr @click="viewStudentDetails(item)">
           <td v-for="header in headers" :key="header.id">
             <span class="top-column-item">{{ item[header.topValue] || '-' }}</span>
             <span class="double-column-item">{{item[header.doubleValue]}}</span>
@@ -35,6 +35,8 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+
 export default {
   name: 'SearchResults',
   props: {
@@ -49,6 +51,13 @@ export default {
     search: {
       type: Function,
       required: true
+    }
+  },
+  methods: {
+    ...mapMutations('student', ['setSelectedStudent']),
+    viewStudentDetails(student) {
+      console.log('Hello John: ' + JSON.stringify(student));
+      this.setSelectedStudent(student);
     }
   },
   data () {
