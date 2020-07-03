@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
     <v-container class="fill-height">
       <v-col cols="15" class="fill-height pb-5">
         <v-row class="flex-grow-0 pb-5">
@@ -13,7 +13,7 @@
                 <p class="pl-2 mb-0">Menu</p>
               </v-col>
               <v-col cols="10" class="pl-0">
-                <v-card-title class="bolder px-0">PEN Record</v-card-title>
+                <v-card-title class="bolder px-0 pl-5">PEN Record</v-card-title>
               </v-col>
             </v-row>
           </v-card>
@@ -54,6 +54,7 @@
                     class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
                     color="#000000"
                     value="Accepted"
+                    :items="demogLabels"
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing"
                     dense
@@ -145,6 +146,7 @@
                     class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
                     color="#000000"
                     value="Active"
+                    :items="statusLabels"
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing"
                     dense
@@ -295,6 +297,7 @@
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering}"
                     v-model="selectedStudent.genderCode"
+                    :items="genderCodes"
                     id='gender'
                     color="#000000"
                     dense
@@ -337,6 +340,7 @@
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering}"
                     v-model="selectedStudent.gradeCode"
+                    :items="gradeLabels"
                     id='grade'
                     color="#000000"
                     dense
@@ -489,7 +493,7 @@
         </v-row>
       </v-col>
     </v-container>
-  </v-content>
+  </v-main>
 </template>
 <script>
 import { mapGetters } from 'vuex';
@@ -503,6 +507,10 @@ export default {
       editing: false,
       demogEditing: false,
       statusEditing: false,
+      genderCodes: [],
+      demogLabels: [],
+      statusLabels: [],
+      gradeLabels: [],
       createdDateTime: null,
       updatedDateTime: null,
       student: {
@@ -531,16 +539,24 @@ export default {
       }
     }
   },
+  created(){
+    this.genderCodes = this.genders ? this.genders.map(a => a.genderCode):[];
+    console.log('Gender codes: ' + this.genders);
+    this.demogLabels = this.demogCodeObjects ? this.demogCodeObjects.map(a => a.label):[];
+    console.log('Demog codes: ' + this.demogCodeObjects);
+    this.statusLabels = this.statusCodeObjects ? this.statusCodeObjects.map(a => a.label):[];
+    this.gradeLabels = this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.label):[];
+  },
  computed: {
-    ...mapGetters('student', ['selectedStudent']),
+    ...mapGetters('student', ['selectedStudent', 'genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects'])
   },
   mounted() {
     this.createdDateTime = this.frontEndDateTimeFormat(this.selectedStudent.createDate);
     this.updatedDateTime = this.frontEndDateTimeFormat(this.selectedStudent.updateDate);
+
   },
   methods: {
     frontEndDateTimeFormat(date){
-      console.log('Date: ' + date); 
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
     },
     prepPut(requestId, request) {

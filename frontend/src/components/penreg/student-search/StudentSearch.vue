@@ -264,7 +264,7 @@ export default {
   computed:{
     ...mapGetters('app', ['requestType']),
     ...mapGetters('penReg', ['pageNumber']),
-    ...mapGetters('studentSearch', ['genders']),
+    ...mapGetters('student', ['genders']),
     charRules() {
       return [
         v => !(/[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u1100-\u11FF\u3040-\u309F\u30A0-\u30FF\u3130-\u318F\u3400-\u4DBF\u4E00-\u9FFF\uAC00-\uD7AF]/.test(v)) || 'Enter English characters only'
@@ -458,7 +458,7 @@ export default {
           });
         }
         ApiService.apiAxios
-          .get(Routes[this.requestType].SEARCH_URL,this.prepPut(studentSearchFilters))
+          .get(Routes['student'].SEARCH_URL,this.prepPut(studentSearchFilters))
           .then(response => {
             this.studentSearchResponse = response.data;
           })
