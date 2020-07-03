@@ -1,5 +1,6 @@
 <template>
   <div class="flex">
+    <v-content v-if="this.request.pen">
     <v-progress-linear
             indeterminate
             color="blue"
@@ -19,6 +20,7 @@
       outlined
       transition="scale-transition"
       class="bootstrap-success">
+
       <v-row no-gutters class="px-2">
         <v-col cols="12" xl="1" lg="1" md="1" sm="1">
           <p class="mb-0">PEN:</p>
@@ -69,8 +71,11 @@
           <p class="mb-0"><strong>{{ this.request.bcscAutoMatchDetails }}</strong></p>
         </v-col>
       </v-row>
+
     </v-alert>
+    </v-content>
   </div>
+
 </template>
 
 <script>

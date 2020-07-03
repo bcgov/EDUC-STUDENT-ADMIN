@@ -288,20 +288,6 @@ export default {
     isDarkForRelease() {
       return this.enableActions && !this.isRequestCompleted && this.isReleaseActionEnabledForUser;
     }
-    /* commented out the below code as a reference point for actual implementation, need some work to show notification only related to this pen request or profile request.
-    notifications() {
-      let notifications = this.$store.getters['notifications/getNotifications'];
-      let filteredNotifications = [];
-      if (notifications) {
-        for (let notification of notifications) {
-          notification = JSON.parse(notification);
-          if (notification) {
-            filteredNotifications.push(notification.eventOutcome);
-          }
-        }
-      }
-      return filteredNotifications;
-    }*/
   },
   mounted() {
     this.enableActions = false;

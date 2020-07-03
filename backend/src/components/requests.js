@@ -37,6 +37,34 @@ function completeRequest(requestType, createRequestApiServiceReq) {
   };
 }
 
+function completeStudentProfileRequest(requestType, createRequestApiServiceReq) {
+  return async function completeRequestHandler(req, res) {
+    try {
+      const token = getBackendToken(req, res);
+      if (!token) {
+        return unauthorizedError(res);
+      }
+      req.body.statusUpdateDate = LocalDateTime.now();
+      return Promise.all([
+        updateRequest(req, res, requestType, createRequestApiServiceReq),
+        sendRequestEmail(req, token, 'COMPLETE', requestType)
+      ])
+        .then(async (response) => {
+          return res.status(200).json(response[0]);
+        })
+        .catch(e => {
+          logApiError(e, 'completeRequest', `Error occurred while attempting to PUT a ${requestType}.`);
+          return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+            message: 'INTERNAL SERVER ERROR'
+          });
+        });
+    } catch (e) {
+      logApiError(e, 'completeRequest', `Error occurred while attempting to PUT a ${requestType}.`);
+      return errorResponse(res);
+    }
+  };
+}
+
 function getAllRequests(requestType) {
   return async function getAllRequestsHandler(req, res) {
     const token = getBackendToken(req);
@@ -545,8 +573,8 @@ async function updateStudentAndDigitalId(req) {
     usualLastName: req['session'].studentDemographics['usualSurname'],
     localID: req['session'].studentDemographics['localID'],
     postalCode: req['session'].studentDemographics['postalCode'],
-    grade: req['session'].studentDemographics['grade'],
-    school: req['session'].studentDemographics['mincode'],
+    gradeCode: req['session'].studentDemographics['grade'],
+    mincode: req['session'].studentDemographics['mincode'],
     email: req['session'].penRequest.email,
     emailVerified: req['session'].penRequest.emailVerified,
   };
@@ -596,43 +624,11 @@ function errorResponse(res, msg) {
   });
 }
 
-function unlinkRequest(requestType, createRequestApiServiceReq) {
-  return async function unlinkRequestHandler(req, res) {
-    try {
-      let thisSession = req['session'];
-      if (!thisSession.penRequest) {
-        log.error('Error attempting to unlink request.  There is no request stored in session.');
-        return errorResponse(res);
-      }
-      const token = utils.getBackendToken(req);
-      if (!token) {
-        log.error('Error attempting to unlink request.  Unable to get token.');
-        return unauthorizedError(res);
-      }
-      let request = thisSession.penRequest;
-      delete request.dataSourceCode;
-      req.body.statusUpdateDate = LocalDateTime.now();
-      request = createRequestApiServiceReq(request, req);
-      request.digitalID = req['session'].penRequest.digitalID;
-      request.penRetrievalRequestID= request.penRequestID;
-      request.penRequestStatusCode = 'SUBSREV';
-      const response = await postData(token, `${config.get('server:penRequest:saga')}/pen-request-unlink-saga`, request);
-      const event ={
-        sagaId:response,
-        penRequestID: request.penRequestID,
-        sagaStatus:'INITIATED'
-      };
-      await redisUtil.createOrUpdatePenRequestSagaRecordInRedis(event);
-      return res.status(200).json({sagaId: response});
-    } catch (e) {
-      logApiError(e, 'unlinkRequest', `Error occurred while attempting to unlink a ${requestType}.`);
-      return errorResponse(res);
-    }
-  };
-}
+
 
 module.exports = {
   completeRequest,
+  completeStudentProfileRequest,
   getAllRequests,
   getMacros,
   getRequestCommentById,
@@ -645,6 +641,5 @@ module.exports = {
   returnRequest,
   updateRequest,
   getRequestCodes,
-  sendRequestEmail,
-  unlinkRequest
+  sendRequestEmail
 };

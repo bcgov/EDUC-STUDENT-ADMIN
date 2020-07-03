@@ -8,12 +8,12 @@ export default {
   },
   mutations: {
     changeNotifications: (state, payload) => {
-      state.notifications.push(payload)
+      state.notifications.push(payload);
     }
   },
   actions: {
     setNotifications: ({commit}, payload) => {
-      commit('changeNotifications', payload)
+      commit('changeNotifications', payload);
     }
   }
 };

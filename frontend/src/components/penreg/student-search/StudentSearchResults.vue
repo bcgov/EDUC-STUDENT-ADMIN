@@ -1,54 +1,74 @@
 <template>
   <div id="searchResults" class="px-3" style="width: 100%" :overlay=false>
     <v-row no-gutters>
-      <span class="px-4 pb-2">{{ tableData.totalElements }} Results</span>
+      <v-col>
+        <span id="numberResults" class="px-4 pb-2">{{ studentSearchResponse.totalElements }} Results</span>
+      </v-col>
+      <v-col>
+        <v-btn color="#1976d2" id="compareButton" class="ma-0" small text @click="compare" :disabled="selectedRecords.length!==2">
+          <v-icon left>mdi-content-copy</v-icon> Compare
+        </v-btn>
+      </v-col>
     </v-row>
     <v-data-table
             id="dataTable"
+            v-model="selectedRecords"
             :headers="headers"
-            :items="tableData.content"
-            :page.sync="curPage"
-            :items-per-page="tableData.pageable.pageSize"
+            :items="studentSearchResponse.content"
+            :page.sync="pageNumber"
+            :items-per-page="studentSearchResponse.pageable.pageSize"
             hide-default-footer
-            @page-count="tableData.pageable.pageNumber = $event">
+            item-key="studentID"
+            @page-count="studentSearchResponse.pageable.pageNumber = $event">
       <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-        <span :key="h.id" class="top-column-item">{{ header.topText }}</span>
+        <span :key="h.id" class="top-column-item">
+          {{ header.topText }}
+        </span>
+        <em :key="h.id" v-if="header.topValue === 'dob'" @click="updateSortParams(header.topValue)"
+            :class="['dob-sort pl-2 v-icon v-data-table-header__icon fas active', headerSortParams.currentSortAsc ? 'fa-sort-down' : 'fa-sort-up']"
+        ></em>
         <span :key="h.id" class="double-column-item">{{header.doubleText}}</span>
         <br :key="h.id" />
         <span :key="h.id" class="bottom-column-item">{{ header.bottomText }}</span>
       </template>
-      <template v-slot:item="{ item, headers }">
+      <template v-slot:item="props">
         <tr @click="viewStudentDetails(item)">
-          <td v-for="header in headers" :key="header.id">
-            <span class="top-column-item">{{ item[header.topValue] || '-' }}</span>
-            <span class="double-column-item">{{item[header.doubleValue]}}</span>
-            <br>
-            <span class="bottom-column-item">{{ item[header.bottomValue] || '-' }}</span>
+          <td v-for="header in props.headers" :key="header.id" :class="header.id">
+            <v-checkbox v-if="header.type" :input-value="props.isSelected" @change="props.select($event)"></v-checkbox>
+            <div v-else>
+              <span class="top-column-item">{{ props.item[header.topValue] || '-' }}</span>
+              <span class="double-column-item">{{props.item[header.doubleValue]}}</span>
+              <br>
+              <span class="bottom-column-item">{{ props.item[header.bottomValue] || '-' }}</span>
+            </div>
           </td>
         </tr>
       </template>
     </v-data-table>
-    <div class="text-center pt-2">
-      <v-pagination v-model="curPage" :length="tableData.totalPages"></v-pagination>
-    </div>
+    <v-row class="pt-2" justify="end">
+      <v-col cols="4">
+        <v-pagination v-model="pageNumber" :length="studentSearchResponse.totalPages"></v-pagination>
+      </v-col>
+      <v-col cols="4" id="currentItemsDisplay">
+        Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ studentSearchResponse.totalElements }}
+      </v-col>
+    </v-row>
   </div>
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
+import ApiService from '../../../common/apiService';
+import {Routes} from '../../../utils/constants';
 
 export default {
   name: 'SearchResults',
   props: {
-    tableData: {
-      type: Object,
-      required: true
-    },
     searchCriteria: {
       type: Object,
       required: true
     },
-    search: {
+    prepPut: {
       type: Function,
       required: true
     }
@@ -62,42 +82,101 @@ export default {
   },
   data () {
     return {
-      curPage: this.$store.state['penReg'].pageNumber,
       pageCount: 0,
       itemsPerPage: 10,
       headers: [
-        {
-          topText: 'PEN',
-          bottomText: 'Merged',
-          align: 'start',
-          sortable: false,
-          topValue: 'pen',
-          bottomValue: 'merged'
-        },
+        { id: 'table-checkbox', type: 'select', sortable: false },
+        { topText: 'PEN', bottomText: 'Merged', align: 'start', sortable: false, topValue: 'pen', bottomValue: 'merged' },
         { topText: 'Legal Surname', bottomText: 'Usual Surname', topValue: 'legalLastName', bottomValue: 'usualLastName', sortable: false },
         { topText: 'Legal Given', bottomText: 'Usual Given', topValue: 'legalFirstName', bottomValue: 'usualFirstName', sortable: false },
         { topText: 'Legal Middle', bottomText: 'Usual Middle', topValue: 'legalMiddleNames', bottomValue: 'usualMiddleNames', sortable: false },
         { topText: 'Postal Code', bottomText: 'Memo', topValue: 'postalCode', bottomValue: 'memo', sortable: false },
         { topText: 'DC', doubleText: 'Gen', bottomText: 'Local ID', topValue: 'dc', doubleValue: 'sexCode', bottomValue: 'localID', sortable: false },
-        { topText: 'Birth Date', bottomText: 'Grade', topValue: 'dob', bottomValue: 'grade', sortable: false },
-        { topText: 'School', bottomText: 'Twinned', topValue: 'school', bottomValue: 'twinned', sortable: false },
+        { topText: 'Birth Date', bottomText: 'Grade', topValue: 'dob', bottomValue: 'gradeCode', sortable: false },
+        { topText: 'Mincode', bottomText: 'Twinned', topValue: 'mincode', bottomValue: 'twinned', sortable: false },
       ],
     };
   },
   watch: {
-    curPage: {
+    pageNumber: {
       handler() {
-        this.$store.state['penReg'].pageNumber = this.curPage;
-        this.search(false);
+        this.pagination();
       }
+    },
+    headerSortParams: {
+      handler() {
+        this.pagination();
+      },
+      deep: true
     }
+  },
+  computed: {
+    ...mapState('studentSearch', ['headerSortParams', 'studentSearchResponse']),
+    searchParams() {
+      return JSON.parse(JSON.stringify(this.searchCriteria));
+    },
+    pageNumber: {
+      get(){
+        return this.$store.state['studentSearch'].pageNumber;
+      },
+      set(newPage){
+        return this.$store.state['studentSearch'].pageNumber = newPage;
+      }
+    },
+    selectedRecords: {
+      get(){
+        return this.$store.state['studentSearch'].selectedRecords;
+      },
+      set(newRecord){
+        return this.$store.state['studentSearch'].selectedRecords = newRecord;
+      }
+    },
+    showingFirstNumber() {
+      return ((this.pageNumber-1) * this.studentSearchResponse.pageable.pageSize + 1);
+    },
+    showingEndNumber() {
+      return ((this.pageNumber-1) * this.studentSearchResponse.pageable.pageSize + this.studentSearchResponse.numberOfElements);
+    }
+  },
+  methods: {
+    ...mapMutations('studentSearch', ['updateSortParams', 'setStudentSearchResponse']),
+    compare() {
+      //TODO
+    },
+    pagination() {
+      const studentSearchKeys = Object.keys(this.searchParams).filter(k => (this.searchParams[k] && this.searchParams[k].length !== 0));
+      let studentSearchFilters;
+      if (studentSearchKeys && studentSearchKeys.length > 0) {
+        studentSearchFilters = {};
+        studentSearchKeys.forEach(element => {
+          studentSearchFilters[element] = this.searchParams[element];
+        });
+      }
+      ApiService.apiAxios
+        .get(Routes.studentSearch.SEARCH_URL,this.prepPut(studentSearchFilters))
+        .then(response => {
+          this.setStudentSearchResponse(response.data);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
   }
 };
 </script>
 
 <style scoped>
-  /deep/ .v-icon {
-    padding: 0 !important;
+  #compareButton {
+    float: right;
+  }
+  #currentItemsDisplay {
+    text-align: right;
+    font-size: 0.875rem;
+  }
+  .dob-sort {
+    opacity: 1;
+    cursor: pointer;
+    color: #1976d2;
   }
   .double-column-item {
     float: right;
@@ -107,5 +186,18 @@ export default {
   }
   .bottom-column-item {
     float: left;
+  }
+  .table-checkbox {
+    margin-top: 0;
+    padding-top: 0;
+  }
+  .table-checkbox /deep/ .v-input__slot {
+    padding-top: 0;
+  }
+  /deep/ .v-pagination__navigation > i {
+    padding-left: 0;
+  }
+  /deep/ .v-input--selection-controls__ripple {
+    left: -7px;
   }
 </style>

@@ -122,14 +122,26 @@ pipeline{
         }
       }
     }
-    stage('Deploy to Dev'){
+    stage('Initial deploy to Dev'){
       environment {
         APP_NAME = "student-admin"
         DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/frontend-static.dc.yaml"
         DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/backend.dc.yaml"
       }
       steps{
-        deployStage('Dev', DEV, 'educ-student-admin', 'student-admin', 'master', 'dev', TOOLS, DEV, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}")
+        script {
+          openshift.withCluster() {
+            openshift.withProject(DEV) {
+              def frontendDC = openshift.selector('dc', "${APP_NAME}-frontend-${JOB_NAME}")
+              def backendDC = openshift.selector('dc', "${APP_NAME}-backend-${JOB_NAME}")
+              if (!frontendDC.exists() || !backendDC.exists()) {
+                deployStage('Dev', DEV, 'educ-student-admin', 'student-admin', 'master', 'dev', TOOLS, DEV, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}")
+              } else {
+                echo "Deployments already exists, so skipping to config map update"
+              }
+            }
+          }
+        }
       }
       post{
         success{
@@ -156,6 +168,24 @@ pipeline{
             def configVars
             sh "bash ./update-configmap.sh \"dev\" ${APP_NAME} ${NAMESPACE} ${COMMON_NAMESPACE}"
           }
+        }
+      }
+    }
+    stage('Deploy to Dev'){
+      environment {
+        APP_NAME = "student-admin"
+        DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/frontend-static.dc.yaml"
+        DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/backend.dc.yaml"
+      }
+      steps{
+        deployStage('Dev', DEV, 'educ-student-admin', 'student-admin', 'master', 'dev', TOOLS, DEV, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}")
+      }
+      post{
+        success{
+          echo 'Deployment to Dev was successful'
+        }
+        failure{
+          echo 'Deployment to Dev failed'
         }
       }
     }
@@ -201,7 +231,7 @@ def configMapSetup(String appName,String appNameUpper, String namespace){
 def triggerWorkflow(String token) {
   def dispatchRequest = """
     {
-      "event_type": "smoke-test-dev"
+      "event_type": "smoke-test-test-admin"
     }
   """
   def response = httpRequest customHeaders: [[name: 'Authorization', value: "token ${token}"], [name: 'Accept', value: "application/vnd.github.ant-man-preview+json"]], contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: dispatchRequest, url: "https://api.github.com/repos/${OWNER}/${TESTS_REPO_NAME}/dispatches"
@@ -299,6 +329,20 @@ def deployStage(String stageEnv, String projectEnv, String repoName, String appN
 
       echo "Applying Deployment ${appName}-frontend-static..."
       def dcFrontendStatic = openshift.apply(dcFrontendStaticTemplate).narrow('dc')
+
+      // Wait for deployments to roll out
+      timeout(10) {
+        parallel(
+            Backend:
+            {
+              dcBackend.rollout().status('--watch=true')
+            } ,
+            Frontend:
+            {
+              dcFrontendStatic.rollout().status('--watch=true')
+            }
+          )
+      }
     }
   }
 }
