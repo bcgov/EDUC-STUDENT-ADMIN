@@ -55,12 +55,12 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
-                    :class="{darkBackgound: hovering}"
+                    :class="{darkBackgound: hovering || hasEdits('demogCode')}"
                     color="#000000"
-                    value="Accepted"
+                    v-model="studentCopy.demogCode"
                     :items="demogLabels"
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('demogCode')"
                     dense
                     type="solo"
                   ></v-combobox>
@@ -154,12 +154,12 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
-                    :class="{darkBackgound: hovering}"
+                    :class="{darkBackgound: hovering || hasEdits('statusCode')}"
+                    v-model="studentCopy.statusCode"
                     color="#000000"
-                    value="Active"
                     :items="statusLabels"
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('statusCode')"
                     dense
                     type="solo"
                   ></v-combobox>
@@ -183,12 +183,12 @@
                     v-on:click="editing = true; hovering = true"
                     v-model="studentCopy.legalLastName"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
+                    :class="{onhoverPad: !hovering && !hasEdits('legalLastName'), darkBackgound: hovering || hasEdits('legalLastName')}"
                     id='legalSurname'
                     color="#000000"
                     dense
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('legalLastName')"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -205,13 +205,13 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
+                    :class="{onhoverPad: !hovering && !hasEdits('legalFirstName'), darkBackgound: hovering || hasEdits('legalFirstName')}"
                     v-model="studentCopy.legalFirstName"
                     id='legal'
                     color="#000000"
                     dense
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('legalFirstName')"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -228,13 +228,13 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
+                    :class="{onhoverPad: !hovering && !hasEdits('legalMiddleNames'), darkBackgound: hovering || hasEdits('legalMiddleNames')}"
                     v-model="studentCopy.legalMiddleNames"
                     id='legalMiddleName'
                     color="#000000"
                     dense
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('legalMiddleNames')"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -252,12 +252,12 @@
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
                     v-model="studentCopy.usualLastName"
-                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
+                    :class="{onhoverPad: !hovering && !hasEdits('usualLastName'), darkBackgound: hovering || hasEdits('usualLastName')}"
                     id='usualSurname'
                     color="#000000"
                     dense
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('usualLastName')"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -274,13 +274,13 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
+                    :class="{onhoverPad: !hovering && !hasEdits('usualFirstName'), darkBackgound: hovering || hasEdits('usualFirstName')}"
                     v-model="studentCopy.usualFirstName"
-                    id=''
+                    id='usualFirstName'
                     color="#000000"
                     dense
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('usualFirstName')"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -298,12 +298,12 @@
                     v-on:click="editing = true; hovering = true"
                     v-model="studentCopy.usualMiddleNames"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
-                    id=''
+                    :class="{onhoverPad: !hovering && !hasEdits('usualMiddleNames'), darkBackgound: hovering || hasEdits('usualMiddleNames')}"
+                    id='usualMiddleNames'
                     color="#000000"
                     dense
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('usualMiddleNames')"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -320,14 +320,14 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
+                    :class="{onhoverPad: !hovering && !hasEdits('genderCode'), darkBackgound: hovering || hasEdits('genderCode')}"
                     v-model="studentCopy.genderCode"
                     :items="genderCodes"
                     id='gender'
                     color="#000000"
                     dense
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('genderCode')"
                   ></v-combobox>
                 </v-col>
               </v-row>
@@ -354,13 +354,13 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
+                    :class="{onhoverPad: !hovering && !hasEdits('dob'), darkBackgound: hovering || hasEdits('dob')}"
                     v-model="studentCopy.dob"
                     id='dob'
                     color="#000000"
                     dense
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('dob')"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="3" class="textFieldColumn">
@@ -437,13 +437,13 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
+                    :class="{onhoverPad: !hovering && !hasEdits('mincode'), darkBackgound: hovering || hasEdits('mincode')}"
                     v-model="studentCopy.mincode"
                     id='school'
                     color="#000000"
                     dense
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('mincode')"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -524,14 +524,14 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
+                    :class="{onhoverPad: !hovering && !hasEdits('memo'), darkBackgound: hovering || hasEdits('memo')}"
                     v-model="studentCopy.memo"
                     id='memo'
                     color="#000000"
                     dense
                     no-resize
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('memo')"
                   ></v-textarea>
                 </v-col>
               </v-row>
@@ -569,6 +569,7 @@ export default {
     this.demogLabels = this.demogCodeObjects ? this.demogCodeObjects.map(a => a.label):[];
     this.statusLabels = this.statusCodeObjects ? this.statusCodeObjects.map(a => a.label):[];
     this.gradeLabels = this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.label):[];
+    this.studentCopy = this.selectedStudent ? JSON.parse(JSON.stringify(this.selectedStudent)):null;
   },
  computed: {
     ...mapGetters('student', ['selectedStudent', 'genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects'])
@@ -577,12 +578,22 @@ export default {
     this.createdDateTime = this.frontEndDateTimeFormat(this.selectedStudent.createDate);
     this.updatedDateTime = this.frontEndDateTimeFormat(this.selectedStudent.updateDate);
     this.longDOB = this.frontEndDOBFormat(this.selectedStudent.dob);
-    this.studentCopy = this.selectedStudent;
   },
   methods: {
     ...mapMutations('student', ['setSelectedStudent']),
     frontEndDateTimeFormat(date){
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
+    },
+    hasEdits(value){
+
+      // console.log('Field value: ' + JSON.stringify(this.studentCopy[value]));
+      // console.log('Field Orig value: ' + JSON.stringify(this.selectedStudent[value]));
+
+      if(JSON.stringify(this.studentCopy[value]) === JSON.stringify(this.selectedStudent[value])){
+        return false;
+      }
+
+      return true;
     },
     frontEndDOBFormat(date){
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('MMMM DD, YYYY');
@@ -620,6 +631,10 @@ export default {
      border-style: none;
   }
   .onhoverPad {
+     padding-left: 12px !important;
+     padding-top: 2px !important;
+  }
+  .onEditPad {
      padding-left: 12px !important;
      padding-top: 2px !important;
   }

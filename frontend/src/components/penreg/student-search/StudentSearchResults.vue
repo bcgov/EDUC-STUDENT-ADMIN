@@ -135,6 +135,7 @@ export default {
     ...mapMutations('studentSearch', ['updateSortParams', 'setStudentSearchResponse']),
     ...mapMutations('student', ['setSelectedStudent']),
     viewStudentDetails(student) {
+      console.log('John was here: ' + JSON.stringify(student));
       this.setSelectedStudent(student);
     },
     compare() {
