@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../components/auth');
 const utils = require('../components/utils');
 const { createStudentRequestApiServiceReq, createStudentRequestCommentApiServiceReq } = require('../components/studentRequests');
-const { completeRequest, getAllRequests, getMacros, getRequestById, getRequestCommentById, putRequest, rejectRequest, returnRequest } = require('../components/requests');
+const { completeStudentProfileRequest, getAllRequests, getMacros, getRequestById, getRequestCommentById, putRequest, rejectRequest, returnRequest } = require('../components/requests');
 
 const { getDocuments, getDocumentById, updateDocumentTypeById } = require('../components/documents');
 
@@ -38,7 +38,7 @@ router.get('/macros', passport.authenticate('jwt', {session: false}, undefined),
  */
 router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPUserToken, getRequestById(requestType));
 
-router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, verifyStudentRequestInSession, completeRequest(requestType, createStudentRequestApiServiceReq));
+router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, verifyStudentRequestInSession, completeStudentProfileRequest(requestType, createStudentRequestApiServiceReq));
 
 router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, verifyStudentRequestInSession, rejectRequest(requestType, createStudentRequestApiServiceReq));
 

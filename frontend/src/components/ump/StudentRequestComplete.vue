@@ -35,9 +35,9 @@
     </v-alert>
     <v-card flat :disabled="!isProvidePenEnabledForUser">
       <v-row class="mx-0"> 
-        <v-col cols="12" xl="6" lg="6" md="6">
-          <v-row class="mx-0">
-            <div class="d-flex align-baseline">
+        <v-col cols="12" xl="6" lg="6" class="py-0">
+          <v-row class="mx-0" justify="space-between">
+            <v-col class="my-0 pl-0 py-0">
               <v-text-field
                       id="pen-search-text-field"
                       v-model="penSearchId"
@@ -47,8 +47,12 @@
                       class="pt-0"
                       @input="validatePen"
               ></v-text-field>
-              <v-btn id="refresh-student-info" :disabled="isRefreshStudInfoDisabled" color="#38598a" :dark="isRefreshStudInfoDark" class="ml-2" @click="refreshStudentInfo">Refresh Student Info</v-btn>
-            </div>
+            </v-col>
+            <v-col class="my-0 mr-0 pr-0 py-0">
+              <v-row justify="end" class="ma-0 pt-3">
+                <v-btn id="refresh-student-info" :disabled="isRefreshStudInfoDisabled" color="#38598a" :dark="isRefreshStudInfoDark" @click="refreshStudentInfo">Refresh Student Info</v-btn>
+              </v-row>
+            </v-col>
           </v-row>
           <v-row class="pr-3">
             <v-card class="ml-3" width="100%">
@@ -95,24 +99,24 @@
           </v-card>
           </v-row>
         </v-col>
-        <v-col cols="12" xl="6" lg="6" md="6" class="pb-0">
-          <v-form ref="completeForm">
-            <v-textarea
-              id="complete-comment-textarea"
-              name="description"
-              label="Enter comment"
-              v-model="request.completeComment"
-              :rules="completedRules"
-              filled
-              clearable
-              @input="replaceCompleteMacro"
-              class="pa-0 ma-0"
-              rows="6"
-            ></v-textarea>
-          </v-form>
-          <v-row justify="end" class="pr-3 pb-2">
+        <v-col cols="12" xl="6" lg="6" class="py-0 pl-0">
+          <v-row justify="end" class="pr-3 pt-3">
             <v-btn :disabled="isCompleteDisabled" color="#38598a" :dark="isCompleteDark" @click="sendChanges">Send Changes to Student</v-btn>
           </v-row>
+          <v-form ref="completeForm">
+            <v-textarea
+                    id="complete-comment-textarea"
+                    name="description"
+                    label="Enter comment"
+                    v-model="request.completeComment"
+                    :rules="completedRules"
+                    filled
+                    clearable
+                    @input="replaceCompleteMacro"
+                    class="pt-5"
+                    rows="6"
+            ></v-textarea>
+          </v-form>
         </v-col>
       </v-row>
     </v-card>
