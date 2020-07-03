@@ -35,14 +35,10 @@ export default {
   },
   actions: {
     async getCodes({commit}) {
-      const responseGender = await ApiService.getGenderCodes();
-      commit('setGenders', responseGender.data.genderCodes);
-      const responseDemog = await ApiService.getDemogCodes();
-      commit('setDemogCodeObjects', responseDemog.data.demogCodes);
-      const responseStatus = await ApiService.getStatusCodes();
-      commit('setStatusCodeObjects', responseStatus.data.statusCodes);
-      const responseGrade = await ApiService.getGradeCodes();
-      commit('setGradeCodeObjects', responseGrade.data.gradeCodes);
+	  ApiService.getGenderCodes().then(responseGender => commit('setGenders', responseGender.data.genderCodes));
+	  ApiService.getDemogCodes().then(responseDemog => commit('setDemogCodeObjects', responseDemog.data.demogCodes));
+      ApiService.getStatusCodes().then(responseStatus => commit('setStatusCodeObjects', responseStatus.data.statusCodes));
+      ApiService.getGradeCodes().then(responseGrade => commit('setGradeCodeObjects', responseGrade.data.gradeCodes));
     }
   }
 };

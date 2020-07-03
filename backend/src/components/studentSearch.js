@@ -4,7 +4,7 @@ const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const utils = require('./utils');
 const log = require('./logger');
-const { getBackendToken, getData } = require('./utils');
+const { getBackendToken, getData, getCodeTable } = require('./utils');
 
 async function searchStudent(req, res) {
   const token = utils.getBackendToken(req);
