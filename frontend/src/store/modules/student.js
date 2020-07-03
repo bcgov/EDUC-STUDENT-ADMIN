@@ -38,11 +38,11 @@ export default {
       const responseGender = await ApiService.getGenderCodes();
       commit('setGenders', responseGender.data.genderCodes);
       const responseDemog = await ApiService.getDemogCodes();
-      commit('setDemogCodeObjects', responseDemog.data.demogCodeObjects);
+      commit('setDemogCodeObjects', responseDemog.data.demogCodes);
       const responseStatus = await ApiService.getStatusCodes();
-      commit('setStatusCodeObjects', responseStatus.data.statsusCodeObjects);
+      commit('setStatusCodeObjects', responseStatus.data.statusCodes);
       const responseGrade = await ApiService.getGradeCodes();
-      commit('setGradeCodeObjects', responseGrade.data.gradeCodeObjects);
+      commit('setGradeCodeObjects', responseGrade.data.gradeCodes);
     }
   }
 };
