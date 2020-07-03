@@ -42,10 +42,9 @@
                       id="pen-search-text-field"
                       v-model="penSearchId"
                       label="PEN:"
-                      :disabled="isPenSearchDisabled"
+                      disabled
                       clearable
                       class="pt-0"
-                      @input="validatePen"
               ></v-text-field>
             </v-col>
             <v-col class="my-0 mr-0 pr-0 py-0">
@@ -253,9 +252,6 @@ export default {
     },
     isRefreshStudInfoDark(){
       return this.enableActions && this.request.penRequestStatusCode!=='DRAFT' && this.request.penRequestStatusCode!=='ABANDONED';
-    },
-    isPenSearchDisabled(){
-      return !this.enableActions || this.request.studentRequestStatusCode === 'DRAFT' || this.request.studentRequestStatusCode === 'ABANDONED';
     }
   },
   mounted() {
