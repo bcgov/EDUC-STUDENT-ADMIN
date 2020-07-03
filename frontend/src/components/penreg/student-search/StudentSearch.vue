@@ -200,7 +200,7 @@
           </v-row>
           <v-row v-if="this.studentSearchResponse" id="resultsRow" no-gutters class="py-2" style="background-color:white;">
             <StudentSearchResults
-                    :searchCriteria="this.studentSearchParams"
+                    :searchCriteria="this.currentStudentSearchParams"
                     :prepPut="prepPut"
             ></StudentSearchResults>
           </v-row>
@@ -252,6 +252,7 @@ export default {
         localID: null,
         gradeCode: null
       },
+      currentStudentSearchParams: {},
       studentSearchResultsKey: 0
     };
   },
@@ -456,6 +457,7 @@ export default {
           .get(Routes['student'].SEARCH_URL,this.prepPut(studentSearchFilters))
           .then(response => {
             this.setStudentSearchResponse(response.data);
+            this.currentStudentSearchParams = JSON.parse(JSON.stringify(this.studentSearchParams));
           })
           .catch(error => {
             console.log(error);

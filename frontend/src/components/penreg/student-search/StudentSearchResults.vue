@@ -32,10 +32,10 @@
         <span :key="h.id" class="bottom-column-item">{{ header.bottomText }}</span>
       </template>
       <template v-slot:item="props">
-        <tr @click="viewStudentDetails(props.item)">
+        <tr>
           <td v-for="header in props.headers" :key="header.id" :class="header.id">
             <v-checkbox v-if="header.type" :input-value="props.isSelected" @change="props.select($event)"></v-checkbox>
-            <div v-else>
+            <div v-else @click="viewStudentDetails(props.item)">
               <span class="top-column-item">{{ props.item[header.topValue] || '-' }}</span>
               <span class="double-column-item">{{props.item[header.doubleValue]}}</span>
               <br>
@@ -105,9 +105,6 @@ export default {
   },
   computed: {
     ...mapState('studentSearch', ['headerSortParams', 'studentSearchResponse']),
-    searchParams() {
-      return JSON.parse(JSON.stringify(this.searchCriteria));
-    },
     pageNumber: {
       get(){
         return this.$store.state['studentSearch'].pageNumber;
@@ -141,16 +138,16 @@ export default {
       //TODO
     },
     pagination() {
-      const studentSearchKeys = Object.keys(this.searchParams).filter(k => (this.searchParams[k] && this.searchParams[k].length !== 0));
+      const studentSearchKeys = Object.keys(this.searchCriteria).filter(k => (this.searchCriteria[k] && this.searchCriteria[k].length !== 0));
       let studentSearchFilters;
       if (studentSearchKeys && studentSearchKeys.length > 0) {
         studentSearchFilters = {};
         studentSearchKeys.forEach(element => {
-          studentSearchFilters[element] = this.searchParams[element];
+          studentSearchFilters[element] = this.searchCriteria[element];
         });
       }
       ApiService.apiAxios
-        .get(Routes.studentSearch.SEARCH_URL,this.prepPut(studentSearchFilters))
+        .get(Routes.student.SEARCH_URL,this.prepPut(studentSearchFilters))
         .then(response => {
           this.setStudentSearchResponse(response.data);
         })
