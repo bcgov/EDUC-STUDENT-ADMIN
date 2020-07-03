@@ -17,13 +17,13 @@
       </v-row>
     </article>
   </v-container>
-  <v-content v-else-if="!selectedRequest && isAuthenticated">
+  <v-content v-else-if="!selectedStudent && !selectedRequest && isAuthenticated">
     <RequestsPage></RequestsPage>
   </v-content>
   <v-content v-else>
     <PenRequestDetail v-if="requestType === requestTypes.penRequest.name"></PenRequestDetail>
     <StudentRequestDetail v-else-if="requestType === requestTypes.studentRequest.name"></StudentRequestDetail>
-    <StudentSearchDetail v-else-if="requestType === requestTypes.studentSearch.name"></StudentSearchDetail>
+    <StudentDetail v-else-if="selectedStudent"></StudentDetail>
   </v-content>
 </template>
 
@@ -33,7 +33,7 @@ import RequestsPage from './RequestsPage';
 import { mapGetters } from 'vuex';
 import PenRequestDetail from './gmp/PenRequestDetail';
 import StudentRequestDetail from './ump/StudentRequestDetail';
-import StudentSearchDetail from './penreg/student-search/StudentSearchDetail';
+import StudentDetail from './penreg/student/StudentDetail';
 import UnAuthorized from './UnAuthorized';
 import { REQUEST_TYPES } from '../utils/constants';
 export default {
@@ -43,12 +43,13 @@ export default {
     RequestsPage,
     PenRequestDetail,
     StudentRequestDetail,
-    StudentSearchDetail,
+    StudentDetail,
     UnAuthorized  
   },
   computed: {
     ...mapGetters('auth', ['isAuthenticated','isAuthorizedUser']),
     ...mapGetters('app', ['selectedRequest', 'requestType']),
+    ...mapGetters('student', ['selectedStudent']),
     requestTypes() {
       return REQUEST_TYPES;
     }

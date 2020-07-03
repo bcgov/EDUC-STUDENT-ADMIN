@@ -78,7 +78,79 @@ async function getStudentGender(req, res) {
   }
 }
 
+async function getDemogCodes(req, res) {
+  try {
+    const accessToken = getBackendToken(req);
+    if (!accessToken) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'No access token'
+      });
+    }
+
+    const codeUrls = [
+      `${config.get('server:studentDemogCodesURL')}`
+    ];
+
+    const [demogCodes] = await Promise.all(codeUrls.map(url => getData(accessToken, url)));
+    return res.status(HttpStatus.OK).json({demogCodes});
+  } catch (e) { 
+    log.error('getCodes Error', e.stack);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Get codes error'
+    });
+  }
+}
+
+async function getStatusCodes(req, res) {
+  try {
+    const accessToken = getBackendToken(req);
+    if (!accessToken) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'No access token'
+      });
+    }
+
+    const codeUrls = [
+      `${config.get('server:studentStatusCodesURL')}`
+    ];
+
+    const [statusCodes] = await Promise.all(codeUrls.map(url => getData(accessToken, url)));
+    return res.status(HttpStatus.OK).json({statusCodes});
+  } catch (e) {
+    log.error('getCodes Error', e.stack);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Get codes error'
+    });
+  }
+}
+
+async function getGradeCodes(req, res) {
+  try {
+    const accessToken = getBackendToken(req);
+    if (!accessToken) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'No access token'
+      });
+    }
+
+    const codeUrls = [
+      `${config.get('server:studentGradeCodesURL')}`
+    ];
+
+    const [gradeCodes] = await Promise.all(codeUrls.map(url => getData(accessToken, url)));
+    return res.status(HttpStatus.OK).json({gradeCodes});
+  } catch (e) {
+    log.error('getCodes Error', e.stack);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Get codes error'
+    });
+  }
+}
+
 module.exports = {
   searchStudent,
-  getStudentGender
+  getStudentGender,
+  getDemogCodes,
+  getStatusCodes,
+  getGradeCodes
 };

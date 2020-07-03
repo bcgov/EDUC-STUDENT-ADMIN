@@ -257,7 +257,8 @@ export default {
   },
   computed:{
     ...mapGetters('app', ['requestType']),
-    ...mapGetters('studentSearch', ['genders']),
+    ...mapGetters('penReg', ['pageNumber']),
+    ...mapGetters('student', ['genders']),
     ...mapState('studentSearch', ['pageNumber', 'headerSortParams', 'studentSearchResponse']),
     charRules() {
       return [
@@ -452,7 +453,7 @@ export default {
           });
         }
         ApiService.apiAxios
-          .get(Routes[this.requestType].SEARCH_URL,this.prepPut(studentSearchFilters))
+          .get(Routes['student'].SEARCH_URL,this.prepPut(studentSearchFilters))
           .then(response => {
             this.setStudentSearchResponse(response.data);
           })

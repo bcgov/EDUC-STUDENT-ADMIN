@@ -32,7 +32,7 @@
         <span :key="h.id" class="bottom-column-item">{{ header.bottomText }}</span>
       </template>
       <template v-slot:item="props">
-        <tr>
+        <tr @click="viewStudentDetails(props.item)">
           <td v-for="header in props.headers" :key="header.id" :class="header.id">
             <v-checkbox v-if="header.type" :input-value="props.isSelected" @change="props.select($event)"></v-checkbox>
             <div v-else>
@@ -60,6 +60,7 @@
 import { mapMutations, mapState } from 'vuex';
 import ApiService from '../../../common/apiService';
 import {Routes} from '../../../utils/constants';
+
 export default {
   name: 'SearchResults',
   props: {
@@ -132,6 +133,10 @@ export default {
   },
   methods: {
     ...mapMutations('studentSearch', ['updateSortParams', 'setStudentSearchResponse']),
+    ...mapMutations('student', ['setSelectedStudent']),
+    viewStudentDetails(student) {
+      this.setSelectedStudent(student);
+    },
     compare() {
       //TODO
     },

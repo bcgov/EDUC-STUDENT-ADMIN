@@ -5,6 +5,7 @@ import request from './modules/request';
 import app from './modules/app';
 import notifications from './modules/notifications';
 import student from './modules/student';
+import studentSearch from './modules/studentSearch';
 
 Vue.use(Vuex);
 
@@ -15,7 +16,8 @@ const store = new Vuex.Store({
     penRequest: request,
     studentRequest: request,
     notifications,
-    student
+    student,
+    studentSearch
   }
 });
 

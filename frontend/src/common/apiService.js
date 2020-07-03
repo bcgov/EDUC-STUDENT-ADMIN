@@ -76,9 +76,36 @@ export default {
       delete apiAxios.defaults.headers.common['Authorization'];
     }
   },
-  async getCodes() {
+  async getGenderCodes() {
     try {
-      const response = await apiAxios.get(Routes.studentSearch.GENDERS_URL);
+      const response = await apiAxios.get(Routes.student.GENDER_CODE_URL);
+      return response;
+    } catch (e) {
+      console.log(`Failed to get from Nodejs API - ${e}`);
+      throw e;
+    }
+  },
+  async getDemogCodes() {
+    try {
+      const response = await apiAxios.get(Routes.student.DEMOG_CODE_URL);
+      return response;
+    } catch (e) {
+      console.log(`Failed to get from Nodejs API - ${e}`);
+      throw e;
+    }
+  },
+  async getStatusCodes() {
+    try {
+      const response = await apiAxios.get(Routes.student.STATUS_CODE_URL);
+      return response;
+    } catch (e) {
+      console.log(`Failed to get from Nodejs API - ${e}`);
+      throw e;
+    }
+  },
+  async getGradeCodes() {
+    try {
+      const response = await apiAxios.get(Routes.student.GRADE_CODE_URL);
       return response;
     } catch (e) {
       console.log(`Failed to get from Nodejs API - ${e}`);

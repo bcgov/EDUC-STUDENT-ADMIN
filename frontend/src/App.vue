@@ -32,7 +32,7 @@ export default {
     this.setLoading(true);
     this.$store.dispatch('auth/getJwtToken').then(() => {
       this.$store.dispatch('auth/getUserInfo');
-      this.$store.dispatch('studentSearch/getCodes');
+      this.$store.dispatch('student/getCodes');
     });
     this.setLoading(false);
   },
@@ -43,7 +43,7 @@ export default {
   },
   methods:{
     ...mapMutations('auth', ['setLoading']),
-    ...mapActions('studentSearch', ['getCodes']),
+    ...mapActions('student', ['getCodes']),
     /*closeSessionOnBrowserClose(event){
         event.
       if(this.$store.state.isAuthenticated){

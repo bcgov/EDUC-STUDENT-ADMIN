@@ -3,7 +3,6 @@ import ApiService from '../../common/apiService';
 export default {
   namespaced: true,
   state: {
-    genders: null,
     pageNumber: 1,
     headerSortParams: {
       currentSort: 'dob',
@@ -12,13 +11,7 @@ export default {
     selectedRecords: [],
     studentSearchResponse: null
   },
-  getters: {
-    genders: state => state.genders,
-  },
   mutations: {
-    setGenders: (state, genders) => {
-      state.genders = genders;
-    },
     setPageNumber: (state, pageNumber) => {
       state.pageNumber = pageNumber;
     },
@@ -35,12 +28,6 @@ export default {
       } else {
         state.headerSortParams.currentSort = sortHeader;
       }
-    }
-  },
-  actions: {
-    async getCodes({commit}) {
-      const response = await ApiService.getCodes();
-      commit('setGenders', response.data.genderCodes);
     }
   }
 };
