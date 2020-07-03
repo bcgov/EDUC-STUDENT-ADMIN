@@ -35,6 +35,7 @@
                     v-model="selectedStudent.pen"
                     readonly
                     dense
+                    tabindex="-1"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -47,6 +48,8 @@
                 <v-col class="sideCardField">
                   <v-combobox
                     id='demogCode'
+                    tabindex="11"
+                    v-on:keyup.tab="editing = true; hovering = true"
                     v-on:mouseover="hovering = true"
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
@@ -77,6 +80,7 @@
                     value="N/A"
                     readonly
                     dense
+                    tabindex="-1"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -94,6 +98,7 @@
                     value="N/A"
                     readonly
                     dense
+                    tabindex="-1"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -111,6 +116,7 @@
                     v-model="createdDateTime"
                     readonly
                     dense
+                    tabindex="-1"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -128,6 +134,7 @@
                     v-model="updatedDateTime"
                     readonly
                     dense
+                    tabindex="-1"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -140,6 +147,8 @@
                 <v-col class="sideCardField">
                   <v-combobox
                     id='statusCode'
+                    tabindex="12"
+                    v-on:keyup.tab="editing = true; hovering = true"
                     v-on:mouseover="hovering = true"
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
@@ -166,6 +175,8 @@
                 </v-col>
                 <v-col class="textFieldColumn">
                   <v-text-field
+                    tabindex="1"
+                    v-on:keyup.tab="editing = true; hovering = true"
                     v-on:mouseover="hovering = true"
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
@@ -187,6 +198,8 @@
                 </v-col>
                 <v-col class="textFieldColumn">
                   <v-text-field
+                    tabindex="2"
+                    v-on:keyup.tab="editing = true; hovering = true"
                     v-on:mouseover="hovering = true"
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
@@ -208,6 +221,8 @@
                 </v-col>
                 <v-col class="textFieldColumn">
                   <v-text-field
+                    tabindex="3"
+                    v-on:keyup.tab="editing = true; hovering = true"
                     v-on:mouseover="hovering = true"
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
@@ -229,6 +244,8 @@
                 </v-col>
                 <v-col class="textFieldColumn">
                   <v-text-field
+                    tabindex="4"
+                    v-on:keyup.tab="editing = true; hovering = true"
                     v-on:mouseover="hovering = true"
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
@@ -250,6 +267,8 @@
                 </v-col>
                 <v-col class="textFieldColumn">
                   <v-text-field
+                    tabindex="5"
+                    v-on:keyup.tab="editing = true; hovering = true"
                     v-on:mouseover="hovering = true"
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
@@ -271,6 +290,8 @@
                 </v-col>
                 <v-col class="textFieldColumn">
                   <v-text-field
+                    tabindex="6"
+                    v-on:keyup.tab="editing = true; hovering = true"
                     v-on:mouseover="hovering = true"
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
@@ -292,6 +313,8 @@
                 </v-col>
                 <v-col cols="2" class="textFieldColumn">
                   <v-combobox
+                    tabindex="7"
+                    v-on:keyup.tab="editing = true; hovering = true"
                     v-on:mouseover="hovering = true"
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
@@ -324,6 +347,8 @@
                 </v-col>
                 <v-col cols="2" class="textFieldColumn">
                   <v-text-field
+                    tabindex="8"
+                    v-on:keyup.tab="editing = true; hovering = true"
                     v-on:mouseover="hovering = true"
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
@@ -336,6 +361,18 @@
                     dense
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="3" class="textFieldColumn">
+                  <v-text-field
+                    class="onhoverEdit bolder customNoBorder onhoverPad"
+                    v-model="longDOB"
+                    v-if="hovering"
+                    id='dobFull'
+                    color="#000000"
+                    dense
+                    readonly
+                    tabindex="-1"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -351,6 +388,7 @@
                     color="#000000"
                     dense
                     readonly
+                    tabindex="-1"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -366,6 +404,7 @@
                     color="#000000"
                     dense
                     readonly
+                    tabindex="-1"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -381,6 +420,7 @@
                     color="#000000"
                     dense
                     readonly
+                    tabindex="-1"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -390,6 +430,8 @@
                 </v-col>
                 <v-col cols="2" class="textFieldColumn">
                   <v-text-field
+                    tabindex="9"
+                    v-on:keyup.tab="editing = true; hovering = true"
                     v-on:mouseover="hovering = true"
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
@@ -417,6 +459,7 @@
                     v-model="selectedStudent.localID"
                     dense
                     readonly
+                    tabindex="-1"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -432,6 +475,7 @@
                     value="N/A"
                     dense
                     readonly
+                    tabindex="-1"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -447,6 +491,7 @@
                     value="N/A"
                     dense
                     readonly
+                    tabindex="-1"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -462,6 +507,7 @@
                     value="N/A"
                     dense
                     readonly
+                    tabindex="-1"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -471,6 +517,8 @@
                 </v-col>
                 <v-col class="textAreaColumn">
                   <v-textarea
+                    tabindex="10"
+                    v-on:keyup.tab="editing = true; hovering = true"
                     v-on:mouseover="hovering = true"
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
@@ -512,6 +560,7 @@ export default {
       gradeLabels: [],
       createdDateTime: null,
       updatedDateTime: null,
+      longDOB: null,
       student: {
         studentID: null,
         pen: null,
@@ -550,11 +599,18 @@ export default {
   mounted() {
     this.createdDateTime = this.frontEndDateTimeFormat(this.selectedStudent.createDate);
     this.updatedDateTime = this.frontEndDateTimeFormat(this.selectedStudent.updateDate);
+    this.longDOB = this.frontEndDOBFormat(this.selectedStudent.dob);
   },
   methods: {
     ...mapMutations('student', ['setSelectedStudent']),
     frontEndDateTimeFormat(date){
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
+    },
+    testMarco(){
+      alert('HELLO');
+    },
+    frontEndDOBFormat(date){
+      return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('MMMM DD, YYYY');
     },
     backToSearch() {
       this.setSelectedStudent(null);

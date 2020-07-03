@@ -2,18 +2,19 @@
   <header class="gov-header">
     <v-toolbar class="toolbar_header">
       <!-- Navbar content -->
-      <a href="/">
+      <a tabindex="-1" href="/">
         <img
+          tabindex="-1"
           src="@/assets/images/bc-gov-logo.svg"
           width="155"
           class="logo"
           alt="B.C. Government Logo"
         >
       </a>
-      <a v-if="isAuthenticated" href="/">
+      <a tabindex="-1" v-if="isAuthenticated" href="/">
         <v-toolbar-title><h3 style="color:white">{{ secureAppTitle }}</h3></v-toolbar-title>
       </a>
-      <a v-else href="/">
+      <a tabindex="-1" v-else href="/">
         <v-toolbar-title><h3 style="color:white">{{ appTitle }}</h3></v-toolbar-title>
       </a>
 
@@ -22,7 +23,7 @@
       <div v-if="isAuthenticated && dataReady">
         <v-menu name="user_options" offset-y>
           <template v-slot:activator="{ on }">
-            <v-chip tabindex="0" v-on="on" pill color="#003366" dark>
+            <v-chip tabindex="-1" v-on="on" pill color="#003366" dark>
               <v-avatar left color="info">
                 {{ userInfo.userName[0] }}
               </v-avatar>
