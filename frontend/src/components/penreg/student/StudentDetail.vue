@@ -5,8 +5,8 @@
         <v-row class="flex-grow-0 pb-5">
           <v-card style="background-color:#d7d7d7;" height="100%" width="100%" elevation=0>
             <v-row>
-              <v-col cols="1" class="topMenu pl-16 mr-12">
-                <img
+              <v-col @click="backToSearch" cols="1" class="topMenu pl-16 mr-12">
+                <img 
                   src="@/assets/images/hamburger.svg"
                   alt="Menu"
                 >
@@ -52,6 +52,7 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
+                    :class="{darkBackgound: hovering}"
                     color="#000000"
                     value="Accepted"
                     :items="demogLabels"
@@ -144,6 +145,7 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
+                    :class="{darkBackgound: hovering}"
                     color="#000000"
                     value="Active"
                     :items="statusLabels"
@@ -170,7 +172,7 @@
                     v-on:click="editing = true; hovering = true"
                     v-model="selectedStudent.legalLastName"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering}"
+                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
                     id='legalSurname'
                     color="#000000"
                     dense
@@ -190,7 +192,7 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering}"
+                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
                     v-model="selectedStudent.legalFirstName"
                     id='legal'
                     color="#000000"
@@ -211,7 +213,7 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering}"
+                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
                     v-model="selectedStudent.legalMiddleNames"
                     id='legalMiddleName'
                     color="#000000"
@@ -233,7 +235,7 @@
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
                     v-model="selectedStudent.usualLastName"
-                    :class="{onhoverPad: !hovering}"
+                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
                     id='usualSurname'
                     color="#000000"
                     dense
@@ -253,7 +255,7 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering}"
+                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
                     v-model="selectedStudent.usualFirstName"
                     id=''
                     color="#000000"
@@ -275,7 +277,7 @@
                     v-on:click="editing = true; hovering = true"
                     v-model="selectedStudent.usualMiddleNames"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering}"
+                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
                     id=''
                     color="#000000"
                     dense
@@ -295,7 +297,7 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering}"
+                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
                     v-model="selectedStudent.genderCode"
                     :items="genderCodes"
                     id='gender'
@@ -308,16 +310,26 @@
               </v-row>
               <v-row no-gutters class="py-1">
                 <v-col cols="3">
-                  <p class="labelField">Date of Birth</p>
+                  <div class="labelField">
+                    <div style="display: inline-block;vertical-align: middle;">
+                      Date of Birth
+                    </div>
+                    <div style="display: inline-block;vertical-align: sub;">
+                       <img title="YYYYMMDD" class="ml-3" 
+                        src="@/assets/images/information.svg"
+                        alt="YYYYMMDD"
+                       >
+                    </div>
+                  </div>
                 </v-col>
-                <v-col class="textFieldColumn">
+                <v-col cols="2" class="textFieldColumn">
                   <v-text-field
                     v-on:mouseover="hovering = true"
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering}"
+                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
                     v-model="selectedStudent.dob"
                     id='dob'
                     color="#000000"
@@ -331,21 +343,14 @@
                 <v-col cols="3">
                   <p class="labelField">Grade</p>
                 </v-col>
-                <v-col class="textFieldColumn">
+                <v-col cols="1" class="textFieldColumn">
                   <v-text-field
-                    v-on:mouseover="hovering = true"
-                    v-on:mouseout="editing ? hovering = true : hovering = false"
-                    v-on:blur="editing = false; hovering = false;"
-                    v-on:click="editing = true; hovering = true"
-                    class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering}"
+                    class="onhoverEdit bolder customNoBorder onhoverPad"
                     v-model="selectedStudent.gradeCode"
-                    :items="gradeLabels"
                     id='grade'
                     color="#000000"
                     dense
-                    :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    readonly
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -353,20 +358,14 @@
                 <v-col cols="3">
                   <p class="labelField">Grade School Year</p>
                 </v-col>
-                <v-col class="textFieldColumn">
+                <v-col cols="1" class="textFieldColumn">
                   <v-text-field
-                    v-on:mouseover="hovering = true"
-                    v-on:mouseout="editing ? hovering = true : hovering = false"
-                    v-on:blur="editing = false; hovering = false;"
-                    v-on:click="editing = true; hovering = true"
-                    class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering}"
+                    class="onhoverEdit bolder customNoBorder onhoverPad"
                     v-model="selectedStudent.gradeYear"
                     id='gradeYear'
                     color="#000000"
                     dense
-                    :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    readonly
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -389,14 +388,14 @@
                 <v-col cols="3">
                   <p class="labelField">School</p>
                 </v-col>
-                <v-col class="textFieldColumn">
+                <v-col cols="2" class="textFieldColumn">
                   <v-text-field
                     v-on:mouseover="hovering = true"
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering}"
+                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
                     v-model="selectedStudent.mincode"
                     id='school'
                     color="#000000"
@@ -477,7 +476,7 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering}"
+                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
                     v-model="selectedStudent.memo"
                     id='memo'
                     color="#000000"
@@ -496,7 +495,7 @@
   </v-main>
 </template>
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 import moment from 'moment';
 
 export default {
@@ -541,9 +540,7 @@ export default {
   },
   created(){
     this.genderCodes = this.genders ? this.genders.map(a => a.genderCode):[];
-    console.log('Gender codes: ' + this.genders);
     this.demogLabels = this.demogCodeObjects ? this.demogCodeObjects.map(a => a.label):[];
-    console.log('Demog codes: ' + this.demogCodeObjects);
     this.statusLabels = this.statusCodeObjects ? this.statusCodeObjects.map(a => a.label):[];
     this.gradeLabels = this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.label):[];
   },
@@ -553,11 +550,14 @@ export default {
   mounted() {
     this.createdDateTime = this.frontEndDateTimeFormat(this.selectedStudent.createDate);
     this.updatedDateTime = this.frontEndDateTimeFormat(this.selectedStudent.updateDate);
-
   },
   methods: {
+    ...mapMutations('student', ['setSelectedStudent']),
     frontEndDateTimeFormat(date){
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
+    },
+    backToSearch() {
+      this.setSelectedStudent(null);
     },
     prepPut(requestId, request) {
       return {
@@ -595,6 +595,9 @@ export default {
   .textFieldColumn{
      display: table-cell;
      height: 36px;
+  }
+  .darkBackgound.v-text-field>.v-input__control>.v-input__slot{
+    background-color: #eeeeee;
   }
   .textAreaColumn{
      display: table-cell;
