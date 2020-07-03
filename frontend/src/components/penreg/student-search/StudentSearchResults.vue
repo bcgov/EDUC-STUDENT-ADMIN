@@ -73,13 +73,6 @@ export default {
       required: true
     }
   },
-  methods: {
-    ...mapMutations('student', ['setSelectedStudent']),
-    viewStudentDetails(student) {
-      console.log('Hello John: ' + JSON.stringify(student));
-      this.setSelectedStudent(student);
-    }
-  },
   data () {
     return {
       pageCount: 0,
@@ -140,6 +133,10 @@ export default {
   },
   methods: {
     ...mapMutations('studentSearch', ['updateSortParams', 'setStudentSearchResponse']),
+    ...mapMutations('student', ['setSelectedStudent']),
+    viewStudentDetails(student) {
+      this.setSelectedStudent(student);
+    },
     compare() {
       //TODO
     },
