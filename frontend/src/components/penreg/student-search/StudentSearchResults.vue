@@ -32,7 +32,7 @@
         <span :key="h.id" class="bottom-column-item">{{ header.bottomText }}</span>
       </template>
       <template v-slot:item="props">
-        <tr @click="viewStudentDetails(item)">
+        <tr @click="viewStudentDetails(props.item)">
           <td v-for="header in props.headers" :key="header.id" :class="header.id">
             <v-checkbox v-if="header.type" :input-value="props.isSelected" @change="props.select($event)"></v-checkbox>
             <div v-else>
