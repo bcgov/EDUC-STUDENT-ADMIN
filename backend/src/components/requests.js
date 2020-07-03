@@ -37,6 +37,34 @@ function completeRequest(requestType, createRequestApiServiceReq) {
   };
 }
 
+function completeStudentProfileRequest(requestType, createRequestApiServiceReq) {
+  return async function completeRequestHandler(req, res) {
+    try {
+      const token = getBackendToken(req, res);
+      if (!token) {
+        return unauthorizedError(res);
+      }
+      req.body.statusUpdateDate = LocalDateTime.now();
+      return Promise.all([
+        updateRequest(req, res, requestType, createRequestApiServiceReq),
+        sendRequestEmail(req, token, 'COMPLETE', requestType)
+      ])
+        .then(async (response) => {
+          return res.status(200).json(response[0]);
+        })
+        .catch(e => {
+          logApiError(e, 'completeRequest', `Error occurred while attempting to PUT a ${requestType}.`);
+          return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+            message: 'INTERNAL SERVER ERROR'
+          });
+        });
+    } catch (e) {
+      logApiError(e, 'completeRequest', `Error occurred while attempting to PUT a ${requestType}.`);
+      return errorResponse(res);
+    }
+  };
+}
+
 function getAllRequests(requestType) {
   return async function getAllRequestsHandler(req, res) {
     const token = getBackendToken(req);
@@ -600,6 +628,7 @@ function errorResponse(res, msg) {
 
 module.exports = {
   completeRequest,
+  completeStudentProfileRequest,
   getAllRequests,
   getMacros,
   getRequestCommentById,
