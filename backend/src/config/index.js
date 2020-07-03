@@ -46,6 +46,9 @@ nconf.defaults({
     digitalIdIdentityTypeCodesURL: process.env.DIGITAL_ID_URL + '/identityTypeCodes',
     studentURL: process.env.STUDENT_API_URL,
     studentGenderCodesURL: process.env.STUDENT_API_URL + '/gender-codes',
+    studentDemogCodesURL: process.env.STUDENT_API_URL + '/demog-codes',
+    studentStatusCodesURL: process.env.STUDENT_API_URL + '/status-codes',
+    studentGradeCodesURL: process.env.STUDENT_API_URL + '/grade-codes'
   },
   oidc: {
     publicKey: process.env.SOAM_PUBLIC_KEY,
