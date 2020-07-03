@@ -32,7 +32,7 @@
                     id='pen'
                     class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
                     color="#000000"
-                    v-model="selectedStudent.pen"
+                    v-model="studentCopy.pen"
                     readonly
                     dense
                     tabindex="-1"
@@ -181,7 +181,7 @@
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
-                    v-model="selectedStudent.legalLastName"
+                    v-model="studentCopy.legalLastName"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering, darkBackgound: hovering}"
                     id='legalSurname'
@@ -206,7 +206,7 @@
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering, darkBackgound: hovering}"
-                    v-model="selectedStudent.legalFirstName"
+                    v-model="studentCopy.legalFirstName"
                     id='legal'
                     color="#000000"
                     dense
@@ -229,7 +229,7 @@
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering, darkBackgound: hovering}"
-                    v-model="selectedStudent.legalMiddleNames"
+                    v-model="studentCopy.legalMiddleNames"
                     id='legalMiddleName'
                     color="#000000"
                     dense
@@ -251,7 +251,7 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    v-model="selectedStudent.usualLastName"
+                    v-model="studentCopy.usualLastName"
                     :class="{onhoverPad: !hovering, darkBackgound: hovering}"
                     id='usualSurname'
                     color="#000000"
@@ -275,7 +275,7 @@
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering, darkBackgound: hovering}"
-                    v-model="selectedStudent.usualFirstName"
+                    v-model="studentCopy.usualFirstName"
                     id=''
                     color="#000000"
                     dense
@@ -296,7 +296,7 @@
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
-                    v-model="selectedStudent.usualMiddleNames"
+                    v-model="studentCopy.usualMiddleNames"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering, darkBackgound: hovering}"
                     id=''
@@ -321,7 +321,7 @@
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering, darkBackgound: hovering}"
-                    v-model="selectedStudent.genderCode"
+                    v-model="studentCopy.genderCode"
                     :items="genderCodes"
                     id='gender'
                     color="#000000"
@@ -355,7 +355,7 @@
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering, darkBackgound: hovering}"
-                    v-model="selectedStudent.dob"
+                    v-model="studentCopy.dob"
                     id='dob'
                     color="#000000"
                     dense
@@ -383,7 +383,7 @@
                 <v-col cols="1" class="textFieldColumn">
                   <v-text-field
                     class="onhoverEdit bolder customNoBorder onhoverPad"
-                    v-model="selectedStudent.gradeCode"
+                    v-model="studentCopy.gradeCode"
                     id='grade'
                     color="#000000"
                     dense
@@ -399,7 +399,7 @@
                 <v-col cols="1" class="textFieldColumn">
                   <v-text-field
                     class="onhoverEdit bolder customNoBorder onhoverPad"
-                    v-model="selectedStudent.gradeYear"
+                    v-model="studentCopy.gradeYear"
                     id='gradeYear'
                     color="#000000"
                     dense
@@ -416,7 +416,7 @@
                   <v-text-field
                     class="onhoverEdit bolder customNoBorder onhoverPad"
                     id='postalCode'
-                    v-model="selectedStudent.postalCode"
+                    v-model="studentCopy.postalCode"
                     color="#000000"
                     dense
                     readonly
@@ -438,7 +438,7 @@
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering, darkBackgound: hovering}"
-                    v-model="selectedStudent.mincode"
+                    v-model="studentCopy.mincode"
                     id='school'
                     color="#000000"
                     dense
@@ -456,7 +456,7 @@
                     class="onhoverEdit bolder customNoBorder onhoverPad"
                     id='localID'
                     color="#000000"
-                    v-model="selectedStudent.localID"
+                    v-model="studentCopy.localID"
                     dense
                     readonly
                     tabindex="-1"
@@ -525,7 +525,7 @@
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering, darkBackgound: hovering}"
-                    v-model="selectedStudent.memo"
+                    v-model="studentCopy.memo"
                     id='memo'
                     color="#000000"
                     dense
@@ -561,30 +561,7 @@ export default {
       createdDateTime: null,
       updatedDateTime: null,
       longDOB: null,
-      student: {
-        studentID: null,
-        pen: null,
-        legalFirstName: null,
-        legalMiddleNames: null,
-        legalLastName: null,
-        dob: null,
-        sexCode: null,
-        genderCode: null,
-        usualFirstName: null,
-        usualMiddleNames: null,
-        usualLastName: null,
-        email: null,
-        emailVerified: null,
-        deceasedDate: null,
-        postalCode: null,
-        mincode: null,
-        localID: null,
-        grade: null,
-        gradeYear: null,
-        demogCode: null,
-        statusCode: null,
-        memo: null
-      }
+      studentCopy: null 
     }
   },
   created(){
@@ -600,14 +577,12 @@ export default {
     this.createdDateTime = this.frontEndDateTimeFormat(this.selectedStudent.createDate);
     this.updatedDateTime = this.frontEndDateTimeFormat(this.selectedStudent.updateDate);
     this.longDOB = this.frontEndDOBFormat(this.selectedStudent.dob);
+    this.studentCopy = this.selectedStudent;
   },
   methods: {
     ...mapMutations('student', ['setSelectedStudent']),
     frontEndDateTimeFormat(date){
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
-    },
-    testMarco(){
-      alert('HELLO');
     },
     frontEndDOBFormat(date){
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('MMMM DD, YYYY');

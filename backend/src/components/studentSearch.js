@@ -64,11 +64,7 @@ async function getStudentGender(req, res) {
       });
     }
 
-    const codeUrls = [
-      `${config.get('server:studentGenderCodesURL')}`
-    ];
-
-    const [genderCodes] = await Promise.all(codeUrls.map(url => getData(accessToken, url)));
+    const genderCodes = await getData(accessToken, `${config.get('server:studentGenderCodesURL')}`);
     return res.status(HttpStatus.OK).json({genderCodes});
   } catch (e) {
     log.error('getCodes Error', e.stack);
@@ -87,11 +83,7 @@ async function getDemogCodes(req, res) {
       });
     }
 
-    const codeUrls = [
-      `${config.get('server:studentDemogCodesURL')}`
-    ];
-
-    const [demogCodes] = await Promise.all(codeUrls.map(url => getData(accessToken, url)));
+    const demogCodes = await getData(accessToken, `${config.get('server:studentDemogCodesURL')}`);
     return res.status(HttpStatus.OK).json({demogCodes});
   } catch (e) { 
     log.error('getCodes Error', e.stack);
@@ -110,11 +102,7 @@ async function getStatusCodes(req, res) {
       });
     }
 
-    const codeUrls = [
-      `${config.get('server:studentStatusCodesURL')}`
-    ];
-
-    const [statusCodes] = await Promise.all(codeUrls.map(url => getData(accessToken, url)));
+    const statusCodes = await getData(accessToken, `${config.get('server:studentStatusCodesURL')}`);
     return res.status(HttpStatus.OK).json({statusCodes});
   } catch (e) {
     log.error('getCodes Error', e.stack);
@@ -133,11 +121,7 @@ async function getGradeCodes(req, res) {
       });
     }
 
-    const codeUrls = [
-      `${config.get('server:studentGradeCodesURL')}`
-    ];
-
-    const [gradeCodes] = await Promise.all(codeUrls.map(url => getData(accessToken, url)));
+    const gradeCodes = await getData(accessToken, `${config.get('server:studentGradeCodesURL')}`);
     return res.status(HttpStatus.OK).json({gradeCodes});
   } catch (e) {
     log.error('getCodes Error', e.stack);
