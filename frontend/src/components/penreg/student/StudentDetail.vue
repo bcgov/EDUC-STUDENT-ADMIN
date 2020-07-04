@@ -741,8 +741,12 @@ export default {
     this.demogLabels = this.demogCodeObjects ? this.demogCodeObjects.map(a => a.label):[];
     this.statusLabels = this.statusCodeObjects ? this.statusCodeObjects.map(a => a.label):[];
     this.gradeLabels = this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.label):[];
-    this.studentCopy = this.selectedStudent ? JSON.parse(JSON.stringify(this.selectedStudent)):null;
 
+    if(this.selectedStudent){
+      this.selectedStudent.demogCode = this.demogCodeObjects.filter(it => (it.demogCode === this.selectedStudent.demogCode))[0].label;
+      this.selectedStudent.statusCode = this.statusCodeObjects.filter(it => (it.statusCode === this.selectedStudent.statusCode))[0].label;
+      this.studentCopy = JSON.parse(JSON.stringify(this.selectedStudent));
+    }
   },
  computed: {
     ...mapGetters('student', ['selectedStudent', 'genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects'])
