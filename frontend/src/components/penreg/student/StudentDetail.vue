@@ -20,7 +20,7 @@
         </v-row>
         <v-row>
           <v-col cols="3" class="pr-15 pl-0">
-            <v-card class="px-2 py-2" color="#D7D7D7" width="100%" elevation=0>
+            <v-card class="px-3 py-2" color="#D7D7D7" width="100%" elevation=0>
               <v-row cols="1" no-gutters>
                 <v-col>
                   <p class="mb-0 mt-1">PEN</p>
