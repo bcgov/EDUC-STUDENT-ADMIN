@@ -19,7 +19,7 @@
           </v-card>
         </v-row>
         <v-row>
-          <v-col cols="2" class="py-0 px-3 pl-0">
+          <v-col cols="3" class="pr-15 pl-0">
             <v-card class="px-2 py-2" color="#D7D7D7" width="100%" elevation=0>
               <v-row cols="1" no-gutters>
                 <v-col>
@@ -159,7 +159,7 @@
                     id='statusCode'
                     tabindex="11"
                     v-on:keyup.tab="editing = true; hovering = true"
-                    v-on:change="editing = false; hovering = false;"
+                    v-on:change="editing = false; hovering = false; openDeceasedDialog()"
                     class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
                     :class="{darkBackgound: hovering || hasEdits('statusCode')}"
                     color="#000000"
@@ -188,7 +188,7 @@
             </v-card>
           </v-col>
           <v-col cols="9" class="py-0 pl-0">
-            <v-card class="px-2 py-2" height="100%" width="100%" elevation=0>
+            <v-card class="px-0 py-2" height="100%" width="100%" elevation=0>
               <v-row no-gutters class="py-1">
                 <v-col cols="2">
                   <p class="labelField mb-0">Legal Surname</p>
@@ -680,26 +680,36 @@
         </v-row>
       </v-col>
     </v-container>
-<!--   <v-dialog
-    v-model="dialog"
-    width="500px"
-  >
-    <v-card>
-      <v-card-text class="fullPadding">
-        Hello World
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn
-          color="#003366"
-          class="white--text"
-          @click="closeDialog"
-        >
-          Close
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog> -->
+   <v-dialog
+    v-model="deceasedDialog"
+    width="400px"
+   >
+      <v-card>
+        <v-card-text class="px-5 py-5">
+          Change Student Status to Deceased?
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn 
+            outlined
+            color="#38598a"
+            class="mx-2"
+            @click="cancelDeceasedDialog"
+          >
+            Cancel
+          </v-btn>
+
+          <v-btn 
+            color="#003366"
+            class="white--text"
+            @click="confirmDeceasedDialog"
+            >
+            Confirm
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+  </v-dialog> 
   </v-main>
 </template>
 
@@ -713,7 +723,7 @@ export default {
     return {
       hovering: false,
       editing: false,
-      dialog: false,
+      deceasedDialog: false,
       demogEditing: false,
       statusEditing: false,
       genderCodes: [],
@@ -745,7 +755,7 @@ export default {
   methods: {
     ...mapMutations('student', ['setSelectedStudent']),
     frontEndDateTimeFormat(date){
-      return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
+      return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD HH:mm:ss a');
     },
     hasEdits(value){
       if(JSON.stringify(this.studentCopy[value]) === JSON.stringify(this.selectedStudent[value])){
@@ -762,6 +772,19 @@ export default {
     },
     backToSearch() {
       this.setSelectedStudent(null);
+    },
+    confirmDeceasedDialog() {
+      this.deceasedDialog = false;
+      this.studentCopy.statusCode = 'Deceased';
+    },
+    cancelDeceasedDialog() {
+      this.deceasedDialog = false;
+      this.studentCopy.statusCode = 'Active';
+    },
+    openDeceasedDialog() {
+      if(this.studentCopy.statusCode === 'Deceased'){
+        this.deceasedDialog = true;
+      }
     }
   }
 };
