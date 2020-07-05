@@ -258,7 +258,7 @@ const utils = {
     const requestIDName = `${requestType}ID`;
     return function verifyRequestInSessionHandler(req, res, next) {
       const requestInSession = req['session'].penRequest;
-      if(req.body[requestIDName] === requestInSession[requestIDName]) {
+      if(req && req.body && req['session'] && req['session'].penRequest && req.body[requestIDName] === requestInSession[requestIDName]) {
         return next();
       }
       log.error(`${requestType} Id in request is different than the one in session.  This should NEVER happen!`);
