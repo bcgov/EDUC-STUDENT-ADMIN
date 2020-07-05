@@ -272,17 +272,13 @@ export default {
     },
     notifications() {
       let outcome = null;
-      let notifications = this.$store.getters['notifications/notifications'];
-      if (Array.isArray(notifications)) {
-        for (let notification of notifications) {
-          notification = JSON.parse(notification);
-          if (notification && notification.penRequestID === this.requestId && notification.eventOutcome === 'SAGA_COMPLETED') {
-            this.loadPenRequest();
-            outcome = 'SAGA_COMPLETED';
-            // eslint-disable-next-line
-            this.unlinkMessage ='Your request to unlink is now completed.';
-          }
-        }
+      let notification = this.$store.getters['notifications/notification'];
+      notification = JSON.parse(notification);
+      if (notification && notification.penRequestID === this.requestId && notification.sagaStatus === 'COMPLETED' && notification.sagaName === 'PEN_REQUEST_UNLINK_SAGA') {
+        this.loadPenRequest();
+        outcome = 'SAGA_COMPLETED';
+        // eslint-disable-next-line
+        this.unlinkMessage ='Your request to unlink is now completed.';
       }
       return outcome;
     },

@@ -42,7 +42,7 @@
       outlined
       transition="scale-transition"
       class="bootstrap-success" >
-      {{notifications}}
+      {{notification}}
     </v-alert>
     <v-alert
       :value="returnOperationSuccessful"
@@ -161,20 +161,16 @@ export default {
     isReturnToStudentDark() {
       return this.enableActions && this.request[this.requestStatusCodeName] !== 'DRAFT' && this.request[this.requestStatusCodeName] !== 'ABANDONED';
     },
-    notifications() {
+    notification() {
       let outcome = null;
-      let notifications = this.$store.getters['notifications/notifications'];
-      if (Array.isArray(notifications)) {
-        for (let notification of notifications) {
-          notification = JSON.parse(notification);
-          if (notification && notification.penRequestID === this.requestId && notification.eventOutcome === 'SAGA_COMPLETED') {
-            outcome = 'SAGA_COMPLETED';
-            // eslint-disable-next-line
-            this.loadPenRequestAndComments();
-            // eslint-disable-next-line
-            this.returnMessage = 'Your request to return for more info is now completed.'
-          }
-        }
+      let notification = this.$store.getters['notifications/notification'];
+      notification = JSON.parse(notification);
+      if (notification[`${this.requestType}ID`] && notification[`${this.requestType}ID`] === this.requestId && notification.sagaStatus === 'COMPLETED') {
+        outcome = 'SAGA_COMPLETED';
+        // eslint-disable-next-line
+        this.loadPenRequestAndComments();
+        // eslint-disable-next-line
+        this.returnMessage = 'Your request to return for more info is now completed.'
       }
       return outcome;
     }

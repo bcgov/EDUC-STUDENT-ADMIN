@@ -82,7 +82,7 @@ async function returnPenRequest(req, res) {
       sagaStatus: 'INITIATED'
     };
     log.info(`going to store event object in redis for return pen request :: ${safeStringify(event)}`);
-    await redisUtil.createOrUpdatePenRequestSagaRecordInRedis(event);
+    await redisUtil.createPenRequestSagaRecordInRedis(event);
     return res.status(200).json();
   } catch (e) {
     logApiError(e, 'returnPenRequest', 'Error occurred while attempting to return a pen request.');
@@ -127,7 +127,7 @@ async function unlinkRequest(req, res) {
       sagaStatus: 'INITIATED'
     };
     log.info(`going to store event object in redis for unlink pen request :: ${safeStringify(event)}`);
-    await redisUtil.createOrUpdatePenRequestSagaRecordInRedis(event);
+    await redisUtil.createPenRequestSagaRecordInRedis(event);
     return res.status(200).json({sagaId: response});
   } catch (e) {
     logApiError(e, 'unlinkRequest', 'Error occurred while attempting to unlink a pen request.');
