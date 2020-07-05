@@ -1,5 +1,16 @@
 <template>
   <v-container fluid class="fill-height px-0">
+    <!-- This alert component is used to refresh the page automatically when saga is completed.-->
+    <v-alert
+      :value="false"
+      dense
+      text
+      dismissible
+      outlined
+      transition="scale-transition"
+      class="bootstrap-success">
+      {{notification}}
+    </v-alert>
     <v-row no-gutters>
       <v-card height="100%" width="100%" style="background-color:#38598a;">
         <v-combobox
@@ -177,6 +188,16 @@
             <span v-else>{{moment(item.initialSubmitDate).format('YYYY-MM-DD LT') }}</span>
           </template>
           <template v-slot:no-data>There are no requests with the selected statuses.</template>
+          <template v-slot:item="{ item }">
+            <tr :class="item.sagaInProgress? 'blue-grey lighten-3' :''" @click="viewRequestDetails(item)">
+              <td>{{item[`${requestType}StatusCode`].label}}</td>
+              <td>{{item.initialSubmitDate}}</td>
+              <td>{{item[`${penName}`]}}</td>
+              <td>{{item.legalLastName}}</td>
+              <td>{{item.legalFirstName}}</td>
+              <td>{{item.reviewer}}</td>
+            </tr>
+          </template>
         </v-data-table>
       </v-card>
     </v-row>
@@ -302,6 +323,21 @@ export default {
     },
     requestIdName() {
       return `${this.requestType}ID`;
+    },
+    notification() {
+      let outcome = null;
+      let notification = this.$store.getters['notifications/notification'];
+      notification = JSON.parse(notification);
+      if (notification && this.requests) {
+        for (const element of this.requests) {
+          if (element[`${this.requestType}ID`] && notification[`${this.requestType}ID`] && element[`${this.requestType}ID`] === notification[`${this.requestType}ID`] && notification.sagaStatus === 'COMPLETED') {
+            element.sagaInProgress = false;
+          } else if (element[`${this.requestType}ID`] && notification[`${this.requestType}ID`] && element[`${this.requestType}ID`] === notification[`${this.requestType}ID`] && notification.sagaStatus === 'INITIATED') {
+            element.sagaInProgress = true;
+          }
+        }
+      }
+      return outcome;
     }
   },
   watch: {
@@ -432,51 +468,67 @@ export default {
 };
 </script>
 <style scoped>
-.header {
-  background-color: #96c0e6;
-  top: -24px;
-}
-.v-input {
-  padding-bottom: 15px;
-  padding-top: 20px;
-}
-.v-data-table /deep/ .v-text-field__details {
-  display: none;
-}
-label {
-  color: white;
-}
-.v-card {
-  background-color: #fafafa;
-}
-.v-combobox {
-  background-color: #5475a7 !important;
-}
-.theme--light .v-label {
-  color: white;
-}
-.header-text {
-  padding-top: 0;
-}
-th {
-  border: none !important;
-  padding-bottom: 0;
-  padding-left: 0;
-  padding-right: 0;
-}
-/deep/ th.text-start:nth-child(1) {
-  vertical-align: sub;
-  padding-top: 10px;
-}
-.active {
-  color: rgba(0, 0, 0, 0.87) !important;
-}
-.table-header {
-  cursor: pointer;
-  padding-top: 10px;
-  margin-bottom: 0;
-}
-.v-icon {
-  font-size: 18px;
-}
+  .header {
+    background-color: #96c0e6;
+    top: -24px;
+  }
+
+  .v-input {
+    padding-bottom: 15px;
+    padding-top: 20px;
+  }
+
+  .v-data-table /deep/ .v-text-field__details {
+    display: none;
+  }
+
+  label {
+    color: white;
+  }
+
+  .v-card {
+    background-color: #fafafa;
+  }
+
+  .v-combobox {
+    background-color: #5475a7 !important;
+  }
+
+  .theme--light .v-label {
+    color: white;
+  }
+
+  .saga-in-progress {
+    color: dimgrey;
+  }
+
+  .header-text {
+    padding-top: 0;
+  }
+
+  th {
+    border: none !important;
+    padding-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /deep/ th.text-start:nth-child(1) {
+    vertical-align: sub;
+    padding-top: 10px;
+  }
+
+  .active {
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+
+  .table-header {
+    cursor: pointer;
+    padding-top: 10px;
+    margin-bottom: 0;
+  }
+
+  .v-icon {
+    font-size: 18px;
+  }
 </style>

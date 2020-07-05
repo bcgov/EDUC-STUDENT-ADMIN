@@ -11,15 +11,22 @@ const redisUtil = {
    * @param event the event object to be stored , this contains sagaId, penRequestId,digitalId, eventPayload etc..
    * @returns {Promise<void>}
    */
-  async createOrUpdatePenRequestSagaRecordInRedis(event) {
-    let penRequestID;
-    if (event && event.penRequestID) {
-      penRequestID = event.penRequestID;
-    }
-
+  async createPenRequestSagaRecordInRedis(event) {
     try {
       const redisClient = Redis.getRedisClient();
       if (redisClient) {
+        await this.addElementToSagaRecordInRedis(event.sagaId, event);
+      } else {
+        log.error('Redis client is not available, this should not have happened');
+      }
+    } catch (e) {
+      log.error(`Error ${e}`);
+    }
+  },
+  async removePenRequestSagaRecordFromRedis(event) {
+    const redisClient = Redis.getRedisClient();
+    if (redisClient) {
+      try {
         const result = await redisClient.smembers(penReqSagaEventKey);
         log.silly(`result from redis for ${penReqSagaEventKey} is ${result}`);
         if (result && result.length > 0) {
@@ -27,21 +34,17 @@ const redisUtil = {
             const eventArrayElement = JSON.parse(element);
             if ((eventArrayElement.sagaId && event.sagaId && eventArrayElement.sagaId === event.sagaId) && ('COMPLETED' === event.sagaStatus)) {
               log.info(`going to delete this event record as it is completed. ${eventArrayElement.sagaId}`);
-              penRequestID = eventArrayElement.penRequestID;
               await this.removeSagaRecordFromRedis(event.sagaId, eventArrayElement);
+              break;
             }
           }
-        } else {
-          log.silly(`did not find any data in redis for the given key ${penReqSagaEventKey} adding fresh one .`);
-          await this.addElementToSagaRecordInRedis(event.sagaId, event);
         }
-      } else {
-        log.error('Redis client is not available, this should not have happened');
+      } catch (e) {
+        log.error(`Error ${e}`);
       }
-    } catch (e) {
-      log.error(`Error ${e}`);
+    } else {
+      log.error('Redis client is not available, this should not have happened');
     }
-    return penRequestID; // return the pen request ID so that it can be passed to frontend.
   },
   async getPenRequestSagaEvents() {
     const redisClient = Redis.getRedisClient();
@@ -51,7 +54,7 @@ const redisUtil = {
       log.error('Redis client is not available, this should not have happened');
     }
   },
-  async removeSagaRecordFromRedis(sagaId, eventToDelete){
+  async removeSagaRecordFromRedis(sagaId, eventToDelete) {
     const redisClient = Redis.getRedisClient();
     try {
       await this.getRedLock().lock(`locks:pen-request-saga:deleteFromSet-${sagaId}`, 500);
@@ -60,7 +63,7 @@ const redisUtil = {
       log.info(`this pod could not acquire lock for locks:pen-request-saga:deleteFromSet-${sagaId}, check other pods. ${e}`);
     }
   },
-  async addElementToSagaRecordInRedis(sagaId, eventToAdd){
+  async addElementToSagaRecordInRedis(sagaId, eventToAdd) {
     const redisClient = Redis.getRedisClient();
     try {
       await this.getRedLock().lock(`locks:pen-request-saga:addToSet-${sagaId}`, 500);
@@ -69,10 +72,10 @@ const redisUtil = {
       log.info(`this pod could not acquire lock for locks:pen-request-saga:addToSet-${sagaId}, check other pods. ${e}`);
     }
   },
-  getRedLock(){
-    if(redLock){
-      return redLock;
-    }else{
+  getRedLock() {
+    if (redLock) {
+      return redLock; // reusable red lock object.
+    } else {
       redLock = new RedLock(
         [Redis.getRedisClient()],
         {

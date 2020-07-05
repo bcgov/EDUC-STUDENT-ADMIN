@@ -1,19 +1,22 @@
 export default {
   namespaced: true,
   state: {
-    notifications: []
+    notification: null,
+    notifications:[]
   },
   getters: {
+    notification: state => state.notification,
     notifications: state => state.notifications
   },
   mutations: {
-    changeNotifications: (state, payload) => {
+    changeNotification: (state, payload) => {
+      state.notification = payload;
       state.notifications.push(payload);
     }
   },
   actions: {
-    setNotifications: ({commit}, payload) => {
-      commit('changeNotifications', payload);
+    setNotification: ({commit}, payload) => {
+      commit('changeNotification', payload);
     }
   }
 };

@@ -6,7 +6,6 @@ const penRequestReturnSagaTopic = 'PEN_REQUEST_RETURN_SAGA_TOPIC';
 const penRequestUnlinkSagaTopic = 'PEN_REQUEST_UNLINK_SAGA_TOPIC';
 const redisUtil = require('../../../util/redis/redis-utils');
 const webSocket = require('../../../socket/web-socket');
-const safeStringify = require('fast-safe-stringify');
 
 const PenRequestSagaMessageHandler = {
   penRequestReturnSagaSubscription(stan, opts) {
@@ -40,19 +39,21 @@ const PenRequestSagaMessageHandler = {
   },
   async handlePenRequestSagaMessage(msg) {
     const event = JSON.parse(msg.getData()); // it is always a JSON string of Event object.
-    log.silly(`received message for SAGA ID :: ${event.sagaId} :: AND EVENT TYPE :: ${event.eventType} :: AND EVENT OUTCOME :: ${event.eventOutcome}`);
-    if('COMPLETED' === event.sagaStatus) { // broadcast only when the saga is completed, clients are not interested in each step.
-      event.penRequestID = await redisUtil.createOrUpdatePenRequestSagaRecordInRedis(event);
+    log.silly(`received message for SAGA ID :: ${event.sagaId} :: AND EVENT OUTCOME :: ${event.eventOutcome} AND PEN_REQUEST_ID :: ${event.penRequestID} AND SAGA STATUS IS :: ${event.sagaStatus} AND SAGA NAME IS :: ${event.sagaName}`);
+    if('COMPLETED' === event.sagaStatus || 'INITIATED' === event.sagaStatus) { // broadcast only when the saga is completed or initiated, clients are not interested in each step.
       const connectedClients = webSocket.getWebSocketClients();
       if (connectedClients && connectedClients.length > 0) {
         for (const connectedClient of connectedClients) {
           try {
-            connectedClient.send(safeStringify(event));
+            connectedClient.send(msg.getData());
           } catch (e) {
             log.error(`Error while sending message to connected client ${connectedClient} :: ${e}`);
           }
         }
       }
+    }
+    if('COMPLETED' === event.sagaStatus){
+      await redisUtil.removePenRequestSagaRecordFromRedis(event);
     }
   },
 };

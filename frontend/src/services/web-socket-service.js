@@ -59,7 +59,7 @@ webSocketsService.install = function (Vue, options) {
     Here we write our custom functions to not make a mess in one function
   */
   function handleNotification (params) {
-    options.store.dispatch('notifications/setNotifications', params.data);
+    options.store.dispatch('notifications/setNotification', params.data);
   }
 }
 

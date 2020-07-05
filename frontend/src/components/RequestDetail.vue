@@ -22,6 +22,17 @@
             >
               {{ claimErrorMessage }}
             </v-alert>
+            <!-- This alert component is used to refresh the page automatically when saga is completed.-->
+            <v-alert
+              :value="false"
+              dense
+              text
+              dismissible
+              outlined
+              transition="scale-transition"
+              class="bootstrap-success">
+              {{notification}}
+            </v-alert>
           </v-card>
         </v-row>
         <v-row>
@@ -249,6 +260,7 @@ export default {
       isClaimActionEnabledForUser: false,
       isDocumentTypeChangeEnabledForUser:false,
       isReleaseActionEnabledForUser:false,
+      sagaInProgress: false
     };
   },
   computed: {
@@ -287,6 +299,19 @@ export default {
     },
     isDarkForRelease() {
       return this.enableActions && !this.isRequestCompleted && this.isReleaseActionEnabledForUser;
+    },
+    notification() {
+      let outcome = null;
+      let notification = this.$store.getters['notifications/notification'];
+      if(notification) {
+        notification = JSON.parse(notification);
+        if (notification[`${this.requestType}ID`] && notification[`${this.requestType}ID`] === this.requestId && notification.sagaStatus === 'INITIATED') {
+          this.disableActionButtons();
+        } else if (notification[`${this.requestType}ID`] && notification[`${this.requestType}ID`] === this.requestId && notification.sagaStatus === 'COMPLETED') {
+          this.enableActionButtons();
+        }
+      }
+      return outcome;
     }
   },
   mounted() {
@@ -313,12 +338,17 @@ export default {
         if(this.request[this.requestStatusCodeName] === this.statusCodes.REJECTED) {
           this.activeTab = 2;
         }
+        if(response.data && response.data.sagaInProgress){
+          this.sagaInProgress = true;
+        }
       })
       .catch(error => {
         console.log(error);
       })
       .finally(() => {
-        this.enableActions = true;
+        if(!this.sagaInProgress) {
+          this.enableActions = true;
+        }
         this.loadingPen = false;
       });
     ApiService.apiAxios

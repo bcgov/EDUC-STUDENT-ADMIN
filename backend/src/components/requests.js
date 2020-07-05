@@ -131,7 +131,6 @@ function getAllRequests(requestType) {
       getData(token, config.get(`server:${requestType}:rootURL`) + '/paginated', params)
     ])
       .then(async ([statusCodeResponse, dataResponse]) => {
-        let filteredList = [];
         const eventsArrayFromRedis = await redisUtil.getPenRequestSagaEvents();
         dataResponse['content'].forEach((element, i) => {
           const penRequestID = element['penRequestID'];
@@ -145,21 +144,18 @@ function getAllRequests(requestType) {
               }
             }
           }
-          if (!sagaInProgress) {
-            //replace status code with label
-            if (element[statusCodeKeyName]) {
-              let temp = statusCodeResponse.find(codeStatus => codeStatus[statusCodeKeyName] === element[statusCodeKeyName]);
-              if (temp) {
-                element[statusCodeKeyName] = temp;
-              }
+          element.sagaInProgress = sagaInProgress;
+          //replace status code with label
+          if (element[statusCodeKeyName]) {
+            let temp = statusCodeResponse.find(codeStatus => codeStatus[statusCodeKeyName] === element[statusCodeKeyName]);
+            if (temp) {
+              element[statusCodeKeyName] = temp;
             }
-            //dont send digital id or audit columns to frontend
-            delete element['digitalID'];
-            dataResponse['content'][i] = utils.stripAuditColumns(element);
-            filteredList.push(dataResponse['content'][i]);
           }
+          //dont send digital id or audit columns to frontend
+          delete element['digitalID'];
+          dataResponse['content'][i] = utils.stripAuditColumns(element);
         });
-        dataResponse['content'] = filteredList;
         return res.status(200).json(dataResponse);
       }).catch(e => {
         logApiError(e, 'getAllRequests', `Error occurred while attempting to GET all ${requestType} requests.`);
@@ -289,6 +285,19 @@ function getRequestById(requestType) {
             log.error(`Failed to get ${requestType} status codes.  Using code value instead of label.`);
           } else {
             dataResponse[`${requestType}StatusCodeLabel`] = utils.getCodeLabel(statusCodesResponse, `${requestType}StatusCode`, dataResponse[`${requestType}StatusCode`]);
+          }
+          if(requestType === 'penRequest'){
+            const id = dataResponse[`${requestType}ID`];
+            const eventsArrayFromRedis = await redisUtil.getPenRequestSagaEvents();
+            if (id && eventsArrayFromRedis) {
+              for (const eventString of eventsArrayFromRedis) {
+                const event = JSON.parse(eventString);
+                if (event && event[`${requestType}ID`] && event[`${requestType}ID`] === id) {
+                  dataResponse['sagaInProgress'] = true; // send saga in progress, so that details page can have the value in frontend.
+                  break;
+                }
+              }
+            }
           }
           utils.saveSession(req, res, dataResponse);
           //dont send digital id or audit columns to vue
