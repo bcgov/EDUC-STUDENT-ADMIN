@@ -164,13 +164,15 @@ export default {
     notification() {
       let outcome = null;
       let notification = this.$store.getters['notifications/notification'];
-      notification = JSON.parse(notification);
-      if (notification[`${this.requestType}ID`] && notification[`${this.requestType}ID`] === this.requestId && notification.sagaStatus === 'COMPLETED') {
-        outcome = 'SAGA_COMPLETED';
-        // eslint-disable-next-line
-        this.loadPenRequestAndComments();
-        // eslint-disable-next-line
-        this.returnMessage = 'Your request to return for more info is now completed.'
+      if(notification) {
+        notification = JSON.parse(notification);
+        if (notification[`${this.requestType}ID`] && notification[`${this.requestType}ID`] === this.requestId && notification.sagaStatus === 'COMPLETED' && notification.sagaName === 'PEN_REQUEST_RETURN_SAGA') {
+          outcome = 'SAGA_COMPLETED';
+          // eslint-disable-next-line
+          this.loadPenRequestAndComments();
+          // eslint-disable-next-line
+          this.returnMessage = 'Your request to return for more info is now completed.'
+        }
       }
       return outcome;
     }
