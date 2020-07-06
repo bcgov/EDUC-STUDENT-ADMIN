@@ -87,7 +87,7 @@
                 <v-btn id="claim-pen-request" :disabled="isClaimDisabled" small color="#38598a" :dark="isDarkForClaim" class="ml-2" @click="claimRequest">Claim</v-btn>
               </v-row>
               <v-row no-gutters justify="end" class="pb-5">
-                <v-btn :disabled="!enableActions" small color="#38598a" :dark="enableActions" class="ml-2" @click="backToList">Back to List</v-btn>
+                <v-btn  small color="#38598a" :dark="true" class="ml-2" @click="backToList">Back to List</v-btn>
               </v-row>
             </v-card>
           </v-col>
