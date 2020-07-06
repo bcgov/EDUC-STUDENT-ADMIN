@@ -10,9 +10,9 @@ async function saveStudent(req, res) {
   try {
 	const token = utils.getBackendToken(req);
 	if (!token) {
-	  return res.status(HttpStatus.UNAUTHORIZED).json({
-	    message: 'No access token'
-	  });
+        return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'No access token'
+     });
 	}
     const student = req.body.student;
 
@@ -82,6 +82,13 @@ function errorResponse(res, msg) {
     message: msg || 'INTERNAL SERVER ERROR'
   });
 }
+
+function unauthorizedError(res) {
+  return res.status(HttpStatus.UNAUTHORIZED).json({
+    message: 'No access token'
+  });
+}
+
 
 module.exports = {
   saveStudent,
