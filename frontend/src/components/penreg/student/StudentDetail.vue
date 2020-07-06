@@ -683,7 +683,7 @@
                       color="#38598a"
                       class="mx-1"
                       :disabled="!hasAnyEdits()"
-                      @click="cancelDeceasedDialog"
+                      @click="backToSearch()"
                     >
                       Cancel
                     </v-btn>
@@ -692,7 +692,7 @@
                       color="#003366"
                       class="white--text"
                       :disabled="!hasAnyEdits()"
-                      @click="confirmDeceasedDialog"
+                      @click="saveStudent()"
                       >
                       Save
                     </v-btn>
@@ -740,6 +740,8 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 import moment from 'moment';
+import ApiService from '../../../common/apiService';
+import { Routes } from '../../../utils/constants';
 
 export default {
   name: 'studentDetail',
@@ -748,8 +750,6 @@ export default {
       hovering: false,
       editing: false,
       deceasedDialog: false,
-      demogEditing: false,
-      statusEditing: false,
       genderCodes: [],
       demogLabels: [],
       statusLabels: [],
@@ -757,6 +757,7 @@ export default {
       createdDateTime: null,
       updatedDateTime: null,
       longDOB: null,
+      origStudent: null,
       studentCopy: null 
     }
   },
@@ -766,45 +767,60 @@ export default {
     this.statusLabels = this.statusCodeObjects ? this.statusCodeObjects.map(a => a.label):[];
     this.gradeLabels = this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.label):[];
 
-    if(this.selectedStudent){
-      if(this.selectedStudent.demogCode){
-        this.selectedStudent.demogCode = this.demogCodeObjects.filter(it => (it.demogCode === this.selectedStudent.demogCode))[0].label;
-      }
-      if(this.selectedStudent.statusCode){
-        this.selectedStudent.statusCode = this.statusCodeObjects.filter(it => (it.statusCode === this.selectedStudent.statusCode))[0].label;
-      }
-      this.studentCopy = JSON.parse(JSON.stringify(this.selectedStudent));
-    }
+    // if(this.selectedStudent){
+    //   if(this.selectedStudent.demogCode){
+    //     this.selectedStudent.demogCode = this.demogCodeObjects.filter(it => (it.demogCode === this.selectedStudent.demogCode))[0].label;
+    //   }
+    //   if(this.selectedStudent.statusCode){
+    //     this.selectedStudent.statusCode = this.statusCodeObjects.filter(it => (it.statusCode === this.selectedStudent.statusCode))[0].label;
+    //   }
+      // this.studentCopy = JSON.parse(JSON.stringify(this.selectedStudent));
+    //}
   },
  computed: {
     ...mapGetters('student', ['selectedStudent', 'genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects'])
   },
   mounted() {
-    this.createdDateTime = this.frontEndDateTimeFormat(this.selectedStudent.createDate);
-    this.updatedDateTime = this.frontEndDateTimeFormat(this.selectedStudent.updateDate);
-    this.longDOB = this.frontEndDOBFormat(this.selectedStudent.dob);
+    this.refreshStudent();
+    this.createdDateTime = this.frontEndDateTimeFormat(this.origStudent.createDate);
+    this.updatedDateTime = this.frontEndDateTimeFormat(this.origStudent.updateDate);
+    this.longDOB = this.frontEndDOBFormat(this.origStudent.dob);
   },
   methods: {
     ...mapMutations('student', ['setSelectedStudent']),
     frontEndDateTimeFormat(date){
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD HH:mm:ss a');
     },
+    refreshStudent(){
+      ApiService.apiAxios
+      .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.selectedStudent.studentID)
+      .then(response => {
+        this.origStudent = response.data;
+        this.studentCopy = JSON.parse(JSON.stringify(this.origStudent));
+      })
+      .catch(error => {
+        console.log(error);
+      })
+      .finally(() => {
+
+      });
+    },
     hasEdits(value){
-      if(JSON.stringify(this.studentCopy[value]) === JSON.stringify(this.selectedStudent[value])){
+      if(JSON.stringify(this.studentCopy[value]) === JSON.stringify(this.origStudent[value])){
         return false;
       }
 
       return true;
     },
     hasAnyEdits(){
-      if(JSON.stringify(this.studentCopy) === JSON.stringify(this.selectedStudent)){
+      if(JSON.stringify(this.studentCopy) === JSON.stringify(this.origStudent)){
         return false;
       }
 
       return true;
     },
     revertField(value){
-      this.studentCopy[value] = JSON.parse(JSON.stringify(this.selectedStudent[value]));
+      this.studentCopy[value] = JSON.parse(JSON.stringify(this.origStudent[value]));
     },
     frontEndDOBFormat(date){
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('MMMM DD, YYYY');
@@ -824,7 +840,29 @@ export default {
       if(this.studentCopy.statusCode === 'Deceased'){
         this.deceasedDialog = true;
       }
-    }
+    },
+    saveStudent() {
+      //if(this.$refs.studentSearchForm.validate()) {
+        
+        ApiService.apiAxios
+          .post(Routes['student'].ROOT_ENDPOINT,this.prepPut(this.studentCopy))
+          .then(response => {
+            this.origStudent = response.data;
+            this.studentCopy = JSON.parse(JSON.stringify(this.origStudent));
+          })
+          .catch(error => {
+            console.log(error);
+          })
+          .finally(() => {
+           
+          });
+      //}
+    },
+    prepPut(student) {
+      return {
+        student: student
+      };
+    },    
   }
 };
 </script>
