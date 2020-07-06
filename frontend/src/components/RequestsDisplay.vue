@@ -329,12 +329,36 @@ export default {
       let notification = this.$store.getters['notifications/notification'];
       notification = JSON.parse(notification);
       if (notification && this.requests) {
+        let sagaCompletedForThisRequest = false;
+        let elementOfRequests;
         for (const element of this.requests) {
           if (element[`${this.requestType}ID`] && notification[`${this.requestType}ID`] && element[`${this.requestType}ID`] === notification[`${this.requestType}ID`] && notification.sagaStatus === 'COMPLETED') {
-            element.sagaInProgress = false;
+            sagaCompletedForThisRequest = true;
+            elementOfRequests = element;
+            break;
+
           } else if (element[`${this.requestType}ID`] && notification[`${this.requestType}ID`] && element[`${this.requestType}ID`] === notification[`${this.requestType}ID`] && notification.sagaStatus === 'INITIATED') {
             element.sagaInProgress = true;
+            break;
           }
+        }
+        if(sagaCompletedForThisRequest && elementOfRequests){
+          ApiService.apiAxios
+            .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + elementOfRequests[`${this.requestType}ID`])
+            .then(response => {
+              elementOfRequests[`${this.requestType}StatusCode`].label = response.data[`${this.requestType}StatusCodeLabel`];
+              elementOfRequests[`${this.penName}`] = response.data[`${this.penName}`];
+              elementOfRequests.legalLastName = response.data.legalLastName;
+              elementOfRequests.legalFirstName = response.data.legalFirstName;
+              elementOfRequests.reviewer = response.data.reviewer;
+            })
+            .catch(error => {
+              console.log(error);
+            })
+            .finally(() => {
+              elementOfRequests.sagaInProgress = false;
+            });
+
         }
       }
       return outcome;
