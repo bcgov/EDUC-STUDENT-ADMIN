@@ -1,5 +1,3 @@
-import ApiService from '../../common/apiService';
-
 export default {
   namespaced: true,
   state: {
