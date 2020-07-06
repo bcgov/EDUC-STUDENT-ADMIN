@@ -19,8 +19,8 @@
           </v-card>
         </v-row>
         <v-row>
-          <v-col cols="2" class="py-0 px-3 pl-0">
-            <v-card class="px-2 py-2" color="#D7D7D7" width="100%" elevation=0>
+          <v-col cols="3" class="pr-15 pl-0">
+            <v-card class="px-3 py-2" color="#D7D7D7" width="100%" elevation=0>
               <v-row cols="1" no-gutters>
                 <v-col>
                   <p class="mb-0 mt-1">PEN</p>
@@ -32,7 +32,7 @@
                     id='pen'
                     class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
                     color="#000000"
-                    v-model="selectedStudent.pen"
+                    v-model="studentCopy.pen"
                     readonly
                     dense
                     tabindex="-1"
@@ -45,25 +45,35 @@
                 </v-col>
               </v-row>
               <v-row cols="1" no-gutters>
-                <v-col class="sideCardField">
-                  <v-combobox
+                <v-col v-on:mouseover="hovering = true" class="sideCardField" v-on:mouseout="editing ? hovering = true : hovering = false">
+                  <v-select
                     id='demogCode'
                     tabindex="11"
                     v-on:keyup.tab="editing = true; hovering = true"
-                    v-on:mouseover="hovering = true"
-                    v-on:mouseout="editing ? hovering = true : hovering = false"
-                    v-on:blur="editing = false; hovering = false;"
-                    v-on:click="editing = true; hovering = true"
+                    v-on:change="editing = false; hovering = false;"
                     class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
-                    :class="{darkBackgound: hovering}"
+                    :class="{darkBackgound: hovering || hasEdits('demogCode')}"
                     color="#000000"
-                    value="Accepted"
+                    v-model="studentCopy.demogCode"
                     :items="demogLabels"
-                    :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('demogCode')"
                     dense
                     type="solo"
-                  ></v-combobox>
+                  ></v-select>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col class="py-0" style="margin-top: -0.5em;">
+                  <v-text-field
+                    id='revertDemog'
+                    v-on:click="revertField('demogCode')"
+                    class="my-0 onhoverEdit revert customNoBorder ml-3"
+                    readonly
+                    v-if="hasEdits('demogCode')"
+                    value="Revert"
+                    dense
+                    tabindex="-1"
+                  ></v-text-field>
                 </v-col>
               </v-row>
               <v-row cols="1" no-gutters>
@@ -144,33 +154,43 @@
                 </v-col>
               </v-row>
               <v-row cols="1" no-gutters>
-                <v-col class="sideCardField">
-                  <v-combobox
+                <v-col v-on:mouseover="hovering = true" class="sideCardField" v-on:mouseout="editing ? hovering = true : hovering = false">
+                  <v-select
                     id='statusCode'
-                    tabindex="12"
+                    tabindex="11"
                     v-on:keyup.tab="editing = true; hovering = true"
-                    v-on:mouseover="hovering = true"
-                    v-on:mouseout="editing ? hovering = true : hovering = false"
-                    v-on:blur="editing = false; hovering = false;"
-                    v-on:click="editing = true; hovering = true"
+                    v-on:change="editing = false; hovering = false; openDeceasedDialog()"
                     class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
-                    :class="{darkBackgound: hovering}"
+                    :class="{darkBackgound: hovering || hasEdits('statusCode')}"
                     color="#000000"
-                    value="Active"
+                    v-model="studentCopy.statusCode"
                     :items="statusLabels"
-                    :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('statusCode')"
                     dense
                     type="solo"
-                  ></v-combobox>
+                  ></v-select>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col class="py-0" style="margin-top: -0.5em;">
+                  <v-text-field
+                    id='revertStatus'
+                    v-on:click="revertField('statusCode')"
+                    class="my-0 onhoverEdit revert customNoBorder ml-3"
+                    readonly
+                    v-if="hasEdits('statusCode')"
+                    value="Revert"
+                    dense
+                    tabindex="-1"
+                  ></v-text-field>
                 </v-col>
               </v-row>
             </v-card>
           </v-col>
-          <v-col cols="8" class="py-0 pl-0">
-            <v-card class="px-2 py-2" height="100%" width="100%" elevation=0>
+          <v-col cols="9" class="py-0 pl-0">
+            <v-card class="px-0 py-2" height="100%" width="100%" elevation=0>
               <v-row no-gutters class="py-1">
-                <v-col cols="3">
+                <v-col cols="2">
                   <p class="labelField mb-0">Legal Surname</p>
                 </v-col>
                 <v-col class="textFieldColumn">
@@ -181,19 +201,31 @@
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
-                    v-model="selectedStudent.legalLastName"
+                    v-model="studentCopy.legalLastName"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
+                    :class="{onhoverPad: !hovering && !hasEdits('legalLastName'), darkBackgound: hovering || hasEdits('legalLastName')}"
                     id='legalSurname'
                     color="#000000"
                     dense
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('legalLastName')"
+                  ></v-text-field>
+                </v-col>
+                <v-col class="textFieldColumn" cols="2">
+                  <v-text-field
+                    id='revertLastName'
+                    v-on:click="revertField('legalLastName')"
+                    class="onhoverEdit revert customNoBorder ml-3"
+                    readonly
+                    v-if="hasEdits('legalLastName')"
+                    value="Revert"
+                    dense
+                    tabindex="-1"
                   ></v-text-field>
                 </v-col>
               </v-row>
               <v-row no-gutters class="py-1">
-                <v-col cols="3">
+                <v-col cols="2">
                   <p class="labelField">Legal Given</p>
                 </v-col>
                 <v-col class="textFieldColumn">
@@ -205,18 +237,30 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
-                    v-model="selectedStudent.legalFirstName"
+                    :class="{onhoverPad: !hovering && !hasEdits('legalFirstName'), darkBackgound: hovering || hasEdits('legalFirstName')}"
+                    v-model="studentCopy.legalFirstName"
                     id='legal'
                     color="#000000"
                     dense
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('legalFirstName')"
+                  ></v-text-field>
+                </v-col>
+                <v-col class="textFieldColumn" cols="2">
+                  <v-text-field
+                    id='revertFirstName'
+                    v-on:click="revertField('legalFirstName')"
+                    class="onhoverEdit revert customNoBorder ml-3"
+                    readonly
+                    v-if="hasEdits('legalFirstName')"
+                    value="Revert"
+                    dense
+                    tabindex="-1"
                   ></v-text-field>
                 </v-col>
               </v-row>
               <v-row no-gutters class="py-1">
-                <v-col cols="3">
+                <v-col cols="2">
                   <p class="labelField">Legal Middle</p>
                 </v-col>
                 <v-col class="textFieldColumn">
@@ -228,18 +272,30 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
-                    v-model="selectedStudent.legalMiddleNames"
+                    :class="{onhoverPad: !hovering && !hasEdits('legalMiddleNames'), darkBackgound: hovering || hasEdits('legalMiddleNames')}"
+                    v-model="studentCopy.legalMiddleNames"
                     id='legalMiddleName'
                     color="#000000"
                     dense
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('legalMiddleNames')"
+                  ></v-text-field>
+                </v-col>
+                <v-col class="textFieldColumn" cols="2">
+                  <v-text-field
+                    id='revertLegalMiddleNames'
+                    v-on:click="revertField('legalMiddleNames')"
+                    class="onhoverEdit revert customNoBorder ml-3"
+                    readonly
+                    v-if="hasEdits('legalMiddleNames')"
+                    value="Revert"
+                    dense
+                    tabindex="-1"
                   ></v-text-field>
                 </v-col>
               </v-row>
               <v-row no-gutters class="py-1">
-                <v-col cols="3">
+                <v-col cols="2">
                   <p class="labelField">Usual Surname</p>
                 </v-col>
                 <v-col class="textFieldColumn">
@@ -251,18 +307,30 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    v-model="selectedStudent.usualLastName"
-                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
+                    v-model="studentCopy.usualLastName"
+                    :class="{onhoverPad: !hovering && !hasEdits('usualLastName'), darkBackgound: hovering || hasEdits('usualLastName')}"
                     id='usualSurname'
                     color="#000000"
                     dense
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('usualLastName')"
+                  ></v-text-field>
+                </v-col>
+                <v-col class="textFieldColumn" cols="2">
+                  <v-text-field
+                    id='revertUsualName'
+                    v-on:click="revertField('usualLastName')"
+                    class="onhoverEdit revert customNoBorder ml-3"
+                    readonly
+                    v-if="hasEdits('usualLastName')"
+                    value="Revert"
+                    dense
+                    tabindex="-1"
                   ></v-text-field>
                 </v-col>
               </v-row>
               <v-row no-gutters class="py-1">
-                <v-col cols="3">
+                <v-col cols="2">
                   <p class="labelField">Usual Given</p>
                 </v-col>
                 <v-col class="textFieldColumn">
@@ -274,18 +342,30 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
-                    v-model="selectedStudent.usualFirstName"
-                    id=''
+                    :class="{onhoverPad: !hovering && !hasEdits('usualFirstName'), darkBackgound: hovering || hasEdits('usualFirstName')}"
+                    v-model="studentCopy.usualFirstName"
+                    id='usualFirstName'
                     color="#000000"
                     dense
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('usualFirstName')"
+                  ></v-text-field>
+                </v-col>
+                <v-col class="textFieldColumn" cols="2">
+                  <v-text-field
+                    id='revertUsualFirstName'
+                    v-on:click="revertField('usualFirstName')"
+                    class="onhoverEdit revert customNoBorder ml-3"
+                    readonly
+                    v-if="hasEdits('usualFirstName')"
+                    value="Revert"
+                    dense
+                    tabindex="-1"
                   ></v-text-field>
                 </v-col>
               </v-row>
               <v-row no-gutters class="py-1">
-                <v-col cols="3">
+                <v-col cols="2">
                   <p class="labelField">Usual Middle</p>
                 </v-col>
                 <v-col class="textFieldColumn">
@@ -296,43 +376,66 @@
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
-                    v-model="selectedStudent.usualMiddleNames"
+                    v-model="studentCopy.usualMiddleNames"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
-                    id=''
+                    :class="{onhoverPad: !hovering && !hasEdits('usualMiddleNames'), darkBackgound: hovering || hasEdits('usualMiddleNames')}"
+                    id='usualMiddleNames'
                     color="#000000"
                     dense
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('usualMiddleNames')"
+                  ></v-text-field>
+                </v-col>
+                <v-col class="textFieldColumn" cols="2">
+                  <v-text-field
+                    id='revertUsualMiddleNames'
+                    v-on:click="revertField('usualMiddleNames')"
+                    class="onhoverEdit revert customNoBorder ml-3"
+                    readonly
+                    v-if="hasEdits('usualMiddleNames')"
+                    value="Revert"
+                    dense
+                    tabindex="-1"
                   ></v-text-field>
                 </v-col>
               </v-row>
               <v-row no-gutters class="py-1">
-                <v-col cols="3">
+                <v-col cols="2">
                   <p class="labelField">Gender</p>
                 </v-col>
-                <v-col cols="2" class="textFieldColumn">
-                  <v-combobox
-                    tabindex="7"
+                <v-col cols="1" class="textFieldColumn">
+                  <v-text-field
+                    tabindex="6"
                     v-on:keyup.tab="editing = true; hovering = true"
                     v-on:mouseover="hovering = true"
                     v-on:mouseout="editing ? hovering = true : hovering = false"
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
+                    v-model="studentCopy.genderCode"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
-                    v-model="selectedStudent.genderCode"
-                    :items="genderCodes"
-                    id='gender'
+                    :class="{onhoverPad: !hovering && !hasEdits('genderCode'), darkBackgound: hovering || hasEdits('genderCode')}"
+                    id='genderCode'
                     color="#000000"
                     dense
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
-                  ></v-combobox>
+                    :outlined="hovering || editing || hasEdits('genderCode')"
+                  ></v-text-field>
+                </v-col>
+                <v-col class="textFieldColumn" cols="2">
+                  <v-text-field
+                    id='revertGender'
+                    v-on:click="revertField('genderCode')"
+                    class="onhoverEdit revert customNoBorder ml-3"
+                    readonly
+                    v-if="hasEdits('genderCode')"
+                    value="Revert"
+                    dense
+                    tabindex="-1"
+                  ></v-text-field>
                 </v-col>
               </v-row>
               <v-row no-gutters class="py-1">
-                <v-col cols="3">
+                <v-col cols="2">
                   <div class="labelField">
                     <div style="display: inline-block;vertical-align: middle;">
                       Date of Birth
@@ -354,20 +457,20 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
-                    v-model="selectedStudent.dob"
+                    :class="{onhoverPad: !hovering && !hasEdits('dob'), darkBackgound: hovering || hasEdits('dob')}"
+                    v-model="studentCopy.dob"
                     id='dob'
                     color="#000000"
                     dense
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('dob')"
                   ></v-text-field>
                 </v-col>
-                <v-col cols="3" class="textFieldColumn">
+                <v-col cols="2" class="textFieldColumn">
                   <v-text-field
                     class="onhoverEdit bolder customNoBorder onhoverPad"
                     v-model="longDOB"
-                    v-if="hovering"
+                    v-if="hovering || hasEdits('dob')"
                     id='dobFull'
                     color="#000000"
                     dense
@@ -375,15 +478,28 @@
                     tabindex="-1"
                   ></v-text-field>
                 </v-col>
+                <v-col class="textFieldColumn" cols="2">
+                  <v-text-field
+                    id='revertDOB'
+                    v-on:click="revertField('dob')"
+                    class="onhoverEdit revert customNoBorder ml-3"
+                    readonly
+                    v-show="hasEdits('dob')"
+                    value="Revert"
+                    style="padding-top: 2px;"
+                    dense
+                    tabindex="-1"
+                  ></v-text-field>
+                </v-col>
               </v-row>
               <v-row no-gutters class="py-1">
-                <v-col cols="3">
+                <v-col cols="2">
                   <p class="labelField">Grade</p>
                 </v-col>
                 <v-col cols="1" class="textFieldColumn">
                   <v-text-field
                     class="onhoverEdit bolder customNoBorder onhoverPad"
-                    v-model="selectedStudent.gradeCode"
+                    v-model="studentCopy.gradeCode"
                     id='grade'
                     color="#000000"
                     dense
@@ -393,13 +509,13 @@
                 </v-col>
               </v-row>
               <v-row no-gutters class="py-1">
-                <v-col cols="3">
-                  <p class="labelField">Grade School Year</p>
-                </v-col>
-                <v-col cols="1" class="textFieldColumn">
-                  <v-text-field
+              <v-col cols="2">
+                <p class="labelField">Grade School Year</p>
+              </v-col>
+              <v-col cols="1" class="textFieldColumn">
+                 <v-text-field
                     class="onhoverEdit bolder customNoBorder onhoverPad"
-                    v-model="selectedStudent.gradeYear"
+                    v-model="studentCopy.gradeYear"
                     id='gradeYear'
                     color="#000000"
                     dense
@@ -409,14 +525,14 @@
                 </v-col>
               </v-row>
               <v-row no-gutters class="py-1">
-                <v-col cols="3">
+                <v-col cols="2">
                   <p class="labelField">Postal Code</p>
                 </v-col>
                 <v-col class="textFieldColumn">
                   <v-text-field
                     class="onhoverEdit bolder customNoBorder onhoverPad"
                     id='postalCode'
-                    v-model="selectedStudent.postalCode"
+                    v-model="studentCopy.postalCode"
                     color="#000000"
                     dense
                     readonly
@@ -425,7 +541,7 @@
                 </v-col>
               </v-row>
               <v-row no-gutters class="py-1">
-                <v-col cols="3">
+                <v-col cols="2">
                   <p class="labelField">School</p>
                 </v-col>
                 <v-col cols="2" class="textFieldColumn">
@@ -437,18 +553,30 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
-                    v-model="selectedStudent.mincode"
+                    :class="{onhoverPad: !hovering && !hasEdits('mincode'), darkBackgound: hovering || hasEdits('mincode')}"
+                    v-model="studentCopy.mincode"
                     id='school'
                     color="#000000"
                     dense
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('mincode')"
+                  ></v-text-field>
+                </v-col>
+                <v-col class="textFieldColumn" cols="2">
+                  <v-text-field
+                    id='revertSchool'
+                    v-on:click="revertField('mincode')"
+                    class="onhoverEdit revert customNoBorder ml-3"
+                    readonly
+                    v-if="hasEdits('mincode')"
+                    value="Revert"
+                    dense
+                    tabindex="-1"
                   ></v-text-field>
                 </v-col>
               </v-row>
               <v-row no-gutters class="py-1">
-                <v-col cols="3">
+                <v-col cols="2">
                   <p class="labelField">Local ID</p>
                 </v-col>
                 <v-col class="textFieldColumn">
@@ -456,7 +584,7 @@
                     class="onhoverEdit bolder customNoBorder onhoverPad"
                     id='localID'
                     color="#000000"
-                    v-model="selectedStudent.localID"
+                    v-model="studentCopy.localID"
                     dense
                     readonly
                     tabindex="-1"
@@ -464,7 +592,7 @@
                 </v-col>
               </v-row>
               <v-row no-gutters class="py-1">
-                <v-col cols="3">
+                <v-col cols="2">
                   <p class="labelField">Twin(s)?</p>
                 </v-col>
                 <v-col class="textFieldColumn">
@@ -480,7 +608,7 @@
                 </v-col>
               </v-row>
               <v-row no-gutters class="py-1">
-                <v-col cols="3">
+                <v-col cols="2">
                   <p class="labelField">Merged To</p>
                 </v-col>
                 <v-col class="textFieldColumn">
@@ -496,7 +624,7 @@
                 </v-col>
               </v-row>
               <v-row no-gutters class="py-1">
-                <v-col cols="3">
+                <v-col cols="2">
                   <p class="labelField">Merged From</p>
                 </v-col>
                 <v-col class="textFieldColumn">
@@ -512,7 +640,7 @@
                 </v-col>
               </v-row>
               <v-row no-gutters class="py-1">
-                <v-col cols="3">
+                <v-col cols="2">
                   <p class="labelField">Memo</p>
                 </v-col>
                 <v-col class="textAreaColumn">
@@ -524,15 +652,51 @@
                     v-on:blur="editing = false; hovering = false;"
                     v-on:click="editing = true; hovering = true"
                     class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hovering, darkBackgound: hovering}"
-                    v-model="selectedStudent.memo"
+                    :class="{onhoverPad: !hovering && !hasEdits('memo'), darkBackgound: hovering || hasEdits('memo')}"
+                    v-model="studentCopy.memo"
                     id='memo'
                     color="#000000"
                     dense
                     no-resize
                     :readonly="!hovering || !editing"
-                    :outlined="hovering || editing"
+                    :outlined="hovering || editing || hasEdits('memo')"
                   ></v-textarea>
+                </v-col>
+                <v-col class="textFieldColumn" cols="2">
+                  <v-text-field
+                    id='revertMemo'
+                    v-on:click="revertField('memo')"
+                    class="onhoverEdit revert customNoBorder ml-3"
+                    readonly
+                    v-if="hasEdits('memo')"
+                    value="Revert"
+                    dense
+                    tabindex="-1"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="10">
+                  <v-card-actions style="float: right;">
+                    <v-btn 
+                      outlined
+                      color="#38598a"
+                      class="mx-1"
+                      :disabled="!hasAnyEdits()"
+                      @click="backToSearch()"
+                    >
+                      Cancel
+                    </v-btn>
+
+                    <v-btn 
+                      color="#003366"
+                      class="white--text"
+                      :disabled="!hasAnyEdits()"
+                      @click="saveStudent()"
+                      >
+                      Save
+                    </v-btn>
+                  </v-card-actions>
                 </v-col>
               </v-row>
             </v-card>
@@ -540,11 +704,44 @@
         </v-row>
       </v-col>
     </v-container>
+   <v-dialog
+    v-model="deceasedDialog"
+    width="400px"
+   >
+      <v-card>
+        <v-card-text class="px-5 py-5">
+          Change Student Status to Deceased?
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn 
+            outlined
+            color="#38598a"
+            class="mx-2"
+            @click="cancelDeceasedDialog"
+          >
+            Cancel
+          </v-btn>
+
+          <v-btn 
+            color="#003366"
+            class="white--text"
+            @click="confirmDeceasedDialog"
+            >
+            Confirm
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+  </v-dialog> 
   </v-main>
 </template>
+
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 import moment from 'moment';
+import ApiService from '../../../common/apiService';
+import { Routes } from '../../../utils/constants';
 
 export default {
   name: 'studentDetail',
@@ -552,8 +749,7 @@ export default {
     return {
       hovering: false,
       editing: false,
-      demogEditing: false,
-      statusEditing: false,
+      deceasedDialog: false,
       genderCodes: [],
       demogLabels: [],
       statusLabels: [],
@@ -561,30 +757,8 @@ export default {
       createdDateTime: null,
       updatedDateTime: null,
       longDOB: null,
-      student: {
-        studentID: null,
-        pen: null,
-        legalFirstName: null,
-        legalMiddleNames: null,
-        legalLastName: null,
-        dob: null,
-        sexCode: null,
-        genderCode: null,
-        usualFirstName: null,
-        usualMiddleNames: null,
-        usualLastName: null,
-        email: null,
-        emailVerified: null,
-        deceasedDate: null,
-        postalCode: null,
-        mincode: null,
-        localID: null,
-        grade: null,
-        gradeYear: null,
-        demogCode: null,
-        statusCode: null,
-        memo: null
-      }
+      origStudent: null,
+      studentCopy: null 
     }
   },
   created(){
@@ -592,22 +766,61 @@ export default {
     this.demogLabels = this.demogCodeObjects ? this.demogCodeObjects.map(a => a.label):[];
     this.statusLabels = this.statusCodeObjects ? this.statusCodeObjects.map(a => a.label):[];
     this.gradeLabels = this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.label):[];
+
+    // if(this.selectedStudent){
+    //   if(this.selectedStudent.demogCode){
+    //     this.selectedStudent.demogCode = this.demogCodeObjects.filter(it => (it.demogCode === this.selectedStudent.demogCode))[0].label;
+    //   }
+    //   if(this.selectedStudent.statusCode){
+    //     this.selectedStudent.statusCode = this.statusCodeObjects.filter(it => (it.statusCode === this.selectedStudent.statusCode))[0].label;
+    //   }
+      // this.studentCopy = JSON.parse(JSON.stringify(this.selectedStudent));
+    //}
   },
  computed: {
     ...mapGetters('student', ['selectedStudent', 'genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects'])
   },
   mounted() {
-    this.createdDateTime = this.frontEndDateTimeFormat(this.selectedStudent.createDate);
-    this.updatedDateTime = this.frontEndDateTimeFormat(this.selectedStudent.updateDate);
-    this.longDOB = this.frontEndDOBFormat(this.selectedStudent.dob);
+    this.refreshStudent();
+    this.createdDateTime = this.frontEndDateTimeFormat(this.origStudent.createDate);
+    this.updatedDateTime = this.frontEndDateTimeFormat(this.origStudent.updateDate);
+    this.longDOB = this.frontEndDOBFormat(this.origStudent.dob);
   },
   methods: {
     ...mapMutations('student', ['setSelectedStudent']),
     frontEndDateTimeFormat(date){
-      return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
+      return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD HH:mm:ss a');
     },
-    testMarco(){
-      alert('HELLO');
+    refreshStudent(){
+      ApiService.apiAxios
+      .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.selectedStudent.studentID)
+      .then(response => {
+        this.origStudent = response.data;
+        this.studentCopy = JSON.parse(JSON.stringify(this.origStudent));
+      })
+      .catch(error => {
+        console.log(error);
+      })
+      .finally(() => {
+
+      });
+    },
+    hasEdits(value){
+      if(JSON.stringify(this.studentCopy[value]) === JSON.stringify(this.origStudent[value])){
+        return false;
+      }
+
+      return true;
+    },
+    hasAnyEdits(){
+      if(JSON.stringify(this.studentCopy) === JSON.stringify(this.origStudent)){
+        return false;
+      }
+
+      return true;
+    },
+    revertField(value){
+      this.studentCopy[value] = JSON.parse(JSON.stringify(this.origStudent[value]));
     },
     frontEndDOBFormat(date){
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('MMMM DD, YYYY');
@@ -615,19 +828,41 @@ export default {
     backToSearch() {
       this.setSelectedStudent(null);
     },
-    prepPut(requestId, request) {
+    confirmDeceasedDialog() {
+      this.deceasedDialog = false;
+      this.studentCopy.statusCode = 'Deceased';
+    },
+    cancelDeceasedDialog() {
+      this.deceasedDialog = false;
+      this.studentCopy.statusCode = 'Active';
+    },
+    openDeceasedDialog() {
+      if(this.studentCopy.statusCode === 'Deceased'){
+        this.deceasedDialog = true;
+      }
+    },
+    saveStudent() {
+      //if(this.$refs.studentSearchForm.validate()) {
+        
+        ApiService.apiAxios
+          .post(Routes['student'].ROOT_ENDPOINT,this.prepPut(this.studentCopy))
+          .then(response => {
+            this.origStudent = response.data;
+            this.studentCopy = JSON.parse(JSON.stringify(this.origStudent));
+          })
+          .catch(error => {
+            console.log(error);
+          })
+          .finally(() => {
+           
+          });
+      //}
+    },
+    prepPut(student) {
       return {
-        // 'penRequestID': requestId,
-        // 'pen': request.pen,
-        // 'penRequestStatusCode': request.penRequestStatusCode,
-        // 'reviewer': request.reviewer,
-        // 'failureReason': request.failureReason,
-        // 'completeComment': request.completeComment,
-        // 'demogChanged': request.demogChanged,
-        // 'bcscAutoMatchOutcome': request.bcscAutoMatchOutcome,
-        // 'bcscAutoMatchDetails': request.bcscAutoMatchDetails
+        student: student
       };
-    }
+    },    
   }
 };
 </script>
@@ -645,6 +880,10 @@ export default {
      border-style: none;
   }
   .onhoverPad {
+     padding-left: 12px !important;
+     padding-top: 2px !important;
+  }
+  .onEditPad {
      padding-left: 12px !important;
      padding-top: 2px !important;
   }
@@ -671,6 +910,11 @@ export default {
   .customNoBorder.v-text-field>.v-input__control>.v-input__slot {
      padding-top: 0px !important;
      padding-bottom: 0px !important;
+  }
+  .revert.v-text-field>.v-input__control>.v-input__slot>.v-text-field__slot>input {   
+    color: #1a5a96 !important;
+    font-weight: bolder; 
+    cursor: pointer;
   }
   .bolder {   
     color: #000000 !important;

@@ -78,8 +78,7 @@ export default {
   },
   async getGenderCodes() {
     try {
-      const response = await apiAxios.get(Routes.student.GENDER_CODE_URL);
-      return response;
+      return await apiAxios.get(Routes.student.GENDER_CODE_URL);
     } catch (e) {
       console.log(`Failed to get from Nodejs API - ${e}`);
       throw e;
@@ -87,8 +86,7 @@ export default {
   },
   async getDemogCodes() {
     try {
-      const response = await apiAxios.get(Routes.student.DEMOG_CODE_URL);
-      return response;
+      return await apiAxios.get(Routes.student.DEMOG_CODE_URL);
     } catch (e) {
       console.log(`Failed to get from Nodejs API - ${e}`);
       throw e;
@@ -96,8 +94,7 @@ export default {
   },
   async getStatusCodes() {
     try {
-      const response = await apiAxios.get(Routes.student.STATUS_CODE_URL);
-      return response;
+      return await apiAxios.get(Routes.student.STATUS_CODE_URL);
     } catch (e) {
       console.log(`Failed to get from Nodejs API - ${e}`);
       throw e;
@@ -105,8 +102,7 @@ export default {
   },
   async getGradeCodes() {
     try {
-      const response = await apiAxios.get(Routes.student.GRADE_CODE_URL);
-      return response;
+      return await apiAxios.get(Routes.student.GRADE_CODE_URL);
     } catch (e) {
       console.log(`Failed to get from Nodejs API - ${e}`);
       throw e;
