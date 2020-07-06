@@ -675,6 +675,30 @@
                   ></v-text-field>
                 </v-col>
               </v-row>
+              <v-row>
+                <v-col cols="10">
+                  <v-card-actions style="float: right;">
+                    <v-btn 
+                      outlined
+                      color="#38598a"
+                      class="mx-1"
+                      :disabled="!hasAnyEdits()"
+                      @click="cancelDeceasedDialog"
+                    >
+                      Cancel
+                    </v-btn>
+
+                    <v-btn 
+                      color="#003366"
+                      class="white--text"
+                      :disabled="!hasAnyEdits()"
+                      @click="confirmDeceasedDialog"
+                      >
+                      Save
+                    </v-btn>
+                  </v-card-actions>
+                </v-col>
+              </v-row>
             </v-card>
           </v-col>
         </v-row>
@@ -743,8 +767,12 @@ export default {
     this.gradeLabels = this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.label):[];
 
     if(this.selectedStudent){
-      this.selectedStudent.demogCode = this.demogCodeObjects.filter(it => (it.demogCode === this.selectedStudent.demogCode))[0].label;
-      this.selectedStudent.statusCode = this.statusCodeObjects.filter(it => (it.statusCode === this.selectedStudent.statusCode))[0].label;
+      if(this.selectedStudent.demogCode){
+        this.selectedStudent.demogCode = this.demogCodeObjects.filter(it => (it.demogCode === this.selectedStudent.demogCode))[0].label;
+      }
+      if(this.selectedStudent.statusCode){
+        this.selectedStudent.statusCode = this.statusCodeObjects.filter(it => (it.statusCode === this.selectedStudent.statusCode))[0].label;
+      }
       this.studentCopy = JSON.parse(JSON.stringify(this.selectedStudent));
     }
   },
@@ -763,6 +791,13 @@ export default {
     },
     hasEdits(value){
       if(JSON.stringify(this.studentCopy[value]) === JSON.stringify(this.selectedStudent[value])){
+        return false;
+      }
+
+      return true;
+    },
+    hasAnyEdits(){
+      if(JSON.stringify(this.studentCopy) === JSON.stringify(this.selectedStudent)){
         return false;
       }
 
