@@ -2,7 +2,7 @@
 const config = require('../config/index');
 const log = require('../components/logger');
 const {uuid} = require('uuidv4');
-const PenRequestSagaMessageHandler = require('./hanlders/gmp/pen-request-saga-message-handler');
+const PenRequestSagaMessageHandler = require('./handlers/gmp/pen-request-saga-message-handler');
 let connection={};
 const clientID = `student-admin-node-subscriber-${uuid()}`;
 const clusterID = config.get('messaging:natsCluster');
