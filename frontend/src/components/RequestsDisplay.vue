@@ -369,12 +369,15 @@ export default {
         let sagaCompletedForThisRequest = false;
         let elementOfRequests;
         for (const element of this.requests) {
-          if (element[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] && element[`${this.requestType}ID`] === notificationData[`${this.requestType}ID`] && notificationData.sagaStatus === 'COMPLETED') {
+          if (element[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`]
+            && element[`${this.requestType}ID`] === notificationData[`${this.requestType}ID`]
+            && ('COMPLETED' === notificationData.sagaStatus || 'FORCE_STOPPED' === notificationData.sagaStatus)) {
             sagaCompletedForThisRequest = true;
             elementOfRequests = element;
             break;
-
-          } else if (element[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] && element[`${this.requestType}ID`] === notificationData[`${this.requestType}ID`] && notificationData.sagaStatus === 'INITIATED') {
+          } else if (element[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`]
+            && element[`${this.requestType}ID`] === notificationData[`${this.requestType}ID`]
+            && notificationData.sagaStatus === 'INITIATED') {
             element.sagaInProgress = true;
             break;
           }
