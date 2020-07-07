@@ -847,6 +847,16 @@ export default {
         this.studentCopy.genderCode = this.studentCopy.genderCode.toUpperCase();
       }
     },
+    getDateFormatterShort(){
+        return (new JSJoda.DateTimeFormatterBuilder)
+            .appendPattern('uuuuMMdd')
+            .toFormatter(JSJoda.ResolverStyle.STRICT);
+    },
+    getDateFormatterLong(){
+        return (new JSJoda.DateTimeFormatterBuilder)
+            .appendPattern('uuuu-MM-dd')
+            .toFormatter(JSJoda.ResolverStyle.STRICT);
+    },
     validateDOB(){
       if(this.studentCopy) {
         if(!this.studentCopy.dob){
@@ -854,12 +864,8 @@ export default {
           return [];
         }
         else {
-          const formatterShort = (new JSJoda.DateTimeFormatterBuilder)
-            .appendPattern('uuuuMMdd')
-            .toFormatter(JSJoda.ResolverStyle.STRICT);
-          const formatterLong = (new JSJoda.DateTimeFormatterBuilder)
-            .appendPattern('uuuu-MM-dd')
-            .toFormatter(JSJoda.ResolverStyle.STRICT);
+          const formatterShort = this.getDateFormatterShort();
+          const formatterLong = this.getDateFormatterLong();
 
           let isBeforeLongDate = false;
           let isBeforeShortDate = false;
@@ -986,12 +992,8 @@ export default {
     },
     shortDOBStyle(){
       if(this.studentCopy.dob){
-        const formatterShort = (new JSJoda.DateTimeFormatterBuilder)
-            .appendPattern('uuuuMMdd')
-            .toFormatter(JSJoda.ResolverStyle.STRICT);
-        const formatterLong = (new JSJoda.DateTimeFormatterBuilder)
-            .appendPattern('uuuu-MM-dd')
-            .toFormatter(JSJoda.ResolverStyle.STRICT);
+          const formatterShort = this.getDateFormatterShort();
+          const formatterLong = this.getDateFormatterLong();
         try {
           const dateLong = JSJoda.LocalDate.parse(this.studentCopy.dob, formatterLong);
           const shortDate = dateLong.format(formatterShort);
@@ -1009,12 +1011,8 @@ export default {
     },
     longDOBStyle(){
       if(this.studentCopy.dob){
-        const formatterShort = (new JSJoda.DateTimeFormatterBuilder)
-            .appendPattern('uuuuMMdd')
-            .toFormatter(JSJoda.ResolverStyle.STRICT);
-        const formatterLong = (new JSJoda.DateTimeFormatterBuilder)
-            .appendPattern('uuuu-MM-dd')
-            .toFormatter(JSJoda.ResolverStyle.STRICT);
+          const formatterShort = this.getDateFormatterShort();
+          const formatterLong = this.getDateFormatterLong();
         try {
           const dateShort = JSJoda.LocalDate.parse(this.studentCopy.dob, formatterShort);
           const longDate = dateShort.format(formatterLong);
@@ -1033,12 +1031,8 @@ export default {
           return false;
         }
 
-        const formatterShort = (new JSJoda.DateTimeFormatterBuilder)
-            .appendPattern('uuuuMMdd')
-            .toFormatter(JSJoda.ResolverStyle.STRICT);
-        const formatterLong = (new JSJoda.DateTimeFormatterBuilder)
-            .appendPattern('uuuu-MM-dd')
-            .toFormatter(JSJoda.ResolverStyle.STRICT);
+          const formatterShort = this.getDateFormatterShort();
+          const formatterLong = this.getDateFormatterLong();
         try {
           const dateLong = JSJoda.LocalDate.parse(this.origStudent.dob, formatterLong);
           const dateShort = JSJoda.LocalDate.parse(this.studentCopy.dob, formatterShort);
