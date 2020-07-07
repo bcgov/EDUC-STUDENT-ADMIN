@@ -3,8 +3,8 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../components/auth');
 const utils = require('../components/utils');
-const {findPenRequestsByPen, createPenRequestApiServiceReq, returnPenRequest, unlinkRequest} = require('../components/penRequests');
-const {completeRequest, getAllRequests, getMacros, getRequestById, getRequestCommentById, putRequest, rejectRequest} = require('../components/requests');
+const {findPenRequestsByPen, createPenRequestApiServiceReq, returnPenRequest, unlinkRequest, rejectPenRequest} = require('../components/penRequests');
+const {completeRequest, getAllRequests, getMacros, getRequestById, getRequestCommentById, putRequest} = require('../components/requests');
 
 const {getDocuments, getDocumentById, updateDocumentTypeById} = require('../components/documents');
 
@@ -39,7 +39,7 @@ router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), au
 
 router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, verifyPenRequestInSession, updatePenReqStatusCodeForComplete, completeRequest(requestType, createPenRequestApiServiceReq));
 
-router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, verifyPenRequestInSession, rejectRequest(requestType, createPenRequestApiServiceReq));
+router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, verifyPenRequestInSession, rejectPenRequest);
 
 router.post('/:id/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, verifyPenRequestInSession, returnPenRequest);/*returnPenRequest*/
 
