@@ -18,7 +18,7 @@
                   color="#003366"
                   label="PEN"
                   maxlength="9"
-                  minglength="9"
+                  minlength="9"
                   @keyup.enter="enterPushed()"
                   v-on:input="[searchHasValues(),runPENSearchIfPossible()]"
                   tabindex="1"
@@ -363,7 +363,7 @@ export default {
           return [];
         }
         else {
-          if(this.studentSearchParams.mincode.match('^[1-9]\\d*$') && this.studentSearchParams.mincode.length === 8){
+          if(this.studentSearchParams.mincode.match('^[0-9]\\d*$') && this.studentSearchParams.mincode.length === 8){
             return [];
           }
         }
