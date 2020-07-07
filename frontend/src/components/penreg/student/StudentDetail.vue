@@ -954,7 +954,6 @@ export default {
         this.isLoading = false;
       })
       .finally(() => {
-        new Promise(resolve => setTimeout(resolve, 5000));
         this.isLoading = false;
       });
     },
