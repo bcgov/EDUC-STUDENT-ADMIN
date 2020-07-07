@@ -221,7 +221,7 @@ export default {
             .post(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId + '/return', body)
             .then(() => {
               this.returnOperationSuccessful = true;
-              this.returnMessage = 'Your request to return for more info is accepted.'
+              this.returnMessage = 'Your request to return for more info is accepted.';
               this.$refs.returnForm.resetValidation();
             })
             .catch(error => {
