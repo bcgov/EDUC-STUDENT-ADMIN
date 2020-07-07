@@ -3,7 +3,7 @@
     <v-form ref="studentDetailForm" id="detailStudentForm"
             v-model="validForm"
           >
-      <v-container class="fill-height">
+      <v-container class="fill-height" v-if="!isLoading">
         <v-col cols="15" class="fill-height pb-5">
           <v-row class="flex-grow-0 pb-5">
             <v-card style="background-color:#d7d7d7;" height="100%" width="100%" elevation=0>
@@ -738,6 +738,18 @@
           </v-row>
         </v-col>
       </v-container>
+      <v-container fluid class="full-height" v-else-if="isLoading">
+        <article id="pen-display-container" class="top-banner full-height">
+          <v-row align="center" justify="center">
+            <v-progress-circular
+                    :size="60"
+                    :width="7"
+                    color="primary"
+                    indeterminate
+            ></v-progress-circular>
+          </v-row>
+        </article>
+      </v-container>
       <v-dialog
         v-model="deceasedDialog"
         width="400px"
@@ -790,6 +802,7 @@ export default {
       editing: false,
       spacePostalCode: null,
       validForm: false,
+      isLoading: true,
       deceasedDialog: false,
       mincodeHint: 'Invalid Mincode',
       mincodeError: false,
@@ -919,6 +932,7 @@ export default {
       this.setGradeLabel();
     },
     refreshStudent(){
+      this.isLoading = true;
       ApiService.apiAxios
       .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.selectedStudent.studentID)
       .then(response => {
@@ -926,9 +940,11 @@ export default {
       })
       .catch(error => {
         console.log(error);
+        this.isLoading = false;
       })
       .finally(() => {
-
+        new Promise(resolve => setTimeout(resolve, 5000));
+        this.isLoading = false;
       });
     },
     hasEdits(value){
@@ -1093,5 +1109,14 @@ export default {
   .bolder {   
     color: #000000 !important;
     font-weight: bolder; 
+  }
+  .top-banner{
+    background-color: white;
+    background-size: cover;
+    align-items: center;
+    display: flex;
+  }
+  .full-height{
+    height: 100%;
   }
 </style>
