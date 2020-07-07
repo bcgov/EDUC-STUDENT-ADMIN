@@ -32,8 +32,8 @@ const redisUtil = {
         if (result && result.length > 0) {
           for (const element of result) {
             const eventArrayElement = JSON.parse(element);
-            if ((eventArrayElement.sagaId && event.sagaId && eventArrayElement.sagaId === event.sagaId) && ('COMPLETED' === event.sagaStatus)) {
-              log.info(`going to delete this event record as it is completed. ${eventArrayElement.sagaId}`);
+            if ((eventArrayElement.sagaId && event.sagaId && eventArrayElement.sagaId === event.sagaId) && ('COMPLETED' === event.sagaStatus || 'FORCE_STOPPED' === event.sagaStatus)) {
+              log.info(`going to delete this event record as it is completed or force stopped. SAGA ID :: ${eventArrayElement.sagaId} AND STATUS :: ${event.sagaStatus}`);
               await this.removeSagaRecordFromRedis(event.sagaId, eventArrayElement);
               break;
             }

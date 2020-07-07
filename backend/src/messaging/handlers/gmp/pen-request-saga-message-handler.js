@@ -51,7 +51,7 @@ const PenRequestSagaMessageHandler = {
   async handlePenRequestSagaMessage(msg) {
     const event = JSON.parse(msg.getData()); // it is always a JSON string of Event object.
     log.silly(`received message for SAGA ID :: ${event.sagaId} :: AND EVENT OUTCOME :: ${event.eventOutcome} AND PEN_REQUEST_ID :: ${event.penRequestID} AND SAGA STATUS IS :: ${event.sagaStatus} AND SAGA NAME IS :: ${event.sagaName}`);
-    if('COMPLETED' === event.sagaStatus || 'INITIATED' === event.sagaStatus) { // broadcast only when the saga is completed or initiated, clients are not interested in each step.
+    if('COMPLETED' === event.sagaStatus || 'INITIATED' === event.sagaStatus || 'FORCE_STOPPED' === event.sagaStatus) { // broadcast only when the saga is completed or initiated, clients are not interested in each step.
       const connectedClients = webSocket.getWebSocketClients();
       if (connectedClients && connectedClients.length > 0) {
         for (const connectedClient of connectedClients) {
@@ -63,7 +63,7 @@ const PenRequestSagaMessageHandler = {
         }
       }
     }
-    if('COMPLETED' === event.sagaStatus){
+    if('COMPLETED' === event.sagaStatus || 'FORCE_STOPPED' === event.sagaStatus){
       await redisUtil.removePenRequestSagaRecordFromRedis(event);
     }
   },
