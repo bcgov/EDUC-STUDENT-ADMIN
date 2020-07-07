@@ -66,12 +66,12 @@ function updateForRejectAndReturn(penRequest, userToken, req) {
 async function returnPenRequest(req, res) {
   let thisSession = req['session'];
   if (!thisSession.penRequest) {
-    log.error('Error attempting to unlink request.  There is no request stored in session.');
+    log.error('Error attempting to return request.  There is no request stored in session.');
     return errorResponse(res);
   }
   const token = utils.getBackendToken(req);
   if (!token) {
-    log.error('Error attempting to unlink request.  Unable to get token.');
+    log.error('Error attempting to return request.  Unable to get token.');
     return unauthorizedError(res);
   }
   const userToken = utils.getUser(req);
@@ -146,12 +146,12 @@ async function unlinkRequest(req, res) {
 async function rejectPenRequest(req, res) {
   let thisSession = req['session'];
   if (!thisSession.penRequest) {
-    log.error('Error attempting to unlink request.  There is no request stored in session.');
+    log.error('Error attempting to reject request.  There is no request stored in session.');
     return errorResponse(res);
   }
   const token = utils.getBackendToken(req);
   if (!token) {
-    log.error('Error attempting to unlink request.  Unable to get token.');
+    log.error('Error attempting to reject request.  Unable to get token.');
     return unauthorizedError(res);
   }
   try {
