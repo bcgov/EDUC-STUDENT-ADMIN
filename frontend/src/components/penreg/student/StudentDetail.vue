@@ -207,6 +207,7 @@
                     id='legalSurname'
                     color="#000000"
                     dense
+                    maxlength="255"
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing || hasEdits('legalLastName')"
                   ></v-text-field>
@@ -240,6 +241,7 @@
                     :class="{onhoverPad: !hovering && !hasEdits('legalFirstName'), darkBackgound: hovering || hasEdits('legalFirstName')}"
                     v-model="studentCopy.legalFirstName"
                     id='legal'
+                    maxlength="255"
                     color="#000000"
                     dense
                     :readonly="!hovering || !editing"
@@ -276,6 +278,7 @@
                     v-model="studentCopy.legalMiddleNames"
                     id='legalMiddleName'
                     color="#000000"
+                    maxlength="255"
                     dense
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing || hasEdits('legalMiddleNames')"
@@ -312,6 +315,7 @@
                     id='usualSurname'
                     color="#000000"
                     dense
+                    maxlength="255"
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing || hasEdits('usualLastName')"
                   ></v-text-field>
@@ -347,6 +351,7 @@
                     id='usualFirstName'
                     color="#000000"
                     dense
+                    maxlength="255"
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing || hasEdits('usualFirstName')"
                   ></v-text-field>
@@ -382,6 +387,7 @@
                     id='usualMiddleNames'
                     color="#000000"
                     dense
+                    maxlength="255"
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing || hasEdits('usualMiddleNames')"
                   ></v-text-field>
@@ -403,7 +409,7 @@
                 <v-col cols="2">
                   <p class="labelField">Gender</p>
                 </v-col>
-                <v-col cols="1" class="textFieldColumn">
+                <v-col cols="1" :class="{textFieldColumn: !genderError}">
                   <v-text-field
                     tabindex="6"
                     v-on:keyup.tab="editing = true; hovering = true"
@@ -416,7 +422,9 @@
                     :class="{onhoverPad: !hovering && !hasEdits('genderCode'), darkBackgound: hovering || hasEdits('genderCode')}"
                     id='genderCode'
                     color="#000000"
+                    :rules="validateGender()"
                     dense
+                    maxlength="1"
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing || hasEdits('genderCode')"
                   ></v-text-field>
@@ -448,29 +456,32 @@
                     </div>
                   </div>
                 </v-col>
-                <v-col cols="2" class="textFieldColumn">
+                <v-col cols="2" :class="{textFieldColumn: !dobError}">
                   <v-text-field
                     tabindex="8"
-                    v-on:keyup.tab="editing = true; hovering = true"
+                    v-on:keyup.tab="editing = true; hovering = true; shortDOBStyle();"
                     v-on:mouseover="hovering = true"
                     v-on:mouseout="editing ? hovering = true : hovering = false"
-                    v-on:blur="editing = false; hovering = false;"
-                    v-on:click="editing = true; hovering = true"
+                    v-on:blur="editing = false; hovering = false; longDOBStyle();"
+                    v-on:click="editing = true; hovering = true; shortDOBStyle();"
+                    v-on:input="updateDOBLabel()"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hovering && !hasEdits('dob'), darkBackgound: hovering || hasEdits('dob')}"
                     v-model="studentCopy.dob"
                     id='dob'
                     color="#000000"
                     dense
+                    :rules="validateDOB()"
+                    maxlength="10"
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing || hasEdits('dob')"
                   ></v-text-field>
                 </v-col>
-                <v-col cols="2" class="textFieldColumn">
+                <v-col cols="3" class="textFieldColumn">
                   <v-text-field
                     class="onhoverEdit bolder customNoBorder onhoverPad"
                     v-model="longDOB"
-                    v-if="hovering || hasEdits('dob')"
+                    v-if="hovering && !editing"
                     id='dobFull'
                     color="#000000"
                     dense
@@ -481,7 +492,7 @@
                 <v-col class="textFieldColumn" cols="2">
                   <v-text-field
                     id='revertDOB'
-                    v-on:click="revertField('dob')"
+                    v-on:click="revertDOBField('dob')"
                     class="onhoverEdit revert customNoBorder ml-3"
                     readonly
                     v-show="hasEdits('dob')"
@@ -504,6 +515,7 @@
                     color="#000000"
                     dense
                     readonly
+                    maxlength="2"
                     tabindex="-1"
                   ></v-text-field>
                 </v-col>
@@ -520,6 +532,7 @@
                     color="#000000"
                     dense
                     readonly
+                    maxlength="4"
                     tabindex="-1"
                   ></v-text-field>
                 </v-col>
@@ -542,9 +555,9 @@
               </v-row>
               <v-row no-gutters class="py-1">
                 <v-col cols="2">
-                  <p class="labelField">School</p>
+                  <p class="labelField">Mincode</p>
                 </v-col>
-                <v-col cols="2" class="textFieldColumn">
+                <v-col cols="2" :class="{textFieldColumn: !mincodeError}">
                   <v-text-field
                     tabindex="9"
                     v-on:keyup.tab="editing = true; hovering = true"
@@ -558,6 +571,9 @@
                     id='school'
                     color="#000000"
                     dense
+                    maxlength="8"
+                    minlength="8"
+                    :rules="validateMincode()"
                     :readonly="!hovering || !editing"
                     :outlined="hovering || editing || hasEdits('mincode')"
                   ></v-text-field>
@@ -656,6 +672,7 @@
                     v-model="studentCopy.memo"
                     id='memo'
                     color="#000000"
+                    maxlength="4000"
                     dense
                     no-resize
                     :readonly="!hovering || !editing"
@@ -742,6 +759,8 @@ import { mapGetters, mapMutations } from 'vuex';
 import moment from 'moment';
 import ApiService from '../../../common/apiService';
 import { Routes } from '../../../utils/constants';
+import {LocalDate} from '@js-joda/core';
+let JSJoda = require('@js-joda/core');
 
 export default {
   name: 'studentDetail',
@@ -750,6 +769,12 @@ export default {
       hovering: false,
       editing: false,
       deceasedDialog: false,
+      mincodeHint: 'Invalid Mincode',
+      mincodeError: false,
+      genderHint: 'Invalid Gender Code',
+      genderError: false,
+      dobHint: 'Invalid Date of Birth',
+      dobError: false,
       genderCodes: [],
       demogLabels: [],
       statusLabels: [],
@@ -766,37 +791,113 @@ export default {
     this.demogLabels = this.demogCodeObjects ? this.demogCodeObjects.map(a => a.label):[];
     this.statusLabels = this.statusCodeObjects ? this.statusCodeObjects.map(a => a.label):[];
     this.gradeLabels = this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.label):[];
-
-    // if(this.selectedStudent){
-    //   if(this.selectedStudent.demogCode){
-    //     this.selectedStudent.demogCode = this.demogCodeObjects.filter(it => (it.demogCode === this.selectedStudent.demogCode))[0].label;
-    //   }
-    //   if(this.selectedStudent.statusCode){
-    //     this.selectedStudent.statusCode = this.statusCodeObjects.filter(it => (it.statusCode === this.selectedStudent.statusCode))[0].label;
-    //   }
-      // this.studentCopy = JSON.parse(JSON.stringify(this.selectedStudent));
-    //}
   },
  computed: {
     ...mapGetters('student', ['selectedStudent', 'genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects'])
   },
   mounted() {
     this.refreshStudent();
-    this.createdDateTime = this.frontEndDateTimeFormat(this.origStudent.createDate);
-    this.updatedDateTime = this.frontEndDateTimeFormat(this.origStudent.updateDate);
-    this.longDOB = this.frontEndDOBFormat(this.origStudent.dob);
   },
   methods: {
     ...mapMutations('student', ['setSelectedStudent']),
     frontEndDateTimeFormat(date){
-      return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD HH:mm:ss a');
+      return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY/MM/DD HH:mm:ss a');
+    },
+    updateDOBLabel(){
+      this.longDOB = this.frontEndDOBFormat(this.studentCopy.dob);
+    },
+    validateDOB(){
+      if(this.studentCopy) {
+        if(!this.studentCopy.dob){
+          this.dobError = false;
+          return [];
+        }
+        else {
+          const formatterShort = (new JSJoda.DateTimeFormatterBuilder)
+            .appendPattern('uuuuMMdd')
+            .toFormatter(JSJoda.ResolverStyle.STRICT);
+          const formatterLong = (new JSJoda.DateTimeFormatterBuilder)
+            .appendPattern('uuuu-MM-dd')
+            .toFormatter(JSJoda.ResolverStyle.STRICT);
+
+          let isBeforeLongDate = false;
+          let isBeforeShortDate = false;
+
+          try {
+            const dateLong = JSJoda.LocalDate.parse(this.studentCopy.dob, formatterLong);
+            isBeforeLongDate = dateLong.isBefore(LocalDate.now());
+          }
+          catch(err){
+            //Do nothing
+          } 
+          try {
+            const dateShort = JSJoda.LocalDate.parse(this.studentCopy.dob, formatterShort);
+            isBeforeShortDate = dateShort.isBefore(LocalDate.now());
+          }
+          catch(err){
+            //Do nothing
+          } 
+
+          if(isBeforeLongDate || isBeforeShortDate){
+            this.dobError = false;
+            return [];
+          }
+        }
+      }
+      this.dobError = true;
+      return [
+        this.dobHint
+      ];   
+    },
+    validateGender(){
+      if(this.studentCopy) {
+        if(!this.studentCopy.genderCode){
+          this.genderError = false;
+          return [];
+        }
+        else {
+          if(this.genderCodes.includes(this.studentCopy.genderCode)){
+            this.genderError = false;
+            return [];
+          }
+        }
+      }
+
+      this.genderError = true;
+      return [
+        this.genderHint
+      ];   
+    },
+    validateMincode(){
+      if(this.studentCopy) {
+        if(!this.studentCopy.mincode){
+          this.mincodeError = false;
+          return [];
+        }
+        else {
+          if(this.studentCopy.mincode.match('^[0-9]\\d*$') && this.studentCopy.mincode.length === 8){
+            this.mincodeError = false;
+            return [];
+          }
+        }
+      }
+      this.mincodeError = true;
+      return [
+        this.mincodeHint
+      ];   
+    },
+    setStudent(student){
+      this.origStudent = student;
+      this.studentCopy = JSON.parse(JSON.stringify(this.origStudent));
+      this.createdDateTime = this.frontEndDateTimeFormat(this.studentCopy.createDate);
+      this.updatedDateTime = this.frontEndDateTimeFormat(this.studentCopy.updateDate);
+      this.updateDOBLabel();
     },
     refreshStudent(){
       ApiService.apiAxios
       .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.selectedStudent.studentID)
       .then(response => {
-        this.origStudent = response.data;
-        this.studentCopy = JSON.parse(JSON.stringify(this.origStudent));
+        this.setStudent(response.data);
       })
       .catch(error => {
         console.log(error);
@@ -822,11 +923,53 @@ export default {
     revertField(value){
       this.studentCopy[value] = JSON.parse(JSON.stringify(this.origStudent[value]));
     },
+    revertDOBField(value){
+      this.revertField(value);
+      this.updateDOBLabel();
+    },
     frontEndDOBFormat(date){
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('MMMM DD, YYYY');
     },
     backToSearch() {
       this.setSelectedStudent(null);
+    },
+    shortDOBStyle(){
+      if(this.studentCopy.dob){
+        const formatterShort = (new JSJoda.DateTimeFormatterBuilder)
+            .appendPattern('uuuuMMdd')
+            .toFormatter(JSJoda.ResolverStyle.STRICT);
+        const formatterLong = (new JSJoda.DateTimeFormatterBuilder)
+            .appendPattern('uuuu-MM-dd')
+            .toFormatter(JSJoda.ResolverStyle.STRICT);
+        try {
+          const dateLong = JSJoda.LocalDate.parse(this.studentCopy.dob, formatterLong);
+          const shortDate = dateLong.format(formatterShort);
+          this.studentCopy.dob = shortDate;
+          this.origStudent.dob = shortDate;
+        }
+        catch(err){
+          //Do nothing
+        } 
+      }
+    },
+    longDOBStyle(){
+      if(this.studentCopy.dob){
+        const formatterShort = (new JSJoda.DateTimeFormatterBuilder)
+            .appendPattern('uuuuMMdd')
+            .toFormatter(JSJoda.ResolverStyle.STRICT);
+        const formatterLong = (new JSJoda.DateTimeFormatterBuilder)
+            .appendPattern('uuuu-MM-dd')
+            .toFormatter(JSJoda.ResolverStyle.STRICT);
+        try {
+          const dateShort = JSJoda.LocalDate.parse(this.studentCopy.dob, formatterShort);
+          const longDate = dateShort.format(formatterLong);
+          this.studentCopy.dob = longDate;
+          this.origStudent.dob = longDate;
+        }
+        catch(err){
+          //Do nothing
+        } 
+      }
     },
     confirmDeceasedDialog() {
       this.deceasedDialog = false;
@@ -847,8 +990,7 @@ export default {
         ApiService.apiAxios
           .post(Routes['student'].ROOT_ENDPOINT,this.prepPut(this.studentCopy))
           .then(response => {
-            this.origStudent = response.data;
-            this.studentCopy = JSON.parse(JSON.stringify(this.origStudent));
+            this.setStudent(response.data);
           })
           .catch(error => {
             console.log(error);
