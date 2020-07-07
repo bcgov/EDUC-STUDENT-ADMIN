@@ -1039,13 +1039,12 @@ export default {
           
           if(dateLong.equals(dateShort)){
             return false;
-          }else{
-            return true;
           }
         }
         catch(err){
           return true;
         } 
+        return true;
       }
     },
     confirmDeceasedDialog() {
