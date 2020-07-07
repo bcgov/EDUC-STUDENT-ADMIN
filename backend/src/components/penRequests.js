@@ -54,26 +54,34 @@ function createPenRequestCommentApiServiceReq(req, userToken) {
   return request;
 }
 
+function updateForRejectAndReturn(penRequest, userToken, req) {
+  penRequest.reviewer = req.body.reviewer;
+  penRequest.penRetrievalRequestID = req.params.id || req.body.penRequestID;
+  penRequest.staffMemberIDIRGUID = userToken['preferred_username'].toUpperCase();
+  penRequest.staffMemberName = userToken['idir_username'];
+  penRequest.email = req['session'].penRequest['email'];
+  penRequest.identityType = req['session'].identityType;
+}
+
 async function returnPenRequest(req, res) {
+  let thisSession = req['session'];
+  if (!thisSession.penRequest) {
+    log.error('Error attempting to return request.  There is no request stored in session.');
+    return errorResponse(res);
+  }
   const token = utils.getBackendToken(req);
   if (!token) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({
-      message: 'No access token'
-    });
+    log.error('Error attempting to return request.  Unable to get token.');
+    return unauthorizedError(res);
   }
   const userToken = utils.getUser(req);
   try {
     const penRequest = {};
 
     penRequest.penRequestStatusCode = 'RETURNED';
-    penRequest.reviewer = req.body.reviewer;
-    penRequest.penRetrievalRequestID = req.params.id;
-    penRequest.staffMemberIDIRGUID = userToken['preferred_username'].toUpperCase();
-    penRequest.staffMemberName = userToken['idir_username'];
     penRequest.commentContent = req.body.content;
     penRequest.commentTimestamp = LocalDateTime.now().toString().substr(0, 19);
-    penRequest.email = req['session'].penRequest['email'];
-    penRequest.identityType = req['session'].identityType;
+    updateForRejectAndReturn(penRequest, userToken, req);
     const url = `${config.get('server:profileSagaAPIURL')}/pen-request-return-saga`;
     const sagaId = await utils.postData(token, url, penRequest);
     const event = {
@@ -135,10 +143,48 @@ async function unlinkRequest(req, res) {
   }
 }
 
+async function rejectPenRequest(req, res) {
+  let thisSession = req['session'];
+  if (!thisSession.penRequest) {
+    log.error('Error attempting to reject request.  There is no request stored in session.');
+    return errorResponse(res);
+  }
+  const token = utils.getBackendToken(req);
+  if (!token) {
+    log.error('Error attempting to reject request.  Unable to get token.');
+    return unauthorizedError(res);
+  }
+  try {
+    const penRequest = {};
+    const userToken = utils.getUser(req);
+    penRequest.penRequestStatusCode = 'REJECTED';
+    penRequest.rejectionReason = req.body.failureReason;
+    updateForRejectAndReturn(penRequest, userToken, req);
+    const url = `${config.get('server:profileSagaAPIURL')}/pen-request-reject-saga`;
+    const sagaId = await utils.postData(token, url, penRequest);
+    const event = {
+      sagaId: sagaId,
+      penRequestID: penRequest.penRetrievalRequestID,
+      sagaStatus: 'INITIATED'
+    };
+    log.info(`going to store event object in redis for return pen request :: ${safeStringify(event)}`);
+    await redisUtil.createPenRequestSagaRecordInRedis(event);
+    return res.status(200).json();
+  } catch (e) {
+    logApiError(e, 'rejectPenRequest', 'Error occurred while attempting to reject a pen request.');
+    if(e.status === HttpStatus.CONFLICT){
+      return errorResponse(res,'Another saga is in progress');
+    }
+    return errorResponse(res);
+  }
+}
+
+
 module.exports = {
   findPenRequestsByPen,
   createPenRequestApiServiceReq,
   createPenRequestCommentApiServiceReq,
   returnPenRequest,
-  unlinkRequest
+  unlinkRequest,
+  rejectPenRequest
 };

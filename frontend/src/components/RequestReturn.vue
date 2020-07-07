@@ -139,7 +139,7 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('app', ['selectedRequest', 'requestType', 'requestTypeLabel']),
-    //...mapGetters(this.requestType, ['returnMacros']),
+    ...mapGetters('notifications', ['notification']),
     requestStatusCodeName() {
       return `${this.requestType}StatusCode`;
     },
@@ -161,20 +161,17 @@ export default {
     isReturnToStudentDark() {
       return this.enableActions && this.request[this.requestStatusCodeName] !== 'DRAFT' && this.request[this.requestStatusCodeName] !== 'ABANDONED';
     },
-    notification() {
-      let outcome = null;
-      let notification = this.$store.getters['notifications/notification'];
-      if(notification) {
-        notification = JSON.parse(notification);
-        if (notification[`${this.requestType}ID`] && notification[`${this.requestType}ID`] === this.requestId && notification.sagaStatus === 'COMPLETED' && notification.sagaName === 'PEN_REQUEST_RETURN_SAGA') {
-          outcome = 'SAGA_COMPLETED';
-          // eslint-disable-next-line
+
+  },
+  watch: {
+    notification(val) {
+      if (val) {
+        let notificationData = JSON.parse(val);
+        if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && notificationData.sagaStatus === 'COMPLETED' && notificationData.sagaName === 'PEN_REQUEST_RETURN_SAGA') {
           this.loadPenRequestAndComments();
-          // eslint-disable-next-line
-          this.returnMessage = 'Your request to return for more info is now completed.'
+          this.returnMessage = 'Your request to return for more info is now completed.';
         }
       }
-      return outcome;
     }
   },
   mounted() {

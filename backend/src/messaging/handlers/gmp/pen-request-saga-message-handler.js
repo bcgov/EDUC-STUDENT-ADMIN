@@ -4,6 +4,7 @@ const log = require('../../../components/logger');
 
 const penRequestReturnSagaTopic = 'PEN_REQUEST_RETURN_SAGA_TOPIC';
 const penRequestUnlinkSagaTopic = 'PEN_REQUEST_UNLINK_SAGA_TOPIC';
+const penRequestRejectSagaTopic = 'PEN_REQUEST_REJECT_SAGA_TOPIC';
 const redisUtil = require('../../../util/redis/redis-utils');
 const webSocket = require('../../../socket/web-socket');
 
@@ -26,6 +27,15 @@ const PenRequestSagaMessageHandler = {
       await this.handlePenRequestSagaMessage(msg);
     });
   },
+  penRequestRejectSagaSubscription(stan, opts) {
+    const penReqRejectSagaSubscription = stan.subscribe(penRequestRejectSagaTopic, '', opts); // no queue group as all the pods need the messages to broadcast to websocket clients.
+    penReqRejectSagaSubscription.on('error', (err) => {
+      log.error(`subscription for ${penRequestRejectSagaTopic} raised an error: ${err}`);
+    });
+    penReqRejectSagaSubscription.on('message', async (msg) => {
+      await this.handlePenRequestSagaMessage(msg);
+    });
+  },
   /**
    * This is where all the subscription will be done related pen requests
    * @param stan
@@ -36,6 +46,7 @@ const PenRequestSagaMessageHandler = {
     opts.setDurableName('student-admin-node-consumer');
     this.penRequestReturnSagaSubscription(stan, opts);
     this.penRequestUnlinkSagaSubscription(stan, opts);
+    this.penRequestRejectSagaSubscription(stan, opts);
   },
   async handlePenRequestSagaMessage(msg) {
     const event = JSON.parse(msg.getData()); // it is always a JSON string of Event object.
