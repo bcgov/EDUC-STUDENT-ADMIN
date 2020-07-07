@@ -1,16 +1,5 @@
 <template>
   <v-container fluid class="fill-height px-0">
-    <!-- This alert component is used to refresh the page automatically when saga is completed.-->
-    <v-alert
-      :value="false"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      class="bootstrap-success">
-      {{notification}}
-    </v-alert>
     <v-row no-gutters>
       <v-card height="100%" width="100%" style="background-color:#38598a;">
         <v-combobox
@@ -205,7 +194,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
+import { mapMutations, mapGetters } from 'vuex';
 import ApiService from '../common/apiService';
 import { Routes } from '../utils/constants';
 export default {
@@ -276,6 +265,7 @@ export default {
     this.$webSocketsConnect();
   },
   computed: {
+    ...mapGetters('notifications', ['notification']),
     filteredResults() {
       if (
         !Array.isArray(this.selectedStatuses) ||
@@ -324,45 +314,6 @@ export default {
     requestIdName() {
       return `${this.requestType}ID`;
     },
-    notification() {
-      let outcome = null;
-      let notification = this.$store.getters['notifications/notification'];
-      notification = JSON.parse(notification);
-      if (notification && this.requests) {
-        let sagaCompletedForThisRequest = false;
-        let elementOfRequests;
-        for (const element of this.requests) {
-          if (element[`${this.requestType}ID`] && notification[`${this.requestType}ID`] && element[`${this.requestType}ID`] === notification[`${this.requestType}ID`] && notification.sagaStatus === 'COMPLETED') {
-            sagaCompletedForThisRequest = true;
-            elementOfRequests = element;
-            break;
-
-          } else if (element[`${this.requestType}ID`] && notification[`${this.requestType}ID`] && element[`${this.requestType}ID`] === notification[`${this.requestType}ID`] && notification.sagaStatus === 'INITIATED') {
-            element.sagaInProgress = true;
-            break;
-          }
-        }
-        if(sagaCompletedForThisRequest && elementOfRequests){
-          ApiService.apiAxios
-            .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + elementOfRequests[`${this.requestType}ID`])
-            .then(response => {
-              elementOfRequests[`${this.requestType}StatusCode`].label = response.data[`${this.requestType}StatusCodeLabel`];
-              elementOfRequests[`${this.penName}`] = response.data[`${this.penName}`];
-              elementOfRequests.legalLastName = response.data.legalLastName;
-              elementOfRequests.legalFirstName = response.data.legalFirstName;
-              elementOfRequests.reviewer = response.data.reviewer;
-            })
-            .catch(error => {
-              console.log(error);
-            })
-            .finally(() => {
-              elementOfRequests.sagaInProgress = false;
-            });
-
-        }
-      }
-      return outcome;
-    }
   },
   watch: {
     pageNumber: {
@@ -409,6 +360,41 @@ export default {
         if (!this.initialLoad) {
           //stop watch from sending multiple getRequests calls on initial page load
           this.getRequests();
+        }
+      }
+    },
+    notification(val) {
+      let notificationData = JSON.parse(val);
+      if (notificationData && this.requests) {
+        let sagaCompletedForThisRequest = false;
+        let elementOfRequests;
+        for (const element of this.requests) {
+          if (element[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] && element[`${this.requestType}ID`] === notificationData[`${this.requestType}ID`] && notificationData.sagaStatus === 'COMPLETED') {
+            sagaCompletedForThisRequest = true;
+            elementOfRequests = element;
+            break;
+
+          } else if (element[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] && element[`${this.requestType}ID`] === notificationData[`${this.requestType}ID`] && notificationData.sagaStatus === 'INITIATED') {
+            element.sagaInProgress = true;
+            break;
+          }
+        }
+        if(sagaCompletedForThisRequest && elementOfRequests){
+          ApiService.apiAxios
+            .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + elementOfRequests[`${this.requestType}ID`])
+            .then(response => {
+              elementOfRequests[`${this.requestType}StatusCode`].label = response.data[`${this.requestType}StatusCodeLabel`];
+              elementOfRequests[`${this.penName}`] = response.data[`${this.penName}`];
+              elementOfRequests.legalLastName = response.data.legalLastName;
+              elementOfRequests.legalFirstName = response.data.legalFirstName;
+              elementOfRequests.reviewer = response.data.reviewer;
+            })
+            .catch(error => {
+              console.log(error);
+            })
+            .finally(() => {
+              elementOfRequests.sagaInProgress = false;
+            });
         }
       }
     }
@@ -487,7 +473,7 @@ export default {
         .catch(error => {
           console.log(error);
         });
-    }
+    },
   }
 };
 </script>

@@ -820,7 +820,7 @@ export default {
       longDOB: null,
       origStudent: null,
       studentCopy: null
-    }
+    };
   },
   created(){
     this.genderCodes = this.genders ? this.genders.map(a => a.genderCode):[];
@@ -828,7 +828,7 @@ export default {
     this.statusLabels = this.statusCodeObjects ? this.statusCodeObjects.map(a => a.label):[];
     this.gradeLabels = this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.label):[];
   },
- computed: {
+  computed: {
     ...mapGetters('student', ['selectedStudent', 'genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects'])
   },
   mounted() {
@@ -848,14 +848,14 @@ export default {
       }
     },
     getDateFormatterShort(){
-        return (new JSJoda.DateTimeFormatterBuilder)
-            .appendPattern('uuuuMMdd')
-            .toFormatter(JSJoda.ResolverStyle.STRICT);
+      return (new JSJoda.DateTimeFormatterBuilder)
+        .appendPattern('uuuuMMdd')
+        .toFormatter(JSJoda.ResolverStyle.STRICT);
     },
     getDateFormatterLong(){
-        return (new JSJoda.DateTimeFormatterBuilder)
-            .appendPattern('uuuu-MM-dd')
-            .toFormatter(JSJoda.ResolverStyle.STRICT);
+      return (new JSJoda.DateTimeFormatterBuilder)
+        .appendPattern('uuuu-MM-dd')
+        .toFormatter(JSJoda.ResolverStyle.STRICT);
     },
     validateDOB(){
       if(this.studentCopy) {
@@ -945,17 +945,17 @@ export default {
     refreshStudent(){
       this.isLoading = true;
       ApiService.apiAxios
-      .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.selectedStudent.studentID)
-      .then(response => {
-        this.setStudent(response.data);
-      })
-      .catch(error => {
-        console.log(error);
-        this.isLoading = false;
-      })
-      .finally(() => {
-        this.isLoading = false;
-      });
+        .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.selectedStudent.studentID)
+        .then(response => {
+          this.setStudent(response.data);
+        })
+        .catch(error => {
+          console.log(error);
+          this.isLoading = false;
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
     },
     hasEdits(value){
       if(JSON.stringify(this.studentCopy[value]) === JSON.stringify(this.origStudent[value])){
@@ -991,8 +991,8 @@ export default {
     },
     shortDOBStyle(){
       if(this.studentCopy.dob){
-          const formatterShort = this.getDateFormatterShort();
-          const formatterLong = this.getDateFormatterLong();
+        const formatterShort = this.getDateFormatterShort();
+        const formatterLong = this.getDateFormatterLong();
         try {
           const dateLong = JSJoda.LocalDate.parse(this.studentCopy.dob, formatterLong);
           const shortDate = dateLong.format(formatterShort);
@@ -1010,8 +1010,8 @@ export default {
     },
     longDOBStyle(){
       if(this.studentCopy.dob){
-          const formatterShort = this.getDateFormatterShort();
-          const formatterLong = this.getDateFormatterLong();
+        const formatterShort = this.getDateFormatterShort();
+        const formatterLong = this.getDateFormatterLong();
         try {
           const dateShort = JSJoda.LocalDate.parse(this.studentCopy.dob, formatterShort);
           const longDate = dateShort.format(formatterLong);
@@ -1030,8 +1030,8 @@ export default {
           return false;
         }
 
-          const formatterShort = this.getDateFormatterShort();
-          const formatterLong = this.getDateFormatterLong();
+        const formatterShort = this.getDateFormatterShort();
+        const formatterLong = this.getDateFormatterLong();
         try {
           const dateLong = JSJoda.LocalDate.parse(this.origStudent.dob, formatterLong);
           const dateShort = JSJoda.LocalDate.parse(this.studentCopy.dob, formatterShort);

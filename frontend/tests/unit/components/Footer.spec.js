@@ -16,6 +16,6 @@ describe('Footer.vue', () => {
   });
   
   it('renders the correct markup', () => {
-    expect(wrapper.html()).toContain('<a href="https://www.gov.bc.ca/" class="v-btn v-btn--flat v-btn--text theme--dark v-size--default" id="footer-home"><span class="v-btn__content">Home</span></a>');
+    expect(wrapper.html()).toContain('Home');
   });
 });

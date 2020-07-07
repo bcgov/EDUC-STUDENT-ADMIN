@@ -295,7 +295,7 @@ export default {
       return this.enableActions && this.isClaimActionEnabledForUser && this.request[this.requestStatusCodeName] !== 'DRAFT' && this.request[this.requestStatusCodeName] !== 'ABANDONED';
     },
     isReleaseDisabled() {
-      return !this.enableActions || this.isRequestCompleted || !this.isReleaseActionEnabledForUser
+      return !this.enableActions || this.isRequestCompleted || !this.isReleaseActionEnabledForUser;
     },
     isDarkForRelease() {
       return this.enableActions && !this.isRequestCompleted && this.isReleaseActionEnabledForUser;
