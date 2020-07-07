@@ -1,14 +1,14 @@
 <template>
-  <v-main>
+  <v-main class="fill-height">
     <v-form ref="studentDetailForm" id="detailStudentForm"
-            v-model="validForm"
+            v-model="validForm" class="fill-height"
           >
       <v-container class="fill-height" v-if="!isLoading">
         <v-col cols="15" class="fill-height pb-5">
           <v-row class="flex-grow-0 pb-5">
             <v-card style="background-color:#d7d7d7;" height="100%" width="100%" elevation=0>
               <v-row>
-                <v-col @click="backToSearch" cols="1" class="topMenu pl-16 mr-12">
+                <v-col cols="1" class="topMenu pl-16 mr-12">
                   <img 
                     src="@/assets/images/hamburger.svg"
                     alt="Menu"
@@ -420,6 +420,7 @@
                       v-on:mouseout="editing ? hovering = true : hovering = false"
                       v-on:blur="editing = false; hovering = false;"
                       v-on:click="editing = true; hovering = true"
+                      v-on:input="uppercaseGender()"
                       v-model="studentCopy.genderCode"
                       class="onhoverEdit bolder customNoBorder"
                       :class="{onhoverPad: !hovering && !hasEdits('genderCode'), darkBackgound: hovering || hasEdits('genderCode')}"
@@ -469,7 +470,7 @@
                       v-on:click="editing = true; hovering = true; shortDOBStyle();"
                       v-on:input="updateDOBLabel()"
                       class="onhoverEdit bolder customNoBorder"
-                      :class="{onhoverPad: !hovering && !hasEdits('dob'), darkBackgound: hovering || hasEdits('dob')}"
+                      :class="{onhoverPad: !hovering && !dobHasChanged('dob'), darkBackgound: hovering || dobHasChanged('dob')}"
                       v-model="studentCopy.dob"
                       id='dob'
                       color="#000000"
@@ -477,7 +478,7 @@
                       :rules="validateDOB()"
                       maxlength="10"
                       :readonly="!hovering || !editing"
-                      :outlined="hovering || editing || hasEdits('dob')"
+                      :outlined="hovering || editing || dobHasChanged('dob')"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="3" class="textFieldColumn">
@@ -498,7 +499,7 @@
                       v-on:click="revertDOBField('dob')"
                       class="onhoverEdit revert customNoBorder ml-3"
                       readonly
-                      v-show="hasEdits('dob')"
+                      v-show="dobHasChanged('dob')"
                       value="Revert"
                       style="padding-top: 2px;"
                       dense
@@ -715,8 +716,7 @@
                         tabindex="-1"
                         color="#38598a"
                         class="mx-1"
-                        :disabled="!hasAnyEdits()"
-                        @click="backToSearch()"
+                        @click="backToSearch()"       
                       >
                         Cancel
                       </v-btn>
@@ -742,7 +742,7 @@
         <article id="pen-display-container" class="top-banner full-height">
           <v-row align="center" justify="center">
             <v-progress-circular
-                    :size="60"
+                    :size="70"
                     :width="7"
                     color="primary"
                     indeterminate
@@ -841,6 +841,11 @@ export default {
     },
     updateDOBLabel(){
       this.longDOB = this.frontEndDOBFormat(this.studentCopy.dob);
+    },
+    uppercaseGender(){
+      if(this.studentCopy.genderCode){
+        this.studentCopy.genderCode = this.studentCopy.genderCode.toUpperCase();
+      }
     },
     validateDOB(){
       if(this.studentCopy) {
@@ -1017,6 +1022,35 @@ export default {
         }
         catch(err){
           //Do nothing
+        } 
+      }
+    },
+    dobHasChanged(){
+      if(this.origStudent.dob){
+        if(!this.studentCopy.dob){
+          return true;
+        }else if(this.origStudent.dob === this.studentCopy.dob){
+          return false;
+        }
+
+        const formatterShort = (new JSJoda.DateTimeFormatterBuilder)
+            .appendPattern('uuuuMMdd')
+            .toFormatter(JSJoda.ResolverStyle.STRICT);
+        const formatterLong = (new JSJoda.DateTimeFormatterBuilder)
+            .appendPattern('uuuu-MM-dd')
+            .toFormatter(JSJoda.ResolverStyle.STRICT);
+        try {
+          const dateLong = JSJoda.LocalDate.parse(this.origStudent.dob, formatterLong);
+          const dateShort = JSJoda.LocalDate.parse(this.studentCopy.dob, formatterShort);
+          
+          if(dateLong.equals(dateShort)){
+            return false;
+          }else{
+            return true;
+          }
+        }
+        catch(err){
+          return true;
         } 
       }
     },
