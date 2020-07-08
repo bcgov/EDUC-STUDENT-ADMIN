@@ -62,7 +62,7 @@
       outlined
       transition="scale-transition"
       class="bootstrap-error">
-      Your request to return for more info could not be accepted. Please try again after some time.
+      {{returnMessage}}
     </v-alert>
     <v-card flat class="pa-3" :disabled="!isRequestMoreInfoEnabledForUser">
       <v-form ref="returnForm">
@@ -203,7 +203,14 @@ export default {
             })
             .catch(error => {
               console.log(error);
-              this.returnOperationSuccessful = false;
+              if (error.response.data && error.response.data.message && error.response.data.message.includes('saga in progress')) {
+                this.returnOperationSuccessful = false;
+                this.returnMessage = 'Another saga is in progress for this request, please try again later.';
+              }
+              else {
+                this.returnOperationSuccessful = false;
+                this.returnMessage = 'Your request to return for more info could not be accepted, please try again later.';
+              }
               this.submitted();
             });
         }

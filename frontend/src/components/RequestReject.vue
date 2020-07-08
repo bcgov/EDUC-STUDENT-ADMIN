@@ -187,7 +187,7 @@ export default {
             })
             .catch(error => {
               console.log(error);
-              if (error.response.data && error.response.data.message.includes('saga in progress')) {
+              if (error.response.data && error.response.data.message && error.response.data.message.includes('saga in progress')) {
                 this.rejectOperationSuccessful = false;
                 this.rejectOperationOutcomeMessage = 'Another saga is in progress for this request, please try again later.';
               }

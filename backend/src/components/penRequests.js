@@ -94,6 +94,9 @@ async function returnPenRequest(req, res) {
     return res.status(200).json();
   } catch (e) {
     logApiError(e, 'returnPenRequest', 'Error occurred while attempting to return a pen request.');
+    if(e.status === HttpStatus.CONFLICT){
+      return errorResponse(res,'Another saga is in progress');
+    }
     return errorResponse(res);
   }
 }
