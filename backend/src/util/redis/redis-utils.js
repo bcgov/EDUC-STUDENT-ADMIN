@@ -24,16 +24,17 @@ const redisUtil = {
     }
   },
   async removePenRequestSagaRecordFromRedis(event) {
+    let recordFoundFromRedis = false;
     const redisClient = Redis.getRedisClient();
     if (redisClient) {
       try {
         const result = await redisClient.smembers(penReqSagaEventKey);
-        log.silly(`result from redis for ${penReqSagaEventKey} is ${result}`);
         if (result && result.length > 0) {
           for (const element of result) {
             const eventArrayElement = JSON.parse(element);
             if ((eventArrayElement.sagaId && event.sagaId && eventArrayElement.sagaId === event.sagaId) && ('COMPLETED' === event.sagaStatus || 'FORCE_STOPPED' === event.sagaStatus)) {
               log.info(`going to delete this event record as it is completed or force stopped. SAGA ID :: ${eventArrayElement.sagaId} AND STATUS :: ${event.sagaStatus}`);
+              recordFoundFromRedis = true;
               await this.removeSagaRecordFromRedis(event.sagaId, eventArrayElement);
               break;
             }
@@ -45,6 +46,7 @@ const redisUtil = {
     } else {
       log.error('Redis client is not available, this should not have happened');
     }
+    return recordFoundFromRedis;
   },
   async getPenRequestSagaEvents() {
     const redisClient = Redis.getRedisClient();
