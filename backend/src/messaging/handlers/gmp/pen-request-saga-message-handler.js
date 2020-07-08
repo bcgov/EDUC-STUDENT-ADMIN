@@ -54,7 +54,7 @@ const PenRequestSagaMessageHandler = {
       if(recordFoundInRedis){
         this.broadCastMessageToWebSocketClients(msg.getData());
       }
-    }else if('INITIATED' === event.sagaStatus) { // broadcast only when the saga is completed or initiated, clients are not interested in each step.
+    }else if('INITIATED' === event.sagaStatus) {
       this.broadCastMessageToWebSocketClients(msg.getData());
     }
   },
