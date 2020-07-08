@@ -1,5 +1,4 @@
 'use strict';
-const STAN = require('node-nats-streaming');
 const log = require('../../../components/logger');
 
 const penRequestReturnSagaTopic = 'PEN_REQUEST_RETURN_SAGA_TOPIC';
