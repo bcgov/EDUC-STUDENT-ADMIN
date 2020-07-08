@@ -419,7 +419,6 @@ export default {
       this.enableActionButtons();
     },
     refreshRequestDetailsAndComments(){
-      console.log(`calling api to refresh data`);
       ApiService.apiAxios
         .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId)
         .then(response => {
