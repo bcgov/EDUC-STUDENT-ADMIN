@@ -1,5 +1,4 @@
 'use strict';
-const STAN = require('node-nats-streaming');
 const log = require('../../../components/logger');
 
 const penRequestReturnSagaTopic = 'PEN_REQUEST_RETURN_SAGA_TOPIC';
@@ -41,8 +40,7 @@ const PenRequestSagaMessageHandler = {
    * @param stan
    */
   subscribe(stan) {
-    const opts = stan.subscriptionOptions();
-    opts.setStartAt(STAN.StartPosition.NEW_ONLY);
+    const opts = stan.subscriptionOptions().setStartWithLastReceived();
     opts.setDurableName('student-admin-node-consumer');
     this.penRequestReturnSagaSubscription(stan, opts);
     this.penRequestUnlinkSagaSubscription(stan, opts);
@@ -50,23 +48,28 @@ const PenRequestSagaMessageHandler = {
   },
   async handlePenRequestSagaMessage(msg) {
     const event = JSON.parse(msg.getData()); // it is always a JSON string of Event object.
-    log.silly(`received message for SAGA ID :: ${event.sagaId} :: AND EVENT OUTCOME :: ${event.eventOutcome} AND PEN_REQUEST_ID :: ${event.penRequestID} AND SAGA STATUS IS :: ${event.sagaStatus} AND SAGA NAME IS :: ${event.sagaName}`);
-    if('COMPLETED' === event.sagaStatus || 'INITIATED' === event.sagaStatus || 'FORCE_STOPPED' === event.sagaStatus) { // broadcast only when the saga is completed or initiated, clients are not interested in each step.
-      const connectedClients = webSocket.getWebSocketClients();
-      if (connectedClients && connectedClients.length > 0) {
-        for (const connectedClient of connectedClients) {
-          try {
-            connectedClient.send(msg.getData());
-          } catch (e) {
-            log.error(`Error while sending message to connected client ${connectedClient} :: ${e}`);
-          }
+    log.silly(`received message for SAGA ID :: ${event.sagaId} :: getSequence ${msg.getSequence()} :: event :: ${msg.getData()}`);
+    if('COMPLETED' === event.sagaStatus || 'FORCE_STOPPED' === event.sagaStatus){
+      const recordFoundInRedis = await redisUtil.removePenRequestSagaRecordFromRedis(event); // if record is not found in redis means duplicate message which was already processed.
+      if(recordFoundInRedis){
+        this.broadCastMessageToWebSocketClients(msg.getData());
+      }
+    }else if('INITIATED' === event.sagaStatus) {
+      this.broadCastMessageToWebSocketClients(msg.getData());
+    }
+  },
+  broadCastMessageToWebSocketClients(msg){
+    const connectedClients = webSocket.getWebSocketClients();
+    if (connectedClients && connectedClients.length > 0) {
+      for (const connectedClient of connectedClients) {
+        try {
+          connectedClient.send(msg);
+        } catch (e) {
+          log.error(`Error while sending message to connected client ${connectedClient} :: ${e}`);
         }
       }
     }
-    if('COMPLETED' === event.sagaStatus || 'FORCE_STOPPED' === event.sagaStatus){
-      await redisUtil.removePenRequestSagaRecordFromRedis(event);
-    }
-  },
+  }
 };
 
 module.exports = PenRequestSagaMessageHandler;

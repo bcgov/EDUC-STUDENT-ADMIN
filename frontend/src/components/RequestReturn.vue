@@ -168,7 +168,6 @@ export default {
       if (val) {
         let notificationData = JSON.parse(val);
         if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && notificationData.sagaStatus === 'COMPLETED' && notificationData.sagaName === 'PEN_REQUEST_RETURN_SAGA') {
-          this.loadPenRequestAndComments();
           this.returnMessage = 'Your request to return for more info is now completed.';
         }
       }
@@ -182,25 +181,6 @@ export default {
     ...mapMutations('app', ['pushMessage','setMessages','setParticipants']),
     replaceReturnMacro() {
       this.returnComment = replaceMacro(this.returnComment, this.returnMacros);
-    },
-    loadPenRequestAndComments(){
-      ApiService.apiAxios
-        .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId + '/comments')
-        .then(response => {
-          this.setParticipants(response.data.participants);
-          this.setMessages(response.data.messages);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-      ApiService.apiAxios
-        .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId)
-        .then(response => {
-          this.setRequest(response.data);
-        })
-        .catch(error => {
-          console.log(error);
-        });
     },
     returnToStudent() {
       if(this.requestType === 'penRequest'){
@@ -224,8 +204,6 @@ export default {
             .catch(error => {
               console.log(error);
               this.returnOperationSuccessful = false;
-            })
-            .finally(() => {
               this.submitted();
             });
         }

@@ -22,17 +22,6 @@
             >
               {{ claimErrorMessage }}
             </v-alert>
-            <!-- This alert component is used to refresh the page automatically when saga is completed.-->
-            <v-alert
-              :value="false"
-              dense
-              text
-              dismissible
-              outlined
-              transition="scale-transition"
-              class="bootstrap-success">
-              {{notification}}
-            </v-alert>
           </v-card>
         </v-row>
         <v-row>
@@ -267,6 +256,7 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('app', ['selectedRequest', 'requestType', 'requestTypeLabel']),
     ...mapGetters('app', ['request']),
+    ...mapGetters('notifications', ['notification']),
     isRequestCompleted() {
       return this.requestCompleted(this.request, this.statusCodes);
     },
@@ -300,19 +290,7 @@ export default {
     isDarkForRelease() {
       return this.enableActions && !this.isRequestCompleted && this.isReleaseActionEnabledForUser;
     },
-    notification() {
-      let outcome = null;
-      let notification = this.$store.getters['notifications/notification'];
-      if(notification) {
-        notification = JSON.parse(notification);
-        if (notification[`${this.requestType}ID`] && notification[`${this.requestType}ID`] === this.requestId && notification.sagaStatus === 'INITIATED') {
-          this.disableActionButtons();
-        } else if (notification[`${this.requestType}ID`] && notification[`${this.requestType}ID`] === this.requestId && notification.sagaStatus === 'COMPLETED') {
-          this.enableActionButtons();
-        }
-      }
-      return outcome;
-    }
+
   },
   mounted() {
     this.enableActions = false;
@@ -364,6 +342,8 @@ export default {
   methods: {
     ...mapMutations('app', ['setSelectedRequest']),
     ...mapMutations('app', ['setRequest']),
+    ...mapMutations('app', ['setMessages']),
+    ...mapMutations('app', ['setParticipants']),
     documentUrl(requestId, document) {
       return `${Routes[this.requestType].ROOT_ENDPOINT}/${requestId}/documents/${document.documentID}`;
     },
@@ -437,6 +417,44 @@ export default {
     submitted() {
       this.switchLoading(false);
       this.enableActionButtons();
+    },
+    refreshRequestDetailsAndComments(){
+      ApiService.apiAxios
+        .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId)
+        .then(response => {
+          this.setRequest(response.data);
+          if(this.request[this.requestStatusCodeName] === this.statusCodes.REJECTED) {
+            this.activeTab = 2;
+          }
+          if(response.data && response.data.sagaInProgress){
+            this.sagaInProgress = true;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+      ApiService.apiAxios
+        .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId + '/comments')
+        .then(response => {
+          this.setParticipants(response.data.participants);
+          this.setMessages(response.data.messages);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  },
+  watch: {
+    notification(val) {
+      if(val) {
+        let notificationData = JSON.parse(val);
+        if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && notificationData.sagaStatus === 'INITIATED') {
+          this.beforeSubmit();
+        } else if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && (notificationData.sagaStatus === 'COMPLETED' || notificationData.sagaStatus === 'FORCE_STOPPED')) {
+          this.refreshRequestDetailsAndComments();
+          this.submitted();
+        }
+      }
     }
   }
 };
