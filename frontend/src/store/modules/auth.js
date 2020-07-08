@@ -88,14 +88,16 @@ export default {
   actions: {
 
     async getUserInfo(context) {
-      ApiService.apiAxios
-        .get(Routes.USER)
-        .then(response => {
-          context.commit('setUserInfo', response.data);
-        })
-        .catch(error => {
-          console.log(error);
-        });
+      if(localStorage.getItem('jwtToken')) {
+        ApiService.apiAxios
+          .get(Routes.USER)
+          .then(response => {
+            context.commit('setUserInfo', response.data);
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
     },
 
     //retrieves the json web token from local storage. If not in local storage, retrieves it from API
