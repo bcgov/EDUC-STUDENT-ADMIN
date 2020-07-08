@@ -66,11 +66,11 @@ objects:
             timeoutSeconds: 1
           resources:
             requests:
-              cpu: "${MIN_CPU}"
-              memory: "${MIN_MEM}"
+              cpu: "5m"
+              memory: "50Mi"
             limits:
-              cpu: "${MAX_CPU}"
-              memory: "${MAX_MEM}"
+              cpu: "10m"
+              memory: "100Mi"
         volumes:
         - name: tls-certs
           secret:
