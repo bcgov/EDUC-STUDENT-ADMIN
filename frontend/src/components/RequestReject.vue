@@ -156,7 +156,6 @@ export default {
       if (val) {
         let notificationData = JSON.parse(val);
         if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && notificationData.sagaStatus === 'COMPLETED' && notificationData.sagaName === 'PEN_REQUEST_REJECT_SAGA') {
-          this.loadRequestDetails();
           this.rejectOperationSuccessful = true;
           this.rejectOperationOutcomeMessage = 'Your request to reject is now completed.';
         }
@@ -188,7 +187,7 @@ export default {
             })
             .catch(error => {
               console.log(error);
-              if (error.response.data && error.response.data.message.includes('saga in progress')) {
+              if (error.response.data && error.response.data.message && error.response.data.message.includes('saga in progress')) {
                 this.rejectOperationSuccessful = false;
                 this.rejectOperationOutcomeMessage = 'Another saga is in progress for this request, please try again later.';
               }
@@ -196,8 +195,6 @@ export default {
                 this.rejectOperationSuccessful = false;
                 this.rejectOperationOutcomeMessage = 'Your request to reject could not be accepted, please try again later.';
               }
-            })
-            .finally(() => {
               this.submitted();
             });
         }
@@ -228,16 +225,6 @@ export default {
             });
         }
       }
-    },
-    loadRequestDetails(){
-      ApiService.apiAxios
-        .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId)
-        .then(response => {
-          this.setRequest(response.data);
-        })
-        .catch(error => {
-          console.log(error);
-        });
     }
   }
 };
