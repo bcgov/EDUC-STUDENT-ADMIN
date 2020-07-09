@@ -182,6 +182,78 @@ async function rejectPenRequest(req, res) {
   }
 }
 
+async function completePenRequest(req, res) {
+  let thisSession = req['session'];
+  if (!thisSession.penRequest) {
+    log.error('Error attempting to complete request.  There is no request stored in session.');
+    return errorResponse(res);
+  }
+  const token = utils.getBackendToken(req);
+  if (!token) {
+    log.error('Error attempting to complete request.  Unable to get token.');
+    return unauthorizedError(res);
+  }
+
+  if (!thisSession.studentDemographics || !thisSession.studentDemographics['studGiven']) {
+    log.error('Error attempting to complete request.  There are no student demographics in session.');
+    return errorResponse(res);
+  }
+  
+  if(req.body.pen !== thisSession.studentDemographics.pen) {
+    log.error('Error attempting to complete request.  PEN in the request is different from the one in the session.');
+    return errorResponse(res);
+  }
+  
+  try {
+    const penRequest = {};
+
+    penRequest.penRequestStatusCode = req.body.penRequestStatusCode;
+    penRequest.digitalID = thisSession.penRequest.digitalID;
+    penRequest.penRequestID = req.body.penRequestID;
+
+    penRequest.pen = req.body.pen;
+    penRequest.legalFirstName = thisSession.studentDemographics['studGiven'];
+    penRequest.legalMiddleNames = thisSession.studentDemographics['studMiddle'];
+    penRequest.legalLastName = thisSession.studentDemographics['studSurname'];
+    penRequest.dob = thisSession.studentDemographics['dob'];
+    penRequest.sexCode = thisSession.studentDemographics['studSex'];
+    penRequest.genderCode = thisSession.studentDemographics['studSex'];
+    penRequest.usualFirstName = thisSession.studentDemographics['usualGiven'];
+    penRequest.usualMiddleNames = thisSession.studentDemographics['usualMiddle'];
+    penRequest.usualLastName = thisSession.studentDemographics['usualSurname'];
+    penRequest.localID = thisSession.studentDemographics['localID'];
+    penRequest.postalCode = thisSession.studentDemographics['postalCode'];
+    penRequest.gradeCode = thisSession.studentDemographics['grade'];
+    penRequest.mincode = thisSession.studentDemographics['mincode'];
+    penRequest.email = thisSession.penRequest.email;
+    penRequest.emailVerified = thisSession.penRequest.emailVerified;
+
+    penRequest.reviewer = req.body.reviewer;
+    penRequest.completeComment = req.body.completeComment;
+    penRequest.demogChanged = req.body.demogChanged;
+    penRequest.bcscAutoMatchOutcome = req.body.bcscAutoMatchOutcome;
+    penRequest.bcscAutoMatchDetails = req.body.bcscAutoMatchDetails;
+    penRequest.identityType = thisSession.identityType;
+    
+    const url = `${config.get('server:profileSagaAPIURL')}/pen-request-complete-saga`;
+    const sagaId = await utils.postData(token, url, penRequest);
+    const event = {
+      sagaId: sagaId,
+      penRequestID: penRequest.penRequestID,
+      sagaStatus: 'INITIATED'
+    };
+    log.info(`going to store event object in redis for complete pen request :: ${safeStringify(event)}`);
+    await redisUtil.createPenRequestSagaRecordInRedis(event);
+    return res.status(200).json();
+  } catch (e) {
+    logApiError(e, 'completePenRequest', 'Error occurred while attempting to complete a pen request.');
+    if(e.status === HttpStatus.CONFLICT){
+      return errorResponse(res,'Another saga is in progress');
+    }
+    return errorResponse(res);
+  }
+}
+
 
 module.exports = {
   findPenRequestsByPen,
@@ -189,5 +261,6 @@ module.exports = {
   createPenRequestCommentApiServiceReq,
   returnPenRequest,
   unlinkRequest,
-  rejectPenRequest
+  rejectPenRequest,
+  completePenRequest
 };

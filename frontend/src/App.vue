@@ -29,12 +29,10 @@ export default {
     }
   },
   created() {
-    this.setLoading(true);
     this.$store.dispatch('auth/getJwtToken').then(() => {
       this.$store.dispatch('auth/getUserInfo');
       this.$store.dispatch('student/getCodes');
     });
-    this.setLoading(false);
   },
   mounted() {
     /* window.addEventListener('beforeunload', function(e){
@@ -42,7 +40,6 @@ export default {
     });*/
   },
   methods:{
-    ...mapMutations('auth', ['setLoading']),
     ...mapActions('student', ['getCodes']),
     /*closeSessionOnBrowserClose(event){
         event.

@@ -1,46 +1,15 @@
 <template>
   <div>
     <v-alert
-      :value="unlinkOperationSuccessful"
+      v-model="alert"
       dense
       text
       dismissible
       outlined
       transition="scale-transition"
-      class="bootstrap-success" >
-      {{unlinkMessage}}
-    </v-alert>
-    <v-alert
-      :value="unlinkOperationSuccessful === false"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      class="bootstrap-error">
-     Your request to unlink could not be accepted. Please try again.
-    </v-alert>
-    <!-- This alert component is used to refresh the page automatically when saga is completed.-->
-    <v-alert
-      :value="false"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      class="bootstrap-success" >
-      {{notifications}}
-    </v-alert>
-    <v-alert
-      :value="completedUpdateSuccess"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      class="bootstrap-success"
+      :class="alertType"
     >
-      {{`${requestTypeLabel} completed and email sent to student.`}}
+      {{ alertMessage }}
     </v-alert>
     <v-alert
       :value="notAPenError"
@@ -52,17 +21,6 @@
       class="bootstrap-error"
     >
       The provided PEN is not valid.
-    </v-alert>
-    <v-alert
-      :value="completedUpdateSuccess === false"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      class="bootstrap-error"
-    >
-      {{`${requestTypeLabel} failed to update. Please navigate to the list and select this ${requestTypeLabel} again.`}}
     </v-alert>
     <v-card flat :disabled="!isProvidePenEnabledForUser">
       <v-row class="mx-0">
@@ -157,7 +115,7 @@
       <v-row justify="end" class="px-4">
           <v-checkbox v-model="request.demogChanged" true-value="Y" false-value="N" justify="flex-end" class="pa-0" cols="12" label="Student demographics changed"></v-checkbox>
           <v-col cols="2" xl="2" lg="2" md="2" class="pt-3">
-              <v-btn :disabled="!enableActions || !(request.penRequestStatusCode === 'MANUAL' || request.penRequestStatusCode === 'AUTO')" color="#38598a" justify="center" width="100%" :dark="enableActions && (request.penRequestStatusCode === 'MANUAL' || request.penRequestStatusCode === 'AUTO')" @click="unlinkRequest">Unlink</v-btn>
+            <v-btn :disabled="isUnlinkDisabled" color="#38598a" justify="center" width="100%" :dark="!isUnlinkDisabled" @click="unlinkRequest">Unlink</v-btn>
           </v-col>
         <v-col cols="3" xl="3" lg="3" md="3" class="pt-3">
           <v-btn :disabled="isCompleteDisabled" color="#38598a" justify="center" width="100%" :dark="isCompleteDark" @click="completeRequest">Provide PEN to Student</v-btn>
@@ -207,9 +165,6 @@ export default {
     return {
       validForm: false,
       requiredRules: [v => !!v || 'Required'],
-      completedUpdateSuccess:null,
-      unlinkOperationSuccessful: null,
-      unlinkMessage : null,
       notAPenError: false,
       penSearchId: null,
       demographics: {
@@ -225,12 +180,16 @@ export default {
       enableCompleteButton: false,
       numberOfDuplicatePenRequests:0,
       isProvidePenEnabledForUser:false,
+      alert: false,
+      alertMessage: null,
+      alertType: null,
+      completeSagaInProgress: false,
     };
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('app', ['selectedRequest', 'requestType', 'requestTypeLabel']),
-    //...mapGetters(this.requestType, ['completeMacros']),
+    ...mapGetters('notifications', ['notification']),
     actionName() {
       return 'PROVIDE_PEN';
     },
@@ -270,20 +229,6 @@ export default {
         return null;
       }
     },
-    notifications() {
-      let outcome = null;
-      let notification = this.$store.getters['notifications/notification'];
-      if (notification) {
-        notification = JSON.parse(notification);
-        if (notification && notification.penRequestID === this.requestId && notification.sagaStatus === 'COMPLETED' && notification.sagaName === 'PEN_REQUEST_UNLINK_SAGA') {
-          this.loadPenRequest();
-          outcome = 'SAGA_COMPLETED';
-          // eslint-disable-next-line
-          this.unlinkMessage = 'Your request to unlink is now completed.';
-        }
-      }
-      return outcome;
-    },
     isCompleteDisabled() {
       return !this.enableCompleteButton || !this.enableActions || this.request.penRequestStatusCode === 'DRAFT' || this.request.penRequestStatusCode === 'ABANDONED';
     },
@@ -295,17 +240,43 @@ export default {
     },
     isCompleteCommentDisabled(){
       return !this.enableCompleteButton || !this.enableActions || this.request.penRequestStatusCode === 'DRAFT' || this.request.penRequestStatusCode === 'ABANDONED';
-    }
+    },
+    isUnlinkDisabled() {
+      return (!this.enableActions || !(this.request.penRequestStatusCode === 'MANUAL' || this.request.penRequestStatusCode === 'AUTO')) && !this.completeSagaInProgress;
+    },
   },
   mounted() {
     this.isProvidePenEnabledForUser = AccessEnabledForUser(this.requestType, this.actionName, this.userInfo);
   },
   watch: {
-    'request.completeComment': 'validateCompleteAction'
+    'request.completeComment': 'validateCompleteAction',
+    notification(val) {
+      if (val) {
+        const notificationData = JSON.parse(val);
+        if (notificationData && notificationData.penRequestID && notificationData.penRequestID === this.requestId && notificationData.sagaStatus === 'COMPLETED') {
+          if (notificationData.sagaName === 'PEN_REQUEST_UNLINK_SAGA') {
+            this.setSuccessAlert('Your request to unlink is now completed.');
+          } else if (notificationData.sagaName === 'PEN_REQUEST_COMPLETE_SAGA') {
+            this.completeSagaInProgress = false;
+            this.setSuccessAlert(`${this.requestTypeLabel} completed and email sent to student.`);
+          }
+        }
+      }
+    },
   },
   methods: {
     ...mapMutations('app', ['setRequest']),
     ...mapMutations('app', ['pushMessage']),
+    setSuccessAlert(message) {
+      this.alertMessage = message;
+      this.alertType = 'bootstrap-success';
+      this.alert = true;
+    },
+    setFailureAlert(message) {
+      this.alertMessage = message;
+      this.alertType = 'bootstrap-error';
+      this.alert = true;
+    },
     validateCompleteAction() {
       this.$refs.completeForm.validate();
     },
@@ -315,7 +286,7 @@ export default {
     completeRequest() {
       if(this.$refs.completeForm.validate()) {
         this.beforeSubmit();
-        this.completedUpdateSuccess = null;
+        this.alert = false;
         this.request.pen = this.penSearchId;
         if (this.request.bcscAutoMatchOutcome === Statuses.AUTO_MATCH_RESULT_CODES.ONE_MATCH && this.autoPenResults === this.penSearchId) {
           this.request.bcscAutoMatchOutcome = Statuses.AUTO_MATCH_RESULT_CODES.RIGHT_PEN;
@@ -327,50 +298,38 @@ export default {
         this.request.reviewer = this.myself.name;
         ApiService.apiAxios
           .post(Routes[this.requestType].COMPLETE_URL, this.prepPut(this.requestId, this.request))
-          .then(response => {
-            this.setRequest(response.data);
-            this.completedUpdateSuccess = true;
+          .then(() => {
+            this.setSuccessAlert('Your request to complete is accepted.');
+            this.completeSagaInProgress = true;
           })
           .catch(error => {
             console.log(error);
-            this.completedUpdateSuccess = false;
-          })
-          .finally(() => {
+            if (error.response.data && error.response.data.message && error.response.data.message.includes('saga in progress')) {
+              this.setFailureAlert('Another saga is in progress for this request, please try again later.');
+            } else {
+              this.setFailureAlert(`${this.requestTypeLabel} failed to update. Please navigate to the list and select this ${this.requestTypeLabel} again.`);
+            }
             this.submitted();
           });
       }
     },
     unlinkRequest() {
       this.beforeSubmit();
-      this.unlinkOperationSuccessful = null;
+      this.alert = false;
       this.request.reviewer = this.myself.name;
       ApiService.apiAxios
         .post(Routes[this.requestType].UNLINK_URL, this.prepPut(this.requestId, this.request))
         .then(() => {
-          this.unlinkOperationSuccessful = true;
-          this.unlinkMessage ='Your request to unlink is accepted.';
+          this.setSuccessAlert('Your request to unlink is accepted.');
+          this.completeSagaInProgress = false;
         })
         .catch(error => {
           console.log(error);
-          this.unlinkOperationSuccessful = false;
-        })
-        .finally(() => {
-          this.submitted();
-        });
-    },
-    loadPenRequest(){
-      ApiService.apiAxios
-        .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId)
-        .then(response => {
-          this.setRequest(response.data);
-          if(this.request[this.requestStatusCodeName] === this.statusCodes.REJECTED) {
-            this.activeTab = 2;
+          if (error.response.data && error.response.data.message && error.response.data.message.includes('saga in progress')) {
+            this.setFailureAlert('Another saga is in progress for this request, please try again later.');
+          } else {
+            this.setFailureAlert('Your request to unlink could not be accepted. Please try again.');
           }
-        })
-        .catch(error => {
-          console.log(error);
-        })
-        .finally(() => {
           this.submitted();
         });
     },

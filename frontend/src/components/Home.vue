@@ -13,18 +13,18 @@
     <!-- login article -->
     <article name="login-banner" class="top-banner">
       <v-row align="center" justify="center" width="100%">
-        <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12"><v-content><UnAuthorized/></v-content></v-col>
+        <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12"><v-main><UnAuthorized/></v-main></v-col>
       </v-row>
     </article>
   </v-container>
-  <v-content v-else-if="!selectedStudent && !selectedRequest && isAuthenticated">
+  <v-main v-else-if="!selectedStudent && !selectedRequest && isAuthenticated">
     <RequestsPage></RequestsPage>
-  </v-content>
-  <v-content v-else>
+  </v-main>
+  <v-main v-else>
     <PenRequestDetail v-if="requestType === requestTypes.penRequest.name"></PenRequestDetail>
     <StudentRequestDetail v-else-if="requestType === requestTypes.studentRequest.name"></StudentRequestDetail>
     <StudentDetail v-else-if="selectedStudent"></StudentDetail>
-  </v-content>
+  </v-main>
 </template>
 
 <script>
