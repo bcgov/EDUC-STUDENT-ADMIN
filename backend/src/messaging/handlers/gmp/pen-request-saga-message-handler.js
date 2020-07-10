@@ -40,7 +40,7 @@ const PenRequestSagaMessageHandler = {
    * @param stan
    */
   subscribe(stan) {
-    const opts = stan.subscriptionOptions().setStartWithLastReceived();
+    const opts = stan.subscriptionOptions().setStartAt(0);
     opts.setDurableName('student-admin-node-consumer');
     this.penRequestReturnSagaSubscription(stan, opts);
     this.penRequestUnlinkSagaSubscription(stan, opts);
@@ -48,7 +48,7 @@ const PenRequestSagaMessageHandler = {
   },
   async handlePenRequestSagaMessage(msg) {
     const event = JSON.parse(msg.getData()); // it is always a JSON string of Event object.
-    log.silly(`received message for SAGA ID :: ${event.sagaId} :: getSequence ${msg.getSequence()} :: event :: ${msg.getData()}`);
+    log.silly(`received message for SAGA ID :: ${event.sagaId} :: getSequence ${msg.getSequence()} :: event :: `, event);
     if('COMPLETED' === event.sagaStatus || 'FORCE_STOPPED' === event.sagaStatus){
       const recordFoundInRedis = await redisUtil.removePenRequestSagaRecordFromRedis(event); // if record is not found in redis means duplicate message which was already processed.
       if(recordFoundInRedis){
