@@ -34,9 +34,9 @@ async function getData(token, url, params) {
     }
     log.info('get Data Url', url);
     const response = await axios.get(url, params);
-    log.info(`get Data Status for url ${url} :: is :: ${response.status}`);
-    log.info(`get Data StatusText for url ${url}  :: is :: ${response.statusText}`);
-    log.verbose(`get Data Response for url ${url}  :: is :: ${minify(response.data)}`);
+    log.info(`get Data Status for url ${url} :: is :: `, response.status);
+    log.info(`get Data StatusText for url ${url}  :: is :: `, response.statusText);
+    log.verbose(`get Data Response for url ${url}  :: is :: `, minify(response.data));
 
     return response.data;
   } catch (e) {
@@ -81,9 +81,9 @@ async function postData(token, url, data, params) {
     data.updateUser='STUDENT-ADMIN';
     const response = await axios.post(url, data, params);
 
-    log.info(`post Data Status for url ${url} :: is :: ${response.status}`);
-    log.info(`post Data StatusText for url ${url}  :: is :: ${response.statusText}`);
-    log.verbose(`post Data Response for url ${url}  :: is :: ${minify(response.data)}`);
+    log.info(`post Data Status for url ${url} :: is :: `, response.status);
+    log.info(`post Data StatusText for url ${url}  :: is :: `, response.statusText);
+    log.verbose(`post Data Response for url ${url}  :: is :: `, minify(response.data));
 
     return response.data;
   } catch(e) {
@@ -107,9 +107,9 @@ async function putData(token, url, data) {
     data.updateUser='STUDENT-ADMIN';
     const response = await axios.put(url, data, putDataConfig);
 
-    log.info(`put Data Status for url ${url} :: is :: ${response.status}`);
-    log.info(`put Data StatusText for url ${url}  :: is :: ${response.statusText}`);
-    log.verbose(`put Data Response for url ${url}  :: is :: ${minify(response.data)}`);
+    log.info(`put Data Status for url ${url} :: is :: `, response.status);
+    log.info(`put Data StatusText for url ${url}  :: is :: `, response.statusText);
+    log.verbose(`put Data Response for url ${url}  :: is :: `, minify(response.data));
 
     return response.data;
   } catch(e) {
