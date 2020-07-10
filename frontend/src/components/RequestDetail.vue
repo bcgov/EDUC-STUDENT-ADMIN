@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
     <v-container class="fill-height">
       <v-col cols="12" class="fill-height pb-5">
         <v-row class="flex-grow-0 pb-5">
@@ -188,7 +188,7 @@
         </v-row>
       </v-col>
     </v-container>
-  </v-content>
+  </v-main>
 </template>
 <script>
 import Chat from './Chat';
@@ -420,24 +420,22 @@ export default {
     },
     refreshRequestDetailsAndComments(){
       ApiService.apiAxios
+        .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId + '/comments')
+        .then(response => {
+          this.setParticipants(response.data.participants);
+          this.setMessages(response.data.messages);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+
+      return ApiService.apiAxios
         .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId)
         .then(response => {
           this.setRequest(response.data);
           if(this.request[this.requestStatusCodeName] === this.statusCodes.REJECTED) {
             this.activeTab = 2;
           }
-          if(response.data && response.data.sagaInProgress){
-            this.sagaInProgress = true;
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        });
-      ApiService.apiAxios
-        .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId + '/comments')
-        .then(response => {
-          this.setParticipants(response.data.participants);
-          this.setMessages(response.data.messages);
         })
         .catch(error => {
           console.log(error);
@@ -451,8 +449,10 @@ export default {
         if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && notificationData.sagaStatus === 'INITIATED') {
           this.beforeSubmit();
         } else if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && (notificationData.sagaStatus === 'COMPLETED' || notificationData.sagaStatus === 'FORCE_STOPPED')) {
-          this.refreshRequestDetailsAndComments();
-          this.submitted();
+          this.refreshRequestDetailsAndComments()
+            .finally(() => {
+              this.submitted();
+            });
         }
       }
     }
