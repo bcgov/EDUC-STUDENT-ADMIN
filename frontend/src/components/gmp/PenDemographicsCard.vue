@@ -113,6 +113,7 @@ export default {
   },
   watch: {
     'request.penRequestStatusCode': function() {
+      this.showDemographics = false;
       if(this.request.pen && (this.request.penRequestStatusCode === this.statusCodes.MANUAL_MATCH || this.request.penRequestStatusCode === this.statusCodes.AUTO_MATCH)) {
         this.showDemographics = true;
         this.loadingDemographics = true;
