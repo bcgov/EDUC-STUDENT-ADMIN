@@ -5,27 +5,41 @@ const redisUtil = require('../../../util/redis/redis-utils');
 const webSocket = require('../../../socket/web-socket');
 
 const SagaTopics = ['PEN_REQUEST_RETURN_SAGA_TOPIC', 'PEN_REQUEST_UNLINK_SAGA_TOPIC', 'PEN_REQUEST_REJECT_SAGA_TOPIC', 'PEN_REQUEST_COMPLETE_SAGA_TOPIC'];
+const SagaEventWebSocketTopic = 'SAGA_EVENT_WS_TOPIC';
 
 function subscribeSagaMessages(stan, opts, topic, handleMessage) {
-  const sagaSubscription = stan.subscribe(topic, '', opts);// no queue group as all the pods need the messages to broadcast to websocket clients.
+  const sagaSubscription = stan.subscribe(topic, 'student-admin-pen-req-saga-queue-group', opts);
   sagaSubscription.on('error', (err) => {
     log.error(`subscription for ${topic} raised an error: ${err}`);
   });
+  sagaSubscription.on('ready', () => {
+    log.info(`subscribed to ${topic}`);
+  });
   sagaSubscription.on('message', (msg) => {
-    handleMessage(msg);
+    log.silly(`Received message, on ${msg.getSubject()} , Sequence ::  [${msg.getSequence()}] :: Data ::`, JSON.parse(msg.getData()));
+    handleMessage(msg, stan);
   });
 }
 
-async function handlePenRequestSagaMessage(msg) {
+async function handlePenRequestSagaMessage(msg, stan) {
+  let isWebSocketBroadcastingRequired = false;
   const event = JSON.parse(msg.getData()); // it is always a JSON string of Event object.
-  log.silly(`received message for SAGA ID :: ${event.sagaId} :: getSequence ${msg.getSequence()} :: event :: `, event);
   if('COMPLETED' === event.sagaStatus || 'FORCE_STOPPED' === event.sagaStatus){
     const recordFoundInRedis = await redisUtil.removePenRequestSagaRecordFromRedis(event); // if record is not found in redis means duplicate message which was already processed.
     if(recordFoundInRedis){
-      broadCastMessageToWebSocketClients(msg.getData());
+      isWebSocketBroadcastingRequired = true;
     }
   }else if('INITIATED' === event.sagaStatus) {
-    broadCastMessageToWebSocketClients(msg.getData());
+    isWebSocketBroadcastingRequired = true;
+  }
+  if(isWebSocketBroadcastingRequired){
+    stan.publish(SagaEventWebSocketTopic, msg.getData(), (err, guid) => {
+      if (err) {
+        log.error(`Error publishing to ${SagaEventWebSocketTopic}`, err);
+      } else {
+        log.silly(`published to :: ${SagaEventWebSocketTopic} :: (${guid})`);
+      }
+    });
   }
 }
 
@@ -42,9 +56,27 @@ function broadCastMessageToWebSocketClients(msg){
   }
 }
 
+function subscribeToWebSocketMessageTopic(stan, opts) {
+  const SagaEventWebSocketTopicSubscription = stan.subscribe(SagaEventWebSocketTopic, '', opts);
+  SagaEventWebSocketTopicSubscription.on('error', (err) => {
+    log.error(`subscription for ${SagaEventWebSocketTopic} raised an error: ${err}`);
+  });
+  SagaEventWebSocketTopicSubscription.on('ready', () => {
+    log.info(`subscribed to ${SagaEventWebSocketTopic}`);
+  });
+  SagaEventWebSocketTopicSubscription.on('message', (msg) => {
+    log.silly(`Received message, on ${msg.getSubject()} , Sequence ::  [${msg.getSequence()}] :: Data ::`, JSON.parse(msg.getData()));
+    broadCastMessageToWebSocketClients(msg.getData());
+  });
+}
+
 const PenRequestSagaMessageHandler = {
   /**
    * This is where all the subscription will be done related pen requests
+   * due to this issue https://github.com/nats-io/stan.go/issues/208
+   * system is needed to have queue group subscription so that message is never lost if all the pod dies,
+   * refer to this https://docs.nats.io/nats-streaming-concepts/channels/subscriptions/queue-group
+   * create a separate topic for pub sub of messages related to websocket clients.
    * @param stan
    */
   subscribe(stan) {
@@ -53,6 +85,7 @@ const PenRequestSagaMessageHandler = {
     SagaTopics.forEach((topic) => {
       subscribeSagaMessages(stan, opts, topic, handlePenRequestSagaMessage);
     });
+    subscribeToWebSocketMessageTopic(stan, opts);
   },
 
 };

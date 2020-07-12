@@ -83,7 +83,7 @@ async function postData(token, url, data, params) {
 
     log.info(`post Data Status for url ${url} :: is :: `, response.status);
     log.info(`post Data StatusText for url ${url}  :: is :: `, response.statusText);
-    log.verbose(`post Data Response for url ${url}  :: is :: `, minify(response.data));
+    log.verbose(`post Data Response for url ${url}  :: is :: `, typeof response.data === 'string' ? response.data : minify(response.data));
 
     return response.data;
   } catch(e) {
