@@ -172,15 +172,11 @@
               clearable
             ></v-text-field>
           </template>
-          <template v-slot:item.initialSubmitDate="{ item }">
-            <span v-if="item.initialSubmitDate == null"></span>
-            <span v-else>{{moment(item.initialSubmitDate).format('YYYY-MM-DD LT') }}</span>
-          </template>
           <template v-slot:no-data>There are no requests with the selected statuses.</template>
           <template v-slot:item="{ item }">
             <tr :class="item.sagaInProgress? 'blue-grey lighten-3' :''" @click="viewRequestDetails(item)">
               <td>{{item[`${requestType}StatusCode`].label}}</td>
-              <td>{{item.initialSubmitDate}}</td>
+              <td>{{item.initialSubmitDate?moment(item.initialSubmitDate).format('YYYY-MM-DD LT'):'' }}</td>
               <td>{{item[`${penName}`]}}</td>
               <td>{{item.legalLastName}}</td>
               <td>{{item.legalFirstName}}</td>
