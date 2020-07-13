@@ -64,7 +64,7 @@ function getDomainWinstonLoggerFormat(colors = true) {
 function getDomainWinstonLoggerJsonFormat() {
   const loggingFormats = [
     format.timestamp({
-      format: 'YYYY-MM-DD HH:mm:ss'
+      format: 'YYYY-MM-DD HH:mm:ss.SSS'
     }),
     format.errors({ stack: true }),
     format.printf((info) => {
