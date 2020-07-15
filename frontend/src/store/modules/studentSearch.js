@@ -1,12 +1,32 @@
 export default {
   namespaced: true,
   state: {
+    isAdvancedSearch: false,
     pageNumber: 1,
     headerSortParams: {
       currentSort: 'dob',
       currentSortAsc: true
     },
     selectedRecords: [],
+    studentSearchParams: {
+      pen: null,
+      legalLastName: null,
+      legalFirstName: null,
+      legalMiddleNames: null,
+      postalCode: null,
+      genderCode: null,
+      dob: {
+        startDate: null,
+        endDate: null
+      },
+      mincode: null,
+      usualLastName: null,
+      usualFirstName: null,
+      usualMiddleNames: null,
+      memo: null,
+      localID: null,
+      gradeCode: null
+    },
     studentSearchResponse: null
   },
   mutations: {
@@ -19,6 +39,9 @@ export default {
     setStudentSearchResponse: (state, studentSearchResponse) => {
       state.studentSearchResponse = studentSearchResponse;
     },
+    setStudentSearchParams: (state, studentSearchParams) => {
+      state.studentSearchParams = studentSearchParams;
+    },
     updateSortParams: (state, sortHeader) => {
       if (sortHeader === state.headerSortParams.currentSort) {
         state.headerSortParams.currentSortAsc = !state.headerSortParams.currentSortAsc;
@@ -26,6 +49,9 @@ export default {
       } else {
         state.headerSortParams.currentSort = sortHeader;
       }
+    },
+    toggleSearchType: (state) => {
+      state.isAdvancedSearch = !state.isAdvancedSearch;
     }
   }
 };

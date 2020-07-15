@@ -143,6 +143,11 @@ export default {
       if (studentSearchKeys && studentSearchKeys.length > 0) {
         studentSearchFilters = {};
         studentSearchKeys.forEach(element => {
+          if(element === 'dob') {
+            if(!this.searchCriteria[element].startDate) {
+              return;
+            }
+          }
           studentSearchFilters[element] = this.searchCriteria[element];
         });
       }

@@ -28,11 +28,11 @@
       <v-tab-item
         :value="requestTypes.studentSearch.name"
       >
-        <StudentSearch
+        <StudentSearchDisplay
           :requestType="requestTypes.studentSearch.name"
           label="Select UMP request statuses to view"
           penName="recordedPen"
-        ></StudentSearch>
+        ></StudentSearchDisplay>
       </v-tab-item>
     </v-tabs>
   </v-container>
@@ -42,12 +42,12 @@
 import { mapGetters, mapMutations } from 'vuex';
 import { REQUEST_TYPES } from '../utils/constants';
 import RequestsDisplay from './RequestsDisplay';
-import StudentSearch from './penreg/student-search/StudentSearch';
+import StudentSearchDisplay from './penreg/student-search/StudentSearchDisplay';
 export default {
   name: 'requestsPage',
   components: {
     RequestsDisplay,
-    StudentSearch
+    StudentSearchDisplay
   },
   data() {
     if(this.isValidGMPUser){

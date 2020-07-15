@@ -20,10 +20,15 @@ async function searchStudent(req, res) {
     Object.keys(searchQueries).forEach(element => {
       let operation = 'starts_with_ignore_case';
       let valueType = 'STRING';
-
       if (element === 'dob') {
-        searchQueries[element] = searchQueries[element].replace(/\//g, '-');
-        operation = 'eq';
+        if (!searchQueries[element].endDate) {
+          searchQueries[element].endDate = searchQueries[element].startDate;
+        }
+        searchQueries[element].endDate = searchQueries[element].endDate.replace(/\//g, '-');
+        searchQueries[element].startDate = searchQueries[element].startDate.replace(/\//g, '-');
+        searchQueries[element] = searchQueries[element].startDate +',' + searchQueries[element].endDate;
+
+        operation = 'btn';
         valueType = 'DATE';
       }else if (element.includes('Name')) {
         operation = 'starts_with_ignore_case';
