@@ -7,6 +7,7 @@ pipeline{
     extJSHelper = '';
     NAMESPACE='c2mvws'
     COMMON_NAMESPACE='mvubjx'
+    STAGING_ENV = 'Dev'
     TOOLS = 'c2mvws-tools'
     DEV = 'c2mvws-dev'
     TEST = 'c2mvws-test'
@@ -15,6 +16,9 @@ pipeline{
     TESTS_REPO_NAME = 'educ-e2e-pen-registry'
     OWNER = 'bcgov'
     JOB_NAME = 'master'
+    TAG = 'latest'
+    TARGET_ENV = 'dev'
+    TARGET_ENVIRONMENT = "${NAMESPACE}-${TARGET_ENV}"
 
     APP_NAME = 'student-admin'
     APP_DOMAIN = 'pathfinder.gov.bc.ca'
@@ -32,7 +36,10 @@ pipeline{
     MIN_CPU = "25m"
     MAX_CPU = "50m"
     MIN_MEM = "150Mi"
-    MAX_MEM = "250Mi"    
+    MAX_MEM = "250Mi"
+    DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/openshift/frontend-static.dc.yaml"
+    DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/openshift/backend.dc.yaml"
+
   }
 
   stages {
@@ -128,7 +135,7 @@ pipeline{
 	stage('Promote and configure DEV') {
       steps{
         script{
-            extJSHelper.performUIDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, APP_NAME, JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE, COMMON_NAMESPACE)
+            extJSHelper.performUIDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, APP_NAME, JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL_FRONTEND, DC_URL_BACKEND, MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE, COMMON_NAMESPACE)
         }
       }
       post{
