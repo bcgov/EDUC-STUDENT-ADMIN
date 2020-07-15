@@ -186,6 +186,8 @@
 <script>
 
 import {mapState} from 'vuex';
+import {LocalDate} from '@js-joda/core';
+let JSJoda = require('@js-joda/core');
 
 export default {
   props: {
@@ -225,10 +227,11 @@ export default {
       type: Function,
       required: true
     },
-    validateDOB: {
-      type: Function,
-      required: true
-    }
+  },
+  data() {
+    return {
+      dobHint: 'Invalid Birth Date',
+    };
   },
   mounted() {
     if(this.studentSearchParams.dob.endDate) {
@@ -237,6 +240,32 @@ export default {
   },
   computed: {
     ...mapState('studentSearch', ['studentSearchParams']),
+  },
+  methods: {
+    validateDOB(){
+      if(this.studentSearchParams) {
+        if(!this.studentSearchParams.dob.startDate){
+          return [];
+        }
+        else {
+          const formatter = (new JSJoda.DateTimeFormatterBuilder)
+            .appendPattern('uuuu/MM/dd')
+            .toFormatter(JSJoda.ResolverStyle.STRICT);
+          try {
+            const dateObject = JSJoda.LocalDate.parse(this.studentSearchParams.dob.startDate, formatter);
+            if(dateObject.isBefore(LocalDate.now())){
+              return [];
+            }
+          }
+          catch(err){
+            //Do nothing
+          }
+        }
+      }
+      return [
+        this.dobHint
+      ];
+    }
   }
 };
 </script>

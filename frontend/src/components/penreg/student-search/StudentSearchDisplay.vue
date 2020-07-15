@@ -20,7 +20,6 @@
                   :validateMincode="validateMincode"
                   :uppercasePostal="uppercasePostal"
                   :validatePostal="validatePostal"
-                  :validateDOB="validateDOB"
                   v-if="!this.isAdvancedSearch">
           </StudentBasicSearch>
           <StudentAdvancedSearch
@@ -62,7 +61,6 @@ import { mapGetters, mapMutations, mapState } from 'vuex';
 import StudentSearchResults from './StudentSearchResults';
 import StudentBasicSearch from './StudentBasicSearch';
 import StudentAdvancedSearch from './StudentAdvancedSearch';
-let JSJoda = require('@js-joda/core');
 
 export default {
   components: {
@@ -74,7 +72,6 @@ export default {
     return {
       penHint: 'Invalid PEN',
       postalCodeHint: 'Invalid Postal Code',
-      dobHint: 'Invalid Birth Date',
       mincodeHint: 'Not enough digits',
       genderHint: 'Invalid gender',
       validForm: false,
@@ -154,30 +151,6 @@ export default {
           this.penHint
         ];
       }
-    },
-    validateDOB(){
-      if(this.studentSearchParams) {
-        if(!this.studentSearchParams.dob.startDate){
-          return [];
-        }
-        else {
-          const formatter = (new JSJoda.DateTimeFormatterBuilder)
-            .appendPattern('uuuu/MM/dd')
-            .toFormatter(JSJoda.ResolverStyle.STRICT);
-          try {
-            const dateObject = JSJoda.LocalDate.parse(this.studentSearchParams.dob.startDate, formatter);
-            if(dateObject.isBefore(LocalDate.now())){
-              return [];
-            }
-          }
-          catch(err){
-            //Do nothing
-          }
-        }
-      }
-      return [
-        this.dobHint
-      ];
     },
     validateGender(){
       if(this.studentSearchParams) {

@@ -23,9 +23,21 @@
         <v-col cols="2">Date of Birth</v-col>
         <v-col cols="3">
           <v-row no-gutters>
-            <v-col cols="4"><v-text-field v-model="startDOB.year" dense filled outlined minLength="4" maxlength="4" placeholder="YYYY"></v-text-field></v-col>
-            <v-col cols="3" class="mx-2"><v-text-field v-model="startDOB.month" dense filled outlined placeholder="MM"></v-text-field></v-col>
-            <v-col cols="3"><v-text-field v-model="startDOB.day" dense filled outlined placeholder="DD"></v-text-field></v-col>
+            <v-col cols="4">
+              <v-text-field v-model="startDOB.year" dense filled outlined minLength="4" maxlength="4" placeholder="YYYY"
+                :rules="validateStartDOBYear(startDOB.year)" @keyup.enter="enterPushed()"
+                v-on:input="searchHasValues"></v-text-field>
+            </v-col>
+            <v-col cols="3" class="mx-2">
+              <v-text-field v-model="startDOB.month" dense filled outlined minLength="2" maxlength="2" placeholder="MM"
+                 :rules="validateStartDOBMonth(startDOB.month)" @keyup.enter="enterPushed()"
+                 v-on:input="searchHasValues"></v-text-field>
+            </v-col>
+            <v-col cols="3">
+              <v-text-field v-model="startDOB.day" dense filled outlined minLength="2" maxlength="2" placeholder="DD"
+                :rules="validateStartDOBDay(startDOB.day, startDOB.month, startDOB.year)" @keyup.enter="enterPushed()"
+                v-on:input="searchHasValues"></v-text-field>
+            </v-col>
           </v-row>
         </v-col>
         <v-col cols="2">
@@ -33,9 +45,9 @@
         </v-col>
         <v-col cols="3">
           <v-row no-gutters v-if="this.useDOBRange">
-            <v-col cols="4" class="ml-3"><v-text-field dense filled outlined placeholder="YYYY" v-model="endDOB.year"></v-text-field></v-col>
-            <v-col cols="3" class="mx-2"><v-text-field dense filled outlined placeholder="MM" v-model="endDOB.month"></v-text-field></v-col>
-            <v-col cols="3"><v-text-field dense filled outlined placeholder="DD" v-model="endDOB.day"></v-text-field></v-col>
+            <v-col cols="4" class="ml-3"><v-text-field dense filled outlined placeholder="YYYY" minLength="4" maxlength="4" v-model="endDOB.year"></v-text-field></v-col>
+            <v-col cols="3" class="mx-2"><v-text-field dense filled outlined placeholder="MM" minLength="2" maxlength="2" v-model="endDOB.month"></v-text-field></v-col>
+            <v-col cols="3"><v-text-field dense filled outlined placeholder="DD" minLength="2" maxlength="2" v-model="endDOB.day"></v-text-field></v-col>
           </v-row>
         </v-col>
       </v-row>
@@ -224,6 +236,7 @@
 
 <script>
 import { mapState } from 'vuex';
+import {LocalDate} from '@js-joda/core';
 export default {
   name: 'SearchAdvancedSearch',
   props: {
@@ -313,6 +326,27 @@ export default {
       }
       return null;
     },
+  },
+  methods: {
+    validateStartDOBYear(year) {
+      if(year) {
+        return LocalDate.now().year() >= year?[]:['*'];
+      }
+      return [];
+    },
+    validateStartDOBMonth(month) {
+      if(month) {
+        return month <= 12 && month > 0?[]:['*'];
+      }
+      return [];
+    },
+    validateStartDOBDay(day, month, year) {
+      if(day && month && year) {
+        const daysInMonth = LocalDate.of(year, month, 1).lengthOfMonth();
+        return day <= daysInMonth && day > 0?[]:['*'];
+      }
+      return [];
+    }
   }
 };
 </script>
