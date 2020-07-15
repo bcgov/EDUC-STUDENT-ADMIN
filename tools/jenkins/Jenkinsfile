@@ -4,6 +4,7 @@ pipeline{
   environment{
     DEBUG_OUTPUT = 'false'
 
+    extJSHelper = '';
     NAMESPACE='c2mvws'
     COMMON_NAMESPACE='mvubjx'
     TOOLS = 'c2mvws-tools'
@@ -46,6 +47,8 @@ pipeline{
             echo 'DEBUG - All pipeline environment variables:'
             echo sh(returnStdout: true, script: 'env')
           }
+          sh "wget -O - https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/deployHelpers.js > deployHelpers.js"
+          extJSHelper = evaluate readFile('deployHelpers.js')
         }
       }
     }
