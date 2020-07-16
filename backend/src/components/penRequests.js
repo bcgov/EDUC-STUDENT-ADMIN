@@ -7,7 +7,6 @@ const redisUtil = require('../util/redis/redis-utils');
 const {ApiError} = require('./error');
 const {LocalDateTime} = require('@js-joda/core');
 const log = require('./logger');
-const safeStringify = require('fast-safe-stringify');
 
 function createPenRequestApiServiceReq(penRequest, req) {
   penRequest.pen = req.body.pen;
@@ -89,7 +88,7 @@ async function returnPenRequest(req, res) {
       penRequestID: penRequest.penRetrievalRequestID,
       sagaStatus: 'INITIATED'
     };
-    log.info(`going to store event object in redis for return pen request :: ${safeStringify(event)}`);
+    log.info('going to store event object in redis for return pen request :: ',event);
     await redisUtil.createPenRequestSagaRecordInRedis(event);
     return res.status(200).json();
   } catch (e) {
@@ -137,7 +136,7 @@ async function unlinkRequest(req, res) {
       penRequestID: request.penRequestID,
       sagaStatus: 'INITIATED'
     };
-    log.info(`going to store event object in redis for unlink pen request :: ${safeStringify(event)}`);
+    log.info('going to store event object in redis for unlink pen request :: ',event);
     await redisUtil.createPenRequestSagaRecordInRedis(event);
     return res.status(200).json({sagaId: response});
   } catch (e) {
@@ -170,7 +169,7 @@ async function rejectPenRequest(req, res) {
       penRequestID: penRequest.penRetrievalRequestID,
       sagaStatus: 'INITIATED'
     };
-    log.info(`going to store event object in redis for return pen request :: ${safeStringify(event)}`);
+    log.info('going to store event object in redis for reject pen request :: ',event);
     await redisUtil.createPenRequestSagaRecordInRedis(event);
     return res.status(200).json();
   } catch (e) {
@@ -242,7 +241,7 @@ async function completePenRequest(req, res) {
       penRequestID: penRequest.penRequestID,
       sagaStatus: 'INITIATED'
     };
-    log.info(`going to store event object in redis for complete pen request :: ${safeStringify(event)}`);
+    log.info('going to store event object in redis for complete pen request :: ',event);
     await redisUtil.createPenRequestSagaRecordInRedis(event);
     return res.status(200).json();
   } catch (e) {
