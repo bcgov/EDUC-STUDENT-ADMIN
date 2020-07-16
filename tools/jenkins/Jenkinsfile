@@ -4,8 +4,10 @@ pipeline{
   environment{
     DEBUG_OUTPUT = 'false'
 
+    extJSHelper = '';
     NAMESPACE='c2mvws'
     COMMON_NAMESPACE='mvubjx'
+    STAGING_ENV = 'Dev'
     TOOLS = 'c2mvws-tools'
     DEV = 'c2mvws-dev'
     TEST = 'c2mvws-test'
@@ -14,6 +16,9 @@ pipeline{
     TESTS_REPO_NAME = 'educ-e2e-pen-registry'
     OWNER = 'bcgov'
     JOB_NAME = 'master'
+    TAG = 'latest'
+    TARGET_ENV = 'dev'
+    TARGET_ENVIRONMENT = "${NAMESPACE}-${TARGET_ENV}"
 
     APP_NAME = 'student-admin'
     APP_DOMAIN = 'pathfinder.gov.bc.ca'
@@ -32,6 +37,9 @@ pipeline{
     MAX_CPU = "50m"
     MIN_MEM = "150Mi"
     MAX_MEM = "250Mi"
+    DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/openshift/frontend-static.dc.yaml"
+    DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/openshift/backend.dc.yaml"
+
   }
 
   stages {
@@ -46,6 +54,8 @@ pipeline{
             echo 'DEBUG - All pipeline environment variables:'
             echo sh(returnStdout: true, script: 'env')
           }
+          sh "wget -O - https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/deployHelpers.js > deployHelpers.js"
+          extJSHelper = evaluate readFile('deployHelpers.js')
         }
       }
     }
@@ -122,63 +132,11 @@ pipeline{
         }
       }
     }
-    stage('Initial deploy to Dev'){
-      environment {
-        APP_NAME = "student-admin"
-        DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/frontend-static.dc.yaml"
-        DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/backend.dc.yaml"
-      }
-      steps{
-        script {
-          openshift.withCluster() {
-            openshift.withProject(DEV) {
-              def frontendDC = openshift.selector('dc', "${APP_NAME}-frontend-${JOB_NAME}")
-              def backendDC = openshift.selector('dc', "${APP_NAME}-backend-${JOB_NAME}")
-              if (!frontendDC.exists() || !backendDC.exists()) {
-                deployStage('Dev', DEV, 'educ-student-admin', 'student-admin', 'master', 'dev', TOOLS, DEV, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}")
-              } else {
-                echo "Deployments already exists, so skipping to config map update"
-              }
-            }
-          }
-        }
-      }
-      post{
-        success{
-          echo 'Deployment to Dev was successful'
-        }
-        failure{
-          echo 'Deployment to Dev failed'
-        }
-      }
-    }
-    stage('Create/Update Config Maps'){
-      environment {
-        APP_NAME = "student-admin"
-      }
+	stage('Promote and configure DEV') {
       steps{
         script{
-          dir('tools/jenkins'){
-            sh "bash ./download-kc.sh \"${NAMESPACE}\""
-          }
+            extJSHelper.performUIDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, APP_NAME, JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL_FRONTEND, DC_URL_BACKEND, MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE, COMMON_NAMESPACE)
         }
-        configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
-        script{
-          dir('tools/jenkins'){
-            def configVars
-            sh "bash ./update-configmap.sh \"dev\" ${APP_NAME} ${NAMESPACE} ${COMMON_NAMESPACE}"
-          }
-        }
-      }
-    }
-    stage('Deploy to Dev'){
-      environment {
-        APP_NAME = "student-admin"
-        DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/frontend-static.dc.yaml"
-        DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/backend.dc.yaml"
-      }
-      steps{
-        deployStage('Dev', DEV, 'educ-student-admin', 'student-admin', 'master', 'dev', TOOLS, DEV, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}")
       }
       post{
         success{
@@ -197,151 +155,6 @@ pipeline{
             waitForWorkflowRunComplete(TOKEN)
           }
         }
-      }
-    }
-  }
-}
-
-def configMapSetup(String appName,String appNameUpper, String namespace){
-  script {
-
-    try{
-      sh( script: "oc project ${namespace}-dev", returnStdout: true)
-      sh( script: "oc describe configmaps ${appName}-dev-setup-config", returnStdout: true)
-      sh( script: "oc project ${namespace}-tools", returnStdout: true)
-      echo 'Config map already exists. Moving to next stage...'
-    } catch(e){
-      configProperties = input(
-              id: 'configProperties', message: "Please enter the required credentials to allow ${appName} to run:",
-              parameters: [
-                      string(defaultValue: "",
-                              description: "Token for ${appName} FluentBit sidecar to connect to the Splunk",
-                              name: "SPLUNK_TOKEN"),
-              ])
-      sh """
-		  set +x
-		  echo Running curl command...
-		  oc create -n ${namespace}-dev configmap ${appName}-dev-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties} --dry-run -o yaml | oc apply -f -
-		  oc project ${namespace}-tools
-		"""
-    }
-  }
-}
-
-def triggerWorkflow(String token) {
-  def dispatchRequest = """
-    {
-      "event_type": "smoke-test-test-admin"
-    }
-  """
-  def response = httpRequest customHeaders: [[name: 'Authorization', value: "token ${token}"], [name: 'Accept', value: "application/vnd.github.ant-man-preview+json"]], contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: dispatchRequest, url: "https://api.github.com/repos/${OWNER}/${TESTS_REPO_NAME}/dispatches"
-  echo "triggerWorkflow Status: ${response.status}"
-  echo "triggered test workflow in Github Actions!"
-}
-
-def getLatestWorkflowRun(String token) {
-  def response = httpRequest customHeaders: [[name: 'Authorization', value: "token ${token}"], [name: 'Accept', value: "application/vnd.github.ant-man-preview+json"]], url: "https://api.github.com/repos/${OWNER}/${TESTS_REPO_NAME}/actions/runs?branch=master&event=repository_dispatch"
-  echo "getLatestWorkflowRun Status: ${response.status}"
-  //echo "Content: ${response.content}"
-  def jsonObj = readJSON text: response.content
-  echo "Total count: ${jsonObj.total_count}"
-  def latestRun = jsonObj.total_count > 0 ? jsonObj.workflow_runs.max { it.created_at } : null
-  latestRun ? latestRun.id : null
-}
-
-def getWorkflowRunById(String token, long runId) {
-  def response = httpRequest customHeaders: [[name: 'Authorization', value: "token ${token}"], [name: 'Accept', value: "application/vnd.github.ant-man-preview+json"]], url: "https://api.github.com/repos/${OWNER}/${TESTS_REPO_NAME}/actions/runs/${runId}"
-  echo "getWorkflowRunById Status: ${response.status}"
-  //echo "Content: ${response.content}"
-  def jsonObj = readJSON text: response.content
-  [jsonObj.status, jsonObj.conclusion]
-}
-
-def waitForWorkflowRunComplete(String token) {
-  sleep(5)
-  def latestRunId = getLatestWorkflowRun(token)
-  if(!latestRunId) {
-    error('No workflow run in Github Actions. Aborting the build!')
-  } else {
-    def count = 60  //timeout (60 * 10) seconds = 10 minutes
-    def status, conclusion
-    while(count-- > 0 && status != 'completed') {
-      (status, conclusion) = getWorkflowRunById(token, latestRunId)
-      if(status != 'completed') {
-        echo "Waiting for workflow run complete: ${count}"
-        sleep(10)
-      }
-    }
-
-    if(status == 'completed' && conclusion != 'success') {
-      error("Workflow run was ${conclusion}. Aborting the build!")
-    } else if(count <= 0) {
-      error('Workflow run query timed out. Aborting the build!')
-    }
-  }
-}
-
-def deployStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURLFrontend, String rawApiDcURLBackend) {
-  openshift.withCluster() {
-    openshift.withProject(projectEnv) {
-      echo "Tagging Image ${repoName}-backend:${jobName} with version ${tag}"
-      openshift.tag("${toolsEnv}/${repoName}-backend:latest", "${repoName}-backend:${tag}")
-
-      echo "Tagging Image ${repoName}-frontend-static:${jobName} with version ${tag}"
-      openshift.tag("${toolsEnv}/${repoName}-frontend-static:latest", "${repoName}-frontend-static:${tag}")
-
-
-      echo "Processing DeploymentConfig ${appName}-backend..."
-      def dcBackendTemplate = openshift.process('-f',
-              "${rawApiDcURLBackend}",
-              "REPO_NAME=${repoName}",
-              "JOB_NAME=${jobName}",
-              "NAMESPACE=${projectEnv}",
-              "APP_NAME=${appName}",
-              "HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
-              "TAG=${tag}",
-              "MIN_REPLICAS=${MIN_REPLICAS}",
-              "MAX_REPLICAS=${MAX_REPLICAS}",
-              "MIN_CPU=${MIN_CPU}",
-              "MAX_CPU=${MAX_CPU}",
-              "MIN_MEM=${MIN_MEM}",
-              "MAX_MEM=${MAX_MEM}"
-      )
-
-      def dcBackend = openshift.apply(dcBackendTemplate).narrow('dc')
-
-      echo "Processing DeploymentConfig ${appName}-frontend-static..."
-      def dcFrontendStaticTemplate = openshift.process('-f',
-              "${rawApiDcURLFrontend}",
-              "REPO_NAME=${repoName}",
-              "JOB_NAME=${jobName}",
-              "NAMESPACE=${projectEnv}",
-              "APP_NAME=${appName}",
-              "HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
-              "TAG=${tag}",
-              "MIN_REPLICAS=${MIN_REPLICAS}",
-              "MAX_REPLICAS=${MAX_REPLICAS}",
-              "MIN_CPU=${MIN_CPU}",
-              "MAX_CPU=${MAX_CPU}",
-              "MIN_MEM=${MIN_MEM}",
-              "MAX_MEM=${MAX_MEM}"
-      )
-
-      echo "Applying Deployment ${appName}-frontend-static..."
-      def dcFrontendStatic = openshift.apply(dcFrontendStaticTemplate).narrow('dc')
-
-      // Wait for deployments to roll out
-      timeout(10) {
-        parallel(
-                Backend:
-                        {
-                          dcBackend.rollout().status('--watch=true')
-                        } ,
-                Frontend:
-                        {
-                          dcFrontendStatic.rollout().status('--watch=true')
-                        }
-        )
       }
     }
   }
