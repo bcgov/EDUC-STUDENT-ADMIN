@@ -83,7 +83,7 @@
 
 <script>
 import ApiService from '../common/apiService';
-import { Routes, Statuses } from '../utils/constants';
+import { Routes } from '../utils/constants';
 import { replaceMacro } from '../utils/macro';
 import {mapGetters, mapMutations} from 'vuex';
 import {AccessEnabledForUser} from '../common/role-based-access';
@@ -155,7 +155,8 @@ export default {
     notification(val) {
       if (val) {
         let notificationData = JSON.parse(val);
-        if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && notificationData.sagaStatus === 'COMPLETED' && notificationData.sagaName === 'PEN_REQUEST_REJECT_SAGA') {
+        if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && notificationData.sagaStatus === 'COMPLETED'
+          && (notificationData.sagaName === 'PEN_REQUEST_REJECT_SAGA' || notificationData.sagaName === 'STUDENT_PROFILE_REJECT_SAGA') ) {
           this.rejectOperationSuccessful = true;
           this.rejectOperationOutcomeMessage = 'Your request to reject is now completed.';
         }
@@ -172,58 +173,29 @@ export default {
       this.rejectComment = replaceMacro(this.rejectComment, this.rejectMacros);
     },
     submitReject() {
-      if(this.requestType === 'penRequest'){
-        this.rejectOperationSuccessful = null;
-        this.rejectOperationOutcomeMessage = null;
-        if (this.$refs.form.validate()) {
-          this.beforeSubmit();
-          this.request.failureReason = this.rejectComment;
-          this.request.reviewer = this.myself.name;
-          ApiService.apiAxios
-            .post(Routes[this.requestType].REJECT_URL, this.prepPut(this.requestId, this.request))
-            .then(() => {
-              this.rejectOperationSuccessful = true;
-              this.rejectOperationOutcomeMessage = 'Your request to reject is accepted.';
-            })
-            .catch(error => {
-              console.log(error);
-              if (error.response.data && error.response.data.message && error.response.data.message.includes('saga in progress')) {
-                this.rejectOperationSuccessful = false;
-                this.rejectOperationOutcomeMessage = 'Another saga is in progress for this request, please try again later.';
-              }
-              else {
-                this.rejectOperationSuccessful = false;
-                this.rejectOperationOutcomeMessage = 'Your request to reject could not be accepted, please try again later.';
-              }
-              this.submitted();
-            });
-        }
-      }else {
-        this.rejectAlertWarning = false;
-        this.rejectAlertSuccess = false;
-        this.rejectAlertFailure = false;
-        if (this.$refs.form.validate()) {
-          this.beforeSubmit();
-          this.request[this.requestStatusCodeName] = Statuses[this.requestType].REJECTED;
-          this.request.failureReason = this.rejectComment;
-          this.request.reviewer = this.myself.name;
-          ApiService.apiAxios
-            .post(Routes[this.requestType].REJECT_URL, this.prepPut(this.requestId, this.request))
-            .then(response => {
-              this.setRequest(response.data);
-              this.rejectAlertSuccess = true;
-            })
-            .catch(error => {
-              console.log(error);
-              if (error.response.data && error.response.data.message.includes('email service'))
-                this.rejectAlertWarning = true;
-              else
-                this.rejectAlertFailure = true;
-            })
-            .finally(() => {
-              this.submitted();
-            });
-        }
+      this.rejectOperationSuccessful = null;
+      this.rejectOperationOutcomeMessage = null;
+      if (this.$refs.form.validate()) {
+        this.beforeSubmit();
+        this.request.failureReason = this.rejectComment;
+        this.request.reviewer = this.myself.name;
+        ApiService.apiAxios
+          .post(Routes[this.requestType].REJECT_URL, this.prepPut(this.requestId, this.request))
+          .then(() => {
+            this.rejectOperationSuccessful = true;
+            this.rejectOperationOutcomeMessage = 'Your request to reject is accepted.';
+          })
+          .catch(error => {
+            console.log(error);
+            if (error.response.data && error.response.data.message && error.response.data.message.includes('saga in progress')) {
+              this.rejectOperationSuccessful = false;
+              this.rejectOperationOutcomeMessage = 'Another saga is in progress for this request, please try again later.';
+            } else {
+              this.rejectOperationSuccessful = false;
+              this.rejectOperationOutcomeMessage = 'Your request to reject could not be accepted, please try again later.';
+            }
+            this.submitted();
+          });
       }
     }
   }
