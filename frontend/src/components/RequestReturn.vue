@@ -94,7 +94,7 @@
 
 <script>
 import ApiService from '../common/apiService';
-import { Routes, Statuses } from '../utils/constants';
+import { Routes } from '../utils/constants';
 import { replaceMacro } from '../utils/macro';
 import { mapGetters, mapMutations } from 'vuex';
 import {AccessEnabledForUser} from '../common/role-based-access';
