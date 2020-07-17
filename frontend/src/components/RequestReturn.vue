@@ -167,7 +167,8 @@ export default {
     notification(val) {
       if (val) {
         let notificationData = JSON.parse(val);
-        if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && notificationData.sagaStatus === 'COMPLETED' && notificationData.sagaName === 'PEN_REQUEST_RETURN_SAGA') {
+        if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && notificationData.sagaStatus === 'COMPLETED'
+          && (notificationData.sagaName === 'PEN_REQUEST_RETURN_SAGA' || notificationData.sagaName === 'STUDENT_PROFILE_RETURN_SAGA') ) {
           this.returnMessage = 'Your request to return for more info is now completed.';
         }
       }
@@ -183,69 +184,34 @@ export default {
       this.returnComment = replaceMacro(this.returnComment, this.returnMacros);
     },
     returnToStudent() {
-      if(this.requestType === 'penRequest'){
-        this.returnOperationSuccessful = null;
-        this.returnAlertWarning = false;
-        this.returnAlertSuccess = false;
-        this.returnAlertFailure = false;
-        if(this.$refs.returnForm.validate()) {
-          this.beforeSubmit();
-          this.request[this.requestStatusCodeName] = Statuses[this.requestType].RETURNED;
-          this.request.reviewer = this.myself.name;
-          let body = this.prepPut(this.requestId, this.request);
-          body.content = this.returnComment;
-          ApiService.apiAxios
-            .post(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId + '/return', body)
-            .then(() => {
-              this.returnOperationSuccessful = true;
-              this.returnMessage = 'Your request to return for more info is accepted.';
-              this.$refs.returnForm.resetValidation();
-            })
-            .catch(error => {
-              console.log(error);
-              if (error.response.data && error.response.data.message && error.response.data.message.includes('saga in progress')) {
-                this.returnOperationSuccessful = false;
-                this.returnMessage = 'Another saga is in progress for this request, please try again later.';
-              }
-              else {
-                this.returnOperationSuccessful = false;
-                this.returnMessage = 'Your request to return for more info could not be accepted, please try again later.';
-              }
-              this.submitted();
-            });
-        }
-      }else {
-        this.returnAlertWarning = false;
-        this.returnAlertSuccess = false;
-        this.returnAlertFailure = false;
-        if(this.$refs.returnForm.validate()) {
-          this.beforeSubmit();
-          this.request[this.requestStatusCodeName] = Statuses[this.requestType].RETURNED;
-          this.request.reviewer = this.myself.name;
-          let body = this.prepPut(this.requestId, this.request);
-          body.content = this.returnComment;
-          ApiService.apiAxios
-            .post(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId + '/return', body)
-            .then(response => {
-              this.setRequest(response.data.penResponse);
-              this.pushMessage(response.data.commentResponse);
-              this.returnAlertSuccess = true;
-              this.returnComment = null;
-              this.$refs.returnForm.resetValidation();
-            })
-            .catch(error => {
-              console.log(error);
-              if (error.response.data && error.response.data.message.includes('email service'))
-                this.returnAlertWarning = true;
-              else
-                this.returnAlertFailure = true;
-            })
-            .finally(() => {
-              this.submitted();
-            });
-        }
+      this.returnOperationSuccessful = null;
+      this.returnAlertWarning = false;
+      this.returnAlertSuccess = false;
+      this.returnAlertFailure = false;
+      if (this.$refs.returnForm.validate()) {
+        this.beforeSubmit();
+        this.request.reviewer = this.myself.name;
+        let body = this.prepPut(this.requestId, this.request);
+        body.content = this.returnComment;
+        ApiService.apiAxios
+          .post(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId + '/return', body)
+          .then(() => {
+            this.returnOperationSuccessful = true;
+            this.returnMessage = 'Your request to return for more info is accepted.';
+            this.$refs.returnForm.resetValidation();
+          })
+          .catch(error => {
+            console.log(error);
+            if (error.response.data && error.response.data.message && error.response.data.message.includes('saga in progress')) {
+              this.returnOperationSuccessful = false;
+              this.returnMessage = 'Another saga is in progress for this request, please try again later.';
+            } else {
+              this.returnOperationSuccessful = false;
+              this.returnMessage = 'Your request to return for more info could not be accepted, please try again later.';
+            }
+            this.submitted();
+          });
       }
-
     },
   }
 };

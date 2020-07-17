@@ -134,11 +134,12 @@ function getAllRequests(requestType) {
         const eventsArrayFromRedis = await redisUtil.getSagaEvents();
         dataResponse['content'].forEach((element, i) => {
           const penRequestID = element['penRequestID'];
+          const studentRequestID = element['studentRequestID'];
           let sagaInProgress = false;
-          if (penRequestID && eventsArrayFromRedis) {
+          if ((penRequestID && eventsArrayFromRedis) || (studentRequestID && eventsArrayFromRedis) ){
             for (const eventString of eventsArrayFromRedis) {
               const event = JSON.parse(eventString);
-              if (event && event.penRequestID && event.penRequestID === penRequestID) {
+              if ((event && event.penRequestID && event.penRequestID === penRequestID) ||(event && event.studentRequestID && event.studentRequestID === studentRequestID)){
                 sagaInProgress = true; // DO NOT show this record in frontend list.
                 break;
               }
@@ -286,16 +287,14 @@ function getRequestById(requestType) {
           } else {
             dataResponse[`${requestType}StatusCodeLabel`] = utils.getCodeLabel(statusCodesResponse, `${requestType}StatusCode`, dataResponse[`${requestType}StatusCode`]);
           }
-          if(requestType === 'penRequest'){
-            const id = dataResponse[`${requestType}ID`];
-            const eventsArrayFromRedis = await redisUtil.getSagaEvents();
-            if (id && eventsArrayFromRedis) {
-              for (const eventString of eventsArrayFromRedis) {
-                const event = JSON.parse(eventString);
-                if (event && event[`${requestType}ID`] && event[`${requestType}ID`] === id) {
-                  dataResponse['sagaInProgress'] = true; // send saga in progress, so that details page can have the value in frontend.
-                  break;
-                }
+          const id = dataResponse[`${requestType}ID`];
+          const eventsArrayFromRedis = await redisUtil.getSagaEvents();
+          if (id && eventsArrayFromRedis) {
+            for (const eventString of eventsArrayFromRedis) {
+              const event = JSON.parse(eventString);
+              if (event && event[`${requestType}ID`] && event[`${requestType}ID`] === id) {
+                dataResponse['sagaInProgress'] = true; // send saga in progress, so that details page can have the value in frontend.
+                break;
               }
             }
           }

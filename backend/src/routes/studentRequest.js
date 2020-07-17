@@ -3,8 +3,8 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../components/auth');
 const utils = require('../components/utils');
-const { createStudentRequestApiServiceReq, createStudentRequestCommentApiServiceReq } = require('../components/studentRequests');
-const { completeRequest, getAllRequests, getMacros, getRequestById, getRequestCommentById, putRequest, rejectRequest, returnRequest } = require('../components/requests');
+const { createStudentRequestApiServiceReq, returnProfileRequest, rejectProfileRequest } = require('../components/studentRequests');
+const { completeRequest, getAllRequests, getMacros, getRequestById, getRequestCommentById, putRequest } = require('../components/requests');
 
 const { getDocuments, getDocumentById, updateDocumentTypeById } = require('../components/documents');
 
@@ -40,9 +40,9 @@ router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), au
 
 router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, verifyStudentRequestInSession, completeRequest(requestType, createStudentRequestApiServiceReq));
 
-router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, verifyStudentRequestInSession, rejectRequest(requestType, createStudentRequestApiServiceReq));
+router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, verifyStudentRequestInSession, rejectProfileRequest);
 
-router.post('/:id/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, verifyStudentRequestInSession, returnRequest(requestType, createStudentRequestApiServiceReq, createStudentRequestCommentApiServiceReq));
+router.post('/:id/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, verifyStudentRequestInSession, returnProfileRequest);
 
 // retrieve all the documents.
 router.get('/:id/documents', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPUserToken, getDocuments(requestType));
