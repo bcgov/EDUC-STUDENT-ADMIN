@@ -131,7 +131,7 @@ function getAllRequests(requestType) {
       getData(token, config.get(`server:${requestType}:rootURL`) + '/paginated', params)
     ])
       .then(async ([statusCodeResponse, dataResponse]) => {
-        const eventsArrayFromRedis = await redisUtil.getPenRequestSagaEvents();
+        const eventsArrayFromRedis = await redisUtil.getSagaEvents();
         dataResponse['content'].forEach((element, i) => {
           const penRequestID = element['penRequestID'];
           let sagaInProgress = false;
@@ -288,7 +288,7 @@ function getRequestById(requestType) {
           }
           if(requestType === 'penRequest'){
             const id = dataResponse[`${requestType}ID`];
-            const eventsArrayFromRedis = await redisUtil.getPenRequestSagaEvents();
+            const eventsArrayFromRedis = await redisUtil.getSagaEvents();
             if (id && eventsArrayFromRedis) {
               for (const eventString of eventsArrayFromRedis) {
                 const event = JSON.parse(eventString);

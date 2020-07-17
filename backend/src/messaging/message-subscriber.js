@@ -2,7 +2,7 @@
 const config = require('../config/index');
 const log = require('../components/logger');
 const {uuid} = require('uuidv4');
-const PenRequestSagaMessageHandler = require('./handlers/gmp/pen-request-saga-message-handler');
+const SagaMessageHandler = require('./handlers/saga-message-handler');
 let connection={};
 const clientID = `student-admin-node-subscriber-${uuid()}`;
 const clusterID = config.get('messaging:natsCluster');
@@ -26,7 +26,7 @@ const STAN = {
   callbacks(){
     connection.on('connect', function () {
       log.info('STAN connected!');
-      PenRequestSagaMessageHandler.subscribe(connection);
+      SagaMessageHandler.subscribe(connection);
     });
 
     connection.on('error', function (reason) {
