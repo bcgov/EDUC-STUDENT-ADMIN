@@ -8,7 +8,7 @@ const localDateTime = require('@js-joda/core').LocalDateTime;
 //Add timestamp to log
 Object.defineProperty(log, 'heading', { get: () => { return localDateTime.now().toString(); } });
 dotenv.config();
-
+log.info('Starting student-admin node app');
 const app = require('./app');
 
 /**

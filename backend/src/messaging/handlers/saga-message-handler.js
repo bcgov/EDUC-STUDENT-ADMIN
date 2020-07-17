@@ -1,10 +1,11 @@
 'use strict';
-const log = require('../../../components/logger');
+const log = require('../../components/logger');
 
-const redisUtil = require('../../../util/redis/redis-utils');
-const webSocket = require('../../../socket/web-socket');
+const redisUtil = require('../../util/redis/redis-utils');
+const webSocket = require('../../socket/web-socket');
 
-const SagaTopics = ['PEN_REQUEST_RETURN_SAGA_TOPIC', 'PEN_REQUEST_UNLINK_SAGA_TOPIC', 'PEN_REQUEST_REJECT_SAGA_TOPIC', 'PEN_REQUEST_COMPLETE_SAGA_TOPIC'];
+const SagaTopics = ['PEN_REQUEST_RETURN_SAGA_TOPIC', 'PEN_REQUEST_UNLINK_SAGA_TOPIC', 'PEN_REQUEST_REJECT_SAGA_TOPIC', 'PEN_REQUEST_COMPLETE_SAGA_TOPIC',
+  'STUDENT_PROFILE_REQUEST_REJECT_SAGA_TOPIC','STUDENT_PROFILE_REQUEST_RETURN_SAGA_TOPIC','STUDENT_PROFILE_COMPLETE_SAGA_TOPIC'];
 const SagaEventWebSocketTopic = 'SAGA_EVENT_WS_TOPIC';
 
 function subscribeSagaMessages(stan, opts, topic, handleMessage) {
@@ -21,11 +22,11 @@ function subscribeSagaMessages(stan, opts, topic, handleMessage) {
   });
 }
 
-async function handlePenRequestSagaMessage(msg, stan) {
+async function handleSagaMessage(msg, stan) {
   let isWebSocketBroadcastingRequired = false;
   const event = JSON.parse(msg.getData()); // it is always a JSON string of Event object.
   if('COMPLETED' === event.sagaStatus || 'FORCE_STOPPED' === event.sagaStatus){
-    const recordFoundInRedis = await redisUtil.removePenRequestSagaRecordFromRedis(event); // if record is not found in redis means duplicate message which was already processed.
+    const recordFoundInRedis = await redisUtil.removeSagaRecordFromRedis(event); // if record is not found in redis means duplicate message which was already processed.
     if(recordFoundInRedis){
       isWebSocketBroadcastingRequired = true;
     }
@@ -70,7 +71,7 @@ function subscribeToWebSocketMessageTopic(stan, opts) {
   });
 }
 
-const PenRequestSagaMessageHandler = {
+const SagaMessageHandler = {
   /**
    * This is where all the subscription will be done related pen requests
    * due to this issue https://github.com/nats-io/stan.go/issues/208
@@ -83,11 +84,11 @@ const PenRequestSagaMessageHandler = {
     const opts = stan.subscriptionOptions().setStartAt(0);
     opts.setDurableName('student-admin-node-consumer');
     SagaTopics.forEach((topic) => {
-      subscribeSagaMessages(stan, opts, topic, handlePenRequestSagaMessage);
+      subscribeSagaMessages(stan, opts, topic, handleSagaMessage);
     });
     subscribeToWebSocketMessageTopic(stan, opts);
   },
 
 };
 
-module.exports = PenRequestSagaMessageHandler;
+module.exports = SagaMessageHandler;

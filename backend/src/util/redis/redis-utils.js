@@ -1,7 +1,7 @@
 'use strict';
 const Redis = require('./redis-client');
 const log = require('../../components/logger');
-const penReqSagaEventKey = 'PEN_REQUEST_SAGA_EVENTS';
+const SagaEventKey = 'SAGA_EVENTS';
 const safeStringify = require('fast-safe-stringify');
 const RedLock = require('redlock');
 let redLock;
@@ -11,7 +11,7 @@ const redisUtil = {
    * @param event the event object to be stored , this contains sagaId, penRequestId,digitalId, eventPayload etc..
    * @returns {Promise<void>}
    */
-  async createPenRequestSagaRecordInRedis(event) {
+  async createSagaRecordInRedis(event) {
     try {
       const redisClient = Redis.getRedisClient();
       if (redisClient) {
@@ -23,19 +23,24 @@ const redisUtil = {
       log.error(`Error ${e}`);
     }
   },
-  async removePenRequestSagaRecordFromRedis(event) {
+  async removeSagaRecordFromRedis(event) {
     let recordFoundFromRedis = false;
     const redisClient = Redis.getRedisClient();
     if (redisClient) {
       try {
-        const result = await redisClient.smembers(penReqSagaEventKey);
+        const result = await redisClient.smembers(SagaEventKey);
         if (result && result.length > 0) {
           for (const element of result) {
             const eventArrayElement = JSON.parse(element);
             if ((eventArrayElement.sagaId && event.sagaId && eventArrayElement.sagaId === event.sagaId) && ('COMPLETED' === event.sagaStatus || 'FORCE_STOPPED' === event.sagaStatus)) {
               log.info(`going to delete this event record as it is completed or force stopped. SAGA ID :: ${eventArrayElement.sagaId} AND STATUS :: ${event.sagaStatus}`);
               recordFoundFromRedis = true;
-              await this.removeSagaRecordFromRedis(event.sagaId, eventArrayElement);
+              try{
+                await this.getRedLock().lock(`locks:saga:deleteFromSet-${event.sagaId}`, 500);
+                await redisClient.srem(SagaEventKey, safeStringify(eventArrayElement));
+              }catch (e) {
+                log.info('this pod could not acquire lock', e);
+              }
               break;
             }
           }
@@ -48,28 +53,20 @@ const redisUtil = {
     }
     return recordFoundFromRedis;
   },
-  async getPenRequestSagaEvents() {
+  async getSagaEvents() {
     const redisClient = Redis.getRedisClient();
     if (redisClient) {
-      return redisClient.smembers(penReqSagaEventKey);
+      return redisClient.smembers(SagaEventKey);
     } else {
       log.error('Redis client is not available, this should not have happened');
     }
   },
-  async removeSagaRecordFromRedis(sagaId, eventToDelete) {
-    const redisClient = Redis.getRedisClient();
-    try {
-      await this.getRedLock().lock(`locks:pen-request-saga:deleteFromSet-${sagaId}`, 500);
-      await redisClient.srem(penReqSagaEventKey, safeStringify(eventToDelete));
-    } catch (e) {
-      log.info(`this pod could not acquire lock for locks:pen-request-saga:deleteFromSet-${sagaId}, check other pods. ${e}`);
-    }
-  },
+
   async addElementToSagaRecordInRedis(sagaId, eventToAdd) {
     const redisClient = Redis.getRedisClient();
     try {
       await this.getRedLock().lock(`locks:pen-request-saga:addToSet-${sagaId}`, 500);
-      await redisClient.sadd(penReqSagaEventKey, safeStringify(eventToAdd));
+      await redisClient.sadd(SagaEventKey, safeStringify(eventToAdd));
     } catch (e) {
       log.info(`this pod could not acquire lock for locks:pen-request-saga:addToSet-${sagaId}, check other pods. ${e}`);
     }
@@ -87,7 +84,7 @@ const redisUtil = {
 
           // the max number of times Redlock will attempt
           // to lock a resource before erroring
-          retryCount: 4,
+          retryCount: 6,
 
           // the time in ms between attempts
           retryDelay: 50, // time in ms
