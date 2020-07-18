@@ -19,19 +19,24 @@ function getBackendToken(req) {
   return thisSession && thisSession['passport']&& thisSession['passport'].user && thisSession['passport'].user.jwt;
 }
 
+function addTokenToHeader(params, token) {
+  if (params) {
+    params.headers = {
+      Authorization: `Bearer ${token}`,
+    };
+  } else {
+    params = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    };
+  }
+  return params;
+}
+
 async function getData(token, url, params) {
   try{
-    if(params) {
-      params.headers = {
-        Authorization: `Bearer ${token}`,
-      };
-    } else {
-      params = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      };
-    }
+    params = addTokenToHeader(params, token);
     log.info('get Data Url', url);
     const response = await axios.get(url, params);
     logResponseData(url, response,'GET');
@@ -64,17 +69,7 @@ function logResponseData(url, response, operationType) {
 
 async function postData(token, url, data, params) {
   try{
-    if(params) {
-      params.headers = {
-        Authorization: `Bearer ${token}`,
-      };
-    } else {
-      params = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      };
-    }
+    params = addTokenToHeader(params, token);
     log.info('post Data Url', url);
     log.verbose('post Data Req', minify(data));
 
