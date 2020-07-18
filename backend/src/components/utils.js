@@ -122,8 +122,7 @@ const utils = {
     }
     return discovery;
   },
-  prettyStringify: (obj, indent = 2) => JSON.stringify(obj, null, indent),
-
+  
   getUser(req) {
     const thisSession = req.session;
     if(thisSession && thisSession['passport']&& thisSession['passport'].user && thisSession['passport'].user.jwt) {
