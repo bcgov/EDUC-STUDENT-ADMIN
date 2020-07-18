@@ -8,6 +8,21 @@ const {ApiError} = require('./error');
 const {LocalDateTime} = require('@js-joda/core');
 const log = require('./logger');
 
+function createPenRequestApiServiceReq(penRequest, req) {
+  penRequest.pen = req.body.pen;
+  penRequest.penRequestStatusCode = req.body.penRequestStatusCode;
+  penRequest.reviewer = req.body.reviewer;
+  penRequest.failureReason = req.body.failureReason;
+  penRequest.completeComment = req.body.completeComment;
+  penRequest.demogChanged = req.body.demogChanged;
+  penRequest.bcscAutoMatchOutcome = req.body.bcscAutoMatchOutcome;
+  penRequest.bcscAutoMatchDetails = req.body.bcscAutoMatchDetails;
+  if (req.body.statusUpdateDate) {
+    penRequest.statusUpdateDate = req.body.statusUpdateDate;
+  }
+
+  return penRequest;
+}
 
 async function findPenRequestsByPen(req, res) {
   try {
@@ -27,6 +42,16 @@ async function findPenRequestsByPen(req, res) {
   }
 }
 
+function createPenRequestCommentApiServiceReq(req, userToken) {
+  const request = {
+    penRetrievalRequestID: req.params.id,
+    staffMemberIDIRGUID: userToken['preferred_username'].toUpperCase(),
+    staffMemberName: userToken['idir_username'],
+    commentContent: req.body.content,
+    commentTimestamp: LocalDateTime.now().toString()
+  };
+  return request;
+}
 
 function updateForRejectAndReturn(penRequest, userToken, req) {
   penRequest.reviewer = req.body.reviewer;
@@ -136,6 +161,8 @@ async function completePenRequest(req, res) {
 
 module.exports = {
   findPenRequestsByPen,
+  createPenRequestApiServiceReq,
+  createPenRequestCommentApiServiceReq,
   returnPenRequest,
   unlinkRequest,
   rejectPenRequest,
