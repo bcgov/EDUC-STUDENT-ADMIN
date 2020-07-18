@@ -36,7 +36,7 @@ async function getData(token, url, params) {
     const response = await axios.get(url, params);
     log.info(`get Data Status for url ${url} :: is :: `, response.status);
     log.info(`get Data StatusText for url ${url}  :: is :: `, response.statusText);
-    log.verbose(`get Data Response for url ${url}  :: is :: `, minify(response.data));
+    log.verbose(`get Data Response for url ${url}  :: is :: `, typeof response.data === 'string' ? response.data : minify(response.data));
 
     return response.data;
   } catch (e) {
@@ -109,7 +109,7 @@ async function putData(token, url, data) {
 
     log.info(`put Data Status for url ${url} :: is :: `, response.status);
     log.info(`put Data StatusText for url ${url}  :: is :: `, response.statusText);
-    log.verbose(`put Data Response for url ${url}  :: is :: `, minify(response.data));
+    log.verbose(`put Data Response for url ${url}  :: is :: `,typeof response.data === 'string' ? response.data : minify(response.data));
 
     return response.data;
   } catch(e) {
@@ -255,8 +255,7 @@ const utils = {
   verifyRequestInSession(requestType) {
     const requestIDName = `${requestType}ID`;
     return function verifyRequestInSessionHandler(req, res, next) {
-      const requestInSession = req['session'].penRequest;
-      if(req && req.body && req['session'] && req['session'].penRequest && req.body[requestIDName] === requestInSession[requestIDName]) {
+      if(req && req.body && req['session'] && req['session'].penRequest && req.body[requestIDName] === req['session'].penRequest[requestIDName]) {
         return next();
       }
       log.error(`${requestType} Id in request is different than the one in session.  This should NEVER happen!`);
