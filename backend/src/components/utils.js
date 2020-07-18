@@ -37,7 +37,6 @@ async function getData(token, url, params) {
     log.info(`get Data Status for url ${url} :: is :: `, response.status);
     log.info(`get Data StatusText for url ${url}  :: is :: `, response.statusText);
     log.verbose(`get Data Response for url ${url}  :: is :: `, typeof response.data === 'string' ? response.data : minify(response.data));
-
     return response.data;
   } catch (e) {
     logApiError(e, 'getData', 'Error during GET on ' + url);
@@ -80,11 +79,9 @@ async function postData(token, url, data, params) {
     data.createUser='STUDENT-ADMIN';
     data.updateUser='STUDENT-ADMIN';
     const response = await axios.post(url, data, params);
-
     log.info(`post Data Status for url ${url} :: is :: `, response.status);
     log.info(`post Data StatusText for url ${url}  :: is :: `, response.statusText);
     log.verbose(`post Data Response for url ${url}  :: is :: `, typeof response.data === 'string' ? response.data : minify(response.data));
-
     return response.data;
   } catch(e) {
     logApiError(e, 'postData', 'Error during POST on ' + url);
@@ -106,11 +103,9 @@ async function putData(token, url, data) {
 
     data.updateUser='STUDENT-ADMIN';
     const response = await axios.put(url, data, putDataConfig);
-
     log.info(`put Data Status for url ${url} :: is :: `, response.status);
     log.info(`put Data StatusText for url ${url}  :: is :: `, response.statusText);
     log.verbose(`put Data Response for url ${url}  :: is :: `,typeof response.data === 'string' ? response.data : minify(response.data));
-
     return response.data;
   } catch(e) {
     logApiError(e, 'putData', 'Error during PUT on ' + url);
