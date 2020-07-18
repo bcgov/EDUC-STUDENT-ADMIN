@@ -34,14 +34,10 @@ async function getData(token, url, params) {
     }
     log.info('get Data Url', url);
     const response = await axios.get(url, params);
-    log.info(`get Data Status for url ${url} :: is :: `, response.status);
-    log.info(`get Data StatusText for url ${url}  :: is :: `, response.statusText);
-    log.verbose(`get Data Response for url ${url}  :: is :: `, typeof response.data === 'string' ? response.data : minify(response.data));
+    logResponseData(url, response,'GET');
     return response.data;
   } catch (e) {
-    logApiError(e, 'getData', 'Error during GET on ' + url);
-    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ApiError(status, { message: 'API Get error'}, e);
+    throwError(e, url, 'GET');
   }
 }
 
@@ -58,6 +54,12 @@ function logApiError(e, functionName, message) {
 function minify(obj, keys=['documentData']) {
   return lodash.transform(obj, (result, value, key) =>
     result[key] = keys.includes(key) && lodash.isString(value) ? value.substring(0,1) + ' ...' : value );
+}
+
+function logResponseData(url, response, operationType) {
+  log.info(`${operationType} Data Status for url ${url} :: is :: `, response.status);
+  log.info(`${operationType} Data StatusText for url ${url}  :: is :: `, response.statusText);
+  log.verbose(`${operationType} Data Response for url ${url}  :: is :: `, typeof response.data === 'string' ? response.data : minify(response.data));
 }
 
 async function postData(token, url, data, params) {
@@ -79,15 +81,17 @@ async function postData(token, url, data, params) {
     data.createUser='STUDENT-ADMIN';
     data.updateUser='STUDENT-ADMIN';
     const response = await axios.post(url, data, params);
-    log.info(`post Data Status for url ${url} :: is :: `, response.status);
-    log.info(`post Data StatusText for url ${url}  :: is :: `, response.statusText);
-    log.verbose(`post Data Response for url ${url}  :: is :: `, typeof response.data === 'string' ? response.data : minify(response.data));
+    logResponseData(url, response,'POST');
     return response.data;
   } catch(e) {
-    logApiError(e, 'postData', 'Error during POST on ' + url);
-    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ApiError(status, { message: 'API Post error'}, e);
+    throwError(e, url, 'POST');
   }
+}
+
+function throwError(e, url, operationType) {
+  logApiError(e, operationType, `Error during ${operationType} on ${url}`);
+  const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
+  throw new ApiError(status, {message: 'API Put error'}, e);
 }
 
 async function putData(token, url, data) {
@@ -103,14 +107,10 @@ async function putData(token, url, data) {
 
     data.updateUser='STUDENT-ADMIN';
     const response = await axios.put(url, data, putDataConfig);
-    log.info(`put Data Status for url ${url} :: is :: `, response.status);
-    log.info(`put Data StatusText for url ${url}  :: is :: `, response.statusText);
-    log.verbose(`put Data Response for url ${url}  :: is :: `,typeof response.data === 'string' ? response.data : minify(response.data));
+    logResponseData(url, response,'PUT');
     return response.data;
   } catch(e) {
-    logApiError(e, 'putData', 'Error during PUT on ' + url);
-    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ApiError(status, { message: 'API Put error'}, e);
+    throwError(e, url, 'PUT');
   }
 }
 
