@@ -8,11 +8,10 @@ const clientID = `student-admin-node-subscriber-${uuid()}`;
 const clusterID = config.get('messaging:natsCluster');
 const server = config.get('messaging:natsUrl');
 const stanOptions = {
-  maxReconnectAttempts: -1,
   url: server,
   waitOnFirstConnect: true,
-  stanMaxPingOut:2000,
-  stanPingInterval:10000
+  stanMaxPingOut: 600,
+  stanPingInterval: 1000
 };
 
 const STAN = {
