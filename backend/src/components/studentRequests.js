@@ -39,10 +39,10 @@ async function rejectProfileRequest(req, res) {
   profileRequest.rejectionReason = req.body.failureReason;
   updateForRejectAndReturn(profileRequest, userToken, req);
   const url = `${config.get('server:profileSagaAPIURL')}/student-profile-reject-saga`;
-  return await executeProfReqSaga(utils.getBackendToken(req), url, profileRequest, res);
+  return await executeProfReqSaga(utils.getBackendToken(req), url, profileRequest, res, 'reject');
 }
 
-async function executeProfReqSaga(token, url, profileRequest, res) {
+async function executeProfReqSaga(token, url, profileRequest, res, sagaType) {
   try {
     const sagaId = await utils.postData(token, url, profileRequest);
     const event = {
@@ -50,11 +50,11 @@ async function executeProfReqSaga(token, url, profileRequest, res) {
       studentRequestID: profileRequest.studentProfileRequestID, //DONT change the key it will break the check during getAllRequests or getRequestById in requests.js
       sagaStatus: 'INITIATED'
     };
-    log.info('going to store event object in redis for return pen request :: ', event);
+    log.info(`going to store event object in redis for ${sagaType} profile request :: `, event);
     await redisUtil.createSagaRecordInRedis(event);
     return res.status(200).json();
   } catch (e) {
-    utils.logApiError(e, 'returnPenRequest', 'Error occurred while attempting to return a pen request.');
+    utils.logApiError(e, `${sagaType}ProfileRequest`, `Error occurred while attempting to ${sagaType} a profile request.`);
     if (e.status === HttpStatus.CONFLICT) {
       return errorResponse(res, 'Another saga is in progress');
     }
@@ -69,7 +69,7 @@ async function returnProfileRequest(req, res) {
   profileRequest.commentTimestamp = LocalDateTime.now().toString().substr(0, 19);
   updateForRejectAndReturn(profileRequest, userToken, req);
   const url = `${config.get('server:profileSagaAPIURL')}/student-profile-return-saga`;
-  return await executeProfReqSaga(utils.getBackendToken(req), url, profileRequest, res);
+  return await executeProfReqSaga(utils.getBackendToken(req), url, profileRequest, res, 'return');
 }
 module.exports = {
   createStudentRequestApiServiceReq,
