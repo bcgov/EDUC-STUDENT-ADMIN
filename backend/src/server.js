@@ -23,6 +23,7 @@ app.set('port', port);
 
 const server = http.createServer(app);
 const WS = require('./socket/web-socket');
+const STAN = require('./messaging/message-subscriber');
 WS.init(app,server);
 
 /**
@@ -89,6 +90,18 @@ function onListening() {
   log.info('Listening on ' + bind);
 }
 
+process.on('SIGINT',() => {
+  STAN.close();
+  server.close(() => {
+    log.info('process terminated');
+  });
+});
+process.on('SIGTERM', () => {
+  STAN.close();
+  server.close(() => {
+    log.info('process terminated');
+  });
+});
 //exports are purely for testing
 module.exports = {
   normalizePort,
