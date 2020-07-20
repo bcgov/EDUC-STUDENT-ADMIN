@@ -37,11 +37,11 @@ router.get('/macros', passport.authenticate('jwt', {session: false}, undefined),
  */
 router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPUserToken, getRequestById(requestType));
 
-router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, verifyPenRequestInSession, updatePenReqStatusCodeForComplete, completePenRequest);
+router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, verifyPenRequestInSession, completePenRequest);
 
 router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, verifyPenRequestInSession, rejectPenRequest);
 
-router.post('/:id/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, verifyPenRequestInSession, returnPenRequest);/*returnPenRequest*/
+router.post('/:id/return', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, verifyPenRequestInSession, returnPenRequest);
 
 // retrieve all the documents.
 router.get('/:id/documents', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPUserToken, getDocuments(requestType));
@@ -54,8 +54,4 @@ router.put('/:id/documents/:documentId', passport.authenticate('jwt', {session: 
 
 router.post('/unlink', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, verifyPenRequestInSession, unlinkRequest);
 
-function updatePenReqStatusCodeForComplete(req, res, next) {
-  req.body.penRequestStatusCode = 'MANUAL';
-  return next();
-}
 module.exports = router;

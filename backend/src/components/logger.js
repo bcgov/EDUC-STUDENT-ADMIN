@@ -73,8 +73,7 @@ function getDomainWinstonLoggerJsonFormat() {
       let message;
       // handle single object
       if (!info.message) {
-        const obj = omit(info, ['level', 'timestamp', Symbol.for('level')]);
-        message = obj;
+        message = omit(info, ['level', 'timestamp', Symbol.for('level')]);
       } else {
         message = stripAnsi(info.message);
       }
