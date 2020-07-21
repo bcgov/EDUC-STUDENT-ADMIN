@@ -116,12 +116,12 @@ async function completePenRequest(req, res) {
   let thisSession = req['session'];
   if (!thisSession.studentDemographics || !thisSession.studentDemographics['studGiven']) {
     log.error('Error attempting to complete request.  There are no student demographics in session.');
-    return errorResponse(res);
+    return utils.errorResponse(res);
   }
 
   if (req.body.pen !== thisSession.studentDemographics.pen) {
     log.error('Error attempting to complete request.  PEN in the request is different from the one in the session.');
-    return errorResponse(res);
+    return utils.errorResponse(res);
   }
 
   const penRequest = {};
