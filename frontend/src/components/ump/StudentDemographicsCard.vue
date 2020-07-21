@@ -120,6 +120,9 @@ export default {
             console.log(error);
           })
           .finally(()=>{this.loadingDemographics = false;});
+      }else {
+        this.showDemographics = false;
+        this.loadingDemographics = false;
       }
     }
   }

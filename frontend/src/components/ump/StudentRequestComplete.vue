@@ -1,15 +1,15 @@
 <template>
   <div>
     <v-alert
-      :value="completedUpdateSuccess"
+      v-model="alert"
       dense
       text
       dismissible
       outlined
       transition="scale-transition"
-      class="bootstrap-success"
+      :class="alertType"
     >
-      {{`${requestTypeLabel} completed and email sent to student.`}}
+      {{ alertMessage }}
     </v-alert>
     <v-alert
       v-model="notAPenError"
@@ -22,17 +22,7 @@
     >
       The provided PEN is not valid.
     </v-alert>
-    <v-alert
-      :value="completedUpdateSuccess === false"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      class="bootstrap-error"
-    >
-      {{`${requestTypeLabel} failed to update. Please navigate to the list and select this ${requestTypeLabel} again.`}}
-    </v-alert>
+
     <v-card flat :disabled="!isProvidePenEnabledForUser">
       <v-row class="mx-0"> 
         <v-col cols="12" xl="6" lg="6" class="py-0">
@@ -108,7 +98,6 @@
                     name="description"
                     label="Enter comment"
                     v-model="request.completeComment"
-                    :rules="completedRules"
                     filled
                     clearable
                     @input="replaceCompleteMacro"
@@ -205,26 +194,20 @@ export default {
       enableCompleteButton: false,
       numberOfDuplicatePenRequests:0,
       isProvidePenEnabledForUser:false,
+      alert: false,
+      alertMessage: null,
+      alertType: null,
+      completeSagaInProgress: false,
       dialog: false,
     };
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('app', ['selectedRequest', 'requestType', 'requestTypeLabel']),
+    ...mapGetters('notifications', ['notification']),
     //...mapGetters(this.requestType, ['completeMacros']),
     actionName() {
       return 'SEND_UPDATE';
-    },
-    autoMatchCodes() { 
-      return Statuses.AUTO_MATCH_RESULT_CODES;
-    },
-    completedRules() {
-      const rules = [];
-      if (this.request.demogChanged==='Y') {
-        const rule = v => !!v || 'Required';
-        rules.push(rule);
-      }
-      return rules;
     },
     requestId() {
       return this.selectedRequest;
@@ -261,11 +244,32 @@ export default {
     'request.completeComment': 'validateCompleteAction',
     'request.recordedPen': function(val) {
       this.penSearchId = val;
-    }
+    },
+    notification(val) {
+      if (val) {
+        const notificationData = JSON.parse(val);
+        if (notificationData && notificationData.studentRequestID && notificationData.studentRequestID === this.requestId && notificationData.sagaStatus === 'COMPLETED') {
+          if (notificationData.sagaName === 'STUDENT_PROFILE_COMPLETE_SAGA') {
+            this.setSuccessAlert(`${this.requestTypeLabel} completed and email sent to student.`);
+            this.completeSagaInProgress = false;
+          }
+        }
+      }
+    },
   },
   methods: {
     ...mapMutations('app', ['setRequest']),
     ...mapMutations('app', ['pushMessage']),
+    setSuccessAlert(message) {
+      this.alertMessage = message;
+      this.alertType = 'bootstrap-success';
+      this.alert = true;
+    },
+    setFailureAlert(message) {
+      this.alertMessage = message;
+      this.alertType = 'bootstrap-error';
+      this.alert = true;
+    },
     validateCompleteAction() {
       this.$refs.completeForm.validate();
     },
@@ -289,61 +293,23 @@ export default {
     },
     completeRequest() {
       this.beforeSubmit();
-      this.completedUpdateSuccess = null;
+      this.alert = false;
       this.request.reviewer = this.myself.name;
-      this.request.studentRequestStatusCode = Statuses.studentRequest.COMPLETED;
       ApiService.apiAxios
         .post(Routes[this.requestType].COMPLETE_URL, this.prepPut(this.requestId, this.request))
-        .then(response => {
-          this.setRequest(response.data);
-          this.completedUpdateSuccess = true;
+        .then(() => {
+          this.setSuccessAlert('Your request to complete is accepted.');
+          this.completeSagaInProgress = true;
         })
         .catch(error => {
           console.log(error);
-          this.completedUpdateSuccess = false;
-        })
-        .finally(() => {
+          if (error.response.data && error.response.data.code && error.response.data.code === 409) {
+            this.setFailureAlert('Another saga is in progress for this request, please try again later.');
+          } else {
+            this.setFailureAlert(`${this.requestTypeLabel} failed to update. Please navigate to the list and select this ${this.requestTypeLabel} again.`);
+          }
           this.submitted();
         });
-    },
-    validatePen() {
-      this.notAPenError = false;
-      this.demographics.legalFirst = null;
-      this.demographics.legalMiddle = null;
-      this.demographics.legalLast = null;
-      this.demographics.usualFirst = null;
-      this.demographics.usualMiddle = null;
-      this.demographics.usualLast = null;
-      this.demographics.dob = null;
-      this.demographics.gender = null;
-      this.enableCompleteButton = false;
-      this.numberOfDuplicatePenRequests=0;
-      if(this.penSearchId) {
-        if (this.penSearchId.length === 9) {
-          if (this.checkDigit()) {
-            this.searchByPen();
-          } else {
-            this.notAPenError = true;
-          }
-        } else if (this.penSearchId.length > 9) {
-          this.notAPenError = true;
-        }
-      }
-    },
-    checkDigit() {
-      const penDigits = [];
-      for(let i = 0; i < this.penSearchId.length; i++) {
-        penDigits[i] = parseInt(this.penSearchId.charAt(i), 10);
-      }
-      const S1 = penDigits.slice(0,-1).filter((element,index) => {return index % 2 === 0;}).reduce((a,b) => a+b,0);
-      const A = parseInt(penDigits.slice(0,-1).filter((element,index) => {return index % 2 === 1;}).join(''), 10);
-      const B = 2 * A;
-      let S2 = B.toString().split('').map(Number).reduce(function (a, b) {return a + b;}, 0);
-      const S3 = S1 + S2;
-      if((S3 % 10) === 0) {
-        return penDigits.pop() === 0;
-      }
-      return penDigits.pop() === (10 - (S3%10));
     },
     searchByPen() {
       this.switchLoading(true);
@@ -360,37 +326,20 @@ export default {
           this.switchLoading(false);
         });
     },
-    searchDuplicatePenRequestsByPen() {
-      this.switchLoading(true);
-      const params={
-        pen :this.penSearchId
-      };
-      ApiService.apiAxios
-        .get(`${Routes[this.requestType].DUPLICATE_REQUESTS_URL}`,{params})
-        .then(response => {
-          if(response && response.data > 0){
-            this.numberOfDuplicatePenRequests=response.data;
-          }
-        }).catch(error => {
-          console.log(error);
-        }).finally(() => {
-          this.switchLoading(false);
-        });
-    },
     refreshStudentInfo() {
       this.notAPenError = false;
       if(this.penSearchId && this.penSearchId.length === 9) {
-        this.validatePen();
+        this.searchByPen();
       } else {
         this.notAPenError = true;
       }
     },
     differentDemographicsData(request, demographics) {
       return request.legalFirstName !== demographics.legalFirst ||
-        request.legalMiddleNames !== demographics.legalMiddle ||
+        (request.legalMiddleNames && demographics.legalMiddle && request.legalMiddleNames !== demographics.legalMiddle) ||
         request.legalLastName !== demographics.legalLast ||
         request.dob !== demographics.dob ||
-        request.gender !== demographics.gender;
+        request.genderCode !== demographics.gender;
     },
   }
 };
