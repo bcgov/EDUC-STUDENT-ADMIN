@@ -18,7 +18,12 @@ function getBackendToken(req) {
   const thisSession = req.session;
   return thisSession && thisSession['passport']&& thisSession['passport'].user && thisSession['passport'].user.jwt;
 }
-
+function errorResponse(res, msg, code) {
+  return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+    message: msg || 'INTERNAL SERVER ERROR',
+    code: code || HttpStatus.INTERNAL_SERVER_ERROR
+  });
+}
 function addTokenToHeader(params, token) {
   if (params) {
     params.headers = {
@@ -292,7 +297,8 @@ const utils = {
   getData,
   logApiError,
   postData,
-  putData
+  putData,
+  errorResponse
 };
 
 module.exports = utils;

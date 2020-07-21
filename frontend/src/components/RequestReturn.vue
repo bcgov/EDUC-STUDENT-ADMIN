@@ -202,7 +202,7 @@ export default {
           })
           .catch(error => {
             console.log(error);
-            if (error.response.data && error.response.data.message && error.response.data.message.includes('saga in progress')) {
+            if (error.response.data && error.response.data.code && error.response.data.code === 409) {
               this.returnOperationSuccessful = false;
               this.returnMessage = 'Another saga is in progress for this request, please try again later.';
             } else {

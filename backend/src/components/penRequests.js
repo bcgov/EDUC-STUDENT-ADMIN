@@ -75,9 +75,9 @@ async function executePenReqSaga(token, url, penRequest, res, sagaType) {
   } catch (e) {
     logApiError(e, `${sagaType}`, `Error occurred while attempting to ${sagaType} a pen request.`);
     if (e.status === HttpStatus.CONFLICT) {
-      return errorResponse(res, 'Another saga in progress');
+      return utils.errorResponse(res, 'Another saga in progress', HttpStatus.CONFLICT);
     }
-    return errorResponse(res);
+    return utils.errorResponse(res);
   }
 }
 
@@ -91,11 +91,7 @@ async function returnPenRequest(req, res) {
   return await executePenReqSaga(utils.getBackendToken(req), `${config.get('server:profileSagaAPIURL')}/pen-request-return-saga`, penRequest, res,'return');
 }
 
-function errorResponse(res, msg) {
-  return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-    message: msg || 'INTERNAL SERVER ERROR'
-  });
-}
+
 
 async function unlinkRequest(req, res) {
   let request = req['session'].penRequest;

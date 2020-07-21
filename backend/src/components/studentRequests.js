@@ -18,12 +18,6 @@ function createStudentRequestApiServiceReq(studentRequest, req) {
   return studentRequest;
 }
 
-function errorResponse(res, msg) {
-  return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-    message: msg || 'INTERNAL SERVER ERROR'
-  });
-}
-
 function updateForRejectAndReturn(studentRequest, userToken, req) {
   studentRequest.reviewer = req.body.reviewer;
   studentRequest.studentProfileRequestID = req.params.id || req.body.studentRequestID;
@@ -56,9 +50,9 @@ async function executeProfReqSaga(token, url, profileRequest, res, sagaType) {
   } catch (e) {
     utils.logApiError(e, `${sagaType}ProfileRequest`, `Error occurred while attempting to ${sagaType} a profile request.`);
     if (e.status === HttpStatus.CONFLICT) {
-      return errorResponse(res, 'Another saga in progress');
+      return utils.errorResponse(res, 'Another saga in progress', HttpStatus.CONFLICT);
     }
-    return errorResponse(res);
+    return utils.errorResponse(res);
   }
 }
 
