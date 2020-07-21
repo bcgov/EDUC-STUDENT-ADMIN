@@ -34,6 +34,8 @@ async function searchStudent(req, res) {
         operation = 'starts_with_ignore_case';
       }else if (element === 'memo') {
         operation = 'like_ignore_case';
+      } else if (element === 'postalCode') {
+        searchQueries[element] = searchQueries[element].replace(/ +/g, '');
       }
 
       searchListCriteria.push({key: element, operation: operation, value: searchQueries[element], valueType: valueType});

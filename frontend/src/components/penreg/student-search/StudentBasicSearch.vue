@@ -160,7 +160,8 @@
         tabindex="14"
         maxlength="2"
         @keyup.enter="enterPushed()"
-        v-on:input="searchHasValues"
+        v-on:input="[searchHasValues(), uppercaseGrade()]"
+        :rules="validateGradeCode()"
         minLength="1"
         dense
       ></v-text-field>
@@ -223,10 +224,18 @@ export default {
       type: Function,
       required: true
     },
+    uppercaseGrade: {
+      type: Function,
+      required: true
+    },
     validatePostal: {
       type: Function,
       required: true
     },
+    validateGradeCode: {
+      type: Function,
+      required: true
+    }
   },
   data() {
     return {

@@ -19,7 +19,9 @@
                   :validateGender="validateGender"
                   :validateMincode="validateMincode"
                   :uppercasePostal="uppercasePostal"
+                  :uppercaseGrade="uppercaseGrade"
                   :validatePostal="validatePostal"
+                  :validateGradeCode="validateGradeCode"
                   v-if="!this.isAdvancedSearch">
           </StudentBasicSearch>
           <StudentAdvancedSearch
@@ -31,11 +33,15 @@
                   :validateGender="validateGender"
                   :validateMincode="validateMincode"
                   :uppercasePostal="uppercasePostal"
+                  :uppercaseGrade="uppercaseGrade"
                   :validatePostal="validatePostal"
+                  :validateGradeCode="validateGradeCode"
                   v-else>
           </StudentAdvancedSearch>
           <v-row justify="end" no-gutters class="py-3 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
-            <v-btn outlined class="mx-2" color="#38598a" @click="toggleSearchType">{{!this.isAdvancedSearch?'Advanced Search':'Standard Search'}}</v-btn><v-btn class="white--text" :disabled="!searchEnabled" :loading="searchLoading" color="#38598a" @click="searchStudent(true)">Search</v-btn>
+            <v-btn outlined class="mx-2" color="#38598a" @click="toggleSearchType">{{!this.isAdvancedSearch?'Advanced Search':'Standard Search'}}</v-btn>
+            <v-btn outlined class="mr-2" color="#38598a" @click="clearSearch">Clear</v-btn>
+            <v-btn class="white--text" :disabled="!searchEnabled" :loading="searchLoading" color="#38598a" @click="searchStudent(true)">Search</v-btn>
           </v-row>
           <v-row v-if="this.studentSearchResponse" no-gutters class="py-2" style="background-color:white;">
             <v-divider class="mx-3"/>
@@ -70,13 +76,15 @@ export default {
   },
   data() {
     return {
-      penHint: 'Invalid PEN',
+      penHint: 'Fails check-digit test',
       postalCodeHint: 'Invalid Postal Code',
-      mincodeHint: 'Not enough digits',
+      mincodeHint: 'Digits only',
       genderHint: 'Invalid gender',
+      gradeHint: 'Invalid grade',
       validForm: false,
       menu: false,
       genderCodes: [],
+      gradeCodes: [],
       localDate:LocalDate,
       searchLoading: false,
       searchEnabled: false,
@@ -87,7 +95,7 @@ export default {
   computed:{
     ...mapGetters('app', ['requestType']),
     ...mapGetters('penReg', ['pageNumber']),
-    ...mapGetters('student', ['genders']),
+    ...mapGetters('student', ['genders', 'gradeCodeObjects']),
     ...mapState('studentSearch', ['pageNumber', 'headerSortParams', 'studentSearchResponse', 'isAdvancedSearch']),
     studentSearchParams: {
       get(){
@@ -105,9 +113,14 @@ export default {
   },
   created(){
     this.genderCodes = this.genders ? this.genders.map(a => a.genderCode):[];
+    this.gradeCodes = this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.gradeCode):[];
   },
   methods: {
-    ...mapMutations('studentSearch', ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse', 'toggleSearchType']),
+    ...mapMutations('studentSearch', ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse', 'toggleSearchType', 'clearStudentSearchParams']),
+    clearSearch() {
+      this.clearStudentSearchParams();
+      this.searchHasValues();
+    },
     uppercasePostal(){
       if(this.studentSearchParams.postalCode){
         this.studentSearchParams.postalCode = this.studentSearchParams.postalCode.toUpperCase();
@@ -116,6 +129,11 @@ export default {
     uppercaseGender(){
       if(this.studentSearchParams.genderCode){
         this.studentSearchParams.genderCode = this.studentSearchParams.genderCode.toUpperCase();
+      }
+    },
+    uppercaseGrade() {
+      if(this.studentSearchParams.gradeCode) {
+        this.studentSearchParams.gradeCode = this.studentSearchParams.gradeCode.toUpperCase();
       }
     },
     enterPushed() {
@@ -129,6 +147,9 @@ export default {
     },
     runPENSearchIfPossible(){
       if(this.isValidPEN()){
+        const pen = this.studentSearchParams.pen;
+        this.clearStudentSearchParams();
+        this.studentSearchParams.pen = pen;
         this.searchStudent(true, false);
       }
     },
@@ -137,7 +158,7 @@ export default {
       if(this.studentSearchParams) {
         if (!this.studentSearchParams.pen){
           validPEN = true;
-        }else if (this.studentSearchParams.pen.length === 9) {
+        } else if (this.studentSearchParams.pen.length === 9) {
           if (this.checkDigit()) {
             validPEN = true;
           }
@@ -147,9 +168,13 @@ export default {
         return [];
       }else{
         this.searchEnabled = false;
-        return [
-          this.penHint
-        ];
+        if(this.studentSearchParams.pen.length < 9) {
+          return [];
+        } else {
+          return [
+            this.penHint
+          ];
+        }
       }
     },
     validateGender(){
@@ -174,7 +199,7 @@ export default {
           return [];
         }
         else {
-          if(this.studentSearchParams.mincode.match('^[0-9]\\d*$') && this.studentSearchParams.mincode.length === 8){
+          if(this.studentSearchParams.mincode.match('^[0-9]\\d*$')){
             return [];
           }
         }
@@ -198,6 +223,22 @@ export default {
       this.searchEnabled = false;
       return [
         this.postalCodeHint
+      ];
+    },
+    validateGradeCode() {
+      if(this.studentSearchParams) {
+        if(!this.studentSearchParams.gradeCode){
+          return [];
+        }
+        else {
+          if(this.gradeCodes.includes(this.studentSearchParams.gradeCode.toUpperCase())){
+            return [];
+          }
+        }
+      }
+      this.searchEnabled = false;
+      return [
+        this.gradeHint
       ];
     },
     requiredRules(hint = 'Required') {
