@@ -98,7 +98,6 @@
                     name="description"
                     label="Enter comment"
                     v-model="request.completeComment"
-                    :rules="completedRules"
                     filled
                     clearable
                     @input="replaceCompleteMacro"
@@ -209,17 +208,6 @@ export default {
     //...mapGetters(this.requestType, ['completeMacros']),
     actionName() {
       return 'SEND_UPDATE';
-    },
-    autoMatchCodes() { 
-      return Statuses.AUTO_MATCH_RESULT_CODES;
-    },
-    completedRules() {
-      const rules = [];
-      if (this.request.demogChanged==='Y') {
-        const rule = v => !!v || 'Required';
-        rules.push(rule);
-      }
-      return rules;
     },
     requestId() {
       return this.selectedRequest;
@@ -348,10 +336,10 @@ export default {
     },
     differentDemographicsData(request, demographics) {
       return request.legalFirstName !== demographics.legalFirst ||
-        request.legalMiddleNames !== demographics.legalMiddle ||
+        (request.legalMiddleNames && demographics.legalMiddle && request.legalMiddleNames !== demographics.legalMiddle) ||
         request.legalLastName !== demographics.legalLast ||
         request.dob !== demographics.dob ||
-        request.gender !== demographics.gender;
+        request.genderCode !== demographics.gender;
     },
   }
 };
