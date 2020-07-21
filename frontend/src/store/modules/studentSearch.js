@@ -50,6 +50,27 @@ export default {
         state.headerSortParams.currentSort = sortHeader;
       }
     },
+    clearStudentSearchParams: (state) => {
+      state.studentSearchParams = {
+        pen: null,
+        legalLastName: null,
+        legalFirstName: null,
+        legalMiddleNames: null,
+        postalCode: null,
+        genderCode: null,
+        dob: {
+          startDate: null,
+          endDate: null
+        },
+        mincode: null,
+        usualLastName: null,
+        usualFirstName: null,
+        usualMiddleNames: null,
+        memo: null,
+        localID: null,
+        gradeCode: null
+      };
+    },
     toggleSearchType: (state) => {
       state.isAdvancedSearch = !state.isAdvancedSearch;
     }
