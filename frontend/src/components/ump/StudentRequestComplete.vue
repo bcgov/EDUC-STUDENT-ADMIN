@@ -1,15 +1,15 @@
 <template>
   <div>
     <v-alert
-      :value="completedUpdateSuccess"
+      v-model="alert"
       dense
       text
       dismissible
       outlined
       transition="scale-transition"
-      class="bootstrap-success"
+      :class="alertType"
     >
-      {{`${requestTypeLabel} completed and email sent to student.`}}
+      {{ alertMessage }}
     </v-alert>
     <v-alert
       v-model="notAPenError"
@@ -22,17 +22,7 @@
     >
       The provided PEN is not valid.
     </v-alert>
-    <v-alert
-      :value="completedUpdateSuccess === false"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      class="bootstrap-error"
-    >
-      {{`${requestTypeLabel} failed to update. Please navigate to the list and select this ${requestTypeLabel} again.`}}
-    </v-alert>
+
     <v-card flat :disabled="!isProvidePenEnabledForUser">
       <v-row class="mx-0"> 
         <v-col cols="12" xl="6" lg="6" class="py-0">
@@ -205,12 +195,17 @@ export default {
       enableCompleteButton: false,
       numberOfDuplicatePenRequests:0,
       isProvidePenEnabledForUser:false,
+      alert: false,
+      alertMessage: null,
+      alertType: null,
+      completeSagaInProgress: false,
       dialog: false,
     };
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('app', ['selectedRequest', 'requestType', 'requestTypeLabel']),
+    ...mapGetters('notifications', ['notification']),
     //...mapGetters(this.requestType, ['completeMacros']),
     actionName() {
       return 'SEND_UPDATE';
@@ -261,11 +256,32 @@ export default {
     'request.completeComment': 'validateCompleteAction',
     'request.recordedPen': function(val) {
       this.penSearchId = val;
-    }
+    },
+    notification(val) {
+      if (val) {
+        const notificationData = JSON.parse(val);
+        if (notificationData && notificationData.studentRequestID && notificationData.studentRequestID === this.requestId && notificationData.sagaStatus === 'COMPLETED') {
+          if (notificationData.sagaName === 'STUDENT_PROFILE_COMPLETE_SAGA') {
+            this.setSuccessAlert(`${this.requestTypeLabel} completed and email sent to student.`);
+            this.completeSagaInProgress = false;
+          }
+        }
+      }
+    },
   },
   methods: {
     ...mapMutations('app', ['setRequest']),
     ...mapMutations('app', ['pushMessage']),
+    setSuccessAlert(message) {
+      this.alertMessage = message;
+      this.alertType = 'bootstrap-success';
+      this.alert = true;
+    },
+    setFailureAlert(message) {
+      this.alertMessage = message;
+      this.alertType = 'bootstrap-error';
+      this.alert = true;
+    },
     validateCompleteAction() {
       this.$refs.completeForm.validate();
     },
@@ -289,20 +305,21 @@ export default {
     },
     completeRequest() {
       this.beforeSubmit();
-      this.completedUpdateSuccess = null;
+      this.alert = false;
       this.request.reviewer = this.myself.name;
-      this.request.studentRequestStatusCode = Statuses.studentRequest.COMPLETED;
       ApiService.apiAxios
         .post(Routes[this.requestType].COMPLETE_URL, this.prepPut(this.requestId, this.request))
-        .then(response => {
-          this.setRequest(response.data);
-          this.completedUpdateSuccess = true;
+        .then(() => {
+          this.setSuccessAlert('Your request to complete is accepted.');
+          this.completeSagaInProgress = true;
         })
         .catch(error => {
           console.log(error);
-          this.completedUpdateSuccess = false;
-        })
-        .finally(() => {
+          if (error.response.data && error.response.data.message && error.response.data.message.includes('saga in progress')) {
+            this.setFailureAlert('Another saga is in progress for this request, please try again later.');
+          } else {
+            this.setFailureAlert(`${this.requestTypeLabel} failed to update. Please navigate to the list and select this ${this.requestTypeLabel} again.`);
+          }
           this.submitted();
         });
     },

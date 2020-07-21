@@ -75,7 +75,7 @@ async function executePenReqSaga(token, url, penRequest, res, sagaType) {
   } catch (e) {
     logApiError(e, `${sagaType}`, `Error occurred while attempting to ${sagaType} a pen request.`);
     if (e.status === HttpStatus.CONFLICT) {
-      return errorResponse(res, 'Another saga is in progress');
+      return errorResponse(res, 'Another saga in progress');
     }
     return errorResponse(res);
   }

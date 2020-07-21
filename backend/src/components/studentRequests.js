@@ -56,7 +56,7 @@ async function executeProfReqSaga(token, url, profileRequest, res, sagaType) {
   } catch (e) {
     utils.logApiError(e, `${sagaType}ProfileRequest`, `Error occurred while attempting to ${sagaType} a profile request.`);
     if (e.status === HttpStatus.CONFLICT) {
-      return errorResponse(res, 'Another saga is in progress');
+      return errorResponse(res, 'Another saga in progress');
     }
     return errorResponse(res);
   }
@@ -71,8 +71,38 @@ async function returnProfileRequest(req, res) {
   const url = `${config.get('server:profileSagaAPIURL')}/student-profile-return-saga`;
   return await executeProfReqSaga(utils.getBackendToken(req), url, profileRequest, res, 'return');
 }
+
+async function completeProfileRequest(req, res) {
+  let thisSession = req['session'];
+  if (!thisSession.studentDemographics || !thisSession.studentDemographics['studGiven']) {
+    log.error('Error attempting to complete profile request.  There are no student demographics in session.');
+    return errorResponse(res);
+  }
+
+  const profileRequest = {};
+  profileRequest.digitalID = thisSession.penRequest.digitalID;
+  profileRequest.studentProfileRequestID = req.body.studentRequestID;
+  profileRequest.pen = thisSession.studentDemographics.pen;
+  profileRequest.legalFirstName = thisSession.studentDemographics['studGiven'];
+  profileRequest.legalMiddleNames = thisSession.studentDemographics['studMiddle'];
+  profileRequest.legalLastName = thisSession.studentDemographics['studSurname'];
+  profileRequest.dob = thisSession.studentDemographics['dob'];
+  profileRequest.sexCode = thisSession.studentDemographics['studSex'];
+  profileRequest.genderCode = thisSession.studentDemographics['studSex'];
+  profileRequest.usualFirstName = thisSession.studentDemographics['usualGiven'];
+  profileRequest.usualMiddleNames = thisSession.studentDemographics['usualMiddle'];
+  profileRequest.usualLastName = thisSession.studentDemographics['usualSurname'];
+  profileRequest.email = thisSession.penRequest.email;
+  profileRequest.emailVerified = thisSession.penRequest.emailVerified;
+  profileRequest.reviewer = req.body.reviewer;
+  profileRequest.completeComment = req.body.completeComment;
+  profileRequest.identityType = thisSession.identityType;
+  const url = `${config.get('server:profileSagaAPIURL')}/student-profile-complete-saga`;
+  return await executeProfReqSaga(utils.getBackendToken(req), url, profileRequest, res, 'complete');
+}
 module.exports = {
   createStudentRequestApiServiceReq,
   rejectProfileRequest,
-  returnProfileRequest
+  returnProfileRequest,
+  completeProfileRequest
 };
