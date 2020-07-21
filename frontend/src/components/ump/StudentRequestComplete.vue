@@ -323,45 +323,6 @@ export default {
           this.submitted();
         });
     },
-    validatePen() {
-      this.notAPenError = false;
-      this.demographics.legalFirst = null;
-      this.demographics.legalMiddle = null;
-      this.demographics.legalLast = null;
-      this.demographics.usualFirst = null;
-      this.demographics.usualMiddle = null;
-      this.demographics.usualLast = null;
-      this.demographics.dob = null;
-      this.demographics.gender = null;
-      this.enableCompleteButton = false;
-      this.numberOfDuplicatePenRequests=0;
-      if(this.penSearchId) {
-        if (this.penSearchId.length === 9) {
-          if (this.checkDigit()) {
-            this.searchByPen();
-          } else {
-            this.notAPenError = true;
-          }
-        } else if (this.penSearchId.length > 9) {
-          this.notAPenError = true;
-        }
-      }
-    },
-    checkDigit() {
-      const penDigits = [];
-      for(let i = 0; i < this.penSearchId.length; i++) {
-        penDigits[i] = parseInt(this.penSearchId.charAt(i), 10);
-      }
-      const S1 = penDigits.slice(0,-1).filter((element,index) => {return index % 2 === 0;}).reduce((a,b) => a+b,0);
-      const A = parseInt(penDigits.slice(0,-1).filter((element,index) => {return index % 2 === 1;}).join(''), 10);
-      const B = 2 * A;
-      let S2 = B.toString().split('').map(Number).reduce(function (a, b) {return a + b;}, 0);
-      const S3 = S1 + S2;
-      if((S3 % 10) === 0) {
-        return penDigits.pop() === 0;
-      }
-      return penDigits.pop() === (10 - (S3%10));
-    },
     searchByPen() {
       this.switchLoading(true);
       ApiService.apiAxios
@@ -377,27 +338,10 @@ export default {
           this.switchLoading(false);
         });
     },
-    searchDuplicatePenRequestsByPen() {
-      this.switchLoading(true);
-      const params={
-        pen :this.penSearchId
-      };
-      ApiService.apiAxios
-        .get(`${Routes[this.requestType].DUPLICATE_REQUESTS_URL}`,{params})
-        .then(response => {
-          if(response && response.data > 0){
-            this.numberOfDuplicatePenRequests=response.data;
-          }
-        }).catch(error => {
-          console.log(error);
-        }).finally(() => {
-          this.switchLoading(false);
-        });
-    },
     refreshStudentInfo() {
       this.notAPenError = false;
       if(this.penSearchId && this.penSearchId.length === 9) {
-        this.validatePen();
+        this.searchByPen();
       } else {
         this.notAPenError = true;
       }
