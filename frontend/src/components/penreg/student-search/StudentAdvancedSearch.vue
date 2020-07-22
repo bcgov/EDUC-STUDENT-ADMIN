@@ -408,6 +408,7 @@ export default {
       return true;
     },
     validateDOBYear(year) {
+      if(!year) { return []; }
       if (!year.match(/\d{4}/g)) {
         return ['Invalid year'];
       } else {
