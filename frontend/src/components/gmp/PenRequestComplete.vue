@@ -118,7 +118,7 @@
             <v-btn :disabled="isUnlinkDisabled" color="#38598a" justify="center" width="100%" :dark="!isUnlinkDisabled" @click="unlinkRequest">Unlink</v-btn>
           </v-col>
         <v-col cols="3" xl="3" lg="3" md="3" class="pt-3">
-          <v-btn :disabled="isCompleteDisabled" color="#38598a" justify="center" width="100%" :dark="isCompleteDark" @click="completeRequest">Provide PEN to Student</v-btn>
+          <v-btn id="provide-pen-to-student" :disabled="isCompleteDisabled" color="#38598a" justify="center" width="100%" :dark="isCompleteDark" @click="completeRequest">Provide PEN to Student</v-btn>
         </v-col>
       </v-row>
     </v-card>
