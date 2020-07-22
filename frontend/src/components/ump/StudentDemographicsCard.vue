@@ -25,7 +25,7 @@
           <p class="mb-0">PEN:</p>
         </v-col>
         <v-col cols="12" xl="11" lg="11" md="11" sm="11">
-          <p class="mb-0"><strong>{{ this.request.recordedPen }}</strong></p>
+          <p id="recordedPEN" class="mb-0"><strong>{{ this.request.recordedPen }}</strong></p>
         </v-col>
       </v-row>
       <v-row no-gutters class="px-2">
@@ -33,7 +33,7 @@
           <p class="mb-0">First:</p>
         </v-col>
         <v-col cols="12" xl="11" lg="11" md="11" sm="11">
-          <p class="mb-0"><strong>{{ this.student.legalFirstName || ''}}</strong></p>
+          <p id="legalFirstName" class="mb-0"><strong>{{ this.student.legalFirstName || ''}}</strong></p>
         </v-col>
       </v-row>
       <v-row no-gutters class="px-2">
@@ -41,7 +41,7 @@
           <p class="mb-0">Middle:</p>
         </v-col>
         <v-col cols="12" xl="11" lg="11" md="11" sm="11">
-          <p class="mb-0"><strong>{{ this.student.legalMiddleNames || ''}}</strong></p>
+          <p id="legalMiddleName" class="mb-0"><strong>{{ this.student.legalMiddleNames || ''}}</strong></p>
         </v-col>
       </v-row>
         <v-row no-gutters class="px-2">
@@ -49,7 +49,7 @@
           <p class="mb-0">Last:</p>
         </v-col>
         <v-col cols="12" xl="11" lg="11" md="11" sm="11">
-          <p class="mb-0"><strong>{{ this.student.legalLastName || ''}}</strong></p>
+          <p id="legalLastName" class="mb-0"><strong>{{ this.student.legalLastName || ''}}</strong></p>
         </v-col>
       </v-row>
       <v-row no-gutters class="px-2">
@@ -57,7 +57,7 @@
           <p class="mb-0">DOB:</p>
         </v-col>
         <v-col cols="12" xl="11" lg="11" md="11" sm="11">
-          <p class="mb-0"><strong>{{ this.student.dob }}</strong></p>
+          <p id="studentDOB" class="mb-0"><strong>{{ this.student.dob }}</strong></p>
         </v-col>
       </v-row>
       <v-row no-gutters class="px-2">
@@ -65,7 +65,7 @@
           <p class="mb-0">Gender:</p>
         </v-col>
         <v-col cols="12" xl="11" lg="11" md="11" sm="11">
-          <p class="mb-0"><strong>{{ this.student.genderCode }}</strong></p>
+          <p id="studentGender" class="mb-0"><strong>{{ this.student.genderCode }}</strong></p>
         </v-col>
       </v-row>
     </v-alert>

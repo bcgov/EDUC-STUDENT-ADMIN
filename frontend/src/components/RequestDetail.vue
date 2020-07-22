@@ -32,13 +32,13 @@
                   <p class="mb-2">Status:</p>
                 </v-col>
                 <v-col v-if="this.request[requestStatusCodeName] === this.statusCodes.FIRST_REVIEW || this.request[requestStatusCodeName] === this.statusCodes.SECOND_REVIEW" cols="12" xl="9" lg="9" md="9" sm="9">
-                  <p class="mb-2 green--text"><strong>{{this.request[requestStatusCodeLabelName]}}</strong></p>
+                  <p id="requestStatus" class="mb-2 green--text"><strong>{{this.request[requestStatusCodeLabelName]}}</strong></p>
                 </v-col>
                 <v-col v-else-if="this.request[requestStatusCodeName] === this.statusCodes.RETURNED" cols="12" xl="9" lg="9" md="9" sm="9">
-                  <p class="mb-2 orange--text"><strong>{{this.request[requestStatusCodeLabelName]}}</strong></p>
+                  <p id="requestStatus" class="mb-2 orange--text"><strong>{{this.request[requestStatusCodeLabelName]}}</strong></p>
                 </v-col>
                 <v-col v-else cols="12" xl="9" lg="9" md="9" sm="9">
-                  <p class="mb-2 grey--text text--darken-1"><strong>{{this.request[requestStatusCodeLabelName]}}</strong></p>
+                  <p id="requestStatus" class="mb-2 grey--text text--darken-1"><strong>{{this.request[requestStatusCodeLabelName]}}</strong></p>
                 </v-col>
               </v-row>
               <v-row no-gutters>
@@ -46,8 +46,8 @@
                   <p class="mb-2">As of:</p>
                 </v-col>
                 <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                  <p v-if="this.request['statusUpdateDate'] == null" class="mb-2"></p>
-                  <p v-else class="mb-2"><strong>{{ this.request['statusUpdateDate'] ? moment(this.request['statusUpdateDate']).fromNow():'' }}</strong>, at {{ this.request['statusUpdateDate'] ? moment(this.request['statusUpdateDate']).format('YYYY-MM-DD LT'):'' }}</p>
+                  <p id="asOfDate" v-if="this.request['statusUpdateDate'] == null" class="mb-2"></p>
+                  <p id="asOfDate" v-else class="mb-2"><strong>{{ this.request['statusUpdateDate'] ? moment(this.request['statusUpdateDate']).fromNow():'' }}</strong>, at {{ this.request['statusUpdateDate'] ? moment(this.request['statusUpdateDate']).format('YYYY-MM-DD LT'):'' }}</p>
                 </v-col>
               </v-row>
               <v-row no-gutters>
@@ -55,8 +55,8 @@
                   <p>Submitted:</p>
                 </v-col>
                 <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                  <p v-if="this.request.initialSubmitDate == null" class="mb-2"></p>
-                  <p v-else><strong>{{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).fromNow():'' }}</strong>, at {{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).format('YYYY-MM-DD LT'):'' }}</p>
+                  <p id="submittedDate" v-if="this.request.initialSubmitDate == null" class="mb-2"></p>
+                  <p id="submittedDate" v-else><strong>{{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).fromNow():'' }}</strong>, at {{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).format('YYYY-MM-DD LT'):'' }}</p>
                 </v-col>
               </v-row>
             </v-card>
@@ -66,7 +66,7 @@
               <v-row v-if="this.request.reviewer === this.myself.name" no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
                 <p v-if="this.isRequestCompleted" class="grey--text text--darken-1"><strong>{{ this.request.reviewer }} completed this request</strong></p>
                 <p v-if="!this.isRequestCompleted" class="green--text"><strong>You are working on this request</strong></p>
-                <v-btn id="release-pen-request" :disabled="isReleaseDisabled" small color="#38598a" :dark="isDarkForRelease" class="ml-2" @click="claimRequest">Release</v-btn>
+                <v-btn id="release-request" :disabled="isReleaseDisabled" small color="#38598a" :dark="isDarkForRelease" class="ml-2" @click="claimRequest">Release</v-btn>
               </v-row>
               <v-row v-else no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
                 <p v-if="!this.request.reviewer && this.isRequestCompleted" class="grey--text text--darken-1"><strong>This request has been completed</strong></p>
@@ -76,7 +76,7 @@
                 <v-btn id="claim-pen-request" :disabled="isClaimDisabled" small color="#38598a" :dark="isDarkForClaim" class="ml-2" @click="claimRequest">Claim</v-btn>
               </v-row>
               <v-row no-gutters justify="end" class="pb-5">
-                <v-btn  small color="#38598a" :dark="true" class="ml-2" @click="backToList">Back to List</v-btn>
+                <v-btn id="back-to-list" small color="#38598a" :dark="true" class="ml-2" @click="backToList">Back to List</v-btn>
               </v-row>
             </v-card>
           </v-col>
