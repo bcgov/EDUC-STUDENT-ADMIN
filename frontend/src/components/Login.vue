@@ -4,7 +4,7 @@
           <h4 id="login_text">Log In</h4>
         </v-card-title>
         <v-card-text id="login_descriptor">
-          To access the Student Administration Application, you must have a valid IDir.
+          To access the Student Administration Application, you must have a valid IDIR.
         </v-card-text>
         <v-card-actions>
             <v-row align="center" justify="center">
