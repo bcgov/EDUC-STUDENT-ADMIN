@@ -157,7 +157,7 @@ pipeline{
       steps {
         script {
           withCredentials([string(credentialsId: 'c2mvws-tools-github-actions-token', variable: 'TOKEN')]) {
-            extJSHelper.triggerWorkflow(TOKEN)
+            extJSHelper.triggerWorkflow(TOKEN, 'smoke-test-admin-dev-environment')
             extJSHelper.waitForWorkflowRunComplete(TOKEN)
           }
         }
