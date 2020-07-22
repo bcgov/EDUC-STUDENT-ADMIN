@@ -90,7 +90,7 @@
         </v-col>
         <v-col cols="12" xl="6" lg="6" class="py-0 pl-0">
           <v-row justify="end" class="pr-3 pt-3">
-            <v-btn :disabled="isCompleteDisabled" color="#38598a" :dark="isCompleteDark" @click="sendChanges">Send Changes to Student</v-btn>
+            <v-btn id="send-changes-to-student" :disabled="isCompleteDisabled" color="#38598a" :dark="isCompleteDark" @click="sendChanges">Send Changes to Student</v-btn>
           </v-row>
           <v-form ref="completeForm">
             <v-textarea
@@ -120,6 +120,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
+            id="confirm-request-changes"
             color="#38598a"
             dark
             @click="confirmChanges"
@@ -127,6 +128,7 @@
             Confirm
           </v-btn>
           <v-btn
+            id="cancel-request-changes"
             color="#38598a"
             dark
             @click="dialog = false"
