@@ -66,7 +66,7 @@ async function executePenReqSaga(token, url, penRequest, res, sagaType) {
     const sagaId = await postData(token, url, penRequest);
     const event = {
       sagaId: sagaId,
-      penRequestID: penRequest.penRetrievalRequestID,
+      penRequestID: penRequest.penRetrievalRequestID || penRequest.penRequestID,
       sagaStatus: 'INITIATED'
     };
     log.info(`going to store event object in redis for ${sagaType} pen request :: `, event);
