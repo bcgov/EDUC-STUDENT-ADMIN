@@ -35,7 +35,7 @@ objects:
       spec:
         containers:
         - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend-static:${TAG}
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           volumeMounts:
           - name: tls-certs
             mountPath: "/etc/tls-certs"
