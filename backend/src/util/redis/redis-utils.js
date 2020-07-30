@@ -38,6 +38,7 @@ const redisUtil = {
               try{
                 await this.getRedLock().lock(`locks:saga:deleteFromSet-${event.sagaId}`, 500);
                 await redisClient.srem(SagaEventKey, safeStringify(eventArrayElement));
+                log.info(`Event record deleted from REDIS. SAGA ID :: ${eventArrayElement.sagaId} AND STATUS :: ${event.sagaStatus}`);
               }catch (e) {
                 log.info('this pod could not acquire lock', e);
               }
