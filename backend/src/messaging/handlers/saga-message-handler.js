@@ -9,7 +9,7 @@ const SagaTopics = ['PEN_REQUEST_RETURN_SAGA_TOPIC', 'PEN_REQUEST_UNLINK_SAGA_TO
 const SagaEventWebSocketTopic = 'SAGA_EVENT_WS_TOPIC';
 
 function subscribeSagaMessages(stan, opts, topic, handleMessage) {
-  const sagaSubscription = stan.subscribe(topic, 'student-admin-pen-req-saga-queue-group', opts);
+  const sagaSubscription = stan.subscribe(topic, 'student-admin-node-saga-queue-group', opts);
   sagaSubscription.on('error', (err) => {
     log.error(`subscription for ${topic} raised an error: ${err}`);
   });
@@ -42,6 +42,7 @@ async function handleSagaMessage(msg, stan) {
       }
     });
   }
+  msg.ack(); // manual acknowledgement that message was received and processed successfully.
 }
 
 function broadCastMessageToWebSocketClients(msg){
@@ -68,6 +69,7 @@ function subscribeToWebSocketMessageTopic(stan, opts) {
   SagaEventWebSocketTopicSubscription.on('message', (msg) => {
     log.silly(`Received message, on ${msg.getSubject()} , Sequence ::  [${msg.getSequence()}] :: Data ::`, JSON.parse(msg.getData()));
     broadCastMessageToWebSocketClients(msg.getData());
+    msg.ack(); // manual acknowledgement that message was received and processed successfully.
   });
 }
 
@@ -82,6 +84,8 @@ const SagaMessageHandler = {
    */
   subscribe(stan) {
     const opts = stan.subscriptionOptions().setStartAt(0);
+    opts.setManualAckMode(true);
+    opts.setAckWait(30000); // 30 seconds
     opts.setDurableName('student-admin-node-consumer');
     SagaTopics.forEach((topic) => {
       subscribeSagaMessages(stan, opts, topic, handleSagaMessage);
