@@ -77,7 +77,7 @@
       <v-row no-gutters class="textFieldRow">
         <v-col cols="2">Gender</v-col>
         <v-col cols="1" id="genderCol">
-          <v-text-field dense filled outlined
+          <v-text-field id="gender" dense filled outlined
             v-model="studentSearchParams.genderCode"
             @keyup.enter="enterPushed()"
             v-on:input="[searchHasValues(),uppercaseGender()]"
