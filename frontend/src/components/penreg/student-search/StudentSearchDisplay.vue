@@ -115,6 +115,11 @@ export default {
     this.genderCodes = this.genders ? this.genders.map(a => a.genderCode):[];
     this.gradeCodes = this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.gradeCode):[];
   },
+  mounted() {
+    if(this.studentSearchParams) {
+      this.searchHasValues();
+    }
+  },
   methods: {
     ...mapMutations('studentSearch', ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse', 'toggleSearchType', 'clearStudentSearchParams']),
     clearSearch() {
