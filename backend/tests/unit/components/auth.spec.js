@@ -7,7 +7,7 @@ const utils = require('../../../src/components/utils');
 const jsonwebtoken = require('jsonwebtoken');
 const HttpStatus = require('http-status-codes');
 
-const { mockRequest, mockResponse, mockNext } = require('../helpers'); 
+const { mockRequest, mockResponse } = require('../helpers'); 
 
 const mockAxios = new MockAdapter(axios);
 

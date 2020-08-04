@@ -9,7 +9,6 @@ const log = require('./logger');
 const cache = require('memory-cache');
 const { ServiceError, ApiError } = require('./error');
 const { LocalDateTime, DateTimeFormatter } = require('@js-joda/core');
-const safeStringify = require('fast-safe-stringify');
 
 let discovery = null;
 let memCache = new cache.Cache();

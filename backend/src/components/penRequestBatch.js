@@ -2,7 +2,6 @@
 const { logApiError } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
-const log = require('./logger');
 const { getBackendToken, getData } = require('./utils');
 
 async function getPenRequestFiles(req, res) {
