@@ -130,20 +130,20 @@ describe('refreshJWT', () => {
   });
 });
 
-describe('createRoleHelpers', () => {
-  const roles = {
-    User: {
-      GMP: ['STUDENT_ADMIN', 'STUDENT_ADMIN_READ_ONLY'],
-      UMP: ['STUDENT_PROFILE_ADMIN', 'STUDENT_PROFILE_READ_ONLY'],
-      StudentSearch: ['STUDENT_SEARCH_ADMIN']
-    },
-    Admin: {
-      GMP: 'STUDENT_ADMIN',
-      UMP: 'STUDENT_PROFILE_ADMIN',
-      StudentSearch: 'STUDENT_SEARCH_ADMIN'
-    }
+const roles = {
+  User: {
+    GMP: ['STUDENT_ADMIN', 'STUDENT_ADMIN_READ_ONLY'],
+    UMP: ['STUDENT_PROFILE_ADMIN', 'STUDENT_PROFILE_READ_ONLY'],
+    StudentSearch: ['STUDENT_SEARCH_ADMIN']
+  },
+  Admin: {
+    GMP: 'STUDENT_ADMIN',
+    UMP: 'STUDENT_PROFILE_ADMIN',
+    StudentSearch: 'STUDENT_SEARCH_ADMIN'
   }
+}
 
+describe('createRoleHelpers', () => {
   jest.spyOn(jsonwebtoken, 'verify');
 
   jest.spyOn(utils, 'getBackendToken'); 
@@ -219,19 +219,6 @@ describe('createRoleHelpers', () => {
 });
 
 describe('isValidGMPUserToken', () => {
-  const roles = {
-    User: {
-      GMP: ['STUDENT_ADMIN', 'STUDENT_ADMIN_READ_ONLY'],
-      UMP: ['STUDENT_PROFILE_ADMIN', 'STUDENT_PROFILE_READ_ONLY'],
-      StudentSearch: ['STUDENT_SEARCH_ADMIN']
-    },
-    Admin: {
-      GMP: 'STUDENT_ADMIN',
-      UMP: 'STUDENT_PROFILE_ADMIN',
-      StudentSearch: 'STUDENT_SEARCH_ADMIN'
-    }
-  }
-
   jest.spyOn(jsonwebtoken, 'verify');
 
   jest.spyOn(utils, 'getBackendToken'); 
@@ -296,19 +283,6 @@ describe('isValidGMPUserToken', () => {
 });
 
 describe('isValidGMPAdmin', () => {
-  const roles = {
-    User: {
-      GMP: ['STUDENT_ADMIN', 'STUDENT_ADMIN_READ_ONLY'],
-      UMP: ['STUDENT_PROFILE_ADMIN', 'STUDENT_PROFILE_READ_ONLY'],
-      StudentSearch: ['STUDENT_SEARCH_ADMIN']
-    },
-    Admin: {
-      GMP: 'STUDENT_ADMIN',
-      UMP: 'STUDENT_PROFILE_ADMIN',
-      StudentSearch: 'STUDENT_SEARCH_ADMIN'
-    }
-  }
-
   jest.spyOn(jsonwebtoken, 'verify');
 
   jest.spyOn(utils, 'getBackendToken'); 
@@ -374,19 +348,6 @@ describe('isValidGMPAdmin', () => {
 
 
 describe('isValidGMPUser', () => {
-  const roles = {
-    User: {
-      GMP: ['STUDENT_ADMIN', 'STUDENT_ADMIN_READ_ONLY'],
-      UMP: ['STUDENT_PROFILE_ADMIN', 'STUDENT_PROFILE_READ_ONLY'],
-      StudentSearch: ['STUDENT_SEARCH_ADMIN']
-    },
-    Admin: {
-      GMP: 'STUDENT_ADMIN',
-      UMP: 'STUDENT_PROFILE_ADMIN',
-      StudentSearch: 'STUDENT_SEARCH_ADMIN'
-    }
-  }
-
   jest.spyOn(jsonwebtoken, 'verify');
 
   jest.spyOn(utils, 'getBackendToken'); 
@@ -439,19 +400,6 @@ describe('isValidGMPUser', () => {
 
 
 describe('isValidUsers', () => {
-  const roles = {
-    User: {
-      GMP: ['STUDENT_ADMIN', 'STUDENT_ADMIN_READ_ONLY'],
-      UMP: ['STUDENT_PROFILE_ADMIN', 'STUDENT_PROFILE_READ_ONLY'],
-      StudentSearch: ['STUDENT_SEARCH_ADMIN']
-    },
-    Admin: {
-      GMP: 'STUDENT_ADMIN',
-      UMP: 'STUDENT_PROFILE_ADMIN',
-      StudentSearch: 'STUDENT_SEARCH_ADMIN'
-    }
-  }
-
   jest.spyOn(jsonwebtoken, 'verify');
 
   const helpers = auth.__get__('createRoleHelpers')(roles);
