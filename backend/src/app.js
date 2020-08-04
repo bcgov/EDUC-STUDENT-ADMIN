@@ -22,6 +22,7 @@ const OidcStrategy = require('passport-openidconnect-kc-idp').Strategy;
 const apiRouter = express.Router();
 const authRouter = require('./routes/auth');
 const penRequestRouter = require('./routes/penRequest');
+const penRequestBatchRouter = require('./routes/penRequestBatch');
 const penRequestStatusesRouter = require('./routes/penRequestStatuses');
 const studentDemographicsRouter = require('./routes/studentDemographics');
 const studentsRouter = require('./routes/students');
@@ -149,6 +150,7 @@ app.use(/(\/api)?/, apiRouter);
 
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/penRequest', penRequestRouter);
+apiRouter.use('/penRequestBatch', penRequestBatchRouter);
 apiRouter.use('/penRequest/codes', penRequestStatusesRouter);
 apiRouter.use('/studentDemographics', studentDemographicsRouter);
 apiRouter.use('/students', studentsRouter);

@@ -5,14 +5,17 @@ const auth = require('../components/auth');
 const { getStudentById } = require('../components/requests');
 const { searchStudent, getStudentGender, getDemogCodes, getStatusCodes, getGradeCodes } = require('../components/studentSearch');
 const { saveStudent, getStudentByStudentId } = require('../components/student');
+const roles = require('../components/roles');
 
-router.get('/genderCodes', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getStudentGender);
-router.get('/demogCodes', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getDemogCodes);
-router.get('/statusCodes', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getStatusCodes);
-router.get('/gradeCodes', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getGradeCodes);
+const isValidUiTokenWithGumpRoles = auth.isValidUiTokenWithRoles('GMP & UMP', [...roles.User.GMP, ...roles.User.UMP]);
+
+router.get('/genderCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithGumpRoles, getStudentGender);
+router.get('/demogCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithGumpRoles, getDemogCodes);
+router.get('/statusCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithGumpRoles, getStatusCodes);
+router.get('/gradeCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithGumpRoles, getGradeCodes);
 router.get('/search', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, searchStudent);
-router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getStudentById);
-router.get('/detail/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, getStudentByStudentId);
-router.post('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUserToken, saveStudent);
+router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithGumpRoles, getStudentById);
+router.get('/detail/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithGumpRoles, getStudentByStudentId);
+router.post('/', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithGumpRoles, saveStudent);
 
 module.exports = router;
