@@ -7,7 +7,7 @@ const jsonwebtoken = require('jsonwebtoken');
 const qs = require('querystring');
 const utils = require('./utils');
 const safeStringify = require('fast-safe-stringify');
-const roles = require('./roles');
+const userRoles = require('./roles');
 const { partial, fromPairs } = require('lodash');
 
 /**
@@ -185,7 +185,7 @@ const auth = {
   },
   isValidUiTokenWithRoles: partial(isValidUiToken, isUserHasRoles),
   isValidUserWithRoles: partial(isValidUser, isUserHasRoles),
-  ...createRoleHelpers(roles)
+  ...createRoleHelpers(userRoles)
 };
 
 module.exports = auth;
