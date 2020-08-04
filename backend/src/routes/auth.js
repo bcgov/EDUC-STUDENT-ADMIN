@@ -5,11 +5,14 @@ const passport = require('passport');
 const express = require('express');
 const auth = require('../components/auth');
 const jsonwebtoken = require('jsonwebtoken');
+const roles = require('../components/roles');
 
 const {
   body,
   validationResult
 } = require('express-validator');
+
+const isValidGumpUserWithRoles = auth.isValidUserWithRoles('GMP & UMP', [...roles.User.GMP, ...roles.User.UMP]);
 
 const router = express.Router();
 
@@ -87,10 +90,8 @@ router.post('/refresh', [
     });
   }
 
-  const isAuthorizedUser = auth.isValidUser(req);
-  const isValidGMPUser = auth.isValidGMPUser(req);
-  const isValidUMPUser = auth.isValidUMPUser(req);
-  const isValidStudentSearchUser = auth.isValidStudentSearchUser(req);
+  const isAuthorizedUser = isValidGumpUserWithRoles(req);
+  const isValidUsers = auth.isValidUsers(req);
   if (!req['user'] || !req['user'].refreshToken) {
     res.status(401).json();
   } else {
@@ -101,9 +102,7 @@ router.post('/refresh', [
       const responseJson = {
         jwtFrontend: auth.generateUiToken(),
         isAuthorizedUser: isAuthorizedUser,
-        isValidGMPUser,
-        isValidUMPUser,
-        isValidStudentSearchUser
+        ...isValidUsers
       };
       return res.status(200).json(responseJson);
     } else {
@@ -115,17 +114,13 @@ router.post('/refresh', [
 //provides a jwt to authenticated users
 router.get('/token', auth.refreshJWT, (req, res) => {
 
-  const isAuthorizedUser = auth.isValidUser(req);
-  const isValidGMPUser = auth.isValidGMPUser(req);
-  const isValidUMPUser = auth.isValidUMPUser(req);
-  const isValidStudentSearchUser = auth.isValidStudentSearchUser(req);
+  const isAuthorizedUser = isValidGumpUserWithRoles(req);
+  const isValidUsers = auth.isValidUsers(req);
   if (req['user'] && req['user'].jwtFrontend && req['user'].refreshToken) {
     const responseJson = {
       jwtFrontend: req['user'].jwtFrontend,
       isAuthorizedUser: isAuthorizedUser,
-      isValidGMPUser,
-      isValidUMPUser,
-      isValidStudentSearchUser
+      ...isValidUsers
     };
     res.status(200).json(responseJson);
   } else {
