@@ -35,7 +35,7 @@
         <tr>
           <td v-for="header in props.headers" :key="header.id" :class="header.id">
             <v-checkbox v-if="header.type" :input-value="props.isSelected" @change="props.select($event)"></v-checkbox>
-            <div v-else @click="viewStudentDetails(props.item)">
+            <div v-else @click="viewStudentDetails(props.item.studentID)">
               <span class="top-column-item">{{ props.item[header.topValue] || '-' }}</span>
               <span class="double-column-item">{{props.item[header.doubleValue]}}</span>
               <br>
@@ -60,6 +60,7 @@
 import { mapMutations, mapState } from 'vuex';
 import ApiService from '../../../common/apiService';
 import {Routes} from '../../../utils/constants';
+import router from '../../../router';
 
 export default {
   name: 'SearchResults',
@@ -130,9 +131,8 @@ export default {
   },
   methods: {
     ...mapMutations('studentSearch', ['updateSortParams', 'setStudentSearchResponse']),
-    ...mapMutations('student', ['setSelectedStudent']),
-    viewStudentDetails(student) {
-      this.setSelectedStudent(student);
+    viewStudentDetails(studentID) {
+      router.push({ name: 'student detail', params: {studentID: studentID}});
     },
     compare() {
       //TODO

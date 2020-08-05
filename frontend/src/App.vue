@@ -13,6 +13,7 @@ import { mapGetters, mapActions } from 'vuex';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ModalIdle from './components/ModalIdle';
+import router from './router';
 
 export default {
   name: 'app',
@@ -34,10 +35,14 @@ export default {
       this.$store.dispatch('student/getCodes');
     });
   },
-  mounted() {
-    /* window.addEventListener('beforeunload', function(e){
-      this.closeSessionOnBrowserClose(e);
-    });*/
+  watch: {
+    isAuthenticated: {
+      handler() {
+        if(!this.isAuthenticated) {
+          router.push({ name: 'login' });
+        }
+      }
+    }
   },
   methods:{
     ...mapActions('student', ['getCodes']),

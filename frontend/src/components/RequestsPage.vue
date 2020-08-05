@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="my-10 px-16">
-    <v-tabs 
+    <v-tabs
       active-class="active-display"
       v-model="tab"
     >

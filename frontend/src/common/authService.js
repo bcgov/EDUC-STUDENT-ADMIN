@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Routes } from '../utils/constants';
+import router from '../router';
 
 export default {
 
@@ -11,6 +12,7 @@ export default {
       return response.data;
     } catch (e) {
       console.log(`Failed to acquire JWT token - ${e}`); // eslint-disable-line no-console
+      router.push({ name: 'login' });
       throw e;
     }
   },
@@ -29,6 +31,7 @@ export default {
       return response.data;
     } catch (e) {
       console.log(`Failed to refresh JWT token - ${e}`); // eslint-disable-line no-console
+      router.push({ name: 'login' });
       throw e;
     }
   }

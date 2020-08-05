@@ -30,6 +30,9 @@ export default {
     studentSearchResponse: null
   },
   mutations: {
+    setIsAdvancedSearch: (state, isAdvancedSearch) => {
+      state.isAdvancedSearch = isAdvancedSearch;
+    },
     setPageNumber: (state, pageNumber) => {
       state.pageNumber = pageNumber;
     },
@@ -70,9 +73,6 @@ export default {
         localID: null,
         gradeCode: null
       };
-    },
-    toggleSearchType: (state) => {
-      state.isAdvancedSearch = !state.isAdvancedSearch;
     }
   }
 };

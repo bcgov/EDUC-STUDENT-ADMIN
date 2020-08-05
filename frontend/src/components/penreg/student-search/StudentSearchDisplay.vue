@@ -1,64 +1,65 @@
 <template>
-  <v-form ref="studentSearchForm" id="searchStudentForm"
-          v-model="validForm"
-  >
-    <v-container fluid class="fill-height px-0">
-      <v-row no-gutters>
-        <v-card height="100%" width="100%" style="background-color:#d7d7d7;">
-          <v-row no-gutters class="mx-5 pa-6">
-            <v-col>
-              <h3>Student Search</h3>
-            </v-col>
-          </v-row>
-          <StudentBasicSearch
-                  :enterPushed="enterPushed"
-                  :runPENSearchIfPossible="runPENSearchIfPossible"
-                  :searchHasValues="searchHasValues"
-                  :validatePen="validatePen"
-                  :uppercaseGender="uppercaseGender"
-                  :validateGender="validateGender"
-                  :validateMincode="validateMincode"
-                  :uppercasePostal="uppercasePostal"
-                  :uppercaseGrade="uppercaseGrade"
-                  :validatePostal="validatePostal"
-                  :validateGradeCode="validateGradeCode"
-                  v-if="!this.isAdvancedSearch">
-          </StudentBasicSearch>
-          <StudentAdvancedSearch
-                  :enterPushed="enterPushed"
-                  :runPENSearchIfPossible="runPENSearchIfPossible"
-                  :searchHasValues="searchHasValues"
-                  :validatePen="validatePen"
-                  :uppercaseGender="uppercaseGender"
-                  :validateGender="validateGender"
-                  :validateMincode="validateMincode"
-                  :uppercasePostal="uppercasePostal"
-                  :uppercaseGrade="uppercaseGrade"
-                  :validatePostal="validatePostal"
-                  :validateGradeCode="validateGradeCode"
-                  v-else>
-          </StudentAdvancedSearch>
-          <v-row justify="end" no-gutters class="py-3 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
-            <v-btn outlined class="mx-2" color="#38598a" @click="toggleSearchType">{{!this.isAdvancedSearch?'Advanced Search':'Standard Search'}}</v-btn>
-            <v-btn outlined class="mr-2" color="#38598a" @click="clearSearch">Clear</v-btn>
-            <v-btn class="white--text" :disabled="!searchEnabled" :loading="searchLoading" color="#38598a" @click="searchStudent(true)">Search</v-btn>
-          </v-row>
-          <v-row v-if="this.studentSearchResponse" no-gutters class="py-2" style="background-color:white;">
-            <v-divider class="mx-3"/>
-          </v-row>
-          <v-row v-if="this.studentSearchResponse" id="resultsRow" no-gutters class="py-2" style="background-color:white;">
-            <StudentSearchResults
-                    :searchCriteria="this.currentStudentSearchParams"
-                    :prepPut="prepPut"
-            ></StudentSearchResults>
-          </v-row>
-        </v-card>
-      </v-row>
-    </v-container>
+  <v-container fluid class="full-height my-10 px-16">
+    <v-form ref="studentSearchForm" id="searchStudentForm"
+            v-model="validForm"
+    >
+      <v-container fluid class="fill-height px-0">
+        <v-row no-gutters>
+          <v-card height="100%" width="100%" style="background-color:#d7d7d7;">
+            <v-row no-gutters class="mx-5 pa-6">
+              <v-col>
+                <h3>Student Search</h3>
+              </v-col>
+            </v-row>
+            <StudentBasicSearch
+                    :enterPushed="enterPushed"
+                    :runPENSearchIfPossible="runPENSearchIfPossible"
+                    :searchHasValues="searchHasValues"
+                    :validatePen="validatePen"
+                    :uppercaseGender="uppercaseGender"
+                    :validateGender="validateGender"
+                    :validateMincode="validateMincode"
+                    :uppercasePostal="uppercasePostal"
+                    :uppercaseGrade="uppercaseGrade"
+                    :validatePostal="validatePostal"
+                    :validateGradeCode="validateGradeCode"
+                    v-if="!this.isAdvancedSearch">
+            </StudentBasicSearch>
+            <StudentAdvancedSearch
+                    :enterPushed="enterPushed"
+                    :runPENSearchIfPossible="runPENSearchIfPossible"
+                    :searchHasValues="searchHasValues"
+                    :validatePen="validatePen"
+                    :uppercaseGender="uppercaseGender"
+                    :validateGender="validateGender"
+                    :validateMincode="validateMincode"
+                    :uppercasePostal="uppercasePostal"
+                    :uppercaseGrade="uppercaseGrade"
+                    :validatePostal="validatePostal"
+                    :validateGradeCode="validateGradeCode"
+                    v-else>
+            </StudentAdvancedSearch>
+            <v-row justify="end" no-gutters class="py-3 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
+              <router-link :to="`/studentSearch/${!this.isAdvancedSearch?'advanced':'basic'}`"><v-btn outlined class="mx-2" color="#38598a">{{!this.isAdvancedSearch?'Advanced Search':'Standard Search'}}</v-btn></router-link>
+              <v-btn outlined class="mr-2" color="#38598a" @click="clearSearch">Clear</v-btn>
+              <v-btn class="white--text" :disabled="!searchEnabled" :loading="searchLoading" color="#38598a" @click="searchStudent(true)">Search</v-btn>
+            </v-row>
+            <v-row v-if="this.studentSearchResponse" no-gutters class="py-2" style="background-color:white;">
+              <v-divider class="mx-3"/>
+            </v-row>
+            <v-row v-if="this.studentSearchResponse" id="resultsRow" no-gutters class="py-2" style="background-color:white;">
+              <StudentSearchResults
+                      :searchCriteria="this.currentStudentSearchParams"
+                      :prepPut="prepPut"
+              ></StudentSearchResults>
+            </v-row>
+          </v-card>
+        </v-row>
+      </v-container>
 
-  </v-form>
+    </v-form>
+  </v-container>
 </template>
-
 <script>
 import {LocalDate} from '@js-joda/core';
 import ApiService from '../../../common/apiService';
@@ -74,6 +75,12 @@ export default {
     StudentAdvancedSearch,
     StudentSearchResults
   },
+  props: {
+    searchType: {
+      type: String,
+      required: true
+    }
+  },
   data() {
     return {
       penHint: 'Fails check-digit test',
@@ -83,8 +90,6 @@ export default {
       gradeHint: 'Invalid grade',
       validForm: false,
       menu: false,
-      genderCodes: [],
-      gradeCodes: [],
       localDate:LocalDate,
       searchLoading: false,
       searchEnabled: false,
@@ -95,8 +100,12 @@ export default {
   computed:{
     ...mapGetters('app', ['requestType']),
     ...mapGetters('penReg', ['pageNumber']),
-    ...mapGetters('student', ['genders', 'gradeCodeObjects']),
-    ...mapState('studentSearch', ['pageNumber', 'headerSortParams', 'studentSearchResponse', 'isAdvancedSearch']),
+    ...mapGetters('student', ['gradeCodeObjects']),
+    ...mapState('student', ['genders']),
+    ...mapState('studentSearch', ['pageNumber', 'headerSortParams', 'studentSearchResponse']),
+    isAdvancedSearch() {
+      return this.searchType === 'advanced';
+    },
     studentSearchParams: {
       get(){
         return this.$store.state['studentSearch'].studentSearchParams;
@@ -105,18 +114,20 @@ export default {
         return this.$store.state['studentSearch'].studentSearchParams = newPage;
       }
     },
+    genderCodes() {
+      return this.genders ? this.genders.map(a => a.genderCode):[];
+    },
+    gradeCodes() {
+      return this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.gradeCode):[];
+    },
     charRules() {
       return [
         v => !(/[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u1100-\u11FF\u3040-\u309F\u30A0-\u30FF\u3130-\u318F\u3400-\u4DBF\u4E00-\u9FFF\uAC00-\uD7AF]/.test(v)) || 'Enter English characters only'
       ];
     },
   },
-  created(){
-    this.genderCodes = this.genders ? this.genders.map(a => a.genderCode):[];
-    this.gradeCodes = this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.gradeCode):[];
-  },
   methods: {
-    ...mapMutations('studentSearch', ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse', 'toggleSearchType', 'clearStudentSearchParams']),
+    ...mapMutations('studentSearch', ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse', 'clearStudentSearchParams']),
     clearSearch() {
       this.clearStudentSearchParams();
       this.searchHasValues();

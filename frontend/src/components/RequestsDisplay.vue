@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="fill-height px-0">
+  <v-container fluid class="fill-height  my-10 px-16">
     <v-row no-gutters>
       <v-card height="100%" width="100%" style="background-color:#38598a;">
         <v-combobox
