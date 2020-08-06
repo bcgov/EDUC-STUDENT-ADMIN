@@ -454,11 +454,7 @@ export default {
     viewRequestDetails(request) {
       this.setSelectedRequest(request[this.requestIdName]);
       this.setRequest();
-      if(this.requestType==='penRequest') {
-        router.push({ name: REQUEST_TYPES.penRequest.detailName, params: { requestId: request.penRequestID } });
-      } else if (this.requestType==='studentRequest') {
-        router.push({ name: REQUEST_TYPES.studentRequest.detailName, params: { requestId: request.studentRequestID } });
-      }
+      router.push({ name: REQUEST_TYPES[this.requestType].detailName, params: { requestId: request[this.requestType + 'ID'] } });
     },
     sort(sortHeader) {
       if (sortHeader === this.headerSortParams.currentSort) {

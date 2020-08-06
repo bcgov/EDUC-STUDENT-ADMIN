@@ -5,7 +5,7 @@
   "description": "Simple Student Admin UI.",
   "author": "Marco Villeneuve",
   "scripts": {
-    "serve": "node_modules/.bin/vue-cli-service serve",
+    "serve": "node_modules/.bin/vue-cli-service serve --port 8090",
     "build": "node_modules/.bin/vue-cli-service build",
     "test:unit": "node_modules/.bin/vue-cli-service test:unit",
     "local:e2e": "testcafe chrome:headless,firefox:headless ./tests/e2e/test.ts",
