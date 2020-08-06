@@ -108,27 +108,42 @@ const router = new VueRouter({
     {
       path: '/login',
       name: 'login',
-      component: Login
+      component: Login,
+      meta: {
+        requiresAuth: false
+      }
     },
     {
       path: '/logout',
       name: 'logout',
-      component: Logout
+      component: Logout,
+      meta: {
+        requiresAuth: false
+      }
     },
     {
       path: '/session-expired',
       name: 'session-expired',
-      component: SessionExpired
+      component: SessionExpired,
+      meta: {
+        requiresAuth: false
+      }
     },
     {
       path: '/unauthorized',
       name: 'unauthorized',
-      component: UnAuthorized
+      component: UnAuthorized,
+      meta: {
+        requiresAuth: false
+      }
     },
     {
       path: '*',
       name: 'notfound',
-      redirect: '/'
+      redirect: '/',
+      meta: {
+        requiresAuth: true
+      }
     }
   ]
 });
@@ -146,6 +161,9 @@ router.beforeEach((to, _from, next) => {
       } else {
         next();
       }
+    }).catch(() => {
+      console.log('Unable to get token');
+      next('login');
     });
   }
   else{
