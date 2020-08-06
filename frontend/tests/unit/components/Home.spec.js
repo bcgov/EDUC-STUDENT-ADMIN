@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import Vuetify from 'vuetify';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -13,14 +13,10 @@ describe('Home.vue', () => {
     Vue.use(Vuetify);
     Vue.use(Vuex);
 
-    wrapper = mount(Home, {
+    wrapper = shallowMount(Home, {
       Vue,
       store
     });
-  });
-
-  it('Check that text body exists', () => {
-    expect(wrapper.html()).toContain('login_descriptor');
   });
 
   it('Check that computed properties are accurate', () => {

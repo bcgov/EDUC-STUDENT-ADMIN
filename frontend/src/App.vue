@@ -28,17 +28,6 @@ export default {
       return this.$store.state.idleVue.isIdle;
     }
   },
-  created() {
-    this.$store.dispatch('auth/getJwtToken').then(() => {
-      this.$store.dispatch('auth/getUserInfo');
-      this.$store.dispatch('student/getCodes');
-    });
-  },
-  mounted() {
-    /* window.addEventListener('beforeunload', function(e){
-      this.closeSessionOnBrowserClose(e);
-    });*/
-  },
   methods:{
     ...mapActions('student', ['getCodes']),
     /*closeSessionOnBrowserClose(event){

@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="fill-height px-0">
+  <v-container fluid class="fill-height  my-10 px-16">
     <v-row no-gutters>
       <v-card height="100%" width="100%" style="background-color:#38598a;">
         <v-combobox
@@ -192,7 +192,8 @@
 <script>
 import { mapMutations, mapGetters } from 'vuex';
 import ApiService from '../common/apiService';
-import { Routes } from '../utils/constants';
+import {REQUEST_TYPES, Routes} from '../utils/constants';
+import router from '../router';
 export default {
   name: 'requestsDisplay',
   props: {
@@ -453,6 +454,7 @@ export default {
     viewRequestDetails(request) {
       this.setSelectedRequest(request[this.requestIdName]);
       this.setRequest();
+      router.push({ name: REQUEST_TYPES[this.requestType].detailName, params: { requestId: request[this.requestType + 'ID'] } });
     },
     sort(sortHeader) {
       if (sortHeader === this.headerSortParams.currentSort) {

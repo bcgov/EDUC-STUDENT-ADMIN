@@ -186,7 +186,7 @@
 
 <script>
 
-import {mapState} from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 import {LocalDate} from '@js-joda/core';
 let JSJoda = require('@js-joda/core');
 
@@ -246,11 +246,13 @@ export default {
     if(this.studentSearchParams.dob.endDate) {
       this.studentSearchParams.dob.endDate = null; //clears lingering range search from advanced search view
     }
+    this.setIsAdvancedSearch(false);
   },
   computed: {
     ...mapState('studentSearch', ['studentSearchParams']),
   },
   methods: {
+    ...mapMutations('studentSearch', ['setIsAdvancedSearch']),
     validateDOB(){
       if(this.studentSearchParams) {
         if(!this.studentSearchParams.dob.startDate){

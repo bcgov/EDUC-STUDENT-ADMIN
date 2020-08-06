@@ -3,7 +3,6 @@ import ApiService from '../../common/apiService';
 export default {
   namespaced: true,
   state: {
-    selectedStudent: null,
     genders: null,
     demogCodeObjects: null,
     statusCodeObjects: null,
@@ -17,9 +16,6 @@ export default {
     gradeCodeObjects: state => state.gradeCodeObjects
   },
   mutations: {
-    setSelectedStudent: (state, selectedStudent) => {
-      state.selectedStudent = selectedStudent;
-    },
     setGenders: (state, genders) => {
       state.genders = genders;
     },

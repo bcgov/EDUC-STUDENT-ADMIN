@@ -52,8 +52,8 @@
                     <v-select
                       id='demogCode'
                       tabindex="11"
-                      v-on:keyup.tab="editing = true; hovering = true"
-                      v-on:change="editing = false; hovering = false;"
+                      v-on:keyup.tab="[editing = true, hovering = true]"
+                      v-on:change="[editing = false, hovering = false]"
                       class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
                       :class="{darkBackgound: hovering || hasEdits('demogCode')}"
                       color="#000000"
@@ -161,8 +161,8 @@
                     <v-select
                       id='statusCode'
                       tabindex="12"
-                      v-on:keyup.tab="editing = true; hovering = true"
-                      v-on:change="editing = false; hovering = false; openDeceasedDialog()"
+                      v-on:keyup.tab="[editing = true, hovering = true]"
+                      v-on:change="[editing = false, hovering = false, openDeceasedDialog()]"
                       class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
                       :class="{darkBackgound: hovering || hasEdits('statusCode')}"
                       color="#000000"
@@ -199,11 +199,11 @@
                   <v-col class="textFieldColumn">
                     <v-text-field
                       tabindex="1"  
-                      v-on:keyup.tab="editing = true; hovering = true"
+                      v-on:keyup.tab="[editing = true, hovering = true]"
                       v-on:mouseover="hovering = true"
                       v-on:mouseout="editing ? hovering = true : hovering = false"
-                      v-on:blur="editing = false; hovering = false;"
-                      v-on:click="editing = true; hovering = true"
+                      v-on:blur="[editing = false, hovering = false]"
+                      v-on:click="[editing = true, hovering = true]"
                       v-model="studentCopy.legalLastName"
                       class="onhoverEdit bolder customNoBorder"
                       :class="{onhoverPad: !hovering && !hasEdits('legalLastName'), darkBackgound: hovering || hasEdits('legalLastName')}"
@@ -235,11 +235,11 @@
                   <v-col class="textFieldColumn">
                     <v-text-field
                       tabindex="2"
-                      v-on:keyup.tab="editing = true; hovering = true"
+                      v-on:keyup.tab="[editing = true, hovering = true]"
                       v-on:mouseover="hovering = true"
                       v-on:mouseout="editing ? hovering = true : hovering = false"
-                      v-on:blur="editing = false; hovering = false;"
-                      v-on:click="editing = true; hovering = true"
+                      v-on:blur="[editing = false, hovering = false]"
+                      v-on:click="[editing = true, hovering = true]"
                       class="onhoverEdit bolder customNoBorder"
                       :class="{onhoverPad: !hovering && !hasEdits('legalFirstName'), darkBackgound: hovering || hasEdits('legalFirstName')}"
                       v-model="studentCopy.legalFirstName"
@@ -271,11 +271,11 @@
                   <v-col class="textFieldColumn">
                     <v-text-field
                       tabindex="3"
-                      v-on:keyup.tab="editing = true; hovering = true"
+                      v-on:keyup.tab="[editing = true, hovering = true]"
                       v-on:mouseover="hovering = true"
                       v-on:mouseout="editing ? hovering = true : hovering = false"
-                      v-on:blur="editing = false; hovering = false;"
-                      v-on:click="editing = true; hovering = true"
+                      v-on:blur="[editing = false, hovering = false]"
+                      v-on:click="[editing = true, hovering = true]"
                       class="onhoverEdit bolder customNoBorder"
                       :class="{onhoverPad: !hovering && !hasEdits('legalMiddleNames'), darkBackgound: hovering || hasEdits('legalMiddleNames')}"
                       v-model="studentCopy.legalMiddleNames"
@@ -307,11 +307,11 @@
                   <v-col class="textFieldColumn">
                     <v-text-field
                       tabindex="4"
-                      v-on:keyup.tab="editing = true; hovering = true"
+                      v-on:keyup.tab="[editing = true, hovering = true]"
                       v-on:mouseover="hovering = true"
                       v-on:mouseout="editing ? hovering = true : hovering = false"
-                      v-on:blur="editing = false; hovering = false;"
-                      v-on:click="editing = true; hovering = true"
+                      v-on:blur="[editing = false, hovering = false]"
+                      v-on:click="[editing = true, hovering = true]"
                       class="onhoverEdit bolder customNoBorder"
                       v-model="studentCopy.usualLastName"
                       :class="{onhoverPad: !hovering && !hasEdits('usualLastName'), darkBackgound: hovering || hasEdits('usualLastName')}"
@@ -343,11 +343,11 @@
                   <v-col class="textFieldColumn">
                     <v-text-field
                       tabindex="5"
-                      v-on:keyup.tab="editing = true; hovering = true"
+                      v-on:keyup.tab="[editing = true, hovering = true]"
                       v-on:mouseover="hovering = true"
                       v-on:mouseout="editing ? hovering = true : hovering = false"
-                      v-on:blur="editing = false; hovering = false;"
-                      v-on:click="editing = true; hovering = true"
+                      v-on:blur="[editing = false, hovering = false]"
+                      v-on:click="[editing = true, hovering = true]"
                       class="onhoverEdit bolder customNoBorder"
                       :class="{onhoverPad: !hovering && !hasEdits('usualFirstName'), darkBackgound: hovering || hasEdits('usualFirstName')}"
                       v-model="studentCopy.usualFirstName"
@@ -379,11 +379,11 @@
                   <v-col class="textFieldColumn">
                     <v-text-field
                       tabindex="6"
-                      v-on:keyup.tab="editing = true; hovering = true"
+                      v-on:keyup.tab="[editing = true, hovering = true]"
                       v-on:mouseover="hovering = true"
                       v-on:mouseout="editing ? hovering = true : hovering = false"
-                      v-on:blur="editing = false; hovering = false;"
-                      v-on:click="editing = true; hovering = true"
+                      v-on:blur="[editing = false, hovering = false]"
+                      v-on:click="[editing = true, hovering = true]"
                       v-model="studentCopy.usualMiddleNames"
                       class="onhoverEdit bolder customNoBorder"
                       :class="{onhoverPad: !hovering && !hasEdits('usualMiddleNames'), darkBackgound: hovering || hasEdits('usualMiddleNames')}"
@@ -415,11 +415,11 @@
                   <v-col cols="1" :class="{textFieldColumn: !genderError}">
                     <v-text-field
                       tabindex="7"
-                      v-on:keyup.tab="editing = true; hovering = true"
+                      v-on:keyup.tab="[editing = true, hovering = true]"
                       v-on:mouseover="hovering = true"
                       v-on:mouseout="editing ? hovering = true : hovering = false"
-                      v-on:blur="editing = false; hovering = false;"
-                      v-on:click="editing = true; hovering = true"
+                      v-on:blur="[editing = false, hovering = false]"
+                      v-on:click="[editing = true, hovering = true]"
                       v-on:input="uppercaseGender()"
                       v-model="studentCopy.genderCode"
                       class="onhoverEdit bolder customNoBorder"
@@ -463,11 +463,11 @@
                   <v-col cols="2" :class="{textFieldColumn: !dobError}">
                     <v-text-field
                       tabindex="8"
-                      v-on:keyup.tab="editing = true; hovering = true; shortDOBStyle();"
+                      v-on:keyup.tab="[editing = true, hovering = true, shortDOBStyle()]"
                       v-on:mouseover="hovering = true"
                       v-on:mouseout="editing ? hovering = true : hovering = false"
-                      v-on:blur="editing = false; hovering = false; longDOBStyle();"
-                      v-on:click="editing = true; hovering = true; shortDOBStyle();"
+                      v-on:blur="[editing = false, hovering = false, longDOBStyle()]"
+                      v-on:click="[editing = true, hovering = true, shortDOBStyle()]"
                       v-on:input="updateDOBLabel()"
                       class="onhoverEdit bolder customNoBorder"
                       :class="{onhoverPad: !hovering && !dobHasChanged('dob'), darkBackgound: hovering || dobHasChanged('dob')}"
@@ -576,11 +576,11 @@
                   <v-col cols="2" :class="{textFieldColumn: !mincodeError}">
                     <v-text-field
                       tabindex="9"
-                      v-on:keyup.tab="editing = true; hovering = true"
+                      v-on:keyup.tab="[editing = true, hovering = true]"
                       v-on:mouseover="hovering = true"
                       v-on:mouseout="editing ? hovering = true : hovering = false"
-                      v-on:blur="editing = false; hovering = false;"
-                      v-on:click="editing = true; hovering = true"
+                      v-on:blur="[editing = false, hovering = false]"
+                      v-on:click="[editing = true, hovering = true]"
                       class="onhoverEdit bolder customNoBorder"
                       :class="{onhoverPad: !hovering && !hasEdits('mincode'), darkBackgound: hovering || hasEdits('mincode')}"
                       v-model="studentCopy.mincode"
@@ -678,11 +678,11 @@
                   <v-col class="textAreaColumn">
                     <v-textarea
                       tabindex="10"
-                      v-on:keyup.tab="editing = true; hovering = true"
+                      v-on:keyup.tab="[editing = true, hovering = true]"
                       v-on:mouseover="hovering = true"
                       v-on:mouseout="editing ? hovering = true : hovering = false"
-                      v-on:blur="editing = false; hovering = false;"
-                      v-on:click="editing = true; hovering = true"
+                      v-on:blur="[editing = false, hovering = false]"
+                      v-on:click="[editing = true, hovering = true]"
                       class="onhoverEdit bolder customNoBorder"
                       :class="{onhoverPad: !hovering && !hasEdits('memo'), darkBackgound: hovering || hasEdits('memo')}"
                       v-model="studentCopy.memo"
@@ -711,16 +711,16 @@
                 <v-row>
                   <v-col cols="10">
                     <v-card-actions style="float: right;">
-                      <v-btn 
-                        outlined
-                        tabindex="-1"
-                        color="#38598a"
-                        class="mx-1"
-                        @click="backToSearch()"       
-                      >
-                        Cancel
-                      </v-btn>
-
+                      <router-link :to="`${this.isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`">
+                        <v-btn
+                          outlined
+                          tabindex="-1"
+                          color="#38598a"
+                          class="mx-1"
+                        >
+                          Cancel
+                        </v-btn>
+                      </router-link>
                       <v-btn
                         tabindex="-1" 
                         color="#003366"
@@ -787,15 +787,21 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 import moment from 'moment';
 import ApiService from '../../../common/apiService';
-import { Routes } from '../../../utils/constants';
+import { Routes, REQUEST_TYPES } from '../../../utils/constants';
 import {LocalDate} from '@js-joda/core';
 let JSJoda = require('@js-joda/core');
 
 export default {
   name: 'studentDetail',
+  props: {
+    studentID: {
+      type: String,
+      required: true
+    }
+  },
   data(){
     return {
       hovering: false,
@@ -819,7 +825,8 @@ export default {
       updatedDateTime: null,
       longDOB: null,
       origStudent: null,
-      studentCopy: null
+      studentCopy: null,
+      REQUEST_TYPES: REQUEST_TYPES
     };
   },
   created(){
@@ -829,13 +836,13 @@ export default {
     this.gradeLabels = this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.label):[];
   },
   computed: {
-    ...mapGetters('student', ['selectedStudent', 'genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects'])
+    ...mapGetters('student', ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects']),
+    ...mapState('studentSearch', ['isAdvancedSearch'])
   },
   mounted() {
     this.refreshStudent();
   },
   methods: {
-    ...mapMutations('student', ['setSelectedStudent']),
     frontEndDateTimeFormat(date){
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY/MM/DD HH:mm:ss a');
     },
@@ -945,7 +952,7 @@ export default {
     refreshStudent(){
       this.isLoading = true;
       ApiService.apiAxios
-        .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.selectedStudent.studentID)
+        .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
         .then(response => {
           this.setStudent(response.data);
         })
@@ -985,9 +992,6 @@ export default {
     },
     frontEndDOBFormat(date){
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('MMMM DD, YYYY');
-    },
-    backToSearch() {
-      this.setSelectedStudent(null);
     },
     shortDOBStyle(){
       if(this.studentCopy.dob){

@@ -1,50 +1,20 @@
 <template>
-  <v-container fluid class="full-height" v-if="!isAuthenticated">
-
-    <!-- login article -->
-    <article name="login-banner" class="top-banner">
-      <v-row align="center" justify="center">
-        <Login></Login>
-      </v-row>
-    </article>
-  </v-container>
-  <v-container fluid class="my-16" v-else-if="isAuthenticated && !isAuthorizedUser">
-
-    <!-- login article -->
-    <article name="login-banner" class="top-banner">
-      <v-row align="center" justify="center" width="100%">
-        <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12"><v-main><UnAuthorized/></v-main></v-col>
-      </v-row>
-    </article>
-  </v-container>
-  <v-main v-else-if="!selectedStudent && !selectedRequest && isAuthenticated">
-    <RequestsPage></RequestsPage>
-  </v-main>
-  <v-main v-else>
-    <PenRequestDetail v-if="requestType === requestTypes.penRequest.name"></PenRequestDetail>
-    <StudentRequestDetail v-else-if="requestType === requestTypes.studentRequest.name"></StudentRequestDetail>
-    <StudentDetail v-else-if="selectedStudent"></StudentDetail>
+  <v-main>
+    <router-link :to="REQUEST_TYPES.penRequest.path">penRequest</router-link><br>
+    <router-link :to="REQUEST_TYPES.studentRequest.path">studentRequest</router-link><br>
+    <router-link :to="REQUEST_TYPES.studentSearch.path.basic">studentSearch</router-link>
   </v-main>
 </template>
 
 <script>
-import Login from './Login';
-import RequestsPage from './RequestsPage';
 import { mapGetters } from 'vuex';
-import PenRequestDetail from './gmp/PenRequestDetail';
-import StudentRequestDetail from './ump/StudentRequestDetail';
-import StudentDetail from './penreg/student/StudentDetail';
-import UnAuthorized from './UnAuthorized';
 import { REQUEST_TYPES } from '../utils/constants';
 export default {
   name: 'home',
-  components: {
-    Login,
-    RequestsPage,
-    PenRequestDetail,
-    StudentRequestDetail,
-    StudentDetail,
-    UnAuthorized  
+  data () {
+    return {
+      REQUEST_TYPES: REQUEST_TYPES
+    };
   },
   computed: {
     ...mapGetters('auth', ['isAuthenticated','isAuthorizedUser']),

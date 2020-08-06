@@ -270,7 +270,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 import {LocalDate} from '@js-joda/core';
 export default {
   name: 'SearchAdvancedSearch',
@@ -352,6 +352,7 @@ export default {
       this.startDOB.month = tempStartDates[1];
       this.startDOB.day = tempStartDates[2];
     }
+    this.setIsAdvancedSearch(true);
   },
   watch: {
     formattedStartDOB: {
@@ -398,6 +399,7 @@ export default {
     },
   },
   methods: {
+    ...mapMutations('studentSearch', ['setIsAdvancedSearch']),
     validateDOBPast(year, month, day) {
       if(year || month || day) {
         if(!!year && month && day) {

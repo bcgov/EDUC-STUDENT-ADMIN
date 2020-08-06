@@ -87,15 +87,34 @@ export const REQUEST_TYPES = Object.freeze(
   {
     penRequest: {
       name: 'penRequest',
-      label: 'PEN Request'
+      label: 'PEN Request',
+      searchLabel: 'Select PEN request statuses to view',
+      path: '/gmp',
+      detailName: 'GMP detail'
     },
     studentRequest: {
       name: 'studentRequest',
-      label: 'UMPI Request'
+      label: 'UMP Request',
+      searchLabel: 'Select UMP request statuses to view',
+      path: '/ump',
+      detailName: 'UMP detail'
     },
     studentSearch: {
       name: 'studentSearch',
-      label: 'Student Search'
+      label: 'Student Search',
+      type: {
+        basic: 'basic',
+        advanced: 'advanced'
+      },
+      path: {
+        basic: '/studentSearch/basic',
+        advanced: '/studentSearch/advanced'
+      }
+    },
+    student: {
+      name: 'student',
+      label: 'student detail',
+      path: '/student/'
     }
   }
 );

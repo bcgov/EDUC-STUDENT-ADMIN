@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="my-10 px-16">
-    <v-tabs 
+    <v-tabs
       active-class="active-display"
       v-model="tab"
     >
@@ -30,7 +30,6 @@
       >
         <StudentSearchDisplay
           :requestType="requestTypes.studentSearch.name"
-          label="Select UMP request statuses to view"
           penName="recordedPen"
         ></StudentSearchDisplay>
       </v-tab-item>

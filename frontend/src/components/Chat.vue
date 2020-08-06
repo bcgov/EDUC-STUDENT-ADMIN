@@ -28,6 +28,16 @@ import {mapGetters, mapMutations} from 'vuex';
 import {Routes} from '../utils/constants';
 
 export default {
+  props: {
+    requestType: {
+      type: String,
+      required: true
+    },
+    requestId: {
+      type: String,
+      required: true
+    }
+  },
   components: {
     SingleComment
   },
@@ -39,10 +49,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapGetters('app', ['requestType', 'messages']),
-    requestId() {
-      return this.$store.state['app'].selectedRequest;
-    },
+    ...mapGetters('app', ['messages']),
     myself() {
       return { name: this.userInfo.userName, id: this.userInfo.userGuid };
     },

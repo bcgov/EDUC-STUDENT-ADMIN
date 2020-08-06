@@ -1,9 +1,10 @@
 <template>
   <RequestDetail
-    request-type-label="PEN Request"
     title="GetMyPen Request Details"
     :prep-put="prepPut"
     :request-completed="requestCompleted"
+    :requestId="requestId"
+    :requestType="requestType"
   >
     <template v-slot:demographics="{ request }">
       <PenDemographicsCard
@@ -37,14 +38,26 @@ import RequestDetail from '../RequestDetail';
 import PenDemographicsCard from './PenDemographicsCard';
 import PenRequestCard from './PenRequestCard';
 import PenRequestActions from './PenRequestActions';
+import { REQUEST_TYPES } from '../../utils/constants';
 
 export default {
   name: 'penRequestDetail',
+  props: {
+    requestId: {
+      type: String,
+      required: true
+    }
+  },
   components: {
     RequestDetail,
     PenDemographicsCard,
     PenRequestCard,
     PenRequestActions,
+  },
+  data () {
+    return {
+      requestType: REQUEST_TYPES.penRequest.name
+    };
   },
   methods: {
     prepPut(requestId, request) {

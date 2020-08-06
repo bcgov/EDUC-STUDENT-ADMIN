@@ -1,9 +1,10 @@
 <template>
   <RequestDetail
-    request-type-label="UMPI Request"
     title="UpdateMyPENInfo Request Details"
     :prep-put="prepPut"
     :request-completed="requestCompleted"
+    :requestId="requestId"
+    :requestType="requestType"
   >
     <template v-slot:demographics="{ request }">
       <StudentDemographicsCard
@@ -37,14 +38,26 @@ import RequestDetail from '../RequestDetail';
 import StudentDemographicsCard from './StudentDemographicsCard';
 import StudentRequestCard from './StudentRequestCard';
 import StudentRequestActions from './StudentRequestActions';
+import { REQUEST_TYPES } from '../../utils/constants';
 
 export default {
   name: 'studentRequestDetail',
+  props: {
+    requestId: {
+      type: String,
+      required: true
+    }
+  },
   components: {
     RequestDetail,
     StudentDemographicsCard,
     StudentRequestCard,
     StudentRequestActions,
+  },
+  data () {
+    return {
+      requestType: REQUEST_TYPES.studentRequest.name
+    };
   },
   methods: {
     prepPut(requestId, request) {
