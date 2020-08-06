@@ -19,10 +19,6 @@ describe('Home.vue', () => {
     });
   });
 
-  it('Check that text body exists', () => {
-    expect(wrapper.html()).toContain('login_descriptor');
-  });
-
   it('Check that computed properties are accurate', () => {
     expect(wrapper.vm.hasPenRequest).toBeFalsy();
     expect(wrapper.vm.hasPen).toBeFalsy();
