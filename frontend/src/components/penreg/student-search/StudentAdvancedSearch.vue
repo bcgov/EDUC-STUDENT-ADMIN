@@ -24,20 +24,20 @@
         <v-col cols="3">
           <v-row no-gutters>
             <v-col cols="4">
-              <v-text-field class="doubleWidthInput" v-model="startDOB.year" dense filled outlined maxlength="4" placeholder="YYYY"
+              <v-text-field id="start-dob-year" class="doubleWidthInput" v-model="startDOB.year" dense filled outlined maxlength="4" placeholder="YYYY"
                 :rules="validateStartDOBYear()"
                 @keyup.enter="enterPushed()"
                 v-on:input="searchHasValues"></v-text-field>
             </v-col>
             <v-col cols="3" class="mx-2">
-              <v-text-field v-model="startDOB.month" dense filled outlined maxlength="2" placeholder="MM"
+              <v-text-field id="start-dob-month" v-model="startDOB.month" dense filled outlined maxlength="2" placeholder="MM"
                 :disabled="!isValidStartDOB.year"
                 :rules="validateStartDOBMonth()"
                 @keyup.enter="enterPushed()"
                v-on:input="searchHasValues"></v-text-field>
             </v-col>
             <v-col cols="3">
-              <v-text-field v-model="startDOB.day" dense filled outlined maxlength="2" placeholder="DD"
+              <v-text-field id="start-dob-day" v-model="startDOB.day" dense filled outlined maxlength="2" placeholder="DD"
                 :disabled="!isValidStartDOB.month || !isValidStartDOB.year"
                 :rules="validateStartDOBDay()"
                 @keyup.enter="enterPushed()"
@@ -51,21 +51,21 @@
         <v-col cols="3">
           <v-row no-gutters v-if="this.useDOBRange">
             <v-col cols="4" class="ml-3">
-              <v-text-field dense filled outlined placeholder="YYYY" maxlength="4" v-model="endDOB.year"
+              <v-text-field id="end-dob-year" dense filled outlined placeholder="YYYY" maxlength="4" v-model="endDOB.year"
                 :rules="validateEndDOBYear()"
                 @keyup.enter="enterPushed()"
                 v-on:input="searchHasValues"
               ></v-text-field>
             </v-col>
             <v-col cols="3" class="mx-2">
-              <v-text-field dense filled outlined placeholder="MM" minLength="2" maxlength="2" v-model="endDOB.month"
+              <v-text-field id="end-dob-month" dense filled outlined placeholder="MM" minLength="2" maxlength="2" v-model="endDOB.month"
                 :rules="validateEndDOBMonth()"
                 :disabled="!isValidEndDOB.year"
                 @keyup.enter="enterPushed()"
                 v-on:input="searchHasValues"></v-text-field>
             </v-col>
             <v-col cols="3">
-              <v-text-field dense filled outlined placeholder="DD" minLength="2" maxlength="2" v-model="endDOB.day"
+              <v-text-field id="end-dob-day" dense filled outlined placeholder="DD" minLength="2" maxlength="2" v-model="endDOB.day"
                 :rules="validateEndDOBDay()"
                 :disabled="!isValidEndDOB.month || !isValidEndDOB.year"
                 @keyup.enter="enterPushed()"
@@ -77,7 +77,7 @@
       <v-row no-gutters class="textFieldRow">
         <v-col cols="2">Gender</v-col>
         <v-col cols="1" id="genderCol">
-          <v-text-field dense filled outlined
+          <v-text-field id="gender" dense filled outlined
             v-model="studentSearchParams.genderCode"
             @keyup.enter="enterPushed()"
             v-on:input="[searchHasValues(),uppercaseGender()]"

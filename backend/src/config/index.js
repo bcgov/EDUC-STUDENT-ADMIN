@@ -40,6 +40,10 @@ nconf.defaults({
     studentSearch: {
       roleAdmin: process.env.STUDENT_SEARCH_ADMIN
     },
+    penRequestBatch: {
+      rootURL: process.env.PEN_REQUEST_BATCH_API_URL,
+      roleAdmin: process.env.PEN_REQUEST_BATCH_ADMIN
+    },
     demographicsURL: process.env.PEN_DEMOGRAPHICS_URL,
     digitalIdURL: process.env.DIGITAL_ID_URL,
     digitalIdIdentityTypeCodesURL: process.env.DIGITAL_ID_URL + '/identityTypeCodes',

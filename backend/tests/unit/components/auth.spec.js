@@ -4,6 +4,11 @@ const MockAdapter = require('axios-mock-adapter');
 const auth = require('../../../src/components/auth');
 const utils = require('../../../src/components/utils');
 
+const jsonwebtoken = require('jsonwebtoken');
+const HttpStatus = require('http-status-codes');
+
+const { mockRequest, mockResponse } = require('../helpers'); 
+
 const mockAxios = new MockAdapter(axios);
 
 const expiredToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjF9.2H0EJnt58ApysedXcvNUAy6FhgBIbDmPfq9d79qF4yQ';
@@ -123,4 +128,324 @@ describe('refreshJWT', () => {
     }, null, () => {});
     expect(result).toBeUndefined();
   });
+});
+
+const roles = {
+  User: {
+    GMP: ['STUDENT_ADMIN', 'STUDENT_ADMIN_READ_ONLY'],
+    UMP: ['STUDENT_PROFILE_ADMIN', 'STUDENT_PROFILE_READ_ONLY'],
+    StudentSearch: ['STUDENT_SEARCH_ADMIN']
+  },
+  Admin: {
+    GMP: 'STUDENT_ADMIN',
+    UMP: 'STUDENT_PROFILE_ADMIN',
+    StudentSearch: 'STUDENT_SEARCH_ADMIN'
+  }
+}
+
+describe('createRoleHelpers', () => {
+  jest.spyOn(jsonwebtoken, 'verify');
+
+  jest.spyOn(utils, 'getBackendToken'); 
+
+  const helpers = auth.__get__('createRoleHelpers')(roles);
+
+  let req;
+  let res;
+  let next;
+
+  beforeEach(() => {
+    utils.getBackendToken.mockReturnValue({});
+    req = mockRequest({
+      passport: {
+        user: {
+          jwt: 'token'
+        }
+      }
+    });
+    res = mockResponse();
+    next = jest.fn();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  
+  it('should have helper functions', () => {
+    expect(helpers.isValidGMPUserToken).toBeInstanceOf(Function);
+    expect(helpers.isValidGMPUser).toBeInstanceOf(Function);
+    expect(helpers.isValidUMPUserToken).toBeInstanceOf(Function);
+    expect(helpers.isValidUMPUser).toBeInstanceOf(Function);
+    expect(helpers.isValidStudentSearchUserToken).toBeInstanceOf(Function);
+    expect(helpers.isValidStudentSearchUser).toBeInstanceOf(Function);
+
+    expect(helpers.isValidGMPAdmin).toBeInstanceOf(Function);
+    expect(helpers.isValidUMPAdmin).toBeInstanceOf(Function);
+    expect(helpers.isValidStudentSearchAdmin).toBeInstanceOf(Function);
+
+    expect(helpers.isValidUsers).toBeInstanceOf(Function);
+  });
+
+  it ('should have isValidGMPUserToken helper function', () => {
+    jsonwebtoken.verify.mockReturnValue({realm_access : { roles: ['STUDENT_ADMIN']}});
+    expect(helpers.isValidGMPUserToken).toBeInstanceOf(Function);
+    helpers.isValidGMPUserToken(req, res, next);
+    expect(next).toHaveBeenCalled();
+  });
+
+  it ('should have isValidGMPAdmin helper function', () => {
+    jsonwebtoken.verify.mockReturnValue({realm_access : { roles: ['STUDENT_ADMIN']}});
+    expect(helpers.isValidGMPAdmin).toBeInstanceOf(Function);
+    helpers.isValidGMPUserToken(req, res, next);
+    expect(next).toHaveBeenCalled();
+  });
+
+  it ('should have isValidGMPUser helper function', () => {
+    jsonwebtoken.verify.mockReturnValue({realm_access : { roles: ['STUDENT_ADMIN']}});
+    expect(helpers.isValidGMPUser).toBeInstanceOf(Function);
+    expect(helpers.isValidGMPUser(req)).toBeTruthy();
+  });
+
+  it ('should have isValidUsers helper function', () => {
+    jsonwebtoken.verify.mockReturnValue({realm_access : { roles: ['STUDENT_ADMIN']}});
+    expect(helpers.isValidUsers).toBeInstanceOf(Function);
+    expect(helpers.isValidUsers(req)).toMatchObject({
+      isValidGMPUser: true,
+      isValidUMPUser: false,
+      isValidStudentSearchUser: false
+    });
+  });
+
+});
+
+describe('isValidGMPUserToken', () => {
+  jest.spyOn(jsonwebtoken, 'verify');
+
+  jest.spyOn(utils, 'getBackendToken'); 
+
+  const helpers = auth.__get__('createRoleHelpers')(roles);
+  const isValidGMPUserToken = helpers.isValidGMPUserToken;
+
+  let req;
+  let res;
+  let next;
+
+  beforeEach(() => {
+    req = mockRequest({
+      passport: {
+        user: {
+          jwt: 'token'
+        }
+      }
+    });
+    res = mockResponse();
+    next = jest.fn();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  
+  it ('should return 401 when no backend token', () => {
+    utils.getBackendToken.mockReturnValue(null);
+    isValidGMPUserToken(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
+  });
+
+  it ('should call next when token and role are validated', () => {
+    utils.getBackendToken.mockReturnValue({});
+    jsonwebtoken.verify.mockReturnValue({realm_access : { roles: ['STUDENT_ADMIN']}});
+    isValidGMPUserToken(req, res, next);
+    expect(next).toHaveBeenCalled();
+  });
+
+  it ('should return 401 when no right roles', () => {
+    utils.getBackendToken.mockReturnValue({});
+    jsonwebtoken.verify.mockReturnValue({realm_access : { roles: ['STUDENT_PROFILE_ADMIN']}});
+    isValidGMPUserToken(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
+  });
+
+  it ('should return 401 when failed to verify the token', () => {
+    utils.getBackendToken.mockReturnValue({});
+    jsonwebtoken.verify.mockReturnValue({});
+    isValidGMPUserToken(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
+  });
+
+  it ('should return 500 when excpetions', () => {
+    utils.getBackendToken.mockReturnValue({});
+    jsonwebtoken.verify.mockImplementation(() => { throw new Error('test error') });
+    isValidGMPUserToken(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+  });
+
+});
+
+describe('isValidGMPAdmin', () => {
+  jest.spyOn(jsonwebtoken, 'verify');
+
+  jest.spyOn(utils, 'getBackendToken'); 
+
+  const helpers = auth.__get__('createRoleHelpers')(roles);
+  const isValidGMPAdmin = helpers.isValidGMPAdmin;
+
+  let req;
+  let res;
+  let next;
+
+  beforeEach(() => {
+    req = mockRequest({
+      passport: {
+        user: {
+          jwt: 'token'
+        }
+      }
+    });
+    res = mockResponse();
+    next = jest.fn();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  
+  it ('should return 401 when no backend token', () => {
+    utils.getBackendToken.mockReturnValue(null);
+    isValidGMPAdmin(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
+  });
+
+  it ('should call next when token and role are validated', () => {
+    utils.getBackendToken.mockReturnValue({});
+    jsonwebtoken.verify.mockReturnValue({realm_access : { roles: ['STUDENT_ADMIN']}});
+    isValidGMPAdmin(req, res, next);
+    expect(next).toHaveBeenCalled();
+  });
+
+  it ('should return 401 when no right roles', () => {
+    utils.getBackendToken.mockReturnValue({});
+    jsonwebtoken.verify.mockReturnValue({realm_access : { roles: ['STUDENT_ADMIN_READ_ONLY']}});
+    isValidGMPAdmin(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
+  });
+
+  it ('should return 401 when failed to verify the token', () => {
+    utils.getBackendToken.mockReturnValue({});
+    jsonwebtoken.verify.mockReturnValue({});
+    isValidGMPAdmin(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
+  });
+
+  it ('should return 500 when excpetions', () => {
+    utils.getBackendToken.mockReturnValue({});
+    jsonwebtoken.verify.mockImplementation(() => { throw new Error('test error') });
+    isValidGMPAdmin(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+  });
+
+});
+
+
+describe('isValidGMPUser', () => {
+  jest.spyOn(jsonwebtoken, 'verify');
+
+  jest.spyOn(utils, 'getBackendToken'); 
+
+  const helpers = auth.__get__('createRoleHelpers')(roles);
+  const isValidGMPUser = helpers.isValidGMPUser;
+
+  let req;
+
+  beforeEach(() => {
+    req = mockRequest({
+      passport: {
+        user: {
+          jwt: 'token'
+        }
+      }
+    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  
+  it ('should return false when no session', () => {
+    req = mockRequest(null);
+    expect(isValidGMPUser(req)).toBeFalsy();
+  });
+
+  it ('should return true when token and roles are validated', () => {
+    jsonwebtoken.verify.mockReturnValue({realm_access : { roles: ['STUDENT_ADMIN']}});
+    expect(isValidGMPUser(req)).toBeTruthy();
+  });
+
+  it ('should return flase when no right roles', () => {
+    jsonwebtoken.verify.mockReturnValue({realm_access : { roles: ['STUDENT_PROFILE_ADMIN']}});
+    expect(isValidGMPUser(req)).toBeFalsy();
+  });
+
+  it ('should return flase when failed to verify the token', () => {
+    jsonwebtoken.verify.mockReturnValue({});
+    expect(isValidGMPUser(req)).toBeFalsy();
+  });
+
+  it ('should return false when excpetions', () => {
+    jsonwebtoken.verify.mockImplementation(() => { throw new Error('test error') });
+    expect(isValidGMPUser(req)).toBeFalsy();
+  });
+
+});
+
+
+describe('isValidUsers', () => {
+  jest.spyOn(jsonwebtoken, 'verify');
+
+  const helpers = auth.__get__('createRoleHelpers')(roles);
+  const isValidUsers = helpers.isValidUsers;
+
+  let req;
+
+  beforeEach(() => {
+    req = mockRequest({
+      passport: {
+        user: {
+          jwt: 'token'
+        }
+      }
+    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it ('should return true for isValidGMPUser', () => {
+    jsonwebtoken.verify.mockReturnValue({realm_access : { roles: ['STUDENT_ADMIN_READ_ONLY']}});
+    expect(isValidUsers(req)).toMatchObject({
+      isValidGMPUser: true,
+      isValidUMPUser: false,
+      isValidStudentSearchUser: false
+    });
+  });
+
+  it ('should return true for isValidUMPUser', () => {
+    jsonwebtoken.verify.mockReturnValue({realm_access : { roles: ['STUDENT_ADMIN_READ_ONLY', 'STUDENT_PROFILE_READ_ONLY']}});
+    expect(isValidUsers(req)).toMatchObject({
+      isValidGMPUser: true,
+      isValidUMPUser: true,
+      isValidStudentSearchUser: false
+    });
+  });
+
+  it ('should return true for isValidStudentSearchUser', () => {
+    jsonwebtoken.verify.mockReturnValue({realm_access : { roles: ['STUDENT_ADMIN_READ_ONLY', 'STUDENT_PROFILE_READ_ONLY', 'STUDENT_SEARCH_ADMIN']}});
+    expect(isValidUsers(req)).toMatchObject({
+      isValidGMPUser: true,
+      isValidUMPUser: true,
+      isValidStudentSearchUser: true
+    });
+  });
+
 });

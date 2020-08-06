@@ -40,9 +40,9 @@
                     v-else>
             </StudentAdvancedSearch>
             <v-row justify="end" no-gutters class="py-3 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
-              <router-link :to="`${!this.isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`"><v-btn outlined class="mx-2" color="#38598a">{{!this.isAdvancedSearch?'Advanced Search':'Standard Search'}}</v-btn></router-link>
-              <v-btn outlined class="mr-2" color="#38598a" @click="clearSearch">Clear</v-btn>
-              <v-btn class="white--text" :disabled="!searchEnabled" :loading="searchLoading" color="#38598a" @click="searchStudent(true)">Search</v-btn>
+              <router-link :to="`${!this.isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`"><v-btn id="search-type-action" outlined class="mx-2" color="#38598a">{{!this.isAdvancedSearch?'Advanced Search':'Standard Search'}}</v-btn></router-link>
+              <v-btn id="search-clear" outlined class="mr-2" color="#38598a" @click="clearSearch">Clear</v-btn>
+              <v-btn "perform-search" class="white--text" :disabled="!searchEnabled" :loading="searchLoading" color="#38598a" @click="searchStudent(true)">Search</v-btn>
             </v-row>
             <v-row v-if="this.studentSearchResponse" no-gutters class="py-2" style="background-color:white;">
               <v-divider class="mx-3"/>
@@ -56,7 +56,6 @@
           </v-card>
         </v-row>
       </v-container>
-
     </v-form>
   </v-container>
 </template>
@@ -125,6 +124,11 @@ export default {
         v => !(/[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u1100-\u11FF\u3040-\u309F\u30A0-\u30FF\u3130-\u318F\u3400-\u4DBF\u4E00-\u9FFF\uAC00-\uD7AF]/.test(v)) || 'Enter English characters only'
       ];
     },
+  },
+  mounted() {
+    if(this.studentSearchParams) {
+      this.searchHasValues();
+    }
   },
   methods: {
     ...mapMutations('studentSearch', ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse', 'clearStudentSearchParams']),
