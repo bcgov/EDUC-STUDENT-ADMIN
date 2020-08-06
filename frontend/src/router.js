@@ -11,7 +11,9 @@ import StudentDetail from './components/penreg/student/StudentDetail';
 import StudentSearchDisplay from './components/penreg/student-search/StudentSearchDisplay';
 import PenRequestDetail from './components/gmp/PenRequestDetail';
 import StudentRequestDetail from './components/ump/StudentRequestDetail';
+import UnAuthorized from './components/UnAuthorized';
 import { REQUEST_TYPES } from './utils/constants';
+import store from './store/modules/app';
 
 Vue.prototype.moment = moment;
 
@@ -24,7 +26,10 @@ const router = new VueRouter({
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: Home,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/gmp',
@@ -33,6 +38,9 @@ const router = new VueRouter({
       props: {
         requestType: REQUEST_TYPES.penRequest.name,
         label: REQUEST_TYPES.penRequest.searchLabel
+      },
+      meta: {
+        requiresAuth: true
       }
     },
     {
@@ -42,6 +50,9 @@ const router = new VueRouter({
       props: {
         requestType: REQUEST_TYPES.studentRequest.name,
         label: REQUEST_TYPES.studentRequest.searchLabel
+      },
+      meta: {
+        requiresAuth: true
       }
     },
     {
@@ -50,6 +61,9 @@ const router = new VueRouter({
       component: StudentSearchDisplay,
       props: {
         searchType: REQUEST_TYPES.studentSearch.type.basic
+      },
+      meta: {
+        requiresAuth: true
       }
     },
     {
@@ -58,25 +72,37 @@ const router = new VueRouter({
       component: StudentSearchDisplay,
       props: {
         searchType: REQUEST_TYPES.studentSearch.type.advanced
+      },
+      meta: {
+        requiresAuth: true
       }
     },
     {
       path: '/student/:studentID',
       name: REQUEST_TYPES.student.label,
       component: StudentDetail,
-      props: true
+      props: true,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/gmp/:requestId',
       name: 'GMP detail',
       component: PenRequestDetail,
-      props: true
+      props: true,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/ump/:requestId',
       name: 'UMP detail',
       component: StudentRequestDetail,
-      props: true
+      props: true,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/login',
@@ -94,6 +120,11 @@ const router = new VueRouter({
       component: SessionExpired
     },
     {
+      path: '/unauthorized',
+      name: 'unauthorized',
+      component: UnAuthorized
+    },
+    {
       path: '*',
       name: 'notfound',
       redirect: '/'
@@ -101,15 +132,19 @@ const router = new VueRouter({
   ]
 });
 
-/*router.beforeEach((to, _from, next) => {
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (!store.getters.isAuthenticated) {
-      next('home');
+router.beforeEach((to, _from, next) => {
+  if (to.meta.requiresAuth) {
+    if (!store.state.isAuthenticated) {
+      next('login');
+    } else if (!store.state.isAuthorizedUser) {
+      next('unauthorized');
+    } else {
+      next();
     }
   }
   else{
     next();
   }
-});*/
+});
 
 export default router;
