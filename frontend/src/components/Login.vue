@@ -1,5 +1,5 @@
 <template>
-    <v-container fluid class="full-height" v-if="!isAuthenticated">
+    <v-container fluid class="full-height">
 
         <!-- login article -->
         <article id="login-banner" class="top-banner">

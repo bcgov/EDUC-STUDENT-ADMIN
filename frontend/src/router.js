@@ -13,7 +13,8 @@ import PenRequestDetail from './components/gmp/PenRequestDetail';
 import StudentRequestDetail from './components/ump/StudentRequestDetail';
 import UnAuthorized from './components/UnAuthorized';
 import { REQUEST_TYPES } from './utils/constants';
-import store from './store/modules/app';
+import authStore from './store/modules/auth';
+import store from './store/index';
 
 Vue.prototype.moment = moment;
 
@@ -134,13 +135,18 @@ const router = new VueRouter({
 
 router.beforeEach((to, _from, next) => {
   if (to.meta.requiresAuth) {
-    if (!store.state.isAuthenticated) {
-      next('login');
-    } else if (!store.state.isAuthorizedUser) {
-      next('unauthorized');
-    } else {
-      next();
-    }
+    store.dispatch('auth/getJwtToken').then(() => {
+      store.dispatch('auth/getUserInfo');
+      store.dispatch('student/getCodes');
+
+      if (!authStore.state.isAuthenticated) {
+        next('login');
+      } else if (!authStore.state.isAuthorizedUser) {
+        next('unauthorized');
+      } else {
+        next();
+      }
+    });
   }
   else{
     next();
