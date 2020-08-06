@@ -28,12 +28,6 @@ export default {
       return this.$store.state.idleVue.isIdle;
     }
   },
-  created() {
-    this.$store.dispatch('auth/getJwtToken').then(() => {
-      this.$store.dispatch('auth/getUserInfo');
-      this.$store.dispatch('student/getCodes');
-    });
-  },
   methods:{
     ...mapActions('student', ['getCodes']),
     /*closeSessionOnBrowserClose(event){
