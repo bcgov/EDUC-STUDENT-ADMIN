@@ -30,7 +30,6 @@
       >
         <StudentSearchDisplay
           :requestType="requestTypes.studentSearch.name"
-          label="Select UMP request statuses to view"
           penName="recordedPen"
         ></StudentSearchDisplay>
       </v-tab-item>

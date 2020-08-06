@@ -40,7 +40,7 @@
                     v-else>
             </StudentAdvancedSearch>
             <v-row justify="end" no-gutters class="py-3 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
-              <router-link :to="`/studentSearch/${!this.isAdvancedSearch?'advanced':'basic'}`"><v-btn outlined class="mx-2" color="#38598a">{{!this.isAdvancedSearch?'Advanced Search':'Standard Search'}}</v-btn></router-link>
+              <router-link :to="`${!this.isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`"><v-btn outlined class="mx-2" color="#38598a">{{!this.isAdvancedSearch?'Advanced Search':'Standard Search'}}</v-btn></router-link>
               <v-btn outlined class="mr-2" color="#38598a" @click="clearSearch">Clear</v-btn>
               <v-btn class="white--text" :disabled="!searchEnabled" :loading="searchLoading" color="#38598a" @click="searchStudent(true)">Search</v-btn>
             </v-row>
@@ -63,7 +63,7 @@
 <script>
 import {LocalDate} from '@js-joda/core';
 import ApiService from '../../../common/apiService';
-import { Routes } from '../../../utils/constants';
+import { Routes, REQUEST_TYPES } from '../../../utils/constants';
 import { mapGetters, mapMutations, mapState } from 'vuex';
 import StudentSearchResults from './StudentSearchResults';
 import StudentBasicSearch from './StudentBasicSearch';
@@ -94,17 +94,17 @@ export default {
       searchLoading: false,
       searchEnabled: false,
       currentStudentSearchParams: {},
-      studentSearchResultsKey: 0
+      studentSearchResultsKey: 0,
+      REQUEST_TYPES: REQUEST_TYPES
     };
   },
   computed:{
-    ...mapGetters('app', ['requestType']),
     ...mapGetters('penReg', ['pageNumber']),
     ...mapGetters('student', ['gradeCodeObjects']),
     ...mapState('student', ['genders']),
     ...mapState('studentSearch', ['pageNumber', 'headerSortParams', 'studentSearchResponse']),
     isAdvancedSearch() {
-      return this.searchType === 'advanced';
+      return this.searchType === REQUEST_TYPES.studentSearch.type.advanced;
     },
     studentSearchParams: {
       get(){

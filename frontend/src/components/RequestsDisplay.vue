@@ -192,7 +192,8 @@
 <script>
 import { mapMutations, mapGetters } from 'vuex';
 import ApiService from '../common/apiService';
-import { Routes } from '../utils/constants';
+import {REQUEST_TYPES, Routes} from '../utils/constants';
+import router from '../router';
 export default {
   name: 'requestsDisplay',
   props: {
@@ -453,6 +454,11 @@ export default {
     viewRequestDetails(request) {
       this.setSelectedRequest(request[this.requestIdName]);
       this.setRequest();
+      if(this.requestType==='penRequest') {
+        router.push({ name: REQUEST_TYPES.penRequest.detailName, params: { requestId: request.penRequestID } });
+      } else if (this.requestType==='studentRequest') {
+        router.push({ name: REQUEST_TYPES.studentRequest.detailName, params: { requestId: request.studentRequestID } });
+      }
     },
     sort(sortHeader) {
       if (sortHeader === this.headerSortParams.currentSort) {

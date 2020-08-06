@@ -105,7 +105,7 @@
             </v-card>
           </v-col>
           <v-col cols="12" xl="6" lg="6" md="6" class="pa-0">
-            <Chat></Chat>
+            <Chat :requestId="requestId" :requestType="requestType"></Chat>
           </v-col>
         </v-row>
         <v-row>
@@ -193,10 +193,11 @@
 <script>
 import Chat from './Chat';
 import ApiService from '../common/apiService';
-import { Routes, Statuses } from '../utils/constants';
+import {REQUEST_TYPES, Routes, Statuses} from '../utils/constants';
 import { mapGetters, mapMutations } from 'vuex';
 import { humanFileSize } from '../utils/file';
 import {AccessEnabledForUser} from '../common/role-based-access';
+import router from '../router';
 export default {
   name: 'requestDetail',
   props: {
@@ -210,6 +211,14 @@ export default {
     },
     requestCompleted: {
       type: Function,
+      required: true
+    },
+    requestId: {
+      type: String,
+      required: true
+    },
+    requestType: {
+      type: String,
       required: true
     }
   },
@@ -232,7 +241,6 @@ export default {
         id: null,
       },
       fileSizeConverter:humanFileSize,
-      requestId: null,
       enableActions: true,
       loadingPen: true,
       loadingComments: true,
@@ -254,7 +262,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapGetters('app', ['selectedRequest', 'requestType', 'requestTypeLabel']),
+    ...mapGetters('app', ['requestTypeLabel']),
     ...mapGetters('app', ['request']),
     ...mapGetters('notifications', ['notification']),
     isRequestCompleted() {
@@ -298,7 +306,6 @@ export default {
     this.loadingComments = true;
     this.myself.name = this.userInfo.userName;
     this.myself.id = this.userInfo.userGuid;
-    this.requestId = this.selectedRequest;
     this.isClaimActionEnabledForUser = AccessEnabledForUser(this.requestType, 'CLAIM_REQUEST', this.userInfo);
     this.isDocumentTypeChangeEnabledForUser =AccessEnabledForUser(this.requestType, 'CHANGE_DOCUMENT_TYPE', this.userInfo);
     this.isReleaseActionEnabledForUser = AccessEnabledForUser(this.requestType, 'RELEASE_REQUEST', this.userInfo);
@@ -340,7 +347,6 @@ export default {
       });
   },
   methods: {
-    ...mapMutations('app', ['setSelectedRequest']),
     ...mapMutations('app', ['setRequest']),
     ...mapMutations('app', ['setMessages']),
     ...mapMutations('app', ['setParticipants']),
@@ -381,8 +387,7 @@ export default {
       this.enableActions = true;
     },
     backToList() {
-      this.requestId = '';
-      this.setSelectedRequest(null);
+      router.push({ name: REQUEST_TYPES[this.requestType].label, params: { requestType: this.requestType } });
     },
     setDocumentError(message) {
       this.documentError = true;

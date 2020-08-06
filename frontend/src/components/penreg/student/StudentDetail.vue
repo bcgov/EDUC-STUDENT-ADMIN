@@ -711,7 +711,7 @@
                 <v-row>
                   <v-col cols="10">
                     <v-card-actions style="float: right;">
-                      <router-link :to="`/studentSearch/${this.isAdvancedSearch?'advanced':'basic'}`">
+                      <router-link :to="`${this.isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`">
                         <v-btn
                           outlined
                           tabindex="-1"
@@ -790,7 +790,7 @@
 import { mapGetters, mapState } from 'vuex';
 import moment from 'moment';
 import ApiService from '../../../common/apiService';
-import { Routes } from '../../../utils/constants';
+import { Routes, REQUEST_TYPES } from '../../../utils/constants';
 import {LocalDate} from '@js-joda/core';
 let JSJoda = require('@js-joda/core');
 
@@ -825,7 +825,8 @@ export default {
       updatedDateTime: null,
       longDOB: null,
       origStudent: null,
-      studentCopy: null
+      studentCopy: null,
+      REQUEST_TYPES: REQUEST_TYPES
     };
   },
   created(){

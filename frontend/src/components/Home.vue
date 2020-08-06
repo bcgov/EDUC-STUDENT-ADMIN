@@ -9,9 +9,9 @@
     </article>
   </v-container>
   <v-main v-else-if="!selectedStudent && !selectedRequest && isAuthenticated">
-    <router-link to="/penRequest/display">penRequest</router-link><br>
-    <router-link to="/studentRequest/display">studentRequest</router-link><br>
-    <router-link to="/studentSearch/basic">studentSearch</router-link>
+    <router-link :to="REQUEST_TYPES.penRequest.path">penRequest</router-link><br>
+    <router-link :to="REQUEST_TYPES.studentRequest.path">studentRequest</router-link><br>
+    <router-link :to="REQUEST_TYPES.studentSearch.path.basic">studentSearch</router-link>
   </v-main>
 </template>
 
@@ -23,6 +23,11 @@ export default {
   name: 'home',
   components: {
     UnAuthorized  
+  },
+  data () {
+    return {
+      REQUEST_TYPES: REQUEST_TYPES
+    };
   },
   computed: {
     ...mapGetters('auth', ['isAuthenticated','isAuthorizedUser']),

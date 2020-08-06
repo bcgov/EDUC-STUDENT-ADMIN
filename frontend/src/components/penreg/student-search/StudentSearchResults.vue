@@ -59,7 +59,7 @@
 <script>
 import { mapMutations, mapState } from 'vuex';
 import ApiService from '../../../common/apiService';
-import {Routes} from '../../../utils/constants';
+import {REQUEST_TYPES, Routes} from '../../../utils/constants';
 import router from '../../../router';
 
 export default {
@@ -132,7 +132,7 @@ export default {
   methods: {
     ...mapMutations('studentSearch', ['updateSortParams', 'setStudentSearchResponse']),
     viewStudentDetails(studentID) {
-      router.push({ name: 'student detail', params: {studentID: studentID}});
+      router.push({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
     },
     compare() {
       //TODO
