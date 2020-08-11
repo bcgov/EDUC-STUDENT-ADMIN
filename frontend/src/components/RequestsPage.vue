@@ -7,6 +7,7 @@
       <v-tab  :disabled="!isValidGMPUser" :href="`#${requestTypes.penRequest.name}`">PEN Retrieval Requests</v-tab>
       <v-tab :disabled="!isValidUMPUser" :href="`#${requestTypes.studentRequest.name}`">UMP Requests</v-tab>
       <v-tab :disabled="!isValidStudentSearchUser" :href="`#${requestTypes.studentSearch.name}`">Student Search</v-tab>
+      <v-tab :disabled="!isValidStudentSearchUser" :href="`#${requestTypes.penRequestBatch.name}`">PEN Request Files</v-tab>
 
       <v-tab-item
         :value="requestTypes.penRequest.name"
@@ -33,6 +34,12 @@
           penName="recordedPen"
         ></StudentSearchDisplay>
       </v-tab-item>
+      <v-tab-item
+        :value="requestTypes.penRequestBatch.name"
+      >
+        <PenRequestBatchDisplay
+        ></PenRequestBatchDisplay>
+      </v-tab-item>
     </v-tabs>
   </v-container>
 </template>
@@ -42,11 +49,13 @@ import { mapGetters, mapMutations } from 'vuex';
 import { REQUEST_TYPES } from '../utils/constants';
 import RequestsDisplay from './RequestsDisplay';
 import StudentSearchDisplay from './penreg/student-search/StudentSearchDisplay';
+import PenRequestBatchDisplay from './penreg/penrequest-batch/PenRequestBatchDisplay';
 export default {
   name: 'requestsPage',
   components: {
     RequestsDisplay,
-    StudentSearchDisplay
+    StudentSearchDisplay,
+    PenRequestBatchDisplay
   },
   data() {
     if(this.isValidGMPUser){
