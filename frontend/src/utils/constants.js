@@ -118,3 +118,38 @@ export const REQUEST_TYPES = Object.freeze(
     }
   }
 );
+/**
+ * Source of truth for field Names in  StudentDetails.vue and its child components.
+ * @type {Readonly<{GRADE_CODE: string, TWINS: string, MINCODE: string, GRADE_YEAR: string, CREATED_DATE: string, LEGAL_FIRST_NAME: string, USUAL_LAST_NAME: string,
+ * STATUS_CODE: string, GRAD_DATE: string, GENDER_CODE: string, MERGED_TO: string, LEGAL_LAST_NAME: string, POSTAL_CODE: string, DEMOG_CODE: string, TRAX_STATUS: string,
+ * DOB: string, LEGAL_MIDDLE_NAMES: string, UPDATED_DATE: string, PEN: string, USUAL_MIDDLE_NAMES: string, MERGED_FROM: string, USUAL_FIRST_NAME: string, LOCAL_ID: string, MEMO: string}>}
+ */
+export const STUDENT_DETAILS_FIELDS = Object.freeze(
+  {
+    LEGAL_LAST_NAME:'legalLastName',
+    LEGAL_FIRST_NAME:'legalFirstName',
+    LEGAL_MIDDLE_NAMES:'legalMiddleNames',
+    USUAL_LAST_NAME:'usualLastName',
+    USUAL_FIRST_NAME:'usualFirstName',
+    USUAL_MIDDLE_NAMES:'usualMiddleNames',
+    GRADE_CODE:'gradeCode',
+    GRADE_YEAR:'gradeYear',
+    POSTAL_CODE:'postalCode',
+    TWINS:'twins',
+    MERGED_TO:'mergedTo',
+    MERGED_FROM:'mergedFrom',
+    DOB:'dob',
+    GENDER_CODE:'genderCode',
+    DEMOG_CODE:'demogCode',
+    TRAX_STATUS:'traxStatus',
+    GRAD_DATE:'gradDate',
+    CREATED_DATE:'createdDate',
+    UPDATED_DATE:'updatedDate',
+    LOCAL_ID:'localID',
+    MINCODE: 'mincode',
+    MEMO:'memo',
+    PEN:'pen',
+    STATUS_CODE:'statusCode'
+  }
+
+)
