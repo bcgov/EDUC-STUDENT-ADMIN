@@ -160,8 +160,8 @@ export default {
       return item.unarchivedBatchChangedFlag === 'Y';
     },
     initializeFiles(files) {
-      let file = files.find(f => f.penRequestBatchStatusCode === 'ACTIVE');
-      file && (file.firstActiveFile = true);
+      let activeFile = files.find(f => f.penRequestBatchStatusCode === 'ACTIVE');
+      activeFile && (activeFile.firstActiveFile = true);
       files.forEach(file => {
         file.isSelected = false;
         this.countableHeaders.forEach(header => file[header.value] = +file[header.value]);
