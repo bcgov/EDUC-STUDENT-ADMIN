@@ -122,8 +122,6 @@ export default {
       this.fieldDisabled = newValue;
     }
   },
-  methods: {
-  }
 }
 </script>
 
