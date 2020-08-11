@@ -9,5 +9,4 @@ const {getPenRequestFiles} = require('../components/penRequestBatch');
  */
 router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, getPenRequestFiles);
 
-
 module.exports = router;

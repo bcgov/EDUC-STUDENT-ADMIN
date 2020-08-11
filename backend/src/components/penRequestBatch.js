@@ -22,6 +22,9 @@ async function getPenRequestFiles(req, res) {
         if (element === 'schoolGroupCode') {
           operation = 'starts_with_ignore_case';
           valueType = 'STRING';
+        } else if (element === 'penRequestBatchStatusCode') {
+          operation = 'in';
+          valueType = 'STRING';
         }
         searchListCriteria.push({key: element, operation: operation, value: searchQueries[element], valueType: valueType});
       });
@@ -30,12 +33,13 @@ async function getPenRequestFiles(req, res) {
     const params = {
       params: {
         pageNumber: req.query.pageNumber,
+        pageSize: req.query.pageSize,
         sort: req.query.sort,
         searchCriteriaList: JSON.stringify(searchListCriteria)
       }
     };
 
-    const dataResponse = getData(token, config.get('server:penRequestBatch:rootURL') + '/pen-request-batch/paginated', params);
+    const dataResponse = await getData(token, config.get('server:penRequestBatch:rootURL') + '/pen-request-batch/paginated', params);
     return res.status(200).json(dataResponse);
 
   } catch (e) {

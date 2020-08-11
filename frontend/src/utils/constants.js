@@ -4,6 +4,7 @@ const penRequestRoot = baseRoot + '/penRequest';
 const studentRequestRoot = baseRoot + '/studentRequest';
 const demographicRoot = baseRoot + '/studentDemographics';
 const studentRoot = baseRoot + '/students';
+const penRequestBatchRoot = baseRoot + '/penRequestBatch';
 let object = {
   LOGIN: authRoot + '/login',
   LOGOUT: authRoot + '/logout',
@@ -44,6 +45,11 @@ let object = {
     DEMOG_CODE_URL: studentRoot + '/demogCodes',
     STATUS_CODE_URL: studentRoot + '/statusCodes',
     GRADE_CODE_URL: studentRoot + '/gradeCodes'
+  },
+
+  penRequestBatch: {
+    ROOT_ENDPOINT: penRequestBatchRoot,
+    FILES_URL: penRequestBatchRoot + '/',
   },
 
   STUDENT_DATA_URL: studentRoot,
@@ -115,6 +121,11 @@ export const REQUEST_TYPES = Object.freeze(
       name: 'student',
       label: 'student detail',
       path: '/student/'
+    },
+    penRequestBatch: {
+      name: 'penRequestBatch',
+      label: 'PEN Request Files',
+      path: '/penRequestBatch',
     }
   }
 );
