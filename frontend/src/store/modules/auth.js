@@ -89,13 +89,13 @@ export default {
 
     async getUserInfo(context) {
       if(localStorage.getItem('jwtToken')) {
-        ApiService.apiAxios
+        await ApiService.apiAxios
           .get(Routes.USER)
           .then(response => {
             context.commit('setUserInfo', response.data);
           })
-          .catch(error => {
-            console.log(error);
+          .catch((e) => {
+            throw e;
           });
       }
     },
@@ -138,6 +138,7 @@ export default {
       } catch (e) {
         // Remove tokens from localStorage and update state
         context.commit('setJwtToken');
+        throw e;
       }
     },
   }

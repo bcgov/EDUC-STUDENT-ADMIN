@@ -126,6 +126,7 @@ export default {
     },
   },
   mounted() {
+    this.$store.dispatch('student/getCodes');
     if(this.studentSearchParams) {
       this.searchHasValues();
     }

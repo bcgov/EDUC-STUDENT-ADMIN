@@ -1,5 +1,6 @@
 let baseRoot = '/api';
 const authRoot = baseRoot + '/auth';
+const penRequestBatchRoot = baseRoot + '/penRequestBatch';
 const penRequestRoot = baseRoot + '/penRequest';
 const studentRequestRoot = baseRoot + '/studentRequest';
 const demographicRoot = baseRoot + '/studentDemographics';
@@ -12,6 +13,11 @@ let object = {
   TOKEN: authRoot + '/token',
   USER: authRoot + '/user',
 
+  penRequestBatch: {
+    ROOT_ENDPOINT: penRequestBatchRoot,
+    STATS_URL: penRequestBatchRoot + '/stats'
+  },
+
   penRequest: {
     ROOT_ENDPOINT: penRequestRoot,
     SEARCH_URL: penRequestRoot + '/',
@@ -23,6 +29,7 @@ let object = {
     RETURN_URL: penRequestRoot + '/return',
     MACRO_URL: penRequestRoot + '/macros',
     UNLINK_URL: penRequestRoot + '/unlink',
+    STATS_URL: penRequestRoot + '/stats'
   },
 
   studentRequest: {
@@ -35,6 +42,7 @@ let object = {
     REJECT_URL: studentRequestRoot + '/reject',
     RETURN_URL: studentRequestRoot + '/return',
     MACRO_URL: studentRequestRoot + '/macros',
+    STATS_URL: studentRequestRoot + '/stats'
   },
 
   student: {

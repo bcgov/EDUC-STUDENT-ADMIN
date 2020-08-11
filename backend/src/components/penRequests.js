@@ -153,6 +153,18 @@ async function completePenRequest(req, res) {
   return await executePenReqSaga(utils.getBackendToken(req), `${config.get('server:profileSagaAPIURL')}/pen-request-complete-saga`, penRequest, res, 'complete');
 }
 
+async function getPENRequestStats(req, res) {
+  return Promise.all([
+    getData(utils.getBackendToken(req), config.get('server:penRequest:rootURL') + '/', {params: { status: 'INITREV' }}),
+    getData(utils.getBackendToken(req), config.get('server:penRequest:rootURL') + '/', {params: { status: 'SUBSREV' }}),
+  ]).then(([initRevResponse, subsRevResponse]) => {
+    return res.status(200).json({ numInitRev: Object.keys(initRevResponse).length, numSubsRev: Object.keys(subsRevResponse).length });
+  }).catch(e => {
+    logApiError(e, 'getPENRequestStats', 'Error occurred while attempting to GET number of pen requests.');
+    return utils.errorResponse(res);
+  });
+}
+
 
 module.exports = {
   findPenRequestsByPen,
@@ -161,5 +173,6 @@ module.exports = {
   returnPenRequest,
   unlinkRequest,
   rejectPenRequest,
-  completePenRequest
+  completePenRequest,
+  getPENRequestStats
 };

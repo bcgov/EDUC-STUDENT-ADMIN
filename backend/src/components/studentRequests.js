@@ -18,6 +18,18 @@ function createStudentRequestApiServiceReq(studentRequest, req) {
   return studentRequest;
 }
 
+async function getUMPRequestStats(req, res) {
+  return Promise.all([
+    utils.getData(utils.getBackendToken(req), config.get('server:studentRequest:rootURL') + '/', {params: { status: 'INITREV' }}),
+    utils.getData(utils.getBackendToken(req), config.get('server:studentRequest:rootURL') + '/', {params: { status: 'SUBSREV' }}),
+  ]).then(([initRevResponse, subsRevResponse]) => {
+    return res.status(200).json({ numInitRev: Object.keys(initRevResponse).length, numSubsRev: Object.keys(subsRevResponse).length });
+  }).catch(e => {
+    utils.logApiError(e, 'getStudentRequestStats', 'Error occurred while attempting to GET number of student profile requests.');
+    return utils.errorResponse(res);
+  });
+}
+
 function updateForRejectAndReturn(studentRequest, userToken, req) {
   studentRequest.reviewer = req.body.reviewer;
   studentRequest.studentProfileRequestID = req.params.id || req.body.studentRequestID;
@@ -96,6 +108,7 @@ async function completeProfileRequest(req, res) {
 }
 module.exports = {
   createStudentRequestApiServiceReq,
+  getUMPRequestStats,
   rejectProfileRequest,
   returnProfileRequest,
   completeProfileRequest
