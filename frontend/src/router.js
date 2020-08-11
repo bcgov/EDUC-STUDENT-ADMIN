@@ -11,6 +11,7 @@ import StudentDetail from './components/penreg/student/StudentDetail';
 import StudentSearchDisplay from './components/penreg/student-search/StudentSearchDisplay';
 import PenRequestDetail from './components/gmp/PenRequestDetail';
 import StudentRequestDetail from './components/ump/StudentRequestDetail';
+import PenRequestBatchDisplay from './components/penreg/penrequest-batch/PenRequestBatchDisplay';
 import UnAuthorized from './components/UnAuthorized';
 import { REQUEST_TYPES } from './utils/constants';
 import authStore from './store/modules/auth';
@@ -101,6 +102,14 @@ const router = new VueRouter({
       name: 'UMP detail',
       component: StudentRequestDetail,
       props: true,
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/penRequestBatch',
+      name: 'penRequestBatch',
+      component: PenRequestBatchDisplay,
       meta: {
         requiresAuth: true
       }

@@ -2,7 +2,8 @@
   <v-main>
     <router-link :to="REQUEST_TYPES.penRequest.path">penRequest</router-link><br>
     <router-link :to="REQUEST_TYPES.studentRequest.path">studentRequest</router-link><br>
-    <router-link :to="REQUEST_TYPES.studentSearch.path.basic">studentSearch</router-link>
+    <router-link :to="REQUEST_TYPES.studentSearch.path.basic">studentSearch</router-link><br>
+    <router-link :to="REQUEST_TYPES.penRequestBatch.path">penRequestBatch</router-link>
   </v-main>
 </template>
 
