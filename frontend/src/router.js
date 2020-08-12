@@ -76,7 +76,8 @@ const router = new VueRouter({
           component: RequestsDisplay,
           props: {
             requestType: REQUEST_TYPES.studentRequest.name,
-            label: REQUEST_TYPES.studentRequest.searchLabel
+            label: REQUEST_TYPES.studentRequest.searchLabel,
+            penName: REQUEST_TYPES.studentRequest.penName
           },
           meta: {
             requiresAuth: true

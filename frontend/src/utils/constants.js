@@ -106,7 +106,8 @@ export const REQUEST_TYPES = Object.freeze(
       label: 'UMP Request',
       searchLabel: 'Select UMP request statuses to view',
       path: '/ump',
-      detailName: 'UMP detail'
+      detailName: 'UMP detail',
+      penName: 'recordedPen'
     },
     studentSearch: {
       name: 'studentSearch',
