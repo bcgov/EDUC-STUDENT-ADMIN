@@ -23,6 +23,6 @@ const roles = {
     //Help functions created in auth module: isValidPenRequestBatchAdmin
     PenRequestBatch: config.get('server:penRequestBatch:roleAdmin')
   }
-}
+};
 
 module.exports = roles;

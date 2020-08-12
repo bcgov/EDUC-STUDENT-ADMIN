@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../components/auth');
 const utils = require('../components/utils');
-const { createStudentRequestApiServiceReq, returnProfileRequest, rejectProfileRequest, completeProfileRequest } = require('../components/studentRequests');
+const { createStudentRequestApiServiceReq, getUMPRequestStats, returnProfileRequest, rejectProfileRequest, completeProfileRequest } = require('../components/studentRequests');
 const { getAllRequests, getMacros, getRequestById, getRequestCommentById, putRequest } = require('../components/requests');
 
 const { getDocuments, getDocumentById, updateDocumentTypeById } = require('../components/documents');
@@ -32,6 +32,9 @@ router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.
 //router.get('/duplicateRequests', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, findPenRequestsByPen);
 
 router.get('/macros', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, utils.cacheMiddleware(), getMacros(requestType));
+
+//Returns the number of pen requests in initial and subsequent review
+router.get('/stats', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPUserToken, getUMPRequestStats);
 
 /*
  * Get a request by id

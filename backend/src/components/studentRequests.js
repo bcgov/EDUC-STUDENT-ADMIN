@@ -18,6 +18,30 @@ function createStudentRequestApiServiceReq(studentRequest, req) {
   return studentRequest;
 }
 
+async function getUMPRequestStats(req, res) {
+  let initRevSearchCriteriaList = [{
+    key: 'studentRequestStatusCode',
+    operation: 'like',
+    value: 'INITREV',
+    valueType: 'STRING'
+  }];
+  let subsRevSearchCriteriaList = [{
+    key: 'studentRequestStatusCode',
+    operation: 'like',
+    value: 'SUBSREV',
+    valueType: 'STRING'
+  }];
+  return Promise.all([
+    utils.getData(utils.getBackendToken(req), config.get('server:studentRequest:paginated'), {params: { pageSize: 1, searchCriteriaList: JSON.stringify(initRevSearchCriteriaList) }}),
+    utils.getData(utils.getBackendToken(req), config.get('server:studentRequest:paginated'), {params: { pageSize: 1, searchCriteriaList: JSON.stringify(subsRevSearchCriteriaList) }}),
+  ]).then(([initRevResponse, subsRevResponse]) => {
+    return res.status(200).json({ numInitRev: initRevResponse.totalElements, numSubsRev: subsRevResponse.totalElements });
+  }).catch(e => {
+    utils.logApiError(e, 'getStudentRequestStats', 'Error occurred while attempting to GET number of student profile requests.');
+    return utils.errorResponse(res);
+  });
+}
+
 function updateForRejectAndReturn(studentRequest, userToken, req) {
   studentRequest.reviewer = req.body.reviewer;
   studentRequest.studentProfileRequestID = req.params.id || req.body.studentRequestID;
@@ -96,6 +120,7 @@ async function completeProfileRequest(req, res) {
 }
 module.exports = {
   createStudentRequestApiServiceReq,
+  getUMPRequestStats,
   rejectProfileRequest,
   returnProfileRequest,
   completeProfileRequest

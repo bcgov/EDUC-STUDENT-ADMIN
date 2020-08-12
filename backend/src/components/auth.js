@@ -63,7 +63,7 @@ function isValidUiToken(isUserHasRole, roleType, roleNames) {
       log.error(e);
       return res.status(500);
     }
-  }
+  };
 }
 
 function isValidUser(isUserHasRole, roleType, roleNames) {
@@ -83,7 +83,7 @@ function isValidUser(isUserHasRole, roleType, roleNames) {
       log.error(e);
       return false;
     }
-  }
+  };
 }
 
 const auth = {

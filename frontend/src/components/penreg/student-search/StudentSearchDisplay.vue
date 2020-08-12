@@ -78,6 +78,10 @@ export default {
     searchType: {
       type: String,
       required: true
+    },
+    initialPenSearch: {
+      type: String,
+      required: false
     }
   },
   data() {
@@ -126,6 +130,11 @@ export default {
     },
   },
   mounted() {
+    this.$store.dispatch('student/getCodes');
+    if(this.initialPenSearch) {
+      this.studentSearchParams.pen = this.initialPenSearch;
+      this.searchStudent();
+    }
     if(this.studentSearchParams) {
       this.searchHasValues();
     }

@@ -15,7 +15,9 @@ import PenRequestBatchDisplay from './components/penreg/penrequest-batch/PenRequ
 import UnAuthorized from './components/UnAuthorized';
 import { REQUEST_TYPES } from './utils/constants';
 import authStore from './store/modules/auth';
+import ErrorPage from './components/ErrorPage';
 import store from './store/index';
+import RouterView from './components/RouterView';
 
 Vue.prototype.moment = moment;
 
@@ -35,35 +37,71 @@ const router = new VueRouter({
     },
     {
       path: '/gmp',
-      name: REQUEST_TYPES.penRequest.label,
-      component: RequestsDisplay,
-      props: {
-        requestType: REQUEST_TYPES.penRequest.name,
-        label: REQUEST_TYPES.penRequest.searchLabel
-      },
-      meta: {
-        requiresAuth: true
-      }
+      component: RouterView,
+      children: [
+        {
+          path: '',
+          name: REQUEST_TYPES.penRequest.label,
+          component: RequestsDisplay,
+          props: {
+            requestType: REQUEST_TYPES.penRequest.name,
+            label: REQUEST_TYPES.penRequest.searchLabel
+          },
+          meta: {
+            requiresAuth: true
+          },
+          beforeEnter(to, from, next) {
+            store.commit('app/setRequestType',REQUEST_TYPES.penRequest.name);
+            next();
+          }
+        },
+        {
+          path: ':requestId',
+          name: 'GMP detail',
+          component: PenRequestDetail,
+          props: true,
+          meta: {
+            requiresAuth: true
+          }
+        },
+      ]
     },
     {
       path: '/ump',
-      name: REQUEST_TYPES.studentRequest.label,
-      component: RequestsDisplay,
-      props: {
-        requestType: REQUEST_TYPES.studentRequest.name,
-        label: REQUEST_TYPES.studentRequest.searchLabel
-      },
-      meta: {
-        requiresAuth: true
-      }
+      component: RouterView,
+      children: [
+        {
+          path: '',
+          name: REQUEST_TYPES.studentRequest.label,
+          component: RequestsDisplay,
+          props: {
+            requestType: REQUEST_TYPES.studentRequest.name,
+            label: REQUEST_TYPES.studentRequest.searchLabel
+          },
+          meta: {
+            requiresAuth: true
+          },
+          beforeEnter(to, from, next) {
+            store.commit('app/setRequestType',REQUEST_TYPES.studentRequest.name);
+            next();
+          }
+        },
+        {
+          path: ':requestId',
+          name: 'UMP detail',
+          component: StudentRequestDetail,
+          props: true,
+          meta: {
+            requiresAuth: true
+          }
+        }
+      ]
     },
     {
       path: '/studentSearch/basic',
       name: 'basicSearch',
       component: StudentSearchDisplay,
-      props: {
-        searchType: REQUEST_TYPES.studentSearch.type.basic
-      },
+      props: (route) => ({ searchType: REQUEST_TYPES.studentSearch.type.basic, initialPenSearch: route.query.pen }),
       meta: {
         requiresAuth: true
       }
@@ -89,27 +127,10 @@ const router = new VueRouter({
       }
     },
     {
-      path: '/gmp/:requestId',
-      name: 'GMP detail',
-      component: PenRequestDetail,
-      props: true,
-      meta: {
-        requiresAuth: true
-      }
-    },
-    {
-      path: '/ump/:requestId',
-      name: 'UMP detail',
-      component: StudentRequestDetail,
-      props: true,
-      meta: {
-        requiresAuth: true
-      }
-    },
-    {
       path: '/penRequestBatch',
       name: 'penRequestBatch',
       component: PenRequestBatchDisplay,
+      props: (route) => ({ schoolGroup: route.query.schoolGroup }),
       meta: {
         requiresAuth: true
       }
@@ -147,6 +168,14 @@ const router = new VueRouter({
       }
     },
     {
+      path: '/error',
+      name: 'error',
+      component: ErrorPage,
+      meta: {
+        requiresAuth: false
+      }
+    },
+    {
       path: '*',
       name: 'notfound',
       redirect: '/',
@@ -160,15 +189,17 @@ const router = new VueRouter({
 router.beforeEach((to, _from, next) => {
   if (to.meta.requiresAuth) {
     store.dispatch('auth/getJwtToken').then(() => {
-      store.dispatch('auth/getUserInfo');
-      store.dispatch('student/getCodes');
-
       if (!authStore.state.isAuthenticated) {
         next('login');
       } else if (!authStore.state.isAuthorizedUser) {
         next('unauthorized');
       } else {
-        next();
+        store.dispatch('auth/getUserInfo').then(() => {
+          next();
+        }).catch(() => {
+          console.log('Unable to get user info');
+          next('error');
+        });
       }
     }).catch(() => {
       console.log('Unable to get token');

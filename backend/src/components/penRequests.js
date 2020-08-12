@@ -153,6 +153,30 @@ async function completePenRequest(req, res) {
   return await executePenReqSaga(utils.getBackendToken(req), `${config.get('server:profileSagaAPIURL')}/pen-request-complete-saga`, penRequest, res, 'complete');
 }
 
+async function getPENRequestStats(req, res) {
+  let initRevSearchCriteriaList = [{
+    key: 'penRequestStatusCode',
+    operation: 'like',
+    value: 'INITREV',
+    valueType: 'STRING'
+  }];
+  let subsRevSearchCriteriaList = [{
+    key: 'penRequestStatusCode',
+    operation: 'like',
+    value: 'SUBSREV',
+    valueType: 'STRING'
+  }];
+  return Promise.all([
+    getData(utils.getBackendToken(req), config.get('server:penRequest:paginated'), {params: { pageSize: 1, searchCriteriaList: JSON.stringify(initRevSearchCriteriaList) }}),
+    getData(utils.getBackendToken(req), config.get('server:penRequest:paginated'), {params: { pageSize: 1, searchCriteriaList: JSON.stringify(subsRevSearchCriteriaList) }}),
+  ]).then(([initRevResponse, subsRevResponse]) => {
+    return res.status(200).json({ numInitRev: initRevResponse.totalElements, numSubsRev: subsRevResponse.totalElements });
+  }).catch(e => {
+    logApiError(e, 'getPENRequestStats', 'Error occurred while attempting to GET number of pen requests.');
+    return utils.errorResponse(res);
+  });
+}
+
 
 module.exports = {
   findPenRequestsByPen,
@@ -161,5 +185,6 @@ module.exports = {
   returnPenRequest,
   unlinkRequest,
   rejectPenRequest,
-  completePenRequest
+  completePenRequest,
+  getPENRequestStats
 };

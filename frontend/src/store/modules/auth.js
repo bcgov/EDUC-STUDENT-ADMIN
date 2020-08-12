@@ -12,6 +12,7 @@ export default {
     isValidGMPUser: localStorage.getItem('isValidGMPUser') !== null,
     isValidUMPUser: localStorage.getItem('isValidUMPUser') !== null,
     isValidStudentSearchUser: localStorage.getItem('isValidStudentSearchUser') !== null,
+    isValidPenRequestBatchUser: localStorage.getItem('isValidPenRequestBatchUser') !== null
   },
   getters: {
     acronyms: state => state.acronyms,
@@ -70,6 +71,15 @@ export default {
         localStorage.removeItem(('isValidStudentSearchUser'));
       }
     },
+    penRequestBatchUser: (state, isValidPenRequestBatchUser) => {
+      if (isValidPenRequestBatchUser) {
+        state.isValidPenRequestBatchUser = true;
+        localStorage.setItem('isValidPenRequestBatchUser', 'true');
+      } else {
+        state.isValidPenRequestBatchUser = false;
+        localStorage.removeItem(('isValidPenRequestBatchUser'));
+      }
+    },
     setUserInfo: (state, userInf) => {
       if (userInf) {
         state.userInfo = userInf;
@@ -89,13 +99,13 @@ export default {
 
     async getUserInfo(context) {
       if(localStorage.getItem('jwtToken')) {
-        ApiService.apiAxios
+        await ApiService.apiAxios
           .get(Routes.USER)
           .then(response => {
             context.commit('setUserInfo', response.data);
           })
-          .catch(error => {
-            console.log(error);
+          .catch((e) => {
+            throw e;
           });
       }
     },
@@ -118,6 +128,7 @@ export default {
             context.commit('setGMPUser', response.isValidGMPUser);
             context.commit('setUMPUser', response.isValidUMPUser);
             context.commit('setStudentSearchUser', response.isValidStudentSearchUser);
+            context.commit('penRequestBatchUser', response.isValidPenRequestBatchUser);
             ApiService.setAuthHeader(response.jwtFrontend);
           }
           else {
@@ -133,11 +144,13 @@ export default {
           context.commit('setGMPUser', response.isValidGMPUser);
           context.commit('setUMPUser', response.isValidUMPUser);
           context.commit('setStudentSearchUser', response.isValidStudentSearchUser);
+          context.commit('penRequestBatchUser', response.isValidPenRequestBatchUser);
           ApiService.setAuthHeader(response.jwtFrontend);
         }
       } catch (e) {
         // Remove tokens from localStorage and update state
         context.commit('setJwtToken');
+        throw e;
       }
     },
   }
