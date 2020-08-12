@@ -383,12 +383,12 @@ import {mapGetters, mapState} from 'vuex';
 import moment from 'moment';
 import ApiService from '../../../common/apiService';
 import {REQUEST_TYPES, Routes, STUDENT_DETAILS_FIELDS} from '@/utils/constants';
-import StudentDetailsTextField from "@/components/penreg/student/StudentDetailsTextField";
+import StudentDetailsTextField from '@/components/penreg/student/StudentDetailsTextField';
 import {LocalDate} from '@js-joda/core';
-import StudentDetailsTextFieldReadOnly from "@/components/penreg/student/StudentDetailsTextFieldReadOnly";
-import StudentDetailsComboBox from "@/components/penreg/student/StudentDetailsComboBox";
+import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly';
+import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsComboBox';
 import StudentDetailsTextFieldSideCardReadOnly
-  from "@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly";
+  from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
 
 const JSJoda = require('@js-joda/core');
 
@@ -476,7 +476,9 @@ export default {
     },
     updateDOBLabel(initialLoad) {
       if(!initialLoad){
-        this.studentCopy.dob = this.studentCopy.dob.replace(/[^0-9]/g, "");
+        if(this.studentCopy && this.studentCopy.dob) {
+          this.studentCopy.dob = this.studentCopy.dob.replace(/[^0-9]/g, '');
+        }
       }
       this.longDOB = this.frontEndDOBFormat(this.studentCopy.dob);
       this.longDOB = this.frontEndDOBFormat(this.studentCopy.dob);
@@ -488,13 +490,13 @@ export default {
     },
     getDateFormatterShort() {
       return (new JSJoda.DateTimeFormatterBuilder)
-          .appendPattern('uuuuMMdd')
-          .toFormatter(JSJoda.ResolverStyle.STRICT);
+        .appendPattern('uuuuMMdd')
+        .toFormatter(JSJoda.ResolverStyle.STRICT);
     },
     getDateFormatterLong() {
       return (new JSJoda.DateTimeFormatterBuilder)
-          .appendPattern('uuuu-MM-dd')
-          .toFormatter(JSJoda.ResolverStyle.STRICT);
+        .appendPattern('uuuu-MM-dd')
+        .toFormatter(JSJoda.ResolverStyle.STRICT);
     },
     validateDOB() {
       if (this.studentCopy) {
@@ -585,17 +587,17 @@ export default {
     refreshStudent() {
       this.isLoading = true;
       ApiService.apiAxios
-          .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
-          .then(response => {
-            this.setStudent(response.data);
-          })
-          .catch(error => {
-            console.log(error);
-            this.isLoading = false;
-          })
-          .finally(() => {
-            this.isLoading = false;
-          });
+        .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
+        .then(response => {
+          this.setStudent(response.data);
+        })
+        .catch(error => {
+          console.log(error);
+          this.isLoading = false;
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
     },
     hasEdits(key) {
       let studentCopy = this.studentCopy[key];
@@ -697,16 +699,16 @@ export default {
     saveStudent() {
       if (this.$refs.studentDetailForm.validate()) {
         ApiService.apiAxios
-            .post(Routes['student'].ROOT_ENDPOINT, this.prepPut(this.studentCopy))
-            .then(response => {
-              this.setStudent(response.data);
-            })
-            .catch(error => {
-              console.log(error);
-            })
-            .finally(() => {
+          .post(Routes['student'].ROOT_ENDPOINT, this.prepPut(this.studentCopy))
+          .then(response => {
+            this.setStudent(response.data);
+          })
+          .catch(error => {
+            console.log(error);
+          })
+          .finally(() => {
 
-            });
+          });
       }
     },
     prepPut(student) {
@@ -758,11 +760,15 @@ export default {
     },
     handleInput(fieldName){
       if(fieldName === STUDENT_DETAILS_FIELDS.POSTAL_CODE){
-        this.studentCopy.postalCode = this.studentCopy.postalCode.replace(/[^0-9A-Za-z]/g, "");
+        if(this.studentCopy && this.studentCopy.postalCode) {
+          this.studentCopy.postalCode = this.studentCopy.postalCode.replace(/[^0-9A-Za-z]/g, '');
+        }
         this.spacePostalCode = this.studentCopy.postalCode;
       }
       if(fieldName === STUDENT_DETAILS_FIELDS.MINCODE){
-        this.studentCopy.mincode = this.studentCopy.mincode.replace(/[^0-9A-Za-z]/g, "");
+        if(this.studentCopy && this.studentCopy.mincode) {
+          this.studentCopy.mincode = this.studentCopy.mincode.replace(/[^0-9A-Za-z]/g, '');
+        }
       }
     },
 
