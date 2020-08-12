@@ -7,15 +7,15 @@
       <v-card-text>
         <v-row>
           <v-col cols="2">
-            <v-text-field outlined dense label="PEN" v-model="pen"></v-text-field>
+            <v-text-field id="penTextField" outlined dense label="PEN" v-model="pen"></v-text-field>
           </v-col>
           <v-col cols="2">
               <v-row>
-                <v-btn :to="REQUEST_TYPES.studentSearch.path.basic + '?pen=' + pen" :disabled="!isValidPEN" :dark="isValidPEN" width="100%" color="#38598a">Quick Search</v-btn>
+                <v-btn id="quickSearchBtn" :to="REQUEST_TYPES.studentSearch.path.basic + '?pen=' + pen" :disabled="!isValidPEN" :dark="isValidPEN" width="100%" color="#38598a">Quick Search</v-btn>
               </v-row>
             <router-link :to="REQUEST_TYPES.studentSearch.path.basic">
               <v-row>
-                <v-btn width="100%" color="#38598a" class="mt-2" outlined>Full Search</v-btn>
+                <v-btn id="fullSearchBtn" width="100%" color="#38598a" class="mt-2" outlined>Full Search</v-btn>
               </v-row>
             </router-link>
           </v-col>
