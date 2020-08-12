@@ -1,5 +1,5 @@
 <template>
-  <div id="file-list" class="px-3" style="width: 100%" :overlay="false" v-if="searchResponse">
+  <div id="file-list" class="px-3" style="width: 100%" :overlay="false">
     <v-data-table
       id="dataTable"
       v-model="selectedRecords"
@@ -39,7 +39,7 @@
               <span v-else>{{props.item[header.value]}}</span>
               <v-tooltip v-if="header.value==='minCode' && isUnarchived(props.item)" right>
                 <template v-slot:activator="{ on }">
-                  <v-icon small color="green darken-2" v-on="on">
+                  <v-icon small color="#2E8540" v-on="on">
                     {{isUnarchivedBatchChanged(props.item) ? 'fa-sync-alt' : 'fa-unlock'}}
                   </v-icon>
                 </template>
@@ -95,7 +95,7 @@ export default {
         { text: 'School Name', value: 'schoolName', sortable: false },
         { text: 'TOT', value: 'studentCount', sortable: false, countable: true },
         { text: 'MCH', value: 'matchedCount', sortable: false, filterName: 'Matched', countable: true, isFiltered: false },
-        { text: 'NEW', value: 'issuedPenCount', sortable: false, filterName: 'New PENs', countable: true, isFiltered: false },
+        { text: 'NEW', value: 'newPenCount', sortable: false, filterName: 'New PENs', countable: true, isFiltered: false },
         { text: 'ERR', value: 'errorCount', sortable: false, filterName: 'Errors', countable: true, isFiltered: false },
         { text: 'REP', value: 'repeatCount', sortable: false, filterName: 'Repeated', countable: true, isFiltered: false },
         { text: 'FIX', value: 'fixableCount', sortable: false, filterName: 'Fixable', countable: true, isFiltered: false },
@@ -128,6 +128,7 @@ export default {
     schoolGroup: {
       handler() {
         this.searchCriteria.schoolGroupCode = this.schoolGroup;
+        this.initializeFilters();
         this.pagination();
       }
     }
@@ -144,6 +145,7 @@ export default {
     },
   },
   created(){
+    this.initializeFilters();
     this.selectFilters();
     this.pagination();
   },
@@ -159,10 +161,15 @@ export default {
     isUnarchivedBatchChanged(item) {
       return item.unarchivedBatchChangedFlag === 'Y';
     },
+    initializeFilters() {
+      this.filters.splice(0);
+      this.filters.push('Fixable');
+    },
     initializeFiles(files) {
       let activeFile = files.find(f => f.penRequestBatchStatusCode === 'ACTIVE');
       activeFile && (activeFile.firstActiveFile = true);
       files.forEach(file => {
+        file.minCode && (file.minCode = file.minCode.substring(0, 3) + ' ' + file.minCode.substring(3));
         file.isSelected = false;
         this.countableHeaders.forEach(header => file[header.value] = +file[header.value]);
         file.filteredCount = this.headers.reduce((sum, header) => 
@@ -223,6 +230,7 @@ export default {
         })
         .catch(error => {
           console.log(error);
+          this.$emit('failure-alert', 'An error occurred while loading the file list. Please try again later.');
         })
         .finally(() => (this.loadingTable = false));
     },
@@ -278,7 +286,7 @@ export default {
     border-left: thin solid #d7d7d7;
   }
   #file-list /deep/ table tr.first-active-file td{ 
-    border-top: thin solid #d7d7d7;
+    border-top: thin solid #2E8540;
   }
   #file-list /deep/ table { 
     border-top: thin solid #d7d7d7;

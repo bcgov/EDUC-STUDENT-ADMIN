@@ -50,10 +50,22 @@
           <v-btn id="view-details-action" class="white--text" color="#38598a" :disabled="!actionEnabled">View Details</v-btn>
         </v-row>
         <v-row no-gutters class="py-2" style="background-color:white;">
+          <v-alert
+            v-model="alert"
+            dense
+            text
+            dismissible
+            outlined
+            transition="scale-transition"
+            :class="`${alertType} flex-grow-1 mx-3`"
+          >
+            {{ alertMessage }}
+          </v-alert>
           <PenRequestBatchList
             :schoolGroup="schoolGroupSelected"
             :filters="filters"
             @filter-change="filterChange"
+            @failure-alert="setFailureAlert"
           ></PenRequestBatchList>
         </v-row>
       </v-card>
@@ -81,6 +93,10 @@ export default {
       filters:[],
       actionEnabled: false,
       schoolGroupSelected: null,
+
+      alert: false,
+      alertMessage: null,
+      alertType: null,
     };
   },
   created() {
@@ -92,7 +108,17 @@ export default {
     },
     filterChange(filters) {
       this.filters = filters;
-    }
+    },
+    setSuccessAlert(message) {
+      this.alertMessage = message;
+      this.alertType = 'bootstrap-success';
+      this.alert = true;
+    },
+    setFailureAlert(message) {
+      this.alertMessage = message;
+      this.alertType = 'bootstrap-error';
+      this.alert = true;
+    },
   }
 };
 </script>

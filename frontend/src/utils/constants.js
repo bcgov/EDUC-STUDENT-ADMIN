@@ -163,4 +163,4 @@ export const STUDENT_DETAILS_FIELDS = Object.freeze(
     STATUS_CODE:'statusCode'
   }
 
-)
+);
