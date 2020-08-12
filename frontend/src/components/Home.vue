@@ -1,7 +1,7 @@
 <template>
   <v-main>
-    <DashboardTable title="School PEN Requests" :tableData="penRequestData"></DashboardTable>
-    <DashboardTable title="Student Requests" :tableData="studentData"></DashboardTable>
+    <DashboardTable v-if="isValidPenRequestBatchUser" title="School PEN Requests" :tableData="penRequestData"></DashboardTable>
+    <DashboardTable v-if="isValidGMPUser || isValidUMPUser" title="Student Requests" :tableData="studentData"></DashboardTable>
     <v-card v-if="isValidStudentSearchUser" flat class="mt-2">
       <v-card-title><h3>Student Search</h3></v-card-title>
       <v-card-text>
