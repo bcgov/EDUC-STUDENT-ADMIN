@@ -44,7 +44,7 @@ nconf.defaults({
     },
     penRequestBatch: {
       rootURL: process.env.PEN_REQUEST_BATCH_API_URL,
-      paginated: process.env.PEN_REQUEST_BATCH_API_URL + '/paginated',
+      paginated: process.env.PEN_REQUEST_BATCH_API_URL + '/pen-request-batch/paginated',
       roleAdmin: process.env.PEN_REQUEST_BATCH_ADMIN,
       maxPaginatedElements: 1000
     },
