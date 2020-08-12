@@ -12,7 +12,7 @@
           </template>
           <v-col class="listCol" cols="1">
             <router-link :to="routeTo(row.title)">
-              <v-btn :id="row.title+'Btn'" class="mr-4 white--text" color="#38598a" width="100%">View {{ buttonWording(row.title) }}</v-btn>
+              <v-btn :id="row.title.replace(/ /g,'')+'Btn'" class="mr-4 white--text" color="#38598a" width="100%">View {{ buttonWording(row.title) }}</v-btn>
             </router-link>
           </v-col>
         </v-row>

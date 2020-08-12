@@ -12,7 +12,7 @@ const {
   validationResult
 } = require('express-validator');
 
-const isValidGumpUserWithRoles = auth.isValidUserWithRoles('GMP & UMP', [...roles.User.GMP, ...roles.User.UMP]);
+const isValidStaffUserWithRoles = auth.isValidUserWithRoles('GMP & UMP & PenRequestBatch & StudentSearch', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.StudentSearch]);
 
 const router = express.Router();
 
@@ -90,7 +90,7 @@ router.post('/refresh', [
     });
   }
 
-  const isAuthorizedUser = isValidGumpUserWithRoles(req);
+  const isAuthorizedUser = isValidStaffUserWithRoles(req);
   const isValidUsers = auth.isValidUsers(req);
   if (!req['user'] || !req['user'].refreshToken) {
     res.status(401).json();
@@ -114,7 +114,7 @@ router.post('/refresh', [
 //provides a jwt to authenticated users
 router.get('/token', auth.refreshJWT, (req, res) => {
 
-  const isAuthorizedUser = isValidGumpUserWithRoles(req);
+  const isAuthorizedUser = isValidStaffUserWithRoles(req);
   const isValidUsers = auth.isValidUsers(req);
   if (req['user'] && req['user'].jwtFrontend && req['user'].refreshToken) {
     const responseJson = {
