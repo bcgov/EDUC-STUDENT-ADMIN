@@ -7,7 +7,7 @@
           <v-col v-if="row.error"><v-alert color="#D8292F" v-if="row.error" dismissible width="100%" class="alert mb-0"><strong>Error loading {{ row.title }} row data. Try refreshing the page.</strong></v-alert></v-col>
           <template v-if="!row.error">
             <v-col class="listCol"><strong>{{ row.title }}</strong></v-col>
-            <v-col v-for="(col, idx) in omit(row, 'title')" :key="col" class="listCol">{{ col }} {{ dataColWording(idx) }}</v-col>
+            <v-col v-for="(col, idx) in omit(row, 'title')" :key="idx" class="listCol">{{ col }} {{ dataColWording(idx) }}</v-col>
 
           </template>
           <v-col class="listCol" cols="1">
@@ -42,9 +42,6 @@ export default {
   },
   methods: {
     compare(a, b) {
-      console.log(a);
-      console.log(b);
-      // Use toUpperCase() to ignore character casing
       const titleA = a.title.toUpperCase();
       const titleB = b.title.toUpperCase();
 
@@ -94,9 +91,9 @@ export default {
     routeTo(title) {
       switch(this.buttonWording(title)) {
       case 'K-12':
-        return '/';//TODO
+        return REQUEST_TYPES.penRequestBatch.path + '?schoolGroup=' + 'K12';
       case 'PSI':
-        return '/';//TODO
+        return REQUEST_TYPES.penRequestBatch.path + '?schoolGroup=' + 'PSI';
       case 'GMP':
         return REQUEST_TYPES.penRequest.path;
       case 'UMP':

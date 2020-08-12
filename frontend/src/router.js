@@ -101,9 +101,7 @@ const router = new VueRouter({
       path: '/studentSearch/basic',
       name: 'basicSearch',
       component: StudentSearchDisplay,
-      props: {
-        searchType: REQUEST_TYPES.studentSearch.type.basic
-      },
+      props: (route) => ({ searchType: REQUEST_TYPES.studentSearch.type.basic, initialPenSearch: route.query.pen }),
       meta: {
         requiresAuth: true
       }
@@ -132,6 +130,7 @@ const router = new VueRouter({
       path: '/penRequestBatch',
       name: 'penRequestBatch',
       component: PenRequestBatchDisplay,
+      props: (route) => ({ schoolGroup: route.query.schoolGroup }),
       meta: {
         requiresAuth: true
       }

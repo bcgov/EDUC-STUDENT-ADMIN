@@ -19,11 +19,23 @@ function createStudentRequestApiServiceReq(studentRequest, req) {
 }
 
 async function getUMPRequestStats(req, res) {
+  let initRevSearchCriteriaList = [{
+    key: 'studentRequestStatusCode',
+    operation: 'like',
+    value: 'INITREV',
+    valueType: 'STRING'
+  }];
+  let subsRevSearchCriteriaList = [{
+    key: 'studentRequestStatusCode',
+    operation: 'like',
+    value: 'SUBSREV',
+    valueType: 'STRING'
+  }];
   return Promise.all([
-    utils.getData(utils.getBackendToken(req), config.get('server:studentRequest:rootURL') + '/', {params: { status: 'INITREV' }}),
-    utils.getData(utils.getBackendToken(req), config.get('server:studentRequest:rootURL') + '/', {params: { status: 'SUBSREV' }}),
+    utils.getData(utils.getBackendToken(req), config.get('server:studentRequest:paginated'), {params: { pageSize: 1, searchCriteriaList: JSON.stringify(initRevSearchCriteriaList) }}),
+    utils.getData(utils.getBackendToken(req), config.get('server:studentRequest:paginated'), {params: { pageSize: 1, searchCriteriaList: JSON.stringify(subsRevSearchCriteriaList) }}),
   ]).then(([initRevResponse, subsRevResponse]) => {
-    return res.status(200).json({ numInitRev: Object.keys(initRevResponse).length, numSubsRev: Object.keys(subsRevResponse).length });
+    return res.status(200).json({ numInitRev: initRevResponse.totalElements, numSubsRev: subsRevResponse.totalElements });
   }).catch(e => {
     utils.logApiError(e, 'getStudentRequestStats', 'Error occurred while attempting to GET number of student profile requests.');
     return utils.errorResponse(res);

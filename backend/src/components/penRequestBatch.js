@@ -2,7 +2,53 @@
 const { logApiError } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
-const { getBackendToken, getData } = require('./utils');
+const { getBackendToken, getData, errorResponse } = require('./utils');
+
+async function getPENBatchRequestStats(req, res) {
+  const schoolGroupCodes = [
+    {
+      schoolGroupCode: 'K12'
+    },
+    {
+      schoolGroupCode: 'PSI'
+    }
+  ];
+  let promises = [];
+  schoolGroupCodes.forEach((schoolGroupCode) => {
+    let searchCriteriaList = [
+      {
+        key: 'schoolGroupCode',
+        operation: 'like',
+        value: schoolGroupCode.schoolGroupCode,
+        valueType: 'STRING'
+      },
+      {
+        key: 'penRequestBatchStatusCode',
+        operation: 'in',
+        value: 'ACTIVE,UNARCHIVED',
+        valueType: 'STRING'
+      }
+    ];
+    promises.push(
+      getData(getBackendToken(req), config.get('server:penRequestBatch:paginated') , {params: { pageSize: config.get('server:penRequestBatch:maxPaginatedElements'), searchCriteriaList: JSON.stringify(searchCriteriaList) }}),
+    );
+  });
+  return Promise.all(promises).then((response) => {
+    let formattedResponse = {};
+    schoolGroupCodes.forEach((schoolGroupCode, index) => {
+      formattedResponse[schoolGroupCode.schoolGroupCode] = {
+        pending: response[index].totalElements,
+        fixable: response[index].content.reduce((a, b) => +a + (+b['fixableCount'] || 0), 0),
+        repeats: response[index].content.reduce((a, b) => +a + (+b['repeatCount'] || 0), 0),
+        unarchived: response[index].content.filter((obj) => obj.penRequestBatchStatusCode === 'UNARCHIVED').length
+      };
+    });
+    return res.status(200).json(formattedResponse);
+  }).catch(e => {
+    logApiError(e, 'getPENBatchRequestStats', 'Error occurred while attempting to GET number of pen batch requests.');
+    return errorResponse(res);
+  });
+}
 
 async function getPenRequestFiles(req, res) {
   try {
@@ -51,5 +97,6 @@ async function getPenRequestFiles(req, res) {
 }
 
 module.exports = {
+  getPENBatchRequestStats,
   getPenRequestFiles,
 };
