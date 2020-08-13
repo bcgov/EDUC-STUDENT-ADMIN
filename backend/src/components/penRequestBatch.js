@@ -58,30 +58,13 @@ async function getPenRequestFiles(req, res) {
         message: 'No access token'
       });
     }
-    let searchListCriteria = [];
-
-    if(req.query.searchQueries) {
-      let searchQueries = JSON.parse(req.query.searchQueries);
-      Object.keys(searchQueries).forEach(element => {
-        let operation = 'gt';
-        let valueType = 'LONG';
-        if (element === 'schoolGroupCode') {
-          operation = 'starts_with_ignore_case';
-          valueType = 'STRING';
-        } else if (element === 'penRequestBatchStatusCode') {
-          operation = 'in';
-          valueType = 'STRING';
-        }
-        searchListCriteria.push({key: element, operation: operation, value: searchQueries[element], valueType: valueType});
-      });
-    }
 
     const params = {
       params: {
         pageNumber: req.query.pageNumber,
         pageSize: req.query.pageSize,
         sort: req.query.sort,
-        searchCriteriaList: JSON.stringify(searchListCriteria)
+        searchCriteriaList: JSON.stringify(req.query.searchQueries.map((query) => JSON.parse(query)))
       }
     };
 
