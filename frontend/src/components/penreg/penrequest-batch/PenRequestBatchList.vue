@@ -13,27 +13,33 @@
       @page-count="searchResponse.pageable.pageNumber = $event"
     >
       <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-        <v-simple-checkbox 
+        <v-checkbox 
           v-if="header.type" 
           :key="h.id" 
-          class="file-column" 
+          class="file-checkbox header-checkbox" 
           color="#039BE5" 
           v-model="allSelected" 
           :indeterminate="partialSelected" 
-          @input="selectAllFiles"
-        ></v-simple-checkbox>
-        <span v-else :key="h.id" :class="header.countable ? '' : 'file-column'">
+          @change="selectAllFiles"
+        ></v-checkbox>
+        <span v-else :key="h.id" :class="{'file-column' : !header.countable}">
           {{ header.text }}
         </span>
         <br :key="h.id" />
         <span :key="h.id" :class="header.countable ? 'countable-column-header' : 'file-column'">
-          <v-simple-checkbox v-if="header.filterName" color="#039BE5" v-model="header.isFiltered" @input="selectFilter(header)"></v-simple-checkbox>
+          <v-checkbox 
+            v-if="header.filterName" 
+            class="file-checkbox filter-checkbox" 
+            color="#039BE5" 
+            v-model="header.isFiltered" 
+            @change="selectFilter(header)"
+          ></v-checkbox>
         </span>
       </template>
       <template v-slot:item="props">
         <tr :class="tableRowClass(props.item)" @click="selectItem(props.item)">
-          <td v-for="header in props.headers" :key="header.id" :class="header.id">
-            <v-simple-checkbox v-if="header.type" color="#039BE5" v-model="props.item.isSelected" @input="selectFile"></v-simple-checkbox>
+          <td v-for="header in props.headers" :key="header.id" :class="{[header.value]: true, 'select-column': header.type}">
+            <v-checkbox v-if="header.type" class="file-checkbox" color="#039BE5" v-model="props.item.isSelected" @change="selectFile" @click.prevent></v-checkbox>
             <div v-else :class="{'countable-column-div': header.countable}">
               <span v-if="header.countable" class="countable-column-data">{{ props.item[header.value] || '-' }}</span>
               <span v-else>{{props.item[header.value]}}</span>
@@ -90,7 +96,7 @@ export default {
       pageNumber: 1,
       itemsPerPage: 15,
       headers: [
-        { value: 'select', type: 'select', sortable: false },
+        { value: 'rowSelect', type: 'select', sortable: false },
         { text: 'Mincode', value: 'minCode', sortable: false, align: 'start'},
         { text: 'School Name', value: 'schoolName', sortable: false },
         { text: 'TOT', value: 'studentCount', sortable: false, countable: true },
@@ -103,7 +109,7 @@ export default {
         { text: 'Submission', value: 'submissionNumber', sortable: false },
       ],
       selectedRecords: [],
-      searchCriteria: {},
+      filterCriteriaList: [],
       allSelected: false,
       partialSelected: false,
       searchResponse: {
@@ -127,7 +133,7 @@ export default {
     },
     schoolGroup: {
       handler() {
-        this.searchCriteria.schoolGroupCode = this.schoolGroup;
+        // this.searchCriteria.schoolGroupCode = this.schoolGroup;
         this.initializeFilters();
         this.pagination();
       }
@@ -142,6 +148,20 @@ export default {
     },
     showingEndNumber() {
       return ((this.pageNumber-1) * this.searchResponse.pageable.pageSize + this.searchResponse.numberOfElements);
+    },
+    searchCriteria() {
+      return [
+        { 
+          searchCriteriaList: [
+            {key: 'schoolGroupCode', operation: 'starts_with_ignore_case', value: this.schoolGroup, valueType: 'STRING'},
+            {key: 'penRequestBatchStatusCode', operation: 'in', value: 'ACTIVE,UNARCHIVED', valueType: 'STRING', condition: 'AND'}
+          ]
+        },
+        { 
+          condition: 'AND', 
+          searchCriteriaList: this.filterCriteriaList
+        },
+      ];
     },
   },
   created(){
@@ -166,6 +186,8 @@ export default {
       this.filters.push('Fixable');
     },
     initializeFiles(files) {
+      this.partialSelected = false;
+      this.allSelected = false;
       let activeFile = files.find(f => f.penRequestBatchStatusCode === 'ACTIVE');
       activeFile && (activeFile.firstActiveFile = true);
       files.forEach(file => {
@@ -191,10 +213,16 @@ export default {
       this.partialSelected = false;
     },
     selectFilters() {
-      this.searchCriteria = {schoolGroupCode: this.schoolGroup, penRequestBatchStatusCode: 'ACTIVE,UNARCHIVED'};
+      this.filterCriteriaList.splice(0);
       this.headers.filter(header => !!header.filterName).forEach(header => {
         header.isFiltered = this.filters.some(filter => filter === header.filterName);
-        header.isFiltered && (this.searchCriteria[header.value] = 0);
+        if(header.isFiltered) {
+          let criteria = {key: header.value, operation: 'gt', value: 0, valueType: 'LONG'};
+          if(this.filterCriteriaList.length > 0) {
+            criteria.condition = 'OR';
+          }
+          this.filterCriteriaList.push(criteria);
+        }
       });
     },
     selectFilter(header) {
@@ -296,7 +324,7 @@ export default {
     cursor: pointer;
   }
   #file-list /deep/ table tr.selected-file,
-  #file-list /deep/ table tr:hover { 
+  #file-list /deep/ table tbody tr:hover { 
     background-color: #E1F5FE
   }
   #file-list /deep/ table td:nth-child(10),
@@ -304,7 +332,37 @@ export default {
     background-color: rgba(0, 0, 0, 0.06);
   }
 
-  #file-list /deep/ table .v-simple-checkbox .v-icon.fa-minus-square {
+  #file-list /deep/ table .file-checkbox .v-icon.fa-minus-square {
     color: #039BE5 !important;
+  }
+
+  .file-checkbox {
+    margin-top: 0;
+  }
+  .file-checkbox /deep/ .v-input__slot {
+    margin-bottom: 0;
+    /* justify-content: center; */
+  }
+  .file-checkbox /deep/ .v-input__slot .v-input--selection-controls__input {
+    margin-right: 0;
+  }
+
+  .header-checkbox {
+    padding-top: 0;
+  }
+  .header-checkbox /deep/ .v-input__slot {
+    padding-top: 0;
+  }
+
+  .filter-checkbox /deep/ .v-input__slot {
+    justify-content: center;
+    padding-top: 0;
+  }
+  .filter-checkbox /deep/ .v-input__slot .v-input--selection-controls__ripple {
+    left: -12px !important;
+  }
+
+  .select-column {
+    vertical-align: bottom !important;
   }
 </style>
