@@ -133,7 +133,6 @@ export default {
     },
     schoolGroup: {
       handler() {
-        // this.searchCriteria.schoolGroupCode = this.schoolGroup;
         this.initializeFilters();
         this.pagination();
       }
