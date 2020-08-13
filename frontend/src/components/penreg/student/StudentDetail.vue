@@ -316,8 +316,8 @@
                       <v-btn
                         tabindex="-1"
                         color="#003366"
-                        class="white&#45;&#45;text"
                         :disabled="!hasAnyEdits()"
+                        :dark="hasAnyEdits()"
                         @click="saveStudent()"
                         >
                         Save
