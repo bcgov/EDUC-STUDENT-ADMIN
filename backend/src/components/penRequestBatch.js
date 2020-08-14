@@ -16,25 +16,32 @@ async function getPENBatchRequestStats(req, res) {
   ];
   let promises = [];
   schoolGroupCodes.forEach((schoolGroupCode) => {
-    const search = {
-      searchCriteriaList: [
-        {
-          key: 'schoolGroupCode',
-          operation: FILTER_OPERATION.EQUAL,
-          value: schoolGroupCode.schoolGroupCode,
-          valueType: VALUE_TYPE.STRING
-        },
-        {
-          condition: CONDITION.AND,
-          key: 'penRequestBatchStatusCode',
-          operation: FILTER_OPERATION.IN,
-          value: 'ACTIVE,UNARCHIVED',
-          valueType: VALUE_TYPE.STRING
-        }
-      ]
-    };
+    const search = [
+      {
+        searchCriteriaList: [
+          {
+            key: 'schoolGroupCode',
+            operation: FILTER_OPERATION.EQUAL,
+            value: schoolGroupCode.schoolGroupCode,
+            valueType: VALUE_TYPE.STRING
+          },
+          {
+            condition: CONDITION.AND,
+            key: 'penRequestBatchStatusCode',
+            operation: FILTER_OPERATION.IN,
+            value: 'ACTIVE,UNARCHIVED',
+            valueType: VALUE_TYPE.STRING
+          }
+        ]
+      }
+    ];
     promises.push(
-      getData(getBackendToken(req), config.get('server:penRequestBatch:paginated') , {params: { pageSize: config.get('server:penRequestBatch:maxPaginatedElements'), searchCriteriaList: JSON.stringify(search) }}),
+      getData(getBackendToken(req), config.get('server:penRequestBatch:paginated'), {
+        params: {
+          pageSize: config.get('server:penRequestBatch:maxPaginatedElements'),
+          searchCriteriaList: JSON.stringify(search)
+        }
+      }),
     );
   });
   return Promise.all(promises).then((response) => {
