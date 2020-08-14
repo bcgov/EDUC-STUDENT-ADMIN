@@ -11,5 +11,5 @@ RUN npm ci
 
 COPY . /opt/app-root/src
 RUN npm run build
-EXPOSE 443 8080
+EXPOSE 443 8090
 CMD ["npm", "start"]
