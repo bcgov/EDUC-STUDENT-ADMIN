@@ -3,6 +3,7 @@ const { logApiError } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const { getBackendToken, getData, errorResponse } = require('./utils');
+const {FILTER_OPERATION, CONDITION, VALUE_TYPE} = require('../util/constants');
 
 async function getPENBatchRequestStats(req, res) {
   const schoolGroupCodes = [
@@ -15,22 +16,25 @@ async function getPENBatchRequestStats(req, res) {
   ];
   let promises = [];
   schoolGroupCodes.forEach((schoolGroupCode) => {
-    let searchCriteriaList = [
-      {
-        key: 'schoolGroupCode',
-        operation: 'like',
-        value: schoolGroupCode.schoolGroupCode,
-        valueType: 'STRING'
-      },
-      {
-        key: 'penRequestBatchStatusCode',
-        operation: 'in',
-        value: 'ACTIVE,UNARCHIVED',
-        valueType: 'STRING'
-      }
-    ];
+    const search = {
+      searchCriteriaList: [
+        {
+          key: 'schoolGroupCode',
+          operation: FILTER_OPERATION.EQUAL,
+          value: schoolGroupCode.schoolGroupCode,
+          valueType: VALUE_TYPE.STRING
+        },
+        {
+          condition: CONDITION.AND,
+          key: 'penRequestBatchStatusCode',
+          operation: FILTER_OPERATION.IN,
+          value: 'ACTIVE,UNARCHIVED',
+          valueType: VALUE_TYPE.STRING
+        }
+      ]
+    };
     promises.push(
-      getData(getBackendToken(req), config.get('server:penRequestBatch:paginated') , {params: { pageSize: config.get('server:penRequestBatch:maxPaginatedElements'), searchCriteriaList: JSON.stringify(searchCriteriaList) }}),
+      getData(getBackendToken(req), config.get('server:penRequestBatch:paginated') , {params: { pageSize: config.get('server:penRequestBatch:maxPaginatedElements'), searchCriteriaList: JSON.stringify(search) }}),
     );
   });
   return Promise.all(promises).then((response) => {

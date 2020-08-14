@@ -152,7 +152,7 @@ export default {
       return [
         { 
           searchCriteriaList: [
-            {key: 'schoolGroupCode', operation: 'starts_with_ignore_case', value: this.schoolGroup, valueType: 'STRING'},
+            {key: 'schoolGroupCode', operation: 'eq', value: this.schoolGroup, valueType: 'STRING'},
             {key: 'penRequestBatchStatusCode', operation: 'in', value: 'ACTIVE,UNARCHIVED', valueType: 'STRING', condition: 'AND'}
           ]
         },
