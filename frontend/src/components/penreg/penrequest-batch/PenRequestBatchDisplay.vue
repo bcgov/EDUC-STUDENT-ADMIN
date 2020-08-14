@@ -124,10 +124,6 @@ export default {
 </script>
 
 <style scoped>
-  .list-actions /deep/ .v-select__selections input { 
-    display: none 
-  }
-
   .v-btn {
     text-transform: none !important;
   }
