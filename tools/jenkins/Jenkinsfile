@@ -65,7 +65,7 @@ pipeline{
         }
       }
     }
-    stage('Build'){
+    /*stage('Build'){
       steps{
         script {
           openshift.withCluster(){
@@ -137,7 +137,7 @@ pipeline{
           echo 'Build stage failed'
         }
       }
-    }
+    }*/
 	stage('Promote and configure DEV') {
       steps{
         script{
