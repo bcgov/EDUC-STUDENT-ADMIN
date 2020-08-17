@@ -66,8 +66,15 @@
                                                          :name="STUDENT_DETAILS_FIELDS.UPDATED_DATE" colspan="1"
                                                          label="Updated"
                                                          :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.UPDATED_DATE)"></StudentDetailsTextFieldSideCardReadOnly>
-
-                <StudentDetailsComboBox label="Status" colspan="1" name="statusCode"
+                <div v-if="studentCopy.statusCode === 'D' || studentCopy.statusCode === 'M'">
+                  <v-row cols="1" no-gutters>
+                    <v-col>
+                      <p class="mb-0">Status</p>
+                    </v-col>
+                  </v-row>
+                  <v-chip color="#38598A" dark><Strong>{{ statusCodeObjects.filter(obj => obj.statusCode === studentCopy.statusCode)[0].label }}</Strong></v-chip>
+                </div>
+                <StudentDetailsComboBox v-else label="Status" colspan="1" name="statusCode"
                                         @changeStudentObjectValue="changeStudentObjectValue"
                                         :model="studentCopy.statusCode?studentCopy.statusCode:''"
                                         :has-edits="hasEdits" tab-index="12" :revert-field="revertField"
@@ -740,11 +747,13 @@ export default {
       const statusCodeComboBox = [];
       if (this.statusCodeObjects) {
         for (const element of this.statusCodeObjects) {
-          const item = {
-            value: element.statusCode,
-            text: element.label,
-          };
-          statusCodeComboBox.push(item);
+          if(element.statusCode === 'D' || element.statusCode === 'A') {
+            const item = {
+              value: element.statusCode,
+              text: element.label,
+            };
+            statusCodeComboBox.push(item);
+          }
         }
       }
       return statusCodeComboBox;
