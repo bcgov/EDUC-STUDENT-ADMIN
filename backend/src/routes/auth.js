@@ -89,26 +89,37 @@ router.post('/refresh', [
       errors: errors.array()
     });
   }
-
-  const isAuthorizedUser = isValidStaffUserWithRoles(req);
-  const isValidUsers = auth.isValidUsers(req);
   if (!req['user'] || !req['user'].refreshToken) {
     res.status(401).json();
   } else {
-    const newTokens = await auth.renew(req['user'].refreshToken);
-    if (newTokens && newTokens.jwt && newTokens.refreshToken) {
-      req['user'].jwt = newTokens.jwt;
-      req['user'].refreshToken = newTokens.refreshToken;
+    if (auth.isTokenExpired(req.user.jwt)) {
+      const newTokens = await auth.renew(req['user'].refreshToken);
+      if (newTokens && newTokens.jwt && newTokens.refreshToken) {
+        req['user'].jwt = newTokens.jwt;
+        req['user'].refreshToken = newTokens.refreshToken;
+        const isAuthorizedUser = isValidStaffUserWithRoles(req);
+        const isValidUsers = auth.isValidUsers(req);
+        const responseJson = {
+          jwtFrontend: auth.generateUiToken(),
+          isAuthorizedUser: isAuthorizedUser,
+          ...isValidUsers
+        };
+        return res.status(200).json(responseJson);
+      } else {
+        res.status(401).json();
+      }
+    } else {
+      const isAuthorizedUser = isValidStaffUserWithRoles(req);
+      const isValidUsers = auth.isValidUsers(req);
       const responseJson = {
-        jwtFrontend: auth.generateUiToken(),
+        jwtFrontend: req.user.jwtFrontend,
         isAuthorizedUser: isAuthorizedUser,
         ...isValidUsers
       };
       return res.status(200).json(responseJson);
-    } else {
-      res.status(401).json();
     }
   }
+
 });
 
 //provides a jwt to authenticated users

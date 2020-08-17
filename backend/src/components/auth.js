@@ -174,7 +174,7 @@ const auth = {
       issuer: i,
       subject: s,
       audience: a,
-      expiresIn: '25m',
+      expiresIn: '30m',
       algorithm: 'RS256'
     };
 
