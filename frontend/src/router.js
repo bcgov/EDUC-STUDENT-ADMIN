@@ -193,43 +193,31 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, _from, next) => {
-  // this section is to handle the backend session expiry, where frontend vue session is still valid.
+  function validateAndExecute(nextRouteInError) {
+    store.dispatch('auth/getJwtToken').then(() => {
+      if (!authStore.state.isAuthenticated) {
+        next(nextRouteInError);
+      } else if (!authStore.state.isAuthorizedUser) {
+        next('unauthorized');
+      } else {
+        store.dispatch('auth/getUserInfo').then(() => {
+          next();
+        }).catch(() => {
+          console.log('Unable to get user info');
+          next('error');
+        });
+      }
+    }).catch(() => {
+      console.log('Unable to get token');
+      next(nextRouteInError);
+    });
+  }
+
+// this section is to handle the backend session expiry, where frontend vue session is still valid.
   if (to.meta.requiresAuth && authStore.state.isAuthenticated) {
-    store.dispatch('auth/getJwtToken').then(() => {
-      if (!authStore.state.isAuthenticated) {
-        next('/token-expired');
-      } else if (!authStore.state.isAuthorizedUser) {
-        next('unauthorized');
-      } else {
-        store.dispatch('auth/getUserInfo').then(() => {
-          next();
-        }).catch(() => {
-          console.log('Unable to get user info');
-          next('error');
-        });
-      }
-    }).catch(() => {
-      console.log('Unable to get token');
-      next('/token-expired');
-    });
+    validateAndExecute('/token-expired');
   }else if (to.meta.requiresAuth) {
-    store.dispatch('auth/getJwtToken').then(() => {
-      if (!authStore.state.isAuthenticated) {
-        next('login');
-      } else if (!authStore.state.isAuthorizedUser) {
-        next('unauthorized');
-      } else {
-        store.dispatch('auth/getUserInfo').then(() => {
-          next();
-        }).catch(() => {
-          console.log('Unable to get user info');
-          next('error');
-        });
-      }
-    }).catch(() => {
-      console.log('Unable to get token');
-      next('login');
-    });
+    validateAndExecute('login');
   }
   else{
     next();
