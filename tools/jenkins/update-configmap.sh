@@ -71,12 +71,22 @@ getStudentAdminClientID(){
 getStudentAdminClientSecret(){
     executorID= $KCADM_FILE_BIN_FOLDER/kcadm.sh get clients/$studentAdminClientID/client-secret -r $SOAM_KC_REALM_ID | grep -Po "(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}"
 }
+getOfflineAccessID(){
+  offlineAccessScopeID= $KCADM_FILE_BIN_FOLDER/kcadm.sh get client-scopes --fields 'id,name' | grep -B2 '"name" : "offline_access"' | grep -Po "(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}"
+}
+
 echo
 echo Fetching client ID for $APP_NAME-soam client
 studentAdminClientID=$(getStudentAdminClientID)
 echo Fetching client secret for $APP_NAME-soam client
 studentAdminClientSecret=$(getStudentAdminClientSecret)
 echo
+echo getting scope id for offline access.
+offlineAccessID=$(getOfflineAccessID)
+
+echo updating client with offline_access scope  client ID :: $studentAdminClientID  :: offline_access ::$offlineAccessID
+$KCADM_FILE_BIN_FOLDER/kcadm.sh create clients/$studentAdminClientID/default-client-scopes/$offlineAccessID
+
 echo Generating private and public keys
 ssh-keygen -b 4096 -t rsa -f tempStudentAdminBackendkey -q -N ""
 UI_PRIVATE_KEY_VAL="$(cat tempStudentAdminBackendkey)"
