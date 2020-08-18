@@ -70,11 +70,13 @@ router.get('/logout', async (req, res) => {
       res.redirect(`${siteMinderLogoutUrl}${siteMinderRetUrl}`);
     } else {
       logout(req);
+      let retUrl;
       if (req.query && req.query.sessionExpired) {
-        res.redirect(config.get('server:frontend') + '/session-expired');
+        retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/session-expired');
       } else {
-        res.redirect(config.get('server:frontend') + '/logout');
+        retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/logout');
       }
+      res.redirect(config.get('siteMinder_logout_endpoint')+ retUrl);
     }
   }
 });

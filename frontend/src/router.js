@@ -18,7 +18,7 @@ import authStore from './store/modules/auth';
 import ErrorPage from './components/ErrorPage';
 import store from './store/index';
 import RouterView from './components/RouterView';
-
+import BackendSessionExpired from '@/components/BackendSessionExpired';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -182,16 +182,21 @@ const router = new VueRouter({
       redirect: '/',
       meta: {
         requiresAuth: true
-      }
+      },
+    },
+    {
+      path: '/token-expired',
+      name: 'backend-session-expired',
+      component: BackendSessionExpired
     }
   ]
 });
 
 router.beforeEach((to, _from, next) => {
-  if (to.meta.requiresAuth) {
+  function validateAndExecute(nextRouteInError) {
     store.dispatch('auth/getJwtToken').then(() => {
       if (!authStore.state.isAuthenticated) {
-        next('login');
+        next(nextRouteInError);
       } else if (!authStore.state.isAuthorizedUser) {
         next('unauthorized');
       } else {
@@ -204,8 +209,15 @@ router.beforeEach((to, _from, next) => {
       }
     }).catch(() => {
       console.log('Unable to get token');
-      next('login');
+      next(nextRouteInError);
     });
+  }
+
+// this section is to handle the backend session expiry, where frontend vue session is still valid.
+  if (to.meta.requiresAuth && authStore.state.isAuthenticated) {
+    validateAndExecute('/token-expired');
+  }else if (to.meta.requiresAuth) {
+    validateAndExecute('login');
   }
   else{
     next();
