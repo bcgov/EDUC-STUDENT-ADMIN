@@ -84,7 +84,6 @@ echo
 echo getting scope id for offline access.
 offlineAccessID=$(getOfflineAccessID)
 
-echo updating client with offline_access scope  client ID :: $studentAdminClientID  :: offline_access ::$offlineAccessID
 $KCADM_FILE_BIN_FOLDER/kcadm.sh update clients/$studentAdminClientID/default-client-scopes/$offlineAccessID
 
 echo Generating private and public keys
