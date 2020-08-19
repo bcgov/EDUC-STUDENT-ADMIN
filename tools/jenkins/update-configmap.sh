@@ -120,15 +120,11 @@ oc set env --from=configmap/$APP_NAME-frontend-config-map dc/$APP_NAME-frontend-
 
 SPLUNK_TOKEN=$(oc -o json get configmaps ${APP_NAME}-${envValue}-setup-config | sed -n "s/.*\"SPLUNK_TOKEN_${APP_NAME_UPPER}\": \"\(.*\)\"/\1/p")
 
-splunkUrl=""
+SPLUNK_URL=""
 if [ "$envValue" != "prod" ]
 then
-  splunkUrl="dev.splunk.educ.gov.bc.ca"
-else
-  splunkUrl="gww.splunk.educ.gov.bc.ca"
-fi
-
-flbConfig="[SERVICE]
+  SPLUNK_URL="dev.splunk.educ.gov.bc.ca"
+  FLB_CONFIG="[SERVICE]
    Flush        1
    Daemon       Off
    Log_Level    debug
@@ -139,26 +135,44 @@ flbConfig="[SERVICE]
    Name   tail
    Path   /mnt/log/*
    Mem_Buf_Limit 20MB
-
 [FILTER]
    Name record_modifier
    Match *
    Record hostname \${HOSTNAME}
-
 [OUTPUT]
    Name   stdout
    Match  *
-
 [OUTPUT]
    Name  splunk
    Match *
-   Host  $splunkUrl
+   Host  $SPLUNK_URL
    Port  443
    TLS         On
    TLS.Verify  Off
-   Message_Key $APP_NAME-backend
+   Message_Key $APP_NAME
    Splunk_Token $SPLUNK_TOKEN
 "
+else
+  FLB_CONFIG="[SERVICE]
+   Flush        1
+   Daemon       Off
+   Log_Level    debug
+   HTTP_Server   On
+   HTTP_Listen   0.0.0.0
+   HTTP_Port     2020
+[INPUT]
+   Name   tail
+   Path   /mnt/log/*
+   Mem_Buf_Limit 20MB
+[FILTER]
+   Name record_modifier
+   Match *
+   Record hostname \${HOSTNAME}
+[OUTPUT]
+   Name   stdout
+   Match  *
+"
+fi
 
 echo Creating config map $APP_NAME-flb-sc-config-map
-oc create -n $PEN_NAMESPACE-$envValue configmap $APP_NAME-flb-sc-config-map --from-literal=fluent-bit.conf="$flbConfig"  --dry-run -o yaml | oc apply -f -
+oc create -n $PEN_NAMESPACE-$envValue configmap $APP_NAME-flb-sc-config-map --from-literal=fluent-bit.conf="$FLB_CONFIG"  --dry-run -o yaml | oc apply -f -
