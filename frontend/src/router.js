@@ -19,6 +19,7 @@ import ErrorPage from './components/ErrorPage';
 import store from './store/index';
 import RouterView from './components/RouterView';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
+import UnAuthorizedPage from './components/UnAuthorizedPage';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -48,7 +49,8 @@ const router = new VueRouter({
             label: REQUEST_TYPES.penRequest.searchLabel
           },
           meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            role: 'isValidGMPUser'
           },
           beforeEnter(to, from, next) {
             store.commit('app/setRequestType',REQUEST_TYPES.penRequest.name);
@@ -61,7 +63,8 @@ const router = new VueRouter({
           component: PenRequestDetail,
           props: true,
           meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            role: 'isValidGMPUser'
           }
         },
       ]
@@ -80,7 +83,8 @@ const router = new VueRouter({
             penName: REQUEST_TYPES.studentRequest.penName
           },
           meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            role: 'isValidUMPUser'
           },
           beforeEnter(to, from, next) {
             store.commit('app/setRequestType',REQUEST_TYPES.studentRequest.name);
@@ -93,7 +97,8 @@ const router = new VueRouter({
           component: StudentRequestDetail,
           props: true,
           meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            role: 'isValidUMPUser'
           }
         }
       ]
@@ -104,7 +109,8 @@ const router = new VueRouter({
       component: StudentSearchDisplay,
       props: (route) => ({ searchType: REQUEST_TYPES.studentSearch.type.basic, initialPenSearch: route.query.pen }),
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        role: 'isValidStudentSearchUser'
       }
     },
     {
@@ -115,7 +121,8 @@ const router = new VueRouter({
         searchType: REQUEST_TYPES.studentSearch.type.advanced
       },
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        role: 'isValidStudentSearchUser'
       }
     },
     {
@@ -124,7 +131,8 @@ const router = new VueRouter({
       component: StudentDetail,
       props: true,
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        role: 'isValidStudentSearchUser'
       }
     },
     {
@@ -133,7 +141,8 @@ const router = new VueRouter({
       component: PenRequestBatchDisplay,
       props: (route) => ({ schoolGroup: route.query.schoolGroup }),
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        role: 'isValidPenRequestBatchUser'
       }
     },
     {
@@ -169,6 +178,14 @@ const router = new VueRouter({
       }
     },
     {
+      path: '/unauthorized-page',
+      name: 'unauthorized-page',
+      component: UnAuthorizedPage,
+      meta: {
+        requiresAuth: false
+      }
+    },
+    {
       path: '/error',
       name: 'error',
       component: ErrorPage,
@@ -197,11 +214,15 @@ router.beforeEach((to, _from, next) => {
     store.dispatch('auth/getJwtToken').then(() => {
       if (!authStore.state.isAuthenticated) {
         next(nextRouteInError);
-      } else if (!authStore.state.isAuthorizedUser) {
-        next('unauthorized');
       } else {
         store.dispatch('auth/getUserInfo').then(() => {
-          next();
+          if (!authStore.state.isAuthorizedUser) {
+            next('unauthorized');
+          } else if (to.meta.role && !authStore.state[`${to.meta.role}`]) {
+            next('unauthorized-page')
+          } else {
+            next();
+          }
         }).catch(() => {
           console.log('Unable to get user info');
           next('error');

@@ -141,7 +141,7 @@ const roles = {
     UMP: 'STUDENT_PROFILE_ADMIN',
     StudentSearch: 'STUDENT_SEARCH_ADMIN'
   }
-}
+};
 
 describe('createRoleHelpers', () => {
   jest.spyOn(jsonwebtoken, 'verify');
@@ -259,23 +259,23 @@ describe('isValidGMPUserToken', () => {
     expect(next).toHaveBeenCalled();
   });
 
-  it ('should return 401 when no right roles', () => {
+  it ('should return 403 when no right roles', () => {
     utils.getBackendToken.mockReturnValue({});
     jsonwebtoken.verify.mockReturnValue({realm_access : { roles: ['STUDENT_PROFILE_ADMIN']}});
     isValidGMPUserToken(req, res, next);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.FORBIDDEN);
   });
 
-  it ('should return 401 when failed to verify the token', () => {
+  it ('should return 403 when no roles', () => {
     utils.getBackendToken.mockReturnValue({});
     jsonwebtoken.verify.mockReturnValue({});
     isValidGMPUserToken(req, res, next);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.FORBIDDEN);
   });
 
-  it ('should return 500 when excpetions', () => {
+  it ('should return 500 when exceptions', () => {
     utils.getBackendToken.mockReturnValue({});
-    jsonwebtoken.verify.mockImplementation(() => { throw new Error('test error') });
+    jsonwebtoken.verify.mockImplementation(() => { throw new Error('test error'); });
     isValidGMPUserToken(req, res, next);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
@@ -323,23 +323,23 @@ describe('isValidGMPAdmin', () => {
     expect(next).toHaveBeenCalled();
   });
 
-  it ('should return 401 when no right roles', () => {
+  it ('should return 403 when no right roles', () => {
     utils.getBackendToken.mockReturnValue({});
     jsonwebtoken.verify.mockReturnValue({realm_access : { roles: ['STUDENT_ADMIN_READ_ONLY']}});
     isValidGMPAdmin(req, res, next);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.FORBIDDEN);
   });
 
-  it ('should return 401 when failed to verify the token', () => {
+  it ('should return 403 when no roles', () => {
     utils.getBackendToken.mockReturnValue({});
     jsonwebtoken.verify.mockReturnValue({});
     isValidGMPAdmin(req, res, next);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.FORBIDDEN);
   });
 
-  it ('should return 500 when excpetions', () => {
+  it ('should return 500 when exceptions', () => {
     utils.getBackendToken.mockReturnValue({});
-    jsonwebtoken.verify.mockImplementation(() => { throw new Error('test error') });
+    jsonwebtoken.verify.mockImplementation(() => { throw new Error('test error'); });
     isValidGMPAdmin(req, res, next);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
@@ -381,18 +381,18 @@ describe('isValidGMPUser', () => {
     expect(isValidGMPUser(req)).toBeTruthy();
   });
 
-  it ('should return flase when no right roles', () => {
+  it ('should return false when no right roles', () => {
     jsonwebtoken.verify.mockReturnValue({realm_access : { roles: ['STUDENT_PROFILE_ADMIN']}});
     expect(isValidGMPUser(req)).toBeFalsy();
   });
 
-  it ('should return flase when failed to verify the token', () => {
+  it ('should return false when failed to verify the token', () => {
     jsonwebtoken.verify.mockReturnValue({});
     expect(isValidGMPUser(req)).toBeFalsy();
   });
 
-  it ('should return false when excpetions', () => {
-    jsonwebtoken.verify.mockImplementation(() => { throw new Error('test error') });
+  it ('should return false when exceptions', () => {
+    jsonwebtoken.verify.mockImplementation(() => { throw new Error('test error'); });
     expect(isValidGMPUser(req)).toBeFalsy();
   });
 
