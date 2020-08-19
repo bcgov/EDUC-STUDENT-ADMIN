@@ -23,6 +23,7 @@ export default {
     isValidGMPUser: state => state.isValidGMPUser,
     isValidUMPUser: state => state.isValidUMPUser,
     isValidStudentSearchUser: state => state.isValidStudentSearchUser,
+    isValidPenRequestBatchUser: state => state.isValidPenRequestBatchUser,
   },
   mutations: {
     //sets Json web token and determines whether user is authenticated

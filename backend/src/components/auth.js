@@ -9,7 +9,7 @@ const utils = require('./utils');
 const safeStringify = require('fast-safe-stringify');
 const userRoles = require('./roles');
 const { partial, fromPairs } = require('lodash');
-
+const HttpStatus = require('http-status-codes');
 /**
  * Create help functions for authorization: isValidGMPUserToken, isValidGMPUser, isValidGMPAdmin, etc
  * @param {*} roles 
@@ -47,7 +47,7 @@ function isValidUiToken(isUserHasRole, roleType, roleNames) {
     try {
       const jwtToken = utils.getBackendToken(req);
       if (!jwtToken) {
-        return res.status(401).json({
+        return res.status(HttpStatus.UNAUTHORIZED).json({
           message: 'Unauthorized user'
         });
       }
@@ -56,8 +56,8 @@ function isValidUiToken(isUserHasRole, roleType, roleNames) {
         && isUserHasRole(roleType, roleNames, userToken['realm_access'].roles)) {
         return next();
       }
-      return res.status(401).json({
-        message: 'Unauthorized user'
+      return res.status(HttpStatus.FORBIDDEN).json({
+        message: 'user is missing role'
       });
     } catch (e) {
       log.error(e);
