@@ -86,4 +86,7 @@ export default {
   .v-alert .v-icon {
     padding-left: 0;
   }
+  .full-height {
+    height: 100%;
+  }
 </style>
