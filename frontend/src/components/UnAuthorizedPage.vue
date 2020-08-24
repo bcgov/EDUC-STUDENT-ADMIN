@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="my-16">
+  <v-container fluid class="my-16 full-height">
 
     <!-- login article -->
     <article id="login-banner" class="top-banner">

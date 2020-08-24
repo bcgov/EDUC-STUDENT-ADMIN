@@ -1,5 +1,5 @@
 <template>
-  <v-footer absolute color="#003366" dark height="auto">
+  <v-footer color="#003366" dark height="auto">
       <v-row justify-center row>
         <v-btn tabindex="-1" text id="footer-home" href="https://www.gov.bc.ca/">Home</v-btn>
         <v-btn tabindex="-1" text id="footer-about" href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca">About gov.bc.ca</v-btn>
