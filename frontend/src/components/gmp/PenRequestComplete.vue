@@ -115,10 +115,10 @@
       <v-row justify="end" class="px-4">
           <v-checkbox v-model="request.demogChanged" true-value="Y" false-value="N" justify="flex-end" class="pa-0" cols="12" label="Student demographics changed"></v-checkbox>
           <v-col cols="2" xl="2" lg="2" md="2" class="pt-3">
-            <v-btn :disabled="isUnlinkDisabled" color="#38598a" justify="center" width="100%" :dark="!isUnlinkDisabled" @click="unlinkRequest">Unlink</v-btn>
+            <PrimaryButton id="unlink-button" text="Unlink" width="100%" :disabled="isUnlinkDisabled" @click.native="unlinkRequest"></PrimaryButton>
           </v-col>
         <v-col cols="3" xl="3" lg="3" md="3" class="pt-3">
-          <v-btn id="provide-pen-to-student" :disabled="isCompleteDisabled" color="#38598a" justify="center" width="100%" :dark="isCompleteDark" @click="completeRequest">Provide PEN to Student</v-btn>
+          <PrimaryButton id="provide-pen-to-student" text="Provide PEN to Student" width="100%" :disabled="isCompleteDisabled" @click.native="completeRequest"></PrimaryButton>
         </v-col>
       </v-row>
     </v-card>
@@ -132,8 +132,10 @@ import { Routes, Statuses } from '../../utils/constants';
 import { replaceMacro } from '../../utils/macro';
 import { mapGetters, mapMutations } from 'vuex';
 import {AccessEnabledForUser} from '../../common/role-based-access';
+import PrimaryButton from '../util/PrimaryButton';
 export default {
   name: 'penRequestComplete',
+  components: {PrimaryButton},
   props: {
     request: {
       type: Object,

@@ -5,9 +5,7 @@
         <span id="numberResults" class="px-4 pb-2">{{ studentSearchResponse.totalElements }} Results</span>
       </v-col>
       <v-col>
-        <v-btn color="#1976d2" id="compareButton" class="ma-0" small text @click="compare" :disabled="selectedRecords.length!==2">
-          <v-icon left>mdi-content-copy</v-icon> Compare
-        </v-btn>
+        <TertiaryButton id="compareButton" class="ma-0" text="Compare" icon="mdi-content-copy" :disabled="selectedRecords.length!==2" @click.native="compare"></TertiaryButton>
       </v-col>
     </v-row>
     <v-data-table
@@ -34,7 +32,7 @@
       <template v-slot:item="props">
         <tr>
           <td v-for="header in props.headers" :key="header.id" :class="header.id">
-            <v-checkbox v-if="header.type" :input-value="props.isSelected" @change="props.select($event)"></v-checkbox>
+            <v-checkbox v-if="header.type" :input-value="props.isSelected" color="#606060" @change="props.select($event)"></v-checkbox>
             <div v-else @click="viewStudentDetails(props.item.studentID)">
               <span class="top-column-item">{{ props.item[header.topValue] || '-' }}</span>
               <span class="double-column-item">{{props.item[header.doubleValue]}}</span>
@@ -61,9 +59,11 @@ import { mapMutations, mapState } from 'vuex';
 import ApiService from '../../../common/apiService';
 import {REQUEST_TYPES, Routes} from '../../../utils/constants';
 import router from '../../../router';
+import TertiaryButton from '../../util/TertiaryButton';
 
 export default {
   name: 'SearchResults',
+  components: {TertiaryButton},
   props: {
     searchCriteria: {
       type: Object,

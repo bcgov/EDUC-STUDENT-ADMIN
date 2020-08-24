@@ -12,7 +12,7 @@
           </template>
           <v-col class="listCol" cols="1">
             <router-link :to="routeTo(row.title)">
-              <v-btn :id="row.title.replace(/ /g,'')+'Btn'" class="mr-4 white--text" color="#38598a" width="100%">View {{ buttonWording(row.title) }}</v-btn>
+              <PrimaryButton :id="row.title.replace(/ /g,'')+'Btn'" :text="'View ' + buttonWording(row.title)" width="100%"></PrimaryButton>
             </router-link>
           </v-col>
         </v-row>
@@ -23,6 +23,7 @@
 <script>
 import omit from 'lodash/omit';
 import { REQUEST_TYPES } from '../utils/constants';
+import PrimaryButton from './util/PrimaryButton';
 export default {
   name: 'DashboardTable.vue',
   props: {
@@ -34,6 +35,9 @@ export default {
       type: String,
       required: false
     }
+  },
+  components: {
+    PrimaryButton
   },
   computed: {
     sortedTableData() {

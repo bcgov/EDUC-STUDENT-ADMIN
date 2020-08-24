@@ -72,7 +72,7 @@
           </v-row>
           <v-row justify="end" align-content="end">
             <v-col cols="12" xl="3" lg="5" md="5" class="py-0" justify="end" align-content="end">
-              <v-btn id="reject-request" color="#38598a" :disabled="isRejectDisabled" :dark="isRejectDark" justify="center" width="100%" @click="submitReject">Reject</v-btn>
+              <PrimaryButton id="reject-request" text="Reject" :disabled="isRejectDisabled" width="100%" @click.native="submitReject"></PrimaryButton>
             </v-col>
           </v-row>
         </v-card-text>
@@ -87,8 +87,10 @@ import { Routes } from '../utils/constants';
 import { replaceMacro } from '../utils/macro';
 import {mapGetters, mapMutations} from 'vuex';
 import {AccessEnabledForUser} from '../common/role-based-access';
+import PrimaryButton from './util/PrimaryButton';
 export default {
   name: 'requestReject',
+  components: {PrimaryButton},
   props: {
     request: {
       type: Object,

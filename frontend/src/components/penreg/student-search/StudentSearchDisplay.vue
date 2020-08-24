@@ -40,9 +40,11 @@
                     v-else>
             </StudentAdvancedSearch>
             <v-row justify="end" no-gutters class="py-3 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
-              <router-link :to="`${!this.isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`"><v-btn id="search-type-action" outlined class="mx-2" color="#38598a">{{!this.isAdvancedSearch?'Advanced Search':'Standard Search'}}</v-btn></router-link>
-              <v-btn id="search-clear" outlined class="mr-2" color="#38598a" @click="clearSearch">Clear</v-btn>
-              <v-btn id="perform-search" class="white--text" :disabled="!searchEnabled" :loading="searchLoading" color="#38598a" @click="searchStudent(true)">Search</v-btn>
+              <router-link :to="`${!this.isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`">
+                <PrimaryButton id="search-type-action" :secondary="true" class="mx-2" :text="!this.isAdvancedSearch?'Advanced Search':'Standard Search'"></PrimaryButton>
+              </router-link>
+              <PrimaryButton id="search-clear" :secondary="true" class="mr-2" @click.native="clearSearch" text="Clear"></PrimaryButton>
+              <PrimaryButton id="perform-search" :disabled="!searchEnabled" :loading="searchLoading" @click.native="searchStudent(true)" text="Search"></PrimaryButton>
             </v-row>
             <v-row v-if="this.studentSearchResponse" no-gutters class="py-2" style="background-color:white;">
               <v-divider class="mx-3"/>
@@ -67,9 +69,11 @@ import { mapGetters, mapMutations, mapState } from 'vuex';
 import StudentSearchResults from './StudentSearchResults';
 import StudentBasicSearch from './StudentBasicSearch';
 import StudentAdvancedSearch from './StudentAdvancedSearch';
+import PrimaryButton from '../../util/PrimaryButton';
 
 export default {
   components: {
+    PrimaryButton,
     StudentBasicSearch,
     StudentAdvancedSearch,
     StudentSearchResults

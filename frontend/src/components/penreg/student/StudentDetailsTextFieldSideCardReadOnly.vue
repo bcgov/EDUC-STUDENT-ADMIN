@@ -25,7 +25,7 @@
 
 <script>
 export default {
-  name: "StudentDetailsTextFieldSideCardReadOnly",
+  name: 'StudentDetailsTextFieldSideCardReadOnly',
   props: {
     colspan: {
       type: String,
@@ -68,7 +68,7 @@ export default {
       this.fieldDisabled = newValue;
     }
   },
-}
+};
 </script>
 
 <style>

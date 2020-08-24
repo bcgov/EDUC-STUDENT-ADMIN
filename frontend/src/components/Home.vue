@@ -11,11 +11,11 @@
           </v-col>
           <v-col cols="2">
               <v-row>
-                <v-btn id="quickSearchBtn" :to="REQUEST_TYPES.studentSearch.path.basic + '?pen=' + pen" :disabled="!isValidPEN" :dark="isValidPEN" width="100%" color="#38598a">Quick Search</v-btn>
+                <PrimaryButton id="quickSearchBtn" :to="REQUEST_TYPES.studentSearch.path.basic + '?pen=' + pen" :disabled="!isValidPEN" text="Quick Search" width="100%"></PrimaryButton>
               </v-row>
             <router-link :to="REQUEST_TYPES.studentSearch.path.basic">
               <v-row>
-                <v-btn id="fullSearchBtn" width="100%" color="#38598a" class="mt-2" outlined>Full Search</v-btn>
+                <PrimaryButton id="fullSearchBtn" text="Full Search" :secondary="true" width="100%"></PrimaryButton>
               </v-row>
             </router-link>
           </v-col>
@@ -31,9 +31,10 @@ import { REQUEST_TYPES } from '../utils/constants';
 import DashboardTable from './DashboardTable';
 import ApiService from '../common/apiService';
 import { Routes } from '../utils/constants';
+import PrimaryButton from './util/PrimaryButton';
 export default {
   name: 'home',
-  components: {DashboardTable},
+  components: {PrimaryButton, DashboardTable},
   data () {
     return {
       REQUEST_TYPES: REQUEST_TYPES,

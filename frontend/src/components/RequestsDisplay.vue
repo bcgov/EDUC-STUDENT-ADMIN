@@ -18,7 +18,7 @@
           class="mx-6 mt-6 pa-0"
         >
           <template v-slot:selection="{ attrs, item, select, selected }">
-            <v-chip v-bind="attrs" :input-value="selected" label small @click="select">
+            <v-chip v-bind="attrs" :input-value="selected" label small outlined="true" @click="select">
               <span class="pr-2">{{ item }}</span>
               <v-icon small @click="remove(item)">close</v-icon>
             </v-chip>
@@ -88,7 +88,7 @@
                 range
               >
                 <v-spacer></v-spacer>
-                <v-btn id="date-picker-ok-button" text color="primary" @click="dateMenu=false">OK</v-btn>
+                <PrimaryButton id="date-picker-ok-button" text="OK" @click.native="dateMenu=false"> </PrimaryButton>
               </v-date-picker>
             </v-menu>
           </template>
@@ -194,8 +194,10 @@ import { mapMutations, mapGetters } from 'vuex';
 import ApiService from '../common/apiService';
 import {REQUEST_TYPES, Routes} from '../utils/constants';
 import router from '../router';
+import PrimaryButton from './util/PrimaryButton';
 export default {
   name: 'requestsDisplay',
+  components: {PrimaryButton},
   props: {
     requestType: {
       type: String,

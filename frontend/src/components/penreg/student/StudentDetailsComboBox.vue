@@ -45,7 +45,7 @@
 
 <script>
 export default {
-  name: "StudentDetailsComboBox",
+  name: 'StudentDetailsComboBox',
   props: {
     colspan: {
       type: String,
@@ -113,7 +113,7 @@ export default {
       this.fieldDisabled = newValue;
     }
   },
-}
+};
 </script>
 
 <style scoped>

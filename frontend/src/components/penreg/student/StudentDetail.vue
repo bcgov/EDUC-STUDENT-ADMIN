@@ -304,6 +304,7 @@
                   <v-col cols="10">
                     <v-card-actions style="float: right;">
                       <router-link :to="`${this.isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`">
+                        <PrimaryButton :secondary="true" class="mx-1" text="Cancel"></PrimaryButton>
                         <v-btn
                           outlined
                           tabindex="-1"
@@ -313,6 +314,7 @@
                           Cancel
                         </v-btn>
                       </router-link>
+                      <PrimaryButton :disabled="!hasAnyEdits()" @click.native="saveStudent()" text="Save"></PrimaryButton>
                       <v-btn
                         tabindex="-1"
                         color="#003366"
@@ -389,6 +391,7 @@ import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/Student
 import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsComboBox';
 import StudentDetailsTextFieldSideCardReadOnly
   from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
+import PrimaryButton from '../../util/PrimaryButton';
 
 const JSJoda = require('@js-joda/core');
 
@@ -401,6 +404,7 @@ export default {
     }
   },
   components: {
+    PrimaryButton,
     StudentDetailsTextFieldSideCardReadOnly,
     StudentDetailsComboBox,
     StudentDetailsTextFieldReadOnly,

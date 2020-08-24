@@ -66,17 +66,17 @@
               <v-row v-if="this.request.reviewer === this.myself.name" no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
                 <p v-if="this.isRequestCompleted" class="grey--text text--darken-1"><strong>{{ this.request.reviewer }} completed this request</strong></p>
                 <p v-if="!this.isRequestCompleted" class="green--text"><strong>You are working on this request</strong></p>
-                <v-btn id="release-request" :disabled="isReleaseDisabled" small color="#38598a" :dark="isDarkForRelease" class="ml-2" @click="claimRequest">Release</v-btn>
+                <PrimaryButton id="release-request" class="ml-2" :disabled="isReleaseDisabled" :short="true" @click.native="claimRequest" text="Release"></PrimaryButton>
               </v-row>
               <v-row v-else no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
                 <p v-if="!this.request.reviewer && this.isRequestCompleted" class="grey--text text--darken-1"><strong>This request has been completed</strong></p>
                 <p v-if="this.request.reviewer && this.isRequestCompleted" class="grey--text text--darken-1"><strong>{{ this.request.reviewer }} completed this request</strong></p>
                 <p v-if="!this.request.reviewer && !this.isRequestCompleted" class="blue--text"><strong>No one is working on this request</strong></p>
                 <p v-if="this.request.reviewer && !this.isRequestCompleted" class="orange--text"><strong>{{ this.request.reviewer }} is working on this request</strong></p>
-                <v-btn id="claim-pen-request" :disabled="isClaimDisabled" small color="#38598a" :dark="isDarkForClaim" class="ml-2" @click="claimRequest">Claim</v-btn>
+                <PrimaryButton id="claim-pen-request" class="ml-2" :disabled="isReleaseDisabled" :short="true" @click.native="claimRequest" text="Claim"></PrimaryButton>
               </v-row>
               <v-row no-gutters justify="end" class="pb-5">
-                <v-btn id="back-to-list" small color="#38598a" :dark="true" class="ml-2" @click="backToList">Back to List</v-btn>
+                <PrimaryButton id="back-to-list" class="ml-2" :short="true" @click.native="backToList" text="Back to List"></PrimaryButton>
               </v-row>
             </v-card>
           </v-col>
@@ -198,6 +198,7 @@ import { mapGetters, mapMutations } from 'vuex';
 import { humanFileSize } from '../utils/file';
 import {AccessEnabledForUser} from '../common/role-based-access';
 import router from '../router';
+import PrimaryButton from './util/PrimaryButton';
 export default {
   name: 'requestDetail',
   props: {
@@ -223,6 +224,7 @@ export default {
     }
   },
   components: {
+    PrimaryButton,
     Chat
   },
   data () {
