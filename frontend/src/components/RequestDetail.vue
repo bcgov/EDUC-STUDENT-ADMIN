@@ -1,5 +1,6 @@
 <template>
   <v-main>
+    <NavBar :title="requestType==='penRequest'?'GMP Details':'UMP Details'"></NavBar>
     <v-container class="fill-height">
       <v-col cols="12" class="fill-height pb-5">
         <v-row class="flex-grow-0 pb-5">
@@ -66,17 +67,17 @@
               <v-row v-if="this.request.reviewer === this.myself.name" no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
                 <p v-if="this.isRequestCompleted" class="grey--text text--darken-1"><strong>{{ this.request.reviewer }} completed this request</strong></p>
                 <p v-if="!this.isRequestCompleted" class="green--text"><strong>You are working on this request</strong></p>
-                <v-btn id="release-request" :disabled="isReleaseDisabled" small color="#38598a" :dark="isDarkForRelease" class="ml-2" @click="claimRequest">Release</v-btn>
+                <PrimaryButton id="release-request" class="ml-2" :disabled="isReleaseDisabled" :short="true" @click.native="claimRequest" text="Release"></PrimaryButton>
               </v-row>
               <v-row v-else no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
                 <p v-if="!this.request.reviewer && this.isRequestCompleted" class="grey--text text--darken-1"><strong>This request has been completed</strong></p>
                 <p v-if="this.request.reviewer && this.isRequestCompleted" class="grey--text text--darken-1"><strong>{{ this.request.reviewer }} completed this request</strong></p>
                 <p v-if="!this.request.reviewer && !this.isRequestCompleted" class="blue--text"><strong>No one is working on this request</strong></p>
                 <p v-if="this.request.reviewer && !this.isRequestCompleted" class="orange--text"><strong>{{ this.request.reviewer }} is working on this request</strong></p>
-                <v-btn id="claim-pen-request" :disabled="isClaimDisabled" small color="#38598a" :dark="isDarkForClaim" class="ml-2" @click="claimRequest">Claim</v-btn>
+                <PrimaryButton id="claim-pen-request" class="ml-2" :disabled="isReleaseDisabled" :short="true" @click.native="claimRequest" text="Claim"></PrimaryButton>
               </v-row>
               <v-row no-gutters justify="end" class="pb-5">
-                <v-btn id="back-to-list" small color="#38598a" :dark="true" class="ml-2" @click="backToList">Back to List</v-btn>
+                <PrimaryButton id="back-to-list" class="ml-2" :short="true" @click.native="backToList" text="Back to List"></PrimaryButton>
               </v-row>
             </v-card>
           </v-col>
@@ -90,7 +91,7 @@
         <v-row>
           <v-col cols="12" xl="6" lg="6" md="6" class="pa-0">
             <v-card height="100%" width="99%">
-              <v-toolbar flat color="#036" class="white--text">
+              <v-toolbar flat color="#036" class="panel-header white--text">
                 <v-toolbar-title><h2>{{requestTypeLabel}} Data</h2></v-toolbar-title>
               </v-toolbar>
               <v-progress-linear
@@ -111,7 +112,7 @@
         <v-row>
           <v-col col="12" class="px-0">
             <v-card>
-              <v-toolbar flat color="#036" class="white--text">
+              <v-toolbar flat color="#036" class="panel-header white--text">
                 <v-toolbar-title><h2>Documents</h2></v-toolbar-title>
               </v-toolbar>
               <v-progress-linear
@@ -167,7 +168,7 @@
         </v-row>
         <v-row>
           <v-card width="100%" >
-            <v-toolbar flat color="#036" dark class="tester">
+            <v-toolbar flat color="#036" dark class="panel-header tester">
               <v-toolbar-title class="pa-0"><h2>Actions</h2></v-toolbar-title>
             </v-toolbar>
             <v-progress-linear
@@ -198,6 +199,8 @@ import { mapGetters, mapMutations } from 'vuex';
 import { humanFileSize } from '../utils/file';
 import {AccessEnabledForUser} from '../common/role-based-access';
 import router from '../router';
+import PrimaryButton from './util/PrimaryButton';
+import NavBar from './util/NavBar';
 export default {
   name: 'requestDetail',
   props: {
@@ -223,6 +226,8 @@ export default {
     }
   },
   components: {
+    NavBar,
+    PrimaryButton,
     Chat
   },
   data () {
@@ -465,7 +470,7 @@ export default {
 };
 </script>
 <style scoped>
-  .v-toolbar /deep/ .v-toolbar__content {
+  .panel-header /deep/ .v-toolbar__content {
     padding-left: 20px !important;
   }
   .v-textarea /deep/ .v-text-field__details {

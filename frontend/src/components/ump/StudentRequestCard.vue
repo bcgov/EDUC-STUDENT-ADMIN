@@ -8,7 +8,7 @@
         <p id="penContainer" class="mb-2"><strong>{{ this.request.recordedPen || ''}}</strong></p>
         <v-tooltip class="mb-2" v-model="clipboard" right v-if="request.recordedPen">
           <template v-slot:activator="{ }">
-            <v-btn id="copy-pen" small depressed color="#38598a" dark class="ml-2" @click="copyPen" >Copy</v-btn>
+            <PrimaryButton id="copy-pen" class="ml-2" text="Copy" :short="true" @click.native="copyPen"></PrimaryButton>
           </template>
           <span>PEN Copied to Clipboard!</span>
         </v-tooltip>
@@ -101,8 +101,10 @@
 </template>
 
 <script>
+import PrimaryButton from '../util/PrimaryButton';
 export default {
   name: 'studentRequestCard',
+  components: {PrimaryButton},
   props: {
     request: {
       type: Object,

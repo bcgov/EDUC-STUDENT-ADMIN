@@ -43,7 +43,7 @@
 
 <script>
 export default {
-  name: "StudentDetailsTextField",
+  name: 'StudentDetailsTextField',
   props: {
     colspan: {
       type: String,
@@ -122,7 +122,7 @@ export default {
       this.fieldDisabled = newValue;
     }
   },
-}
+};
 </script>
 
 <style >

@@ -39,7 +39,7 @@
             </v-col>
             <v-col class="my-0 mr-0 pr-0 py-0">
               <v-row justify="end" class="ma-0 pt-3">
-                <v-btn id="refresh-student-info" :disabled="isRefreshStudInfoDisabled" color="#38598a" :dark="isRefreshStudInfoDark" @click="refreshStudentInfo">Refresh Student Info</v-btn>
+                <PrimaryButton id="refresh-student-info" text="Refresh Student Info" :disabled="isRefreshStudInfoDisabled" @click.native="refreshStudentInfo"></PrimaryButton>
               </v-row>
             </v-col>
           </v-row>
@@ -90,7 +90,7 @@
         </v-col>
         <v-col cols="12" xl="6" lg="6" class="py-0 pl-0">
           <v-row justify="end" class="pr-3 pt-3">
-            <v-btn id="send-changes-to-student" :disabled="isCompleteDisabled" color="#38598a" :dark="isCompleteDark" @click="sendChanges">Send Changes to Student</v-btn>
+            <PrimaryButton id="send-changes-to-student" text="Send Changes to Student" :disabled="isCompleteDisabled" @click.native="sendChanges"></PrimaryButton>
           </v-row>
           <v-form ref="completeForm">
             <v-textarea
@@ -119,22 +119,8 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            id="confirm-request-changes"
-            color="#38598a"
-            dark
-            @click="confirmChanges"
-          >
-            Confirm
-          </v-btn>
-          <v-btn
-            id="cancel-request-changes"
-            color="#38598a"
-            dark
-            @click="dialog = false"
-          >
-            Cancel
-          </v-btn>
+          <PrimaryButton id="confirm-request-changes" text="Confirm" @click.native="confirmChanges"></PrimaryButton>
+          <PrimaryButton id="confirm-request-changes" text="Cancel" @click.native="dialog = false"></PrimaryButton>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -147,8 +133,10 @@ import { Routes, Statuses } from '../../utils/constants';
 import { replaceMacro } from '../../utils/macro';
 import { mapGetters, mapMutations } from 'vuex';
 import {AccessEnabledForUser} from '../../common/role-based-access';
+import PrimaryButton from '../util/PrimaryButton';
 export default {
   name: 'studentRequestComplete',
+  components: {PrimaryButton},
   props: {
     request: {
       type: Object,

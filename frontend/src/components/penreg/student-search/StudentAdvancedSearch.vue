@@ -46,7 +46,7 @@
           </v-row>
         </v-col>
         <v-col cols="2">
-          <v-checkbox class="ma-0 pa-0" height="100%" label="Use range" v-model="useDOBRange"></v-checkbox>
+          <v-checkbox class="ma-0 pa-0" height="100%" label="Use range" color="#606060" v-model="useDOBRange"></v-checkbox>
         </v-col>
         <v-col cols="3">
           <v-row no-gutters v-if="this.useDOBRange">
@@ -125,7 +125,7 @@
           </v-text-field>
         </v-col>
         <v-col cols="3" class="ml-3">
-          <v-checkbox disabled class="ma-0 pa-0" height="100%" label="Audit history"></v-checkbox>
+          <v-checkbox disabled class="ma-0 pa-0" height="100%" color="#606060" label="Audit history"></v-checkbox>
         </v-col>
       </v-row>
       <v-row no-gutters class="textFieldRow">
@@ -157,7 +157,7 @@
     <v-col>
       <v-card class="pa-4">
         <v-row no-gutters class="textFieldRow mb-4" justify="space-between">
-          <v-checkbox disabled label="Search name variants" class="ma-0 pa-0"></v-checkbox>
+          <v-checkbox disabled label="Search name variants" color="#606060" class="ma-0 pa-0"></v-checkbox>
           <v-col cols="1">
             <v-row no-gutters justify="end">
               <p style="text-align: center">AUDIT<br>HISTORY</p>
@@ -177,7 +177,7 @@
           </v-textarea>
           <v-col cols="1" class="ml-4">
             <v-row no-gutters justify="center">
-              <v-checkbox disabled class="ma-0 pa-0"></v-checkbox>
+              <v-checkbox disabled color="#606060" class="ma-0 pa-0"></v-checkbox>
             </v-row>
           </v-col>
         </v-row>
@@ -194,7 +194,7 @@
           </v-textarea>
           <v-col cols="1" class="ml-4">
             <v-row no-gutters justify="center">
-              <v-checkbox disabled class="ma-0 pa-0"></v-checkbox>
+              <v-checkbox disabled color="#606060" class="ma-0 pa-0"></v-checkbox>
             </v-row>
           </v-col>
         </v-row>
@@ -211,7 +211,7 @@
           </v-textarea>
           <v-col cols="1" class="ml-4">
             <v-row no-gutters justify="center">
-              <v-checkbox disabled class="ma-0 pa-0"></v-checkbox>
+              <v-checkbox disabled color="#606060" class="ma-0 pa-0"></v-checkbox>
             </v-row>
           </v-col>
         </v-row>
@@ -228,7 +228,7 @@
           </v-textarea>
           <v-col cols="1" class="ml-4">
             <v-row no-gutters justify="center">
-              <v-checkbox disabled class="ma-0 pa-0"></v-checkbox>
+              <v-checkbox disabled color="#606060" class="ma-0 pa-0"></v-checkbox>
             </v-row>
           </v-col>
         </v-row>
@@ -244,7 +244,7 @@
             auto-grow></v-textarea>
           <v-col cols="1" class="ml-4">
             <v-row no-gutters justify="center">
-              <v-checkbox disabled class="ma-0 pa-0"></v-checkbox>
+              <v-checkbox disabled color="#606060" class="ma-0 pa-0"></v-checkbox>
             </v-row>
           </v-col>
         </v-row>
@@ -260,7 +260,7 @@
             auto-grow></v-textarea>
           <v-col cols="1" class="ml-4">
             <v-row no-gutters justify="center">
-              <v-checkbox disabled class="ma-0 pa-0"></v-checkbox>
+              <v-checkbox disabled color="#606060" class="ma-0 pa-0"></v-checkbox>
             </v-row>
           </v-col>
         </v-row>

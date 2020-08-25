@@ -83,7 +83,7 @@
           </v-row>
           <v-row justify="end" align-content="end">
             <v-col cols="12" xl="3" lg="5" md="5" class="py-0" justify="end" align-content="end">
-              <v-btn id="return-to-student" :disabled="isReturnToStudentDisabled" color="#38598a" :dark="isReturnToStudentDark" justify="center" width="100%" @click="returnToStudent">Return to Student</v-btn>
+              <PrimaryButton id="return-to-student" text="Return to Student" :disabled="isReturnToStudentDisabled" width="100%" @click.native="returnToStudent"></PrimaryButton>
             </v-col>
           </v-row>
         </v-card-text>
@@ -98,8 +98,10 @@ import { Routes } from '../utils/constants';
 import { replaceMacro } from '../utils/macro';
 import { mapGetters, mapMutations } from 'vuex';
 import {AccessEnabledForUser} from '../common/role-based-access';
+import PrimaryButton from './util/PrimaryButton';
 export default {
   name: 'requestReturn',
+  components: {PrimaryButton},
   props: {
     request: {
       type: Object,
