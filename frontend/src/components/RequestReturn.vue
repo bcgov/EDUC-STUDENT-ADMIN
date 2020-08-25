@@ -83,7 +83,7 @@
           </v-row>
           <v-row justify="end" align-content="end">
             <v-col cols="12" xl="3" lg="5" md="5" class="py-0" justify="end" align-content="end">
-              <PrimaryButton id="return-to-student" text="Return to Student" :disabled="isReturnToStudentDisabled" width="100%" @click.native="returnToStudent"></PrimaryButton>
+              <PrimaryButton id="return-to-student" text="Return to Student" :disabled="isReturnToStudentDisabled || !isRequestMoreInfoEnabledForUser" width="100%" @click.native="returnToStudent"></PrimaryButton>
             </v-col>
           </v-row>
         </v-card-text>
