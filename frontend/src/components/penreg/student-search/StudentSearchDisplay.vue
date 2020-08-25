@@ -1,18 +1,13 @@
 <template>
   <v-main fluid class="align-start mb-0 pb-0">
   <NavBar title="Student Search"></NavBar>
-    <v-container fluid class="full-height my-10 px-16">
+    <v-container fluid class="full-height px-16">
       <v-form ref="studentSearchForm" id="searchStudentForm"
               v-model="validForm"
       >
         <v-container fluid class="fill-height px-0">
           <v-row no-gutters>
-            <v-card height="100%" width="100%" style="background-color:#d7d7d7;">
-              <v-row no-gutters class="mx-5 pa-6">
-                <v-col>
-                  <h3>Student Search</h3>
-                </v-col>
-              </v-row>
+            <v-card elevation="0" height="100%" width="100%" style="background-color:#d7d7d7;">
               <StudentBasicSearch
                       :enterPushed="enterPushed"
                       :runPENSearchIfPossible="runPENSearchIfPossible"

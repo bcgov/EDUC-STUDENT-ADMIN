@@ -39,7 +39,7 @@
             </v-col>
             <v-col class="my-0 mr-0 pr-0 py-0">
               <v-row justify="end" class="ma-0 pt-3">
-                <PrimaryButton id="refresh-student-info" text="Refresh Student Info" :disabled="isRefreshStudInfoDisabled" @click.native="refreshStudentInfo"></PrimaryButton>
+                <PrimaryButton id="refresh-student-info" text="Refresh Student Info" :disabled="isRefreshStudInfoDisabled || !isProvidePenEnabledForUser" @click.native="refreshStudentInfo"></PrimaryButton>
               </v-row>
             </v-col>
           </v-row>
@@ -90,7 +90,7 @@
         </v-col>
         <v-col cols="12" xl="6" lg="6" class="py-0 pl-0">
           <v-row justify="end" class="pr-3 pt-3">
-            <PrimaryButton id="send-changes-to-student" text="Send Changes to Student" :disabled="isCompleteDisabled" @click.native="sendChanges"></PrimaryButton>
+            <PrimaryButton id="send-changes-to-student" text="Send Changes to Student" :disabled="isCompleteDisabled || !isProvidePenEnabledForUser" @click.native="sendChanges"></PrimaryButton>
           </v-row>
           <v-form ref="completeForm">
             <v-textarea
