@@ -1,5 +1,6 @@
 <template>
   <v-main>
+    <NavBar :title="requestType==='penRequest'?'GMP Details':'UMP Details'"></NavBar>
     <v-container class="fill-height">
       <v-col cols="12" class="fill-height pb-5">
         <v-row class="flex-grow-0 pb-5">
@@ -90,7 +91,7 @@
         <v-row>
           <v-col cols="12" xl="6" lg="6" md="6" class="pa-0">
             <v-card height="100%" width="99%">
-              <v-toolbar flat color="#036" class="white--text">
+              <v-toolbar flat color="#036" class="panel-header white--text">
                 <v-toolbar-title><h2>{{requestTypeLabel}} Data</h2></v-toolbar-title>
               </v-toolbar>
               <v-progress-linear
@@ -111,7 +112,7 @@
         <v-row>
           <v-col col="12" class="px-0">
             <v-card>
-              <v-toolbar flat color="#036" class="white--text">
+              <v-toolbar flat color="#036" class="panel-header white--text">
                 <v-toolbar-title><h2>Documents</h2></v-toolbar-title>
               </v-toolbar>
               <v-progress-linear
@@ -167,7 +168,7 @@
         </v-row>
         <v-row>
           <v-card width="100%" >
-            <v-toolbar flat color="#036" dark class="tester">
+            <v-toolbar flat color="#036" dark class="panel-header tester">
               <v-toolbar-title class="pa-0"><h2>Actions</h2></v-toolbar-title>
             </v-toolbar>
             <v-progress-linear
@@ -199,6 +200,7 @@ import { humanFileSize } from '../utils/file';
 import {AccessEnabledForUser} from '../common/role-based-access';
 import router from '../router';
 import PrimaryButton from './util/PrimaryButton';
+import NavBar from './util/NavBar';
 export default {
   name: 'requestDetail',
   props: {
@@ -224,6 +226,7 @@ export default {
     }
   },
   components: {
+    NavBar,
     PrimaryButton,
     Chat
   },
@@ -467,7 +470,7 @@ export default {
 };
 </script>
 <style scoped>
-  .v-toolbar /deep/ .v-toolbar__content {
+  .panel-header /deep/ .v-toolbar__content {
     padding-left: 20px !important;
   }
   .v-textarea /deep/ .v-text-field__details {

@@ -1,26 +1,11 @@
 <template>
-  <v-main class="fill-height">
+  <v-main fluid class="align-start mb-0 pb-0">
+    <NavBar title="Student Details"></NavBar>
     <v-form ref="studentDetailForm" id="detailStudentForm"
             v-model="validForm" class="fill-height"
     >
       <v-container class="fill-height" v-if="!isLoading">
         <v-col cols="15" class="fill-height pb-5">
-          <v-row class="flex-grow-0 pb-2">
-            <v-card style="background-color:#d7d7d7;" height="100%" width="100%" elevation=0>
-              <v-row>
-                <v-col cols="1" class="topMenu pl-16 mr-12">
-                  <img
-                      src="@/assets/images/hamburger.svg"
-                      alt="Menu"
-                  >
-                  <p class="pl-2 mb-0">Menu</p>
-                </v-col>
-                <v-col cols="10" class="pl-0">
-                  <v-card-title class="bolder px-0 pl-5">Student Details</v-card-title>
-                </v-col>
-              </v-row>
-            </v-card>
-          </v-row>
           <v-row class="flex-grow-0">
                 <v-tabs active-class="active-display" v-model="tab" align-with-title>
                   <v-tab>DEMOGRAPHICS</v-tab>
@@ -305,25 +290,8 @@
                     <v-card-actions style="float: right;">
                       <router-link :to="`${this.isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`">
                         <PrimaryButton :secondary="true" class="mx-1" text="Cancel"></PrimaryButton>
-                        <v-btn
-                          outlined
-                          tabindex="-1"
-                          color="#38598a"
-                          class="mx-1"
-                        >
-                          Cancel
-                        </v-btn>
                       </router-link>
                       <PrimaryButton :disabled="!hasAnyEdits()" @click.native="saveStudent()" text="Save"></PrimaryButton>
-                      <v-btn
-                        tabindex="-1"
-                        color="#003366"
-                        :disabled="!hasAnyEdits()"
-                        :dark="hasAnyEdits()"
-                        @click="saveStudent()"
-                        >
-                        Save
-                      </v-btn>
                     </v-card-actions>
                   </v-col>
                 </v-row>
@@ -392,6 +360,7 @@ import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsCo
 import StudentDetailsTextFieldSideCardReadOnly
   from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
 import PrimaryButton from '../../util/PrimaryButton';
+import NavBar from '../../util/NavBar';
 
 const JSJoda = require('@js-joda/core');
 
@@ -404,6 +373,7 @@ export default {
     }
   },
   components: {
+    NavBar,
     PrimaryButton,
     StudentDetailsTextFieldSideCardReadOnly,
     StudentDetailsComboBox,

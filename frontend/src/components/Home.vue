@@ -1,5 +1,6 @@
 <template>
   <v-main>
+    <NavBar title="Dashboard"></NavBar>
     <DashboardTable v-if="isValidPenRequestBatchUser" title="School PEN Requests" :tableData="penRequestData"></DashboardTable>
     <DashboardTable v-if="isValidGMPUser || isValidUMPUser" title="Student Requests" :tableData="studentData"></DashboardTable>
     <v-card v-if="isValidStudentSearchUser" flat class="mt-2">
@@ -32,9 +33,14 @@ import DashboardTable from './DashboardTable';
 import ApiService from '../common/apiService';
 import { Routes } from '../utils/constants';
 import PrimaryButton from './util/PrimaryButton';
+import NavBar from './util/NavBar';
 export default {
   name: 'home',
-  components: {PrimaryButton, DashboardTable},
+  components: {
+    PrimaryButton,
+    DashboardTable,
+    NavBar
+  },
   data () {
     return {
       REQUEST_TYPES: REQUEST_TYPES,

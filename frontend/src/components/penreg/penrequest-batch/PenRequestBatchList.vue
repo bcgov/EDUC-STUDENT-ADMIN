@@ -17,7 +17,7 @@
           v-if="header.type" 
           :key="h.id" 
           class="file-checkbox header-checkbox" 
-          color="#039BE5" 
+          color="#606060"
           v-model="allSelected" 
           :indeterminate="partialSelected" 
           @change="selectAllFiles"
@@ -30,7 +30,7 @@
           <v-checkbox 
             v-if="header.filterName" 
             class="file-checkbox filter-checkbox" 
-            color="#039BE5" 
+            color="#606060"
             v-model="header.isFiltered" 
             @change="selectFilter(header)"
           ></v-checkbox>
@@ -39,7 +39,7 @@
       <template v-slot:item="props">
         <tr :class="tableRowClass(props.item)" @click="selectItem(props.item)">
           <td v-for="header in props.headers" :key="header.id" :class="{[header.value]: true, 'select-column': header.type}">
-            <v-checkbox v-if="header.type" class="file-checkbox" color="#039BE5" v-model="props.item.isSelected" @change="selectFile" @click.prevent></v-checkbox>
+            <v-checkbox v-if="header.type" class="file-checkbox" color="#606060" v-model="props.item.isSelected" @change="selectFile" @click.prevent></v-checkbox>
             <div v-else :class="{'countable-column-div': header.countable}">
               <span v-if="header.countable" class="countable-column-data">{{ props.item[header.value] || '-' }}</span>
               <span v-else>{{props.item[header.value]}}</span>
@@ -66,7 +66,7 @@
         </v-btn>
       </v-col>
       <v-col cols="4">
-        <v-pagination v-model="pageNumber" :length="searchResponse.totalPages"></v-pagination>
+        <v-pagination color="#38598A" v-model="pageNumber" :length="searchResponse.totalPages"></v-pagination>
       </v-col>
       <v-col cols="4" id="currentItemsDisplay">
         Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ searchResponse.totalElements }}

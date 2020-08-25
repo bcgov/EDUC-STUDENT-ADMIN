@@ -33,7 +33,7 @@
         <tr>
           <td v-for="header in props.headers" :key="header.id" :class="header.id">
             <v-checkbox v-if="header.type" :input-value="props.isSelected" color="#606060" @change="props.select($event)"></v-checkbox>
-            <div v-else @click="viewStudentDetails(props.item.studentID)">
+            <div v-else @click="viewStudentDetails(props.item.studentID)" class="tableCell">
               <span class="top-column-item">{{ props.item[header.topValue] || '-' }}</span>
               <span class="double-column-item">{{props.item[header.doubleValue]}}</span>
               <br>
@@ -45,7 +45,7 @@
     </v-data-table>
     <v-row class="pt-2" justify="end">
       <v-col cols="4">
-        <v-pagination v-model="pageNumber" :length="studentSearchResponse.totalPages"></v-pagination>
+        <v-pagination color="#38598A" v-model="pageNumber" :length="studentSearchResponse.totalPages"></v-pagination>
       </v-col>
       <v-col cols="4" id="currentItemsDisplay">
         Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ studentSearchResponse.totalElements }}
@@ -175,7 +175,7 @@ export default {
   .dob-sort {
     opacity: 1;
     cursor: pointer;
-    color: #1976d2;
+    color: #1A5A96;
   }
   .double-column-item {
     float: right;
@@ -192,6 +192,9 @@ export default {
   }
   .table-checkbox /deep/ .v-input__slot {
     padding-top: 0;
+  }
+  .tableCell {
+    cursor: pointer;
   }
   /deep/ .v-pagination__navigation > i {
     padding-left: 0;

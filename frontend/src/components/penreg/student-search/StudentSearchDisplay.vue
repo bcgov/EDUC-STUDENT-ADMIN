@@ -1,65 +1,68 @@
 <template>
-  <v-container fluid class="full-height my-10 px-16">
-    <v-form ref="studentSearchForm" id="searchStudentForm"
-            v-model="validForm"
-    >
-      <v-container fluid class="fill-height px-0">
-        <v-row no-gutters>
-          <v-card height="100%" width="100%" style="background-color:#d7d7d7;">
-            <v-row no-gutters class="mx-5 pa-6">
-              <v-col>
-                <h3>Student Search</h3>
-              </v-col>
-            </v-row>
-            <StudentBasicSearch
-                    :enterPushed="enterPushed"
-                    :runPENSearchIfPossible="runPENSearchIfPossible"
-                    :searchHasValues="searchHasValues"
-                    :validatePen="validatePen"
-                    :uppercaseGender="uppercaseGender"
-                    :validateGender="validateGender"
-                    :validateMincode="validateMincode"
-                    :uppercasePostal="uppercasePostal"
-                    :uppercaseGrade="uppercaseGrade"
-                    :validatePostal="validatePostal"
-                    :validateGradeCode="validateGradeCode"
-                    v-if="!this.isAdvancedSearch">
-            </StudentBasicSearch>
-            <StudentAdvancedSearch
-                    :enterPushed="enterPushed"
-                    :runPENSearchIfPossible="runPENSearchIfPossible"
-                    :searchHasValues="searchHasValues"
-                    :validatePen="validatePen"
-                    :uppercaseGender="uppercaseGender"
-                    :validateGender="validateGender"
-                    :validateMincode="validateMincode"
-                    :uppercasePostal="uppercasePostal"
-                    :uppercaseGrade="uppercaseGrade"
-                    :validatePostal="validatePostal"
-                    :validateGradeCode="validateGradeCode"
-                    v-else>
-            </StudentAdvancedSearch>
-            <v-row justify="end" no-gutters class="py-3 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
-              <router-link :to="`${!this.isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`">
-                <PrimaryButton id="search-type-action" :secondary="true" class="mx-2" :text="!this.isAdvancedSearch?'Advanced Search':'Standard Search'"></PrimaryButton>
-              </router-link>
-              <PrimaryButton id="search-clear" :secondary="true" class="mr-2" @click.native="clearSearch" text="Clear"></PrimaryButton>
-              <PrimaryButton id="perform-search" :disabled="!searchEnabled" :loading="searchLoading" @click.native="searchStudent(true)" text="Search"></PrimaryButton>
-            </v-row>
-            <v-row v-if="this.studentSearchResponse" no-gutters class="py-2" style="background-color:white;">
-              <v-divider class="mx-3"/>
-            </v-row>
-            <v-row v-if="this.studentSearchResponse" id="resultsRow" no-gutters class="py-2" style="background-color:white;">
-              <StudentSearchResults
-                      :searchCriteria="this.currentStudentSearchParams"
-                      :prepPut="prepPut"
-              ></StudentSearchResults>
-            </v-row>
-          </v-card>
-        </v-row>
-      </v-container>
-    </v-form>
-  </v-container>
+  <v-main fluid class="align-start mb-0 pb-0">
+  <NavBar title="Student Search"></NavBar>
+    <v-container fluid class="full-height my-10 px-16">
+      <v-form ref="studentSearchForm" id="searchStudentForm"
+              v-model="validForm"
+      >
+        <v-container fluid class="fill-height px-0">
+          <v-row no-gutters>
+            <v-card height="100%" width="100%" style="background-color:#d7d7d7;">
+              <v-row no-gutters class="mx-5 pa-6">
+                <v-col>
+                  <h3>Student Search</h3>
+                </v-col>
+              </v-row>
+              <StudentBasicSearch
+                      :enterPushed="enterPushed"
+                      :runPENSearchIfPossible="runPENSearchIfPossible"
+                      :searchHasValues="searchHasValues"
+                      :validatePen="validatePen"
+                      :uppercaseGender="uppercaseGender"
+                      :validateGender="validateGender"
+                      :validateMincode="validateMincode"
+                      :uppercasePostal="uppercasePostal"
+                      :uppercaseGrade="uppercaseGrade"
+                      :validatePostal="validatePostal"
+                      :validateGradeCode="validateGradeCode"
+                      v-if="!this.isAdvancedSearch">
+              </StudentBasicSearch>
+              <StudentAdvancedSearch
+                      :enterPushed="enterPushed"
+                      :runPENSearchIfPossible="runPENSearchIfPossible"
+                      :searchHasValues="searchHasValues"
+                      :validatePen="validatePen"
+                      :uppercaseGender="uppercaseGender"
+                      :validateGender="validateGender"
+                      :validateMincode="validateMincode"
+                      :uppercasePostal="uppercasePostal"
+                      :uppercaseGrade="uppercaseGrade"
+                      :validatePostal="validatePostal"
+                      :validateGradeCode="validateGradeCode"
+                      v-else>
+              </StudentAdvancedSearch>
+              <v-row justify="end" no-gutters class="py-3 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
+                <router-link :to="`${!this.isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`">
+                  <PrimaryButton id="search-type-action" :secondary="true" class="mx-2" :text="!this.isAdvancedSearch?'Advanced Search':'Standard Search'"></PrimaryButton>
+                </router-link>
+                <PrimaryButton id="search-clear" :secondary="true" class="mr-2" @click.native="clearSearch" text="Clear"></PrimaryButton>
+                <PrimaryButton id="perform-search" :disabled="!searchEnabled" :loading="searchLoading" @click.native="searchStudent(true)" text="Search"></PrimaryButton>
+              </v-row>
+              <v-row v-if="this.studentSearchResponse" no-gutters class="py-2" style="background-color:white;">
+                <v-divider class="mx-3"/>
+              </v-row>
+              <v-row v-if="this.studentSearchResponse" id="resultsRow" no-gutters class="py-2" style="background-color:white;">
+                <StudentSearchResults
+                        :searchCriteria="this.currentStudentSearchParams"
+                        :prepPut="prepPut"
+                ></StudentSearchResults>
+              </v-row>
+            </v-card>
+          </v-row>
+        </v-container>
+      </v-form>
+    </v-container>
+  </v-main>
 </template>
 <script>
 import {LocalDate} from '@js-joda/core';
@@ -70,9 +73,11 @@ import StudentSearchResults from './StudentSearchResults';
 import StudentBasicSearch from './StudentBasicSearch';
 import StudentAdvancedSearch from './StudentAdvancedSearch';
 import PrimaryButton from '../../util/PrimaryButton';
+import NavBar from '../../util/NavBar';
 
 export default {
   components: {
+    NavBar,
     PrimaryButton,
     StudentBasicSearch,
     StudentAdvancedSearch,
