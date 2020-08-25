@@ -20,7 +20,7 @@
             class="mx-6 mt-6 pa-0"
           >
             <template v-slot:selection="{ attrs, item, select, selected }">
-              <FilterTag :id="item + 'tag'" :text="item" :close="remove"></FilterTag>
+              <FilterTag :id="item + 'tag'" :text="item" :close="remove" :item="item"></FilterTag>
             </template>
           </v-combobox>
           <v-data-table

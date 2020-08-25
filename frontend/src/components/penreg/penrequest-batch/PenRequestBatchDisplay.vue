@@ -36,6 +36,7 @@
                 :text="filter"
                 class="mr-2"
                 :close="removeFilter"
+                :item="index"
               >
               </FilterTag>
             </v-sheet>

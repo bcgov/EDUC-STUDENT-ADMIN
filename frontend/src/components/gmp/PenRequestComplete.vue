@@ -115,10 +115,10 @@
       <v-row justify="end" class="px-4">
           <v-checkbox v-model="request.demogChanged" true-value="Y" false-value="N" justify="flex-end" class="pa-0" cols="12" label="Student demographics changed"></v-checkbox>
           <v-col cols="2" xl="2" lg="2" md="2" class="pt-3">
-            <PrimaryButton id="unlink-button" text="Unlink" width="100%" :disabled="isUnlinkDisabled" @click.native="unlinkRequest"></PrimaryButton>
+            <PrimaryButton id="unlink-button" text="Unlink" width="100%" :disabled="isUnlinkDisabled || !isProvidePenEnabledForUser" @click.native="unlinkRequest"></PrimaryButton>
           </v-col>
         <v-col cols="3" xl="3" lg="3" md="3" class="pt-3">
-          <PrimaryButton id="provide-pen-to-student" text="Provide PEN to Student" width="100%" :disabled="isCompleteDisabled" @click.native="completeRequest"></PrimaryButton>
+          <PrimaryButton id="provide-pen-to-student" text="Provide PEN to Student" width="100%" :disabled="isCompleteDisabled || !isProvidePenEnabledForUser" @click.native="completeRequest"></PrimaryButton>
         </v-col>
       </v-row>
     </v-card>

@@ -5,7 +5,7 @@
     label
     close
     close-icon="fa-times"
-    @click:close="close"
+    @click:close="close(item)"
   >
     <span>{{ text }}</span>
   </v-chip>
@@ -24,6 +24,9 @@ export default {
     },
     close: {
       type: Function
+    },
+    item: {
+      type: String
     }
   }
 };
