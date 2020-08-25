@@ -79,7 +79,8 @@ export const Statuses = Object.freeze(
       AUTO_MATCH: 'AUTO',
       MANUAL_MATCH: 'MANUAL',
       REJECTED: 'REJECTED',
-      UNMATCHED: 'UNMATCHED'
+      UNMATCHED: 'UNMATCHED',
+      ABANDONED: 'ABANDONED'
     },
     studentRequest: {
       DRAFT: 'DRAFT',
@@ -88,6 +89,7 @@ export const Statuses = Object.freeze(
       SECOND_REVIEW: 'SUBSREV',
       COMPLETED: 'COMPLETED',
       REJECTED: 'REJECTED',
+      ABANDONED: 'ABANDONED'
     }
   }
 );

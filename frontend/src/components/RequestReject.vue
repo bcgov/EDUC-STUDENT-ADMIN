@@ -83,7 +83,7 @@
 
 <script>
 import ApiService from '../common/apiService';
-import { Routes } from '../utils/constants';
+import { Routes, Statuses } from '../utils/constants';
 import { replaceMacro } from '../utils/macro';
 import {mapGetters, mapMutations} from 'vuex';
 import {AccessEnabledForUser} from '../common/role-based-access';
@@ -146,7 +146,7 @@ export default {
       };
     },
     isRejectDisabled() {
-      return !this.enableActions || this.request[this.requestStatusCodeName] === 'ABANDONED';
+      return !this.enableActions || [Statuses[this.requestType].MANUAL_MATCH, Statuses[this.requestType].AUTO_MATCH, Statuses[this.requestType].COMPLETED, Statuses[this.requestType].ABANDONED].includes(this.request[this.requestStatusCodeName]);
     },
     isRejectDark() {
       return this.enableActions && this.request[this.requestStatusCodeName] !== 'ABANDONED';
