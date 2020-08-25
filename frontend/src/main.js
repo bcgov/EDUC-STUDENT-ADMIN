@@ -5,11 +5,10 @@ import router from './router';
 import store from './store';
 import IdleVue from 'idle-vue';
 import webSocketService from './services/web-socket-service';
-//import StaticConfig from '@/common/staticConfig';
 Vue.config.productionTip = false;
 Vue.use(webSocketService, {
   store,
-  url: 'ws://localhost:8090/api/socket'// StaticConfig.WEB_SOCKET_URL // ex:
+  url: 'wss://'+window.location.hostname+'/api/socket'
 });
 const eventsHub = new Vue();
 Vue.use(IdleVue, {
@@ -20,7 +19,7 @@ Vue.use(IdleVue, {
 });
 new Vue({
   vuetify,
-  store,
   router,
+  store,
   render: h => h(App)
 }).$mount('#app');
