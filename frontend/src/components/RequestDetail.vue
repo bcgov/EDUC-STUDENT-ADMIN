@@ -1,8 +1,8 @@
 <template>
-  <v-main>
+  <v-main fluid class="align-start mb-0 pb-0">
     <NavBar :title="requestType==='penRequest'?'GMP Details':'UMP Details'"></NavBar>
-    <v-container class="fill-height">
-      <v-col cols="12" class="fill-height pb-5">
+    <v-container fluid class="fill-height mb-10 px-16">
+      <v-col cols="12" class="fill-height pb-0">
         <v-row class="flex-grow-0 pb-5">
           <v-card height="100%" width="100%" elevation=0>
             <v-card-title class="pb-0 px-0">{{title}}</v-card-title>

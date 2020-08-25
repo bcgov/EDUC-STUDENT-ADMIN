@@ -219,7 +219,7 @@ router.beforeEach((to, _from, next) => {
           if (!authStore.state.isAuthorizedUser) {
             next('unauthorized');
           } else if (to.meta.role && !authStore.state[`${to.meta.role}`]) {
-            next('unauthorized-page')
+            next('unauthorized-page');
           } else {
             next();
           }
@@ -234,7 +234,7 @@ router.beforeEach((to, _from, next) => {
     });
   }
 
-// this section is to handle the backend session expiry, where frontend vue session is still valid.
+  // this section is to handle the backend session expiry, where frontend vue session is still valid.
   if (to.meta.requiresAuth && authStore.state.isAuthenticated) {
     validateAndExecute('/token-expired');
   }else if (to.meta.requiresAuth) {
