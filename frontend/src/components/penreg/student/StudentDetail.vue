@@ -429,6 +429,7 @@ export default {
     ...mapState('studentSearch', ['isAdvancedSearch'])
   },
   mounted() {
+    this.$store.dispatch('student/getCodes');
     this.refreshStudent();
   },
   methods: {

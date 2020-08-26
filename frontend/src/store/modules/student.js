@@ -30,12 +30,20 @@ export default {
     }
   },
   actions: {
-    async getCodes({commit}) {
+    async getCodes({ commit, state}) {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        ApiService.getGenderCodes().then(responseGender => commit('setGenders', responseGender.data.genderCodes));
-        ApiService.getDemogCodes().then(responseDemog => commit('setDemogCodeObjects', responseDemog.data.demogCodes));
-        ApiService.getStatusCodes().then(responseStatus => commit('setStatusCodeObjects', responseStatus.data.statusCodes));
-        ApiService.getGradeCodes().then(responseGrade => commit('setGradeCodeObjects', responseGrade.data.gradeCodes));
+        if(!state.genders) {
+          ApiService.getGenderCodes().then(responseGender => commit('setGenders', responseGender.data.genderCodes));
+        }
+        if (!state.demogCodeObjects) {
+          ApiService.getDemogCodes().then(responseDemog => commit('setDemogCodeObjects', responseDemog.data.demogCodes));
+        }
+        if (!state.statusCodeObjects) {
+          ApiService.getStatusCodes().then(responseStatus => commit('setStatusCodeObjects', responseStatus.data.statusCodes));
+        }
+        if (!state.gradeCodeObjects) {
+          ApiService.getGradeCodes().then(responseGrade => commit('setGradeCodeObjects', responseGrade.data.gradeCodes));
+        }
       }
     }
   }
