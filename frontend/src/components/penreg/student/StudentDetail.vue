@@ -72,7 +72,7 @@
                       <p class="mb-0">Status</p>
                     </v-col>
                   </v-row>
-                  <v-chip color="#38598A" dark><Strong>{{ statusCodeObjects.filter(obj => obj.statusCode === studentCopy.statusCode)[0].label }}</Strong></v-chip>
+                  <v-chip color="#38598A" small dark><Strong>{{ statusCodeObjects.filter(obj => obj.statusCode === studentCopy.statusCode)[0].label }}</Strong></v-chip>
                 </div>
                 <StudentDetailsComboBox v-else label="Status" colspan="1" name="statusCode"
                                         @changeStudentObjectValue="changeStudentObjectValue"
