@@ -16,7 +16,7 @@
               </v-row>
             <router-link :to="REQUEST_TYPES.studentSearch.path.basic">
               <v-row>
-                <PrimaryButton id="fullSearchBtn" text="Full Search" :secondary="true" width="100%"></PrimaryButton>
+                <PrimaryButton id="fullSearchBtn" class="mt-2" text="Full Search" :secondary="true" width="100%"></PrimaryButton>
               </v-row>
             </router-link>
           </v-col>
