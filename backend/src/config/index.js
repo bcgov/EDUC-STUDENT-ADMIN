@@ -48,6 +48,10 @@ nconf.defaults({
       roleAdmin: process.env.PEN_REQUEST_BATCH_ADMIN,
       maxPaginatedElements: 1000
     },
+    penMatch: {
+      rootURL: process.env.PEN_MATCH_API_URL,
+      roleAdmin: process.env.STUDENT_SEARCH_ADMIN
+    },
     demographicsURL: process.env.PEN_DEMOGRAPHICS_URL,
     digitalIdURL: process.env.DIGITAL_ID_URL,
     digitalIdIdentityTypeCodesURL: process.env.DIGITAL_ID_URL + '/identityTypeCodes',
