@@ -20,6 +20,7 @@ import store from './store/index';
 import RouterView from './components/RouterView';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
 import UnAuthorizedPage from './components/UnAuthorizedPage';
+import PenMatch from './components/penreg/PenMatch';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -143,6 +144,15 @@ const router = new VueRouter({
       meta: {
         requiresAuth: true,
         role: 'isValidPenRequestBatchUser'
+      }
+    },
+    {
+      path: '/penMatch',
+      name: 'penMatch',
+      component: PenMatch,
+      meta: {
+        requiresAuth: true,
+        role: 'isValidStudentSearchUser'
       }
     },
     {

@@ -71,14 +71,16 @@ function logResponseData(url, response, operationType) {
   log.verbose(`${operationType} Data Response for url ${url}  :: is :: `, typeof response.data === 'string' ? response.data : minify(response.data));
 }
 
-async function postData(token, url, data, params) {
+async function postData(token, url, data, params, dontAddUser) {
   try{
     params = addTokenToHeader(params, token);
     log.info('post Data Url', url);
     log.verbose('post Data Req', minify(data));
 
-    data.createUser='STUDENT-ADMIN';
-    data.updateUser='STUDENT-ADMIN';
+    if(!dontAddUser) {
+      data.createUser = 'STUDENT-ADMIN';
+      data.updateUser = 'STUDENT-ADMIN';
+    }
     const response = await axios.post(url, data, params);
     logResponseData(url, response,'POST');
     return response.data;
