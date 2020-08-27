@@ -292,13 +292,13 @@ export default {
       return this.$store.getters[`${this.requestType}/completeMacros`];
     },
     isClaimDisabled() {
-      return !this.enableActions || !this.isClaimActionEnabledForUser || this.request[this.requestStatusCodeName] === 'DRAFT' || this.request[this.requestStatusCodeName] === 'ABANDONED';
+      return !this.enableActions || !this.isClaimActionEnabledForUser || this.isRequestCompleted || this.request[this.requestStatusCodeName] === 'DRAFT' || this.request[this.requestStatusCodeName] === 'ABANDONED';
     },
     isDarkForClaim() {
       return this.enableActions && this.isClaimActionEnabledForUser && this.request[this.requestStatusCodeName] !== 'DRAFT' && this.request[this.requestStatusCodeName] !== 'ABANDONED';
     },
     isReleaseDisabled() {
-      return !this.enableActions || this.isRequestCompleted || !this.isReleaseActionEnabledForUser;
+      return !this.enableActions || this.isRequestCompleted || !this.isReleaseActionEnabledForUser || this.request[this.requestStatusCodeName] === 'ABANDONED';
     },
     isDarkForRelease() {
       return this.enableActions && !this.isRequestCompleted && this.isReleaseActionEnabledForUser;
