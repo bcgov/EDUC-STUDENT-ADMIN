@@ -12,6 +12,9 @@ async function getPenMatch(req, res) {
         message: 'No access token'
       });
     }
+    if(req.body.dob) {
+      req.body.dob = req.body.dob.replace(/\//g, '');
+    }
     const dataResponse = await postData(token, config.get('server:penMatch:rootURL'), req.body, null, true);
     return res.status(200).json(dataResponse);
 
