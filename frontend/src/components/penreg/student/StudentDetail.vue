@@ -726,8 +726,8 @@ export default {
       const statusCodeComboBox = [];
       if (this.statusCodeObjects) {
         for (const element of this.statusCodeObjects) {
-          if([STUDENT_CODES.ACTIVE,STUDENT_CODES.DECEASED].includes(element.statusCode) ||
-            (element.statusCode === STUDENT_CODES.DELETED && this.studentCopy.statusCode === STUDENT_CODES.DELETED)) {
+          if(([STUDENT_CODES.ACTIVE,STUDENT_CODES.DECEASED].includes(element.statusCode) && this.studentCopy.statusCode !== STUDENT_CODES.DELETED) ||
+            ([STUDENT_CODES.DELETED,STUDENT_CODES.ACTIVE].includes(element.statusCode) && this.studentCopy.statusCode === STUDENT_CODES.DELETED)) {
             const item = {
               value: element.statusCode,
               text: element.label,
