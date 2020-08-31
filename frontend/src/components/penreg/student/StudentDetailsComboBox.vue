@@ -6,24 +6,28 @@
       </v-col>
     </v-row>
     <v-row :cols="colspan" no-gutters>
-      <v-col v-on:mouseover="fieldDisabled?hovering=false:hovering = true" class="sideCardField"
+      <v-col :id="(name==='statusCode' && [STUDENT_CODES.DECEASED,STUDENT_CODES.DELETED].includes(fieldModel))?'chipSelected':''"
+             v-on:mouseover="fieldDisabled?hovering=false:hovering = true" class="sideCardField"
              v-on:mouseout="editing ? hovering = true : hovering = false">
         <v-select
-            :id='name'
+            :id="name"
             :tabindex="tabIndex"
             v-on:keyup.tab="[editing = true, hovering = true]"
             v-on:change="[editing = false, hovering = false, $emit('changeStudentObjectValue', name, fieldModel), name==='statusCode' ? deceasedDialog() : '' ]"
             class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
-            :class="{highlightItem:(name==='statusCode' && (fieldModel==='M' || fieldModel==='D' || fieldModel==='X')) , darkBackgound: hovering || hasEdits(name)}"
+            :class="{darkBackgound: hovering || hasEdits(name)}"
             color="#FFFFFF"
-
             v-model="fieldModel"
             :items="items"
             :outlined="hovering || editing || hasEdits(name)"
             dense
             type="solo"
             :disabled="fieldDisabled"
-        ></v-select>
+
+        ><template #selection="{ item }">
+          <v-chip v-if="name==='statusCode' && [STUDENT_CODES.DECEASED,STUDENT_CODES.DELETED].includes(fieldModel)" small dark color="#003366">{{ item.text }}</v-chip>
+          <div v-else>{{ item.text }}</div>
+        </template></v-select>
       </v-col>
     </v-row>
     <v-row>
@@ -44,6 +48,7 @@
 </template>
 
 <script>
+import { STUDENT_CODES } from '../../../utils/constants';
 export default {
   name: 'StudentDetailsComboBox',
   props: {
@@ -98,6 +103,7 @@ export default {
       fieldModel: null,
       fieldLabel: null,
       fieldDisabled: false,
+      STUDENT_CODES: STUDENT_CODES
     };
   },
   beforeMount() {
@@ -117,10 +123,10 @@ export default {
 </script>
 
 <style scoped>
-.highlightItem /deep/ .v-select__selection {
-  background-color: #6fabf1!important;
-  color: white;
-  text-transform: uppercase;
-  padding: 0.3rem;
-}
+  #chipSelected /deep/ i {
+    display: none !important;
+  }
+  #chipSelected:hover /deep/ i {
+    display: inline !important;
+  }
 </style>

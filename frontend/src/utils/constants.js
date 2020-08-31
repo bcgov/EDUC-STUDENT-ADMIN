@@ -168,5 +168,13 @@ export const STUDENT_DETAILS_FIELDS = Object.freeze(
     PEN:'pen',
     STATUS_CODE:'statusCode'
   }
-
 );
+export const STUDENT_CODES = Object.freeze(
+  {
+    ACTIVE: 'A',
+    DECEASED: 'D',
+    DELETED: 'X',
+    MERGED: 'M'
+  }
+);
+

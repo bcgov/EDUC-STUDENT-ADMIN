@@ -51,13 +51,16 @@
                                                          :name="STUDENT_DETAILS_FIELDS.UPDATED_DATE" colspan="1"
                                                          label="Updated"
                                                          :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.UPDATED_DATE)"></StudentDetailsTextFieldSideCardReadOnly>
-                <div v-if="studentCopy.statusCode === 'D' || studentCopy.statusCode === 'M'">
+                <div v-if="studentCopy.statusCode === STUDENT_CODES.MERGED">
                   <v-row cols="1" no-gutters>
                     <v-col>
                       <p class="mb-0">Status</p>
                     </v-col>
                   </v-row>
-                  <v-chip color="#38598A" small dark><Strong>{{ statusCodeObjects.filter(obj => obj.statusCode === studentCopy.statusCode)[0].label }}</Strong></v-chip>
+                  <v-chip color="#003366"
+                          small
+                          dark>
+                    <Strong>{{ statusCodeObjects.filter(obj => obj.statusCode === studentCopy.statusCode)[0].label }}</Strong></v-chip>
                 </div>
                 <StudentDetailsComboBox v-else label="Status" colspan="1" name="statusCode"
                                         @changeStudentObjectValue="changeStudentObjectValue"
@@ -359,7 +362,7 @@
 import {mapGetters, mapState} from 'vuex';
 import moment from 'moment';
 import ApiService from '../../../common/apiService';
-import {REQUEST_TYPES, Routes, STUDENT_DETAILS_FIELDS} from '@/utils/constants';
+import {REQUEST_TYPES, Routes, STUDENT_DETAILS_FIELDS, STUDENT_CODES} from '@/utils/constants';
 import StudentDetailsTextField from '@/components/penreg/student/StudentDetailsTextField';
 import {LocalDate} from '@js-joda/core';
 import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly';
@@ -421,7 +424,8 @@ export default {
       enableDisableFieldsMap: new Map(),
       fieldNames: Object.values(STUDENT_DETAILS_FIELDS),
       tab:'DEMOGRAPHICS',
-      STUDENT_DETAILS_FIELDS:STUDENT_DETAILS_FIELDS
+      STUDENT_DETAILS_FIELDS:STUDENT_DETAILS_FIELDS,
+      STUDENT_CODES: STUDENT_CODES
     };
   },
   created() {
@@ -442,11 +446,11 @@ export default {
   methods: {
     changeStudentObjectValue(key, value) {
       this.studentCopy[`${key}`] = value;
-      if (key === STUDENT_DETAILS_FIELDS.STATUS_CODE && value === 'M') {
+      if (key === STUDENT_DETAILS_FIELDS.STATUS_CODE && value === STUDENT_CODES.MERGED) {
         this.setEnableDisableForFields(true, STUDENT_DETAILS_FIELDS.MERGED_TO, STUDENT_DETAILS_FIELDS.PEN, STUDENT_DETAILS_FIELDS.STATUS_CODE);
-      } else if (key === STUDENT_DETAILS_FIELDS.STATUS_CODE &&( value === 'D' || value === 'X')) {
+      } else if (key === STUDENT_DETAILS_FIELDS.STATUS_CODE &&( value === STUDENT_CODES.DECEASED || value === STUDENT_CODES.DELETED)) {
         this.setEnableDisableForFields(true, STUDENT_DETAILS_FIELDS.STATUS_CODE);
-      } else if (key === STUDENT_DETAILS_FIELDS.STATUS_CODE && value === 'A') {
+      } else if (key === STUDENT_DETAILS_FIELDS.STATUS_CODE && value === STUDENT_CODES.ACTIVE) {
         this.setEnableDisableForFields(false);
       }
     },
@@ -559,10 +563,10 @@ export default {
       this.updateDOBLabel(true);
       this.formatPostalCode();
       this.setGradeLabel();
-      if (this.studentCopy.statusCode === 'M') {
+      if (this.studentCopy.statusCode === STUDENT_CODES.MERGED) {
         this.setEnableDisableForFields(true, STUDENT_DETAILS_FIELDS.MERGED_TO, STUDENT_DETAILS_FIELDS.PEN);
       }
-      if (this.studentCopy.statusCode === 'D' || this.studentCopy.statusCode === 'X') {
+      if (this.studentCopy.statusCode === STUDENT_CODES.DECEASED || this.studentCopy.statusCode === STUDENT_CODES.DELETED) {
         this.setEnableDisableForFields(true, STUDENT_DETAILS_FIELDS.STATUS_CODE);
       }
     },
@@ -593,9 +597,9 @@ export default {
     },
     revertField(key) {
       this.studentCopy[key] = this.origStudent[key];
-      if(key === STUDENT_DETAILS_FIELDS.STATUS_CODE && this.origStudent[key] ==='D' ){
+      if(key === STUDENT_DETAILS_FIELDS.STATUS_CODE && this.origStudent[key] ===STUDENT_CODES.DECEASED ){
         this.setEnableDisableForFields(true);
-      }else if(key === STUDENT_DETAILS_FIELDS.STATUS_CODE && this.origStudent[key] ==='A' ){
+      }else if(key === STUDENT_DETAILS_FIELDS.STATUS_CODE && this.origStudent[key] ===STUDENT_CODES.ACTIVE ){
         this.setEnableDisableForFields(false);
       }
     },
@@ -665,16 +669,16 @@ export default {
     },
     confirmDeceasedDialog() {
       this.deceasedDialog = false;
-      this.studentCopy.statusCode = 'D';
+      this.studentCopy.statusCode = STUDENT_CODES.DECEASED;
       this.setEnableDisableForFields(true);
     },
     cancelDeceasedDialog() {
       this.deceasedDialog = false;
-      this.studentCopy.statusCode = 'A';
+      this.studentCopy.statusCode = STUDENT_CODES.ACTIVE;
       this.setEnableDisableForFields(false);
     },
     openDeceasedDialog() {
-      if (this.studentCopy.statusCode === 'D') {
+      if (this.studentCopy.statusCode === STUDENT_CODES.DECEASED) {
         this.deceasedDialog = true;
       }
     },
@@ -722,7 +726,8 @@ export default {
       const statusCodeComboBox = [];
       if (this.statusCodeObjects) {
         for (const element of this.statusCodeObjects) {
-          if(element.statusCode === 'D' || element.statusCode === 'A') {
+          if(([STUDENT_CODES.ACTIVE,STUDENT_CODES.DECEASED].includes(element.statusCode) && this.studentCopy.statusCode !== STUDENT_CODES.DELETED) ||
+            ([STUDENT_CODES.DELETED,STUDENT_CODES.ACTIVE].includes(element.statusCode) && this.studentCopy.statusCode === STUDENT_CODES.DELETED)) {
             const item = {
               value: element.statusCode,
               text: element.label,
