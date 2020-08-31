@@ -17,6 +17,11 @@ function getBackendToken(req) {
   const thisSession = req.session;
   return thisSession && thisSession['passport']&& thisSession['passport'].user && thisSession['passport'].user.jwt;
 }
+function unauthorizedError(res) {
+  return res.status(HttpStatus.UNAUTHORIZED).json({
+    message: 'No access token'
+  });
+}
 function errorResponse(res, msg, code) {
   return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
     message: msg || 'INTERNAL SERVER ERROR',
@@ -115,6 +120,34 @@ async function putData(token, url, data) {
   }
 }
 
+//keys = ['identityTypeCodes', 'penStatusCodes', 'genderCodes']
+function getCodeTable(token, key, url) {
+  try {
+    let cacheContent = memCache.get(key);
+    if (cacheContent) {
+      return cacheContent;
+    } else {
+      const getDataConfig = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      };
+      return axios.get(url, getDataConfig)
+        .then(response => {
+          memCache.put(key, response.data);
+          return response.data;
+        })
+        .catch(e => {
+          logApiError(e, 'getCodeTable', 'Error during get on ' + url);
+          const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
+          throw new ApiError(status, { message: 'API get error'}, e);
+        });
+    }
+  } catch (e) {
+    throw new ServiceError('getCodeTable error', e);
+  }
+}
+
 const utils = {
   // Returns OIDC Discovery values
   async getOidcDiscovery() {
@@ -182,32 +215,24 @@ const utils = {
     delete data.updateDate;
     return data;
   },
-  //keys = ['identityTypeCodes', 'penStatusCodes', 'genderCodes']
-  getCodeTable(token, key, url) {
-    try {
-      let cacheContent = memCache.get(key);
-      if (cacheContent) {
-        return cacheContent;
-      } else {
-        const getDataConfig = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          }
-        };
-        return axios.get(url, getDataConfig)
-          .then(response => {
-            memCache.put(key, response.data);
-            return response.data;
-          })
-          .catch(e => {
-            logApiError(e, 'getCodeTable', 'Error during get on ' + url);
-            const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-            throw new ApiError(status, { message: 'API get error'}, e);
-          });
+  //keys = ['identityTypeCodes', 'penStatusCodes', 'studentRequestStatusCodes']
+  getCodes(urlKey, cacheKey) {
+    return async function getCodesHandler(req, res) {
+      try {
+        const token = getBackendToken(req);
+        if (!token) {
+          return unauthorizedError(res);
+        }
+        const url = config.get(urlKey);
+        const codes = await getCodeTable(token, cacheKey, url);
+      
+        return res.status(HttpStatus.OK).json(codes);
+      
+      } catch (e) {
+        logApiError(e, 'getCodes', `Error occurred while attempting to GET ${cacheKey}.`);
+        return errorResponse(res);
       }
-    } catch (e) {
-      throw new ServiceError('getCodeTable error', e);
-    }
+    };
   },
   cacheMiddleware() {
     return (req, res, next) => {
@@ -264,7 +289,9 @@ const utils = {
   logApiError,
   postData,
   putData,
-  errorResponse
+  errorResponse,
+  unauthorizedError,
+  getCodeTable
 };
 
 module.exports = utils;

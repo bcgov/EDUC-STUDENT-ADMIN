@@ -55,12 +55,15 @@ nconf.defaults({
     demographicsURL: process.env.PEN_DEMOGRAPHICS_URL,
     digitalIdURL: process.env.DIGITAL_ID_URL,
     digitalIdIdentityTypeCodesURL: process.env.DIGITAL_ID_URL + '/identityTypeCodes',
-    studentURL: process.env.STUDENT_API_URL,
-    studentGenderCodesURL: process.env.STUDENT_API_URL + '/gender-codes',
     profileSagaAPIURL: process.env.PROFILE_REQUEST_SAGA_API_URL,
-    studentDemogCodesURL: process.env.STUDENT_API_URL + '/demog-codes',
-    studentStatusCodesURL: process.env.STUDENT_API_URL + '/status-codes',
-    studentGradeCodesURL: process.env.STUDENT_API_URL + '/grade-codes'
+    student: {
+      rootURL: process.env.STUDENT_API_URL,
+      genderCodesURL: process.env.STUDENT_API_URL + '/gender-codes',
+      demogCodesURL: process.env.STUDENT_API_URL + '/demog-codes',
+      statusCodesURL: process.env.STUDENT_API_URL + '/status-codes',
+      gradeCodesURL: process.env.STUDENT_API_URL + '/grade-codes',
+      twinReasonCodesURL: process.env.STUDENT_API_URL + '/student-twin-reason-codes',
+    }
   },
   oidc: {
     publicKey: process.env.SOAM_PUBLIC_KEY,

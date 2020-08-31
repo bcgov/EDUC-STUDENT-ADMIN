@@ -1,5 +1,5 @@
 'use strict';
-const { getBackendToken, getData, postData, putData, logApiError } = require('./utils');
+const { getBackendToken, getData, postData, putData, logApiError, unauthorizedError } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const config = require('../config/index');
@@ -235,26 +235,6 @@ function getRequestCommentById(requestType) {
   };
 }
 
-//keys = ['identityTypeCodes', 'penStatusCodes', 'studentRequestStatusCodes']
-function getRequestCodes(urlKey, cacheKey) {
-  return async function getRequestCodesHandler(req, res) {
-    try {
-      const token = getBackendToken(req);
-      if (!token) {
-        return unauthorizedError(res);
-      }
-      const url = config.get(urlKey);
-      const statusCodes = await utils.getCodeTable(token, cacheKey, url);
-
-      return res.status(HttpStatus.OK).json(statusCodes);
-
-    } catch (e) {
-      logApiError(e, 'getRequestCodes', 'Error occurred while attempting to GET request status codes.');
-      return errorResponse(res);
-    }
-  };
-}
-
 function getRequestById(requestType) {
   return async function getRequestByIdHandler(req, res) {
     try {
@@ -315,12 +295,6 @@ function getRequestById(requestType) {
   };
 }
 
-function unauthorizedError(res) {
-  return res.status(HttpStatus.UNAUTHORIZED).json({
-    message: 'No access token'
-  });
-}
-
 async function getStudentById(req, res) {
   const token = utils.getBackendToken(req);
   if (!token) {
@@ -328,8 +302,8 @@ async function getStudentById(req, res) {
   }
   const id = req.params.id;
   return Promise.all([
-    utils.getData(token, config.get('server:studentURL'), {params: {pen: id}}),
-    utils.getCodeTable(token, 'genderCodes', config.get('server:studentGenderCodesURL'))
+    utils.getData(token, config.get('server:student:rootURL'), {params: {pen: id}}),
+    utils.getCodeTable(token, 'genderCodes', config.get('server:student:genderCodesURL'))
   ])
     .then(async ([dataResponse, genderCodesResponse]) => {
       if (Array.isArray(dataResponse) && dataResponse.length === 1) {
@@ -567,7 +541,7 @@ async function updateRequest(req, res, requestType, createApiServiceReq) {
 async function updateStudentAndDigitalId(req) {
   const token = utils.getBackendToken(req);
   let studentResponse = null;
-  const url = config.get('server:studentURL');
+  const url = config.get('server:student:rootURL');
   const studentBody = {
     pen: req['session'].studentDemographics.pen,
     legalFirstName: req['session'].studentDemographics['studGiven'],
@@ -591,9 +565,9 @@ async function updateStudentAndDigitalId(req) {
 
     if (Array.isArray(studentAndDigitalIdResponse) && studentAndDigitalIdResponse.length === 1) {
       studentBody.studentID = studentAndDigitalIdResponse[0].studentID;
-      studentResponse = await putData(token, config.get('server:studentURL'), studentBody);
+      studentResponse = await putData(token, config.get('server:student:rootURL'), studentBody);
     } else if (Array.isArray(studentAndDigitalIdResponse) && !studentAndDigitalIdResponse.length) {
-      studentResponse = await postData(token, config.get('server:studentURL'), studentBody);
+      studentResponse = await postData(token, config.get('server:student:rootURL'), studentBody);
     } else {
       log.error('Failed to create student record. Invalid response data from student api, there should not be more than one student with the same pen. Complete pen transaction will be out of sync. Student record still needs to be created.');
     }
@@ -648,6 +622,5 @@ module.exports = {
   rejectRequest,
   returnRequest,
   updateRequest,
-  getRequestCodes,
   sendRequestEmail
 };

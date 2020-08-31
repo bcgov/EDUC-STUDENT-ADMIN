@@ -78,6 +78,7 @@
 <script>
 import ApiService from '../../../common/apiService';
 import {Routes} from '../../../utils/constants';
+import {formatMinCode} from '../../../utils/format';
 
 export default {
   name: 'PenRequestBatchList',
@@ -134,7 +135,6 @@ export default {
     schoolGroup: {
       handler() {
         this.initializeFilters();
-        this.pagination();
       }
     }
   },
@@ -165,8 +165,6 @@ export default {
   },
   created(){
     this.initializeFilters();
-    this.selectFilters();
-    this.pagination();
   },
   methods: {
     tableRowClass(item) {
@@ -190,7 +188,7 @@ export default {
       let activeFile = files.find(f => f.penRequestBatchStatusCode === 'ACTIVE');
       activeFile && (activeFile.firstActiveFile = true);
       files.forEach(file => {
-        file.minCode && (file.minCode = file.minCode.substring(0, 3) + ' ' + file.minCode.substring(3));
+        file.minCode && (file.minCode = formatMinCode(file.minCode));
         file.isSelected = false;
         this.countableHeaders.forEach(header => file[header.value] = +file[header.value]);
         file.filteredCount = this.headers.reduce((sum, header) => 

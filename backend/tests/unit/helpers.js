@@ -1,8 +1,9 @@
 'use strict';
 
-const mockRequest = (session = {}) => {
+const mockRequest = (session = {}, params = {}) => {
   return {
     session,
+    params,
   };
 };
 

@@ -641,7 +641,7 @@ describe('completeRequest', () => {
   it('should return unauthorized error if no token', async () => {
     utils.getBackendToken.mockReturnValue(null);
     await completeRequest(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
+    expect(utils.unauthorizedError).toHaveBeenCalled();
   });
   it('should return 500 error if updatePenRequest fails', async () => {
     requests.__Rewire__('updateRequest', () => Promise.reject(new ServiceError('updatePenRequest',{ message: 'No access token'})));
@@ -705,7 +705,7 @@ describe('getMacroData', () => {
   it('should return unauthorized error if no token', async () => {
     utils.getBackendToken.mockReturnValue(null);
     await getMacros(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
+    expect(utils.unauthorizedError).toHaveBeenCalled();
   });
 });
 
@@ -785,12 +785,7 @@ describe('getPenRequestCommentById', () => {
   it('should return unauthorized error if no token', async () => {
     utils.getBackendToken.mockReturnValue(null);
     await getPenRequestCommentById(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
-  });
-  it('should return INTERNAL_SERVER_ERROR if no user info', async () => {
-    utils.getUser.mockReturnValue(false);
-    await getPenRequestCommentById(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(utils.unauthorizedError).toHaveBeenCalled();
   });
   it('should return INTERNAL_SERVER_ERROR if getData exceptions thrown', async () => {
     req.params = {
@@ -798,40 +793,6 @@ describe('getPenRequestCommentById', () => {
     };
     utils.getData.mockRejectedValue(new Error('test error'));
     await getPenRequestCommentById(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
-  });
-});
-
-describe('getPenRequestCodes', () => {
-  let req;
-  let res;
-
-  jest.spyOn(utils, 'getBackendToken');
-  jest.spyOn(utils, 'getCodeTable');
-
-  beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
-    utils.getCodeTable.mockResolvedValue(penRequestStatusCodesData);
-    req = mockRequest();
-    res = mockResponse();
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-  it('should return codeTableData', async () => {
-    await requests.getRequestCodes('urlKey, cacheKey')(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
-    expect(res.json).toHaveBeenCalledWith(penRequestStatusCodesData);
-  });
-  it('should return unauthorized error if no token', async () => {
-    utils.getBackendToken.mockReturnValue(null);
-    await requests.getRequestCodes('urlKey, cacheKey')(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
-  });
-  it('should return INTERNAL_SERVER_ERROR if getCodeTable exceptions thrown', async () => {
-    utils.getCodeTable.mockRejectedValue(new Error('test error'));
-    await requests.getRequestCodes('urlKey, cacheKey')(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
 });
@@ -975,7 +936,7 @@ describe('getPenRequestById', () => {
     };
     utils.getBackendToken.mockReturnValue(null);
     await getPenRequestById(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
+    expect(utils.unauthorizedError).toHaveBeenCalled();
   });
   it('should return INTERNAL_SERVER_ERROR if getCodeTable exceptions thrown', async () => {
     req.params = {
@@ -1069,7 +1030,7 @@ describe('getStudentById', () => {
   it('should return unauthorized error if no token', async () => {
     utils.getBackendToken.mockReturnValue(null);
     await requests.getStudentById(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
+    expect(utils.unauthorizedError).toHaveBeenCalled();
   });
 });
 

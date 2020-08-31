@@ -115,16 +115,16 @@ export default {
     async getJwtToken(context) {
       try {
         if (context.getters.isAuthenticated && !!context.getters.jwtToken) {
-            const response = await AuthService.refreshAuthToken(context.getters.jwtToken);
-            if (response.jwtFrontend) {
-              context.commit('setJwtToken', response.jwtFrontend);
-            }
-            context.commit('setAuthorizedUser', response.isAuthorizedUser);
-            context.commit('setGMPUser', response.isValidGMPUser);
-            context.commit('setUMPUser', response.isValidUMPUser);
-            context.commit('setStudentSearchUser', response.isValidStudentSearchUser);
-            context.commit('penRequestBatchUser', response.isValidPenRequestBatchUser);
-            ApiService.setAuthHeader(response.jwtFrontend);
+          const response = await AuthService.refreshAuthToken(context.getters.jwtToken);
+          if (response.jwtFrontend) {
+            context.commit('setJwtToken', response.jwtFrontend);
+          }
+          context.commit('setAuthorizedUser', response.isAuthorizedUser);
+          context.commit('setGMPUser', response.isValidGMPUser);
+          context.commit('setUMPUser', response.isValidUMPUser);
+          context.commit('setStudentSearchUser', response.isValidStudentSearchUser);
+          context.commit('penRequestBatchUser', response.isValidPenRequestBatchUser);
+          ApiService.setAuthHeader(response.jwtFrontend);
         } else {
           const response = await AuthService.getAuthToken();
 
