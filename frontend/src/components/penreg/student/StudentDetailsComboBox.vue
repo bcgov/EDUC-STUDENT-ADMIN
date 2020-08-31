@@ -6,7 +6,7 @@
       </v-col>
     </v-row>
     <v-row :cols="colspan" no-gutters>
-      <v-col :id="(name==='statusCode' && fieldModel===STUDENT_CODES.DECEASED)?'deceasedSelected':''"
+      <v-col :id="(name==='statusCode' && [STUDENT_CODES.DECEASED,STUDENT_CODES.DELETED].includes(fieldModel))?'chipSelected':''"
              v-on:mouseover="fieldDisabled?hovering=false:hovering = true" class="sideCardField"
              v-on:mouseout="editing ? hovering = true : hovering = false">
         <v-select
@@ -123,10 +123,10 @@ export default {
 </script>
 
 <style scoped>
-  #deceasedSelected /deep/ i {
+  #chipSelected /deep/ i {
     display: none !important;
   }
-  #deceasedSelected:hover /deep/ i {
+  #chipSelected:hover /deep/ i {
     display: inline !important;
   }
 </style>

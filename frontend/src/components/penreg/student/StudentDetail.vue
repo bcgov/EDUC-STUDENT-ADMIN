@@ -424,7 +424,8 @@ export default {
       enableDisableFieldsMap: new Map(),
       fieldNames: Object.values(STUDENT_DETAILS_FIELDS),
       tab:'DEMOGRAPHICS',
-      STUDENT_DETAILS_FIELDS:STUDENT_DETAILS_FIELDS
+      STUDENT_DETAILS_FIELDS:STUDENT_DETAILS_FIELDS,
+      STUDENT_CODES: STUDENT_CODES
     };
   },
   created() {
