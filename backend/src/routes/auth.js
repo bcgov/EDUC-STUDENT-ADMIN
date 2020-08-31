@@ -99,13 +99,15 @@ router.post('/refresh', [
       if (newTokens && newTokens.jwt && newTokens.refreshToken) {
         req['user'].jwt = newTokens.jwt;
         req['user'].refreshToken = newTokens.refreshToken;
+        req['user'].jwtFrontend = auth.generateUiToken();
         const isAuthorizedUser = isValidStaffUserWithRoles(req);
         const isValidUsers = auth.isValidUsers(req);
         const responseJson = {
-          jwtFrontend: auth.generateUiToken(),
+          jwtFrontend: req.user.jwtFrontend,
           isAuthorizedUser: isAuthorizedUser,
           ...isValidUsers
         };
+
         return res.status(200).json(responseJson);
       } else {
         res.status(401).json();

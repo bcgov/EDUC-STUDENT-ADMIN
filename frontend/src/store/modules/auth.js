@@ -115,13 +115,7 @@ export default {
     async getJwtToken(context) {
       try {
         if (context.getters.isAuthenticated && !!context.getters.jwtToken) {
-          const now = Date.now().valueOf() / 1000;
-          const jwtPayload = context.getters.jwtToken.split('.')[1];
-          const payload = JSON.parse(window.atob(jwtPayload));
-
-          if (payload.exp > now) {
             const response = await AuthService.refreshAuthToken(context.getters.jwtToken);
-
             if (response.jwtFrontend) {
               context.commit('setJwtToken', response.jwtFrontend);
             }
@@ -131,10 +125,6 @@ export default {
             context.commit('setStudentSearchUser', response.isValidStudentSearchUser);
             context.commit('penRequestBatchUser', response.isValidPenRequestBatchUser);
             ApiService.setAuthHeader(response.jwtFrontend);
-          }
-          else {
-            context.commit('logoutState');
-          }
         } else {
           const response = await AuthService.getAuthToken();
 
