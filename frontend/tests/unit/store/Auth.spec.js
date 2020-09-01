@@ -57,6 +57,7 @@ describe('auth.js', () => {
     try {
       await store.dispatch('getJwtToken');
     } catch (error) {
+      console.log(error);
     }
     await flushPromises();
     expect(store.state.isAuthenticated).toBe(false);
