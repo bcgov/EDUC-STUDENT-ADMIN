@@ -40,7 +40,7 @@
               <th
                 id="status-header"
                 :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
-                @click="sort(header.value)"
+                @click="sort(`${requestType}StatusCode`)"
               >
                 {{ header.text }}
                 <em
@@ -77,6 +77,7 @@
                     readonly
                     v-on="on"
                     @click:clear="headerSearchParams.initialSubmitDate = []"
+                    clearable
                     class="header-text"
                   ></v-text-field>
                 </template>
