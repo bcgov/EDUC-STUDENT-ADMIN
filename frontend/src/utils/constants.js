@@ -52,7 +52,8 @@ let object = {
     GENDER_CODE_URL: studentRoot + '/genderCodes',
     DEMOG_CODE_URL: studentRoot + '/demogCodes',
     STATUS_CODE_URL: studentRoot + '/statusCodes',
-    GRADE_CODE_URL: studentRoot + '/gradeCodes'
+    GRADE_CODE_URL: studentRoot + '/gradeCodes',
+    TWIN_REASON_CODE_URL: studentRoot + '/twinReasonCodes'
   },
 
   STUDENT_DATA_URL: studentRoot,

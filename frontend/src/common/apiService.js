@@ -62,6 +62,17 @@ const intercept = apiAxios.interceptors.response.use(config => config, error => 
   return Promise.reject(error);
 });
 
+function getCodes(url) {
+  return async function getCodesHandler() {
+    try {
+      return await apiAxios.get(url);
+    } catch (e) {
+      console.log(`Failed to get from Nodejs API - ${e}`);
+      throw e;
+    }
+  };
+}
+
 export default {
   apiAxios: apiAxios,
   intercept: intercept,
@@ -76,37 +87,9 @@ export default {
       delete apiAxios.defaults.headers.common['Authorization'];
     }
   },
-  async getGenderCodes() {
-    try {
-      return await apiAxios.get(Routes.student.GENDER_CODE_URL);
-    } catch (e) {
-      console.log(`Failed to get from Nodejs API - ${e}`);
-      throw e;
-    }
-  },
-  async getDemogCodes() {
-    try {
-      return await apiAxios.get(Routes.student.DEMOG_CODE_URL);
-    } catch (e) {
-      console.log(`Failed to get from Nodejs API - ${e}`);
-      throw e;
-    }
-  },
-  async getStatusCodes() {
-    try {
-      return await apiAxios.get(Routes.student.STATUS_CODE_URL);
-    } catch (e) {
-      console.log(`Failed to get from Nodejs API - ${e}`);
-      throw e;
-    }
-  },
-  async getGradeCodes() {
-    try {
-      return await apiAxios.get(Routes.student.GRADE_CODE_URL);
-    } catch (e) {
-      console.log(`Failed to get from Nodejs API - ${e}`);
-      throw e;
-    }
-  }
-
+  getGenderCodes: getCodes(Routes.student.GENDER_CODE_URL),
+  getDemogCodes: getCodes(Routes.student.DEMOG_CODE_URL),
+  getStatusCodes: getCodes(Routes.student.STATUS_CODE_URL),
+  getGradeCodes: getCodes(Routes.student.GRADE_CODE_URL),
+  getTwinReasonCodes: getCodes(Routes.student.TWIN_REASON_CODE_URL),
 };

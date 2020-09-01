@@ -3,8 +3,6 @@ const { logApiError } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const utils = require('./utils');
-const log = require('./logger');
-const { getBackendToken, getData } = require('./utils');
 
 async function searchStudent(req, res) {
   const token = utils.getBackendToken(req);
@@ -51,7 +49,7 @@ async function searchStudent(req, res) {
   };
 
   return Promise.all([
-    utils.getData(token, config.get('server:studentURL') + '/paginated', params),
+    utils.getData(token, config.get('server:student:rootURL') + '/paginated', params),
   ]).then(([dataResponse]) => {
     return res.status(200).json(dataResponse);
   }).catch((e) => {
@@ -62,86 +60,6 @@ async function searchStudent(req, res) {
   });
 }
 
-async function getStudentGender(req, res) {
-  try {
-    const accessToken = getBackendToken(req);
-    if (!accessToken) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
-      });
-    }
-
-    const genderCodes = await getData(accessToken, `${config.get('server:studentGenderCodesURL')}`);
-    return res.status(HttpStatus.OK).json({genderCodes});
-  } catch (e) {
-    log.error('getCodes Error', e.stack);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Get codes error'
-    });
-  }
-}
-
-async function getDemogCodes(req, res) {
-  try {
-    const accessToken = getBackendToken(req);
-    if (!accessToken) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
-      });
-    }
-
-    const demogCodes = await getData(accessToken, `${config.get('server:studentDemogCodesURL')}`);
-    return res.status(HttpStatus.OK).json({demogCodes});
-  } catch (e) { 
-    log.error('getCodes Error', e.stack);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Get codes error'
-    });
-  }
-}
-
-async function getStatusCodes(req, res) {
-  try {
-    const accessToken = getBackendToken(req);
-    if (!accessToken) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
-      });
-    }
-
-    const statusCodes = await getData(accessToken, `${config.get('server:studentStatusCodesURL')}`);
-    return res.status(HttpStatus.OK).json({statusCodes});
-  } catch (e) {
-    log.error('getCodes Error', e.stack);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Get codes error'
-    });
-  }
-}
-
-async function getGradeCodes(req, res) {
-  try {
-    const accessToken = getBackendToken(req);
-    if (!accessToken) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
-      });
-    }
-
-    const gradeCodes = await getData(accessToken, `${config.get('server:studentGradeCodesURL')}`);
-    return res.status(HttpStatus.OK).json({gradeCodes});
-  } catch (e) {
-    log.error('getCodes Error', e.stack);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Get codes error'
-    });
-  }
-}
-
 module.exports = {
   searchStudent,
-  getStudentGender,
-  getDemogCodes,
-  getStatusCodes,
-  getGradeCodes
 };

@@ -165,7 +165,7 @@
                         Date of Birth
                       </div>
                       <div style="display: inline-block;vertical-align: sub;">
-                        <img title="YYYYMMDD" class="ml-3"
+                        <img title="YYYYMMDD" :class="{'ml-3': true, 'dob-disabled': isFieldDisabled(STUDENT_DETAILS_FIELDS.DOB)}"
                           src="@/assets/images/information.svg"
                           alt="YYYYMMDD"
                         >
@@ -237,7 +237,7 @@
 
                 <StudentDetailsTextField max-length="9" min-length="8" :name="STUDENT_DETAILS_FIELDS.MINCODE" tab-index="9"
                                          @changeStudentObjectValue="changeStudentObjectValue"
-                                         :model="studentCopy.mincode?studentCopy.mincode:''" :has-edits="hasEdits"
+                                         :model="mincode" :has-edits="hasEdits"
                                          revert-id="revertMincode" :fieldValidationRequired=true
                                          :validation-rules="validateMincode" :revert-field="revertField" label="Mincode"
                                          colspan="2" :handle-on-input="handleInput(STUDENT_DETAILS_FIELDS.MINCODE)"
@@ -247,14 +247,38 @@
                                                  colspan="2" label="Local ID"
                                                  :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.LOCAL_ID)"></StudentDetailsTextFieldReadOnly>
 
-                <StudentDetailsTextFieldReadOnly :model="''" :name="STUDENT_DETAILS_FIELDS.TWINS" colspan="2" label="Twin(s)?"
-                                                 :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.TWINS)"></StudentDetailsTextFieldReadOnly>
+                <StudentDetailsTemplateTextField colspan="2" label="Twin(s)?" :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.TWINS)">
+                  <a @click="twinsDialog=true" v-if="twins.length > 0">
+                    Yes
+                  </a>
+                  <span v-else>
+                    No
+                  </span>
+                </StudentDetailsTemplateTextField>
 
-                <StudentDetailsTextFieldReadOnly :model="''" :name="STUDENT_DETAILS_FIELDS.MERGED_TO" colspan="2" label="Merged To"
-                                                 :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MERGED_TO)"></StudentDetailsTextFieldReadOnly>
+                <StudentDetailsTemplateTextField colspan="8" label="Merged To" :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MERGED_TO)">
+                  <div v-if="mergedTo">
+                    <router-link :to="{params: {studentID: mergedTo.mergeStudentID}}" class="pr-4">
+                      {{formatPen(mergedTo.mergeStudent.pen)}}
+                    </router-link>
+                    <span class="pr-4">{{formatUpdateTime(mergedTo.mergeStudent.updateDate)}}</span>
+                    <span class="pr-4">{{mergedTo.studentMergeSourceCode}}</span>
+                    <span>{{mergedTo.mergeStudent.updateUser}}</span>
+                  </div>
+                </StudentDetailsTemplateTextField>
 
-                <StudentDetailsTextFieldReadOnly :model="''" :name="STUDENT_DETAILS_FIELDS.MERGED_FROM" colspan="2" label="Merged From"
-                                                 :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MERGED_FROM)"></StudentDetailsTextFieldReadOnly>
+                <StudentDetailsTemplateTextField colspan="8" label="Merged From" :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MERGED_FROM)">
+                  <div v-if="mergedFrom.length > 0" class="d-flex flex-wrap">
+                    <router-link 
+                      v-for="merge in mergedFrom" 
+                      :key="merge.studentMergeID" 
+                      :to="{params: {studentID: merge.mergeStudentID}}"
+                      class="pr-4 pen"
+                    >
+                      {{formatPen(merge.mergeStudent.pen)}}
+                    </router-link>
+                  </div>
+                </StudentDetailsTemplateTextField>
 
                 <v-row no-gutters class="py-1">
                   <v-col cols="2">
@@ -354,6 +378,16 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <v-dialog
+        v-model="twinsDialog"
+        width="900px"
+      >
+        <TwinnedStudentsCard 
+          :student="studentCopy"
+          :twins="twins"
+          @close="twinsDialog=false"
+        ></TwinnedStudentsCard>
+      </v-dialog>
     </v-form>
   </v-main>
 </template>
@@ -371,6 +405,10 @@ import StudentDetailsTextFieldSideCardReadOnly
   from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
 import PrimaryButton from '../../util/PrimaryButton';
 import NavBar from '../../util/NavBar';
+import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
+import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard';
+import {formatMinCode, formatPen} from '../../../utils/format';
+import {sortBy} from 'lodash';
 
 const JSJoda = require('@js-joda/core');
 
@@ -388,7 +426,9 @@ export default {
     StudentDetailsTextFieldSideCardReadOnly,
     StudentDetailsComboBox,
     StudentDetailsTextFieldReadOnly,
-    StudentDetailsTextField
+    StudentDetailsTextField,
+    StudentDetailsTemplateTextField,
+    TwinnedStudentsCard
   },
   data() {
     return {
@@ -425,7 +465,10 @@ export default {
       fieldNames: Object.values(STUDENT_DETAILS_FIELDS),
       tab:'DEMOGRAPHICS',
       STUDENT_DETAILS_FIELDS:STUDENT_DETAILS_FIELDS,
-      STUDENT_CODES: STUDENT_CODES
+      STUDENT_CODES: STUDENT_CODES,
+      merges: [],
+      twins: [],
+      twinsDialog: false,
     };
   },
   created() {
@@ -433,25 +476,40 @@ export default {
     this.demogLabels = this.demogCodeObjects ? this.demogCodeObjects.map(a => a.label) : [];
     this.statusLabels = this.statusCodeObjects ? this.statusCodeObjects.map(a => a.label) : [];
     this.gradeLabels = this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.label) : [];
-    this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false));
   },
   computed: {
     ...mapGetters('student', ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects']),
-    ...mapState('studentSearch', ['isAdvancedSearch'])
+    ...mapState('studentSearch', ['isAdvancedSearch']),
+    mincode() {
+      return formatMinCode(this.studentCopy.mincode);
+    },
+    mergedTo() {
+      return this.merges.find(merge => merge.studentMergeDirectionCode === 'TO');
+    },
+    mergedFrom() {
+      return sortBy(this.merges.filter(merge => merge.studentMergeDirectionCode === 'FROM'), ['mergeStudent.pen']);
+    }
   },
   mounted() {
     this.$store.dispatch('student/getCodes');
     this.refreshStudent();
   },
+  watch: {
+    studentID() {
+      this.refreshStudent();
+    }
+  },
   methods: {
+    formatPen,
     changeStudentObjectValue(key, value) {
       this.studentCopy[`${key}`] = value;
+      if (key === STUDENT_DETAILS_FIELDS.STATUS_CODE) {
+        this.setEnableDisableForFields(false);
+      }
       if (key === STUDENT_DETAILS_FIELDS.STATUS_CODE && value === STUDENT_CODES.MERGED) {
         this.setEnableDisableForFields(true, STUDENT_DETAILS_FIELDS.MERGED_TO, STUDENT_DETAILS_FIELDS.PEN, STUDENT_DETAILS_FIELDS.STATUS_CODE);
       } else if (key === STUDENT_DETAILS_FIELDS.STATUS_CODE &&( value === STUDENT_CODES.DECEASED || value === STUDENT_CODES.DELETED)) {
         this.setEnableDisableForFields(true, STUDENT_DETAILS_FIELDS.STATUS_CODE);
-      } else if (key === STUDENT_DETAILS_FIELDS.STATUS_CODE && value === STUDENT_CODES.ACTIVE) {
-        this.setEnableDisableForFields(false);
       }
     },
     setEnableDisableForFields(value, ...excludedFields) {
@@ -572,10 +630,13 @@ export default {
     },
     refreshStudent() {
       this.isLoading = true;
+      this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false));
       ApiService.apiAxios
         .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
         .then(response => {
-          this.setStudent(response.data);
+          this.setStudent(response.data.student);
+          this.merges = response.data.merges;
+          this.twins = response.data.twins;
         })
         .catch(error => {
           console.log(error);
@@ -760,7 +821,9 @@ export default {
         }
       }
     },
-
+    formatUpdateTime(datetime) {
+      return moment(JSON.stringify(datetime), 'YYYY-MM-DDTHH:mm:ss').format('YYYY/MM/DD H:mma');
+    },
   }
 };
 </script>
@@ -845,5 +908,13 @@ export default {
   background-color: #eaf8fe;
   color: #02A7F0;
   font-weight: bolder;
+}
+
+.pen {
+  white-space: nowrap;
+}
+
+.dob-disabled {
+  visibility: hidden;
 }
 </style>
