@@ -3,7 +3,7 @@ const student = require('../../../src/components/student');
 jest.mock('../../../src/components/utils');
 const { mockRequest, mockResponse } = require('../helpers');
 const utils = require('../../../src/components/utils');
-const { ApiError, ServiceError } = require('../../../src/components/error');
+const { ApiError } = require('../../../src/components/error');
 
 describe('getStudentByStudentId', () => {
   let req;
