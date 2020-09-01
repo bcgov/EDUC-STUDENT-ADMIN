@@ -141,7 +141,7 @@ export default {
       };
     },
     twinReasonLabel(code) {
-      const reason = this.twinReasons && this.twinReasons.find(reason => reason.twinReasonCode === code);
+      const reason = this.twinReasons && this.twinReasons.find(v => v.twinReasonCode === code);
       return reason && reason.label || code;
     }
   }
