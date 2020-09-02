@@ -261,9 +261,9 @@
                     <router-link :to="{params: {studentID: mergedTo.mergeStudentID}}" class="pr-4">
                       {{formatPen(mergedTo.mergeStudent.pen)}}
                     </router-link>
-                    <span class="pr-4">{{formatUpdateTime(mergedTo.mergeStudent.updateDate)}}</span>
+                    <span class="pr-4">{{formatUpdateTime(mergedTo.updateDate)}}</span>
                     <span class="pr-4">{{mergedTo.studentMergeSourceCode}}</span>
-                    <span>{{mergedTo.mergeStudent.updateUser}}</span>
+                    <span>{{mergedTo.updateUser}}</span>
                   </div>
                 </StudentDetailsTemplateTextField>
 
