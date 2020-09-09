@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import Vuetify from 'vuetify';
 import Vue from 'vue';
 import Footer from '../../../src/components/Footer.vue';
@@ -10,7 +10,7 @@ describe('Footer.vue', () => {
   
     Vue.use(Vuetify);
   
-    wrapper = mount(Footer, {
+    wrapper = shallowMount(Footer, {
       Vue: Vue
     });
   });
