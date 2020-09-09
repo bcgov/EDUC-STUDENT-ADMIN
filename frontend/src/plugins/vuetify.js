@@ -30,7 +30,9 @@ export default new Vuetify({
       error: 'fas fa-exclamation-triangle',
       lock: 'fas fa-lock',
       info2: 'fas fa-info-circle fa-10x',
-      question: 'fas fa-question-circle fa-10x'
+      question: 'fas fa-question-circle fa-10x',
+      plus: 'fas fa-plus-circle',
+      minus: 'fas fa-minus-circle',
     }
   }
 });

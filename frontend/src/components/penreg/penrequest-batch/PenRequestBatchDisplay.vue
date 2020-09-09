@@ -1,6 +1,5 @@
 <template>
   <v-main fluid class="align-start mb-0 pb-0">
-    <NavBar title="PEN Request Files"></NavBar>
     <v-container fluid class="fill-height my-10 px-16 align-start">
       <v-row no-gutters>
         <v-card height="100%" width="100%" style="background-color:#d7d7d7;">
@@ -78,12 +77,10 @@
 <script>
 import PenRequestBatchList from './PenRequestBatchList';
 import FilterTag from '../../util/FilterTag';
-import NavBar from '../../util/NavBar';
 
 export default {
   name: 'PenRequestBatchDisplay',
   components: {
-    NavBar,
     FilterTag,
     PenRequestBatchList
   },

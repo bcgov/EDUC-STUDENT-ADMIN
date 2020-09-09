@@ -2,21 +2,26 @@
 
   <v-app id="app">
     <Header/>
-    <ModalIdle v-if="isAuthenticated && isIdle"/>
-    <router-view/>
+    <NavBar v-if="pageTitle" :title="pageTitle"></NavBar>
+    <v-main fluid class="align-start px-10 mb-0">
+      <ModalIdle v-if="isAuthenticated && isIdle"/>
+      <router-view/>
+    </v-main>
     <Footer/>
   </v-app>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions, mapState } from 'vuex';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ModalIdle from './components/ModalIdle';
+import NavBar from './components/util/NavBar';
 
 export default {
   name: 'app',
   components: {
+    NavBar,
     Header,
     Footer,
     ModalIdle
@@ -24,6 +29,7 @@ export default {
   computed: {
     ...mapGetters('auth', ['getJwtToken','isAuthenticated']),
     ...mapGetters('auth', ['userInfo']),
+    ...mapState('app', ['pageTitle']),
     isIdle(){
       return this.$store.state.idleVue.isIdle;
     }

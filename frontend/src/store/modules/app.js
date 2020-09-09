@@ -9,6 +9,7 @@ export default {
     participants:[],
     requestType: REQUEST_TYPES.penRequest.name,
     requestTypeLabel: REQUEST_TYPES.penRequest.label,
+    pageTitle: null,
   },
   getters: {
     request: state => state.request,
@@ -38,5 +39,8 @@ export default {
       state.requestType = requestType;
       state.requestTypeLabel = REQUEST_TYPES[requestType].label;
     },
+    setPageTitle: (state, pageTitle) => {
+      state.pageTitle = pageTitle;
+    }
   },
 };

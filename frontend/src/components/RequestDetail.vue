@@ -1,195 +1,192 @@
 <template>
-  <v-main fluid class="align-start mb-0 pb-0">
-    <NavBar :title="requestType==='penRequest'?'GMP Details':'UMP Details'"></NavBar>
-    <v-container fluid class="fill-height mb-10 px-16">
-      <v-col cols="12" class="fill-height pb-0">
-        <v-row class="flex-grow-0 pb-5">
+  <v-container fluid class="fill-height mb-10 px-16">
+    <v-col cols="12" class="fill-height pb-0">
+      <v-row class="flex-grow-0 pb-5">
+        <v-card height="100%" width="100%" elevation=0>
+          <v-card-title class="pb-0 px-0">{{title}}</v-card-title>
+          <v-divider/>
+          <v-progress-linear
+                  indeterminate
+                  color="blue"
+                  :active="loadingPen || loadingClaimAction"
+          ></v-progress-linear>
+          <v-alert
+                  :value="claimError"
+                  dense
+                  text
+                  dismissible
+                  outlined
+                  transition="scale-transition"
+                  class="bootstrap-error"
+          >
+            {{ claimErrorMessage }}
+          </v-alert>
+        </v-card>
+      </v-row>
+      <v-row>
+        <v-col cols="12" xl="6" lg="6" md="6" sm="6" class="py-0 pl-0">
           <v-card height="100%" width="100%" elevation=0>
-            <v-card-title class="pb-0 px-0">{{title}}</v-card-title>
-            <v-divider/>
-            <v-progress-linear
-                    indeterminate
-                    color="blue"
-                    :active="loadingPen || loadingClaimAction"
-            ></v-progress-linear>
-            <v-alert
-                    :value="claimError"
-                    dense
-                    text
-                    dismissible
-                    outlined
-                    transition="scale-transition"
-                    class="bootstrap-error"
-            >
-              {{ claimErrorMessage }}
-            </v-alert>
+            <v-row no-gutters>
+              <v-col cols="12" xl="3" lg="3" md="3" sm="3">
+                <p class="mb-2">Status:</p>
+              </v-col>
+              <v-col v-if="this.request[requestStatusCodeName] === this.statusCodes.FIRST_REVIEW || this.request[requestStatusCodeName] === this.statusCodes.SECOND_REVIEW" cols="12" xl="9" lg="9" md="9" sm="9">
+                <p id="requestStatus" class="mb-2 green--text"><strong>{{this.request[requestStatusCodeLabelName]}}</strong></p>
+              </v-col>
+              <v-col v-else-if="this.request[requestStatusCodeName] === this.statusCodes.RETURNED" cols="12" xl="9" lg="9" md="9" sm="9">
+                <p id="requestStatus" class="mb-2 orange--text"><strong>{{this.request[requestStatusCodeLabelName]}}</strong></p>
+              </v-col>
+              <v-col v-else cols="12" xl="9" lg="9" md="9" sm="9">
+                <p id="requestStatus" class="mb-2 grey--text text--darken-1"><strong>{{this.request[requestStatusCodeLabelName]}}</strong></p>
+              </v-col>
+            </v-row>
+            <v-row no-gutters>
+              <v-col cols="12" xl="3" lg="3" md="3" sm="3">
+                <p class="mb-2">As of:</p>
+              </v-col>
+              <v-col cols="12" xl="9" lg="9" md="9" sm="9">
+                <p id="asOfDate" v-if="this.request['statusUpdateDate'] == null" class="mb-2"></p>
+                <p id="asOfDate" v-else class="mb-2"><strong>{{ this.request['statusUpdateDate'] ? moment(this.request['statusUpdateDate']).fromNow():'' }}</strong>, at {{ this.request['statusUpdateDate'] ? moment(this.request['statusUpdateDate']).format('YYYY-MM-DD LT'):'' }}</p>
+              </v-col>
+            </v-row>
+            <v-row no-gutters>
+              <v-col cols="12" xl="3" lg="3" md="3" sm="3">
+                <p>Submitted:</p>
+              </v-col>
+              <v-col cols="12" xl="9" lg="9" md="9" sm="9">
+                <p id="submittedDate" v-if="this.request.initialSubmitDate == null" class="mb-2"></p>
+                <p id="submittedDate" v-else><strong>{{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).fromNow():'' }}</strong>, at {{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).format('YYYY-MM-DD LT'):'' }}</p>
+              </v-col>
+            </v-row>
           </v-card>
-        </v-row>
-        <v-row>
-          <v-col cols="12" xl="6" lg="6" md="6" sm="6" class="py-0 pl-0">
-            <v-card height="100%" width="100%" elevation=0>
-              <v-row no-gutters>
-                <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                  <p class="mb-2">Status:</p>
-                </v-col>
-                <v-col v-if="this.request[requestStatusCodeName] === this.statusCodes.FIRST_REVIEW || this.request[requestStatusCodeName] === this.statusCodes.SECOND_REVIEW" cols="12" xl="9" lg="9" md="9" sm="9">
-                  <p id="requestStatus" class="mb-2 green--text"><strong>{{this.request[requestStatusCodeLabelName]}}</strong></p>
-                </v-col>
-                <v-col v-else-if="this.request[requestStatusCodeName] === this.statusCodes.RETURNED" cols="12" xl="9" lg="9" md="9" sm="9">
-                  <p id="requestStatus" class="mb-2 orange--text"><strong>{{this.request[requestStatusCodeLabelName]}}</strong></p>
-                </v-col>
-                <v-col v-else cols="12" xl="9" lg="9" md="9" sm="9">
-                  <p id="requestStatus" class="mb-2 grey--text text--darken-1"><strong>{{this.request[requestStatusCodeLabelName]}}</strong></p>
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                  <p class="mb-2">As of:</p>
-                </v-col>
-                <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                  <p id="asOfDate" v-if="this.request['statusUpdateDate'] == null" class="mb-2"></p>
-                  <p id="asOfDate" v-else class="mb-2"><strong>{{ this.request['statusUpdateDate'] ? moment(this.request['statusUpdateDate']).fromNow():'' }}</strong>, at {{ this.request['statusUpdateDate'] ? moment(this.request['statusUpdateDate']).format('YYYY-MM-DD LT'):'' }}</p>
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                  <p>Submitted:</p>
-                </v-col>
-                <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                  <p id="submittedDate" v-if="this.request.initialSubmitDate == null" class="mb-2"></p>
-                  <p id="submittedDate" v-else><strong>{{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).fromNow():'' }}</strong>, at {{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).format('YYYY-MM-DD LT'):'' }}</p>
-                </v-col>
-              </v-row>
-            </v-card>
-          </v-col>
-          <v-col cols="12" xl="6" lg="6" md="6" sm="6" class="pa-0">
-            <v-card height="100%" width="100%" elevation=0>
-              <v-row v-if="this.request.reviewer === this.myself.name" no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
-                <p v-if="this.isRequestCompleted" class="grey--text text--darken-1"><strong>{{ this.request.reviewer }} completed this request</strong></p>
-                <p v-if="!this.isRequestCompleted" class="green--text"><strong>You are working on this request</strong></p>
-                <PrimaryButton id="release-request" class="ml-2" :disabled="isReleaseDisabled" :short="true" @click.native="claimRequest" text="Release"></PrimaryButton>
-              </v-row>
-              <v-row v-else no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
-                <p v-if="!this.request.reviewer && this.isRequestCompleted" class="grey--text text--darken-1"><strong>This request has been completed</strong></p>
-                <p v-if="this.request.reviewer && this.isRequestCompleted" class="grey--text text--darken-1"><strong>{{ this.request.reviewer }} completed this request</strong></p>
-                <p v-if="!this.request.reviewer && !this.isRequestCompleted" class="blue--text"><strong>No one is working on this request</strong></p>
-                <p v-if="this.request.reviewer && !this.isRequestCompleted" class="orange--text"><strong>{{ this.request.reviewer }} is working on this request</strong></p>
-                <PrimaryButton id="claim-pen-request" class="ml-2" :disabled="isClaimDisabled" :short="true" @click.native="claimRequest" text="Claim"></PrimaryButton>
-              </v-row>
-              <v-row no-gutters justify="end" class="pb-5">
-                <PrimaryButton id="back-to-list" class="ml-2" :short="true" @click.native="backToList" text="Back to List"></PrimaryButton>
-              </v-row>
-            </v-card>
-          </v-col>
-        </v-row>
-        <v-row>
-          <slot 
-            name="demographics"
-            :request="request"
-          ></slot>
-        </v-row>
-        <v-row>
-          <v-col cols="12" xl="6" lg="6" md="6" class="pa-0">
-            <v-card height="100%" width="99%">
-              <v-toolbar flat color="#036" class="panel-header white--text">
-                <v-toolbar-title><h2>{{requestTypeLabel}} Data</h2></v-toolbar-title>
-              </v-toolbar>
-              <v-progress-linear
-                      indeterminate
-                      color="blue"
-                      :active="loadingPen"
-              ></v-progress-linear>
-              <slot 
-                name="request"
-                :request="request"
-              ></slot>
-            </v-card>
-          </v-col>
-          <v-col cols="12" xl="6" lg="6" md="6" class="pa-0">
-            <Chat :requestId="requestId" :requestType="requestType"></Chat>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col col="12" class="px-0">
-            <v-card>
-              <v-toolbar flat color="#036" class="panel-header white--text">
-                <v-toolbar-title><h2>Documents</h2></v-toolbar-title>
-              </v-toolbar>
-              <v-progress-linear
-                      indeterminate
-                      color="blue"
-                      :active="loadingPen"
-              ></v-progress-linear>
-              <v-alert
-                :value="documentError"
-                dense
-                text
-                dismissible
-                outlined
-                transition="scale-transition"
-                class="bootstrap-error"
-              >
-                {{ documentErrorMessage }}
-              </v-alert>
-              <v-data-table
-                      :headers="headers"
-                      :items="filteredResults"
-                      :sort-by="['createDate']"
-                      :items-per-page="15"
-                      class="fill-height">
-                <template v-slot:item.createDate="{ item }">
-                  <span>{{item.createDate.toString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
-                </template>
-                <template v-slot:item.fileName="{item: document}">
-                  <router-link :to="{ path: documentUrl(requestId, document) }" target="_blank">{{document.fileName}}</router-link>
-                </template>
-
-                <template v-if="isDocumentTypeChangeEnabledForUser"  v-slot:item.documentTypeLabel="{item: document}" >
-                  <v-edit-dialog
-                    :return-value.sync="document.documentTypeCode"
-                    large
-                    persistent
-                    @open="oldDocumentTypeCode=document.documentTypeCode"
-                    @save="saveDocumentType(document)"
-                  >
-                    <div>{{ document.documentTypeLabel }}</div>
-                    <template v-slot:input>
-                      <v-select
-                        v-model="document.documentTypeCode"
-                        style="max-width: 20em;"
-                        :items="documentTypes"
-                      ></v-select>
-                    </template>
-                  </v-edit-dialog>
-                </template>
-              </v-data-table>
-            </v-card>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-card width="100%" >
-            <v-toolbar flat color="#036" dark class="panel-header tester">
-              <v-toolbar-title class="pa-0"><h2>Actions</h2></v-toolbar-title>
+        </v-col>
+        <v-col cols="12" xl="6" lg="6" md="6" sm="6" class="pa-0">
+          <v-card height="100%" width="100%" elevation=0>
+            <v-row v-if="this.request.reviewer === this.myself.name" no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
+              <p v-if="this.isRequestCompleted" class="grey--text text--darken-1"><strong>{{ this.request.reviewer }} completed this request</strong></p>
+              <p v-if="!this.isRequestCompleted" class="green--text"><strong>You are working on this request</strong></p>
+              <PrimaryButton id="release-request" class="ml-2" :disabled="isReleaseDisabled" :short="true" @click.native="claimRequest" text="Release"></PrimaryButton>
+            </v-row>
+            <v-row v-else no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
+              <p v-if="!this.request.reviewer && this.isRequestCompleted" class="grey--text text--darken-1"><strong>This request has been completed</strong></p>
+              <p v-if="this.request.reviewer && this.isRequestCompleted" class="grey--text text--darken-1"><strong>{{ this.request.reviewer }} completed this request</strong></p>
+              <p v-if="!this.request.reviewer && !this.isRequestCompleted" class="blue--text"><strong>No one is working on this request</strong></p>
+              <p v-if="this.request.reviewer && !this.isRequestCompleted" class="orange--text"><strong>{{ this.request.reviewer }} is working on this request</strong></p>
+              <PrimaryButton id="claim-pen-request" class="ml-2" :disabled="isClaimDisabled" :short="true" @click.native="claimRequest" text="Claim"></PrimaryButton>
+            </v-row>
+            <v-row no-gutters justify="end" class="pb-5">
+              <PrimaryButton id="back-to-list" class="ml-2" :short="true" @click.native="backToList" text="Back to List"></PrimaryButton>
+            </v-row>
+          </v-card>
+        </v-col>
+      </v-row>
+      <v-row>
+        <slot
+          name="demographics"
+          :request="request"
+        ></slot>
+      </v-row>
+      <v-row>
+        <v-col cols="12" xl="6" lg="6" md="6" class="pa-0">
+          <v-card height="100%" width="99%">
+            <v-toolbar flat color="#036" class="panel-header white--text">
+              <v-toolbar-title><h2>{{requestTypeLabel}} Data</h2></v-toolbar-title>
             </v-toolbar>
             <v-progress-linear
                     indeterminate
                     color="blue"
-                    :active="loadingActionResults"
+                    :active="loadingPen"
             ></v-progress-linear>
-            <slot 
-              name="actions"
-              :active-tab="activeTab"
+            <slot
+              name="request"
               :request="request"
-              :enable-actions="enableActions"
-              :before-submit="beforeSubmit"
-              :submitted="submitted"
-              :switch-loading="switchLoading"
             ></slot>
           </v-card>
-        </v-row>
-      </v-col>
-    </v-container>
-  </v-main>
+        </v-col>
+        <v-col cols="12" xl="6" lg="6" md="6" class="pa-0">
+          <Chat :requestId="requestId" :requestType="requestType"></Chat>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col col="12" class="px-0">
+          <v-card>
+            <v-toolbar flat color="#036" class="panel-header white--text">
+              <v-toolbar-title><h2>Documents</h2></v-toolbar-title>
+            </v-toolbar>
+            <v-progress-linear
+                    indeterminate
+                    color="blue"
+                    :active="loadingPen"
+            ></v-progress-linear>
+            <v-alert
+              :value="documentError"
+              dense
+              text
+              dismissible
+              outlined
+              transition="scale-transition"
+              class="bootstrap-error"
+            >
+              {{ documentErrorMessage }}
+            </v-alert>
+            <v-data-table
+                    :headers="headers"
+                    :items="filteredResults"
+                    :sort-by="['createDate']"
+                    :items-per-page="15"
+                    class="fill-height">
+              <template v-slot:item.createDate="{ item }">
+                <span>{{item.createDate.toString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
+              </template>
+              <template v-slot:item.fileName="{item: document}">
+                <router-link :to="{ path: documentUrl(requestId, document) }" target="_blank">{{document.fileName}}</router-link>
+              </template>
+
+              <template v-if="isDocumentTypeChangeEnabledForUser"  v-slot:item.documentTypeLabel="{item: document}" >
+                <v-edit-dialog
+                  :return-value.sync="document.documentTypeCode"
+                  large
+                  persistent
+                  @open="oldDocumentTypeCode=document.documentTypeCode"
+                  @save="saveDocumentType(document)"
+                >
+                  <div>{{ document.documentTypeLabel }}</div>
+                  <template v-slot:input>
+                    <v-select
+                      v-model="document.documentTypeCode"
+                      style="max-width: 20em;"
+                      :items="documentTypes"
+                    ></v-select>
+                  </template>
+                </v-edit-dialog>
+              </template>
+            </v-data-table>
+          </v-card>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-card width="100%" >
+          <v-toolbar flat color="#036" dark class="panel-header tester">
+            <v-toolbar-title class="pa-0"><h2>Actions</h2></v-toolbar-title>
+          </v-toolbar>
+          <v-progress-linear
+                  indeterminate
+                  color="blue"
+                  :active="loadingActionResults"
+          ></v-progress-linear>
+          <slot
+            name="actions"
+            :active-tab="activeTab"
+            :request="request"
+            :enable-actions="enableActions"
+            :before-submit="beforeSubmit"
+            :submitted="submitted"
+            :switch-loading="switchLoading"
+          ></slot>
+        </v-card>
+      </v-row>
+    </v-col>
+  </v-container>
 </template>
 <script>
 import Chat from './Chat';
@@ -200,7 +197,6 @@ import { humanFileSize } from '../utils/file';
 import {AccessEnabledForUser} from '../common/role-based-access';
 import router from '../router';
 import PrimaryButton from './util/PrimaryButton';
-import NavBar from './util/NavBar';
 export default {
   name: 'requestDetail',
   props: {
@@ -226,7 +222,6 @@ export default {
     }
   },
   components: {
-    NavBar,
     PrimaryButton,
     Chat
   },

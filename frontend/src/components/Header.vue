@@ -1,6 +1,5 @@
 <template>
-  <header class="gov-header">
-    <v-toolbar class="toolbar_header">
+    <v-system-bar app absolute color="rgb(0, 51, 102)" height="56rem" class="sysBar pl-10 pr-10">
       <!-- Navbar content -->
       <a tabindex="-1" href="/">
         <img
@@ -23,7 +22,7 @@
       <div v-if="isAuthenticated && dataReady">
         <v-menu name="user_options" offset-y>
           <template v-slot:activator="{ on }">
-            <v-chip tabindex="-1" v-on="on" pill color="#003366" dark>
+            <v-chip tabindex="-1" v-on="on" pill color="#003366" dark class="pr-0">
               <v-avatar left color="info">
                 {{ userInfo.userName[0] }}
               </v-avatar>
@@ -40,8 +39,7 @@
         <v-skeleton-loader type="chip">
         </v-skeleton-loader>
       </div>
-    </v-toolbar>
-  </header>
+    </v-system-bar>
 </template>
 
 <script>
@@ -74,9 +72,6 @@ export default {
 a {
   text-decoration: none;
 }
-.v-toolbar__content{
-  padding: 4px 10px 4px 65px;
-}
 .logo{
   padding-right: 15px;
 }
@@ -84,9 +79,9 @@ a {
   color: #fff;
   text-decoration: none;
 }
-.gov-header .v-toolbar {
-  background-color: rgb(0, 51, 102) !important;
+.sysBar {
   border-bottom: 2px solid rgb(252, 186, 25) !important;
+  z-index: 8;
 }
 .gov-header .v-btn,
 .v-btn--active.title:before,
