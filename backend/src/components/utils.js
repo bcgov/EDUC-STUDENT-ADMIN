@@ -284,6 +284,19 @@ const utils = {
       });
     };
   },
+  extendSession() {
+    return function (req, res, next) {
+      if (req && req.session) {
+        log.debug('req.session.cookie.maxAge before is ::', req.session.cookie.maxAge);
+        req['session'].touch();
+        req['session'].tempSessionExtensionIdentifier = Math.random(); // DO NOT USE this key anywhere else in session.
+        log.debug('req.session.cookie.maxAge after is ::', req.session.cookie.maxAge);
+        return next();
+      } else {
+        return next(); // let the next handler deal with what to do when no session
+      }
+    };
+  },
   getBackendToken,
   getData,
   logApiError,
