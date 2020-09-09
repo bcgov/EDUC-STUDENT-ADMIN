@@ -178,4 +178,17 @@ export const STUDENT_CODES = Object.freeze(
     MERGED: 'M'
   }
 );
+export const PAGE_TITLES = Object.freeze(
+  {
+    DASHBOARD: 'Dashboard',
+    GMP: 'Get My Pen',
+    GMP_DETAILS: 'GetMyPen Request Details',
+    UMP: 'Update My Pen',
+    UMP_DETAILS: 'UMP Details',
+    STUDENT_SEARCH: 'Student Search',
+    STUDENT_DETAILS: 'Student Details',
+    PEN_REQ_FILES: 'PEN Request Files',
+    PEN_MATCH: 'PEN Match'
+  }
+);
 

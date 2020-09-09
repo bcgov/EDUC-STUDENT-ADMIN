@@ -13,7 +13,7 @@ import PenRequestDetail from './components/gmp/PenRequestDetail';
 import StudentRequestDetail from './components/ump/StudentRequestDetail';
 import PenRequestBatchDisplay from './components/penreg/penrequest-batch/PenRequestBatchDisplay';
 import UnAuthorized from './components/UnAuthorized';
-import { REQUEST_TYPES } from './utils/constants';
+import { REQUEST_TYPES, PAGE_TITLES } from './utils/constants';
 import authStore from './store/modules/auth';
 import ErrorPage from './components/ErrorPage';
 import store from './store/index';
@@ -34,6 +34,7 @@ const router = new VueRouter({
       name: 'home',
       component: Home,
       meta: {
+        pageTitle: PAGE_TITLES.DASHBOARD,
         requiresAuth: true
       }
     },
@@ -50,6 +51,7 @@ const router = new VueRouter({
             label: REQUEST_TYPES.penRequest.searchLabel
           },
           meta: {
+            pageTitle: PAGE_TITLES.GMP,
             requiresAuth: true,
             role: 'isValidGMPUser'
           },
@@ -64,6 +66,7 @@ const router = new VueRouter({
           component: PenRequestDetail,
           props: true,
           meta: {
+            pageTitle: PAGE_TITLES.GMP_DETAILS,
             requiresAuth: true,
             role: 'isValidGMPUser'
           }
@@ -84,6 +87,7 @@ const router = new VueRouter({
             penName: REQUEST_TYPES.studentRequest.penName
           },
           meta: {
+            pageTitle: PAGE_TITLES.UMP,
             requiresAuth: true,
             role: 'isValidUMPUser'
           },
@@ -98,6 +102,7 @@ const router = new VueRouter({
           component: StudentRequestDetail,
           props: true,
           meta: {
+            pageTitle: PAGE_TITLES.UMP_DETAILS,
             requiresAuth: true,
             role: 'isValidUMPUser'
           }
@@ -110,6 +115,7 @@ const router = new VueRouter({
       component: StudentSearchDisplay,
       props: (route) => ({ searchType: REQUEST_TYPES.studentSearch.type.basic, initialPenSearch: route.query.pen }),
       meta: {
+        pageTitle: PAGE_TITLES.STUDENT_SEARCH,
         requiresAuth: true,
         role: 'isValidStudentSearchUser'
       }
@@ -122,6 +128,7 @@ const router = new VueRouter({
         searchType: REQUEST_TYPES.studentSearch.type.advanced
       },
       meta: {
+        pageTitle: PAGE_TITLES.STUDENT_SEARCH,
         requiresAuth: true,
         role: 'isValidStudentSearchUser'
       }
@@ -132,6 +139,7 @@ const router = new VueRouter({
       component: StudentDetail,
       props: true,
       meta: {
+        pageTitle: PAGE_TITLES.STUDENT_DETAILS,
         requiresAuth: true,
         role: 'isValidStudentSearchUser'
       }
@@ -142,6 +150,7 @@ const router = new VueRouter({
       component: PenRequestBatchDisplay,
       props: (route) => ({ schoolGroup: route.query.schoolGroup }),
       meta: {
+        pageTitle: PAGE_TITLES.PEN_REQ_FILES,
         requiresAuth: true,
         role: 'isValidPenRequestBatchUser'
       }
@@ -151,6 +160,7 @@ const router = new VueRouter({
       name: 'penMatch',
       component: PenMatch,
       meta: {
+        pageTitle: PAGE_TITLES.PEN_MATCH,
         requiresAuth: true,
         role: 'isValidStudentSearchUser'
       }
@@ -242,6 +252,12 @@ router.beforeEach((to, _from, next) => {
       console.log('Unable to get token');
       next(nextRouteInError);
     });
+  }
+  // this section is to set page title in vue store
+  if (to && to.meta) {
+    store.commit('app/setPageTitle',to.meta.pageTitle);
+  } else {
+    store.commit('app/setPageTitle','');
   }
 
   // this section is to handle the backend session expiry, where frontend vue session is still valid.

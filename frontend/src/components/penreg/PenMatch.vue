@@ -1,6 +1,5 @@
 <template>
-  <v-main>
-    <NavBar title="PEN Match Algorithm"></NavBar>
+  <div>
     <v-form class="mx-10" v-model="valid">
         <v-row>
           <v-col cols='3' md='4'  class="pb-0">
@@ -151,18 +150,16 @@
       <v-card-title>PEN Match Response</v-card-title>
       <v-card-text><pre>{{ matchResponseData }}</pre></v-card-text>
     </v-card>
-  </v-main>
+  </div>
 </template>
 
 <script>
 import {LocalDate} from '@js-joda/core';
 import ApiService from '../../common/apiService';
-import NavBar from '../util/NavBar';
 let JSJoda = require('@js-joda/core');
 
 export default {
   name: 'PenMatch',
-  components: {NavBar},
   data() {
     return {
       valid: false,

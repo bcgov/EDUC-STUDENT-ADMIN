@@ -1,14 +1,12 @@
 <template>
-  <v-main fluid class="align-start mb-0 pb-0">
-    <NavBar title="Student Details"></NavBar>
     <v-form ref="studentDetailForm" id="detailStudentForm"
             v-model="validForm" class="fill-height"
     >
-      <v-container class="fill-height" v-if="!isLoading">
+      <v-container class="fill-height mx-0" v-if="!isLoading">
         <v-col cols="15" class="fill-height pb-5">
           <v-row class="flex-grow-0">
                 <v-tabs active-class="active-display" v-model="tab" align-with-title>
-                  <v-tab>DEMOGRAPHICS</v-tab>
+                  <v-tab class="ma-0">DEMOGRAPHICS</v-tab>
                   <v-tab :disabled="true">SLD DATA</v-tab>
                   <v-tab :disabled="true">AUDIT HISTORY</v-tab>
                   <v-tab :disabled="true">TRANSCRIPT</v-tab>
@@ -389,7 +387,6 @@
         ></TwinnedStudentsCard>
       </v-dialog>
     </v-form>
-  </v-main>
 </template>
 
 <script>
@@ -404,7 +401,6 @@ import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsCo
 import StudentDetailsTextFieldSideCardReadOnly
   from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
 import PrimaryButton from '../../util/PrimaryButton';
-import NavBar from '../../util/NavBar';
 import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
 import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard';
 import {formatMinCode, formatPen} from '../../../utils/format';
@@ -421,7 +417,6 @@ export default {
     }
   },
   components: {
-    NavBar,
     PrimaryButton,
     StudentDetailsTextFieldSideCardReadOnly,
     StudentDetailsComboBox,

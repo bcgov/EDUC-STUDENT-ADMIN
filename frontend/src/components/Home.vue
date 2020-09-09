@@ -1,29 +1,28 @@
 <template>
-  <v-main>
-    <NavBar title="Dashboard"></NavBar>
-    <DashboardTable v-if="isValidPenRequestBatchUser" title="School PEN Requests" :tableData="penRequestData"></DashboardTable>
-    <DashboardTable v-if="isValidGMPUser || isValidUMPUser" title="Student Requests" :tableData="studentData"></DashboardTable>
-    <v-card v-if="isValidStudentSearchUser" flat class="mt-2">
-      <v-card-title><h3>Student Search</h3></v-card-title>
-      <v-card-text>
-        <v-row>
-          <v-col cols="2">
-            <v-text-field id="penTextField" outlined dense label="PEN" v-model="pen"></v-text-field>
-          </v-col>
-          <v-col cols="2">
-              <v-row>
-                <PrimaryButton id="quickSearchBtn" :to="REQUEST_TYPES.studentSearch.path.basic + '?pen=' + pen" :disabled="!isValidPEN" text="Quick Search" width="100%"></PrimaryButton>
-              </v-row>
-            <router-link :to="REQUEST_TYPES.studentSearch.path.basic">
-              <v-row>
-                <PrimaryButton id="fullSearchBtn" class="mt-2" text="Full Search" :secondary="true" width="100%"></PrimaryButton>
-              </v-row>
-            </router-link>
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
-  </v-main>
+  <div>
+  <DashboardTable v-if="isValidPenRequestBatchUser" title="School PEN Requests" :tableData="penRequestData"></DashboardTable>
+  <DashboardTable v-if="isValidGMPUser || isValidUMPUser" title="Student Requests" :tableData="studentData"></DashboardTable>
+  <v-card v-if="isValidStudentSearchUser" flat class="mt-2">
+    <v-card-title><h3>Student Search</h3></v-card-title>
+    <v-card-text>
+      <v-row>
+        <v-col cols="2">
+          <v-text-field id="penTextField" outlined dense label="PEN" v-model="pen"></v-text-field>
+        </v-col>
+        <v-col cols="2">
+            <v-row>
+              <PrimaryButton id="quickSearchBtn" :to="REQUEST_TYPES.studentSearch.path.basic + '?pen=' + pen" :disabled="!isValidPEN" text="Quick Search" width="100%"></PrimaryButton>
+            </v-row>
+          <router-link :to="REQUEST_TYPES.studentSearch.path.basic">
+            <v-row>
+              <PrimaryButton id="fullSearchBtn" class="mt-2" text="Full Search" :secondary="true" width="100%"></PrimaryButton>
+            </v-row>
+          </router-link>
+        </v-col>
+      </v-row>
+    </v-card-text>
+  </v-card>
+  </div>
 </template>
 
 <script>
@@ -33,13 +32,11 @@ import DashboardTable from './DashboardTable';
 import ApiService from '../common/apiService';
 import { Routes } from '../utils/constants';
 import PrimaryButton from './util/PrimaryButton';
-import NavBar from './util/NavBar';
 export default {
   name: 'home',
   components: {
     PrimaryButton,
-    DashboardTable,
-    NavBar
+    DashboardTable
   },
   data () {
     return {
