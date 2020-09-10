@@ -36,15 +36,19 @@ async function searchStudent(req, res) {
         searchQueries[element] = searchQueries[element].replace(/ +/g, '');
       }
 
-      searchListCriteria.push({key: element, operation: operation, value: searchQueries[element], valueType: valueType});
+      searchListCriteria.push({key: element, condition:'AND', operation: operation, value: searchQueries[element], valueType: valueType});
     });
   }
-
+  const search = [
+    {
+      searchCriteriaList: searchListCriteria
+    }
+  ];
   const params = {
     params: {
       pageNumber: req.query.pageNumber,
       sort: req.query.sort,
-      searchCriteriaList: JSON.stringify(searchListCriteria)
+      searchCriteriaList: JSON.stringify(search)
     }
   };
 
