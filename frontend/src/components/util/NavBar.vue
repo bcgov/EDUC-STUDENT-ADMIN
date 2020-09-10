@@ -62,11 +62,12 @@
       </v-list-group>
     </v-list>
   </v-navigation-drawer>
-  <v-app-bar app absolute elevation="0" color="#38598A" :dark="true" id="navBar" class="pl-10">
+  <v-app-bar app absolute elevation="0" color="#38598A" :dark="true" id="navBar" class="pl-16">
       <v-app-bar-nav-icon @click="drawer=true">
         <v-icon v-if="!drawer">$menu</v-icon>
         <v-icon v-else>$close</v-icon>
-      </v-app-bar-nav-icon>Menu
+        <p class="ma-0 pl-4 pr-2">Menu</p>
+      </v-app-bar-nav-icon>
     <v-toolbar-title class="ml-4">{{ title }}</v-toolbar-title>
   </v-app-bar>
 </div>
