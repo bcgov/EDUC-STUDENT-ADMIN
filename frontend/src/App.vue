@@ -2,7 +2,7 @@
 
   <v-app id="app">
     <Header/>
-    <NavBar v-if="pageTitle" :title="pageTitle"></NavBar>
+    <NavBar v-if="pageTitle && isAuthenticated" :title="pageTitle"></NavBar>
     <v-main fluid class="align-start px-10 mb-0">
       <ModalIdle v-if="isAuthenticated && isIdle"/>
       <router-view/>

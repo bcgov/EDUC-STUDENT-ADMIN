@@ -73,8 +73,8 @@
 </template>
 
 <script>
-import authStore from '../../store/modules/auth';
 import {PAGE_TITLES} from '../../utils/constants';
+import { mapState } from 'vuex';
 export default {
   name: 'navBar',
   props: {
@@ -86,61 +86,67 @@ export default {
   data() {
     return {
       drawer: null,
-      items: [
-        {
-          title: PAGE_TITLES.DASHBOARD,
-          link: 'home',
-          authorized: authStore.state.isAuthorizedUser
-        },
-        {
-          title: PAGE_TITLES.STUDENT_SEARCH,
-          link: 'basicSearch',
-          authorized: authStore.state.isValidStudentSearchUser
-        },
-        {
-          title: PAGE_TITLES.PEN_REQ_FILES,
-          link: 'penRequestBatch',
-          authorized: authStore.state.isValidPenRequestBatchUser
-        },
-        {
-          title: 'Search Archived PEN Requests',
-          link: 'todo',
-          authorized: true //TODO fix when ready
-        },
-        {
-          title: 'Compare PENs',
-          link: 'todo',
-          authorized: true //TODO fix when ready
-        },
-        {
-          title: 'Infrequent Processes',
-          active: false,
-          items: [
-            {
-              title: 'Nominal Role',
-              link: 'todo',
-              authorized: true //TODO fix when ready
-            },
-            {
-              title: 'Create New PEN',
-              link: 'todo',
-              authorized: true //TODO fix when ready
-            }
-          ],
-        },
-        {
-          title: 'System Admin',
-          active: false,
-          items: [
-            {
-              title: 'TODO',
-              link: 'todo',
-              authorized: true //TODO fix when ready
-            },
-          ],
-        },
-      ]
+      items: []
     };
+  },
+  mounted() {
+    this.items = [
+      {
+        title: PAGE_TITLES.DASHBOARD,
+        link: 'home',
+        authorized: this.isAuthorizedUser
+      },
+      {
+        title: PAGE_TITLES.STUDENT_SEARCH,
+        link: 'basicSearch',
+        authorized: this.isValidStudentSearchUser
+      },
+      {
+        title: PAGE_TITLES.PEN_REQ_FILES,
+        link: 'penRequestBatch',
+        authorized: this.isValidPenRequestBatchUser
+      },
+      {
+        title: 'Search Archived PEN Requests',
+        link: 'todo',
+        authorized: true //TODO fix when ready
+      },
+      {
+        title: 'Compare PENs',
+        link: 'todo',
+        authorized: true //TODO fix when ready
+      },
+      {
+        title: 'Infrequent Processes',
+        active: false,
+        items: [
+          {
+            title: 'Nominal Role',
+            link: 'todo',
+            authorized: true //TODO fix when ready
+          },
+          {
+            title: 'Create New PEN',
+            link: 'todo',
+            authorized: true //TODO fix when ready
+          }
+        ],
+      },
+      {
+        title: 'System Admin',
+        active: false,
+        items: [
+          {
+            title: 'TODO',
+            link: 'todo',
+            authorized: true //TODO fix when ready
+          },
+        ],
+      },
+    ];
+  },
+  computed: {
+    ...mapState('auth', ['isAuthorizedUser', 'isValidStudentSearchUser', 'isValidPenRequestBatchUser'])
   },
   methods: {
     setActive(item) {
