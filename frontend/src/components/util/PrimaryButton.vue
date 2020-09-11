@@ -1,7 +1,7 @@
 <template>
   <v-hover v-slot:default="{ hover }">
     <v-btn :id="id"
-           :class="[hover ? secondary ? 'text-decoration-underline button-hover white--text':'text-decoration-underline button-hover':'']"
+           :class="[hover ? secondary ? 'button-hover white--text':'button-hover':'']"
            color="#003366"
            :outlined="secondary"
            :small="short"
@@ -10,7 +10,11 @@
            :to="to"
            :width="width"
            :loading="loading"
-    >{{ text }}</v-btn>
+           v-bind="bind"
+           v-on="on"
+    ><span :class="hover ? 'text-decoration-underline': ''">{{ text }}</span>
+      <v-icon class="ml-1 pr-2 pt-1" v-if="icon" :nudge-down="4" right dark>{{ icon }}</v-icon>
+    </v-btn>
   </v-hover>
 </template>
 
@@ -44,6 +48,15 @@ export default {
     },
     loading: {
       type: Boolean
+    },
+    icon: {
+      type: String
+    },
+    bind: {
+      type: Object
+    },
+    on: {
+      type: Object
     }
   }
 };
