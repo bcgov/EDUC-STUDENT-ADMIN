@@ -1,23 +1,28 @@
 <template>
-  <v-card flat class="mt-2">
-    <v-card-title><h3>{{ title }}</h3></v-card-title>
-    <v-card-text>
-      <v-card outlined flat rounded="0">
-        <v-row v-for="(row, index) in sortedTableData" :key="index" :class="['listRow', index%2===1?'oddRow':'']">
-          <v-col v-if="row.error"><v-alert color="#D8292F" v-if="row.error" dismissible width="100%" class="alert mb-0"><strong>Error loading {{ row.title }} row data. Try refreshing the page.</strong></v-alert></v-col>
-          <template v-if="!row.error">
-            <v-col class="listCol"><strong>{{ row.title }}</strong></v-col>
-            <v-col v-for="(col, idx) in omit(row, 'title')" :key="idx" class="listCol">{{ col }} {{ dataColWording(idx) }}</v-col>
-
-          </template>
-          <v-col class="listCol" cols="1">
-            <router-link :to="routeTo(row.title)">
-              <PrimaryButton :id="row.title.replace(/ /g,'')+'Btn'" :text="'View ' + buttonWording(row.title)" width="100%"></PrimaryButton>
-            </router-link>
-          </v-col>
+  <v-card flat :color="colour" class="mt-2" height="100%">
+    <v-row class="pt-4 px-8">
+      <v-col cols="3" class="pa-0">
+        <v-card-title class="pa-0">
+          <h3>
+            <v-row no-gutters>{{ requestType }}</v-row>
+            <v-row no-gutters>Requests</v-row>
+          </h3>
+        </v-card-title>
+      </v-col>
+      <v-col cols="4" v-for="(row, index) in sortedTableData" :key="index" class="py-0">
+        <v-row class="pa-0"><h3>{{ row.title }}</h3></v-row>
+        <v-row v-for="(col, idx) in omit(row, 'title')" :key="idx" class="pt-2 listCol">
+          <v-alert v-if="row.error" color="#D8292F" dismissible width="100%" class="alert mb-0"><strong>Error loading {{ row.title }} row data. Try refreshing the page.</strong></v-alert>
+          <div v-else>{{ col }} {{ dataColWording(idx) }}</div>
         </v-row>
-      </v-card>
-    </v-card-text>
+        <v-row class="pt-4">
+          <router-link :to="routeTo(row.title)">
+            <PrimaryButton :id="row.title.replace(/ /g,'')+'Btn'" :text="'View ' + buttonWording(row.title)"></PrimaryButton>
+          </router-link>
+        </v-row>
+      </v-col>
+    </v-row>
+    <v-col></v-col>
   </v-card>
 </template>
 <script>
@@ -31,9 +36,12 @@ export default {
       type: Array,
       required: true
     },
-    title: {
+    requestType: {
       type: String,
       required: false
+    },
+    colour: {
+      type: String
     }
   },
   components: {

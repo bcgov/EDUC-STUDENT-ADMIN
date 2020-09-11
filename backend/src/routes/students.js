@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../components/auth');
 const {getStudentById} = require('../components/requests');
 const {searchStudent} = require('../components/studentSearch');
-const {saveStudent, getStudentByStudentId} = require('../components/student');
+const {saveStudent, getStudentByStudentId, getStudentByPen} = require('../components/student');
 const roles = require('../components/roles');
 const utils = require('../components/utils');
 const extendSession = utils.extendSession();
@@ -17,6 +17,7 @@ router.get('/gradeCodes', passport.authenticate('jwt', {session: false}, undefin
 router.get('/twinReasonCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:student:twinReasonCodesURL', 'studentTwinReasonCodes'));
 router.get('/search', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, extendSession, searchStudent);
 router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentById);
+router.get('/', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentByPen);
 router.get('/detail/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentByStudentId);
 router.post('/', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, saveStudent);
 
