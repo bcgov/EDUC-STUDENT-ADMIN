@@ -6,10 +6,10 @@
         <v-col cols="12" class="fill-height ma-0 pa-0">
           <v-row>
                 <v-tabs   active-class="active-display" class="pa-0 ma-0 " v-model="tab">
-                  <v-tab style="text-transform: none"><strong>Demographics</strong></v-tab>
-                  <v-tab :disabled="true" style="text-transform: none"><strong>SLD Data</strong></v-tab>
-                  <v-tab :disabled="true" style="text-transform: none"><strong>Audit History</strong></v-tab>
-                  <v-tab :disabled="true" style="text-transform: none"><strong>Transcript</strong></v-tab>
+                  <v-tab class="student-details-tabs-style" ><strong>Demographics</strong></v-tab>
+                  <v-tab class="student-details-tabs-style" :disabled="true"><strong>SLD Data</strong></v-tab>
+                  <v-tab class="student-details-tabs-style" :disabled="true"><strong>Audit History</strong></v-tab>
+                  <v-tab class="student-details-tabs-style" :disabled="true"><strong>Transcript</strong></v-tab>
 
                   <v-tab-item value="Demographics"/>
                   <v-tab-item value="Sld"/>
@@ -909,5 +909,8 @@ export default {
 
 .dob-disabled {
   visibility: hidden;
+}
+.student-details-tabs-style{
+  text-transform: none;
 }
 </style>
