@@ -2,7 +2,7 @@
   <div>
     <v-row cols="1" no-gutters>
       <v-col>
-        <p class="mb-0">{{ this.fieldLabel }}</p>
+        <p class="ma-0">{{ this.fieldLabel }}</p>
       </v-col>
     </v-row>
     <v-row :cols="colspan" no-gutters>
