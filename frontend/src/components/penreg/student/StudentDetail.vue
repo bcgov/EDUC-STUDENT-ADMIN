@@ -2,24 +2,24 @@
     <v-form ref="studentDetailForm" id="detailStudentForm"
             v-model="validForm" class="fill-height"
     >
-      <v-container class="fill-height mx-0" v-if="!isLoading">
-        <v-col cols="15" class="fill-height pb-5">
-          <v-row class="flex-grow-0">
-                <v-tabs active-class="active-display" v-model="tab" align-with-title>
-                  <v-tab class="ma-0">DEMOGRAPHICS</v-tab>
-                  <v-tab :disabled="true">SLD DATA</v-tab>
-                  <v-tab :disabled="true">AUDIT HISTORY</v-tab>
-                  <v-tab :disabled="true">TRANSCRIPT</v-tab>
+      <v-container class="fill-height ma-0 pa-0" v-if="!isLoading">
+        <v-col cols="12" class="fill-height ma-0 pa-0">
+          <v-row>
+                <v-tabs   active-class="active-display" class="pa-0 ma-0 " v-model="tab">
+                  <v-tab style="text-transform: none"><strong>Demographics</strong></v-tab>
+                  <v-tab :disabled="true" style="text-transform: none"><strong>SLD Data</strong></v-tab>
+                  <v-tab :disabled="true" style="text-transform: none"><strong>Audit History</strong></v-tab>
+                  <v-tab :disabled="true" style="text-transform: none"><strong>Transcript</strong></v-tab>
 
-                  <v-tab-item value="DEMOGRAPHICS"/>
-                  <v-tab-item value="SLD"/>
-                  <v-tab-item value="AUDIT"/>
-                  <v-tab-item value="TRANSCRIPT"/>
+                  <v-tab-item value="Demographics"/>
+                  <v-tab-item value="Sld"/>
+                  <v-tab-item value="Audit"/>
+                  <v-tab-item value="Transcript"/>
                 </v-tabs>
           </v-row>
           <v-row>
-            <v-col cols="3" class="pr-15 pl-0">
-              <v-card class="px-3 py-2" color="#D7D7D7" width="100%" elevation=0>
+            <v-col cols="2" class="pr-6 pl-0 ma-0">
+              <v-card class="pa-2 ma-0" color="#D7D7D7" width="100%" elevation=0>
 
                 <StudentDetailsTextFieldSideCardReadOnly :model="studentCopy.pen" :name="STUDENT_DETAILS_FIELDS.PEN"
                                                          colspan="1" label="PEN"
@@ -69,8 +69,8 @@
                                         :disabled="isFieldDisabled('statusCode')"></StudentDetailsComboBox>
               </v-card>
             </v-col>
-            <v-col cols="9" class="py-0 pl-0">
-              <v-card class="px-0 py-2" height="100%" width="100%" elevation=0>
+            <v-col cols="10" class="py-0 pl-0">
+              <v-card class="pa-0" height="60%" width="100%" elevation=0 rounded>
 
                 <StudentDetailsTextField max-length="255" :name="STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME" tab-index="1"
                                          @changeStudentObjectValue="changeStudentObjectValue"
@@ -458,7 +458,7 @@ export default {
       hoveringMemo: false,
       enableDisableFieldsMap: new Map(),
       fieldNames: Object.values(STUDENT_DETAILS_FIELDS),
-      tab:'DEMOGRAPHICS',
+      tab:'Demographics',
       STUDENT_DETAILS_FIELDS:STUDENT_DETAILS_FIELDS,
       STUDENT_CODES: STUDENT_CODES,
       merges: [],
@@ -850,7 +850,7 @@ export default {
 
 .textFieldColumn {
   display: table-cell;
-  height: 36px;
+  height: 1rem;
 }
 
 .darkBackgound.v-text-field > .v-input__control > .v-input__slot {
@@ -901,8 +901,6 @@ export default {
 }
 .active-display {
   background-color: #eaf8fe;
-  color: #02A7F0;
-  font-weight: bolder;
 }
 
 .pen {
