@@ -70,7 +70,7 @@
               </v-card>
             </v-col>
             <v-col cols="10" class="py-0 pl-0">
-              <v-card class="pa-0" height="60%" width="100%" elevation=0 rounded>
+              <v-card class="pa-0" height="100%" width="100%" elevation=0>
 
                 <StudentDetailsTextField max-length="255" :name="STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME" tab-index="1"
                                          @changeStudentObjectValue="changeStudentObjectValue"
