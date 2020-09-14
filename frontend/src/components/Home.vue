@@ -220,7 +220,7 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
   #requestsSearchBtn, #quickSearchBtn {
     height: 2.858em;
   }
