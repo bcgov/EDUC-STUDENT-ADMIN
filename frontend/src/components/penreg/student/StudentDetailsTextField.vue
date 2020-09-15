@@ -3,7 +3,7 @@
     <v-col cols="2">
       <p class="labelField">{{ this.fieldLabel }}</p>
     </v-col>
-    <v-col class="textFieldColumn" :cols="colspan">
+    <v-col :class="{textFieldColumn: validationRequired?validationRules().length ===0:true}" :cols="colspan">
       <v-text-field
           :tabindex="tabIndex"
           v-on:keyup.tab="[edited=true, hovered=true]"

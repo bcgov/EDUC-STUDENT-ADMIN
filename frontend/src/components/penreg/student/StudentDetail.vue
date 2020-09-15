@@ -76,6 +76,7 @@
                                          @changeStudentObjectValue="changeStudentObjectValue"
                                          :model="studentCopy.legalLastName?studentCopy.legalLastName:''"
                                          :has-edits="hasEdits" revert-id="revertLegalLastName"
+                                         :fieldValidationRequired=true :validation-rules="validateLegalLastName"
                                          :revert-field="revertField" label="Legal Surname" colspan="5"
                                          :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"></StudentDetailsTextField>
 
@@ -278,7 +279,7 @@
                   </div>
                 </StudentDetailsTemplateTextField>
 
-                <v-row no-gutters class="py-1">
+                <v-row no-gutters dense>
                   <v-col cols="2">
                     <p class="labelField">Memo</p>
                   </v-col>
@@ -297,6 +298,7 @@
                       color="#000000"
                       maxlength="4000"
                       dense
+                      rows="2"
                       auto-grow
                       :readonly="!hoveringMemo || !editingMemo"
                       :outlined="hoveringMemo || editingMemo || hasEdits(STUDENT_DETAILS_FIELDS.MEMO)"
@@ -317,13 +319,13 @@
                     ></v-text-field>
                   </v-col>
                 </v-row>
-                <v-row>
+                <v-row no-gutters dense class="mt-n4">
                   <v-col cols="10">
                     <v-card-actions style="float: right;">
                       <router-link :to="`${this.isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`">
                         <PrimaryButton :secondary="true" class="mx-1" text="Cancel"></PrimaryButton>
                       </router-link>
-                      <PrimaryButton :disabled="!hasAnyEdits()" @click.native="saveStudent()" text="Save"></PrimaryButton>
+                      <PrimaryButton :disabled="!hasAnyEdits() || !validForm" @click.native="saveStudent()" text="Save"></PrimaryButton>
                     </v-card-actions>
                   </v-col>
                 </v-row>
@@ -576,8 +578,8 @@ export default {
     validateGender() {
       if (this.studentCopy) {
         if (!this.studentCopy.genderCode) {
-          this.genderError = false;
-          return [];
+          this.genderError = true;
+          return ['Gender is required.'];
         } else {
           if (this.getGenderCodes().includes(this.studentCopy.genderCode)) {
             this.genderError = false;
@@ -819,6 +821,14 @@ export default {
     formatUpdateTime(datetime) {
       return moment(JSON.stringify(datetime), 'YYYY-MM-DDTHH:mm:ss').format('YYYY/MM/DD H:mma');
     },
+    validateLegalLastName(){
+      if (this.studentCopy) {
+        if (!this.studentCopy.legalLastName || this.studentCopy.legalLastName.length < 2) {
+          return ['Legal Surname is required and must be more than one character.'];
+        }
+      }
+      return [];
+    },
   }
 };
 </script>
@@ -859,7 +869,6 @@ export default {
 
 .textAreaColumn {
   display: table-cell;
-  min-height: 11em;
 }
 
 .sideCardField {
