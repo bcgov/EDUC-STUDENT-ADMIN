@@ -76,6 +76,10 @@ export default {
     border-color: #eeaaad !important;
   }
 
+  .v-alert--text:before {
+    background-color: transparent;
+  }
+
   .v-application {
     font-family: 'BCSans', Verdana, Arial, sans-serif !important;
   }
