@@ -12,7 +12,7 @@
       <v-col cols="4" v-for="(row, index) in sortedTableData" :key="index" class="py-0">
         <v-row class="pa-0"><h3>{{ row.title }}</h3></v-row>
         <v-row v-for="(col, idx) in omit(row, 'title')" :key="idx" class="pt-2 listCol">
-          <v-alert v-if="row.error" color="#D8292F" dismissible width="100%" class="alert mb-0"><strong>Error loading {{ row.title }} row data. Try refreshing the page.</strong></v-alert>
+          <v-alert v-if="row.error" color="#D8292F" dismissible width="100%" class="bootstrap-error mb-0"><strong>Error</strong> loading {{ row.title }} row data. Try refreshing the page.</v-alert>
           <div v-else>{{ col }} {{ dataColWording(idx) }}</div>
         </v-row>
         <v-row class="pt-4">
