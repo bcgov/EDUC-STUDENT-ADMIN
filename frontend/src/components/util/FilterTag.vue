@@ -25,9 +25,7 @@ export default {
     close: {
       type: Function
     },
-    item: {
-      type: String
-    }
+    item: [String, Number]
   }
 };
 </script>

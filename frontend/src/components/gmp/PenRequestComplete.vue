@@ -133,6 +133,7 @@ import { replaceMacro } from '../../utils/macro';
 import { mapGetters, mapMutations } from 'vuex';
 import {AccessEnabledForUser} from '../../common/role-based-access';
 import PrimaryButton from '../util/PrimaryButton';
+import { checkDigit } from '../../utils/validation';
 export default {
   name: 'penRequestComplete',
   components: {PrimaryButton},
@@ -349,7 +350,7 @@ export default {
       this.numberOfDuplicatePenRequests=0;
       if(this.penSearchId) {
         if (this.penSearchId.length === 9) {
-          if (this.checkDigit()) {
+          if (checkDigit(this.penSearchId)) {
             this.searchByPen();
             this.searchDuplicatePenRequestsByPen();
           } else {
@@ -357,21 +358,6 @@ export default {
           }
         }
       }
-    },
-    checkDigit() {
-      const penDigits = [];
-      for(let i = 0; i < this.penSearchId.length; i++) {
-        penDigits[i] = parseInt(this.penSearchId.charAt(i), 10);
-      }
-      const S1 = penDigits.slice(0,-1).filter((element,index) => {return index % 2 === 0;}).reduce((a,b) => a+b,0);
-      const A = parseInt(penDigits.slice(0,-1).filter((element,index) => {return index % 2 === 1;}).join(''), 10);
-      const B = 2 * A;
-      let S2 = B.toString().split('').map(Number).reduce(function (a, b) {return a + b;}, 0);
-      const S3 = S1 + S2;
-      if((S3 % 10) === 0) {
-        return penDigits.pop() === 0;
-      }
-      return penDigits.pop() === (10 - (S3%10));
     },
     searchByPen() {
       this.switchLoading(true);

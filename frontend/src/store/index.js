@@ -6,6 +6,8 @@ import app from './modules/app';
 import notifications from './modules/notifications';
 import student from './modules/student';
 import studentSearch from './modules/studentSearch';
+import prbStudentSearch from './modules/prbStudentSearch';
+import penRequestBatch from './modules/penRequestBatch';
 
 Vue.use(Vuex);
 
@@ -17,11 +19,10 @@ const store = new Vuex.Store({
     studentRequest: request,
     notifications,
     student,
-    studentSearch
+    studentSearch,
+    prbStudentSearch,
+    penRequestBatch
   }
 });
-
-// store.registerModule('studentRequest', createRequestStore());
-// store.registerModule('penRequest', createRequestStore());
 
 export default store;

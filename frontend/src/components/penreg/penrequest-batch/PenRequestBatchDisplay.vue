@@ -5,7 +5,7 @@
             <v-select
               id="select-school-group"
               :items="schoolGroups"
-              v-model="schoolGroupSelected"
+              v-model="selectedSchoolGroup"
               outlined
               dense
               color="#38598a"
@@ -32,45 +32,49 @@
             </FilterTag>
           </v-sheet>
           <v-spacer v-else></v-spacer>
-          <v-btn id="archive-action" class="mx-2 white--text" color="#38598a" :disabled="!actionEnabled">
+          <PrimaryButton id="archive-action" class="mx-2" :disabled="!actionEnabled">
             Archive
-            <v-icon large right dark>
+            <v-icon large right>
               mdi-chevron-down
             </v-icon>
-          </v-btn>
-          <v-btn id="view-list-action" class="mr-2 white--text" color="#38598a" :disabled="!actionEnabled">View List</v-btn>
-          <v-btn id="view-details-action" class="white--text" color="#38598a" :disabled="!actionEnabled">View Details</v-btn>
+          </PrimaryButton>
+          <PrimaryButton id="view-list-action" class="mr-2" :disabled="this.selectedFiles.length === 0" @click.native="clickViewList">View List</PrimaryButton>
+          <PrimaryButton id="view-details-action" :disabled="!actionEnabled">View Details</PrimaryButton>
         </v-row>
         <v-row no-gutters class="py-2" style="background-color:white;">
-            <v-alert
-              v-model="alert"
-              dense
-              text
-              dismissible
-              outlined
-              transition="scale-transition"
-              :class="`${alertType} flex-grow-1 mx-3`"
-            >
-              {{ alertMessage }}
-            </v-alert>
-            <PenRequestBatchList
-              :schoolGroup="schoolGroupSelected"
-              :filters="filters"
-              @filter-change="filterChange"
-              @failure-alert="setFailureAlert"
-            ></PenRequestBatchList>
-          </v-row>
+          <v-alert
+            v-model="alert"
+            dense
+            text
+            dismissible
+            outlined
+            transition="scale-transition"
+            :class="`${alertType} flex-grow-1 mx-3`"
+          >
+            {{ alertMessage }}
+          </v-alert>
+          <PenRequestBatchList
+            :schoolGroup="selectedSchoolGroup"
+            :filters="filters"
+            @filter-change="filterChange"
+            @failure-alert="setFailureAlert"
+          ></PenRequestBatchList>
+        </v-row>
     </v-container>
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex';
 import PenRequestBatchList from './PenRequestBatchList';
 import FilterTag from '../../util/FilterTag';
+import PrimaryButton from '../../util/PrimaryButton';
+import router from '../../../router';
 
 export default {
   name: 'PenRequestBatchDisplay',
   components: {
     FilterTag,
+    PrimaryButton,
     PenRequestBatchList
   },
   props: {
@@ -82,19 +86,30 @@ export default {
   data() {
     return {
       schoolGroups: [{value: 'K12', text: 'K-12'}, {value: 'PSI', text: 'PSI'}],
-      filters:[],
+      filters:['Fixable'],
       actionEnabled: false,
-      schoolGroupSelected: null,
 
       alert: false,
       alertMessage: null,
       alertType: null,
     };
   },
+  computed: {
+    ...mapState('penRequestBatch', ['selectedFiles', 'prbStudentStatusFilters']),
+    selectedSchoolGroup: {
+      get(){
+        return this.$store.state['penRequestBatch'].selectedSchoolGroup;
+      },
+      set(newSchoolGroup){
+        return this.$store.state['penRequestBatch'].selectedSchoolGroup = newSchoolGroup;
+      }
+    },
+  },
   created() {
-    this.schoolGroupSelected = this.schoolGroup;
+    this.selectedSchoolGroup = this.schoolGroup;
   },
   methods: {
+    ...mapMutations('prbStudentSearch', ['clearPrbStudentSearchState']),
     removeFilter(index) {
       this.filters.splice(index, 1);
     },
@@ -111,6 +126,12 @@ export default {
       this.alertType = 'bootstrap-error';
       this.alert = true;
     },
+    clickViewList() {
+      const batchIDs = this.selectedFiles.map(file => file.penRequestBatchID);
+      const statusFilters = this.prbStudentStatusFilters;
+      this.clearPrbStudentSearchState();
+      router.push({name: 'prbStudentList', query: { batchIDs, statusFilters }});
+    }
   }
 };
 </script>
@@ -118,5 +139,9 @@ export default {
 <style scoped>
   .v-btn {
     text-transform: none !important;
+  }
+
+  #archive-action .v-icon {
+    color: white !important;
   }
 </style>

@@ -108,6 +108,8 @@ import ApiService from '../common/apiService';
 import { Routes } from '../utils/constants';
 import PrimaryButton from './util/PrimaryButton';
 import router from '../router';
+import { isValidPEN } from '../utils/validation';
+
 export default {
   name: 'home',
   components: {
@@ -186,25 +188,10 @@ export default {
       return REQUEST_TYPES;
     },
     isValidPEN(){
-      return !!(this.pen && this.pen.length === 9 && this.checkDigit());
+      return isValidPEN(this.pen);
     }
   },
   methods: {
-    checkDigit() {
-      const penDigits = [];
-      for(let i = 0; i < this.pen.length; i++) {
-        penDigits[i] = parseInt(this.pen.charAt(i), 10);
-      }
-      const S1 = penDigits.slice(0,-1).filter((element,index) => {return index % 2 === 0;}).reduce((a,b) => a+b,0);
-      const A = parseInt(penDigits.slice(0,-1).filter((element,index) => {return index % 2 === 1;}).join(''), 10);
-      const B = 2 * A;
-      let S2 = B.toString().split('').map(Number).reduce(function (a, b) {return a + b;}, 0);
-      const S3 = S1 + S2;
-      if((S3 % 10) === 0) {
-        return penDigits.pop() === 0;
-      }
-      return penDigits.pop() === (10 - (S3%10));
-    },
     quickSearch() {
       this.searchError = false;
       ApiService.apiAxios
