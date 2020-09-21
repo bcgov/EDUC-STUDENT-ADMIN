@@ -220,16 +220,14 @@ export default {
   .table-checkbox {
     margin-top: 0;
     padding-top: 0;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
   }
   .table-checkbox /deep/ .v-input__slot {
     padding-top: 0;
   }
   .table-cell {
     cursor: pointer;
-  }
-  .table-checkbox {
-    padding-left: 0.5rem !important;
-    padding-right: 0.5rem !important;
   }
 
   #searchResults /deep/ .v-pagination__navigation > i {

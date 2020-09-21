@@ -254,10 +254,7 @@ export default {
     ...mapMutations('studentSearch', ['setIsAdvancedSearch']),
     validateDOB(){
       if(this.studentSearchParams) {
-        if(!this.studentSearchParams.dob.startDate){
-          return [];
-        }
-        else if(isValidDob(this.studentSearchParams.dob.startDate)){
+        if(!this.studentSearchParams.dob.startDate || isValidDob(this.studentSearchParams.dob.startDate)){
           return [];
         }
       }

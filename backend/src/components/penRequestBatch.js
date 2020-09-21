@@ -1,6 +1,5 @@
 'use strict';
 const { logApiError } = require('./utils');
-const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const { getBackendToken, getData, errorResponse, getPaginatedList } = require('./utils');
 const {FILTER_OPERATION, CONDITION, VALUE_TYPE} = require('../util/constants');
