@@ -1,7 +1,7 @@
 'use strict';
 const { logApiError } = require('./utils');
 const config = require('../config/index');
-const { getBackendToken, getData, errorResponse, getPaginatedList } = require('./utils');
+const { getBackendToken, getData, errorResponse, getPaginatedListForSCGroups } = require('./utils');
 const {FILTER_OPERATION, CONDITION, VALUE_TYPE} = require('../util/constants');
 
 async function getPENBatchRequestStats(req, res) {
@@ -62,6 +62,6 @@ async function getPENBatchRequestStats(req, res) {
 
 module.exports = {
   getPENBatchRequestStats,
-  getPenRequestFiles: getPaginatedList('getPenRequestFiles', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/paginated`),
-  getPenRequestBatchStudents: getPaginatedList('getPenRequestBatchStudents', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/student/paginated`),
+  getPenRequestFiles: getPaginatedListForSCGroups('getPenRequestFiles', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/paginated`),
+  getPenRequestBatchStudents: getPaginatedListForSCGroups('getPenRequestBatchStudents', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/student/paginated`),
 };

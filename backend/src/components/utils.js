@@ -148,8 +148,8 @@ function getCodeTable(token, key, url) {
   }
 }
 
-function getPaginatedList(apiName, url) {
-  return async function getPaginatedListHandler(req, res) {
+function getPaginatedListForSCGroups(apiName, url) {
+  return async function getPaginatedListForSCGroupsHandler(req, res) {
     try {
       const token = getBackendToken(req);
       if (!token) {
@@ -171,7 +171,7 @@ function getPaginatedList(apiName, url) {
       return res.status(200).json(dataResponse);
   
     } catch (e) {
-      logApiError(e, 'getPaginatedList', `Error occurred while attempting to ${apiName}.`);
+      logApiError(e, 'getPaginatedListForSCGroups', `Error occurred while attempting to ${apiName}.`);
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: 'INTERNAL SERVER ERROR'
       });
@@ -336,7 +336,7 @@ const utils = {
   errorResponse,
   unauthorizedError,
   getCodeTable,
-  getPaginatedList
+  getPaginatedListForSCGroups
 };
 
 module.exports = utils;
