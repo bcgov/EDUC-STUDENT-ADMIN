@@ -12,6 +12,7 @@ import StudentSearchDisplay from './components/penreg/student-search/StudentSear
 import PenRequestDetail from './components/gmp/PenRequestDetail';
 import StudentRequestDetail from './components/ump/StudentRequestDetail';
 import PenRequestBatchDisplay from './components/penreg/penrequest-batch/PenRequestBatchDisplay';
+import PrbStudentListDisplay from './components/penreg/penrequest-batch/PrbStudentListDisplay';
 import UnAuthorized from './components/UnAuthorized';
 import { REQUEST_TYPES, PAGE_TITLES } from './utils/constants';
 import authStore from './store/modules/auth';
@@ -153,7 +154,24 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.PEN_REQ_FILES,
         requiresAuth: true,
         role: 'isValidPenRequestBatchUser'
+      },
+      beforeEnter(to, from, next) {
+        if(!from.path.includes('/prb')) {
+          store.commit('penRequestBatch/clearPenRequestBatchState');
+        }
+        next();
       }
+    },
+    {
+      path: '/prbStudentList',
+      name: 'prbStudentList',
+      component: PrbStudentListDisplay,
+      props: (route) => ({ batchIDs: route.query.batchIDs,  statusFilters: route.query.statusFilters}),
+      meta: {
+        pageTitle: PAGE_TITLES.PEN_REQ_BATCH_STUDENT,
+        requiresAuth: true,
+        role: 'isValidPenRequestBatchUser'
+      },
     },
     {
       path: '/penMatch',

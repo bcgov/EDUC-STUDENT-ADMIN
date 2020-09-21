@@ -2,15 +2,14 @@
   <div id="file-list" class="px-3" style="width: 100%" :overlay="false">
     <v-data-table
       id="dataTable"
-      v-model="selectedRecords"
       :headers="headers"
-      :items="searchResponse.content"
+      :items="penRequestBatchResponse.content"
       :page.sync="pageNumber"
-      :items-per-page="searchResponse.pageable.pageSize"
+      :items-per-page="penRequestBatchResponse.pageable.pageSize"
       hide-default-footer
       item-key="penRequestBatchID"
       :loading="loadingTable"
-      @page-count="searchResponse.pageable.pageNumber = $event"
+      @page-count="penRequestBatchResponse.pageable.pageNumber = $event"
     >
       <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
         <v-checkbox 
@@ -66,16 +65,17 @@
         </v-btn>
       </v-col>
       <v-col cols="4">
-        <v-pagination color="#38598A" v-model="pageNumber" :length="searchResponse.totalPages"></v-pagination>
+        <v-pagination color="#38598A" v-model="pageNumber" :length="penRequestBatchResponse.totalPages"></v-pagination>
       </v-col>
       <v-col cols="4" id="currentItemsDisplay">
-        Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ searchResponse.totalElements }}
+        Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ penRequestBatchResponse.totalElements }}
       </v-col>
     </v-row>
   </div>
 </template>
 
 <script>
+import { mapMutations, mapState } from 'vuex';
 import ApiService from '../../../common/apiService';
 import {Routes} from '../../../utils/constants';
 import {formatMinCode} from '../../../utils/format';
@@ -94,7 +94,6 @@ export default {
   },
   data () {
     return {
-      pageNumber: 1,
       itemsPerPage: 15,
       headers: [
         { value: 'rowSelect', type: 'select', sortable: false },
@@ -109,14 +108,8 @@ export default {
         { text: 'FLT', value: 'filteredCount', sortable: false, countable: true },
         { text: 'Submission', value: 'submissionNumber', sortable: false },
       ],
-      selectedRecords: [],
-      filterCriteriaList: [],
       allSelected: false,
       partialSelected: false,
-      searchResponse: {
-        content: [],
-        pageable: {}
-      },
       loadingTable: true,
     };
   },
@@ -139,16 +132,26 @@ export default {
     }
   },
   computed: {
+    ...mapState('penRequestBatch', ['prbStudentStatusFilters', 'selectedFiles', 'penRequestBatchResponse']),
+    pageNumber: {
+      get(){
+        return this.$store.state['penRequestBatch'].pageNumber;
+      },
+      set(newPage){
+        return this.$store.state['penRequestBatch'].pageNumber = newPage;
+      }
+    },
     countableHeaders() {
       return this.headers.filter(header => header.countable);
     },
     showingFirstNumber() {
-      return ((this.pageNumber-1) * this.searchResponse.pageable.pageSize + 1);
+      return ((this.pageNumber-1) * this.penRequestBatchResponse.pageable.pageSize + (this.penRequestBatchResponse.numberOfElements > 0 ? 1 : 0));
     },
     showingEndNumber() {
-      return ((this.pageNumber-1) * this.searchResponse.pageable.pageSize + this.searchResponse.numberOfElements);
+      return ((this.pageNumber-1) * this.penRequestBatchResponse.pageable.pageSize + this.penRequestBatchResponse.numberOfElements);
     },
     searchCriteria() {
+      const statusCriteriaList = this.prbStudentStatusFilters.map(statusCriteria => ({key: statusCriteria, operation: 'gt', value: 0, valueType: 'LONG', condition: 'OR'}));
       return [
         { 
           searchCriteriaList: [
@@ -158,7 +161,7 @@ export default {
         },
         { 
           condition: 'AND', 
-          searchCriteriaList: this.filterCriteriaList
+          searchCriteriaList: statusCriteriaList
         },
       ];
     },
@@ -167,6 +170,7 @@ export default {
     this.initializeFilters();
   },
   methods: {
+    ...mapMutations('penRequestBatch', ['setSelectedFiles', 'setPrbStudentStatusFilters', 'setPenRequestBatchResponse']),
     tableRowClass(item) {
       let rowClass = [item.firstActiveFile ? 'first-active-file' : 'batch-file'];
       item.isSelected && rowClass.push('selected-file');
@@ -179,8 +183,13 @@ export default {
       return item.unarchivedBatchChangedFlag === 'Y';
     },
     initializeFilters() {
-      this.filters.splice(0);
-      this.filters.push('Fixable');
+      if(this.prbStudentStatusFilters?.length > 0) {
+        const filterNames = this.prbStudentStatusFilters.map(filter => this.headers.find(header => header.value === filter)?.filterName);
+        this.filters.splice(0, this.filters.length, ...filterNames);
+      } else {
+        this.filters.splice(0);
+        this.filters.push('Fixable');
+      }      
     },
     initializeFiles(files) {
       this.partialSelected = false;
@@ -198,29 +207,28 @@ export default {
       return files;
     },
     selectFile(selected) {
-      this.allSelected = this.searchResponse.content.every(file => file.isSelected);
-      this.partialSelected = (selected || this.searchResponse.content.some(file => file.isSelected)) && !this.allSelected;
+      this.allSelected = this.penRequestBatchResponse.content.every(file => file.isSelected);
+      this.partialSelected = (selected || this.penRequestBatchResponse.content.some(file => file.isSelected)) && !this.allSelected;
+      this.setSelectedFiles(this.penRequestBatchResponse.content.filter(file => file.isSelected));
     },
     selectItem(item) {
       item.isSelected = !item.isSelected;
       this.selectFile(item.isSelected);
     },
     selectAllFiles(selected) {
-      this.searchResponse.content.forEach(file => file.isSelected = selected);
+      this.penRequestBatchResponse.content.forEach(file => file.isSelected = selected);
       this.partialSelected = false;
+      this.setSelectedFiles(this.penRequestBatchResponse.content.filter(file => file.isSelected));
     },
     selectFilters() {
-      this.filterCriteriaList.splice(0);
+      let statusFilters = [];
       this.headers.filter(header => !!header.filterName).forEach(header => {
         header.isFiltered = this.filters.some(filter => filter === header.filterName);
         if(header.isFiltered) {
-          let criteria = {key: header.value, operation: 'gt', value: 0, valueType: 'LONG'};
-          if(this.filterCriteriaList.length > 0) {
-            criteria.condition = 'OR';
-          }
-          this.filterCriteriaList.push(criteria);
+          statusFilters.push(header.value);
         }
       });
+      this.setPrbStudentStatusFilters(statusFilters);
     },
     selectFilter(header) {
       if(header.isFiltered) {
@@ -234,6 +242,7 @@ export default {
     },
     pagination() {
       this.loadingTable = true;
+      this.setSelectedFiles();
       const req = {
         params: {
           pageNumber: this.pageNumber-1,
@@ -251,7 +260,7 @@ export default {
         .get(Routes.penRequestBatch.FILES_URL, req)
         .then(response => {
           response.data && response.data.content && this.initializeFiles(response.data.content);
-          this.searchResponse = response.data;
+          this.setPenRequestBatchResponse(response.data);
         })
         .catch(error => {
           console.log(error);

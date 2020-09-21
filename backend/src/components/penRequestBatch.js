@@ -1,8 +1,7 @@
 'use strict';
 const { logApiError } = require('./utils');
-const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
-const { getBackendToken, getData, errorResponse } = require('./utils');
+const { getBackendToken, getData, errorResponse, getPaginatedListForSCGroups } = require('./utils');
 const {FILTER_OPERATION, CONDITION, VALUE_TYPE} = require('../util/constants');
 
 async function getPENBatchRequestStats(req, res) {
@@ -61,36 +60,8 @@ async function getPENBatchRequestStats(req, res) {
   });
 }
 
-async function getPenRequestFiles(req, res) {
-  try {
-    const token = getBackendToken(req);
-    if (!token) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
-      });
-    }
-
-    const params = {
-      params: {
-        pageNumber: req.query.pageNumber,
-        pageSize: req.query.pageSize,
-        sort: req.query.sort,
-        searchCriteriaList: JSON.stringify(req.query.searchQueries.map((query) => JSON.parse(query)))
-      }
-    };
-
-    const dataResponse = await getData(token, config.get('server:penRequestBatch:rootURL') + '/pen-request-batch/paginated', params);
-    return res.status(200).json(dataResponse);
-
-  } catch (e) {
-    logApiError(e, 'getPenRequestFiles', 'Error occurred while attempting to get pen rquest files.');
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'INTERNAL SERVER ERROR'
-    });
-  }
-}
-
 module.exports = {
   getPENBatchRequestStats,
-  getPenRequestFiles,
+  getPenRequestFiles: getPaginatedListForSCGroups('getPenRequestFiles', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/paginated`),
+  getPenRequestBatchStudents: getPaginatedListForSCGroups('getPenRequestBatchStudents', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/student/paginated`),
 };

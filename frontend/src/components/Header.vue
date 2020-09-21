@@ -66,7 +66,7 @@ export default {
 </script>
 
 <style>
-.v-icon{
+.gov-header .v-icon{
   padding-left: 10px;
 }
 a {

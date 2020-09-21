@@ -12,8 +12,10 @@
            :loading="loading"
            v-bind="bind"
            v-on="on"
-    ><span :class="hover ? 'text-decoration-underline': ''">{{ text }}</span>
+    >
+      <span :class="hover ? 'text-decoration-underline': ''">{{ text }}</span>
       <v-icon class="ml-1 pr-2 pt-1" v-if="icon" :nudge-down="4" right dark>{{ icon }}</v-icon>
+      <slot></slot>
     </v-btn>
   </v-hover>
 </template>

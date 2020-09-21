@@ -92,4 +92,5 @@ export default {
   getStatusCodes: getCodes(Routes.student.STATUS_CODE_URL),
   getGradeCodes: getCodes(Routes.student.GRADE_CODE_URL),
   getTwinReasonCodes: getCodes(Routes.student.TWIN_REASON_CODE_URL),
+  getPenRequestBatchStudentStatusCodes: getCodes(Routes.penRequestBatch.STUDENT_STATUS_CODE_URL),
 };

@@ -187,8 +187,7 @@
 <script>
 
 import { mapState, mapMutations } from 'vuex';
-import {LocalDate} from '@js-joda/core';
-let JSJoda = require('@js-joda/core');
+import { isValidDob } from '../../../utils/validation';
 
 export default {
   props: {
@@ -255,22 +254,8 @@ export default {
     ...mapMutations('studentSearch', ['setIsAdvancedSearch']),
     validateDOB(){
       if(this.studentSearchParams) {
-        if(!this.studentSearchParams.dob.startDate){
+        if(!this.studentSearchParams.dob.startDate || isValidDob(this.studentSearchParams.dob.startDate)){
           return [];
-        }
-        else {
-          const formatter = (new JSJoda.DateTimeFormatterBuilder)
-            .appendPattern('uuuu/MM/dd')
-            .toFormatter(JSJoda.ResolverStyle.STRICT);
-          try {
-            const dateObject = JSJoda.LocalDate.parse(this.studentSearchParams.dob.startDate, formatter);
-            if(dateObject.isBefore(LocalDate.now())){
-              return [];
-            }
-          }
-          catch(err){
-            //Do nothing
-          }
         }
       }
       return [

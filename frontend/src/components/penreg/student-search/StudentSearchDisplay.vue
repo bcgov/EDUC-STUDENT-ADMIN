@@ -65,6 +65,7 @@ import StudentSearchResults from './StudentSearchResults';
 import StudentBasicSearch from './StudentBasicSearch';
 import StudentAdvancedSearch from './StudentAdvancedSearch';
 import PrimaryButton from '../../util/PrimaryButton';
+import { isValidPEN, checkDigit, isValidMinCode, isValidPostalCode } from '../../../utils/validation';
 
 export default {
   components: {
@@ -97,7 +98,6 @@ export default {
     };
   },
   computed:{
-    ...mapGetters('penReg', ['pageNumber']),
     ...mapGetters('student', ['gradeCodeObjects']),
     ...mapState('student', ['genders']),
     ...mapState('studentSearch', ['pageNumber', 'headerSortParams', 'studentSearchResponse']),
@@ -157,12 +157,8 @@ export default {
         this.searchStudent(true, true);
       }
     },
-    isValidPEN(){
-      return !!(this.studentSearchParams && this.studentSearchParams.pen && this.studentSearchParams.pen.length === 9 && this.checkDigit());
-
-    },
     runPENSearchIfPossible(){
-      if(this.isValidPEN()){
+      if(this.studentSearchParams && isValidPEN(this.studentSearchParams.pen)){
         const pen = this.studentSearchParams.pen;
         this.clearStudentSearchParams();
         this.studentSearchParams.pen = pen;
@@ -175,7 +171,7 @@ export default {
         if (!this.studentSearchParams.pen){
           validPEN = true;
         } else if (this.studentSearchParams.pen.length === 9) {
-          if (this.checkDigit()) {
+          if (checkDigit(this.studentSearchParams.pen)) {
             validPEN = true;
           }
         }
@@ -215,7 +211,7 @@ export default {
           return [];
         }
         else {
-          if(this.studentSearchParams.mincode.match('^[0-9]\\d*$')){
+          if(isValidMinCode(this.studentSearchParams.mincode)){
             return [];
           }
         }
@@ -231,7 +227,7 @@ export default {
           return [];
         }
         else {
-          if(this.studentSearchParams.postalCode.match('^[abceghjklmnprstvxyABCEGHJKLMNPRSTVXY][0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ] {0,1}[0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ][0-9]$')){
+          if(isValidPostalCode(this.studentSearchParams.postalCode)){
             return [];
           }
         }
@@ -262,22 +258,6 @@ export default {
         v => !!(v && v.trim()) || hint,
         ...this.charRules
       ];
-    },
-    checkDigit() {
-      const penDigits = [];
-
-      for(let i = 0; i < this.studentSearchParams.pen.length; i++) {
-        penDigits[i] = parseInt(this.studentSearchParams.pen.charAt(i), 10);
-      }
-      const S1 = penDigits.slice(0,-1).filter((element,index) => {return index % 2 === 0;}).reduce((a,b) => a+b,0);
-      const A = parseInt(penDigits.slice(0,-1).filter((element,index) => {return index % 2 === 1;}).join(''), 10);
-      const B = 2 * A;
-      let S2 = B.toString().split('').map(Number).reduce(function (a, b) {return a + b;}, 0);
-      const S3 = S1 + S2;
-      if((S3 % 10) === 0) {
-        return penDigits.pop() === 0;
-      }
-      return penDigits.pop() === (10 - (S3%10));
     },
     focusBirthdateField(event) {
       if(event.key === 'Tab' && event.type === 'keyup') {

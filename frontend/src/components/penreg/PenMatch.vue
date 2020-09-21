@@ -157,6 +157,7 @@
 import {LocalDate} from '@js-joda/core';
 import ApiService from '../../common/apiService';
 let JSJoda = require('@js-joda/core');
+import { isValidPEN } from '../../utils/validation';
 
 export default {
   name: 'PenMatch',
@@ -180,7 +181,7 @@ export default {
         updateCode: null
       },
       genderRules: [ v => (!v || this.genderCodes.includes(v)) || this.genderHint],
-      penRules: [ v => (!v || v.length === 9 && this.checkDigit()) || this.penHint],
+      penRules: [ v => (!v || isValidPEN(v)) || this.penHint],
       postalRules: [ v => !v || v.match('^[a-zA-Z][0-9][a-zA-Z] {0,1}[0-9][a-zA-Z][0-9]$') || this.postalCodeHint],
       mincodeRules: [ v => !v || v.match('^[0-9]\\d*$') || this.mincodeHint],
       genderCodes: ['M','F','X','U'],
@@ -199,22 +200,6 @@ export default {
     }
   },
   methods: {
-    checkDigit() {
-      const penDigits = [];
-
-      for(let i = 0; i < this.request.pen.length; i++) {
-        penDigits[i] = parseInt(this.request.pen.charAt(i), 10);
-      }
-      const S1 = penDigits.slice(0,-1).filter((element,index) => {return index % 2 === 0;}).reduce((a,b) => a+b,0);
-      const A = parseInt(penDigits.slice(0,-1).filter((element,index) => {return index % 2 === 1;}).join(''), 10);
-      const B = 2 * A;
-      let S2 = B.toString().split('').map(Number).reduce(function (a, b) {return a + b;}, 0);
-      const S3 = S1 + S2;
-      if((S3 % 10) === 0) {
-        return penDigits.pop() === 0;
-      }
-      return penDigits.pop() === (10 - (S3%10));
-    },
     reset() {
       this.request = {
         pen: null,
