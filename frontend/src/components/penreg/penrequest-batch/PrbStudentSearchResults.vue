@@ -139,6 +139,8 @@ export default {
     },
     selectedStudentStatus: {
       handler() {
+        this.setSelectedRecords();
+        this.setPageNumber(1);
         this.pagination();
       }
     },
@@ -183,7 +185,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('prbStudentSearch', ['setPrbStudentSearchResponse']),
+    ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse']),
     pagination() {
       this.loadingTable = true;
       this.retrievePenRequests(this.currentPrbStudentSearchParams)
