@@ -285,7 +285,7 @@ export default {
     gradeCodes() {
       return this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.gradeCode):[];
     },
-    penRequestStatusSearchCriteria() {
+    prbStudentStatusSearchCriteria() {
       const keys = {
         matchedCount: ['MATCHEDSYS', 'MATCHEDUSR'],
         newPenCount: ['NEWPENSYS', 'NEWPENUSR'],
@@ -301,6 +301,10 @@ export default {
         valueType: SEARCH_VALUE_TYPE.STRING
       };
     },
+    prbStudentBatchIdSearchCriteria() {
+      const criteriaValue = [this.batchIDs].flat().join(',');
+      return ({key: 'penRequestBatchEntity.penRequestBatchID', operation: SEARCH_FILTER_OPERATION.IN, value: criteriaValue, valueType: SEARCH_VALUE_TYPE.UUID});
+    }
   },
   mounted() {
     this.$store.dispatch('penRequestBatch/getCodes');
@@ -401,10 +405,7 @@ export default {
       return students;
     },
     prbStudentSearchCriteriaList(searchParams) {
-      const statusCriteriaList = [this.batchIDs].flat().map(batchID => 
-        ({key: 'penRequestBatchEntity.penRequestBatchID', operation: SEARCH_FILTER_OPERATION.EQUAL, value: batchID, valueType: SEARCH_VALUE_TYPE.UUID}));
-
-      let optionalCriteriaList = [this.penRequestStatusSearchCriteria];
+      let optionalCriteriaList = [this.prbStudentStatusSearchCriteria];
 
       const prbStudentSearchKeys = Object.keys(searchParams).filter(k => (searchParams[k] && searchParams[k].length !== 0));
       if (prbStudentSearchKeys && prbStudentSearchKeys.length > 0) {
@@ -434,7 +435,7 @@ export default {
 
       const searchCriteriaList = [
         { 
-          searchCriteriaList: statusCriteriaList,
+          searchCriteriaList: [this.prbStudentBatchIdSearchCriteria],
         },
         { 
           condition: 'AND', 
