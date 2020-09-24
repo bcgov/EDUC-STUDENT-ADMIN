@@ -58,7 +58,7 @@ describe('SetNavigation Component initialized with namespaced Vuex module.', () 
     store.commit('setNavigation/setNavigation', {seqNumber: 1, totalNumber: 10, title: 'Record 1 of 10 (5 files selected)', preRoute: 'previous', nextRoute: 'next'});
     await Vue.nextTick();
     const button = wrapper.find('#preRecord');
-    const spy = spyOn(appRouter, 'push');
+    const spy = jest.spyOn(appRouter, 'push');
     button.trigger('click');
     expect(spy).toHaveBeenCalledTimes(0);
   });
@@ -67,7 +67,7 @@ describe('SetNavigation Component initialized with namespaced Vuex module.', () 
     store.commit('setNavigation/setNavigation', {seqNumber: 1, totalNumber: 10, title: 'Record 1 of 10 (5 files selected)', preRoute: 'previous', nextRoute: 'next'});
     await Vue.nextTick();
     const button = wrapper.find('#nextRecord');
-    const spy = spyOn(appRouter, 'push');
+    const spy = jest.spyOn(appRouter, 'push');
     button.trigger('click');
     expect(spy).toBeCalledWith('next');
   });
@@ -76,7 +76,7 @@ describe('SetNavigation Component initialized with namespaced Vuex module.', () 
     store.commit('setNavigation/setNavigation', {seqNumber: 10, totalNumber: 10, title: 'Record 10 of 10 (5 files selected)', preRoute: 'previous', nextRoute: 'next'});
     await Vue.nextTick();
     const button = wrapper.find('#nextRecord');
-    const spy = spyOn(appRouter, 'push');
+    const spy = jest.spyOn(appRouter, 'push');
     button.trigger('click');
     expect(spy).toHaveBeenCalledTimes(0);
   });
@@ -85,27 +85,8 @@ describe('SetNavigation Component initialized with namespaced Vuex module.', () 
     store.commit('setNavigation/setNavigation', {seqNumber: 10, totalNumber: 10, title: 'Record 10 of 10 (5 files selected)', preRoute: 'previous', nextRoute: 'next'});
     await Vue.nextTick();
     const button = wrapper.find('#preRecord');
-    const spy = spyOn(appRouter, 'push');
+    const spy = jest.spyOn(appRouter, 'push');
     button.trigger('click');
     expect(spy).toBeCalledWith('previous');
   });
-
-  test('Its next button should be clickable when seqNumber is larger than 1 and less than totalNumber.', async () => {
-    store.commit('setNavigation/setNavigation', {seqNumber: 5, totalNumber: 10, title: 'Record 5 of 10 (5 files selected)', preRoute: 'previous', nextRoute: 'next'});
-    await Vue.nextTick();
-    const button = wrapper.find('#nextRecord');
-    const spy = spyOn(appRouter, 'push');
-    button.trigger('click');
-    expect(spy).toBeCalledWith('next');
-  });
-
-  test('It previous button should be clickable when seqNumber is larger than 1 and less than totalNumber.', async () => {
-    store.commit('setNavigation/setNavigation', {seqNumber: 5, totalNumber: 10, title: 'Record 5 of 10 (5 files selected)', preRoute: 'previous', nextRoute: 'next'});
-    await Vue.nextTick();
-    const button = wrapper.find('#preRecord');
-    const spy = spyOn(appRouter, 'push');
-    button.trigger('click');
-    expect(spy).toBeCalledWith('previous');
-  });
-
 });
