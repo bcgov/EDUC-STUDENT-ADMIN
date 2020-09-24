@@ -62,13 +62,15 @@
       </v-list-group>
     </v-list>
   </v-navigation-drawer>
-  <v-app-bar app absolute elevation="0" color="#38598A" :dark="true" id="navBar" class="pl-16">
-      <v-app-bar-nav-icon @click="drawer=true">
-        <v-icon v-if="!drawer">$menu</v-icon>
-        <v-icon v-else>$close</v-icon>
-        <p class="ma-0 pl-4 pr-2">Menu</p>
-      </v-app-bar-nav-icon>
+  <v-app-bar app absolute elevation="0" color="#38598A" :dark="true" id="navBar" class="pl-16 pr-8">
+    <v-app-bar-nav-icon @click="drawer=true">
+      <v-icon v-if="!drawer">$menu</v-icon>
+      <v-icon v-else>$close</v-icon>
+      <p class="ma-0 pl-4 pr-2">Menu</p>
+    </v-app-bar-nav-icon>
     <v-toolbar-title class="ml-4">{{ title }}</v-toolbar-title>
+    <v-spacer></v-spacer>
+    <SetNavigation/>
   </v-app-bar>
 </div>
 </template>
@@ -76,8 +78,12 @@
 <script>
 import {PAGE_TITLES} from '../../utils/constants';
 import { mapState } from 'vuex';
+import SetNavigation from './SetNavigation';
 export default {
   name: 'navBar',
+  components: {
+    SetNavigation,
+  },
   props: {
     title: {
       type: String,

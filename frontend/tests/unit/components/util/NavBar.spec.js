@@ -20,10 +20,17 @@ describe('NavBar Component initialized with namespaced Vuex module.\'', () => {
   const  store = new Vuex.Store({
     modules: {
       auth: {
+        namespaced: true,
         state: {
           isAuthorizedUser: true,
           isValidStudentSearchUser: true,
           isValidPenRequestBatchUser: true
+        }
+      },
+      setNavigation: {
+        namespaced: true,
+        state: {
+          totalNumber: 0,
         }
       }
     }
