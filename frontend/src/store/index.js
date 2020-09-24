@@ -8,6 +8,7 @@ import student from './modules/student';
 import studentSearch from './modules/studentSearch';
 import prbStudentSearch from './modules/prbStudentSearch';
 import penRequestBatch from './modules/penRequestBatch';
+import setNavigation from './modules/setNavigation';
 
 Vue.use(Vuex);
 
@@ -21,7 +22,8 @@ const store = new Vuex.Store({
     student,
     studentSearch,
     prbStudentSearch,
-    penRequestBatch
+    penRequestBatch,
+    setNavigation
   }
 });
 
