@@ -172,8 +172,7 @@
             @keyup.enter="enterPushed()"
             v-on:input="searchHasValues"
             maxlength="255"
-            rows="1"
-            auto-grow>
+            >
           </v-text-field>
           <v-col cols="1" class="ml-4">
             <v-row no-gutters justify="center">
@@ -189,8 +188,7 @@
             @keyup.enter="enterPushed()"
             v-on:input="searchHasValues"
             maxlength="255"
-            rows="1"
-            auto-grow>
+            >
           </v-text-field>
           <v-col cols="1" class="ml-4">
             <v-row no-gutters justify="center">
@@ -206,8 +204,7 @@
             v-on:input="searchHasValues"
             @keyup.enter="enterPushed()"
             maxlength="255"
-            rows="1"
-            auto-grow>
+            >
           </v-text-field>
           <v-col cols="1" class="ml-4">
             <v-row no-gutters justify="center">
@@ -223,8 +220,7 @@
             @keyup.enter="enterPushed()"
             v-on:input="searchHasValues"
             maxlength="255"
-            rows="1"
-            auto-grow>
+            >
           </v-text-field>
           <v-col cols="1" class="ml-4">
             <v-row no-gutters justify="center">
@@ -240,8 +236,7 @@
             @keyup.enter="enterPushed()"
             v-on:input="searchHasValues"
             maxlength="255"
-            rows="1"
-            auto-grow></v-text-field>
+            ></v-text-field>
           <v-col cols="1" class="ml-4">
             <v-row no-gutters justify="center">
               <v-checkbox disabled color="#606060" class="ma-0 pa-0"></v-checkbox>
@@ -256,8 +251,7 @@
             @keyup.enter="enterPushed()"
             v-on:input="searchHasValues"
             maxlength="255"
-            rows="1"
-            auto-grow></v-text-field>
+            ></v-text-field>
           <v-col cols="1" class="ml-4">
             <v-row no-gutters justify="center">
               <v-checkbox disabled color="#606060" class="ma-0 pa-0"></v-checkbox>
