@@ -166,7 +166,7 @@
         </v-row>
         <v-row no-gutters class="textFieldRow">
           <v-col cols="3">Legal Surname</v-col>
-          <v-textarea dense filled outlined
+          <v-text-field dense filled outlined
             id='legalLastName'
             v-model="studentSearchParams.legalLastName"
             @keyup.enter="enterPushed()"
@@ -174,7 +174,7 @@
             maxlength="255"
             rows="1"
             auto-grow>
-          </v-textarea>
+          </v-text-field>
           <v-col cols="1" class="ml-4">
             <v-row no-gutters justify="center">
               <v-checkbox disabled color="#606060" class="ma-0 pa-0"></v-checkbox>
@@ -183,7 +183,7 @@
         </v-row>
         <v-row no-gutters class="textFieldRow">
           <v-col cols="3">Legal Given</v-col>
-          <v-textarea dense filled outlined
+          <v-text-field dense filled outlined
             id='legalFirstName'
             v-model="studentSearchParams.legalFirstName"
             @keyup.enter="enterPushed()"
@@ -191,7 +191,7 @@
             maxlength="255"
             rows="1"
             auto-grow>
-          </v-textarea>
+          </v-text-field>
           <v-col cols="1" class="ml-4">
             <v-row no-gutters justify="center">
               <v-checkbox disabled color="#606060" class="ma-0 pa-0"></v-checkbox>
@@ -200,7 +200,7 @@
         </v-row>
         <v-row no-gutters class="textFieldRow">
           <v-col cols="3">Legal Middle</v-col>
-          <v-textarea dense filled outlined
+          <v-text-field dense filled outlined
             id='legalMiddleNames'
             v-model="studentSearchParams.legalMiddleNames"
             v-on:input="searchHasValues"
@@ -208,7 +208,7 @@
             maxlength="255"
             rows="1"
             auto-grow>
-          </v-textarea>
+          </v-text-field>
           <v-col cols="1" class="ml-4">
             <v-row no-gutters justify="center">
               <v-checkbox disabled color="#606060" class="ma-0 pa-0"></v-checkbox>
@@ -217,7 +217,7 @@
         </v-row>
         <v-row no-gutters class="textFieldRow">
           <v-col cols="3">Usual Surname</v-col>
-          <v-textarea dense filled outlined
+          <v-text-field dense filled outlined
             id='usualLastName'
             v-model="studentSearchParams.usualLastName"
             @keyup.enter="enterPushed()"
@@ -225,7 +225,7 @@
             maxlength="255"
             rows="1"
             auto-grow>
-          </v-textarea>
+          </v-text-field>
           <v-col cols="1" class="ml-4">
             <v-row no-gutters justify="center">
               <v-checkbox disabled color="#606060" class="ma-0 pa-0"></v-checkbox>
@@ -234,14 +234,14 @@
         </v-row>
         <v-row no-gutters class="textFieldRow">
           <v-col cols="3">Usual Given</v-col>
-          <v-textarea dense filled outlined
+          <v-text-field dense filled outlined
             id='usualFirstName'
             v-model="studentSearchParams.usualFirstName"
             @keyup.enter="enterPushed()"
             v-on:input="searchHasValues"
             maxlength="255"
             rows="1"
-            auto-grow></v-textarea>
+            auto-grow></v-text-field>
           <v-col cols="1" class="ml-4">
             <v-row no-gutters justify="center">
               <v-checkbox disabled color="#606060" class="ma-0 pa-0"></v-checkbox>
@@ -250,14 +250,14 @@
         </v-row>
         <v-row no-gutters class="textFieldRow">
           <v-col cols="3">Usual Middle</v-col>
-          <v-textarea dense filled outlined
+          <v-text-field dense filled outlined
             id='usualMiddleNames'
             v-model="studentSearchParams.usualMiddleNames"
             @keyup.enter="enterPushed()"
             v-on:input="searchHasValues"
             maxlength="255"
             rows="1"
-            auto-grow></v-textarea>
+            auto-grow></v-text-field>
           <v-col cols="1" class="ml-4">
             <v-row no-gutters justify="center">
               <v-checkbox disabled color="#606060" class="ma-0 pa-0"></v-checkbox>
