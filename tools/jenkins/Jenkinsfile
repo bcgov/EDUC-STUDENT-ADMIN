@@ -43,8 +43,8 @@ pipeline{
     MAX_CPU_BE = "100m"
     MIN_MEM_BE = "200Mi"
     MAX_MEM_BE = "250Mi"
-    DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/openshift/frontend-static.dc.yaml"
-    DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/openshift/backend.dc.yaml"
+    DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/frontend-static.dc.yaml"
+    DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/backend.dc.yaml"
 
   }
 
