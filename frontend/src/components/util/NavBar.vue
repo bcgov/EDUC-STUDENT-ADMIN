@@ -13,7 +13,8 @@
       <v-list-item
             v-for="item in items.filter(obj => !obj.items && obj.authorized)"
             :key="item.title+`1`"
-            class="menuRow pl-10">
+            class="menuRow pl-10"
+            :id="stripWhitespace(item.title + `MenuBtn`)">
           <router-link v-if="!['todo'].includes(item.link)" :to="{ name: item.link }" class="router">
             <v-list-item-content>
               <v-list-item-title v-if="item.link === $route.name" class="menuItem"><strong>{{item.title}}</strong></v-list-item-title>
@@ -47,6 +48,7 @@
                 v-for="subItem in item.items.filter(obj => obj.authorized)"
                 :key="subItem.title"
                 class="subMenuRow pl-9"
+                :id="stripWhitespace(subItem.title) + `MenuBtn`"
         >
           <router-link v-if="!['todo'].includes(subItem.link)" :to="{ name: subItem.link }" class="router">
             <v-list-item-content>
@@ -63,7 +65,7 @@
     </v-list>
   </v-navigation-drawer>
   <v-app-bar app absolute elevation="0" color="#38598A" :dark="true" id="navBar" class="pl-16 pr-8">
-    <v-app-bar-nav-icon @click="drawer=true">
+    <v-app-bar-nav-icon id="menuBtn" @click="drawer=true">
       <v-icon v-if="!drawer">$menu</v-icon>
       <v-icon v-else>$close</v-icon>
       <p class="ma-0 pl-4 pr-2">Menu</p>
@@ -164,6 +166,9 @@ export default {
         this.items.filter(obj => obj.items && obj.active).forEach(obj => obj.active = !obj.active);
         this.items[index].active = true;
       }
+    },
+    stripWhitespace(title) {
+      return title.replace(' ', '');
     }
   }
 };
