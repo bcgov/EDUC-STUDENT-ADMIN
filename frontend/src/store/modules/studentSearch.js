@@ -71,7 +71,7 @@ export default {
     },
     clearStudentSearchParams: (state) => {
       state.advancedSearchCriteria = {
-	    startDate: {
+        startDate: {
           year: null,
           month: null,
           day: null
