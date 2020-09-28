@@ -19,8 +19,8 @@ export default {
           month: null,
           day: null
         },
-	    useDOBRange: false
-	},
+        useDOBRange: false
+    },
     studentSearchParams: {
       pen: null,
       legalLastName: null,
