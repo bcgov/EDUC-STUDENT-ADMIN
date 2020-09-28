@@ -8,6 +8,19 @@ export default {
       currentSortAsc: true
     },
     selectedRecords: [],
+    advancedSearchCriteria:{
+        startDate: {
+          year: null,
+          month: null,
+          day: null
+        },
+        endDate: {
+          year: null,
+          month: null,
+          day: null
+        },
+	    useDOBRange: false
+	},
     studentSearchParams: {
       pen: null,
       legalLastName: null,
@@ -42,6 +55,9 @@ export default {
     setStudentSearchResponse: (state, studentSearchResponse) => {
       state.studentSearchResponse = studentSearchResponse;
     },
+    setAdvancedSearchCriteria: (state, advancedSearchCriteria) => {
+      state.advancedSearchCriteria = advancedSearchCriteria;
+    },
     setStudentSearchParams: (state, studentSearchParams) => {
       state.studentSearchParams = studentSearchParams;
     },
@@ -54,6 +70,19 @@ export default {
       }
     },
     clearStudentSearchParams: (state) => {
+      state.advancedSearchCriteria = {
+	    startDate: {
+          year: null,
+          month: null,
+          day: null
+        },
+        endDate: {
+          year: null,
+          month: null,
+          day: null
+        },
+        useDOBRange: false
+      };
       state.studentSearchParams = {
         pen: null,
         legalLastName: null,
@@ -62,8 +91,8 @@ export default {
         postalCode: null,
         genderCode: null,
         dob: {
-          startDate: null,
-          endDate: null
+           startDate: null,
+           endDate: null
         },
         mincode: null,
         usualLastName: null,
