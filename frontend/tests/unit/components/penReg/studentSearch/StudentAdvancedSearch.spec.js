@@ -471,7 +471,7 @@ describe('validateEndDOBMonth', () => {
     expect(wrapper.vm.validateEndDOBMonth()).toEqual([]);
   });
   it('Should return invalid if month is not valid', () => {
-    store.commit('studentSearch/setAdvancedSearchCriteria', { startDate: { year: null, month: null, day: null }, endDate: { year: '1990', month: '13', day: null }, useDOBRange: true });
+    store.commit('studentSearch/setAdvancedSearchCriteria', { startDate: { year: null, month: null, day: null }, endDate: { year: '1990', month: '13', day: null }, useDOBRange: false });
     wrapper.setData({
       isValidEndDOB: {
         year: true
@@ -639,7 +639,7 @@ describe('validateEndDOBDay', () => {
     expect(wrapper.vm.validateEndDOBDay()).toEqual([]);
   });
   it('Should return true if start day is null and end date valid', () => {
-    store.commit('studentSearch/setAdvancedSearchCriteria', { startDate: { year: '1990', month: '07', day: null }, endDate: { year: '1990', month: '07', day: '04' }, useDOBRange: true });
+    store.commit('studentSearch/setAdvancedSearchCriteria', { startDate: { year: '1990', month: '07', day: null }, endDate: { year: '1990', month: '07', day: '04' }, useDOBRange: false });
     wrapper.setData({
       isValidEndDOB: {
         year: true,
@@ -649,7 +649,7 @@ describe('validateEndDOBDay', () => {
     expect(wrapper.vm.validateEndDOBDay()).toEqual([]);
   });
   it('Should return true if start month is valid and end date valid', () => {
-    store.commit('studentSearch/setAdvancedSearchCriteria', { startDate: { year: '1990', month: '01', day: '02' }, endDate: { year: '1990', month: '07', day: '04' }, useDOBRange: true });
+    store.commit('studentSearch/setAdvancedSearchCriteria', { startDate: { year: '1990', month: '01', day: '02' }, endDate: { year: '1990', month: '07', day: '04' }, useDOBRange: false });
     wrapper.setData({
       isValidEndDOB: {
         year: true,
@@ -659,7 +659,7 @@ describe('validateEndDOBDay', () => {
     expect(wrapper.vm.validateEndDOBDay()).toEqual([]);
   });
   it('Should be invalid if end date date before start date', () => {
-    store.commit('studentSearch/setAdvancedSearchCriteria', { startDate: { year: '1990', month: '07', day: '05'}, endDate: { year: '1990', month: '07', day: '04' }, useDOBRange: true });
+    store.commit('studentSearch/setAdvancedSearchCriteria', { startDate: { year: '1990', month: '07', day: '05'}, endDate: { year: '1990', month: '07', day: '04' }, useDOBRange: false });
     wrapper.setData({
       isValidEndDOB: {
         year: true,
