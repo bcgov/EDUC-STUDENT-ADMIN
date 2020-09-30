@@ -365,7 +365,6 @@ export default {
     },
     formattedEndDOB() {
       if(this.advancedSearchCriteria.endDate && this.advancedSearchCriteria.endDate.year && this.advancedSearchCriteria.useDOBRange) {
-	console.log('advancedSearchCriteria object:' + JSON.stringify(this.advancedSearchCriteria));
         const formattedDate = {
           year: this.advancedSearchCriteria.endDate.year,
           month: this.endMonth(this.advancedSearchCriteria.endDate.month, this.isValidEndDOB.month),
@@ -373,7 +372,6 @@ export default {
         };
         return Object.values(formattedDate).join('/');
       } else if (this.advancedSearchCriteria.startDate && this.advancedSearchCriteria.startDate.year && (!this.isValidStartDOB.month || !this.isValidStartDOB.day)) {
-	console.log('advancedSearchCriteria object2:' + JSON.stringify(this.advancedSearchCriteria));
         const formattedDate = {
           year: this.advancedSearchCriteria.startDate.year,
           month: this.endMonth(this.advancedSearchCriteria.startDate.month, this.isValidStartDOB.month),
@@ -381,7 +379,6 @@ export default {
         };
         return Object.values(formattedDate).join('/');
       }
-console.log('advancedSearchCriteria object3:' + JSON.stringify(this.advancedSearchCriteria));
       return this.formattedStartDOB;
     },
   },
@@ -418,7 +415,7 @@ console.log('advancedSearchCriteria object3:' + JSON.stringify(this.advancedSear
       return [];
     },
     validateEndDOBYear() {
-      if(this.useDOBRange && !this.advancedSearchCriteria.endDate.year) {
+      if(this.advancedSearchCriteria.useDOBRange && !this.advancedSearchCriteria.endDate.year) {
         this.isValidEndDOB.year = false;
         return ['Year required for range search'];
       }
@@ -455,7 +452,7 @@ console.log('advancedSearchCriteria object3:' + JSON.stringify(this.advancedSear
       return [];
     },
     validateEndDOBMonth() {
-      if(this.advancedSearchCriteria.endDate && this.advancedSearchCriteria.startDate.year && this.advancedSearchCriteria.endDate.month && this.isValidEndDOB.year) {
+      if(this.advancedSearchCriteria.endDate && this.advancedSearchCriteria.endDate.year && this.advancedSearchCriteria.endDate.month && this.isValidEndDOB.year) {
         const validMonthResponse =  this.validateDOBMonth(this.advancedSearchCriteria.endDate.year, this.advancedSearchCriteria.endDate.month);
         const startDOBMonth = !this.advancedSearchCriteria.startDate.month || this.advancedSearchCriteria.startDate.month < 1?1:this.advancedSearchCriteria.startDate.month;
         if(validMonthResponse.length===0 && LocalDate.of(this.advancedSearchCriteria.endDate.year, this.advancedSearchCriteria.endDate.month, 1)  < LocalDate.of(this.advancedSearchCriteria.startDate.year, startDOBMonth, 1)) {
@@ -514,13 +511,7 @@ console.log('advancedSearchCriteria object3:' + JSON.stringify(this.advancedSear
       return month && isValid && month!=='0' ? month: 12;
     },
     endDay(dateObject, isValidObject) {
-	  console.log('Date object:' + JSON.stringify(dateObject));
-	  if(dateObject.day && isValidObject.day){
-		return dateObject.day;
-	  }else{
-		return LocalDate.of(dateObject.year, this.endMonth(dateObject.month, isValidObject.month), 1).lengthOfMonth();
-	  }
-
+      return dateObject.day && isValidObject.day? dateObject.day: LocalDate.of(dateObject.year, this.endMonth(dateObject.month, isValidObject.month), 1).lengthOfMonth();
     }
   }
 };
