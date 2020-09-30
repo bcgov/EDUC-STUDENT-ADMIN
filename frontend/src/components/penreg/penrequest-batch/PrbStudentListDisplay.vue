@@ -235,7 +235,7 @@ import { mapGetters, mapMutations, mapState } from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
 import { isValidPEN, isValidMinCode, isValidPostalCode, isValidDob, isValidAlphanumericValue } from '../../../utils/validation';
 import PrbStudentSearchResults from './PrbStudentSearchResults';
-import {formatMinCode, formatPen, formatDob, formatPostalCode} from '../../../utils/format';
+import { formatPrbStudent } from '../../../utils/penrequest-batch/format';
 
 export default {
   components: {
@@ -298,7 +298,8 @@ export default {
         key: 'penRequestBatchStudentStatusCode', 
         operation: statuses.length > 0 ? SEARCH_FILTER_OPERATION.IN : SEARCH_FILTER_OPERATION.NOT_EQUAL, 
         value: statuses.length > 0 ? statuses : 'LOADED', 
-        valueType: SEARCH_VALUE_TYPE.STRING
+        valueType: SEARCH_VALUE_TYPE.STRING,
+        condition: SEARCH_CONDITION.AND
       };
     },
     prbStudentBatchIdSearchCriteria() {
@@ -317,7 +318,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse', 'clearPrbStudentSearchParams', 'setCurrentPrbStudentSearchParams']),
+    ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse', 'clearPrbStudentSearchParams', 'setCurrentPrbStudentSearchParams', 'setPrbStudentSearchCriteria']),
     uppercasePostal(){
       if(this.prbStudentSearchParams.postalCode){
         this.prbStudentSearchParams.postalCode = this.prbStudentSearchParams.postalCode.toUpperCase();
@@ -382,9 +383,11 @@ export default {
       this.setPageNumber(1);
 
       if(initial || (this.$refs.prbStudentSearchForm.validate() && this.searchHasValues())) {
-        this.retrievePenRequests(this.prbStudentSearchParams)
+        const searchCriteria = this.prbStudentSearchCriteriaList(this.prbStudentSearchParams);
+        this.retrievePenRequests(searchCriteria)
           .then(() => {
             this.setCurrentPrbStudentSearchParams(JSON.parse(JSON.stringify(this.prbStudentSearchParams)));
+            this.setPrbStudentSearchCriteria(searchCriteria);
           })
           .finally(() => {
             this.searchLoading = false;
@@ -395,11 +398,7 @@ export default {
     },
     initializePrbStudents(students) {
       students.forEach(student => {
-        student.minCode && (student.minCode = formatMinCode(student.minCode));
-        student.bestMatchPEN && (student.bestMatchPEN = formatPen(student.bestMatchPEN));
-        student.submittedPen && (student.submittedPen = formatPen(student.submittedPen));
-        student.dob && (student.dob = formatDob(student.dob));
-        student.postalCode && (student.postalCode = formatPostalCode(student.postalCode));
+        formatPrbStudent(student);
         student.isSelected = false;
       });
       return students;
@@ -435,17 +434,13 @@ export default {
 
       const searchCriteriaList = [
         { 
-          searchCriteriaList: [this.prbStudentBatchIdSearchCriteria],
-        },
-        { 
-          condition: 'AND', 
-          searchCriteriaList: optionalCriteriaList
+          searchCriteriaList: [this.prbStudentBatchIdSearchCriteria, ... optionalCriteriaList],
         },
       ];
 
-      return searchCriteriaList.filter(criteria => criteria?.searchCriteriaList?.length > 0);
+      return searchCriteriaList;
     },
-    retrievePenRequests(searchParams) {
+    retrievePenRequests(searchCriteria) {
       const params = {
         params: {
           pageNumber: this.pageNumber-1,
@@ -455,7 +450,7 @@ export default {
             legalFirstName: 'ASC',
             legalMiddleNames: 'ASC'
           },
-          searchQueries: this.prbStudentSearchCriteriaList(searchParams),
+          searchQueries: searchCriteria,
         }
       };
 

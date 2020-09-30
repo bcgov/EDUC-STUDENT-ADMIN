@@ -157,11 +157,16 @@ function getPaginatedListForSCGroups(apiName, url) {
           message: 'No access token'
         });
       }
+
+      let pageSize = req.query.pageSize;
+      if(pageSize > 20) {
+        pageSize = 20;
+      }
   
       const params = {
         params: {
           pageNumber: req.query.pageNumber,
-          pageSize: req.query.pageSize,
+          pageSize,
           sort: req.query.sort,
           searchCriteriaList: JSON.stringify(req.query.searchQueries.map((query) => JSON.parse(query)))
         }
