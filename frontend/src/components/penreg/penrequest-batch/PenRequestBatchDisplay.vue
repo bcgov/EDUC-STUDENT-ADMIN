@@ -38,8 +38,8 @@
               mdi-chevron-down
             </v-icon>
           </PrimaryButton>
-          <PrimaryButton id="view-list-action" class="mr-2" :disabled="this.selectedFiles.length === 0" @click.native="clickViewList">View List</PrimaryButton>
-          <PrimaryButton id="view-details-action" :disabled="!actionEnabled">View Details</PrimaryButton>
+          <PrimaryButton id="view-list-action" class="mr-2" :disabled="this.selectedFiles.length === 0" @click.native="clickViewList" text="View List"></PrimaryButton>
+          <PrimaryButton id="view-details-action" :disabled="!actionEnabled" text="View Details"></PrimaryButton>
         </v-row>
         <v-row no-gutters class="py-2" style="background-color:white;">
           <v-alert

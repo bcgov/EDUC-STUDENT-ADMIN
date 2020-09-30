@@ -191,7 +191,8 @@ export const PAGE_TITLES = Object.freeze(
     STUDENT_DETAILS: 'Student Details',
     PEN_REQ_FILES: 'PEN Request Files',
     PEN_MATCH: 'PEN Match',
-    PEN_REQ_BATCH_STUDENT: 'PEN Request List',
+    PEN_REQ_BATCH_STUDENT_LIST: 'PEN Request List',
+    PEN_REQ_BATCH_STUDENT_DETAILS: 'PEN Request Details',
   }
 );
 
