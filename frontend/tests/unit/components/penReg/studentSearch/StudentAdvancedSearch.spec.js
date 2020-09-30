@@ -609,7 +609,7 @@ describe('validateEndDOBDay', () => {
     wrapper.destroy();
   });
   it('Should return invalid if day is not valid', () => {
-    store.commit('studentSearch/setAdvancedSearchCriteria', { startDate: { year: null, month: null, day: null }, endDate: { year: '1990', month: '07', day: '32' }, useDOBRange: true });
+    store.commit('studentSearch/setAdvancedSearchCriteria', { startDate: { year: null, month: null, day: null }, endDate: { year: '1990', month: '07', day: '32' }, useDOBRange: false });
     wrapper.setData({
       isValidEndDOB: {
         year: true,
