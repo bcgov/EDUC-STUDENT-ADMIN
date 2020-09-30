@@ -13,6 +13,7 @@ import PenRequestDetail from './components/gmp/PenRequestDetail';
 import StudentRequestDetail from './components/ump/StudentRequestDetail';
 import PenRequestBatchDisplay from './components/penreg/penrequest-batch/PenRequestBatchDisplay';
 import PrbStudentListDisplay from './components/penreg/penrequest-batch/PrbStudentListDisplay';
+import PrbStudentDetailsDisplay from './components/penreg/penrequest-batch/PrbStudentDetailsDisplay';
 import UnAuthorized from './components/UnAuthorized';
 import { REQUEST_TYPES, PAGE_TITLES } from './utils/constants';
 import authStore from './store/modules/auth';
@@ -168,7 +169,26 @@ const router = new VueRouter({
       component: PrbStudentListDisplay,
       props: (route) => ({ batchIDs: route.query.batchIDs,  statusFilters: route.query.statusFilters}),
       meta: {
-        pageTitle: PAGE_TITLES.PEN_REQ_BATCH_STUDENT,
+        pageTitle: PAGE_TITLES.PEN_REQ_BATCH_STUDENT_LIST,
+        requiresAuth: true,
+        role: 'isValidPenRequestBatchUser'
+      },
+    },
+    {
+      path: '/prbStudentDetails',
+      name: 'prbStudentDetails',
+      component: PrbStudentDetailsDisplay,
+      props: (route) => ({ 
+        seqNumber: +(route.query.seqNumber ?? 1),
+        totalNumber: +(route.query.totalNumber ?? 1),
+        batchCount: +(route.query.batchCount ?? 1),
+        seqInBatch: +(route.query.seqInBatch ?? 1),
+        totalInBatch: +(route.query.totalInBatch ?? 1),
+        searchCriteria: JSON.parse(route.query.searchCriteria ?? '[]'),
+        prbStudentIDs: route.query.prbStudentIDs,
+      }),
+      meta: {
+        pageTitle: PAGE_TITLES.PEN_REQ_BATCH_STUDENT_DETAILS,
         requiresAuth: true,
         role: 'isValidPenRequestBatchUser'
       },
