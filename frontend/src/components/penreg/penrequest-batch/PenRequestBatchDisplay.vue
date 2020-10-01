@@ -69,6 +69,7 @@ import PenRequestBatchList from './PenRequestBatchList';
 import FilterTag from '../../util/FilterTag';
 import PrimaryButton from '../../util/PrimaryButton';
 import router from '../../../router';
+import alterMixin from '../../../mixins/alterMixin';
 
 export default {
   name: 'PenRequestBatchDisplay',
@@ -77,6 +78,7 @@ export default {
     PrimaryButton,
     PenRequestBatchList
   },
+  mixins: [alterMixin],
   props: {
     schoolGroup: {
       type: String,
@@ -88,10 +90,6 @@ export default {
       schoolGroups: [{value: 'K12', text: 'K-12'}, {value: 'PSI', text: 'PSI'}],
       filters:['Fixable'],
       actionEnabled: false,
-
-      alert: false,
-      alertMessage: null,
-      alertType: null,
     };
   },
   computed: {
@@ -115,16 +113,6 @@ export default {
     },
     filterChange(filters) {
       this.filters = filters;
-    },
-    setSuccessAlert(message) {
-      this.alertMessage = message;
-      this.alertType = 'bootstrap-success';
-      this.alert = true;
-    },
-    setFailureAlert(message) {
-      this.alertMessage = message;
-      this.alertType = 'bootstrap-error';
-      this.alert = true;
     },
     clickViewList() {
       const batchIDs = this.selectedFiles.map(file => file.penRequestBatchID);
