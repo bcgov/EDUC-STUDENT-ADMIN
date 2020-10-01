@@ -5,7 +5,7 @@
     >
       <v-container fluid class="fill-height px-0">
         <v-row no-gutters>
-          <v-card elevation="0" height="100%" width="100%" style="background-color:#white;">
+          <v-card elevation="0" height="100%" width="100%" style="background-color:white;">
             <v-row no-gutters class="py-2" style="background-color:white;">
               <v-col cols="1" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
                 <v-text-field

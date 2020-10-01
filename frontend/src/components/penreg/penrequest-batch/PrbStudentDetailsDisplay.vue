@@ -413,7 +413,7 @@ export default {
   #bottom-table /deep/ table th,
   #top-table /deep/ table th { 
     border-bottom: none !important;
-    font-size: 0.875rem;;
+    font-size: 0.875rem;
     font-weight: normal;
     color: rgba(0, 0, 0, 0.87) !important;
   }
