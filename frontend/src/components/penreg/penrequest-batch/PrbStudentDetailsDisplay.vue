@@ -29,7 +29,7 @@
           <v-spacer></v-spacer>
           <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2" :disabled="!actionEnabled" text="Modify search"></PrimaryButton>
           <PrimaryButton id="issue-pen-action" class="mr-2" :disabled="!actionEnabled" text="Issue new PEN"></PrimaryButton>
-          <PrimaryButton id="request-info-action" text="Request info"></PrimaryButton>
+          <InfoDialog @updateInfoRequested="updateInfoRequested"></InfoDialog>
         </v-row>
         <v-row no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
           <span>
@@ -101,7 +101,7 @@
           <v-col cols="6">
             <v-row no-gutters class="d-flex align-center">
               <span class="mr-3"><strong>Info requested</strong></span>               
-              <v-btn icon color="#003366" @click="clearInfoRequested">
+              <v-btn icon color="#003366" @click="updateInfoRequested()">
                 <v-icon>fa-times-circle</v-icon>
               </v-btn>
             </v-row>
@@ -118,6 +118,7 @@
 import { mapState, mapMutations } from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
 import PrbStudentStatusChip from './PrbStudentStatusChip';
+import InfoDialog from '../../util/InfoDialog';
 import { formatPrbStudent, formatPrbStudents } from '../../../utils/penrequest-batch/format';
 import ApiService from '../../../common/apiService';
 import { Routes, SEARCH_FILTER_OPERATION, SEARCH_VALUE_TYPE } from '../../../utils/constants';
@@ -128,6 +129,7 @@ export default {
   components: {
     PrimaryButton,
     PrbStudentStatusChip,
+    InfoDialog
   },
   props: {
     seqNumber: {
@@ -263,7 +265,7 @@ export default {
         await this.retrieveBatchFile();
         this.setBatchNav();
       } catch (error) {
-        this.setFailureAlert('An error occurred while loading the PEN request. Please try again later.')
+        this.setFailureAlert('An error occurred while loading the PEN request. Please try again later.');
         console.log(error);
       }
 
@@ -388,18 +390,26 @@ export default {
         query.searchCriteriaList.some(criteria => criteria.key === 'penRequestBatchEntity.penRequestBatchID'));
       return batchIdSearchQuery?.searchCriteriaList.find(criteria => criteria.key === 'penRequestBatchEntity.penRequestBatchID');
     },
-    clearInfoRequested() {
+    updateInfoRequested(infoRequest) {
       this.loading = true;
-      const req = {
-        infoRequest: '',
-        penRequestBatchStudentStatusCode: 'FIXABLE'
-      };
+      let req;
+      if(infoRequest) {
+        req = {
+          infoRequest: infoRequest,
+          penRequestBatchStudentStatusCode: 'INFOREQ'
+        };
+      } else {
+        req = {
+          infoRequest: '',
+          penRequestBatchStudentStatusCode: 'FIXABLE'
+        };
+      }
       ApiService.apiAxios.put(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}`, req)
         .then(response => {
           this.prbStudent = response.data.content;
         })
         .catch(error => {
-          this.setFailureAlert('An error occurred while updating the PEN request. Please try again later.')
+          this.setFailureAlert('An error occurred while updating the PEN request. Please try again later.');
           console.log(error);
         })
         .finally(() => {

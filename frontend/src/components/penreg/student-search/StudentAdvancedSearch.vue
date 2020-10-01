@@ -329,13 +329,13 @@ export default {
     };
   },
   mounted() {
-	if(this.studentSearchParams.dob.startDate){
+    if(this.studentSearchParams.dob.startDate){
       const tempStartDates = this.studentSearchParams.dob.startDate.split('/');
       this.advancedSearchCriteria.startDate.year = tempStartDates[0];
       this.advancedSearchCriteria.startDate.month = tempStartDates[1];
       this.advancedSearchCriteria.startDate.day = tempStartDates[2];
     }
-	this.advancedSearchCriteria.useDOBRange = false;
+    this.advancedSearchCriteria.useDOBRange = false;
     this.setIsAdvancedSearch(true);
   },
   watch: {
@@ -516,7 +516,7 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
   .v-text-field>.v-input__control>.v-text-field__details {
     max-width:300%;
     width:300%;
