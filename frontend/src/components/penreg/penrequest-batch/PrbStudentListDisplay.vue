@@ -5,7 +5,7 @@
     >
       <v-container fluid class="fill-height px-0">
         <v-row no-gutters>
-          <v-card elevation="0" height="100%" width="100%" style="background-color:#d7d7d7;">
+          <v-card elevation="0" height="100%" width="100%" style="background-color:#white;">
             <v-row no-gutters class="py-2" style="background-color:white;">
               <v-col cols="1" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
                 <v-text-field
@@ -213,6 +213,17 @@
               color="blue"
               :active="searchLoading && !searchEnabled"
             ></v-progress-linear>
+            <v-alert
+              v-model="alert"
+              dense
+              text
+              dismissible
+              outlined
+              transition="scale-transition"
+              :class="`${alertType} flex-grow-1 mx-3`"
+            >
+              {{ alertMessage }}
+            </v-alert>
             <v-row v-if="prbStudentSearchResponse" no-gutters class="py-2" style="background-color:white;">
               <v-divider class="mx-3 header-divider"/>
             </v-row>
@@ -236,12 +247,14 @@ import PrimaryButton from '../../util/PrimaryButton';
 import { isValidPEN, isValidMinCode, isValidPostalCode, isValidDob, isValidAlphanumericValue } from '../../../utils/validation';
 import PrbStudentSearchResults from './PrbStudentSearchResults';
 import { formatPrbStudent } from '../../../utils/penrequest-batch/format';
+import alterMixin from '../../../mixins/alterMixin';
 
 export default {
   components: {
     PrimaryButton,
     PrbStudentSearchResults,
   },
+  mixins: [alterMixin],
   props: {
     batchIDs: {
       type: [Array, String],
@@ -271,6 +284,7 @@ export default {
     ...mapGetters('student', ['gradeCodeObjects']),
     ...mapState('student', ['genders']),
     ...mapState('prbStudentSearch', ['pageNumber', 'prbStudentSearchResponse', 'selectedStudentStatus', 'currentPrbStudentSearchParams']),
+    ...mapState('penRequestBatch', ['selectedFiles']),
     prbStudentSearchParams: {
       get(){
         return this.$store.state['prbStudentSearch'].prbStudentSearchParams;
@@ -319,6 +333,7 @@ export default {
   },
   methods: {
     ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse', 'clearPrbStudentSearchParams', 'setCurrentPrbStudentSearchParams', 'setPrbStudentSearchCriteria']),
+    ...mapMutations('penRequestBatch', ['setSelectedFiles']),
     uppercasePostal(){
       if(this.prbStudentSearchParams.postalCode){
         this.prbStudentSearchParams.postalCode = this.prbStudentSearchParams.postalCode.toUpperCase();
@@ -392,6 +407,10 @@ export default {
           .finally(() => {
             this.searchLoading = false;
           });
+
+        if(!this.selectedFiles || this.selectedFiles.length === 0) {
+          this.retrieveSelectedFiles();
+        }
       }else{
         this.searchLoading = false;
       }
@@ -461,8 +480,32 @@ export default {
           this.setPrbStudentSearchResponse(response.data);
         })
         .catch(error => {
+          this.setFailureAlert('An error occurred while loading the PEN requests. Please try again later.');
           console.log(error);
           throw error;
+        });
+    },
+    retrieveSelectedFiles() {
+      const criteriaValue = [this.batchIDs].flat().join(',');
+      const searchQueries = [
+        { 
+          searchCriteriaList: [{
+            key: 'penRequestBatchID', operation: SEARCH_FILTER_OPERATION.IN, value: criteriaValue, valueType: SEARCH_VALUE_TYPE.UUID
+          }],
+        },
+      ];
+
+      const params = {
+        params: {
+          pageNumber: 0,
+          pageSize: 15,
+          searchQueries
+        }
+      };
+
+      return ApiService.apiAxios.get(Routes['penRequestBatch'].FILES_URL, params)
+        .then(response => {
+          response.data && this.setSelectedFiles(response.data.content);
         });
     },
   }
