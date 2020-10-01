@@ -17,8 +17,8 @@
           clearable
         ></v-select>
       </v-flex>
-      <PrimaryButton id="viewSelected" v-if="selectedRecords.length > 0" text="View Selected"></PrimaryButton>
-      <PrimaryButton id="viewDetails" v-else text="View Details"></PrimaryButton>
+      <PrimaryButton id="viewSelected" v-if="selectedRecords.length > 0" @click.native="clickViewSelected" text="View Selected"></PrimaryButton>
+      <PrimaryButton id="viewDetails" v-else :disabled="!(prbStudentSearchResponse.totalElements > 0)" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
     </v-row>
     <v-divider class="mb-1 subheader-divider"/>
     <v-data-table
@@ -59,13 +59,10 @@
               <span class="double-column-item">{{props.item[header.doubleValue]}}</span>
               <br>
               <span class="bottom-column-item mt-1">
-                <v-chip 
+                <PrbStudentStatusChip 
                   v-if="header.bottomValue === 'penRequestBatchStudentStatusCode'" 
-                  :color="statusChipColors[props.item[header.bottomValue]][0] || '#027CB1' " 
-                  :text-color="statusChipColors[props.item[header.bottomValue]][1] || 'white'"
-                >
-                  <strong>{{ getStatusLabel(props.item) || '-' }}</strong>
-                </v-chip>
+                  :prbStudent="props.item"
+                ></PrbStudentStatusChip>
                 <span v-else>{{ props.item[header.bottomValue] || '-' }}</span>
               </span>
             </div>
@@ -87,12 +84,15 @@
 <script>
 import { mapMutations, mapState } from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
-import { sortBy } from 'lodash';
+import PrbStudentStatusChip from './PrbStudentStatusChip';
+import { sortBy, uniq } from 'lodash';
+import router from '../../../router';
 
 export default {
   name: 'PrbStudentSearchResults',
   components: {
     PrimaryButton,
+    PrbStudentStatusChip,
   },
   props: {
     retrievePenRequests: {
@@ -119,16 +119,6 @@ export default {
         { topText: 'Suggested PEN', bottomText: 'Submitted PEN', topValue: 'bestMatchPEN', bottomValue: 'submittedPen', sortable: false },
         { topText: 'Submission', bottomText: 'Status', topValue: 'submissionNumber', bottomValue: 'penRequestBatchStudentStatusCode', sortable: false },
       ],
-      statusChipColors: {
-        'MATCHEDSYS': ['#027CB1', 'white'],
-        'MATCHEDUSR': ['#027CB1', 'white'],
-        'NEWPENSYS' : ['#7737BD', 'white'],
-        'NEWPENUSR' : ['#7737BD', 'white'],
-        'FIXABLE' : ['#2E8540', 'white'],
-        'ERROR' : ['#D8292F', 'white'],
-        'REPEAT' : ['#FCBA19', '#313132'],
-        'INFOREQ' : ['#FF9839', '#313132'],
-      },
     };
   },
   watch: {
@@ -146,7 +136,7 @@ export default {
     },
   },
   computed: {
-    ...mapState('prbStudentSearch', ['prbStudentSearchResponse', 'currentPrbStudentSearchParams']),
+    ...mapState('prbStudentSearch', ['prbStudentSearchResponse', 'prbStudentSearchCriteria']),
     ...mapState('penRequestBatch', ['selectedFiles', 'prbStudentStatuses']),
     pageNumber: {
       get(){
@@ -188,19 +178,35 @@ export default {
     ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse']),
     pagination() {
       this.loadingTable = true;
-      this.retrievePenRequests(this.currentPrbStudentSearchParams)
+      this.retrievePenRequests(this.prbStudentSearchCriteria)
         .finally(() => {
           this.loadingTable = false;
         });
-    },
-    getStatusLabel(request) {
-      const statusLabel = this.prbStudentStatuses.find(status => status.penRequestBatchStudentStatusCode === request.penRequestBatchStudentStatusCode)?.label;
-      return request.penRequestBatchStudentStatusCode === 'REPEAT' ? `${request.repeatRequestSequenceNumber || ''} Repeats` : statusLabel;
     },
     getSchoolName(request) {
       const schoolName = this.selectedFiles.find(file => file.penRequestBatchID === request.penRequestBatchID)?.schoolName;
       return schoolName;
     },
+    clickViewSelected() {
+      const batchIDs = uniq(this.selectedRecords.map(record => record.penRequestBatchID));
+      const prbStudentIDs = this.selectedRecords.map(record => record.penRequestBatchStudentID);
+      const query = { 
+        seqNumber: 1,
+        totalNumber: this.selectedRecords.length, 
+        batchCount: batchIDs.length, 
+        prbStudentIDs: prbStudentIDs,
+      };
+      router.push({name: 'prbStudentDetails', query});
+    },
+    clickViewDetails() {
+      const query = { 
+        seqNumber: 1,
+        totalNumber: this.prbStudentSearchResponse.totalElements, 
+        batchCount: this.selectedFiles.length, 
+        searchCriteria: JSON.stringify(this.prbStudentSearchCriteria),
+      };
+      router.push({name: 'prbStudentDetails', query});
+    }
   }
 };
 </script>

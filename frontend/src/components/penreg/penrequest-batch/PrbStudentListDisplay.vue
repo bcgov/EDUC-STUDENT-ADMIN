@@ -5,7 +5,7 @@
     >
       <v-container fluid class="fill-height px-0">
         <v-row no-gutters>
-          <v-card elevation="0" height="100%" width="100%" style="background-color:#d7d7d7;">
+          <v-card elevation="0" height="100%" width="100%" style="background-color:white;">
             <v-row no-gutters class="py-2" style="background-color:white;">
               <v-col cols="1" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
                 <v-text-field
@@ -213,6 +213,17 @@
               color="blue"
               :active="searchLoading && !searchEnabled"
             ></v-progress-linear>
+            <v-alert
+              v-model="alert"
+              dense
+              text
+              dismissible
+              outlined
+              transition="scale-transition"
+              :class="`${alertType} flex-grow-1 mx-3`"
+            >
+              {{ alertMessage }}
+            </v-alert>
             <v-row v-if="prbStudentSearchResponse" no-gutters class="py-2" style="background-color:white;">
               <v-divider class="mx-3 header-divider"/>
             </v-row>
@@ -235,13 +246,15 @@ import { mapGetters, mapMutations, mapState } from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
 import { isValidPEN, isValidMinCode, isValidPostalCode, isValidDob, isValidAlphanumericValue } from '../../../utils/validation';
 import PrbStudentSearchResults from './PrbStudentSearchResults';
-import {formatMinCode, formatPen, formatDob, formatPostalCode} from '../../../utils/format';
+import { formatPrbStudent } from '../../../utils/penrequest-batch/format';
+import alterMixin from '../../../mixins/alterMixin';
 
 export default {
   components: {
     PrimaryButton,
     PrbStudentSearchResults,
   },
+  mixins: [alterMixin],
   props: {
     batchIDs: {
       type: [Array, String],
@@ -271,6 +284,7 @@ export default {
     ...mapGetters('student', ['gradeCodeObjects']),
     ...mapState('student', ['genders']),
     ...mapState('prbStudentSearch', ['pageNumber', 'prbStudentSearchResponse', 'selectedStudentStatus', 'currentPrbStudentSearchParams']),
+    ...mapState('penRequestBatch', ['selectedFiles']),
     prbStudentSearchParams: {
       get(){
         return this.$store.state['prbStudentSearch'].prbStudentSearchParams;
@@ -298,7 +312,8 @@ export default {
         key: 'penRequestBatchStudentStatusCode', 
         operation: statuses.length > 0 ? SEARCH_FILTER_OPERATION.IN : SEARCH_FILTER_OPERATION.NOT_EQUAL, 
         value: statuses.length > 0 ? statuses : 'LOADED', 
-        valueType: SEARCH_VALUE_TYPE.STRING
+        valueType: SEARCH_VALUE_TYPE.STRING,
+        condition: SEARCH_CONDITION.AND
       };
     },
     prbStudentBatchIdSearchCriteria() {
@@ -317,7 +332,8 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse', 'clearPrbStudentSearchParams', 'setCurrentPrbStudentSearchParams']),
+    ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse', 'clearPrbStudentSearchParams', 'setCurrentPrbStudentSearchParams', 'setPrbStudentSearchCriteria']),
+    ...mapMutations('penRequestBatch', ['setSelectedFiles']),
     uppercasePostal(){
       if(this.prbStudentSearchParams.postalCode){
         this.prbStudentSearchParams.postalCode = this.prbStudentSearchParams.postalCode.toUpperCase();
@@ -382,24 +398,26 @@ export default {
       this.setPageNumber(1);
 
       if(initial || (this.$refs.prbStudentSearchForm.validate() && this.searchHasValues())) {
-        this.retrievePenRequests(this.prbStudentSearchParams)
+        const searchCriteria = this.prbStudentSearchCriteriaList(this.prbStudentSearchParams);
+        this.retrievePenRequests(searchCriteria)
           .then(() => {
             this.setCurrentPrbStudentSearchParams(JSON.parse(JSON.stringify(this.prbStudentSearchParams)));
+            this.setPrbStudentSearchCriteria(searchCriteria);
           })
           .finally(() => {
             this.searchLoading = false;
           });
+
+        if(!this.selectedFiles || this.selectedFiles.length === 0) {
+          this.retrieveSelectedFiles();
+        }
       }else{
         this.searchLoading = false;
       }
     },
     initializePrbStudents(students) {
       students.forEach(student => {
-        student.minCode && (student.minCode = formatMinCode(student.minCode));
-        student.bestMatchPEN && (student.bestMatchPEN = formatPen(student.bestMatchPEN));
-        student.submittedPen && (student.submittedPen = formatPen(student.submittedPen));
-        student.dob && (student.dob = formatDob(student.dob));
-        student.postalCode && (student.postalCode = formatPostalCode(student.postalCode));
+        formatPrbStudent(student);
         student.isSelected = false;
       });
       return students;
@@ -435,17 +453,13 @@ export default {
 
       const searchCriteriaList = [
         { 
-          searchCriteriaList: [this.prbStudentBatchIdSearchCriteria],
-        },
-        { 
-          condition: 'AND', 
-          searchCriteriaList: optionalCriteriaList
+          searchCriteriaList: [this.prbStudentBatchIdSearchCriteria, ... optionalCriteriaList],
         },
       ];
 
-      return searchCriteriaList.filter(criteria => criteria?.searchCriteriaList?.length > 0);
+      return searchCriteriaList;
     },
-    retrievePenRequests(searchParams) {
+    retrievePenRequests(searchCriteria) {
       const params = {
         params: {
           pageNumber: this.pageNumber-1,
@@ -455,7 +469,7 @@ export default {
             legalFirstName: 'ASC',
             legalMiddleNames: 'ASC'
           },
-          searchQueries: this.prbStudentSearchCriteriaList(searchParams),
+          searchQueries: searchCriteria,
         }
       };
 
@@ -466,8 +480,32 @@ export default {
           this.setPrbStudentSearchResponse(response.data);
         })
         .catch(error => {
+          this.setFailureAlert('An error occurred while loading the PEN requests. Please try again later.');
           console.log(error);
           throw error;
+        });
+    },
+    retrieveSelectedFiles() {
+      const criteriaValue = [this.batchIDs].flat().join(',');
+      const searchQueries = [
+        { 
+          searchCriteriaList: [{
+            key: 'penRequestBatchID', operation: SEARCH_FILTER_OPERATION.IN, value: criteriaValue, valueType: SEARCH_VALUE_TYPE.UUID
+          }],
+        },
+      ];
+
+      const params = {
+        params: {
+          pageNumber: 0,
+          pageSize: 15,
+          searchQueries
+        }
+      };
+
+      return ApiService.apiAxios.get(Routes['penRequestBatch'].FILES_URL, params)
+        .then(response => {
+          response.data && this.setSelectedFiles(response.data.content);
         });
     },
   }

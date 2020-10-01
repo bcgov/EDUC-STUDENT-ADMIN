@@ -23,7 +23,8 @@ const getDefaultState = () => {
     },
     prbStudentSearchResponse: null,
     selectedStudentStatus: null,
-    currentPrbStudentSearchParams: null
+    currentPrbStudentSearchParams: null,
+    prbStudentSearchCriteria: null,
   };
 };
 
@@ -54,6 +55,9 @@ export default {
     },
     setCurrentPrbStudentSearchParams: (state, currentPrbStudentSearchParams) => {
       state.currentPrbStudentSearchParams = currentPrbStudentSearchParams;
+    },
+    setPrbStudentSearchCriteria: (state, prbStudentSearchCriteria) => {
+      state.prbStudentSearchCriteria = prbStudentSearchCriteria;
     }
   }
 };

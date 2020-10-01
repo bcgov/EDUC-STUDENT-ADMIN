@@ -27,6 +27,12 @@ export default {
      */
     clearNavigation: (state) => {
       Object.assign(state, getDefaultState());
+    },
+    setPreRoute: (state, preRoute) => {
+      state.preRoute = preRoute;
+    },
+    setNextRoute: (state, nextRoute) => {
+      state.nextRoute = nextRoute;
     }
   },
 };

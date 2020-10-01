@@ -1,8 +1,9 @@
 'use strict';
 const { logApiError } = require('./utils');
 const config = require('../config/index');
-const { getBackendToken, getData, errorResponse, getPaginatedListForSCGroups } = require('./utils');
+const { getBackendToken, getData, putData, errorResponse, getPaginatedListForSCGroups } = require('./utils');
 const {FILTER_OPERATION, CONDITION, VALUE_TYPE} = require('../util/constants');
+const HttpStatus = require('http-status-codes');
 
 async function getPENBatchRequestStats(req, res) {
   const schoolGroupCodes = [
@@ -60,8 +61,35 @@ async function getPENBatchRequestStats(req, res) {
   });
 }
 
+async function updatePrbStudentInfoRequested(req, res) {
+  const token = getBackendToken(req, res);
+  if(!token) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No access token'
+    });
+  }
+
+  try {
+    const url = `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${req.params.id}/student/${req.params.studentId}`;
+    let studentData = await getData(token, url);
+
+    const studentReq = {
+      ... studentData,
+      infoRequest: req.body.infoRequest,
+      penRequestBatchStudentStatusCode: req.body.penRequestBatchStudentStatusCode
+    };
+
+    const studentRes = await putData(token, url, studentReq);
+    return res.status(200).json(studentRes);
+  } catch(e) {
+    logApiError(e, 'updateStudentInfoRequested', 'Error updating a PrbStudent.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getPENBatchRequestStats,
+  updatePrbStudentInfoRequested,
   getPenRequestFiles: getPaginatedListForSCGroups('getPenRequestFiles', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/paginated`),
   getPenRequestBatchStudents: getPaginatedListForSCGroups('getPenRequestBatchStudents', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/student/paginated`),
 };
