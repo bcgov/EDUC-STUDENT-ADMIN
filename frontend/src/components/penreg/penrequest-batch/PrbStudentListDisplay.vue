@@ -469,7 +469,7 @@ export default {
             legalFirstName: 'ASC',
             legalMiddleNames: 'ASC'
           },
-          searchQueries: searchCriteria,
+          searchQueries: searchCriteria || this.prbStudentSearchCriteriaList(this.prbStudentSearchParams),
         }
       };
 

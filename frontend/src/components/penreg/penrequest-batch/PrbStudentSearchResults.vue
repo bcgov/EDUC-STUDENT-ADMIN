@@ -17,8 +17,8 @@
           clearable
         ></v-select>
       </v-flex>
-      <PrimaryButton id="viewSelected" v-if="selectedRecords.length > 0" @click.native="clickViewSelected" text="View Selected"></PrimaryButton>
-      <PrimaryButton id="viewDetails" v-else :disabled="!(prbStudentSearchResponse.totalElements > 0)" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
+      <PrimaryButton id="viewSelected" v-if="selected" :disabled="!viewEnabled" @click.native="clickViewSelected" text="View Selected"></PrimaryButton>
+      <PrimaryButton id="viewDetails" v-else :disabled="!viewEnabled" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
     </v-row>
     <v-divider class="mb-1 subheader-divider"/>
     <v-data-table
@@ -85,7 +85,7 @@
 import { mapMutations, mapState } from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
 import PrbStudentStatusChip from './PrbStudentStatusChip';
-import { sortBy, uniq } from 'lodash';
+import { sortBy, uniq, values } from 'lodash';
 import router from '../../../router';
 
 export default {
@@ -136,7 +136,7 @@ export default {
     },
   },
   computed: {
-    ...mapState('prbStudentSearch', ['prbStudentSearchResponse', 'prbStudentSearchCriteria']),
+    ...mapState('prbStudentSearch', ['prbStudentSearchResponse', 'prbStudentSearchCriteria', 'currentPrbStudentSearchParams']),
     ...mapState('penRequestBatch', ['selectedFiles', 'prbStudentStatuses']),
     pageNumber: {
       get(){
@@ -172,13 +172,19 @@ export default {
       set(status){
         return this.$store.state['prbStudentSearch'].selectedStudentStatus = status;
       }
+    },
+    selected() {
+      return this.selectedRecords.length > 0 || this.selectedStudentStatus || (this.currentPrbStudentSearchParams && values(this.currentPrbStudentSearchParams).some(v => !!v));
+    },
+    viewEnabled() {
+      return this.prbStudentSearchResponse.totalElements > 0 && !this.loadingTable && !this.loading;
     }
   },
   methods: {
     ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse']),
     pagination() {
       this.loadingTable = true;
-      this.retrievePenRequests(this.prbStudentSearchCriteria)
+      this.retrievePenRequests()
         .finally(() => {
           this.loadingTable = false;
         });
@@ -188,15 +194,19 @@ export default {
       return schoolName;
     },
     clickViewSelected() {
-      const batchIDs = uniq(this.selectedRecords.map(record => record.penRequestBatchID));
-      const prbStudentIDs = this.selectedRecords.map(record => record.penRequestBatchStudentID);
-      const query = { 
-        seqNumber: 1,
-        totalNumber: this.selectedRecords.length, 
-        batchCount: batchIDs.length, 
-        prbStudentIDs: prbStudentIDs,
-      };
-      router.push({name: 'prbStudentDetails', query});
+      if(this.selectedRecords?.length > 0) {
+        const batchIDs = uniq(this.selectedRecords.map(record => record.penRequestBatchID));
+        const prbStudentIDs = this.selectedRecords.map(record => record.penRequestBatchStudentID);
+        const query = { 
+          seqNumber: 1,
+          totalNumber: this.selectedRecords.length, 
+          batchCount: batchIDs.length, 
+          prbStudentIDs: prbStudentIDs,
+        };
+        router.push({name: 'prbStudentDetails', query});
+      } else {
+        this.clickViewDetails();
+      }
     },
     clickViewDetails() {
       const query = { 
