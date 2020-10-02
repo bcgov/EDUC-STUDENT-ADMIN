@@ -119,7 +119,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.STUDENT_SEARCH,
         requiresAuth: true,
-        role: 'isValidStudentSearchUser'
+        role: 'isValidStudentSearchUser',
+        saveSearch: true
       }
     },
     {
@@ -132,7 +133,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.STUDENT_SEARCH,
         requiresAuth: true,
-        role: 'isValidStudentSearchUser'
+        role: 'isValidStudentSearchUser',
+        saveSearch: true
       }
     },
     {
@@ -143,7 +145,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.STUDENT_DETAILS,
         requiresAuth: true,
-        role: 'isValidStudentSearchUser'
+        role: 'isValidStudentSearchUser',
+        saveSearch: true
       }
     },
     {
@@ -296,6 +299,12 @@ router.beforeEach((to, _from, next) => {
     store.commit('app/setPageTitle',to.meta.pageTitle);
   } else {
     store.commit('app/setPageTitle','');
+  }
+
+  // This section is to clear the search results when users are not on a search page
+  if (!to.meta.saveSearch){
+	store.commit('studentSearch/clearStudentSearchParams');
+	store.commit('studentSearch/clearStudentSearchResults');
   }
 
   // this section is to handle the backend session expiry, where frontend vue session is still valid.
