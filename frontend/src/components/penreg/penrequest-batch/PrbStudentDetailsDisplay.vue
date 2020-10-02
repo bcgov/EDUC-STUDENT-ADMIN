@@ -121,7 +121,7 @@ import PrbStudentStatusChip from './PrbStudentStatusChip';
 import InfoDialog from '../../util/InfoDialog';
 import { formatPrbStudent, formatPrbStudents } from '../../../utils/penrequest-batch/format';
 import ApiService from '../../../common/apiService';
-import { Routes, SEARCH_FILTER_OPERATION, SEARCH_VALUE_TYPE } from '../../../utils/constants';
+import { Routes, SEARCH_FILTER_OPERATION, SEARCH_VALUE_TYPE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES } from '../../../utils/constants';
 import { cloneDeep, sortBy, uniq } from 'lodash';
 import alterMixin from '../../../mixins/alterMixin';
 
@@ -387,12 +387,12 @@ export default {
       if(infoRequest) {
         req = {
           infoRequest: infoRequest,
-          penRequestBatchStudentStatusCode: 'INFOREQ'
+          penRequestBatchStudentStatusCode: PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ
         };
       } else {
         req = {
           infoRequest: '',
-          penRequestBatchStudentStatusCode: 'FIXABLE'
+          penRequestBatchStudentStatusCode: PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE
         };
       }
       ApiService.apiAxios.put(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}`, req)
