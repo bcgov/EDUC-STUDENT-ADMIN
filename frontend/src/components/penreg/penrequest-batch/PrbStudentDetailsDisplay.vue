@@ -385,7 +385,6 @@ export default {
       this.loading = true;
       let req;
       if(infoRequest) {
-        console.log(infoRequest);
         req = {
           infoRequest: infoRequest,
           penRequestBatchStudentStatusCode: 'INFOREQ'
