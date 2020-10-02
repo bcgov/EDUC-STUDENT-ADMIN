@@ -23,13 +23,13 @@
         <span class="mr-4">
           <strong>{{seqNumberInBatch}} of {{totalNumberInBatch}} filtered</strong> | Record {{prbStudent.recordNumber}} of {{batchFile.studentCount}} in submission {{prbStudent.submissionNumber}}
         </span>
-        <PrbStudentStatusChip 
+        <PrbStudentStatusChip
           :prbStudent="prbStudent"
         ></PrbStudentStatusChip>
         <v-spacer></v-spacer>
         <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2" :disabled="!actionEnabled" text="Modify search"></PrimaryButton>
         <PrimaryButton id="issue-pen-action" class="mr-2" :disabled="!actionEnabled" text="Issue new PEN"></PrimaryButton>
-        <PrimaryButton id="request-info-action" text="Request info"></PrimaryButton>
+        <InfoDialog @updateInfoRequested="updateInfoRequested"></InfoDialog>
       </v-row>
       <v-row no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
         <span>
@@ -100,8 +100,8 @@
       <v-row v-if="prbStudent.infoRequest" no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
         <v-col cols="6">
           <v-row no-gutters class="d-flex align-center">
-            <span class="mr-3"><strong>Info requested</strong></span>               
-            <v-btn icon color="#003366" @click="clearInfoRequested">
+            <span class="mr-3"><strong>Info requested</strong></span>
+            <v-btn icon color="#003366" @click="updateInfoRequested()">
               <v-icon>fa-times-circle</v-icon>
             </v-btn>
           </v-row>
@@ -118,9 +118,10 @@
 import { mapState, mapMutations } from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
 import PrbStudentStatusChip from './PrbStudentStatusChip';
+import InfoDialog from '../../util/InfoDialog';
 import { formatPrbStudent, formatPrbStudents } from '../../../utils/penrequest-batch/format';
 import ApiService from '../../../common/apiService';
-import { Routes, SEARCH_FILTER_OPERATION, SEARCH_VALUE_TYPE } from '../../../utils/constants';
+import { Routes, SEARCH_FILTER_OPERATION, SEARCH_VALUE_TYPE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES } from '../../../utils/constants';
 import { cloneDeep, sortBy, uniq } from 'lodash';
 import alterMixin from '../../../mixins/alterMixin';
 
@@ -129,6 +130,7 @@ export default {
   components: {
     PrimaryButton,
     PrbStudentStatusChip,
+    InfoDialog
   },
   mixins: [alterMixin],
   props: {
@@ -220,19 +222,19 @@ export default {
     ...mapMutations('prbStudentSearch', [ 'setSelectedRecords']),
     ...mapMutations('penRequestBatch', ['setSelectedFiles']),
     setBatchNav() {
-      const query = { 
+      const query = {
         totalNumber: this.totalNumber,
-        totalInBatch: this.totalNumberInBatch, 
-        batchCount: this.batchCount, 
-        searchCriteria: JSON.stringify(this.searchCriteria), 
+        totalInBatch: this.totalNumberInBatch,
+        batchCount: this.batchCount,
+        searchCriteria: JSON.stringify(this.searchCriteria),
         prbStudentIDs: this.prbStudentIDs,
       };
 
       this.setNavigation({
-        seqNumber: this.seqNumber, 
-        totalNumber: this.totalNumber, 
-        title: `Record ${this.seqNumber} of ${this.totalNumber} (${this.batchCount} ${this.batchCount > 1 ? 'files' : 'file'} selected)`, 
-        preRoute: { name: 'prbStudentDetails', query: { seqNumber: this.seqNumber - 1, seqInBatch: this.seqNumberInBatch - 1, ...query }}, 
+        seqNumber: this.seqNumber,
+        totalNumber: this.totalNumber,
+        title: `Record ${this.seqNumber} of ${this.totalNumber} (${this.batchCount} ${this.batchCount > 1 ? 'files' : 'file'} selected)`,
+        preRoute: { name: 'prbStudentDetails', query: { seqNumber: this.seqNumber - 1, seqInBatch: this.seqNumberInBatch - 1, ...query }},
         nextRoute: { name: 'prbStudentDetails', query: { seqNumber: this.seqNumber + 1, seqInBatch: this.seqNumberInBatch + 1, ...query }},
       });
     },
@@ -302,7 +304,7 @@ export default {
     },
     retrieveAllPenRequests(studentIDs) {
       const searchQueries = [
-        { 
+        {
           searchCriteriaList: [{
             key: 'penRequestBatchStudentID', operation: SEARCH_FILTER_OPERATION.IN, value: studentIDs.join(','), valueType: SEARCH_VALUE_TYPE.UUID
           }],
@@ -351,7 +353,7 @@ export default {
     },
     retrieveSelectedFiles() {
       const searchQueries = [
-        { 
+        {
           searchCriteriaList: [{
             key: 'penRequestBatchID', operation: SEARCH_FILTER_OPERATION.IN, value: this.batchIDs.join(','), valueType: SEARCH_VALUE_TYPE.UUID
           }],
@@ -375,16 +377,24 @@ export default {
       return ApiService.apiAxios.get(Routes['penRequestBatch'].STUDENTS_SEARCH_URL, params);
     },
     getBatchIdSearchCriteria(searchCriteria) {
-      const batchIdSearchQuery = searchCriteria.find(query => 
+      const batchIdSearchQuery = searchCriteria.find(query =>
         query.searchCriteriaList.some(criteria => criteria.key === 'penRequestBatchEntity.penRequestBatchID'));
       return batchIdSearchQuery?.searchCriteriaList.find(criteria => criteria.key === 'penRequestBatchEntity.penRequestBatchID');
     },
-    clearInfoRequested() {
+    updateInfoRequested(infoRequest) {
       this.loading = true;
-      const req = {
-        infoRequest: '',
-        penRequestBatchStudentStatusCode: 'FIXABLE'
-      };
+      let req;
+      if(infoRequest) {
+        req = {
+          infoRequest: infoRequest,
+          penRequestBatchStudentStatusCode: PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ
+        };
+      } else {
+        req = {
+          infoRequest: '',
+          penRequestBatchStudentStatusCode: PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE
+        };
+      }
       ApiService.apiAxios.put(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}`, req)
         .then(response => {
           response.data && (this.prbStudent = formatPrbStudent(response.data));
@@ -411,7 +421,7 @@ export default {
   }
 
   #bottom-table /deep/ table th,
-  #top-table /deep/ table th { 
+  #top-table /deep/ table th {
     border-bottom: none !important;
     font-size: 0.875rem;
     font-weight: normal;
@@ -437,7 +447,7 @@ export default {
     background: transparent !important;
   }
 
-  .details-table /deep/ table > tbody > tr:not(:last-child) > td { 
+  .details-table /deep/ table > tbody > tr:not(:last-child) > td {
     border-bottom: none !important;
   }
 

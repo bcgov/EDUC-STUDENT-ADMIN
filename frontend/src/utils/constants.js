@@ -180,6 +180,12 @@ export const STUDENT_CODES = Object.freeze(
     MERGED: 'M'
   }
 );
+export const PEN_REQ_BATCH_STUDENT_REQUEST_CODES = Object.freeze(
+  {
+    FIXABLE: 'FIXABLE',
+    INFOREQ: 'INFOREQ'
+  }
+);
 export const PAGE_TITLES = Object.freeze(
   {
     DASHBOARD: 'Dashboard',
