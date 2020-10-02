@@ -9,17 +9,17 @@ export default {
     },
     selectedRecords: [],
     advancedSearchCriteria:{
-        startDate: {
-          year: null,
-          month: null,
-          day: null
-        },
-        endDate: {
-          year: null,
-          month: null,
-          day: null
-        },
-        useDOBRange: false
+      startDate: {
+        year: null,
+        month: null,
+        day: null
+      },
+      endDate: {
+        year: null,
+        month: null,
+        day: null
+      },
+      useDOBRange: false
     },
     studentSearchParams: {
       pen: null,
@@ -91,8 +91,8 @@ export default {
         postalCode: null,
         genderCode: null,
         dob: {
-           startDate: null,
-           endDate: null
+          startDate: null,
+          endDate: null
         },
         mincode: null,
         usualLastName: null,
