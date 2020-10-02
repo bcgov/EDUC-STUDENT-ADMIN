@@ -56,7 +56,6 @@ describe('updatePrbStudentInfoRequested', () => {
   });
 
   it('should return INTERNAL_SERVER_ERROR if getData failed', async () => {
-    const resp = {...prbStudentData, ...req.body};
     utils.getData.mockRejectedValue(new Error('Test error'));
     await penRequestBatch.updatePrbStudentInfoRequested(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
