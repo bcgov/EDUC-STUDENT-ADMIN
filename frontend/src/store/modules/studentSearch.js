@@ -102,6 +102,10 @@ export default {
         localID: null,
         gradeCode: null
       };
+    },
+    clearStudentSearchResults: (state) => {
+      state.selectedRecords = [];
+      state.studentSearchResponse = null;
     }
   }
 };
