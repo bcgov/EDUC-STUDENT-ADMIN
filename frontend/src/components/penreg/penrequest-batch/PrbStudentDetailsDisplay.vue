@@ -20,7 +20,7 @@
     </v-alert>
     <div v-if="!loading && prbStudent"  style="width: 100%" :overlay=false>
       <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center" style="background-color:white;">
-        <span class="mr-4">
+        <span class="mr-4 batch-title">
           <strong>{{seqNumberInBatch}} of {{totalNumberInBatch}} filtered</strong> | Record {{prbStudent.recordNumber}} of {{batchFile.studentCount}} in submission {{prbStudent.submissionNumber}}
         </span>
         <PrbStudentStatusChip
@@ -50,7 +50,7 @@
         <div style="width: 100%" :overlay="false">
           <v-data-table
             id="top-table"
-            class="details-table"
+            class="details-table mb-3"
             :headers="headers"
             :items="[prbStudent]"
             hide-default-footer
@@ -412,6 +412,10 @@ export default {
 </script>
 
 <style scoped>
+  .batch-title {
+    font-size: 1.065rem;
+  }
+
   .pen-placeholder {
     margin-right: 5.7em;
   }
@@ -426,6 +430,11 @@ export default {
     font-size: 0.875rem;
     font-weight: normal;
     color: rgba(0, 0, 0, 0.87) !important;
+    height: 1.5rem;
+  }
+
+  .details-table /deep/ table > tbody > tr > td {
+    height: 1.5rem;
   }
 
   .details-table /deep/ table th:nth-child(1) {
