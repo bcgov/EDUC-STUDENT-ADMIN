@@ -1,5 +1,16 @@
 <template>
     <v-container fluid class="fill-height px-0 mb-4">
+        <v-alert
+          v-model="alert"
+          dense
+          text
+          dismissible
+          outlined
+          transition="scale-transition"
+          :class="`${alertType} flex-grow-1 mx-3`"
+        >
+          {{ alertMessage }}
+        </v-alert>
         <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
           <v-col cols="1">
             <v-select
@@ -32,27 +43,16 @@
             </FilterTag>
           </v-sheet>
           <v-spacer v-else></v-spacer>
-          <PrimaryButton id="archive-action" class="mx-2" :disabled="!actionEnabled">
-            Archive
+          <PrimaryButton id="view-list-action" class="mr-2" :disabled="!filesSelected" @click.native="clickViewList" text="View List"></PrimaryButton>
+          <PrimaryButton id="view-details-action" class="mx-2" :disabled="!filesSelected" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
+          <PrimaryButton id="archive-action" :disabled="!actionEnabled">
+            Finish Submission
             <v-icon large right>
               mdi-chevron-down
             </v-icon>
           </PrimaryButton>
-          <PrimaryButton id="view-list-action" class="mr-2" :disabled="this.selectedFiles.length === 0" @click.native="clickViewList" text="View List"></PrimaryButton>
-          <PrimaryButton id="view-details-action" :disabled="!actionEnabled" text="View Details"></PrimaryButton>
         </v-row>
         <v-row no-gutters class="py-2" style="background-color:white;">
-          <v-alert
-            v-model="alert"
-            dense
-            text
-            dismissible
-            outlined
-            transition="scale-transition"
-            :class="`${alertType} flex-grow-1 mx-3`"
-          >
-            {{ alertMessage }}
-          </v-alert>
           <PenRequestBatchList
             :schoolGroup="selectedSchoolGroup"
             :filters="filters"
@@ -64,6 +64,7 @@
 </template>
 
 <script>
+import { PEN_REQ_BATCH_STUDENT_REQUEST_CODES, SEARCH_FILTER_OPERATION, SEARCH_CONDITION, SEARCH_VALUE_TYPE } from '../../../utils/constants';
 import { mapState, mapMutations } from 'vuex';
 import PenRequestBatchList from './PenRequestBatchList';
 import FilterTag from '../../util/FilterTag';
@@ -102,6 +103,23 @@ export default {
         return this.$store.state['penRequestBatch'].selectedSchoolGroup = newSchoolGroup;
       }
     },
+    filesSelected() {
+      return this.selectedFiles?.length > 0;
+    },
+    selectedFileBatchIDs() {
+      return this.selectedFiles.map(file => file.penRequestBatchID).join(',');
+    },
+    selectedFilterNames() {
+      const filterNames = {
+        matchedCount: [PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR],
+        newPenCount: [PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR],
+        errorCount: [PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR],
+        repeatCount: [PEN_REQ_BATCH_STUDENT_REQUEST_CODES.REPEAT],
+        fixableCount: [PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE]
+      };
+      
+      return this.prbStudentStatusFilters.map(filter => filterNames[filter]).join(',');
+    }
   },
   created() {
     this.selectedSchoolGroup = this.schoolGroup;
@@ -115,10 +133,42 @@ export default {
       this.filters = filters;
     },
     clickViewList() {
-      const batchIDs = this.selectedFiles.map(file => file.penRequestBatchID);
-      const statusFilters = this.prbStudentStatusFilters;
+      const batchIDs = this.selectedFileBatchIDs;
+      const statusFilters = this.selectedFilterNames;
       this.clearPrbStudentSearchState();
       router.push({name: 'prbStudentList', query: { batchIDs, statusFilters }});
+    },
+    clickViewDetails() {
+      const countColumn = (this.prbStudentStatusFilters.length > 0) ? 'filteredCount' : 'studentCount';
+      const totalNumber = this.selectedFiles.reduce((sum, file) => sum + file[countColumn], 0);
+    
+      const searchCriteriaList = [
+        { 
+          searchCriteriaList: [
+            {
+              key: 'penRequestBatchEntity.penRequestBatchID', 
+              operation: SEARCH_FILTER_OPERATION.IN, 
+              value: this.selectedFileBatchIDs, 
+              valueType: SEARCH_VALUE_TYPE.UUID
+            },
+            {
+              key: 'penRequestBatchStudentStatusCode', 
+              operation: this.selectedFilterNames.length > 0 ? SEARCH_FILTER_OPERATION.IN : SEARCH_FILTER_OPERATION.NOT_EQUAL, 
+              value: this.selectedFilterNames.length > 0 ? this.selectedFilterNames : PEN_REQ_BATCH_STUDENT_REQUEST_CODES.LOADED, 
+              valueType: SEARCH_VALUE_TYPE.STRING,
+              condition: SEARCH_CONDITION.AND
+            }
+          ],
+        },
+      ];
+      
+      const query = { 
+        seqNumber: 1,
+        totalNumber, 
+        batchCount: this.selectedFiles.length, 
+        searchCriteria: JSON.stringify(searchCriteriaList),
+      };
+      router.push({name: 'prbStudentDetails', query});
     }
   }
 };
