@@ -303,8 +303,8 @@ router.beforeEach((to, _from, next) => {
 
   // This section is to clear the search results when users are not on a search page
   if (!to.meta.saveSearch){
-	store.commit('studentSearch/clearStudentSearchParams');
-	store.commit('studentSearch/clearStudentSearchResults');
+    store.commit('studentSearch/clearStudentSearchParams');
+    store.commit('studentSearch/clearStudentSearchResults');
   }
 
   // this section is to handle the backend session expiry, where frontend vue session is still valid.

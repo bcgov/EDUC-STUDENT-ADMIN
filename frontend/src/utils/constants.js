@@ -183,7 +183,14 @@ export const STUDENT_CODES = Object.freeze(
 export const PEN_REQ_BATCH_STUDENT_REQUEST_CODES = Object.freeze(
   {
     FIXABLE: 'FIXABLE',
-    INFOREQ: 'INFOREQ'
+    INFOREQ: 'INFOREQ',
+    MATCHEDSYS: 'MATCHEDSYS',
+    MATCHEDUSR: 'MATCHEDUSR',
+    NEWPENSYS: 'NEWPENSYS',
+    NEWPENUSR: 'NEWPENUSR',
+    ERROR: 'ERROR',
+    REPEAT: 'REPEAT',
+    LOADED: 'LOADED'
   }
 );
 export const PAGE_TITLES = Object.freeze(

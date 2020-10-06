@@ -30,7 +30,7 @@
       :items-per-page="prbStudentSearchResponse.pageable.pageSize"
       hide-default-footer
       item-key="studentID"
-      :loading="loadingTable || loading"
+      :loading="loading"
       @page-count="prbStudentSearchResponse.pageable.pageNumber = $event"
     >
       <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
@@ -95,10 +95,6 @@ export default {
     PrbStudentStatusChip,
   },
   props: {
-    retrievePenRequests: {
-      type: Function,
-      required: true
-    },
     loading: {
       type: Boolean,
       required: true
@@ -107,7 +103,6 @@ export default {
   data () {
     return {
       itemsPerPage: 10,
-      loadingTable: false,
       headers: [
         { id: 'table-checkbox', type: 'select', sortable: false },
         { topText: 'Mincode', bottomText: 'Local ID', align: 'start', sortable: false, topValue: 'minCode', bottomValue: 'localID' },
@@ -120,20 +115,6 @@ export default {
         { topText: 'Submission', bottomText: 'Status', topValue: 'submissionNumber', bottomValue: 'penRequestBatchStudentStatusCode', sortable: false },
       ],
     };
-  },
-  watch: {
-    pageNumber: {
-      handler() {
-        this.pagination();
-      }
-    },
-    selectedStudentStatus: {
-      handler() {
-        this.setSelectedRecords();
-        this.setPageNumber(1);
-        this.pagination();
-      }
-    },
   },
   computed: {
     ...mapState('prbStudentSearch', ['prbStudentSearchResponse', 'prbStudentSearchCriteria', 'currentPrbStudentSearchParams']),
@@ -177,18 +158,11 @@ export default {
       return this.selectedRecords.length > 0 || this.selectedStudentStatus || (this.currentPrbStudentSearchParams && values(this.currentPrbStudentSearchParams).some(v => !!v));
     },
     viewEnabled() {
-      return this.prbStudentSearchResponse.totalElements > 0 && !this.loadingTable && !this.loading;
+      return this.prbStudentSearchResponse.totalElements > 0 && !this.loading;
     }
   },
   methods: {
     ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse']),
-    pagination() {
-      this.loadingTable = true;
-      this.retrievePenRequests()
-        .finally(() => {
-          this.loadingTable = false;
-        });
-    },
     getSchoolName(request) {
       const schoolName = this.selectedFiles.find(file => file.penRequestBatchID === request.penRequestBatchID)?.schoolName;
       return schoolName;
