@@ -225,9 +225,6 @@ export default {
   #searchResults /deep/ .v-pagination__navigation > i {
     padding-left: 0;
   }
-  #searchResults /deep/ .v-input--selection-controls__ripple {
-    left: -7px;
-  }
 
   .subheader-divider {
     border-width: 0.25ex 0 0 0;

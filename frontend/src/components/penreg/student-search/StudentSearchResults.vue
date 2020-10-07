@@ -199,7 +199,4 @@ export default {
   /deep/ .v-pagination__navigation > i {
     padding-left: 0;
   }
-  /deep/ .v-input--selection-controls__ripple {
-    left: -7px;
-  }
 </style>
