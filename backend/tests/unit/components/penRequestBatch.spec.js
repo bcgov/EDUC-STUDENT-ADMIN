@@ -1,11 +1,19 @@
 const HttpStatus = require('http-status-codes');
 const penRequestBatch = require('../../../src/components/penRequestBatch');
-jest.mock('../../../src/components/utils');
+jest.mock('../../../src/components/utils', () => {
+  const originalModule = jest.requireActual('../../../src/components/utils');
+  return {
+    __esModule: true, // Use it when dealing with esModules
+    ...originalModule,
+    getBackendToken: jest.fn(),
+    getData: jest.fn(),
+    putData: jest.fn(),
+  };
+});
 const { mockRequest, mockResponse } = require('../helpers');
 const utils = require('../../../src/components/utils');
-const { ApiError } = require('../../../src/components/error');
 
-const prbStudentData = 
+const prbStudentData =
   {
     'penRequestBatchStudentID': 'c0a8014d-74e1-1d99-8174-e10db8410001',
     'penRequestBatchID': 'c0a8014d-74e1-1d99-8174-e10db81f0000',
@@ -17,11 +25,6 @@ const prbStudentData =
 describe('updatePrbStudentInfoRequested', () => {
   let req;
   let res;
-
-  jest.spyOn(utils, 'getBackendToken');
-  jest.spyOn(utils, 'getData');
-  jest.spyOn(utils, 'putData');
-
 
   beforeEach(() => {
     utils.getBackendToken.mockReturnValue('token');
@@ -50,6 +53,19 @@ describe('updatePrbStudentInfoRequested', () => {
     await penRequestBatch.updatePrbStudentInfoRequested(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(resp);
+  });
+
+  it('should return INTERNAL_SERVER_ERROR if getData failed', async () => {
+    utils.getData.mockRejectedValue(new Error('Test error'));
+    await penRequestBatch.updatePrbStudentInfoRequested(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+  });
+
+  it('should return INTERNAL_SERVER_ERROR if putData failed', async () => {
+    utils.getData.mockResolvedValue(prbStudentData);
+    utils.putData.mockRejectedValue(new Error('Test error'));
+    await penRequestBatch.updatePrbStudentInfoRequested(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
 });
 
@@ -204,10 +220,10 @@ describe('getPenRequestBatchStudentMatchOutcome', () => {
   });
 
   it('should return error if match call errors', async () => {
-    utils.getData.mockRejectedValue(new ApiError());
+    utils.getData.mockRejectedValue(new Error('Test error'));
 
     await penRequestBatch.getPenRequestBatchStudentMatchOutcome(req,res);
-    expect(utils.errorResponse).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
 
   it('should return error if student call errors', async () => {
@@ -218,10 +234,10 @@ describe('getPenRequestBatchStudentMatchOutcome', () => {
       { matchedStudentId: '4' },
     ];
     utils.getData.mockResolvedValueOnce(matchResponse);
-    utils.getData.mockRejectedValue(new ApiError());
+    utils.getData.mockRejectedValue(new Error('Test error'));
 
     await penRequestBatch.getPenRequestBatchStudentMatchOutcome(req,res);
-    expect(utils.errorResponse).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
 });
 
