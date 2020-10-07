@@ -294,9 +294,6 @@ export default {
   #file-list /deep/ .v-pagination__navigation > i {
     padding-left: 0;
   }
-  #file-list /deep/ .v-input--selection-controls__ripple {
-    left: -7px;
-  }
   #file-list /deep/ table th .countable-column-header .v-icon {
     padding: 0.5rem 0;
   }
@@ -363,9 +360,6 @@ export default {
   .filter-checkbox /deep/ .v-input__slot {
     justify-content: center;
     padding-top: 0;
-  }
-  .filter-checkbox /deep/ .v-input__slot .v-input--selection-controls__ripple {
-    left: -12px !important;
   }
 
   .select-column {

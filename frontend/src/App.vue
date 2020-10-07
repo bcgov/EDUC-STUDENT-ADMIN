@@ -99,8 +99,5 @@ export default {
   .full-height {
     height: 100%;
   }
-
-  .v-input--checkbox .v-icon {
-    padding-left: 10px;
-  }
+  
 </style>

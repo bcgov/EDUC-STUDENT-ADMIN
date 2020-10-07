@@ -2,7 +2,7 @@
     <div :class="comment.color">
       <v-row class="mr-0">
           <v-col class="pa-0 iconCol" md="auto">
-            <v-icon :size="iconSize">{{ comment.icon }}</v-icon>
+            <v-icon class="pl-3" :size="iconSize">{{ comment.icon }}</v-icon>
           </v-col>
           <v-col class="pa-0 header-col">
             <p class="username mb-0" href="#">
