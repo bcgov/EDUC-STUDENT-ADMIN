@@ -41,9 +41,9 @@
               item-key="studentID"
               :items="studentPossibleMatches">
         <template v-slot:item="props">
-          <tr :class="[props.item.isSelected?'selected-record':'']">
+          <tr :class="{'selected-record' : props.isSelected}">
             <td v-for="header in props.headers" :key="header.id" :class="header.id">
-              <v-checkbox v-if="header.type" class="pl-3" v-model="props.item.isSelected" :input-value="props.isSelected" color="#606060" @change="props.select($event)"></v-checkbox>
+              <v-checkbox v-if="header.type" class="pl-3" color="#606060" @change="props.select($event)"></v-checkbox>
               <div v-else class="tableCell">
                 <router-link class="pen-link" to="" v-if="header.topValue==='pen'">
                   <span :class="['top-column-item', 'pen-link', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
