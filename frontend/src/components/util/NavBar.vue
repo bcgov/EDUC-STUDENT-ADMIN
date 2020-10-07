@@ -70,7 +70,7 @@
       <v-icon v-else>$close</v-icon>
       <p class="ma-0 pl-4 pr-2">Menu</p>
     </v-app-bar-nav-icon>
-    <v-toolbar-title class="ml-4">{{ title }}</v-toolbar-title>
+    <v-toolbar-title class="ml-4 nav-title">{{ title }}</v-toolbar-title>
     <v-spacer></v-spacer>
     <SetNavigation/>
   </v-app-bar>
@@ -206,5 +206,9 @@ export default {
   }
   /deep/ .v-list-group__header:before {
     background-color: #E9EBEF;
+  }
+
+  .nav-title {
+    font-size: 1.4rem;
   }
 </style>

@@ -211,7 +211,7 @@
             <v-progress-linear
               indeterminate
               color="blue"
-              :active="searchLoading && !searchEnabled"
+              :active="searchLoading && !prbStudentSearchResponse"
             ></v-progress-linear>
             <v-alert
               v-model="alert"
@@ -229,7 +229,6 @@
             </v-row>
             <v-row v-if="prbStudentSearchResponse" id="resultsRow" no-gutters class="py-2" style="background-color:white;">
               <PrbStudentSearchResults
-                :retrievePenRequests="retrievePenRequests"
                 :loading="searchLoading"
               ></PrbStudentSearchResults>
             </v-row>
@@ -241,7 +240,7 @@
 </template>
 <script>
 import ApiService from '../../../common/apiService';
-import { Routes, SEARCH_FILTER_OPERATION, SEARCH_CONDITION, SEARCH_VALUE_TYPE } from '../../../utils/constants';
+import { Routes, PEN_REQ_BATCH_STUDENT_REQUEST_CODES, SEARCH_FILTER_OPERATION, SEARCH_CONDITION, SEARCH_VALUE_TYPE } from '../../../utils/constants';
 import { mapGetters, mapMutations, mapState } from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
 import { isValidPEN, isValidMinCode, isValidPostalCode, isValidDob, isValidAlphanumericValue } from '../../../utils/validation';
@@ -257,12 +256,12 @@ export default {
   mixins: [alterMixin],
   props: {
     batchIDs: {
-      type: [Array, String],
-      default: () => []
+      type: String,
+      default: ''
     },
     statusFilters: {
-      type: [Array, String],
-      default: () => []
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -283,7 +282,7 @@ export default {
   computed:{
     ...mapGetters('student', ['gradeCodeObjects']),
     ...mapState('student', ['genders']),
-    ...mapState('prbStudentSearch', ['pageNumber', 'prbStudentSearchResponse', 'selectedStudentStatus', 'currentPrbStudentSearchParams']),
+    ...mapState('prbStudentSearch', ['pageNumber', 'prbStudentSearchResponse', 'selectedStudentStatus', 'currentPrbStudentSearchParams', 'prbStudentSearchCriteria']),
     ...mapState('penRequestBatch', ['selectedFiles']),
     prbStudentSearchParams: {
       get(){
@@ -300,36 +299,38 @@ export default {
       return this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.gradeCode):[];
     },
     prbStudentStatusSearchCriteria() {
-      const keys = {
-        matchedCount: ['MATCHEDSYS', 'MATCHEDUSR'],
-        newPenCount: ['NEWPENSYS', 'NEWPENUSR'],
-        errorCount: ['ERROR'],
-        repeatCount: ['REPEAT'],
-        fixableCount: ['FIXABLE']
-      };
-      const statuses = this.selectedStudentStatus || [this.statusFilters].flat().map(filter => keys[filter]).join(',');
+      const statuses = this.selectedStudentStatus || this.statusFilters;
       return {
         key: 'penRequestBatchStudentStatusCode', 
         operation: statuses.length > 0 ? SEARCH_FILTER_OPERATION.IN : SEARCH_FILTER_OPERATION.NOT_EQUAL, 
-        value: statuses.length > 0 ? statuses : 'LOADED', 
+        value: statuses.length > 0 ? statuses : PEN_REQ_BATCH_STUDENT_REQUEST_CODES.LOADED, 
         valueType: SEARCH_VALUE_TYPE.STRING,
         condition: SEARCH_CONDITION.AND
       };
     },
     prbStudentBatchIdSearchCriteria() {
-      const criteriaValue = [this.batchIDs].flat().join(',');
-      return ({key: 'penRequestBatchEntity.penRequestBatchID', operation: SEARCH_FILTER_OPERATION.IN, value: criteriaValue, valueType: SEARCH_VALUE_TYPE.UUID});
+      return ({key: 'penRequestBatchEntity.penRequestBatchID', operation: SEARCH_FILTER_OPERATION.IN, value: this.batchIDs, valueType: SEARCH_VALUE_TYPE.UUID});
     }
+  },
+  watch: {
+    pageNumber: {
+      handler() {
+        this.searchLoading = true;
+        this.retrievePenRequests(this.prbStudentSearchCriteria)
+          .finally(() => {
+            this.searchLoading = false;
+          });
+      }
+    },
+    selectedStudentStatus: {
+      handler() {
+        this.initialSearch();
+      }
+    },
   },
   mounted() {
     this.$store.dispatch('penRequestBatch/getCodes');
-    if(this.currentPrbStudentSearchParams) {
-      this.prbStudentSearchParams = JSON.parse(JSON.stringify(this.currentPrbStudentSearchParams));
-    }
-    this.searchPenRequests(true);
-    if(this.prbStudentSearchParams) {
-      this.searchHasValues();
-    }
+    this.initialSearch();
   },
   methods: {
     ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse', 'clearPrbStudentSearchParams', 'setCurrentPrbStudentSearchParams', 'setPrbStudentSearchCriteria']),
@@ -390,6 +391,15 @@ export default {
     searchHasValues(){
       this.searchEnabled = Object.values(this.prbStudentSearchParams).some(v => !!v);
       return this.searchEnabled;
+    },
+    initialSearch() {
+      if(this.currentPrbStudentSearchParams) {
+        this.prbStudentSearchParams = JSON.parse(JSON.stringify(this.currentPrbStudentSearchParams));
+      }
+      this.searchPenRequests(true);
+      if(this.prbStudentSearchParams) {
+        this.searchHasValues();
+      }
     },
     searchPenRequests(initial = false) {
       this.searchLoading = true;
@@ -469,7 +479,7 @@ export default {
             legalFirstName: 'ASC',
             legalMiddleNames: 'ASC'
           },
-          searchQueries: searchCriteria,
+          searchQueries: searchCriteria || this.prbStudentSearchCriteriaList(this.prbStudentSearchParams),
         }
       };
 
@@ -486,11 +496,10 @@ export default {
         });
     },
     retrieveSelectedFiles() {
-      const criteriaValue = [this.batchIDs].flat().join(',');
       const searchQueries = [
         { 
           searchCriteriaList: [{
-            key: 'penRequestBatchID', operation: SEARCH_FILTER_OPERATION.IN, value: criteriaValue, valueType: SEARCH_VALUE_TYPE.UUID
+            key: 'penRequestBatchID', operation: SEARCH_FILTER_OPERATION.IN, value: this.batchIDs, valueType: SEARCH_VALUE_TYPE.UUID
           }],
         },
       ];
