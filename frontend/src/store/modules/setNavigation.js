@@ -5,6 +5,7 @@ const getDefaultState = () => {
     title: '',
     preRoute: null,
     nextRoute: null,
+    currentRoute: {},
   };
 };
 
@@ -33,6 +34,9 @@ export default {
     },
     setNextRoute: (state, nextRoute) => {
       state.nextRoute = nextRoute;
-    }
+    },
+    setCurrentRoute: (state, currentRoute) => {
+      state.currentRoute = Object.assign({}, state.currentRoute, currentRoute);
+    },
   },
 };

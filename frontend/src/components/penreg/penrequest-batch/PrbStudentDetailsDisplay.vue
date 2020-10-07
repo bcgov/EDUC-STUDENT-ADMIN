@@ -102,12 +102,12 @@
         <v-col cols="6">
           <v-row no-gutters class="d-flex align-center">
             <span class="mr-3"><strong>Info requested</strong></span>
-            <v-btn icon color="#003366" @click="updateInfoRequested()">
+            <v-btn id="clear-info-requested" icon color="#003366" @click="updateInfoRequested()">
               <v-icon>fa-times-circle</v-icon>
             </v-btn>
           </v-row>
           <v-row no-gutters>
-            <p>{{prbStudent.infoRequest}}</p>
+            <pre>{{prbStudent.infoRequest}}</pre>
           </v-row>
         </v-col>
       </v-row>
@@ -127,7 +127,7 @@ import InfoDialog from './prb-student-details/InfoDialog';
 import { formatPrbStudent, formatPrbStudents } from '../../../utils/penrequest-batch/format';
 import ApiService from '../../../common/apiService';
 import { Routes, SEARCH_FILTER_OPERATION, SEARCH_VALUE_TYPE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES } from '../../../utils/constants';
-import { cloneDeep, sortBy, uniq } from 'lodash';
+import { cloneDeep, sortBy, uniq, isEmpty } from 'lodash';
 import alterMixin from '../../../mixins/alterMixin';
 import MatchOutcome from './prb-student-details/MatchOutcome';
 
@@ -141,23 +141,11 @@ export default {
   },
   mixins: [alterMixin],
   props: {
-    seqNumber: {
-      type: Number,
-      default: 1,
-    },
     totalNumber: {
       type: Number,
       default: 1,
     },
     batchCount: {
-      type: Number,
-      default: 1,
-    },
-    seqInBatch: {
-      type: Number,
-      default: 1,
-    },
-    totalInBatch: {
       type: Number,
       default: 1,
     },
@@ -174,6 +162,7 @@ export default {
     return {
       batchFile: null,
       prbStudent: null,
+      seqNumber: 1,
       seqNumberInBatch: 1,
       totalNumberInBatch: 1,
       sortParams: {
@@ -198,13 +187,14 @@ export default {
     };
   },
   watch: {
-    seqNumber: {
+    currentRoute: {
       handler() {
         this.initializeDetails();
       }
     },
   },
   computed: {
+    ...mapState('setNavigation', ['currentRoute']),
     ...mapState('penRequestBatch', ['selectedFiles']),
     ...mapState('prbStudentSearch', ['selectedRecords']),
     selectedStudents() {
@@ -218,35 +208,31 @@ export default {
     },
   },
   created() {
+    this.$store.dispatch('penRequestBatch/getCodes');
     this.initializeDetails();
   },
   beforeDestroy() {
     this.clearNavigation();
   },
   methods: {
-    ...mapMutations('setNavigation', ['setNavigation', 'clearNavigation', 'setPreRoute', 'setNextRoute']),
+    ...mapMutations('setNavigation', ['setNavigation', 'clearNavigation']),
     ...mapMutations('prbStudentSearch', [ 'setSelectedRecords']),
     ...mapMutations('penRequestBatch', ['setSelectedFiles']),
     setBatchNav() {
-      const query = {
-        totalNumber: this.totalNumber,
-        totalInBatch: this.totalNumberInBatch,
-        batchCount: this.batchCount,
-        searchCriteria: JSON.stringify(this.searchCriteria),
-        prbStudentIDs: this.prbStudentIDs,
-      };
-
       this.setNavigation({
         seqNumber: this.seqNumber,
         totalNumber: this.totalNumber,
         title: `Record ${this.seqNumber} of ${this.totalNumber} (${this.batchCount} ${this.batchCount > 1 ? 'files' : 'file'} selected)`,
-        preRoute: { name: 'prbStudentDetails', query: { seqNumber: this.seqNumber - 1, seqInBatch: this.seqNumberInBatch - 1, ...query }},
-        nextRoute: { name: 'prbStudentDetails', query: { seqNumber: this.seqNumber + 1, seqInBatch: this.seqNumberInBatch + 1, ...query }},
+        preRoute: { name: 'prbStudentDetails', query: { seqNumber: this.seqNumber - 1, seqInBatch: this.seqNumberInBatch - 1, totalInBatch: this.totalNumberInBatch }},
+        nextRoute: { name: 'prbStudentDetails', query: { seqNumber: this.seqNumber + 1, seqInBatch: this.seqNumberInBatch + 1, totalInBatch: this.totalNumberInBatch }},
       });
     },
     async initializeDetails() {
-      this.seqNumberInBatch = this.seqInBatch;
-      this.totalNumberInBatch = this.totalInBatch;
+      if(!isEmpty(this.currentRoute)) {
+        this.seqNumber = this.currentRoute.query?.seqNumber;
+        this.seqNumberInBatch = this.currentRoute.query?.seqInBatch;
+        this.totalNumberInBatch = this.currentRoute.query?.totalInBatch;
+      }
       const studentIDs = [this.prbStudentIDs].flat();
       this.loading = true;
 
@@ -343,7 +329,7 @@ export default {
 
       const params = {
         params: {
-          pageNumber: 1,
+          pageNumber: 0,
           pageSize: 1,
           searchQueries: criteria,
         }
@@ -485,4 +471,10 @@ export default {
     z-index: 6;
     background-color: white;
   }
+
+  pre {
+    font-family: inherit;
+    font-size: inherit;
+  }
+
 </style>

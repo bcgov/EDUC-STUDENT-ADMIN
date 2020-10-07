@@ -182,11 +182,8 @@ const router = new VueRouter({
       name: 'prbStudentDetails',
       component: PrbStudentDetailsDisplay,
       props: (route) => ({ 
-        seqNumber: +(route.query.seqNumber ?? 1),
         totalNumber: +(route.query.totalNumber ?? 1),
         batchCount: +(route.query.batchCount ?? 1),
-        seqInBatch: +(route.query.seqInBatch ?? 1),
-        totalInBatch: +(route.query.totalInBatch ?? 1),
         searchCriteria: JSON.parse(route.query.searchCriteria ?? '[]'),
         prbStudentIDs: route.query.prbStudentIDs,
       }),

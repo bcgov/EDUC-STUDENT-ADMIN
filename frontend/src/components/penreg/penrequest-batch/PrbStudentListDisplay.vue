@@ -245,8 +245,9 @@ import { mapGetters, mapMutations, mapState } from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
 import { isValidPEN, isValidMinCode, isValidPostalCode, isValidDob, isValidAlphanumericValue } from '../../../utils/validation';
 import PrbStudentSearchResults from './PrbStudentSearchResults';
-import { formatPrbStudent } from '../../../utils/penrequest-batch/format';
+import { formatPrbStudents } from '../../../utils/penrequest-batch/format';
 import alterMixin from '../../../mixins/alterMixin';
+import { difference } from 'lodash';
 
 export default {
   components: {
@@ -418,7 +419,7 @@ export default {
             this.searchLoading = false;
           });
 
-        if(!this.selectedFiles || this.selectedFiles.length === 0) {
+        if(!this.selectedFiles || difference(this.batchIDs.split(','), this.selectedFiles.map(file => file.penRequestBatchID)).length > 0) {
           this.retrieveSelectedFiles();
         }
       }else{
@@ -426,10 +427,7 @@ export default {
       }
     },
     initializePrbStudents(students) {
-      students.forEach(student => {
-        formatPrbStudent(student);
-        student.isSelected = false;
-      });
+      formatPrbStudents(students);
       return students;
     },
     prbStudentSearchCriteriaList(searchParams) {

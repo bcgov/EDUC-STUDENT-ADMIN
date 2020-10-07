@@ -33,6 +33,9 @@ describe('SetNavigation Component initialized with namespaced Vuex module.', () 
       vuetify,
       store,
       router,
+      propsData: {
+        stateful: false
+      }
     });
   });
 
@@ -88,5 +91,14 @@ describe('SetNavigation Component initialized with namespaced Vuex module.', () 
     const spy = jest.spyOn(appRouter, 'push');
     button.trigger('click');
     expect(spy).toBeCalledWith('previous');
+  });
+
+  test('Current route should be set in the store when click on the button.', async () => {
+    await wrapper.setProps({ stateful: true });
+    store.commit('setNavigation/setNavigation', {seqNumber: 1, totalNumber: 2, title: 'Record 1 of 2', preRoute: {name: 'previous'}, nextRoute: {name: 'next'}});
+    await Vue.nextTick();
+    const button = wrapper.find('#nextRecord');
+    button.trigger('click');
+    expect(store.state.setNavigation.currentRoute.name).toBe('next');
   });
 });

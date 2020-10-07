@@ -23,11 +23,17 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 import router from '../../router';
 
 export default {
   name: 'SetNavigation',
+  props: {
+    stateful: {
+      type: Boolean,
+      default: true,
+    },
+  },
   computed:{
     ...mapState('setNavigation', ['seqNumber', 'totalNumber', 'title', 'preRoute', 'nextRoute']),
     preDisabled() {
@@ -38,8 +44,13 @@ export default {
     }
   },
   methods: {
+    ...mapMutations('setNavigation', ['setCurrentRoute']),
     clickBtn(route) {
-      router.push(route);
+      if(this.stateful) {
+        this.setCurrentRoute(route);
+      } else {
+        router.push(route);
+      }
     }
   }
 };
