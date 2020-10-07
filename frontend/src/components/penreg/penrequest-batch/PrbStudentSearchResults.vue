@@ -29,7 +29,7 @@
       :page.sync="pageNumber"
       :items-per-page="prbStudentSearchResponse.pageable.pageSize"
       hide-default-footer
-      item-key="studentID"
+      item-key="penRequestBatchStudentID"
       :loading="loading"
       @page-count="prbStudentSearchResponse.pageable.pageNumber = $event"
     >
@@ -42,9 +42,9 @@
         <span :key="h.id" class="bottom-column-item">{{ header.bottomText }}</span>
       </template>
       <template v-slot:item="props">
-        <tr :class="{'selected-record' : props.item.isSelected}">
+        <tr :class="{'selected-record' : props.isSelected}">
           <td v-for="header in props.headers" :key="header.id" :class="header.id">
-            <v-checkbox v-if="header.type" class="record-checkbox header-checkbox" v-model="props.item.isSelected" color="#606060" @change="props.select($event)"></v-checkbox>
+            <v-checkbox v-if="header.type" class="record-checkbox header-checkbox" color="#606060" @change="props.select($event)"></v-checkbox>
             <div v-else class="table-cell">
               <span class="top-column-item">
                 <a v-if="header.topValue === 'submissionNumber'" class="submission">{{props.item[header.topValue] || '-'}}</a>
