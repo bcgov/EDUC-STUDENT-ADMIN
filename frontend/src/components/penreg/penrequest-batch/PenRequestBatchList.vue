@@ -38,7 +38,7 @@
       <template v-slot:item="props">
         <tr :class="tableRowClass(props.item)" @click="selectItem(props.item)">
           <td v-for="header in props.headers" :key="header.id" :class="{[header.value]: true, 'select-column': header.type}">
-            <v-checkbox v-if="header.type" class="file-checkbox" color="#606060" v-model="props.item.isSelected" @change="selectFile" @click.prevent></v-checkbox>
+            <v-checkbox v-if="header.type" class="file-checkbox" color="#606060" :value="props.item.isSelected"></v-checkbox>
             <div v-else :class="{'countable-column-div': header.countable}">
               <span v-if="header.countable" class="countable-column-data">{{ props.item[header.value] || '-' }}</span>
               <span v-else>{{props.item[header.value]}}</span>

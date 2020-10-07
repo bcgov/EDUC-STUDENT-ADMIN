@@ -1,24 +1,23 @@
 <template>
   <div v-if="totalNumber > 0">
-    <span class="mr-2">{{title}}</span>
+    <span class="mr-8 nav-title">{{title}}</span>
     <v-btn 
-      class="mr-1"
+      class="mr-3"
       id="preRecord"
       icon
       small
       :disabled="preDisabled"
       @click="clickBtn(preRoute)"
     >
-      <v-icon>fa-arrow-alt-circle-left</v-icon>
+      <v-icon large>fa-arrow-alt-circle-left</v-icon>
     </v-btn >
     <v-btn 
       id="nextRecord"
       icon
-      small
       :disabled="nextDisabled"
       @click="clickBtn(nextRoute)"
     >
-      <v-icon>fa-arrow-alt-circle-right</v-icon>
+      <v-icon large>fa-arrow-alt-circle-right</v-icon>
     </v-btn>
   </div>
 </template>
@@ -52,6 +51,10 @@ export default {
   background-color: rgba(255, 255, 255, 0.80) !important;
   color: white !important;
   border-radius: 50%;
+}
+
+.nav-title {
+  font-size: 1.065rem;
 }
 
 </style>
