@@ -87,9 +87,37 @@ async function updatePrbStudentInfoRequested(req, res) {
   }
 }
 
+async function getPenRequestBatchStudentMatchOutcome(req, res) {
+  const token = getBackendToken(req, res);
+  if(!token) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No access token'
+    });
+  }
+
+  try {
+    const url = `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${req.query.id}/student/${req.query.studentId}/possible-match`;
+    let matchData = await getData(token, url);
+
+    return Promise.all(matchData.map(async (match) => {
+      const studentUrl = `${config.get('server:student:rootURL')}/${match.matchedStudentId}`;
+      return await getData(token, studentUrl);
+    })).then((response) => {
+      return res.status(200).json(response);
+    }).catch(e => {
+      logApiError(e, 'getPenRequestBatchStudentMatchOutcome', 'Error occurred while attempting to GET student records.');
+      return errorResponse(res);
+    });
+  } catch(e) {
+    logApiError(e, 'getPenRequestBatchStudentMatchOutcome', 'Error getting pen request student possible matches.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getPENBatchRequestStats,
   updatePrbStudentInfoRequested,
   getPenRequestFiles: getPaginatedListForSCGroups('getPenRequestFiles', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/paginated`),
   getPenRequestBatchStudents: getPaginatedListForSCGroups('getPenRequestBatchStudents', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/student/paginated`),
+  getPenRequestBatchStudentMatchOutcome
 };

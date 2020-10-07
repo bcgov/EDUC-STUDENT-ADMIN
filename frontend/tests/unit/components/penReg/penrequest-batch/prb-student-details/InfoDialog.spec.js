@@ -2,7 +2,7 @@ import {mount, createLocalVue} from '@vue/test-utils';
 import Vuetify from 'vuetify';
 import Vuex from 'vuex';
 import Vue from 'vue';
-import NavBar from '@/components/util/InfoDialog.vue';
+import NavBar from '@/components/penreg/penrequest-batch/prb-student-details/InfoDialog.vue';
 import VueRouter from 'vue-router';
 
 describe('NavBar Component initialized with namespaced Vuex module.\'', () => {

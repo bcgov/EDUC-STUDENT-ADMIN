@@ -23,7 +23,8 @@
                 outlined
                 clearable
                 auto-grow
-                rows="6">
+                rows="6"
+                maxlength="4000">
         </v-textarea>
       </v-card-text>
       <v-card-actions class="pt-0 px-6 pb-4">
@@ -58,7 +59,7 @@
 </template>
 
 <script>
-import PrimaryButton from './PrimaryButton';
+import PrimaryButton from '../../../util/PrimaryButton';
 export default {
   name: 'InfoDialog',
   components: {PrimaryButton},

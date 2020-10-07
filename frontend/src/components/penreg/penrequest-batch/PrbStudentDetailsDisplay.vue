@@ -18,7 +18,8 @@
     >
       {{ alertMessage }}
     </v-alert>
-    <div v-if="!loading && prbStudent"  style="width: 100%" :overlay=false>
+    <div v-if="!loading && prbStudent" style="width: 100%" :overlay=false>
+      <div class="sticky full-width px-8">
       <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center" style="background-color:white;">
         <span class="mr-4 batch-title">
           <strong>{{seqNumberInBatch}} of {{totalNumberInBatch}} filtered</strong> | Record {{prbStudent.recordNumber}} of {{batchFile.studentCount}} in submission {{prbStudent.submissionNumber}}
@@ -110,6 +111,10 @@
           </v-row>
         </v-col>
       </v-row>
+      </div>
+      <v-row class="full-width">
+        <MatchOutcome :prbStudent="prbStudent"></MatchOutcome>
+      </v-row>
     </div>
   </v-container>
 </template>
@@ -118,16 +123,18 @@
 import { mapState, mapMutations } from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
 import PrbStudentStatusChip from './PrbStudentStatusChip';
-import InfoDialog from '../../util/InfoDialog';
+import InfoDialog from './prb-student-details/InfoDialog';
 import { formatPrbStudent, formatPrbStudents } from '../../../utils/penrequest-batch/format';
 import ApiService from '../../../common/apiService';
 import { Routes, SEARCH_FILTER_OPERATION, SEARCH_VALUE_TYPE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES } from '../../../utils/constants';
 import { cloneDeep, sortBy, uniq } from 'lodash';
 import alterMixin from '../../../mixins/alterMixin';
+import MatchOutcome from './prb-student-details/MatchOutcome';
 
 export default {
   name: 'PrbStudentDetailsDisplay',
   components: {
+    MatchOutcome,
     PrimaryButton,
     PrbStudentStatusChip,
     InfoDialog
@@ -187,7 +194,6 @@ export default {
       ],
 
       actionEnabled: false,
-
       loading: true,
     };
   },
@@ -469,5 +475,14 @@ export default {
   .bottom-column-item {
     float: left;
   }
-
+  .full-width {
+    margin-left: -32px;
+    margin-right: -32px;
+  }
+  .sticky {
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    background-color: white;
+  }
 </style>
