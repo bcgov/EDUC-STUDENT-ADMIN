@@ -54,7 +54,15 @@
           </v-row>
           <v-row class="pt-4 px-8">
             <v-col cols="5" class="pa-0">
-              <v-text-field id="penTextField" outlined dense background-color="white" label="Enter PEN" v-model="pen"></v-text-field>
+              <v-text-field
+                      id="penTextField"
+                      outlined
+                      dense
+                      background-color="white"
+                      label="Enter PEN"
+                      v-model="pen"
+                      @keyup.enter="enterPushed()">
+              </v-text-field>
             </v-col>
             <v-col cols="2" class="py-0 px-2">
               <PrimaryButton id="quickSearchBtn" :disabled="!isValidPEN" text="Search" width="100%" @click.native="quickSearch"></PrimaryButton>
@@ -203,6 +211,11 @@ export default {
           console.log(error);
           this.searchError = true;
         });
+    },
+    enterPushed() {
+      if(this.pen && this.isValidPEN){
+        this.quickSearch();
+      }
     }
   }
 };
