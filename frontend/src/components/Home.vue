@@ -61,7 +61,9 @@
                       background-color="white"
                       label="Enter PEN"
                       v-model="pen"
-                      @keyup.enter="enterPushed()">
+                      @keyup.enter="enterPushed()"
+                      maxlength="9"
+                      :rules="penRules">
               </v-text-field>
             </v-col>
             <v-col cols="2" class="py-0 px-2">
@@ -135,7 +137,9 @@ export default {
         { title: 'Active' }
       ],
       searchError: false,
-      searchErrorMessage: 'PEN not found in Student table'
+      searchErrorMessage: 'PEN not found in Student table',
+      penRules: [ v => (!v || isValidPEN(v)) || this.penHint],
+      penHint: 'Fails check-digit test'
     };
   },
   mounted() {
