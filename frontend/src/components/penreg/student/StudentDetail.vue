@@ -227,12 +227,9 @@
                                                  :name="STUDENT_DETAILS_FIELDS.GRADE_YEAR" colspan="1" label="Grade School Year"
                                                  :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.GRADE_YEAR)"></StudentDetailsTextFieldReadOnly>
 
-                <StudentDetailsTextField :model="spacePostalCode?spacePostalCode:''" :has-edits="hasEdits"
-                                         revert-id="revertPostalCode" @changeStudentObjectValue="changeStudentObjectValue"
-                                         :name="STUDENT_DETAILS_FIELDS.POSTAL_CODE" colspan="2"
-                                         label="Postal Code" max-length="7" min-length="6" tab-index="9"
-                                         :revert-field="revertField" :handle-on-input="handleInput(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
-                                         :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"></StudentDetailsTextField>
+                <StudentDetailsTextFieldReadOnly :model="spacePostalCode?spacePostalCode:''" :name="STUDENT_DETAILS_FIELDS.POSTAL_CODE"
+                                                 colspan="2" label="Postal Code"
+                                                 :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.LOCAL_ID)"></StudentDetailsTextFieldReadOnly>
 
                 <StudentDetailsTextField max-length="9" min-length="8" :name="STUDENT_DETAILS_FIELDS.MINCODE" tab-index="9"
                                          @changeStudentObjectValue="changeStudentObjectValue"
