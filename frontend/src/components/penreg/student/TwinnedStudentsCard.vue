@@ -84,7 +84,7 @@ export default {
   data () {
     return {
       pageNumber: 1,
-      itemsPerPage: 4,
+      itemsPerPage: 15,
       headers: [
         { text: 'PEN', align: 'start', sortable: false, value: 'pen', topTable: true},
         { text: 'Legal Name', value: 'legalName', sortable: false, topTable: true },
@@ -159,7 +159,7 @@ export default {
   }
 
   #top-table /deep/ table th:nth-child(1) {
-    width: 21;
+    width: 21%;
   }
   #top-table /deep/ table th:nth-child(3),
   #top-table /deep/ table th:nth-child(4) {
@@ -212,8 +212,9 @@ export default {
     border-bottom: none !important;
   }
 
-  #details-table /deep/ table > tbody > tr:last-child > td { 
-    border-bottom: thin solid rgba(0, 0, 0, 0.12) !important;
+  #details-table /deep/ table > thead > tr:last-child > th,
+  #details-table /deep/ table > tbody > tr:last-child > td {
+    border-bottom: thin solid black;
   }
 
   #details-table /deep/ table th { 
@@ -223,5 +224,18 @@ export default {
 
   #details-table /deep/ table > tbody > tr { 
     cursor: pointer;
+  }
+  #details-table /deep/ table > tbody > tr > td {
+    height: 32px;
+  }
+  .v-divider {
+    display: block;
+    flex: 1 1 0;
+    max-width: 100%;
+    height: 0;
+    max-height: 0;
+    border: 0 solid black;
+    border-top-width: medium;
+    transition: inherit;
   }
 </style>
