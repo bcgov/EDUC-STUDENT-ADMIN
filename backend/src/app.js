@@ -76,7 +76,7 @@ const dbSession = new RedisStore({
 const cookie = {
   secure: true,
   httpOnly: true,
-  maxAge: 1800000 //30 minutes in ms. this is same as session time. DO NOT MODIFY, IF MODIFIED, MAKE SURE SAME AS SESSION TIME OUT VALUE.
+  maxAge: config.get('server:session:maxAge') || 1800000 //30 minutes in ms. this is same as session time. DO NOT MODIFY, IF MODIFIED, MAKE SURE SAME AS SESSION TIME OUT VALUE.
 };
 if ('local' === config.get('environment')) {
   cookie.secure = false;
