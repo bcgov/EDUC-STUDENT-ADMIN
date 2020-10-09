@@ -118,7 +118,7 @@ fi
 
 regConfigStaff="var studentAdminConfig = (function() {
   return {
-    \"VUE_APP_IDLE_TIMEOUT_IN_MILLIS\" : \"$vueIdleTimeout\",
+    \"VUE_APP_IDLE_TIMEOUT_IN_MILLIS\" : $vueIdleTimeout,
     \"WEB_SOCKET_URL\":\"wss://$APP_NAME-$PEN_NAMESPACE-$envValue.pathfinder.gov.bc.ca/api/socket\"
   };
 })();"
