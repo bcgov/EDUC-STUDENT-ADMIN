@@ -32,12 +32,10 @@ export default {
   },
   mounted() {
     this.$store.commit('auth/setJwtToken');
-    this.$store.commit('auth/setRefreshToken');
   },
   methods: {
     clearStorage() {
       this.$store.commit('auth/setJwtToken');
-      this.$store.commit('auth/setRefreshToken');
     }
   }
 };

@@ -94,22 +94,36 @@ echo Removing key files
 rm tempStudentAdminBackendkey
 rm tempStudentAdminBackendkey.pub
 
+sessionMaxAge="1800000"
+tokenExpiresIn="30m"
+if [ "$envValue" == "test" ]
+then
+  sessionMaxAge="3600000"
+  tokenExpiresIn="60m"
+fi
+
 echo Creating config map $APP_NAME-backend-config-map
-oc create -n $PEN_NAMESPACE-$envValue configmap $APP_NAME-backend-config-map --from-literal=TZ=$TZVALUE --from-literal=UI_PRIVATE_KEY="$UI_PRIVATE_KEY_VAL"  --from-literal=SITEMINDER_LOGOUT_ENDPOINT="$siteMinderLogoutUrl" --from-literal=UI_PUBLIC_KEY="$UI_PUBLIC_KEY_VAL" --from-literal=ID=$APP_NAME-soam --from-literal=SECRET=$studentAdminClientSecret --from-literal=SERVER_FRONTEND=https://$APP_NAME-$PEN_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=ISSUER=STUDENT_ADMIN_APPLICATION --from-literal=SOAM_PUBLIC_KEY="$formattedPublicKey" --from-literal=PEN_REQUEST_EMAIL_API_URL=https://student-profile-email-api-$PEN_NAMESPACE-$envValue.pathfinder.gov.bc.ca/gmp --from-literal=PEN_REQUEST_API_URL=https://pen-request-api-$COMMON_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=DISCOVERY=https://$SOAM_KC/auth/realms/$SOAM_KC_REALM_ID/.well-known/openid-configuration --from-literal=KC_DOMAIN=https://$SOAM_KC/auth/realms/$SOAM_KC_REALM_ID --from-literal=PEN_DEMOGRAPHICS_URL=https://pen-demographics-api-$COMMON_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=DIGITAL_ID_URL=https://digitalid-api-$COMMON_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=STUDENT_API_URL=https://student-api-$COMMON_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=LOG_LEVEL=info --from-literal=REDIS_HOST=redis --from-literal=REDIS_PORT=6379 --from-literal=STUDENT_PROFILE_API_URL=https://student-profile-api-$COMMON_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=STUDENT_PROFILE_EMAIL_API_URL=https://student-profile-email-api-$PEN_NAMESPACE-$envValue.pathfinder.gov.bc.ca/ump --from-literal=PROFILE_REQUEST_SAGA_API_URL=https://student-profile-saga-api-$PEN_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=NATS_URL="$NATS_URL" --from-literal=NATS_CLUSTER="$NATS_CLUSTER" --from-literal=UMP_ROLES="STUDENT_PROFILE_ADMIN,STUDENT_PROFILE_READ_ONLY" --from-literal=GMP_ROLES="STUDENT_ADMIN,STUDENT_ADMIN_READ_ONLY" --from-literal=STUDENT_SEARCH_ADMIN="STUDENT_SEARCH_ADMIN" --from-literal=UMP_ROLE_ADMIN="STUDENT_PROFILE_ADMIN" --from-literal=GMP_ROLE_ADMIN="STUDENT_ADMIN" --from-literal=PEN_REQUEST_BATCH_ADMIN="PEN_REQUEST_BATCH_ADMIN" --from-literal=PEN_REQUEST_BATCH_API_URL=https://pen-reg-batch-api-$PEN_NAMESPACE-$envValue.pathfinder.gov.bc.ca/api/v1 --from-literal=PEN_MATCH_API_URL=https://pen-match-api-$PEN_NAMESPACE-$envValue.pathfinder.gov.bc.ca/api/v1/pen-match/ --dry-run -o yaml | oc apply -f -
+oc create -n $PEN_NAMESPACE-$envValue configmap $APP_NAME-backend-config-map --from-literal=TZ=$TZVALUE --from-literal=UI_PRIVATE_KEY="$UI_PRIVATE_KEY_VAL"  --from-literal=SITEMINDER_LOGOUT_ENDPOINT="$siteMinderLogoutUrl" --from-literal=UI_PUBLIC_KEY="$UI_PUBLIC_KEY_VAL" --from-literal=ID=$APP_NAME-soam --from-literal=SECRET=$studentAdminClientSecret --from-literal=SERVER_FRONTEND=https://$APP_NAME-$PEN_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=ISSUER=STUDENT_ADMIN_APPLICATION --from-literal=SOAM_PUBLIC_KEY="$formattedPublicKey" --from-literal=PEN_REQUEST_EMAIL_API_URL=https://student-profile-email-api-$PEN_NAMESPACE-$envValue.pathfinder.gov.bc.ca/gmp --from-literal=PEN_REQUEST_API_URL=https://pen-request-api-$COMMON_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=DISCOVERY=https://$SOAM_KC/auth/realms/$SOAM_KC_REALM_ID/.well-known/openid-configuration --from-literal=KC_DOMAIN=https://$SOAM_KC/auth/realms/$SOAM_KC_REALM_ID --from-literal=PEN_DEMOGRAPHICS_URL=https://pen-demographics-api-$COMMON_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=DIGITAL_ID_URL=https://digitalid-api-$COMMON_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=STUDENT_API_URL=https://student-api-$COMMON_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=LOG_LEVEL=info --from-literal=REDIS_HOST=redis --from-literal=REDIS_PORT=6379 --from-literal=STUDENT_PROFILE_API_URL=https://student-profile-api-$COMMON_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=STUDENT_PROFILE_EMAIL_API_URL=https://student-profile-email-api-$PEN_NAMESPACE-$envValue.pathfinder.gov.bc.ca/ump --from-literal=PROFILE_REQUEST_SAGA_API_URL=https://student-profile-saga-api-$PEN_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=NATS_URL="$NATS_URL" --from-literal=NATS_CLUSTER="$NATS_CLUSTER" --from-literal=UMP_ROLES="STUDENT_PROFILE_ADMIN,STUDENT_PROFILE_READ_ONLY" --from-literal=GMP_ROLES="STUDENT_ADMIN,STUDENT_ADMIN_READ_ONLY" --from-literal=STUDENT_SEARCH_ADMIN="STUDENT_SEARCH_ADMIN" --from-literal=UMP_ROLE_ADMIN="STUDENT_PROFILE_ADMIN" --from-literal=GMP_ROLE_ADMIN="STUDENT_ADMIN" --from-literal=PEN_REQUEST_BATCH_ADMIN="PEN_REQUEST_BATCH_ADMIN" --from-literal=PEN_REQUEST_BATCH_API_URL=https://pen-reg-batch-api-$PEN_NAMESPACE-$envValue.pathfinder.gov.bc.ca/api/v1 --from-literal=PEN_MATCH_API_URL=https://pen-match-api-$PEN_NAMESPACE-$envValue.pathfinder.gov.bc.ca/api/v1/pen-match/ --from-literal=SESSION_MAX_AGE=$sessionMaxAge --from-literal=TOKEN_EXPIRES_IN=$tokenExpiresIn --dry-run -o yaml | oc apply -f -
 echo
 echo Setting environment variables for $APP_NAME-backend-$SOAM_KC_REALM_ID application
 oc set env --from=configmap/$APP_NAME-backend-config-map dc/$APP_NAME-backend-$SOAM_KC_REALM_ID
 ###########################################################
 #Setup for student-admin-frontend-config-map
 ###########################################################
+vueIdleTimeout="1800000"
+if [ "$envValue" == "test" ]
+then
+  vueIdleTimeout="3600000"
+fi
+
 regConfigStaff="var studentAdminConfig = (function() {
   return {
-    \"VUE_APP_IDLE_TIMEOUT_IN_MILLIS\" : \"1800000\",
+    \"VUE_APP_IDLE_TIMEOUT_IN_MILLIS\" : $vueIdleTimeout,
     \"WEB_SOCKET_URL\":\"wss://$APP_NAME-$PEN_NAMESPACE-$envValue.pathfinder.gov.bc.ca/api/socket\"
   };
 })();"
 echo Creating config map $APP_NAME-frontend-config-map
-oc create -n $PEN_NAMESPACE-$envValue configmap $APP_NAME-frontend-config-map --from-literal=TZ=$TZVALUE --from-literal=HOST_ROUTE=$APP_NAME-$PEN_NAMESPACE-$envValue.pathfinder.gov.bc.ca  --from-literal=BACKEND_ROOT=https://$APP_NAME-$PEN_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=studentAdminConfig.js="$regConfigStaff"  --dry-run -o yaml | oc apply -f -
+oc create -n $PEN_NAMESPACE-$envValue configmap $APP_NAME-frontend-config-map --from-literal=TZ=$TZVALUE --from-literal=HOST_ROUTE=$APP_NAME-$PEN_NAMESPACE-$envValue.pathfinder.gov.bc.ca  --from-literal=BACKEND_ROOT=https://$APP_NAME-$PEN_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=config.js="$regConfigStaff"  --dry-run -o yaml | oc apply -f -
 echo
 echo Setting environment variables for $APP_NAME-frontend-$SOAM_KC_REALM_ID application
 oc set env --from=configmap/$APP_NAME-frontend-config-map dc/$APP_NAME-frontend-$SOAM_KC_REALM_ID
