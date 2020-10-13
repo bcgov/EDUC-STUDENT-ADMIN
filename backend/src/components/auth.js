@@ -88,11 +88,13 @@ function isValidUser(isUserHasRole, roleType, roleNames) {
 
 const auth = {
   // Check if JWT Access Token has expired
+  // logic to add 30 seconds to the check is to avoid edge case when the token is valid here
+  // but expires just before the api call due to ms time difference, so if token is expiring within next 30 seconds, refresh it.
   isTokenExpired(token) {
     const now = Date.now().valueOf() / 1000;
     const payload = jsonwebtoken.decode(token);
 
-    return (!!payload['exp'] && payload['exp'] < now);
+    return (!!payload['exp'] && payload['exp'] < (now + 30)); // Add 30 seconds to make sure , edge case is avoided and token is refreshed.
   },
 
   // Check if JWT Refresh Token has expired
