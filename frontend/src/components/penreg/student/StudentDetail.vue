@@ -765,7 +765,7 @@ export default {
           })
           .catch(error => {
             console.log(error);
-            this.setFailureAlert(`Student data could not be updated due to ${error}`);
+            this.setFailureAlert(`Student data could not be updated, please try again.`);
           })
           .finally(() => {
           });
