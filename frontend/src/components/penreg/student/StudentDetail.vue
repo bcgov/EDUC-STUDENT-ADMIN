@@ -3,6 +3,7 @@
             v-model="validForm" class="fill-height"
     >
       <v-container class="fill-height ma-0 pa-0" v-if="!isLoading">
+
         <v-col cols="12" class="fill-height ma-0 pa-0">
           <v-row>
                 <v-tabs   active-class="active-display" class="pa-0 ma-0 " v-model="tab">
@@ -320,6 +321,17 @@
                   </v-col>
                 </v-row>
                 <v-row no-gutters dense class="mt-n4">
+                  <v-alert
+                      v-model="alert"
+                      dense
+                      text
+                      dismissible
+                      outlined
+                      transition="scale-transition"
+                      :class="`${alertType} flex-grow-1 mx-3`"
+                  >
+                    {{ alertMessage }}
+                  </v-alert>
                   <v-col cols="10">
                     <v-card-actions style="float: right;">
                       <router-link :to="`${this.isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`">
@@ -327,6 +339,7 @@
                       </router-link>
                       <PrimaryButton :disabled="!hasAnyEdits() || !validForm" @click.native="saveStudent()" text="Save"></PrimaryButton>
                     </v-card-actions>
+
                   </v-col>
                 </v-row>
               </v-card>
@@ -407,11 +420,13 @@ import StudentDetailsTemplateTextField from '@/components/penreg/student/Student
 import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard';
 import {formatMinCode, formatPen} from '../../../utils/format';
 import {sortBy} from 'lodash';
+import alterMixin from '../../../mixins/alterMixin';
 
 const JSJoda = require('@js-joda/core');
 
 export default {
   name: 'studentDetail',
+  mixins: [alterMixin],
   props: {
     studentID: {
       type: String,
@@ -746,12 +761,13 @@ export default {
           .post(Routes['student'].ROOT_ENDPOINT, this.prepPut(this.studentCopy))
           .then(response => {
             this.setStudent(response.data);
+            this.setSuccessAlert("Student data updated successfully.");
           })
           .catch(error => {
             console.log(error);
+            this.setFailureAlert(`Student data could not be updated due to ${error}`);
           })
           .finally(() => {
-
           });
       }
     },
