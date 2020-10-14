@@ -90,6 +90,10 @@ nconf.defaults({
   messaging:{
     natsUrl:process.env.NATS_URL,
     natsCluster:process.env.NATS_CLUSTER
+  },
+  scheduler :{
+    schedulerCronStaleSagaRecordRedis:process.env.SCHEDULER_CRON_STALE_SAGA_RECORD_REDIS,
+    minTimeBeforeSagaIsStaleInMinutes:process.env.MIN_TIME_BEFORE_SAGA_IS_STALE_IN_MINUTES
   }
 });
 module.exports = nconf;

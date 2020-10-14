@@ -4,6 +4,7 @@ const log = require('../../components/logger');
 const SagaEventKey = 'SAGA_EVENTS';
 const safeStringify = require('fast-safe-stringify');
 const RedLock = require('redlock');
+const { LocalDateTime } = require('@js-joda/core');
 let redLock;
 const redisUtil = {
   /**
@@ -64,6 +65,9 @@ const redisUtil = {
   },
 
   async addElementToSagaRecordInRedis(sagaId, eventToAdd) {
+    if(eventToAdd){
+      eventToAdd.createDateTime = LocalDateTime.now().toString(); // store the timestamp so that it can be checked through scheduler.
+    }
     const redisClient = Redis.getRedisClient();
     try {
       await this.getRedLock().lock(`locks:pen-request-saga:addToSet-${sagaId}`, 500);
