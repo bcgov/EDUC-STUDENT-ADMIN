@@ -18,7 +18,7 @@ dotenv.config();
 const JWTStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const OidcStrategy = require('passport-openidconnect-kc-idp').Strategy;
-
+require('./schedulers/student-admin-scheduler');
 const apiRouter = express.Router();
 const authRouter = require('./routes/auth');
 const penRequestRouter = require('./routes/penRequest');
@@ -64,7 +64,7 @@ const logStream = {
     log.info(message);
   }
 };
-app.use(morgan(config.get('server:morganFormat'), { 'stream': logStream }));
+app.use(morgan(config.get('server:morganFormat'), {'stream': logStream}));
 
 const Redis = require('./util/redis/redis-client');
 Redis.init(); // call the init to initialize appropriate client, and reuse it across the app.
