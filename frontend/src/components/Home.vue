@@ -178,7 +178,6 @@ export default {
           repeats: response.data.K12.repeats,
           unarchived: response.data.K12.unarchived
         });
-        this.isLoadingBatch = false;
         this.penRequestData.push(
           {
             title: 'PSI',
@@ -187,6 +186,8 @@ export default {
             repeats: response.data.PSI.repeats,
             unarchived: response.data.PSI.unarchived
           });
+      }).finally(() => {
+          this.isLoadingBatch = false;
       });
     }
     if(this.isValidGMPUser) {
@@ -196,12 +197,13 @@ export default {
           initial: response.data.numInitRev,
           subsequent: response.data.numSubsRev
         });
-        this.isLoadingGmpUmp = false;
       }).catch(() => {
         this.studentData.push({
           title: 'Get My PEN',
           error: true
         });
+      }).finally(() => {
+          this.isLoadingGmpUmp = false;
       });
 
     }
@@ -218,6 +220,8 @@ export default {
           title: 'Update My PEN',
           error: true
         });
+      }).finally(() => {
+          this.isLoadingGmpUmp = false;
       });
     }
     
