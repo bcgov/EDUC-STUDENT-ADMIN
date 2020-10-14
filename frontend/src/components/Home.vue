@@ -13,7 +13,19 @@
     </v-alert>
     <v-row>
       <v-col cols="8">
-        <DashboardTable v-if="isValidPenRequestBatchUser" requestType="School" colour="#CED6E2" :tableData="penRequestData"></DashboardTable>
+        <DashboardTable v-if="isValidPenRequestBatchUser && !isLoadingBatch" requestType="School" colour="#CED6E2" :tableData="penRequestData"></DashboardTable>
+         <v-container fluid class="full-height" v-else-if="isLoadingBatch">
+           <article id="pen-display-container" class="top-banner full-height">
+             <v-row align="center" justify="center">
+               <v-progress-circular
+                   :size="70"
+                   :width="7"
+                   color="primary"
+                   indeterminate
+               ></v-progress-circular>
+             </v-row>
+           </article>
+         </v-container>
       </v-col>
       <v-col cols="4">
         <v-card v-if="isValidStudentSearchUser" flat color="#F2F2F2" class="mt-2" height="100%">
@@ -80,7 +92,19 @@
     </v-row>
     <v-row class="pb-6">
       <v-col cols="8">
-        <DashboardTable v-if="isValidGMPUser || isValidUMPUser" requestType="Student" colour="#F2F2F2" :tableData="studentData"></DashboardTable>
+        <DashboardTable v-if="(isValidGMPUser || isValidUMPUser) && !isLoadingGmpUmp" requestType="Student" colour="#F2F2F2" :tableData="studentData"></DashboardTable>
+        <v-container fluid class="full-height" v-else-if="isLoadingGmpUmp">
+          <article id="pen-display-container" class="top-banner full-height">
+            <v-row align="center" justify="center">
+              <v-progress-circular
+                  :size="70"
+                  :width="7"
+                  color="primary"
+                  indeterminate
+              ></v-progress-circular>
+            </v-row>
+          </article>
+        </v-container>
       </v-col>
       <v-col cols="4">
         <v-card flat color="#F2F2F2" class="mt-2" height="100%">
@@ -132,6 +156,8 @@ export default {
       penRequestData: [],
       studentData: [],
       pen: null,
+      isLoadingBatch: true,
+      isLoadingGmpUmp: true,
       searchDropDownItems: [
         { title: 'Archived' },
         { title: 'Active' }
@@ -152,6 +178,7 @@ export default {
           repeats: response.data.K12.repeats,
           unarchived: response.data.K12.unarchived
         });
+        this.isLoadingBatch = false;
         this.penRequestData.push(
           {
             title: 'PSI',
@@ -169,6 +196,7 @@ export default {
           initial: response.data.numInitRev,
           subsequent: response.data.numSubsRev
         });
+        this.isLoadingGmpUmp = false;
       }).catch(() => {
         this.studentData.push({
           title: 'Get My PEN',
@@ -184,6 +212,7 @@ export default {
           initial: response.data.numInitRev,
           subsequent: response.data.numSubsRev
         });
+        this.isLoadingGmpUmp = false;
       }).catch(() => {
         this.studentData.push({
           title: 'Update My PEN',
@@ -191,6 +220,7 @@ export default {
         });
       });
     }
+    
   },
   computed: {
     ...mapState('auth', ['isAuthenticated','isAuthorizedUser','isValidGMPUser','isValidUMPUser', 'isValidStudentSearchUser', 'isValidPenRequestBatchUser']),
@@ -220,12 +250,15 @@ export default {
       if(this.pen && this.isValidPEN){
         this.quickSearch();
       }
-    }
+    },
   }
 };
 </script>
 <style scoped>
   #requestsSearchBtn, #quickSearchBtn {
     height: 2.858em;
+  }
+  .full-height {
+    height: 100%;
   }
 </style>
