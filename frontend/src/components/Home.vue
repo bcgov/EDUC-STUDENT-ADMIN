@@ -214,7 +214,6 @@ export default {
           initial: response.data.numInitRev,
           subsequent: response.data.numSubsRev
         });
-        this.isLoadingGmpUmp = false;
       }).catch(() => {
         this.studentData.push({
           title: 'Update My PEN',
