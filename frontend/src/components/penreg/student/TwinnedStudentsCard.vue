@@ -37,6 +37,9 @@
         hide-default-footer
         item-key="twinID"
       >
+        <template v-slot:[`item.checkbox`]="props">
+          <v-checkbox :input-value="props.isSelected" color="#606060" @change="props.select($event)"></v-checkbox>
+        </template>
         <template v-slot:[`item.pen`]="props">
           <a>
             {{props.value}}
@@ -86,6 +89,7 @@ export default {
       pageNumber: 1,
       itemsPerPage: 15,
       headers: [
+        { text: '', sortable: false, value: 'checkbox', topTable: false},
         { text: 'PEN', align: 'start', sortable: false, value: 'pen', topTable: true},
         { text: 'Legal Name', value: 'legalName', sortable: false, topTable: true },
         { text: 'Birth Date', value: 'dob', sortable: false, topTable: true },
@@ -192,20 +196,25 @@ export default {
   }
 
   #details-table /deep/ table th:nth-child(1) {
-     width: 16%;
+     width: 5%;
   }
-  #details-table /deep/ table th:nth-child(3),
-  #details-table /deep/ table th:nth-child(5),
+  #details-table /deep/ table th:nth-child(2) {
+    width: 16%;
+  }
+  #details-table /deep/ table th:nth-child(3){
+    width: 25%;
+  }
+  #details-table /deep/ table th:nth-child(4) {
+    width: 15%;
+  }
+  #details-table /deep/ table th:nth-child(5){
+    width: 8%;
+  }
   #details-table /deep/ table th:nth-child(6) {
     width: 15%;
   }
-
-  #details-table /deep/ table th:nth-child(4) {
-    width: 10%;
-  }
-
-  #details-table /deep/ table th:nth-child(2) {
-    width: 29%;
+  #details-table /deep/ table th:nth-child(7) {
+    width: 18%;
   }
 
   #details-table /deep/ table > tbody > tr:not(:last-child) > td { 
