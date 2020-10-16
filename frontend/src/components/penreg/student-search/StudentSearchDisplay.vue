@@ -106,6 +106,7 @@ export default {
     },
     studentSearchParams: {
       get(){
+        this.setCurrentSearchObject(this.$store.state['studentSearch'].studentSearchParams);
         return this.$store.state['studentSearch'].studentSearchParams;
       },
       set(newPage){
@@ -133,6 +134,9 @@ export default {
   },
   methods: {
     ...mapMutations('studentSearch', ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse', 'clearStudentSearchParams']),
+    setCurrentSearchObject(searchParams){
+      this.currentStudentSearchParams = JSON.parse(JSON.stringify(searchParams));
+    },
     clearSearch() {
       this.clearStudentSearchParams();
       this.searchHasValues();
