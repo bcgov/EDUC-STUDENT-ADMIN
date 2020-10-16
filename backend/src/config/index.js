@@ -7,7 +7,7 @@ dotenv.config();
 const env = process.env.NODE_ENV;
 
 nconf.argv()
-  .file({ file: path.join(__dirname, `${env}.json`) });
+  .file({file: path.join(__dirname, `${env}.json`)});
 
 nconf.defaults({
   environment: env,
@@ -48,7 +48,7 @@ nconf.defaults({
     penRequestBatch: {
       rootURL: process.env.PEN_REQUEST_BATCH_API_URL,
       paginated: process.env.PEN_REQUEST_BATCH_API_URL + '/pen-request-batch/paginated',
-      studentStatusCodesURL: process.env.PEN_REQUEST_BATCH_API_URL +  '/pen-request-batch/student/pen-request-batch-student-status-codes',
+      studentStatusCodesURL: process.env.PEN_REQUEST_BATCH_API_URL + '/pen-request-batch/student/pen-request-batch-student-status-codes',
       roleAdmin: process.env.PEN_REQUEST_BATCH_ADMIN,
       maxPaginatedElements: 1000
     },
@@ -67,6 +67,10 @@ nconf.defaults({
       statusCodesURL: process.env.STUDENT_API_URL + '/status-codes',
       gradeCodesURL: process.env.STUDENT_API_URL + '/grade-codes',
       twinReasonCodesURL: process.env.STUDENT_API_URL + '/student-twin-reason-codes',
+    },
+    penServices: {
+      rootURL: process.env.PEN_SERVICES_API_URL,
+      nextPenURL:process.env.PEN_SERVICES_API_URL+'/next-pen-number'
     }
   },
   oidc: {
@@ -82,18 +86,18 @@ nconf.defaults({
     issuer: process.env.ISSUER,
     expiresIn: process.env.TOKEN_EXPIRES_IN,
   },
-  redis:{
-    host:process.env.REDIS_HOST,
-    port:process.env.REDIS_PORT,
-    password:process.env.REDIS_PASSWORD
+  redis: {
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+    password: process.env.REDIS_PASSWORD
   },
-  messaging:{
-    natsUrl:process.env.NATS_URL,
-    natsCluster:process.env.NATS_CLUSTER
+  messaging: {
+    natsUrl: process.env.NATS_URL,
+    natsCluster: process.env.NATS_CLUSTER
   },
-  scheduler :{
-    schedulerCronStaleSagaRecordRedis:process.env.SCHEDULER_CRON_STALE_SAGA_RECORD_REDIS,
-    minTimeBeforeSagaIsStaleInMinutes:process.env.MIN_TIME_BEFORE_SAGA_IS_STALE_IN_MINUTES
+  scheduler: {
+    schedulerCronStaleSagaRecordRedis: process.env.SCHEDULER_CRON_STALE_SAGA_RECORD_REDIS,
+    minTimeBeforeSagaIsStaleInMinutes: process.env.MIN_TIME_BEFORE_SAGA_IS_STALE_IN_MINUTES
   }
 });
 module.exports = nconf;
