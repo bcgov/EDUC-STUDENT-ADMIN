@@ -23,9 +23,14 @@
         </v-col>
       </v-row>
       <v-divider class="mt-2"></v-divider>
-      <v-row no-gutters>
-        <v-col class="mt-2">
+      <v-row no-gutters justify="end">
+        <v-col class="mt-4">
           <span id="twins-number" class="px-4"><strong>{{ twins.length }} Twins</strong></span>
+        </v-col>
+        <v-col class="mt-2">
+          <v-row justify="end" class="mx-3">
+            <TertiaryButton :disabled="selectedTwins.length < 1" id="deleteButton" class="ma-0" text="Delete" icon="mdi-delete" ></TertiaryButton>
+          </v-row>
         </v-col>
       </v-row>
       <v-data-table
@@ -34,12 +39,11 @@
         :items="twinItems"
         :page.sync="pageNumber"
         :items-per-page="itemsPerPage"
+        show-select
         hide-default-footer
         item-key="twinID"
+        v-model="selectedTwins"
       >
-        <template v-slot:[`item.checkbox`]="props">
-          <v-checkbox :input-value="props.isSelected" color="#606060" @change="props.select($event)"></v-checkbox>
-        </template>
         <template v-slot:[`item.pen`]="props">
           <a>
             {{props.value}}
@@ -67,6 +71,7 @@
 </template>
 
 <script>
+import TertiaryButton from '../../util/TertiaryButton';
 import {mapGetters, mapActions} from 'vuex';
 import moment from 'moment';
 import {sortBy} from 'lodash';
@@ -74,6 +79,9 @@ import {formatPen} from '../../../utils/format';
 
 export default {
   name: 'TwinnedStudentsCard',
+  components: {
+    TertiaryButton: TertiaryButton
+  },
   props: {
     student: {
       type: Object,
@@ -86,10 +94,11 @@ export default {
   },
   data () {
     return {
+      selectedTwins: [],
+      isTwinSelected: false,
       pageNumber: 1,
       itemsPerPage: 15,
       headers: [
-        { text: '', sortable: false, value: 'checkbox', topTable: false},
         { text: 'PEN', align: 'start', sortable: false, value: 'pen', topTable: true},
         { text: 'Legal Name', value: 'legalName', sortable: false, topTable: true },
         { text: 'Birth Date', value: 'dob', sortable: false, topTable: true },
