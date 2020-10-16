@@ -6,12 +6,17 @@ const log = require('./logger');
 const utils = require('./utils');
 const {putData} = require('./utils');
 
-async function saveStudent(req, res) {
+async function updateStudent(req, res) {
   try {
     const token = utils.getBackendToken(req);
     if (!token) {
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'No access token'
+      });
+    }
+    if(!req.params.studentID){
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'No Student ID for PUT operation.'
       });
     }
     const student = req.body.student;
@@ -75,7 +80,7 @@ async function getStudentByPen(req, res) {
 
 
 module.exports = {
-  saveStudent,
+  updateStudent,
   getStudentByStudentId,
   getStudentByPen
 };
