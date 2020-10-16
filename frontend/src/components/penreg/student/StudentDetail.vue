@@ -755,7 +755,7 @@ export default {
     saveStudent() {
       if (this.$refs.studentDetailForm.validate()) {
         ApiService.apiAxios
-          .post(Routes['student'].ROOT_ENDPOINT, this.prepPut(this.studentCopy))
+          .put(Routes['student'].ROOT_ENDPOINT+'/'+ this.studentID, this.prepPut(this.studentCopy))
           .then(response => {
             this.setStudent(response.data);
             this.setSuccessAlert("Student data updated successfully.");
