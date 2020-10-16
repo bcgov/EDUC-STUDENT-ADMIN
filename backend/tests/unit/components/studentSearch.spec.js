@@ -41,30 +41,30 @@ describe('searchStudent', () => {
   it('should call api with CONTAINS, STARTS_WITH or ENDS_WITH operation when wildcards at the start or end of name', async () => {
     await expectApitoHaveBeenCalled(
       '{"legalFirstName": "*on*", "legalMiddleNames": "Jan*", "legalLastName": "*son"}',
-      "[{\"searchCriteriaList\":[{\"key\":\"legalFirstName\",\"condition\":\"AND\",\"operation\":\"like\",\"value\":\"ON\",\"valueType\":\"STRING\"}," + 
-      "{\"key\":\"legalMiddleNames\",\"condition\":\"AND\",\"operation\":\"starts_with\",\"value\":\"JAN\",\"valueType\":\"STRING\"}," +
-      "{\"key\":\"legalLastName\",\"condition\":\"AND\",\"operation\":\"ends_with\",\"value\":\"SON\",\"valueType\":\"STRING\"}]}]"
+      '[{"searchCriteriaList":[{"key":"legalFirstName","condition":"AND","operation":"like","value":"ON","valueType":"STRING"},' + 
+      '{"key":"legalMiddleNames","condition":"AND","operation":"starts_with","value":"JAN","valueType":"STRING"},' +
+      '{"key":"legalLastName","condition":"AND","operation":"ends_with","value":"SON","valueType":"STRING"}]}]'
     );
   });
 
   it('should call api with BETWEEN operation when dob in searchQueries', async () => {
     await expectApitoHaveBeenCalled(
       '{"dob": {"startDate": "2010/01/01"}}',
-      '[{\"searchCriteriaList\":[{\"key\":\"dob\",\"condition\":\"AND\",\"operation\":\"btn\",\"value\":\"2010-01-01,2010-01-01\",\"valueType\":\"DATE\"}]}]'
+      '[{"searchCriteriaList":[{"key":"dob","condition":"AND","operation":"btn","value":"2010-01-01,2010-01-01","valueType":"DATE"}]}]'
     );
   });
 
   it('should call api with CONTAINS_IGNORE_CASE operation when memo in searchQueries', async () => {
     await expectApitoHaveBeenCalled(
       '{"memo": "test memo"}',
-      '[{\"searchCriteriaList\":[{\"key\":\"memo\",\"condition\":\"AND\",\"operation\":\"like_ignore_case\",\"value\":\"test memo\",\"valueType\":\"STRING\"}]}]'
+      '[{"searchCriteriaList":[{"key":"memo","condition":"AND","operation":"like_ignore_case","value":"test memo","valueType":"STRING"}]}]'
     );
   });
 
   it('should remove spaces in the value when postalCode in searchQueries', async () => {
     await expectApitoHaveBeenCalled(
       '{"postalCode": "V1P 3M7"}',
-      '[{\"searchCriteriaList\":[{\"key\":\"postalCode\",\"condition\":\"AND\",\"operation\":\"starts_with\",\"value\":\"V1P3M7\",\"valueType\":\"STRING\"}]}]'
+      '[{"searchCriteriaList":[{"key":"postalCode","condition":"AND","operation":"starts_with","value":"V1P3M7","valueType":"STRING"}]}]'
     );
   });
 
