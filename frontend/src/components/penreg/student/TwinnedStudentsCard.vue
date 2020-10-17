@@ -29,7 +29,7 @@
         </v-col>
         <v-col class="mt-2">
           <v-row justify="end" class="mx-3">
-            <TertiaryButton :disabled="selectedTwins.length < 1" id="deleteButton" class="ma-0" text="Delete" icon="mdi-delete" ></TertiaryButton>
+            <TertiaryButton :disabled="selectedTwins.length < 1" id="deleteButton" class="ma-0" text="Delete" icon="mdi-delete" @click.native="deleteTwinStudent" ></TertiaryButton>
           </v-row>
         </v-col>
       </v-row>
@@ -75,6 +75,8 @@ import TertiaryButton from '../../util/TertiaryButton';
 import {mapGetters, mapActions} from 'vuex';
 import moment from 'moment';
 import {sortBy} from 'lodash';
+import ApiService from '../../../common/apiService';
+import { Routes } from '../../../utils/constants';
 import {formatPen} from '../../../utils/format';
 
 export default {
@@ -156,6 +158,20 @@ export default {
     twinReasonLabel(code) {
       const reason = this.twinReasons && this.twinReasons.find(v => v.twinReasonCode === code);
       return reason && reason.label || code;
+    },
+    deleteTwinStudent() {
+      this.selectedTwins.forEach(element => {
+        ApiService.apiAxios
+          .delete(Routes['student'].ROOT_ENDPOINT + '/' + this.student.studentID + '/twins/' + element.twinID)
+          .catch(error => {
+            console.log(error);
+          })
+          .finally(() => {
+            this.twins.splice(this.twins.indexOf(element));
+          });
+      });
+
+
     }
   }
 };
@@ -166,7 +182,9 @@ export default {
     text-align: right;
     font-size: 0.875rem;
   }
-
+  /deep/ tr.v-data-table__selected {
+    background: #dff4fd !important;
+  }
   .twins-pagination /deep/ .v-pagination__navigation > i {
     padding-left: 0;
   }

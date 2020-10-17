@@ -199,4 +199,7 @@ export default {
   /deep/ .v-pagination__navigation > i {
     padding-left: 0;
   }
+  /deep/ tr.v-data-table__selected {
+    background: #dff4fd !important;
+  }
 </style>
