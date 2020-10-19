@@ -180,7 +180,7 @@ export default {
     text-align: right;
     font-size: 0.875rem;
   }
-  /deep/ tr.v-data-table__selected {
+  ::v-deep tr.v-data-table__selected {
     background: #dff4fd !important;
   }
   .twins-pagination /deep/ .v-pagination__navigation > i {
