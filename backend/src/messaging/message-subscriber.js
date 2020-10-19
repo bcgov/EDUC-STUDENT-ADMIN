@@ -1,10 +1,10 @@
 'use strict';
 const config = require('../config/index');
 const log = require('../components/logger');
-const {uuid} = require('uuidv4');
+const { v4: uuidv4 } = require('uuid');
 const SagaMessageHandler = require('./handlers/saga-message-handler');
 let connection={};
-const clientID = `student-admin-node-subscriber-${uuid()}`;
+const clientID = `student-admin-node-subscriber-${uuidv4()}`;
 const clusterID = config.get('messaging:natsCluster');
 const server = config.get('messaging:natsUrl');
 const stanOptions = {

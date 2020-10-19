@@ -51,7 +51,11 @@ const FILTER_OPERATION = Object.freeze(
     /**
      * Starts with ignore case filter operation.
      */
-    STARTS_WITH_IGNORE_CASE: 'starts_with_ignore_case'
+    STARTS_WITH_IGNORE_CASE: 'starts_with_ignore_case',
+    /**
+     * Ends with filter operation.
+     */
+    ENDS_WITH: 'ends_with',
   }
 );
 const CONDITION = Object.freeze(

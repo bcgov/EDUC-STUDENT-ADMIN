@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../components/auth');
 const {getStudentById} = require('../components/requests');
 const {searchStudent} = require('../components/studentSearch');
-const {updateStudent, getStudentByStudentId, getStudentByPen} = require('../components/student');
+const {createNewStudent, updateStudent, getStudentByStudentId, getStudentByPen} = require('../components/student');
 const roles = require('../components/roles');
 const utils = require('../components/utils');
 const extendSession = utils.extendSession();
@@ -20,5 +20,6 @@ router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), is
 router.get('/', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentByPen);
 router.get('/detail/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentByStudentId);
 router.put('/:studentID', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, updateStudent);
+router.post('/', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, createNewStudent);
 
 module.exports = router;
