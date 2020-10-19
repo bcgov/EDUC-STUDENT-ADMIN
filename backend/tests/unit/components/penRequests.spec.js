@@ -638,11 +638,6 @@ describe('completeRequest', () => {
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(updatePenRequestRes);
   });
-  it('should return unauthorized error if no token', async () => {
-    utils.getBackendToken.mockReturnValue(null);
-    await completeRequest(req, res);
-    expect(utils.unauthorizedError).toHaveBeenCalled();
-  });
   it('should return 500 error if updatePenRequest fails', async () => {
     requests.__Rewire__('updateRequest', () => Promise.reject(new ServiceError('updatePenRequest',{ message: 'No access token'})));
     await completeRequest(req, res);
@@ -701,11 +696,6 @@ describe('getMacroData', () => {
     await getMacros(req,res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).toHaveBeenCalledWith({message: 'INTERNAL SERVER ERROR'});
-  });
-  it('should return unauthorized error if no token', async () => {
-    utils.getBackendToken.mockReturnValue(null);
-    await getMacros(req, res);
-    expect(utils.unauthorizedError).toHaveBeenCalled();
   });
 });
 
@@ -781,11 +771,6 @@ describe('getPenRequestCommentById', () => {
     await getPenRequestCommentById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(penRequestCommentData);
-  });
-  it('should return unauthorized error if no token', async () => {
-    utils.getBackendToken.mockReturnValue(null);
-    await getPenRequestCommentById(req, res);
-    expect(utils.unauthorizedError).toHaveBeenCalled();
   });
   it('should return INTERNAL_SERVER_ERROR if getData exceptions thrown', async () => {
     req.params = {
@@ -930,14 +915,6 @@ describe('getPenRequestById', () => {
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(penRequestStrippedResponse);
   });
-  it('should return unauthorized error if no token', async () => {
-    req.params = {
-      id: '1'
-    };
-    utils.getBackendToken.mockReturnValue(null);
-    await getPenRequestById(req, res);
-    expect(utils.unauthorizedError).toHaveBeenCalled();
-  });
   it('should return INTERNAL_SERVER_ERROR if getCodeTable exceptions thrown', async () => {
     req.params = {
       id: '1'
@@ -1027,11 +1004,6 @@ describe('getStudentById', () => {
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
     expect(res.json).toHaveBeenCalledWith({message: 'INTERNAL SERVER ERROR'});
   });
-  it('should return unauthorized error if no token', async () => {
-    utils.getBackendToken.mockReturnValue(null);
-    await requests.getStudentById(req, res);
-    expect(utils.unauthorizedError).toHaveBeenCalled();
-  });
 });
 
 describe('getStudentDemographicsById', () => {
@@ -1089,11 +1061,6 @@ describe('getStudentDemographicsById', () => {
     await requests.getStudentDemographicsById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(formattedResponse);
-  });
-  it('should return unauthorized error if no token', async () => {
-    utils.getBackendToken.mockReturnValue(null);
-    await requests.getStudentDemographicsById(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
   });
   it('should return INTERNAL_SERVER_ERROR if getData exceptions thrown', async () => {
     utils.getData.mockRejectedValue(new Error('test error'));
