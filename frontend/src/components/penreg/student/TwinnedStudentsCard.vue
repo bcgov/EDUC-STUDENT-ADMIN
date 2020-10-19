@@ -6,7 +6,7 @@
       </v-list-item-content>
       <v-list-item-icon>
         <v-btn text icon @click="$emit('close')">
-          <v-icon class="px-0">mdi-close</v-icon>
+          <v-icon color="#38598A" class="px-0">mdi-close</v-icon>
         </v-btn>
       </v-list-item-icon>
     </v-list-item>
@@ -170,8 +170,6 @@ export default {
             this.twins.splice(this.twins.indexOf(element));
           });
       });
-
-
     }
   }
 };

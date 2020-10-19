@@ -31,6 +31,25 @@ async function updateStudent(req, res) {
   }
 }
 
+
+async function deleteStudentTwinByStudentTwinId(req, res) {
+  try {
+    const token = utils.getBackendToken(req);
+    if (!token) {
+      return unauthorizedError(res);
+    }
+
+    const endpoint = config.get('server:student:rootURL');
+    const url = `${endpoint}/${req.params.studentID}/twins/${req.params.studentTwinID}`;
+    
+    await deleteData(token, url);
+    return res.status(HttpStatus.OK).json();
+  }catch(e){
+    logApiError(e, 'deleteStudentTwinByStudentTwinId', 'Error occurred while attempting to DELETE student twin.');
+    return errorResponse(res);
+  }
+}
+
 async function getStudentByStudentId(req, res) {
   const token = utils.getBackendToken(req);
   if (!token) {
@@ -117,5 +136,6 @@ module.exports = {
   updateStudent,
   getStudentByStudentId,
   getStudentByPen,
-  createNewStudent
+  createNewStudent,
+  deleteStudentTwinByStudentTwinId
 };
