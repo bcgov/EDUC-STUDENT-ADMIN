@@ -10,11 +10,7 @@ const {v4: uuidv4} = require('uuid');
 async function updateStudent(req, res) {
   try {
     const token = utils.getBackendToken(req);
-    if (!token) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
-      });
-    }
+
     if (!req.params.studentID) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'No Student ID for PUT operation.'
@@ -35,9 +31,6 @@ async function updateStudent(req, res) {
 async function deleteStudentTwinByStudentTwinId(req, res) {
   try {
     const token = utils.getBackendToken(req);
-    if (!token) {
-      return unauthorizedError(res);
-    }
 
     const endpoint = config.get('server:student:rootURL');
     const url = `${endpoint}/${req.params.studentID}/twins/${req.params.studentTwinID}`;
@@ -52,9 +45,6 @@ async function deleteStudentTwinByStudentTwinId(req, res) {
 
 async function getStudentByStudentId(req, res) {
   const token = utils.getBackendToken(req);
-  if (!token) {
-    return unauthorizedError(res);
-  }
   const id = req.params.id;
 
   return Promise.all([
@@ -79,9 +69,6 @@ async function getStudentByStudentId(req, res) {
 async function getStudentByPen(req, res) {
   try {
     const token = utils.getBackendToken(req);
-    if (!token) {
-      return unauthorizedError(res);
-    }
     const pen = req.query.pen;
     const result = await utils.getData(token, config.get('server:student:rootURL') + '/', {params: {pen: pen}});
     if (result && result[0] && result[0].studentID) {
