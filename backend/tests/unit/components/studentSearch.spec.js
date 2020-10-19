@@ -74,10 +74,4 @@ describe('searchStudent', () => {
     await studentSearch.searchStudent(req,res)
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
-
-  it('should return unauthorized error if no token', async () => {
-    utils.getBackendToken.mockReturnValue(null);
-    await studentSearch.searchStudent(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
-  });
 });
