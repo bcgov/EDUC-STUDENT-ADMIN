@@ -319,6 +319,7 @@
                 </v-row>
                 <v-row no-gutters dense class="mt-n4">
                   <v-alert
+
                       v-model="alert"
                       dense
                       text
@@ -765,6 +766,9 @@ export default {
             this.setFailureAlert(`Student data could not be updated, please try again.`);
           })
           .finally(() => {
+            setTimeout(()=>{
+              this.alert=false
+            },5000);
           });
       }
     },

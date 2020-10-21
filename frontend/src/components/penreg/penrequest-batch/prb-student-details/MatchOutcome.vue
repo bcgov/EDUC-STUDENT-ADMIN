@@ -74,7 +74,7 @@
 <script>
 import TertiaryButton from '../../../util/TertiaryButton';
 import ApiService from '../../../../common/apiService';
-import { Routes } from '../../../../utils/constants';
+import { Routes } from '@/utils/constants';
 export default {
   name: 'MatchOutcome.vue',
   components: {

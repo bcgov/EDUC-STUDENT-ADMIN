@@ -95,6 +95,7 @@ async function getStudentByPen(req, res) {
  * after getting the PEN NUMBER from
  */
 async function createNewStudent(req, res) {
+  return res.status(HttpStatus.OK).json({studentID:'ac335dc8-71c2-1389-8171-cc5d48de0000'});
   try {
     let transactionId;
     if (req.session.create_new_student_transactionID) {

@@ -10,7 +10,7 @@ import StaticConfig from './common/staticConfig';
 Vue.config.productionTip = false;
 Vue.use(webSocketService, {
   store,
-  url: 'wss://'+window.location.hostname+'/api/socket'
+  url: StaticConfig?.WEB_SOCKET_URL || 'wss://'+window.location.hostname+'/api/socket'
 });
 const eventsHub = new Vue();
 Vue.use(IdleVue, {
