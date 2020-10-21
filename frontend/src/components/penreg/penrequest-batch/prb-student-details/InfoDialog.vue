@@ -112,7 +112,7 @@ export default {
   },
   methods: {
     async closeRequestInfoDialog() {
-      if(this.requestInfoDialogText !== this.text && !(!this.requestInfoDialogText && !this.text)) {
+      if(this.requestInfoDialogText != this.text) { //we want null and empty string to be viewed as equal
         await this.$refs.confirmationDialog.open('Warning!', 'Changes will be lost. Are you sure?', { color: '#003366', rejectText: 'No, go back' })
           .then((result) => {
             if(result) {
