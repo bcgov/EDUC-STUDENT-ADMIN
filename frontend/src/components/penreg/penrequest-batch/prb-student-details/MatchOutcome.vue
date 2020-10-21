@@ -50,6 +50,12 @@
                     {{ formattedPEN(props.item[header.topValue]) }}
                   </span>
                 </router-link>
+                <span v-else-if="header.topValue==='mincode'" :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, formattedMincode(props.item[header.topValue]))?'font-weight-bold':'']">
+                  {{ formattedMincode(props.item[header.topValue]) }}
+                </span>
+                <span v-else-if="header.topValue==='dob'" :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, formattedDOB(props.item[header.topValue]))?'font-weight-bold':'']">
+                  {{ formattedDOB(props.item[header.topValue]) }}
+                </span>
                 <span v-else :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
                   {{ props.item[header.topValue] }}
                 </span>
@@ -57,8 +63,11 @@
                   {{ props.item[header.doubleValue] }}
                 </span>
                 <br>
-                <span :class="['bottom-column-item', props.item[header.bottomValue] && demogValuesMatch(header.bottomValue, props.item[header.bottomValue])? 'font-weight-bold':'']">
-                  {{ props.item[header.bottomValue] }}
+                <span v-if="header.bottomValue==='postalCode'" :class="['bottom-column-item', props.item[header.bottomValue] && demogValuesMatch(header.bottomValue, formattedPostal(props.item[header.bottomValue]))? 'font-weight-bold':'']">
+                  {{ formattedPostal(props.item[header.bottomValue]) }}
+                </span>
+                <span v-else :class="['bottom-column-item', props.item[header.bottomValue] && demogValuesMatch(header.bottomValue, props.item[header.bottomValue])? 'font-weight-bold':'']">
+                  {{ props.item[header.bottomValue] }}                   
                 </span>
               </div>
             </td>
@@ -75,6 +84,7 @@
 import TertiaryButton from '../../../util/TertiaryButton';
 import ApiService from '../../../../common/apiService';
 import { Routes } from '../../../../utils/constants';
+import { formatPen, formatMinCode, formatDob, formatPostalCode } from '../../../../utils/format';
 export default {
   name: 'MatchOutcome.vue',
   components: {
@@ -128,7 +138,16 @@ export default {
       }
     },
     formattedPEN(pen) {
-      return pen.toString().replace(/(\d{3})/g, '$1 ');
+      return formatPen(pen);
+    },
+    formattedDOB(dob) {
+      return formatDob(dob.toString().replaceAll('-',''));
+    },
+    formattedPostal(postal) {
+      return formatPostalCode(postal);
+    },
+    formattedMincode(mincode) {
+      return formatMinCode(mincode);
     },
     getMatchOutcomeResults() {
       this.loadingMatchResults = true;
