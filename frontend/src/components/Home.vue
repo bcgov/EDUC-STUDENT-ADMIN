@@ -187,7 +187,7 @@ export default {
             unarchived: response.data.PSI.unarchived
           });
       }).finally(() => {
-          this.isLoadingBatch = false;
+        this.isLoadingBatch = false;
       });
     }
     if(this.isValidGMPUser) {
@@ -203,7 +203,7 @@ export default {
           error: true
         });
       }).finally(() => {
-          this.isLoadingGmpUmp = false;
+        this.isLoadingGmpUmp = false;
       });
 
     }
@@ -220,7 +220,7 @@ export default {
           error: true
         });
       }).finally(() => {
-          this.isLoadingGmpUmp = false;
+        this.isLoadingGmpUmp = false;
       });
     }
     

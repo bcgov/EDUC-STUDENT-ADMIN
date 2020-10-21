@@ -35,11 +35,6 @@ describe('getCodes', () => {
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(penRequestStatusCodesData);
   });
-  it('should return unauthorized error if no token', async () => {
-    utils.__Rewire__('getBackendToken', () => null);
-    await utils.getCodes('urlKey', 'cacheKey')(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
-  });
   it('should return INTERNAL_SERVER_ERROR if getCodeTable exceptions thrown', async () => {
     utils.__Rewire__('getCodeTable', () => Promise.reject(new Error('test error senario')));
     await utils.getCodes('urlKey', 'cacheKey')(req, res);

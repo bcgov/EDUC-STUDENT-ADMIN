@@ -6,7 +6,7 @@
       </v-list-item-content>
       <v-list-item-icon>
         <v-btn text icon @click="$emit('close')">
-          <v-icon class="px-0">mdi-close</v-icon>
+          <v-icon color="#38598A" class="px-0">mdi-close</v-icon>
         </v-btn>
       </v-list-item-icon>
     </v-list-item>
@@ -23,9 +23,14 @@
         </v-col>
       </v-row>
       <v-divider class="mt-2"></v-divider>
-      <v-row no-gutters>
-        <v-col class="mt-2">
+      <v-row no-gutters justify="end">
+        <v-col class="mt-4">
           <span id="twins-number" class="px-4"><strong>{{ twins.length }} Twins</strong></span>
+        </v-col>
+        <v-col class="mt-2">
+          <v-row justify="end" class="mx-3">
+            <TertiaryButton :disabled="selectedTwins.length < 1" id="deleteButton" class="ma-0" text="Delete" icon="mdi-delete" @click.native="deleteTwinStudent" ></TertiaryButton>
+          </v-row>
         </v-col>
       </v-row>
       <v-data-table
@@ -34,8 +39,10 @@
         :items="twinItems"
         :page.sync="pageNumber"
         :items-per-page="itemsPerPage"
+        show-select
         hide-default-footer
         item-key="twinID"
+        v-model="selectedTwins"
       >
         <template v-slot:[`item.pen`]="props">
           <a>
@@ -64,13 +71,19 @@
 </template>
 
 <script>
+import TertiaryButton from '../../util/TertiaryButton';
 import {mapGetters, mapActions} from 'vuex';
 import moment from 'moment';
 import {sortBy} from 'lodash';
+import ApiService from '../../../common/apiService';
+import { Routes } from '../../../utils/constants';
 import {formatPen} from '../../../utils/format';
 
 export default {
   name: 'TwinnedStudentsCard',
+  components: {
+    TertiaryButton: TertiaryButton
+  },
   props: {
     student: {
       type: Object,
@@ -83,6 +96,8 @@ export default {
   },
   data () {
     return {
+      selectedTwins: [],
+      isTwinSelected: false,
       pageNumber: 1,
       itemsPerPage: 15,
       headers: [
@@ -143,6 +158,18 @@ export default {
     twinReasonLabel(code) {
       const reason = this.twinReasons && this.twinReasons.find(v => v.twinReasonCode === code);
       return reason && reason.label || code;
+    },
+    deleteTwinStudent() {
+      this.selectedTwins.forEach(element => {
+        ApiService.apiAxios
+          .delete(Routes['student'].ROOT_ENDPOINT + '/' + this.student.studentID + '/twins/' + element.twinID)
+          .catch(error => {
+            console.log(error);
+          })
+          .finally(() => {
+            this.twins.splice(this.twins.indexOf(element));
+          });
+      });
     }
   }
 };
@@ -153,7 +180,9 @@ export default {
     text-align: right;
     font-size: 0.875rem;
   }
-
+  /deep/ tr.v-data-table__selected {
+    background: #dff4fd !important;
+  }
   .twins-pagination /deep/ .v-pagination__navigation > i {
     padding-left: 0;
   }
@@ -192,20 +221,25 @@ export default {
   }
 
   #details-table /deep/ table th:nth-child(1) {
-     width: 16%;
+     width: 5%;
   }
-  #details-table /deep/ table th:nth-child(3),
-  #details-table /deep/ table th:nth-child(5),
+  #details-table /deep/ table th:nth-child(2) {
+    width: 16%;
+  }
+  #details-table /deep/ table th:nth-child(3){
+    width: 25%;
+  }
+  #details-table /deep/ table th:nth-child(4) {
+    width: 15%;
+  }
+  #details-table /deep/ table th:nth-child(5){
+    width: 8%;
+  }
   #details-table /deep/ table th:nth-child(6) {
     width: 15%;
   }
-
-  #details-table /deep/ table th:nth-child(4) {
-    width: 10%;
-  }
-
-  #details-table /deep/ table th:nth-child(2) {
-    width: 29%;
+  #details-table /deep/ table th:nth-child(7) {
+    width: 18%;
   }
 
   #details-table /deep/ table > tbody > tr:not(:last-child) > td { 
