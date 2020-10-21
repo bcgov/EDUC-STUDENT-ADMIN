@@ -9,6 +9,7 @@ const log = require('./logger');
 const cache = require('memory-cache');
 const { ServiceError, ApiError } = require('./error');
 const { LocalDateTime, DateTimeFormatter } = require('@js-joda/core');
+const {FILTER_OPERATION, VALUE_TYPE} = require('../util/constants');
 
 let discovery = null;
 let memCache = new cache.Cache();
@@ -332,6 +333,35 @@ const utils = {
         return next(); // let the next handler deal with what to do when no session
       }
     };
+  },
+  /**
+   * This function will call student api paginated endpoint and get the list of students based on their ids.
+   * @param {String} token the token to call api with.
+   * @param {String} studentIDs the comma separated ids of student
+   * @returns {Promise<undefined>}
+   */
+  async getStudentsFromStudentAPIByTheirIds(token, studentIDs) {
+    const pageSize = studentIDs.split(',').length; // it is expected to get all the student ids as a comma separated string.
+    let searchListCriteria = [];
+    searchListCriteria.push({
+      key: 'studentID',
+      operation: FILTER_OPERATION.IN,
+      value: studentIDs,
+      valueType: VALUE_TYPE.UUID
+    });
+    const search = [
+      {
+        searchCriteriaList: searchListCriteria
+      }
+    ];
+    const params = {
+      params: {
+        pageSize,
+        searchCriteriaList: JSON.stringify(search)
+      }
+    };
+
+    return await utils.getData(token, config.get('server:student:rootURL') + '/paginated', params);
   },
   getBackendToken,
   getData,
