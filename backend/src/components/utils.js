@@ -225,7 +225,12 @@ const utils = {
   getUser(req) {
     const thisSession = req.session;
     if(thisSession && thisSession['passport']&& thisSession['passport'].user && thisSession['passport'].user.jwt) {
-      return jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
+      try {
+        return jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
+      }catch (e){
+        log.error('error is from verify', e);
+        return false;
+      }
     }else {
       return false;
     }

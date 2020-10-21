@@ -14,6 +14,7 @@ import StudentRequestDetail from './components/ump/StudentRequestDetail';
 import PenRequestBatchDisplay from './components/penreg/penrequest-batch/PenRequestBatchDisplay';
 import PrbStudentListDisplay from './components/penreg/penrequest-batch/PrbStudentListDisplay';
 import PrbStudentDetailsDisplay from './components/penreg/penrequest-batch/PrbStudentDetailsDisplay';
+import CreateNewPEN from './components/CreateNewPEN'
 import UnAuthorized from './components/UnAuthorized';
 import { REQUEST_TYPES, PAGE_TITLES } from './utils/constants';
 import authStore from './store/modules/auth';
@@ -201,6 +202,15 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.PEN_MATCH,
         requiresAuth: true,
         role: 'isValidStudentSearchUser'
+      }
+    },
+    {
+      path: '/createNewPEN',
+      name: 'createNewPEN',
+      component: CreateNewPEN,
+      meta: {
+        pageTitle: PAGE_TITLES.CREATE_NEW_PEN,
+        requiresAuth: true
       }
     },
     {
