@@ -318,18 +318,7 @@
                   </v-col>
                 </v-row>
                 <v-row no-gutters dense class="mt-n4">
-                  <v-alert
-
-                      v-model="alert"
-                      dense
-                      text
-                      dismissible
-                      outlined
-                      transition="scale-transition"
-                      :class="`${alertType} flex-grow-1 mx-3`"
-                  >
-                    {{ alertMessage }}
-                  </v-alert>
+                  <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000"></AlertMessage>
                   <v-col cols="10">
                     <v-card-actions style="float: right;">
                       <router-link :to="`${this.isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`">
@@ -399,6 +388,7 @@
           @close="twinsDialog=false"
         ></TwinnedStudentsCard>
       </v-dialog>
+      <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>
     </v-form>
 </template>
 
@@ -418,7 +408,9 @@ import StudentDetailsTemplateTextField from '@/components/penreg/student/Student
 import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard';
 import {formatMinCode, formatPen} from '../../../utils/format';
 import {sortBy} from 'lodash';
+import ConfirmationDialog from '../../util/ConfirmationDialog';
 import alterMixin from '../../../mixins/alterMixin';
+import AlertMessage from '../../util/AlertMessage';
 
 const JSJoda = require('@js-joda/core');
 
@@ -432,6 +424,8 @@ export default {
     }
   },
   components: {
+    AlertMessage,
+    ConfirmationDialog,
     PrimaryButton,
     StudentDetailsTextFieldSideCardReadOnly,
     StudentDetailsComboBox,
@@ -479,6 +473,7 @@ export default {
       merges: [],
       twins: [],
       twinsDialog: false,
+      unsavedChanges: false
     };
   },
   created() {
@@ -507,6 +502,19 @@ export default {
   watch: {
     studentID() {
       this.refreshStudent();
+    }
+  },
+  beforeRouteLeave (to, from, next) {
+    if(this.hasAnyEdits()) {
+      this.$refs.confirmationDialog.open('Warning!', 'Changes will be lost. Are you sure?', { color: '#003366', rejectText: 'No, go back' }).then((result) => {
+        if(result) {
+          next();
+        } else {
+          next(false);
+        }
+      });
+    } else {
+      next();
     }
   },
   methods: {
