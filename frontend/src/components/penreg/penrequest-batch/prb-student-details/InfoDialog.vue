@@ -145,7 +145,7 @@ export default {
         this.macroAlert = true;
       } else {
         this.macroAlert = false;
-        this.requestInfoDialogText = replaceMacro(this.requestInfoDialogText, this.studentInfoMacros);
+        this.requestInfoDialogText = replacedText;
       }
     }
   }
