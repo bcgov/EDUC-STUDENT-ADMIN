@@ -223,6 +223,9 @@ export default {
 #dataTable /deep/ tbody tr td:nth-child(6) {
   width: 9.5%;
 }
+#dataTable /deep/ tbody tr td:nth-child(7) {
+  width: 9.5%;
+}
 .pen-link {
   text-decoration: underline;
 }
