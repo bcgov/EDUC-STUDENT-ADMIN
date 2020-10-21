@@ -56,10 +56,10 @@
                 <span v-else-if="header.topValue==='dob'" :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, formattedDOB(props.item[header.topValue]))?'font-weight-bold':'']">
                   {{ formattedDOB(props.item[header.topValue]) }}
                 </span>
-                <span v-else :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
+                <span v-else :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'', props.item[header.doubleValue] ? 'top-column-item-double' : '']">
                   {{ props.item[header.topValue] }}
                 </span>
-                <span :class="['double-column-item', props.item[header.doubleValue] && demogValuesMatch(header.doubleValue, props.item[header.doubleValue])? 'font-weight-bold':'']">
+                <span :class="['value-half-width','double-column-item', props.item[header.doubleValue] && demogValuesMatch(header.doubleValue, props.item[header.doubleValue])? 'font-weight-bold':'']">
                   {{ props.item[header.doubleValue] }}
                 </span>
                 <br>
@@ -188,6 +188,11 @@ export default {
 .top-column-item {
   float: left;
 }
+.top-column-item-double{
+  float: none;
+  width: 2.7em;
+  display: inline-block;
+}
 .bottom-column-item {
   float: left;
   min-height: 1.5em;
@@ -202,7 +207,7 @@ export default {
   background-color: inherit
 }
 #dataTable /deep/ tbody tr td:nth-child(1) {
-  width: 2%;
+  width: 3%;
 }
 #dataTable /deep/ tbody tr td:nth-child(2) {
   width: 10%;
@@ -215,8 +220,14 @@ export default {
 #dataTable /deep/ tbody tr td:nth-child(5) {
   width: 19%;
 }
+#dataTable /deep/ tbody tr td:nth-child(6) {
+  width: 9.5%;
+}
 .pen-link {
   text-decoration: underline;
+}
+.value-half-width {
+  display: contents;
 }
 .sticky {
   position: sticky;

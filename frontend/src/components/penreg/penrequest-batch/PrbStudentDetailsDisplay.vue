@@ -475,10 +475,10 @@ export default {
     width: 5em;
   }
   .header-half-width {
-    width: 3.5em;
+    width: 3.0em;
   }
   .value-half-width {
-    width: 4.5em;
+    width: 4.0em;
   }
   .sticky {
     position: sticky;
