@@ -66,6 +66,16 @@ async function getStudentByStudentId(req, res) {
   });
 }
 
+async function getAllStudentByStudentIds(req, res) {
+  try {
+    const result = await utils.getStudentsFromStudentAPIByTheirIds(utils.getBackendToken(req), req.query.studentIDs);
+    return res.status(HttpStatus.OK).json(result.content);
+  } catch (e) {
+    logApiError(e, 'getAllStudentByStudentIds', 'Error occurred while attempting to GET all students by their ids.');
+    return errorResponse(res);
+  }
+}
+
 async function getStudentByPen(req, res) {
   try {
     const token = utils.getBackendToken(req);
@@ -124,5 +134,6 @@ module.exports = {
   getStudentByStudentId,
   getStudentByPen,
   createNewStudent,
+  getAllStudentByStudentIds,
   deleteStudentTwinByStudentTwinId
 };
