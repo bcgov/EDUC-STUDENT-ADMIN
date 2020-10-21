@@ -8,14 +8,13 @@ const qs = require('querystring');
 const utils = require('./utils');
 const safeStringify = require('fast-safe-stringify');
 const userRoles = require('./roles');
-const {partial, fromPairs} = require('lodash');
+const { partial, fromPairs } = require('lodash');
 const HttpStatus = require('http-status-codes');
-const {pick} = require('lodash');
-const {ApiError} = require('./error');
-
+const { pick } =  require('lodash');
+const { ApiError } = require('./error');
 /**
  * Create help functions for authorization: isValidGMPUserToken, isValidGMPUser, isValidGMPAdmin, etc
- * @param {*} roles
+ * @param {*} roles 
  */
 function createRoleHelpers(roles) {
   const userTokenHelpers = Object.entries(roles.User).map(([roleType, roleNames]) => [
@@ -29,8 +28,8 @@ function createRoleHelpers(roles) {
   ]);
   // create object { isValidGMPUser: ture, isValidUMPUser: true, isValidStudentSearchUser: false, ...}
   const isValidUsers = (req) => fromPairs(userHelpers.map(([roleType, verifyRole]) => [roleType, verifyRole(req)]));
-  return ({...fromPairs([...userTokenHelpers, ...userHelpers, ...adminHelpers]), isValidUsers});
-}
+  return ({...fromPairs([...userTokenHelpers, ...userHelpers, ...adminHelpers]), isValidUsers });
+} 
 
 function isUserHasAdminRole(roleType, roleName, roles) {
   const adminRole = roleName || '';
@@ -54,13 +53,7 @@ function isValidUiToken(isUserHasRole, roleType, roleNames) {
           message: 'Unauthorized user'
         });
       }
-      let userToken;
-      try {
-        userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
-      } catch (e) {
-        log.error('error is from verify', e);
-        return res.status(HttpStatus.UNAUTHORIZED).json();
-      }
+      const userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
       if (userToken['realm_access'] && userToken['realm_access'].roles
         && isUserHasRole(roleType, roleNames, userToken['realm_access'].roles)) {
         return next();
@@ -68,10 +61,9 @@ function isValidUiToken(isUserHasRole, roleType, roleNames) {
       return res.status(HttpStatus.FORBIDDEN).json({
         message: 'user is missing role'
       });
-
     } catch (e) {
       log.error(e);
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
+      return res.status(500);
     }
 
   };
@@ -187,7 +179,7 @@ const auth = {
       issuer: i,
       subject: s,
       audience: a,
-      expiresIn: config.get('tokenGenerate:expiresIn') || '30m',
+      expiresIn: config.get('tokenGenerate:expiresIn') || '30m' ,
       algorithm: 'RS256'
     };
 
@@ -227,7 +219,7 @@ const auth = {
     } catch (error) {
       log.error('getApiCredentials Error', error.response ? pick(error.response, ['status', 'statusText', 'data']) : error.message);
       const status = error.response ? error.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-      throw new ApiError(status, {message: 'Get getApiCredentials error'}, error);
+      throw new ApiError(status, { message: 'Get getApiCredentials error'}, error);
     }
   }
 };
