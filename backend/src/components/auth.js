@@ -10,6 +10,8 @@ const safeStringify = require('fast-safe-stringify');
 const userRoles = require('./roles');
 const { partial, fromPairs } = require('lodash');
 const HttpStatus = require('http-status-codes');
+const { pick } =  require('lodash');
+const { ApiError } = require('./error');
 /**
  * Create help functions for authorization: isValidGMPUserToken, isValidGMPUser, isValidGMPAdmin, etc
  * @param {*} roles 
@@ -88,11 +90,13 @@ function isValidUser(isUserHasRole, roleType, roleNames) {
 
 const auth = {
   // Check if JWT Access Token has expired
+  // logic to add 30 seconds to the check is to avoid edge case when the token is valid here
+  // but expires just before the api call due to ms time difference, so if token is expiring within next 30 seconds, refresh it.
   isTokenExpired(token) {
     const now = Date.now().valueOf() / 1000;
     const payload = jsonwebtoken.decode(token);
 
-    return (!!payload['exp'] && payload['exp'] < now);
+    return (!!payload['exp'] && payload['exp'] < (now + 30)); // Add 30 seconds to make sure , edge case is avoided and token is refreshed.
   },
 
   // Check if JWT Refresh Token has expired
@@ -174,7 +178,7 @@ const auth = {
       issuer: i,
       subject: s,
       audience: a,
-      expiresIn: '30m',
+      expiresIn: config.get('tokenGenerate:expiresIn') || '30m' ,
       algorithm: 'RS256'
     };
 
@@ -185,7 +189,38 @@ const auth = {
   },
   isValidUiTokenWithRoles: partial(isValidUiToken, isUserHasRoles),
   isValidUserWithRoles: partial(isValidUser, isUserHasRoles),
-  ...createRoleHelpers(userRoles)
+  ...createRoleHelpers(userRoles),
+
+  async getApiCredentials() {
+    try {
+      const discovery = await utils.getOidcDiscovery();
+      const response = await axios.post(discovery.token_endpoint,
+        qs.stringify({
+          client_id: config.get('oidc:clientId'),
+          client_secret: config.get('oidc:clientSecret'),
+          grant_type: 'client_credentials',
+          scope: discovery.scopes_supported
+        }), {
+          headers: {
+            Accept: 'application/json',
+            'Cache-Control': 'no-cache',
+            'Content-Type': 'application/x-www-form-urlencoded',
+          }
+        }
+      );
+
+      log.verbose('getApiCredentials Res', safeStringify(response.data));
+
+      let result = {};
+      result.accessToken = response.data.access_token;
+      result.refreshToken = response.data.refresh_token;
+      return result;
+    } catch (error) {
+      log.error('getApiCredentials Error', error.response ? pick(error.response, ['status', 'statusText', 'data']) : error.message);
+      const status = error.response ? error.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
+      throw new ApiError(status, { message: 'Get getApiCredentials error'}, error);
+    }
+  }
 };
 
 module.exports = auth;

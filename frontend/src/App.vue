@@ -36,17 +36,6 @@ export default {
   },
   methods:{
     ...mapActions('student', ['getCodes']),
-    /*closeSessionOnBrowserClose(event){
-        event.
-      if(this.$store.state.isAuthenticated){
-        this.$store.commit('auth/setJwtToken');
-        this.$store.commit('auth/setRefreshToken');
-        this.$store.commit('auth/setAdminUser',false);
-        window.location = document.getElementById('logout_href').href;
-        return null;
-      }
-      return null;
-    }*/
   }
 };
 </script>

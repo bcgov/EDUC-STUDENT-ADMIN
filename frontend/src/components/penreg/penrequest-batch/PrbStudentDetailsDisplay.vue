@@ -61,7 +61,7 @@
             dense
           >
             <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-              <span :key="h.id" class="top-column-item">
+              <span :key="h.id" class="top-column-item" :class="[header.doubleText ? 'header-half-width':'']">
                 {{ header.topText }}
               </span>
               <span :key="h.id" class="double-column-item">{{header.doubleText}}</span>
@@ -69,11 +69,11 @@
             <template v-slot:item="props">
               <tr>
                 <td v-for="header in props.headers" :key="header.id" :class="header.id">
-                  <div class="table-cell">
+                  <div class="table-cell" :class="[props.item[header.doubleValue] ? 'value-half-width':'']">
                     <span class="top-column-item">
                       <span><strong>{{ props.item[header.topValue] || ' ' }}</strong></span>
                     </span>
-                    <span class="double-column-item"><strong>{{props.item[header.doubleValue]}}</strong></span>
+                    <span class="double-column-item-value"><strong>{{props.item[header.doubleValue]}}</strong></span>
                   </div>
                 </td>
               </tr>
@@ -457,7 +457,13 @@ export default {
 
   .double-column-item {
     float: right;
+    display: contents;
   }
+
+  .double-column-item-value{
+    float: right;
+  }
+
   .top-column-item {
     float: left;
   }
@@ -467,6 +473,15 @@ export default {
   .full-width {
     margin-left: -32px;
     margin-right: -32px;
+  }
+  .double-width {
+    width: 5em;
+  }
+  .header-half-width {
+    width: 3.0em;
+  }
+  .value-half-width {
+    width: 4.0em;
   }
   .sticky {
     position: sticky;
