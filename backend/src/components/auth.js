@@ -73,6 +73,7 @@ function isValidUiToken(isUserHasRole, roleType, roleNames) {
       log.error(e);
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
     }
+
   };
 }
 
