@@ -774,9 +774,6 @@ export default {
             this.setFailureAlert('Student data could not be updated, please try again.');
           })
           .finally(() => {
-            setTimeout(()=>{
-              this.alert=false
-            },5000);
           });
       }
     },

@@ -57,8 +57,7 @@ let object = {
     DEMOG_CODE_URL: studentRoot + '/demogCodes',
     STATUS_CODE_URL: studentRoot + '/statusCodes',
     GRADE_CODE_URL: studentRoot + '/gradeCodes',
-    TWIN_REASON_CODE_URL: studentRoot + '/twinReasonCodes',
-    GET_ALL_STUDENTS_BY_IDS: studentRoot +'/allStudents'
+    TWIN_REASON_CODE_URL: studentRoot + '/twinReasonCodes'
   },
 
   STUDENT_DATA_URL: studentRoot,
@@ -209,7 +208,6 @@ export const PAGE_TITLES = Object.freeze(
     PEN_MATCH: 'PEN Match',
     PEN_REQ_BATCH_STUDENT_LIST: 'PEN Request List',
     PEN_REQ_BATCH_STUDENT_DETAILS: 'PEN Request Details',
-    CREATE_NEW_PEN:'Create New PEN'
   }
 );
 
