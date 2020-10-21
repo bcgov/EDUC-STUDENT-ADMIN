@@ -30,7 +30,10 @@
         <v-spacer></v-spacer>
         <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2" :disabled="!actionEnabled" text="Modify search"></PrimaryButton>
         <PrimaryButton id="issue-pen-action" class="mr-2" :disabled="!actionEnabled" text="Issue new PEN"></PrimaryButton>
-        <InfoDialog @updateInfoRequested="updateInfoRequested"></InfoDialog>
+        <InfoDialog
+          @updateInfoRequested="updateInfoRequested"
+          :text="prbStudent.infoRequest"
+        ></InfoDialog>
       </v-row>
       <v-row no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
         <span>

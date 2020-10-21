@@ -11,6 +11,7 @@ const getDefaultState = () => {
     prbStudentStatuses: [],
     prbStudentStatusFilters: null,
     selectedSchoolGroup: null,
+    studentInfoMacros: null
   };
 };
 
@@ -39,6 +40,9 @@ export default {
     clearPenRequestBatchState: (state) => {
       Object.assign(state, {...getDefaultState(), prbStudentStatuses: state.prbStudentStatuses});
     },
+    setStudentInfoMacros: (state, studentInfoMacros) => {
+      state.studentInfoMacros = studentInfoMacros;
+    }
   },
   actions: {
     async getCodes({ commit, state, dispatch}) {
@@ -49,5 +53,12 @@ export default {
         } 
       }
     },
+    async getMacros({ commit, state }) {
+      if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
+        if (!state.studentInfoMacros) {
+          ApiService.getPenRequestBatchStudentInfoMacroCodes().then(response => commit('setStudentInfoMacros', response.data));
+        }
+      }
+    }
   }
 };

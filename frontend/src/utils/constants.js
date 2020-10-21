@@ -19,7 +19,8 @@ let object = {
     FILES_URL: penRequestBatchRoot + '/',
     STUDENTS_SEARCH_URL: penRequestBatchRoot + '/students',
     STUDENT_STATUS_CODE_URL: penRequestBatchRoot + '/studentStatusCodes',
-    MATCH_OUTCOME_URL: penRequestBatchRoot + '/matchOutcome'
+    MATCH_OUTCOME_URL: penRequestBatchRoot + '/matchOutcome',
+    STUDENT_INFO_MACROS_URL: penRequestBatchRoot + '/studentInfoMacros'
   },
 
   penRequest: {
