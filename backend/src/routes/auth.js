@@ -6,8 +6,6 @@ const express = require('express');
 const auth = require('../components/auth');
 const jsonwebtoken = require('jsonwebtoken');
 const roles = require('../components/roles');
-const log = require('../components/logger');
-const HttpStatus = require('http-status-codes');
 
 const {
   body,
@@ -89,12 +87,12 @@ router.post('/refresh', [
 ], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(HttpStatus.BAD_REQUEST).json({
+    return res.status(400).json({
       errors: errors.array()
     });
   }
   if (!req['user'] || !req['user'].refreshToken) {
-    res.status(HttpStatus.UNAUTHORIZED).json();
+    res.status(401).json();
   } else {
     if (auth.isTokenExpired(req.user.jwt)) {
       const newTokens = await auth.renew(req['user'].refreshToken);
@@ -110,9 +108,9 @@ router.post('/refresh', [
           ...isValidUsers
         };
 
-        return res.status(HttpStatus.OK).json(responseJson);
+        return res.status(200).json(responseJson);
       } else {
-        res.status(HttpStatus.UNAUTHORIZED).json();
+        res.status(401).json();
       }
     } else {
       const isAuthorizedUser = isValidStaffUserWithRoles(req);
@@ -122,7 +120,7 @@ router.post('/refresh', [
         isAuthorizedUser: isAuthorizedUser,
         ...isValidUsers
       };
-      return res.status(HttpStatus.OK).json(responseJson);
+      return res.status(200).json(responseJson);
     }
   }
 
@@ -139,9 +137,9 @@ router.get('/token', auth.refreshJWT, (req, res) => {
       isAuthorizedUser: isAuthorizedUser,
       ...isValidUsers
     };
-    res.status(HttpStatus.OK).json(responseJson);
+    res.status(200).json(responseJson);
   } else {
-    res.status(HttpStatus.UNAUTHORIZED).json({
+    res.status(401).json({
       message: 'Not logged in'
     });
   }
@@ -149,15 +147,9 @@ router.get('/token', auth.refreshJWT, (req, res) => {
 
 router.get('/user', passport.authenticate('jwt', {session: false}), (req, res) => {
   const thisSession = req['session'];
-  let userToken;
-  try {
-    userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
-    if (userToken === undefined || userToken.realm_access === undefined || userToken.realm_access.roles === undefined) {
-      return res.status(HttpStatus.UNAUTHORIZED).json();
-    }
-  }catch (e){
-    log.error('error is from verify', e);
-    return res.status(HttpStatus.UNAUTHORIZED).json();
+  const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
+  if(userToken === undefined || userToken.realm_access === undefined || userToken.realm_access.roles === undefined){
+    return res.status(401).json();
   }
   const userName = {
     userName: userToken['idir_username'],
@@ -166,9 +158,9 @@ router.get('/user', passport.authenticate('jwt', {session: false}), (req, res) =
   };
 
   if (userName.userName && userName.userGuid) {
-    return res.status(HttpStatus.OK).json(userName);
+    return res.status(200).json(userName);
   } else {
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
+    return res.status(500);
   }
 
 });

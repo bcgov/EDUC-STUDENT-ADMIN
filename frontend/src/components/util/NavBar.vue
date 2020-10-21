@@ -136,7 +136,7 @@ export default {
           },
           {
             title: 'Create New PEN',
-            link: 'createNewPEN', // create new PEN is actually creating a new student record.
+            link: 'todo',
             authorized: true //TODO fix when ready
           }
         ],
