@@ -32,11 +32,6 @@ describe('getStudentByStudentId', () => {
     await student.getStudentByStudentId(req, res);
     expect(utils.errorResponse).toHaveBeenCalled();
   });
-  it('should return unauthorized error if no token', async () => {
-    utils.getBackendToken.mockReturnValue(null);
-    await student.getStudentByStudentId(req, res);
-    expect(utils.unauthorizedError).toHaveBeenCalled();
-  });
   it('should return INTERNAL_SERVER_ERROR error if no student record', async () => {
     utils.getData.mockResolvedValue(null);
     await student.getStudentByStudentId(req, res);

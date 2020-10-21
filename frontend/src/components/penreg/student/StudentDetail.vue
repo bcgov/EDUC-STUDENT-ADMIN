@@ -758,11 +758,11 @@ export default {
           .put(Routes['student'].ROOT_ENDPOINT+'/'+ this.studentID, this.prepPut(this.studentCopy))
           .then(response => {
             this.setStudent(response.data);
-            this.setSuccessAlert("Student data updated successfully.");
+            this.setSuccessAlert('Student data updated successfully.');
           })
           .catch(error => {
             console.log(error);
-            this.setFailureAlert(`Student data could not be updated, please try again.`);
+            this.setFailureAlert('Student data could not be updated, please try again.');
           })
           .finally(() => {
           });

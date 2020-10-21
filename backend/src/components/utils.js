@@ -44,6 +44,29 @@ function addTokenToHeader(params, token) {
   return params;
 }
 
+async function deleteData(token, url) {
+  try{
+    const delConfig = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    };
+
+    log.info('delete Data Url', url);
+    const response = await axios.delete(url, delConfig);
+    log.info(`delete Data Status for url ${url} :: is :: `, response.status);
+    log.info(`delete Data StatusText for url ${url}  :: is :: `, response.statusText);
+    log.verbose(`delete Data Response for url ${url}  :: is :: `, minify(response.data));
+
+    return response.data;
+  } catch (e) {
+    log.error('deleteData Error', e.response ? e.response.status : e.message);
+    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
+    throw new ApiError(status, { message: 'API Delete error'}, e);
+  }
+}
+
+
 async function getData(token, url, params) {
   try{
     params = addTokenToHeader(params, token);
@@ -371,7 +394,8 @@ const utils = {
   errorResponse,
   unauthorizedError,
   getCodeTable,
-  getPaginatedListForSCGroups
+  getPaginatedListForSCGroups,
+  deleteData
 };
 
 module.exports = utils;
