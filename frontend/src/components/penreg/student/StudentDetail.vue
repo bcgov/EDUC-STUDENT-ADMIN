@@ -385,6 +385,7 @@
           @close="twinsDialog=false"
         ></TwinnedStudentsCard>
       </v-dialog>
+      <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>
     </v-form>
 </template>
 
@@ -404,6 +405,7 @@ import StudentDetailsTemplateTextField from '@/components/penreg/student/Student
 import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard';
 import {formatMinCode, formatPen} from '../../../utils/format';
 import {sortBy} from 'lodash';
+import ConfirmationDialog from '../../util/ConfirmationDialog';
 
 const JSJoda = require('@js-joda/core');
 
@@ -416,6 +418,7 @@ export default {
     }
   },
   components: {
+    ConfirmationDialog,
     PrimaryButton,
     StudentDetailsTextFieldSideCardReadOnly,
     StudentDetailsComboBox,
@@ -463,6 +466,7 @@ export default {
       merges: [],
       twins: [],
       twinsDialog: false,
+      unsavedChanges: false
     };
   },
   created() {
@@ -491,6 +495,17 @@ export default {
   watch: {
     studentID() {
       this.refreshStudent();
+    }
+  },
+  beforeRouteLeave (to, from, next) {
+    if(this.hasAnyEdits()) {
+      this.$refs.confirmationDialog.open('Warning!', 'Changes will be lost. Are you sure?', { color: '#003366', rejectText: 'No, go back' }).then((result) => {
+        if(result) {
+          next();
+        } else {
+          next(false);
+        }
+      });
     }
   },
   methods: {

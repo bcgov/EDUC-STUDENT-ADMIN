@@ -46,6 +46,7 @@ nconf.defaults({
       rootURL: process.env.PEN_REQUEST_BATCH_API_URL,
       paginated: process.env.PEN_REQUEST_BATCH_API_URL + '/pen-request-batch/paginated',
       studentStatusCodesURL: process.env.PEN_REQUEST_BATCH_API_URL +  '/pen-request-batch/student/pen-request-batch-student-status-codes',
+      studentInfoMacrosURL: process.env.PEN_REQUEST_BATCH_API_URL + '/pen-request-batch-macro',
       roleAdmin: process.env.PEN_REQUEST_BATCH_ADMIN,
       maxPaginatedElements: 1000
     },
