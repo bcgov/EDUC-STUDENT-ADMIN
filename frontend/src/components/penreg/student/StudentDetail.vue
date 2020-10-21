@@ -318,17 +318,7 @@
                   </v-col>
                 </v-row>
                 <v-row no-gutters dense class="mt-n4">
-                  <v-alert
-                      v-model="alert"
-                      dense
-                      text
-                      dismissible
-                      outlined
-                      transition="scale-transition"
-                      :class="`${alertType} flex-grow-1 mx-3`"
-                  >
-                    {{ alertMessage }}
-                  </v-alert>
+                  <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000"></AlertMessage>
                   <v-col cols="10">
                     <v-card-actions style="float: right;">
                       <router-link :to="`${this.isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`">
@@ -420,6 +410,7 @@ import {formatMinCode, formatPen} from '../../../utils/format';
 import {sortBy} from 'lodash';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
 import alterMixin from '../../../mixins/alterMixin';
+import AlertMessage from '../../util/AlertMessage';
 
 const JSJoda = require('@js-joda/core');
 
@@ -433,6 +424,7 @@ export default {
     }
   },
   components: {
+    AlertMessage,
     ConfirmationDialog,
     PrimaryButton,
     StudentDetailsTextFieldSideCardReadOnly,
