@@ -38,12 +38,12 @@
                   <router-link class="pen-link" to="" v-if="header.topValue==='pen' && isPenLink">
                   <span
                       :class="['top-column-item', 'pen-link', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
-                    {{ formattedPEN(props.item[header.topValue]) }}
+                    {{ formatPen(props.item[header.topValue]) }}
                   </span>
                   </router-link>
                   <span v-else-if="header.topValue==='pen'"
                       :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
-                    {{ formattedPEN(props.item[header.topValue]) }}
+                    {{ formatPen(props.item[header.topValue]) }}
                   </span>
                   <span v-else-if="header.topValue==='mincode'"
                         :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
@@ -187,12 +187,8 @@ export default {
           return this.student[valueType] === value;
       }
     },
-    formattedPEN(pen) {
-      return formatPen(pen);
-    },
-    formatMinCode(mincode){
-      return formatMinCode(mincode);
-    }
+    formatPen,
+    formatMinCode,
 
   }
 };

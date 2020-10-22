@@ -75,7 +75,7 @@
             </v-row>
             <v-row dense>
               <v-col cols="1"></v-col>
-              <v-col cols="1"><span>{{
+              <v-col cols="1"><span :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.LOCAL_ID)?'font-weight-bold':'','display-demog-data']">{{
                   student.localID
                 }}</span></v-col>
               <v-col cols="2"><span
@@ -192,9 +192,7 @@ export default {
       Object.assign(this.student, studentModified);
       this.runPenMatch();
     },
-    formatMinCode(mincode) {
-      return formatMinCode(mincode);
-    },
+    formatMinCode,
     demogValueMatched(fieldName) {
       if (fieldName === STUDENT_DETAILS_FIELDS.DOB) {
         const dob = this.student[fieldName]?.replace(/\D/g, '');
