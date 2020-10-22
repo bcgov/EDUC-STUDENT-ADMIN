@@ -118,8 +118,6 @@ async function createNewStudent(req, res) {
     const penNumber = await getData(token, config.get('server:penServices:nextPenURL'), params);
     const student = req.body.student;
     student.pen = penNumber;
-    student.sexCode = student.genderCode; // sex code is mandatory in API.
-    student.emailVerified='N';
     student.createDate = null;
     student.updateDate = null;
     const result = await postData(token, config.get('server:student:rootURL') + '/', student);

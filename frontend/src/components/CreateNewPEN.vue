@@ -31,34 +31,35 @@
             </v-row>
             <v-row dense class="mb-2">
               <v-col cols="1"></v-col>
-              <v-col cols="1"><span :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.MINCODE)?'font-weight-bold':'']"
-                                    style="word-wrap: break-word;font-size: medium">{{
+              <v-col cols="1"><span
+                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.MINCODE)?'font-weight-bold':'','display-demog-data','display-demog-data']"
+              >{{
                   formatMinCode(student.mincode)
                 }}</span></v-col>
               <v-col cols="2"><span
-                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)?'font-weight-bold':'']"
-                  style="word-wrap: break-word;font-size: medium">{{ student.legalLastName }}</span>
+                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)?'font-weight-bold':'','display-demog-data']"
+              >{{ student.legalLastName }}</span>
               </v-col>
               <v-col cols="2"><span
-                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)?'font-weight-bold':'']"
-                  style="word-wrap: break-word;font-size: medium">{{ student.legalFirstName }}</span>
+                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)?'font-weight-bold':'','display-demog-data']"
+              >{{ student.legalFirstName }}</span>
               </v-col>
               <v-col cols="2"><span
-                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)?'font-weight-bold':'']"
-                  style="word-wrap: break-word;font-size: medium">{{ student.legalMiddleNames }}</span>
+                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)?'font-weight-bold':'','display-demog-data']"
+              >{{ student.legalMiddleNames }}</span>
               </v-col>
               <v-col cols="1"><span
-                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.STATUS_CODE)?'font-weight-bold':'']"
-                  style="word-wrap: break-word;font-size: medium">{{
+                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.STATUS_CODE)?'font-weight-bold':'','display-demog-data']"
+              >{{
                   student.status
                 }}</span></v-col>
               <v-col cols="1"><span
-                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.GENDER_CODE)?'font-weight-bold':'']"
-                  style="word-wrap: break-word;font-size: medium">{{
+                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.GENDER_CODE)?'font-weight-bold':'','display-demog-data']"
+              >{{
                   student.genderCode
                 }}</span></v-col>
-              <v-col cols="2"><span :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.DOB)?'font-weight-bold':'']"
-                                    style="word-wrap: break-word;font-size: medium">{{
+              <v-col cols="2"><span :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.DOB)?'font-weight-bold':'','display-demog-data']"
+              >{{
                   student.dob
                 }}</span></v-col>
             </v-row>
@@ -74,29 +75,29 @@
             </v-row>
             <v-row dense>
               <v-col cols="1"></v-col>
-              <v-col cols="1"><span style="word-wrap: break-word;font-size: medium">{{
+              <v-col cols="1"><span>{{
                   student.localID
                 }}</span></v-col>
               <v-col cols="2"><span
-                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)?'font-weight-bold':'']"
-                  style="word-wrap: break-word;font-size: medium">{{ student.usualLastName }}</span>
+                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)?'font-weight-bold':'','display-demog-data']"
+              >{{ student.usualLastName }}</span>
               </v-col>
               <v-col cols="2"><span
-                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)?'font-weight-bold':'']"
-                  style="word-wrap: break-word;font-size: medium">{{ student.usualFirstName }}</span>
+                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)?'font-weight-bold':'','display-demog-data']"
+              >{{ student.usualFirstName }}</span>
               </v-col>
               <v-col cols="2"><span
-                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)?'font-weight-bold':'']"
-                  style="word-wrap: break-word;font-size: medium">{{ student.usualMiddleNames }}</span>
+                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)?'font-weight-bold':'','display-demog-data']"
+              >{{ student.usualMiddleNames }}</span>
               </v-col>
               <v-col cols="2"><span
-                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.POSTAL_CODE)?'font-weight-bold':'']"
-                  style="word-wrap: break-word;font-size: medium">{{
+                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.POSTAL_CODE)?'font-weight-bold':'','display-demog-data']"
+              >{{
                   student.postalCode
                 }}</span></v-col>
               <v-col cols="2"><span
-                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.GRADE_CODE)?'font-weight-bold':'']"
-                  style="word-wrap: break-word;font-size: medium">{{
+                  :class="[demogValueMatched(STUDENT_DETAILS_FIELDS.GRADE_CODE)?'font-weight-bold':'','display-demog-data']"
+              >{{
                   student.gradeCode
                 }}</span></v-col>
             </v-row>
@@ -195,21 +196,23 @@ export default {
       return formatMinCode(mincode);
     },
     demogValueMatched(fieldName) {
-      if(fieldName === STUDENT_DETAILS_FIELDS.DOB){
-        const dob = this.student[fieldName]?.replace(/\D/g,'');
-        return this.possibleMatches.filter(el => el[fieldName]?.replace(/\D/g,'') === dob).length > 0;
+      if (fieldName === STUDENT_DETAILS_FIELDS.DOB) {
+        const dob = this.student[fieldName]?.replace(/\D/g, '');
+        return this.possibleMatches.filter(el => el[fieldName]?.replace(/\D/g, '') === dob).length > 0;
       }
       return this.possibleMatches.filter(el => el[fieldName] === this.student[fieldName]).length > 0;
     },
     async issueNewPen() {
       this.isLoadingMatches = true;
       const studentWithAssociations = {
-        student:{
+        student: {
           ...this.student,
         }
       }
       // API expects DOB to be with - not /
-      studentWithAssociations.student.dob = formatDob(this.student.dob, 'uuuu/MM/dd','uuuu-MM-dd');
+      studentWithAssociations.student.dob = formatDob(this.student.dob, 'uuuu/MM/dd', 'uuuu-MM-dd');
+      studentWithAssociations.student.sexCode = this.student.genderCode; // sex code is mandatory in API.
+      studentWithAssociations.student.emailVerified='N';
       const studentTwins = this.possibleMatches.map(element => ({
         twinStudentID: element.studentID,
         studentTwinReasonCode: 'PENCREATE'
@@ -242,11 +245,10 @@ export default {
         usualSurname: this.student.usualLastName,
         usualGiven: this.student.usualFirstName,
         usualMiddleName: this.student.usualMiddleNames,
-        dob: this.student.dob,//formatDob(this.student.dob,'uuuu-MM-dd','uuuu/MM/dd'),
+        dob: this.student.dob,
         sex: this.student.genderCode,
         enrolledGradeCode: this.student.gradeCode,
         mincode: this.student.mincode,
-        //localID: this.student.localID,
         postal: this.student.postalCode
       }
       ApiService.apiAxios.post('api/penMatches/', penMatch)
@@ -284,12 +286,18 @@ export default {
             console.log(error);
             this.requestFailed = true;
             this.isLoadingMatches = false;
+            this.setFailureAlert('PEN Match API call failed, please try again.');
           });
     }
   }
 };
 </script>
 <style scoped>
+
+.display-demog-data {
+  word-wrap: break-word;
+  font-size: medium;
+}
 
 .subheader-divider {
   border-width: 0.50ex 0 0 0;
