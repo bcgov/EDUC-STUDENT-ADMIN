@@ -1,6 +1,7 @@
 'use strict';
 const jsonwebtoken = require('jsonwebtoken');
 const config = require('../config/index');
+const log = require('../components/logger');
 let connectedClients = [];
 const webSocket = {
 
@@ -17,12 +18,17 @@ const webSocket = {
       if (!jwtToken) {
         ws.close();
       } else {
-        const userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
-        if (userToken['realm_access'] && userToken['realm_access'].roles
-          && (userToken['realm_access'].roles['includes'](config.get('server:penRequest:roleAdmin'))
-            || userToken['realm_access'].roles['includes'](config.get('server:studentRequest:roleAdmin')))) {
-          connectedClients.push(ws);
-        } else {
+        try {
+          const userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
+          if (userToken['realm_access'] && userToken['realm_access'].roles
+            && (userToken['realm_access'].roles['includes'](config.get('server:penRequest:roleAdmin'))
+              || userToken['realm_access'].roles['includes'](config.get('server:studentRequest:roleAdmin')))) {
+            connectedClients.push(ws);
+          } else {
+            ws.close();
+          }
+        } catch (e) {
+          log.error('error is from verify', e);
           ws.close();
         }
       }

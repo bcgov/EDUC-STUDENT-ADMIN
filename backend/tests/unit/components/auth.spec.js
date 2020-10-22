@@ -273,11 +273,11 @@ describe('isValidGMPUserToken', () => {
     expect(res.status).toHaveBeenCalledWith(HttpStatus.FORBIDDEN);
   });
 
-  it ('should return 500 when exceptions', () => {
+  it ('should return 401 when verify exceptions', () => {
     utils.getBackendToken.mockReturnValue({});
     jsonwebtoken.verify.mockImplementation(() => { throw new Error('test error'); });
     isValidGMPUserToken(req, res, next);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
   });
 
 });
@@ -337,11 +337,11 @@ describe('isValidGMPAdmin', () => {
     expect(res.status).toHaveBeenCalledWith(HttpStatus.FORBIDDEN);
   });
 
-  it ('should return 500 when exceptions', () => {
+  it ('should return 401 when verify exceptions', () => {
     utils.getBackendToken.mockReturnValue({});
     jsonwebtoken.verify.mockImplementation(() => { throw new Error('test error'); });
     isValidGMPAdmin(req, res, next);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
   });
 
 });

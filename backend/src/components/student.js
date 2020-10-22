@@ -102,16 +102,16 @@ async function getStudentByPen(req, res) {
  */
 async function createNewStudent(req, res) {
   try {
-    let transactionId;
+    let transactionID;
     if (req.session.create_new_student_transactionID) {
-      transactionId = req.session.create_new_student_transactionID;
+      transactionID = req.session.create_new_student_transactionID;
     } else {
-      transactionId = uuidv4();
-      req.session.create_new_student_transactionID = transactionId; // store it in session so that it can be reused when the api call to create student fails.
+      transactionID = uuidv4();
+      req.session.create_new_student_transactionID = transactionID; // store it in session so that it can be reused when the api call to create student fails.
     }
     const params = {
       params: {
-        transactionId
+        transactionID
       }
     };
     const token = utils.getBackendToken(req);
@@ -124,7 +124,7 @@ async function createNewStudent(req, res) {
     delete req.session.create_new_student_transactionID; // delete it when student is created successfully.
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
-    logApiError(e, 'saveStudent', 'Error occurred while attempting to save a student.');
+    logApiError(e, 'createNewStudent', 'Error occurred while attempting to create a new student.');
     return errorResponse(res);
   }
 }
