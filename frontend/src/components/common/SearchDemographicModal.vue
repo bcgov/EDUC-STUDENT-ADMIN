@@ -33,7 +33,7 @@
                   <v-col cols="3">
                     <v-text-field outlined dense filled
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
-                                  :rules="validateLegalLastName()"
+                                  :rules="validateLegalLastName()" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
                                   required tabindex="1"
                                   v-model="student.legalLastName"></v-text-field>
                   </v-col>
@@ -41,7 +41,7 @@
                   <v-col cols="3">
                     <v-text-field outlined dense filled
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
-                                  :rules="validateLegalFirstName()"
+                                  :rules="validateLegalFirstName()" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
                                   tabindex="2"
                                   v-model="student.legalFirstName"></v-text-field>
                   </v-col>
@@ -49,7 +49,7 @@
                   <v-col cols="3">
                     <v-text-field outlined dense filled
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
-                                  tabindex="3"
+                                  tabindex="3" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
                                   v-model="student.legalMiddleNames"></v-text-field>
                   </v-col>
                   <v-spacer/>
@@ -66,21 +66,21 @@
                   <v-col cols="3">
                     <v-text-field outlined dense filled
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
-                                  tabindex="4"
+                                  tabindex="4" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
                                   v-model="student.usualLastName"></v-text-field>
                   </v-col>
                   <v-spacer/>
                   <v-col cols="3">
                     <v-text-field outlined dense filled
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
-                                  tabindex="5"
+                                  tabindex="5" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
                                   v-model="student.usualFirstName"></v-text-field>
                   </v-col>
                   <v-spacer/>
                   <v-col cols="3">
                     <v-text-field outlined dense filled
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
-                                  tabindex="6"
+                                  tabindex="6" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
                                   v-model="student.usualMiddleNames"></v-text-field>
                   </v-col>
                   <v-spacer/>
@@ -103,7 +103,7 @@
                   <v-col cols="3">
                     <v-text-field outlined dense filled :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
                                   :rules="validateGender()" maxlength="1"
-                                  tabindex="7"
+                                  tabindex="7" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
                                   v-model="student.genderCode"></v-text-field>
                   </v-col>
                   <v-spacer/>
@@ -118,7 +118,7 @@
                   <v-col cols="3">
                     <v-text-field outlined dense filled :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
                                   :rules="validateGradeCode()" maxlength="2"
-                                  tabindex="9"
+                                  tabindex="9" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
                                   v-model="student.gradeCode"></v-text-field>
                   </v-col>
                   <v-spacer/>
@@ -135,7 +135,7 @@
                   <v-col cols="3">
                     <v-text-field outlined dense filled :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
                                   :rules="validatePostalCode()"
-                                  tabindex="10"
+                                  tabindex="10" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
                                   v-model="student.postalCode"></v-text-field>
                   </v-col>
                   <v-spacer/>
@@ -164,8 +164,8 @@
           </PrimaryButton>
 
           <PrimaryButton width="15%"
-              text="Search"
-              @click.native="[isFormValid(),]"
+                         text="Search"
+                         @click.native="[isFormValid(),]"
           >
           </PrimaryButton>
         </v-card-actions>
@@ -178,7 +178,6 @@
 import PrimaryButton from '../util/PrimaryButton';
 import {STUDENT_DETAILS_FIELDS} from "@/utils/constants";
 import {isValidMinCode, isValidPostalCode, isValidDob} from '@/utils/validation';
-import {formatMinCode} from '@/utils/format';
 import {mapGetters} from "vuex";
 
 export default {
@@ -208,7 +207,7 @@ export default {
       STUDENT_DETAILS_FIELDS: STUDENT_DETAILS_FIELDS,
       student: this.studentData,
       genderCodes: [],
-      gradeCodes:[],
+      gradeCodes: [],
     }
   },
   computed: {
@@ -223,6 +222,11 @@ export default {
     }
   },
   methods: {
+    upperCaseInput(fieldName) {
+      if (this.student[fieldName]) {
+        this.student[fieldName] = this.student[fieldName].toUpperCase();
+      }
+    },
     validateLegalLastName() {
       if (!this.student.legalLastName || this.student.legalLastName.length < 2) {
         return ['Legal Surname is required and must be more than one character.'];
@@ -269,10 +273,10 @@ export default {
         return ['Invalid Birth Date.'];
       }
     },
-    fillDOBSlashes(){
+    fillDOBSlashes() {
       if (this.student.dob) {
-        if(this.student.dob.length === 4 || this.student.dob.length === 7){
-          this.student.dob+='/';
+        if (this.student.dob.length === 4 || this.student.dob.length === 7) {
+          this.student.dob += '/';
         }
       }
     },

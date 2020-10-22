@@ -101,31 +101,32 @@ async function getStudentByPen(req, res) {
  * after getting the PEN NUMBER from
  */
 async function createNewStudent(req, res) {
-  return res.status(HttpStatus.OK).json({studentID:'ac335dc8-71c2-1389-8171-cc5d48de0000'});
   try {
-    let transactionId;
+    let transactionID;
     if (req.session.create_new_student_transactionID) {
-      transactionId = req.session.create_new_student_transactionID;
+      transactionID = req.session.create_new_student_transactionID;
     } else {
-      transactionId = uuidv4();
-      req.session.create_new_student_transactionID = transactionId; // store it in session so that it can be reused when the api call to create student fails.
+      transactionID = uuidv4();
+      req.session.create_new_student_transactionID = transactionID; // store it in session so that it can be reused when the api call to create student fails.
     }
     const params = {
       params: {
-        transactionId
+        transactionID
       }
     };
     const token = utils.getBackendToken(req);
     const penNumber = await getData(token, config.get('server:penServices:nextPenURL'), params);
     const student = req.body.student;
     student.pen = penNumber;
+    student.sexCode = student.genderCode; // sex code is mandatory in API.
+    student.emailVerified='N';
     student.createDate = null;
     student.updateDate = null;
     const result = await postData(token, config.get('server:student:rootURL') + '/', student);
     delete req.session.create_new_student_transactionID; // delete it when student is created successfully.
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
-    logApiError(e, 'saveStudent', 'Error occurred while attempting to save a student.');
+    logApiError(e, 'createNewStudent', 'Error occurred while attempting to create a new student.');
     return errorResponse(res);
   }
 }

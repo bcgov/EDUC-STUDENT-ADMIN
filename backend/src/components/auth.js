@@ -68,7 +68,6 @@ function isValidUiToken(isUserHasRole, roleType, roleNames) {
       return res.status(HttpStatus.FORBIDDEN).json({
         message: 'user is missing role'
       });
-
     } catch (e) {
       log.error(e);
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();

@@ -6,7 +6,9 @@
         <v-card-title>
           <span id="numberMatches" class="px-4"><strong>{{ studentPossibleMatches.length || 0 }} Matches</strong><v-btn
               @click="matchesExpanded=!matchesExpanded" icon><v-icon nudge-bottom="4"
-                                                                     color="#003366">{{ !matchesExpanded ? 'fa-angle-up' : 'fa-angle-down' }}</v-icon></v-btn></span>
+                                                                     color="#003366">{{
+              !matchesExpanded ? 'fa-angle-up' : 'fa-angle-down'
+            }}</v-icon></v-btn></span>
         </v-card-title>
       </v-col>
       <v-col align-self="center">
@@ -33,12 +35,20 @@
               <td v-for="header in props.headers" :key="header.id" :class="header.id">
                 <v-checkbox v-if="header.type" class="pl-3" color="#606060" @change="props.select($event)"></v-checkbox>
                 <div v-else class="tableCell">
-                  <router-link class="pen-link" to="" v-if="header.topValue==='pen'">
+                  <router-link class="pen-link" to="" v-if="header.topValue==='pen' && isPenLink">
                   <span
                       :class="['top-column-item', 'pen-link', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
                     {{ formattedPEN(props.item[header.topValue]) }}
                   </span>
                   </router-link>
+                  <span v-else-if="header.topValue==='pen'"
+                      :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
+                    {{ formattedPEN(props.item[header.topValue]) }}
+                  </span>
+                  <span v-else-if="header.topValue==='mincode'"
+                        :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
+                  {{ formatMinCode(props.item[header.topValue]) }}
+                </span>
                   <span v-else
                         :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
                   {{ props.item[header.topValue] }}
@@ -66,7 +76,8 @@
 <script>
 
 import TertiaryButton from '../util/TertiaryButton';
-import {formatPen} from '@/utils/format';
+import {formatPen, formatMinCode} from '@/utils/format';
+
 export default {
   name: 'PenMatchResultsTable.vue',
   components: {
@@ -88,6 +99,10 @@ export default {
     isRefreshRequired: {
       type: Boolean,
       required: true
+    },
+    isPenLink:{
+      type:Boolean,
+      required:true
     }
 
   },
@@ -158,8 +173,10 @@ export default {
     },
     demogValuesMatch(valueType, value) {
       switch (valueType) {
+        case 'dob':
+          return this.student?.dob?.replace(/\D/g,'') === value?.replace(/\D/g,''); // match birth date without - or /
         case 'mincode':
-          return this.student.minCode === value;
+          return this.student.mincode === value;
         case 'pen':
           if (this.student.assignedPEN) {
             return this.student.assignedPEN === value;
@@ -173,6 +190,9 @@ export default {
     formattedPEN(pen) {
       return formatPen(pen);
     },
+    formatMinCode(mincode){
+      return formatMinCode(mincode);
+    }
 
   }
 };
@@ -184,26 +204,11 @@ export default {
   z-index: 0;
 }
 
-.double-column-item {
-  float: right;
-}
-
-.top-column-item {
-  float: left;
-}
-
-.bottom-column-item {
-  float: left;
-  min-height: 1.5em;
-}
 
 #dataTable {
   background-color: #F2F2F2;
 }
 
-#dataTable /deep/ table tr.selected-record {
-  background-color: #E1F5FE
-}
 
 #dataTable /deep/ table tbody tr:not(.selected-record):hover {
   background-color: inherit
@@ -237,11 +242,5 @@ export default {
   background-color: #F2F2F2;
 }
 
-.table-checkbox /deep/ .v-input__slot, .v-input--checkbox {
-  padding-top: 0;
-}
 
-#loading {
-  z-index: 6;
-}
 </style>
