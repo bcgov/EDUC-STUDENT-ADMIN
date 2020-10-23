@@ -45,11 +45,13 @@
             <td v-for="header in props.headers" :key="header.id" :class="header.id">
               <v-checkbox v-if="header.type" class="pl-3" color="#606060" @change="props.select($event)"></v-checkbox>
               <div v-else class="tableCell">
-                <router-link class="pen-link" to="" v-if="header.topValue==='pen'">
-                  <span :class="['top-column-item', 'pen-link', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
-                    {{ formattedPEN(props.item[header.topValue]) }}
-                  </span>
-                </router-link>
+
+                <StudentDetailDialog v-if="header.topValue === 'pen'" 
+                  v-bind:studentID="props.item['studentID']" 
+                  v-bind:pen="props.item[header.topValue]"
+                  v-bind:is-matched="props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])"  
+                ></StudentDetailDialog>
+                
                 <span v-else-if="header.topValue==='mincode'" :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, formattedMincode(props.item[header.topValue]))?'font-weight-bold':'']">
                   {{ formattedMincode(props.item[header.topValue]) }}
                 </span>
@@ -84,10 +86,12 @@
 import TertiaryButton from '../../../util/TertiaryButton';
 import ApiService from '../../../../common/apiService';
 import { Routes } from '../../../../utils/constants';
+import StudentDetailDialog from '../../student/StudentDetailDialog';
 import { formatPen, formatMinCode, formatDob, formatPostalCode } from '../../../../utils/format';
 export default {
   name: 'MatchOutcome.vue',
   components: {
+    StudentDetailDialog,
     TertiaryButton: TertiaryButton
   },
   props: {
@@ -225,9 +229,6 @@ export default {
 }
 #dataTable /deep/ tbody tr td:nth-child(7) {
   width: 9.5%;
-}
-.pen-link {
-  text-decoration: underline;
 }
 .value-half-width {
   display: contents;
