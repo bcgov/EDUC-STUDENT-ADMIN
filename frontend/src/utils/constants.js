@@ -5,6 +5,7 @@ const penRequestRoot = baseRoot + '/penRequest';
 const studentRequestRoot = baseRoot + '/studentRequest';
 const demographicRoot = baseRoot + '/studentDemographics';
 const studentRoot = baseRoot + '/students';
+const penServicesRoot = baseRoot + '/pen-services';
 let object = {
   LOGIN: authRoot + '/login',
   LOGOUT: authRoot + '/logout',
@@ -26,7 +27,7 @@ let object = {
   penRequest: {
     ROOT_ENDPOINT: penRequestRoot,
     SEARCH_URL: penRequestRoot + '/',
-    DUPLICATE_REQUESTS_URL:penRequestRoot + '/duplicatePenRequests',
+    DUPLICATE_REQUESTS_URL: penRequestRoot + '/duplicatePenRequests',
     STATUSES_URL: penRequestRoot + '/codes/requeststatuses',
     DOCUMENT_TYPES_URL: penRequestRoot + '/codes/documentTypes',
     COMPLETE_URL: penRequestRoot + '/complete',
@@ -40,7 +41,7 @@ let object = {
   studentRequest: {
     ROOT_ENDPOINT: studentRequestRoot,
     SEARCH_URL: studentRequestRoot + '/',
-    DUPLICATE_REQUESTS_URL:studentRequestRoot + '/duplicatePenRequests',
+    DUPLICATE_REQUESTS_URL: studentRequestRoot + '/duplicatePenRequests',
     STATUSES_URL: studentRequestRoot + '/codes/requeststatuses',
     DOCUMENT_TYPES_URL: studentRequestRoot + '/codes/documentTypes',
     COMPLETE_URL: studentRequestRoot + '/complete',
@@ -58,9 +59,12 @@ let object = {
     STATUS_CODE_URL: studentRoot + '/statusCodes',
     GRADE_CODE_URL: studentRoot + '/gradeCodes',
     TWIN_REASON_CODE_URL: studentRoot + '/twinReasonCodes',
-    GET_ALL_STUDENTS_BY_IDS: studentRoot +'/allStudents'
+    GET_ALL_STUDENTS_BY_IDS: studentRoot + '/allStudents'
   },
-
+  penServices: {
+    ROOT_ENDPOINT: penServicesRoot,
+    VALIDATE_DEMOGRAPHICS: penServicesRoot + '/demog-validation'
+  },
   STUDENT_DATA_URL: studentRoot,
   SEARCH_BY_PEN: demographicRoot
 };
@@ -149,30 +153,30 @@ export const REQUEST_TYPES = Object.freeze(
  */
 export const STUDENT_DETAILS_FIELDS = Object.freeze(
   {
-    LEGAL_LAST_NAME:'legalLastName',
-    LEGAL_FIRST_NAME:'legalFirstName',
-    LEGAL_MIDDLE_NAMES:'legalMiddleNames',
-    USUAL_LAST_NAME:'usualLastName',
-    USUAL_FIRST_NAME:'usualFirstName',
-    USUAL_MIDDLE_NAMES:'usualMiddleNames',
-    GRADE_CODE:'gradeCode',
-    GRADE_YEAR:'gradeYear',
-    POSTAL_CODE:'postalCode',
-    TWINS:'twins',
-    MERGED_TO:'mergedTo',
-    MERGED_FROM:'mergedFrom',
-    DOB:'dob',
-    GENDER_CODE:'genderCode',
-    DEMOG_CODE:'demogCode',
-    TRAX_STATUS:'traxStatus',
-    GRAD_DATE:'gradDate',
-    CREATED_DATE:'createdDate',
-    UPDATED_DATE:'updatedDate',
-    LOCAL_ID:'localID',
+    LEGAL_LAST_NAME: 'legalLastName',
+    LEGAL_FIRST_NAME: 'legalFirstName',
+    LEGAL_MIDDLE_NAMES: 'legalMiddleNames',
+    USUAL_LAST_NAME: 'usualLastName',
+    USUAL_FIRST_NAME: 'usualFirstName',
+    USUAL_MIDDLE_NAMES: 'usualMiddleNames',
+    GRADE_CODE: 'gradeCode',
+    GRADE_YEAR: 'gradeYear',
+    POSTAL_CODE: 'postalCode',
+    TWINS: 'twins',
+    MERGED_TO: 'mergedTo',
+    MERGED_FROM: 'mergedFrom',
+    DOB: 'dob',
+    GENDER_CODE: 'genderCode',
+    DEMOG_CODE: 'demogCode',
+    TRAX_STATUS: 'traxStatus',
+    GRAD_DATE: 'gradDate',
+    CREATED_DATE: 'createdDate',
+    UPDATED_DATE: 'updatedDate',
+    LOCAL_ID: 'localID',
     MINCODE: 'mincode',
-    MEMO:'memo',
-    PEN:'pen',
-    STATUS_CODE:'statusCode'
+    MEMO: 'memo',
+    PEN: 'pen',
+    STATUS_CODE: 'statusCode'
   }
 );
 export const STUDENT_CODES = Object.freeze(
@@ -209,7 +213,7 @@ export const PAGE_TITLES = Object.freeze(
     PEN_MATCH: 'PEN Match',
     PEN_REQ_BATCH_STUDENT_LIST: 'PEN Request List',
     PEN_REQ_BATCH_STUDENT_DETAILS: 'PEN Request Details',
-    CREATE_NEW_PEN:'Create New PEN'
+    CREATE_NEW_PEN: 'Create New PEN'
   }
 );
 
@@ -275,11 +279,11 @@ export const SEARCH_CONDITION = Object.freeze(
     /**
      * And condition.
      */
-    AND:'AND',
+    AND: 'AND',
     /**
      * Or condition.
      */
-    OR:'OR'
+    OR: 'OR'
   }
 );
 
@@ -288,26 +292,26 @@ export const SEARCH_VALUE_TYPE = Object.freeze(
     /**
      * String value type.
      */
-    STRING:'STRING',
+    STRING: 'STRING',
     /**
      * Integer value type.
      */
-    INTEGER:'INTEGER',
+    INTEGER: 'INTEGER',
     /**
      * Long value type.
      */
-    LONG:'LONG',
+    LONG: 'LONG',
     /**
      * Date value type.
      */
-    DATE:'DATE',
+    DATE: 'DATE',
     /**
      * Date time value type.
      */
-    DATE_TIME:'DATE_TIME',
+    DATE_TIME: 'DATE_TIME',
     /**
      * Uuid value type.
      */
-    UUID:'UUID'
+    UUID: 'UUID'
   }
 );
