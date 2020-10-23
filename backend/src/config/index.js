@@ -71,7 +71,8 @@ nconf.defaults({
     },
     penServices: {
       rootURL: process.env.PEN_SERVICES_API_URL,
-      nextPenURL:process.env.PEN_SERVICES_API_URL+'/next-pen-number'
+      nextPenURL: process.env.PEN_SERVICES_API_URL + '/next-pen-number',
+      validateDemographicsURL: process.env.PEN_SERVICES_API_URL + '/validation/student-request'
     }
   },
   oidc: {
