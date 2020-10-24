@@ -1,5 +1,5 @@
 import {LocalDate, DateTimeFormatterBuilder, ResolverStyle} from '@js-joda/core';
-
+const datePatternWithSlash = (new DateTimeFormatterBuilder).appendPattern('uuuu/MM/dd').toFormatter(ResolverStyle.STRICT);
 export function checkDigit(pen) {
   const penDigits = [];
 
@@ -38,6 +38,36 @@ export function isValidDob(dob, pattern='uuuu/MM/dd') {
   try {
     const dateObject = LocalDate.parse(dob, formatter);
     if(dateObject.isBefore(LocalDate.now())){
+      return true;
+    }
+  }
+  catch(err){
+    //Do nothing
+  }
+  return false;
+}
+
+export function isDateAfter1900(dob, pattern='uuuu/MM/dd') {
+  const formatter = (new DateTimeFormatterBuilder).appendPattern(pattern).toFormatter(ResolverStyle.STRICT);
+  try {
+    const dateObject = LocalDate.parse(dob, formatter);
+    const dateBefore1900 = LocalDate.parse('1899/12/31',datePatternWithSlash);
+    if(dateObject.isAfter(dateBefore1900)){
+      return true;
+    }
+  }
+  catch(err){
+    //Do nothing
+  }
+  return false;
+}
+
+export function isValidDOBAndAfter1900(dob, pattern='uuuu/MM/dd') {
+  const formatter = (new DateTimeFormatterBuilder).appendPattern(pattern).toFormatter(ResolverStyle.STRICT);
+  try {
+    const dateObject = LocalDate.parse(dob, formatter);
+    const dateBefore1900 = LocalDate.parse('1899/12/31', datePatternWithSlash);
+    if(dateObject.isBefore(LocalDate.now()) && dateObject.isAfter(dateBefore1900)){
       return true;
     }
   }
