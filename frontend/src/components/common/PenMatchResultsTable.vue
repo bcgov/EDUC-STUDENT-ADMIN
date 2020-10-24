@@ -173,6 +173,8 @@ export default {
     },
     demogValuesMatch(valueType, value) {
       switch (valueType) {
+        case 'postalCode':
+          return this.student?.postalCode?.replace(' ','') === value?.replace(' ',''); // match without space
         case 'dob':
           return this.student?.dob?.replace(/\D/g,'') === value?.replace(/\D/g,''); // match birth date without - or /
         case 'mincode':
@@ -224,7 +226,7 @@ export default {
 }
 
 #dataTable /deep/ tbody tr td:nth-child(5) {
-  width: 19%;
+  width: 18%;
 }
 
 .pen-link {
