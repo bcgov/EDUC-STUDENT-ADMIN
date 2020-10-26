@@ -177,7 +177,7 @@
 <script>
 import PrimaryButton from '../util/PrimaryButton';
 import {STUDENT_DETAILS_FIELDS} from "@/utils/constants";
-import {isValidMinCode, isValidPostalCode, isValidDob} from '@/utils/validation';
+import {isValidMinCode, isValidPostalCode, isValidDOBAndAfter1900} from '@/utils/validation';
 import {mapGetters} from "vuex";
 
 export default {
@@ -262,14 +262,14 @@ export default {
         return ['Mincode is required.'];
       }
       if (!isValidMinCode(this.student.mincode) || this.student.mincode.length !== 8) {
-        return ['Invalid mincode.'];
+        return ['Invalid mincode, should be exactly 8 digits.'];
       }
     },
     validateDOB() {
       if (!this.student.dob) {
         return ['Birth Date is Required.'];
       }
-      if (!isValidDob(this.student.dob)) {
+      if (!isValidDOBAndAfter1900(this.student.dob)) {
         return ['Invalid Birth Date.'];
       }
     },
