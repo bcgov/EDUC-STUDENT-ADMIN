@@ -28,5 +28,5 @@ export function formatDob(dob, from='uuuuMMdd', to='uuuu/MM/dd') {
 }
 
 export function formatPostalCode(postalCode) {
-  return postalCode.replace(/.{3}$/, ' $&');
+  return postalCode?.replace(/.{3}$/, ' $&');
 }
