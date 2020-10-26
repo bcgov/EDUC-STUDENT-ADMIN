@@ -1,7 +1,7 @@
 <template>
   <v-container fluid class="fill-height px-0 mb-4">
 
-    <div style="width: 100%" :overlay=false>
+    <div style="width: 100%;" :overlay=false>
       <div class="sticky full-width px-8">
         <v-row>
           <v-col cols="12">
@@ -205,7 +205,7 @@ export default {
       if (fieldName === STUDENT_DETAILS_FIELDS.DOB) {
         const dob = this.student[fieldName]?.replace(/\D/g, '');
         return this.possibleMatches.filter(el => el[fieldName]?.replace(/\D/g, '') === dob).length > 0;
-      }else if(fieldName === STUDENT_DETAILS_FIELDS.POSTAL_CODE){
+      } else if (fieldName === STUDENT_DETAILS_FIELDS.POSTAL_CODE) {
         const postalCode = this.student[fieldName]?.replace(' ', '');
         return this.possibleMatches.filter(el => el[fieldName]?.replace(' ', '') === postalCode).length > 0;
       }
@@ -217,7 +217,7 @@ export default {
         student: {
           ...this.student,
         }
-      }
+      };
       // API expects DOB to be with - not /
       studentWithAssociations.student.dob = formatDob(this.student.dob, 'uuuu/MM/dd', 'uuuu-MM-dd');
       studentWithAssociations.student.sexCode = this.student.genderCode; // sex code is mandatory in API.
@@ -261,7 +261,7 @@ export default {
         enrolledGradeCode: this.student.gradeCode,
         mincode: this.student.mincode,
         postal: this.student.postalCode
-      }
+      };
       ApiService.apiAxios.post('api/penMatches/', penMatch)
           .then(response => {
             if (response.data && response.data.matchingRecords && response.data.matchingRecords.length > 0) {
@@ -350,6 +350,7 @@ export default {
   .left-margin-fifth-column {
     margin-left: -2em;
   }
+
   .left-margin-sixth-column {
     margin-left: -2.8em;
   }
@@ -376,6 +377,7 @@ export default {
   .left-margin-fifth-column {
     margin-left: -1.6em;
   }
+
   .left-margin-sixth-column {
     margin-left: -5em;
   }
