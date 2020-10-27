@@ -56,7 +56,7 @@
                   </span>
                   </router-link>
                   <span v-else-if="header.topValue==='mincode'"
-                        :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, formattedMincode(props.item[header.topValue]))?'font-weight-bold':'']">
+                        :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, formatMinCode(props.item[header.topValue]))?'font-weight-bold':'']">
                   {{ formatMinCode(props.item[header.topValue]) }}
                 </span>
                   <span v-else-if="header.topValue==='dob'"
