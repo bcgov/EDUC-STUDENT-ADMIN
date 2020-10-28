@@ -28,9 +28,10 @@
           :prbStudent="prbStudent"
         ></PrbStudentStatusChip>
         <v-spacer></v-spacer>
-        <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2" text="Modify search" @click.native="openSearchDemographicsModal"></PrimaryButton>
+        <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2" :disabled="!actionEnabled" text="Modify search"></PrimaryButton>
         <PrimaryButton id="issue-pen-action" class="mr-2" :disabled="!actionEnabled" text="Issue new PEN"></PrimaryButton>
         <InfoDialog
+          :disabled="disableInfoReqBtn"
           @updateInfoRequested="updateInfoRequested"
           :text="prbStudent.infoRequest"
         ></InfoDialog>
@@ -221,6 +222,7 @@ export default {
 
       actionEnabled: false,
       loading: true,
+      repeatRequestOriginalStatus: null,
       dialog: false,
       possibleMatches: [],
       isLoadingMatches: false,
@@ -234,11 +236,23 @@ export default {
         this.initializeDetails();
       }
     },
+    repeatRequestOriginal: {
+      handler() {
+        if(this.prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.REPEAT && this.prbStudent?.repeatRequestOriginalID)
+          return ApiService.apiAxios.get(`${Routes['penRequestBatch'].FILES_URL}${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.repeatRequestOriginalID}`)
+            .then(response => {
+              this.repeatRequestOriginalStatus = response.data?.repeatRequestOriginalStatus;
+            });
+      }
+    }
   },
   computed: {
     ...mapState('setNavigation', ['currentRoute']),
     ...mapState('penRequestBatch', ['selectedFiles']),
     ...mapState('prbStudentSearch', ['selectedRecords']),
+    disableInfoReqBtn() {
+      return ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE].some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
+    },
     selectedStudents() {
       return sortBy(this.selectedRecords, ['minCode', 'submissionNumber', 'recordNumber']);
     },
@@ -248,6 +262,9 @@ export default {
     bottomTableHeaders() {
       return this.headers.map(({bottomText, bottomValue, sortable})=> ({text: bottomText, value: bottomValue, sortable}));
     },
+    repeatRequestOriginal() {
+      return this.prbStudent?.repeatRequestOriginalID;
+    }
   },
   created() {
     this.$store.dispatch('penRequestBatch/getCodes');

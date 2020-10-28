@@ -4,11 +4,13 @@
           v-model="requestInfoDialogOpen"
           max-width="50%"
           persistent
+          :disabled="disabled"
   >
     <template v-slot:activator="{ on, attrs }">
       <PrimaryButton
             id="requestInfoBtn"
             text="Request info"
+            :disabled="disabled"
             :bind="attrs"
             :on="on">
       </PrimaryButton>
@@ -93,6 +95,10 @@ export default {
     text: {
       type: String,
       default: ''
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

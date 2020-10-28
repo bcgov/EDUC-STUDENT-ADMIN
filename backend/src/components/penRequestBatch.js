@@ -87,6 +87,18 @@ async function updatePrbStudentInfoRequested(req, res) {
   }
 }
 
+async function getPenRequestBatchStudentById(req, res) {
+  const token = getBackendToken(req, res);
+  try {
+    const url = `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${req.params.id}/student/${req.params.studentId}`;
+    let studentData = await getData(token, url);
+    return res.status(200).json({repeatRequestOriginalStatus: studentData.penRequestBatchStudentStatusCode});
+  } catch(e) {
+    logApiError(e, 'getPenRequestBatchStudentById', 'Error getting a PrbStudent.');
+    return errorResponse(res);
+  }
+}
+
 async function getPenRequestBatchStudentMatchOutcome(req, res) {
   const token = getBackendToken(req, res);
   if(!token) {
@@ -119,5 +131,6 @@ module.exports = {
   updatePrbStudentInfoRequested,
   getPenRequestFiles: getPaginatedListForSCGroups('getPenRequestFiles', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/paginated`),
   getPenRequestBatchStudents: getPaginatedListForSCGroups('getPenRequestBatchStudents', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/student/paginated`),
+  getPenRequestBatchStudentById,
   getPenRequestBatchStudentMatchOutcome
 };
