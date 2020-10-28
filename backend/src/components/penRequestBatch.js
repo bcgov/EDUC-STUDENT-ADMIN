@@ -89,11 +89,6 @@ async function updatePrbStudentInfoRequested(req, res) {
 
 async function getPenRequestBatchStudentById(req, res) {
   const token = getBackendToken(req, res);
-  if(!token) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({
-      message: 'No access token'
-    });
-  }
   try {
     const url = `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${req.params.id}/student/${req.params.studentId}`;
     let studentData = await getData(token, url);
