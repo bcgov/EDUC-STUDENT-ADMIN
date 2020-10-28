@@ -167,7 +167,9 @@ export default {
             console.log(error);
           })
           .finally(() => {
-            this.twins.splice(this.twins.indexOf(element));
+            let foundElement = this.twins.find(o => o.studentTwinID === element.twinID);
+            this.twins.splice(this.twins.indexOf(foundElement),1);
+            this.selectedTwins.splice(element,1);
           });
       });
     }
