@@ -298,12 +298,12 @@ describe('validateEndDOBYear', () => {
     wrapper.destroy();
   });
 
+  it('Should return true if is valid end year and useDOBRange is null', () => {
+    expect(wrapper.vm.validateEndDOBYear()).toEqual([]);
+  });
   it('Should return year required error if end year is null', () => {
     store.commit('studentSearch/setAdvancedSearchCriteria', { startDate: { year: null, month: null, day: null }, endDate: { year: null, month: null, day: null }, useDOBRange: true });
     expect(wrapper.vm.validateEndDOBYear()).toEqual(['Year required for range search']);
-  });
-  it('Should return true if is valid end year and useDOBRange is null', () => {
-    expect(wrapper.vm.validateEndDOBYear()).toEqual([]);
   });
   it('Should return end date error if end date greater than start date is not valid', () => {
     store.commit('studentSearch/setAdvancedSearchCriteria', { startDate: { year: '1995', month: null, day: null }, endDate: { year: '1990', month: null, day: null }, useDOBRange: true });
