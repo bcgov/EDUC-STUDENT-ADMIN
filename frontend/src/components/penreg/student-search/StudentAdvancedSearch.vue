@@ -335,7 +335,6 @@ export default {
       this.advancedSearchCriteria.startDate.month = tempStartDates[1];
       this.advancedSearchCriteria.startDate.day = tempStartDates[2];
     }
-    this.advancedSearchCriteria.useDOBRange = false;
     this.setIsAdvancedSearch(true);
   },
   watch: {

@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../components/auth');
 const utils = require('../components/utils');
 const extendSession = utils.extendSession();
-const { getPENBatchRequestStats, getPenRequestFiles, getPenRequestBatchStudents, getPenRequestBatchStudentMatchOutcome, updatePrbStudentInfoRequested } = require('../components/penRequestBatch');
+const { getPENBatchRequestStats, getPenRequestFiles, getPenRequestBatchStudents, getPenRequestBatchStudentById, getPenRequestBatchStudentMatchOutcome, updatePrbStudentInfoRequested } = require('../components/penRequestBatch');
 
 /*
  * Get all pen request batch files
@@ -29,6 +29,12 @@ router.get('/matchOutcome', passport.authenticate('jwt', {session: false}, undef
 
 // Updates the info requested of student by studentId.
 router.put('/:id/students/:studentId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, updatePrbStudentInfoRequested);
+
+/*
+ * Get pen request batch student by id
+ */
+router.get('/:id/students/:studentId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, getPenRequestBatchStudentById);
+
 
 router.get('/studentStatusCodes', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, utils.cacheMiddleware(), utils.getCodes('server:penRequestBatch:studentStatusCodesURL', 'penRequestBatchStudentStatusCodes'));
 
