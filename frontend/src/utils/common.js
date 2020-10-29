@@ -1,6 +1,6 @@
 'use strict';
-import ApiService from "../common/apiService";
-import {Routes} from "@/utils/constants";
+import ApiService from '../common/apiService';
+import {Routes} from '@/utils/constants';
 
 const clone = require('rfdc')();
 
@@ -26,7 +26,7 @@ export function getPossibleMatches(penMatch) {
       .then(response => {
         if (response.data && response.data.matchingRecords && response.data.matchingRecords.length > 0) {
           const studentIDs = response.data.matchingRecords.map((matchingRecord) => {
-            return matchingRecord.studentID
+            return matchingRecord.studentID;
           }).join();
           const params = {
             params: {
