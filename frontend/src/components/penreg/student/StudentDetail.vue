@@ -20,10 +20,10 @@
           </v-row>
           <StudentDetailCommon 
               :studentID="studentID"
-              :validForm="validForm">
+              :validForm="validForm"
+              :parentRefs="this.$refs">
               <template v-slot:buttonbar="{ isAdvancedSearch, hasAnyEdits, saveStudent, REQUEST_TYPES }">
                 <v-row no-gutters dense class="mt-n4">
-                  <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000"></AlertMessage>
                   <v-col cols="10">
                     <v-card-actions style="float: right;">
                       <router-link :to="`${isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`">
@@ -43,7 +43,6 @@
 <script>
 import StudentDetailCommon from '../../common/StudentDetailCommon';
 import alterMixin from '../../../mixins/alterMixin';
-import AlertMessage from '../../util/AlertMessage';
 import PrimaryButton from '../../util/PrimaryButton';
 
 export default {
@@ -56,13 +55,13 @@ export default {
     }
   },
   components: {
-    AlertMessage,
     PrimaryButton,
     StudentDetailCommon
   },
   data() {
     return {
       validForm: false,
+      studentForm: null,
       tab:'Demographics'
     };
   },

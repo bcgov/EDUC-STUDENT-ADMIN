@@ -298,6 +298,9 @@
                 ></v-text-field>
               </v-col>
             </v-row>
+            <v-row>
+              <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000"></AlertMessage>
+            </v-row>
             <slot 
               name="buttonbar"
               :isAdvancedSearch="isAdvancedSearch"
@@ -320,6 +323,49 @@
           </v-row>
         </article>
       </v-row>
+      <v-dialog
+          v-model="deceasedDialog"
+          width="400px"
+      >
+        <v-card>
+          <v-card-text class="px-5 py-5">
+            Change Student Status to Deceased?
+          </v-card-text>
+          <v-divider></v-divider>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+                outlined
+                tabindex="-1"
+                color="#38598a"
+                class="mx-2"
+                @click="cancelDeceasedDialog"
+            >
+              Cancel
+            </v-btn>
+
+            <v-btn
+                color="#003366"
+                tabindex="-1"
+                class="white--text"
+                @click="confirmDeceasedDialog"
+            >
+              Confirm
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog
+        v-model="twinsDialog"
+        width="900px"
+      >
+        <TwinnedStudentsCard 
+          :student="studentCopy"
+          :twins="twins"
+          @close="twinsDialog=false"
+        ></TwinnedStudentsCard>
+      </v-dialog>
+      <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>
     </v-row>
 </template>
 
@@ -334,11 +380,11 @@ import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/Student
 import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsComboBox';
 import StudentDetailsTextFieldSideCardReadOnly
   from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
-import PrimaryButton from '../util/PrimaryButton';
 import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
 import {formatMinCode, formatPen} from '../../utils/format';
 import {sortBy} from 'lodash';
 import alterMixin from '../../mixins/alterMixin';
+import ConfirmationDialog from '../util/ConfirmationDialog';
 import AlertMessage from '../util/AlertMessage';
 
 const JSJoda = require('@js-joda/core');
@@ -354,11 +400,15 @@ export default {
     validForm: {
       type: Boolean,
       required: true
+    },
+    parentRefs: {
+      type: Object,
+      required: true
     }
   },
   components: {
     AlertMessage,
-    PrimaryButton,
+    ConfirmationDialog,
     StudentDetailsTextFieldSideCardReadOnly,
     StudentDetailsComboBox,
     StudentDetailsTextFieldReadOnly,
@@ -383,6 +433,7 @@ export default {
       statusLabels: [],
       gradeLabels: [],
       gradeLabel: null,
+      alert: false,
       createdDateTime: null,
       updatedDateTime: null,
       longDOB: null,
@@ -692,7 +743,7 @@ export default {
       }
     },
     saveStudent() {
-      if (this.$refs.studentDetailForm.validate()) {
+      if (this.parentRefs.studentDetailForm.validate()) {
         ApiService.apiAxios
           .put(Routes['student'].ROOT_ENDPOINT+'/'+ this.studentID, this.prepPut(this.studentCopy))
           .then(response => {
