@@ -28,7 +28,7 @@
           :prbStudent="prbStudent"
         ></PrbStudentStatusChip>
         <v-spacer></v-spacer>
-        <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2" :disabled="!actionEnabled" text="Modify search"></PrimaryButton>
+        <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2" text="Modify search" @click.native="openSearchDemographicsModal"></PrimaryButton>
         <PrimaryButton id="issue-pen-action" class="mr-2" :disabled="!actionEnabled" text="Issue new PEN"></PrimaryButton>
         <InfoDialog
           :disabled="disableInfoReqBtn"
@@ -36,6 +36,12 @@
           :text="prbStudent.infoRequest"
         ></InfoDialog>
       </v-row>
+        <v-row>
+          <SearchDemographicModal @closeDialog="closeDialog" @updateStudent="updateStudentAndRunPenMatch" :dialog="dialog"
+                                  :is-field-read-only="isFieldReadOnly"
+                                  :is-mincode-hidden="true"
+                                  :student-data="modalStudent"></SearchDemographicModal>
+        </v-row>
       <v-row no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
         <span>
           <strong>{{prbStudent.minCode}} {{batchFile.schoolName}}</strong>
@@ -71,10 +77,10 @@
               <tr>
                 <td v-for="header in props.headers" :key="header.id" :class="header.id">
                   <div class="table-cell" :class="[props.item[header.doubleValue] ? 'value-half-width':'']">
-                    <span class="top-column-item">
+                    <span :class="['top-column-item',{'mark-field-value-changed':isFieldValueUpdated(header.topValue)}]">
                       <span><strong>{{ props.item[header.topValue] || ' ' }}</strong></span>
                     </span>
-                    <span class="double-column-item-value"><strong>{{props.item[header.doubleValue]}}</strong></span>
+                    <span :class="['double-column-item-value',{'mark-field-value-changed':isFieldValueUpdated(header.doubleValue)}]"><strong>{{props.item[header.doubleValue]}}</strong></span>
                   </div>
                 </td>
               </tr>
@@ -92,7 +98,7 @@
               <tr>
                 <td v-for="header in props.headers" :key="header.id" :class="header.id">
                   <div class="table-cell">
-                    <span class="top-column-item">
+                    <span  :class="['top-column-item',{'mark-field-value-changed':isFieldValueUpdated(header.value)}]">
                       <span><strong>{{ props.item[header.value] || ' ' }}</strong></span>
                     </span>
                   </div>
@@ -116,32 +122,63 @@
         </v-col>
       </v-row>
       </div>
-      <v-row class="full-width">
-        <MatchOutcome :prbStudent="prbStudent"></MatchOutcome>
+      <v-row v-if="isLoadingMatches">
+        <v-container fluid class="full-height">
+          <article id="match-results-container" class="top-banner full-height">
+            <v-row align="center" justify="center">
+              <v-progress-circular
+                  :size="70"
+                  :width="7"
+                  color="primary"
+                  indeterminate
+              ></v-progress-circular>
+            </v-row>
+          </article>
+        </v-container>
+      </v-row>
+      <v-row class="full-width" v-if="showPossibleMatch">
+        <PenMatchResultsTable :student="prbStudent" :is-comparison-required="true"
+                              :is-pen-link="true"
+                              :is-refresh-required="true"
+                              :possible-match="possibleMatches"></PenMatchResultsTable>
       </v-row>
     </div>
   </v-container>
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex';
+import {mapMutations, mapState} from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
 import PrbStudentStatusChip from './PrbStudentStatusChip';
 import InfoDialog from './prb-student-details/InfoDialog';
-import { formatPrbStudent, formatPrbStudents } from '@/utils/penrequest-batch/format';
+import {formatPrbStudent, formatPrbStudents} from '@/utils/penrequest-batch/format';
 import ApiService from '../../../common/apiService';
-import { Routes, SEARCH_FILTER_OPERATION, SEARCH_VALUE_TYPE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES } from '@/utils/constants';
-import { cloneDeep, sortBy, uniq, isEmpty } from 'lodash';
+import {
+  PEN_REQ_BATCH_STUDENT_REQUEST_CODES,
+  Routes,
+  SEARCH_FILTER_OPERATION,
+  SEARCH_VALUE_TYPE
+} from '@/utils/constants';
+import {cloneDeep, isEmpty, sortBy, uniq} from 'lodash';
 import alterMixin from '../../../mixins/alterMixin';
-import MatchOutcome from './prb-student-details/MatchOutcome';
+import SearchDemographicModal from "@/components/common/SearchDemographicModal";
+import PenMatchResultsTable from "@/components/common/PenMatchResultsTable";
+import {
+  constructPenMatchObjectFromStudent,
+  deepCloneObject,
+  getDemogValidationResults,
+  getPossibleMatches
+} from '@/utils/common';
+import {formatDob, formatPostalCode} from "@/utils/format";
 
 export default {
   name: 'PrbStudentDetailsDisplay',
   components: {
-    MatchOutcome,
     PrimaryButton,
     PrbStudentStatusChip,
-    InfoDialog
+    InfoDialog,
+    SearchDemographicModal,
+    PenMatchResultsTable
   },
   mixins: [alterMixin],
   props: {
@@ -166,6 +203,7 @@ export default {
     return {
       batchFile: null,
       prbStudent: null,
+      modalStudent: null,
       seqNumber: 1,
       seqNumberInBatch: 1,
       totalNumberInBatch: 1,
@@ -188,7 +226,12 @@ export default {
 
       actionEnabled: false,
       loading: true,
-      repeatRequestOriginalStatus: null
+      repeatRequestOriginalStatus: null,
+      dialog: false,
+      possibleMatches: [],
+      isLoadingMatches: false,
+      showPossibleMatch: false,
+      prbStudentCopy:{},
     };
   },
   watch: {
@@ -265,6 +308,7 @@ export default {
 
         await this.retrieveBatchFile();
         this.setBatchNav();
+        await this.loadPossibleMatchesFromBatchAPI();
       } catch (error) {
         this.setFailureAlert('An error occurred while loading the PEN request. Please try again later.');
         console.log(error);
@@ -277,6 +321,8 @@ export default {
         await this.retrieveAllPenRequests(studentIDs);
       }
       this.prbStudent = this.selectedStudents[this.seqNumber-1];
+      this.setModalStudentFromPrbStudent(this.prbStudent);
+      this.prbStudentCopy = deepCloneObject(this.prbStudent);
       const recordsInBatch = this.selectedStudents.filter(record => record.penRequestBatchID === this.prbStudent.penRequestBatchID);
       this.seqNumberInBatch = recordsInBatch.findIndex(record => record.penRequestBatchStudentID === this.prbStudent.penRequestBatchStudentID) + 1;
       this.totalNumberInBatch = recordsInBatch.length;
@@ -297,6 +343,8 @@ export default {
       const response = await this.getPenRequestsFromApi(params);
       if(response.data && response.data.content) {
         this.prbStudent = formatPrbStudent(response.data.content[0]);
+        this.setModalStudentFromPrbStudent(this.prbStudent);
+        this.prbStudentCopy = deepCloneObject(this.prbStudent);
         if(this.seqNumberInBatch < 1 || this.seqNumberInBatch > this.totalNumberInBatch || (this.seqNumberInBatch === 1 && this.seqNumber === 1)) {
           const penRequestInBatchResp = await this.retrievePenRequestsInBatch(this.prbStudent.penRequestBatchID);
           if(penRequestInBatchResp.data) {
@@ -418,6 +466,92 @@ export default {
         .finally(() => {
           this.loading = false;
         });
+    },
+    openSearchDemographicsModal() {
+      this.setModalStudentFromPrbStudent(this.prbStudent);
+      this.dialog = true;
+    },
+    closeDialog() {
+      this.dialog = false;
+      // cancel reverts the request to original state.
+      this.prbStudent = deepCloneObject(this.prbStudentCopy);
+    },
+    isFieldReadOnly() {
+      return false;
+    },
+    async updateStudentAndRunPenMatch(studentModified) {
+      this.prbStudent = deepCloneObject(studentModified);
+      this.prbStudent.postalCode = this.prbStudent.postalCode? formatPostalCode(this.prbStudent.postalCode):'';
+      this.prbStudent.dob = formatDob(this.prbStudent.dob,'uuuuMMdd','uuuu/MM/dd');
+      await Promise.all([this.runDemogValidation(), this.runPenMatch()]);
+    },
+    async loadPossibleMatchesFromBatchAPI(){
+      this.isLoadingMatches = true;
+      this.showPossibleMatch = false;
+      const params = {
+        params: {
+          id: this.prbStudent.penRequestBatchID,
+          studentId: this.prbStudent.penRequestBatchStudentID
+        }
+      };
+      try{
+        const result = await ApiService.apiAxios.get(Routes.penRequestBatch.MATCH_OUTCOME_URL, params);
+        this.possibleMatches = result.data;
+      }catch (e){
+        console.log(e);
+        this.setFailureAlert('Error in retrieving possible matches from batch api.');
+      }finally {
+        this.isLoadingMatches = false;
+        this.showPossibleMatch = true;
+      }
+    },
+    async runPenMatch() {
+      this.isLoadingMatches = true;
+      this.showPossibleMatch = false;
+      this.possibleMatches = [];
+      try {
+        const result = await getPossibleMatches(constructPenMatchObjectFromStudent(this.modalStudent));
+        console.log(result);
+        this.isIssuePenDisabled = false;
+        this.showPossibleMatch = true;
+        this.possibleMatches = result.data;
+        this.prbStudent.penRequestBatchStudentStatusCode = this.getPrbStatusCodeFromPenMatchStatus(result.penStatus);
+      } catch (error) {
+        console.log(error);
+        this.requestFailed = true;
+        this.setFailureAlert('PEN Match API call failed, please try again.');
+      } finally {
+        this.isLoadingMatches = false;
+      }
+    },
+    isFieldValueUpdated(fieldName) {
+      return this.prbStudent[fieldName] !== this.prbStudentCopy[fieldName];
+    },
+    async runDemogValidation() {
+      try {
+        const payload = {
+          student: {
+            ...this.modalStudent
+          }
+        };
+        const result = await getDemogValidationResults(payload);
+        return result.length > 0;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    setModalStudentFromPrbStudent(prbStudent){
+      this.modalStudent = deepCloneObject(prbStudent);
+      this.modalStudent.mincode = this.modalStudent.minCode?.replaceAll(' ',''); // since the modal component is generic and expects mincode to be all lowercase.
+      this.modalStudent.postalCode = this.modalStudent.postalCode?.replaceAll(' ','');
+      this.modalStudent.dob = formatDob(this.modalStudent.dob,'uuuu/MM/dd','uuuuMMdd');
+    },
+    //TODO need to find out when we implement validation in next story, which other status maps to what and may be update it to get from a MAP.
+    getPrbStatusCodeFromPenMatchStatus(penStatus) {
+      if (penStatus === 'D1') {
+        return 'MATCHEDSYS';
+      }
+      return '';
     }
   }
 };
@@ -512,4 +646,7 @@ export default {
     font-size: inherit;
   }
 
+  .mark-field-value-changed {
+    color: #2E8540;
+  }
 </style>

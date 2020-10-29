@@ -171,6 +171,9 @@ export default {
     compare() {
       //TODO
     },
+    refresh(){
+
+    },
     demogValuesMatch(valueType, value) {
       switch (valueType) {
         case 'postalCode':
