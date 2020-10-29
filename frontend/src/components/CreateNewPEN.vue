@@ -111,6 +111,7 @@
 
             <SearchDemographicModal @closeDialog="closeDialog" @updateStudent="updateStudent" :dialog="dialog"
                                     :is-field-read-only="isFieldReadOnly"
+                                    :is-mincode-hidden="false"
                                     :student-data="studentCopy"></SearchDemographicModal>
             <v-row v-if="isLoadingMatches">
               <v-container fluid class="full-height">
@@ -148,6 +149,7 @@ import {mapGetters} from "vuex";
 import ApiService from "../common/apiService";
 import {Routes} from "@/utils/constants";
 import {formatDob, formatMinCode} from '@/utils/format';
+import {constructPenMatchObjectFromStudent, getPossibleMatches} from '@/utils/common';
 import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import AlertMessage from '../components/util/AlertMessage';
 
@@ -249,59 +251,21 @@ export default {
       this.isLoadingMatches = true;
       this.showPossibleMatch = false;
       this.possibleMatches = [];
-      const penMatch = {
-        surname: this.student.legalLastName,
-        givenName: this.student.legalFirstName,
-        middleName: this.student.legalMiddleNames,
-        usualSurname: this.student.usualLastName,
-        usualGiven: this.student.usualFirstName,
-        usualMiddleName: this.student.usualMiddleNames,
-        dob: this.student.dob,
-        sex: this.student.genderCode,
-        enrolledGradeCode: this.student.gradeCode,
-        mincode: this.student.mincode,
-        postal: this.student.postalCode
-      };
-      ApiService.apiAxios.post('api/penMatches/', penMatch)
-          .then(response => {
-            if (response.data && response.data.matchingRecords && response.data.matchingRecords.length > 0) {
-              const studentIDs = response.data.matchingRecords.map((matchingRecord) => {
-                return matchingRecord.studentID
-              }).join();
-              const params = {
-                params: {
-                  studentIDs: studentIDs
-                }
-              };
-              ApiService.apiAxios.get(Routes.student.GET_ALL_STUDENTS_BY_IDS, params)
-                  .then(result => {
-                    this.isIssuePenDisabled = false;
-                    this.showPossibleMatch = true;
-                    this.possibleMatches = result.data;
-                  })
-                  .catch(error => {
-                    console.log(error);
-                    this.requestFailed = true;
-                  })
-                  .finally(() => {
-                    this.isLoadingMatches = false;
-                  })
-            } else {
-              this.isIssuePenDisabled = false;
-              this.showPossibleMatch = true;
-              this.possibleMatches = [];
-              this.isLoadingMatches = false;
-            }
-          })
-          .catch(error => {
-            console.log(error.message);
-            if (error.message && error.message.includes('401')) {
-              this.$router.push('/session-expired');
-            }
-            this.requestFailed = true;
-            this.isLoadingMatches = false;
-            this.setFailureAlert('PEN Match API call failed, please try again.');
-          });
+      try {
+        const result = await getPossibleMatches(constructPenMatchObjectFromStudent(this.student));
+        this.isIssuePenDisabled = false;
+        this.showPossibleMatch = true;
+        this.possibleMatches = result.data;
+      } catch (error) {
+        console.log(error);
+        if (error.message && error.message.includes('401')) {
+          await this.$router.push('/session-expired');
+        }
+        this.requestFailed = true;
+        this.setFailureAlert('PEN Match API call failed, please try again.');
+      } finally {
+        this.isLoadingMatches = false;
+      }
     }
   }
 };

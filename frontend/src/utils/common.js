@@ -1,7 +1,9 @@
 'use strict';
 import ApiService from "../common/apiService";
 import {Routes} from "@/utils/constants";
+
 const clone = require('rfdc')();
+
 export function constructPenMatchObjectFromStudent(student) {
   return {
     surname: student.legalLastName,
@@ -17,7 +19,8 @@ export function constructPenMatchObjectFromStudent(student) {
     postal: student.postalCode
   };
 }
-export function getPossibleMatches(penMatch){
+
+export function getPossibleMatches(penMatch) {
   return new Promise((resolve, reject) => {
     ApiService.apiAxios.post('api/penMatches/', penMatch)
       .then(response => {
@@ -32,7 +35,10 @@ export function getPossibleMatches(penMatch){
           };
           ApiService.apiAxios.get(Routes.student.GET_ALL_STUDENTS_BY_IDS, params)
             .then(result => {
-              resolve(result.data);
+              resolve({
+                penStatus: response.data.penStatus,
+                data: result.data
+              });
             })
             .catch(error => {
               reject(error);
@@ -48,6 +54,18 @@ export function getPossibleMatches(penMatch){
 
 }
 
-export function deepCloneObject(objectToBeCloned){
+export function deepCloneObject(objectToBeCloned) {
   return clone(objectToBeCloned);
+}
+
+export function getDemogValidationResults(student) {
+  return new Promise((resolve, reject) => {
+    ApiService.apiAxios.post(Routes.penServices.VALIDATE_DEMOGRAPHICS, student)
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
 }

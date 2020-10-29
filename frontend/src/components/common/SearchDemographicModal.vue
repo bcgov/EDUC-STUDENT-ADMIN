@@ -33,16 +33,20 @@
                   <v-col cols="3">
                     <v-text-field outlined dense filled
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
-                                  :rules="validateLegalLastName()" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
+                                  :rules="validateLegalLastName()"
+                                  :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
                                   required tabindex="1"
+                                  clearable
                                   v-model="student.legalLastName"></v-text-field>
                   </v-col>
                   <v-spacer/>
                   <v-col cols="3">
                     <v-text-field outlined dense filled
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
-                                  :rules="validateLegalFirstName()" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
+                                  :rules="validateLegalFirstName()"
+                                  :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
                                   tabindex="2"
+                                  clearable
                                   v-model="student.legalFirstName"></v-text-field>
                   </v-col>
                   <v-spacer/>
@@ -50,6 +54,7 @@
                     <v-text-field outlined dense filled
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
                                   tabindex="3" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
+                                  clearable
                                   v-model="student.legalMiddleNames"></v-text-field>
                   </v-col>
                   <v-spacer/>
@@ -67,6 +72,7 @@
                     <v-text-field outlined dense filled
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
                                   tabindex="4" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
+                                  clearable
                                   v-model="student.usualLastName"></v-text-field>
                   </v-col>
                   <v-spacer/>
@@ -74,6 +80,7 @@
                     <v-text-field outlined dense filled
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
                                   tabindex="5" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
+                                  clearable
                                   v-model="student.usualFirstName"></v-text-field>
                   </v-col>
                   <v-spacer/>
@@ -81,6 +88,7 @@
                     <v-text-field outlined dense filled
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
                                   tabindex="6" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
+                                  clearable
                                   v-model="student.usualMiddleNames"></v-text-field>
                   </v-col>
                   <v-spacer/>
@@ -89,7 +97,7 @@
                   <v-col cols="3"><Strong>Gender</Strong></v-col>
                   <v-spacer/>
                   <v-col cols="3"><strong>Birth Date
-                    <v-btn icon class="" title="YYYY/MM/DD">
+                    <v-btn icon class="" title="YYYYMMDD">
                       <v-icon color="#2196f3">
                         info
                       </v-icon>
@@ -104,13 +112,14 @@
                     <v-text-field outlined dense filled :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
                                   :rules="validateGender()" maxlength="1"
                                   tabindex="7" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
+                                  clearable
                                   v-model="student.genderCode"></v-text-field>
                   </v-col>
                   <v-spacer/>
                   <v-col cols="3">
                     <v-text-field outlined dense filled :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.DOB)"
-                                  :rules="validateDOB()" maxlength="10"
-                                  :onkeyup="fillDOBSlashes()"
+                                  :rules="validateDOB()" maxlength="8"
+                                  clearable
                                   tabindex="8"
                                   v-model="student.dob"></v-text-field>
                   </v-col>
@@ -119,6 +128,7 @@
                     <v-text-field outlined dense filled :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
                                   :rules="validateGradeCode()" maxlength="2"
                                   tabindex="9" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
+                                  clearable
                                   v-model="student.gradeCode"></v-text-field>
                   </v-col>
                   <v-spacer/>
@@ -126,7 +136,7 @@
                 <v-row dense no-gutters>
                   <v-col cols="3"><Strong>Postal Code</Strong></v-col>
                   <v-spacer/>
-                  <v-col cols="3"><strong>Mincode</strong></v-col>
+                  <v-col  v-if="!isMincodeHidden" cols="3"><strong>Mincode</strong></v-col>
                   <v-spacer/>
                   <v-col cols="3"></v-col>
                   <v-spacer/>
@@ -134,14 +144,16 @@
                 <v-row dense>
                   <v-col cols="3">
                     <v-text-field outlined dense filled :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
-                                  :rules="validatePostalCode()"
+                                  :rules="validatePostalCode()" maxlength="6"
                                   tabindex="10" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
+                                  clearable
                                   v-model="student.postalCode"></v-text-field>
                   </v-col>
                   <v-spacer/>
-                  <v-col cols="3">
+                  <v-col v-if="!isMincodeHidden" cols="3">
                     <v-text-field outlined dense filled :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.MINCODE)"
                                   :rules="validateMincode()" maxlength="8" minlength="8"
+                                  clearable
                                   tabindex="11"
                                   v-model="student.mincode"></v-text-field>
                   </v-col>
@@ -197,6 +209,10 @@ export default {
     isFieldReadOnly: {
       type: Function,
       required: true,
+    },
+    isMincodeHidden:{
+      type: Boolean,
+      required: true
     }
   },
   data() {
@@ -269,7 +285,7 @@ export default {
       if (!this.student.dob) {
         return ['Birth Date is Required.'];
       }
-      if (!isValidDOBAndAfter1900(this.student.dob)) {
+      if (!isValidDOBAndAfter1900(this.student.dob,'uuuuMMdd')) {
         return ['Invalid Birth Date.'];
       }
     },
