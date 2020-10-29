@@ -18,7 +18,7 @@
     >
       {{ alertMessage }}
     </v-alert>
-    <div v-if="!loading && prbStudent" style="width: 100%" :overlay=false>
+    <div v-if="!loading && prbStudent" style="width: 100%;" :overlay=false>
       <div class="sticky full-width px-8">
       <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center" style="background-color:white;">
         <span class="mr-4 batch-title">
@@ -58,7 +58,7 @@
       </v-row>
       <v-divider class="mb-1 subheader-divider"/>
       <v-row no-gutters class="py-2" style="background-color:white;">
-        <div style="width: 100%" :overlay="false">
+        <div style="width: 100%;" :overlay="false">
           <v-data-table
             id="top-table"
             class="details-table mb-3"
@@ -525,7 +525,10 @@ export default {
       }
     },
     isFieldValueUpdated(fieldName) {
-      return this.prbStudent[fieldName] !== this.prbStudentCopy[fieldName];
+      if(fieldName){
+        return this.prbStudent[fieldName]?.toLowerCase() !== this.prbStudentCopy[fieldName]?.toLowerCase();
+      }
+      return false;
     },
     async runDemogValidation() {
       try {
@@ -551,7 +554,7 @@ export default {
       if (penStatus === 'D1') {
         return 'MATCHEDSYS';
       }
-      return '';
+      return 'FIXABLE';
     }
   }
 };
@@ -581,21 +584,6 @@ export default {
 
   .details-table /deep/ table > tbody > tr > td {
     height: 1.5rem;
-  }
-
-  .details-table /deep/ table th:nth-child(1) {
-    width: 3%;
-  }
-  .details-table /deep/ table th:nth-child(3),
-  .details-table /deep/ table th:nth-child(4),
-  .details-table /deep/ table th:nth-child(5) {
-    width: 19%;
-  }
-  .details-table /deep/ table th:nth-child(2),
-  .details-table /deep/ table th:nth-child(6),
-  .details-table /deep/ table th:nth-child(7),
-  .details-table /deep/ table th:nth-child(8) {
-    width: 10%;
   }
 
   .details-table /deep/ table > tbody > tr:hover {
@@ -648,5 +636,47 @@ export default {
 
   .mark-field-value-changed {
     color: #2E8540;
+  }
+
+  @media screen and (max-width: 1300px) {
+    .details-table /deep/ table tr:nth-child(1),
+    .details-table /deep/ table th:nth-child(1) {
+      width: 3%;
+    }
+    .details-table /deep/ table tr:nth-child(3),
+    .details-table /deep/ table tr:nth-child(4),
+    .details-table /deep/ table tr:nth-child(5),
+    .details-table /deep/ table th:nth-child(3),
+    .details-table /deep/ table th:nth-child(4),
+    .details-table /deep/ table th:nth-child(5) {
+      width: 17.2%;
+    }
+    .details-table /deep/ table tr:nth-child(2),
+    .details-table /deep/ table tr:nth-child(6),
+    .details-table /deep/ table tr:nth-child(7),
+    .details-table /deep/ table tr:nth-child(8),
+    .details-table /deep/ table th:nth-child(2),
+    .details-table /deep/ table th:nth-child(6),
+    .details-table /deep/ table th:nth-child(7),
+    .details-table /deep/ table th:nth-child(8) {
+      width: 10%;
+    }
+  }
+
+  @media screen and (min-width: 1301px) {
+    .details-table /deep/ table th:nth-child(1) {
+      width: 2%;
+    }
+    .details-table /deep/ table th:nth-child(3),
+    .details-table /deep/ table th:nth-child(4),
+    .details-table /deep/ table th:nth-child(5) {
+      width: 16.8%;
+    }
+    .details-table /deep/ table th:nth-child(2),
+    .details-table /deep/ table th:nth-child(6),
+    .details-table /deep/ table th:nth-child(7),
+    .details-table /deep/ table th:nth-child(8) {
+      width: 10%;
+    }
   }
 </style>
