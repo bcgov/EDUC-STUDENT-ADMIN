@@ -258,9 +258,6 @@ export default {
         this.possibleMatches = result.data;
       } catch (error) {
         console.log(error);
-        if (error.message && error.message.includes('401')) {
-          await this.$router.push('/session-expired');
-        }
         this.requestFailed = true;
         this.setFailureAlert('PEN Match API call failed, please try again.');
       } finally {
