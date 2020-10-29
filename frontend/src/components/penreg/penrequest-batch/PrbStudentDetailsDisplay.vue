@@ -141,7 +141,6 @@
                               :is-pen-link="true"
                               :is-refresh-required="true"
                               :possible-match="possibleMatches"></PenMatchResultsTable>
-        <!--<MatchOutcome :prbStudent="prbStudent"></MatchOutcome>-->
       </v-row>
     </div>
   </v-container>
@@ -162,7 +161,6 @@ import {
 } from '@/utils/constants';
 import {cloneDeep, isEmpty, sortBy, uniq} from 'lodash';
 import alterMixin from '../../../mixins/alterMixin';
-import MatchOutcome from './prb-student-details/MatchOutcome';
 import SearchDemographicModal from "@/components/common/SearchDemographicModal";
 import PenMatchResultsTable from "@/components/common/PenMatchResultsTable";
 import {
@@ -176,7 +174,6 @@ import {formatDob, formatPostalCode} from "@/utils/format";
 export default {
   name: 'PrbStudentDetailsDisplay',
   components: {
-    MatchOutcome,
     PrimaryButton,
     PrbStudentStatusChip,
     InfoDialog,
