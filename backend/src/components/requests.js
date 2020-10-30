@@ -406,7 +406,7 @@ async function postRequestComment(req, requestType, createCommentApiServiceReq) 
     //mapping from what comment widget needs to what the comments api needs
     const request = createCommentApiServiceReq(req, userToken);
 
-    const commentResponse = await postData(token, config.get(`server:${requestType}:rootURL`) + '/' + req.params.id + '/comments', request, userToken['idir_username']);
+    const commentResponse = await postData(token, config.get(`server:${requestType}:rootURL`) + '/' + req.params.id + '/comments', request,null, userToken['idir_username']);
     const readableTime = utils.formatCommentTimestamp(commentResponse.commentTimestamp);
     return {
       content: commentResponse.commentContent,
@@ -567,7 +567,7 @@ async function updateStudentAndDigitalId(req) {
       studentBody.studentID = studentAndDigitalIdResponse[0].studentID;
       studentResponse = await putData(token, config.get('server:student:rootURL'), studentBody, utils.getUser(req).idir_username);
     } else if (Array.isArray(studentAndDigitalIdResponse) && !studentAndDigitalIdResponse.length) {
-      studentResponse = await postData(token, config.get('server:student:rootURL'), studentBody, utils.getUser(req).idir_username);
+      studentResponse = await postData(token, config.get('server:student:rootURL'), studentBody, null, utils.getUser(req).idir_username);
     } else {
       log.error('Failed to create student record. Invalid response data from student api, there should not be more than one student with the same pen. Complete pen transaction will be out of sync. Student record still needs to be created.');
     }
