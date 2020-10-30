@@ -56,7 +56,7 @@ async function rejectProfileRequest(req, res) {
 
 async function executeProfReqSaga(token, url, profileRequest, res, sagaType, user) {
   try {
-    const sagaId = await utils.postData(token, url, profileRequest, user);
+    const sagaId = await utils.postData(token, url, profileRequest, null, user);
     const event = {
       sagaId: sagaId,
       studentRequestID: profileRequest.studentProfileRequestID, //DONT change the key it will break the check during getAllRequests or getRequestById in requests.js

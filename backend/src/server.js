@@ -106,6 +106,5 @@ process.on('SIGTERM', () => {
 module.exports = {
   normalizePort,
   onError,
-  onListening,
   server
 };

@@ -55,7 +55,7 @@ function updateForRejectAndReturn(penRequest, userToken, req) {
 
 async function executePenReqSaga(token, url, penRequest, res, sagaType, user) {
   try {
-    const sagaId = await postData(token, url, penRequest, user);
+    const sagaId = await postData(token, url, penRequest,null, user);
     const event = {
       sagaId: sagaId,
       penRequestID: penRequest.penRetrievalRequestID || penRequest.penRequestID,
