@@ -301,15 +301,15 @@
             <v-row>
               <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000"></AlertMessage>
             </v-row>
-            <slot 
-              name="buttonbar"
-              :isAdvancedSearch="isAdvancedSearch"
-              :hasAnyEdits="hasAnyEdits"
-              :saveStudent="saveStudent"
-              :REQUEST_TYPES="REQUEST_TYPES">
-            </slot>
           </v-card>
         </v-col>
+        <slot 
+          name="buttonbar"
+          :isAdvancedSearch="isAdvancedSearch"
+          :hasAnyEdits="hasAnyEdits"
+          :saveStudent="saveStudent"
+          :REQUEST_TYPES="REQUEST_TYPES">
+        </slot>
       </v-row>
       <v-row fluid class="full-height align-center justify-center" v-else-if="isLoading">
         <article id="pen-display-container" class="top-banner full-height">

@@ -15,6 +15,11 @@
 <script>
 export default {
   name: 'AlertMessage',
+  data() {
+    return {
+      intervalID: null,
+    };
+  },
   props: {
     alertMessage: {
       type: String,
@@ -45,8 +50,9 @@ export default {
   watch: {
     displayAlert() {
       if(this.displayAlert && this.timeoutMs) {
-        window.setInterval(() => {
+        this.intervalID = window.setInterval(() => {
           this.displayAlert = false;
+          window.clearInterval(this.intervalID);
         }, this.timeoutMs);
       }
     }

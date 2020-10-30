@@ -4,11 +4,24 @@
           v-model="openDialog"
           content-class="studentDialog">
     <v-card class="studentDetailDialogCard fill-height ma-0 pa-4">
+        <v-list-item>
+          <v-list-item-content style="padding-bottom: 0px">
+            <v-list-item-title class="headline">Student Details</v-list-item-title>
+          </v-list-item-content>
+          <v-list-item-icon>
+            <v-btn text icon @click="$emit('closeDialog')">
+              <v-icon large color="#38598A">mdi-close</v-icon>
+            </v-btn>
+          </v-list-item-icon>
+        </v-list-item>
         <v-col>
         <StudentDetailCommon 
             class="mx-3"
             :studentID="studentID">
             <template v-slot:buttonbar>
+              <v-col class="subheader-divider-col">
+                <v-divider class="subheader-divider"/>
+              </v-col>
               <v-col cols="12">
                 <v-card-actions style="float: right;">
                   <PrimaryButton :secondary="true" class="mx-1" text="Cancel"></PrimaryButton>
@@ -59,6 +72,14 @@ export default {
 </script>
 
 <style>
+.subheader-divider {
+  border-width: 0.25ex 0 0 0;
+}
+
+.subheader-divider-col {
+  padding: 1px;
+}
+
 .topMenu {
   display: flex;
   align-items: center;
@@ -68,6 +89,7 @@ export default {
 .studentDialog{
   max-height: 100% !important;
   max-width: 1024px;
+  font-size: 14px;
 }
 
 .studentDetailDialogCard {

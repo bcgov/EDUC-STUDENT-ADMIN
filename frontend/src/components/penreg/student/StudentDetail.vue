@@ -2,7 +2,7 @@
     <v-form ref="studentDetailForm" id="detailStudentForm"
             v-model="validForm" class="fill-height"
     >
-      <v-container class="fill-height ma-0 pa-0">
+      <v-container class="fill-height ma-0 pa-2">
 
         <v-col cols="12" class="fill-height ma-0 pa-0">
           <v-row>
