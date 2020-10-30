@@ -357,6 +357,7 @@ const utils = {
       if (req && req.session) {
         log.debug('req.session.cookie.maxAge before is ::', req.session.cookie.maxAge);
         req['session'].touch();
+        // NOSONAR
         req['session'].tempSessionExtensionIdentifier = Math.random(); // DO NOT USE this key anywhere else in session.
         log.debug('req.session.cookie.maxAge after is ::', req.session.cookie.maxAge);
         return next();
