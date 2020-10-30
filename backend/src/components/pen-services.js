@@ -11,7 +11,7 @@ async function validateStudentDemogData(req, res) {
     const student = req.body.student;
     student.isInteractive = true;
     student.transactionID = uuidv4();
-    const dataResponse = await postData(token, config.get('server:penServices:validateDemographicsURL'), student, null, true);
+    const dataResponse = await postData(token, config.get('server:penServices:validateDemographicsURL'), student, null);
     return res.status(200).json(dataResponse);
 
   } catch (e) {

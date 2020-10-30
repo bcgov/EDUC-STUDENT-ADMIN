@@ -5,16 +5,14 @@ const config = require('../config/index');
 const utils = require('./utils');
 const redisUtil = require('../util/redis/redis-utils');
 const HttpStatus = require('http-status-codes');
+const commonRequest = require('./requests');
+
+
+
 function createStudentRequestApiServiceReq(studentRequest, req) {
   //studentRequest.pen = req.body.pen;
   studentRequest.studentRequestStatusCode = req.body.studentRequestStatusCode;
-  studentRequest.reviewer = req.body.reviewer;
-  studentRequest.failureReason = req.body.failureReason;
-  studentRequest.completeComment = req.body.completeComment;
-  if(req.body.statusUpdateDate) {
-    studentRequest.statusUpdateDate = req.body.statusUpdateDate;
-  }
-
+  commonRequest.setDefaultsForCreateApiReq(studentRequest, req);
   return studentRequest;
 }
 
@@ -43,12 +41,8 @@ async function getUMPRequestStats(req, res) {
 }
 
 function updateForRejectAndReturn(studentRequest, userToken, req) {
-  studentRequest.reviewer = req.body.reviewer;
   studentRequest.studentProfileRequestID = req.params.id || req.body.studentRequestID;
-  studentRequest.staffMemberIDIRGUID = userToken['preferred_username'].toUpperCase();
-  studentRequest.staffMemberName = userToken['idir_username'];
-  studentRequest.email = req['session'].penRequest['email'];
-  studentRequest.identityType = req['session'].identityType;
+  commonRequest.setDefaultsInRequestForRejectAndReturn(studentRequest, req, userToken);
 }
 
 async function rejectProfileRequest(req, res) {
@@ -57,12 +51,12 @@ async function rejectProfileRequest(req, res) {
   profileRequest.rejectionReason = req.body.failureReason;
   updateForRejectAndReturn(profileRequest, userToken, req);
   const url = `${config.get('server:profileSagaAPIURL')}/student-profile-reject-saga`;
-  return await executeProfReqSaga(utils.getBackendToken(req), url, profileRequest, res, 'reject');
+  return await executeProfReqSaga(utils.getBackendToken(req), url, profileRequest, res, 'reject', userToken['idir_username']);
 }
 
-async function executeProfReqSaga(token, url, profileRequest, res, sagaType) {
+async function executeProfReqSaga(token, url, profileRequest, res, sagaType, user) {
   try {
-    const sagaId = await utils.postData(token, url, profileRequest);
+    const sagaId = await utils.postData(token, url, profileRequest, user);
     const event = {
       sagaId: sagaId,
       studentRequestID: profileRequest.studentProfileRequestID, //DONT change the key it will break the check during getAllRequests or getRequestById in requests.js
@@ -87,8 +81,10 @@ async function returnProfileRequest(req, res) {
   profileRequest.commentTimestamp = LocalDateTime.now().toString().substr(0, 19);
   updateForRejectAndReturn(profileRequest, userToken, req);
   const url = `${config.get('server:profileSagaAPIURL')}/student-profile-return-saga`;
-  return await executeProfReqSaga(utils.getBackendToken(req), url, profileRequest, res, 'return');
+  return await executeProfReqSaga(utils.getBackendToken(req), url, profileRequest, res, 'return', userToken['idir_username']);
 }
+
+
 
 async function completeProfileRequest(req, res) {
   let thisSession = req['session'];
@@ -98,25 +94,11 @@ async function completeProfileRequest(req, res) {
   }
 
   const profileRequest = {};
-  profileRequest.digitalID = thisSession.penRequest.digitalID;
   profileRequest.studentProfileRequestID = req.body.studentRequestID;
   profileRequest.pen = thisSession.studentDemographics.pen;
-  profileRequest.legalFirstName = thisSession.studentDemographics['studGiven'];
-  profileRequest.legalMiddleNames = thisSession.studentDemographics['studMiddle'];
-  profileRequest.legalLastName = thisSession.studentDemographics['studSurname'];
-  profileRequest.dob = thisSession.studentDemographics['dob'];
-  profileRequest.sexCode = thisSession.studentDemographics['studSex'];
-  profileRequest.genderCode = thisSession.studentDemographics['studSex'];
-  profileRequest.usualFirstName = thisSession.studentDemographics['usualGiven'];
-  profileRequest.usualMiddleNames = thisSession.studentDemographics['usualMiddle'];
-  profileRequest.usualLastName = thisSession.studentDemographics['usualSurname'];
-  profileRequest.email = thisSession.penRequest.email;
-  profileRequest.emailVerified = thisSession.penRequest.emailVerified;
-  profileRequest.reviewer = req.body.reviewer;
-  profileRequest.completeComment = req.body.completeComment;
-  profileRequest.identityType = thisSession.identityType;
+  commonRequest.setDefaultsInRequestForComplete(profileRequest, thisSession, req);
   const url = `${config.get('server:profileSagaAPIURL')}/student-profile-complete-saga`;
-  return await executeProfReqSaga(utils.getBackendToken(req), url, profileRequest, res, 'complete');
+  return await executeProfReqSaga(utils.getBackendToken(req), url, profileRequest, res, 'complete', req.body.reviewer);
 }
 module.exports = {
   createStudentRequestApiServiceReq,

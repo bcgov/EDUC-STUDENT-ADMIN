@@ -19,7 +19,7 @@ async function updateStudent(req, res) {
     const student = req.body.student;
     student.createDate = null;
     student.updateDate = null;
-    const result = await putData(token, config.get('server:student:rootURL') + '/', student);
+    const result = await putData(token, config.get('server:student:rootURL') + '/', student, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'saveStudent', 'Error occurred while attempting to save a student.');
@@ -120,7 +120,7 @@ async function createNewStudent(req, res) {
     student.pen = penNumber;
     student.createDate = null;
     student.updateDate = null;
-    const result = await postData(token, config.get('server:student:rootURL') + '/', student);
+    const result = await postData(token, config.get('server:student:rootURL') + '/', student, utils.getUser(req).idir_username);
     delete req.session.create_new_student_transactionID; // delete it when student is created successfully.
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
