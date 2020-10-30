@@ -399,11 +399,11 @@ export default {
     },
     validForm: {
       type: Boolean,
-      required: true
+      required: false
     },
     parentRefs: {
       type: Object,
-      required: true
+      required: false
     }
   },
   components: {

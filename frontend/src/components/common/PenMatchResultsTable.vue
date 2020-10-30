@@ -35,33 +35,37 @@
               <td v-for="header in props.headers" :key="header.id" :class="header.id">
                 <v-checkbox v-if="header.type" class="pl-3" color="#606060" @change="props.select($event)"></v-checkbox>
                 <div v-else class="tableCell">
-                  <router-link class="pen-link" to="" v-if="header.topValue==='pen' && isPenLink">
-                  <span
-                      :class="['top-column-item', 'pen-link', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
-                    {{ formatPen(props.item[header.topValue]) }}
-                  </span>
-                  </router-link>
+                  <a class="pen-link" @click="popStudentDialog(props.item['studentID'])" v-if="header.topValue==='pen' && isPenLink">
+                    <span
+                        :class="['top-column-item', 'pen-link', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
+                      {{ formatPen(props.item[header.topValue]) }}
+                    </span>
+                    <StudentDetailModal  
+                      :studentID="props.item['studentID']"
+                      :openDialog="openStudentDialog"
+                    ></StudentDetailModal>
+                  </a>
                   <span v-else-if="header.topValue==='pen'"
                       :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
                     {{ formatPen(props.item[header.topValue]) }}
                   </span>
                   <span v-else-if="header.topValue==='mincode'"
                         :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
-                  {{ formatMinCode(props.item[header.topValue]) }}
-                </span>
+                        {{ formatMinCode(props.item[header.topValue]) }}
+                  </span>
                   <span v-else
                         :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
-                  {{ props.item[header.topValue] }}
-                </span>
+                        {{ props.item[header.topValue] }}
+                  </span>
                   <span
                       :class="['double-column-item', props.item[header.doubleValue] && demogValuesMatch(header.doubleValue, props.item[header.doubleValue])? 'font-weight-bold':'']">
-                  {{ props.item[header.doubleValue] }}
-                </span>
+                      {{ props.item[header.doubleValue] }}
+                  </span>
                   <br>
                   <span
                       :class="['bottom-column-item', props.item[header.bottomValue] && demogValuesMatch(header.bottomValue, props.item[header.bottomValue])? 'font-weight-bold':'']">
-                  {{ props.item[header.bottomValue] }}
-                </span>
+                      {{ props.item[header.bottomValue] }}
+                  </span>
                 </div>
               </td>
             </tr>
@@ -76,12 +80,14 @@
 <script>
 
 import TertiaryButton from '../util/TertiaryButton';
+import StudentDetailModal from '../penreg/student/StudentDetailModal';
 import {formatPen, formatMinCode} from '@/utils/format';
 
 export default {
   name: 'PenMatchResultsTable.vue',
   components: {
-    TertiaryButton: TertiaryButton
+    TertiaryButton,
+    StudentDetailModal
   },
   props: {
     student: {
@@ -108,6 +114,7 @@ export default {
   },
   data() {
     return {
+      openStudentDialog: false,
       matchesExpanded: true,
       headers: [
         {id: 'table-checkbox', type: 'select', sortable: false},
@@ -167,7 +174,10 @@ export default {
     }
   },
   methods: {
-
+    popStudentDialog(studentID){
+      console.log('stud: ' + studentID);
+      this.openStudentDialog = true;
+    },
     compare() {
       //TODO
     },
@@ -176,20 +186,20 @@ export default {
     },
     demogValuesMatch(valueType, value) {
       switch (valueType) {
-        case 'postalCode':
-          return this.student?.postalCode?.replace(' ','') === value?.replace(' ',''); // match without space
-        case 'dob':
-          return this.student?.dob?.replace(/\D/g,'') === value?.replace(/\D/g,''); // match birth date without - or /
-        case 'mincode':
-          return this.student.mincode === value;
-        case 'pen':
-          if (this.student.assignedPEN) {
-            return this.student.assignedPEN === value;
-          } else {
-            return this.student.bestMatchPEN === value;
-          }
-        default:
-          return this.student[valueType] === value;
+      case 'postalCode':
+        return this.student?.postalCode?.replace(' ','') === value?.replace(' ',''); // match without space
+      case 'dob':
+        return this.student?.dob?.replace(/\D/g,'') === value?.replace(/\D/g,''); // match birth date without - or /
+      case 'mincode':
+        return this.student.mincode === value;
+      case 'pen':
+        if (this.student.assignedPEN) {
+          return this.student.assignedPEN === value;
+        } else {
+          return this.student.bestMatchPEN === value;
+        }
+      default:
+        return this.student[valueType] === value;
       }
     },
     formatPen,
@@ -242,6 +252,4 @@ export default {
   z-index: 6;
   background-color: #F2F2F2;
 }
-
-
 </style>
