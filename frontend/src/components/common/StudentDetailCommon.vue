@@ -1,7 +1,7 @@
 <template>
     <v-row>
       <v-row v-if="!isLoading">
-        <v-col cols="2" class="pr-6 pl-0 ma-0">
+        <v-col cols="3" class="pr-6 pl-0 ma-0">
           <v-card class="pa-2 ma-0" color="#D7D7D7" width="100%" elevation=0>
 
             <StudentDetailsTextFieldSideCardReadOnly :model="studentCopy.pen" :name="STUDENT_DETAILS_FIELDS.PEN"
@@ -52,7 +52,7 @@
                                     :disabled="isFieldDisabled('statusCode')"></StudentDetailsComboBox>
           </v-card>
         </v-col>
-        <v-col cols="10" class="py-0 pl-0">
+        <v-col cols="9" class="py-0 pl-0">
           <v-card class="pa-0" height="100%" width="100%" elevation=0>
 
             <StudentDetailsTextField max-length="255" :name="STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME" tab-index="1"
@@ -143,10 +143,10 @@
             <v-row no-gutters class="py-1">
               <v-col cols="2">
                 <div class="labelField">
-                  <div style="display: inline-block;vertical-align: middle;">
+                  <div style="display: inline-block;">
                     Date of Birth
                   </div>
-                  <div style="display: inline-block;vertical-align: sub;">
+                  <div style="display: inline-block">
                     <img title="YYYYMMDD" :class="{'ml-3': true, 'dob-disabled': isFieldDisabled(STUDENT_DETAILS_FIELDS.DOB)}"
                       src="@/assets/images/information.svg"
                       alt="YYYYMMDD"
@@ -872,6 +872,7 @@ export default {
 
 .textAreaColumn {
   display: table-cell;
+  height: 5em;
 }
 
 .sideCardField {
