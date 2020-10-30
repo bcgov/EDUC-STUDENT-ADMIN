@@ -40,10 +40,6 @@
                         :class="['top-column-item', 'pen-link', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
                       {{ formatPen(props.item[header.topValue]) }}
                     </span>
-                    <StudentDetailModal  
-                      :studentID="props.item['studentID']"
-                      :openDialog="openStudentDialog"
-                    ></StudentDetailModal>
                   </a>
                   <span v-else-if="header.topValue==='pen'"
                       :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
@@ -73,7 +69,11 @@
         </v-data-table>
       </v-col>
     </v-slide-y-transition>
-
+    <StudentDetailModal  
+      :studentID="currentStudentID"
+      :openDialog="openStudentDialog"
+      @closeDialog="closeDialog"
+    ></StudentDetailModal>
   </v-card>
 </template>
 
@@ -114,6 +114,7 @@ export default {
   },
   data() {
     return {
+      currentStudentID: null,
       openStudentDialog: false,
       matchesExpanded: true,
       headers: [
@@ -171,12 +172,15 @@ export default {
   watch: {
     possibleMatch(newValue) {
       this.studentPossibleMatches = newValue;
-    }
+    },
   },
   methods: {
     popStudentDialog(studentID){
-      console.log('stud: ' + studentID);
+      this.currentStudentID = studentID;
       this.openStudentDialog = true;
+    },
+    closeDialog(){
+      this.openStudentDialog = false;
     },
     compare() {
       //TODO

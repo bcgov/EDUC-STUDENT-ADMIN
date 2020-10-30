@@ -404,6 +404,10 @@ export default {
     parentRefs: {
       type: Object,
       required: false
+    },
+    fullReadOnly: {
+      type: Boolean,
+      required: true
     }
   },
   components: {
@@ -806,7 +810,7 @@ export default {
       return this.updatedDateTime;
     },
     isFieldDisabled(fieldName){
-      return !!this.enableDisableFieldsMap.get(fieldName);
+      return (!!this.enableDisableFieldsMap.get(fieldName) || this.fullReadOnly);
     },
     handleInput(fieldName){
       if(fieldName === STUDENT_DETAILS_FIELDS.POSTAL_CODE){
@@ -864,6 +868,7 @@ export default {
 .textFieldColumn {
   display: table-cell;
   height: 1rem;
+  margin-top: -2px;
 }
 
 .darkBackgound.v-text-field > .v-input__control > .v-input__slot {

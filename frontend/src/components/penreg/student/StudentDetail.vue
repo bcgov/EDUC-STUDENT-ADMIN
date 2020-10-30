@@ -2,7 +2,7 @@
     <v-form ref="studentDetailForm" id="detailStudentForm"
             v-model="validForm" class="fill-height"
     >
-      <v-container class="fill-height ma-0 pa-2">
+      <v-container class="fill-height ma-0 pa-2 studentDetail">
 
         <v-col cols="12" class="fill-height ma-0 pa-0">
           <v-row>
@@ -21,7 +21,8 @@
           <StudentDetailCommon 
               :studentID="studentID"
               :validForm="validForm"
-              :parentRefs="this.$refs">
+              :parentRefs="this.$refs"
+              :fullReadOnly="false">
               <template v-slot:buttonbar="{ isAdvancedSearch, hasAnyEdits, saveStudent, REQUEST_TYPES }">
                 <v-row no-gutters dense class="mt-n4">
                   <v-col cols="10">
@@ -69,6 +70,10 @@ export default {
 </script>
 
 <style>
+.studentDetail {
+  line-height: 1.2;
+}
+
 .topMenu {
   display: flex;
   align-items: center;

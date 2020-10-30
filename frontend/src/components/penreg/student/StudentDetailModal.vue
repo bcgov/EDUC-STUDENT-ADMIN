@@ -1,14 +1,15 @@
 <template>
   <v-dialog           
           id="studentDetailDialog"
-          v-model="openDialog"
+          v-model="isDialogOpen"
+          persistent
           content-class="studentDialog">
     <v-card class="studentDetailDialogCard fill-height ma-0 pa-4">
         <v-list-item>
-          <v-list-item-content style="padding-bottom: 0px">
+          <v-list-item-content style="padding-bottom: 0px; padding-top: 0px">
             <v-list-item-title class="headline">Student Details</v-list-item-title>
           </v-list-item-content>
-          <v-list-item-icon>
+          <v-list-item-icon style="margin: 0px;">
             <v-btn text icon @click="$emit('closeDialog')">
               <v-icon large color="#38598A">mdi-close</v-icon>
             </v-btn>
@@ -17,14 +18,15 @@
         <v-col>
         <StudentDetailCommon 
             class="mx-3"
-            :studentID="studentID">
+            :studentID="studentID"
+            :fullReadOnly="true">
             <template v-slot:buttonbar>
               <v-col class="subheader-divider-col">
                 <v-divider class="subheader-divider"/>
               </v-col>
               <v-col cols="12">
                 <v-card-actions style="float: right;">
-                  <PrimaryButton :secondary="true" class="mx-1" text="Cancel"></PrimaryButton>
+                  <PrimaryButton @click.native="$emit('closeDialog')" :secondary="true" class="mx-1" text="Cancel"></PrimaryButton>
                   <PrimaryButton class="mx-1" text="Go to Record"></PrimaryButton>
                   <PrimaryButton class="mx-1" text="Open in new window"></PrimaryButton>
                 </v-card-actions>
@@ -45,7 +47,7 @@ export default {
   props: {
     studentID: {
       type: String,
-      required: true
+      required: false
     },
     openDialog: {
       type: Boolean,
@@ -56,18 +58,16 @@ export default {
     PrimaryButton,
     StudentDetailCommon
   },
-  watch: {
-    openDialog: {
-      handler() {
-        console.log('Hello');
-      }
-    },
-  },
   data() {
     return {
-      
+      isDialogOpen: this.openDialog,
     };
   },
+  watch: {
+    openDialog(val) {
+      this.isDialogOpen = val;
+    }
+  }
 };
 </script>
 
@@ -88,8 +88,7 @@ export default {
 
 .studentDialog{
   max-height: 100% !important;
-  max-width: 1024px;
-  font-size: 14px;
+  max-width: 1200px;
 }
 
 .studentDetailDialogCard {
@@ -152,6 +151,18 @@ export default {
 .bolder {
   color: #000000 !important;
   font-weight: bolder;
+}
+
+.bolder > .v-input__control > .v-input__slot > .v-text-field__slot > input {
+  color: #000000 !important;
+}
+
+.gradeLabelColumn > .v-input > .v-input__control > .v-input__slot > .v-text-field__slot > input {
+  color: #000000 !important;
+}
+
+.bolder > .disabled > span {
+  color: #000000 !important;
 }
 
 .top-banner {
