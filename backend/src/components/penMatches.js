@@ -15,7 +15,7 @@ async function getPenMatch(req, res) {
     if(req.body.dob) {
       req.body.dob = req.body.dob.replace(/\//g, '');
     }
-    const dataResponse = await postData(token, config.get('server:penMatch:rootURL'), req.body, null, true);
+    const dataResponse = await postData(token, config.get('server:penMatch:rootURL'), req.body, null);
     return res.status(200).json(dataResponse);
 
   } catch (e) {

@@ -1,5 +1,5 @@
 'use strict';
-const { getBackendToken, getData, putData, logApiError } = require('./utils');
+const { getBackendToken, getData, putData, logApiError, getUser } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const file = require('./file');
@@ -93,7 +93,7 @@ function updateDocumentTypeById(requestType) {
         fileSize: documentMetaData.fileSize
       };
 
-      const documentRes = await putData(token, url, documentReq);
+      const documentRes = await putData(token, url, documentReq, getUser(req).idir_username);
       return res.status(200).json(documentRes);
     } catch(e) {
       logApiError(e, 'updateDocumentTypeById', 'Error updating a document.');
