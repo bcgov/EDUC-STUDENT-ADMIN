@@ -883,7 +883,7 @@ export default {
 .labelField {
   display: table-cell;
   height: 1em;
-  padding-top: 9px !important;
+  padding-top: 8px !important;
 }
 
 .customNoBorder.v-text-field > .v-input__control > .v-input__slot {
