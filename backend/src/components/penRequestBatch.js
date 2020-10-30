@@ -1,7 +1,7 @@
 'use strict';
 const { logApiError } = require('./utils');
 const config = require('../config/index');
-const { getBackendToken, getData, putData, errorResponse, getPaginatedListForSCGroups } = require('./utils');
+const { getBackendToken, getData, putData, errorResponse, getPaginatedListForSCGroups, getUser } = require('./utils');
 const {FILTER_OPERATION, CONDITION, VALUE_TYPE} = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 
@@ -79,7 +79,7 @@ async function updatePrbStudentInfoRequested(req, res) {
       penRequestBatchStudentStatusCode: req.body.penRequestBatchStudentStatusCode
     };
 
-    const studentRes = await putData(token, url, studentReq);
+    const studentRes = await putData(token, url, studentReq, getUser(req).idir_username);
     return res.status(200).json(studentRes);
   } catch(e) {
     logApiError(e, 'updateStudentInfoRequested', 'Error updating a PrbStudent.');

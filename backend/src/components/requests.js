@@ -383,7 +383,7 @@ async function sendRequestEmail(req, token, emailType, requestType) {
     }
   }
   try {
-    await postData(token, config.get(`server:${requestType}:emails`) + '/' + lowerCaseEmail, emailBody, params);
+    await postData(token, config.get(`server:${requestType}:emails`) + '/' + lowerCaseEmail, emailBody, params, utils.getUser(req).idir_username);
   } catch (e) {
     logApiError(e, 'sendRequestEmail', 'Error calling email service.');
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
@@ -406,7 +406,7 @@ async function postRequestComment(req, requestType, createCommentApiServiceReq) 
     //mapping from what comment widget needs to what the comments api needs
     const request = createCommentApiServiceReq(req, userToken);
 
-    const commentResponse = await postData(token, config.get(`server:${requestType}:rootURL`) + '/' + req.params.id + '/comments', request);
+    const commentResponse = await postData(token, config.get(`server:${requestType}:rootURL`) + '/' + req.params.id + '/comments', request, userToken['idir_username']);
     const readableTime = utils.formatCommentTimestamp(commentResponse.commentTimestamp);
     return {
       content: commentResponse.commentContent,
@@ -514,7 +514,7 @@ async function updateRequest(req, res, requestType, createApiServiceReq) {
   request = createApiServiceReq(request, req);
 
   return Promise.all([
-    putData(token, config.get(`server:${requestType}:rootURL`), request),
+    putData(token, config.get(`server:${requestType}:rootURL`), request, utils.getUser(req).idir_username),
     utils.getCodeTable(token, `${requestType}StatusCodes`, config.get(`server:${requestType}:statusCodeURL`))
   ])
     .then(async ([dataResponse, statusCodesResponse]) => {
@@ -565,9 +565,9 @@ async function updateStudentAndDigitalId(req) {
 
     if (Array.isArray(studentAndDigitalIdResponse) && studentAndDigitalIdResponse.length === 1) {
       studentBody.studentID = studentAndDigitalIdResponse[0].studentID;
-      studentResponse = await putData(token, config.get('server:student:rootURL'), studentBody);
+      studentResponse = await putData(token, config.get('server:student:rootURL'), studentBody, utils.getUser(req).idir_username);
     } else if (Array.isArray(studentAndDigitalIdResponse) && !studentAndDigitalIdResponse.length) {
-      studentResponse = await postData(token, config.get('server:student:rootURL'), studentBody);
+      studentResponse = await postData(token, config.get('server:student:rootURL'), studentBody, utils.getUser(req).idir_username);
     } else {
       log.error('Failed to create student record. Invalid response data from student api, there should not be more than one student with the same pen. Complete pen transaction will be out of sync. Student record still needs to be created.');
     }
@@ -589,7 +589,7 @@ async function updateStudentAndDigitalId(req) {
       delete digitalIdBody['updateDate'];
       delete digitalIdBody['createDate'];
 
-      return await putData(token, config.get('server:digitalIdURL'), digitalIdBody);
+      return await putData(token, config.get('server:digitalIdURL'), digitalIdBody, utils.getUser(req).idir_username);
     }
   } catch (e) {
     logApiError(e, 'updateStudentAndDigitalId', 'Failed to update digitalid. Complete pen transaction will be out of sync. StudentId in DigitalId record still needs to be updated.');
@@ -606,7 +606,45 @@ function errorResponse(res, msg) {
   });
 }
 
+/**
+ * Common function to be used between pen request and profile request to reduce duplication.
+ * @param request
+ * @param req
+ * @param userToken
+ */
+function setDefaultsInRequestForRejectAndReturn(request, req, userToken) {
+  request.reviewer = req.body.reviewer;
+  request.staffMemberIDIRGUID = userToken['preferred_username'].toUpperCase();
+  request.staffMemberName = userToken['idir_username'];
+  request.email = req['session'].penRequest['email'];
+  request.identityType = req['session'].identityType;
+}
 
+function setDefaultsInRequestForComplete(request, thisSession, req) {
+  request.digitalID = thisSession.penRequest.digitalID;
+  request.legalFirstName = thisSession.studentDemographics['studGiven'];
+  request.legalMiddleNames = thisSession.studentDemographics['studMiddle'];
+  request.legalLastName = thisSession.studentDemographics['studSurname'];
+  request.dob = thisSession.studentDemographics['dob'];
+  request.sexCode = thisSession.studentDemographics['studSex'];
+  request.genderCode = thisSession.studentDemographics['studSex'];
+  request.usualFirstName = thisSession.studentDemographics['usualGiven'];
+  request.usualMiddleNames = thisSession.studentDemographics['usualMiddle'];
+  request.usualLastName = thisSession.studentDemographics['usualSurname'];
+  request.email = thisSession.penRequest.email;
+  request.emailVerified = thisSession.penRequest.emailVerified;
+  request.reviewer = req.body.reviewer;
+  request.completeComment = req.body.completeComment;
+  request.identityType = thisSession.identityType;
+}
+function setDefaultsForCreateApiReq(request, req) {
+  request.reviewer = req.body.reviewer;
+  request.failureReason = req.body.failureReason;
+  request.completeComment = req.body.completeComment;
+  if (req.body.statusUpdateDate) {
+    request.statusUpdateDate = req.body.statusUpdateDate;
+  }
+}
 
 module.exports = {
   completeRequest,
@@ -622,5 +660,8 @@ module.exports = {
   rejectRequest,
   returnRequest,
   updateRequest,
-  sendRequestEmail
+  sendRequestEmail,
+  setDefaultsInRequestForRejectAndReturn,
+  setDefaultsInRequestForComplete,
+  setDefaultsForCreateApiReq
 };

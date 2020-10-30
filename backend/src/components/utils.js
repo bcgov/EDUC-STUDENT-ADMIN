@@ -7,8 +7,8 @@ const jsonwebtoken = require('jsonwebtoken');
 const lodash = require('lodash');
 const log = require('./logger');
 const cache = require('memory-cache');
-const { ServiceError, ApiError } = require('./error');
-const { LocalDateTime, DateTimeFormatter } = require('@js-joda/core');
+const {ServiceError, ApiError} = require('./error');
+const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
 const {FILTER_OPERATION, VALUE_TYPE} = require('../util/constants');
 
 let discovery = null;
@@ -16,19 +16,22 @@ let memCache = new cache.Cache();
 
 function getBackendToken(req) {
   const thisSession = req.session;
-  return thisSession && thisSession['passport']&& thisSession['passport'].user && thisSession['passport'].user.jwt;
+  return thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt;
 }
+
 function unauthorizedError(res) {
   return res.status(HttpStatus.UNAUTHORIZED).json({
     message: 'No access token'
   });
 }
+
 function errorResponse(res, msg, code) {
   return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
     message: msg || 'INTERNAL SERVER ERROR',
     code: code || HttpStatus.INTERNAL_SERVER_ERROR
   });
 }
+
 function addTokenToHeader(params, token) {
   if (params) {
     params.headers = {
@@ -45,7 +48,7 @@ function addTokenToHeader(params, token) {
 }
 
 async function deleteData(token, url) {
-  try{
+  try {
     const delConfig = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -62,17 +65,17 @@ async function deleteData(token, url) {
   } catch (e) {
     log.error('deleteData Error', e.response ? e.response.status : e.message);
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ApiError(status, { message: 'API Delete error'}, e);
+    throw new ApiError(status, {message: 'API Delete error'}, e);
   }
 }
 
 
 async function getData(token, url, params) {
-  try{
+  try {
     params = addTokenToHeader(params, token);
     log.info('get Data Url', url);
     const response = await axios.get(url, params);
-    logResponseData(url, response,'GET');
+    logResponseData(url, response, 'GET');
     return response.data;
   } catch (e) {
     throwError(e, url, 'GET');
@@ -80,18 +83,18 @@ async function getData(token, url, params) {
 }
 
 function logApiError(e, functionName, message) {
-  if(message) {
+  if (message) {
     log.error(message);
   }
   log.error(functionName, ' Error', e.stack);
-  if(e.response && e.response.data){
+  if (e.response && e.response.data) {
     log.error(JSON.stringify(e.response.data));
   }
 }
 
-function minify(obj, keys=['documentData']) {
+function minify(obj, keys = ['documentData']) {
   return lodash.transform(obj, (result, value, key) =>
-    result[key] = keys.includes(key) && lodash.isString(value) ? value.substring(0,1) + ' ...' : value );
+    result[key] = keys.includes(key) && lodash.isString(value) ? value.substring(0, 1) + ' ...' : value);
 }
 
 function logResponseData(url, response, operationType) {
@@ -100,20 +103,19 @@ function logResponseData(url, response, operationType) {
   log.verbose(`${operationType} Data Response for url ${url}  :: is :: `, typeof response.data === 'string' ? response.data : minify(response.data));
 }
 
-async function postData(token, url, data, params, dontAddUser) {
-  try{
+async function postData(token, url, data, params, user) {
+  try {
     params = addTokenToHeader(params, token);
     log.info('post Data Url', url);
     log.verbose('post Data Req', minify(data));
-
-    if(!dontAddUser) {
-      data.createUser = 'STUDENT-ADMIN';
-      data.updateUser = 'STUDENT-ADMIN';
+    if(user && typeof user === 'string'){
+      data.createUser = user;
+      data.updateUser = user;  
     }
     const response = await axios.post(url, data, params);
-    logResponseData(url, response,'POST');
+    logResponseData(url, response, 'POST');
     return response.data;
-  } catch(e) {
+  } catch (e) {
     throwError(e, url, 'POST');
   }
 }
@@ -124,8 +126,8 @@ function throwError(e, url, operationType) {
   throw new ApiError(status, {message: 'API Put error'}, e);
 }
 
-async function putData(token, url, data) {
-  try{
+async function putData(token, url, data, user) {
+  try {
     const putDataConfig = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -135,11 +137,13 @@ async function putData(token, url, data) {
     log.info('put Data Url', url);
     log.verbose('put Data Req', data);
 
-    data.updateUser='STUDENT-ADMIN';
+    if(user && typeof user === 'string'){
+      data.updateUser = user;
+    }
     const response = await axios.put(url, data, putDataConfig);
-    logResponseData(url, response,'PUT');
+    logResponseData(url, response, 'PUT');
     return response.data;
-  } catch(e) {
+  } catch (e) {
     throwError(e, url, 'PUT');
   }
 }
@@ -164,7 +168,7 @@ function getCodeTable(token, key, url) {
         .catch(e => {
           logApiError(e, 'getCodeTable', 'Error during get on ' + url);
           const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-          throw new ApiError(status, { message: 'API get error'}, e);
+          throw new ApiError(status, {message: 'API get error'}, e);
         });
     }
   } catch (e) {
@@ -183,10 +187,10 @@ function getPaginatedListForSCGroups(apiName, url) {
       }
 
       let pageSize = req.query.pageSize;
-      if(pageSize > 20) {
+      if (pageSize > 20) {
         pageSize = 20;
       }
-  
+
       const params = {
         params: {
           pageNumber: req.query.pageNumber,
@@ -195,10 +199,10 @@ function getPaginatedListForSCGroups(apiName, url) {
           searchCriteriaList: JSON.stringify(req.query.searchQueries.map((query) => JSON.parse(query)))
         }
       };
-  
+
       const dataResponse = await getData(token, url, params);
       return res.status(200).json(dataResponse);
-  
+
     } catch (e) {
       logApiError(e, 'getPaginatedListForSCGroups', `Error occurred while attempting to ${apiName}.`);
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -221,54 +225,53 @@ const utils = {
     }
     return discovery;
   },
-  
+
   getUser(req) {
     const thisSession = req.session;
-    if(thisSession && thisSession['passport']&& thisSession['passport'].user && thisSession['passport'].user.jwt) {
+    if (thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt) {
       try {
         return jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
-      }catch (e){
+      } catch (e) {
         log.error('error is from verify', e);
         return false;
       }
-    }else {
+    } else {
       return false;
     }
   },
   saveSession(req, res, penRequest) {
-    req['session'].penRequest = Object.assign({},penRequest);
+    req['session'].penRequest = Object.assign({}, penRequest);
     //req['session'].save();
   },
   formatCommentTimestamp(time) {
     const timestamp = LocalDateTime.parse(time);
     const formattedTime = timestamp.format(DateTimeFormatter.ofPattern('yyyy-MM-dd h:m'));
     let hour = timestamp.hour();
-    let minute =  timestamp.minute();
-    if(timestamp.minute() < 10){
+    let minute = timestamp.minute();
+    if (timestamp.minute() < 10) {
       minute = '0' + timestamp.minute();
     }
     let amPm = 'am';
     //let hours = d.hour;
-    if(hour > 12){
+    if (hour > 12) {
       amPm = 'pm';
       hour = hour - 12;
       //changes from 24 hour to 12 hour
     }
     //split the hour/minute object, make fixes, then add it back to the dataTime object
     let fixTime = (formattedTime).split(' ');
-    fixTime[1] = String(hour) + ':' +  minute;
+    fixTime[1] = String(hour) + ':' + minute;
     fixTime = fixTime.join(' ');
     return fixTime + amPm;
   },
   formatDate(date) {
-    if(date && (date.length === 8)) {
+    if (date && (date.length === 8)) {
       const year = date.substring(0, 4);
       const month = date.substring(4, 6);
       const day = date.substring(6, 8);
 
       return `${year}-${month}-${day}`;
-    }
-    else {
+    } else {
       log.error('Invalid date received from VMS. Using null instead. Check the data.');
       return null;
     }
@@ -290,9 +293,9 @@ const utils = {
         }
         const url = config.get(urlKey);
         const codes = await getCodeTable(token, cacheKey, url);
-      
+
         return res.status(HttpStatus.OK).json(codes);
-      
+
       } catch (e) {
         logApiError(e, 'getCodes', `Error occurred while attempting to GET ${cacheKey}.`);
         return errorResponse(res);
@@ -301,14 +304,14 @@ const utils = {
   },
   cacheMiddleware() {
     return (req, res, next) => {
-      let key =  '__express__' + req.originalUrl || req.url;
+      let key = '__express__' + req.originalUrl || req.url;
       let cacheContent = memCache.get(key);
-      if(cacheContent){
-        res.send( cacheContent );
-      }else{
+      if (cacheContent) {
+        res.send(cacheContent);
+      } else {
         res.sendResponse = res.send;
         res.send = (body) => {
-          if(res.statusCode < 300  && res.statusCode >= 200) {
+          if (res.statusCode < 300 && res.statusCode >= 200) {
             memCache.put(key, body);
           }
           res.sendResponse(body);
@@ -340,7 +343,7 @@ const utils = {
   verifyRequestInSession(requestType) {
     const requestIDName = `${requestType}ID`;
     return function verifyRequestInSessionHandler(req, res, next) {
-      if(req && req.body && req['session'] && req['session'].penRequest && req.body[requestIDName] === req['session'].penRequest[requestIDName]) {
+      if (req && req.body && req['session'] && req['session'].penRequest && req.body[requestIDName] === req['session'].penRequest[requestIDName]) {
         return next();
       }
       log.error(`${requestType} Id in request is different than the one in session.  This should NEVER happen!`);
@@ -354,6 +357,7 @@ const utils = {
       if (req && req.session) {
         log.debug('req.session.cookie.maxAge before is ::', req.session.cookie.maxAge);
         req['session'].touch();
+        // NOSONAR
         req['session'].tempSessionExtensionIdentifier = Math.random(); // DO NOT USE this key anywhere else in session.
         log.debug('req.session.cookie.maxAge after is ::', req.session.cookie.maxAge);
         return next();
@@ -391,6 +395,7 @@ const utils = {
 
     return await utils.getData(token, config.get('server:student:rootURL') + '/paginated', params);
   },
+
   getBackendToken,
   getData,
   logApiError,

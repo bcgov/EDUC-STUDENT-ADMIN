@@ -7,20 +7,15 @@ const redisUtil = require('../util/redis/redis-utils');
 const {ApiError} = require('./error');
 const {LocalDateTime} = require('@js-joda/core');
 const log = require('./logger');
+const commonRequest = require('./requests');
 
 function createPenRequestApiServiceReq(penRequest, req) {
   penRequest.pen = req.body.pen;
   penRequest.penRequestStatusCode = req.body.penRequestStatusCode;
-  penRequest.reviewer = req.body.reviewer;
-  penRequest.failureReason = req.body.failureReason;
-  penRequest.completeComment = req.body.completeComment;
   penRequest.demogChanged = req.body.demogChanged;
   penRequest.bcscAutoMatchOutcome = req.body.bcscAutoMatchOutcome;
   penRequest.bcscAutoMatchDetails = req.body.bcscAutoMatchDetails;
-  if (req.body.statusUpdateDate) {
-    penRequest.statusUpdateDate = req.body.statusUpdateDate;
-  }
-
+  commonRequest.setDefaultsForCreateApiReq(penRequest, req);
   return penRequest;
 }
 
@@ -52,18 +47,15 @@ function createPenRequestCommentApiServiceReq(req, userToken) {
   };
 }
 
+
 function updateForRejectAndReturn(penRequest, userToken, req) {
-  penRequest.reviewer = req.body.reviewer;
   penRequest.penRetrievalRequestID = req.params.id || req.body.penRequestID;
-  penRequest.staffMemberIDIRGUID = userToken['preferred_username'].toUpperCase();
-  penRequest.staffMemberName = userToken['idir_username'];
-  penRequest.email = req['session'].penRequest['email'];
-  penRequest.identityType = req['session'].identityType;
+  commonRequest.setDefaultsInRequestForRejectAndReturn(penRequest, req, userToken);
 }
 
-async function executePenReqSaga(token, url, penRequest, res, sagaType) {
+async function executePenReqSaga(token, url, penRequest, res, sagaType, user) {
   try {
-    const sagaId = await postData(token, url, penRequest);
+    const sagaId = await postData(token, url, penRequest, user);
     const event = {
       sagaId: sagaId,
       penRequestID: penRequest.penRetrievalRequestID || penRequest.penRequestID,
@@ -88,9 +80,8 @@ async function returnPenRequest(req, res) {
   penRequest.commentContent = req.body.content;
   penRequest.commentTimestamp = LocalDateTime.now().toString().substr(0, 19);
   updateForRejectAndReturn(penRequest, userToken, req);
-  return await executePenReqSaga(utils.getBackendToken(req), `${config.get('server:profileSagaAPIURL')}/pen-request-return-saga`, penRequest, res,'return');
+  return await executePenReqSaga(utils.getBackendToken(req), `${config.get('server:profileSagaAPIURL')}/pen-request-return-saga`, penRequest, res, 'return', req.body.reviewer);
 }
-
 
 
 async function unlinkRequest(req, res) {
@@ -100,7 +91,7 @@ async function unlinkRequest(req, res) {
   request.digitalID = req['session'].penRequest.digitalID;
   request.penRetrievalRequestID = request.penRequestID;
   request.penRequestStatusCode = 'SUBSREV';
-  return await executePenReqSaga(utils.getBackendToken(req), `${config.get('server:profileSagaAPIURL')}/pen-request-unlink-saga`, request, res, 'unlink');
+  return await executePenReqSaga(utils.getBackendToken(req), `${config.get('server:profileSagaAPIURL')}/pen-request-unlink-saga`, request, res, 'unlink', req.body.reviewer);
 }
 
 async function rejectPenRequest(req, res) {
@@ -109,7 +100,7 @@ async function rejectPenRequest(req, res) {
   penRequest.penRequestStatusCode = 'REJECTED';
   penRequest.rejectionReason = req.body.failureReason;
   updateForRejectAndReturn(penRequest, userToken, req);
-  return await executePenReqSaga(utils.getBackendToken(req), `${config.get('server:profileSagaAPIURL')}/pen-request-reject-saga`, penRequest, res, 'reject');
+  return await executePenReqSaga(utils.getBackendToken(req), `${config.get('server:profileSagaAPIURL')}/pen-request-reject-saga`, penRequest, res, 'reject', req.body.reviewer);
 }
 
 async function completePenRequest(req, res) {
@@ -126,31 +117,17 @@ async function completePenRequest(req, res) {
 
   const penRequest = {};
   penRequest.penRequestStatusCode = 'MANUAL';
-  penRequest.digitalID = thisSession.penRequest.digitalID;
   penRequest.penRequestID = req.body.penRequestID;
   penRequest.pen = req.body.pen;
-  penRequest.legalFirstName = thisSession.studentDemographics['studGiven'];
-  penRequest.legalMiddleNames = thisSession.studentDemographics['studMiddle'];
-  penRequest.legalLastName = thisSession.studentDemographics['studSurname'];
-  penRequest.dob = thisSession.studentDemographics['dob'];
-  penRequest.sexCode = thisSession.studentDemographics['studSex'];
-  penRequest.genderCode = thisSession.studentDemographics['studSex'];
-  penRequest.usualFirstName = thisSession.studentDemographics['usualGiven'];
-  penRequest.usualMiddleNames = thisSession.studentDemographics['usualMiddle'];
-  penRequest.usualLastName = thisSession.studentDemographics['usualSurname'];
   penRequest.localID = thisSession.studentDemographics['localID'];
   penRequest.postalCode = thisSession.studentDemographics['postalCode'];
   penRequest.gradeCode = thisSession.studentDemographics['grade'];
   penRequest.mincode = thisSession.studentDemographics['mincode'];
-  penRequest.email = thisSession.penRequest.email;
-  penRequest.emailVerified = thisSession.penRequest.emailVerified;
-  penRequest.reviewer = req.body.reviewer;
-  penRequest.completeComment = req.body.completeComment;
   penRequest.demogChanged = req.body.demogChanged;
   penRequest.bcscAutoMatchOutcome = req.body.bcscAutoMatchOutcome;
   penRequest.bcscAutoMatchDetails = req.body.bcscAutoMatchDetails;
-  penRequest.identityType = thisSession.identityType;
-  return await executePenReqSaga(utils.getBackendToken(req), `${config.get('server:profileSagaAPIURL')}/pen-request-complete-saga`, penRequest, res, 'complete');
+  commonRequest.setDefaultsInRequestForComplete(penRequest, thisSession, req);
+  return await executePenReqSaga(utils.getBackendToken(req), `${config.get('server:profileSagaAPIURL')}/pen-request-complete-saga`, penRequest, res, 'complete', req.body.reviewer);
 }
 
 async function getPENRequestStats(req, res) {
@@ -167,10 +144,20 @@ async function getPENRequestStats(req, res) {
     valueType: 'STRING'
   }];
   return Promise.all([
-    getData(utils.getBackendToken(req), config.get('server:penRequest:paginated'), {params: { pageSize: 1, searchCriteriaList: JSON.stringify(initRevSearchCriteriaList) }}),
-    getData(utils.getBackendToken(req), config.get('server:penRequest:paginated'), {params: { pageSize: 1, searchCriteriaList: JSON.stringify(subsRevSearchCriteriaList) }}),
+    getData(utils.getBackendToken(req), config.get('server:penRequest:paginated'), {
+      params: {
+        pageSize: 1,
+        searchCriteriaList: JSON.stringify(initRevSearchCriteriaList)
+      }
+    }),
+    getData(utils.getBackendToken(req), config.get('server:penRequest:paginated'), {
+      params: {
+        pageSize: 1,
+        searchCriteriaList: JSON.stringify(subsRevSearchCriteriaList)
+      }
+    }),
   ]).then(([initRevResponse, subsRevResponse]) => {
-    return res.status(200).json({ numInitRev: initRevResponse.totalElements, numSubsRev: subsRevResponse.totalElements });
+    return res.status(200).json({numInitRev: initRevResponse.totalElements, numSubsRev: subsRevResponse.totalElements});
   }).catch(e => {
     logApiError(e, 'getPENRequestStats', 'Error occurred while attempting to GET number of pen requests.');
     return utils.errorResponse(res);
