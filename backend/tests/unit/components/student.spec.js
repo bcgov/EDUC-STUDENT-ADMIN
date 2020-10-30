@@ -75,6 +75,7 @@ describe('createNewStudent', () => {
 
   it('should retain transaction id in session when create student fails', async () => {
     utils.getData.mockResolvedValue('200000000');
+    utils.getUser.mockResolvedValue({idir_username:'test'});
     utils.postData.mockRejectedValue('failed');
 
     await student.createNewStudent(req, res);
@@ -85,12 +86,14 @@ describe('createNewStudent', () => {
 
   it('should remove transaction id in session when create student success', async () => {
     utils.getData.mockResolvedValue('200000000');
+    utils.getUser.mockResolvedValue({idir_username:'test'});
     utils.postData.mockResolvedValue({student:{}});
 
     await createStudentAndValidateExpectations(req, res);
   });
   it('should use transaction id already in session when create student failed last time', async () => {
     utils.getData.mockResolvedValue('200000000');
+    utils.getUser.mockResolvedValue({idir_username:'test'});
     utils.postData.mockResolvedValue({student:{}});
     req.session.create_new_student_transactionID=uuidv4();
     await createStudentAndValidateExpectations(req, res);
