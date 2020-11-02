@@ -14,7 +14,7 @@
           :disabled="fieldDisabled"
       ></v-text-field>
     </v-col>
-    <v-col v-if="name==='gradeCode'" cols="3" class="textFieldColumn">
+    <v-col v-if="name==='gradeCode'" cols="3" class="textFieldColumn gradeLabelColumn">
       <v-text-field v-if="name==='gradeCode'"
                     class="onhoverEdit customNoBorder onhoverPad"
                     :value="gradeLevelCode"
