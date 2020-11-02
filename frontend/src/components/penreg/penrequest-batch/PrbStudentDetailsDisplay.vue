@@ -275,7 +275,8 @@ export default {
     ...mapState('prbStudentSearch', ['selectedRecords']),
     ...mapState('notifications', ['notification']),
     disableInfoReqBtn() {
-      return ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE].some(element => element === this.prbStudent?.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
+      return this.loading || this.prbStudent?.sagaInProgress || ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE]
+        .some(element => element === this.prbStudent?.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
     },
     selectedStudents() {
       return sortBy(this.selectedRecords, ['minCode', 'submissionNumber', 'recordNumber']);
@@ -610,6 +611,7 @@ export default {
       ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}/issueNewPen`, req)
         .then(response => {
           if(response.data) {
+            this.prbStudent.sagaInProgress = true;
             this.setSuccessAlert('Your request to issue new PEN is accepted.');
           }
         })
