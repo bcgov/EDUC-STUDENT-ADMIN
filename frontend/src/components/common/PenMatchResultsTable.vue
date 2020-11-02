@@ -4,7 +4,7 @@
     <v-row no-gutters justify="space-between" class="sticky">
       <v-col>
         <v-card-title>
-          <span id="numberMatches" class="px-4"><strong>{{ studentPossibleMatches.length || 0 }} Matches</strong><v-btn
+          <span id="numberMatches" class="px-4"><strong>{{ title }}</strong><v-btn
               @click="matchesExpanded=!matchesExpanded" icon><v-icon nudge-bottom="4"
                                                                      color="#003366">{{
               !matchesExpanded ? 'fa-angle-up' : 'fa-angle-down'
@@ -31,7 +31,7 @@
             item-key="studentID"
             :items="studentPossibleMatches">
           <template v-slot:item="props">
-            <tr :class="{'selected-record' : props.isSelected}">
+            <tr :class="{'selected-record' : props.isSelected, grayout: !isCreatedStudent(props.item)}">
               <td v-for="header in props.headers" :key="header.id" :class="header.id">
                 <v-checkbox v-if="header.type" class="pl-3" color="#606060" @change="props.select($event)"></v-checkbox>
                 <div v-else class="tableCell">
@@ -81,6 +81,7 @@
 
 import TertiaryButton from '../util/TertiaryButton';
 import StudentDetailModal from '../penreg/student/StudentDetailModal';
+import { PEN_REQ_BATCH_STUDENT_REQUEST_CODES } from '@/utils/constants';
 import {formatPen, formatMinCode} from '@/utils/format';
 
 export default {
@@ -174,6 +175,11 @@ export default {
       this.studentPossibleMatches = newValue;
     },
   },
+  computed: {
+    title() {
+      return this.student.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR ? 'New PEN Created' : `${this.studentPossibleMatches.length || 0} Matches`;
+    }
+  },
   methods: {
     popStudentDialog(studentID){
       this.currentStudentID = studentID;
@@ -190,21 +196,24 @@ export default {
     },
     demogValuesMatch(valueType, value) {
       switch (valueType) {
-      case 'postalCode':
-        return this.student?.postalCode?.replace(' ','') === value?.replace(' ',''); // match without space
-      case 'dob':
-        return this.student?.dob?.replace(/\D/g,'') === value?.replace(/\D/g,''); // match birth date without - or /
-      case 'mincode':
-        return this.student.mincode === value;
-      case 'pen':
-        if (this.student.assignedPEN) {
-          return this.student.assignedPEN === value;
-        } else {
-          return this.student.bestMatchPEN === value;
-        }
-      default:
-        return this.student[valueType] === value;
+        case 'postalCode':
+          return this.student?.postalCode?.replace(' ','') === value?.replace(' ',''); // match without space
+        case 'dob':
+          return this.student?.dob?.replace(/\D/g,'') === value?.replace(/\D/g,''); // match birth date without - or /
+        case 'mincode':
+          return this.student?.minCode?.replace(/\s/g,'') === value?.replace(/\s/g,'');
+        case 'pen':
+          if (this.student.assignedPEN) {
+            return this.student.assignedPEN === value;
+          } else {
+            return this.student.bestMatchPEN === value;
+          }
+        default:
+          return this.student[valueType] === value;
       }
+    },
+    isCreatedStudent(matchedStudent) {
+      return this.student.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR && this.student.assignedPEN === matchedStudent.pen;
     },
     formatPen,
     formatMinCode,
@@ -256,4 +265,9 @@ export default {
   z-index: 6;
   background-color: #F2F2F2;
 }
+
+.grayout {
+  opacity: 0.5;
+}
+
 </style>

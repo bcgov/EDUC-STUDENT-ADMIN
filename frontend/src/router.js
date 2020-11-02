@@ -14,7 +14,7 @@ import StudentRequestDetail from './components/ump/StudentRequestDetail';
 import PenRequestBatchDisplay from './components/penreg/penrequest-batch/PenRequestBatchDisplay';
 import PrbStudentListDisplay from './components/penreg/penrequest-batch/PrbStudentListDisplay';
 import PrbStudentDetailsDisplay from './components/penreg/penrequest-batch/PrbStudentDetailsDisplay';
-import CreateNewPEN from './components/CreateNewPEN'
+import CreateNewPEN from './components/CreateNewPEN';
 import UnAuthorized from './components/UnAuthorized';
 import { REQUEST_TYPES, PAGE_TITLES } from './utils/constants';
 import authStore from './store/modules/auth';
@@ -187,6 +187,7 @@ const router = new VueRouter({
         batchCount: +(route.query.batchCount ?? 1),
         searchCriteria: JSON.parse(route.query.searchCriteria ?? '[]'),
         prbStudentIDs: route.query.prbStudentIDs,
+        prBatchIDs: route.query.batchIDs,
       }),
       meta: {
         pageTitle: PAGE_TITLES.PEN_REQ_BATCH_STUDENT_DETAILS,

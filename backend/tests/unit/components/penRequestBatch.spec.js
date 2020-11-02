@@ -1,5 +1,4 @@
 const HttpStatus = require('http-status-codes');
-const penRequestBatch = require('../../../src/components/penRequestBatch');
 jest.mock('../../../src/components/utils', () => {
   const originalModule = jest.requireActual('../../../src/components/utils');
   return {
@@ -8,10 +7,14 @@ jest.mock('../../../src/components/utils', () => {
     getBackendToken: jest.fn(),
     getData: jest.fn(),
     putData: jest.fn(),
+    postData: jest.fn(),
   };
 });
+jest.mock('../../../src/util/redis/redis-utils');
 const { mockRequest, mockResponse } = require('../helpers');
 const utils = require('../../../src/components/utils');
+const redisUtil = require('../../../src/util/redis/redis-utils');
+const penRequestBatch = require('../../../src/components/penRequestBatch');
 
 const prbStudentData =
   {
@@ -19,7 +22,9 @@ const prbStudentData =
     'penRequestBatchID': 'c0a8014d-74e1-1d99-8174-e10db81f0000',
     'penRequestBatchStudentStatusCode':'FIXABLE',
     'localID':'123456',
-    'legalFirstName':'Ben'
+    'legalFirstName':'Ben',
+    'minCode': '00807025',
+    'createUser': 'PEN_REQUEST_BATCH_API'
   };
 
 describe('updatePrbStudentInfoRequested', () => {
@@ -144,3 +149,108 @@ describe('getPenRequestBatchStudentMatchOutcome', () => {
   });
 });
 
+describe('issueNewPen', () => {
+  let req;
+  let res;
+  const twinStudentIDs = ['201', '202'];
+
+  beforeEach(() => {
+    utils.getBackendToken.mockReturnValue('token');
+    req = mockRequest();
+    res = mockResponse();
+    req.params = {
+      id: 'c0a8014d-74e1-1d99-8174-e10db81f0000',
+      studentId: 'c0a8014d-74e1-1d99-8174-e10db8410001'
+    };
+    req.body = {
+      twinStudentIDs
+    };
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return sagaId if success', async () => {
+    const resp = 'c0a8014d-74e1-1d99-8174-e10db8410003';
+    utils.getData.mockResolvedValue(prbStudentData);
+    utils.postData.mockResolvedValue(resp);
+    await penRequestBatch.issueNewPen(req, res);
+    expect(utils.postData.mock.calls[0][2].mincode).toBe(prbStudentData.minCode);
+    expect(utils.postData.mock.calls[0][2].twinStudentIDs).toEqual(twinStudentIDs);
+    expect(utils.postData.mock.calls[0][2].createUser).toBeUndefined();
+    expect(redisUtil.createSagaRecordInRedis).toHaveBeenCalledWith({
+      sagaId: resp,
+      penRequestBatchStudentID: req.params.studentId,
+      sagaStatus: 'INITIATED'
+    });
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+    expect(res.json).toHaveBeenCalledWith(resp);
+  });
+
+  it('should return INTERNAL_SERVER_ERROR if getData failed', async () => {
+    utils.getData.mockRejectedValue(new Error('Test error'));
+    await penRequestBatch.issueNewPen(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+  });
+
+  it('should return INTERNAL_SERVER_ERROR if postData failed', async () => {
+    utils.getData.mockResolvedValue(prbStudentData);
+    utils.postData.mockRejectedValue(new Error('Test error'));
+    await penRequestBatch.issueNewPen(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+  });
+
+});
+
+
+describe('getPenRequestBatchStudentById', () => {
+  let req;
+  let res;
+
+  beforeEach(() => {
+    utils.getBackendToken.mockReturnValue('token');
+    req = mockRequest();
+    res = mockResponse();
+    req.params = {
+      id: 'c0a8014d-74e1-1d99-8174-e10db81f0000',
+      studentId: 'c0a8014d-74e1-1d99-8174-e10db8410001'
+    };
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return true sagaInProgress if penRequestBatchStudentID in redis', async () => {
+    utils.getData.mockResolvedValue(prbStudentData);
+    redisUtil.getSagaEvents.mockResolvedValue([`{
+      "sagaId": "c0a8014d-74e1-1d99-8174-e10db8410003",
+      "penRequestBatchStudentID": "${prbStudentData.penRequestBatchStudentID}",
+      "sagaStatus": "INITIATED"
+    }`]);
+    await penRequestBatch.getPenRequestBatchStudentById(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+    expect(res.json.mock.calls[0][0].sagaInProgress).toBeTruthy();
+    expect(res.json.mock.calls[0][0].repeatRequestOriginalStatus).toBe(prbStudentData.penRequestBatchStudentStatusCode);
+  });
+
+  it('should return false sagaInProgress if penRequestBatchStudentID not in redis', async () => {
+    utils.getData.mockResolvedValue(prbStudentData);
+    redisUtil.getSagaEvents.mockResolvedValue([`{
+      "sagaId": "c0a8014d-74e1-1d99-8174-e10db8410003",
+      "penRequestBatchStudentID": "c0a8014d-74e1-1d99-8174-e10db8419999",
+      "sagaStatus": "INITIATED"
+    }`]);
+    await penRequestBatch.getPenRequestBatchStudentById(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+    expect(res.json.mock.calls[0][0].sagaInProgress).toBeFalsy();
+  });
+
+  it('should return INTERNAL_SERVER_ERROR if getData failed', async () => {
+    utils.getData.mockRejectedValue(new Error('Test error'));
+    await penRequestBatch.getPenRequestBatchStudentById(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+  });
+
+});
