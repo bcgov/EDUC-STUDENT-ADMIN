@@ -223,6 +223,10 @@ export default {
         this.isLoadingGmpUmp = false;
       });
     }
+
+    if(this.isValidPenRequestBatchUser || this.isValidGMPUser || this.isValidUMPUser) {
+        this.$webSocketsConnect();
+    }
     
   },
   computed: {

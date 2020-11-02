@@ -260,7 +260,6 @@ export default {
         this.getDocumentTypes();
         this.loadingSelect = false;
       });
-    this.$webSocketsConnect();
   },
   computed: {
     ...mapGetters('notifications', ['notification']),
