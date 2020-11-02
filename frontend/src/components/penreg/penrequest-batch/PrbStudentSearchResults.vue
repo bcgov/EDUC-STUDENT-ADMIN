@@ -175,7 +175,8 @@ export default {
           seqNumber: 1,
           totalNumber: this.selectedRecords.length, 
           batchCount: batchIDs.length, 
-          prbStudentIDs: prbStudentIDs,
+          prbStudentIDs,
+          batchIDs
         };
         router.push({name: 'prbStudentDetails', query});
       } else {

@@ -17,7 +17,7 @@ let object = {
   penRequestBatch: {
     ROOT_ENDPOINT: penRequestBatchRoot,
     STATS_URL: penRequestBatchRoot + '/stats',
-    FILES_URL: penRequestBatchRoot + '/',
+    FILES_URL: penRequestBatchRoot,
     STUDENTS_SEARCH_URL: penRequestBatchRoot + '/students',
     STUDENT_STATUS_CODE_URL: penRequestBatchRoot + '/studentStatusCodes',
     MATCH_OUTCOME_URL: penRequestBatchRoot + '/matchOutcome',

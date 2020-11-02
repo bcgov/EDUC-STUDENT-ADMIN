@@ -1,9 +1,11 @@
 'use strict';
-const { logApiError } = require('./utils');
+const { logApiError, postData } = require('./utils');
 const config = require('../config/index');
-const { getBackendToken, getData, putData, errorResponse, getPaginatedListForSCGroups, getUser } = require('./utils');
+const { getBackendToken, getData, putData, errorResponse, getPaginatedListForSCGroups, getUser, stripAuditColumns } = require('./utils');
 const {FILTER_OPERATION, CONDITION, VALUE_TYPE} = require('../util/constants');
 const HttpStatus = require('http-status-codes');
+const redisUtil = require('../util/redis/redis-utils');
+const log = require('./logger');
 
 async function getPENBatchRequestStats(req, res) {
   const schoolGroupCodes = [
@@ -92,7 +94,9 @@ async function getPenRequestBatchStudentById(req, res) {
   try {
     const url = `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${req.params.id}/student/${req.params.studentId}`;
     let studentData = await getData(token, url);
-    return res.status(200).json({repeatRequestOriginalStatus: studentData.penRequestBatchStudentStatusCode});
+    studentData.repeatRequestOriginalStatus = studentData.penRequestBatchStudentStatusCode;
+    await addSagaStatus([studentData]);
+    return res.status(200).json(studentData);
   } catch(e) {
     logApiError(e, 'getPenRequestBatchStudentById', 'Error getting a PrbStudent.');
     return errorResponse(res);
@@ -126,11 +130,55 @@ async function getPenRequestBatchStudentMatchOutcome(req, res) {
   }
 }
 
+async function issueNewPen(req, res) {
+  const token = getBackendToken(req, res);
+
+  try {
+    const url = `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${req.params.id}/student/${req.params.studentId}`;
+    let studentData = await getData(token, url);
+    
+
+    const sagaReq = {
+      ... stripAuditColumns(studentData),
+      mincode: studentData.minCode,
+      twinStudentIDs: req.body.twinStudentIDs
+    };
+
+    const sagaId = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/new-pen`, sagaReq, null, getUser(req).idir_username);
+
+    const event = {
+      sagaId: sagaId,
+      penRequestBatchStudentID: studentData.penRequestBatchStudentID,
+      sagaStatus: 'INITIATED'
+    };
+    log.info(`going to store event object in redis for issueNewPen request :: `, event);
+    await redisUtil.createSagaRecordInRedis(event);
+
+    return res.status(200).json(sagaId);
+  } catch(e) {
+    logApiError(e, 'issueNewPen', 'Error issuing new pen.');
+    return errorResponse(res);
+  }
+}
+
+async function addSagaStatus(prbStudents) {
+  let eventsArrayFromRedis = await redisUtil.getSagaEvents() || [];
+  eventsArrayFromRedis = eventsArrayFromRedis.map(event => JSON.parse(event));
+  prbStudents && prbStudents.forEach(prbStudent => {
+    if(prbStudent.penRequestBatchStudentID) {
+      prbStudent.sagaInProgress = eventsArrayFromRedis.some(event => 
+        event.penRequestBatchStudentID === prbStudent.penRequestBatchStudentID
+      );
+    }
+  });
+}
+
 module.exports = {
   getPENBatchRequestStats,
   updatePrbStudentInfoRequested,
   getPenRequestFiles: getPaginatedListForSCGroups('getPenRequestFiles', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/paginated`),
-  getPenRequestBatchStudents: getPaginatedListForSCGroups('getPenRequestBatchStudents', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/student/paginated`),
+  getPenRequestBatchStudents: getPaginatedListForSCGroups('getPenRequestBatchStudents', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/student/paginated`, addSagaStatus),
   getPenRequestBatchStudentById,
-  getPenRequestBatchStudentMatchOutcome
+  getPenRequestBatchStudentMatchOutcome,
+  issueNewPen
 };

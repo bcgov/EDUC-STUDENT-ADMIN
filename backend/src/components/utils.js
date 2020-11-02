@@ -176,7 +176,7 @@ function getCodeTable(token, key, url) {
   }
 }
 
-function getPaginatedListForSCGroups(apiName, url) {
+function getPaginatedListForSCGroups(apiName, url, handleResponse) {
   return async function getPaginatedListForSCGroupsHandler(req, res) {
     try {
       const token = getBackendToken(req);
@@ -201,6 +201,9 @@ function getPaginatedListForSCGroups(apiName, url) {
       };
 
       const dataResponse = await getData(token, url, params);
+      if(handleResponse && dataResponse.content) {
+        await handleResponse(dataResponse.content);
+      }
       return res.status(200).json(dataResponse);
 
     } catch (e) {
