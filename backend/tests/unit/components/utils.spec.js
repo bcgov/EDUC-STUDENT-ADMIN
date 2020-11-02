@@ -1,5 +1,4 @@
 const HttpStatus = require('http-status-codes');
-const requests = require('../../../src/components/requests');
 const { mockRequest, mockResponse } = require('../helpers');
 const utils = require('../../../src/components/utils');
 

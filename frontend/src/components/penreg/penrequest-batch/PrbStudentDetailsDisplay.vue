@@ -151,7 +151,7 @@ import {mapMutations, mapState} from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
 import PrbStudentStatusChip from './PrbStudentStatusChip';
 import InfoDialog from './prb-student-details/InfoDialog';
-import {formatPrbStudent, formatPrbStudents} from '@/utils/penrequest-batch/format';
+import {formatPrbStudent} from '@/utils/penrequest-batch/format';
 import ApiService from '../../../common/apiService';
 import {
   PEN_REQ_BATCH_STUDENT_REQUEST_CODES,
@@ -160,7 +160,7 @@ import {
   SEARCH_CONDITION, 
   SEARCH_VALUE_TYPE
 } from '@/utils/constants';
-import {cloneDeep, isEmpty, sortBy, uniq} from 'lodash';
+import {cloneDeep, isEmpty, sortBy} from 'lodash';
 import alterMixin from '../../../mixins/alterMixin';
 import SearchDemographicModal from "@/components/common/SearchDemographicModal";
 import PenMatchResultsTable from "@/components/common/PenMatchResultsTable";
