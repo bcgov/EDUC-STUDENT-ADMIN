@@ -27,8 +27,8 @@
               <v-col cols="12">
                 <v-card-actions style="float: right;">
                   <PrimaryButton @click.native="$emit('closeDialog')" :secondary="true" class="mx-1" text="Cancel"></PrimaryButton>
-                  <PrimaryButton class="mx-1" text="Go to Record"></PrimaryButton>
-                  <PrimaryButton class="mx-1" text="Open in new window"></PrimaryButton>
+                  <PrimaryButton class="mx-1" text="Go to Record" @click.native="viewStudentDetails"></PrimaryButton>
+                  <PrimaryButton class="mx-1" text="Open in new window" @click.native="openStudentDetails"></PrimaryButton>
                 </v-card-actions>
               </v-col>
             </template>
@@ -41,6 +41,8 @@
 <script>
 import StudentDetailCommon from '../../common/StudentDetailCommon';
 import PrimaryButton from '../../util/PrimaryButton';
+import router from '../../../router';
+import {REQUEST_TYPES} from '@/utils/constants';
 
 export default {
   name: 'studentDetailModal',
@@ -53,6 +55,15 @@ export default {
       type: Boolean,
       required: true
     }
+  },
+  methods: {
+    viewStudentDetails() {
+      router.push({ name: REQUEST_TYPES.student.label, params: {studentID: this.studentID}});
+    },
+    openStudentDetails() {
+      const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: this.studentID}});
+      window.open(route.href, '_blank');
+    },
   },
   components: {
     PrimaryButton,
