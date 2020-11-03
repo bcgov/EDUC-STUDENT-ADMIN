@@ -386,6 +386,7 @@ import {sortBy} from 'lodash';
 import alterMixin from '../../mixins/alterMixin';
 import ConfirmationDialog from '../util/ConfirmationDialog';
 import AlertMessage from '../util/AlertMessage';
+import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard';
 
 const JSJoda = require('@js-joda/core');
 
@@ -413,6 +414,7 @@ export default {
   components: {
     AlertMessage,
     ConfirmationDialog,
+    TwinnedStudentsCard,
     StudentDetailsTextFieldSideCardReadOnly,
     StudentDetailsComboBox,
     StudentDetailsTextFieldReadOnly,
