@@ -47,14 +47,14 @@
             <v-checkbox v-if="header.type" class="record-checkbox header-checkbox" color="#606060" @change="props.select($event)"></v-checkbox>
             <div v-else class="table-cell">
               <span class="top-column-item">
-                <a v-if="header.topValue === 'submissionNumber'" class="submission">{{props.item[header.topValue] || '-'}}</a>
+                <a v-if="header.topValue === 'submissionNumber'" class="submission">{{props.item[header.topValue] }}</a>
                 <v-tooltip v-else-if="header.topValue === 'minCode'" right>
                   <template v-slot:activator="{ on }">
-                    <span v-on="on">{{ props.item[header.topValue] || '-' }}</span>
+                    <span v-on="on">{{ props.item[header.topValue] }}</span>
                   </template>
-                  <span>{{getSchoolName(props.item) || '-'}}</span>
+                  <span>{{getSchoolName(props.item) }}</span>
                 </v-tooltip>
-                <span v-else>{{ props.item[header.topValue] || '-' }}</span>
+                <span v-else>{{ props.item[header.topValue] }}</span>
               </span>
               <span class="double-column-item">{{props.item[header.doubleValue]}}</span>
               <br>
@@ -63,7 +63,7 @@
                   v-if="header.bottomValue === 'penRequestBatchStudentStatusCode'" 
                   :prbStudent="props.item"
                 ></PrbStudentStatusChip>
-                <span v-else>{{ props.item[header.bottomValue] || '-' }}</span>
+                <span v-else>{{ props.item[header.bottomValue] }}</span>
               </span>
             </div>
           </td>
@@ -209,6 +209,7 @@ export default {
   }
   .bottom-column-item {
     float: left;
+    min-height: 1.5em;
   }
   .table-checkbox {
     margin-top: 0;

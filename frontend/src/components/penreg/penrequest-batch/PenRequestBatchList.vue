@@ -40,7 +40,7 @@
           <td v-for="header in props.headers" :key="header.id" :class="{[header.value]: true, 'select-column': header.type}">
             <v-checkbox v-if="header.type" class="file-checkbox" color="#606060" :value="props.item.isSelected"></v-checkbox>
             <div v-else :class="{'countable-column-div': header.countable}">
-              <span v-if="header.countable" class="countable-column-data">{{ props.item[header.value] || '-' }}</span>
+              <span v-if="header.countable" class="countable-column-data">{{ props.item[header.value] || '' }}</span>
               <span v-else>{{props.item[header.value]}}</span>
               <v-tooltip v-if="header.value==='minCode' && isUnarchived(props.item)" right>
                 <template v-slot:activator="{ on }">
