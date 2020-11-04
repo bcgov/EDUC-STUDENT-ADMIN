@@ -35,7 +35,7 @@ export default {
     }
   },
   watch: {
-    isAuthenticated(val)  {
+    isAuthenticated()  {
       this.handleWebSocket();
     }
   },
