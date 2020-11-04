@@ -223,11 +223,6 @@ export default {
         this.isLoadingGmpUmp = false;
       });
     }
-
-    if(this.isValidPenRequestBatchUser || this.isValidGMPUser || this.isValidUMPUser) {
-        this.$webSocketsConnect();
-    }
-    
   },
   computed: {
     ...mapState('auth', ['isAuthenticated','isAuthorizedUser','isValidGMPUser','isValidUMPUser', 'isValidStudentSearchUser', 'isValidPenRequestBatchUser']),

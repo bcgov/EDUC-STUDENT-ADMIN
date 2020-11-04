@@ -41,7 +41,7 @@ try{
       if (staleSagas.length > 0) {
         const data = await getApiCredentials(); // get the tokens first to make api calls.
         for (const saga of staleSagas) {
-          if(!saga.sagaName.startsWith('PEN_REQUEST_BATCH')) {
+          if(!(saga.sagaName && saga.sagaName.startsWith('PEN_REQUEST_BATCH'))) {
             sagaRecordFromAPIPromises.push(getData(data.accessToken, `${config.get('server:profileSagaAPIURL')}/${saga.sagaId}`));
           }
         }
