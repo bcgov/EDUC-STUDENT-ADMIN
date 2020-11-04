@@ -27,15 +27,30 @@ export default {
     ModalIdle
   },
   computed: {
-    ...mapGetters('auth', ['getJwtToken','isAuthenticated']),
+    ...mapGetters('auth', ['getJwtToken','isAuthenticated','isValidGMPUser','isValidUMPUser', 'isValidPenRequestBatchUser']),
     ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['pageTitle']),
     isIdle(){
       return this.$store.state.idleVue.isIdle;
     }
   },
+  watch: {
+    isAuthenticated(val)  {
+      this.handleWebSocket();
+    }
+  },
+  mounted() {
+    this.handleWebSocket();
+  },
   methods:{
     ...mapActions('student', ['getCodes']),
+    handleWebSocket() {
+      if(this.isAuthenticated && (this.isValidPenRequestBatchUser || this.isValidGMPUser || this.isValidUMPUser)) {
+        this.$webSocketsConnect();
+      } else {
+        this.$webSocketsDisconnect();
+      }
+    }
   }
 };
 </script>

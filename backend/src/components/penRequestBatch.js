@@ -148,7 +148,8 @@ async function issueNewPen(req, res) {
     const event = {
       sagaId: sagaId,
       penRequestBatchStudentID: studentData.penRequestBatchStudentID,
-      sagaStatus: 'INITIATED'
+      sagaStatus: 'INITIATED',
+      sagaName: 'PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA'
     };
     log.info(`going to store event object in redis for issueNewPen request :: `, event);
     await redisUtil.createSagaRecordInRedis(event);

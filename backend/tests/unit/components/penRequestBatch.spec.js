@@ -182,7 +182,8 @@ describe('issueNewPen', () => {
     expect(redisUtil.createSagaRecordInRedis).toHaveBeenCalledWith({
       sagaId: resp,
       penRequestBatchStudentID: req.params.studentId,
-      sagaStatus: 'INITIATED'
+      sagaStatus: 'INITIATED',
+      sagaName: 'PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA'
     });
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(resp);

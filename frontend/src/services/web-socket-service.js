@@ -48,7 +48,7 @@ webSocketsService.install = function (Vue, options) {
 
   Vue.prototype.$webSocketsDisconnect = () => {
     // Our custom disconnect event
-    ws.close();
+    ws?.close();
   };
 
   Vue.prototype.$webSocketsSend = (data) => {
