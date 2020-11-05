@@ -246,9 +246,7 @@ export default {
   #dataTable /deep/ table tbody tr:hover { 
     background-color: #E1F5FE
   }
-  /* #dataTable /deep/ table tbody tr:not(.selected-record):hover { 
-    background-color: inherit
-  } */
+
   #dataTable /deep/ table { 
     border-bottom: thin solid #d7d7d7;
   }
