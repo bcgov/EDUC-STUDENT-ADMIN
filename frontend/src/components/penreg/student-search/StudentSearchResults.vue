@@ -132,7 +132,8 @@ export default {
   methods: {
     ...mapMutations('studentSearch', ['updateSortParams', 'setStudentSearchResponse']),
     viewStudentDetails(studentID) {
-      router.push({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
+      const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
+      window.open(route.href, '_blank');
     },
     compare() {
       //TODO
