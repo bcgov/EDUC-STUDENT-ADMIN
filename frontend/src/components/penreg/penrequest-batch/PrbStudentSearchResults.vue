@@ -47,7 +47,7 @@
             <v-checkbox v-if="header.type" class="record-checkbox header-checkbox" color="#606060" :value="props.item.isSelected"></v-checkbox>
             <div v-else class="table-cell">
               <span class="top-column-item">
-                <a v-if="header.topValue === 'submissionNumber'" class="submission">{{props.item[header.topValue] }}</a>
+                <a v-if="header.topValue === 'submissionNumber'" class="submission" @click="handleSubmissionNumberClicked">{{props.item[header.topValue] }}</a>
                 <v-tooltip v-else-if="header.topValue === 'minCode'" right>
                   <template v-slot:activator="{ on }">
                     <span v-on="on">{{ props.item[header.topValue] }}</span>
@@ -195,6 +195,9 @@ export default {
     selectItem(item) {
       item.isSelected = !item.isSelected;
       this.setSelectedRecords(this.prbStudentSearchResponse.content.filter(rec => rec.isSelected));
+    },
+    handleSubmissionNumberClicked(event) {
+      event.stopPropagation();
     }
   }
 };
