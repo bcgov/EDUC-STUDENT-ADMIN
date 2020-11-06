@@ -199,7 +199,7 @@ export default {
     initializeFiles(files, isFilterOperation) {
       let activeFile = files?.find(f => f.penRequestBatchStatusCode === 'ACTIVE');
       activeFile && (activeFile.firstActiveFile = true);
-      files?.forEach(file => {
+      files.forEach(file => {
         file.minCode && (file.minCode = formatMinCode(file.minCode));
         file.isSelected = this.isSelected(file);
         this.countableHeaders.forEach(header => file[header.value] = +file[header.value]);
