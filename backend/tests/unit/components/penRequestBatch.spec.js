@@ -177,7 +177,7 @@ describe('issueNewPen', () => {
     utils.postData.mockResolvedValue(resp);
     await penRequestBatch.issueNewPen(req, res);
     expectationsForUserActionsInPRBSaga(twinStudentIDs);
-    expect(redisUtil.createPenRequestBatchSagaRecordInRedis()).toHaveBeenCalledWith({
+    expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenCalledWith({
       sagaId: resp,
       penRequestBatchStudentID: req.params.studentId,
       sagaStatus: 'INITIATED',
@@ -237,7 +237,7 @@ describe('user match saga', () => {
     utils.postData.mockResolvedValue(resp);
     await penRequestBatch.userMatchSaga(req, res);
     expectationsForUserActionsInPRBSaga(twinStudentIDs);
-    expect(redisUtil.createPenRequestBatchSagaRecordInRedis()).toHaveBeenCalledWith({
+    expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenCalledWith({
       sagaId: resp,
       penRequestBatchStudentID: req.params.studentId,
       sagaStatus: 'INITIATED',
