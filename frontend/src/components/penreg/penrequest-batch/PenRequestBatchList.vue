@@ -38,7 +38,7 @@
       <template v-slot:item="props">
         <tr :class="tableRowClass(props.item)" @click="selectItem(props.item)">
           <td v-for="header in props.headers" :key="header.id" :class="{[header.value]: true, 'select-column': header.type}">
-            <v-checkbox v-if="header.type" class="file-checkbox" color="#606060" v-model="props.item.isSelected" @click="handleFileCheckBoxClicked(props.item)"></v-checkbox>
+            <v-checkbox v-if="header.type" class="file-checkbox" color="#606060" v-model="props.item.isSelected" @click.stop="handleFileCheckBoxClicked(props.item)"></v-checkbox>
             <div v-else :class="{'countable-column-div': header.countable}">
               <span v-if="header.countable" class="countable-column-data">{{ props.item[header.value] || '' }}</span>
               <span v-else>{{props.item[header.value]}}</span>
@@ -79,6 +79,7 @@ import { mapMutations, mapState } from 'vuex';
 import ApiService from '../../../common/apiService';
 import {Routes} from '../../../utils/constants';
 import {formatMinCode} from '../../../utils/format';
+const {uniqBy} = require('lodash');
 
 export default {
   name: 'PenRequestBatchList',
@@ -185,7 +186,6 @@ export default {
     },
     handleFileCheckBoxClicked(item) {
       this.selectFile(item);
-      event.stopPropagation();
     },
     initializeFilters() {
       if(this.prbStudentStatusFilters?.length > 0) {
@@ -228,28 +228,13 @@ export default {
       
       if (item.isSelected) {
         const selectedFilesFromCurrentData = this.penRequestBatchResponse.content.filter(file => file.isSelected);
-        const newSelectedFiles = this.mergeSelectedFiles(this.selectedFiles, selectedFilesFromCurrentData);
+        let newSelectedFiles = [...this.selectedFiles, ...selectedFilesFromCurrentData];
+        newSelectedFiles = uniqBy(newSelectedFiles, a => a.submissionNumber);
         this.setSelectedFiles(newSelectedFiles);
       } else {
         const newSelectedFiles = this.selectedFiles.filter(file => file.submissionNumber !== item.submissionNumber);
         this.setSelectedFiles(newSelectedFiles);
       }
-    },
-    mergeSelectedFiles(array1, array2) {
-      if (array1.length === 0 && array2.length == 0) {
-        return [];
-      }
-      if (array1.length === 0) {
-        return array2;
-      }
-      if (array2.length === 0) {
-        return array1;
-      }
-      const merged = array1.concat(array2.filter(file => {
-        const found = array1.find(item => item.submissionNumber === file.submissionNumber);
-        return !found;
-      }));
-      return merged;
     },
     selectItem(item) {
       item.isSelected = !item.isSelected;
@@ -260,7 +245,8 @@ export default {
       this.partialSelected = false;
       if (selected) {
         const selectedFilesFromCurrentData = this.penRequestBatchResponse.content.filter(file => file.isSelected);
-        const newSelectedFiles = this.mergeSelectedFiles(this.selectedFiles, selectedFilesFromCurrentData);
+        let newSelectedFiles = [...this.selectedFiles, ...selectedFilesFromCurrentData];
+        newSelectedFiles = uniqBy(newSelectedFiles, a => a.submissionNumber);
         this.setSelectedFiles(newSelectedFiles);
       } else {
         const unselectedFilesFromCurrentData = this.penRequestBatchResponse.content.filter(file => !file.isSelected);
