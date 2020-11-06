@@ -282,7 +282,7 @@ describe('getPenRequestBatchStudentById', () => {
 
   it('should return true sagaInProgress if penRequestBatchStudentID in redis', async () => {
     utils.getData.mockResolvedValue(prbStudentData);
-    redisUtil.getPenRequestBatchSagaEvents().mockResolvedValue([`{
+    redisUtil.getPenRequestBatchSagaEvents.mockResolvedValue([`{
       "sagaId": "c0a8014d-74e1-1d99-8174-e10db8410003",
       "penRequestBatchStudentID": "${prbStudentData.penRequestBatchStudentID}",
       "sagaStatus": "INITIATED"
@@ -295,7 +295,7 @@ describe('getPenRequestBatchStudentById', () => {
 
   it('should return false sagaInProgress if penRequestBatchStudentID not in redis', async () => {
     utils.getData.mockResolvedValue(prbStudentData);
-    redisUtil.getPenRequestBatchSagaEvents().mockResolvedValue([`{
+    redisUtil.getPenRequestBatchSagaEvents.mockResolvedValue([`{
       "sagaId": "c0a8014d-74e1-1d99-8174-e10db8410003",
       "penRequestBatchStudentID": "c0a8014d-74e1-1d99-8174-e10db8419999",
       "sagaStatus": "INITIATED"

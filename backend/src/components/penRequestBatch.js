@@ -209,7 +209,7 @@ async function userMatchSaga(req, res) {
 }
 
 async function addSagaStatus(prbStudents) {
-  let eventsArrayFromRedis = await redisUtil.getSagaEvents() || [];
+  let eventsArrayFromRedis = await redisUtil.getPenRequestBatchSagaEvents() || [];
   eventsArrayFromRedis = eventsArrayFromRedis.map(event => JSON.parse(event));
   prbStudents && prbStudents.forEach(prbStudent => {
     if (prbStudent.penRequestBatchStudentID) {
