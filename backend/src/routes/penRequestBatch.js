@@ -45,4 +45,9 @@ router.get('/studentInfoMacros', passport.authenticate('jwt', {session: false}, 
  * Issue new pen saga
  */
 router.post('/:id/students/:studentId/issueNewPen', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, issueNewPen);
+
+/*
+ * User Match saga
+ */
+router.post('/:id/students/:studentId/user-match', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, issueNewPen);
 module.exports = router;
