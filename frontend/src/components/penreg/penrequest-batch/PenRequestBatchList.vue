@@ -38,7 +38,7 @@
       <template v-slot:item="props">
         <tr :class="tableRowClass(props.item)" @click="selectItem(props.item)">
           <td v-for="header in props.headers" :key="header.id" :class="{[header.value]: true, 'select-column': header.type}">
-            <v-checkbox v-if="header.type" class="file-checkbox" color="#606060" :value="props.item.isSelected"></v-checkbox>
+            <v-checkbox v-if="header.type" class="file-checkbox" color="#606060" v-model="props.item.isSelected" @click.stop="handleFileCheckBoxClicked(props.item)"></v-checkbox>
             <div v-else :class="{'countable-column-div': header.countable}">
               <span v-if="header.countable" class="countable-column-data">{{ props.item[header.value] || '' }}</span>
               <span v-else>{{props.item[header.value]}}</span>
@@ -79,6 +79,7 @@ import { mapMutations, mapState } from 'vuex';
 import ApiService from '../../../common/apiService';
 import {Routes} from '../../../utils/constants';
 import {formatMinCode} from '../../../utils/format';
+const {uniqBy} = require('lodash');
 
 export default {
   name: 'PenRequestBatchList',
@@ -116,13 +117,13 @@ export default {
   watch: {
     pageNumber: {
       handler() {
-        this.pagination();
+        this.pagination(false);
       }
     },
     filters: {
       handler() {
         this.selectFilters();
-        this.pagination();
+        this.pagination(true);
       }
     },
     schoolGroup: {
@@ -167,6 +168,7 @@ export default {
     },
   },
   created(){
+    this.setSelectedFiles();
     this.initializeFilters();
   },
   methods: {
@@ -182,6 +184,9 @@ export default {
     isUnarchivedBatchChanged(item) {
       return item.unarchivedBatchChangedFlag === 'Y';
     },
+    handleFileCheckBoxClicked(item) {
+      this.selectFile(item);
+    },
     initializeFilters() {
       if(this.prbStudentStatusFilters?.length > 0) {
         const filterNames = this.prbStudentStatusFilters.map(filter => this.headers.find(header => header.value === filter)?.filterName);
@@ -191,34 +196,66 @@ export default {
         this.filters.push('Fixable');
       }      
     },
-    initializeFiles(files) {
-      this.partialSelected = false;
-      this.allSelected = false;
-      let activeFile = files.find(f => f.penRequestBatchStatusCode === 'ACTIVE');
+    initializeFiles(files, isFilterOperation) {
+      let activeFile = files?.find(f => f.penRequestBatchStatusCode === 'ACTIVE');
       activeFile && (activeFile.firstActiveFile = true);
       files.forEach(file => {
         file.minCode && (file.minCode = formatMinCode(file.minCode));
-        file.isSelected = false;
+        file.isSelected = this.isSelected(file);
         this.countableHeaders.forEach(header => file[header.value] = +file[header.value]);
         file.filteredCount = this.headers.reduce((sum, header) => 
           header.isFiltered ? sum + file[header.value] : sum
         , 0);
       });
+
+      this.allSelected = !!files && files.length > 0 && files.every(file => file.isSelected);
+      this.partialSelected = files.some(file => file.isSelected) && !this.allSelected;
+
+      if (isFilterOperation && this.selectedFiles.length > 0) {
+        // drop selected rows if it is not in the current data set
+        const newSelectedFiles = this.selectedFiles.filter(file => files.find(item => item.submissionNumber === file.submissionNumber));
+        this.setSelectedFiles(newSelectedFiles);
+      }
       return files;
     },
-    selectFile(selected) {
+    isSelected(file) {
+      const foundItem = this.selectedFiles?.find(item => item?.penRequestBatchID === file.penRequestBatchID);
+      return !!foundItem;
+    },
+    selectFile(item) {
       this.allSelected = this.penRequestBatchResponse.content.every(file => file.isSelected);
-      this.partialSelected = (selected || this.penRequestBatchResponse.content.some(file => file.isSelected)) && !this.allSelected;
-      this.setSelectedFiles(this.penRequestBatchResponse.content.filter(file => file.isSelected));
+      this.partialSelected = (item.selected || this.penRequestBatchResponse.content.some(file => file.isSelected)) && !this.allSelected;
+      
+      if (item.isSelected) {
+        const selectedFilesFromCurrentData = this.penRequestBatchResponse.content.filter(file => file.isSelected);
+        let newSelectedFiles = [...this.selectedFiles, ...selectedFilesFromCurrentData];
+        newSelectedFiles = uniqBy(newSelectedFiles, a => a.submissionNumber);
+        this.setSelectedFiles(newSelectedFiles);
+      } else {
+        const newSelectedFiles = this.selectedFiles.filter(file => file.submissionNumber !== item.submissionNumber);
+        this.setSelectedFiles(newSelectedFiles);
+      }
     },
     selectItem(item) {
       item.isSelected = !item.isSelected;
-      this.selectFile(item.isSelected);
+      this.selectFile(item);
     },
     selectAllFiles(selected) {
       this.penRequestBatchResponse.content.forEach(file => file.isSelected = selected);
       this.partialSelected = false;
-      this.setSelectedFiles(this.penRequestBatchResponse.content.filter(file => file.isSelected));
+      if (selected) {
+        const selectedFilesFromCurrentData = this.penRequestBatchResponse.content.filter(file => file.isSelected);
+        let newSelectedFiles = [...this.selectedFiles, ...selectedFilesFromCurrentData];
+        newSelectedFiles = uniqBy(newSelectedFiles, a => a.submissionNumber);
+        this.setSelectedFiles(newSelectedFiles);
+      } else {
+        const unselectedFilesFromCurrentData = this.penRequestBatchResponse.content.filter(file => !file.isSelected);
+        let newSelectedFiles = [ ...this.selectedFiles];
+        unselectedFilesFromCurrentData.forEach(file => {
+          newSelectedFiles = newSelectedFiles.filter(item => item.submissionNumber !== file.submissionNumber);
+        });
+        this.setSelectedFiles(newSelectedFiles);
+      }
     },
     selectFilters() {
       let statusFilters = [];
@@ -240,9 +277,8 @@ export default {
 
       this.$emit('filter-change', this.filters);
     },
-    pagination() {
+    pagination(isFilterOperation) {
       this.loadingTable = true;
-      this.setSelectedFiles();
       const req = {
         params: {
           pageNumber: this.pageNumber-1,
@@ -259,8 +295,10 @@ export default {
       ApiService.apiAxios
         .get(Routes.penRequestBatch.FILES_URL, req)
         .then(response => {
-          response.data && response.data.content && this.initializeFiles(response.data.content);
-          this.setPenRequestBatchResponse(response.data);
+          if (response.data && response.data.content) {
+            this.initializeFiles(response.data.content, isFilterOperation);
+            this.setPenRequestBatchResponse(response.data);
+          }
         })
         .catch(error => {
           console.log(error);
