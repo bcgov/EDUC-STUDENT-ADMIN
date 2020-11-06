@@ -176,10 +176,8 @@ describe('issueNewPen', () => {
     utils.getData.mockResolvedValue(prbStudentData);
     utils.postData.mockResolvedValue(resp);
     await penRequestBatch.issueNewPen(req, res);
-    expect(utils.postData.mock.calls[0][2].mincode).toBe(prbStudentData.minCode);
-    expect(utils.postData.mock.calls[0][2].twinStudentIDs).toEqual(twinStudentIDs);
-    expect(utils.postData.mock.calls[0][2].createUser).toBeUndefined();
-    expect(redisUtil.createSagaRecordInRedis).toHaveBeenCalledWith({
+    expectationsForUserActionsInPRBSaga(twinStudentIDs);
+    expect(redisUtil.createPenRequestBatchSagaRecordInRedis()).toHaveBeenCalledWith({
       sagaId: resp,
       penRequestBatchStudentID: req.params.studentId,
       sagaStatus: 'INITIATED',
@@ -204,6 +202,65 @@ describe('issueNewPen', () => {
 
 });
 
+function expectationsForUserActionsInPRBSaga(twinStudentIDs) {
+  expect(utils.postData.mock.calls[0][2].mincode).toBe(prbStudentData.minCode);
+  expect(utils.postData.mock.calls[0][2].twinStudentIDs).toEqual(twinStudentIDs);
+  expect(utils.postData.mock.calls[0][2].createUser).toBeUndefined();
+}
+
+describe('user match saga', () => {
+  let req;
+  let res;
+  const twinStudentIDs = ['201', '202'];
+
+  beforeEach(() => {
+    utils.getBackendToken.mockReturnValue('token');
+    req = mockRequest();
+    res = mockResponse();
+    req.params = {
+      id: 'c0a8014d-74e1-1d99-8174-e10db81f0000',
+      studentId: 'c0a8014d-74e1-1d99-8174-e10db8410001'
+    };
+    req.body = {
+      matchedPEN: '123456789',
+      twinStudentIDs
+    };
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return sagaId if success', async () => {
+    const resp = 'c0a8014d-74e1-1d99-8174-e10db8410003';
+    utils.getData.mockResolvedValue(prbStudentData);
+    utils.postData.mockResolvedValue(resp);
+    await penRequestBatch.userMatchSaga(req, res);
+    expectationsForUserActionsInPRBSaga(twinStudentIDs);
+    expect(redisUtil.createPenRequestBatchSagaRecordInRedis()).toHaveBeenCalledWith({
+      sagaId: resp,
+      penRequestBatchStudentID: req.params.studentId,
+      sagaStatus: 'INITIATED',
+      sagaName: 'PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_SAGA'
+    });
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+    expect(res.json).toHaveBeenCalledWith(resp);
+  });
+
+  it('should return INTERNAL_SERVER_ERROR if getData failed', async () => {
+    utils.getData.mockRejectedValue(new Error('Test error'));
+    await penRequestBatch.userMatchSaga(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+  });
+
+  it('should return INTERNAL_SERVER_ERROR if postData failed', async () => {
+    utils.getData.mockResolvedValue(prbStudentData);
+    utils.postData.mockRejectedValue(new Error('Test error'));
+    await penRequestBatch.userMatchSaga(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+  });
+
+});
 
 describe('getPenRequestBatchStudentById', () => {
   let req;
@@ -225,7 +282,7 @@ describe('getPenRequestBatchStudentById', () => {
 
   it('should return true sagaInProgress if penRequestBatchStudentID in redis', async () => {
     utils.getData.mockResolvedValue(prbStudentData);
-    redisUtil.getSagaEvents.mockResolvedValue([`{
+    redisUtil.getPenRequestBatchSagaEvents().mockResolvedValue([`{
       "sagaId": "c0a8014d-74e1-1d99-8174-e10db8410003",
       "penRequestBatchStudentID": "${prbStudentData.penRequestBatchStudentID}",
       "sagaStatus": "INITIATED"
@@ -238,7 +295,7 @@ describe('getPenRequestBatchStudentById', () => {
 
   it('should return false sagaInProgress if penRequestBatchStudentID not in redis', async () => {
     utils.getData.mockResolvedValue(prbStudentData);
-    redisUtil.getSagaEvents.mockResolvedValue([`{
+    redisUtil.getPenRequestBatchSagaEvents().mockResolvedValue([`{
       "sagaId": "c0a8014d-74e1-1d99-8174-e10db8410003",
       "penRequestBatchStudentID": "c0a8014d-74e1-1d99-8174-e10db8419999",
       "sagaStatus": "INITIATED"
