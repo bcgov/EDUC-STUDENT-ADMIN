@@ -5,7 +5,7 @@ const redisUtil = require('../../util/redis/redis-utils');
 const webSocket = require('../../socket/web-socket');
 
 const SagaTopics = ['PEN_REQUEST_RETURN_SAGA_TOPIC', 'PEN_REQUEST_UNLINK_SAGA_TOPIC', 'PEN_REQUEST_REJECT_SAGA_TOPIC', 'PEN_REQUEST_COMPLETE_SAGA_TOPIC',
-  'STUDENT_PROFILE_REQUEST_REJECT_SAGA_TOPIC','STUDENT_PROFILE_REQUEST_RETURN_SAGA_TOPIC','STUDENT_PROFILE_COMPLETE_SAGA_TOPIC',
+  'STUDENT_PROFILE_REQUEST_REJECT_SAGA_TOPIC', 'STUDENT_PROFILE_REQUEST_RETURN_SAGA_TOPIC', 'STUDENT_PROFILE_COMPLETE_SAGA_TOPIC',
   'PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_TOPIC'];
 const SagaEventWebSocketTopic = 'SAGA_EVENT_WS_TOPIC';
 
@@ -26,15 +26,21 @@ function subscribeSagaMessages(stan, opts, topic, handleMessage) {
 async function handleSagaMessage(msg, stan) {
   let isWebSocketBroadcastingRequired = false;
   const event = JSON.parse(msg.getData()); // it is always a JSON string of Event object.
-  if('COMPLETED' === event.sagaStatus || 'FORCE_STOPPED' === event.sagaStatus){
-    const recordFoundInRedis = await redisUtil.removeSagaRecordFromRedis(event); // if record is not found in redis means duplicate message which was already processed.
-    if(recordFoundInRedis){
+  if ('COMPLETED' === event.sagaStatus || 'FORCE_STOPPED' === event.sagaStatus) {
+    let recordFoundInRedis;
+    if (msg.getSubject().startsWith('PEN_REQUEST_BATCH')) {
+      recordFoundInRedis = await redisUtil.removePenRequestBatchSagaRecordFromRedis(event);
+    } else {
+      recordFoundInRedis = await redisUtil.removeSagaRecordFromRedis(event);
+    }
+    // if record is not found in redis means duplicate message which was already processed.
+    if (recordFoundInRedis) {
       isWebSocketBroadcastingRequired = true;
     }
-  }else if('INITIATED' === event.sagaStatus) {
+  } else if ('INITIATED' === event.sagaStatus) {
     isWebSocketBroadcastingRequired = true;
   }
-  if(isWebSocketBroadcastingRequired){
+  if (isWebSocketBroadcastingRequired) {
     stan.publish(SagaEventWebSocketTopic, msg.getData(), (err, guid) => {
       if (err) {
         log.error(`Error publishing to ${SagaEventWebSocketTopic}`, err);
@@ -46,7 +52,7 @@ async function handleSagaMessage(msg, stan) {
   msg.ack(); // manual acknowledgement that message was received and processed successfully.
 }
 
-function broadCastMessageToWebSocketClients(msg){
+function broadCastMessageToWebSocketClients(msg) {
   const connectedClients = webSocket.getWebSocketClients();
   if (connectedClients && connectedClients.length > 0) {
     for (const connectedClient of connectedClients) {

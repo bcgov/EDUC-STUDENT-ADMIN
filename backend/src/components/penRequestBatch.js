@@ -1,6 +1,6 @@
 'use strict';
 const config = require('../config/index');
-const { logApiError, postData, getBackendToken, getData, putData, errorResponse, getPaginatedListForSCGroups, getUser, stripAuditColumns } = require('./utils');
+const {logApiError, postData, getBackendToken, getData, putData, errorResponse, getPaginatedListForSCGroups, getUser, stripAuditColumns} = require('./utils');
 const {FILTER_OPERATION, CONDITION, VALUE_TYPE} = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const redisUtil = require('../util/redis/redis-utils');
@@ -64,7 +64,7 @@ async function getPENBatchRequestStats(req, res) {
 
 async function updatePrbStudentInfoRequested(req, res) {
   const token = getBackendToken(req, res);
-  if(!token) {
+  if (!token) {
     return res.status(HttpStatus.UNAUTHORIZED).json({
       message: 'No access token'
     });
@@ -75,14 +75,14 @@ async function updatePrbStudentInfoRequested(req, res) {
     let studentData = await getData(token, url);
 
     const studentReq = {
-      ... studentData,
+      ...studentData,
       infoRequest: req.body.infoRequest,
       penRequestBatchStudentStatusCode: req.body.penRequestBatchStudentStatusCode
     };
 
     const studentRes = await putData(token, url, studentReq, getUser(req).idir_username);
     return res.status(200).json(studentRes);
-  } catch(e) {
+  } catch (e) {
     logApiError(e, 'updateStudentInfoRequested', 'Error updating a PrbStudent.');
     return errorResponse(res);
   }
@@ -96,7 +96,7 @@ async function getPenRequestBatchStudentById(req, res) {
     studentData.repeatRequestOriginalStatus = studentData.penRequestBatchStudentStatusCode;
     await addSagaStatus([studentData]);
     return res.status(200).json(studentData);
-  } catch(e) {
+  } catch (e) {
     logApiError(e, 'getPenRequestBatchStudentById', 'Error getting a PrbStudent.');
     return errorResponse(res);
   }
@@ -104,7 +104,7 @@ async function getPenRequestBatchStudentById(req, res) {
 
 async function getPenRequestBatchStudentMatchOutcome(req, res) {
   const token = getBackendToken(req, res);
-  if(!token) {
+  if (!token) {
     return res.status(HttpStatus.UNAUTHORIZED).json({
       message: 'No access token'
     });
@@ -123,7 +123,7 @@ async function getPenRequestBatchStudentMatchOutcome(req, res) {
       logApiError(e, 'getPenRequestBatchStudentMatchOutcome', 'Error occurred while attempting to GET student records.');
       return errorResponse(res);
     });
-  } catch(e) {
+  } catch (e) {
     logApiError(e, 'getPenRequestBatchStudentMatchOutcome', 'Error getting pen request student possible matches.');
     return errorResponse(res);
   }
@@ -135,10 +135,10 @@ async function issueNewPen(req, res) {
   try {
     const url = `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${req.params.id}/student/${req.params.studentId}`;
     let studentData = await getData(token, url);
-    
+
 
     const sagaReq = {
-      ... stripAuditColumns(studentData),
+      ...stripAuditColumns(studentData),
       mincode: studentData.minCode,
       twinStudentIDs: req.body.twinStudentIDs
     };
@@ -151,22 +151,69 @@ async function issueNewPen(req, res) {
       sagaStatus: 'INITIATED',
       sagaName: 'PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA'
     };
-    log.info(`going to store event object in redis for issueNewPen request :: `, event);
-    await redisUtil.createSagaRecordInRedis(event);
+    log.info('going to store event object in redis for issueNewPen request :: ', event);
+    await redisUtil.createPenRequestBatchSagaRecordInRedis(event);
 
     return res.status(200).json(sagaId);
-  } catch(e) {
+  } catch (e) {
     logApiError(e, 'issueNewPen', 'Error issuing new pen.');
     return errorResponse(res);
   }
 }
 
+/**
+ * This method will do the following.
+ *   <pre>
+ *     1. First get the PRB Student and only update required fields
+ *     2. call PRB Saga API to initiate the saga process
+ *     3. Add saga record to redis and return success if API call is success, return error otherwise.
+ *   </pre>
+ * @param req the request
+ * @param res the response
+ * @returns {Promise<*>}
+ */
+async function userMatchSaga(req, res) {
+  const token = getBackendToken(req, res);
+
+  try {
+    if(!req.body.matchedPEN || req.body.matchedPEN.length !== 9){
+      return res.status(400).json({'message':'Matching student PEN is mandatory and should be exactly 9 digits in this flow.'});
+    }
+    const url = `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${req.params.id}/student/${req.params.studentId}`;
+    let studentData = await getData(token, url);
+    studentData = stripAuditColumns(studentData);
+    studentData.assignedPEN = req.body.matchedPEN;
+
+    const sagaReq = {
+      ...studentData,
+      mincode: studentData.minCode,
+      twinStudentIDs: req.body.twinStudentIDs
+    };
+
+    const sagaId = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/user-match`, sagaReq, null, getUser(req).idir_username);
+
+    const event = {
+      sagaId: sagaId,
+      penRequestBatchStudentID: studentData.penRequestBatchStudentID,
+      sagaStatus: 'INITIATED',
+      sagaName: 'PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_SAGA'
+    };
+    log.info('going to store event object in redis for user match request :: ', event);
+    await redisUtil.createPenRequestBatchSagaRecordInRedis(event);
+
+    return res.status(200).json(sagaId);
+  } catch (e) {
+    logApiError(e, 'userMatchSaga', 'Error user matching pen request to an existing student.');
+    return errorResponse(res);
+  }
+}
+
 async function addSagaStatus(prbStudents) {
-  let eventsArrayFromRedis = await redisUtil.getSagaEvents() || [];
+  let eventsArrayFromRedis = await redisUtil.getPenRequestBatchSagaEvents() || [];
   eventsArrayFromRedis = eventsArrayFromRedis.map(event => JSON.parse(event));
   prbStudents && prbStudents.forEach(prbStudent => {
-    if(prbStudent.penRequestBatchStudentID) {
-      prbStudent.sagaInProgress = eventsArrayFromRedis.some(event => 
+    if (prbStudent.penRequestBatchStudentID) {
+      prbStudent.sagaInProgress = eventsArrayFromRedis.some(event =>
         event.penRequestBatchStudentID === prbStudent.penRequestBatchStudentID
       );
     }
@@ -180,5 +227,6 @@ module.exports = {
   getPenRequestBatchStudents: getPaginatedListForSCGroups('getPenRequestBatchStudents', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/student/paginated`, addSagaStatus),
   getPenRequestBatchStudentById,
   getPenRequestBatchStudentMatchOutcome,
-  issueNewPen
+  issueNewPen,
+  userMatchSaga
 };
