@@ -72,8 +72,11 @@ nconf.defaults({
     penServices: {
       rootURL: process.env.PEN_SERVICES_API_URL,
       nextPenURL: process.env.PEN_SERVICES_API_URL + '/next-pen-number',
-      validateDemographicsURL: process.env.PEN_SERVICES_API_URL + '/validation/student-request'
-    }
+      validateDemographicsURL: process.env.PEN_SERVICES_API_URL + '/validation/student-request',
+      prbValidationFieldCodesURL: process.env.PEN_SERVICES_API_URL + '/validation/issue-field-code',
+      prbValidationSeverityCodesURL: process.env.PEN_SERVICES_API_URL + '/validation/issue-severity-code',
+      prbValidationTypeCodesURL: process.env.PEN_SERVICES_API_URL + '/validation/issue-type-code'
+}
   },
   oidc: {
     publicKey: process.env.SOAM_PUBLIC_KEY,

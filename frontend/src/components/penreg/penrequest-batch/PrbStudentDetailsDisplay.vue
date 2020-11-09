@@ -77,10 +77,10 @@
               <tr>
                 <td v-for="header in props.headers" :key="header.id" :class="header.id">
                   <div class="table-cell" :class="[props.item[header.doubleValue] ? 'value-half-width':'']">
-                    <span :class="['top-column-item',{'mark-field-value-changed':isFieldValueUpdated(header.topValue)}]">
+                    <span :class="['top-column-item',{'mark-field-value-changed':isFieldValueUpdated(header.topValue)}, {'mark-field-value-errored':isFieldValueErrored(header.topValue)}]">
                       <span><strong>{{ props.item[header.topValue] || ' ' }}</strong></span>
                     </span>
-                    <span :class="['double-column-item-value',{'mark-field-value-changed':isFieldValueUpdated(header.doubleValue)}]"><strong>{{props.item[header.doubleValue]}}</strong></span>
+                    <span :class="['double-column-item-value',{'mark-field-value-changed':isFieldValueUpdated(header.doubleValue)}, {'mark-field-value-errored':isFieldValueErrored(header.doubleValue)}]"><strong>{{props.item[header.doubleValue]}}</strong></span>
                   </div>
                 </td>
               </tr>
@@ -98,7 +98,7 @@
               <tr>
                 <td v-for="header in props.headers" :key="header.id" :class="header.id">
                   <div class="table-cell">
-                    <span  :class="['top-column-item',{'mark-field-value-changed':isFieldValueUpdated(header.value)}]">
+                    <span  :class="['top-column-item',{'mark-field-value-changed':isFieldValueUpdated(header.value)}, {'mark-field-value-errored':isFieldValueErrored(header.value)}]">
                       <span><strong>{{ props.item[header.value] || ' ' }}</strong></span>
                     </span>
                   </div>
@@ -107,6 +107,16 @@
             </template>
           </v-data-table>
         </div>
+      </v-row>
+      <v-row v-if="validationErrorFields && validationErrorFields.length" class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
+        <v-card elevation="0">
+          <v-card-title class="pb-0">Error Details</v-card-title>
+        <v-data-table
+          :headers="validationErrorFieldHeaders"
+          :items="validationErrorFields"
+          hide-default-footer
+        ></v-data-table>
+        </v-card>
       </v-row>
       <v-row v-if="prbStudent.infoRequest" no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
         <v-col cols="6">
@@ -136,7 +146,7 @@
           </article>
         </v-container>
       </v-row>
-      <v-row class="full-width" v-if="showPossibleMatch">
+      <v-row class="full-width" v-if="showPossibleMatch && !(validationErrorFields && validationErrorFields.length)">
         <PenMatchResultsTable :student="prbStudent" :is-comparison-required="true"
                               :is-pen-link="true"
                               :is-refresh-required="true"
@@ -155,6 +165,7 @@ import {formatPrbStudent} from '@/utils/penrequest-batch/format';
 import ApiService from '../../../common/apiService';
 import {
   PEN_REQ_BATCH_STUDENT_REQUEST_CODES,
+  PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER,
   Routes,
   SEARCH_FILTER_OPERATION,
   SEARCH_CONDITION, 
@@ -162,15 +173,15 @@ import {
 } from '@/utils/constants';
 import {cloneDeep, isEmpty, sortBy} from 'lodash';
 import alterMixin from '../../../mixins/alterMixin';
-import SearchDemographicModal from "@/components/common/SearchDemographicModal";
-import PenMatchResultsTable from "@/components/common/PenMatchResultsTable";
+import SearchDemographicModal from '@/components/common/SearchDemographicModal';
+import PenMatchResultsTable from '@/components/common/PenMatchResultsTable';
 import {
   constructPenMatchObjectFromStudent,
   deepCloneObject,
   getDemogValidationResults,
   getPossibleMatches
 } from '@/utils/common';
-import {formatDob, formatPostalCode} from "@/utils/format";
+import {formatDob, formatPostalCode} from '@/utils/format';
 
 export default {
   name: 'PrbStudentDetailsDisplay',
@@ -238,6 +249,12 @@ export default {
       prbStudentCopy:{},
       isIssuingNewPen: false,
       prbStudentNavInfo: [],
+      validationErrorFields: null,
+      validationErrorFieldHeaders: [
+        { text: 'Field Name', value: 'uiFieldName' },
+        { text: 'Error Description', value: 'penRequestBatchValidationIssueTypeCode' }
+      ],
+      originalStatusCode: null
     };
   },
   watch: {
@@ -259,19 +276,19 @@ export default {
       if (val) {
         const notificationData = JSON.parse(val);
         if (notificationData && notificationData.sagaName === 'PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA' && notificationData.sagaStatus === 'COMPLETED') {
-            const updatedPrbStudent = JSON.parse(notificationData.eventPayload);
-            if(updatedPrbStudent?.penRequestBatchStudentID === this.prbStudent.penRequestBatchStudentID) {
-              this.setSuccessAlert('The request to issue new PEN is now completed.');
-              this.setSelectedRecords();
-              this.initializeDetails();
-            }
+          const updatedPrbStudent = JSON.parse(notificationData.eventPayload);
+          if(updatedPrbStudent?.penRequestBatchStudentID === this.prbStudent.penRequestBatchStudentID) {
+            this.setSuccessAlert('The request to issue new PEN is now completed.');
+            this.setSelectedRecords();
+            this.initializeDetails();
+          }
         }
       }
     },
   },
   computed: {
     ...mapState('setNavigation', ['currentRoute']),
-    ...mapState('penRequestBatch', ['selectedFiles']),
+    ...mapState('penRequestBatch', ['selectedFiles', 'prbValidationFieldCodes', 'prbValidationIssueSeverityCodes', 'prbValidationIssueTypeCodes']),
     ...mapState('prbStudentSearch', ['selectedRecords']),
     ...mapState('notifications', ['notification']),
     disableInfoReqBtn() {
@@ -342,6 +359,8 @@ export default {
         if(this.prbStudent?.sagaInProgress) {
           this.setSuccessAlert('The request to issue new PEN is currently being processed.');
         }
+
+        this.originalStatusCode = this.prbStudent.penRequestBatchStudentStatusCode; //storing original status to revert to in the event a modified search returned validation error is corrected
         
       } catch (error) {
         this.setFailureAlert('An error occurred while loading the PEN request. Please try again later.');
@@ -526,7 +545,10 @@ export default {
       this.prbStudent = deepCloneObject(studentModified);
       this.prbStudent.postalCode = this.prbStudent.postalCode? formatPostalCode(this.prbStudent.postalCode):'';
       this.prbStudent.dob = formatDob(this.prbStudent.dob,'uuuuMMdd','uuuu/MM/dd');
-      await Promise.all([this.runDemogValidation(), this.runPenMatch()]);
+      const hasValidationFailure = await this.runDemogValidation();
+      if(!hasValidationFailure) {
+        await this.runPenMatch();
+      }
     },
     async loadPossibleMatchesFromBatchAPI(){
       this.isLoadingMatches = true;
@@ -539,7 +561,7 @@ export default {
       };
       try{
         const result = await ApiService.apiAxios.get(Routes.penRequestBatch.MATCH_OUTCOME_URL, params);
-        this.possibleMatches = result.data;
+        this.possibleMatches = result.data || [];
       }catch (e){
         console.log(e);
         this.setFailureAlert('Error in retrieving possible matches from batch api.');
@@ -556,7 +578,7 @@ export default {
         const result = await getPossibleMatches(constructPenMatchObjectFromStudent(this.modalStudent));
         this.isIssuePenDisabled = false;
         this.showPossibleMatch = true;
-        this.possibleMatches = result.data;
+        this.possibleMatches = result.data || [];
         if(this.prbStudent?.penRequestBatchStudentStatusCode != PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR) {
           this.prbStudent.penRequestBatchStudentStatusCode = this.getPrbStatusCodeFromPenMatchStatus(result.penStatus);
         } else if(! this.possibleMatches.some(matched => this.prbStudent?.assignedPEN?.replace(/\D/g,'') === matched.pen)) {
@@ -577,6 +599,12 @@ export default {
       }
       return false;
     },
+    isFieldValueErrored(fieldName) {
+      if(fieldName && this.validationErrorFields) {
+        return this.validationErrorFields.filter(x => PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER[x.penRequestBatchValidationFieldCode] === fieldName)?.length;
+      }
+      return false;
+    },
     async runDemogValidation() {
       try {
         const payload = {
@@ -585,7 +613,20 @@ export default {
           }
         };
         const result = await getDemogValidationResults(payload);
-        return result.length > 0;
+        this.validationErrorFields = result.filter(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR')
+          .map(y => {
+            y.uiFieldName = this.prbValidationFieldCodes.find(obj => obj.code === y.penRequestBatchValidationFieldCode)?.label;
+            y.penRequestBatchValidationIssueTypeCode = this.prbValidationIssueTypeCodes.find(obj => obj.code === y.penRequestBatchValidationIssueTypeCode)?.description;
+            return y;
+          });
+        if(this.validationErrorFields?.length > 0) {
+          this.prbStudent.penRequestBatchStudentStatusCode = PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR;
+        }
+        else {
+          this.prbStudent.penRequestBatchStudentStatusCode = this.originalStatusCode;
+        }
+
+        return this.validationErrorFields?.length > 0;
       } catch (error) {
         console.log(error);
       }
@@ -703,6 +744,10 @@ export default {
   pre {
     font-family: inherit;
     font-size: inherit;
+  }
+
+  .mark-field-value-errored {
+    color: #D8292F !important;
   }
 
   .mark-field-value-changed {

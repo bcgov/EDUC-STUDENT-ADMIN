@@ -11,7 +11,10 @@ const getDefaultState = () => {
     prbStudentStatuses: [],
     prbStudentStatusFilters: null,
     selectedSchoolGroup: null,
-    studentInfoMacros: null
+    studentInfoMacros: [],
+    prbValidationFieldCodes: [],
+    prbValidationIssueSeverityCodes: [],
+    prbValidationIssueTypeCodes: []
   };
 };
 
@@ -42,6 +45,15 @@ export default {
     },
     setStudentInfoMacros: (state, studentInfoMacros) => {
       state.studentInfoMacros = studentInfoMacros;
+    },
+    setPrbValidationFieldCodes: (state, prbValidationFieldCodes) => {
+      state.prbValidationFieldCodes = prbValidationFieldCodes;
+    },
+    setPrbValidationIssueSeverityCodes: (state, prbValidationIssueSeverityCodes) => {
+      state.prbValidationIssueSeverityCodes = prbValidationIssueSeverityCodes;
+    },
+    setPrbValidationIssueTypeCodes: (state, prbValidationIssueTypeCodes) => {
+      state.prbValidationIssueTypeCodes = prbValidationIssueTypeCodes;
     }
   },
   actions: {
@@ -50,7 +62,16 @@ export default {
         dispatch('student/getCodes', null, { root: true });
         if(state.prbStudentStatuses?.length === 0) {
           ApiService.getPenRequestBatchStudentStatusCodes().then(response => commit('setPrbStudentStatuses', response.data));
-        } 
+        }
+        if(state.prbValidationFieldCodes?.length === 0) {
+          ApiService.getPrbValidationFieldCodes().then(response => commit('setPrbValidationFieldCodes', response.data));
+        }
+        if(state.prbValidationIssueSeverityCodes?.length === 0) {
+          ApiService.getPrbValidationIssueSeverityCodes().then(response => commit('setPrbValidationIssueSeverityCodes', response.data));
+        }
+        if(state.prbValidationIssueTypeCodes?.length === 0) {
+          ApiService.getPrbValidationIssueTypeCodes().then(response => commit('setPrbValidationIssueTypeCodes', response.data));
+        }
       }
     },
     async getMacros({ commit, state }) {
