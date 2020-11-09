@@ -27,7 +27,7 @@ describe('searchStudent', () => {
     expect(utils.getData).toHaveBeenCalledWith('token', config.get('server:student:rootURL') + '/paginated', params);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith({});
-  }
+  };
 
   beforeEach(() => {
     utils.getBackendToken.mockReturnValue('token');
@@ -71,7 +71,7 @@ describe('searchStudent', () => {
   it('should return 500 if getData fails', async () => {
     utils.getData.mockRejectedValue(new ApiError());
 
-    await studentSearch.searchStudent(req,res)
+    await studentSearch.searchStudent(req,res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
 });

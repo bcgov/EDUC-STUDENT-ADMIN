@@ -50,7 +50,7 @@ describe('getPaginatedListForSCGroups', () => {
 
   beforeEach(() => {
     utils.__Rewire__('getBackendToken', () => 'token');
-    utils.__Rewire__('getData', () => Promise.resolve({content: ["data"]}));
+    utils.__Rewire__('getData', () => Promise.resolve({content: ['data']}));
     
     req = mockRequest();
     res = mockResponse();
@@ -81,7 +81,7 @@ describe('getPaginatedListForSCGroups', () => {
   it('should call handleResponse if success', async () => {
     await getPenRequestBatchStudents(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
-    expect(handleResponse).toHaveBeenCalledWith(["data"]);
+    expect(handleResponse).toHaveBeenCalledWith(['data']);
   });
 
 });
