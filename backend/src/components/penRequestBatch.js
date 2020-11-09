@@ -1,10 +1,14 @@
 'use strict';
 const config = require('../config/index');
-const {logApiError, postData, getBackendToken, getData, putData, errorResponse, getPaginatedListForSCGroups, getUser, stripAuditColumns} = require('./utils');
+const {
+  logApiError, postData, getBackendToken, getData, putData, errorResponse,
+  getPaginatedListForSCGroups, getUser, stripAuditColumns, logDebug
+} = require('./utils');
 const {FILTER_OPERATION, CONDITION, VALUE_TYPE} = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const redisUtil = require('../util/redis/redis-utils');
 const log = require('./logger');
+const lodash = require('lodash');
 
 async function getPENBatchRequestStats(req, res) {
   const schoolGroupCodes = [
@@ -165,8 +169,9 @@ async function issueNewPen(req, res) {
  * This method will do the following.
  *   <pre>
  *     1. First get the PRB Student and only update required fields
- *     2. call PRB Saga API to initiate the saga process
- *     3. Add saga record to redis and return success if API call is success, return error otherwise.
+ *     2. call student api to get student twins and only add twins which is not already existing, to avoid creation of duplicate twins.
+ *     3. call PRB Saga API to initiate the saga process
+ *     4. Add saga record to redis and return success if API call is success, return error otherwise.
  *   </pre>
  * @param req the request
  * @param res the response
@@ -174,20 +179,22 @@ async function issueNewPen(req, res) {
  */
 async function userMatchSaga(req, res) {
   const token = getBackendToken(req, res);
-
   try {
-    if(!req.body.matchedPEN || req.body.matchedPEN.length !== 9){
-      return res.status(400).json({'message':'Matching student PEN is mandatory and should be exactly 9 digits in this flow.'});
+    if (!req.body.matchedPEN || req.body.matchedPEN.length !== 9) {
+      return res.status(400).json({'message': 'Matching student PEN is mandatory and should be exactly 9 digits in this flow.'});
     }
-    const url = `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${req.params.id}/student/${req.params.studentId}`;
-    let studentData = await getData(token, url);
-    studentData = stripAuditColumns(studentData);
+    const studentTwinUrl = `${config.get('server:student:rootURL')}/${req.body.studentID}/twins`;
+    const prbStudentUrl = `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${req.params.id}/student/${req.params.studentId}`;
+    const results = await Promise.all([getData(token, studentTwinUrl), getData(token, prbStudentUrl)]);
+    const studentData = stripAuditColumns(results[1]);
     studentData.assignedPEN = req.body.matchedPEN;
-
+    studentData.studentID = req.body.studentID;
+    const studentTwinIds = filterStudentTwinIds(results[0], req.body.twinStudentIDs);
+    logDebug('student twin ids after filter ::', studentTwinIds);
     const sagaReq = {
       ...studentData,
       mincode: studentData.minCode,
-      twinStudentIDs: req.body.twinStudentIDs
+      twinStudentIDs: studentTwinIds
     };
 
     const sagaId = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/user-match`, sagaReq, null, getUser(req).idir_username);
@@ -204,8 +211,26 @@ async function userMatchSaga(req, res) {
     return res.status(200).json(sagaId);
   } catch (e) {
     logApiError(e, 'userMatchSaga', 'Error user matching pen request to an existing student.');
+    if (e.status === HttpStatus.CONFLICT) {
+      return errorResponse(res, 'Another saga in progress', HttpStatus.CONFLICT);
+    }
     return errorResponse(res);
   }
+}
+
+/**
+ * This function will remove the duplicates and will return only those student ids which are not already twinned to the student.
+ * @param studentTwinResponse the response from student api containing all the twins for the student.
+ * @param studentTwinIds the twinIds which needs to be added for the student.
+ */
+function filterStudentTwinIds(studentTwinResponse, studentTwinIds) {
+  logDebug('studentTwinResponse ::', studentTwinResponse);
+  logDebug('studentTwinIds ::', studentTwinIds);
+  if (studentTwinResponse?.length > 0) {
+    const twinStudentIDsFromStudentAPI = lodash.map(studentTwinResponse, 'twinStudentID');
+    return lodash.difference(twinStudentIDsFromStudentAPI, studentTwinIds);
+  }
+  return studentTwinIds;
 }
 
 async function addSagaStatus(prbStudents) {

@@ -10,6 +10,7 @@ const cache = require('memory-cache');
 const {ServiceError, ApiError} = require('./error');
 const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
 const {FILTER_OPERATION, VALUE_TYPE} = require('../util/constants');
+const fsStringify = require('fast-safe-stringify');
 
 let discovery = null;
 let memCache = new cache.Cache();
@@ -55,12 +56,9 @@ async function deleteData(token, url) {
       }
     };
 
-    log.info('delete Data Url', url);
+    logRequestData('DELETE', url);
     const response = await axios.delete(url, delConfig);
-    log.info(`delete Data Status for url ${url} :: is :: `, response.status);
-    log.info(`delete Data StatusText for url ${url}  :: is :: `, response.statusText);
-    log.verbose(`delete Data Response for url ${url}  :: is :: `, minify(response.data));
-
+    logResponseData(url, response, 'DELETE');
     return response.data;
   } catch (e) {
     log.error('deleteData Error', e.response ? e.response.status : e.message);
@@ -73,7 +71,7 @@ async function deleteData(token, url) {
 async function getData(token, url, params) {
   try {
     params = addTokenToHeader(params, token);
-    log.info('get Data Url', url);
+    logRequestData('GET', url);
     const response = await axios.get(url, params);
     logResponseData(url, response, 'GET');
     return response.data;
@@ -82,13 +80,13 @@ async function getData(token, url, params) {
   }
 }
 
-function logApiError(e, functionName, message) {
+async function logApiError(e, functionName, message) {
   if (message) {
     log.error(message);
   }
   log.error(functionName, ' Error', e.stack);
   if (e.response && e.response.data) {
-    log.error(JSON.stringify(e.response.data));
+    log.error(fsStringify(e.response.data));
   }
 }
 
@@ -97,21 +95,34 @@ function minify(obj, keys = ['documentData']) {
     result[key] = keys.includes(key) && lodash.isString(value) ? value.substring(0, 1) + ' ...' : value);
 }
 
-function logResponseData(url, response, operationType) {
+async function logResponseData(url, response, operationType) {
   log.info(`${operationType} Data Status for url ${url} :: is :: `, response.status);
   log.info(`${operationType} Data StatusText for url ${url}  :: is :: `, response.statusText);
   log.verbose(`${operationType} Data Response for url ${url}  :: is :: `, typeof response.data === 'string' ? response.data : minify(response.data));
 }
 
+/**
+ *
+ * @param operationType the type of Operation {POST, PUT, GET, DELETE}
+ * @param url the url being hit
+ * @param data the data passed onto the http request.
+ * @returns {Promise<void>}
+ */
+async function logRequestData(operationType, url, data) {
+  log.info(`${operationType} Data Url`, url);
+  if (data) {
+    log.verbose(`${operationType} Data Req`, typeof data === 'string' ? data : minify(data));
+  }
+}
+
 async function postData(token, url, data, params, user) {
   try {
     params = addTokenToHeader(params, token);
-    log.info('post Data Url', url);
-    log.verbose('post Data Req', minify(data));
-    if(user && typeof user === 'string'){
+    if (user && typeof user === 'string') {
       data.createUser = user;
-      data.updateUser = user;  
+      data.updateUser = user;
     }
+    logRequestData('POST', url, data);
     const response = await axios.post(url, data, params);
     logResponseData(url, response, 'POST');
     return response.data;
@@ -133,13 +144,10 @@ async function putData(token, url, data, user) {
         Authorization: `Bearer ${token}`,
       }
     };
-
-    log.info('put Data Url', url);
-    log.verbose('put Data Req', data);
-
     if(user && typeof user === 'string'){
       data.updateUser = user;
     }
+    logRequestData('PUT', url, data);
     const response = await axios.put(url, data, putDataConfig);
     logResponseData(url, response, 'PUT');
     return response.data;
@@ -398,7 +406,21 @@ const utils = {
 
     return await utils.getData(token, config.get('server:student:rootURL') + '/paginated', params);
   },
-
+  async logDebug(message, data) {
+    log.debug(message, data ?? '');
+  },
+  async logInfo(message, data) {
+    log.info(message, data ?? '');
+  },
+  async logError(message, data) {
+    log.error(message, data ?? '');
+  },
+  async logSilly(message, data) {
+    log.silly(message, data ?? '');
+  },
+  async logVerbose(message, data) {
+    log.verbose(message, data ?? '');
+  },
   getBackendToken,
   getData,
   logApiError,
