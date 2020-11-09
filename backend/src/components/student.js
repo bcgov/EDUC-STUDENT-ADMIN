@@ -72,7 +72,7 @@ async function getStudentTwinsByStudentId(req, res) {
   try{
     return res.status(200).json(await utils.getData(token, `${config.get('server:student:rootURL')}/${id}/twins`));
   }catch (e) {
-    logApiError(e, 'getStudentByStudentId', 'Error occurred while attempting to GET student.');
+    logApiError(e, 'getStudentTwinsByStudentId', 'Error occurred while attempting to GET student twins.');
     return errorResponse(res);
   }
 }
