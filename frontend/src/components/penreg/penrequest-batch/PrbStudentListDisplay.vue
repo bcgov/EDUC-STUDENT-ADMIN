@@ -283,7 +283,7 @@ export default {
   computed:{
     ...mapGetters('student', ['gradeCodeObjects']),
     ...mapState('student', ['genders']),
-    ...mapState('prbStudentSearch', ['pageNumber', 'prbStudentSearchResponse', 'selectedStudentStatus', 'currentPrbStudentSearchParams', 'prbStudentSearchCriteria']),
+    ...mapState('prbStudentSearch', ['pageNumber', 'selectedRecords', 'prbStudentSearchResponse', 'selectedStudentStatus', 'currentPrbStudentSearchParams', 'prbStudentSearchCriteria']),
     ...mapState('penRequestBatch', ['selectedFiles']),
     prbStudentSearchParams: {
       get(){
@@ -317,7 +317,7 @@ export default {
     pageNumber: {
       handler() {
         this.searchLoading = true;
-        this.retrievePenRequests(this.prbStudentSearchCriteria)
+        this.retrievePenRequests(this.prbStudentSearchCriteria, true)
           .finally(() => {
             this.searchLoading = false;
           });
@@ -331,6 +331,7 @@ export default {
   },
   mounted() {
     this.$store.dispatch('penRequestBatch/getCodes');
+    this.setSelectedRecords();
     this.initialSearch();
   },
   methods: {
@@ -405,12 +406,12 @@ export default {
     searchPenRequests(initial = false) {
       this.searchLoading = true;
       this.prbStudentSearchResultsKey += 1; //forces prbStudentSearchResults to rerender and update curPage
-      this.setSelectedRecords();
+      //this.setSelectedRecords();
       this.setPageNumber(1);
 
       if(initial || (this.$refs.prbStudentSearchForm.validate() && this.searchHasValues())) {
         const searchCriteria = this.prbStudentSearchCriteriaList(this.prbStudentSearchParams);
-        this.retrievePenRequests(searchCriteria)
+        this.retrievePenRequests(searchCriteria, false)
           .then(() => {
             this.setCurrentPrbStudentSearchParams(JSON.parse(JSON.stringify(this.prbStudentSearchParams)));
             this.setPrbStudentSearchCriteria(searchCriteria);
@@ -426,9 +427,22 @@ export default {
         this.searchLoading = false;
       }
     },
-    initializePrbStudents(students) {
+    initializePrbStudents(students, isPagingOperation) {
+      students.forEach(rec => {
+        rec.isSelected = this.isSelected(rec);
+      });
+
+      if (!isPagingOperation && this.selectedRecords.length > 0) {
+        // drop selected rows if it is not in the current data set
+        const newSelectedRecords = this.selectedRecords.filter(rec => students.find(item => item.penRequestBatchStudentID === rec.penRequestBatchStudentID));
+        this.setSelectedRecords(newSelectedRecords);
+      }
       formatPrbStudents(students);
       return students;
+    },
+    isSelected(rec) {
+      const foundItem = this.selectedRecords?.find(item => item?.penRequestBatchStudentID === rec.penRequestBatchStudentID);
+      return !!foundItem;
     },
     prbStudentSearchCriteriaList(searchParams) {
       let optionalCriteriaList = [this.prbStudentStatusSearchCriteria];
@@ -467,7 +481,7 @@ export default {
 
       return searchCriteriaList;
     },
-    retrievePenRequests(searchCriteria) {
+    retrievePenRequests(searchCriteria, isPagingOperation) {
       const params = {
         params: {
           pageNumber: this.pageNumber-1,
@@ -484,7 +498,7 @@ export default {
       return ApiService.apiAxios
         .get(Routes['penRequestBatch'].STUDENTS_SEARCH_URL, params)
         .then(response => {
-          response.data && response.data.content && this.initializePrbStudents(response.data.content);
+          response.data && response.data.content && this.initializePrbStudents(response.data.content, isPagingOperation);
           this.setPrbStudentSearchResponse(response.data);
         })
         .catch(error => {

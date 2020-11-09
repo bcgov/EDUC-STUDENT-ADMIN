@@ -79,7 +79,7 @@ import { mapMutations, mapState } from 'vuex';
 import ApiService from '../../../common/apiService';
 import {Routes} from '../../../utils/constants';
 import {formatMinCode} from '../../../utils/format';
-const {uniqBy} = require('lodash');
+import {uniqBy} from 'lodash';
 
 export default {
   name: 'PenRequestBatchList',

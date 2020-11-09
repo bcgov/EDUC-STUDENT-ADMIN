@@ -44,7 +44,7 @@
       <template v-slot:item="props">
         <tr :class="{'selected-record' : props.item.isSelected}" @click="selectItem(props.item)">
           <td v-for="header in props.headers" :key="header.id" :class="header.id">
-            <v-checkbox v-if="header.type" class="record-checkbox header-checkbox" color="#606060" :value="props.item.isSelected"></v-checkbox>
+            <v-checkbox v-if="header.type" class="record-checkbox header-checkbox" color="#606060" v-model="props.item.isSelected" @click.stop="handleRecordCheckBoxClicked(props.item)"></v-checkbox>
             <div v-else class="table-cell">
               <span class="top-column-item">
                 <a v-if="header.topValue === 'submissionNumber'" class="submission" @click="handleSubmissionNumberClicked">{{props.item[header.topValue] }}</a>
@@ -85,7 +85,7 @@
 import { mapMutations, mapState } from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
 import PrbStudentStatusChip from './PrbStudentStatusChip';
-import { sortBy, uniq, values } from 'lodash';
+import { sortBy, uniq, values, uniqBy } from 'lodash';
 import router from '../../../router';
 
 export default {
@@ -192,9 +192,23 @@ export default {
       };
       router.push({name: 'prbStudentDetails', query});
     },
+    handleRecordCheckBoxClicked(item) {
+      this.selectRecord(item);
+    },
     selectItem(item) {
       item.isSelected = !item.isSelected;
-      this.setSelectedRecords(this.prbStudentSearchResponse.content.filter(rec => rec.isSelected));
+      this.selectRecord(item);
+    },
+    selectRecord(item) {
+      if (item.isSelected) {
+        const selectedRecordsFromCurrentData = this.prbStudentSearchResponse.content.filter(file => file.isSelected);
+        let newSelectedRecords = [...this.selectedRecords, ...selectedRecordsFromCurrentData];
+        newSelectedRecords = uniqBy(newSelectedRecords, a => a.penRequestBatchStudentID);
+        this.setSelectedRecords(newSelectedRecords);
+      } else {
+        const newSelectedRecords = this.selectedRecords.filter(rec => rec.submissionNumber !== item.submissionNumber);
+        this.setSelectedRecords(newSelectedRecords);
+      }
     },
     handleSubmissionNumberClicked(event) {
       event.stopPropagation();
