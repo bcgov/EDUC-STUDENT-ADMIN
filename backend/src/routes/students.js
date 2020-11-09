@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../components/auth');
 const {getStudentById} = require('../components/requests');
 const {searchStudent} = require('../components/studentSearch');
-const {createNewStudent, updateStudent, getStudentByStudentId, getStudentByPen, getAllStudentByStudentIds, deleteStudentTwinByStudentTwinId} = require('../components/student');
+const {createNewStudent, updateStudent, getStudentByStudentId, getStudentByPen, getAllStudentByStudentIds, deleteStudentTwinByStudentTwinId, getStudentTwinsByStudentId} = require('../components/student');
 const roles = require('../components/roles');
 const utils = require('../components/utils');
 const extendSession = utils.extendSession();
@@ -23,5 +23,5 @@ router.get('/', passport.authenticate('jwt', {session: false}, undefined), isVal
 router.get('/detail/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentByStudentId);
 router.put('/:studentID', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, updateStudent);
 router.post('/', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, createNewStudent);
-
+router.get('/:id/twins', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentTwinsByStudentId);
 module.exports = router;
