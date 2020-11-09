@@ -226,17 +226,14 @@
                                               colspan="2" label="Local ID"
                                               :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.LOCAL_ID)"></StudentDetailsTextFieldReadOnly>
 
-            <StudentDetailsTemplateTextField colspan="2" label="Twin(s)?" :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.TWINS)">
-              <a @click="twinsDialog=true" v-if="twins.length > 0">
+            <StudentDetailsTemplateTextField v-if="twins.length > 0" colspan="2" label="Twin(s)?" :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.TWINS)">
+              <a @click="twinsDialog=true">
                 Yes
               </a>
-              <span v-else>
-                No
-              </span>
             </StudentDetailsTemplateTextField>
 
-            <StudentDetailsTemplateTextField colspan="8" label="Merged To" :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MERGED_TO)">
-              <div v-if="mergedTo">
+            <StudentDetailsTemplateTextField v-if="mergedTo" colspan="8" label="Merged To" :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MERGED_TO)">
+              <div>
                 <router-link :to="{params: {studentID: mergedTo.mergeStudentID}}" class="pr-4">
                   {{formatPen(mergedTo.mergeStudent.pen)}}
                 </router-link>
@@ -246,8 +243,8 @@
               </div>
             </StudentDetailsTemplateTextField>
 
-            <StudentDetailsTemplateTextField colspan="8" label="Merged From" :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MERGED_FROM)">
-              <div v-if="mergedFrom.length > 0" class="d-flex flex-wrap">
+            <StudentDetailsTemplateTextField v-if="mergedFrom.length > 0" colspan="8" label="Merged From" :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MERGED_FROM)">
+              <div class="d-flex flex-wrap">
                 <router-link 
                   v-for="merge in mergedFrom" 
                   :key="merge.studentMergeID" 

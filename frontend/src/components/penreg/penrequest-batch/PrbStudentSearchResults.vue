@@ -42,19 +42,19 @@
         <span :key="h.id" class="bottom-column-item">{{ header.bottomText }}</span>
       </template>
       <template v-slot:item="props">
-        <tr :class="{'selected-record' : props.isSelected}">
+        <tr :class="{'selected-record' : props.item.isSelected}" @click="selectItem(props.item)">
           <td v-for="header in props.headers" :key="header.id" :class="header.id">
-            <v-checkbox v-if="header.type" class="record-checkbox header-checkbox" color="#606060" @change="props.select($event)"></v-checkbox>
+            <v-checkbox v-if="header.type" class="record-checkbox header-checkbox" color="#606060" :value="props.item.isSelected"></v-checkbox>
             <div v-else class="table-cell">
               <span class="top-column-item">
-                <a v-if="header.topValue === 'submissionNumber'" class="submission">{{props.item[header.topValue] || '-'}}</a>
+                <a v-if="header.topValue === 'submissionNumber'" class="submission" @click="handleSubmissionNumberClicked">{{props.item[header.topValue] }}</a>
                 <v-tooltip v-else-if="header.topValue === 'minCode'" right>
                   <template v-slot:activator="{ on }">
-                    <span v-on="on">{{ props.item[header.topValue] || '-' }}</span>
+                    <span v-on="on">{{ props.item[header.topValue] }}</span>
                   </template>
-                  <span>{{getSchoolName(props.item) || '-'}}</span>
+                  <span>{{getSchoolName(props.item) }}</span>
                 </v-tooltip>
-                <span v-else>{{ props.item[header.topValue] || '-' }}</span>
+                <span v-else>{{ props.item[header.topValue] }}</span>
               </span>
               <span class="double-column-item">{{props.item[header.doubleValue]}}</span>
               <br>
@@ -63,7 +63,7 @@
                   v-if="header.bottomValue === 'penRequestBatchStudentStatusCode'" 
                   :prbStudent="props.item"
                 ></PrbStudentStatusChip>
-                <span v-else>{{ props.item[header.bottomValue] || '-' }}</span>
+                <span v-else>{{ props.item[header.bottomValue] }}</span>
               </span>
             </div>
           </td>
@@ -131,8 +131,8 @@ export default {
       get(){
         return this.$store.state['prbStudentSearch'].selectedRecords;
       },
-      set(newRecord){
-        return this.$store.state['prbStudentSearch'].selectedRecords = newRecord;
+      set(newRecords){
+        return this.$store.state['prbStudentSearch'].selectedRecords = newRecords;
       }
     },
     showingFirstNumber() {
@@ -191,6 +191,13 @@ export default {
         searchCriteria: JSON.stringify(this.prbStudentSearchCriteria),
       };
       router.push({name: 'prbStudentDetails', query});
+    },
+    selectItem(item) {
+      item.isSelected = !item.isSelected;
+      this.setSelectedRecords(this.prbStudentSearchResponse.content.filter(rec => rec.isSelected));
+    },
+    handleSubmissionNumberClicked(event) {
+      event.stopPropagation();
     }
   }
 };
@@ -209,6 +216,7 @@ export default {
   }
   .bottom-column-item {
     float: left;
+    min-height: 1.5em;
   }
   .table-checkbox {
     margin-top: 0;
@@ -237,12 +245,11 @@ export default {
   #dataTable /deep/ table th{
     font-size: 0.875rem;
   }
-  #dataTable /deep/ table tr.selected-record { 
+  #dataTable /deep/ table tr.selected-record,
+  #dataTable /deep/ table tbody tr:hover { 
     background-color: #E1F5FE
   }
-  #dataTable /deep/ table tbody tr:not(.selected-record):hover { 
-    background-color: inherit
-  }
+
   #dataTable /deep/ table { 
     border-bottom: thin solid #d7d7d7;
   }

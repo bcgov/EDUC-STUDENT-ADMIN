@@ -34,10 +34,10 @@
           <td v-for="header in props.headers" :key="header.id" :class="header.id">
             <v-checkbox v-if="header.type" :input-value="props.isSelected" color="#606060" @change="props.select($event)"></v-checkbox>
             <div v-else @click="viewStudentDetails(props.item.studentID)" class="tableCell">
-              <span class="top-column-item">{{ props.item[header.topValue] || '-' }}</span>
+              <span class="top-column-item">{{ props.item[header.topValue] }}</span>
               <span class="double-column-item">{{props.item[header.doubleValue]}}</span>
               <br>
-              <span class="bottom-column-item">{{ props.item[header.bottomValue] || '-' }}</span>
+              <span class="bottom-column-item">{{ props.item[header.bottomValue] }}</span>
             </div>
           </td>
         </tr>
@@ -132,7 +132,8 @@ export default {
   methods: {
     ...mapMutations('studentSearch', ['updateSortParams', 'setStudentSearchResponse']),
     viewStudentDetails(studentID) {
-      router.push({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
+      const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
+      window.open(route.href, '_blank');
     },
     compare() {
       //TODO
@@ -185,6 +186,7 @@ export default {
   }
   .bottom-column-item {
     float: left;
+    min-height: 1.5em;
   }
   .table-checkbox {
     margin-top: 0;

@@ -228,6 +228,10 @@ export default {
   z-index: 0;
 }
 
+.bottom-column-item {
+  float: left;
+  min-height: 1.5em;
+}
 
 #dataTable {
   background-color: #F2F2F2;
