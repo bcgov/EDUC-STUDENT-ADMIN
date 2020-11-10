@@ -762,6 +762,7 @@ export default {
       }
     },
     prepPut(student) {
+      student.historyActivityCode = 'USEREDIT';
       return {
         student: student
       };
