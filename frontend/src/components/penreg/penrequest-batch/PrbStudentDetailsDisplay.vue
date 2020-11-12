@@ -586,7 +586,8 @@ export default {
         this.possibleMatchesPlaceHolder = result.data ?? [];
         if (this.prbStudent?.penRequestBatchStudentStatusCode !== PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR
             && this.prbStudent?.penRequestBatchStudentStatusCode !== PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR) {
-          this.prbStudent.penRequestBatchStudentStatusCode = this.getPrbStatusCodeFromPenMatchStatus(result.penStatus);
+          // TODO what to do when the PEN match returns a diff status.
+          //this.prbStudent.penRequestBatchStudentStatusCode = this.getPrbStatusCodeFromPenMatchStatus(result.penStatus);
         } else if(! this.possibleMatches.some(matched => this.prbStudent?.assignedPEN?.replace(/\D/g,'') === matched.pen)) {
           const newStudent = await this.getStudentByID(this.prbStudent.studentID);
           this.possibleMatchesPlaceHolder.unshift(newStudent);
