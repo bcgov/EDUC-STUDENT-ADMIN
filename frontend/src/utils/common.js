@@ -1,9 +1,9 @@
 'use strict';
 import ApiService from '../common/apiService';
-import {Routes} from '@/utils/constants';
+import {PEN_REQ_BATCH_STUDENT_REQUEST_CODES, Routes} from '@/utils/constants';
+import {filter, sortBy} from 'lodash';
 
 const clone = require('rfdc')();
-
 export function constructPenMatchObjectFromStudent(student) {
   return {
     surname: student.legalLastName,
@@ -44,7 +44,10 @@ export function getPossibleMatches(penMatch) {
               reject(error);
             });
         } else {
-          resolve([]);
+          resolve({
+            penStatus: response.data.penStatus,
+            data: []
+          });
         }
       })
       .catch(error => {
@@ -68,4 +71,45 @@ export function getDemogValidationResults(student) {
         reject(error);
       });
   });
+}
+
+export function getStudentTwinsByStudentID(studentID) {
+  return new Promise((resolve, reject) => {
+    ApiService.apiAxios.get(`${Routes.student.ROOT_ENDPOINT}/${studentID}/twins`)
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+}
+
+export function updatePossibleMatchResultsBasedOnCurrentStatus(prbStudent, possibleMatches, matchedStudentTwinRecords) {
+  if (prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR
+    && possibleMatches) {
+    let twinRecordNumber = 3.0;
+    let newPossibleRecordNumber = 2.0;
+    possibleMatches.forEach((item, index) => {
+      if (item.studentID === prbStudent?.studentID) {
+        item.matchedToStudent = true;
+        item.iconValue='mdi-file-check';
+        item.recordNum = 1; // it is expected to be executed only once
+      } else if (matchedStudentTwinRecords && filter(matchedStudentTwinRecords, ['twinStudentID', item.studentID]).length > 0) {
+        item.twinRecordToMatchedStudent = true;
+        twinRecordNumber += .1;
+        item.iconValue='mdi-account-multiple';
+        item.recordNum = twinRecordNumber;
+      } else {
+        item.iconValue='mdi-account-plus';
+        newPossibleRecordNumber += .1;
+        item.recordNum = newPossibleRecordNumber;
+        item.newPossibleMatch = true;
+      }
+      possibleMatches[index] = item;
+    });
+    return sortBy(possibleMatches, ['recordNum']);
+  }else {
+    return deepCloneObject(possibleMatches);
+  }
 }

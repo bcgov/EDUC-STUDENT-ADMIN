@@ -238,9 +238,12 @@ async function addSagaStatus(prbStudents) {
   eventsArrayFromRedis = eventsArrayFromRedis.map(event => JSON.parse(event));
   prbStudents && prbStudents.forEach(prbStudent => {
     if (prbStudent.penRequestBatchStudentID) {
-      prbStudent.sagaInProgress = eventsArrayFromRedis.some(event =>
-        event.penRequestBatchStudentID === prbStudent.penRequestBatchStudentID
-      );
+      const prbSagaInProgress = eventsArrayFromRedis.filter(event =>
+        event.penRequestBatchStudentID === prbStudent.penRequestBatchStudentID);
+      if(prbSagaInProgress && prbSagaInProgress.length > 0){
+        prbStudent.sagaInProgress = true;
+        prbStudent.sagaName = prbSagaInProgress[0].sagaName;
+      }
     }
   });
 }

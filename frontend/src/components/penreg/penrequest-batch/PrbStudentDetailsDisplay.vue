@@ -150,6 +150,8 @@
         <PenMatchResultsTable :student="prbStudent" :is-comparison-required="true"
                               :is-pen-link="true"
                               :is-refresh-required="true"
+                              :is-match-un-match="true"
+                              @match-unmatch-student-prb-student="matchUnmatchStudentToPRBStudent"
                               :possible-match="possibleMatches"></PenMatchResultsTable>
       </v-row>
     </div>
@@ -168,10 +170,11 @@ import {
   PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER,
   Routes,
   SEARCH_FILTER_OPERATION,
-  SEARCH_CONDITION, 
-  SEARCH_VALUE_TYPE
+  SEARCH_CONDITION,
+  SEARCH_VALUE_TYPE,
+  PRB_SAGA_NAMES
 } from '@/utils/constants';
-import {cloneDeep, isEmpty, sortBy} from 'lodash';
+import {cloneDeep, isEmpty, sortBy, filter} from 'lodash';
 import alterMixin from '../../../mixins/alterMixin';
 import SearchDemographicModal from '@/components/common/SearchDemographicModal';
 import PenMatchResultsTable from '@/components/common/PenMatchResultsTable';
@@ -179,7 +182,9 @@ import {
   constructPenMatchObjectFromStudent,
   deepCloneObject,
   getDemogValidationResults,
-  getPossibleMatches
+  getPossibleMatches,
+  getStudentTwinsByStudentID,
+  updatePossibleMatchResultsBasedOnCurrentStatus
 } from '@/utils/common';
 import {formatDob, formatPostalCode} from '@/utils/format';
 
@@ -244,6 +249,7 @@ export default {
       repeatRequestOriginalStatus: null,
       dialog: false,
       possibleMatches: [],
+      possibleMatchesPlaceHolder: [],
       isLoadingMatches: false,
       showPossibleMatch: false,
       prbStudentCopy:{},
@@ -254,7 +260,10 @@ export default {
         { text: 'Field Name', value: 'uiFieldName' },
         { text: 'Error Description', value: 'penRequestBatchValidationIssueTypeCode' }
       ],
-      originalStatusCode: null
+      originalStatusCode: null,
+      matchedStudentTwinRecords:[],
+      prbSagaNames: Object.values(PRB_SAGA_NAMES),
+      isMatchingToStudentRecord: false,
     };
   },
   watch: {
@@ -273,15 +282,23 @@ export default {
       }
     },
     notification(val) {
-      if (val) {
-        const notificationData = JSON.parse(val);
-        if (notificationData && notificationData.sagaName === 'PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA' && notificationData.sagaStatus === 'COMPLETED') {
-          const updatedPrbStudent = JSON.parse(notificationData.eventPayload);
-          if(updatedPrbStudent?.penRequestBatchStudentID === this.prbStudent.penRequestBatchStudentID) {
+      let notificationData;
+      try{
+        notificationData = JSON.parse(val);
+      }catch (e) {
+        console.error(e);
+      }
+      if (notificationData && notificationData.sagaStatus === 'COMPLETED'
+          && filter(this.prbSagaNames, notificationData.sagaName).length > 0) {
+        const updatedPrbStudent = JSON.parse(notificationData.eventPayload);
+        if (updatedPrbStudent?.penRequestBatchStudentID === this.prbStudent.penRequestBatchStudentID) {
+          if(notificationData?.sagaName === PRB_SAGA_NAMES.PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA){
             this.setSuccessAlert('The request to issue new PEN is now completed.');
-            this.setSelectedRecords();
-            this.initializeDetails();
+          }else if(notificationData?.sagaName === PRB_SAGA_NAMES.PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_SAGA){
+            this.setSuccessAlert('The request to match student to Pen Request is now completed.');
           }
+          this.setSelectedRecords();
+          this.initializeDetails();
         }
       }
     },
@@ -352,16 +369,22 @@ export default {
         this.setBatchNav();
         if(this.prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR) {
           await Promise.all([this.runDemogValidation(), this.runPenMatch()]);
-        } else {
-          await this.loadPossibleMatchesFromBatchAPI();
+        }else if(PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR === this.prbStudent?.penRequestBatchStudentStatusCode){
+          await Promise.all([this.getStudentTwinsForMatchedStudent(), this.runPenMatch()]);
+        }else {
+          await this.runPenMatch();
         }
-
+        this.updatePossibleMatchResultsBasedOnCurrentStatus();
         if(this.prbStudent?.sagaInProgress) {
-          this.setSuccessAlert('The request to issue new PEN is currently being processed.');
+          if(this.prbStudent?.sagaName === 'PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA'){
+            this.setSuccessAlert('The request to issue new PEN is currently being processed.');
+          }else if(this.prbStudent?.sagaName === 'PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_SAGA'){
+            this.setSuccessAlert('The request to match student to Pen Request is currently being processed.');
+          }
         }
 
         this.originalStatusCode = this.prbStudent.penRequestBatchStudentStatusCode; //storing original status to revert to in the event a modified search returned validation error is corrected
-        
+
       } catch (error) {
         this.setFailureAlert('An error occurred while loading the PEN request. Please try again later.');
         console.log(error);
@@ -391,15 +414,15 @@ export default {
           {
             searchCriteriaList: [
               {
-                key: 'penRequestBatchEntity.penRequestBatchID', 
-                operation: SEARCH_FILTER_OPERATION.IN, 
-                value: this.batchIDs.join(','), 
+                key: 'penRequestBatchEntity.penRequestBatchID',
+                operation: SEARCH_FILTER_OPERATION.IN,
+                value: this.batchIDs.join(','),
                 valueType: SEARCH_VALUE_TYPE.UUID
               },
               {
-                key: 'penRequestBatchStudentID', 
-                operation: SEARCH_FILTER_OPERATION.IN, 
-                value: studentIDs.join(','), 
+                key: 'penRequestBatchStudentID',
+                operation: SEARCH_FILTER_OPERATION.IN,
+                value: studentIDs.join(','),
                 valueType: SEARCH_VALUE_TYPE.UUID,
                 condition: SEARCH_CONDITION.AND
               }
@@ -500,7 +523,7 @@ export default {
     },
     getBatchIdSearchCriteria(searchCriteria) {
       const batchIdSearchQuery = searchCriteria.find(query =>
-        query.searchCriteriaList.some(criteria => criteria.key === 'penRequestBatchEntity.penRequestBatchID'));
+          query.searchCriteriaList.some(criteria => criteria.key === 'penRequestBatchEntity.penRequestBatchID'));
       return batchIdSearchQuery?.searchCriteriaList.find(criteria => criteria.key === 'penRequestBatchEntity.penRequestBatchID');
     },
     updateInfoRequested(infoRequest) {
@@ -548,28 +571,10 @@ export default {
       const hasValidationFailure = await this.runDemogValidation();
       if(!hasValidationFailure) {
         await this.runPenMatch();
+        this.updatePossibleMatchResultsBasedOnCurrentStatus();
       }
     },
-    async loadPossibleMatchesFromBatchAPI(){
-      this.isLoadingMatches = true;
-      this.showPossibleMatch = false;
-      const params = {
-        params: {
-          id: this.prbStudent.penRequestBatchID,
-          studentId: this.prbStudent.penRequestBatchStudentID
-        }
-      };
-      try{
-        const result = await ApiService.apiAxios.get(Routes.penRequestBatch.MATCH_OUTCOME_URL, params);
-        this.possibleMatches = result.data || [];
-      }catch (e){
-        console.log(e);
-        this.setFailureAlert('Error in retrieving possible matches from batch api.');
-      }finally {
-        this.isLoadingMatches = false;
-        this.showPossibleMatch = true;
-      }
-    },
+
     async runPenMatch() {
       this.isLoadingMatches = true;
       this.showPossibleMatch = false;
@@ -578,12 +583,12 @@ export default {
         const result = await getPossibleMatches(constructPenMatchObjectFromStudent(this.modalStudent));
         this.isIssuePenDisabled = false;
         this.showPossibleMatch = true;
-        this.possibleMatches = result.data || [];
-        if(this.prbStudent?.penRequestBatchStudentStatusCode != PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR) {
+        this.possibleMatchesPlaceHolder = result.data ?? [];
+        if(this.prbStudent?.penRequestBatchStudentStatusCode !== PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR) {
           this.prbStudent.penRequestBatchStudentStatusCode = this.getPrbStatusCodeFromPenMatchStatus(result.penStatus);
         } else if(! this.possibleMatches.some(matched => this.prbStudent?.assignedPEN?.replace(/\D/g,'') === matched.pen)) {
           const newStudent = await this.getStudentByID(this.prbStudent.studentID);
-          this.possibleMatches.unshift(newStudent);
+          this.possibleMatchesPlaceHolder.unshift(newStudent);
         }
       } catch (error) {
         console.log(error);
@@ -667,6 +672,49 @@ export default {
     async getStudentByID(studentID) {
       const response = await ApiService.apiAxios.get(Routes.student.GET_ALL_STUDENTS_BY_IDS, { params: { studentIDs: studentID }});
       return response.data[0];
+    },
+    /**
+     * This method is responsible to do match/unmatch of student to Pen Request.
+     * filter the matched row from possible matches to mark them twin.
+     * @param student the matched/unmatched student
+     * @param buttonText whether match or unmatch was clicked.
+     * @returns {Promise<void>}
+     */
+    async matchUnmatchStudentToPRBStudent(student, buttonText){
+      if('Match' ===  buttonText){
+        this.prbStudent.assignedPEN = student.pen;
+        this.prbStudent.studentID = student.studentID;
+        this.isMatchingToStudentRecord = true;
+        const payload = {
+          studentID: student.studentID,
+          matchedPEN: student.pen,
+          twinStudentIDs: this.possibleMatches.filter(el => el.studentID !== student.studentID).map(el=>el.studentID)
+        };
+        ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}/user-match`, payload)
+            .then(response => {
+              if(response.data) {
+                this.prbStudent.sagaInProgress = true;
+                this.setSuccessAlert(`Your request to match student to Pen Request is accepted.`);
+              }
+            })
+            .catch(error => {
+              this.setFailureAlert(`Your request to match student to Pen Request could not be accepted,  Please try again later.`);
+              console.log(error);
+            })
+            .finally(() => {
+              this.isMatchingToStudentRecord = false;
+            });
+      }else {
+        //TODO implement the unmatch in future story.
+      }
+
+    },
+    updatePossibleMatchResultsBasedOnCurrentStatus() {
+      this.possibleMatches = updatePossibleMatchResultsBasedOnCurrentStatus(this.prbStudent, this.possibleMatchesPlaceHolder, this.matchedStudentTwinRecords);
+
+    },
+    async getStudentTwinsForMatchedStudent(){
+      this.matchedStudentTwinRecords = await getStudentTwinsByStudentID(this.prbStudent.studentID);
     }
   }
 };
