@@ -243,6 +243,8 @@ async function addSagaStatus(prbStudents) {
       if(prbSagaInProgress && prbSagaInProgress.length > 0){
         prbStudent.sagaInProgress = true;
         prbStudent.sagaName = prbSagaInProgress[0].sagaName;
+      }else {
+        prbStudent.sagaInProgress = false;
       }
     }
   });
