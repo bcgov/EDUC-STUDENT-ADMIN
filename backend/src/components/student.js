@@ -129,9 +129,10 @@ async function createNewStudent(req, res) {
     const penNumber = await getData(token, config.get('server:penServices:nextPenURL'), params);
     const student = req.body.student;
     student.pen = penNumber;
+    student.historyActivityCode = 'USERNEW';
     student.createDate = null;
     student.updateDate = null;
-    const result = await postData(token, config.get('server:student:rootURL') + '/', student, utils.getUser(req).idir_username);
+    const result = await postData(token, config.get('server:student:rootURL') + '/', student, null, utils.getUser(req).idir_username);
     delete req.session.create_new_student_transactionID; // delete it when student is created successfully.
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
