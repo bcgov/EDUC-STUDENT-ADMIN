@@ -636,6 +636,7 @@ function setDefaultsInRequestForComplete(request, thisSession, req) {
   request.reviewer = req.body.reviewer;
   request.completeComment = req.body.completeComment;
   request.identityType = thisSession.identityType;
+  request.historyActivityCode = 'PEN';
 }
 function setDefaultsForCreateApiReq(request, req) {
   request.reviewer = req.body.reviewer;
