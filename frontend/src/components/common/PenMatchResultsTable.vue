@@ -219,6 +219,7 @@ export default {
         switch (this.student.penRequestBatchStudentStatusCode) {
         case PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR:
           return 'New PEN Created';
+        case PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS:
         case PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR:
           return 'Matched To';
         default:
@@ -276,7 +277,8 @@ export default {
             || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ === this.student.penRequestBatchStudentStatusCode) {
           this.hoveredOveredRowStudentID = matchedStudent.studentID;
           this.matchUnMatchButtonText = 'Match';
-        } else if (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR === this.student.penRequestBatchStudentStatusCode
+        } else if ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS,
+          PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR ].some(element => element === this.student.penRequestBatchStudentStatusCode)
             && matchedStudent.studentID === this.student.studentID) {
           this.hoveredOveredRowStudentID = matchedStudent.studentID;
           this.matchUnMatchButtonText = 'Unmatch';

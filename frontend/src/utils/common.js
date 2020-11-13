@@ -1,7 +1,9 @@
 'use strict';
-import ApiService from '../common/apiService';
+
 import {PEN_REQ_BATCH_STUDENT_REQUEST_CODES, Routes} from '@/utils/constants';
 import {filter, sortBy} from 'lodash';
+
+import ApiService from '../common/apiService';
 
 const clone = require('rfdc')();
 export function constructPenMatchObjectFromStudent(student) {
@@ -86,7 +88,8 @@ export function getStudentTwinsByStudentID(studentID) {
 }
 
 export function updatePossibleMatchResultsBasedOnCurrentStatus(prbStudent, possibleMatches, matchedStudentTwinRecords) {
-  if (prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR
+  if ((prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR
+    || prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS)
     && possibleMatches && possibleMatches.length > 0) {
     let twinRecordNumber = 3.0;
     let newPossibleRecordNumber = 2.0;
@@ -109,7 +112,7 @@ export function updatePossibleMatchResultsBasedOnCurrentStatus(prbStudent, possi
       possibleMatches[index] = item;
     });
     return sortBy(possibleMatches, ['recordNum']);
-  }else {
+  } else {
     return deepCloneObject(possibleMatches);
   }
 }
