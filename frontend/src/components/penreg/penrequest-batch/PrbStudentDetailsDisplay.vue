@@ -169,13 +169,13 @@ import ApiService from '../../../common/apiService';
 import {
   PEN_REQ_BATCH_STUDENT_REQUEST_CODES,
   PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER,
+  PRB_SAGA_NAMES,
   Routes,
-  SEARCH_FILTER_OPERATION,
   SEARCH_CONDITION,
-  SEARCH_VALUE_TYPE,
-  PRB_SAGA_NAMES
+  SEARCH_FILTER_OPERATION,
+  SEARCH_VALUE_TYPE
 } from '@/utils/constants';
-import {cloneDeep, isEmpty, sortBy, filter} from 'lodash';
+import {cloneDeep, isEmpty, sortBy} from 'lodash';
 import alterMixin from '../../../mixins/alterMixin';
 import SearchDemographicModal from '@/components/common/SearchDemographicModal';
 import PenMatchResultsTable from '@/components/common/PenMatchResultsTable';
@@ -265,6 +265,7 @@ export default {
       matchedStudentTwinRecords:[],
       prbSagaNames: Object.values(PRB_SAGA_NAMES),
       isMatchingToStudentRecord: false,
+      disabledButtonActionsForStudentStatuses: [PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS]
     };
   },
   watch: {
@@ -289,8 +290,9 @@ export default {
       }catch (e) {
         console.error(e);
       }
+      const filteredArray = this.prbSagaNames.filter(el => el === notificationData.sagaName);
       if (notificationData && notificationData.sagaStatus === 'COMPLETED'
-          && filter(this.prbSagaNames, notificationData.sagaName).length > 0) {
+          && filteredArray.length > 0) {
         const updatedPrbStudent = JSON.parse(notificationData.eventPayload);
         if (updatedPrbStudent?.penRequestBatchStudentID === this.prbStudent.penRequestBatchStudentID) {
           if(notificationData?.sagaName === PRB_SAGA_NAMES.PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA){
@@ -311,8 +313,7 @@ export default {
     ...mapState('notifications', ['notification']),
     disableInfoReqBtn() {
       return this.loading || this.prbStudent?.sagaInProgress
-          || this.prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR
-          || this.prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS
+          || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
           || ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE]
               .some(element => element === this.prbStudent?.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
     },
@@ -330,15 +331,13 @@ export default {
     },
     disableIssueNewPen() {
       return this.loading || this.prbStudent?.sagaInProgress
-          || this.prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR
-          || this.prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS
+          || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
           || ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ]
               .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
     },
     disableModifySearch(){
-      return this.loading || this.prbStudent?.sagaInProgress 
-        || this.prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR
-        || this.prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS;
+      return this.loading || this.prbStudent?.sagaInProgress
+          || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode);
     }
   },
   created() {
@@ -676,10 +675,6 @@ export default {
         .finally(() => {
           this.isIssuingNewPen = false;
         });
-    },
-    async getStudentByID(studentID) {
-      const response = await ApiService.apiAxios.get(Routes.student.GET_ALL_STUDENTS_BY_IDS, { params: { studentIDs: studentID }});
-      return response.data[0];
     },
     /**
      * This method is responsible to do match/unmatch of student to Pen Request.
