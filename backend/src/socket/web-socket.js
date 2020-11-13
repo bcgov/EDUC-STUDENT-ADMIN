@@ -28,7 +28,7 @@ const webSocket = {
             ws.close();
           }
         } catch (e) {
-          log.error('error is from verify', e);
+          log.error('error is from verify', e.message);
           ws.close();
         }
       }
