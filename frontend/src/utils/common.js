@@ -87,7 +87,7 @@ export function getStudentTwinsByStudentID(studentID) {
 
 export function updatePossibleMatchResultsBasedOnCurrentStatus(prbStudent, possibleMatches, matchedStudentTwinRecords) {
   if (prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR
-    && possibleMatches) {
+    && possibleMatches && possibleMatches.length > 0) {
     let twinRecordNumber = 3.0;
     let newPossibleRecordNumber = 2.0;
     possibleMatches.forEach((item, index) => {
