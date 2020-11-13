@@ -290,7 +290,7 @@ export default {
       }catch (e) {
         console.error(e);
       }
-      const isPRBSaga = this.prbSagaNames.some(el => el === notificationData.sagaName);
+      const isPRBSaga = this.prbSagaNames.some(el => el === notificationData?.sagaName);
       if (notificationData && notificationData.sagaStatus === 'COMPLETED'
           && isPRBSaga) {
         const updatedPrbStudent = JSON.parse(notificationData.eventPayload);
