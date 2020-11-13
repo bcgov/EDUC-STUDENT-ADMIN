@@ -290,9 +290,9 @@ export default {
       }catch (e) {
         console.error(e);
       }
-      const filteredArray = this.prbSagaNames.filter(el => el === notificationData.sagaName);
+      const isPRBSaga = this.prbSagaNames.some(el => el === notificationData.sagaName);
       if (notificationData && notificationData.sagaStatus === 'COMPLETED'
-          && filteredArray.length > 0) {
+          && isPRBSaga) {
         const updatedPrbStudent = JSON.parse(notificationData.eventPayload);
         if (updatedPrbStudent?.penRequestBatchStudentID === this.prbStudent.penRequestBatchStudentID) {
           if(notificationData?.sagaName === PRB_SAGA_NAMES.PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA){
