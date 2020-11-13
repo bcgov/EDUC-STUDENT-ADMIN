@@ -16,7 +16,7 @@
           <TertiaryButton v-if="isComparisonRequired" id="compareButton" class="ma-0" text="Compare"
                           icon="mdi-content-copy" @click.native="compare"></TertiaryButton>
           <TertiaryButton v-if="isRefreshRequired" id="refreshButton" class="ma-0" iconStyle="mdi-flip-h" text="Refresh"
-                          icon="mdi-cached" @click.native="refresh"></TertiaryButton>
+                          icon="mdi-cached" @click.native="$emit('refresh-match-results')"></TertiaryButton>
         </v-row>
       </v-col>
     </v-row>

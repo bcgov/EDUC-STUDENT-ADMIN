@@ -28,7 +28,7 @@
           :prbStudent="prbStudent"
         ></PrbStudentStatusChip>
         <v-spacer></v-spacer>
-        <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2" text="Modify search" @click.native="openSearchDemographicsModal"></PrimaryButton>
+        <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2" :disabled="disableModifySearch" text="Modify search" @click.native="openSearchDemographicsModal"></PrimaryButton>
         <PrimaryButton id="issue-pen-action" class="mr-2" :disabled="disableIssueNewPen" :loading="isIssuingNewPen" text="Issue new PEN" @click.native="issueNewPen"></PrimaryButton>
         <InfoDialog
           :disabled="disableInfoReqBtn"
@@ -152,6 +152,7 @@
                               :is-refresh-required="true"
                               :is-match-un-match="true"
                               @match-unmatch-student-prb-student="matchUnmatchStudentToPRBStudent"
+                              @refresh-match-results="refreshMatchResults"
                               :possible-match="possibleMatches"></PenMatchResultsTable>
       </v-row>
     </div>
@@ -309,8 +310,10 @@ export default {
     ...mapState('prbStudentSearch', ['selectedRecords']),
     ...mapState('notifications', ['notification']),
     disableInfoReqBtn() {
-      return this.loading || this.prbStudent?.sagaInProgress || ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE]
-        .some(element => element === this.prbStudent?.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
+      return this.loading || this.prbStudent?.sagaInProgress
+          || this.prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR
+          || ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE]
+              .some(element => element === this.prbStudent?.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
     },
     selectedStudents() {
       return sortBy(this.selectedRecords, ['minCode', 'submissionNumber', 'recordNumber']);
@@ -325,8 +328,13 @@ export default {
       return this.prbStudent?.repeatRequestOriginalID;
     },
     disableIssueNewPen() {
-      return this.loading || this.prbStudent?.sagaInProgress || ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ]
-        .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
+      return this.loading || this.prbStudent?.sagaInProgress
+          || this.prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR
+          || ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ]
+              .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
+    },
+    disableModifySearch(){
+      return this.loading || this.prbStudent?.sagaInProgress || this.prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR;
     }
   },
   created() {
@@ -367,12 +375,16 @@ export default {
 
         await this.retrieveBatchFile();
         this.setBatchNav();
-        if(this.prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR) {
-          await Promise.all([this.runDemogValidation(), this.runPenMatch()]);
-        }else if(PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR === this.prbStudent?.penRequestBatchStudentStatusCode){
-          await Promise.all([this.getStudentTwinsForMatchedStudent(), this.runPenMatch()]);
-        }else {
-          await this.runPenMatch();
+        this.originalStatusCode = this.prbStudent.penRequestBatchStudentStatusCode; //storing original status to revert to in the event a modified search returned validation error is corrected
+        const hasValidationFailure = await this.runDemogValidation();
+        if (!hasValidationFailure) {
+          if (this.prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR) {
+            await this.runPenMatch();
+          } else if (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR === this.prbStudent?.penRequestBatchStudentStatusCode) {
+            await Promise.all([this.getStudentTwinsForMatchedStudent(), this.runPenMatch()]);
+          } else {
+            await this.runPenMatch();
+          }
         }
         this.updatePossibleMatchResultsBasedOnCurrentStatus();
         if(this.prbStudent?.sagaInProgress) {
@@ -382,9 +394,6 @@ export default {
             this.setSuccessAlert('The request to match student to Pen Request is currently being processed.');
           }
         }
-
-        this.originalStatusCode = this.prbStudent.penRequestBatchStudentStatusCode; //storing original status to revert to in the event a modified search returned validation error is corrected
-
       } catch (error) {
         this.setFailureAlert('An error occurred while loading the PEN request. Please try again later.');
         console.log(error);
@@ -579,19 +588,12 @@ export default {
       this.isLoadingMatches = true;
       this.showPossibleMatch = false;
       this.possibleMatches = [];
+      this.possibleMatchesPlaceHolder = [];
       try {
         const result = await getPossibleMatches(constructPenMatchObjectFromStudent(this.modalStudent));
         this.isIssuePenDisabled = false;
         this.showPossibleMatch = true;
         this.possibleMatchesPlaceHolder = result.data ?? [];
-        if (this.prbStudent?.penRequestBatchStudentStatusCode !== PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR
-            && this.prbStudent?.penRequestBatchStudentStatusCode !== PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR) {
-          // TODO what to do when the PEN match returns a diff status.
-          //this.prbStudent.penRequestBatchStudentStatusCode = this.getPrbStatusCodeFromPenMatchStatus(result.penStatus);
-        } else if(! this.possibleMatches.some(matched => this.prbStudent?.assignedPEN?.replace(/\D/g,'') === matched.pen)) {
-          const newStudent = await this.getStudentByID(this.prbStudent.studentID);
-          this.possibleMatchesPlaceHolder.unshift(newStudent);
-        }
       } catch (error) {
         console.log(error);
         this.requestFailed = true;
@@ -717,6 +719,10 @@ export default {
     },
     async getStudentTwinsForMatchedStudent(){
       this.matchedStudentTwinRecords = await getStudentTwinsByStudentID(this.prbStudent.studentID);
+    },
+    async refreshMatchResults(){
+      await this.runPenMatch();
+      this.updatePossibleMatchResultsBasedOnCurrentStatus();
     }
   }
 };
