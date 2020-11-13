@@ -747,7 +747,6 @@ export default {
     },
     saveStudent() {
       if (this.parentRefs.studentDetailForm.validate()) {
-        this.studentCopy.historyActivityCode = 'USEREDIT';
         ApiService.apiAxios
           .put(Routes['student'].ROOT_ENDPOINT+'/'+ this.studentID, this.prepPut(this.studentCopy))
           .then(response => {
