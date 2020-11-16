@@ -250,7 +250,7 @@ export default {
     demogValuesMatch(valueType, value) {
       switch (valueType) {
       case 'postalCode':
-        return this.student?.postalCode?.replace(' ', '') === value?.replace(' ', ''); // match without space
+        return this.student?.postalCode?.replace(' ', '')?.toLowerCase() === value?.replace(' ', '')?.toLowerCase(); // match without space
       case 'dob':
         return this.student?.dob?.replace(/\D/g, '') === value?.replace(/\D/g, ''); // match birth date without - or /
       case 'mincode':
@@ -262,7 +262,7 @@ export default {
           return this.student.bestMatchPEN === value;
         }
       default:
-        return this.student[valueType] === value;
+        return this.student[valueType]?.toLowerCase() === value?.toLowerCase();
       }
     },
     isGreyedOut(matchedStudent) {

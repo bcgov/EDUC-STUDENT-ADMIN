@@ -76,20 +76,25 @@ export function getDemogValidationResults(student) {
 }
 
 export function getStudentTwinsByStudentID(studentID) {
-  return new Promise((resolve, reject) => {
-    ApiService.apiAxios.get(`${Routes.student.ROOT_ENDPOINT}/${studentID}/twins`)
-      .then(response => {
-        resolve(response.data);
-      })
-      .catch(error => {
-        reject(error);
-      });
-  });
+  if(studentID){
+    return new Promise((resolve, reject) => {
+      ApiService.apiAxios.get(`${Routes.student.ROOT_ENDPOINT}/${studentID}/twins`)
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }else {
+    return Promise.resolve([]); // resolve blank array if student id is not present.
+  }
 }
 
 export function updatePossibleMatchResultsBasedOnCurrentStatus(prbStudent, possibleMatches, matchedStudentTwinRecords) {
   if ((prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR
-    || prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS)
+    || prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS
+    || prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS)
     && possibleMatches && possibleMatches.length > 0) {
     let twinRecordNumber = 3.0;
     let newPossibleRecordNumber = 2.0;

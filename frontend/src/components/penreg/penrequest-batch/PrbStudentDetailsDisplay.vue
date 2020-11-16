@@ -381,9 +381,8 @@ export default {
         this.originalStatusCode = this.prbStudent.penRequestBatchStudentStatusCode; //storing original status to revert to in the event a modified search returned validation error is corrected
         const hasValidationFailure = await this.runDemogValidation();
         if (!hasValidationFailure) {
-          if (this.prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR) {
-            await this.runPenMatch();
-          } else if (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR === this.prbStudent?.penRequestBatchStudentStatusCode) {
+          if (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR === this.prbStudent?.penRequestBatchStudentStatusCode
+              || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR === this.prbStudent?.penRequestBatchStudentStatusCode) {
             await Promise.all([this.getStudentTwinsForMatchedStudent(), this.runPenMatch()]);
           } else {
             await this.runPenMatch();
@@ -717,7 +716,7 @@ export default {
 
     },
     async getStudentTwinsForMatchedStudent(){
-      this.matchedStudentTwinRecords = await getStudentTwinsByStudentID(this.prbStudent.studentID);
+      this.matchedStudentTwinRecords = await getStudentTwinsByStudentID(this.prbStudent?.studentID);
     },
     async refreshMatchResults(){
       await this.runPenMatch();
