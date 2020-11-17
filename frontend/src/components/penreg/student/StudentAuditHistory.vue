@@ -247,6 +247,8 @@ export default {
 
   #dataTable /deep/ table {
     border-spacing: 0 0.25rem;
+    border-top: thin solid #d7d7d7;
+    border-bottom: thin solid #d7d7d7;
   }
 
   #dataTable /deep/ table th{
@@ -260,14 +262,6 @@ export default {
   #dataTable /deep/ table td { 
     border-bottom: none !important;
   }
-  #dataTable /deep/ table { 
-    border-top: thin solid #d7d7d7;
-    border-bottom: thin solid #d7d7d7;
-  }
-
-  #studentInfo {
-    font-size: 1.25rem;
-  }
 
   #dataTable /deep/ table tr.hide-item {
     display: none;
@@ -277,14 +271,11 @@ export default {
     background-color: rgba(0, 0, 0, 0.06);
   }
 
+  #studentInfo {
+    font-size: 1.25rem;
+  }
+
   .diff-value {
     font-weight:bold;
   }
-
-  /* #dataTable /deep/ table tr td{
-    text-align: center !important;
-    vertical-align: top;
-    padding-top: 0.5rem;
-    padding-bottom: 0.3rem;
-  } */
 </style>
