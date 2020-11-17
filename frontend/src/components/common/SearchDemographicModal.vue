@@ -188,12 +188,12 @@
 
 <script>
 import PrimaryButton from '../util/PrimaryButton';
-import {STUDENT_DETAILS_FIELDS} from "@/utils/constants";
+import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import {isValidMinCode, isValidPostalCode, isValidDOBAndAfter1900} from '@/utils/validation';
-import {mapGetters} from "vuex";
+import {mapGetters} from 'vuex';
 
 export default {
-  name: "SearchDemographicModal.vue",
+  name: 'SearchDemographicModal.vue',
   components: {
     PrimaryButton
   },
@@ -224,7 +224,7 @@ export default {
       student: this.studentData,
       genderCodes: [],
       gradeCodes: [],
-    }
+    };
   },
   computed: {
     ...mapGetters('student', ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects']),
@@ -319,7 +319,7 @@ export default {
       return this.gradeCodes;
     },
   }
-}
+};
 </script>
 
 <style scoped>

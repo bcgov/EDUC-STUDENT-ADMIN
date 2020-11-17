@@ -1,7 +1,7 @@
 <template>
 
-  <v-card id="searchResults" elevation="0" tile width="100%">
-    <v-row no-gutters justify="space-between" class="sticky">
+  <v-card id="searchResults" elevation="0" tile width="100%" class="px-8">
+    <v-row no-gutters justify="space-between" class="sticky" :style="{top: `${stickyInfoPanelHeight}px`}">
       <v-col>
         <v-card-title>
           <span id="numberMatches" class="px-4"><strong>{{ title }}</strong><v-btn
@@ -83,6 +83,7 @@ import TertiaryButton from '../util/TertiaryButton';
 import StudentDetailModal from '../penreg/student/StudentDetailModal';
 import { PEN_REQ_BATCH_STUDENT_REQUEST_CODES } from '@/utils/constants';
 import {formatPen, formatMinCode} from '@/utils/format';
+import { mapState } from 'vuex';
 
 export default {
   name: 'PenMatchResultsTable.vue',
@@ -176,6 +177,7 @@ export default {
     },
   },
   computed: {
+    ...mapState('app', ['stickyInfoPanelHeight']),
     title() {
       return this.student.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR ? 'New PEN Created' : `${this.studentPossibleMatches.length || 0} Matches`;
     }
@@ -196,20 +198,20 @@ export default {
     },
     demogValuesMatch(valueType, value) {
       switch (valueType) {
-        case 'postalCode':
-          return this.student?.postalCode?.replace(' ','') === value?.replace(' ',''); // match without space
-        case 'dob':
-          return this.student?.dob?.replace(/\D/g,'') === value?.replace(/\D/g,''); // match birth date without - or /
-        case 'mincode':
-          return this.student?.minCode?.replace(/\s/g,'') === value?.replace(/\s/g,'');
-        case 'pen':
-          if (this.student.assignedPEN) {
-            return this.student.assignedPEN === value;
-          } else {
-            return this.student.bestMatchPEN === value;
-          }
-        default:
-          return this.student[valueType] === value;
+      case 'postalCode':
+        return this.student?.postalCode?.replace(' ','') === value?.replace(' ',''); // match without space
+      case 'dob':
+        return this.student?.dob?.replace(/\D/g,'') === value?.replace(/\D/g,''); // match birth date without - or /
+      case 'mincode':
+        return this.student?.minCode?.replace(/\s/g,'') === value?.replace(/\s/g,'');
+      case 'pen':
+        if (this.student.assignedPEN) {
+          return this.student.assignedPEN === value;
+        } else {
+          return this.student.bestMatchPEN === value;
+        }
+      default:
+        return this.student[valueType] === value;
       }
     },
     isCreatedStudent(matchedStudent) {
@@ -242,21 +244,19 @@ export default {
   background-color: inherit
 }
 
-#dataTable /deep/ tbody tr td:nth-child(1) {
-  width: 2%;
+.v-data-table /deep/ tr td:nth-child(1) {
+  width: 6%;
 }
-
-#dataTable /deep/ tbody tr td:nth-child(2) {
+.v-data-table /deep/ tr td:nth-child(3),
+.v-data-table /deep/ tr td:nth-child(4),
+.v-data-table /deep/ tr td:nth-child(5) {
+  width: 18%;
+}
+.v-data-table /deep/ tr td:nth-child(2),
+.v-data-table /deep/ tr td:nth-child(6),
+.v-data-table /deep/ tr td:nth-child(7),
+.v-data-table /deep/ tr td:nth-child(8) {
   width: 10%;
-}
-
-#dataTable /deep/ tbody tr td:nth-child(3),
-#dataTable /deep/ tbody tr td:nth-child(4) {
-  width: 18%;
-}
-
-#dataTable /deep/ tbody tr td:nth-child(5) {
-  width: 18%;
 }
 
 .pen-link {
@@ -265,7 +265,6 @@ export default {
 
 .sticky {
   position: sticky;
-  top: 16rem;
   z-index: 6;
   background-color: #F2F2F2;
 }
