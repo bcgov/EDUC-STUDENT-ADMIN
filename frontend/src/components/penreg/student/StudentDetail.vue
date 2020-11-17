@@ -6,23 +6,24 @@
 
         <v-col cols="12" class="fill-height ma-0 pa-0">
           <v-row>
-                <v-tabs   active-class="active-display" class="pa-0 ma-0 " v-model="tab">
-                  <v-tab class="student-details-tabs-style" ><strong>Demographics</strong></v-tab>
-                  <v-tab class="student-details-tabs-style" :disabled="true"><strong>SLD Data</strong></v-tab>
-                  <v-tab class="student-details-tabs-style" :disabled="true"><strong>Audit History</strong></v-tab>
-                  <v-tab class="student-details-tabs-style" :disabled="true"><strong>Transcript</strong></v-tab>
-
-                  <v-tab-item value="Demographics"/>
-                  <v-tab-item value="Sld"/>
-                  <v-tab-item value="Audit"/>
-                  <v-tab-item value="Transcript"/>
-                </v-tabs>
+            <v-tabs active-class="active-display" class="pa-0 ma-0 " v-model="tab">
+              <v-tab class="student-details-tabs-style" key="Demographics"><strong>Demographics</strong></v-tab>
+              <v-tab class="student-details-tabs-style" :disabled="true"><strong>SLD Data</strong></v-tab>
+              <v-tab class="student-details-tabs-style" key="Audit"><strong>Audit History</strong></v-tab>
+              <v-tab class="student-details-tabs-style" :disabled="true"><strong>Transcript</strong></v-tab>
+            </v-tabs>
           </v-row>
-          <StudentDetailCommon 
-              :studentID="studentID"
-              :validForm="validForm"
-              :parentRefs="this.$refs"
-              :fullReadOnly="false">
+          <v-row>
+            <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000" class="mt-2"></AlertMessage>
+          </v-row>
+          <v-tabs-items v-if="!isLoading">
+            <StudentDetailCommon 
+                :studentID="studentID"
+                :validForm="validForm"
+                :parentRefs="this.$refs"
+                :fullReadOnly="false"
+                v-if="tab===0"
+            >
               <template v-slot:buttonbar="{ isAdvancedSearch, hasAnyEdits, saveStudent, REQUEST_TYPES }">
                 <v-row no-gutters dense class="mt-n4">
                   <v-col cols="10">
@@ -35,7 +36,23 @@
                   </v-col>
                 </v-row>
               </template>
-          </StudentDetailCommon>
+            </StudentDetailCommon>
+            <StudentAuditHistory v-else-if="tab===2" :student="studentDetails.student"/>
+          </v-tabs-items>
+          <v-row v-else>
+          <v-row fluid class="full-height align-center justify-center" >
+            <article id="pen-display-container" class="top-banner full-height">
+              <v-row align="center" justify="center">
+                <v-progress-circular
+                    :size="70"
+                    :width="7"
+                    color="primary"
+                    indeterminate
+                ></v-progress-circular>
+              </v-row>
+            </article>
+          </v-row>
+          </v-row>
         </v-col>
       </v-container>
     </v-form>
@@ -43,8 +60,12 @@
 
 <script>
 import StudentDetailCommon from '../../common/StudentDetailCommon';
-import alterMixin from '../../../mixins/alterMixin';
+import StudentAuditHistory from './StudentAuditHistory';
 import PrimaryButton from '../../util/PrimaryButton';
+import { Routes } from '../../../utils/constants';
+import AlertMessage from '../../util/AlertMessage';
+import ApiService from '../../../common/apiService';
+import alterMixin from '../../../mixins/alterMixin';
 
 export default {
   name: 'studentDetail',
@@ -57,15 +78,45 @@ export default {
   },
   components: {
     PrimaryButton,
-    StudentDetailCommon
+    StudentDetailCommon,
+    StudentAuditHistory,
+    AlertMessage
   },
   data() {
     return {
       validForm: false,
       studentForm: null,
-      tab:'Demographics'
+      tab: 0,
+      isLoading: true,
+      studentDetails: null,
     };
   },
+  mounted() {
+    this.$store.dispatch('student/getCodes');
+    this.refreshStudent();
+  },
+  watch: {
+    studentID() {
+      this.refreshStudent();
+    }
+  },
+  methods: {
+    refreshStudent() {
+      this.isLoading = true;
+      ApiService.apiAxios
+        .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
+        .then(response => {
+          this.studentDetails = response.data;
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while loading the student details. Please try again later.');
+          console.log(error);
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
+    },
+  }
 };
 </script>
 
@@ -147,6 +198,7 @@ export default {
 
 .full-height {
   height: 100%;
+  min-height: 400px;
 }
 .active-display {
   background-color: #eaf8fe;

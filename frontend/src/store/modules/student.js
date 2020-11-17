@@ -8,6 +8,7 @@ export default {
     statusCodeObjects: null,
     gradeCodeObjects: null,
     twinReasons: null,
+    historyActivityCodes: null
   },
   getters: {
     selectedStudent: state => state.selectedStudent,
@@ -16,6 +17,7 @@ export default {
     statusCodeObjects: state => state.statusCodeObjects,
     gradeCodeObjects: state => state.gradeCodeObjects,
     twinReasons: state => state.twinReasons,
+    historyActivityCodes: state => state.historyActivityCodes,
   },
   mutations: {
     setGenders: (state, genders) => {
@@ -32,6 +34,9 @@ export default {
     },
     setTwinReasons: (state, twinReasons) => {
       state.twinReasons = twinReasons;
+    },
+    setHistoryActivityCodes: (state, historyActivityCodes) => {
+      state.historyActivityCodes = historyActivityCodes;
     }
   },
   actions: {
@@ -57,7 +62,12 @@ export default {
 
     async getTwinReasonCodes({commit}) {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        ApiService.getTwinReasonCodes().then(responseGrade => commit('setTwinReasons', responseGrade.data));
+        ApiService.getTwinReasonCodes().then(response => commit('setTwinReasons', response.data));
+      }
+    },
+    async getHistoryActivityCodes({commit}) {
+      if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
+        ApiService.getHistoryActivityCodes().then(response => commit('setHistoryActivityCodes', response.data));
       }
     }
   }

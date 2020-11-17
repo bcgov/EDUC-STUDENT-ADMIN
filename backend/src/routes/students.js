@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../components/auth');
 const {getStudentById} = require('../components/requests');
-const {searchStudent} = require('../components/studentSearch');
+const {searchStudent, getStudentHistoryByStudentID} = require('../components/studentSearch');
 const {createNewStudent, updateStudent, getStudentByStudentId, getStudentByPen, getAllStudentByStudentIds, deleteStudentTwinByStudentTwinId, getStudentTwinsByStudentId} = require('../components/student');
 const roles = require('../components/roles');
 const utils = require('../components/utils');
@@ -16,6 +16,7 @@ router.get('/demogCodes', passport.authenticate('jwt', {session: false}, undefin
 router.get('/statusCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:student:statusCodesURL', 'studentStatusCodes'));
 router.get('/gradeCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:student:gradeCodesURL', 'studentGradeCodes'));
 router.get('/twinReasonCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:student:twinReasonCodesURL', 'studentTwinReasonCodes'));
+router.get('/historyActivityCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:student:historyActivityCodesURL', 'studentHistoryActivityCodes'));
 router.get('/search', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, extendSession, searchStudent);
 router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentById);
 router.delete('/:studentID/twins/:studentTwinID', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, extendSession, deleteStudentTwinByStudentTwinId);
@@ -24,4 +25,6 @@ router.get('/detail/:id', passport.authenticate('jwt', {session: false}, undefin
 router.put('/:studentID', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, updateStudent);
 router.post('/', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, createNewStudent);
 router.get('/:id/twins', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentTwinsByStudentId);
+router.get('/:id/history', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, extendSession, getStudentHistoryByStudentID);
+
 module.exports = router;

@@ -1,0 +1,290 @@
+<template>
+  <div id="auditHistory" class="px-0 pt-3 ma-0" style="width: 100%">
+    <v-row>
+      <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000"></AlertMessage>
+    </v-row>
+    <v-row no-gutters>
+      <div id="studentInfo" class="px-1 pt-2 pb-5"><strong class="pr-3">{{ formatPen(student.pen) }}</strong> {{ getStudentName(student)}}</div>
+    </v-row>
+    <v-data-table
+      id="dataTable"
+      v-model="selectedRecords"
+      :headers="headers"
+      :items="studentHistoryResp.content"
+      :page.sync="pageNumber"
+      :items-per-page="studentHistoryResp.pageable.pageSize"
+      hide-default-footer
+      item-key="studentHistoryID"
+      :loading="loading"
+      @page-count="studentHistoryResp.pageable.pageNumber = $event"
+    >
+      <template v-slot:item="props">
+        <tr :class="{'selected-record' : props.isSelected, 'hide-item': props.item.hiden, 'hideable': props.item.hideable}" @click="selectItem(props)">
+          <td v-for="header in props.headers" :key="header.id" :class="header.id">
+            <div class="table-cell">
+              <span :class="{'diff-value': props.item[`${header.value}_diff`]}">{{ props.item[header.value] || '' }}</span>
+              <v-btn v-if="header.value === 'createDate' && props.item.expandable" icon class="ml-1" color="#38598a">
+                <v-icon @click.stop="expandRow(props.item)">
+                  {{ props.item.expanded ? 'mdi-chevron-up' : 'mdi-chevron-down'}}
+                </v-icon>
+            </v-btn>
+            </div>
+          </td>
+        </tr>
+      </template>
+    </v-data-table>
+    <v-row class="pt-2" justify="end">
+      <v-col cols="4">
+        <v-pagination color="#38598A" v-model="pageNumber" :length="studentHistoryResp.totalPages"></v-pagination>
+      </v-col>
+      <v-col cols="4" id="currentItemsDisplay">
+        Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ studentHistoryResp.totalElements }}
+      </v-col>
+    </v-row>
+  </div>
+</template>
+
+<script>
+import { mapGetters, mapActions } from 'vuex';
+import { Routes } from '../../../utils/constants';
+import AlertMessage from '../../util/AlertMessage';
+import ApiService from '../../../common/apiService';
+import alterMixin from '../../../mixins/alterMixin';
+import {formatMinCode, formatPen, formatDob, formatPostalCode} from '../../../utils/format';
+import {groupBy, mapValues} from 'lodash';
+
+export default {
+  name: 'StudentAuditHistory',
+  mixins: [alterMixin],
+  props: {
+    student: {
+      type: Object,
+      required: true
+    }
+  },
+  components: {
+    AlertMessage,
+  },
+  data () {
+    return {
+      itemsPerPage: 10,
+      headers: [
+        { text: 'Date', sortable: false, value: 'createDate'},
+        { text: 'Changed by', sortable: false, value: 'createUser'},
+        { text: 'Activity', sortable: false, value: 'historyActivityLabel'},
+        { text: 'Mincode', sortable: false, value: 'mincode'},
+        { text: 'Local ID', sortable: false, value: 'localID'},
+        { text: 'Birth Date', sortable: false, value: 'dob'},
+        { text: 'Gen', sortable: false, value: 'genderCode'},
+        { text: 'Legal Name', sortable: false, value: 'legalName'},
+        { text: 'Postal', sortable: false, value: 'postalCode'},
+        { text: 'DC', sortable: false, value: 'demogCode'},
+      ],
+      loading: true,
+      selectedRecords: [],
+      pageNumber: 1,
+      studentHistoryResp: {
+        numberOfElements: 0,
+        totalElements: 0,
+        pageable: {
+          pageSize: 0
+        }
+      },
+      userEditHistoryGroups: null,
+    };
+  },
+  computed: {
+    ...mapGetters('student', ['historyActivityCodes']),
+    showingFirstNumber() {
+      return ((this.pageNumber-1) * this.studentHistoryResp.pageable.pageSize + (this.studentHistoryResp.numberOfElements > 0 ? 1 : 0));
+    },
+    showingEndNumber() {
+      return ((this.pageNumber-1) * this.studentHistoryResp.pageable.pageSize + this.studentHistoryResp.numberOfElements);
+    },
+  },
+  mounted() {
+    if(!this.historyActivityCodes) {
+      this.getHistoryActivityCodes();
+    }
+    this.retrieveStudentHistory();
+  },
+  watch: {
+    pageNumber: {
+      handler() {
+        this.retrieveStudentHistory();
+      }
+    },
+  },
+  methods: {
+    ...mapActions('student', ['getHistoryActivityCodes']),
+    formatPen,
+    selectItem(props) {
+      props.isSelected = !props.isSelected;
+    },
+    expandRow(item) {
+      this.userEditHistoryGroups[item.createDate].forEach(history => {
+        if(history.studentHistoryID != item.studentHistoryID) {
+          history.hiden = !history.hiden;
+        }
+      });
+      item.expanded = !item.expanded;
+    },
+    getStudentName(student) {
+      return `${student.legalLastName ? student.legalLastName + ',': ''} ${ student.legalFirstName ? student.legalFirstName: ''} ${ student.legalMiddleNames ? student.legalMiddleNames: ''}`;
+    },
+    formatStudentHistory(history) {
+      history.mincode && (history.mincode = formatMinCode(history.mincode));  
+      history.dob && (history.dob = formatDob(history.dob, 'uuuu-MM-dd'));
+      history.createTime = history.createDate;
+      history.createDate && (history.createDate = formatDob(history.createDate.substring(0, 10), 'uuuu-MM-dd'));
+      history.postalCode && (history.postalCode = formatPostalCode(history.postalCode));
+      history.legalName = this.getStudentName(history);
+      history.historyActivityLabel = this.historyActivityCodes.find(activity => activity.historyActivityCode === history.historyActivityCode)?.label || history.historyActivityCode;
+      history.expandable = false;
+      history.expanded = false;
+      history.hideable = false;
+      history.hiden = false;
+      return history;
+    },
+    markDifferences(currentPageContent, nextPageContent) {
+      const historyContent = [...currentPageContent, ...nextPageContent];
+      historyContent.forEach((history, index) => {
+        if(index < historyContent.length - 1) {
+          const preHistory = history.expandable ? (historyContent[index + history.setCount] || historyContent[index + 1]) : historyContent[index + 1];
+          Object.keys(history).forEach(key => {
+            if(history[key] != preHistory[key] && !['createDate', 'createUser', 'historyActivityLabel'].includes(key)) {
+              history[`${key}_diff`] = true;
+            }
+          });
+        }
+      });
+    },
+    initializeStudentHistory(currentPageData, nextPageData) {
+      [...currentPageData.content, ...nextPageData.content].forEach(history => {
+        this.formatStudentHistory(history);
+      });
+
+      const historyGroups = groupBy(currentPageData.content, 'createDate');
+      this.userEditHistoryGroups = mapValues(historyGroups, group => group.filter(history => history.historyActivityCode === 'USEREDIT'));
+
+      const currentPageContent = currentPageData.content.reduce((acc, history) => {
+        if(history.historyActivityCode != 'USEREDIT') {
+          acc.push(history);
+        } else {
+          const group = this.userEditHistoryGroups[history.createDate];
+          if(group?.length > 1 && group[0].studentHistoryID === history.studentHistoryID) {
+            history.expandable = true;
+            history.setCount = group.length;
+            group.slice(1).forEach(editHistory => {
+              editHistory.hideable = true;
+              editHistory.hiden = true;
+            });
+            acc.push(...group);
+          } else if(group?.length === 1) {
+            acc.push(history);
+          }
+        }
+        return acc;
+      }, []);
+
+      this.markDifferences(currentPageContent, nextPageData.content);
+
+      this.studentHistoryResp = {
+        ...currentPageData,
+        content: currentPageContent,
+      };
+    },
+    retrieveStudentHistory() {
+      this.loading = true;
+      const currentPageParams = {
+        params: {
+          pageSize: 20,
+          pageNumber: this.pageNumber-1,
+          sort: {
+            createDate: 'DESC'
+          }
+        }
+      };
+
+      const nextPageParams = {
+        params: {
+          pageSize: 1,
+          pageNumber: this.pageNumber * currentPageParams.params.pageSize,
+          sort: {
+            createDate: 'DESC'
+          }
+        }
+      };
+
+      return Promise.all([currentPageParams, nextPageParams].map(params => ApiService.apiAxios
+        .get(`${Routes['student'].ROOT_ENDPOINT}/${this.student.studentID}/history`, params)))
+        .then(([currentPageResp, nextPageResp]) => {
+          this.initializeStudentHistory(currentPageResp.data, nextPageResp.data);
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while loading the audit history. Please try again later.');
+          console.log(error);
+        })
+        .finally(() => this.loading = false);
+    },
+  }
+};
+</script>
+
+<style scoped>
+  #currentItemsDisplay {
+    text-align: right;
+    font-size: 0.875rem;
+  }
+
+  .table-cell {
+    cursor: pointer;
+  }
+
+  #auditHistory /deep/ .v-pagination__navigation > i {
+    padding-left: 0;
+  }
+
+  #dataTable /deep/ table {
+    border-spacing: 0 0.25rem;
+  }
+
+  #dataTable /deep/ table th{
+    font-size: 0.875rem;
+  }
+  #dataTable /deep/ table tr.selected-record,
+  #dataTable /deep/ table tbody tr:hover { 
+    background-color: #E1F5FE
+  }
+
+  #dataTable /deep/ table td { 
+    border-bottom: none !important;
+  }
+  #dataTable /deep/ table { 
+    border-top: thin solid #d7d7d7;
+    border-bottom: thin solid #d7d7d7;
+  }
+
+  #studentInfo {
+    font-size: 1.25rem;
+  }
+
+  #dataTable /deep/ table tr.hide-item {
+    display: none;
+  }
+
+  #dataTable /deep/ table tr.hideable { 
+    background-color: rgba(0, 0, 0, 0.06);
+  }
+
+  .diff-value {
+    font-weight:bold;
+  }
+
+  /* #dataTable /deep/ table tr td{
+    text-align: center !important;
+    vertical-align: top;
+    padding-top: 0.5rem;
+    padding-bottom: 0.3rem;
+  } */
+</style>
