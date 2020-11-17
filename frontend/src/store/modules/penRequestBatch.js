@@ -76,7 +76,7 @@ export default {
     },
     async getMacros({ commit, state }) {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        if (!state.studentInfoMacros) {
+        if (state.studentInfoMacros?.length === 0) {
           ApiService.getPenRequestBatchStudentInfoMacroCodes().then(response => commit('setStudentInfoMacros', response.data));
         }
       }

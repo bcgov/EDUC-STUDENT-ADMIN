@@ -1,160 +1,98 @@
 <template>
-  <v-container fluid class="fill-height px-0 mb-4">
-    <v-progress-linear
-      absolute
-      top
-      indeterminate
-      color="blue"
-      :active="loading"
-    ></v-progress-linear>
-    <v-alert
-      v-model="alert"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      :class="`${alertType} flex-grow-1 mx-3`"
-    >
-      {{ alertMessage }}
-    </v-alert>
-    <div v-if="!loading && prbStudent" style="width: 100%;" :overlay=false>
-      <div class="sticky full-width px-8">
-      <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center" style="background-color:white;">
-        <span class="mr-4 batch-title">
-          <strong>{{seqNumberInBatch}} of {{totalNumberInBatch}} filtered</strong> | Record {{prbStudent.recordNumber}} of {{batchFile.studentCount}} in submission {{prbStudent.submissionNumber}}
-        </span>
-        <PrbStudentStatusChip
-          :prbStudent="prbStudent"
-        ></PrbStudentStatusChip>
-        <v-spacer></v-spacer>
-        <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2" :disabled="disableModifySearch" text="Modify search" @click.native="openSearchDemographicsModal"></PrimaryButton>
-        <PrimaryButton id="issue-pen-action" class="mr-2" :disabled="disableIssueNewPen" :loading="isIssuingNewPen" text="Issue new PEN" @click.native="issueNewPen"></PrimaryButton>
-        <InfoDialog
-          :disabled="disableInfoReqBtn"
-          @updateInfoRequested="updateInfoRequested"
-          :text="prbStudent.infoRequest"
-        ></InfoDialog>
-      </v-row>
-        <v-row>
-          <SearchDemographicModal @closeDialog="closeDialog" @updateStudent="updateStudentAndRunPenMatch" :dialog="dialog"
-                                  :is-field-read-only="isFieldReadOnly"
-                                  :is-mincode-hidden="true"
-                                  :student-data="modalStudent"></SearchDemographicModal>
-        </v-row>
-      <v-row no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
-        <span>
-          <strong>{{prbStudent.minCode}} {{batchFile.schoolName}}</strong>
-        </span>
-        <v-spacer></v-spacer>
-        <span class="mr-6">
-          <span class="mr-3">Submitted PEN</span>
-          <span :class="{'pen-placeholder': !prbStudent.submittedPen}"><strong>{{prbStudent.submittedPen}}</strong></span>
-        </span>
-        <span>
-          <span class="mr-3">Assigned PEN</span>
-          <span :class="{'pen-placeholder': !prbStudent.assignedPEN}"><strong>{{prbStudent.assignedPEN}}</strong></span>
-        </span>
-      </v-row>
-      <v-divider class="mb-1 subheader-divider"/>
-      <v-row no-gutters class="py-2" style="background-color:white;">
-        <div style="width: 100%;" :overlay="false">
-          <v-data-table
-            id="top-table"
-            class="details-table mb-3"
-            :headers="headers"
-            :items="[prbStudent]"
-            hide-default-footer
-            dense
-          >
-            <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-              <span :key="h.id" class="top-column-item" :class="[header.doubleText ? 'header-half-width':'']">
-                {{ header.topText }}
-              </span>
-              <span :key="h.id" class="double-column-item">{{header.doubleText}}</span>
-            </template>
-            <template v-slot:item="props">
-              <tr>
-                <td v-for="header in props.headers" :key="header.id" :class="header.id">
-                  <div class="table-cell" :class="[props.item[header.doubleValue] ? 'value-half-width':'']">
-                    <span :class="['top-column-item',{'mark-field-value-changed':isFieldValueUpdated(header.topValue)}, {'mark-field-value-errored':isFieldValueErrored(header.topValue)}]">
-                      <span><strong>{{ props.item[header.topValue] || ' ' }}</strong></span>
-                    </span>
-                    <span :class="['double-column-item-value',{'mark-field-value-changed':isFieldValueUpdated(header.doubleValue)}, {'mark-field-value-errored':isFieldValueErrored(header.doubleValue)}]"><strong>{{props.item[header.doubleValue]}}</strong></span>
-                  </div>
-                </td>
-              </tr>
-            </template>
-          </v-data-table>
-          <v-data-table
-            id="bottom-table"
-            class="details-table"
-            :headers="bottomTableHeaders"
-            :items="[prbStudent]"
-            hide-default-footer
-            dense
-          >
-            <template v-slot:item="props">
-              <tr>
-                <td v-for="header in props.headers" :key="header.id" :class="header.id">
-                  <div class="table-cell">
-                    <span  :class="['top-column-item',{'mark-field-value-changed':isFieldValueUpdated(header.value)}, {'mark-field-value-errored':isFieldValueErrored(header.value)}]">
-                      <span><strong>{{ props.item[header.value] || ' ' }}</strong></span>
-                    </span>
-                  </div>
-                </td>
-              </tr>
-            </template>
-          </v-data-table>
-        </div>
-      </v-row>
-      <v-row v-if="validationErrorFields && validationErrorFields.length" class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
-        <v-card elevation="0">
-          <v-card-title class="pb-0">Error Details</v-card-title>
-        <v-data-table
-          :headers="validationErrorFieldHeaders"
-          :items="validationErrorFields"
-          hide-default-footer
-        ></v-data-table>
-        </v-card>
-      </v-row>
-      <v-row v-if="prbStudent.infoRequest" no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
-        <v-col cols="6">
-          <v-row no-gutters class="d-flex align-center">
-            <span class="mr-3"><strong>Info requested</strong></span>
-            <v-btn id="clear-info-requested" icon color="#003366" @click="updateInfoRequested()">
-              <v-icon>fa-times-circle</v-icon>
-            </v-btn>
-          </v-row>
-          <v-row no-gutters>
-            <pre>{{prbStudent.infoRequest}}</pre>
-          </v-row>
-        </v-col>
-      </v-row>
-      </div>
-      <v-row v-if="isLoadingMatches">
-        <v-container fluid class="full-height">
-          <article id="match-results-container" class="top-banner full-height">
-            <v-row align="center" justify="center">
-              <v-progress-circular
-                  :size="70"
-                  :width="7"
-                  color="primary"
-                  indeterminate
-              ></v-progress-circular>
+  <v-container fluid class="fill-height pa-0 mb-4">
+
+    <div style="width: 100%;" :overlay=false>
+      <div class="full-width">
+        <v-row class="pt-0">
+          <v-col cols="12 pt-0">
+            <v-progress-linear
+              absolute
+              top
+              indeterminate
+              color="blue"
+              :active="loading"
+            ></v-progress-linear>
+            <v-row>
+              <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
             </v-row>
-          </article>
-        </v-container>
-      </v-row>
-      <v-row class="full-width" v-if="showPossibleMatch && !(validationErrorFields && validationErrorFields.length)">
-        <PenMatchResultsTable :student="prbStudent" :is-comparison-required="true"
-                              :is-pen-link="true"
-                              :is-refresh-required="true"
-                              :is-match-un-match="true"
-                              @match-unmatch-student-prb-student="matchUnmatchStudentToPRBStudent"
-                              @refresh-match-results="refreshMatchResults"
-                              :possible-match="possibleMatches"></PenMatchResultsTable>
-      </v-row>
+            <div v-if="!loading && prbStudent" style="width: 100%;" :overlay=false>
+
+              <StudentDetailsInfoPanel :student.sync="prbStudent" key="info-panel" :runPenMatch="runPenMatch" :studentDetailsCopy="prbStudentCopy">
+                <template v-slot:headerPanel="{ openSearchDemographicsModal }">
+                  <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center" style="background-color:white;">
+                    <span class="mr-4 batch-title">
+                      <strong>{{seqNumberInBatch}} of {{totalNumberInBatch}} filtered</strong> | Record {{prbStudent.recordNumber}} of {{batchFile.studentCount}} in submission {{prbStudent.submissionNumber}}
+                    </span>
+                    <PrbStudentStatusChip
+                            :prbStudent="prbStudent"
+                    ></PrbStudentStatusChip>
+                    <v-spacer></v-spacer>
+                    <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2" :disabled="disableModifySearch" text="Modify search" @click.native="openSearchDemographicsModal"></PrimaryButton>
+                    <PrimaryButton id="issue-pen-action" class="mr-2" :disabled="disableIssueNewPen" :loading="isIssuingNewPen" text="Issue new PEN" @click.native="issueNewPen"></PrimaryButton>
+                    <InfoDialog
+                            :disabled="disableInfoReqBtn"
+                            @updateInfoRequested="updateInfoRequested"
+                            :text="prbStudent.infoRequest"
+                    ></InfoDialog>
+                  </v-row>
+                  <v-row no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
+                    <span>
+                      <strong>{{prbStudent.minCode}} {{batchFile.schoolName}}</strong>
+                    </span>
+                    <v-spacer></v-spacer>
+                    <span class="mr-6">
+                      <span class="mr-3">Submitted PEN</span>
+                      <span :class="{'pen-placeholder': !prbStudent.submittedPen}"><strong>{{prbStudent.submittedPen}}</strong></span>
+                    </span>
+                    <span>
+                      <span class="mr-3">Assigned PEN</span>
+                      <span :class="{'pen-placeholder': !prbStudent.assignedPEN}"><strong>{{prbStudent.assignedPEN}}</strong></span>
+                    </span>
+                  </v-row>
+                </template>
+                <template v-slot:footerPanel>
+                  <v-row v-if="prbStudent.infoRequest" no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
+                    <v-col cols="6">
+                      <v-row no-gutters class="d-flex align-center">
+                        <span class="mr-3"><strong>Info requested</strong></span>
+                        <v-btn id="clear-info-requested" icon color="#003366" @click="updateInfoRequested()">
+                          <v-icon>fa-times-circle</v-icon>
+                        </v-btn>
+                      </v-row>
+                      <v-row no-gutters>
+                        <pre>{{prbStudent.infoRequest}}</pre>
+                      </v-row>
+                    </v-col>
+                  </v-row>
+                </template>
+              </StudentDetailsInfoPanel>
+              <v-row v-if="isLoadingMatches">
+                <v-container fluid class="full-height">
+                  <article id="match-results-container" class="top-banner full-height">
+                    <v-row align="center" justify="center">
+                      <v-progress-circular
+                          :size="70"
+                          :width="7"
+                          color="primary"
+                          indeterminate
+                      ></v-progress-circular>
+                    </v-row>
+                  </article>
+                </v-container>
+              </v-row>
+              <v-row class="full-width" v-if="showPossibleMatch && !(validationErrorFields && validationErrorFields.length)">
+                <PenMatchResultsTable :student="prbStudent" :is-comparison-required="true"
+                                      :is-pen-link="true"
+                                      :is-refresh-required="true"
+                                      :is-match-un-match="true"
+                                      @match-unmatch-student-prb-student="matchUnmatchStudentToPRBStudent"
+                                      @refresh-match-results="refreshMatchResults"
+                                      :possible-match="possibleMatches"></PenMatchResultsTable>
+              </v-row>
+            </div>
+          </v-col>
+        </v-row>
+      </div>
     </div>
   </v-container>
 </template>
@@ -166,18 +104,18 @@ import PrbStudentStatusChip from './PrbStudentStatusChip';
 import InfoDialog from './prb-student-details/InfoDialog';
 import {formatPrbStudent} from '@/utils/penrequest-batch/format';
 import ApiService from '../../../common/apiService';
+import StudentDetailsInfoPanel from '../../common/StudentDetailsInfoPanel';
+import AlertMessage from '../../util/AlertMessage';
 import {
   PEN_REQ_BATCH_STUDENT_REQUEST_CODES,
-  PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER,
   PRB_SAGA_NAMES,
   Routes,
   SEARCH_CONDITION,
   SEARCH_FILTER_OPERATION,
   SEARCH_VALUE_TYPE
 } from '@/utils/constants';
-import {cloneDeep, isEmpty, sortBy} from 'lodash';
+import {cloneDeep, isEmpty} from 'lodash';
 import alterMixin from '../../../mixins/alterMixin';
-import SearchDemographicModal from '@/components/common/SearchDemographicModal';
 import PenMatchResultsTable from '@/components/common/PenMatchResultsTable';
 import {
   constructPenMatchObjectFromStudent,
@@ -187,16 +125,17 @@ import {
   getStudentTwinsByStudentID,
   updatePossibleMatchResultsBasedOnCurrentStatus
 } from '@/utils/common';
-import {formatDob, formatPostalCode} from '@/utils/format';
+import {formatDob} from '@/utils/format';
 
 export default {
   name: 'PrbStudentDetailsDisplay',
   components: {
+    AlertMessage,
     PrimaryButton,
     PrbStudentStatusChip,
     InfoDialog,
-    SearchDemographicModal,
-    PenMatchResultsTable
+    PenMatchResultsTable,
+    StudentDetailsInfoPanel
   },
   mixins: [alterMixin],
   props: {
@@ -235,20 +174,8 @@ export default {
         recordNumber: 'ASC',
       },
       batchIDs: null,
-      headers: [
-        { id: 'table-checkbox', type: 'select', sortable: false },
-        { topText: 'Mincode', bottomText: 'Local ID', align: 'start', sortable: false, topValue: 'minCode', bottomValue: 'localID' },
-        { topText: 'Legal Surname', bottomText: 'Usual Surname', topValue: 'legalLastName', bottomValue: 'usualLastName', sortable: false },
-        { topText: 'Legal Given', bottomText: 'Usual Given', topValue: 'legalFirstName', bottomValue: 'usualFirstName', sortable: false },
-        { topText: 'Legal Middle', bottomText: 'Usual Middle', topValue: 'legalMiddleNames', bottomValue: 'usualMiddleNames', sortable: false },
-        { topText: 'DC', doubleText: 'Gen', bottomText: 'Postal Code', topValue: 'dc', doubleValue: 'genderCode', bottomValue: 'postalCode', sortable: false },
-        { topText: 'Birth Date', bottomText: 'Grade', topValue: 'dob', bottomValue: 'gradeCode', sortable: false },
-        { topText: 'Sugg. PEN', bottomText: '', topValue: 'bestMatchPEN', bottomValue: '', sortable: false },
-      ],
-
       loading: true,
       repeatRequestOriginalStatus: null,
-      dialog: false,
       possibleMatches: [],
       possibleMatchesPlaceHolder: [],
       isLoadingMatches: false,
@@ -257,10 +184,6 @@ export default {
       isIssuingNewPen: false,
       prbStudentNavInfo: [],
       validationErrorFields: null,
-      validationErrorFieldHeaders: [
-        { text: 'Field Name', value: 'uiFieldName' },
-        { text: 'Error Description', value: 'penRequestBatchValidationIssueTypeCode' }
-      ],
       originalStatusCode: null,
       matchedStudentTwinRecords:[],
       prbSagaNames: Object.values(PRB_SAGA_NAMES),
@@ -308,23 +231,13 @@ export default {
   },
   computed: {
     ...mapState('setNavigation', ['currentRoute']),
-    ...mapState('penRequestBatch', ['selectedFiles', 'prbValidationFieldCodes', 'prbValidationIssueSeverityCodes', 'prbValidationIssueTypeCodes']),
-    ...mapState('prbStudentSearch', ['selectedRecords']),
+    ...mapState('penRequestBatch', ['selectedFiles', 'prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
     ...mapState('notifications', ['notification']),
     disableInfoReqBtn() {
       return this.loading || this.prbStudent?.sagaInProgress
           || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
           || ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE]
-              .some(element => element === this.prbStudent?.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
-    },
-    selectedStudents() {
-      return sortBy(this.selectedRecords, ['minCode', 'submissionNumber', 'recordNumber']);
-    },
-    topTableHeaders() {
-      return this.headers.map(({topText, doubleText, topValue, doubleValue, sortable})=> ({text: topText, doubleText, value: topValue, doubleValue, sortable}));
-    },
-    bottomTableHeaders() {
-      return this.headers.map(({bottomText, bottomValue, sortable})=> ({text: bottomText, value: bottomValue, sortable}));
+            .some(element => element === this.prbStudent?.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
     },
     repeatRequestOriginal() {
       return this.prbStudent?.repeatRequestOriginalID;
@@ -333,7 +246,7 @@ export default {
       return this.loading || this.prbStudent?.sagaInProgress
           || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
           || ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ]
-              .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
+            .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
     },
     disableModifySearch(){
       return this.loading || this.prbStudent?.sagaInProgress
@@ -534,7 +447,7 @@ export default {
     },
     getBatchIdSearchCriteria(searchCriteria) {
       const batchIdSearchQuery = searchCriteria.find(query =>
-          query.searchCriteriaList.some(criteria => criteria.key === 'penRequestBatchEntity.penRequestBatchID'));
+        query.searchCriteriaList.some(criteria => criteria.key === 'penRequestBatchEntity.penRequestBatchID'));
       return batchIdSearchQuery?.searchCriteriaList.find(criteria => criteria.key === 'penRequestBatchEntity.penRequestBatchID');
     },
     updateInfoRequested(infoRequest) {
@@ -563,28 +476,6 @@ export default {
           this.loading = false;
         });
     },
-    openSearchDemographicsModal() {
-      this.setModalStudentFromPrbStudent(this.prbStudent);
-      this.dialog = true;
-    },
-    closeDialog() {
-      this.dialog = false;
-      // cancel reverts the request to original state.
-      this.prbStudent = deepCloneObject(this.prbStudentCopy);
-    },
-    isFieldReadOnly() {
-      return false;
-    },
-    async updateStudentAndRunPenMatch(studentModified) {
-      this.prbStudent = deepCloneObject(studentModified);
-      this.prbStudent.postalCode = this.prbStudent.postalCode? formatPostalCode(this.prbStudent.postalCode):'';
-      this.prbStudent.dob = formatDob(this.prbStudent.dob,'uuuuMMdd','uuuu/MM/dd');
-      const hasValidationFailure = await this.runDemogValidation();
-      if(!hasValidationFailure) {
-        await this.runPenMatch();
-        this.updatePossibleMatchResultsBasedOnCurrentStatus();
-      }
-    },
 
     async runPenMatch() {
       this.isLoadingMatches = true;
@@ -602,19 +493,8 @@ export default {
         this.setFailureAlert('PEN Match API call failed, please try again.');
       } finally {
         this.isLoadingMatches = false;
+        this.updatePossibleMatchResultsBasedOnCurrentStatus();
       }
-    },
-    isFieldValueUpdated(fieldName) {
-      if(fieldName){
-        return this.prbStudent[fieldName]?.toLowerCase() !== this.prbStudentCopy[fieldName]?.toLowerCase();
-      }
-      return false;
-    },
-    isFieldValueErrored(fieldName) {
-      if(fieldName && this.validationErrorFields) {
-        return this.validationErrorFields.filter(x => PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER[x.penRequestBatchValidationFieldCode] === fieldName)?.length;
-      }
-      return false;
     },
     async runDemogValidation() {
       try {
@@ -693,19 +573,19 @@ export default {
           twinStudentIDs: this.possibleMatches.filter(el => el.studentID !== student.studentID).map(el=>el.studentID)
         };
         ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}/user-match`, payload)
-            .then(response => {
-              if(response.data) {
-                this.prbStudent.sagaInProgress = true;
-                this.setSuccessAlert(`Your request to match student to Pen Request is accepted.`);
-              }
-            })
-            .catch(error => {
-              this.setFailureAlert(`Your request to match student to Pen Request could not be accepted,  Please try again later.`);
-              console.log(error);
-            })
-            .finally(() => {
-              this.isMatchingToStudentRecord = false;
-            });
+          .then(response => {
+            if(response.data) {
+              this.prbStudent.sagaInProgress = true;
+              this.setSuccessAlert('Your request to match student to Pen Request is accepted.');
+            }
+          })
+          .catch(error => {
+            this.setFailureAlert('Your request to match student to Pen Request could not be accepted,  Please try again later.');
+            console.log(error);
+          })
+          .finally(() => {
+            this.isMatchingToStudentRecord = false;
+          });
       }else {
         //TODO implement the unmatch in future story.
       }
@@ -735,10 +615,6 @@ export default {
     margin-right: 5.7em;
   }
 
-  .subheader-divider {
-    border-width: 0.25ex 0 0 0;
-  }
-
   #bottom-table /deep/ table th,
   #top-table /deep/ table th {
     border-bottom: none !important;
@@ -759,94 +635,13 @@ export default {
   .details-table /deep/ table > tbody > tr:not(:last-child) > td {
     border-bottom: none !important;
   }
-
-  .double-column-item {
-    float: right;
-    display: contents;
-  }
-
-  .double-column-item-value{
-    float: right;
-  }
-
-  .top-column-item {
-    float: left;
-  }
-  .bottom-column-item {
-    float: left;
-  }
   .full-width {
     margin-left: -32px;
     margin-right: -32px;
-  }
-  .double-width {
-    width: 5em;
-  }
-  .header-half-width {
-    width: 3.0em;
-  }
-  .value-half-width {
-    width: 4.0em;
-  }
-  .sticky {
-    position: sticky;
-    top: 0;
-    z-index: 6;
-    background-color: white;
   }
 
   pre {
     font-family: inherit;
     font-size: inherit;
-  }
-
-  .mark-field-value-errored {
-    color: #D8292F !important;
-  }
-
-  .mark-field-value-changed {
-    color: #2E8540;
-  }
-
-  @media screen and (max-width: 1300px) {
-    .details-table /deep/ table tr:nth-child(1),
-    .details-table /deep/ table th:nth-child(1) {
-      width: 3%;
-    }
-    .details-table /deep/ table tr:nth-child(3),
-    .details-table /deep/ table tr:nth-child(4),
-    .details-table /deep/ table tr:nth-child(5),
-    .details-table /deep/ table th:nth-child(3),
-    .details-table /deep/ table th:nth-child(4),
-    .details-table /deep/ table th:nth-child(5) {
-      width: 17.2%;
-    }
-    .details-table /deep/ table tr:nth-child(2),
-    .details-table /deep/ table tr:nth-child(6),
-    .details-table /deep/ table tr:nth-child(7),
-    .details-table /deep/ table tr:nth-child(8),
-    .details-table /deep/ table th:nth-child(2),
-    .details-table /deep/ table th:nth-child(6),
-    .details-table /deep/ table th:nth-child(7),
-    .details-table /deep/ table th:nth-child(8) {
-      width: 10%;
-    }
-  }
-
-  @media screen and (min-width: 1301px) {
-    .details-table /deep/ table th:nth-child(1) {
-      width: 2%;
-    }
-    .details-table /deep/ table th:nth-child(3),
-    .details-table /deep/ table th:nth-child(4),
-    .details-table /deep/ table th:nth-child(5) {
-      width: 16.8%;
-    }
-    .details-table /deep/ table th:nth-child(2),
-    .details-table /deep/ table th:nth-child(6),
-    .details-table /deep/ table th:nth-child(7),
-    .details-table /deep/ table th:nth-child(8) {
-      width: 10%;
-    }
   }
 </style>

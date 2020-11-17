@@ -36,7 +36,7 @@
                 </article>
               </v-container>
             </v-row>
-            <v-row v-if="showPossibleMatch" class="full-width">
+            <v-row v-if="showPossibleMatch" >
               <PenMatchResultsTable :student="student" :is-comparison-required="false"
                                     :is-pen-link="false"
                                     :is-refresh-required="false"

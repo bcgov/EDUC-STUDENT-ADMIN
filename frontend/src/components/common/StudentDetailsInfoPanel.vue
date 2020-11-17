@@ -67,6 +67,7 @@
         ></v-data-table>
       </v-card>
     </v-row>
+    <slot name="footerPanel"></slot>
   </v-container>
 </template>
 
@@ -146,6 +147,14 @@ export default {
     },
     topTableHeaders() {
       return this.headers.map(({topText, doubleText, topValue, doubleValue, sortable})=> ({text: topText, doubleText, value: topValue, doubleValue, sortable}));
+    },
+    stickyInfoPanelHeight() {
+      return this.$refs.stickyInfoPanel?.clientHeight;
+    }
+  },
+  watch: {
+    stickyInfoPanelHeight(newValue) {
+      this.setStickyInfoPanelHeight(newValue);
     }
   },
   methods: {
@@ -163,13 +172,21 @@ export default {
       return false;
     },
     openSearchDemographicsModal() {
+      this.setModalStudentFromPrbStudent();
+      this.originalStatusCode = this.studentDetails.penRequestBatchStudentStatusCode;
       this.dialog = true;
     },
     setModalStudentFromPrbStudent(){
       this.modalStudent = deepCloneObject(this.studentDetails);
-      this.modalStudent.mincode = this.modalStudent.minCode?.replaceAll(' ',''); // since the modal component is generic and expects mincode to be all lowercase.
-      this.modalStudent.postalCode = this.modalStudent.postalCode?.replaceAll(' ','');
-      this.modalStudent.dob = this.modalStudent.dob? formatDob(this.modalStudent.dob,'uuuu/MM/dd','uuuuMMdd'): '';
+      if(this.modalStudent.mincode) {
+        this.modalStudent.mincode = this.modalStudent.minCode?.replaceAll(' ',''); // since the modal component is generic and expects mincode to be all lowercase.
+      }
+      if(this.modalStudent.postalCode) {
+        this.modalStudent.postalCode = this.modalStudent.postalCode?.replaceAll(' ','');
+      }
+      if(this.modalStudent.dob) {
+        this.modalStudent.dob = formatDob(this.modalStudent.dob,'uuuu/MM/dd','uuuuMMdd');
+      }
     },
     closeDialog() {
       this.dialog = false;
@@ -218,19 +235,12 @@ export default {
 </script>
 
 <style scoped>
-  .batch-title {
-    font-size: 1.065rem;
-  }
   .default-container {
     padding: 0;
     margin: 0;
     max-width: 100%;
     width: 100%;
   }
-  .pen-placeholder {
-    margin-right: 5.7em;
-  }
-
   .subheader-divider {
     border-width: 0.25ex 0 0 0;
   }
@@ -243,40 +253,28 @@ export default {
     color: rgba(0, 0, 0, 0.87) !important;
     height: 1.5rem;
   }
-
   .details-table /deep/ table > tbody > tr > td {
     height: 1.5rem;
   }
-
   .details-table /deep/ table > tbody > tr:hover {
     background: transparent !important;
   }
-
   .details-table /deep/ table > tbody > tr:not(:last-child) > td {
     border-bottom: none !important;
   }
-
   .double-column-item {
     float: right;
     display: contents;
   }
-
   .double-column-item-value{
     float: right;
   }
-
   .top-column-item {
-    float: left;
-  }
-  .bottom-column-item {
     float: left;
   }
   .full-width {
     margin-left: -32px;
     margin-right: -32px;
-  }
-  .double-width {
-    width: 5em;
   }
   .header-half-width {
     width: 3.0em;
