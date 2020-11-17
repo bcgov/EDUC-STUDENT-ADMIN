@@ -62,7 +62,8 @@ let object = {
     STATUS_CODE_URL: studentRoot + '/statusCodes',
     GRADE_CODE_URL: studentRoot + '/gradeCodes',
     TWIN_REASON_CODE_URL: studentRoot + '/twinReasonCodes',
-    GET_ALL_STUDENTS_BY_IDS: studentRoot + '/allStudents'
+    HISTORY_ACTIVITY_CODE_URL: studentRoot + '/historyActivityCodes',
+    GET_ALL_STUDENTS_BY_IDS: studentRoot + '/allStudents',
   },
   penServices: {
     ROOT_ENDPOINT: penServicesRoot,

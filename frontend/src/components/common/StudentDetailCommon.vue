@@ -379,7 +379,7 @@ import StudentDetailsTextFieldSideCardReadOnly
   from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
 import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
 import {formatMinCode, formatPen} from '../../utils/format';
-import {sortBy} from 'lodash';
+import {sortBy,isEmpty} from 'lodash';
 import alterMixin from '../../mixins/alterMixin';
 import ConfirmationDialog from '../util/ConfirmationDialog';
 import AlertMessage from '../util/AlertMessage';
@@ -394,6 +394,10 @@ export default {
     studentID: {
       type: String,
       required: true
+    },
+    studentDetails: {
+      type: Object,
+      default: () => {}
     },
     validForm: {
       type: Boolean,
@@ -633,20 +637,22 @@ export default {
     refreshStudent() {
       this.isLoading = true;
       this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false));
-      ApiService.apiAxios
-        .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
-        .then(response => {
-          this.setStudent(response.data.student);
-          this.merges = response.data.merges;
-          this.twins = response.data.twins;
-        })
-        .catch(error => {
-          console.log(error);
-          this.isLoading = false;
-        })
-        .finally(() => {
-          this.isLoading = false;
-        });
+      if(!isEmpty(this.studentDetails)) {
+        this.handleStudentDetails(this.studentDetails);
+        this.isLoading = false;
+      } else {
+        ApiService.apiAxios
+          .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
+          .then(response => {
+            this.handleStudentDetails(response.data);
+          })
+          .catch(error => {
+            console.log(error);
+          })
+          .finally(() => {
+            this.isLoading = false;
+          });
+      }
     },
     hasEdits(key) {
       let studentCopy = this.studentCopy[key];
@@ -836,6 +842,11 @@ export default {
       }
       return [];
     },
+    handleStudentDetails({student, merges, twins}) {
+      this.setStudent(student);
+      this.merges = merges;
+      this.twins = twins;
+    }
   }
 };
 </script>

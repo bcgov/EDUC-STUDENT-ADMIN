@@ -78,6 +78,29 @@ async function searchStudent(req, res) {
   });
 }
 
+async function getStudentHistoryByStudentID(req, res) {
+  const token = utils.getBackendToken(req);
+  
+  const params = {
+    params: {
+      pageSize: req.query.pageSize <= 20 ? req.query.pageSize : 20,
+      pageNumber: req.query.pageNumber,
+      sort: req.query.sort,
+    }
+  };
+
+  return utils.getData(token, `${config.get('server:student:rootURL')}/${req.params.id}/student-history/paginated`, params)
+    .then((dataResponse) => {
+      return res.status(200).json(dataResponse);
+    }).catch((e) => {
+      logApiError(e, 'getStudentHistoryByStudentID', 'Error occurred while attempting to get student history.');
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'INTERNAL SERVER ERROR'
+      });
+    });
+}
+
 module.exports = {
   searchStudent,
+  getStudentHistoryByStudentID
 };

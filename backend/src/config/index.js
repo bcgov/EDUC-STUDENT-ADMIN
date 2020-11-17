@@ -68,6 +68,7 @@ nconf.defaults({
       statusCodesURL: process.env.STUDENT_API_URL + '/status-codes',
       gradeCodesURL: process.env.STUDENT_API_URL + '/grade-codes',
       twinReasonCodesURL: process.env.STUDENT_API_URL + '/student-twin-reason-codes',
+      historyActivityCodesURL: process.env.STUDENT_API_URL + '/student-history-activity-codes',
     },
     penServices: {
       rootURL: process.env.PEN_SERVICES_API_URL,

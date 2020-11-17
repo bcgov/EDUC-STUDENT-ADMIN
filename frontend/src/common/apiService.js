@@ -92,6 +92,7 @@ export default {
   getStatusCodes: getCodes(Routes.student.STATUS_CODE_URL),
   getGradeCodes: getCodes(Routes.student.GRADE_CODE_URL),
   getTwinReasonCodes: getCodes(Routes.student.TWIN_REASON_CODE_URL),
+  getHistoryActivityCodes: getCodes(Routes.student.HISTORY_ACTIVITY_CODE_URL),
   getPenRequestBatchStudentStatusCodes: getCodes(Routes.penRequestBatch.STUDENT_STATUS_CODE_URL),
   getPenRequestBatchStudentInfoMacroCodes: getCodes(Routes.penRequestBatch.STUDENT_INFO_MACROS_URL),
   getPrbValidationFieldCodes: getCodes(Routes.penRequestBatch.PRB_VALIDATION_FIELD_CODE_URL),
