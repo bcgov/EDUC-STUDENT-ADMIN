@@ -19,7 +19,7 @@
       @page-count="studentHistoryResp.pageable.pageNumber = $event"
     >
       <template v-slot:item="props">
-        <tr :class="{'selected-record' : props.isSelected, 'hide-item': props.item.hiden, 'hideable': props.item.hideable}" @click="selectItem(props)">
+        <tr :class="{'selected-record' : props.isSelected, 'hide-item': props.item.hidden, 'hideable': props.item.hideable}" @click="selectItem(props)">
           <td v-for="header in props.headers" :key="header.id" :class="header.id">
             <div class="table-cell">
               <span :class="{'diff-value': props.item[`${header.value}_diff`]}">{{ props.item[header.value] || '' }}</span>
@@ -124,7 +124,7 @@ export default {
     expandRow(item) {
       this.userEditHistoryGroups[item.createDate].forEach(history => {
         if(history.studentHistoryID != item.studentHistoryID) {
-          history.hiden = !history.hiden;
+          history.hidden = !history.hidden;
         }
       });
       item.expanded = !item.expanded;
@@ -143,7 +143,7 @@ export default {
       history.expandable = false;
       history.expanded = false;
       history.hideable = false;
-      history.hiden = false;
+      history.hidden = false;
       return history;
     },
     markDifferences(currentPageContent, nextPageContent) {
@@ -177,7 +177,7 @@ export default {
             history.setCount = group.length;
             group.slice(1).forEach(editHistory => {
               editHistory.hideable = true;
-              editHistory.hiden = true;
+              editHistory.hidden = true;
             });
             acc.push(...group);
           } else if(group?.length === 1) {
