@@ -16,63 +16,85 @@
           <TertiaryButton v-if="isComparisonRequired" id="compareButton" class="ma-0" text="Compare"
                           icon="mdi-content-copy" @click.native="compare"></TertiaryButton>
           <TertiaryButton v-if="isRefreshRequired" id="refreshButton" class="ma-0" iconStyle="mdi-flip-h" text="Refresh"
-                          icon="mdi-cached" @click.native="refresh"></TertiaryButton>
+                          icon="mdi-cached" @click.native="$emit('refresh-match-results')"></TertiaryButton>
         </v-row>
       </v-col>
     </v-row>
-    <v-slide-y-transition>
-      <v-col key="results" v-if="matchesExpanded" class="pa-0">
-        <v-divider></v-divider>
-        <v-data-table
-            id="dataTable"
-            :headers="headers"
-            hide-default-header
-            hide-default-footer
-            item-key="studentID"
-            :items="studentPossibleMatches">
-          <template v-slot:item="props">
-            <tr :class="{'selected-record' : props.isSelected, grayout: !isCreatedStudent(props.item)}">
-              <td v-for="header in props.headers" :key="header.id" :class="header.id">
-                <v-checkbox v-if="header.type" class="pl-3" color="#606060" @change="props.select($event)"></v-checkbox>
-                <div v-else class="tableCell">
-                  <a class="pen-link" @click="popStudentDialog(props.item['studentID'])" v-if="header.topValue==='pen' && isPenLink">
+    <v-row>
+      <v-slide-y-transition>
+        <v-col key="results" v-if="matchesExpanded" class="pa-0">
+          <v-divider></v-divider>
+          <v-data-table
+              id="penMatchResultsDataTable"
+              :headers="headers"
+              hide-default-header
+              hide-default-footer
+              item-key="studentID"
+              :items="studentPossibleMatches">
+            <template v-slot:item="props">
+              <tr :key="props.index"
+                  @mouseover="enableMatchOrUnMatch(props.item)"
+                  @mouseleave="disableMatchOrUnMatch(props.item)"
+                  :class="[hoveredOveredRowStudentID === props.item.studentID?'hovered-record-match-unmatch':'' ,
+                 props.isSelected?'selected-record':'',
+                 isMatchedToStudent(props.item)?'matchedStudentRow':'',
+                 (student.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR && student.assignedPEN === props.item.pen) || !!props.item.twinRecordToMatchedStudent ? 'grayout':'']">
+                <td v-for="header in props.headers" :key="header.id" :class="header.id">
+                  <div class="tableCell">
+                    <v-checkbox :class="['top-column-item']" v-if="header.type" class="pl-3" color="#606060"
+                                @change="props.select($event)"></v-checkbox>
+                    <v-icon :class="['bottom-column-item','pl-3']"
+                            v-if="header.bottomValue==='icon' && props.item['iconValue']" color="#606060">
+                      {{ props.item['iconValue'] }}
+                    </v-icon>
+                    <a class="pen-link" @click="popStudentDialog(props.item['studentID'])"
+                       v-if="header.topValue==='pen' && isPenLink">
                     <span
                         :class="['top-column-item', 'pen-link', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
                       {{ formatPen(props.item[header.topValue]) }}
                     </span>
-                  </a>
-                  <span v-else-if="header.topValue==='pen'"
-                      :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
+                    </a>
+                    <span v-else-if="header.topValue==='pen'"
+                          :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
                     {{ formatPen(props.item[header.topValue]) }}
                   </span>
-                  <span v-else-if="header.topValue==='mincode'"
-                        :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
+                    <span v-else-if="header.topValue==='mincode'"
+                          :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
                         {{ formatMinCode(props.item[header.topValue]) }}
                   </span>
-                  <span v-else
-                        :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
+                    <span v-else
+                          :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
                         {{ props.item[header.topValue] }}
                   </span>
-                  <span
-                      :class="['double-column-item', props.item[header.doubleValue] && demogValuesMatch(header.doubleValue, props.item[header.doubleValue])? 'font-weight-bold':'']">
+                    <span
+                        :class="['double-column-item', props.item[header.doubleValue] && demogValuesMatch(header.doubleValue, props.item[header.doubleValue])? 'font-weight-bold':'']">
                       {{ props.item[header.doubleValue] }}
                   </span>
-                  <br>
-                  <span
-                      :class="['bottom-column-item', props.item[header.bottomValue] && demogValuesMatch(header.bottomValue, props.item[header.bottomValue])? 'font-weight-bold':'']">
+                    <br>
+                    <span
+                        v-if="!!isMatchUnMatch && header.bottomValue==='button' && hoveredOveredRowStudentID === props.item.studentID">
+
+                      <PrimaryButton :short="true" id="matchUnMatchButton" :text="matchUnMatchButtonText"
+                                     :width="'6.5em'"
+                                     @click.native="$emit('match-unmatch-student-prb-student', props.item, matchUnMatchButtonText)"></PrimaryButton>
+                  </span>
+
+                    <span v-else
+                          :class="['bottom-column-item', props.item[header.bottomValue] && demogValuesMatch(header.bottomValue, props.item[header.bottomValue])? 'font-weight-bold':'']">
                       {{ props.item[header.bottomValue] }}
                   </span>
-                </div>
-              </td>
-            </tr>
-          </template>
-        </v-data-table>
-      </v-col>
-    </v-slide-y-transition>
-    <StudentDetailModal  
-      :studentID="currentStudentID"
-      :openDialog="openStudentDialog"
-      @closeDialog="closeDialog"
+                  </div>
+                </td>
+              </tr>
+            </template>
+          </v-data-table>
+        </v-col>
+      </v-slide-y-transition>
+    </v-row>
+    <StudentDetailModal
+        :studentID="currentStudentID"
+        :openDialog="openStudentDialog"
+        @closeDialog="closeDialog"
     ></StudentDetailModal>
   </v-card>
 </template>
@@ -81,13 +103,15 @@
 
 import TertiaryButton from '../util/TertiaryButton';
 import StudentDetailModal from '../penreg/student/StudentDetailModal';
-import { PEN_REQ_BATCH_STUDENT_REQUEST_CODES } from '@/utils/constants';
+import {PEN_REQ_BATCH_STUDENT_REQUEST_CODES} from '@/utils/constants';
 import {formatPen, formatMinCode} from '@/utils/format';
 import { mapState } from 'vuex';
+import PrimaryButton from '@/components/util/PrimaryButton';
 
 export default {
   name: 'PenMatchResultsTable.vue',
   components: {
+    PrimaryButton,
     TertiaryButton,
     StudentDetailModal
   },
@@ -108,10 +132,14 @@ export default {
       type: Boolean,
       required: true
     },
-    isPenLink:{
-      type:Boolean,
-      required:true
-    }
+    isPenLink: {
+      type: Boolean,
+      required: true
+    },
+    isMatchUnMatch: {
+      type: Boolean,
+      required: true
+    },
 
   },
   data() {
@@ -120,7 +148,12 @@ export default {
       openStudentDialog: false,
       matchesExpanded: true,
       headers: [
-        {id: 'table-checkbox', type: 'select', sortable: false},
+        {
+          id: 'table-checkbox',
+          type: 'select',
+          sortable: false,
+          bottomValue: 'icon'
+        },
         {
           topText: 'Mincode',
           bottomText: 'Local ID',
@@ -160,12 +193,17 @@ export default {
           sortable: false
         },
         {topText: 'Birth Date', bottomText: 'Grade', topValue: 'dob', bottomValue: 'gradeCode', sortable: false},
-        {topText: 'Sugg. PEN', bottomText: '', topValue: 'pen', bottomValue: '', sortable: false},
+        {topText: 'Sugg. PEN', bottomText: '', topValue: 'pen', bottomValue: 'button', sortable: false},
       ],
       studentPossibleMatches: [],
       loadingMatchResults: false,
       errorCallingMatchResults: false,
-      errorMessage: 'There was an error in retrieving the data. Try refreshing the page, or leaving this request and returning to it after viewing another.'
+      errorMessage: 'There was an error in retrieving the data. Try refreshing the page, or leaving this request and returning to it after viewing another.',
+      isMatchUnMatchEnabled: false,
+      selectedRecordStudentID: null,
+      hoveredOveredRowStudentID: null,
+      matchUnMatchButtonText: null,
+      PEN_REQ_BATCH_STUDENT_REQUEST_CODES: PEN_REQ_BATCH_STUDENT_REQUEST_CODES,
     };
   },
   mounted() {
@@ -179,31 +217,46 @@ export default {
   computed: {
     ...mapState('app', ['stickyInfoPanelHeight']),
     title() {
-      return this.student.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR ? 'New PEN Created' : `${this.studentPossibleMatches.length || 0} Matches`;
-    }
+      if (this.student.penRequestBatchStudentStatusCode) {
+        switch (this.student.penRequestBatchStudentStatusCode) {
+        case PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR:
+          return 'New PEN Created';
+        case PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS:
+        case PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR:
+          return 'Matched To';
+        default:
+          return `${this.studentPossibleMatches.length || 0} Matches`;
+        }
+      } else {
+        return `${this.studentPossibleMatches.length || 0} Matches`;
+      }
+    },
+    isMatchedToStudent(){
+      return item => !!item?.matchedToStudent;
+    },
   },
   methods: {
-    popStudentDialog(studentID){
+    popStudentDialog(studentID) {
       this.currentStudentID = studentID;
       this.openStudentDialog = true;
     },
-    closeDialog(){
+    closeDialog() {
       this.openStudentDialog = false;
     },
     compare() {
       //TODO
     },
-    refresh(){
+    refresh() {
 
     },
     demogValuesMatch(valueType, value) {
       switch (valueType) {
       case 'postalCode':
-        return this.student?.postalCode?.replace(' ','') === value?.replace(' ',''); // match without space
+        return this.student?.postalCode?.replace(' ', '')?.toLowerCase() === value?.replace(' ', '')?.toLowerCase(); // match without space
       case 'dob':
-        return this.student?.dob?.replace(/\D/g,'') === value?.replace(/\D/g,''); // match birth date without - or /
+        return this.student?.dob?.replace(/\D/g, '') === value?.replace(/\D/g, ''); // match birth date without - or /
       case 'mincode':
-        return this.student?.minCode?.replace(/\s/g,'') === value?.replace(/\s/g,'');
+        return this.student?.minCode?.replace(/\s/g, '') === value?.replace(/\s/g, '');
       case 'pen':
         if (this.student.assignedPEN) {
           return this.student.assignedPEN === value;
@@ -211,20 +264,39 @@ export default {
           return this.student.bestMatchPEN === value;
         }
       default:
-        return this.student[valueType] === value;
+        return this.student[valueType]?.toLowerCase() === value?.toLowerCase();
       }
     },
-    isCreatedStudent(matchedStudent) {
-      return this.student.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR && this.student.assignedPEN === matchedStudent.pen;
+    isGreyedOut(matchedStudent) {
+      return ( (this.student.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR && this.student.assignedPEN === matchedStudent.pen) || !!matchedStudent.twinRecordToMatchedStudent);
     },
     formatPen,
     formatMinCode,
 
+    enableMatchOrUnMatch(matchedStudent) {
+      if (this.student && matchedStudent) {
+        if (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE === this.student.penRequestBatchStudentStatusCode
+            || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ === this.student.penRequestBatchStudentStatusCode) {
+          this.hoveredOveredRowStudentID = matchedStudent.studentID;
+          this.matchUnMatchButtonText = 'Match';
+        } else if ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS,
+          PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR ].some(element => element === this.student.penRequestBatchStudentStatusCode)
+            && matchedStudent.studentID === this.student.studentID) {
+          this.hoveredOveredRowStudentID = matchedStudent.studentID;
+          this.matchUnMatchButtonText = 'Unmatch';
+        }
+      }
+    },
+    disableMatchOrUnMatch() {
+      this.hoveredOveredRowStudentID = null;
+      this.matchUnMatchButtonText = '';
+    },
   }
 };
 </script>
 
 <style scoped>
+
 #searchResults {
   background-color: #F2F2F2;
   z-index: 0;
@@ -235,13 +307,13 @@ export default {
   min-height: 1.5em;
 }
 
-#dataTable {
+#penMatchResultsDataTable {
   background-color: #F2F2F2;
 }
 
 
-#dataTable /deep/ table tbody tr:not(.selected-record):hover {
-  background-color: inherit
+#penMatchResultsDataTable /deep/ table tbody tr:not(.selected-record):hover {
+  background-color: inherit;
 }
 
 .v-data-table /deep/ tr td:nth-child(1) {
@@ -269,8 +341,15 @@ export default {
   background-color: #F2F2F2;
 }
 
+.hovered-record-match-unmatch {
+  background-color: #dff4fd !important;
+}
+
 .grayout {
   opacity: 0.5;
 }
 
+.matchedStudentRow {
+  background-color: #E0EFD9 !important;
+}
 </style>

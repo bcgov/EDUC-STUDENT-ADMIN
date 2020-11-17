@@ -40,6 +40,7 @@
               <PenMatchResultsTable :student="student" :is-comparison-required="false"
                                     :is-pen-link="false"
                                     :is-refresh-required="false"
+                                    :is-match-un-match="false"
                                     :possible-match="possibleMatches"></PenMatchResultsTable>
             </v-row>
           </v-col>
@@ -94,7 +95,7 @@ export default {
         }
       };
       // API expects DOB to be with - not /
-      studentWithAssociations.student.dob = formatDob(this.student.dob, 'uuuu/MM/dd', 'uuuu-MM-dd');
+      studentWithAssociations.student.dob = formatDob(this.student.dob, 'uuuuMMdd', 'uuuu-MM-dd');
       studentWithAssociations.student.sexCode = this.student.genderCode; // sex code is mandatory in API.
       studentWithAssociations.student.emailVerified = 'N';
       studentWithAssociations.student.postalCode = this.student.postalCode ? this.student.postalCode.replaceAll(' ', '') : null;
