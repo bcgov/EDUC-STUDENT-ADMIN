@@ -278,6 +278,7 @@ export default {
       searchLoading: false,
       searchEnabled: false,
       prbStudentSearchResultsKey: 0,
+      allIDs: [],
     };
   },
   computed:{
@@ -432,9 +433,11 @@ export default {
         rec.isSelected = this.isSelected(rec);
       });
 
-      if (!isPagingOperation && this.selectedRecords.length > 0) {
-        // drop selected rows if it is not in the current data set
-        const newSelectedRecords = this.selectedRecords.filter(rec => students.find(item => item.penRequestBatchStudentID === rec.penRequestBatchStudentID));
+      if (!isPagingOperation &&
+        this.allIDs.length > 0 &&
+        this.selectedRecords.length > 0) {
+        // drop selected rows if it is not in all data set for all pages after filter change
+        const newSelectedRecords = this.selectedRecords.filter(rec => this.allIDs.find(prbStudentId => prbStudentId === rec.penRequestBatchStudentID));
         this.setSelectedRecords(newSelectedRecords);
       }
       formatPrbStudents(students);
@@ -494,6 +497,21 @@ export default {
           searchQueries: searchCriteria || this.prbStudentSearchCriteriaList(this.prbStudentSearchParams),
         }
       };
+
+      if (!isPagingOperation) {
+        ApiService.apiAxios
+          .get(Routes['penRequestBatch'].STUDENTS_SEARCH_URL + '/allIds', params)
+          .then(response => {
+            if (response.data) {
+              this.allIDs = response.data;
+            }
+          })
+          .catch(error => {
+            this.setFailureAlert('An error occurred while loading the PEN request student ids. Please try again later.');
+            console.log(error);
+            throw error;
+          });
+      }
 
       return ApiService.apiAxios
         .get(Routes['penRequestBatch'].STUDENTS_SEARCH_URL, params)

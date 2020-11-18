@@ -4,13 +4,21 @@ const router = express.Router();
 const auth = require('../components/auth');
 const utils = require('../components/utils');
 const extendSession = utils.extendSession();
-const { getPENBatchRequestStats, getPenRequestFiles, getPenRequestBatchStudents, getPenRequestBatchStudentById, getPenRequestBatchStudentMatchOutcome, updatePrbStudentInfoRequested,
+const { getPENBatchRequestStats,
+  getPenRequestFiles, getAllPenRequestBatchIds,
+  getPenRequestBatchStudents, getAllPenRequestBatchStudentIds,
+  getPenRequestBatchStudentById, getPenRequestBatchStudentMatchOutcome, updatePrbStudentInfoRequested,
   issueNewPen, userMatchSaga } = require('../components/penRequestBatch');
+
+/*
+ * Get paginated pen request batch files
+ */
+router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, getPenRequestFiles);
 
 /*
  * Get all pen request batch files
  */
-router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, getPenRequestFiles);
+router.get('/allIds', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, getAllPenRequestBatchIds);
 
 /*
  * Returns the number of pen requests in initial and subsequent review
@@ -18,9 +26,14 @@ router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.
 router.get('/stats', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, getPENBatchRequestStats);
 
 /*
- * Get pen request students
+ * Get paginated pen request students
  */
 router.get('/students', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, getPenRequestBatchStudents);
+
+/*
+ * Get all pen request students
+ */
+router.get('/students/allIds', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, getAllPenRequestBatchStudentIds);
 
 /*
  * Get pen request batch students match results

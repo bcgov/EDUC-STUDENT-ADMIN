@@ -2,7 +2,7 @@
 const config = require('../config/index');
 const {
   logApiError, postData, getBackendToken, getData, putData, errorResponse,
-  getPaginatedListForSCGroups, getUser, stripAuditColumns, logDebug
+  getPaginatedListForSCGroups, getAllIDs, getUser, stripAuditColumns, logDebug
 } = require('./utils');
 const {FILTER_OPERATION, CONDITION, VALUE_TYPE} = require('../util/constants');
 const HttpStatus = require('http-status-codes');
@@ -254,7 +254,9 @@ module.exports = {
   getPENBatchRequestStats,
   updatePrbStudentInfoRequested,
   getPenRequestFiles: getPaginatedListForSCGroups('getPenRequestFiles', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/paginated`),
+  getAllPenRequestBatchIds: getAllIDs('getAllPenRequestBatchIds', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/paginated`, 'penRequestBatchID'),
   getPenRequestBatchStudents: getPaginatedListForSCGroups('getPenRequestBatchStudents', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/student/paginated`, addSagaStatus),
+  getAllPenRequestBatchStudentIds: getAllIDs('getAllPenRequestBatchStudentIds', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/student/paginated`, 'penRequestBatchStudentID'),
   getPenRequestBatchStudentById,
   getPenRequestBatchStudentMatchOutcome,
   issueNewPen,

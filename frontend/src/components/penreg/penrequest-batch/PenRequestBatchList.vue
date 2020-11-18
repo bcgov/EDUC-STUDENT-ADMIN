@@ -112,6 +112,7 @@ export default {
       allSelected: false,
       partialSelected: false,
       loadingTable: true,
+      allIDs: [],
     };
   },
   watch: {
@@ -211,9 +212,11 @@ export default {
       this.allSelected = !!files && files.length > 0 && files.every(file => file.isSelected);
       this.partialSelected = files.some(file => file.isSelected) && !this.allSelected;
 
-      if (isFilterOperation && this.selectedFiles.length > 0) {
-        // drop selected rows if it is not in the current data set
-        const newSelectedFiles = this.selectedFiles.filter(file => files.find(item => item.submissionNumber === file.submissionNumber));
+      if (isFilterOperation && 
+        this.allIDs.length > 0 &&
+        this.selectedFiles.length > 0) {
+        // drop selected rows if it is not in all data set for all pages after filter change
+        const newSelectedFiles = this.selectedFiles.filter(file => this.allIDs.find(prbId => prbId === file.penRequestBatchID));
         this.setSelectedFiles(newSelectedFiles);
       }
       return files;
@@ -229,10 +232,10 @@ export default {
       if (item.isSelected) {
         const selectedFilesFromCurrentData = this.penRequestBatchResponse.content.filter(file => file.isSelected);
         let newSelectedFiles = [...this.selectedFiles, ...selectedFilesFromCurrentData];
-        newSelectedFiles = uniqBy(newSelectedFiles, a => a.submissionNumber);
+        newSelectedFiles = uniqBy(newSelectedFiles, a => a.penRequestBatchID);
         this.setSelectedFiles(newSelectedFiles);
       } else {
-        const newSelectedFiles = this.selectedFiles.filter(file => file.submissionNumber !== item.submissionNumber);
+        const newSelectedFiles = this.selectedFiles.filter(file => file.penRequestBatchID !== item.penRequestBatchID);
         this.setSelectedFiles(newSelectedFiles);
       }
     },
@@ -246,13 +249,13 @@ export default {
       if (selected) {
         const selectedFilesFromCurrentData = this.penRequestBatchResponse.content.filter(file => file.isSelected);
         let newSelectedFiles = [...this.selectedFiles, ...selectedFilesFromCurrentData];
-        newSelectedFiles = uniqBy(newSelectedFiles, a => a.submissionNumber);
+        newSelectedFiles = uniqBy(newSelectedFiles, a => a.penRequestBatchID);
         this.setSelectedFiles(newSelectedFiles);
       } else {
         const unselectedFilesFromCurrentData = this.penRequestBatchResponse.content.filter(file => !file.isSelected);
         let newSelectedFiles = [ ...this.selectedFiles];
         unselectedFilesFromCurrentData.forEach(file => {
-          newSelectedFiles = newSelectedFiles.filter(item => item.submissionNumber !== file.submissionNumber);
+          newSelectedFiles = newSelectedFiles.filter(item => item.penRequestBatchID !== file.penRequestBatchID);
         });
         this.setSelectedFiles(newSelectedFiles);
       }
@@ -291,6 +294,20 @@ export default {
           searchQueries: this.searchCriteria
         }
       };
+
+      if (isFilterOperation) {
+        ApiService.apiAxios
+          .get(Routes.penRequestBatch.FILES_URL + '/allIds', req)
+          .then(response => {
+            if (response.data) {
+              this.allIDs = response.data;
+            }
+          })
+          .catch(error => {
+            console.log(error);
+            this.$emit('failure-alert', 'An error occurred while loading array of all the file ids. Please try again later.');
+          });
+      }
 
       ApiService.apiAxios
         .get(Routes.penRequestBatch.FILES_URL, req)

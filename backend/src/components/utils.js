@@ -223,6 +223,41 @@ function getPaginatedListForSCGroups(apiName, url, handleResponse) {
   };
 }
 
+function getAllIDs(apiName, url, idFieldName, handleResponse) {
+  return async function getAllListHandler(req, res) {
+    try {
+      const token = getBackendToken(req);
+      if (!token) {
+        return res.status(HttpStatus.UNAUTHORIZED).json({
+          message: 'No access token'
+        });
+      }
+      
+      const params = {
+        params: {
+          pageNumber: 0,
+          pageSize: Number.MAX_INTEGER,
+          sort: req.query.sort,
+          searchCriteriaList: JSON.stringify(req.query.searchQueries.map((query) => JSON.parse(query)))
+        }
+      };
+
+      const dataResponse = await getData(token, url, params);
+      const idSet = dataResponse.content.map(item => item[idFieldName]);
+      if(handleResponse && dataResponse.content) {
+        await handleResponse(idSet);
+      }
+      return res.status(200).json(idSet);
+
+    } catch (e) {
+      logApiError(e, 'getAllList', `Error occurred while attempting to ${apiName}.`);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'INTERNAL SERVER ERROR'
+      });
+    }
+  };
+}
+
 const utils = {
   // Returns OIDC Discovery values
   async getOidcDiscovery() {
@@ -430,6 +465,7 @@ const utils = {
   unauthorizedError,
   getCodeTable,
   getPaginatedListForSCGroups,
+  getAllIDs,
   deleteData
 };
 
