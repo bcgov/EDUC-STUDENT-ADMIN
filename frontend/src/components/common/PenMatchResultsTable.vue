@@ -1,7 +1,7 @@
 <template>
 
-  <v-card id="searchResults" elevation="0" tile width="100%">
-    <v-row no-gutters justify="space-between" class="sticky">
+  <v-card id="searchResults" elevation="0" tile width="100%" class="px-8">
+    <v-row no-gutters justify="space-between" class="sticky" :style="{top: `${stickyInfoPanelHeight}px`}">
       <v-col>
         <v-card-title>
           <span id="numberMatches" class="px-4"><strong>{{ title }}</strong><v-btn
@@ -105,6 +105,7 @@ import TertiaryButton from '../util/TertiaryButton';
 import StudentDetailModal from '../penreg/student/StudentDetailModal';
 import {PEN_REQ_BATCH_STUDENT_REQUEST_CODES} from '@/utils/constants';
 import {formatPen, formatMinCode} from '@/utils/format';
+import { mapState } from 'vuex';
 import PrimaryButton from '@/components/util/PrimaryButton';
 
 export default {
@@ -214,6 +215,7 @@ export default {
     },
   },
   computed: {
+    ...mapState('app', ['stickyInfoPanelHeight']),
     title() {
       if (this.student.penRequestBatchStudentStatusCode) {
         switch (this.student.penRequestBatchStudentStatusCode) {
@@ -314,21 +316,19 @@ export default {
   background-color: inherit;
 }
 
-#penMatchResultsDataTable /deep/ tbody tr td:nth-child(1) {
-  width: 2%;
+.v-data-table /deep/ tr td:nth-child(1) {
+  width: 6%;
 }
-
-#penMatchResultsDataTable /deep/ tbody tr td:nth-child(2) {
+.v-data-table /deep/ tr td:nth-child(3),
+.v-data-table /deep/ tr td:nth-child(4),
+.v-data-table /deep/ tr td:nth-child(5) {
+  width: 18%;
+}
+.v-data-table /deep/ tr td:nth-child(2),
+.v-data-table /deep/ tr td:nth-child(6),
+.v-data-table /deep/ tr td:nth-child(7),
+.v-data-table /deep/ tr td:nth-child(8) {
   width: 10%;
-}
-
-#penMatchResultsDataTable /deep/ tbody tr td:nth-child(3),
-#penMatchResultsDataTable /deep/ tbody tr td:nth-child(4) {
-  width: 18%;
-}
-
-#penMatchResultsDataTable /deep/ tbody tr td:nth-child(5) {
-  width: 18%;
 }
 
 .pen-link {
@@ -337,7 +337,6 @@ export default {
 
 .sticky {
   position: sticky;
-  top: 16rem;
   z-index: 6;
   background-color: #F2F2F2;
 }

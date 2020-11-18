@@ -10,6 +10,7 @@ export default {
     requestType: REQUEST_TYPES.penRequest.name,
     requestTypeLabel: REQUEST_TYPES.penRequest.label,
     pageTitle: null,
+    stickyInfoPanelHeight: null
   },
   getters: {
     request: state => state.request,
@@ -41,6 +42,9 @@ export default {
     },
     setPageTitle: (state, pageTitle) => {
       state.pageTitle = pageTitle;
+    },
+    setStickyInfoPanelHeight: (state, stickyInfoPanelHeight) => {
+      state.stickyInfoPanelHeight = stickyInfoPanelHeight;
     }
   },
 };
