@@ -134,7 +134,7 @@ else
 fi
 
 echo Creating config map $APP_NAME-frontend-config-map
-oc create -n $PEN_NAMESPACE-$envValue configmap $APP_NAME-frontend-config-map --from-literal=TZ=$TZVALUE --from-literal=HOST_ROUTE=$APP_NAME-$PEN_NAMESPACE-$envValue.apps.silver.devops.gov.bc.ca  --from-literal=BACKEND_ROOT=https://$APP_NAME-$PEN_NAMESPACE-$envValue.apps.silver.devops.gov.bc.ca --from-literal=config.js="$regConfigStaff"  --dry-run -o yaml | oc apply -f -
+oc create -n $PEN_NAMESPACE-$envValue configmap $APP_NAME-frontend-config-map --from-literal=TZ=$TZVALUE --from-literal=HOST_ROUTE=$APP_NAME-$PEN_NAMESPACE-$envValue.apps.silver.devops.gov.bc.ca  --from-literal=BACKEND_ROOT=$BACKEND_ROOT --from-literal=config.js="$regConfigStaff"  --dry-run -o yaml | oc apply -f -
 echo
 echo Setting environment variables for $APP_NAME-frontend-$SOAM_KC_REALM_ID application
 oc set env --from=configmap/$APP_NAME-frontend-config-map dc/$APP_NAME-frontend-$SOAM_KC_REALM_ID
