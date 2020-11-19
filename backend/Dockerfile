@@ -1,4 +1,4 @@
-FROM registry.redhat.io/rhel8/nodejs-14:1
+FROM registry.hub.docker.com/node:lts-alpine
 
 RUN mkdir -p /logs
 RUN chmod 755 /logs
