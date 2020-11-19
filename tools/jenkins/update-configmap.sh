@@ -122,6 +122,16 @@ regConfigStaff="var studentAdminConfig = (function() {
     \"WEB_SOCKET_URL\":\"wss://$APP_NAME-$PEN_NAMESPACE-$envValue.apps.silver.devops.gov.bc.ca/api/socket\"
   };
 })();"
+
+if [ "$envValue" = "tools" ]
+then
+  BACKEND_ROOT=https://$APP_NAME-$PEN_NAMESPACE-dev.apps.silver.devops.gov.bc.ca
+elif [ "$envValue" = "dev" ]
+  BACKEND_ROOT=https://$APP_NAME-$PEN_NAMESPACE-test.apps.silver.devops.gov.bc.ca
+else
+  BACKEND_ROOT=https://$APP_NAME-$PEN_NAMESPACE-$envValue.apps.silver.devops.gov.bc.ca
+fi
+
 echo Creating config map $APP_NAME-frontend-config-map
 oc create -n $PEN_NAMESPACE-$envValue configmap $APP_NAME-frontend-config-map --from-literal=TZ=$TZVALUE --from-literal=HOST_ROUTE=$APP_NAME-$PEN_NAMESPACE-$envValue.apps.silver.devops.gov.bc.ca  --from-literal=BACKEND_ROOT=https://$APP_NAME-$PEN_NAMESPACE-$envValue.apps.silver.devops.gov.bc.ca --from-literal=config.js="$regConfigStaff"  --dry-run -o yaml | oc apply -f -
 echo
