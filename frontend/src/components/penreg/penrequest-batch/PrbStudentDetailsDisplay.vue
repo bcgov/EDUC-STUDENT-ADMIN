@@ -20,6 +20,9 @@
               <StudentDetailsInfoPanel :student.sync="prbStudent" key="info-panel" :runPenMatch="runPenMatch" :studentDetailsCopy="prbStudentCopy">
                 <template v-slot:headerPanel="{ openSearchDemographicsModal }">
                   <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center" style="background-color:white;">
+                    <v-icon dense v-if="isUnarchived" color="#2E8540">
+                      unarchive
+                    </v-icon>
                     <span class="mr-4 batch-title">
                       <strong>{{seqNumberInBatch}} of {{totalNumberInBatch}} filtered</strong> | Record {{prbStudent.recordNumber}} of {{batchFile.studentCount}} in submission {{prbStudent.submissionNumber}}
                     </span>
@@ -188,7 +191,12 @@ export default {
       matchedStudentTwinRecords:[],
       prbSagaNames: Object.values(PRB_SAGA_NAMES),
       isMatchingToStudentRecord: false,
-      disabledButtonActionsForStudentStatuses: [PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS]
+      disabledButtonActionsForStudentStatuses: [
+        PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR,
+        PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS,
+        PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS,
+        PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR,
+      ],
     };
   },
   watch: {
@@ -250,7 +258,12 @@ export default {
     },
     disableModifySearch(){
       return this.loading || this.prbStudent?.sagaInProgress
-          || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode);
+          || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
+          || ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ]
+              .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
+    },
+    isUnarchived(){
+      return this.batchFile?.penRequestBatchStatusCode === 'UNARCHIVED';
     }
   },
   created() {
