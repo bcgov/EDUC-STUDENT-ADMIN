@@ -17,7 +17,12 @@
             </v-row>
             <div v-if="!loading && prbStudent" style="width: 100%;" :overlay=false>
 
-              <StudentDetailsInfoPanel :student.sync="prbStudent" key="info-panel" :runPenMatch="runPenMatch" :studentDetailsCopy="prbStudentCopy">
+              <StudentDetailsInfoPanel
+                      :student.sync="prbStudent"
+                      key="info-panel"
+                      :runPenMatch="runPenMatch"
+                      :studentDetailsCopy="prbStudentCopy"
+                      @validationRun="checkValidationResults">
                 <template v-slot:headerPanel="{ openSearchDemographicsModal }">
                   <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center" style="background-color:white;">
                     <v-icon dense v-if="isUnarchived" color="#2E8540">
@@ -83,7 +88,7 @@
                   </article>
                 </v-container>
               </v-row>
-              <v-row class="full-width" v-if="showPossibleMatch && !(validationErrorFields && validationErrorFields.length)">
+              <v-row class="full-width" v-if="showPossibleMatch && !hasValidationIssues">
                 <PenMatchResultsTable :student="prbStudent" :is-comparison-required="true"
                                       :is-pen-link="true"
                                       :is-refresh-required="true"
@@ -186,11 +191,10 @@ export default {
       prbStudentCopy:{},
       isIssuingNewPen: false,
       prbStudentNavInfo: [],
-      validationErrorFields: null,
-      originalStatusCode: null,
       matchedStudentTwinRecords:[],
       prbSagaNames: Object.values(PRB_SAGA_NAMES),
       isMatchingToStudentRecord: false,
+      hasValidationIssues: false,
       disabledButtonActionsForStudentStatuses: [
         PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR,
         PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS,
@@ -260,7 +264,7 @@ export default {
       return this.loading || this.prbStudent?.sagaInProgress
           || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
           || ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ]
-              .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
+            .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
     },
     isUnarchived(){
       return this.batchFile?.penRequestBatchStatusCode === 'UNARCHIVED';
@@ -304,8 +308,13 @@ export default {
 
         await this.retrieveBatchFile();
         this.setBatchNav();
-        this.originalStatusCode = this.prbStudent.penRequestBatchStudentStatusCode; //storing original status to revert to in the event a modified search returned validation error is corrected
-        const hasValidationFailure = await this.runDemogValidation();
+        const payload = {
+          student: {
+            ...this.modalStudent
+          }
+        };
+        const result = await getDemogValidationResults(payload);
+        const hasValidationFailure = result?.length > 0;
         if (!hasValidationFailure) {
           if (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR === this.prbStudent?.penRequestBatchStudentStatusCode
               || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR === this.prbStudent?.penRequestBatchStudentStatusCode) {
@@ -509,31 +518,8 @@ export default {
         this.updatePossibleMatchResultsBasedOnCurrentStatus();
       }
     },
-    async runDemogValidation() {
-      try {
-        const payload = {
-          student: {
-            ...this.modalStudent
-          }
-        };
-        const result = await getDemogValidationResults(payload);
-        this.validationErrorFields = result.filter(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR')
-          .map(y => {
-            y.uiFieldName = this.prbValidationFieldCodes.find(obj => obj.code === y.penRequestBatchValidationFieldCode)?.label;
-            y.penRequestBatchValidationIssueTypeCode = this.prbValidationIssueTypeCodes.find(obj => obj.code === y.penRequestBatchValidationIssueTypeCode)?.description;
-            return y;
-          });
-        if(this.validationErrorFields?.length > 0) {
-          this.prbStudent.penRequestBatchStudentStatusCode = PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR;
-        }
-        else {
-          this.prbStudent.penRequestBatchStudentStatusCode = this.originalStatusCode;
-        }
-
-        return this.validationErrorFields?.length > 0;
-      } catch (error) {
-        console.log(error);
-      }
+    checkValidationResults(value) {
+      this.hasValidationIssues = value;
     },
     setModalStudentFromPrbStudent(prbStudent){
       this.modalStudent = deepCloneObject(prbStudent);
