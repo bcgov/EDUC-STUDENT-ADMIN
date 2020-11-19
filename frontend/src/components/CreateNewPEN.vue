@@ -9,7 +9,11 @@
               <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"
                             :timeout-ms="5000"></AlertMessage>
             </v-row>
-            <StudentDetailsInfoPanel :student.sync="student" key="info-panel" :runPenMatch="runPenMatch">
+            <StudentDetailsInfoPanel
+                    :student.sync="student"
+                    key="info-panel"
+                    :runPenMatch="runPenMatch"
+                    @validationRun="checkValidationResults">
               <template v-slot:headerPanel="{ openSearchDemographicsModal }">
                 <v-row align="end" no-gutters justify="end" class="pb-6"
                        style="background-color:white;">
@@ -36,7 +40,7 @@
                 </article>
               </v-container>
             </v-row>
-            <v-row v-if="showPossibleMatch" >
+            <v-row v-if="showPossibleMatch && !hasValidationIssues" >
               <PenMatchResultsTable :student="student" :is-comparison-required="false"
                                     :is-pen-link="false"
                                     :is-refresh-required="false"
@@ -78,7 +82,8 @@ export default {
       isIssuePenDisabled: true,
       student: {
         localID: '00000000'
-      }
+      },
+      hasValidationIssues: false
     };
   },
   mounted() {
@@ -136,8 +141,11 @@ export default {
       } finally {
         this.isLoadingMatches = false;
       }
+    },
+    checkValidationResults(value) {
+      this.hasValidationIssues = value;
     }
-  }
+  },
 };
 </script>
 <style scoped>

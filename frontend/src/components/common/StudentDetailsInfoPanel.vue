@@ -80,6 +80,7 @@ import SearchDemographicModal from './SearchDemographicModal';
 import { deepCloneObject, getDemogValidationResults } from '../../utils/common';
 import { formatDob, formatPostalCode } from '@/utils/format';
 import { mapState, mapMutations } from 'vuex';
+import {formatMinCode} from '../../utils/format';
 
 export default {
   name: 'StudentDetailsInfoPanel',
@@ -104,7 +105,7 @@ export default {
     return {
       headers: [
         { id: 'table-checkbox', type: 'select', sortable: false },
-        { topText: 'Mincode', topValue: 'mincode', sortable: false },
+        { topText: 'Mincode', topValue: 'minCode', sortable: false },
         { topText: 'Legal Surname', topValue: 'legalLastName', sortable: false },
         { topText: 'Legal Given', topValue: 'legalFirstName', sortable: false },
         { topText: 'Legal Middle', topValue: 'legalMiddleNames', sortable: false },
@@ -134,6 +135,7 @@ export default {
   },
   mounted() {
     this.setStickyInfoPanelHeight(this.$refs.stickyInfoPanel.clientHeight);
+    this.originalStatusCode = this.studentDetails.penRequestBatchStudentStatusCode;//storing original status to revert to in the event a modified search returned validation error is corrected
   },
   computed: {
     ...mapState('penRequestBatch', ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
@@ -173,12 +175,11 @@ export default {
     },
     openSearchDemographicsModal() {
       this.setModalStudentFromPrbStudent();
-      this.originalStatusCode = this.studentDetails.penRequestBatchStudentStatusCode;
       this.dialog = true;
     },
     setModalStudentFromPrbStudent(){
       this.modalStudent = deepCloneObject(this.studentDetails);
-      if(this.modalStudent.mincode) {
+      if(this.modalStudent.minCode) {
         this.modalStudent.mincode = this.modalStudent.minCode?.replaceAll(' ',''); // since the modal component is generic and expects mincode to be all lowercase.
       }
       if(this.modalStudent.postalCode) {
@@ -197,6 +198,7 @@ export default {
       await this.$nextTick(); //need to wait so update can me made in parent and propagated back down to child component
       this.studentDetails.postalCode = this.studentDetails.postalCode? formatPostalCode(this.studentDetails.postalCode):'';
       this.studentDetails.dob = this.studentDetails.dob? formatDob(this.studentDetails.dob,'uuuuMMdd','uuuu/MM/dd'): '';
+      this.studentDetails.minCode = this.studentDetails.mincode? formatMinCode(this.studentDetails.mincode): '';
       this.setModalStudentFromPrbStudent();
 
       const hasValidationFailure = await this.runDemogValidation();
@@ -224,8 +226,9 @@ export default {
         else {
           this.studentDetails.penRequestBatchStudentStatusCode = this.originalStatusCode;
         }
-
-        return this.validationErrorFields?.length > 0;
+        const hasValidationError = this.validationErrorFields?.length > 0;
+        this.$emit('validationRun', hasValidationError);
+        return hasValidationError;
       } catch (error) {
         console.log(error);
       }

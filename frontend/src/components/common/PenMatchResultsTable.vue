@@ -40,7 +40,7 @@
                  isMatchedToStudent(props.item)?'matchedStudentRow':'',
                  (student.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR && student.assignedPEN === props.item.pen) || !!props.item.twinRecordToMatchedStudent ? 'grayout':'']">
                 <td v-for="header in props.headers" :key="header.id" :class="header.id">
-                  <div class="tableCell">
+                  <div :class="[props.item[header.doubleValue] ? 'value-half-width':'','tableCell']">
                     <v-checkbox :class="['top-column-item']" v-if="header.type" class="pl-3" color="#606060"
                                 @change="props.select($event)"></v-checkbox>
                     <v-icon :class="['bottom-column-item','pl-3']"
@@ -49,36 +49,41 @@
                     </v-icon>
                     <a class="pen-link" @click="popStudentDialog(props.item['studentID'])"
                        v-if="header.topValue==='pen' && isPenLink">
-                    <span
-                        :class="['top-column-item', 'pen-link', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
-                      {{ formatPen(props.item[header.topValue]) }}
-                    </span>
+                      <span
+                          :class="['top-column-item', 'pen-link', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
+                        {{ formatPen(props.item[header.topValue]) }}
+                      </span>
                     </a>
                     <span v-else-if="header.topValue==='pen'"
                           :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
                     {{ formatPen(props.item[header.topValue]) }}
-                  </span>
+                    </span>
                     <span v-else-if="header.topValue==='mincode'"
                           :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
                         {{ formatMinCode(props.item[header.topValue]) }}
-                  </span>
+                    </span>
+                    <span v-else-if="header.topValue==='dob'"
+                          :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
+                        {{ formatDob(props.item[header.topValue], 'uuuu-MM-dd') }}
+                    </span>
                     <span v-else
                           :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
                         {{ props.item[header.topValue] }}
-                  </span>
+                    </span>
                     <span
                         :class="['double-column-item', props.item[header.doubleValue] && demogValuesMatch(header.doubleValue, props.item[header.doubleValue])? 'font-weight-bold':'']">
                       {{ props.item[header.doubleValue] }}
-                  </span>
+                    </span>
                     <br>
-                    <span
-                        v-if="!!isMatchUnMatch && header.bottomValue==='button' && hoveredOveredRowStudentID === props.item.studentID">
-
+                    <span v-if="!!isMatchUnMatch && header.bottomValue==='button' && hoveredOveredRowStudentID === props.item.studentID">
                       <PrimaryButton :short="true" id="matchUnMatchButton" :text="matchUnMatchButtonText"
                                      :width="'6.5em'"
                                      @click.native="$emit('match-unmatch-student-prb-student', props.item, matchUnMatchButtonText)"></PrimaryButton>
-                  </span>
-
+                    </span>
+                    <span v-else-if="header.bottomValue==='postalCode'"
+                          :class="['bottom-column-item', props.item[header.bottomValue] && demogValuesMatch(header.bottomValue, props.item[header.bottomValue])? 'font-weight-bold':'']">
+                      {{ formatPostalCode(props.item[header.bottomValue]) }}
+                    </span>
                     <span v-else
                           :class="['bottom-column-item', props.item[header.bottomValue] && demogValuesMatch(header.bottomValue, props.item[header.bottomValue])? 'font-weight-bold':'']">
                       {{ props.item[header.bottomValue] }}
@@ -104,7 +109,7 @@
 import TertiaryButton from '../util/TertiaryButton';
 import StudentDetailModal from '../penreg/student/StudentDetailModal';
 import {PEN_REQ_BATCH_STUDENT_REQUEST_CODES} from '@/utils/constants';
-import {formatPen, formatMinCode} from '@/utils/format';
+import {formatPen, formatMinCode, formatPostalCode, formatDob} from '@/utils/format';
 import { mapState } from 'vuex';
 import PrimaryButton from '@/components/util/PrimaryButton';
 
@@ -272,7 +277,8 @@ export default {
     },
     formatPen,
     formatMinCode,
-
+    formatPostalCode,
+    formatDob,
     enableMatchOrUnMatch(matchedStudent) {
       if (this.student && matchedStudent) {
         if (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE === this.student.penRequestBatchStudentStatusCode
@@ -314,6 +320,18 @@ export default {
 
 #penMatchResultsDataTable /deep/ table tbody tr:not(.selected-record):hover {
   background-color: inherit;
+}
+
+.double-column-item {
+  float: right;
+}
+
+.top-column-item {
+  float: left;
+}
+
+.value-half-width {
+  width: 4.0em;
 }
 
 .v-data-table /deep/ tr td:nth-child(1) {
