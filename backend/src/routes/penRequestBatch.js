@@ -16,7 +16,7 @@ const { getPENBatchRequestStats,
 router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, getPenRequestFiles);
 
 /*
- * Get all pen request batch files
+ * Get all pen request batch file ids
  */
 router.get('/allIds', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, getAllPenRequestBatchIds);
 
@@ -26,12 +26,12 @@ router.get('/allIds', passport.authenticate('jwt', {session: false}, undefined),
 router.get('/stats', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, getPENBatchRequestStats);
 
 /*
- * Get paginated pen request students
+ * Get paginated pen request batch students
  */
 router.get('/students', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, getPenRequestBatchStudents);
 
 /*
- * Get all pen request students
+ * Get all pen request batch student ids 
  */
 router.get('/students/allIds', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, getAllPenRequestBatchStudentIds);
 

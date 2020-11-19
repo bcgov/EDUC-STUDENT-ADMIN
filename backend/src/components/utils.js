@@ -236,7 +236,7 @@ function getAllIDs(apiName, url, idFieldName, handleResponse) {
       const params = {
         params: {
           pageNumber: 0,
-          pageSize: Number.MAX_INTEGER,
+          pageSize: 8388607, // MAX_VALUE = 0x7fffffff
           sort: req.query.sort,
           searchCriteriaList: JSON.stringify(req.query.searchQueries.map((query) => JSON.parse(query)))
         }
