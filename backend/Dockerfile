@@ -1,4 +1,4 @@
-FROM registry.hub.docker.com/node:lts-alpine
+FROM docker.io/node:lts-alpine
 
 RUN mkdir -p /logs
 RUN chmod 755 /logs
