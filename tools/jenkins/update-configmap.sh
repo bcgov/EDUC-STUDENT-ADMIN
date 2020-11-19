@@ -127,6 +127,7 @@ if [ "$envValue" = "tools" ]
 then
   BACKEND_ROOT=https://$APP_NAME-$PEN_NAMESPACE-dev.apps.silver.devops.gov.bc.ca
 elif [ "$envValue" = "dev" ]
+then
   BACKEND_ROOT=https://$APP_NAME-$PEN_NAMESPACE-test.apps.silver.devops.gov.bc.ca
 else
   BACKEND_ROOT=https://$APP_NAME-$PEN_NAMESPACE-$envValue.apps.silver.devops.gov.bc.ca
