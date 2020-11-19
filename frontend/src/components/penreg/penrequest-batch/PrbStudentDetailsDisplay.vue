@@ -194,7 +194,7 @@ export default {
       matchedStudentTwinRecords:[],
       prbSagaNames: Object.values(PRB_SAGA_NAMES),
       isMatchingToStudentRecord: false,
-      hasValidationIssues: false
+      hasValidationIssues: false,
       disabledButtonActionsForStudentStatuses: [
         PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR,
         PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS,
