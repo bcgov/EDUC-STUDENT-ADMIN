@@ -314,7 +314,7 @@ export default {
           }
         };
         const result = await getDemogValidationResults(payload);
-        const hasValidationFailure = result.filter(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR')?.length > 0;
+        const hasValidationFailure = result.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR')?.length > 0;
 
         if (!hasValidationFailure) {
           if (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR === this.prbStudent?.penRequestBatchStudentStatusCode
