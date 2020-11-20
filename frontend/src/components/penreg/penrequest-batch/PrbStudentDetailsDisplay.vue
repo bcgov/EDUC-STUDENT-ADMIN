@@ -262,9 +262,7 @@ export default {
     },
     disableModifySearch(){
       return this.loading || this.prbStudent?.sagaInProgress
-          || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
-          || ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ]
-            .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
+          || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode);
     },
     isUnarchived(){
       return this.batchFile?.penRequestBatchStatusCode === 'UNARCHIVED';
@@ -314,7 +312,8 @@ export default {
           }
         };
         const result = await getDemogValidationResults(payload);
-        const hasValidationFailure = result?.length > 0;
+        const hasValidationFailure = result.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR');
+
         if (!hasValidationFailure) {
           if (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR === this.prbStudent?.penRequestBatchStudentStatusCode
               || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR === this.prbStudent?.penRequestBatchStudentStatusCode) {
@@ -505,7 +504,7 @@ export default {
       this.possibleMatches = [];
       this.possibleMatchesPlaceHolder = [];
       try {
-        const result = await getPossibleMatches(constructPenMatchObjectFromStudent(this.modalStudent));
+        const result = await getPossibleMatches(constructPenMatchObjectFromStudent(this.prbStudent));
         this.isIssuePenDisabled = false;
         this.showPossibleMatch = true;
         this.possibleMatchesPlaceHolder = result.data ?? [];

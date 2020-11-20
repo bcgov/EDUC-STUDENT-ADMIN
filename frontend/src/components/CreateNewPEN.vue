@@ -80,9 +80,7 @@ export default {
       showPossibleMatch: false,
       possibleMatches: [],
       isIssuePenDisabled: true,
-      student: {
-        localID: '00000000'
-      },
+      student: {},
       hasValidationIssues: false
     };
   },

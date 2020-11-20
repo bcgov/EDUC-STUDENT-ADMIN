@@ -20,7 +20,7 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-row>
+    <v-row no-gutters >
       <v-slide-y-transition>
         <v-col key="results" v-if="matchesExpanded" class="pa-0">
           <v-divider></v-divider>
@@ -331,7 +331,7 @@ export default {
 }
 
 .value-half-width {
-  width: 4.0em;
+  width: 3.9rem;
 }
 
 .v-data-table /deep/ tr td:nth-child(1) {
