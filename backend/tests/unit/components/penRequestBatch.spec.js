@@ -211,20 +211,10 @@ function expectationsForUserActionsInPRBSaga(twinStudentIDs) {
 describe('user match saga', () => {
   let req;
   let res;
-  const twinStudentIDs = ['201', '202'];
+  let twinStudentIDs;
 
   beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
-    req = mockRequest();
-    res = mockResponse();
-    req.params = {
-      id: 'c0a8014d-74e1-1d99-8174-e10db81f0000',
-      studentId: 'c0a8014d-74e1-1d99-8174-e10db8410001'
-    };
-    req.body = {
-      matchedPEN: '123456789',
-      twinStudentIDs
-    };
+    [req, res, twinStudentIDs] = initializeMatchUnmatchTestData();
   });
 
   afterEach(() => {
@@ -316,19 +306,9 @@ describe('getPenRequestBatchStudentById', () => {
 describe('user unmatch saga', () => {
   let req;
   let res;
-  const twinStudentIDs = ['203', '204'];
 
   beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
-    req = mockRequest();
-    res = mockResponse();
-    req.params = {
-      id: 'c0a8014d-74e1-1d99-8174-e10db81f0000',
-      studentId: 'c0a8014d-74e1-1d99-8174-e10db8410001'
-    };
-    req.body = {
-      twinStudentIDs
-    };
+    [req, res] = initializeMatchUnmatchTestData();
   });
 
   afterEach(() => {
@@ -365,3 +345,19 @@ describe('user unmatch saga', () => {
   });
 
 });
+
+function initializeMatchUnmatchTestData() {
+  const twinStudentIDs = ['201', '202'];
+  utils.getBackendToken.mockReturnValue('token');
+  const req = mockRequest();
+  const res = mockResponse();
+  req.params = {
+    id: 'c0a8014d-74e1-1d99-8174-e10db81f0000',
+    studentId: 'c0a8014d-74e1-1d99-8174-e10db8410001'
+  };
+  req.body = {
+    matchedPEN: '123456789',
+    twinStudentIDs
+  };
+  return [req, res, twinStudentIDs];
+}
