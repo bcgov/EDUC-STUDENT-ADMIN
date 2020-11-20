@@ -1,14 +1,13 @@
 <template>
   <v-row no-gutters class="py-1">
-    <v-col cols="2">
+    <v-col :cols="labelSpan">
       <p class="labelField">{{ this.fieldLabel }}</p>
     </v-col>
     <v-col class="textFieldColumn" :cols="colspan">
       <v-text-field
           :value="fieldModel"
-          class="onhoverEdit bolder customNoBorder onhoverPad"
+          :class="['onhoverEdit', 'customNoBorder', 'onhoverPad', highlighted? 'diff-value' : 'plain-value']"
           :id="name"
-          color="#000000"
           dense
           readonly
           :disabled="fieldDisabled"
@@ -33,6 +32,10 @@
 export default {
   name: 'StudentDetailsTextFieldReadOnly',
   props: {
+    labelSpan: {
+      type: String,
+      default: '2',
+    },
     colspan: {
       type: String,
       required: true
@@ -52,6 +55,10 @@ export default {
     gradeLevel: {
       type: String
     },
+    highlight: {
+      type: Boolean,
+      default: false
+    },
     disabled: {
       type: Boolean,
       required: true
@@ -62,7 +69,8 @@ export default {
       fieldModel: null,
       fieldLabel: null,
       gradeLevelCode: null,
-      fieldDisabled: false
+      fieldDisabled: false,
+      highlighted: false
     };
   },
   beforeMount() {
@@ -70,6 +78,7 @@ export default {
     this.fieldLabel = this.label;
     this.gradeLevelCode = this.gradeLevel;
     this.fieldDisabled = this.disabled;
+    this.highlighted = this.highlight;
   },
   watch: {
     model(newValue) {
@@ -80,7 +89,24 @@ export default {
     },
     disabled(newValue){
       this.fieldDisabled = newValue;
+    },
+    highlight(newValue){
+      this.highlighted = newValue;
     }
   },
 };
 </script>
+
+<style scoped>
+
+.plain-value >>> .v-text-field__slot input {
+  font-weight: bold;
+  color: #000000 !important;
+}
+
+.diff-value >>> .v-text-field__slot input {
+  font-weight: bold;
+  color: #008000 !important;
+}
+
+</style>
