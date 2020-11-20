@@ -50,6 +50,8 @@ async function removeEventRecordFromRedis(event, redisKey) {
             break;
           }
         }
+      }else {
+        log.silly(`no record found in REDIS for :: ${redisKey} :: for Event ::`, event);
       }
     } catch (e) {
       log.error(`Error ${e}`);
