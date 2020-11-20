@@ -144,9 +144,8 @@ export default {
     ...mapActions('student', ['getHistoryActivityCodes']),
     formatPen,
     selectItem(props) {
-      props.isSelected = !props.isSelected;
-      this.listDetailMode = true;
       this.updateSelectedStudentHistoryId(props.item.studentHistoryID);
+      this.listDetailMode = true;
     },
     tableRowClass(item) {
       let rowClass = [];
