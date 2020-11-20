@@ -292,7 +292,7 @@ export default {
     width: 3.0em;
   }
   .value-half-width {
-    width: 4.0em;
+    width: 3.9rem;
   }
   .sticky {
     position: sticky;

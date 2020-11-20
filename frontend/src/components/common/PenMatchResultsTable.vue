@@ -331,7 +331,7 @@ export default {
 }
 
 .value-half-width {
-  width: 4.0em;
+  width: 3.9rem;
 }
 
 .v-data-table /deep/ tr td:nth-child(1) {
