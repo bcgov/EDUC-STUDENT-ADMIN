@@ -184,13 +184,22 @@ export default {
     };
   },
   created() {
-    this.studentHistoryDetail = this.studentHistory.content.find(item => item.studentHistoryID === this.studentHistoryId);
-
     this.studentHistory.content.forEach((item, idx) => {
       if (item.studentHistoryID === this.studentHistoryId) {
+        this.studentHistoryDetail = item;
         this.rowNumber = idx;
       }
     });
+  },
+  watch: {
+    studentHistoryId(newValue) {
+      this.studentHistory.content.forEach((item, idx) => {
+        if (item.studentHistoryID === newValue) {
+          this.studentHistoryDetail = item;
+          this.rowNumber = idx;
+        }
+      });
+    }
   },
   computed: {
     ...mapGetters('student', ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects', 'studentHistoryResponse']),
