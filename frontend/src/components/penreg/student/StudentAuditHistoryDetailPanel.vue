@@ -96,14 +96,14 @@
                                             labelSpan="4" colspan="4" label="Grade School Year"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="getPostalCode()" :name="STUDENT_DETAILS_FIELDS.POSTAL_CODE"
+          <StudentDetailsTextFieldReadOnly :model="formatPostalCode(studentHistoryDetail.postalCode)" :name="STUDENT_DETAILS_FIELDS.POSTAL_CODE"
                                           :highlight="studentHistoryDetail.postalCode_diff"
                                           labelSpan="4" colspan="4" label="Postal Code"
                                           :disabled="false"></StudentDetailsTextFieldReadOnly>
 
           <StudentDetailsTextFieldReadOnly max-length="9" min-length="8" :name="STUDENT_DETAILS_FIELDS.MINCODE"
                                     :highlight="studentHistoryDetail.mincode_diff"
-                                    :model="studentHistoryDetail.mincode" :has-edits="false"
+                                    :model="formatMinCode(studentHistoryDetail.mincode)" :has-edits="false"
                                     labelSpan="4" colspan="6" label="Mincode" 
                                     :disabled="false"></StudentDetailsTextFieldReadOnly>
 
@@ -154,10 +154,8 @@ import moment from 'moment';
 import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly';
 import PrimaryButton from '../../util/PrimaryButton';
-import {formatMinCode, formatPen} from '../../../utils/format';
+import {formatMinCode, formatPen, formatPostalCode} from '../../../utils/format';
 import alterMixin from '../../../mixins/alterMixin';
-
-const JSJoda = require('@js-joda/core');
 
 export default {
   name: 'studentAudtiHistoryDetail',
@@ -202,10 +200,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('student', ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects', 'studentHistoryResponse']),
-    mincode() {
-      return formatMinCode(this.studentCopy.mincode);
-    },
+    ...mapGetters('student', ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects']),
     previousDisabled() {
       return this.rowNumber <= 0;
     },
@@ -215,6 +210,8 @@ export default {
   },
   methods: {
     formatPen,
+    formatPostalCode,
+    formatMinCode,
     clickPrevious() {
       if (this.rowNumber > 0) {
         this.rowNumber -= 1;
@@ -234,24 +231,6 @@ export default {
     },
     frontEndTimeFormat(date) {
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('HH:mm');
-    },
-    uppercaseGender() {
-      if (this.studentHistoryDetail.genderCode) {
-        this.studentHistoryDetail.genderCode = this.studentHistoryDetail.genderCode.toUpperCase();
-      }
-    },
-    getDateFormatterShort() {
-      return (new JSJoda.DateTimeFormatterBuilder)
-        .appendPattern('uuuuMMdd')
-        .toFormatter(JSJoda.ResolverStyle.STRICT);
-    },
-    getDateFormatterLong() {
-      return (new JSJoda.DateTimeFormatterBuilder)
-        .appendPattern('uuuu-MM-dd')
-        .toFormatter(JSJoda.ResolverStyle.STRICT);
-    },
-    getPostalCode() {
-      return this.studentHistoryDetail.postalCode? this.studentHistoryDetail.postalCode.replace(/.{3}$/, ' $&') : '';
     },
     getGradeLabel() {
       return this.studentHistoryDetail.gradeCode? this.gradeCodeObjects.filter(it => (it.gradeCode === this.studentHistoryDetail.gradeCode))[0].label : '';
