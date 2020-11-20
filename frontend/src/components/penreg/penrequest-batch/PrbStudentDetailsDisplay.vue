@@ -314,12 +314,7 @@ export default {
           }
         };
         const result = await getDemogValidationResults(payload);
-        const hasValidationFailure = result.filter(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR')
-          .map(y => {
-            y.uiFieldName = this.prbValidationFieldCodes.find(obj => obj.code === y.penRequestBatchValidationFieldCode)?.label;
-            y.penRequestBatchValidationIssueTypeCode = this.prbValidationIssueTypeCodes.find(obj => obj.code === y.penRequestBatchValidationIssueTypeCode)?.description;
-            return y;
-          })?.length > 0;
+        const hasValidationFailure = result.filter(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR')?.length > 0;
 
         if (!hasValidationFailure) {
           if (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR === this.prbStudent?.penRequestBatchStudentStatusCode
