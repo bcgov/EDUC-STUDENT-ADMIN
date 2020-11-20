@@ -5,7 +5,7 @@ const auth = require('../components/auth');
 const utils = require('../components/utils');
 const extendSession = utils.extendSession();
 const { getPENBatchRequestStats, getPenRequestFiles, getPenRequestBatchStudents, getPenRequestBatchStudentById, getPenRequestBatchStudentMatchOutcome, updatePrbStudentInfoRequested,
-  issueNewPen, userMatchSaga } = require('../components/penRequestBatch');
+  issueNewPen, userMatchSaga, userUnmatchSaga } = require('../components/penRequestBatch');
 
 /*
  * Get all pen request batch files
@@ -56,4 +56,8 @@ router.post('/:id/students/:studentId/issueNewPen', passport.authenticate('jwt',
  * User Match saga
  */
 router.post('/:id/students/:studentId/user-match', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, userMatchSaga);
+/*
+ * User Unmatch saga
+ */
+router.post('/:id/students/:studentId/user-unmatch', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, userUnmatchSaga);
 module.exports = router;
