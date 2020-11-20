@@ -149,14 +149,7 @@ async function issueNewPen(req, res) {
 
     const sagaId = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/new-pen`, sagaReq, null, getUser(req).idir_username);
 
-    const event = {
-      sagaId: sagaId,
-      penRequestBatchStudentID: studentData.penRequestBatchStudentID,
-      sagaStatus: 'INITIATED',
-      sagaName: 'PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA'
-    };
-    log.info('going to store event object in redis for issueNewPen request :: ', event);
-    await redisUtil.createPenRequestBatchSagaRecordInRedis(event);
+    await createPenRequestBatchSagaRecordInRedis(sagaId, 'PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA', 'issueNewPen', studentData.penRequestBatchStudentID);
 
     return res.status(200).json(sagaId);
   } catch (e) {
@@ -199,14 +192,7 @@ async function userMatchSaga(req, res) {
 
     const sagaId = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/user-match`, sagaReq, null, getUser(req).idir_username);
 
-    const event = {
-      sagaId: sagaId,
-      penRequestBatchStudentID: studentData.penRequestBatchStudentID,
-      sagaStatus: 'INITIATED',
-      sagaName: 'PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_SAGA'
-    };
-    log.info('going to store event object in redis for user match request :: ', event);
-    await redisUtil.createPenRequestBatchSagaRecordInRedis(event);
+    await createPenRequestBatchSagaRecordInRedis(sagaId, 'PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_SAGA', 'user match', studentData.penRequestBatchStudentID);
 
     return res.status(200).json(sagaId);
   } catch (e) {
@@ -231,6 +217,59 @@ function filterStudentTwinIds(studentTwinResponse, studentTwinIds) {
     return lodash.difference(twinStudentIDsFromStudentAPI, studentTwinIds);
   }
   return studentTwinIds;
+}
+
+/**
+ * This method will do the following.
+ *   <pre>
+ *     1. First get the PRB Student and only update required fields
+ *     2. call student api to get student twins to delete.
+ *     3. call PRB Saga API to initiate the saga process
+ *     4. Add saga record to redis and return success if API call is success, return error otherwise.
+ *   </pre>
+ * @param req the request
+ * @param res the response
+ * @returns {Promise<*>}
+ */
+async function userUnmatchSaga(req, res) {
+  const token = getBackendToken(req, res);
+  try {
+    const studentTwinUrl = `${config.get('server:student:rootURL')}/${req.body.studentID}/twins`;
+    const prbStudentUrl = `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${req.params.id}/student/${req.params.studentId}`;
+    const results = await Promise.all([getData(token, studentTwinUrl), getData(token, prbStudentUrl)]);
+    const studentData = stripAuditColumns(results[1]);
+    const studentTwinIds = lodash.compact(req.body.twinStudentIDs.map(twinStudentID => 
+      lodash.find(results[0], ['twinStudentID', twinStudentID])?.studentTwinID
+    ));
+    logDebug('student twin ids after filter ::', studentTwinIds);
+    const sagaReq = {
+      ...studentData,
+      studentTwinIDs: studentTwinIds
+    };
+
+    const sagaId = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/user-unmatch`, sagaReq, null, getUser(req).idir_username);
+
+    await createPenRequestBatchSagaRecordInRedis(sagaId, 'PEN_REQUEST_BATCH_USER_UNMATCH_PROCESSING_SAGA', 'user unmatch', studentData.penRequestBatchStudentID);
+
+    return res.status(200).json(sagaId);
+  } catch (e) {
+    logApiError(e, 'userMatchSaga', 'Error user unmatching pen request to an existing student.');
+    if (e.status === HttpStatus.CONFLICT) {
+      return errorResponse(res, 'Another saga in progress', HttpStatus.CONFLICT);
+    }
+    return errorResponse(res);
+  }
+}
+
+function createPenRequestBatchSagaRecordInRedis(sagaId, sagaName, operation, penRequestBatchStudentID) {
+  const event = {
+    sagaId,
+    penRequestBatchStudentID,
+    sagaStatus: 'INITIATED',
+    sagaName
+  };
+  log.info(`going to store event object in redis for ${operation} request :: `, event);
+  return redisUtil.createPenRequestBatchSagaRecordInRedis(event);
 }
 
 async function addSagaStatus(prbStudents) {
@@ -258,5 +297,6 @@ module.exports = {
   getPenRequestBatchStudentById,
   getPenRequestBatchStudentMatchOutcome,
   issueNewPen,
-  userMatchSaga
+  userMatchSaga,
+  userUnmatchSaga
 };
