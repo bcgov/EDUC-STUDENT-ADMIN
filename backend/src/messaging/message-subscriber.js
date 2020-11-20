@@ -11,7 +11,7 @@ const natsOptions = {
   waitOnFirstConnect: true,
 };
 
-const STAN = {
+const NATS = {
   init(){
     try {
       connection = nats.connect(server, natsOptions);
@@ -50,4 +50,4 @@ const STAN = {
 
 };
 
-module.exports = STAN;
+module.exports = NATS;
