@@ -316,7 +316,7 @@ describe('getPenRequestBatchStudentById', () => {
 describe('user unmatch saga', () => {
   let req;
   let res;
-  const twinStudentIDs = ['201', '202'];
+  const twinStudentIDs = ['203', '204'];
 
   beforeEach(() => {
     utils.getBackendToken.mockReturnValue('token');
@@ -327,7 +327,6 @@ describe('user unmatch saga', () => {
       studentId: 'c0a8014d-74e1-1d99-8174-e10db8410001'
     };
     req.body = {
-      matchedPEN: '123456789',
       twinStudentIDs
     };
   });
@@ -337,7 +336,7 @@ describe('user unmatch saga', () => {
   });
 
   it('should return sagaId if success', async () => {
-    const resp = 'c0a8014d-74e1-1d99-8174-e10db8410003';
+    const resp = 'c0a8014d-74e1-1d99-8174-e10db8410004';
     utils.getData.mockResolvedValue(prbStudentData);
     utils.postData.mockResolvedValue(resp);
     await penRequestBatch.userUnmatchSaga(req, res);
