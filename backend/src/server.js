@@ -23,7 +23,7 @@ app.set('port', port);
 
 const server = http.createServer(app);
 const WS = require('./socket/web-socket');
-const STAN = require('./messaging/message-subscriber');
+const NATS = require('./messaging/message-subscriber');
 WS.init(app,server);
 
 /**
@@ -91,13 +91,13 @@ function onListening() {
 }
 
 process.on('SIGINT',() => {
-  STAN.close();
+  NATS.close();
   server.close(() => {
     log.info('process terminated');
   });
 });
 process.on('SIGTERM', () => {
-  STAN.close();
+  NATS.close();
   server.close(() => {
     log.info('process terminated');
   });

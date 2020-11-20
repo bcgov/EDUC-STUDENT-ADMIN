@@ -136,6 +136,10 @@ export default {
   mounted() {
     this.setStickyInfoPanelHeight(this.$refs.stickyInfoPanel.clientHeight);
     this.originalStatusCode = this.studentDetails.penRequestBatchStudentStatusCode;//storing original status to revert to in the event a modified search returned validation error is corrected
+    if(!_.isEmpty(this.studentDetails)) { //don't run validation on page load if create new pen screen
+      this.setModalStudentFromPrbStudent();
+      this.runDemogValidation();
+    }
   },
   computed: {
     ...mapState('penRequestBatch', ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
@@ -189,9 +193,14 @@ export default {
         this.modalStudent.dob = formatDob(this.modalStudent.dob,'uuuu/MM/dd','uuuuMMdd');
       }
     },
-    closeDialog() {
+    async closeDialog() {
       this.dialog = false;
       this.studentDetails = deepCloneObject(this.studentDetailsCopy);
+      await this.$nextTick(); //need to wait so update can me made in parent and propagated back down to child component
+      if(!_.isEmpty(this.studentDetails)) {
+        this.setModalStudentFromPrbStudent();
+        this.runDemogValidation();
+      }
     },
     async updateStudentAndRunPenMatch(studentModified) {
       this.studentDetails = deepCloneObject(studentModified);
@@ -283,7 +292,7 @@ export default {
     width: 3.0em;
   }
   .value-half-width {
-    width: 4.0em;
+    width: 3.9rem;
   }
   .sticky {
     position: sticky;
