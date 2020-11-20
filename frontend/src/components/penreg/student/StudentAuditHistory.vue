@@ -17,7 +17,7 @@
           :items-per-page="studentHistoryResp.pageable.pageSize"
           hide-default-footer
           item-key="studentHistoryID"
-          :key="selectedStudentHistoryId? selectedStudentHistoryId : studentHistoryResp.content[0].studentHistoryID"
+          :key="selectedStudentHistoryId"
           :loading="loading"
           @page-count="studentHistoryResp.pageable.pageNumber = $event"
         >
@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions, mapState } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import { Routes } from '../../../utils/constants';
 import AlertMessage from '../../util/AlertMessage';
 import StudentAuditHistoryDetail from '../student/StudentAuditHistoryDetailPanel';
