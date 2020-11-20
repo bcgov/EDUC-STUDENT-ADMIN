@@ -6,39 +6,52 @@
     <v-row no-gutters>
       <div id="studentInfo" class="px-1 pt-2 pb-5"><strong class="pr-3">{{ formatPen(student.pen) }}</strong> {{ getStudentName(student)}}</div>
     </v-row>
-    <v-data-table
-      id="dataTable"
-      v-model="selectedRecords"
-      :headers="headers"
-      :items="studentHistoryResp.content"
-      :page.sync="pageNumber"
-      :items-per-page="studentHistoryResp.pageable.pageSize"
-      hide-default-footer
-      item-key="studentHistoryID"
-      :loading="loading"
-      @page-count="studentHistoryResp.pageable.pageNumber = $event"
-    >
-      <template v-slot:item="props">
-        <tr :class="{'selected-record' : props.isSelected, 'hide-item': props.item.hidden, 'hideable': props.item.hideable}" @click="selectItem(props)">
-          <td v-for="header in props.headers" :key="header.id" :class="header.id">
-            <div class="table-cell">
-              <span :class="{'diff-value': props.item[`${header.value}_diff`]}">{{ props.item[header.value] || '' }}</span>
-              <v-btn v-if="header.value === 'createDate' && props.item.expandable" icon class="ml-1" color="#38598a">
-                <v-icon @click.stop="expandRow(props.item)">
-                  {{ props.item.expanded ? 'mdi-chevron-up' : 'mdi-chevron-down'}}
-                </v-icon>
-            </v-btn>
-            </div>
-          </td>
-        </tr>
-      </template>
-    </v-data-table>
-    <v-row class="pt-2" justify="end">
-      <v-col cols="4">
-        <v-pagination color="#38598A" v-model="pageNumber" :length="studentHistoryResp.totalPages"></v-pagination>
+    <v-row>
+      <v-col :cols="this.listDetailMode? 6 : 12">
+        <v-data-table
+          id="dataTable"
+          v-model="selectedRecords"
+          :headers="getHeaders()"
+          :items="studentHistoryResp.content"
+          :page.sync="pageNumber"
+          :items-per-page="studentHistoryResp.pageable.pageSize"
+          hide-default-footer
+          item-key="studentHistoryID"
+          :key="selectedStudentHistoryId"
+          :loading="loading"
+          @page-count="studentHistoryResp.pageable.pageNumber = $event"
+        >
+          <template v-slot:item="props">
+            <tr :class="tableRowClass(props.item)" @click="selectItem(props)">
+              <td v-for="header in props.headers" :key="header.id" :class="header.id">
+                <div class="table-cell">
+                  <span :class="{'diff-value': props.item[`${header.value}_diff`]}">{{ props.item[header.value] || '' }}</span>
+                  <v-btn v-if="header.value === 'createDate' && props.item.expandable" icon class="ml-1" color="#38598a">
+                    <v-icon @click.stop="expandRow(props.item)">
+                      {{ props.item.expanded ? 'mdi-chevron-up' : 'mdi-chevron-down'}}
+                    </v-icon>
+                  </v-btn>
+                </div>
+              </td>
+            </tr>
+          </template>
+        </v-data-table>
+        <v-row class="pt-2" justify="end">
+          <v-col cols="4">
+            <v-pagination color="#38598A" v-model="pageNumber" :length="studentHistoryResp.totalPages"></v-pagination>
+          </v-col>
+          <v-col cols="4" id="currentItemsDisplay">
+            Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ studentHistoryResp.totalElements }}
+          </v-col>
+        </v-row>
       </v-col>
-      <v-col cols="4" id="currentItemsDisplay">
-        Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ studentHistoryResp.totalElements }}
+      <v-col v-if="listDetailMode">
+        <StudentAuditHistoryDetail 
+            :studentHistory="studentHistoryResp"
+            :studentHistoryId="selectedStudentHistoryId"
+            @close="listDetailMode=false"
+            @update="updateSelectedStudentHistoryId">
+        </StudentAuditHistoryDetail>
       </v-col>
     </v-row>
   </div>
@@ -48,6 +61,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import { Routes } from '../../../utils/constants';
 import AlertMessage from '../../util/AlertMessage';
+import StudentAuditHistoryDetail from '../student/StudentAuditHistoryDetailPanel';
 import ApiService from '../../../common/apiService';
 import alterMixin from '../../../mixins/alterMixin';
 import {formatMinCode, formatPen, formatDob, formatPostalCode} from '../../../utils/format';
@@ -64,6 +78,7 @@ export default {
   },
   components: {
     AlertMessage,
+    StudentAuditHistoryDetail,
   },
   data () {
     return {
@@ -80,6 +95,13 @@ export default {
         { text: 'Postal', sortable: false, value: 'postalCode'},
         { text: 'DC', sortable: false, value: 'demogCode'},
       ],
+      shortHeaders: [
+        { text: 'Date', sortable: false, value: 'createDate'},
+        { text: 'Changed by', sortable: false, value: 'createUser'},
+        { text: 'Activity', sortable: false, value: 'historyActivityLabel'},
+        { text: 'Mincode', sortable: false, value: 'mincode'},
+        { text: 'Local ID', sortable: false, value: 'localID'},
+      ],
       loading: true,
       selectedRecords: [],
       pageNumber: 1,
@@ -91,6 +113,8 @@ export default {
         }
       },
       userEditHistoryGroups: null,
+      listDetailMode: false,  // true: both list and detail panels are rendered,  false: list panel only
+      selectedStudentHistoryId: null, // pointing the current history record
     };
   },
   computed: {
@@ -107,6 +131,7 @@ export default {
       this.getHistoryActivityCodes();
     }
     this.retrieveStudentHistory();
+    this.listDetailMode = false;
   },
   watch: {
     pageNumber: {
@@ -119,7 +144,27 @@ export default {
     ...mapActions('student', ['getHistoryActivityCodes']),
     formatPen,
     selectItem(props) {
-      props.isSelected = !props.isSelected;
+      this.updateSelectedStudentHistoryId(props.item.studentHistoryID);
+      this.listDetailMode = true;
+    },
+    tableRowClass(item) {
+      let rowClass = [];
+      item.hideable && rowClass.push('hideable');
+      item.hidden && rowClass.push('hide-item');
+      item.isSelected && rowClass.push('selected-record');
+      return rowClass;
+    },
+    updateSelectedStudentHistoryId(historyId) {
+      this.studentHistoryResp.content.forEach(hist => {
+        hist.expanded = false;
+        hist.hidden = false;
+        if (hist.studentHistoryID === historyId) {
+          hist.isSelected = true;
+        } else {
+          hist.isSelected = false;
+        }
+      });
+      this.selectedStudentHistoryId = historyId;
     },
     expandRow(item) {
       this.userEditHistoryGroups[item.createDate].forEach(history => {
@@ -128,6 +173,12 @@ export default {
         }
       });
       item.expanded = !item.expanded;
+    },
+    getHeaders() {
+      if (this.listDetailMode) {
+        return this.shortHeaders;
+      }
+      return this.headers;
     },
     getStudentName(student) {
       return `${student.legalLastName ? student.legalLastName + ',': ''} ${ student.legalFirstName ? student.legalFirstName: ''} ${ student.legalMiddleNames ? student.legalMiddleNames: ''}`;
@@ -256,7 +307,7 @@ export default {
   }
   #dataTable /deep/ table tr.selected-record,
   #dataTable /deep/ table tbody tr:hover { 
-    background-color: #E1F5FE
+    background-color: #E1F5FE !important;
   }
 
   #dataTable /deep/ table td { 
