@@ -4,6 +4,7 @@ const log = require('../../components/logger');
 const redisUtil = require('../../util/redis/redis-utils');
 const webSocket = require('../../socket/web-socket');
 
+
 const SagaTopics = [
   'PEN_REQUEST_RETURN_SAGA_TOPIC',
   'PEN_REQUEST_UNLINK_SAGA_TOPIC',
@@ -13,7 +14,8 @@ const SagaTopics = [
   'STUDENT_PROFILE_REQUEST_RETURN_SAGA_TOPIC',
   'STUDENT_PROFILE_COMPLETE_SAGA_TOPIC',
   'PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_TOPIC',
-  'PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_TOPIC'];
+  'PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_TOPIC',
+  'PEN_REQUEST_BATCH_USER_UNMATCH_PROCESSING_TOPIC'];
 
 const SagaEventWebSocketTopic = 'SAGA_EVENT_WS_TOPIC';
 

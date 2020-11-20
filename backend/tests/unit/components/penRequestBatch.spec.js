@@ -211,20 +211,10 @@ function expectationsForUserActionsInPRBSaga(twinStudentIDs) {
 describe('user match saga', () => {
   let req;
   let res;
-  const twinStudentIDs = ['201', '202'];
+  let twinStudentIDs;
 
   beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
-    req = mockRequest();
-    res = mockResponse();
-    req.params = {
-      id: 'c0a8014d-74e1-1d99-8174-e10db81f0000',
-      studentId: 'c0a8014d-74e1-1d99-8174-e10db8410001'
-    };
-    req.body = {
-      matchedPEN: '123456789',
-      twinStudentIDs
-    };
+    [req, res, twinStudentIDs] = initializeMatchUnmatchTestData();
   });
 
   afterEach(() => {
@@ -312,3 +302,62 @@ describe('getPenRequestBatchStudentById', () => {
   });
 
 });
+
+describe('user unmatch saga', () => {
+  let req;
+  let res;
+
+  beforeEach(() => {
+    [req, res] = initializeMatchUnmatchTestData();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return sagaId if success', async () => {
+    const resp = 'c0a8014d-74e1-1d99-8174-e10db8410004';
+    utils.getData.mockResolvedValue(prbStudentData);
+    utils.postData.mockResolvedValue(resp);
+    await penRequestBatch.userUnmatchSaga(req, res);
+    expect(utils.postData.mock.calls[0][2].studentTwinIDs.length).toEqual(0);
+    expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenCalledWith({
+      sagaId: resp,
+      penRequestBatchStudentID: req.params.studentId,
+      sagaStatus: 'INITIATED',
+      sagaName: 'PEN_REQUEST_BATCH_USER_UNMATCH_PROCESSING_SAGA'
+    });
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+    expect(res.json).toHaveBeenCalledWith(resp);
+  });
+
+  it('should return INTERNAL_SERVER_ERROR if getData failed', async () => {
+    utils.getData.mockRejectedValue(new Error('Test error'));
+    await penRequestBatch.userUnmatchSaga(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+  });
+
+  it('should return INTERNAL_SERVER_ERROR if postData failed', async () => {
+    utils.getData.mockResolvedValue(prbStudentData);
+    utils.postData.mockRejectedValue(new Error('Test error'));
+    await penRequestBatch.userUnmatchSaga(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+  });
+
+});
+
+function initializeMatchUnmatchTestData() {
+  const twinStudentIDs = ['201', '202'];
+  utils.getBackendToken.mockReturnValue('token');
+  const req = mockRequest();
+  const res = mockResponse();
+  req.params = {
+    id: 'c0a8014d-74e1-1d99-8174-e10db81f0000',
+    studentId: 'c0a8014d-74e1-1d99-8174-e10db8410001'
+  };
+  req.body = {
+    matchedPEN: '123456789',
+    twinStudentIDs
+  };
+  return [req, res, twinStudentIDs];
+}

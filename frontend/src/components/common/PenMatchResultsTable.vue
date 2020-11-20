@@ -20,7 +20,7 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-row>
+    <v-row no-gutters >
       <v-slide-y-transition>
         <v-col key="results" v-if="matchesExpanded" class="pa-0">
           <v-divider></v-divider>
@@ -78,6 +78,7 @@
                     <span v-if="!!isMatchUnMatch && header.bottomValue==='button' && hoveredOveredRowStudentID === props.item.studentID">
                       <PrimaryButton :short="true" id="matchUnMatchButton" :text="matchUnMatchButtonText"
                                      :width="'6.5em'"
+                                     :disabled="disabled"
                                      @click.native="$emit('match-unmatch-student-prb-student', props.item, matchUnMatchButtonText)"></PrimaryButton>
                     </span>
                     <span v-else-if="header.bottomValue==='postalCode'"
@@ -145,7 +146,10 @@ export default {
       type: Boolean,
       required: true
     },
-
+    disabled: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -285,9 +289,9 @@ export default {
             || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ === this.student.penRequestBatchStudentStatusCode) {
           this.hoveredOveredRowStudentID = matchedStudent.studentID;
           this.matchUnMatchButtonText = 'Match';
-        } else if ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS,
-          PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR ].some(element => element === this.student.penRequestBatchStudentStatusCode)
-            && matchedStudent.studentID === this.student.studentID) {
+        } else if ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR, 
+          PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR]
+          .some(element => element === this.student.penRequestBatchStudentStatusCode) && matchedStudent.studentID === this.student.studentID) {
           this.hoveredOveredRowStudentID = matchedStudent.studentID;
           this.matchUnMatchButtonText = 'Unmatch';
         }
@@ -331,7 +335,7 @@ export default {
 }
 
 .value-half-width {
-  width: 4.0em;
+  width: 3.9rem;
 }
 
 .v-data-table /deep/ tr td:nth-child(1) {

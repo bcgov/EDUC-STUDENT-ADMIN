@@ -93,6 +93,7 @@
                                       :is-pen-link="true"
                                       :is-refresh-required="true"
                                       :is-match-un-match="true"
+                                      :disabled="disableMatchUnmatch"
                                       @match-unmatch-student-prb-student="matchUnmatchStudentToPRBStudent"
                                       @refresh-match-results="refreshMatchResults"
                                       :possible-match="possibleMatches"></PenMatchResultsTable>
@@ -230,10 +231,16 @@ export default {
           && isPRBSaga) {
         const updatedPrbStudent = JSON.parse(notificationData.eventPayload);
         if (updatedPrbStudent?.penRequestBatchStudentID === this.prbStudent.penRequestBatchStudentID) {
-          if(notificationData?.sagaName === PRB_SAGA_NAMES.PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA){
+          switch (notificationData?.sagaName) {
+          case PRB_SAGA_NAMES.PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA:
             this.setSuccessAlert('The request to issue new PEN is now completed.');
-          }else if(notificationData?.sagaName === PRB_SAGA_NAMES.PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_SAGA){
+            break;
+          case PRB_SAGA_NAMES.PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_SAGA:
             this.setSuccessAlert('The request to match student to Pen Request is now completed.');
+            break;
+          case PRB_SAGA_NAMES.PEN_REQUEST_BATCH_USER_UNMATCH_PROCESSING_SAGA:
+            this.setSuccessAlert('The request to unmatch student to Pen Request is now completed.');
+            break;
           }
           this.setSelectedRecords();
           this.initializeDetails();
@@ -245,6 +252,9 @@ export default {
     ...mapState('setNavigation', ['currentRoute']),
     ...mapState('penRequestBatch', ['selectedFiles', 'prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
     ...mapState('notifications', ['notification']),
+    disableMatchUnmatch() {
+      return this.prbStudent?.sagaInProgress;
+    },
     disableInfoReqBtn() {
       return this.loading || this.prbStudent?.sagaInProgress
           || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
@@ -262,9 +272,7 @@ export default {
     },
     disableModifySearch(){
       return this.loading || this.prbStudent?.sagaInProgress
-          || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
-          || ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ]
-            .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
+          || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode);
     },
     isUnarchived(){
       return this.batchFile?.penRequestBatchStatusCode === 'UNARCHIVED';
@@ -314,7 +322,8 @@ export default {
           }
         };
         const result = await getDemogValidationResults(payload);
-        const hasValidationFailure = result?.length > 0;
+        const hasValidationFailure = result.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR');
+
         if (!hasValidationFailure) {
           if (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR === this.prbStudent?.penRequestBatchStudentStatusCode
               || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR === this.prbStudent?.penRequestBatchStudentStatusCode) {
@@ -325,10 +334,16 @@ export default {
         }
         this.updatePossibleMatchResultsBasedOnCurrentStatus();
         if(this.prbStudent?.sagaInProgress) {
-          if(this.prbStudent?.sagaName === 'PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA'){
+          switch (this.prbStudent?.sagaName) {
+          case PRB_SAGA_NAMES.PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA:
             this.setSuccessAlert('The request to issue new PEN is currently being processed.');
-          }else if(this.prbStudent?.sagaName === 'PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_SAGA'){
+            break;
+          case PRB_SAGA_NAMES.PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_SAGA:
             this.setSuccessAlert('The request to match student to Pen Request is currently being processed.');
+            break;
+          case PRB_SAGA_NAMES.PEN_REQUEST_BATCH_USER_UNMATCH_PROCESSING_SAGA:
+            this.setSuccessAlert('The request to unmatch student to Pen Request is currently being processed.');
+            break;
           }
         }
       } catch (error) {
@@ -505,7 +520,7 @@ export default {
       this.possibleMatches = [];
       this.possibleMatchesPlaceHolder = [];
       try {
-        const result = await getPossibleMatches(constructPenMatchObjectFromStudent(this.modalStudent));
+        const result = await getPossibleMatches(constructPenMatchObjectFromStudent(this.prbStudent));
         this.isIssuePenDisabled = false;
         this.showPossibleMatch = true;
         this.possibleMatchesPlaceHolder = result.data ?? [];
@@ -562,33 +577,35 @@ export default {
      * @returns {Promise<void>}
      */
     async matchUnmatchStudentToPRBStudent(student, buttonText){
+      let operation;
       if('Match' ===  buttonText){
         this.prbStudent.assignedPEN = student.pen;
         this.prbStudent.studentID = student.studentID;
-        this.isMatchingToStudentRecord = true;
-        const payload = {
-          studentID: student.studentID,
-          matchedPEN: student.pen,
-          twinStudentIDs: this.possibleMatches.filter(el => el.studentID !== student.studentID).map(el=>el.studentID)
-        };
-        ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}/user-match`, payload)
-          .then(response => {
-            if(response.data) {
-              this.prbStudent.sagaInProgress = true;
-              this.setSuccessAlert('Your request to match student to Pen Request is accepted.');
-            }
-          })
-          .catch(error => {
-            this.setFailureAlert('Your request to match student to Pen Request could not be accepted,  Please try again later.');
-            console.log(error);
-          })
-          .finally(() => {
-            this.isMatchingToStudentRecord = false;
-          });
-      }else {
-        //TODO implement the unmatch in future story.
+        operation = 'match';
+      } else {
+        operation = 'unmatch';
       }
 
+      this.isMatchingToStudentRecord = true;
+      const payload = {
+        studentID: student.studentID,
+        matchedPEN: student.pen,
+        twinStudentIDs: this.possibleMatches.filter(el => el.studentID !== student.studentID).map(el=>el.studentID)
+      };
+      ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}/user-${operation}`, payload)
+        .then(response => {
+          if(response.data) {
+            this.prbStudent.sagaInProgress = true;
+            this.setSuccessAlert(`Your request to ${operation} student to Pen Request is accepted.`);
+          }
+        })
+        .catch(error => {
+          this.setFailureAlert(`Your request to ${operation} student to Pen Request could not be accepted,  Please try again later.`);
+          console.log(error);
+        })
+        .finally(() => {
+          this.isMatchingToStudentRecord = false;
+        });
     },
     updatePossibleMatchResultsBasedOnCurrentStatus() {
       this.possibleMatches = updatePossibleMatchResultsBasedOnCurrentStatus(this.prbStudent, this.possibleMatchesPlaceHolder, this.matchedStudentTwinRecords);
