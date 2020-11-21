@@ -56,7 +56,7 @@ then
   SERVER_FRONTEND="https://student-admin-$PEN_NAMESPACE-dev.apps.silver.devops.gov.bc.ca"
 elif [ "$envValue" = "dev" ]
 then
-  SERVER_FRONTEND="https://student-admin-$PEN_NAMESPACE-test.apps.silver.devops.gov.bc.ca""
+  SERVER_FRONTEND="https://student-admin-$PEN_NAMESPACE-test.apps.silver.devops.gov.bc.ca"
 fi
 
 echo Creating student-admin-soam Keycloak client
@@ -114,11 +114,11 @@ fi
 if [ "$envValue" = "tools" ]
 then
   BACKEND_ROOT=$APP_NAME-$PEN_NAMESPACE-dev.apps.silver.devops.gov.bc.ca
-  SERVER_FRONTEND=https://$APP_NAME-dev-$envValue.apps.silver.devops.gov.bc.ca
+  SERVER_FRONTEND=https://$APP_NAME-$PEN_NAMESPACE-dev.apps.silver.devops.gov.bc.ca
 elif [ "$envValue" = "dev" ]
 then
   BACKEND_ROOT=$APP_NAME-$PEN_NAMESPACE-test.apps.silver.devops.gov.bc.ca
-  SERVER_FRONTEND=https://$APP_NAME-test-$envValue.apps.silver.devops.gov.bc.ca
+  SERVER_FRONTEND=https://$APP_NAME-$PEN_NAMESPACE-test.apps.silver.devops.gov.bc.ca
 else
   BACKEND_ROOT=$APP_NAME-$PEN_NAMESPACE-$envValue.apps.silver.devops.gov.bc.ca
   SERVER_FRONTEND=https://$APP_NAME-$PEN_NAMESPACE-$envValue.apps.silver.devops.gov.bc.ca
