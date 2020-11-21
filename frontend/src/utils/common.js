@@ -110,7 +110,7 @@ export function updatePossibleMatchResultsBasedOnCurrentStatus(prbStudent, possi
         item.recordNum = twinRecordNumber;
       } else {
         item.iconValue='mdi-account-plus';
-        newPossibleRecordNumber += .1;
+        newPossibleRecordNumber += .01;
         item.recordNum = newPossibleRecordNumber;
         item.newPossibleMatch = true;
       }
