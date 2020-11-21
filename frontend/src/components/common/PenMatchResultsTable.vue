@@ -38,7 +38,7 @@
                   :class="[hoveredOveredRowStudentID === props.item.studentID?'hovered-record-match-unmatch':'' ,
                  props.isSelected?'selected-record':'',
                  isMatchedToStudent(props.item)?'matchedStudentRow':'',
-                 (student.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR && student.assignedPEN === props.item.pen) || !!props.item.twinRecordToMatchedStudent ? 'grayout':'']">
+                 (student.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR && student.assignedPEN != formatPen(props.item.pen)) || !!props.item.twinRecordToMatchedStudent ? 'grayout':'']">
                 <td v-for="header in props.headers" :key="header.id" :class="header.id">
                   <div :class="[props.item[header.doubleValue] ? 'value-half-width':'','tableCell']">
                     <v-checkbox :class="['top-column-item']" v-if="header.type" class="pl-3" color="#606060"
@@ -228,6 +228,7 @@ export default {
     title() {
       if (this.student.penRequestBatchStudentStatusCode) {
         switch (this.student.penRequestBatchStudentStatusCode) {
+        case PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS:
         case PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR:
           return 'New PEN Created';
         case PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS:
@@ -268,16 +269,13 @@ export default {
         return this.student?.minCode?.replace(/\s/g, '') === value?.replace(/\s/g, '');
       case 'pen':
         if (this.student.assignedPEN) {
-          return this.student.assignedPEN === value;
+          return this.student?.assignedPEN?.replace(/\s/g, '') === value?.replace(/\s/g, '');
         } else {
-          return this.student.bestMatchPEN === value;
+          return this.student?.bestMatchPEN?.replace(/\s/g, '') === value?.replace(/\s/g, '');
         }
       default:
         return this.student[valueType]?.toLowerCase() === value?.toLowerCase();
       }
-    },
-    isGreyedOut(matchedStudent) {
-      return ( (this.student.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR && this.student.assignedPEN === matchedStudent.pen) || !!matchedStudent.twinRecordToMatchedStudent);
     },
     formatPen,
     formatMinCode,
