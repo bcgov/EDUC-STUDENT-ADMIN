@@ -211,10 +211,9 @@ function expectationsForUserActionsInPRBSaga(twinStudentIDs) {
 describe('user match saga', () => {
   let req;
   let res;
-  let twinStudentIDs;
 
   beforeEach(() => {
-    [req, res, twinStudentIDs] = initializeMatchUnmatchTestData();
+    [req, res] = initializeMatchUnmatchTestData();
   });
 
   afterEach(() => {
