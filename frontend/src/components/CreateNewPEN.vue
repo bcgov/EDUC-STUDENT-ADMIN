@@ -40,7 +40,7 @@
                 </article>
               </v-container>
             </v-row>
-            <v-row v-if="showPossibleMatch && !hasValidationIssues" >
+            <v-row v-if="showPossibleMatch && !hasValidationIssues" class="full-width">
               <PenMatchResultsTable :student="student" :is-comparison-required="false"
                                     :is-pen-link="false"
                                     :is-refresh-required="false"
