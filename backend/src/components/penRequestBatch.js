@@ -214,7 +214,7 @@ function filterStudentTwinIds(studentTwinResponse, studentTwinIds) {
   logDebug('studentTwinIds ::', studentTwinIds);
   if (studentTwinResponse?.length > 0) {
     const twinStudentIDsFromStudentAPI = lodash.map(studentTwinResponse, 'twinStudentID');
-    return lodash.difference(twinStudentIDsFromStudentAPI, studentTwinIds);
+    return lodash.pullAll(studentTwinIds, twinStudentIDsFromStudentAPI);
   }
   return studentTwinIds;
 }

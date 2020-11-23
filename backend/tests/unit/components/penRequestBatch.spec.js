@@ -211,10 +211,9 @@ function expectationsForUserActionsInPRBSaga(twinStudentIDs) {
 describe('user match saga', () => {
   let req;
   let res;
-  let twinStudentIDs;
 
   beforeEach(() => {
-    [req, res, twinStudentIDs] = initializeMatchUnmatchTestData();
+    [req, res] = initializeMatchUnmatchTestData();
   });
 
   afterEach(() => {
@@ -223,10 +222,12 @@ describe('user match saga', () => {
 
   it('should return sagaId if success', async () => {
     const resp = 'c0a8014d-74e1-1d99-8174-e10db8410003';
-    utils.getData.mockResolvedValue(prbStudentData);
+    utils.getData.mockImplementation((token, url) => 
+      url.includes('twins') ? [{twinStudentID: '201'}, {twinStudentID: '301'}] : prbStudentData
+    );
     utils.postData.mockResolvedValue(resp);
     await penRequestBatch.userMatchSaga(req, res);
-    expectationsForUserActionsInPRBSaga(twinStudentIDs);
+    expectationsForUserActionsInPRBSaga(['202']);
     expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenCalledWith({
       sagaId: resp,
       penRequestBatchStudentID: req.params.studentId,
@@ -318,9 +319,12 @@ describe('user unmatch saga', () => {
   it('should return sagaId if success', async () => {
     const resp = 'c0a8014d-74e1-1d99-8174-e10db8410004';
     utils.getData.mockResolvedValue(prbStudentData);
+    utils.getData.mockImplementation((token, url) => 
+      url.includes('twins') ? [{twinStudentID: '201', studentTwinID: '801'}, {twinStudentID: '301', studentTwinID: '901'}] : prbStudentData
+    );
     utils.postData.mockResolvedValue(resp);
     await penRequestBatch.userUnmatchSaga(req, res);
-    expect(utils.postData.mock.calls[0][2].studentTwinIDs.length).toEqual(0);
+    expect(utils.postData.mock.calls[0][2].studentTwinIDs).toEqual(['801']);
     expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenCalledWith({
       sagaId: resp,
       penRequestBatchStudentID: req.params.studentId,
