@@ -317,7 +317,7 @@ export default {
     pageNumber: {
       handler() {
         this.searchLoading = true;
-        this.retrievePenRequests(this.prbStudentSearchCriteria, true)
+        this.retrievePenRequests(this.prbStudentSearchCriteria, false)
           .finally(() => {
             this.searchLoading = false;
           });
@@ -411,7 +411,7 @@ export default {
 
       if(initial || (this.$refs.prbStudentSearchForm.validate() && this.searchHasValues())) {
         const searchCriteria = this.prbStudentSearchCriteriaList(this.prbStudentSearchParams);
-        this.retrievePenRequests(searchCriteria, false)
+        this.retrievePenRequests(searchCriteria, true)
           .then(() => {
             this.setCurrentPrbStudentSearchParams(JSON.parse(JSON.stringify(this.prbStudentSearchParams)));
             this.setPrbStudentSearchCriteria(searchCriteria);
@@ -427,16 +427,16 @@ export default {
         this.searchLoading = false;
       }
     },
-    initializePrbStudents(students, isPagingOperation) {
+    initializePrbStudents(students, isFilterOperation) {
+      if (isFilterOperation) {
+        // reset
+        this.setSelectedRecords([]);
+      }
+
       students.forEach(rec => {
         rec.isSelected = this.isSelected(rec);
       });
-
-      if (!isPagingOperation && this.selectedRecords.length > 0) {
-        // drop selected rows if it is not in the current data set
-        const newSelectedRecords = this.selectedRecords.filter(rec => students.find(item => item.penRequestBatchStudentID === rec.penRequestBatchStudentID));
-        this.setSelectedRecords(newSelectedRecords);
-      }
+     
       formatPrbStudents(students);
       return students;
     },
@@ -481,7 +481,7 @@ export default {
 
       return searchCriteriaList;
     },
-    retrievePenRequests(searchCriteria, isPagingOperation) {
+    retrievePenRequests(searchCriteria, isFilterOperation) {
       const params = {
         params: {
           pageNumber: this.pageNumber-1,
@@ -498,7 +498,7 @@ export default {
       return ApiService.apiAxios
         .get(Routes['penRequestBatch'].STUDENTS_SEARCH_URL, params)
         .then(response => {
-          response.data && response.data.content && this.initializePrbStudents(response.data.content, isPagingOperation);
+          response.data && response.data.content && this.initializePrbStudents(response.data.content, isFilterOperation);
           this.setPrbStudentSearchResponse(response.data);
         })
         .catch(error => {

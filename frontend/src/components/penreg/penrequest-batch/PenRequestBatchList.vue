@@ -199,6 +199,12 @@ export default {
     initializeFiles(files, isFilterOperation) {
       let activeFile = files?.find(f => f.penRequestBatchStatusCode === 'ACTIVE');
       activeFile && (activeFile.firstActiveFile = true);
+
+      if (isFilterOperation) {
+        // reset
+        this.setSelectedFiles([]);
+      }
+      
       files.forEach(file => {
         file.minCode && (file.minCode = formatMinCode(file.minCode));
         file.isSelected = this.isSelected(file);
@@ -210,12 +216,6 @@ export default {
 
       this.allSelected = !!files && files.length > 0 && files.every(file => file.isSelected);
       this.partialSelected = files.some(file => file.isSelected) && !this.allSelected;
-
-      if (isFilterOperation && this.selectedFiles.length > 0) {
-        // drop selected rows if it is not in the current data set
-        const newSelectedFiles = this.selectedFiles.filter(file => files.find(item => item.submissionNumber === file.submissionNumber));
-        this.setSelectedFiles(newSelectedFiles);
-      }
       return files;
     },
     isSelected(file) {
