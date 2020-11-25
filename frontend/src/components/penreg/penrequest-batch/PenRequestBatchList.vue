@@ -41,6 +41,7 @@
             <v-checkbox v-if="header.type" class="file-checkbox" color="#606060" v-model="props.item.isSelected" @click.stop="handleFileCheckBoxClicked(props.item)"></v-checkbox>
             <div v-else :class="{'countable-column-div': header.countable}">
               <span v-if="header.countable" class="countable-column-data">{{ props.item[header.value] || '' }}</span>
+              <span v-else-if="header.value==='submissionNumber'"><a class="submission" @click.stop="handleSubmissionNumberClicked(props.item[header.value])">{{props.item[header.value] }}</a></span>
               <span v-else>{{props.item[header.value]}}</span>
               <v-tooltip v-if="header.value==='minCode' && isUnarchived(props.item)" right>
                 <template v-slot:activator="{ on }">
@@ -79,6 +80,7 @@ import { mapMutations, mapState } from 'vuex';
 import ApiService from '../../../common/apiService';
 import {Routes} from '../../../utils/constants';
 import {formatMinCode} from '../../../utils/format';
+import router from '../../../router';
 import {uniqBy} from 'lodash';
 
 export default {
@@ -277,6 +279,12 @@ export default {
 
       this.$emit('filter-change', this.filters);
     },
+    handleSubmissionNumberClicked(submissionNumber) {
+      const batchIDs = this.penRequestBatchResponse.content.find(file => file.submissionNumber === submissionNumber)?.penRequestBatchID;
+      const statusFilters = '';
+      const route = router.resolve({name: 'prbStudentList', query: { batchIDs, statusFilters }});
+      window.open(route.href, '_blank');
+    },
     pagination(isFilterOperation) {
       this.loadingTable = true;
       const req = {
@@ -402,5 +410,8 @@ export default {
 
   .select-column {
     vertical-align: bottom !important;
+  }
+  .submission {
+    text-decoration: underline;
   }
 </style>
