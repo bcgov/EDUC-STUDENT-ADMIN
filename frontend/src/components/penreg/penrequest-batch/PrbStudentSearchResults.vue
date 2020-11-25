@@ -47,7 +47,7 @@
             <v-checkbox v-if="header.type" class="record-checkbox header-checkbox" color="#606060" v-model="props.item.isSelected" @click.stop="handleRecordCheckBoxClicked(props.item)"></v-checkbox>
             <div v-else class="table-cell">
               <span class="top-column-item">
-                <a v-if="header.topValue === 'submissionNumber'" class="submission" @click="handleSubmissionNumberClicked">{{props.item[header.topValue] }}</a>
+                <a v-if="header.topValue === 'submissionNumber'" class="submission" @click.stop="handleSubmissionNumberClicked(props.item[header.topValue])">{{props.item[header.topValue] }}</a>
                 <v-tooltip v-else-if="header.topValue === 'minCode'" right>
                   <template v-slot:activator="{ on }">
                     <span v-on="on">{{ props.item[header.topValue] }}</span>
@@ -210,8 +210,11 @@ export default {
         this.setSelectedRecords(newSelectedRecords);
       }
     },
-    handleSubmissionNumberClicked(event) {
-      event.stopPropagation();
+    handleSubmissionNumberClicked(submissionNumber) {
+      const batchIDs = this.prbStudentSearchResponse.content.find(file => file.submissionNumber === submissionNumber)?.penRequestBatchID;
+      const statusFilters = '';
+      const route = router.resolve({name: 'prbStudentList', query: { batchIDs, statusFilters }});
+      window.open(route.href, '_blank');
     }
   }
 };
