@@ -11,7 +11,7 @@
             <v-list-item-title class="headline">Enter and Search Demographic Data For New PEN</v-list-item-title>
           </v-list-item-content>
           <v-list-item-icon>
-            <v-btn text icon @click="$emit('closeDialog')">
+            <v-btn id="closeSearchDemographicModalBtn" text icon @click="$emit('closeDialog')">
               <v-icon large color="#38598A">mdi-close</v-icon>
             </v-btn>
           </v-list-item-icon>
@@ -31,7 +31,7 @@
                 </v-row>
                 <v-row dense>
                   <v-col cols="3">
-                    <v-text-field outlined dense filled
+                    <v-text-field id="searchDemogModalLegalLastNameTxtField" outlined dense filled
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
                                   :rules="validateLegalLastName()"
                                   :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
@@ -42,6 +42,7 @@
                   <v-spacer/>
                   <v-col cols="3">
                     <v-text-field outlined dense filled
+                                  id="searchDemogModalLegalFirstNameTxtField"
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
                                   :rules="validateLegalFirstName()"
                                   :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
@@ -52,6 +53,7 @@
                   <v-spacer/>
                   <v-col cols="3">
                     <v-text-field outlined dense filled
+                                  id="searchDemogModalLegalMiddleNameTxtField"
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
                                   tabindex="3" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
                                   clearable
@@ -70,6 +72,7 @@
                 <v-row dense>
                   <v-col cols="3">
                     <v-text-field outlined dense filled
+                                  id="searchDemogModalUsualLastNameTxtField"
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
                                   tabindex="4" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
                                   clearable
@@ -78,6 +81,7 @@
                   <v-spacer/>
                   <v-col cols="3">
                     <v-text-field outlined dense filled
+                                  id="searchDemogModalUsualFirstNameTxtField"
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
                                   tabindex="5" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
                                   clearable
@@ -86,6 +90,7 @@
                   <v-spacer/>
                   <v-col cols="3">
                     <v-text-field outlined dense filled
+                                  id="searchDemogModalUsualMiddleNameTxtField"
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
                                   tabindex="6" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
                                   clearable
@@ -109,7 +114,9 @@
                 </v-row>
                 <v-row dense>
                   <v-col cols="3">
-                    <v-text-field outlined dense filled :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
+                    <v-text-field outlined dense filled
+                                  id="searchDemogModalGenderTxtField"
+                                  :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
                                   :rules="validateGender()" maxlength="1"
                                   tabindex="7" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
                                   clearable
@@ -117,7 +124,9 @@
                   </v-col>
                   <v-spacer/>
                   <v-col cols="3">
-                    <v-text-field outlined dense filled :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.DOB)"
+                    <v-text-field outlined dense filled
+                                  id="searchDemogModalDobTxtField"
+                                  :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.DOB)"
                                   :rules="validateDOB()" maxlength="8"
                                   clearable
                                   tabindex="8"
@@ -125,7 +134,9 @@
                   </v-col>
                   <v-spacer/>
                   <v-col cols="3">
-                    <v-text-field outlined dense filled :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
+                    <v-text-field outlined dense filled
+                                  id="searchDemogModalGradeTxtField"
+                                  :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
                                   :rules="validateGradeCode()" maxlength="2"
                                   tabindex="9" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
                                   clearable
@@ -143,7 +154,9 @@
                 </v-row>
                 <v-row dense>
                   <v-col cols="3">
-                    <v-text-field outlined dense filled :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
+                    <v-text-field outlined dense filled
+                                  id="searchDemogModalPostalCodeTxtField"
+                                  :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
                                   :rules="validatePostalCode()" maxlength="6"
                                   tabindex="10" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
                                   clearable
@@ -151,7 +164,9 @@
                   </v-col>
                   <v-spacer/>
                   <v-col v-if="!isMincodeHidden" cols="3">
-                    <v-text-field outlined dense filled :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.MINCODE)"
+                    <v-text-field outlined dense filled
+                                  id="searchDemogModalMincodeTxtField"
+                                  :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.MINCODE)"
                                   :rules="validateMincode()" maxlength="8" minlength="8"
                                   clearable
                                   tabindex="11"
@@ -177,6 +192,7 @@
 
           <PrimaryButton width="15%"
                          text="Search"
+                         id="searchDemogModalSearchBtn"
                          @click.native="[isFormValid(),]"
           >
           </PrimaryButton>
