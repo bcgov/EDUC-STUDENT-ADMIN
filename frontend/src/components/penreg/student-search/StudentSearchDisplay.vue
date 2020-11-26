@@ -100,7 +100,7 @@ export default {
   computed:{
     ...mapGetters('student', ['gradeCodeObjects']),
     ...mapState('student', ['genders']),
-    ...mapState('studentSearch', ['pageNumber', 'headerSortParams', 'studentSearchResponse']),
+    ...mapState('studentSearch', ['pageNumber', 'headerSortParams', 'advancedSearchCriteria', 'studentSearchResponse']),
     isAdvancedSearch() {
       return this.searchType === REQUEST_TYPES.studentSearch.type.advanced;
     },
@@ -309,6 +309,8 @@ export default {
             }
             studentSearchFilters[element] = this.studentSearchParams[element];
           });
+
+          studentSearchFilters['useNameVariants'] = this.advancedSearchCriteria.useNameVariants;
         }
         ApiService.apiAxios
           .get(Routes['student'].SEARCH_URL,this.prepPut(studentSearchFilters))

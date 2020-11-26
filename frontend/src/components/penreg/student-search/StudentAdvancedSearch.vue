@@ -157,7 +157,7 @@
     <v-col>
       <v-card class="pa-4">
         <v-row no-gutters class="textFieldRow mb-4" justify="space-between">
-          <v-checkbox disabled label="Search name variants" color="#606060" class="ma-0 pa-0"></v-checkbox>
+          <v-checkbox label="Search name variants" color="#606060" class="ma-0 pa-0" v-model="advancedSearchCriteria.useNameVariants"></v-checkbox>
           <v-col cols="1">
             <v-row no-gutters justify="end">
               <p style="text-align: center">AUDIT<br>HISTORY</p>
