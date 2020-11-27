@@ -310,7 +310,7 @@ export default {
             studentSearchFilters[element] = this.studentSearchParams[element];
           });
 
-          studentSearchFilters['useNameVariants'] = this.advancedSearchCriteria.useNameVariants;
+          studentSearchFilters['useNameVariants'] = this.isAdvancedSearch && this.advancedSearchCriteria.useNameVariants;
         }
         ApiService.apiAxios
           .get(Routes['student'].SEARCH_URL,this.prepPut(studentSearchFilters))

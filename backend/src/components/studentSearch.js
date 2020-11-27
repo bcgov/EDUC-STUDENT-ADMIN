@@ -107,8 +107,7 @@ async function searchStudent(req, res) {
 }
 
 async function getNicknames(token, givenName) {
-  return Promise.resolve(
-    utils.getData(token, config.get('server:penMatch:rootURL') + '/nicknames/' + givenName),
+  return utils.getData(token, config.get('server:penMatch:rootURL') + '/nicknames/' + givenName
   ).then((dataResponse) => {
     return dataResponse;
   }).catch((e) => {
