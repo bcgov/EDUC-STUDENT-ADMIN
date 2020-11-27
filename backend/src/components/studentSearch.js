@@ -13,9 +13,21 @@ async function searchStudent(req, res) {
     });
   }
   let searchListCriteria = [];
+  let legalNicknames = [];
+  let usualNicknames = [];
 
   if(req.query.searchQueries) {
     let searchQueries = JSON.parse(req.query.searchQueries);
+    const useNameVariants = searchQueries['useNameVariants'];
+    if (useNameVariants) {
+      if (searchQueries['legalFirstName']) {
+        legalNicknames = await getNicknames(token, searchQueries['legalFirstName']);
+      } 
+      if (searchQueries['usualFirstName']) {
+        usualNicknames = await getNicknames(token, searchQueries['usualFirstName']);
+      }
+    }
+    
     Object.keys(searchQueries).forEach(element => {
       let operation = FILTER_OPERATION.STARTS_WITH;
       let valueType = VALUE_TYPE.STRING;
@@ -30,6 +42,9 @@ async function searchStudent(req, res) {
         operation = FILTER_OPERATION.BETWEEN;
         valueType = VALUE_TYPE.DATE;
       }else if (element.includes('Name')) {
+        if (element == 'useNameVariants') {
+          return;
+        }
         operation = FILTER_OPERATION.EQUAL;
         if(searchQueries[element]) {
           searchQueries[element] = searchQueries[element].toUpperCase();
@@ -42,7 +57,20 @@ async function searchStudent(req, res) {
           } else if(searchQueries[element][0] === '*') {
             operation = FILTER_OPERATION.ENDS_WITH;
             searchQueries[element] = searchQueries[element].substring(1);
-          } 
+          }
+          
+          if (useNameVariants) {
+            if (element === 'legalFirstName') {
+              operation = FILTER_OPERATION.IN;
+              legalNicknames.push(searchQueries[element].toUpperCase());
+              searchQueries[element] = legalNicknames.join(',');
+            } 
+            if (element === 'usualFirstName') {
+              operation = FILTER_OPERATION.IN;
+              usualNicknames.push(searchQueries[element].toUpperCase());
+              searchQueries[element] = usualNicknames.join(',');
+            }
+          }
         }
       }else if (element === 'memo') {
         operation = FILTER_OPERATION.CONTAINS_IGNORE_CASE;
@@ -75,6 +103,16 @@ async function searchStudent(req, res) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       message: 'INTERNAL SERVER ERROR'
     });
+  });
+}
+
+async function getNicknames(token, givenName) {
+  return utils.getData(token, config.get('server:penMatch:rootURL') + '/nicknames/' + givenName
+  ).then((dataResponse) => {
+    return dataResponse;
+  }).catch((e) => {
+    logApiError(e, 'getNicknames', 'Error occurred while attempting to retrieve nicknames.');
+    throw e;
   });
 }
 

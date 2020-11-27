@@ -19,7 +19,8 @@ export default {
         month: null,
         day: null
       },
-      useDOBRange: false
+      useDOBRange: false,
+      useNameVariants: false,
     },
     studentSearchParams: {
       pen: null,
@@ -81,7 +82,8 @@ export default {
           month: null,
           day: null
         },
-        useDOBRange: false
+        useDOBRange: false,
+        useNameVariants: false,
       };
       state.studentSearchParams = {
         pen: null,
