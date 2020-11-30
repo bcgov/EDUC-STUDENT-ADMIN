@@ -68,6 +68,13 @@ describe('searchStudent', () => {
     );
   });
 
+  it('should call api with IN operation when statusCode in searchQueries', async () => {
+    await expectApitoHaveBeenCalled(
+      '{"statusCode": ["M", "A"]}',
+      '[{"searchCriteriaList":[{"key":"statusCode","condition":"AND","operation":"in","value":"M,A","valueType":"STRING"}]}]'
+    );
+  });
+
   it('should return 500 if getData fails', async () => {
     utils.getData.mockRejectedValue(new ApiError());
 
