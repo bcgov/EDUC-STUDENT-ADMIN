@@ -5,7 +5,7 @@
         <span id="numberResults" class="px-4 pb-2">{{ studentSearchResponse.totalElements }} Results</span>
       </v-col>
       <v-col>
-        <TertiaryButton id="compareButton" class="ma-0" text="Compare" icon="mdi-content-copy" :disabled="selectedRecords.length!==2" @click.native="compare"></TertiaryButton>
+        <CompareDemographicModal :disabled="selectedRecords.length<2 || selectedRecords.length>3" :selectedRecords.sync="selectedRecords"></CompareDemographicModal>
       </v-col>
     </v-row>
     <v-data-table
@@ -59,11 +59,11 @@ import { mapMutations, mapState } from 'vuex';
 import ApiService from '../../../common/apiService';
 import {REQUEST_TYPES, Routes} from '../../../utils/constants';
 import router from '../../../router';
-import TertiaryButton from '../../util/TertiaryButton';
+import CompareDemographicModal from '../../common/CompareDemographicModal';
 
 export default {
   name: 'SearchResults',
-  components: {TertiaryButton},
+  components: { CompareDemographicModal },
   props: {
     searchCriteria: {
       type: Object,
@@ -166,9 +166,6 @@ export default {
 </script>
 
 <style scoped>
-  #compareButton {
-    float: right;
-  }
   #currentItemsDisplay {
     text-align: right;
     font-size: 0.875rem;
