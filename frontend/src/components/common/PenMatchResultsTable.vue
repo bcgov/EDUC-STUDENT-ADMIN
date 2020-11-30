@@ -13,8 +13,7 @@
       </v-col>
       <v-col align-self="center">
         <v-row justify="end" class="mx-3" v-if="isComparisonRequired || isRefreshRequired">
-          <TertiaryButton v-if="isComparisonRequired" id="compareButton" class="ma-0" text="Compare"
-                          icon="mdi-content-copy" @click.native="compare"></TertiaryButton>
+          <CompareDemographicModal :disabled="selectedRecords.length<2 || selectedRecords.length>3" :selectedRecords.sync="selectedRecords"></CompareDemographicModal>
           <TertiaryButton v-if="isRefreshRequired" id="refreshButton" class="ma-0" iconStyle="mdi-flip-h" text="Refresh"
                           icon="mdi-cached" @click.native="$emit('refresh-match-results')"></TertiaryButton>
         </v-row>
@@ -26,6 +25,7 @@
           <v-divider></v-divider>
           <v-data-table
               id="penMatchResultsDataTable"
+              v-model="selectedRecords"
               :headers="headers"
               hide-default-header
               hide-default-footer
@@ -107,6 +107,7 @@
 
 <script>
 
+import CompareDemographicModal from './CompareDemographicModal';
 import TertiaryButton from '../util/TertiaryButton';
 import StudentDetailModal from '../penreg/student/StudentDetailModal';
 import {PEN_REQ_BATCH_STUDENT_REQUEST_CODES} from '@/utils/constants';
@@ -117,6 +118,7 @@ import PrimaryButton from '@/components/util/PrimaryButton';
 export default {
   name: 'PenMatchResultsTable.vue',
   components: {
+    CompareDemographicModal,
     PrimaryButton,
     TertiaryButton,
     StudentDetailModal
@@ -209,7 +211,7 @@ export default {
       errorCallingMatchResults: false,
       errorMessage: 'There was an error in retrieving the data. Try refreshing the page, or leaving this request and returning to it after viewing another.',
       isMatchUnMatchEnabled: false,
-      selectedRecordStudentID: null,
+      selectedRecords: [],
       hoveredOveredRowStudentID: null,
       matchUnMatchButtonText: null,
       PEN_REQ_BATCH_STUDENT_REQUEST_CODES: PEN_REQ_BATCH_STUDENT_REQUEST_CODES,
@@ -252,9 +254,6 @@ export default {
     },
     closeDialog() {
       this.openStudentDialog = false;
-    },
-    compare() {
-      //TODO
     },
     refresh() {
 
