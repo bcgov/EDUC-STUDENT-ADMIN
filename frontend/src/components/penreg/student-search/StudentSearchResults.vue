@@ -31,7 +31,7 @@
       </template>
       <template v-slot:item="props">
         <tr>
-          <td v-for="header in props.headers" :key="header.id" :class="header.id">
+          <td v-for="header in props.headers" :key="header.id" :class="{'table-checkbox' :header.id, 'row-hightlight': isMergedOrDeceased(props.item) }">
             <v-checkbox v-if="header.type" :input-value="props.isSelected" color="#606060" @change="props.select($event)"></v-checkbox>
             <div v-else @click="viewStudentDetails(props.item.studentID)" class="tableCell">
               <span class="top-column-item">{{ props.item[header.topValue] }}</span>
@@ -57,7 +57,7 @@
 <script>
 import { mapMutations, mapState } from 'vuex';
 import ApiService from '../../../common/apiService';
-import {REQUEST_TYPES, Routes} from '../../../utils/constants';
+import {REQUEST_TYPES, Routes, STUDENT_CODES} from '../../../utils/constants';
 import router from '../../../router';
 import CompareDemographicModal from '../../common/CompareDemographicModal';
 
@@ -80,7 +80,7 @@ export default {
       itemsPerPage: 10,
       headers: [
         { id: 'table-checkbox', type: 'select', sortable: false },
-        { topText: 'PEN', bottomText: 'Merged', align: 'start', sortable: false, topValue: 'pen', bottomValue: 'merged' },
+        { topText: 'PEN', align: 'start', sortable: false, topValue: 'pen'},
         { topText: 'Legal Surname', bottomText: 'Usual Surname', topValue: 'legalLastName', bottomValue: 'usualLastName', sortable: false },
         { topText: 'Legal Given', bottomText: 'Usual Given', topValue: 'legalFirstName', bottomValue: 'usualFirstName', sortable: false },
         { topText: 'Legal Middle', bottomText: 'Usual Middle', topValue: 'legalMiddleNames', bottomValue: 'usualMiddleNames', sortable: false },
@@ -161,6 +161,9 @@ export default {
           console.log(error);
         });
     },
+    isMergedOrDeceased(student) {
+      return [STUDENT_CODES.MERGED, STUDENT_CODES.DECEASED].some(status => status === student.statusCode);
+    }
   }
 };
 </script>
@@ -195,7 +198,12 @@ export default {
   .tableCell {
     cursor: pointer;
   }
-  /deep/ .v-pagination__navigation > i {
+  #searchResults /deep/ .v-pagination__navigation > i {
     padding-left: 0;
+  }
+  .row-hightlight { 
+    background-color: rgba(0, 0, 0, 0.06);
+    color: #1A5A96;
+    font-weight: bold;
   }
 </style>
