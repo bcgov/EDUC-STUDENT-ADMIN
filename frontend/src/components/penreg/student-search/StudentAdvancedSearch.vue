@@ -260,9 +260,15 @@
         </v-row>
         <v-row no-gutters class="textFieldRow" >
           <v-col cols="3" class="mt-2">Status</v-col>
-          <v-checkbox label="Active" color="#606060" class="ma-0 mr-5 pa-0" v-model="advancedSearchCriteria.statusCode" :value="statusCodes.ACTIVE"></v-checkbox>
-          <v-checkbox label="Merged" color="#606060" class="ma-0 mr-5 pa-0" v-model="advancedSearchCriteria.statusCode" :value="statusCodes.MERGED"></v-checkbox>
-          <v-checkbox label="Deceased" color="#606060" class="ma-0 pa-0" v-model="advancedSearchCriteria.statusCode" :value="statusCodes.DECEASED"></v-checkbox>
+          <v-checkbox  
+            v-for="status in statusCodes" 
+            :key="status.label" 
+            :label="status.label" 
+            color="#606060" 
+            class="ma-0 mr-5 pa-0" 
+            v-model="advancedSearchCriteria.statusCode" 
+            :value="status.value"
+          ></v-checkbox>
         </v-row>
       </v-card>
     </v-col>
@@ -388,7 +394,11 @@ export default {
       return this.formattedStartDOB;
     },
     statusCodes() {
-      return STUDENT_CODES;
+      return [
+        {label: 'Active', value: STUDENT_CODES.ACTIVE},
+        {label: 'Merged', value: STUDENT_CODES.MERGED},
+        {label: 'Deceased', value: STUDENT_CODES.DECEASED}
+      ];
     }, 
   },
   methods: {
