@@ -1,3 +1,21 @@
+const getDefaultAdvancedSearchCriteria = () => {
+  return {
+    startDate: {
+      year: null,
+      month: null,
+      day: null
+    },
+    endDate: {
+      year: null,
+      month: null,
+      day: null
+    },
+    useDOBRange: false,
+    useNameVariants: false,
+    statusCode: [],
+  };
+};
+
 export default {
   namespaced: true,
   state: {
@@ -8,20 +26,7 @@ export default {
       currentSortAsc: true
     },
     selectedRecords: [],
-    advancedSearchCriteria:{
-      startDate: {
-        year: null,
-        month: null,
-        day: null
-      },
-      endDate: {
-        year: null,
-        month: null,
-        day: null
-      },
-      useDOBRange: false,
-      useNameVariants: false,
-    },
+    advancedSearchCriteria: getDefaultAdvancedSearchCriteria(),
     studentSearchParams: {
       pen: null,
       legalLastName: null,
@@ -71,20 +76,7 @@ export default {
       }
     },
     clearStudentSearchParams: (state) => {
-      state.advancedSearchCriteria = {
-        startDate: {
-          year: null,
-          month: null,
-          day: null
-        },
-        endDate: {
-          year: null,
-          month: null,
-          day: null
-        },
-        useDOBRange: false,
-        useNameVariants: false,
-      };
+      state.advancedSearchCriteria = getDefaultAdvancedSearchCriteria();
       state.studentSearchParams = {
         pen: null,
         legalLastName: null,
