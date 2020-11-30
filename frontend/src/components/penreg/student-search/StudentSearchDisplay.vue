@@ -311,6 +311,9 @@ export default {
           });
 
           studentSearchFilters['useNameVariants'] = this.isAdvancedSearch && this.advancedSearchCriteria.useNameVariants;
+          if(this.isAdvancedSearch && this.advancedSearchCriteria.statusCode.length > 0) {
+            studentSearchFilters['statusCode'] = this.advancedSearchCriteria.statusCode;
+          }
         }
         ApiService.apiAxios
           .get(Routes['student'].SEARCH_URL,this.prepPut(studentSearchFilters))

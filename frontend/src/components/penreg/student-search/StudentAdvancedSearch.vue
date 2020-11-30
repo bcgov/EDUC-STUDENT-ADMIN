@@ -258,6 +258,12 @@
             </v-row>
           </v-col>
         </v-row>
+        <v-row no-gutters class="textFieldRow" >
+          <v-col cols="3" class="mt-2">Status</v-col>
+          <v-checkbox label="Active" color="#606060" class="ma-0 mr-5 pa-0" v-model="advancedSearchCriteria.statusCode" :value="statusCodes.ACTIVE"></v-checkbox>
+          <v-checkbox label="Merged" color="#606060" class="ma-0 mr-5 pa-0" v-model="advancedSearchCriteria.statusCode" :value="statusCodes.MERGED"></v-checkbox>
+          <v-checkbox label="Deceased" color="#606060" class="ma-0 pa-0" v-model="advancedSearchCriteria.statusCode" :value="statusCodes.DECEASED"></v-checkbox>
+        </v-row>
       </v-card>
     </v-col>
   </v-row>
@@ -266,6 +272,7 @@
 <script>
 import { mapState, mapMutations } from 'vuex';
 import {LocalDate} from '@js-joda/core';
+import { STUDENT_CODES } from '../../../utils/constants';
 export default {
   name: 'SearchAdvancedSearch',
   props: {
@@ -380,6 +387,9 @@ export default {
       }
       return this.formattedStartDOB;
     },
+    statusCodes() {
+      return STUDENT_CODES;
+    }, 
   },
   methods: {
     ...mapMutations('studentSearch', ['setIsAdvancedSearch']),

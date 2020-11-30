@@ -76,6 +76,9 @@ async function searchStudent(req, res) {
         operation = FILTER_OPERATION.CONTAINS_IGNORE_CASE;
       } else if (element === 'postalCode') {
         searchQueries[element] = searchQueries[element].replace(/ +/g, '');
+      } else if (element === 'statusCode') {
+        operation = FILTER_OPERATION.IN;
+        searchQueries[element] = searchQueries[element].join(',');
       }
 
       searchListCriteria.push({key: element, condition: CONDITION.AND, operation: operation, value: searchQueries[element], valueType: valueType});
