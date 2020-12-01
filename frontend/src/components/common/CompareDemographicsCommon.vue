@@ -177,7 +177,6 @@ export default {
         });
     },
     enterPushed() {
-      console.log(this.isValidPEN);
       if (this.penToAdd && this.isValidPEN(this.penToAdd) && (!this.studentRecords || this.studentRecords?.length<3)) {
         this.addPEN();
       }
