@@ -241,7 +241,7 @@ export default {
       ApiService.apiAxios
         .get(Routes['student'].ROOT_ENDPOINT + '/', { params: { pen: this.pen } })
         .then(response => {
-          router.push({ name: REQUEST_TYPES.student.label, params: {studentID: response.data}});
+          router.push({ name: REQUEST_TYPES.student.label, params: {studentID: response.data.studentID}});
         })
         .catch(error => {
           console.log(error);

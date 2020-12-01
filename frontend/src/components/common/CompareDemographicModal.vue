@@ -19,19 +19,14 @@
       </TertiaryButton>
     </template>
     <v-card id="requestInfoDialogCard">
-      <CompareDemographicsCommon :selectedRecords.sync="studentRecords">
-        <template v-slot:title>
-          Compare/View
-          <v-spacer></v-spacer>
-          <v-btn id="closeCompareModalBtn" text icon @click="closeCompareModal">
-            <v-icon large color="#38598A">mdi-close</v-icon>
-          </v-btn>
+      <CompareDemographicsCommon
+        :selectedRecords.sync="studentRecords"
+        title="Compare/View"
+        :closeCompareModal="closeCompareModal">
+        <template v-slot:actions>
+          <PrimaryButton id="compareModalCancelBtn" text="Cancel" secondary @click.native="closeCompareModal"></PrimaryButton>
         </template>
       </CompareDemographicsCommon>
-      <v-card-actions class="pt-0 px-6 pb-4">
-        <v-spacer></v-spacer>
-        <PrimaryButton id="compareModalCancelBtn" text="Cancel" secondary @click.native="closeCompareModal"></PrimaryButton>
-      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>

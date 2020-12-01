@@ -93,7 +93,7 @@ async function getStudentByPen(req, res) {
     const pen = req.query.pen;
     const result = await utils.getData(token, config.get('server:student:rootURL') + '/', {params: {pen: pen}});
     if (result && result[0] && result[0].studentID) {
-      return res.status(200).json(result[0].studentID);
+      return res.status(200).json(result[0]);
     } else {
       log.error(`No student was found or error occurred retrieving student, for pen :: ${pen}`);
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({

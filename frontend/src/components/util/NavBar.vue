@@ -122,8 +122,8 @@ export default {
       },
       {
         title: 'Compare PENs',
-        link: 'todo',
-        authorized: true //TODO fix when ready
+        link: 'compare',
+        authorized: this.isValidStudentSearchUser
       },
       {
         title: 'Infrequent Processes',
