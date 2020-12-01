@@ -50,8 +50,8 @@
             {{ formatPen(students.pen) }}
           </a>
         </span>
-        <span v-for="(key, index) in studentDataHeaders" :key="index" class="pl-4 pr-3">
-                <span v-if="key==='dob'">
+        <span v-for="(key, index) in studentDataHeaders" :key="index" class="pl-4 pr-3" :ref="key+`Col`">
+                <span v-if="key==='dob'" ref="dobText">
                   {{ formatDob(students[key].replaceAll('-','')) }}
                 </span>
           <span v-else-if="key==='mincode'">{{ formatMinCode(students[key]) }}</span>
@@ -64,7 +64,7 @@
           Demog Code: {{ students.demogCode }}
         </span>
         <v-spacer></v-spacer>
-        <a class="pl-4 pr-9" @click="removeRecord(students.studentID)">
+        <a class="removePenLink" :style="`padding-right: `+removePenPadding+`px`" @click="removeRecord(students.studentID)">
             <v-icon small color="#38598A">mdi-close</v-icon>
             Remove PEN
         </a>
@@ -143,11 +143,18 @@ export default {
       searchError: false,
       penRules: [ v => (!v || isValidPEN(v)) || this.penHint],
       penHint: 'Invalid PEN',
-      alertMessage: 'Error! This student does not exist in the system.'
+      alertMessage: 'Error! This student does not exist in the system.',
+      removePenPadding: 0
     };
   },
-  created() {
+  mounted() {
     _.sortBy(this.selectedRecords, o => o.pen);
+    this.updatePadding();
+  },
+  watch: {
+    selectedRecords() {
+      this.updatePadding();
+    }
   },
   computed: {
     studentRecords: {
@@ -160,6 +167,12 @@ export default {
     }
   },
   methods: {
+    async updatePadding() {
+      if(this.studentRecords?.length > 0 && this.removePenPadding !== '0') {
+        await this.$nextTick();
+        this.removePenPadding = this.$refs.dobCol[0]?.clientWidth - this.$refs?.dobText[0]?.offsetWidth - 16; //getting offset to right align text with dob col above
+      }
+    },
     addPEN() {
       this.searchError = false;
       ApiService.apiAxios

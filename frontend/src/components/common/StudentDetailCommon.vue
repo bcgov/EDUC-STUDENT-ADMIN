@@ -1,7 +1,7 @@
 <template>
     <v-row>
       <v-row v-if="!isLoading">
-        <v-col cols="3" class="pr-6 pl-0 ma-0">
+        <v-col cols="3" class="px-6 ma-0">
           <v-card class="pa-2 ma-0" color="#D7D7D7" width="100%" elevation=0>
 
             <StudentDetailsTextFieldSideCardReadOnly :model="studentCopy.pen" :name="STUDENT_DETAILS_FIELDS.PEN"
