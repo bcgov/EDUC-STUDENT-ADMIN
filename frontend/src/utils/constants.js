@@ -223,6 +223,7 @@ export const PEN_REQ_BATCH_STUDENT_REQUEST_CODES = Object.freeze(
 );
 export const PAGE_TITLES = Object.freeze(
   {
+    COMPARE_STUDENTS: 'Compare/View',
     DASHBOARD: 'Dashboard',
     GMP: 'Get My Pen',
     GMP_DETAILS: 'GetMyPen Request Details',

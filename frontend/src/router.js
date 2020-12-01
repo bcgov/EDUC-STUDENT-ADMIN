@@ -24,6 +24,7 @@ import RouterView from './components/RouterView';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
 import UnAuthorizedPage from './components/UnAuthorizedPage';
 import PenMatch from './components/penreg/PenMatch';
+import CompareStudents from './components/CompareStudents';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -39,6 +40,16 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.DASHBOARD,
         requiresAuth: true
+      }
+    },
+    {
+      path: '/compare',
+      name: 'compare',
+      component: CompareStudents,
+      meta: {
+        pageTitle: PAGE_TITLES.COMPARE_STUDENTS,
+        requiresAuth: true,
+        role: 'isValidStudentSearchUser'
       }
     },
     {

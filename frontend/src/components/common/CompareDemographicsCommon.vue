@@ -1,8 +1,35 @@
 <template>
   <v-card fluid class="px-4" elevation="0">
-    <v-card-title class="px-0">
-      <slot name="title"></slot>
+    <v-card-title class="px-0 pb-0">
+      <v-row>
+        <v-col v-if="title" cols="2" class="pr-0">
+          {{ title }}
+        </v-col>
+        <v-col cols="2" class="pb-0 pr-0">
+          <v-text-field
+                  id="enterAPenTxtField"
+                  v-model="penToAdd"
+                  outlined
+                  dense
+                  label="Enter a PEN"
+                  @keyup.enter="enterPushed()"
+                  maxlength="9"
+                  :rules="penRules"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1" class="pb-0">
+          <PrimaryButton id="addPenBtn" :disabled="!isValidPEN(penToAdd) || studentRecords.length >= 3" text="Add PEN" @click.native="addPEN"></PrimaryButton>
+        </v-col>
+        <v-col class="pt-0">
+          <v-btn v-if="closeCompareModal" id="closeCompareModalBtn" text icon @click="closeCompareModal">
+            <v-icon large color="#38598A">mdi-close</v-icon>
+          </v-btn>
+        </v-col>
+      </v-row>
     </v-card-title>
+    <v-row>
+      <AlertMessage v-model="searchError" :alertMessage="alertMessage" alertType="bootstrap-error"></AlertMessage>
+    </v-row>
     <v-divider></v-divider>
     <v-simple-table class="sldTable pb-2">
       <template v-slot:default>
@@ -15,7 +42,7 @@
         </thead>
       </template>
     </v-simple-table>
-    <div v-for="(students, index) in studentRecords" :key="index">
+    <div v-for="(students, index) in studentRecords" :key="index" class="pb-2">
       <v-row id="studentDemographicsTableTopRow" class="studentDemographicsTable" no-gutters>
         <span class="px-4">
           <a>
@@ -49,17 +76,41 @@
       JohnC has a sample table that is a good place to start from
       -->
     </div>
+    <div v-if="selectedRecords && selectedRecords.length">
+      <v-divider></v-divider>
+      <v-card-actions class="px-0">
+        <v-spacer></v-spacer>
+        <slot name="actions"></slot>
+      </v-card-actions>
+    </div>
   </v-card>
 </template>
 
 <script>
 import { formatPen, formatDob, formatMinCode, formatPostalCode } from '../../utils/format';
+import PrimaryButton from '../util/PrimaryButton';
+import ApiService from '../../common/apiService';
+import { Routes } from '../../utils/constants';
+import { isValidPEN } from '../../utils/validation';
+import AlertMessage from '../util/AlertMessage';
+
 export default {
   name: 'CompareDemographicsCommon',
+  components: {
+    AlertMessage,
+    PrimaryButton
+  },
   props: {
     selectedRecords: {
       type: Array,
       required: true
+    },
+    title: {
+      type: String
+    },
+    closeCompareModal: {
+      type: Function,
+      default: null
     }
   },
   data() {
@@ -87,20 +138,50 @@ export default {
         {text: 'Gen', value: 'gender', key: 'gender', sortable: false},
         {text: 'Postal Code', value: 'postalCode', key: 'postalCode', sortable: false},
         {text: 'Birth Date', value: 'dob', key: 'dob', sortable: false}
-      ]
+      ],
+      penToAdd: null,
+      searchError: false,
+      penRules: [ v => (!v || isValidPEN(v)) || this.penHint],
+      penHint: 'Invalid PEN',
+      alertMessage: 'Error! This student does not exist in the system.'
     };
+  },
+  created() {
+    _.sortBy(this.selectedRecords, o => o.pen);
   },
   computed: {
     studentRecords: {
       get: function() {
-        return _.sortBy(this.selectedRecords, o => o.pen);
+        return this.selectedRecords;
       },
-      set: function(value) {
+      set: async function(value) {
         this.$emit('update:selectedRecords', value);
       }
     }
   },
   methods: {
+    addPEN() {
+      this.searchError = false;
+      ApiService.apiAxios
+        .get(Routes['student'].ROOT_ENDPOINT + '/', { params: { pen: this.penToAdd } })
+        .then(response => {
+          this.studentRecords.push(response.data);
+          this.studentRecords = _.sortBy(this.studentRecords, o => o.pen);
+        })
+        .catch(error => {
+          console.log(error);
+          this.searchError = true;
+        })
+        .finally(() => {
+          this.penToAdd = null;
+        });
+    },
+    enterPushed() {
+      if (this.penToAdd && this.isValidPEN(this.penToAdd) && (!this.studentRecords || this.studentRecords?.length<3)) {
+        this.addPEN();
+      }
+    },
+    isValidPEN,
     formatDob,
     formatMinCode,
     formatPostalCode,
@@ -113,7 +194,12 @@ export default {
 </script>
 
 <style scoped>
-
+  #addPenBtn {
+    height: 2.858em;
+  }
+  #closeCompareModalBtn {
+    float: right;
+  }
   .sldCheckbox /deep/ .v-input--selection-controls__input {
     margin: 0;
   }
