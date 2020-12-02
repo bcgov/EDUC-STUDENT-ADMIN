@@ -15,9 +15,11 @@ async function searchStudent(req, res) {
   let searchListCriteria = [];
   let legalNicknames = [];
   let usualNicknames = [];
+  let isAuditHistorySearch = false;
 
   if(req.query.searchQueries) {
     let searchQueries = JSON.parse(req.query.searchQueries);
+    isAuditHistorySearch = searchQueries['isAuditHistorySearch'];
     const useNameVariants = searchQueries['useNameVariants'];
     if (useNameVariants) {
       if (searchQueries['legalFirstName']) {
@@ -31,7 +33,9 @@ async function searchStudent(req, res) {
     Object.keys(searchQueries).forEach(element => {
       let operation = FILTER_OPERATION.STARTS_WITH;
       let valueType = VALUE_TYPE.STRING;
-      if (element === 'dob') {
+      if (element === 'useNameVariants' || element === 'isAuditHistorySearch') {
+        return;
+      } else if (element === 'dob') {
         if (!searchQueries[element].endDate) {
           searchQueries[element].endDate = searchQueries[element].startDate;
         }
@@ -41,10 +45,7 @@ async function searchStudent(req, res) {
 
         operation = FILTER_OPERATION.BETWEEN;
         valueType = VALUE_TYPE.DATE;
-      }else if (element.includes('Name')) {
-        if (element == 'useNameVariants') {
-          return;
-        }
+      } else if (element.includes('Name')) {
         operation = FILTER_OPERATION.EQUAL;
         if(searchQueries[element]) {
           searchQueries[element] = searchQueries[element].toUpperCase();
@@ -72,7 +73,7 @@ async function searchStudent(req, res) {
             }
           }
         }
-      }else if (element === 'memo') {
+      } else if (element === 'memo') {
         operation = FILTER_OPERATION.CONTAINS_IGNORE_CASE;
       } else if (element === 'postalCode') {
         searchQueries[element] = searchQueries[element].replace(/ +/g, '');
@@ -97,8 +98,10 @@ async function searchStudent(req, res) {
     }
   };
 
+  const baseUrl = config.get('server:student:rootURL');
   return Promise.all([
-    utils.getData(token, config.get('server:student:rootURL') + '/paginated', params),
+    utils.getData(token, isAuditHistorySearch? baseUrl + '/student-history/paginated' : baseUrl + '/paginated', params),
+
   ]).then(([dataResponse]) => {
     return res.status(200).json(dataResponse);
   }).catch((e) => {
