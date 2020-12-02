@@ -43,33 +43,33 @@
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
           <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.legalLastName" :name="STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME"
-                                            :highlight="!!studentHistoryDetail.legalName_diff"
+                                            :highlight="!!studentHistoryDetail.legalLastName_diff"
                                             labelSpan="4" colspan="8" label="Legal Surname"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
           <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.legalFirstName" :name="STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME"
-                                            :highlight="!!studentHistoryDetail.legalName_diff"
+                                            :highlight="!!studentHistoryDetail.legalFirstName_diff"
                                             labelSpan="4" colspan="8" label="Legal Given"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
           <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.legalMiddleNames?studentHistoryDetail.legalMiddleNames:''" :name="STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES"
-                                            :highlight="!!studentHistoryDetail.legalName_diff"
+                                            :highlight="!!studentHistoryDetail.legalMiddleNames_diff"
                                             labelSpan="4" colspan="8" label="Legal Middle"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
           
           <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualLastName" :name="STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME"
-                                            :highlight="!!studentHistoryDetail.usualName_diff"
+                                            :highlight="!!studentHistoryDetail.usualLastName_diff"
                                             labelSpan="4" colspan="8" label="Usual Surname"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
           <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualFirstName" :name="STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME"
                                             labelSpan="4" colspan="8" label="Usual Given"
-                                            :highlight="!!studentHistoryDetail.usualName_diff"
+                                            :highlight="!!studentHistoryDetail.usualFirstName_diff"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
           <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualMiddleNames?studentHistoryDetail.usualMiddleNames:''" :name="STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES"
                                             labelSpan="4" colspan="8" label="Usual Middle"
-                                            :highlight="!!studentHistoryDetail.usualName_diff"
+                                            :highlight="!!studentHistoryDetail.usualMiddleNames_diff"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
           <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.genderCode?studentHistoryDetail.genderCode:''"
