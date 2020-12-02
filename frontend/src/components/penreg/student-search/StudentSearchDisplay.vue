@@ -311,6 +311,7 @@ export default {
           });
 
           studentSearchFilters['useNameVariants'] = this.isAdvancedSearch && this.advancedSearchCriteria.useNameVariants;
+          studentSearchFilters['isAuditHistorySearch'] = this.isAdvancedSearch && this.advancedSearchCriteria.isAuditHistorySearch;
           if(this.isAdvancedSearch && this.advancedSearchCriteria.statusCode.length > 0) {
             studentSearchFilters['statusCode'] = this.advancedSearchCriteria.statusCode;
           }

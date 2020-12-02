@@ -157,11 +157,11 @@
     <v-col>
       <v-card class="pa-4">
         <v-row no-gutters class="textFieldRow mb-4" justify="space-between">
-          <v-checkbox label="Search name variants" color="#606060" class="ma-0 pa-0" v-model="advancedSearchCriteria.useNameVariants"></v-checkbox>
-          <v-col cols="1">
-            <v-row no-gutters justify="end">
-              <p style="text-align: center">AUDIT<br>HISTORY</p>
-            </v-row>
+          <v-col cols="5">
+            <v-checkbox label="Search name variants" color="#606060" class="ma-0 pa-0" v-model="advancedSearchCriteria.useNameVariants"></v-checkbox>
+          </v-col>
+          <v-col>
+              <v-checkbox label="Search audit history" color="#606060" class="ma-0 pa-0" v-model="advancedSearchCriteria.isAuditHistorySearch"></v-checkbox>
           </v-col>
         </v-row>
         <v-row no-gutters class="textFieldRow">
@@ -174,11 +174,6 @@
             maxlength="255"
             >
           </v-text-field>
-          <v-col cols="1" class="ml-4">
-            <v-row no-gutters justify="center">
-              <v-checkbox disabled color="#606060" class="ma-0 pa-0"></v-checkbox>
-            </v-row>
-          </v-col>
         </v-row>
         <v-row no-gutters class="textFieldRow">
           <v-col cols="3">Legal Given</v-col>
@@ -190,11 +185,6 @@
             maxlength="255"
             >
           </v-text-field>
-          <v-col cols="1" class="ml-4">
-            <v-row no-gutters justify="center">
-              <v-checkbox disabled color="#606060" class="ma-0 pa-0"></v-checkbox>
-            </v-row>
-          </v-col>
         </v-row>
         <v-row no-gutters class="textFieldRow">
           <v-col cols="3">Legal Middle</v-col>
@@ -206,11 +196,6 @@
             maxlength="255"
             >
           </v-text-field>
-          <v-col cols="1" class="ml-4">
-            <v-row no-gutters justify="center">
-              <v-checkbox disabled color="#606060" class="ma-0 pa-0"></v-checkbox>
-            </v-row>
-          </v-col>
         </v-row>
         <v-row no-gutters class="textFieldRow">
           <v-col cols="3">Usual Surname</v-col>
@@ -222,11 +207,6 @@
             maxlength="255"
             >
           </v-text-field>
-          <v-col cols="1" class="ml-4">
-            <v-row no-gutters justify="center">
-              <v-checkbox disabled color="#606060" class="ma-0 pa-0"></v-checkbox>
-            </v-row>
-          </v-col>
         </v-row>
         <v-row no-gutters class="textFieldRow">
           <v-col cols="3">Usual Given</v-col>
@@ -237,11 +217,6 @@
             v-on:input="searchHasValues"
             maxlength="255"
             ></v-text-field>
-          <v-col cols="1" class="ml-4">
-            <v-row no-gutters justify="center">
-              <v-checkbox disabled color="#606060" class="ma-0 pa-0"></v-checkbox>
-            </v-row>
-          </v-col>
         </v-row>
         <v-row no-gutters class="textFieldRow">
           <v-col cols="3">Usual Middle</v-col>
@@ -252,11 +227,6 @@
             v-on:input="searchHasValues"
             maxlength="255"
             ></v-text-field>
-          <v-col cols="1" class="ml-4">
-            <v-row no-gutters justify="center">
-              <v-checkbox disabled color="#606060" class="ma-0 pa-0"></v-checkbox>
-            </v-row>
-          </v-col>
         </v-row>
         <v-row no-gutters class="textFieldRow" >
           <v-col cols="3" class="mt-2">Status</v-col>

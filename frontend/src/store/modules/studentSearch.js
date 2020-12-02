@@ -12,6 +12,7 @@ const getDefaultAdvancedSearchCriteria = () => {
     },
     useDOBRange: false,
     useNameVariants: false,
+    isAuditHistorySearch: false,
     statusCode: [],
   };
 };
