@@ -1,7 +1,7 @@
 <template>
   <v-row no-gutters class="py-1">
     <v-col :cols="labelSpan">
-      <p class="labelField">{{ this.fieldLabel }}</p>
+      <p :class="['labelField', highlighted && !fieldModel? 'diff-value' : 'plain-value']">{{ this.fieldLabel }}</p>
     </v-col>
     <v-col class="textFieldColumn" :cols="colspan">
       <v-text-field
@@ -105,6 +105,11 @@ export default {
 }
 
 .diff-value >>> .v-text-field__slot input {
+  font-weight: bold;
+  color: #008000 !important;
+}
+
+p.diff-value {
   font-weight: bold;
   color: #008000 !important;
 }
