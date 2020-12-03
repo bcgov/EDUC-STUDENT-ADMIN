@@ -114,11 +114,11 @@
 
           <v-row>
             <v-col cols="4">
-              <p class="labelField">Memo</p>
+              <p :class="['labelField', !!studentHistoryDetail.memo_diff && !studentHistoryDetail.memo? 'diff-value' : 'plain-value' ]">Memo</p>
             </v-col>
-            <v-col class="textAreaColumn">
+            <v-col class="textAreaColumn mr-2">
               <v-textarea
-                class="onhoverEdit bolder customNoBorder"
+                :class="['onhoverEdit', 'bolder', 'customNoBorder', !!studentHistoryDetail.memo_diff? 'diff-value' : 'plain-value' ]"
                 v-model="studentHistoryDetail.memo"
                 :id='STUDENT_DETAILS_FIELDS.MEMO'
                 color="#000000"
@@ -128,6 +128,7 @@
                 :readonly="true"
                 :outlined="false"
                 :disabled="false"
+                :no-resize="true"
               ></v-textarea>
             </v-col>
           </v-row>
@@ -291,6 +292,20 @@ span#headerRowNumber {
   background-color: rgba(255, 255, 255, 0.80) !important;
   color: white !important;
   border-radius: 50%;
+}
+
+</style>
+
+<style scoped>
+
+.diff-value >>> .v-text-field__slot textarea {
+  font-weight: bold;
+  color: #008000 !important;
+}
+
+p.diff-value {
+  font-weight: bold;
+  color: #008000 !important;
 }
 
 </style>
