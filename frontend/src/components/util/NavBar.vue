@@ -169,7 +169,7 @@ export default {
       }
     },
     stripWhitespace(title) {
-      return title.replaceAll(' ', '');
+      return title.replace(/\s+/g, '');
     }
   }
 };
