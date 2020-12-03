@@ -33,6 +33,7 @@
               no-action
               active-class="active"
               class="groupMenu"
+              :id="stripWhitespace(item.title) + `MenuBtn`"
               append-icon=""
               @click="setActive(item)"
       >
@@ -168,7 +169,7 @@ export default {
       }
     },
     stripWhitespace(title) {
-      return title.replace(' ', '');
+      return title.replaceAll(' ', '');
     }
   }
 };
