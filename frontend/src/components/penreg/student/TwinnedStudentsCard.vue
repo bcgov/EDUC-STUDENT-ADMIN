@@ -45,7 +45,7 @@
         v-model="selectedTwins"
       >
         <template v-slot:[`item.pen`]="props">
-          <a>
+          <a @click="viewStudentDetails(props.item.twinStudentID)">
             {{props.value}}
           </a>
         </template>
@@ -76,8 +76,9 @@ import {mapGetters, mapActions} from 'vuex';
 import moment from 'moment';
 import {sortBy} from 'lodash';
 import ApiService from '../../../common/apiService';
-import { Routes } from '../../../utils/constants';
+import {REQUEST_TYPES, Routes} from '../../../utils/constants';
 import {formatPen} from '../../../utils/format';
+import router from "@/router";
 
 export default {
   name: 'TwinnedStudentsCard',
@@ -172,7 +173,11 @@ export default {
             this.selectedTwins.splice(element,1);
           });
       });
-    }
+    },
+    viewStudentDetails(studentID) {
+      const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
+      window.open(route.href, '_blank');
+    },
   }
 };
 </script>
