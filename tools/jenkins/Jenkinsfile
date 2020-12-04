@@ -159,7 +159,6 @@ pipeline{
             TOKEN = sh( script: "oc -n ${TOOLS} -o json get secret github-actions-token | sed -n 's/.*\"token\": \"\\(.*\\)\"/\\1/p' | base64 --decode", returnStdout: true);
             extJSHelper.triggerWorkflow(TOKEN, 'smoke-test-admin-dev-environment')
             extJSHelper.waitForWorkflowRunComplete(TOKEN)
-          }
         }
       }
     }
