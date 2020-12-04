@@ -7,6 +7,7 @@ const server = config.get('messaging:natsUrl');
 const nats = require('nats');
 const natsOptions = {
   url: server,
+  servers: [server],
   maxReconnectAttempts: -1, //forever retry
   waitOnFirstConnect: true,
 };
@@ -21,7 +22,7 @@ const NATS = {
   },
   callbacks(){
     connection.on('connect', function () {
-      log.info('NATS connected!');
+      log.info('NATS connected!', connection?.currentServer?.url?.host);
       SagaMessageHandler.subscribe(connection);
     });
 
