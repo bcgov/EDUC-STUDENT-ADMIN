@@ -13,7 +13,7 @@ pipeline{
     TEST = '8878b4-test'
     PROD = '8878b4-prod'
     REPO_NAME = 'educ-student-admin'
-    TESTS_REPO_NAME = 'educ-e2e-pen-registry'
+    TESTS_REPO_NAME = 'educ-pen-reg-automation'
     OWNER = 'bcgov'
     JOB_NAME = 'master'
     TAG = 'latest'
