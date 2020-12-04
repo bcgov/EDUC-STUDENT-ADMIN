@@ -32,7 +32,7 @@
       <template v-slot:item="props">
         <tr>
           <td v-for="header in props.headers" :key="header.id" :class="{'table-checkbox' :header.id, 'row-hightlight': isMergedOrDeceased(props.item) }">
-            <v-checkbox v-if="header.type" :input-value="props.isSelected" color="#606060" @change="props.select($event)"></v-checkbox>
+            <v-checkbox v-if="header.type" :disabled="isAuditHistorySearch" :input-value="props.isSelected" color="#606060" @change="props.select($event)"></v-checkbox>
             <div v-else @click="viewStudentDetails(props.item.studentID)" class="tableCell">
               <span class="top-column-item">{{ props.item[header.topValue] }}</span>
               <span class="double-column-item">{{props.item[header.doubleValue]}}</span>
@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex';
+import {mapGetters, mapMutations, mapState} from 'vuex';
 import ApiService from '../../../common/apiService';
 import {REQUEST_TYPES, Routes, STUDENT_CODES} from '../../../utils/constants';
 import router from '../../../router';
@@ -105,6 +105,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('studentSearch', ['useNameVariants', 'isAuditHistorySearch', 'statusCode']),  // For advanced search criteria
     ...mapState('studentSearch', ['headerSortParams', 'studentSearchResponse']),
     pageNumber: {
       get(){
@@ -151,6 +152,13 @@ export default {
           }
           studentSearchFilters[element] = this.searchCriteria[element];
         });
+
+        // Advanced search criteria settings
+        studentSearchFilters['useNameVariants'] = this.useNameVariants;
+        studentSearchFilters['isAuditHistorySearch'] = this.isAuditHistorySearch;
+        if(this.statusCode.length > 0) {
+          studentSearchFilters['statusCode'] = this.statusCode;
+        }
       }
       ApiService.apiAxios
         .get(Routes.student.SEARCH_URL,this.prepPut(studentSearchFilters))

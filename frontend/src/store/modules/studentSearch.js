@@ -49,6 +49,11 @@ export default {
     },
     studentSearchResponse: null
   },
+  getters: {
+    useNameVariants: state => state.isAdvancedSearch && state.advancedSearchCriteria.useNameVariants,
+    isAuditHistorySearch: state => state.isAdvancedSearch && state.advancedSearchCriteria.isAuditHistorySearch,
+    statusCode: state => state.isAdvancedSearch? state.advancedSearchCriteria.statusCode : [],
+  },
   mutations: {
     setIsAdvancedSearch: (state, isAdvancedSearch) => {
       state.isAdvancedSearch = isAdvancedSearch;
