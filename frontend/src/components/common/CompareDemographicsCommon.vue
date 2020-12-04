@@ -21,7 +21,7 @@
           <PrimaryButton id="addPenBtn" :disabled="!isValidPEN(penToAdd) || studentRecords.length >= 3" text="Add PEN" @click.native="addPEN"></PrimaryButton>
         </v-col>
         <v-col class="pt-0">
-          <v-btn v-if="closeCompareModal" id="closeCompareModalBtn" text icon @click="closeCompareModal">
+          <v-btn v-if="closeCompareModal" id="closeCompareModalBtn" text icon @click="[closeCompareModal(), clearError()]">
             <v-icon large color="#38598A">mdi-close</v-icon>
           </v-btn>
         </v-col>
@@ -80,7 +80,7 @@
       <v-divider></v-divider>
       <v-card-actions class="px-0">
         <v-spacer></v-spacer>
-        <slot name="actions"></slot>
+        <slot name="actions" :clearError="clearError"></slot>
       </v-card-actions>
     </div>
   </v-card>
@@ -147,7 +147,7 @@ export default {
       removePenPadding: 0
     };
   },
-  mounted() {
+  created() {
     _.sortBy(this.selectedRecords, o => o.pen);
     this.updatePadding();
   },
@@ -159,7 +159,7 @@ export default {
   computed: {
     studentRecords: {
       get: function() {
-        return this.selectedRecords;
+        return _.sortBy(this.selectedRecords, o => o.pen);
       },
       set: async function(value) {
         this.$emit('update:selectedRecords', value);
@@ -188,6 +188,9 @@ export default {
         .finally(() => {
           this.penToAdd = null;
         });
+    },
+    clearError() {
+      this.searchError = false;
     },
     enterPushed() {
       if (this.penToAdd && this.isValidPEN(this.penToAdd) && (!this.studentRecords || this.studentRecords?.length<3)) {
