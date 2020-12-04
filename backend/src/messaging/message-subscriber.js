@@ -10,6 +10,7 @@ const natsOptions = {
   servers: [server],
   maxReconnectAttempts: -1, //forever retry
   waitOnFirstConnect: true,
+  pingInterval: 5000
 };
 
 const NATS = {
