@@ -36,7 +36,7 @@
             </StudentAdvancedSearch>
             <v-row justify="end" no-gutters class="py-3 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
               <router-link :to="`${!this.isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`">
-                <PrimaryButton id="search-type-action" :secondary="true" class="mx-2" :text="!this.isAdvancedSearch?'Advanced Search':'Standard Search'"></PrimaryButton>
+                <PrimaryButton id="search-type-action" :secondary="true" class="mx-2" @click.native="clearSearchResult" :text="!this.isAdvancedSearch?'Advanced Search':'Standard Search'"></PrimaryButton>
               </router-link>
               <PrimaryButton id="search-clear" :secondary="true" class="mr-2" @click.native="clearSearch" text="Clear"></PrimaryButton>
               <PrimaryButton id="perform-search" :disabled="!searchEnabled" :loading="searchLoading" @click.native="searchStudent(true)" text="Search"></PrimaryButton>
@@ -133,13 +133,16 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('studentSearch', ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse', 'clearStudentSearchParams']),
+    ...mapMutations('studentSearch', ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse', 'clearStudentSearchParams', 'clearStudentSearchResults']),
     setCurrentSearchObject(searchParams){
       this.currentStudentSearchParams = JSON.parse(JSON.stringify(searchParams));
     },
     clearSearch() {
       this.clearStudentSearchParams();
       this.searchHasValues();
+    },
+    clearSearchResult() {
+      this.clearStudentSearchResults();
     },
     uppercasePostal(){
       if(this.studentSearchParams.postalCode){
