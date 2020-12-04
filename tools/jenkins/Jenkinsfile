@@ -156,7 +156,7 @@ pipeline{
     stage('e2e tests'){
       steps {
         script {
-          withCredentials([string(credentialsId: 'c2mvws-tools-github-actions-token', variable: 'TOKEN')]) {
+            TOKEN = sh( script: "oc -n ${TOOLS} -o json get secret github-actions-token | sed -n 's/.*\"token\": \"\\(.*\\)\"/\\1/p' | base64 --decode", returnStdout: true);
             extJSHelper.triggerWorkflow(TOKEN, 'smoke-test-admin-dev-environment')
             extJSHelper.waitForWorkflowRunComplete(TOKEN)
           }
