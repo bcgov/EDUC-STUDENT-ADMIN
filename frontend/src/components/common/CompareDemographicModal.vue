@@ -23,8 +23,8 @@
         :selectedRecords.sync="studentRecords"
         title="Compare/View"
         :closeCompareModal="closeCompareModal">
-        <template v-slot:actions>
-          <PrimaryButton id="compareModalCancelBtn" text="Cancel" secondary @click.native="closeCompareModal"></PrimaryButton>
+        <template v-slot:actions="{clearError}">
+          <PrimaryButton id="compareModalCancelBtn" text="Cancel" secondary @click.native="[closeCompareModal(), clearError()]"></PrimaryButton>
         </template>
       </CompareDemographicsCommon>
     </v-card>
@@ -71,6 +71,7 @@ export default {
   methods: {
     closeCompareModal() {
       this.compareModalOpen = false;
+      this.studentRecords = [];
     },
     compare() {
       this.compareModalOpen = true;

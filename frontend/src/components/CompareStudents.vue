@@ -1,7 +1,7 @@
 <template>
   <CompareDemographicsCommon :selectedRecords.sync="selectedRecords">
-    <template v-slot:actions>
-      <PrimaryButton id="compareCancelBtn" text="Cancel" secondary @click.native="cancel"></PrimaryButton>
+    <template v-slot:actions="{clearError}">
+      <PrimaryButton id="compareCancelBtn" text="Clear" secondary @click.native="[cancel(), clearError()]"></PrimaryButton>
     </template>
   </CompareDemographicsCommon>
 </template>
