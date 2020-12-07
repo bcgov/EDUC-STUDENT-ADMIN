@@ -108,7 +108,7 @@
                 <v-text-field
                     tabindex="7"
                     v-on:keyup.tab="[editingGender = true, hoveringGender = true]"
-                    v-on:mouseover="isFieldDisabled('memo')?hoveringGender=false:hoveringGender = true"
+                    v-on:mouseover="isFieldDisabled('genderCode')?hoveringGender=false:hoveringGender = true"
                     v-on:mouseout="editingGender ? hoveringGender = true : hoveringGender=false"
                     v-on:blur="[editingGender = false, hoveringGender = false]"
                     v-on:click="[editingGender = true, hoveringGender = true]"
@@ -158,13 +158,13 @@
                 <v-text-field
                   tabindex="8"
                   v-on:keyup.tab="[editingDOB = true, hoveringDOB = true, shortDOBStyle()]"
-                  v-on:mouseover="isFieldDisabled('memo')? hoveringDOB = false : hoveringDOB = true"
+                  v-on:mouseover="isFieldDisabled('dob')? hoveringDOB = false : hoveringDOB = true"
                   v-on:mouseout="editingDOB ? hoveringDOB = true : hoveringDOB = false"
                   v-on:blur="[editingDOB = false, hoveringDOB = false, longDOBStyle()]"
                   v-on:click="[editingDOB = true, hoveringDOB = true, shortDOBStyle()]"
                   v-on:input="updateDOBLabel()"
                   class="onhoverEdit bolder customNoBorder"
-                  :class="{onhoverPad: !hoveringDOB && !dobHasChanged('dob'), darkBackgound: hoveringDOB || dobHasChanged('dob')}"
+                  :class="{onhoverPad: !hoveringDOB && !dobHasChanged(), darkBackgound: hoveringDOB || dobHasChanged()}"
                   v-model="studentCopy.dob"
                   :id='STUDENT_DETAILS_FIELDS.DOB'
                   color="#000000"
@@ -194,7 +194,7 @@
                   v-on:click="revertDOBField(STUDENT_DETAILS_FIELDS.DOB)"
                   class="onhoverEdit revert customNoBorder ml-3"
                   readonly
-                  v-show="dobHasChanged(STUDENT_DETAILS_FIELDS.DOB)"
+                  v-show="dobHasChanged()"
                   value="Revert"
                   style="padding-top: 2px;"
                   dense
@@ -256,11 +256,11 @@
               </div>
             </StudentDetailsTemplateTextField>
 
-            <v-row no-gutters dense>
+            <v-row no-gutters dense style="min-height: 7em;">
               <v-col cols="2">
                 <p class="labelField">Memo</p>
               </v-col>
-              <v-col class="textAreaColumn">
+              <v-col class="textAreaColumn memo-style">
                 <v-textarea
                   tabindex="10"
                   v-on:keyup.tab="[editingMemo = true, hoveringMemo = true]"
@@ -275,8 +275,8 @@
                   color="#000000"
                   maxlength="4000"
                   dense
-                  rows="2"
-                  auto-grow
+                  rows="3"
+                  no-resize
                   :readonly="!hoveringMemo || !editingMemo"
                   :outlined="hoveringMemo || editingMemo || hasEdits(STUDENT_DETAILS_FIELDS.MEMO)"
                   :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MEMO)"
@@ -655,6 +655,7 @@ export default {
       }
     },
     hasEdits(key) {
+
       let studentCopy = this.studentCopy[key];
       let studentOriginal = this.origStudent[key];
       studentCopy = (studentCopy === null || studentCopy === undefined) ? '' : studentCopy;
@@ -869,6 +870,11 @@ export default {
 .onhoverPad {
   padding-left: 12px !important;
   padding-top: 2px !important;
+}
+
+.memo-style > .v-input > .v-input__control > .v-input__slot > .v-text-field__slot > textarea {
+  margin-right: 2px;
+  margin-bottom: 3px;
 }
 
 .onEditPad {
