@@ -632,7 +632,7 @@ export default {
     white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
     white-space: -o-pre-wrap;    /* Opera 7 */
     word-wrap: break-word;
-    max-height: 10pc;
+    max-height: 10em;
     overflow-y: scroll;
   }
 
