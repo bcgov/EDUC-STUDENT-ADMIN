@@ -41,7 +41,7 @@
                  (student.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR && student.assignedPEN != formatPen(props.item.pen)) || !!props.item.twinRecordToMatchedStudent ? 'grayout':'']">
                 <td v-for="header in props.headers" :key="header.id" :class="header.id">
                   <div :class="[props.item[header.doubleValue] ? 'value-half-width':'','tableCell']">
-                    <v-checkbox :class="['top-column-item']" v-if="header.type" class="pl-3" color="#606060"
+                    <v-checkbox :class="['top-column-item']" v-if="header.type" class="pl-3" color="#606060" :input-value="props.isSelected"
                                 @change="props.select($event)"></v-checkbox>
                     <v-icon :class="['bottom-column-item','pl-3']"
                             v-if="header.bottomValue==='icon' && props.item['iconValue']" color="#606060">
