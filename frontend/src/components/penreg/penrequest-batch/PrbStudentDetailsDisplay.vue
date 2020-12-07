@@ -68,7 +68,7 @@
                         </v-btn>
                       </v-row>
                       <v-row no-gutters>
-                        <div>{{prbStudent.infoRequest}}</div>
+                        <pre class="pre-style">{{prbStudent.infoRequest}}</pre>
                       </v-row>
                     </v-col>
                   </v-row>
@@ -627,6 +627,13 @@ export default {
     font-size: 1.065rem;
   }
 
+  .pre-style {
+    white-space: pre-wrap;       /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;
+  }
+
   .pen-placeholder {
     margin-right: 5.7em;
   }
@@ -639,6 +646,8 @@ export default {
     color: rgba(0, 0, 0, 0.87) !important;
     height: 1.5rem;
   }
+
+
 
   .details-table /deep/ table > tbody > tr > td {
     height: 1.5rem;
