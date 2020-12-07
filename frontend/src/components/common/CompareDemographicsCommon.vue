@@ -64,7 +64,7 @@
           Demog Code: {{ students.demogCode }}
         </span>
         <v-spacer></v-spacer>
-        <a class="removePenLink" :style="`padding-right: `+removePenPadding+`px`" @click="removeRecord(students.studentID)">
+        <a class="removePenLink pr-3" @click="removeRecord(students.studentID)">
             <v-icon small color="#38598A">mdi-close</v-icon>
             Remove PEN
         </a>
@@ -143,18 +143,11 @@ export default {
       searchError: false,
       penRules: [ v => (!v || isValidPEN(v)) || this.penHint],
       penHint: 'Invalid PEN',
-      alertMessage: 'Error! This student does not exist in the system.',
-      removePenPadding: 0
+      alertMessage: 'Error! This student does not exist in the system.'
     };
   },
   created() {
     _.sortBy(this.selectedRecords, o => o.pen);
-    this.updatePadding();
-  },
-  watch: {
-    selectedRecords() {
-      this.updatePadding();
-    }
   },
   computed: {
     studentRecords: {
@@ -167,12 +160,6 @@ export default {
     }
   },
   methods: {
-    async updatePadding() {
-      if(this.studentRecords?.length > 0 && this.removePenPadding !== '0') {
-        await this.$nextTick();
-        this.removePenPadding = this.$refs.dobCol[0]?.clientWidth - this.$refs?.dobText[0]?.offsetWidth - 16; //getting offset to right align text with dob col above
-      }
-    },
     addPEN() {
       this.searchError = false;
       ApiService.apiAxios
@@ -191,6 +178,7 @@ export default {
     },
     clearError() {
       this.searchError = false;
+      this.penToAdd = null;
     },
     enterPushed() {
       if (this.penToAdd && this.isValidPEN(this.penToAdd) && (!this.studentRecords || this.studentRecords?.length<3)) {
@@ -242,18 +230,23 @@ export default {
   }
   #studentDemographicsTableTopRow /deep/ span:nth-child(3),
   #studentDemographicsTableTopRow /deep/ span:nth-child(4),
-  #studentDemographicsTableTopRow /deep/ span:nth-child(9),
-  #studentDemographicsTableTopRow /deep/ span:nth-child(10) {
+  #studentDemographicsTableTopRow /deep/ span:nth-child(9) {
     vertical-align: top;
     padding-top: 6px;
     width: 10%;
+  }
+  #studentDemographicsTableTopRow /deep/ span:nth-child(10) {
+    vertical-align: top;
+    padding-top: 6px;
+    text-align: right;
+    width: 8%;
   }
   #studentDemographicsTableTopRow /deep/ span:nth-child(5),
   #studentDemographicsTableTopRow /deep/ span:nth-child(6),
   #studentDemographicsTableTopRow /deep/ span:nth-child(7) {
     vertical-align: top;
     padding-top: 6px;
-    width: 11.66%;
+    width: 12.333%;
   }
 
   .sldTable /deep/ tr th:nth-child(1),
@@ -268,13 +261,18 @@ export default {
   .sldTable /deep/ tr th:nth-child(4),
   .sldTable /deep/ tr th:nth-child(5),
   .sldTable /deep/ tr th:nth-child(10),
-  .sldTable /deep/ tr th:nth-child(11),
   .sldTable /deep/ tr td:nth-child(2),
   .sldTable /deep/ tr td:nth-child(4),
   .sldTable /deep/ tr td:nth-child(5),
-  .sldTable /deep/ tr td:nth-child(10),
-  .sldTable /deep/ tr td:nth-child(11) {
+  .sldTable /deep/ tr td:nth-child(10)
+   {
     width: 10%;
+  }
+  .sldTable /deep/ tr th:nth-child(11),
+  .sldTable /deep/ tr td:nth-child(11){
+    width: 8%;
+    text-align: right !important;
+    padding-right: 12px;
   }
   .sldTable /deep/ tr th:nth-child(6),
   .sldTable /deep/ tr th:nth-child(7),
@@ -282,6 +280,6 @@ export default {
   .sldTable /deep/ tr td:nth-child(6),
   .sldTable /deep/ tr td:nth-child(7),
   .sldTable /deep/ tr td:nth-child(8) {
-    width: 11.66%;
+    width: 12.333%;
   }
 </style>
