@@ -60,7 +60,7 @@
                 </template>
                 <template v-slot:footerPanel>
                   <v-row v-if="prbStudent.infoRequest" no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
-                    <v-col cols="6">
+                    <v-col cols="12">
                       <v-row no-gutters class="d-flex align-center">
                         <span class="mr-3"><strong>Info requested</strong></span>
                         <v-btn id="clear-info-requested" icon color="#003366" @click="updateInfoRequested()">
@@ -68,7 +68,7 @@
                         </v-btn>
                       </v-row>
                       <v-row no-gutters>
-                        <pre>{{prbStudent.infoRequest}}</pre>
+                        <div>{{prbStudent.infoRequest}}</div>
                       </v-row>
                     </v-col>
                   </v-row>
