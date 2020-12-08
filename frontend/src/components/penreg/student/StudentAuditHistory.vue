@@ -249,7 +249,7 @@ export default {
       this.loading = true;
       const currentPageParams = {
         params: {
-          pageSize: 20,
+          pageSize: 15,
           pageNumber: this.pageNumber-1,
           sort: {
             createDate: 'DESC'
