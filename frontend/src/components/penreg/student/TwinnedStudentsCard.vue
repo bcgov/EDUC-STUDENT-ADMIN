@@ -78,7 +78,7 @@ import {sortBy} from 'lodash';
 import ApiService from '../../../common/apiService';
 import {REQUEST_TYPES, Routes} from '../../../utils/constants';
 import {formatPen} from '../../../utils/format';
-import router from "@/router";
+import router from '@/router';
 
 export default {
   name: 'TwinnedStudentsCard',

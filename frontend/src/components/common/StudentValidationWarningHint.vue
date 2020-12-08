@@ -1,7 +1,7 @@
 <template>
   <v-tooltip right>
     <template v-slot:activator="{ on }">
-      <v-icon small color="#FCBA19" :class="[doubleText ? 'mx-1' : 'ml-2']" v-on="on">
+      <v-icon small color="#FCBA19" :class="[hasDoubleText ? 'mx-1' : 'ml-2']" v-on="on">
         fa-exclamation-circle
       </v-icon>
     </template>
@@ -15,9 +15,9 @@
 export default {
   name: 'studentValidationWarningHint',
   props: {
-    doubleText: {
-      type: String,
-      default: ''
+    hasDoubleText: {
+      type: Boolean,
+      default: false
     },
     validationWarnings: {
       type: Array,

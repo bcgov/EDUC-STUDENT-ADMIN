@@ -23,7 +23,7 @@
             <StudentValidationWarningHint 
               v-if="header.topValue && isFieldValueWarned(header.topValue)" 
               :key="h.topValue" 
-              :doubleText="header.doubleText" 
+              :hasDoubleText="!!header.doubleText" 
               :validationWarnings="getValidationWarnings(header.topValue)"
             />
             
@@ -31,7 +31,7 @@
             <StudentValidationWarningHint 
               v-if="header.doubleValue && isFieldValueWarned(header.doubleValue)" 
               :key="h.doubleValue" 
-              :doubleText="header.doubleText" 
+              :hasDoubleText="!!header.doubleText" 
               :validationWarnings="getValidationWarnings(header.doubleValue)"
             />
           </template>
