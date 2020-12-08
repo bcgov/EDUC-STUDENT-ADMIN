@@ -214,14 +214,58 @@
                                               colspan="2" label="Postal Code"
                                               :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.LOCAL_ID)"></StudentDetailsTextFieldReadOnly>
 
-            <StudentDetailsTextField max-length="9" min-length="8" :name="STUDENT_DETAILS_FIELDS.MINCODE" tab-index="9"
-                                      @changeStudentObjectValue="changeStudentObjectValue"
-                                      :model="mincode" :has-edits="hasEdits"
-                                      revert-id="revertMincode" :fieldValidationRequired=true
-                                      :validation-rules="validateMincode" :revert-field="revertField" label="Mincode"
-                                      colspan="2" :handle-on-input="handleInput(STUDENT_DETAILS_FIELDS.MINCODE)"
-                                      :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MINCODE)"></StudentDetailsTextField>
-
+            <v-row no-gutters class="py-1">
+              <v-col cols="2">
+                <p class="labelField">Mincode</p>
+              </v-col>
+              <v-col cols="2" :class="{textFieldColumn: !mincodeError}">
+                <v-text-field
+                    tabindex="9"
+                    v-on:keyup.tab="[editingMincode = true, hoveringMincode = true]"
+                    v-on:mouseover="isFieldDisabled('mincode')? hoveringMincode = false : hoveringMincode = true"
+                    v-on:mouseout="editingMincode ? hoveringMincode = true : hoveringMincode = false"
+                    v-on:blur="[editingMincode = false, hoveringMincode = false]"
+                    v-on:click="[editingMincode = true, hoveringMincode = true]"
+                    v-on:input="handleInput(STUDENT_DETAILS_FIELDS.MINCODE)"
+                    @keyup="changeMinCodeValue"
+                    class="onhoverEdit bolder customNoBorder"
+                    :class="{onhoverPad: !hoveringMincode && !hasEdits(STUDENT_DETAILS_FIELDS.MINCODE), darkBackgound: hoveringMincode || hasEdits(STUDENT_DETAILS_FIELDS.MINCODE)}"
+                    v-model="minCodeLabel"
+                    :id='STUDENT_DETAILS_FIELDS.MINCODE'
+                    color="#000000"
+                    dense
+                    :rules="validateMinCode()"
+                    max-length="9" min-length="8"
+                    :readonly="!hoveringMincode || !editingMincode"
+                    :outlined="hoveringMincode || editingMincode || hasEdits(STUDENT_DETAILS_FIELDS.MINCODE)"
+                    :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MINCODE)"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="3" class="textFieldColumn">
+                <v-text-field
+                    class="onhoverEdit bolder customNoBorder onhoverPad"
+                    v-model="schoolLabel"
+                    id='schoolFill'
+                    color="#000000"
+                    dense
+                    readonly
+                    tabindex="-1"
+                ></v-text-field>
+              </v-col>
+              <v-col class="textFieldColumn" cols="2">
+                <v-text-field
+                    id='revertMincode'
+                    v-on:click="revertMinCodeField()"
+                    class="onhoverEdit revert customNoBorder ml-3"
+                    readonly
+                    v-if="hasEdits(STUDENT_DETAILS_FIELDS.MINCODE)"
+                    value="Revert"
+                    style="padding-top: 2px;"
+                    dense
+                    tabindex="-1"
+                ></v-text-field>
+              </v-col>
+            </v-row>
             <StudentDetailsTextFieldReadOnly :model="studentCopy.localID?studentCopy.localID:''" :name="STUDENT_DETAILS_FIELDS.LOCAL_ID"
                                               colspan="2" label="Local ID"
                                               :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.LOCAL_ID)"></StudentDetailsTextFieldReadOnly>
@@ -440,6 +484,9 @@ export default {
       statusLabels: [],
       gradeLabels: [],
       gradeLabel: null,
+      minCodeLabel: null,
+      schoolLabel: null,
+      isMinCodeChanged: false,
       alert: false,
       createdDateTime: null,
       updatedDateTime: null,
@@ -451,6 +498,8 @@ export default {
       hoveringDOB: false,
       editingGender: false,
       hoveringGender: false,
+      editingMincode: false,
+      hoveringMincode: false,
       editingMemo: false,
       hoveringMemo: false,
       enableDisableFieldsMap: new Map(),
@@ -473,9 +522,6 @@ export default {
   computed: {
     ...mapGetters('student', ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects']),
     ...mapState('studentSearch', ['isAdvancedSearch']),
-    mincode() {
-      return formatMinCode(this.studentCopy.mincode);
-    },
     mergedTo() {
       return this.merges.find(merge => merge.studentMergeDirectionCode === 'TO');
     },
@@ -517,6 +563,10 @@ export default {
       } else if (key === STUDENT_DETAILS_FIELDS.STATUS_CODE &&( value === STUDENT_CODES.DECEASED || value === STUDENT_CODES.DELETED)) {
         this.setEnableDisableForFields(true, STUDENT_DETAILS_FIELDS.STATUS_CODE);
       }
+    },
+    changeMinCodeValue(event) {
+      this.isMinCodeChanged = true;
+      this.setMinCode(event.target.value);
     },
     setEnableDisableForFields(value, ...excludedFields) {
       this.enableDisableFieldsMap.forEach((fieldValue, fieldKey) => excludedFields.includes(fieldKey) ? this.enableDisableFieldsMap.set(fieldKey, fieldValue) : this.enableDisableFieldsMap.set(fieldKey, value));
@@ -602,22 +652,69 @@ export default {
         this.genderHint
       ];
     },
-    validateMincode() {
+    validateMinCode() {
+      let message = [];
       if (this.studentCopy) {
         if (!this.studentCopy.mincode) {
           this.mincodeError = false;
-          return [];
+          this.schoolLabel = '';
+          return message;
         } else {
           if (this.studentCopy.mincode.match('^[0-9]\\d*$') && this.studentCopy.mincode.length === 8) {
-            this.mincodeError = false;
-            return [];
+            if (this.isMinCodeChanged) {
+              this.getSchoolName(this.studentCopy.mincode);
+            }
+            if (!this.schoolLabel) {
+              this.mincodeError = true;
+              message.push(this.mincodeHint);
+            } else {
+              this.mincodeError = false;
+            }
+            return message;
           }
         }
       }
+
       this.mincodeError = true;
-      return [
-        this.mincodeHint
-      ];
+      this.schoolLabel = '';
+      message.push(this.mincodeHint);
+      return message;
+    },
+    async getSchoolName(mincode) {
+      try {
+        this.schoolLabel = await this.retrieveSchoolEntity(mincode);
+        if (!this.schoolLabel) {
+          this.mincodeError = true;
+        } else {
+          this.mincodError = false;
+        }
+      } catch (e) {
+        this.schoolLabel = '';
+        this.mincodeError = true;
+      } finally {
+        this.isMinCodeChanged = false;
+      }
+    },
+    retrieveSchoolEntity(mincode) {
+      const params = {
+        params: {
+          mincode,
+        }
+      };
+      if (mincode) {
+        return new Promise((resolve, reject) => {
+          ApiService.apiAxios
+            .get(Routes.SCHOOL_DATA_URL, params)
+            .then(response => {
+              resolve(response.data?.schoolName);
+            })
+            .catch(error => {
+              reject(error);
+            });
+        });
+      } else {
+        return Promise.resolve('');
+      }
     },
     setStudent(student) {
       this.origStudent = student;
@@ -627,6 +724,7 @@ export default {
       this.updateDOBLabel(true);
       this.formatPostalCode();
       this.setGradeLabel();
+      this.setMinCodeLabel();
       if (this.studentCopy.statusCode === STUDENT_CODES.MERGED) {
         this.setEnableDisableForFields(true, STUDENT_DETAILS_FIELDS.MERGED_TO, STUDENT_DETAILS_FIELDS.PEN);
       }
@@ -677,6 +775,10 @@ export default {
       this.revertField(value);
       this.updateDOBLabel(true);
     },
+    revertMinCodeField() {
+      this.revertField(STUDENT_DETAILS_FIELDS.MINCODE);
+      this.setMinCodeLabel();
+    },
     setGradeLabel() {
       if (this.studentCopy && this.studentCopy.gradeCode && this.gradeCodeObjects) {
         this.gradeLabel = this.gradeCodeObjects.filter(it => (it.gradeCode === this.studentCopy.gradeCode))[0].label;
@@ -700,6 +802,22 @@ export default {
     formatPostalCode() {
       if (this.studentCopy.postalCode) {
         this.spacePostalCode = this.studentCopy.postalCode.replace(/.{3}$/, ' $&');
+      }
+    },
+    setMinCodeLabel() {
+      if (this.studentCopy.mincode) {
+        this.minCodeLabel = formatMinCode(this.studentCopy.mincode);
+      }
+    },
+    setMinCode(minCodeLabel) {
+      if (minCodeLabel) {
+        if (minCodeLabel.includes(' ')) {
+          this.studentCopy.mincode = minCodeLabel.replace(' ' , '');
+        } else {
+          this.studentCopy.mincode = minCodeLabel;
+        }
+      } else {
+        this.studentCopy.mincode = '';
       }
     },
     longDOBStyle() {
@@ -847,6 +965,7 @@ export default {
       this.setStudent(student);
       this.merges = merges;
       this.twins = twins;
+      this.isMinCodeChanged = true; // whenever student detail is loaded, set this to true to validate mincode for shcool api
     }
   }
 };
