@@ -141,7 +141,7 @@ export default {
       }
     },
     checkValidationResults(value) {
-      this.hasValidationIssues = value;
+      this.hasValidationIssues = value.hasValidationError;
     }
   },
 };

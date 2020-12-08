@@ -17,18 +17,31 @@
                 dense
         >
           <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-              <span :key="h.id" class="top-column-item" :class="[header.doubleText ? 'header-half-width':'']">
-                {{ header.topText }}
-              </span>
-            <span :key="h.id" class="double-column-item">{{header.doubleText}}</span>
+            <span :key="h.id || h.topText" class="top-column-item" :class="{'header-half-width': header.doubleText && !isFieldValueWarned(header.topValue)}">
+              {{ header.topText }}
+            </span>
+            <StudentValidationWarningHint 
+              v-if="header.topValue && isFieldValueWarned(header.topValue)" 
+              :key="h.topValue" 
+              :doubleText="header.doubleText" 
+              :validationWarnings="getValidationWarnings(header.topValue)"
+            />
+            
+            <span :key="h.id || h.doubleValue" class="double-column-item">{{header.doubleText}}</span>
+            <StudentValidationWarningHint 
+              v-if="header.doubleValue && isFieldValueWarned(header.doubleValue)" 
+              :key="h.doubleValue" 
+              :doubleText="header.doubleText" 
+              :validationWarnings="getValidationWarnings(header.doubleValue)"
+            />
           </template>
           <template v-slot:item="props">
             <tr>
-              <td v-for="header in props.headers" :key="header.id" :class="header.id">
+              <td v-for="header in props.headers" :key="header.id || header.topValue" :class="header.id">
                 <div class="table-cell" :class="[props.item[header.doubleValue] ? 'value-half-width':'']">
-                    <span :class="['top-column-item',{'mark-field-value-changed':isFieldValueUpdated(header.topValue)}, {'mark-field-value-errored':isFieldValueErrored(header.topValue)}]">
-                      <span><strong>{{ props.item[header.topValue] || ' ' }}</strong></span>
-                    </span>
+                  <span :class="['top-column-item',{'mark-field-value-changed':isFieldValueUpdated(header.topValue)}, {'mark-field-value-errored':isFieldValueErrored(header.topValue)}]">
+                    <span><strong>{{ props.item[header.topValue] || ' ' }}</strong></span>
+                  </span>
                   <span :class="['double-column-item-value',{'mark-field-value-changed':isFieldValueUpdated(header.doubleValue)}, {'mark-field-value-errored':isFieldValueErrored(header.doubleValue)}]"><strong>{{props.item[header.doubleValue]}}</strong></span>
                 </div>
               </td>
@@ -43,9 +56,19 @@
                 hide-default-footer
                 dense
         >
+          <template v-for="h in bottomTableHeaders" v-slot:[`header.${h.value}`]="{ header }">
+            <span :key="h.id || h.text">
+              {{ header.text }}
+            </span>
+            <StudentValidationWarningHint 
+              v-if="header.value && isFieldValueWarned(header.value)" 
+              :key="h.id || h.value" 
+              :validationWarnings="getValidationWarnings(header.value)"
+            />
+          </template>
           <template v-slot:item="props">
             <tr>
-              <td v-for="header in props.headers" :key="header.id" :class="header.id">
+              <td v-for="header in props.headers" :key="header.id || header.value" :class="header.id">
                 <div class="table-cell">
                     <span  :class="['top-column-item',{'mark-field-value-changed':studentDetailsCopy && isFieldValueUpdated(header.value)}, {'mark-field-value-errored':isFieldValueErrored(header.value)}]">
                       <span><strong>{{ props.item[header.value] || ' ' }}</strong></span>
@@ -81,11 +104,13 @@ import { deepCloneObject, getDemogValidationResults } from '../../utils/common';
 import { formatDob, formatPostalCode } from '@/utils/format';
 import { mapState, mapMutations } from 'vuex';
 import {formatMinCode} from '../../utils/format';
+import StudentValidationWarningHint from './StudentValidationWarningHint';
 
 export default {
   name: 'StudentDetailsInfoPanel',
   components: {
-    SearchDemographicModal
+    SearchDemographicModal,
+    StudentValidationWarningHint
   },
   props: {
     student: {
@@ -99,6 +124,10 @@ export default {
     runPenMatch: {
       type: Function,
       required: true
+    },
+    demogValidationResult: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -123,6 +152,7 @@ export default {
         { text: 'Grade', value: 'gradeCode', sortable: false },
         { text: '', value: '', sortable: false }
       ],
+      validationWarningFields: null,
       validationErrorFields: null,
       validationErrorFieldHeaders: [
         { text: 'Field Name', value: 'uiFieldName', sortable: false },
@@ -138,7 +168,7 @@ export default {
     this.originalStatusCode = this.studentDetails.penRequestBatchStudentStatusCode;//storing original status to revert to in the event a modified search returned validation error is corrected
     if(!_.isEmpty(this.studentDetails)) { //don't run validation on page load if create new pen screen
       this.setModalStudentFromPrbStudent();
-      this.runDemogValidation();
+      this.handleDemogValidationResult(this.demogValidationResult);
     }
   },
   computed: {
@@ -165,11 +195,20 @@ export default {
   },
   methods: {
     ...mapMutations('app', ['setStickyInfoPanelHeight']),
+    getValidationIssues(fieldName, validationIssueFields) {
+      return validationIssueFields?.filter(x => PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER[x.penRequestBatchValidationFieldCode] === fieldName);
+    },
+    getValidationWarnings(fieldName) {
+      return this.getValidationIssues(fieldName, this.validationWarningFields);
+    },
+    isFieldValueWithIssues(fieldName, validationIssueFields) {
+      return !!(this.getValidationIssues(fieldName, validationIssueFields)?.length);
+    },
     isFieldValueErrored(fieldName) {
-      if(fieldName && this.validationErrorFields) {
-        return this.validationErrorFields.filter(x => PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER[x.penRequestBatchValidationFieldCode] === fieldName)?.length;
-      }
-      return false;
+      return this.isFieldValueWithIssues(fieldName, this.validationErrorFields);
+    },
+    isFieldValueWarned(fieldName) {
+      return this.isFieldValueWithIssues(fieldName, this.validationWarningFields);
     },
     isFieldValueUpdated(fieldName) {
       if(fieldName && this.studentDetailsCopy && !_.isEmpty(this.studentDetailsCopy)){
@@ -223,24 +262,29 @@ export default {
           }
         };
         const result = await getDemogValidationResults(payload);
-        this.validationErrorFields = result.filter(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR')
-          .map(y => {
-            y.uiFieldName = this.prbValidationFieldCodes.find(obj => obj.code === y.penRequestBatchValidationFieldCode)?.label;
-            y.penRequestBatchValidationIssueTypeCode = this.prbValidationIssueTypeCodes.find(obj => obj.code === y.penRequestBatchValidationIssueTypeCode)?.description;
-            return y;
-          });
-        if(this.validationErrorFields?.length > 0) {
-          this.studentDetails.penRequestBatchStudentStatusCode = PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR;
-        }
-        else {
-          this.studentDetails.penRequestBatchStudentStatusCode = this.originalStatusCode;
-        }
-        const hasValidationError = this.validationErrorFields?.length > 0;
-        this.$emit('validationRun', hasValidationError);
-        return hasValidationError;
+        return this.handleDemogValidationResult(result);
       } catch (error) {
         console.log(error);
       }
+    },
+    async handleDemogValidationResult(result) {
+      const validationIssues = result.map(y => {
+        y.uiFieldName = this.prbValidationFieldCodes.find(obj => obj.code === y.penRequestBatchValidationFieldCode)?.label;
+        y.penRequestBatchValidationIssueTypeCode = this.prbValidationIssueTypeCodes.find(obj => obj.code === y.penRequestBatchValidationIssueTypeCode)?.description;
+        return y;
+      });
+      this.validationErrorFields = validationIssues.filter(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR');
+      this.validationWarningFields = validationIssues.filter(x => x.penRequestBatchValidationIssueSeverityCode === 'WARNING');
+
+      if(this.validationErrorFields?.length > 0) {
+        this.studentDetails.penRequestBatchStudentStatusCode = PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR;
+      }
+      else {
+        this.studentDetails.penRequestBatchStudentStatusCode = this.originalStatusCode;
+      }
+      const hasValidationError = this.validationErrorFields?.length > 0;
+      this.$emit('validationRun', {validationIssues, hasValidationError});
+      return hasValidationError;
     }
   }
 };
@@ -317,12 +361,16 @@ export default {
     width: 6%;
   }
   .v-data-table /deep/ tr td:nth-child(3),
-  .v-data-table /deep/ tr td:nth-child(4),
-  .v-data-table /deep/ tr td:nth-child(5) {
+  .v-data-table /deep/ tr td:nth-child(4) {
     width: 18%;
   }
+  .v-data-table /deep/ tr td:nth-child(5) {
+    width: 17%;
+  }
+  .v-data-table /deep/ tr td:nth-child(6) {
+    width: 11%;
+  }
   .v-data-table /deep/ tr td:nth-child(2),
-  .v-data-table /deep/ tr td:nth-child(6),
   .v-data-table /deep/ tr td:nth-child(7),
   .v-data-table /deep/ tr td:nth-child(8) {
     width: 10%;

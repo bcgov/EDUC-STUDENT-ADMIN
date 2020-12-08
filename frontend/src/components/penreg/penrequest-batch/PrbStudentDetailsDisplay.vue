@@ -22,6 +22,7 @@
                       key="info-panel"
                       :runPenMatch="runPenMatch"
                       :studentDetailsCopy="prbStudentCopy"
+                      :demogValidationResult="demogValidationResult"
                       @validationRun="checkValidationResults">
                 <template v-slot:headerPanel="{ openSearchDemographicsModal }">
                   <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center" style="background-color:white;">
@@ -102,6 +103,25 @@
           </v-col>
         </v-row>
       </div>
+      <ConfirmationDialog ref="confirmationDialog">
+        <template v-slot:message>
+          <v-col class="warnings-modal pt-0">
+            <v-row class="mb-3">There is <strong>&nbsp;{{demogValidationResult.length}}&nbsp;</strong> questionable errors with this PEN request:</v-row>
+            <v-row v-for="warning in demogValidationResult" :key="warning.penRequestBatchValidationIssueTypeCode">
+              <v-col class="pb-0">
+                <v-row>
+                  <strong>{{warning.uiFieldName}}</strong>
+                  <v-icon small color="#FCBA19" class="ml-2">
+                    fa-exclamation-circle
+                  </v-icon>
+                </v-row>
+                <v-row>{{warning.penRequestBatchValidationIssueTypeCode}}</v-row>
+              </v-col>
+            </v-row>
+          </v-col>
+          <v-divider />
+        </template>
+      </ConfirmationDialog>
     </div>
   </v-container>
 </template>
@@ -135,6 +155,7 @@ import {
   updatePossibleMatchResultsBasedOnCurrentStatus
 } from '@/utils/common';
 import {formatDob} from '@/utils/format';
+import ConfirmationDialog from '../../util/ConfirmationDialog';
 
 export default {
   name: 'PrbStudentDetailsDisplay',
@@ -144,7 +165,8 @@ export default {
     PrbStudentStatusChip,
     InfoDialog,
     PenMatchResultsTable,
-    StudentDetailsInfoPanel
+    StudentDetailsInfoPanel,
+    ConfirmationDialog
   },
   mixins: [alterMixin],
   props: {
@@ -202,6 +224,7 @@ export default {
         PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS,
         PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR,
       ],
+      demogValidationResult: []
     };
   },
   watch: {
@@ -321,8 +344,8 @@ export default {
             ...this.modalStudent
           }
         };
-        const result = await getDemogValidationResults(payload);
-        const hasValidationFailure = result.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR');
+        this.demogValidationResult = await getDemogValidationResults(payload);
+        const hasValidationFailure = this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR');
 
         if (!hasValidationFailure) {
           if (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR === this.prbStudent?.penRequestBatchStudentStatusCode
@@ -534,7 +557,8 @@ export default {
       }
     },
     checkValidationResults(value) {
-      this.hasValidationIssues = value;
+      this.hasValidationIssues = value.hasValidationError;
+      this.demogValidationResult = value.validationIssues;
     },
     setModalStudentFromPrbStudent(prbStudent){
       this.modalStudent = deepCloneObject(prbStudent);
@@ -549,7 +573,19 @@ export default {
       }
       return 'FIXABLE';
     },
+    async confirmToProceed() {
+      let result = true;
+      if(this.demogValidationResult.length > 0) {
+        result = await this.$refs.confirmationDialog.open('Are you sure you want to proceed?', null, 
+          { width: '680px', messagePadding: 'px-4 pt-1', color: '', dark: false, closeIcon: true, resolveText: 'Confirm' });
+      }
+      return result;
+    },
     async issueNewPen() {
+      let result = await this.confirmToProceed();
+      if(!result) {
+        return;
+      }
       this.isIssuingNewPen = true;
       const req = {
         twinStudentIDs: this.possibleMatches.map(match => match.studentID)
@@ -577,6 +613,11 @@ export default {
      * @returns {Promise<void>}
      */
     async matchUnmatchStudentToPRBStudent(student, buttonText){
+      let result = await this.confirmToProceed();
+      if(!result) {
+        return;
+      }
+
       let operation;
       if('Match' ===  buttonText){
         this.prbStudent.assignedPEN = student.pen;
@@ -670,5 +711,9 @@ export default {
   pre {
     font-family: inherit;
     font-size: inherit;
+  }
+
+  .warnings-modal {
+    color: black;
   }
 </style>
