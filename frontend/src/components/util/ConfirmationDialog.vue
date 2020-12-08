@@ -1,10 +1,19 @@
 <template>
   <v-dialog v-model="dialog" :max-width="options.width" :style="{ zIndex: options.zIndex }" @keydown.esc="cancel">
     <v-card>
-      <v-toolbar dark :color="options.color" dense flat>
-        <v-toolbar-title class="white--text">{{ title }}</v-toolbar-title>
+      <v-toolbar :dark="options.dark" :color="options.color" :dense="options.dense" flat>
+        <v-toolbar-title :class="{'white--text': options.dark, 'align-self-end': options.closeIcon, 'font-weight-bold': !options.dark}">
+          {{ title }}
+        </v-toolbar-title>
+        <v-spacer/>
+        <v-btn id="closeBtn" v-if="options.closeIcon" text icon @click.native="cancel">
+          <v-icon color="#38598A">mdi-close</v-icon>
+        </v-btn>
       </v-toolbar>
-      <v-card-text v-show="!!message" class="pa-4">{{ message }}</v-card-text>
+      <v-card-text :class="options.messagePadding">
+        {{ message }}
+        <slot name="message"></slot>              
+      </v-card-text>
       <v-card-actions class="pt-0">
         <v-spacer></v-spacer>
         <PrimaryButton id="rejectBtn" secondary :text="options.rejectText || 'Cancel'" @click.native="cancel"></PrimaryButton>
@@ -28,7 +37,11 @@ export default {
     options: {
       color: 'primary',
       width: 290,
-      zIndex: 200
+      zIndex: 200,
+      dark: true,
+      dense: true,
+      closeIcon: false,
+      messagePadding: 'pa-4', 
     }
   }),
   methods: {
