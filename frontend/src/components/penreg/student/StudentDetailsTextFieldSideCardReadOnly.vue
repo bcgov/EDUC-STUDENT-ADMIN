@@ -44,7 +44,7 @@ export default {
       required: true
     },
     model: {
-      type: String | Array,
+      type: [Array, String],
       required: true
     },
     disabled: {
