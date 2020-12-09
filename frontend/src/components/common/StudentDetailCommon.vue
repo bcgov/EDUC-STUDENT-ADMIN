@@ -424,7 +424,7 @@ import StudentDetailsTextFieldSideCardReadOnly
   from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
 import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
 import {formatMinCode, formatPen} from '../../utils/format';
-import {sortBy,isEmpty,compact} from 'lodash';
+import {sortBy,isEmpty} from 'lodash';
 import alterMixin from '../../mixins/alterMixin';
 import ConfirmationDialog from '../util/ConfirmationDialog';
 import AlertMessage from '../util/AlertMessage';
@@ -967,7 +967,9 @@ export default {
       ApiService.apiAxios
         .get(Routes.PEN_TRAX_URL, { params: { pen } })
         .then(response => {
-          this.gradDateAndMincode = compact([this.formatGradDate(response.data?.gradDate || 0), formatMinCode(response.data?.mincodeGrad || '')]);
+          if(response.data?.gradDate > 0) {
+            this.gradDateAndMincode = [this.formatGradDate(response.data?.gradDate), formatMinCode(response.data?.mincodeGrad || '')];
+          }
         })
         .catch(error => {
           console.log(error);
