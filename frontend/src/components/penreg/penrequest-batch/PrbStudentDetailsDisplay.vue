@@ -95,6 +95,7 @@
                                       :is-refresh-required="true"
                                       :is-match-un-match="true"
                                       :disabled="disableMatchUnmatch"
+                                      :demogValidationResult="demogValidationResult"
                                       @match-unmatch-student-prb-student="matchUnmatchStudentToPRBStudent"
                                       @refresh-match-results="refreshMatchResults"
                                       :possible-match="possibleMatches"></PenMatchResultsTable>
@@ -290,8 +291,9 @@ export default {
     disableIssueNewPen() {
       return this.loading || this.prbStudent?.sagaInProgress
           || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
-          || ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ]
-            .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
+          || (![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ]
+            .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus)
+              && (this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR')));
     },
     disableModifySearch(){
       return this.loading || this.prbStudent?.sagaInProgress

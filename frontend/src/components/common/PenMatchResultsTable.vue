@@ -128,6 +128,10 @@ export default {
       type: Object,
       required: true
     },
+    demogValidationResult: {
+      type: Array,
+      required: true
+    },
     possibleMatch: {
       type: Array,
       required: true
@@ -283,7 +287,9 @@ export default {
     enableMatchOrUnMatch(matchedStudent) {
       if (this.student && matchedStudent) {
         if (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE === this.student.penRequestBatchStudentStatusCode
-            || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ === this.student.penRequestBatchStudentStatusCode) {
+            || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ === this.student.penRequestBatchStudentStatusCode
+            || (!this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR')
+                && PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.student.penRequestBatchStudentStatusCode )) {
           this.hoveredOveredRowStudentID = matchedStudent.studentID;
           this.matchUnMatchButtonText = 'Match';
         } else if ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR, 
