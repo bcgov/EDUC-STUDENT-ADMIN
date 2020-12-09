@@ -227,7 +227,7 @@
                     v-on:blur="[editingMincode = false, hoveringMincode = false]"
                     v-on:click="[editingMincode = true, hoveringMincode = true]"
                     v-on:input="handleInput(STUDENT_DETAILS_FIELDS.MINCODE)"
-                    @keyup="changeMinCodeValue"
+                    :error-messages="errors"
                     class="onhoverEdit bolder customNoBorder"
                     :class="{onhoverPad: !hoveringMincode && !hasEdits(STUDENT_DETAILS_FIELDS.MINCODE), darkBackgound: hoveringMincode || hasEdits(STUDENT_DETAILS_FIELDS.MINCODE)}"
                     v-model="minCodeLabel"
@@ -473,6 +473,7 @@ export default {
       spacePostalCode: null,
       isLoading: true,
       deceasedDialog: false,
+      errors: [], // asynchronous way to set the validation error messages
       mincodeHint: 'Invalid Mincode',
       mincodeError: false,
       genderHint: 'Invalid Gender Code',
@@ -486,7 +487,6 @@ export default {
       gradeLabel: null,
       minCodeLabel: null,
       schoolLabel: null,
-      isMinCodeChanged: false,
       alert: false,
       createdDateTime: null,
       updatedDateTime: null,
@@ -563,10 +563,6 @@ export default {
       } else if (key === STUDENT_DETAILS_FIELDS.STATUS_CODE &&( value === STUDENT_CODES.DECEASED || value === STUDENT_CODES.DELETED)) {
         this.setEnableDisableForFields(true, STUDENT_DETAILS_FIELDS.STATUS_CODE);
       }
-    },
-    changeMinCodeValue(event) {
-      this.isMinCodeChanged = true;
-      this.setMinCode(event.target.value);
     },
     setEnableDisableForFields(value, ...excludedFields) {
       this.enableDisableFieldsMap.forEach((fieldValue, fieldKey) => excludedFields.includes(fieldKey) ? this.enableDisableFieldsMap.set(fieldKey, fieldValue) : this.enableDisableFieldsMap.set(fieldKey, value));
@@ -652,47 +648,42 @@ export default {
         this.genderHint
       ];
     },
+    // Asynchronous validator returns an array of boolean or string that would be provided for :rules prop of input field
     validateMinCode() {
-      let message = [];
-      if (this.studentCopy) {
-        if (!this.studentCopy.mincode) {
-          this.mincodeError = false;
-          this.schoolLabel = '';
-          return message;
-        } else {
-          if (this.studentCopy.mincode.match('^[0-9]\\d*$') && this.studentCopy.mincode.length === 8) {
-            if (this.isMinCodeChanged) {
+      return [v => {
+        this.setMinCode(v);
+        if (this.studentCopy) {
+          if (!this.studentCopy.mincode) {
+            this.mincodeError = false;
+            this.schoolLabel = '';
+            return true;
+          } else {
+            if (this.studentCopy.mincode.match('^[0-9]\\d*$') && this.studentCopy.mincode.length === 8) {
               this.getSchoolName(this.studentCopy.mincode);
+              return true;
             }
-            if (!this.schoolLabel) {
-              this.mincodeError = true;
-              message.push(this.mincodeHint);
-            } else {
-              this.mincodeError = false;
-            }
-            return message;
           }
         }
-      }
 
-      this.mincodeError = true;
-      this.schoolLabel = '';
-      message.push(this.mincodeHint);
-      return message;
+        this.mincodeError = true;
+        this.schoolLabel = '';
+        return this.mincodeHint;
+      }];
     },
     async getSchoolName(mincode) {
       try {
         this.schoolLabel = await this.retrieveSchoolEntity(mincode);
         if (!this.schoolLabel) {
           this.mincodeError = true;
+          this.errors = [this.mincodeHint];
         } else {
           this.mincodError = false;
+          this.errors = [];
         }
       } catch (e) {
         this.schoolLabel = '';
         this.mincodeError = true;
-      } finally {
-        this.isMinCodeChanged = false;
+        this.errors = [this.mincodeHint];
       }
     },
     retrieveSchoolEntity(mincode) {
@@ -965,7 +956,6 @@ export default {
       this.setStudent(student);
       this.merges = merges;
       this.twins = twins;
-      this.isMinCodeChanged = true; // whenever student detail is loaded, set this to true to validate mincode for shcool api
     }
   }
 };
