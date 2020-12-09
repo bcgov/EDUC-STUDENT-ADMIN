@@ -7,6 +7,7 @@ const demographicRoot = baseRoot + '/studentDemographics';
 const studentRoot = baseRoot + '/students';
 const penServicesRoot = baseRoot + '/pen-services';
 const schoolRequestRoot = baseRoot + '/schools';
+const penTraxRoot = baseRoot + '/penTrax';
 let object = {
   LOGIN: authRoot + '/login',
   LOGOUT: authRoot + '/logout',
@@ -72,7 +73,8 @@ let object = {
     VALIDATE_DEMOGRAPHICS: penServicesRoot + '/demog-validation'
   },
   STUDENT_DATA_URL: studentRoot,
-  SEARCH_BY_PEN: demographicRoot
+  SEARCH_BY_PEN: demographicRoot,
+  PEN_TRAX_URL: penTraxRoot,
 };
 
 //endpoints
