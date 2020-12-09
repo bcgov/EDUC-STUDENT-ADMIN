@@ -6,6 +6,7 @@ const studentRequestRoot = baseRoot + '/studentRequest';
 const demographicRoot = baseRoot + '/studentDemographics';
 const studentRoot = baseRoot + '/students';
 const penServicesRoot = baseRoot + '/pen-services';
+const schoolRequestRoot = baseRoot + '/schools';
 let object = {
   LOGIN: authRoot + '/login',
   LOGOUT: authRoot + '/logout',
@@ -65,6 +66,7 @@ let object = {
     HISTORY_ACTIVITY_CODE_URL: studentRoot + '/historyActivityCodes',
     GET_ALL_STUDENTS_BY_IDS: studentRoot + '/allStudents',
   },
+  SCHOOL_DATA_URL: schoolRequestRoot,
   penServices: {
     ROOT_ENDPOINT: penServicesRoot,
     VALIDATE_DEMOGRAPHICS: penServicesRoot + '/demog-validation'
