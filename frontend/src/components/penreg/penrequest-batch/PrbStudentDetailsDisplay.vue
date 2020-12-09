@@ -145,7 +145,7 @@ import {
   SEARCH_VALUE_TYPE
 } from '@/utils/constants';
 import {cloneDeep, isEmpty} from 'lodash';
-import alterMixin from '../../../mixins/alterMixin';
+import alertMixin from '../../../mixins/alertMixin';
 import PenMatchResultsTable from '@/components/common/PenMatchResultsTable';
 import {
   constructPenMatchObjectFromStudent,
@@ -169,7 +169,7 @@ export default {
     StudentDetailsInfoPanel,
     ConfirmationDialog
   },
-  mixins: [alterMixin],
+  mixins: [alertMixin],
   props: {
     totalNumber: {
       type: Number,

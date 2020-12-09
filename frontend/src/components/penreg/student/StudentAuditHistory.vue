@@ -63,13 +63,13 @@ import { Routes } from '../../../utils/constants';
 import AlertMessage from '../../util/AlertMessage';
 import StudentAuditHistoryDetail from '../student/StudentAuditHistoryDetailPanel';
 import ApiService from '../../../common/apiService';
-import alterMixin from '../../../mixins/alterMixin';
+import alertMixin from '../../../mixins/alertMixin';
 import {formatMinCode, formatPen, formatDob, formatPostalCode} from '../../../utils/format';
 import {groupBy, mapValues} from 'lodash';
 
 export default {
   name: 'StudentAuditHistory',
-  mixins: [alterMixin],
+  mixins: [alertMixin],
   props: {
     student: {
       type: Object,
