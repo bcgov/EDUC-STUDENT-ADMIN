@@ -19,8 +19,9 @@
                                                       colspan="1" label="TRAX Status"
                                                       :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.TRAX_STATUS)"></StudentDetailsTextFieldSideCardReadOnly>
 
-            <StudentDetailsTextFieldSideCardReadOnly :model="''" :name="STUDENT_DETAILS_FIELDS.GRAD_DATE"
-                                                      colspan="1" label="Grad Date"
+            <StudentDetailsTextFieldSideCardReadOnly :model="gradDateAndMincode" :name="STUDENT_DETAILS_FIELDS.GRAD_DATE"
+                                                      colspan="1" label="Grad Date & Mincode"
+                                                      multi-line
                                                       :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.GRAD_DATE)"></StudentDetailsTextFieldSideCardReadOnly>
 
             <StudentDetailsTextFieldSideCardReadOnly :model="getCreatedDateTime()"
@@ -423,7 +424,7 @@ import StudentDetailsTextFieldSideCardReadOnly
   from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
 import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
 import {formatMinCode, formatPen} from '../../utils/format';
-import {sortBy,isEmpty} from 'lodash';
+import {sortBy,isEmpty,compact} from 'lodash';
 import alterMixin from '../../mixins/alterMixin';
 import ConfirmationDialog from '../util/ConfirmationDialog';
 import AlertMessage from '../util/AlertMessage';
@@ -432,7 +433,7 @@ import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard
 const JSJoda = require('@js-joda/core');
 
 export default {
-  name: 'studentDetail',
+  name: 'studentDetailCommon',
   mixins: [alterMixin],
   props: {
     studentID: {
@@ -510,7 +511,8 @@ export default {
       merges: [],
       twins: [],
       twinsDialog: false,
-      unsavedChanges: false
+      unsavedChanges: false,
+      gradDateAndMincode: [],
     };
   },
   created() {
@@ -956,6 +958,20 @@ export default {
       this.setStudent(student);
       this.merges = merges;
       this.twins = twins;
+      this.getTraxData(student.pen);
+    },
+    formatGradDate(date) {
+      return date > 0 ? moment(date + '', 'YYYYMM').format('YYYY/MM') : '';
+    },
+    getTraxData(pen) {
+      ApiService.apiAxios
+        .get(Routes.PEN_TRAX_URL, { params: { pen } })
+        .then(response => {
+          this.gradDateAndMincode = compact([this.formatGradDate(response.data?.gradDate || 0), formatMinCode(response.data?.mincodeGrad || '')]);
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
   }
 };

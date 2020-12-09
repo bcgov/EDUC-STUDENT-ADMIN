@@ -16,7 +16,11 @@
             dense
             tabindex="-1"
             :disabled="fieldDisabled"
+            v-if="!multiLine"
         ></v-text-field>
+        <span v-for="v in fieldModel" v-else :key="v" class="bolder">
+          {{v}} <br/>
+        </span>
       </v-col>
     </v-row>
   </div>
@@ -40,12 +44,16 @@ export default {
       required: true
     },
     model: {
-      type: String,
+      type: String | Array,
       required: true
     },
     disabled: {
       type: Boolean,
       required: true
+    },
+    multiLine: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
