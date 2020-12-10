@@ -156,11 +156,11 @@ import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly';
 import PrimaryButton from '../../util/PrimaryButton';
 import {formatMinCode, formatPen, formatPostalCode} from '../../../utils/format';
-import alterMixin from '../../../mixins/alterMixin';
+import alertMixin from '../../../mixins/alertMixin';
 
 export default {
   name: 'studentAudtiHistoryDetail',
-  mixins: [alterMixin],
+  mixins: [alertMixin],
   props: {
     studentHistory: {
       type: Object,

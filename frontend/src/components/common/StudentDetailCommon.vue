@@ -15,7 +15,7 @@
                                     :items="getDemogCodeComboBox()" revert-id="revertDemogCode"
                                     :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.DEMOG_CODE)"></StudentDetailsComboBox>
 
-            <StudentDetailsTextFieldSideCardReadOnly :model="''" :name="STUDENT_DETAILS_FIELDS.TRAX_STATUS"
+            <StudentDetailsTextFieldSideCardReadOnly :model="traxStatus" :name="STUDENT_DETAILS_FIELDS.TRAX_STATUS"
                                                       colspan="1" label="TRAX Status"
                                                       :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.TRAX_STATUS)"></StudentDetailsTextFieldSideCardReadOnly>
 
@@ -242,7 +242,7 @@
                     :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MINCODE)"
                 ></v-text-field>
               </v-col>
-              <v-col cols="3" class="textFieldColumn">
+              <v-col cols="4" class="textFieldColumn">
                 <v-text-field
                     class="onhoverEdit bolder customNoBorder onhoverPad"
                     v-model="schoolLabel"
@@ -425,7 +425,7 @@ import StudentDetailsTextFieldSideCardReadOnly
 import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
 import {formatMinCode, formatPen} from '../../utils/format';
 import {sortBy,isEmpty} from 'lodash';
-import alterMixin from '../../mixins/alterMixin';
+import alertMixin from '../../mixins/alertMixin';
 import ConfirmationDialog from '../util/ConfirmationDialog';
 import AlertMessage from '../util/AlertMessage';
 import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard';
@@ -434,7 +434,7 @@ const JSJoda = require('@js-joda/core');
 
 export default {
   name: 'studentDetailCommon',
-  mixins: [alterMixin],
+  mixins: [alertMixin],
   props: {
     studentID: {
       type: String,
@@ -492,8 +492,8 @@ export default {
       createdDateTime: null,
       updatedDateTime: null,
       longDOB: null,
-      origStudent: null,
-      studentCopy: null,
+      origStudent: {},
+      studentCopy: {},
       REQUEST_TYPES: REQUEST_TYPES,
       editingDOB: false,
       hoveringDOB: false,
@@ -513,6 +513,7 @@ export default {
       twinsDialog: false,
       unsavedChanges: false,
       gradDateAndMincode: [],
+      traxStatus: '',
     };
   },
   created() {
@@ -654,6 +655,7 @@ export default {
     validateMinCode() {
       return [v => {
         this.setMinCode(v);
+        this.schoolLabel = '';
         if (this.studentCopy) {
           if (!this.studentCopy.mincode) {
             this.mincodeError = false;
@@ -668,7 +670,6 @@ export default {
         }
 
         this.mincodeError = true;
-        this.schoolLabel = '';
         return this.mincodeHint;
       }];
     },
@@ -739,6 +740,7 @@ export default {
           })
           .catch(error => {
             console.log(error);
+            this.$emit('alert', 'An error occurred while loading the student details. Please try again later.');
           })
           .finally(() => {
             this.isLoading = false;
@@ -964,15 +966,19 @@ export default {
       return date > 0 ? moment(date + '', 'YYYYMM').format('YYYY/MM') : '';
     },
     getTraxData(pen) {
+      this.traxStatus = '';
+      this.gradDateAndMincode = [];
       ApiService.apiAxios
         .get(Routes.PEN_TRAX_URL, { params: { pen } })
         .then(response => {
-          if(response.data?.gradDate > 0) {
-            this.gradDateAndMincode = [this.formatGradDate(response.data?.gradDate), formatMinCode(response.data?.mincodeGrad || '')];
+          this.traxStatus = response.data.traxStatus;
+          if(response.data.student?.gradDate > 0) {
+            this.gradDateAndMincode = [this.formatGradDate(response.data.student?.gradDate), formatMinCode(response.data.student?.mincodeGrad || '')];
           }
         })
         .catch(error => {
           console.log(error);
+          this.$emit('alert', 'An error occurred while loading the TRAX status. Please try again later.');
         });
     }
   }
