@@ -242,7 +242,7 @@
                     :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MINCODE)"
                 ></v-text-field>
               </v-col>
-              <v-col :cols="4" class="textFieldColumn">
+              <v-col cols="4" class="textFieldColumn">
                 <v-text-field
                     class="onhoverEdit bolder customNoBorder onhoverPad"
                     v-model="schoolLabel"
