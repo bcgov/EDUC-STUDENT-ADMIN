@@ -29,6 +29,7 @@
               :headers="headers"
               hide-default-header
               hide-default-footer
+              disable-pagination
               item-key="studentID"
               :items="studentPossibleMatches">
             <template v-slot:item="props">
