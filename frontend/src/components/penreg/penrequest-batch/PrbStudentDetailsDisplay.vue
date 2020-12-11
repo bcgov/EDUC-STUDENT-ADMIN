@@ -590,7 +590,8 @@ export default {
       }
       this.isIssuingNewPen = true;
       const req = {
-        twinStudentIDs: this.possibleMatches.map(match => match.studentID)
+        twinStudentIDs: this.possibleMatches.map(match => match.studentID),
+        prbStudent: this.prbStudent
       };
       ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}/issueNewPen`, req)
         .then(response => {

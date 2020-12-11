@@ -137,9 +137,11 @@ async function issueNewPen(req, res) {
   const token = getBackendToken(req, res);
 
   try {
-    const url = `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${req.params.id}/student/${req.params.studentId}`;
-    let studentData = await getData(token, url);
+    let studentData = req.body.prbStudent;
 
+    studentData.minCode = studentData.minCode?.replace(/ /g,'');
+    studentData.postalCode = studentData.postalCode?.replace(/ /g,'');
+    studentData.dob = studentData.dob?.replace(/\//g,'');
 
     const sagaReq = {
       ...stripAuditColumns(studentData),
