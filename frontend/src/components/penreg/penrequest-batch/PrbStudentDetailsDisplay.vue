@@ -611,6 +611,7 @@ export default {
     /**
      * This method is responsible to do match/unmatch of student to Pen Request.
      * filter the matched row from possible matches to mark them twin.
+     *
      * @param student the matched/unmatched student
      * @param buttonText whether match or unmatch was clicked.
      * @returns {Promise<void>}
