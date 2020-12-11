@@ -70,20 +70,27 @@ async function removeStaleSagas(staleSagas, sagaType) {
 
 try {
   const removeStaleSagaRecordFromRedis = new CronJob(schedulerCronStaleSagaRecordRedis, async () => {
-    log.info('starting findAndRemoveStaleSagaRecord');
+    log.debug('starting findAndRemoveStaleSagaRecord');
     const redLock = redisUtil.getRedLock();
     try {
       await redLock.lock('locks:remove-stale-saga-record', 6000); // no need to release the lock as it will auto expire after 6000 ms.
       const staleSagas = findStaleSagaRecords(await redisUtil.getSagaEvents());
       const stalePRBSagas = findStaleSagaRecords(await redisUtil.getPenRequestBatchSagaEvents());
-      log.info(`found ${staleSagas.length} stale GMP or UMP saga records`);
-      log.info(`found ${stalePRBSagas.length} stale PenRequestBatch saga records`);
-
       if (staleSagas.length > 0) {
-        await removeStaleSagas(staleSagas, 'GMP_UMP');
+        log.info(`found ${staleSagas.length} stale GMP or UMP saga records`);
+        removeStaleSagas(staleSagas, 'GMP_UMP').then(()=>{
+          log.debug('remove stale sagas completed');
+        }).catch((e)=>{
+          log.error(e);
+        });
       }
       if(stalePRBSagas.length > 0){
-        await removeStaleSagas(stalePRBSagas, 'PEN_REQUEST_BATCH');
+        log.info(`found ${stalePRBSagas.length} stale PenRequestBatch saga records`);
+        removeStaleSagas(stalePRBSagas, 'PEN_REQUEST_BATCH').then(()=>{
+          log.debug('remove stale PRB sagas completed');
+        }).catch((e)=>{
+          log.error(e);
+        });
       }
     } catch (e) {
       log.info(`locks:remove-stale-saga-record, check other pods. ${e}`);
