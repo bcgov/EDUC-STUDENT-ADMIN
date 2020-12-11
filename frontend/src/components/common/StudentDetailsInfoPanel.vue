@@ -276,15 +276,23 @@ export default {
       this.validationErrorFields = validationIssues.filter(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR');
       this.validationWarningFields = validationIssues.filter(x => x.penRequestBatchValidationIssueSeverityCode === 'WARNING');
 
-      if(this.validationErrorFields?.length > 0) {
-        this.studentDetails.penRequestBatchStudentStatusCode = PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR;
+      if (!(this.student.penRequestBatchStudentStatusCode === 'MATCHEDSYS' || this.student.penRequestBatchStudentStatusCode === 'MATCHEDUSR')) {
+        if (this.validationErrorFields?.length > 0) {
+          this.studentDetails.penRequestBatchStudentStatusCode = PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR;
+        } else {
+          this.studentDetails.penRequestBatchStudentStatusCode = this.originalStatusCode;
+        }
+        const hasValidationError = this.validationErrorFields?.length > 0;
+        this.$emit('validationRun', {validationIssues, hasValidationError});
+        return hasValidationError;
+      }else{
+        let blankValidation;
+        let noValidationError = false;
+        this.$emit('validationRun', {blankValidation, noValidationError});
+        this.validationErrorFields = null;
+        this.validationWarningFields = null;
+        return false;
       }
-      else {
-        this.studentDetails.penRequestBatchStudentStatusCode = this.originalStatusCode;
-      }
-      const hasValidationError = this.validationErrorFields?.length > 0;
-      this.$emit('validationRun', {validationIssues, hasValidationError});
-      return hasValidationError;
     }
   }
 };
