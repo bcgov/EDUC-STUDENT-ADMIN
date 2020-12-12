@@ -29,6 +29,7 @@
               :headers="headers"
               hide-default-header
               hide-default-footer
+              disable-pagination
               item-key="studentID"
               :items="studentPossibleMatches">
             <template v-slot:item="props">
@@ -126,6 +127,10 @@ export default {
   props: {
     student: {
       type: Object,
+      required: true
+    },
+    demogValidationResult: {
+      type: Array,
       required: true
     },
     possibleMatch: {
@@ -283,7 +288,9 @@ export default {
     enableMatchOrUnMatch(matchedStudent) {
       if (this.student && matchedStudent) {
         if (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE === this.student.penRequestBatchStudentStatusCode
-            || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ === this.student.penRequestBatchStudentStatusCode) {
+            || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ === this.student.penRequestBatchStudentStatusCode
+            || (!this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR')
+                && PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.student.penRequestBatchStudentStatusCode )) {
           this.hoveredOveredRowStudentID = matchedStudent.studentID;
           this.matchUnMatchButtonText = 'Match';
         } else if ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR, 
@@ -339,12 +346,16 @@ export default {
   width: 6%;
 }
 .v-data-table /deep/ tr td:nth-child(3),
-.v-data-table /deep/ tr td:nth-child(4),
-.v-data-table /deep/ tr td:nth-child(5) {
+.v-data-table /deep/ tr td:nth-child(4) {
   width: 18%;
 }
+.v-data-table /deep/ tr td:nth-child(5) {
+  width: 17%;
+}
+.v-data-table /deep/ tr td:nth-child(6) {
+  width: 11%;
+}
 .v-data-table /deep/ tr td:nth-child(2),
-.v-data-table /deep/ tr td:nth-child(6),
 .v-data-table /deep/ tr td:nth-child(7),
 .v-data-table /deep/ tr td:nth-child(8) {
   width: 10%;

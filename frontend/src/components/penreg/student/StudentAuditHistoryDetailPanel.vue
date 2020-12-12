@@ -1,7 +1,7 @@
 <template>
   <div class="full-width mt-n15">
     <v-row>
-      <v-col cols="12" class="pr-2 pl-0 ml-15">
+      <v-col cols="11" class="pr-2 pl-0 ml-15">
         <div id="auditHistoryDetailHeader" class="pt-4 pl-2">
           <span id="headerLabel">Changed by</span>
           <span id="headerUser">{{studentHistoryDetail.updateUser}}</span>
@@ -156,11 +156,11 @@ import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly';
 import PrimaryButton from '../../util/PrimaryButton';
 import {formatMinCode, formatPen, formatPostalCode} from '../../../utils/format';
-import alterMixin from '../../../mixins/alterMixin';
+import alertMixin from '../../../mixins/alertMixin';
 
 export default {
   name: 'studentAudtiHistoryDetail',
-  mixins: [alterMixin],
+  mixins: [alertMixin],
   props: {
     studentHistory: {
       type: Object,

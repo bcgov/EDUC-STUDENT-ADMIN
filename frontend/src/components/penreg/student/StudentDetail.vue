@@ -19,9 +19,11 @@
           <v-tabs-items v-if="!isLoading">
             <StudentDetailCommon 
                 :studentID="studentID"
+                :studentDetails="studentDetails"
                 :validForm="validForm"
                 :parentRefs="this.$refs"
                 :fullReadOnly="false"
+                @alert="setFailureAlert"
                 v-if="tab===0"
             >
               <template v-slot:buttonbar="{ isAdvancedSearch, hasAnyEdits, saveStudent, REQUEST_TYPES }">
@@ -65,11 +67,11 @@ import PrimaryButton from '../../util/PrimaryButton';
 import { Routes } from '../../../utils/constants';
 import AlertMessage from '../../util/AlertMessage';
 import ApiService from '../../../common/apiService';
-import alterMixin from '../../../mixins/alterMixin';
+import alertMixin from '../../../mixins/alertMixin';
 
 export default {
   name: 'studentDetail',
-  mixins: [alterMixin],
+  mixins: [alertMixin],
   props: {
     studentID: {
       type: String,

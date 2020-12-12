@@ -70,7 +70,7 @@ import PenRequestBatchList from './PenRequestBatchList';
 import FilterTag from '../../util/FilterTag';
 import PrimaryButton from '../../util/PrimaryButton';
 import router from '../../../router';
-import alterMixin from '../../../mixins/alterMixin';
+import alertMixin from '../../../mixins/alertMixin';
 
 export default {
   name: 'PenRequestBatchDisplay',
@@ -79,7 +79,7 @@ export default {
     PrimaryButton,
     PenRequestBatchList
   },
-  mixins: [alterMixin],
+  mixins: [alertMixin],
   props: {
     schoolGroup: {
       type: String,

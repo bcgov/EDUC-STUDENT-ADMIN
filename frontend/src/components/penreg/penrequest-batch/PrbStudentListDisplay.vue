@@ -246,7 +246,7 @@ import PrimaryButton from '../../util/PrimaryButton';
 import { isValidPEN, isValidMinCode, isValidPostalCode, isValidDob, isValidAlphanumericValue } from '../../../utils/validation';
 import PrbStudentSearchResults from './PrbStudentSearchResults';
 import { formatPrbStudents } from '../../../utils/penrequest-batch/format';
-import alterMixin from '../../../mixins/alterMixin';
+import alertMixin from '../../../mixins/alertMixin';
 import { difference } from 'lodash';
 
 export default {
@@ -254,7 +254,7 @@ export default {
     PrimaryButton,
     PrbStudentSearchResults,
   },
-  mixins: [alterMixin],
+  mixins: [alertMixin],
   props: {
     batchIDs: {
       type: String,

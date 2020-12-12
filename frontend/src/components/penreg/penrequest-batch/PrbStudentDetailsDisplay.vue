@@ -22,6 +22,7 @@
                       key="info-panel"
                       :runPenMatch="runPenMatch"
                       :studentDetailsCopy="prbStudentCopy"
+                      :demogValidationResult="demogValidationResult"
                       @validationRun="checkValidationResults">
                 <template v-slot:headerPanel="{ openSearchDemographicsModal }">
                   <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center" style="background-color:white;">
@@ -94,6 +95,7 @@
                                       :is-refresh-required="true"
                                       :is-match-un-match="true"
                                       :disabled="disableMatchUnmatch"
+                                      :demogValidationResult="demogValidationResult"
                                       @match-unmatch-student-prb-student="matchUnmatchStudentToPRBStudent"
                                       @refresh-match-results="refreshMatchResults"
                                       :possible-match="possibleMatches"></PenMatchResultsTable>
@@ -102,6 +104,25 @@
           </v-col>
         </v-row>
       </div>
+      <ConfirmationDialog ref="confirmationDialog">
+        <template v-slot:message>
+          <v-col class="warnings-modal pt-0">
+            <v-row class="mb-3">There is <strong>&nbsp;{{demogValidationResult.length}}&nbsp;</strong> questionable errors with this PEN request:</v-row>
+            <v-row v-for="warning in demogValidationResult" :key="warning.penRequestBatchValidationIssueTypeCode">
+              <v-col class="pb-0">
+                <v-row>
+                  <strong>{{warning.uiFieldName}}</strong>
+                  <v-icon small color="#FCBA19" class="ml-2">
+                    fa-exclamation-circle
+                  </v-icon>
+                </v-row>
+                <v-row>{{warning.penRequestBatchValidationIssueTypeCode}}</v-row>
+              </v-col>
+            </v-row>
+          </v-col>
+          <v-divider />
+        </template>
+      </ConfirmationDialog>
     </div>
   </v-container>
 </template>
@@ -124,7 +145,7 @@ import {
   SEARCH_VALUE_TYPE
 } from '@/utils/constants';
 import {cloneDeep, isEmpty} from 'lodash';
-import alterMixin from '../../../mixins/alterMixin';
+import alertMixin from '../../../mixins/alertMixin';
 import PenMatchResultsTable from '@/components/common/PenMatchResultsTable';
 import {
   constructPenMatchObjectFromStudent,
@@ -135,6 +156,7 @@ import {
   updatePossibleMatchResultsBasedOnCurrentStatus
 } from '@/utils/common';
 import {formatDob} from '@/utils/format';
+import ConfirmationDialog from '../../util/ConfirmationDialog';
 
 export default {
   name: 'PrbStudentDetailsDisplay',
@@ -144,9 +166,10 @@ export default {
     PrbStudentStatusChip,
     InfoDialog,
     PenMatchResultsTable,
-    StudentDetailsInfoPanel
+    StudentDetailsInfoPanel,
+    ConfirmationDialog
   },
-  mixins: [alterMixin],
+  mixins: [alertMixin],
   props: {
     totalNumber: {
       type: Number,
@@ -202,6 +225,7 @@ export default {
         PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS,
         PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR,
       ],
+      demogValidationResult: []
     };
   },
   watch: {
@@ -267,8 +291,9 @@ export default {
     disableIssueNewPen() {
       return this.loading || this.prbStudent?.sagaInProgress
           || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
-          || ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ]
-            .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
+          || (![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ]
+            .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus)
+              && (this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR') && (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.prbStudent.penRequestBatchStudentStatusCode )));
     },
     disableModifySearch(){
       return this.loading || this.prbStudent?.sagaInProgress
@@ -321,8 +346,8 @@ export default {
             ...this.modalStudent
           }
         };
-        const result = await getDemogValidationResults(payload);
-        const hasValidationFailure = result.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR');
+        this.demogValidationResult = await getDemogValidationResults(payload);
+        const hasValidationFailure = this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR');
 
         if (!hasValidationFailure) {
           if (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR === this.prbStudent?.penRequestBatchStudentStatusCode
@@ -534,7 +559,8 @@ export default {
       }
     },
     checkValidationResults(value) {
-      this.hasValidationIssues = value;
+      this.hasValidationIssues = value.hasValidationError;
+      this.demogValidationResult = value.validationIssues;
     },
     setModalStudentFromPrbStudent(prbStudent){
       this.modalStudent = deepCloneObject(prbStudent);
@@ -549,10 +575,23 @@ export default {
       }
       return 'FIXABLE';
     },
+    async confirmToProceed() {
+      let result = true;
+      if(this.demogValidationResult.length > 0) {
+        result = await this.$refs.confirmationDialog.open('Are you sure you want to proceed?', null, 
+          { width: '680px', messagePadding: 'px-4 pt-1', color: '', dark: false, closeIcon: true, resolveText: 'Confirm' });
+      }
+      return result;
+    },
     async issueNewPen() {
+      let result = await this.confirmToProceed();
+      if(!result) {
+        return;
+      }
       this.isIssuingNewPen = true;
       const req = {
-        twinStudentIDs: this.possibleMatches.map(match => match.studentID)
+        twinStudentIDs: this.possibleMatches.map(match => match.studentID),
+        prbStudent: this.prbStudent
       };
       ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}/issueNewPen`, req)
         .then(response => {
@@ -572,11 +611,17 @@ export default {
     /**
      * This method is responsible to do match/unmatch of student to Pen Request.
      * filter the matched row from possible matches to mark them twin.
+     *
      * @param student the matched/unmatched student
      * @param buttonText whether match or unmatch was clicked.
      * @returns {Promise<void>}
      */
     async matchUnmatchStudentToPRBStudent(student, buttonText){
+      let result = await this.confirmToProceed();
+      if(!result) {
+        return;
+      }
+
       let operation;
       if('Match' ===  buttonText){
         this.prbStudent.assignedPEN = student.pen;
@@ -670,5 +715,9 @@ export default {
   pre {
     font-family: inherit;
     font-size: inherit;
+  }
+
+  .warnings-modal {
+    color: black;
   }
 </style>

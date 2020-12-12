@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import alterMixin from '../mixins/alterMixin';
+import alertMixin from '../mixins/alertMixin';
 import PrimaryButton from './util/PrimaryButton';
 import PenMatchResultsTable from '@/components/common/PenMatchResultsTable';
 import ApiService from '../common/apiService';
@@ -73,7 +73,7 @@ export default {
     PrimaryButton,
     AlertMessage
   },
-  mixins: [alterMixin],
+  mixins: [alertMixin],
   data() {
     return {
       isLoadingMatches: false,
@@ -141,7 +141,7 @@ export default {
       }
     },
     checkValidationResults(value) {
-      this.hasValidationIssues = value;
+      this.hasValidationIssues = value.hasValidationError;
     }
   },
 };

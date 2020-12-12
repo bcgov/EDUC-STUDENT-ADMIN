@@ -30,6 +30,8 @@ const studentsRouter = require('./routes/students');
 const studentRequestRouter = require('./routes/studentRequest');
 const studentRequestStatusesRouter = require('./routes/studentRequestStatuses');
 const penServicesRouter = require('./routes/pen-services-router');
+const schoolsRouter = require('./routes/schools');
+const penTraxRouter = require('./routes/penTrax');
 const promMid = require('express-prometheus-middleware');
 const actuator = require('express-actuator');
 const messageSubscriber = require('./messaging/message-subscriber');
@@ -161,6 +163,8 @@ apiRouter.use('/students', studentsRouter);
 apiRouter.use('/studentRequest', studentRequestRouter);
 apiRouter.use('/studentRequest/codes', studentRequestStatusesRouter);
 apiRouter.use('/pen-services', penServicesRouter);
+apiRouter.use('/schools', schoolsRouter);
+apiRouter.use('/penTrax', penTraxRouter);
 
 // Prevent unhandled errors from crashing application
 process.on('unhandledRejection', err => {

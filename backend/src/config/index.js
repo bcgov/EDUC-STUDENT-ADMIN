@@ -61,6 +61,8 @@ nconf.defaults({
     digitalIdURL: process.env.DIGITAL_ID_URL,
     digitalIdIdentityTypeCodesURL: process.env.DIGITAL_ID_URL + '/identityTypeCodes',
     profileSagaAPIURL: process.env.PROFILE_REQUEST_SAGA_API_URL,
+    schoolAPIURL: process.env.SCHOOL_API_URL,
+    penTraxURL: process.env.PEN_TRAX_API_URL,
     student: {
       rootURL: process.env.STUDENT_API_URL,
       genderCodesURL: process.env.STUDENT_API_URL + '/gender-codes',
@@ -77,7 +79,7 @@ nconf.defaults({
       prbValidationFieldCodesURL: process.env.PEN_SERVICES_API_URL + '/validation/issue-field-code',
       prbValidationSeverityCodesURL: process.env.PEN_SERVICES_API_URL + '/validation/issue-severity-code',
       prbValidationTypeCodesURL: process.env.PEN_SERVICES_API_URL + '/validation/issue-type-code'
-}
+    }
   },
   oidc: {
     publicKey: process.env.SOAM_PUBLIC_KEY,

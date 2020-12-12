@@ -15,12 +15,13 @@
                                     :items="getDemogCodeComboBox()" revert-id="revertDemogCode"
                                     :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.DEMOG_CODE)"></StudentDetailsComboBox>
 
-            <StudentDetailsTextFieldSideCardReadOnly :model="''" :name="STUDENT_DETAILS_FIELDS.TRAX_STATUS"
+            <StudentDetailsTextFieldSideCardReadOnly :model="traxStatus" :name="STUDENT_DETAILS_FIELDS.TRAX_STATUS"
                                                       colspan="1" label="TRAX Status"
                                                       :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.TRAX_STATUS)"></StudentDetailsTextFieldSideCardReadOnly>
 
-            <StudentDetailsTextFieldSideCardReadOnly :model="''" :name="STUDENT_DETAILS_FIELDS.GRAD_DATE"
-                                                      colspan="1" label="Grad Date"
+            <StudentDetailsTextFieldSideCardReadOnly :model="gradDateAndMincode" :name="STUDENT_DETAILS_FIELDS.GRAD_DATE"
+                                                      colspan="1" label="Grad Date & Mincode"
+                                                      multi-line
                                                       :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.GRAD_DATE)"></StudentDetailsTextFieldSideCardReadOnly>
 
             <StudentDetailsTextFieldSideCardReadOnly :model="getCreatedDateTime()"
@@ -108,7 +109,7 @@
                 <v-text-field
                     tabindex="7"
                     v-on:keyup.tab="[editingGender = true, hoveringGender = true]"
-                    v-on:mouseover="isFieldDisabled('memo')?hoveringGender=false:hoveringGender = true"
+                    v-on:mouseover="isFieldDisabled('genderCode')?hoveringGender=false:hoveringGender = true"
                     v-on:mouseout="editingGender ? hoveringGender = true : hoveringGender=false"
                     v-on:blur="[editingGender = false, hoveringGender = false]"
                     v-on:click="[editingGender = true, hoveringGender = true]"
@@ -158,13 +159,13 @@
                 <v-text-field
                   tabindex="8"
                   v-on:keyup.tab="[editingDOB = true, hoveringDOB = true, shortDOBStyle()]"
-                  v-on:mouseover="isFieldDisabled('memo')? hoveringDOB = false : hoveringDOB = true"
+                  v-on:mouseover="isFieldDisabled('dob')? hoveringDOB = false : hoveringDOB = true"
                   v-on:mouseout="editingDOB ? hoveringDOB = true : hoveringDOB = false"
                   v-on:blur="[editingDOB = false, hoveringDOB = false, longDOBStyle()]"
                   v-on:click="[editingDOB = true, hoveringDOB = true, shortDOBStyle()]"
                   v-on:input="updateDOBLabel()"
                   class="onhoverEdit bolder customNoBorder"
-                  :class="{onhoverPad: !hoveringDOB && !dobHasChanged('dob'), darkBackgound: hoveringDOB || dobHasChanged('dob')}"
+                  :class="{onhoverPad: !hoveringDOB && !dobHasChanged(), darkBackgound: hoveringDOB || dobHasChanged()}"
                   v-model="studentCopy.dob"
                   :id='STUDENT_DETAILS_FIELDS.DOB'
                   color="#000000"
@@ -194,7 +195,7 @@
                   v-on:click="revertDOBField(STUDENT_DETAILS_FIELDS.DOB)"
                   class="onhoverEdit revert customNoBorder ml-3"
                   readonly
-                  v-show="dobHasChanged(STUDENT_DETAILS_FIELDS.DOB)"
+                  v-show="dobHasChanged()"
                   value="Revert"
                   style="padding-top: 2px;"
                   dense
@@ -214,14 +215,58 @@
                                               colspan="2" label="Postal Code"
                                               :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.LOCAL_ID)"></StudentDetailsTextFieldReadOnly>
 
-            <StudentDetailsTextField max-length="9" min-length="8" :name="STUDENT_DETAILS_FIELDS.MINCODE" tab-index="9"
-                                      @changeStudentObjectValue="changeStudentObjectValue"
-                                      :model="mincode" :has-edits="hasEdits"
-                                      revert-id="revertMincode" :fieldValidationRequired=true
-                                      :validation-rules="validateMincode" :revert-field="revertField" label="Mincode"
-                                      colspan="2" :handle-on-input="handleInput(STUDENT_DETAILS_FIELDS.MINCODE)"
-                                      :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MINCODE)"></StudentDetailsTextField>
-
+            <v-row no-gutters class="py-1">
+              <v-col cols="2">
+                <p class="labelField">Mincode</p>
+              </v-col>
+              <v-col cols="2" :class="{textFieldColumn: !mincodeError}">
+                <v-text-field
+                    tabindex="9"
+                    v-on:keyup.tab="[editingMincode = true, hoveringMincode = true]"
+                    v-on:mouseover="isFieldDisabled('mincode')? hoveringMincode = false : hoveringMincode = true"
+                    v-on:mouseout="editingMincode ? hoveringMincode = true : hoveringMincode = false"
+                    v-on:blur="[editingMincode = false, hoveringMincode = false]"
+                    v-on:click="[editingMincode = true, hoveringMincode = true]"
+                    v-on:input="handleInput(STUDENT_DETAILS_FIELDS.MINCODE)"
+                    :error-messages="errors"
+                    class="onhoverEdit bolder customNoBorder"
+                    :class="{onhoverPad: !hoveringMincode && !hasEdits(STUDENT_DETAILS_FIELDS.MINCODE), darkBackgound: hoveringMincode || hasEdits(STUDENT_DETAILS_FIELDS.MINCODE)}"
+                    v-model="minCodeLabel"
+                    :id='STUDENT_DETAILS_FIELDS.MINCODE'
+                    color="#000000"
+                    dense
+                    :rules="validateMinCode()"
+                    max-length="9" min-length="8"
+                    :readonly="!hoveringMincode || !editingMincode"
+                    :outlined="hoveringMincode || editingMincode || hasEdits(STUDENT_DETAILS_FIELDS.MINCODE)"
+                    :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MINCODE)"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="4" class="textFieldColumn">
+                <v-text-field
+                    class="onhoverEdit bolder customNoBorder onhoverPad"
+                    v-model="schoolLabel"
+                    id='schoolFill'
+                    color="#000000"
+                    dense
+                    readonly
+                    tabindex="-1"
+                ></v-text-field>
+              </v-col>
+              <v-col class="textFieldColumn" cols="2">
+                <v-text-field
+                    id='revertMincode'
+                    v-on:click="revertMinCodeField()"
+                    class="onhoverEdit revert customNoBorder ml-3"
+                    readonly
+                    v-if="hasEdits(STUDENT_DETAILS_FIELDS.MINCODE)"
+                    value="Revert"
+                    style="padding-top: 2px;"
+                    dense
+                    tabindex="-1"
+                ></v-text-field>
+              </v-col>
+            </v-row>
             <StudentDetailsTextFieldReadOnly :model="studentCopy.localID?studentCopy.localID:''" :name="STUDENT_DETAILS_FIELDS.LOCAL_ID"
                                               colspan="2" label="Local ID"
                                               :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.LOCAL_ID)"></StudentDetailsTextFieldReadOnly>
@@ -256,11 +301,11 @@
               </div>
             </StudentDetailsTemplateTextField>
 
-            <v-row no-gutters dense>
+            <v-row no-gutters dense style="min-height: 7em;">
               <v-col cols="2">
                 <p class="labelField">Memo</p>
               </v-col>
-              <v-col class="textAreaColumn">
+              <v-col class="textAreaColumn memo-style">
                 <v-textarea
                   tabindex="10"
                   v-on:keyup.tab="[editingMemo = true, hoveringMemo = true]"
@@ -275,8 +320,8 @@
                   color="#000000"
                   maxlength="4000"
                   dense
-                  rows="2"
-                  auto-grow
+                  rows="3"
+                  no-resize
                   :readonly="!hoveringMemo || !editingMemo"
                   :outlined="hoveringMemo || editingMemo || hasEdits(STUDENT_DETAILS_FIELDS.MEMO)"
                   :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MEMO)"
@@ -380,7 +425,7 @@ import StudentDetailsTextFieldSideCardReadOnly
 import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
 import {formatMinCode, formatPen} from '../../utils/format';
 import {sortBy,isEmpty} from 'lodash';
-import alterMixin from '../../mixins/alterMixin';
+import alertMixin from '../../mixins/alertMixin';
 import ConfirmationDialog from '../util/ConfirmationDialog';
 import AlertMessage from '../util/AlertMessage';
 import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard';
@@ -388,8 +433,8 @@ import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard
 const JSJoda = require('@js-joda/core');
 
 export default {
-  name: 'studentDetail',
-  mixins: [alterMixin],
+  name: 'studentDetailCommon',
+  mixins: [alertMixin],
   props: {
     studentID: {
       type: String,
@@ -429,6 +474,7 @@ export default {
       spacePostalCode: null,
       isLoading: true,
       deceasedDialog: false,
+      errors: [], // asynchronous way to set the validation error messages
       mincodeHint: 'Invalid Mincode',
       mincodeError: false,
       genderHint: 'Invalid Gender Code',
@@ -440,17 +486,21 @@ export default {
       statusLabels: [],
       gradeLabels: [],
       gradeLabel: null,
+      minCodeLabel: null,
+      schoolLabel: null,
       alert: false,
       createdDateTime: null,
       updatedDateTime: null,
       longDOB: null,
-      origStudent: null,
-      studentCopy: null,
+      origStudent: {},
+      studentCopy: {},
       REQUEST_TYPES: REQUEST_TYPES,
       editingDOB: false,
       hoveringDOB: false,
       editingGender: false,
       hoveringGender: false,
+      editingMincode: false,
+      hoveringMincode: false,
       editingMemo: false,
       hoveringMemo: false,
       enableDisableFieldsMap: new Map(),
@@ -461,7 +511,9 @@ export default {
       merges: [],
       twins: [],
       twinsDialog: false,
-      unsavedChanges: false
+      unsavedChanges: false,
+      gradDateAndMincode: [],
+      traxStatus: '',
     };
   },
   created() {
@@ -473,9 +525,6 @@ export default {
   computed: {
     ...mapGetters('student', ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects']),
     ...mapState('studentSearch', ['isAdvancedSearch']),
-    mincode() {
-      return formatMinCode(this.studentCopy.mincode);
-    },
     mergedTo() {
       return this.merges.find(merge => merge.studentMergeDirectionCode === 'TO');
     },
@@ -602,22 +651,64 @@ export default {
         this.genderHint
       ];
     },
-    validateMincode() {
-      if (this.studentCopy) {
-        if (!this.studentCopy.mincode) {
-          this.mincodeError = false;
-          return [];
-        } else {
-          if (this.studentCopy.mincode.match('^[0-9]\\d*$') && this.studentCopy.mincode.length === 8) {
+    // Asynchronous validator returns an array of boolean or string that would be provided for :rules prop of input field
+    validateMinCode() {
+      return [v => {
+        this.setMinCode(v);
+        this.schoolLabel = '';
+        if (this.studentCopy) {
+          if (!this.studentCopy.mincode) {
             this.mincodeError = false;
-            return [];
+            this.schoolLabel = '';
+            return true;
+          } else {
+            if (this.studentCopy.mincode.match('^[0-9]\\d*$') && this.studentCopy.mincode.length === 8) {
+              this.getSchoolName(this.studentCopy.mincode);
+              return true;
+            }
           }
         }
+
+        this.mincodeError = true;
+        return this.mincodeHint;
+      }];
+    },
+    async getSchoolName(mincode) {
+      try {
+        this.schoolLabel = await this.retrieveSchoolEntity(mincode);
+        if (!this.schoolLabel) {
+          this.mincodeError = true;
+          this.errors = [this.mincodeHint];
+        } else {
+          this.mincodError = false;
+          this.errors = [];
+        }
+      } catch (e) {
+        this.schoolLabel = '';
+        this.mincodeError = true;
+        this.errors = [this.mincodeHint];
       }
-      this.mincodeError = true;
-      return [
-        this.mincodeHint
-      ];
+    },
+    retrieveSchoolEntity(mincode) {
+      const params = {
+        params: {
+          mincode,
+        }
+      };
+      if (mincode) {
+        return new Promise((resolve, reject) => {
+          ApiService.apiAxios
+            .get(Routes.SCHOOL_DATA_URL, params)
+            .then(response => {
+              resolve(response.data?.schoolName);
+            })
+            .catch(error => {
+              reject(error);
+            });
+        });
+      } else {
+        return Promise.resolve('');
+      }
     },
     setStudent(student) {
       this.origStudent = student;
@@ -627,6 +718,7 @@ export default {
       this.updateDOBLabel(true);
       this.formatPostalCode();
       this.setGradeLabel();
+      this.setMinCodeLabel();
       if (this.studentCopy.statusCode === STUDENT_CODES.MERGED) {
         this.setEnableDisableForFields(true, STUDENT_DETAILS_FIELDS.MERGED_TO, STUDENT_DETAILS_FIELDS.PEN);
       }
@@ -648,6 +740,7 @@ export default {
           })
           .catch(error => {
             console.log(error);
+            this.$emit('alert', 'An error occurred while loading the student details. Please try again later.');
           })
           .finally(() => {
             this.isLoading = false;
@@ -655,6 +748,7 @@ export default {
       }
     },
     hasEdits(key) {
+
       let studentCopy = this.studentCopy[key];
       let studentOriginal = this.origStudent[key];
       studentCopy = (studentCopy === null || studentCopy === undefined) ? '' : studentCopy;
@@ -675,6 +769,10 @@ export default {
     revertDOBField(value) {
       this.revertField(value);
       this.updateDOBLabel(true);
+    },
+    revertMinCodeField() {
+      this.revertField(STUDENT_DETAILS_FIELDS.MINCODE);
+      this.setMinCodeLabel();
     },
     setGradeLabel() {
       if (this.studentCopy && this.studentCopy.gradeCode && this.gradeCodeObjects) {
@@ -699,6 +797,22 @@ export default {
     formatPostalCode() {
       if (this.studentCopy.postalCode) {
         this.spacePostalCode = this.studentCopy.postalCode.replace(/.{3}$/, ' $&');
+      }
+    },
+    setMinCodeLabel() {
+      if (this.studentCopy.mincode) {
+        this.minCodeLabel = formatMinCode(this.studentCopy.mincode);
+      }
+    },
+    setMinCode(minCodeLabel) {
+      if (minCodeLabel) {
+        if (minCodeLabel.includes(' ')) {
+          this.studentCopy.mincode = minCodeLabel.replace(' ' , '');
+        } else {
+          this.studentCopy.mincode = minCodeLabel;
+        }
+      } else {
+        this.studentCopy.mincode = '';
       }
     },
     longDOBStyle() {
@@ -846,6 +960,26 @@ export default {
       this.setStudent(student);
       this.merges = merges;
       this.twins = twins;
+      this.getTraxData(student.pen);
+    },
+    formatGradDate(date) {
+      return date > 0 ? moment(date + '', 'YYYYMM').format('YYYY/MM') : '';
+    },
+    getTraxData(pen) {
+      this.traxStatus = '';
+      this.gradDateAndMincode = [];
+      ApiService.apiAxios
+        .get(Routes.PEN_TRAX_URL, { params: { pen } })
+        .then(response => {
+          this.traxStatus = response.data.traxStatus;
+          if(response.data.student?.gradDate > 0) {
+            this.gradDateAndMincode = [this.formatGradDate(response.data.student?.gradDate), formatMinCode(response.data.student?.mincodeGrad || '')];
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          this.$emit('alert', 'An error occurred while loading the TRAX status. Please try again later.');
+        });
     }
   }
 };
@@ -869,6 +1003,11 @@ export default {
 .onhoverPad {
   padding-left: 12px !important;
   padding-top: 2px !important;
+}
+
+.memo-style > .v-input > .v-input__control > .v-input__slot > .v-text-field__slot > textarea {
+  margin-right: 2px;
+  margin-bottom: 3px;
 }
 
 .onEditPad {
