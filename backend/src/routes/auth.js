@@ -40,16 +40,6 @@ router.get('/login', passport.authenticate('oidc', {
   failureRedirect: 'error'
 }));
 
-function computeSMRetUrl(req, token) {
-  let siteMinderRetUrl;
-  if (req.query && req.query.sessionExpired) {
-    siteMinderRetUrl = encodeURIComponent(config.get('logoutEndpoint') + '?id_token_hint=' + token + '&post_logout_redirect_uri=' + config.get('server:frontend') + '/session-expired');
-  } else {
-    siteMinderRetUrl = encodeURIComponent(config.get('logoutEndpoint') + '?id_token_hint=' + token + '&post_logout_redirect_uri=' + config.get('server:frontend') + '/logout');
-  }
-  return siteMinderRetUrl;
-}
-
 function logout(req) {
   req.logout();
   req.session.destroy();
@@ -57,30 +47,14 @@ function logout(req) {
 
 //removes tokens and destroys session
 router.get('/logout', async (req, res) => {
-  if (req.user && req.user.jwt) {
-    const token = req.user.jwt;
-    const siteMinderRetUrl = computeSMRetUrl(req, token);
-    const siteMinderLogoutUrl = config.get('siteMinder_logout_endpoint');
     logout(req);
-    res.redirect(`${siteMinderLogoutUrl}${siteMinderRetUrl}`);
-  } else {
-    if (req.user) {
-      const refresh = await auth.renew(req.user.refreshToken);
-      const siteMinderRetUrl = computeSMRetUrl(req, refresh.jwt);
-      const siteMinderLogoutUrl = config.get('siteMinder_logout_endpoint');
-      logout(req);
-      res.redirect(`${siteMinderLogoutUrl}${siteMinderRetUrl}`);
+    let retUrl;
+    if (req.query && req.query.sessionExpired) {
+      retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/session-expired');
     } else {
-      logout(req);
-      let retUrl;
-      if (req.query && req.query.sessionExpired) {
-        retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/session-expired');
-      } else {
-        retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/logout');
-      }
-      res.redirect(config.get('siteMinder_logout_endpoint')+ retUrl);
+      retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/logout');
     }
-  }
+    res.redirect(config.get('siteMinder_logout_endpoint')+ retUrl);
 });
 
 //refreshes jwt on refresh if refreshToken is valid
