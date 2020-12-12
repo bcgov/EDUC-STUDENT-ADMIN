@@ -47,14 +47,14 @@ function logout(req) {
 
 //removes tokens and destroys session
 router.get('/logout', async (req, res) => {
-    logout(req);
-    let retUrl;
-    if (req.query && req.query.sessionExpired) {
-      retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/session-expired');
-    } else {
-      retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/logout');
-    }
-    res.redirect(config.get('siteMinder_logout_endpoint')+ retUrl);
+  logout(req);
+  let retUrl;
+  if (req.query && req.query.sessionExpired) {
+    retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/session-expired');
+  } else {
+    retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/logout');
+  }
+  res.redirect(config.get('siteMinder_logout_endpoint')+ retUrl);
 });
 
 //refreshes jwt on refresh if refreshToken is valid
