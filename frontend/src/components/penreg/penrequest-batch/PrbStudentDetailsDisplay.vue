@@ -305,6 +305,7 @@ export default {
   },
   created() {
     this.$store.dispatch('penRequestBatch/getCodes');
+    this.resetAlert();
     this.initializeDetails();
   },
   beforeDestroy() {
