@@ -17,5 +17,10 @@ export default {
       this.alertType = 'bootstrap-error';
       this.alert = true;
     },
+    resetAlert() {
+      this.alert = false;
+      this.alertMessage = null;
+      this.alertType = null;
+    }
   }
 };
