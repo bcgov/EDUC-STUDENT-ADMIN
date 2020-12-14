@@ -7,6 +7,12 @@
     </v-row>
     <v-row :cols="colspan" no-gutters>
       <v-col class="sideCardField">
+        <v-progress-circular
+          v-if="loading"
+          color="primary"
+          indeterminate
+          class="ml-3"
+        ></v-progress-circular>
         <v-text-field
             :id='name'
             class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
@@ -16,7 +22,7 @@
             dense
             tabindex="-1"
             :disabled="fieldDisabled"
-            v-if="!multiLine"
+            v-else-if="!multiLine"
         ></v-text-field>
         <span v-for="v in fieldModel" v-else :key="v" class="bolder">
           {{v}} <br/>
@@ -52,6 +58,10 @@ export default {
       required: true
     },
     multiLine: {
+      type: Boolean,
+      default: false
+    },
+    loading: {
       type: Boolean,
       default: false
     }
