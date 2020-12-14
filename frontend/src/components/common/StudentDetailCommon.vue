@@ -17,11 +17,13 @@
 
             <StudentDetailsTextFieldSideCardReadOnly :model="traxStatus" :name="STUDENT_DETAILS_FIELDS.TRAX_STATUS"
                                                       colspan="1" label="TRAX Status"
+                                                      :loading="loadingTraxData"
                                                       :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.TRAX_STATUS)"></StudentDetailsTextFieldSideCardReadOnly>
 
             <StudentDetailsTextFieldSideCardReadOnly :model="gradDateAndMincode" :name="STUDENT_DETAILS_FIELDS.GRAD_DATE"
                                                       colspan="1" label="Grad Date & Mincode"
                                                       multi-line
+                                                      :loading="loadingTraxData"
                                                       :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.GRAD_DATE)"></StudentDetailsTextFieldSideCardReadOnly>
 
             <StudentDetailsTextFieldSideCardReadOnly :model="getCreatedDateTime()"
@@ -243,7 +245,14 @@
                 ></v-text-field>
               </v-col>
               <v-col cols="4" class="textFieldColumn">
+                <v-progress-circular
+                    v-if="loadingSchoolData"
+                    color="primary"
+                    indeterminate
+                    class="ml-3"
+                ></v-progress-circular>
                 <v-text-field
+                    v-else
                     class="onhoverEdit bolder customNoBorder onhoverPad"
                     v-model="schoolLabel"
                     id='schoolFill'
@@ -514,6 +523,8 @@ export default {
       unsavedChanges: false,
       gradDateAndMincode: [],
       traxStatus: '',
+      loadingTraxData: false,
+      loadingSchoolData: false,
     };
   },
   created() {
@@ -696,6 +707,7 @@ export default {
         }
       };
       if (mincode) {
+        this.loadingSchoolData = true;
         return new Promise((resolve, reject) => {
           ApiService.apiAxios
             .get(Routes.SCHOOL_DATA_URL, params)
@@ -704,6 +716,9 @@ export default {
             })
             .catch(error => {
               reject(error);
+            })
+            .finally(() => {
+              this.loadingSchoolData = false;
             });
         });
       } else {
@@ -871,6 +886,7 @@ export default {
           .put(Routes['student'].ROOT_ENDPOINT+'/'+ this.studentID, this.prepPut(this.studentCopy))
           .then(response => {
             this.setStudent(response.data);
+            this.$emit('update:student', response.data);
             this.setSuccessAlert('Student data updated successfully.');
           })
           .catch(error => {
@@ -968,6 +984,7 @@ export default {
     getTraxData(pen) {
       this.traxStatus = '';
       this.gradDateAndMincode = [];
+      this.loadingTraxData = true;
       ApiService.apiAxios
         .get(Routes.PEN_TRAX_URL, { params: { pen } })
         .then(response => {
@@ -979,6 +996,9 @@ export default {
         .catch(error => {
           console.log(error);
           this.$emit('alert', 'An error occurred while loading the TRAX status. Please try again later.');
+        })
+        .finally(() => {
+          this.loadingTraxData = false;
         });
     }
   }

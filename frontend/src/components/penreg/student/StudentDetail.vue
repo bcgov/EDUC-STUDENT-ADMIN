@@ -24,6 +24,7 @@
                 :parentRefs="this.$refs"
                 :fullReadOnly="false"
                 @alert="setFailureAlert"
+                @update:student="v => studentDetails.student = v"
                 v-if="tab===0"
             >
               <template v-slot:buttonbar="{ isAdvancedSearch, hasAnyEdits, saveStudent, REQUEST_TYPES }">
