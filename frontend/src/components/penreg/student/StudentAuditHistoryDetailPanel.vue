@@ -1,13 +1,12 @@
 <template>
   <div class="full-width mt-n15">
     <v-row>
-      <v-col cols="11" class="pr-2 pl-0 ml-15">
+      <v-col cols="11" class="ml-10">
         <div id="auditHistoryDetailHeader" class="pt-4 pl-2">
           <span id="headerLabel">Changed by</span>
           <span id="headerUser">{{studentHistoryDetail.updateUser}}</span>
           <span id="headerUpdateDate">{{frontEndDateFormat(studentHistoryDetail.updateDate)}}</span>
           <span id="headerUpdateTime">at {{frontEndTimeFormat(studentHistoryDetail.updateDate)}}</span>
-          <span id="headerRowNumber">{{rowNumber + 1}} of {{this.studentHistory.content.length}}</span>
           <span class="float-right mt-n2"> 
             <v-btn 
               class="mr-3"
@@ -52,45 +51,45 @@
                                             labelSpan="4" colspan="8" label="Legal Given"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.legalMiddleNames?studentHistoryDetail.legalMiddleNames:''" :name="STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES"
+          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.legalMiddleNames || ''" :name="STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES"
                                             :highlight="!!studentHistoryDetail.legalMiddleNames_diff"
                                             labelSpan="4" colspan="8" label="Legal Middle"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
           
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualLastName" :name="STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME"
+          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualLastName || ''" :name="STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME"
                                             :highlight="!!studentHistoryDetail.usualLastName_diff"
                                             labelSpan="4" colspan="8" label="Usual Surname"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualFirstName" :name="STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME"
+          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualFirstName || ''" :name="STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME"
                                             labelSpan="4" colspan="8" label="Usual Given"
                                             :highlight="!!studentHistoryDetail.usualFirstName_diff"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualMiddleNames?studentHistoryDetail.usualMiddleNames:''" :name="STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES"
+          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualMiddleNames || ''" :name="STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES"
                                             labelSpan="4" colspan="8" label="Usual Middle"
                                             :highlight="!!studentHistoryDetail.usualMiddleNames_diff"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.genderCode?studentHistoryDetail.genderCode:''"
+          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.genderCode || ''"
                                             :highlight="!!studentHistoryDetail.genderCode_diff"
                                             :name="STUDENT_DETAILS_FIELDS.GENDER_CODE" 
                                             labelSpan="4" colspan="1" label="Gender"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.dob?studentHistoryDetail.dob:''"
+          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.dob || ''"
                                             :highlight="!!studentHistoryDetail.dob_diff"
                                             :name="STUDENT_DETAILS_FIELDS.DOB" 
                                             labelSpan="4" colspan="4" label="Date of Birth"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.gradeCode?studentHistoryDetail.gradeCode:''"
+          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.gradeCode || ''"
                                             :highlight="!!studentHistoryDetail.gradeCode_diff"
                                             :name="STUDENT_DETAILS_FIELDS.GRADE_CODE" 
                                             labelSpan="4" colspan="1" label="Grade" :grade-level="getGradeLabel()"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.gradeYear?studentHistoryDetail.gradeYear:''"
+          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.gradeYear || ''"
                                             :highlight="studentHistoryDetail.gradeYear_diff"
                                             :name="STUDENT_DETAILS_FIELDS.GRADE_YEAR"
                                             labelSpan="4" colspan="4" label="Grade School Year"
@@ -107,7 +106,7 @@
                                     labelSpan="4" colspan="6" label="Mincode" 
                                     :disabled="false"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.localID?studentHistoryDetail.localID:''" :name="STUDENT_DETAILS_FIELDS.LOCAL_ID"
+          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.localID || ''" :name="STUDENT_DETAILS_FIELDS.LOCAL_ID"
                                             :highlight="studentHistoryDetail.localID_diff"
                                             labelSpan="4" colspan="6" label="Local ID"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
@@ -266,24 +265,18 @@ span#headerLabel {
 
 span#headerUser {
   margin-top: 10px;
-  margin-left: 14px;
+  margin-left: 5px;
 }
 
 span#headerUpdateDate {
   margin-top: 10px;
-  margin-left: 12px;
+  margin-left: 8px;
   font-size: 14px;
 }
 
 span#headerUpdateTime {
   margin-top: 10px;
   margin-left: 6px;
-  font-size: 14px;
-}
-
-span#headerRowNumber {
-  margin-top: 10px;
-  margin-left: 60px;
   font-size: 14px;
 }
 
