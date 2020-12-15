@@ -1,13 +1,12 @@
 <template>
   <div class="full-width mt-n15">
     <v-row>
-      <v-col cols="11" class="pr-2 pl-0 ml-15">
+      <v-col cols="11" class="ml-10">
         <div id="auditHistoryDetailHeader" class="pt-4 pl-2">
           <span id="headerLabel">Changed by</span>
           <span id="headerUser">{{studentHistoryDetail.updateUser}}</span>
           <span id="headerUpdateDate">{{frontEndDateFormat(studentHistoryDetail.updateDate)}}</span>
           <span id="headerUpdateTime">at {{frontEndTimeFormat(studentHistoryDetail.updateDate)}}</span>
-          <span id="headerRowNumber">{{rowNumber + 1}} of {{this.studentHistory.content.length}}</span>
           <span class="float-right mt-n2"> 
             <v-btn 
               class="mr-3"
@@ -57,12 +56,12 @@
                                             labelSpan="4" colspan="8" label="Legal Middle"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
           
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualLastName" :name="STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME"
+          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualLastName?studentHistoryDetail.usualLastName:''" :name="STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME"
                                             :highlight="!!studentHistoryDetail.usualLastName_diff"
                                             labelSpan="4" colspan="8" label="Usual Surname"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualFirstName" :name="STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME"
+          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualFirstName?studentHistoryDetail.usualFirstName:''" :name="STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME"
                                             labelSpan="4" colspan="8" label="Usual Given"
                                             :highlight="!!studentHistoryDetail.usualFirstName_diff"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
@@ -266,24 +265,18 @@ span#headerLabel {
 
 span#headerUser {
   margin-top: 10px;
-  margin-left: 14px;
+  margin-left: 5px;
 }
 
 span#headerUpdateDate {
   margin-top: 10px;
-  margin-left: 12px;
+  margin-left: 8px;
   font-size: 14px;
 }
 
 span#headerUpdateTime {
   margin-top: 10px;
   margin-left: 6px;
-  font-size: 14px;
-}
-
-span#headerRowNumber {
-  margin-top: 10px;
-  margin-left: 60px;
   font-size: 14px;
 }
 
