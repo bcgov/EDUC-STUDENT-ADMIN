@@ -51,45 +51,45 @@
                                             labelSpan="4" colspan="8" label="Legal Given"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.legalMiddleNames?studentHistoryDetail.legalMiddleNames:''" :name="STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES"
+          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.legalMiddleNames || ''" :name="STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES"
                                             :highlight="!!studentHistoryDetail.legalMiddleNames_diff"
                                             labelSpan="4" colspan="8" label="Legal Middle"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
           
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualLastName?studentHistoryDetail.usualLastName:''" :name="STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME"
+          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualLastName || ''" :name="STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME"
                                             :highlight="!!studentHistoryDetail.usualLastName_diff"
                                             labelSpan="4" colspan="8" label="Usual Surname"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualFirstName?studentHistoryDetail.usualFirstName:''" :name="STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME"
+          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualFirstName || ''" :name="STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME"
                                             labelSpan="4" colspan="8" label="Usual Given"
                                             :highlight="!!studentHistoryDetail.usualFirstName_diff"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualMiddleNames?studentHistoryDetail.usualMiddleNames:''" :name="STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES"
+          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualMiddleNames || ''" :name="STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES"
                                             labelSpan="4" colspan="8" label="Usual Middle"
                                             :highlight="!!studentHistoryDetail.usualMiddleNames_diff"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.genderCode?studentHistoryDetail.genderCode:''"
+          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.genderCode || ''"
                                             :highlight="!!studentHistoryDetail.genderCode_diff"
                                             :name="STUDENT_DETAILS_FIELDS.GENDER_CODE" 
                                             labelSpan="4" colspan="1" label="Gender"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.dob?studentHistoryDetail.dob:''"
+          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.dob || ''"
                                             :highlight="!!studentHistoryDetail.dob_diff"
                                             :name="STUDENT_DETAILS_FIELDS.DOB" 
                                             labelSpan="4" colspan="4" label="Date of Birth"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.gradeCode?studentHistoryDetail.gradeCode:''"
+          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.gradeCode || ''"
                                             :highlight="!!studentHistoryDetail.gradeCode_diff"
                                             :name="STUDENT_DETAILS_FIELDS.GRADE_CODE" 
                                             labelSpan="4" colspan="1" label="Grade" :grade-level="getGradeLabel()"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.gradeYear?studentHistoryDetail.gradeYear:''"
+          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.gradeYear || ''"
                                             :highlight="studentHistoryDetail.gradeYear_diff"
                                             :name="STUDENT_DETAILS_FIELDS.GRADE_YEAR"
                                             labelSpan="4" colspan="4" label="Grade School Year"
@@ -106,7 +106,7 @@
                                     labelSpan="4" colspan="6" label="Mincode" 
                                     :disabled="false"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.localID?studentHistoryDetail.localID:''" :name="STUDENT_DETAILS_FIELDS.LOCAL_ID"
+          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.localID || ''" :name="STUDENT_DETAILS_FIELDS.LOCAL_ID"
                                             :highlight="studentHistoryDetail.localID_diff"
                                             labelSpan="4" colspan="6" label="Local ID"
                                             :disabled="false"></StudentDetailsTextFieldReadOnly>
