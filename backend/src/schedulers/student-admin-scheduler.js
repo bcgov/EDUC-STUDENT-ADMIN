@@ -93,7 +93,7 @@ try {
         });
       }
     } catch (e) {
-      log.info(`locks:remove-stale-saga-record, check other pods. ${e}`);
+      log.debug(`locks:remove-stale-saga-record, check other pods. ${e}`);
     }
   });
   removeStaleSagaRecordFromRedis.start();
