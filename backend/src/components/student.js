@@ -130,6 +130,7 @@ async function createNewStudent(req, res) {
     const student = req.body.student;
     student.pen = penNumber;
     student.historyActivityCode = 'USERNEW';
+    student.statusCode = 'A';
     student.createDate = null;
     student.updateDate = null;
     const result = await postData(token, config.get('server:student:rootURL') + '/', student, null, utils.getUser(req).idir_username);
