@@ -49,7 +49,6 @@
                     <v-text-field outlined dense filled
                                   id="searchDemogModalLegalFirstNameTxtField"
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
-                                  :rules="validateLegalFirstName()"
                                   :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
                                   tabindex="2"
                                   clearable
@@ -256,12 +255,6 @@ export default {
       }
       return [];
     },
-    validateLegalFirstName() {
-      if (!this.student.legalFirstName || this.student.legalFirstName.length < 2) {
-        return ['Legal Given is required and must be more than one character.'];
-      }
-      return [];
-    },
     validateGender() {
       if (!this.student.genderCode) {
         return ['Gender is required.'];
@@ -281,11 +274,10 @@ export default {
       }
     },
     validateMincode() {
-      if (!this.student.mincode) {
-        return ['Mincode is required.'];
-      }
-      if (!isValidMinCode(this.student.mincode) || this.student.mincode.length !== 8) {
-        return ['Invalid mincode, should be exactly 8 digits.'];
+      if (this.student.mincode) {
+        if (!isValidMinCode(this.student.mincode) || this.student.mincode.length !== 8) {
+          return ['Invalid mincode, should be exactly 8 digits.'];
+        }
       }
     },
     validateDOB() {
