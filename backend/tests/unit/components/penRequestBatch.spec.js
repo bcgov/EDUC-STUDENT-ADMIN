@@ -163,7 +163,8 @@ describe('issueNewPen', () => {
       studentId: 'c0a8014d-74e1-1d99-8174-e10db8410001'
     };
     req.body = {
-      twinStudentIDs
+      twinStudentIDs: twinStudentIDs,
+      prbStudent: prbStudentData
     };
   });
 
@@ -185,12 +186,6 @@ describe('issueNewPen', () => {
     });
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(resp);
-  });
-
-  it('should return INTERNAL_SERVER_ERROR if getData failed', async () => {
-    utils.getData.mockRejectedValue(new Error('Test error'));
-    await penRequestBatch.issueNewPen(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
 
   it('should return INTERNAL_SERVER_ERROR if postData failed', async () => {
