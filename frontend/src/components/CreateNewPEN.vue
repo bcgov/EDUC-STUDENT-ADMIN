@@ -13,6 +13,7 @@
                     :student.sync="student"
                     key="info-panel"
                     :runPenMatch="runPenMatch"
+                    :isCreatePen="true"
                     @validationRun="checkValidationResults">
               <template v-slot:headerPanel="{ openSearchDemographicsModal }">
                 <v-row align="end" no-gutters justify="end" class="pb-6"
@@ -45,6 +46,7 @@
                                     :is-pen-link="false"
                                     :is-refresh-required="false"
                                     :is-match-un-match="false"
+                                    :demogValidationResult="demogValidationResult"
                                     :possible-match="possibleMatches"></PenMatchResultsTable>
             </v-row>
           </v-col>
@@ -81,7 +83,8 @@ export default {
       possibleMatches: [],
       isIssuePenDisabled: true,
       student: {},
-      hasValidationIssues: false
+      hasValidationIssues: false,
+      demogValidationResult: []
     };
   },
   mounted() {
@@ -142,6 +145,7 @@ export default {
     },
     checkValidationResults(value) {
       this.hasValidationIssues = value.hasValidationError;
+      this.demogValidationResult = value.validationIssues;
     }
   },
 };
