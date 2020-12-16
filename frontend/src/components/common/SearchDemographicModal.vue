@@ -7,8 +7,13 @@
 
       <v-card>
         <v-list-item>
-          <v-list-item-content>
-            <v-list-item-title class="headline">Enter and Search Demographic Data For New PEN</v-list-item-title>
+          <v-list-item-content class="pt-4 pl-2">
+            <slot name="headLine">
+              <v-list-item-title class="headline">
+                Modify search
+              </v-list-item-title>
+              <v-list-item-subtitle><em>Modifying the search parameters will not change the request.</em></v-list-item-subtitle>
+            </slot>
           </v-list-item-content>
           <v-list-item-icon>
             <v-btn id="closeSearchDemographicModalBtn" text icon @click="$emit('closeDialog')">
@@ -182,20 +187,10 @@
           <v-divider class="subheader-divider"/>
         </v-card-text>
 
-        <v-card-actions class="mr-4">
+        <v-card-actions class="mr-4 pb-6">
           <v-spacer/>
-
-          <PrimaryButton id="cancel" :secondary="true" text="Cancel"
-                         @click.native="$emit('closeDialog')"
-          >
-          </PrimaryButton>
-
-          <PrimaryButton width="15%"
-                         text="Search"
-                         id="searchDemogModalSearchBtn"
-                         @click.native="[isFormValid(),]"
-          >
-          </PrimaryButton>
+          <slot name="actions" :isFormValid="isFormValid">
+          </slot>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -203,16 +198,12 @@
 </template>
 
 <script>
-import PrimaryButton from '../util/PrimaryButton';
 import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import {isValidMinCode, isValidPostalCode, isValidDOBAndAfter1900} from '@/utils/validation';
 import {mapGetters} from 'vuex';
 
 export default {
   name: 'SearchDemographicModal.vue',
-  components: {
-    PrimaryButton
-  },
   props: {
     dialog: {
       type: Boolean,

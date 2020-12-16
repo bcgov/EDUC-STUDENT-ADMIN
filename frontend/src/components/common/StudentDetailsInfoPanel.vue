@@ -3,8 +3,27 @@
     <slot name="headerPanel" :openSearchDemographicsModal="openSearchDemographicsModal"></slot>
     <SearchDemographicModal @closeDialog="closeDialog" @updateStudent="updateStudentAndRunPenMatch" :dialog="dialog"
                             :is-field-read-only="() => {return false}"
-                            :is-mincode-hidden="false"
-                            :student-data="modalStudent"></SearchDemographicModal>
+                            :is-mincode-hidden="!isCreatePen"
+                            :student-data="modalStudent">
+      <template v-if="isCreatePen" v-slot:headLine>
+        <v-list-item-title class="headline">
+          Enter and Search Demographic Data for New PEN
+        </v-list-item-title>
+      </template>
+      <template v-slot:actions="{ isFormValid }">
+        <PrimaryButton id="cancel" :secondary="true" text="Cancel"
+                       @click.native="closeDialog"
+        >
+        </PrimaryButton>
+
+        <PrimaryButton width="15%"
+                       :text="isCreatePen?'Search':'Modify Search'"
+                       id="searchDemogModalSearchBtn"
+                       @click.native="isFormValid()"
+        >
+        </PrimaryButton>
+      </template>
+    </SearchDemographicModal>
     <v-divider class="mb-1 subheader-divider"/>
     <v-row no-gutters class="py-2 full-width" style="background-color:white;">
       <div style="width: 100%;" :overlay="false">
@@ -105,10 +124,12 @@ import { formatDob, formatPostalCode } from '@/utils/format';
 import { mapState, mapMutations } from 'vuex';
 import {formatMinCode} from '../../utils/format';
 import StudentValidationWarningHint from './StudentValidationWarningHint';
+import PrimaryButton from '../util/PrimaryButton';
 
 export default {
   name: 'StudentDetailsInfoPanel',
   components: {
+    PrimaryButton,
     SearchDemographicModal,
     StudentValidationWarningHint
   },
@@ -128,6 +149,10 @@ export default {
     demogValidationResult: {
       type: Array,
       default: () => []
+    },
+    isCreatePen: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -237,8 +262,8 @@ export default {
       this.studentDetails = deepCloneObject(this.studentDetailsCopy);
       await this.$nextTick(); //need to wait so update can me made in parent and propagated back down to child component
       if(!_.isEmpty(this.studentDetails)) {
+        await this.runDemogValidation();
         this.setModalStudentFromPrbStudent();
-        this.runDemogValidation();
       }
     },
     async updateStudentAndRunPenMatch(studentModified) {
