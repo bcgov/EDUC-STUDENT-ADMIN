@@ -285,7 +285,6 @@ export default {
     },
     validateDOB() {
       return [v => {
-        console.log('dob trace in validator = ' + v);
         this.setDob(v);
         if (!this.student.dob) {
           return 'Birth Date is Required.';
