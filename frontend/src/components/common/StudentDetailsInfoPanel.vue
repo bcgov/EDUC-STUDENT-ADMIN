@@ -296,7 +296,7 @@ export default {
       }
     },
     async handleDemogValidationResult(result) {
-      const validationIssues = result.map(y => {
+      let validationIssues = result.map(y => {
         y.uiFieldName = this.prbValidationFieldCodes.find(obj => obj.code === y.penRequestBatchValidationFieldCode)?.label;
         y.penRequestBatchValidationIssueTypeCode = this.prbValidationIssueTypeCodes.find(obj => obj.code === y.penRequestBatchValidationIssueTypeCode)?.description || y.penRequestBatchValidationIssueTypeCode;
         return y;
@@ -314,9 +314,9 @@ export default {
         this.$emit('validationRun', {validationIssues, hasValidationError});
         return hasValidationError;
       }else{
-        let blankValidation;
-        let noValidationError = false;
-        this.$emit('validationRun', {blankValidation, noValidationError});
+        validationIssues = [];
+        const hasValidationError = false;
+        this.$emit('validationRun', {validationIssues, hasValidationError});
         this.validationErrorFields = null;
         this.validationWarningFields = null;
         return false;

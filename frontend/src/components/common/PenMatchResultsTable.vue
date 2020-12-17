@@ -117,7 +117,7 @@ import { mapState } from 'vuex';
 import PrimaryButton from '@/components/util/PrimaryButton';
 
 export default {
-  name: 'PenMatchResultsTable.vue',
+  name: 'PenMatchResultsTable',
   components: {
     CompareDemographicModal,
     PrimaryButton,
