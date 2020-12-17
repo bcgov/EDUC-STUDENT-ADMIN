@@ -131,10 +131,10 @@
                     <v-text-field outlined dense filled
                                   id="searchDemogModalDobTxtField"
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.DOB)"
-                                  :rules="validateDOB()" maxlength="8"
+                                  :rules="validateDOB()" maxlength="10"
                                   clearable
                                   tabindex="8"
-                                  v-model="student.dob"></v-text-field>
+                                  v-model="dobLabel"></v-text-field>
                   </v-col>
                   <v-spacer/>
                   <v-col cols="3">
@@ -200,6 +200,7 @@
 import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import {isValidMinCode, isValidPostalCode, isValidDOBAndAfter1900} from '@/utils/validation';
 import {mapGetters} from 'vuex';
+import {formatDob} from '@/utils/format';
 
 export default {
   name: 'SearchDemographicModal.vue',
@@ -230,6 +231,7 @@ export default {
       student: this.studentData,
       genderCodes: [],
       gradeCodes: [],
+      dobLabel: null,
     };
   },
   computed: {
@@ -241,6 +243,7 @@ export default {
     },
     studentData(newValue) {
       this.student = newValue;
+      this.setDobLabel();
     }
   },
   methods: {
@@ -281,12 +284,16 @@ export default {
       }
     },
     validateDOB() {
-      if (!this.student.dob) {
-        return ['Birth Date is Required.'];
-      }
-      if (!isValidDOBAndAfter1900(this.student.dob,'uuuuMMdd')) {
-        return ['Invalid Birth Date.'];
-      }
+      return [v => {
+        console.log('dob trace in validator = ' + v);
+        this.setDob(v);
+        if (!this.student.dob) {
+          return 'Birth Date is Required.';
+        }
+        if (!isValidDOBAndAfter1900(this.student.dob,'uuuuMMdd')) {
+          return 'Invalid Birth Date.';
+        }
+      }];
     },
     fillDOBSlashes() {
       if (this.student.dob) {
@@ -316,6 +323,18 @@ export default {
         this.gradeCodes = this.gradeCodeObjects.map(a => a.gradeCode);
       }
       return this.gradeCodes;
+    },
+    setDobLabel() {
+      if (this.student.dob) {
+        this.dobLabel = formatDob(this.student.dob, 'uuuuMMdd', 'uuuu/MM/dd');
+      }
+    },
+    setDob(dobLabel) {
+      if (dobLabel) {
+        this.student.dob = dobLabel.replace(/[^0-9]/g, '');
+      } else {
+        this.student.dob = null;
+      }
     },
   }
 };
