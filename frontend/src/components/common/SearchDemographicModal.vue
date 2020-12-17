@@ -128,13 +128,15 @@
                   </v-col>
                   <v-spacer/>
                   <v-col cols="3">
-                    <v-text-field outlined dense filled
-                                  id="searchDemogModalDobTxtField"
-                                  :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.DOB)"
-                                  :rules="validateDOB()" maxlength="8"
-                                  clearable
-                                  tabindex="8"
-                                  v-model="student.dob"></v-text-field>
+                    <FormattedTextField
+                            outlined dense filled
+                            id="searchDemogModalDobTxtField"
+                            :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.DOB)"
+                            :rules="validateDOB()" maxlength="8"
+                            clearable
+                            tabindex="8"
+                            :format="formatDob"
+                            v-model="student.dob"></FormattedTextField>
                   </v-col>
                   <v-spacer/>
                   <v-col cols="3">
@@ -204,7 +206,7 @@ import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import {isValidMinCode, isValidPostalCode, isValidDOBAndAfter1900} from '@/utils/validation';
 import {mapGetters} from 'vuex';
 import FormattedTextField from '../util/FormattedTextField';
-import {formatPostalCode} from '../../utils/format';
+import {formatPostalCode, formatDob} from '../../utils/format';
 
 export default {
   name: 'SearchDemographicModal.vue',
@@ -251,6 +253,7 @@ export default {
   },
   methods: {
     formatPostalCode,
+    formatDob,
     upperCaseInput(fieldName) {
       if (this.student[fieldName]) {
         this.student[fieldName] = this.student[fieldName].toUpperCase();
@@ -292,13 +295,6 @@ export default {
       }
       if (!isValidDOBAndAfter1900(this.student.dob,'uuuuMMdd')) {
         return ['Invalid Birth Date.'];
-      }
-    },
-    fillDOBSlashes() {
-      if (this.student.dob) {
-        if (this.student.dob.length === 4 || this.student.dob.length === 7) {
-          this.student.dob += '/';
-        }
       }
     },
     validateGradeCode() {
