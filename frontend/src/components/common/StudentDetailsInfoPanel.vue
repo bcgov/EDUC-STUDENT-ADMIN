@@ -185,6 +185,7 @@ export default {
       ],
       originalStatusCode: null,
       modalStudent: {},
+      currentStudentSearch: this.studentDetailsCopy,
       dialog: false,
     };
   },
@@ -259,7 +260,7 @@ export default {
     },
     async closeDialog() {
       this.dialog = false;
-      this.studentDetails = deepCloneObject(this.studentDetailsCopy);
+      this.studentDetails = deepCloneObject(this.currentStudentSearch);
       await this.$nextTick(); //need to wait so update can me made in parent and propagated back down to child component
       if(!_.isEmpty(this.studentDetails)) {
         this.setModalStudentFromPrbStudent();
@@ -274,6 +275,7 @@ export default {
       this.studentDetails.dob = this.studentDetails.dob? formatDob(this.studentDetails.dob,'uuuuMMdd','uuuu/MM/dd'): '';
       this.studentDetails.minCode = this.studentDetails.mincode? formatMinCode(this.studentDetails.mincode): '';
       this.setModalStudentFromPrbStudent();
+      this.currentStudentSearch = deepCloneObject(this.studentDetails);
 
       const hasValidationFailure = await this.runDemogValidation();
       if(!hasValidationFailure) {
