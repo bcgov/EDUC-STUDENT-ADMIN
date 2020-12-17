@@ -158,13 +158,16 @@
                 </v-row>
                 <v-row dense>
                   <v-col cols="3">
-                    <v-text-field outlined dense filled
-                                  id="searchDemogModalPostalCodeTxtField"
-                                  :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
-                                  :rules="validatePostalCode()" maxlength="6"
-                                  tabindex="10" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
-                                  clearable
-                                  v-model="student.postalCode"></v-text-field>
+                    <FormattedTextField
+                            outlined dense filled
+                            id="searchDemogModalPostalCodeTxtField"
+                            :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
+                            :rules="validatePostalCode()" maxlength="6"
+                            tabindex="10" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
+                            clearable
+                            :format="formatPostalCode"
+                            v-model="student.postalCode">
+                    </FormattedTextField>
                   </v-col>
                   <v-spacer/>
                   <v-col v-if="!isMincodeHidden" cols="3">
@@ -200,9 +203,12 @@
 import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import {isValidMinCode, isValidPostalCode, isValidDOBAndAfter1900} from '@/utils/validation';
 import {mapGetters} from 'vuex';
+import FormattedTextField from '../util/FormattedTextField';
+import {formatPostalCode} from '../../utils/format';
 
 export default {
   name: 'SearchDemographicModal.vue',
+  components: {FormattedTextField},
   props: {
     dialog: {
       type: Boolean,
@@ -244,6 +250,7 @@ export default {
     }
   },
   methods: {
+    formatPostalCode,
     upperCaseInput(fieldName) {
       if (this.student[fieldName]) {
         this.student[fieldName] = this.student[fieldName].toUpperCase();
