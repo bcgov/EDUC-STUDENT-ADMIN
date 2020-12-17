@@ -269,7 +269,6 @@ export default {
     },
     isFormValid() {
       if (this.$refs.searchDemographicModalForm.validate()) {
-        this.$emit('closeDialog');
         this.$emit('updateStudent', this.student);
       }
     },

@@ -267,6 +267,7 @@ export default {
       }
     },
     async updateStudentAndRunPenMatch(studentModified) {
+      this.dialog = false;
       this.studentDetails = deepCloneObject(studentModified);
       await this.$nextTick(); //need to wait so update can me made in parent and propagated back down to child component
       this.studentDetails.postalCode = this.studentDetails.postalCode? formatPostalCode(this.studentDetails.postalCode):'';
