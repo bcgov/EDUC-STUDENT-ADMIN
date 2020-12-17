@@ -262,8 +262,8 @@ export default {
       this.studentDetails = deepCloneObject(this.studentDetailsCopy);
       await this.$nextTick(); //need to wait so update can me made in parent and propagated back down to child component
       if(!_.isEmpty(this.studentDetails)) {
-        await this.runDemogValidation();
         this.setModalStudentFromPrbStudent();
+        await this.runDemogValidation();
       }
     },
     async updateStudentAndRunPenMatch(studentModified) {
