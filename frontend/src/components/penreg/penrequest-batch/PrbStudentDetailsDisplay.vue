@@ -107,7 +107,7 @@
       <ConfirmationDialog ref="confirmationDialog">
         <template v-slot:message>
           <v-col class="warnings-modal pt-0">
-            <v-row class="mb-3">There is <strong>&nbsp;{{demogValidationResult.length}}&nbsp;</strong> questionable errors with this PEN request:</v-row>
+            <v-row class="mb-3">There is <strong>&nbsp;{{demogValidationResult.length}}&nbsp;</strong> questionable {{`error${demogValidationResult.length > 1 ? 's' : ''}`}} with this PEN request:</v-row>
             <v-row v-for="warning in demogValidationResult" :key="warning.penRequestBatchValidationIssueTypeCode">
               <v-col class="pb-0">
                 <v-row>
@@ -618,13 +618,14 @@ export default {
      * @returns {Promise<void>}
      */
     async matchUnmatchStudentToPRBStudent(student, buttonText){
-      let result = await this.confirmToProceed();
-      if(!result) {
-        return;
-      }
-
       let operation;
+      
       if('Match' ===  buttonText){
+        const result = await this.confirmToProceed();
+        if(!result) {
+          return;
+        }
+
         this.prbStudent.assignedPEN = student.pen;
         this.prbStudent.studentID = student.studentID;
         operation = 'match';
