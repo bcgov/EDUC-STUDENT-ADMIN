@@ -676,7 +676,6 @@ export default {
         if (this.studentCopy) {
           if (!this.studentCopy.mincode) {
             this.mincodeError = false;
-            this.schoolLabel = '';
             return true;
           } else {
             if (!this.studentCopy.mincode.match('^[0-9]\\d*$')) { // format error
