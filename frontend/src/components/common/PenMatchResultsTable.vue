@@ -36,26 +36,27 @@
               <tr :key="props.index"
                   @mouseover="enableMatchOrUnMatch(props.item)"
                   @mouseleave="disableMatchOrUnMatch(props.item)"
-                  :class="[hoveredOveredRowStudentID === props.item.studentID?'hovered-record-match-unmatch':'' ,
-                 props.isSelected?'selected-record':'',
-                 isMatchedToStudent(props.item)?'matchedStudentRow':'',
-                 (student.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR && student.assignedPEN != formatPen(props.item.pen)) || !!props.item.twinRecordToMatchedStudent ? 'grayout':'']">
+                  :class="['resultsTableRow',
+                    hoveredOveredRowStudentID === props.item.studentID?'hovered-record-match-unmatch':'' ,
+                    props.isSelected?'selected-record':'',
+                    isMatchedToStudent(props.item)?'matchedStudentRow':'',
+                    (student.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR && student.assignedPEN != formatPen(props.item.pen)) || !!props.item.twinRecordToMatchedStudent ? 'grayout':'']">
                 <td v-for="header in props.headers" :key="header.id" :class="header.id">
                   <div :class="[props.item[header.doubleValue] ? 'value-half-width':'','tableCell']">
                     <span v-if="header.type">
                       <v-checkbox
-                              :class="['top-column-item', 'checkbox']"
-                              class="pl-3"
+                              :class="['checkbox', 'pl-3']"
                               color="#606060"
                               :input-value="props.isSelected"
                               dense
                               @change="props.select($event)"></v-checkbox>
                       <v-icon
-                              :class="['pl-3', 'pb-3']"
+                              :class="['checkboxIcon', 'pl-3', ]"
                               v-if="header.bottomValue==='icon' && props.item['iconValue']"
                               color="#606060">
                         {{ props.item['iconValue'] }}
                       </v-icon>
+                      <span v-else class="bottom-column-item"> </span>
                     </span>
                     <span v-else>
                       <a class="pen-link" @click="popStudentDialog(props.item['studentID'])"
@@ -329,7 +330,7 @@ export default {
 
 .bottom-column-item {
   float: left;
-  min-height: 1.5em;
+  min-height: 1.75rem;
 }
 
 #penMatchResultsDataTable {
@@ -347,6 +348,7 @@ export default {
 
 .top-column-item {
   float: left;
+  min-height: 1rem;
 }
 
 .value-half-width {
@@ -393,17 +395,30 @@ export default {
 .matchedStudentRow {
   background-color: #E0EFD9 !important;
 }
-
+.resultsTableRow {
+  height: 4.5rem; /*is effectively a 'min-height' with the way height on tables works*/
+}
+.resultsTableRow > td {
+  border-bottom: thin solid rgba(0, 0, 0, 0.12)
+}
 .v-input--checkbox {
   margin-top: 0;
 }
 .checkbox {
   width: 100%;
+  min-height: 1.7rem;
 }
 .checkbox /deep/ .v-messages {
   display: none;
 }
 .checkbox /deep/ .v-input__slot {
   margin-bottom: 0;
+  padding-top: 0;
+}
+.checkboxIcon {
+  min-height: 1rem;
+}
+.tableCell {
+  padding-top: .3rem;
 }
 </style>
