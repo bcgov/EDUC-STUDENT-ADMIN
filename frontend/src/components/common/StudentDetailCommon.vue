@@ -672,21 +672,19 @@ export default {
         }
         this.setMinCode(minCode); // set the changed value
         this.schoolLabel = '';
+        this.errors = [];
         if (this.studentCopy) {
           if (!this.studentCopy.mincode) {
             this.mincodeError = false;
-            this.errors = [];
             this.schoolLabel = '';
             return true;
           } else {
             if (!this.studentCopy.mincode.match('^[0-9]\\d*$')) { // format error
               this.mincodeError = true;
-              this.errors = [];
               return this.mincodeHint;
             }
             if (this.studentCopy.mincode.length !== 8) { // length error
               this.mincodeError = true;
-              this.errors = [];
               return this.mincodeHint+ this.mincodeAdditionalHint;
             }
             this.getSchoolName(this.studentCopy.mincode);
@@ -695,7 +693,6 @@ export default {
         }
 
         this.mincodeError = true;
-        this.errors = [];
         return this.mincodeHint;
       }];
     },
@@ -844,10 +841,7 @@ export default {
       }
     },
     isMinCodeChanged(minCode) {
-      if (this.studentCopy.mincode !== minCode) {
-        return true;
-      }
-      return false;
+      return this.studentCopy.mincode !== minCode;
     },
     shortMinCodeStyle(){
       if(this.minCodeLabel) {
