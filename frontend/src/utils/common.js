@@ -17,7 +17,7 @@ export function constructPenMatchObjectFromStudent(student) {
     dob: student.dob,
     sex: student.genderCode,
     enrolledGradeCode: student.gradeCode,
-    mincode: student.mincode,
+    mincode: student.minCode.replace(/\s/g, ''),
     postal: student.postalCode
   };
 }
