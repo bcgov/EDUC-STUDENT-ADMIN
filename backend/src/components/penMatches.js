@@ -1,23 +1,26 @@
 'use strict';
-const { logApiError } = require('./utils');
+const {logApiError,logDebug} = require('./utils');
 const HttpStatus = require('http-status-codes');
-const config = require('../config/index');
-const { getBackendToken, postData } = require('./utils');
+const NATS = require('../messaging/message-subscriber');
+const {v4: guid} = require('uuid');
 
 async function getPenMatch(req, res) {
   try {
-    const token = getBackendToken(req);
-    if (!token) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
-      });
-    }
-    if(req.body.dob) {
+    if (req.body.dob) {
       req.body.dob = req.body.dob.replace(/\//g, '');
     }
-    const dataResponse = await postData(token, config.get('server:penMatch:rootURL'), req.body, null);
-    return res.status(200).json(dataResponse);
-
+    req.body.usualGivenName = req.body.usualGiven; // the match api expects usualGivenName
+    delete req.body.usualGiven;
+    const event = {
+      sagaId: guid(), // this should be a guid, otherwise it would break
+      eventType: 'PROCESS_PEN_MATCH',
+      eventPayload: JSON.stringify(req.body)
+    };
+    logDebug('calling pen match via NATS', event);
+    const result = await NATS.requestMessage('PEN_MATCH_API_TOPIC', JSON.stringify(event));
+    const parsedEvent = JSON.parse(result);
+    logDebug('got result from NATS', parsedEvent);
+    return res.status(200).json(JSON.parse(parsedEvent.eventPayload));
   } catch (e) {
     logApiError(e, 'getPenMatch', 'Error occurred while attempting to get pen matches.');
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -25,7 +28,6 @@ async function getPenMatch(req, res) {
     });
   }
 }
-
 module.exports = {
   getPenMatch
 };
