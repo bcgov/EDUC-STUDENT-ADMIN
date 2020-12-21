@@ -679,7 +679,6 @@ export default {
               return this.minCodeHint + this.minCodeAdditionalHint;
             }
             this.getSchoolName(this.studentCopy.mincode);
-            return true;
           }
         }
         return true;

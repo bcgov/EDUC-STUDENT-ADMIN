@@ -3,15 +3,17 @@ import {getSchoolData} from '@/utils/common';
 export default {
   data() {
     return {
-      minCodeErrors: [], // asynchronous way to set the validation error messages
-      schoolLabel: null,
-      minCodeError: false,
+      minCodeErrors: [], // asynchronously set the validation error messages
+      schoolLabel: null, // school name returned from school API
+      minCodeError: false, // error indicator
+      loadingSchoolData: false, // in progress for asynchronous validation
       minCodeHint: 'Invalid Mincode',
       minCodeAdditionalHint: ', should be exactly 8 digits.',
     };
   },
   methods: {
     async getSchoolName(minCode) {
+      this.loadingSchoolData = true;
       try {
         const schoolData = await getSchoolData(minCode);
         if (!!schoolData && !!schoolData.schoolName) {
@@ -25,6 +27,8 @@ export default {
       } catch (e) {
         this.mincodeError = true;
         this.minCodeErrors = [this.minCodeHint];
+      } finally {
+        this.loadingSchoolData = false;
       }
     },
     isValidFormattedMinCode(minCode) {
