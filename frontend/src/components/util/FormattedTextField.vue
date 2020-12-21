@@ -1,5 +1,6 @@
 <template>
   <v-text-field
+    :disabled="disabled"
     :outlined="outlined"
     :dense="dense"
     :filled="filled"
@@ -9,9 +10,11 @@
     :maxlength="maxlength"
     :clearable="clearable"
     :tabindex="tabindex"
+    :error-messages="asyncMessages"
+    v-bind:class="classes"
     v-model="data"
-    @focus="isActive=true"
-    @blur="isActive=false">
+    @focus="[isActive = true, $emit('focus')]"
+    @blur="[isActive = false, $emit('blur')]">
   </v-text-field>
 </template>
 
@@ -20,7 +23,13 @@
 export default {
   name: 'FormattedTextField',
   props: {
-
+    classes: {
+      type: Array
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    },
     clearable: {
       type: Boolean,
       default: true
@@ -59,6 +68,9 @@ export default {
     },
     value: {
       type: String
+    },
+    asyncMessages: {
+      type: Array
     }
   },
   data() {
@@ -69,7 +81,7 @@ export default {
   computed: {
     data: {
       get(){
-        if(!this.isActive && !this.rules) {
+        if(!this.isActive && (!this.rules || !this.existsAsyncMessages())) {
           return this.format(this.value);
         } else {
           return this.value;
@@ -79,6 +91,11 @@ export default {
         this.$emit('input', data);
       }
     }
+  },
+  methods: {
+    existsAsyncMessages() {
+      return this.asyncMessages && this.asyncMessages.length > 0;
+    },
   }
 };
 </script>

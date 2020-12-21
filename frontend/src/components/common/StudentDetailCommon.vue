@@ -221,27 +221,27 @@
               <v-col cols="2">
                 <p class="labelField">Mincode</p>
               </v-col>
-              <v-col cols="2" :class="{textFieldColumn: !mincodeError}">
-                <v-text-field
+              <v-col cols="2" :class="{textFieldColumn: !minCodeError}">
+                <FormattedTextField
                     tabindex="9"
-                    v-on:keyup.tab="[editingMincode = true, hoveringMincode = true]"
-                    v-on:mouseover="isFieldDisabled('mincode')? hoveringMincode = false : hoveringMincode = true"
-                    v-on:mouseout="editingMincode ? hoveringMincode = true : hoveringMincode = false"
-                    v-on:blur="[editingMincode = false, hoveringMincode = false, longMinCodeStyle()]"
-                    v-on:click="[editingMincode = true, hoveringMincode = true, shortMinCodeStyle()]"
-                    :error-messages="errors"
-                    class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hoveringMincode && !hasEdits(STUDENT_DETAILS_FIELDS.MINCODE), darkBackgound: hoveringMincode || hasEdits(STUDENT_DETAILS_FIELDS.MINCODE)}"
-                    v-model="minCodeLabel"
+                    @keyup.tab.native="[editingMincode = true, hoveringMincode = true]"
+                    @mouseover.native="isFieldDisabled('mincode')? hoveringMincode = false : hoveringMincode = true"
+                    @mouseout.native="editingMincode ? hoveringMincode = true : hoveringMincode = false"
+                    @blur="[editingMincode = false, hoveringMincode = false]"
+                    @focus="[editingMincode = true, hoveringMincode = true]"
+                    :classes="['onhoverEdit', 'bolder', 'customNoBorder', {onhoverPad: !hoveringMincode && !minCodeHasChanged(), darkBackgound: hoveringMincode || minCodeHasChanged()}]"
+                    :async-messages="minCodeErrors"
+                    v-model="studentCopy.mincode"
                     :id='STUDENT_DETAILS_FIELDS.MINCODE'
-                    color="#000000"
-                    dense
+                    :filled="false"
+                    :clearable="false"
+                    :format="formatMinCode"
                     :rules="validateMinCode()"
-                    maxlength="9" minlength="8"
+                    maxlength="8"
                     :readonly="!hoveringMincode || !editingMincode"
-                    :outlined="hoveringMincode || editingMincode || hasEdits(STUDENT_DETAILS_FIELDS.MINCODE)"
+                    :outlined="hoveringMincode || editingMincode || minCodeHasChanged()"
                     :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MINCODE)"
-                ></v-text-field>
+                ></FormattedTextField>
               </v-col>
               <v-col cols="4" class="textFieldColumn">
                 <v-progress-circular
@@ -434,15 +434,18 @@ import StudentDetailsTemplateTextField from '@/components/penreg/student/Student
 import {formatMinCode, formatPen} from '../../utils/format';
 import {sortBy,isEmpty} from 'lodash';
 import alertMixin from '../../mixins/alertMixin';
+import schoolMixin from '../../mixins/schoolMixin';
 import ConfirmationDialog from '../util/ConfirmationDialog';
 import AlertMessage from '../util/AlertMessage';
 import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard';
+import {isValidMinCode} from '@/utils/validation';
+import FormattedTextField from '@/components/util/FormattedTextField';
 
 const JSJoda = require('@js-joda/core');
 
 export default {
   name: 'studentDetailCommon',
-  mixins: [alertMixin],
+  mixins: [alertMixin, schoolMixin],
   props: {
     studentID: {
       type: String,
@@ -466,6 +469,7 @@ export default {
     }
   },
   components: {
+    FormattedTextField,
     AlertMessage,
     ConfirmationDialog,
     TwinnedStudentsCard,
@@ -482,10 +486,6 @@ export default {
       spacePostalCode: null,
       isLoading: true,
       deceasedDialog: false,
-      errors: [], // asynchronous way to set the validation error messages
-      mincodeHint: 'Invalid Mincode',
-      mincodeAdditionalHint: ', should be exactly 8 digits.',
-      mincodeError: false,
       genderHint: 'Invalid Gender Code',
       genderError: false,
       dobHint: 'Invalid Date of Birth',
@@ -495,8 +495,6 @@ export default {
       statusLabels: [],
       gradeLabels: [],
       gradeLabel: null,
-      minCodeLabel: null,
-      schoolLabel: null,
       alert: false,
       createdDateTime: null,
       updatedDateTime: null,
@@ -666,75 +664,26 @@ export default {
     // Asynchronous validator returns an array of boolean or string that would be provided for :rules prop of input field
     validateMinCode() {
       return [v => {
-        const minCode = v.replaceAll(' ', '');
-        if (!this.isMinCodeChanged(minCode)) {
+        if (this.isValidFormattedMinCode(v)) { // skip when no input or the formatted text is set for view
           return true;
         }
-        this.setMinCode(minCode); // set the changed value
         this.schoolLabel = '';
-        this.errors = [];
         if (this.studentCopy) {
-          if (!this.studentCopy.mincode) {
-            this.mincodeError = false;
-            return true;
-          } else {
-            if (!this.studentCopy.mincode.match('^[0-9]\\d*$')) { // format error
-              this.mincodeError = true;
-              return this.mincodeHint;
+          if (this.studentCopy.mincode) {
+            if (!isValidMinCode(this.studentCopy.mincode)) { // format error
+              this.minCodeError = true;
+              return this.minCodeHint;
             }
             if (this.studentCopy.mincode.length !== 8) { // length error
-              this.mincodeError = true;
-              return this.mincodeHint+ this.mincodeAdditionalHint;
+              this.minCodeError = true;
+              return this.minCodeHint + this.minCodeAdditionalHint;
             }
             this.getSchoolName(this.studentCopy.mincode);
             return true;
           }
         }
-
-        this.mincodeError = true;
-        return this.mincodeHint;
+        return true;
       }];
-    },
-    async getSchoolName(mincode) {
-      try {
-        this.schoolLabel = await this.retrieveSchoolEntity(mincode);
-        if (!this.schoolLabel) {
-          this.mincodeError = true;
-          this.errors = [this.mincodeHint];
-        } else {
-          this.mincodError = false;
-          this.errors = [];
-        }
-      } catch (e) {
-        this.schoolLabel = '';
-        this.mincodeError = true;
-        this.errors = [this.mincodeHint];
-      }
-    },
-    retrieveSchoolEntity(mincode) {
-      const params = {
-        params: {
-          mincode,
-        }
-      };
-      if (mincode) {
-        this.loadingSchoolData = true;
-        return new Promise((resolve, reject) => {
-          ApiService.apiAxios
-            .get(Routes.SCHOOL_DATA_URL, params)
-            .then(response => {
-              resolve(response.data?.schoolName);
-            })
-            .catch(error => {
-              reject(error);
-            })
-            .finally(() => {
-              this.loadingSchoolData = false;
-            });
-        });
-      } else {
-        return Promise.resolve('');
-      }
     },
     setStudent(student) {
       this.origStudent = student;
@@ -744,7 +693,6 @@ export default {
       this.updateDOBLabel(true);
       this.formatPostalCode();
       this.setGradeLabel();
-      this.setMinCodeLabel();
       this.getSchoolName(this.studentCopy.mincode);
       if (this.studentCopy.statusCode === STUDENT_CODES.MERGED) {
         this.setEnableDisableForFields(true, STUDENT_DETAILS_FIELDS.MERGED_TO, STUDENT_DETAILS_FIELDS.PEN);
@@ -775,7 +723,6 @@ export default {
       }
     },
     hasEdits(key) {
-
       let studentCopy = this.studentCopy[key];
       let studentOriginal = this.origStudent[key];
       studentCopy = (studentCopy === null || studentCopy === undefined) ? '' : studentCopy;
@@ -799,7 +746,6 @@ export default {
     },
     revertMinCodeField() {
       this.revertField(STUDENT_DETAILS_FIELDS.MINCODE);
-      this.setMinCodeLabel();
       this.getSchoolName(this.studentCopy.mincode);
     },
     setGradeLabel() {
@@ -825,31 +771,6 @@ export default {
     formatPostalCode() {
       if (this.studentCopy.postalCode) {
         this.spacePostalCode = this.studentCopy.postalCode.replace(/.{3}$/, ' $&');
-      }
-    },
-    setMinCodeLabel() {
-      if (this.studentCopy.mincode) {
-        this.minCodeLabel = formatMinCode(this.studentCopy.mincode);
-      }
-    },
-    setMinCode(minCode) {
-      if (minCode) {
-        this.studentCopy.mincode = minCode.replaceAll(' ', '');
-      } else {
-        this.studentCopy.mincode = '';
-      }
-    },
-    isMinCodeChanged(minCode) {
-      return this.studentCopy.mincode !== minCode;
-    },
-    shortMinCodeStyle(){
-      if(this.minCodeLabel) {
-        this.minCodeLabel = this.minCodeLabel.replaceAll(' ', '');
-      }
-    },
-    longMinCodeStyle(){
-      if(this.minCodeLabel && this.minCodeLabel.length === 8) {
-        this.minCodeLabel = formatMinCode(this.minCodeLabel);
       }
     },
     longDOBStyle() {
@@ -883,6 +804,22 @@ export default {
           }
         } catch (err) {
           return true;
+        }
+        return true;
+      }
+    },
+    minCodeHasChanged() {
+      if (this.origStudent.mincode) {
+        if (!this.studentCopy.mincode) {
+          return true;
+        } else {
+          let inputMincode = this.studentCopy.mincode;
+          if (inputMincode.length === 9) {
+            inputMincode = inputMincode.replace(' ', '');
+          }
+          if (this.origStudent.mincode === inputMincode) {
+            return false;
+          }
         }
         return true;
       }
@@ -1009,7 +946,7 @@ export default {
         .finally(() => {
           this.loadingTraxData = false;
         });
-    }
+    },
   }
 };
 </script>
