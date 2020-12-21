@@ -1,5 +1,5 @@
 'use strict';
-const {logApiError,logDebug} = require('./utils');
+const {logApiError,logInfo} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const NATS = require('../messaging/message-subscriber');
 const {v4: guid} = require('uuid');
@@ -16,10 +16,10 @@ async function getPenMatch(req, res) {
       eventType: 'PROCESS_PEN_MATCH',
       eventPayload: JSON.stringify(req.body)
     };
-    logDebug('calling pen match via NATS', event);
+    logInfo('calling pen match via NATS', event);
     const result = await NATS.requestMessage('PEN_MATCH_API_TOPIC', JSON.stringify(event));
     const parsedEvent = JSON.parse(result);
-    logDebug('got result from NATS', parsedEvent);
+    logInfo('got result from NATS', parsedEvent);
     return res.status(200).json(JSON.parse(parsedEvent.eventPayload));
   } catch (e) {
     logApiError(e, 'getPenMatch', 'Error occurred while attempting to get pen matches.');
