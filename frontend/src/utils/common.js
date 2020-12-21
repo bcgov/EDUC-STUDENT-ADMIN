@@ -122,3 +122,25 @@ export function updatePossibleMatchResultsBasedOnCurrentStatus(prbStudent, possi
     return deepCloneObject(possibleMatches);
   }
 }
+
+export function getSchoolData(minCode) {
+  const params = {
+    params: {
+      mincode: minCode,
+    }
+  };
+  if (minCode) {
+    return new Promise((resolve, reject) => {
+      ApiService.apiAxios
+        .get(Routes.SCHOOL_DATA_URL, params)
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  } else {
+    return Promise.resolve(null);
+  }
+}
