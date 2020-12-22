@@ -2,7 +2,7 @@
     <v-form ref="studentDetailForm" id="detailStudentForm"
             v-model="validForm" class="fill-height"
     >
-      <v-container class="fill-height ma-0 pa-2 studentDetail">
+      <v-container fluid class="fill-height ma-0 pa-2 studentDetail">
 
         <v-col cols="12" class="fill-height ma-0 pa-0">
           <v-row>
@@ -28,8 +28,8 @@
                 v-if="tab===0"
             >
               <template v-slot:buttonbar="{ isAdvancedSearch, hasAnyEdits, saveStudent, REQUEST_TYPES }">
-                <v-row no-gutters dense class="mt-n4">
-                  <v-col cols="10">
+                <v-row>
+                  <v-col cols="12">
                     <v-card-actions style="float: right;">
                       <router-link :to="`${isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`">
                         <PrimaryButton :secondary="true" class="mx-1" text="Cancel"></PrimaryButton>
