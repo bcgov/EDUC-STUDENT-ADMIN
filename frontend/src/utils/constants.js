@@ -2,6 +2,7 @@ let baseRoot = '/api';
 const authRoot = baseRoot + '/auth';
 const penRequestBatchRoot = baseRoot + '/penRequestBatch';
 const penRequestRoot = baseRoot + '/penRequest';
+const sldRequestRoot = baseRoot + '/sld';
 const studentRequestRoot = baseRoot + '/studentRequest';
 const demographicRoot = baseRoot + '/studentDemographics';
 const studentRoot = baseRoot + '/students';
@@ -41,6 +42,11 @@ let object = {
     MACRO_URL: penRequestRoot + '/macros',
     UNLINK_URL: penRequestRoot + '/unlink',
     STATS_URL: penRequestRoot + '/stats'
+  },
+
+  sld: {
+    ROOT_ENDPOINT: sldRequestRoot,
+    STUDENT_HISTORY_URL: sldRequestRoot + '/studentHistory'
   },
 
   studentRequest: {
