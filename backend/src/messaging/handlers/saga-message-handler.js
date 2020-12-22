@@ -1,6 +1,6 @@
 'use strict';
 const log = require('../../components/logger');
-
+const config= require('../../config/index');
 const redisUtil = require('../../util/redis/redis-utils');
 const webSocket = require('../../socket/web-socket');
 
@@ -21,7 +21,7 @@ const SagaEventWebSocketTopic = 'SAGA_EVENT_WS_TOPIC';
 
 function subscribeSagaMessages(nats, topic, handleMessage) {
   const opts = {
-    queue : 'student-admin-node-saga-queue-group'
+    queue : config.get('messaging:queueGroupName')//'student-admin-node-queue-group'
   };
 
   nats.subscribe(topic, opts, (msg, reply, subject, sid) => {
