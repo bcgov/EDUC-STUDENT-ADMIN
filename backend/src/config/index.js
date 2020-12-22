@@ -105,7 +105,8 @@ nconf.defaults({
   },
   messaging: {
     natsUrl: process.env.NATS_URL,
-    natsCluster: process.env.NATS_CLUSTER
+    natsCluster: process.env.NATS_CLUSTER,
+    queueGroupName: process.env.QUEUE_GROUP_NAME
   },
   scheduler: {
     schedulerCronStaleSagaRecordRedis: process.env.SCHEDULER_CRON_STALE_SAGA_RECORD_REDIS,
