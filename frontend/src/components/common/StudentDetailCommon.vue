@@ -221,28 +221,27 @@
               <v-col cols="2">
                 <p class="labelField">Mincode</p>
               </v-col>
-              <v-col cols="2" :class="{textFieldColumn: !mincodeError}">
-                <v-text-field
+              <v-col cols="2" :class="{textFieldColumn: !minCodeError}">
+                <FormattedTextField
                     tabindex="9"
-                    v-on:keyup.tab="[editingMincode = true, hoveringMincode = true]"
-                    v-on:mouseover="isFieldDisabled('mincode')? hoveringMincode = false : hoveringMincode = true"
-                    v-on:mouseout="editingMincode ? hoveringMincode = true : hoveringMincode = false"
-                    v-on:blur="[editingMincode = false, hoveringMincode = false]"
-                    v-on:click="[editingMincode = true, hoveringMincode = true]"
-                    v-on:input="handleInput(STUDENT_DETAILS_FIELDS.MINCODE)"
-                    :error-messages="errors"
-                    class="onhoverEdit bolder customNoBorder"
-                    :class="{onhoverPad: !hoveringMincode && !hasEdits(STUDENT_DETAILS_FIELDS.MINCODE), darkBackgound: hoveringMincode || hasEdits(STUDENT_DETAILS_FIELDS.MINCODE)}"
-                    v-model="minCodeLabel"
+                    @keyup.tab.native="[editingMincode = true, hoveringMincode = true]"
+                    @mouseover.native="isFieldDisabled('mincode')? hoveringMincode = false : hoveringMincode = true"
+                    @mouseout.native="editingMincode ? hoveringMincode = true : hoveringMincode = false"
+                    @blur="[editingMincode = false, hoveringMincode = false]"
+                    @focus="[editingMincode = true, hoveringMincode = true]"
+                    :classes="['onhoverEdit', 'bolder', 'customNoBorder', {onhoverPad: !hoveringMincode && !minCodeHasChanged(), darkBackgound: hoveringMincode || minCodeHasChanged()}]"
+                    :async-messages="minCodeErrors"
+                    v-model="studentCopy.mincode"
                     :id='STUDENT_DETAILS_FIELDS.MINCODE'
-                    color="#000000"
-                    dense
+                    :filled="false"
+                    :clearable="false"
+                    :format="formatMinCode"
                     :rules="validateMinCode()"
-                    max-length="9" min-length="8"
+                    maxlength="8"
                     :readonly="!hoveringMincode || !editingMincode"
-                    :outlined="hoveringMincode || editingMincode || hasEdits(STUDENT_DETAILS_FIELDS.MINCODE)"
+                    :outlined="hoveringMincode || editingMincode || minCodeHasChanged()"
                     :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MINCODE)"
-                ></v-text-field>
+                ></FormattedTextField>
               </v-col>
               <v-col cols="4" class="textFieldColumn">
                 <v-progress-circular
@@ -440,16 +439,19 @@ import StudentDetailsTemplateTextField from '@/components/penreg/student/Student
 import {formatMinCode, formatPen} from '../../utils/format';
 import {sortBy,isEmpty} from 'lodash';
 import alertMixin from '../../mixins/alertMixin';
+import schoolMixin from '../../mixins/schoolMixin';
 import ConfirmationDialog from '../util/ConfirmationDialog';
 import AlertMessage from '../util/AlertMessage';
 import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard';
 import CompareDemographicModal from './CompareDemographicModal';
+import {isValidMinCode} from '@/utils/validation';
+import FormattedTextField from '@/components/util/FormattedTextField';
 
 const JSJoda = require('@js-joda/core');
 
 export default {
   name: 'studentDetailCommon',
-  mixins: [alertMixin],
+  mixins: [alertMixin, schoolMixin],
   props: {
     studentID: {
       type: String,
@@ -473,6 +475,7 @@ export default {
     }
   },
   components: {
+    FormattedTextField,
     AlertMessage,
     CompareDemographicModal,
     ConfirmationDialog,
@@ -490,9 +493,6 @@ export default {
       spacePostalCode: null,
       isLoading: true,
       deceasedDialog: false,
-      errors: [], // asynchronous way to set the validation error messages
-      mincodeHint: 'Invalid Mincode',
-      mincodeError: false,
       genderHint: 'Invalid Gender Code',
       genderError: false,
       dobHint: 'Invalid Date of Birth',
@@ -502,8 +502,6 @@ export default {
       statusLabels: [],
       gradeLabels: [],
       gradeLabel: null,
-      minCodeLabel: null,
-      schoolLabel: null,
       alert: false,
       createdDateTime: null,
       updatedDateTime: null,
@@ -575,6 +573,7 @@ export default {
   },
   methods: {
     formatPen,
+    formatMinCode,
     changeStudentObjectValue(key, value) {
       this.studentCopy[`${key}`] = value;
       if (key === STUDENT_DETAILS_FIELDS.STATUS_CODE) {
@@ -673,65 +672,25 @@ export default {
     // Asynchronous validator returns an array of boolean or string that would be provided for :rules prop of input field
     validateMinCode() {
       return [v => {
-        this.setMinCode(v);
+        if (this.isValidFormattedMinCode(v)) { // skip when no input or the formatted text is set for view
+          return true;
+        }
         this.schoolLabel = '';
         if (this.studentCopy) {
-          if (!this.studentCopy.mincode) {
-            this.mincodeError = false;
-            this.schoolLabel = '';
-            return true;
-          } else {
-            if (this.studentCopy.mincode.match('^[0-9]\\d*$') && this.studentCopy.mincode.length === 8) {
-              this.getSchoolName(this.studentCopy.mincode);
-              return true;
+          if (this.studentCopy.mincode) {
+            if (!isValidMinCode(this.studentCopy.mincode)) { // format error
+              this.minCodeError = true;
+              return this.minCodeHint;
             }
+            if (this.studentCopy.mincode.length !== 8) { // length error
+              this.minCodeError = true;
+              return this.minCodeHint + this.minCodeAdditionalHint;
+            }
+            this.getSchoolName(this.studentCopy.mincode);
           }
         }
-
-        this.mincodeError = true;
-        return this.mincodeHint;
+        return true;
       }];
-    },
-    async getSchoolName(mincode) {
-      try {
-        this.schoolLabel = await this.retrieveSchoolEntity(mincode);
-        if (!this.schoolLabel) {
-          this.mincodeError = true;
-          this.errors = [this.mincodeHint];
-        } else {
-          this.mincodError = false;
-          this.errors = [];
-        }
-      } catch (e) {
-        this.schoolLabel = '';
-        this.mincodeError = true;
-        this.errors = [this.mincodeHint];
-      }
-    },
-    retrieveSchoolEntity(mincode) {
-      const params = {
-        params: {
-          mincode,
-        }
-      };
-      if (mincode) {
-        this.loadingSchoolData = true;
-        return new Promise((resolve, reject) => {
-          ApiService.apiAxios
-            .get(Routes.SCHOOL_DATA_URL, params)
-            .then(response => {
-              resolve(response.data?.schoolName);
-            })
-            .catch(error => {
-              reject(error);
-            })
-            .finally(() => {
-              this.loadingSchoolData = false;
-            });
-        });
-      } else {
-        return Promise.resolve('');
-      }
     },
     setStudent(student) {
       this.origStudent = student;
@@ -741,7 +700,7 @@ export default {
       this.updateDOBLabel(true);
       this.formatPostalCode();
       this.setGradeLabel();
-      this.setMinCodeLabel();
+      this.getSchoolName(this.studentCopy.mincode);
       if (this.studentCopy.statusCode === STUDENT_CODES.MERGED) {
         this.setEnableDisableForFields(true, STUDENT_DETAILS_FIELDS.MERGED_TO, STUDENT_DETAILS_FIELDS.PEN);
       }
@@ -772,7 +731,6 @@ export default {
       }
     },
     hasEdits(key) {
-
       let studentCopy = this.studentCopy[key];
       let studentOriginal = this.origStudent[key];
       studentCopy = (studentCopy === null || studentCopy === undefined) ? '' : studentCopy;
@@ -796,7 +754,7 @@ export default {
     },
     revertMinCodeField() {
       this.revertField(STUDENT_DETAILS_FIELDS.MINCODE);
-      this.setMinCodeLabel();
+      this.getSchoolName(this.studentCopy.mincode);
     },
     setGradeLabel() {
       if (this.studentCopy && this.studentCopy.gradeCode && this.gradeCodeObjects) {
@@ -821,22 +779,6 @@ export default {
     formatPostalCode() {
       if (this.studentCopy.postalCode) {
         this.spacePostalCode = this.studentCopy.postalCode.replace(/.{3}$/, ' $&');
-      }
-    },
-    setMinCodeLabel() {
-      if (this.studentCopy.mincode) {
-        this.minCodeLabel = formatMinCode(this.studentCopy.mincode);
-      }
-    },
-    setMinCode(minCodeLabel) {
-      if (minCodeLabel) {
-        if (minCodeLabel.includes(' ')) {
-          this.studentCopy.mincode = minCodeLabel.replace(' ' , '');
-        } else {
-          this.studentCopy.mincode = minCodeLabel;
-        }
-      } else {
-        this.studentCopy.mincode = '';
       }
     },
     longDOBStyle() {
@@ -870,6 +812,22 @@ export default {
           }
         } catch (err) {
           return true;
+        }
+        return true;
+      }
+    },
+    minCodeHasChanged() {
+      if (this.origStudent.mincode) {
+        if (!this.studentCopy.mincode) {
+          return true;
+        } else {
+          let inputMincode = this.studentCopy.mincode;
+          if (inputMincode.length === 9) {
+            inputMincode = inputMincode.replace(' ', '');
+          }
+          if (this.origStudent.mincode === inputMincode) {
+            return false;
+          }
         }
         return true;
       }
@@ -957,19 +915,6 @@ export default {
     isFieldDisabled(fieldName){
       return (!!this.enableDisableFieldsMap.get(fieldName) || this.fullReadOnly);
     },
-    handleInput(fieldName){
-      if(fieldName === STUDENT_DETAILS_FIELDS.POSTAL_CODE){
-        if(this.studentCopy && this.studentCopy.postalCode) {
-          this.studentCopy.postalCode = this.studentCopy.postalCode.replace(/[^0-9A-Za-z]/g, '');
-        }
-        this.spacePostalCode = this.studentCopy.postalCode;
-      }
-      if(fieldName === STUDENT_DETAILS_FIELDS.MINCODE){
-        if(this.studentCopy && this.studentCopy.mincode) {
-          this.studentCopy.mincode = this.studentCopy.mincode.replace(/[^0-9A-Za-z]/g, '');
-        }
-      }
-    },
     formatUpdateTime(datetime) {
       return moment(JSON.stringify(datetime), 'YYYY-MM-DDTHH:mm:ss').format('YYYY/MM/DD H:mma');
     },
@@ -1009,7 +954,7 @@ export default {
         .finally(() => {
           this.loadingTraxData = false;
         });
-    }
+    },
   }
 };
 </script>

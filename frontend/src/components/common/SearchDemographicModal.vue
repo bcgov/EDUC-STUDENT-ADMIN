@@ -129,11 +129,9 @@
                   <v-spacer/>
                   <v-col cols="3">
                     <FormattedTextField
-                            outlined dense filled
                             id="searchDemogModalDobTxtField"
                             :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.DOB)"
                             :rules="validateDOB()" maxlength="8"
-                            clearable
                             tabindex="8"
                             :format="formatDob"
                             v-model="student.dob"></FormattedTextField>
@@ -161,25 +159,24 @@
                 <v-row dense>
                   <v-col cols="3">
                     <FormattedTextField
-                            outlined dense filled
                             id="searchDemogModalPostalCodeTxtField"
                             :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
                             :rules="validatePostalCode()" maxlength="6"
                             tabindex="10" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
-                            clearable
                             :format="formatPostalCode"
                             v-model="student.postalCode">
                     </FormattedTextField>
                   </v-col>
                   <v-spacer/>
                   <v-col v-if="!isMincodeHidden" cols="3">
-                    <v-text-field outlined dense filled
-                                  id="searchDemogModalMincodeTxtField"
-                                  :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.MINCODE)"
-                                  :rules="validateMincode()" maxlength="8" minlength="8"
-                                  clearable
-                                  tabindex="11"
-                                  v-model="student.mincode"></v-text-field>
+                    <FormattedTextField
+                            id="searchDemogModalMincodeTxtField"
+                            :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.MINCODE)"
+                            :rules="validateMinCode()" maxlength="8"
+                            :async-messages="minCodeErrors"
+                            tabindex="11"
+                            :format="formatMinCode"
+                            v-model="student.mincode"></FormattedTextField>
                   </v-col>
                   <v-spacer/>
                   <v-col cols="3"></v-col>
@@ -206,10 +203,12 @@ import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import {isValidMinCode, isValidPostalCode, isValidDOBAndAfter1900} from '@/utils/validation';
 import {mapGetters} from 'vuex';
 import FormattedTextField from '../util/FormattedTextField';
-import {formatPostalCode, formatDob} from '../../utils/format';
+import {formatPostalCode, formatDob, formatMinCode} from '../../utils/format';
+import schoolMixin from '../../mixins/schoolMixin';
 
 export default {
   name: 'SearchDemographicModal.vue',
+  mixins: [schoolMixin],
   components: {FormattedTextField},
   props: {
     dialog: {
@@ -254,6 +253,7 @@ export default {
   methods: {
     formatPostalCode,
     formatDob,
+    formatMinCode,
     upperCaseInput(fieldName) {
       if (this.student[fieldName]) {
         this.student[fieldName] = this.student[fieldName].toUpperCase();
@@ -282,12 +282,22 @@ export default {
         this.$emit('updateStudent', this.student);
       }
     },
-    validateMincode() {
-      if (this.student.mincode) {
-        if (!isValidMinCode(this.student.mincode) || this.student.mincode.length !== 8) {
-          return ['Invalid mincode, should be exactly 8 digits.'];
+    validateMinCode() {
+      return [v => {
+        if (!v || this.isValidFormattedMinCode(v)) { // skip when no input or the formatted text is set for view
+          return true;
         }
-      }
+        if (this.student.mincode) {
+          if (!isValidMinCode(this.student.mincode)) {
+            return this.minCodeHint;
+          }
+          if (this.student.mincode.length !== 8) {
+            return this.minCodeHint + this.minCodeAdditionalHint;
+          }
+          this.getSchoolName(this.student.mincode);
+        }
+        return true;
+      }];
     },
     validateDOB() {
       if (!this.student.dob) {
