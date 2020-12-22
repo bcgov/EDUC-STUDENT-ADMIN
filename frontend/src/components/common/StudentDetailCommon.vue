@@ -1,5 +1,5 @@
 <template>
-    <v-row>
+    <div>
       <v-row v-if="!isLoading">
         <v-col cols="3" class="px-6 ma-0">
           <v-card class="pa-2 ma-0" color="#D7D7D7" width="100%" elevation=0>
@@ -55,7 +55,7 @@
                                     :disabled="isFieldDisabled('statusCode')"></StudentDetailsComboBox>
           </v-card>
         </v-col>
-        <v-col cols="9" class="py-0 pl-0">
+        <v-col cols="8" class="py-0 pl-0">
           <v-card class="pa-0" height="100%" width="100%" elevation=0>
 
             <StudentDetailsTextField max-length="255" :name="STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME" tab-index="1"
@@ -353,15 +353,19 @@
             </v-row>
           </v-card>
         </v-col>
-        <slot 
-          name="buttonbar"
-          :isAdvancedSearch="isAdvancedSearch"
-          :hasAnyEdits="hasAnyEdits"
-          :saveStudent="saveStudent"
-          :REQUEST_TYPES="REQUEST_TYPES">
-        </slot>
+        <v-col cols="1">
+          <CompareDemographicModal :disabled="false" :selectedRecords="compareStudent"></CompareDemographicModal>
+        </v-col>
       </v-row>
-      <v-row fluid class="full-height align-center justify-center" v-else-if="isLoading">
+      <slot
+              v-if="!isLoading"
+              name="buttonbar"
+              :isAdvancedSearch="isAdvancedSearch"
+              :hasAnyEdits="hasAnyEdits"
+              :saveStudent="saveStudent"
+              :REQUEST_TYPES="REQUEST_TYPES">
+      </slot>
+      <v-row fluid class="full-height align-center justify-center" v-if="isLoading">
         <article id="pen-display-container" class="top-banner full-height">
           <v-row align="center" justify="center">
             <v-progress-circular
@@ -373,6 +377,7 @@
           </v-row>
         </article>
       </v-row>
+
       <v-dialog
           v-model="deceasedDialog"
           width="400px"
@@ -416,7 +421,7 @@
         ></TwinnedStudentsCard>
       </v-dialog>
       <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>
-    </v-row>
+    </div>
 </template>
 
 <script>
@@ -438,6 +443,7 @@ import schoolMixin from '../../mixins/schoolMixin';
 import ConfirmationDialog from '../util/ConfirmationDialog';
 import AlertMessage from '../util/AlertMessage';
 import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard';
+import CompareDemographicModal from './CompareDemographicModal';
 import {isValidMinCode} from '@/utils/validation';
 import FormattedTextField from '@/components/util/FormattedTextField';
 
@@ -471,6 +477,7 @@ export default {
   components: {
     FormattedTextField,
     AlertMessage,
+    CompareDemographicModal,
     ConfirmationDialog,
     TwinnedStudentsCard,
     StudentDetailsTextFieldSideCardReadOnly,
@@ -523,6 +530,7 @@ export default {
       traxStatus: '',
       loadingTraxData: false,
       loadingSchoolData: false,
+      compareStudent: []
     };
   },
   created() {
@@ -710,6 +718,7 @@ export default {
         ApiService.apiAxios
           .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
           .then(response => {
+            this.compareStudent[0] = response.data.student;
             this.handleStudentDetails(response.data);
           })
           .catch(error => {
