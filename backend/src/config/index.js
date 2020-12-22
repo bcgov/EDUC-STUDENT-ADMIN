@@ -63,6 +63,10 @@ nconf.defaults({
     profileSagaAPIURL: process.env.PROFILE_REQUEST_SAGA_API_URL,
     schoolAPIURL: process.env.SCHOOL_API_URL,
     penTraxURL: process.env.PEN_TRAX_API_URL,
+    sld: {
+      rootURL: process.env.SLD_API_URL,
+      studentHistoryURL: process.env.SLD_API_URL + '/student-history/'
+    },
     student: {
       rootURL: process.env.STUDENT_API_URL,
       genderCodesURL: process.env.STUDENT_API_URL + '/gender-codes',

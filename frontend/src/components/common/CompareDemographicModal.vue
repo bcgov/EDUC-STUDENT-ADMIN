@@ -20,6 +20,7 @@
     </template>
     <v-card id="requestInfoDialogCard">
       <CompareDemographicsCommon
+        v-if="compareModalOpen"
         :selectedRecords.sync="studentRecords"
         title="Compare/View"
         :closeCompareModal="closeCompareModal">
