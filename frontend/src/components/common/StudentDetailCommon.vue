@@ -718,7 +718,6 @@ export default {
         ApiService.apiAxios
           .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
           .then(response => {
-            this.compareStudent[0] = response.data.student;
             this.handleStudentDetails(response.data);
           })
           .catch(error => {
@@ -927,6 +926,7 @@ export default {
       return [];
     },
     handleStudentDetails({student, merges, twins}) {
+      this.compareStudent[0] = student;
       this.setStudent(student);
       this.merges = merges;
       this.twins = twins;
