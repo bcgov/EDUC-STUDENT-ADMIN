@@ -69,15 +69,14 @@ const NATS = {
     return new Promise((resolve, reject) => {
       connection.requestOne(topic, payload, timeout, (msg) => {
         if (msg instanceof nats.NatsError && msg?.code === nats.REQ_TIMEOUT) {
-          log.error(`Request to NATS timed out after 120000 ms for topic ${topic} and payload ${payload}`, msg);
+          log.error(`Request to NATS timed out after ${timeout} ms for topic ${topic} and payload ${payload}`, msg);
           return reject('request timed out');
         } else {
           return resolve(msg);
         }
       });
     });
-  }
-
+  },
 };
 
 module.exports = NATS;

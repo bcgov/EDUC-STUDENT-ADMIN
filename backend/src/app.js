@@ -35,9 +35,9 @@ const schoolsRouter = require('./routes/schools');
 const penTraxRouter = require('./routes/penTrax');
 const promMid = require('express-prometheus-middleware');
 const actuator = require('express-actuator');
-const messageSubscriber = require('./messaging/message-subscriber');
-messageSubscriber.init();
-messageSubscriber.callbacks();
+const messagePubSub = require('./messaging/message-pub-sub');
+messagePubSub.init();
+messagePubSub.callbacks();
 //initialize app
 const app = express();
 const nocache = require('nocache');

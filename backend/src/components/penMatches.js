@@ -1,7 +1,7 @@
 'use strict';
 const {logApiError,logInfo} = require('./utils');
 const HttpStatus = require('http-status-codes');
-const NATS = require('../messaging/message-subscriber');
+const NATS = require('../messaging/message-pub-sub');
 const {v4: guid} = require('uuid');
 
 async function getPenMatch(req, res) {
@@ -17,7 +17,8 @@ async function getPenMatch(req, res) {
       eventPayload: JSON.stringify(req.body)
     };
     logInfo('calling pen match via NATS', event);
-    const result = await NATS.requestMessage('PEN_MATCH_API_TOPIC', JSON.stringify(event));
+    // since router times out at 30 seconds on vue side, lets timeout at 29 seconds here.
+    const result = await NATS.requestMessage('PEN_MATCH_API_TOPIC', JSON.stringify(event),29000);
     const parsedEvent = JSON.parse(result);
     logInfo('got result from NATS', parsedEvent);
     return res.status(200).json(JSON.parse(parsedEvent.eventPayload));
