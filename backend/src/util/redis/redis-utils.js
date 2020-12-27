@@ -29,7 +29,7 @@ async function createSagaRecord(event, redisKey) {
   }
 }
 async function removeEventRecordFromRedis(event, redisKey) {
-  let recordFoundFromRedis = false;
+  let recordFoundFromRedis;
   const redisClient = Redis.getRedisClient();
   if (redisClient) {
     try {
@@ -39,7 +39,7 @@ async function removeEventRecordFromRedis(event, redisKey) {
           const eventArrayElement = JSON.parse(element);
           if ((eventArrayElement.sagaId && event.sagaId && eventArrayElement.sagaId === event.sagaId) && ('COMPLETED' === event.sagaStatus || 'FORCE_STOPPED' === event.sagaStatus)) {
             log.info(`going to delete this event record as it is completed or force stopped. SAGA ID :: ${eventArrayElement.sagaId} AND STATUS :: ${event.sagaStatus}`);
-            recordFoundFromRedis = true;
+            recordFoundFromRedis = eventArrayElement;
             try {
               await this.getRedLock().lock(`locks:saga:deleteFromSet-${event.sagaId}`, 500);
               await redisClient.srem(redisKey, safeStringify(eventArrayElement));

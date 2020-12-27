@@ -77,6 +77,14 @@ const NATS = {
       });
     });
   },
+  publishMessage(topic, payload) {
+    return new Promise((resolve) => {
+      connection.publish(topic, payload, (msg) => {
+        log.info('Published to [' + topic + '] : "' + msg + '"');
+        return resolve();
+      });
+    });
+  },
 };
 
 module.exports = NATS;
