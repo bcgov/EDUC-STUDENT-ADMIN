@@ -77,6 +77,13 @@ const NATS = {
       });
     });
   },
+
+  /**
+   * This is asynchronous publish of message to a given topic.
+   * @param topic the topic to which request will be sent.
+   * @param payload the payload to sent to the topic.
+   * @returns {Promise<void>}
+   */
   publishMessage(topic, payload) {
     return new Promise((resolve) => {
       connection.publish(topic, payload, (msg) => {
