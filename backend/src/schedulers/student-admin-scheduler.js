@@ -59,6 +59,7 @@ async function removeStaleSagas(staleSagas, sagaType) {
           }
           if (recordFromRedis) {
             recordFromRedis.sagaStatus = sagaFromAPI.status;
+            recordFromRedis.sagaName = sagaFromAPI.sagaName;
             NATS.publishMessage('SAGA_EVENT_WS_TOPIC', safeStringify(recordFromRedis)).then(() => {
               log.info('message published to SAGA_EVENT_WS_TOPIC', recordFromRedis);
             });
