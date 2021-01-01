@@ -13,7 +13,8 @@ const {LocalDateTime} = require('@js-joda/core');
 const NATS = require('../messaging/message-pub-sub');
 
 /**
- * This method will check whether the saga record was created 15 minutes before, if so add it to the list
+ * @property minimumTimeBeforeSagaIsStale - this is the value which will be subtracted from current time.
+ * This method will check whether the saga record was created @property minimumTimeBeforeSagaIsStale before, if so add it to the list
  * @param inProgressSagas the records from redis.
  * @returns {[]} array of saga records, if nothing matches criteria, blank array.
  */
@@ -31,6 +32,12 @@ function findStaleSagaRecords(inProgressSagas) {
   return staleSagas;
 }
 
+/**
+ *
+ * @param staleSagas the sagas which are considered stale, as it took more than desired time to be completed.
+ * @param sagaType the saga type, whether GMP/UMP or PEN_REQUEST_BATCH
+ * @returns {Promise<void>}
+ */
 async function removeStaleSagas(staleSagas, sagaType) {
   let sagaRecordFromAPIPromises = [];
   try {
