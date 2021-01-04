@@ -45,21 +45,41 @@
           <v-spacer v-else></v-spacer>
           <PrimaryButton id="view-list-action" class="mr-2" :disabled="!filesSelected" @click.native="clickViewList" text="View List"></PrimaryButton>
           <PrimaryButton id="view-details-action" class="mx-2" :disabled="!filesSelected" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
-          <PrimaryButton id="archive-action" :disabled="!actionEnabled">
-            Finish Submission
-            <v-icon large right>
-              mdi-chevron-down
-            </v-icon>
-          </PrimaryButton>
+          <v-menu offset-y>
+            <template v-slot:activator="{ on }">
+              <PrimaryButton id="archive-action" :disabled="!filesSelected" :on="on">
+                Finish Submission
+                <v-icon large right>
+                  mdi-chevron-down
+                </v-icon>
+              </PrimaryButton>
+            </template>
+            <v-list>
+              <v-list-item>
+                <v-list-item-title>Return All Except FIX</v-list-item-title>
+              </v-list-item>
+              <v-list-item>
+                <v-list-item-title>Return All</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="archiveOnly">
+                <v-list-item-title>Archive Only</v-list-item-title>
+              </v-list-item>
+              <v-list-item>
+                <v-list-item-title>Delete Request File</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </v-row>
         <v-row no-gutters class="py-2" style="background-color:white;">
           <PenRequestBatchList
             :schoolGroup="selectedSchoolGroup"
             :filters="filters"
+            :loadingFiles="loadingFiles"
             @filter-change="filterChange"
             @failure-alert="setFailureAlert"
           ></PenRequestBatchList>
         </v-row>
+        <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>
     </v-container>
 </template>
 
@@ -71,13 +91,18 @@ import FilterTag from '../../util/FilterTag';
 import PrimaryButton from '../../util/PrimaryButton';
 import router from '../../../router';
 import alertMixin from '../../../mixins/alertMixin';
+import ConfirmationDialog from '../../util/ConfirmationDialog';
+import pluralize from 'pluralize'; 
+import ApiService from '@/common/apiService';
+import {Routes} from '@/utils/constants';
 
 export default {
   name: 'PenRequestBatchDisplay',
   components: {
     FilterTag,
     PrimaryButton,
-    PenRequestBatchList
+    PenRequestBatchList,
+    ConfirmationDialog
   },
   mixins: [alertMixin],
   props: {
@@ -90,7 +115,7 @@ export default {
     return {
       schoolGroups: [{value: 'K12', text: 'K-12'}, {value: 'PSI', text: 'PSI'}],
       filters:['Fixable'],
-      actionEnabled: false,
+      loadingFiles: false,
     };
   },
   computed: {
@@ -169,6 +194,37 @@ export default {
         searchCriteria: JSON.stringify(searchCriteriaList),
       };
       router.push({name: 'prbStudentDetails', query});
+    },
+    async archiveOnly() {
+      const fileNumber = this.selectedFiles.length;
+      const result = await this.$refs.confirmationDialog.open(
+        `Please confirm that you would like to Archive ${fileNumber} ${pluralize('file', fileNumber)}`, 
+        'Note this action will not return any files to the submitting school.', 
+        { width: '520px', messagePadding: 'px-4 pt-4', color: '', dark: false, closeIcon: true, divider: true, subtitle: true, resolveText: 'Confirm' }
+      );
+      if(result) {
+        const payload = {
+          penRequestBatchIDs: this.selectedFiles.map(file => file.penRequestBatchID)
+        };
+        this.loadingFiles = true;
+        ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/archiveFiles`, payload)
+          .then(response => {
+            const archivedNumber = response.data.length;
+            const archivedMessage = `${archivedNumber} PEN Request ${pluralize('File', archivedNumber)} ${pluralize('has', archivedNumber)} been archived.`;
+            if(archivedNumber === fileNumber) {
+              this.setSuccessAlert(`Success! ${archivedMessage}`);
+            } else {
+              this.setFailureAlert(`An error occurred while archiving PEN Request Files! ${archivedMessage} Please try again later.`);
+            }
+          })
+          .catch(error => {
+            this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
+            console.log(error);
+          })
+          .finally(() => {
+            this.loadingFiles = false;
+          });
+      }
     }
   }
 };

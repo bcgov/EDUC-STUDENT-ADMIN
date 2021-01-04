@@ -38,6 +38,7 @@
     "moment": "^2.29.1",
     "nightwatch": "^1.5.1",
     "path": "^0.12.7",
+    "pluralize": "^8.0.0",
     "purgecss-webpack-plugin": "^1.6.0",
     "regenerator-runtime": "^0.13.5",
     "rfdc": "^1.1.4",
