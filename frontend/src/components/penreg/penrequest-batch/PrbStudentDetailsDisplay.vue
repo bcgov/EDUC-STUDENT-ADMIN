@@ -106,7 +106,7 @@
       </div>
       <ConfirmationDialog ref="confirmationDialog">
         <template v-slot:message>
-          <v-col class="warnings-modal pt-0">
+          <v-col class="pt-0">
             <v-row class="mb-3">There is <strong>&nbsp;{{demogValidationResult.length}}&nbsp;</strong> questionable {{`error${demogValidationResult.length > 1 ? 's' : ''}`}} with this PEN request:</v-row>
             <v-row v-for="warning in demogValidationResult" :key="warning.penRequestBatchValidationIssueTypeCode">
               <v-col class="pb-0">
@@ -120,7 +120,6 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-divider />
         </template>
       </ConfirmationDialog>
     </div>
@@ -580,7 +579,7 @@ export default {
       let result = true;
       if(this.demogValidationResult.length > 0) {
         result = await this.$refs.confirmationDialog.open('Are you sure you want to proceed?', null, 
-          { width: '680px', messagePadding: 'px-4 pt-1', color: '', dark: false, closeIcon: true, resolveText: 'Confirm' });
+          { width: '680px', messagePadding: 'px-4 pt-1', color: '', dark: false, titleBold: true, closeIcon: true, divider: true, resolveText: 'Confirm' });
       }
       return result;
     },
@@ -717,9 +716,5 @@ export default {
   pre {
     font-family: inherit;
     font-size: inherit;
-  }
-
-  .warnings-modal {
-    color: black;
   }
 </style>
