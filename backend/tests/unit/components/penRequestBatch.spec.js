@@ -392,7 +392,7 @@ describe('archiveFiles', () => {
       penRequestBatchStatusCode: 'ARCHIVED'
     }));
     utils.getData.mockResolvedValue(batchFiles);
-    utils.putData.mockImplementation((token, url, data, user) => 
+    utils.putData.mockImplementation((token, url, data) => 
       Promise.resolve(data)
     );
     await penRequestBatch.archiveFiles(req, res);
@@ -407,7 +407,7 @@ describe('archiveFiles', () => {
       penRequestBatchStatusCode: 'ARCHIVED'
     }];
     utils.getData.mockResolvedValue(batchFiles);
-    utils.putData.mockImplementation((token, url, data, user) => 
+    utils.putData.mockImplementation((token, url, data) => 
       data.penRequestBatchID === penRequestBatchID ? Promise.resolve(data) : Promise.reject({status: HttpStatus.INTERNAL_SERVER_ERROR})
     );
     await penRequestBatch.archiveFiles(req, res);
@@ -418,7 +418,7 @@ describe('archiveFiles', () => {
   it('should return empty array if all failed', async () => {
     const resp = [];
     utils.getData.mockResolvedValue(batchFiles);
-    utils.putData.mockImplementation((token, url, data, user) => 
+    utils.putData.mockImplementation(() => 
       Promise.reject({status: HttpStatus.INTERNAL_SERVER_ERROR})
     );
     await penRequestBatch.archiveFiles(req, res);
