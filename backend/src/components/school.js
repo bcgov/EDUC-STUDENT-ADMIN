@@ -13,6 +13,8 @@ async function getSchoolByMincode(req, res) {
       const data = cacheService.getAllSchoolsJSON();
       if(data){
         return res.status(200).json(data);
+      }else {
+        return res.status(200).json([]);
       }
     }
     return res.status(200).json();
