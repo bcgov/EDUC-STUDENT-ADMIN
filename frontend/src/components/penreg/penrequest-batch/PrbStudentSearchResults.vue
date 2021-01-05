@@ -82,10 +82,10 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex';
+import {mapMutations, mapState} from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
 import PrbStudentStatusChip from './PrbStudentStatusChip';
-import { sortBy, uniq, values, uniqBy } from 'lodash';
+import {sortBy, uniq, uniqBy, values} from 'lodash';
 import router from '../../../router';
 
 export default {
@@ -116,6 +116,9 @@ export default {
       ],
     };
   },
+  async beforeMount() {
+    await this.$store.dispatch('prbStudentSearch/getCodes');
+  },
   computed: {
     ...mapState('prbStudentSearch', ['prbStudentSearchResponse', 'prbStudentSearchCriteria', 'currentPrbStudentSearchParams']),
     ...mapState('penRequestBatch', ['selectedFiles', 'prbStudentStatuses']),
@@ -142,9 +145,10 @@ export default {
       return ((this.pageNumber-1) * this.prbStudentSearchResponse.pageable.pageSize + this.prbStudentSearchResponse.numberOfElements);
     },
     studentStatuses() {
-      const statuses = sortBy(this.prbStudentStatuses.filter(status => status.penRequestBatchStudentStatusCode !== 'LOADED'), ['displayOrder']).
-        map(status => ({text: status.label, value: status.penRequestBatchStudentStatusCode}));
-      return statuses;
+      return sortBy(this.prbStudentStatuses.filter(status => status.penRequestBatchStudentStatusCode !== 'LOADED'), ['displayOrder']).map(status => ({
+        text: status.label,
+        value: status.penRequestBatchStudentStatusCode
+      }));
     },
     selectedStudentStatus: {
       get(){
@@ -159,13 +163,13 @@ export default {
     },
     viewEnabled() {
       return this.prbStudentSearchResponse.totalElements > 0 && !this.loading;
-    }
+    },
+
   },
   methods: {
     ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse']),
     getSchoolName(request) {
-      const schoolName = this.selectedFiles.find(file => file.penRequestBatchID === request.penRequestBatchID)?.schoolName;
-      return schoolName;
+      return this.$store.state['prbStudentSearch'].mincodeSchoolNames.get(request?.minCode?.replace(' ',''));
     },
     clickViewSelected() {
       if(this.selectedRecords?.length > 0) {

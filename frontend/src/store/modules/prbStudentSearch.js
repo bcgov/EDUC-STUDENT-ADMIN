@@ -1,4 +1,5 @@
-import { mapValues } from 'lodash';
+import {mapValues} from 'lodash';
+import ApiService from '@/common/apiService';
 
 const getDefaultState = () => {
   return {
@@ -25,6 +26,7 @@ const getDefaultState = () => {
     selectedStudentStatus: null,
     currentPrbStudentSearchParams: null,
     prbStudentSearchCriteria: null,
+    mincodeSchoolNames: new Map(),
   };
 };
 
@@ -58,6 +60,22 @@ export default {
     },
     setPrbStudentSearchCriteria: (state, prbStudentSearchCriteria) => {
       state.prbStudentSearchCriteria = prbStudentSearchCriteria;
+    },
+    setMinCodeSchoolName(state, minCodeSchoolNameList) {
+      state.mincodeSchoolNames = new Map();
+      minCodeSchoolNameList.forEach(element => {
+        state.mincodeSchoolNames.set(element.minCode, element.schoolName);
+      });
     }
-  }
+  },
+  actions: {
+    async getCodes({ commit, state}) {
+      if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
+        if(state.mincodeSchoolNames.size === 0) {
+          const response = await ApiService.getMinCodeSchoolNames();
+          commit('setMinCodeSchoolName', response.data);
+        }
+      }
+    },
+  },
 };

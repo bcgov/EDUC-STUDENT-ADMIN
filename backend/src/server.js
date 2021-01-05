@@ -6,7 +6,11 @@ const log = require('./components/logger');
 const dotenv = require('dotenv');
 const localDateTime = require('@js-joda/core').LocalDateTime;
 //Add timestamp to log
-Object.defineProperty(log, 'heading', { get: () => { return localDateTime.now().toString(); } });
+Object.defineProperty(log, 'heading', {
+  get: () => {
+    return localDateTime.now().toString();
+  }
+});
 dotenv.config();
 log.info('Starting student-admin node app');
 const app = require('./app');
@@ -24,7 +28,13 @@ app.set('port', port);
 const server = http.createServer(app);
 const WS = require('./socket/web-socket');
 const NATS = require('./messaging/message-pub-sub');
-WS.init(app,server);
+const cacheService = require('./components/cache-service');
+cacheService.loadAllSchoolsToMap().then(() => {
+  log.info('loaded school data to memory');
+}).catch((e) => {
+  log.error('error loading schools during boot .', e);
+});
+WS.init(app, server);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -90,7 +100,7 @@ function onListening() {
   log.info('Listening on ' + bind);
 }
 
-process.on('SIGINT',() => {
+process.on('SIGINT', () => {
   NATS.close();
   server.close(() => {
     log.info('process terminated');
