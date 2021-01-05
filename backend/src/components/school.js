@@ -1,22 +1,22 @@
 'use strict';
 const {logApiError, errorResponse} = require('./utils');
-const config = require('../config/index');
-const HttpStatus = require('http-status-codes');
-const utils = require('./utils');
+const cacheService = require('./cache-service');
 
 async function getSchoolByMincode(req, res) {
-  const token = utils.getBackendToken(req);
-  const params = {
-    params: {
-      mincode: req.query.mincode
+  try {
+    if(req.query?.mincode){
+      const data = cacheService.getSchoolNameJSONByMincode(req.query.mincode);
+      if(data){
+        return res.status(200).json(data);
+      }
+    }else {
+      const data = cacheService.getAllSchoolsJSON();
+      if(data){
+        return res.status(200).json(data);
+      }
     }
-  };
-  try{
-    return res.status(200).json(await utils.getData(token, `${config.get('server:schoolAPIURL')}/schools`, params));
-  }catch (e) {
-    if (e.status === HttpStatus.NOT_FOUND) {
-      return res.status(200).json();
-    }
+    return res.status(200).json();
+  } catch (e) {
     logApiError(e, 'getSchoolByMincode', 'Error occurred while attempting to GET school entity.');
     return errorResponse(res);
   }
