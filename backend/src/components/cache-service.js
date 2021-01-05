@@ -11,11 +11,11 @@ let minCodeSchools = [];
 const cacheService = {
 
   async loadAllSchoolsToMap() {
-    minCodeSchools = []; // reset the value.
-    minCodeSchoolMap.clear();// reset the value.
     log.debug('loading all schools during start up');
     const data = await getApiCredentials(); // get the tokens first to make api calls.
     const schools = await getData(data.accessToken, `${config.get('server:schoolAPIURL')}/schools`);
+    minCodeSchools = []; // reset the value.
+    minCodeSchoolMap.clear();// reset the value.
     if (schools && schools.length > 0) {
       for (const school of schools) {
         const minCodeSchool = {
