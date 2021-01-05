@@ -24,7 +24,7 @@
     "@fortawesome/fontawesome-free": "5.11.2",
     "@js-joda/core": "^2.0.0",
     "@mdi/font": "^4.9.95",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "axios-mock-adapter": "1.17.0",
     "chromedriver": "^76.0.0",
     "core-js": "^2.6.12",

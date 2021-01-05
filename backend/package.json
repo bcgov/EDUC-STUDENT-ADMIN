@@ -22,7 +22,7 @@
     "@babel/runtime": "7.1.5",
     "@js-joda/core": "^2.0.0",
     "atob": "2.1.2",
-    "axios": "0.21.0",
+    "axios": "0.21.1",
     "config": "^3.3.3",
     "connect-redis": "^4.0.4",
     "cors": "^2.8.5",
