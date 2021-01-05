@@ -28,7 +28,12 @@ const webSocket = {
             ws.close();
           }
         } catch (e) {
-          log.error('error is from verify', e.message);
+          if ('jwt expired' === e?.message) {
+            log.silly('error is from verify', e.message);
+          } else {
+            log.error('error from verify', e);
+          }
+
           ws.close();
         }
       }
