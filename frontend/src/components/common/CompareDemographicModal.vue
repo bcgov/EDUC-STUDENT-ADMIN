@@ -50,9 +50,9 @@ export default {
       type: Boolean,
       required: true
     },
-    isStudentDetailsPage: {
+    clearOnExit: {
       type: Boolean,
-      default: false
+      default: true
     },
     selectedRecords: {
       type: Array,
@@ -81,7 +81,7 @@ export default {
   methods: {
     closeCompareModal() {
       this.compareModalOpen = false;
-      if(this.isStudentDetailsPage) {
+      if(!this.clearOnExit) {
         this.studentRecords = this.initialSelectedRecord;
       } else {
         this.studentRecords = [];

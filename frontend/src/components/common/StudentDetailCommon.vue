@@ -354,7 +354,7 @@
           </v-card>
         </v-col>
         <v-col cols="1">
-          <CompareDemographicModal :isStudentDetailsPage="true" :disabled="false" :selectedRecords.sync="compareStudent"></CompareDemographicModal>
+          <CompareDemographicModal :clearOnExit="false" :disabled="false" :selectedRecords.sync="compareStudent"></CompareDemographicModal>
         </v-col>
       </v-row>
       <slot
