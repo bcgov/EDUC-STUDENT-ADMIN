@@ -106,7 +106,7 @@
                   <v-col cols="3"><Strong>Gender</Strong></v-col>
                   <v-spacer/>
                   <v-col cols="3"><strong>Birth Date
-                    <v-btn icon class="" title="YYYYMMDD">
+                    <v-btn icon x-small title="YYYYMMDD">
                       <v-icon color="#2196f3">
                         info
                       </v-icon>
