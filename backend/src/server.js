@@ -23,7 +23,7 @@ app.set('port', port);
 
 const server = http.createServer(app);
 const WS = require('./socket/web-socket');
-const NATS = require('./messaging/message-subscriber');
+const NATS = require('./messaging/message-pub-sub');
 WS.init(app,server);
 
 /**

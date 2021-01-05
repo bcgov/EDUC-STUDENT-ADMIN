@@ -1,3 +1,4 @@
+[![img](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
 # EDUC-STUDENT-ADMIN
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_EDUC-STUDENT-ADMIN&metric=alert_status)](https://sonarcloud.io/dashboard?id=bcgov_EDUC-STUDENT-ADMIN)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=bcgov_EDUC-STUDENT-ADMIN&metric=ncloc)](https://sonarcloud.io/dashboard?id=bcgov_EDUC-STUDENT-ADMIN)

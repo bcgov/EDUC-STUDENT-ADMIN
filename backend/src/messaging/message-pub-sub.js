@@ -69,15 +69,28 @@ const NATS = {
     return new Promise((resolve, reject) => {
       connection.requestOne(topic, payload, timeout, (msg) => {
         if (msg instanceof nats.NatsError && msg?.code === nats.REQ_TIMEOUT) {
-          log.error(`Request to NATS timed out after 120000 ms for topic ${topic} and payload ${payload}`, msg);
+          log.error(`Request to NATS timed out after ${timeout} ms for topic ${topic} and payload ${payload}`, msg);
           return reject('request timed out');
         } else {
           return resolve(msg);
         }
       });
     });
-  }
+  },
 
+  /**
+   * This is asynchronous publish of message to a given topic.
+   * @param topic the topic to which request will be sent.
+   * @param payload the payload to sent to the topic.
+   * @returns {Promise<void>}
+   */
+  publishMessage(topic, payload) {
+    return new Promise((resolve) => {
+      connection.publish(topic, payload, () => {
+        return resolve();
+      });
+    });
+  },
 };
 
 module.exports = NATS;

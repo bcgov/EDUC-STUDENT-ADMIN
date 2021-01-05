@@ -6,13 +6,15 @@ const {getApiCredentials} = require('../components/auth');
 const safeStringify = require('fast-safe-stringify');
 const {getData} = require('../components/utils');
 const schedulerCronStaleSagaRecordRedis = config.get('scheduler:schedulerCronStaleSagaRecordRedis');
-const minimumTimeBeforeSagaIsStale = config.get('scheduler:minTimeBeforeSagaIsStaleInMinutes'); // should be in minutes.
+const minimumTimeBeforeSagaIsStale = config.get('scheduler:minTimeBeforeSagaIsStaleInSeconds'); // should be in seconds.
 log.info(`${schedulerCronStaleSagaRecordRedis} :: ${minimumTimeBeforeSagaIsStale}`);
 const redisUtil = require('../util/redis/redis-utils');
 const {LocalDateTime} = require('@js-joda/core');
+const NATS = require('../messaging/message-pub-sub');
 
 /**
- * This method will check whether the saga record was created 15 minutes before, if so add it to the list
+ * @property minimumTimeBeforeSagaIsStale - this is the value which will be subtracted from current time.
+ * This method will check whether the saga record was created @property minimumTimeBeforeSagaIsStale before, if so add it to the list
  * @param inProgressSagas the records from redis.
  * @returns {[]} array of saga records, if nothing matches criteria, blank array.
  */
@@ -21,7 +23,7 @@ function findStaleSagaRecords(inProgressSagas) {
   if (inProgressSagas && inProgressSagas.length > 0) {
     for (const sagaString of inProgressSagas) {
       const saga = JSON.parse(sagaString);
-      const isStaleRecord = LocalDateTime.parse(saga.createDateTime).isBefore(LocalDateTime.now().minusMinutes(minimumTimeBeforeSagaIsStale));
+      const isStaleRecord = LocalDateTime.parse(saga.createDateTime).isBefore(LocalDateTime.now().minusSeconds(minimumTimeBeforeSagaIsStale));
       if (isStaleRecord) {
         staleSagas.push(saga);
       }
@@ -30,6 +32,12 @@ function findStaleSagaRecords(inProgressSagas) {
   return staleSagas;
 }
 
+/**
+ *
+ * @param staleSagas the sagas which are considered stale, as it took more than desired time to be completed.
+ * @param sagaType the saga type, whether GMP/UMP or PEN_REQUEST_BATCH
+ * @returns {Promise<void>}
+ */
 async function removeStaleSagas(staleSagas, sagaType) {
   let sagaRecordFromAPIPromises = [];
   try {
@@ -44,6 +52,7 @@ async function removeStaleSagas(staleSagas, sagaType) {
     const results = await Promise.allSettled(sagaRecordFromAPIPromises);
     for (const result of results) {
       if ('fulfilled' === result.status) {
+        let recordFromRedis;
         const sagaFromAPI = result.value;
         if ('COMPLETED' === sagaFromAPI.status || 'FORCE_STOPPED' === sagaFromAPI.status) {
           const event = {
@@ -51,9 +60,16 @@ async function removeStaleSagas(staleSagas, sagaType) {
             sagaStatus: sagaFromAPI.status
           };
           if (sagaType === 'GMP_UMP') {
-            await redisUtil.removeSagaRecordFromRedis(event);
+            recordFromRedis = await redisUtil.removeSagaRecordFromRedis(event);
           } else if (sagaType === 'PEN_REQUEST_BATCH') {
-            await redisUtil.removePenRequestBatchSagaRecordFromRedis(event);
+            recordFromRedis = await redisUtil.removePenRequestBatchSagaRecordFromRedis(event);
+          }
+          if (recordFromRedis) {
+            recordFromRedis.sagaStatus = sagaFromAPI.status;
+            recordFromRedis.sagaName = sagaFromAPI.sagaName;
+            NATS.publishMessage('SAGA_EVENT_WS_TOPIC', safeStringify(recordFromRedis)).then(() => {
+              log.info('message published to SAGA_EVENT_WS_TOPIC', recordFromRedis);
+            });
           }
 
         } else {
@@ -78,17 +94,17 @@ try {
       const stalePRBSagas = findStaleSagaRecords(await redisUtil.getPenRequestBatchSagaEvents());
       if (staleSagas.length > 0) {
         log.info(`found ${staleSagas.length} stale GMP or UMP saga records`);
-        removeStaleSagas(staleSagas, 'GMP_UMP').then(()=>{
+        removeStaleSagas(staleSagas, 'GMP_UMP').then(() => {
           log.debug('remove stale sagas completed');
-        }).catch((e)=>{
+        }).catch((e) => {
           log.error(e);
         });
       }
-      if(stalePRBSagas.length > 0){
+      if (stalePRBSagas.length > 0) {
         log.info(`found ${stalePRBSagas.length} stale PenRequestBatch saga records`);
-        removeStaleSagas(stalePRBSagas, 'PEN_REQUEST_BATCH').then(()=>{
+        removeStaleSagas(stalePRBSagas, 'PEN_REQUEST_BATCH').then(() => {
           log.debug('remove stale PRB sagas completed');
-        }).catch((e)=>{
+        }).catch((e) => {
           log.error(e);
         });
       }
