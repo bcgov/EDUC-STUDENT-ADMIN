@@ -8,7 +8,7 @@
       :items-per-page="penRequestBatchResponse.pageable.pageSize"
       hide-default-footer
       item-key="penRequestBatchID"
-      :loading="loadingTable"
+      :loading="loadingTable || loadingFiles"
       @page-count="penRequestBatchResponse.pageable.pageNumber = $event"
     >
       <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
@@ -94,6 +94,10 @@ export default {
       type: Array,
       required: true
     },
+    loadingFiles: {
+      type: Boolean,
+      required: true
+    }
   },
   data () {
     return {
@@ -131,6 +135,13 @@ export default {
     schoolGroup: {
       handler() {
         this.initializeFilters();
+      }
+    },
+    loadingFiles: {
+      handler(v) {
+        if(!v) {
+          this.pagination(false);
+        }
       }
     }
   },

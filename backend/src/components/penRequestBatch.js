@@ -291,6 +291,44 @@ async function addSagaStatus(prbStudents) {
   });
 }
 
+async function archiveFiles(req, res) {
+  const token = getBackendToken(req, res);
+
+  try {
+    const params = {
+      params: {
+        pageNumber: 0,
+        pageSize: 20,
+        searchCriteriaList: JSON.stringify([{
+          searchCriteriaList:[{
+            key: 'penRequestBatchID',
+            operation: 'in',
+            value: req.body.penRequestBatchIDs?.join(','),
+            valueType: 'UUID'
+          }]
+        }])
+      }
+    };
+
+    const dataResponse = await getData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/paginated`, params);
+    const promises = dataResponse.content.map(batchFile => {
+      batchFile.penRequestBatchStatusCode = 'ARCHIVED';
+      return putData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${batchFile.penRequestBatchID}`, batchFile, getUser(req).idir_username);
+    });
+
+    const results = await Promise.allSettled(promises);
+    const resultGroups = lodash.groupBy(results, 'status');
+
+    resultGroups.rejected?.forEach(result => {
+      log.error(result);
+    });
+    return res.status(200).json(resultGroups.fulfilled?.map(result => result.value) || []);
+  } catch (e) {
+    logApiError(e, 'archiveFiles', 'Error archiving batch files.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getPENBatchRequestStats,
   updatePrbStudentInfoRequested,
@@ -300,5 +338,6 @@ module.exports = {
   getPenRequestBatchStudentMatchOutcome,
   issueNewPen,
   userMatchSaga,
-  userUnmatchSaga
+  userUnmatchSaga,
+  archiveFiles
 };

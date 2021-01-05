@@ -360,3 +360,76 @@ function initializeMatchUnmatchTestData() {
   };
   return [req, res, twinStudentIDs];
 }
+
+
+describe('archiveFiles', () => {
+  let req;
+  let res;
+  const penRequestBatchIDs = ['c0a8014d-74e1-1d99-8174-e10db81f0001', 'c0a8014d-74e1-1d99-8174-e10db81f0002'];
+  const batchFiles = {
+    content: penRequestBatchIDs.map(id => ({
+      penRequestBatchID: id,
+      penRequestBatchStatusCode: 'ACTIVE'
+    }))
+  };
+
+  beforeEach(() => {
+    utils.getBackendToken.mockReturnValue('token');
+    req = mockRequest();
+    res = mockResponse();
+    req.body = {
+      penRequestBatchIDs,
+    };
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return all batch files if all success', async () => {
+    const resp = penRequestBatchIDs.map(id => ({
+      penRequestBatchID: id,
+      penRequestBatchStatusCode: 'ARCHIVED'
+    }));
+    utils.getData.mockResolvedValue(batchFiles);
+    utils.putData.mockImplementation((token, url, data) => 
+      Promise.resolve(data)
+    );
+    await penRequestBatch.archiveFiles(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+    expect(res.json).toHaveBeenCalledWith(resp);
+  });
+
+  it('should return part of batch files if partial success', async () => {
+    const penRequestBatchID = 'c0a8014d-74e1-1d99-8174-e10db81f0001';
+    const resp = [{
+      penRequestBatchID,
+      penRequestBatchStatusCode: 'ARCHIVED'
+    }];
+    utils.getData.mockResolvedValue(batchFiles);
+    utils.putData.mockImplementation((token, url, data) => 
+      data.penRequestBatchID === penRequestBatchID ? Promise.resolve(data) : Promise.reject({status: HttpStatus.INTERNAL_SERVER_ERROR})
+    );
+    await penRequestBatch.archiveFiles(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+    expect(res.json).toHaveBeenCalledWith(resp);
+  });
+
+  it('should return empty array if all failed', async () => {
+    const resp = [];
+    utils.getData.mockResolvedValue(batchFiles);
+    utils.putData.mockImplementation(() => 
+      Promise.reject({status: HttpStatus.INTERNAL_SERVER_ERROR})
+    );
+    await penRequestBatch.archiveFiles(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+    expect(res.json).toHaveBeenCalledWith(resp);
+  });
+
+  it('should return INTERNAL_SERVER_ERROR if getData failed', async () => {
+    utils.getData.mockRejectedValue(new Error('Test error'));
+    await penRequestBatch.archiveFiles(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+  });
+
+});

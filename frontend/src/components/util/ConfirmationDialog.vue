@@ -2,7 +2,7 @@
   <v-dialog v-model="dialog" :max-width="options.width" :style="{ zIndex: options.zIndex }" @keydown.esc="cancel">
     <v-card>
       <v-toolbar :dark="options.dark" :color="options.color" :dense="options.dense" flat>
-        <v-toolbar-title :class="{'white--text': options.dark, 'align-self-end': options.closeIcon, 'font-weight-bold': !options.dark}">
+        <v-toolbar-title :class="{'white--text': options.dark, 'align-self-end': options.closeIcon, 'font-weight-bold': options.titleBold, 'dialog-subtitle':  options.subtitle}">
           {{ title }}
         </v-toolbar-title>
         <v-spacer/>
@@ -10,9 +10,10 @@
           <v-icon color="#38598A">mdi-close</v-icon>
         </v-btn>
       </v-toolbar>
-      <v-card-text :class="options.messagePadding">
+      <v-card-text :class="[options.messagePadding, { 'black--text': !options.dark }]">
         {{ message }}
-        <slot name="message"></slot>              
+        <slot name="message"></slot>
+        <v-divider v-if="options.divider" class="mt-1"/>              
       </v-card-text>
       <v-card-actions class="pt-0">
         <v-spacer></v-spacer>
@@ -41,7 +42,10 @@ export default {
       dark: true,
       dense: true,
       closeIcon: false,
-      messagePadding: 'pa-4', 
+      messagePadding: 'pa-4',
+      titleBold: false,
+      subtitle: false,
+      divider: false,
     }
   }),
   methods: {
@@ -66,3 +70,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+  .dialog-subtitle {
+    font-size: 1rem;
+  }
+</style>
