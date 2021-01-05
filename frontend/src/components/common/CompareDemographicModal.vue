@@ -36,6 +36,7 @@
 import PrimaryButton from '../util/PrimaryButton';
 import TertiaryButton from '../util/TertiaryButton';
 import CompareDemographicsCommon from './CompareDemographicsCommon';
+import {deepCloneObject} from '../../utils/common';
 
 export default {
   name: 'CompareDemographicModal',
@@ -49,6 +50,10 @@ export default {
       type: Boolean,
       required: true
     },
+    clearOnExit: {
+      type: Boolean,
+      default: true
+    },
     selectedRecords: {
       type: Array,
       required: true
@@ -57,7 +62,11 @@ export default {
   data() {
     return {
       compareModalOpen: false,
+      initialSelectedRecord: []
     };
+  },
+  created() {
+    this.initialSelectedRecord = deepCloneObject(this.studentRecords);
   },
   computed: {
     studentRecords: {
@@ -72,7 +81,11 @@ export default {
   methods: {
     closeCompareModal() {
       this.compareModalOpen = false;
-      this.studentRecords = [];
+      if(!this.clearOnExit) {
+        this.studentRecords = this.initialSelectedRecord;
+      } else {
+        this.studentRecords = [];
+      }
     },
     compare() {
       this.compareModalOpen = true;
