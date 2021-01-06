@@ -105,7 +105,7 @@ async function rejectPenRequest(req, res) {
 
 async function completePenRequest(req, res) {
   let thisSession = req['session'];
-  if (!thisSession.studentDemographics || !thisSession.studentDemographics['studGiven']) {
+  if (!thisSession.studentDemographics || !thisSession.studentDemographics['studSurname']) {
     log.error('Error attempting to complete request.  There are no student demographics in session.');
     return utils.errorResponse(res);
   }
