@@ -59,7 +59,7 @@
               <td v-for="header in props.headers" :key="header.id || header.topValue" :class="header.id">
                 <div class="table-cell" :class="[props.item[header.doubleValue] ? 'value-half-width':'']">
                   <span :class="['top-column-item',{'mark-field-value-changed':isFieldValueUpdated(header.topValue)}, {'mark-field-value-errored':isFieldValueErrored(header.topValue)}]">
-                    <span><strong>{{ props.item[header.topValue] || ' ' }}</strong></span>
+                    <span><strong>{{ formatTableColumn(header.format, props.item[header.topValue]) }}</strong></span>
                   </span>
                   <span :class="['double-column-item-value',{'mark-field-value-changed':isFieldValueUpdated(header.doubleValue)}, {'mark-field-value-errored':isFieldValueErrored(header.doubleValue)}]"><strong>{{props.item[header.doubleValue]}}</strong></span>
                 </div>
@@ -90,7 +90,7 @@
               <td v-for="header in props.headers" :key="header.id || header.value" :class="header.id">
                 <div class="table-cell">
                     <span  :class="['top-column-item',{'mark-field-value-changed':studentDetailsCopy && isFieldValueUpdated(header.value)}, {'mark-field-value-errored':isFieldValueErrored(header.value)}]">
-                      <span><strong>{{ props.item[header.value] || ' ' }}</strong></span>
+                      <span><strong>{{ formatTableColumn(header.format, props.item[header.value]) }}</strong></span>
                     </span>
                 </div>
               </td>
@@ -120,11 +120,11 @@ import {
 } from '@/utils/constants';
 import SearchDemographicModal from './SearchDemographicModal';
 import { deepCloneObject, getDemogValidationResults } from '../../utils/common';
-import { formatDob, formatPostalCode } from '@/utils/format';
+import { formatDob, formatPostalCode, formatMinCode, formatPen } from '@/utils/format';
 import { mapState, mapMutations } from 'vuex';
-import {formatMinCode} from '../../utils/format';
 import StudentValidationWarningHint from './StudentValidationWarningHint';
 import PrimaryButton from '../util/PrimaryButton';
+import { partialRight } from 'lodash';
 
 export default {
   name: 'StudentDetailsInfoPanel',
@@ -159,13 +159,13 @@ export default {
     return {
       headers: [
         { id: 'table-checkbox', type: 'select', sortable: false },
-        { topText: 'Mincode', topValue: 'minCode', sortable: false },
+        { topText: 'Mincode', topValue: 'minCode', sortable: false, format: formatMinCode },
         { topText: 'Legal Surname', topValue: 'legalLastName', sortable: false },
         { topText: 'Legal Given', topValue: 'legalFirstName', sortable: false },
         { topText: 'Legal Middle', topValue: 'legalMiddleNames', sortable: false },
         { topText: 'DC', doubleText: 'Gen', topValue: 'dc', doubleValue: 'genderCode', sortable: false },
-        { topText: 'Birth Date', topValue: 'dob', sortable: false },
-        { topText: 'Sugg. PEN', topValue: 'bestMatchPEN', sortable: false }
+        { topText: 'Birth Date', topValue: 'dob', sortable: false, format: partialRight(formatDob,'uuuuMMdd','uuuu/MM/dd') },
+        { topText: 'Sugg. PEN', topValue: 'bestMatchPEN', sortable: false, format: formatPen }
       ],
       bottomTableHeaders: [
         { id: 'table-checkbox', type: 'select', sortable: false },
@@ -173,7 +173,7 @@ export default {
         { text: 'Usual Surname', value: 'usualLastName', sortable: false },
         { text: 'Usual Given', value: 'usualFirstName', sortable: false },
         { text: 'Usual Middle', value: 'usualMiddleNames', sortable: false },
-        { text: 'Postal Code', value: 'postalCode', sortable: false },
+        { text: 'Postal Code', value: 'postalCode', sortable: false, format: formatPostalCode },
         { text: 'Grade', value: 'gradeCode', sortable: false },
         { text: '', value: '', sortable: false }
       ],
@@ -221,6 +221,9 @@ export default {
   },
   methods: {
     ...mapMutations('app', ['setStickyInfoPanelHeight']),
+    formatTableColumn(format, column) {
+      return (format && column) ? format(column) : (column || ' ');
+    },
     getValidationIssues(fieldName, validationIssueFields) {
       return validationIssueFields?.filter(x => PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER[x.penRequestBatchValidationFieldCode] === fieldName);
     },
@@ -248,15 +251,6 @@ export default {
     },
     setModalStudentFromPrbStudent(){
       this.modalStudent = deepCloneObject(this.studentDetails);
-      if(this.modalStudent.minCode) {
-        this.modalStudent.mincode = this.modalStudent.minCode?.replaceAll(' ',''); // since the modal component is generic and expects mincode to be all lowercase.
-      }
-      if(this.modalStudent.postalCode) {
-        this.modalStudent.postalCode = this.modalStudent.postalCode?.replaceAll(' ','');
-      }
-      if(this.modalStudent.dob) {
-        this.modalStudent.dob = formatDob(this.modalStudent.dob,'uuuu/MM/dd','uuuuMMdd');
-      }
     },
     async closeDialog() {
       this.dialog = false;
@@ -271,9 +265,6 @@ export default {
       this.dialog = false;
       this.studentDetails = deepCloneObject(studentModified);
       await this.$nextTick(); //need to wait so update can me made in parent and propagated back down to child component
-      this.studentDetails.postalCode = this.studentDetails.postalCode? formatPostalCode(this.studentDetails.postalCode):'';
-      this.studentDetails.dob = this.studentDetails.dob? formatDob(this.studentDetails.dob,'uuuuMMdd','uuuu/MM/dd'): '';
-      this.studentDetails.minCode = this.studentDetails.mincode? formatMinCode(this.studentDetails.mincode): '';
       this.setModalStudentFromPrbStudent();
       this.currentStudentSearch = deepCloneObject(this.studentDetails);
 
