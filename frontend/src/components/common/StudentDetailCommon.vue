@@ -612,9 +612,9 @@ export default {
     validateDOB() {
       if (this.studentCopy) {
         if (!this.shortDOB) {
-          this.dobError = false;
+          this.dobError = true;
           this.updateDOBLabel();
-          return [];
+          return ['Required'];
         } else {
           if (isValidDob(this.shortDOB, 'uuuuMMdd')) {
             this.dobError = false;
