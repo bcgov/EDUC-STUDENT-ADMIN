@@ -51,11 +51,11 @@
                     <v-spacer></v-spacer>
                     <span class="mr-6">
                       <span class="mr-3">Submitted PEN</span>
-                      <span :class="{'pen-placeholder': !prbStudent.submittedPen}"><strong>{{prbStudent.submittedPen}}</strong></span>
+                      <span :class="{'pen-placeholder': !prbStudent.submittedPen}"><strong>{{formatPen(prbStudent.submittedPen)}}</strong></span>
                     </span>
                     <span>
                       <span class="mr-3">Assigned PEN</span>
-                      <span :class="{'pen-placeholder': !prbStudent.assignedPEN}"><strong>{{prbStudent.assignedPEN}}</strong></span>
+                      <span :class="{'pen-placeholder': !prbStudent.assignedPEN}"><strong>{{formatPen(prbStudent.assignedPEN)}}</strong></span>
                     </span>
                   </v-row>
                 </template>
@@ -131,7 +131,6 @@ import {mapMutations, mapState} from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
 import PrbStudentStatusChip from './PrbStudentStatusChip';
 import InfoDialog from './prb-student-details/InfoDialog';
-import {formatPrbStudent} from '@/utils/penrequest-batch/format';
 import ApiService from '../../../common/apiService';
 import StudentDetailsInfoPanel from '../../common/StudentDetailsInfoPanel';
 import AlertMessage from '../../util/AlertMessage';
@@ -154,7 +153,7 @@ import {
   getStudentTwinsByStudentID,
   updatePossibleMatchResultsBasedOnCurrentStatus
 } from '@/utils/common';
-import {formatDob} from '@/utils/format';
+import {formatPen} from '@/utils/format';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
 
 export default {
@@ -314,6 +313,7 @@ export default {
     ...mapMutations('setNavigation', ['setNavigation', 'clearNavigation']),
     ...mapMutations('prbStudentSearch', [ 'setSelectedRecords']),
     ...mapMutations('penRequestBatch', ['setSelectedFiles']),
+    formatPen,
     setBatchNav() {
       this.setNavigation({
         seqNumber: this.seqNumber,
@@ -385,7 +385,7 @@ export default {
 
       const response = await ApiService.apiAxios.get(`${Routes['penRequestBatch'].FILES_URL}/${navInfo.penRequestBatchID}/students/${navInfo.penRequestBatchStudentID}`);
       if(response.data) {
-        this.prbStudent = formatPrbStudent(response.data);
+        this.prbStudent = response.data;
         this.setModalStudentFromPrbStudent(this.prbStudent);
         this.prbStudentCopy = deepCloneObject(this.prbStudent);
       } else {
@@ -431,7 +431,7 @@ export default {
 
       const response = await this.getPenRequestsFromApi(params);
       if(response.data && response.data.content) {
-        this.prbStudent = formatPrbStudent(response.data.content[0]);
+        this.prbStudent = response.data.content[0];
         this.setModalStudentFromPrbStudent(this.prbStudent);
         this.prbStudentCopy = deepCloneObject(this.prbStudent);
         if(this.seqNumberInBatch < 1 || this.seqNumberInBatch > this.totalNumberInBatch || (this.seqNumberInBatch === 1 && this.seqNumber === 1)) {
@@ -528,7 +528,7 @@ export default {
       }
       ApiService.apiAxios.put(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}`, req)
         .then(response => {
-          response.data && (this.prbStudent = formatPrbStudent(response.data));
+          response.data && (this.prbStudent = response.data);
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while updating the PEN request. Please try again later.');
@@ -564,9 +564,6 @@ export default {
     },
     setModalStudentFromPrbStudent(prbStudent){
       this.modalStudent = deepCloneObject(prbStudent);
-      this.modalStudent.mincode = this.modalStudent.minCode?.replaceAll(' ',''); // since the modal component is generic and expects mincode to be all lowercase.
-      this.modalStudent.postalCode = this.modalStudent.postalCode?.replaceAll(' ','');
-      this.modalStudent.dob = formatDob(this.modalStudent.dob,'uuuu/MM/dd','uuuuMMdd');
     },
     //TODO need to find out when we implement validation in next story, which other status maps to what and may be update it to get from a MAP.
     getPrbStatusCodeFromPenMatchStatus(penStatus) {
@@ -634,6 +631,7 @@ export default {
 
       this.isMatchingToStudentRecord = true;
       const payload = {
+        prbStudent: this.prbStudent,
         studentID: student.studentID,
         matchedPEN: student.pen,
         twinStudentIDs: this.possibleMatches.filter(el => el.studentID !== student.studentID).map(el=>el.studentID)

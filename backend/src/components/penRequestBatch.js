@@ -179,12 +179,11 @@ async function userMatchSaga(req, res) {
       return res.status(400).json({'message': 'Matching student PEN is mandatory and should be exactly 9 digits in this flow.'});
     }
     const studentTwinUrl = `${config.get('server:student:rootURL')}/${req.body.studentID}/twins`;
-    const prbStudentUrl = `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${req.params.id}/student/${req.params.studentId}`;
-    const results = await Promise.all([getData(token, studentTwinUrl), getData(token, prbStudentUrl)]);
-    const studentData = stripAuditColumns(results[1]);
+    const twins = getData(token, studentTwinUrl);
+    const studentData = stripAuditColumns(req.body.prbStudent);
     studentData.assignedPEN = req.body.matchedPEN;
     studentData.studentID = req.body.studentID;
-    const studentTwinIds = filterStudentTwinIds(results[0], req.body.twinStudentIDs);
+    const studentTwinIds = filterStudentTwinIds(twins, req.body.twinStudentIDs);
     logDebug('student twin ids after filter ::', studentTwinIds);
     const sagaReq = {
       ...studentData,

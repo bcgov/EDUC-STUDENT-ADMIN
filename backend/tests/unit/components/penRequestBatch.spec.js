@@ -24,6 +24,7 @@ const prbStudentData =
     'localID':'123456',
     'legalFirstName':'Ben',
     'minCode': '00807025',
+    'gradeCode': '10',
     'createUser': 'PEN_REQUEST_BATCH_API'
   };
 
@@ -223,6 +224,7 @@ describe('user match saga', () => {
     utils.postData.mockResolvedValue(resp);
     await penRequestBatch.userMatchSaga(req, res);
     expectationsForUserActionsInPRBSaga(['202']);
+    expect(utils.postData.mock.calls[0][2].gradeCode).toBe(prbStudentData.gradeCode);
     expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenCalledWith({
       sagaId: resp,
       penRequestBatchStudentID: req.params.studentId,
@@ -231,12 +233,6 @@ describe('user match saga', () => {
     });
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(resp);
-  });
-
-  it('should return INTERNAL_SERVER_ERROR if getData failed', async () => {
-    utils.getData.mockRejectedValue(new Error('Test error'));
-    await penRequestBatch.userMatchSaga(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
 
   it('should return INTERNAL_SERVER_ERROR if postData failed', async () => {
@@ -355,6 +351,7 @@ function initializeMatchUnmatchTestData() {
     studentId: 'c0a8014d-74e1-1d99-8174-e10db8410001'
   };
   req.body = {
+    prbStudent: prbStudentData,
     matchedPEN: '123456789',
     twinStudentIDs
   };
