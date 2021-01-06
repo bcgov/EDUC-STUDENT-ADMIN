@@ -158,26 +158,25 @@
                 </div>
               </v-col>
               <v-col cols="2" :class="{textFieldColumn: !dobError}">
-                <v-text-field
-                  tabindex="8"
-                  v-on:keyup.tab="[editingDOB = true, hoveringDOB = true, shortDOBStyle()]"
-                  v-on:mouseover="isFieldDisabled('dob')? hoveringDOB = false : hoveringDOB = true"
-                  v-on:mouseout="editingDOB ? hoveringDOB = true : hoveringDOB = false"
-                  v-on:blur="[editingDOB = false, hoveringDOB = false, longDOBStyle()]"
-                  v-on:click="[editingDOB = true, hoveringDOB = true, shortDOBStyle()]"
-                  v-on:input="updateDOBLabel()"
-                  class="onhoverEdit bolder customNoBorder"
-                  :class="{onhoverPad: !hoveringDOB && !dobHasChanged(), darkBackgound: hoveringDOB || dobHasChanged()}"
-                  v-model="studentCopy.dob"
-                  :id='STUDENT_DETAILS_FIELDS.DOB'
-                  color="#000000"
-                  dense
-                  :rules="validateDOB()"
-                  maxlength="10"
-                  :readonly="!hoveringDOB || !editingDOB"
-                  :outlined="hoveringDOB || editingDOB || dobHasChanged()"
-                  :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.DOB)"
-                ></v-text-field>
+                <FormattedTextField
+                    tabindex="8"
+                    @keyup.tab.native="[editingDOB = true, hoveringDOB = true]"
+                    @mouseover.native="isFieldDisabled('dob')? hoveringDOB = false : hoveringDOB = true"
+                    @mouseout.native="editingDOB ? hoveringDOB = true : hoveringDOB = false"
+                    @blur="[editingDOB = false, hoveringDOB = false]"
+                    @focus="[editingDOB = true, hoveringDOB = true]"
+                    :classes="['onhoverEdit', 'bolder', 'customNoBorder', {onhoverPad: !hoveringDOB && !dobHasChanged(), darkBackgound: hoveringDOB || dobHasChanged()}]"
+                    v-model="shortDOB"
+                    :id='STUDENT_DETAILS_FIELDS.DOB'
+                    :filled="false"
+                    :clearable="false"
+                    :format="formatDob"
+                    :rules="validateDOB()"
+                    maxlength="8"
+                    :readonly="!hoveringDOB || !editingDOB"
+                    :outlined="hoveringDOB || editingDOB || dobHasChanged()"
+                    :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.DOB)"
+                ></FormattedTextField>
               </v-col>
               <v-col cols="3" class="textFieldColumn">
                 <v-text-field
@@ -430,13 +429,12 @@ import moment from 'moment';
 import ApiService from '../../common/apiService';
 import {REQUEST_TYPES, Routes, STUDENT_DETAILS_FIELDS, STUDENT_CODES} from '@/utils/constants';
 import StudentDetailsTextField from '@/components/penreg/student/StudentDetailsTextField';
-import {LocalDate} from '@js-joda/core';
 import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly';
 import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsComboBox';
 import StudentDetailsTextFieldSideCardReadOnly
   from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
 import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
-import {formatMinCode, formatPen} from '../../utils/format';
+import {formatMinCode, formatPen, formatDob} from '../../utils/format';
 import {sortBy,isEmpty} from 'lodash';
 import alertMixin from '../../mixins/alertMixin';
 import schoolMixin from '../../mixins/schoolMixin';
@@ -444,7 +442,7 @@ import ConfirmationDialog from '../util/ConfirmationDialog';
 import AlertMessage from '../util/AlertMessage';
 import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard';
 import CompareDemographicModal from './CompareDemographicModal';
-import {isValidMinCode} from '@/utils/validation';
+import {isValidMinCode, isValidDob} from '@/utils/validation';
 import FormattedTextField from '@/components/util/FormattedTextField';
 
 const JSJoda = require('@js-joda/core');
@@ -505,6 +503,7 @@ export default {
       alert: false,
       createdDateTime: null,
       updatedDateTime: null,
+      shortDOB: null,
       longDOB: null,
       origStudent: {},
       studentCopy: {},
@@ -574,6 +573,7 @@ export default {
   methods: {
     formatPen,
     formatMinCode,
+    formatDob,
     changeStudentObjectValue(key, value) {
       this.studentCopy[`${key}`] = value;
       if (key === STUDENT_DETAILS_FIELDS.STATUS_CODE) {
@@ -592,12 +592,11 @@ export default {
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY/MM/DD HH:mm:ss a');
     },
     updateDOBLabel(initialLoad) {
-      if(!initialLoad){
-        if(this.studentCopy && this.studentCopy.dob) {
-          this.studentCopy.dob = this.studentCopy.dob.replace(/[^0-9]/g, '');
-        }
+      if (initialLoad) {
+        this.shortDOB = this.studentCopy.dob = this.studentCopy.dob.replace(/[^0-9]/g, '');
+      } else {
+        this.studentCopy.dob = this.shortDOB? formatDob(this.shortDOB,'uuuuMMdd','uuuu-MM-dd') : '';
       }
-      this.longDOB = this.frontEndDOBFormat(this.studentCopy.dob);
       this.longDOB = this.frontEndDOBFormat(this.studentCopy.dob);
     },
     uppercaseGender() {
@@ -605,43 +604,21 @@ export default {
         this.studentCopy.genderCode = this.studentCopy.genderCode.toUpperCase();
       }
     },
-    getDateFormatterShort() {
+    getDateFormatter(pattern = 'uuuu-MM-dd') {
       return (new JSJoda.DateTimeFormatterBuilder)
-        .appendPattern('uuuuMMdd')
-        .toFormatter(JSJoda.ResolverStyle.STRICT);
-    },
-    getDateFormatterLong() {
-      return (new JSJoda.DateTimeFormatterBuilder)
-        .appendPattern('uuuu-MM-dd')
+        .appendPattern(pattern)
         .toFormatter(JSJoda.ResolverStyle.STRICT);
     },
     validateDOB() {
       if (this.studentCopy) {
-        if (!this.studentCopy.dob) {
+        if (!this.shortDOB) {
           this.dobError = false;
+          this.updateDOBLabel();
           return [];
         } else {
-          const formatterShort = this.getDateFormatterShort();
-          const formatterLong = this.getDateFormatterLong();
-
-          let isBeforeLongDate = false;
-          let isBeforeShortDate = false;
-
-          try {
-            const dateLong = JSJoda.LocalDate.parse(this.studentCopy.dob, formatterLong);
-            isBeforeLongDate = dateLong.isBefore(LocalDate.now());
-          } catch (err) {
-            //Do nothing
-          }
-          try {
-            const dateShort = JSJoda.LocalDate.parse(this.studentCopy.dob, formatterShort);
-            isBeforeShortDate = dateShort.isBefore(LocalDate.now());
-          } catch (err) {
-            //Do nothing
-          }
-
-          if (isBeforeLongDate || isBeforeShortDate) {
+          if (isValidDob(this.shortDOB, 'uuuuMMdd')) {
             this.dobError = false;
+            this.updateDOBLabel();
             return [];
           }
         }
@@ -763,33 +740,9 @@ export default {
     frontEndDOBFormat(date) {
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('MMMM DD, YYYY');
     },
-    shortDOBStyle() {
-      if (this.studentCopy.dob) {
-        const formatterShort = this.getDateFormatterShort();
-        const formatterLong = this.getDateFormatterLong();
-        try {
-          const dateLong = JSJoda.LocalDate.parse(this.studentCopy.dob, formatterLong);
-          this.studentCopy.dob = dateLong.format(formatterShort);
-        } catch (err) {
-          //Do nothing
-        }
-      }
-    },
     formatPostalCode() {
       if (this.studentCopy.postalCode) {
         this.spacePostalCode = this.studentCopy.postalCode.replace(/.{3}$/, ' $&');
-      }
-    },
-    longDOBStyle() {
-      if (this.studentCopy.dob) {
-        const formatterShort = this.getDateFormatterShort();
-        const formatterLong = this.getDateFormatterLong();
-        try {
-          const dateShort = JSJoda.LocalDate.parse(this.studentCopy.dob, formatterShort);
-          this.studentCopy.dob = dateShort.format(formatterLong);
-        } catch (err) {
-          //Do nothing
-        }
       }
     },
     dobHasChanged() {
@@ -800,11 +753,10 @@ export default {
           return false;
         }
 
-        const formatterShort = this.getDateFormatterShort();
-        const formatterLong = this.getDateFormatterLong();
+        const formatterLong = this.getDateFormatter();
         try {
           const dateLong = JSJoda.LocalDate.parse(this.origStudent.dob, formatterLong);
-          const dateShort = JSJoda.LocalDate.parse(this.studentCopy.dob, formatterShort);
+          const dateShort = JSJoda.LocalDate.parse(this.studentCopy.dob, formatterLong);
 
           if (dateLong.equals(dateShort)) {
             return false;
