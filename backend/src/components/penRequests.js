@@ -119,10 +119,6 @@ async function completePenRequest(req, res) {
   penRequest.penRequestStatusCode = 'MANUAL';
   penRequest.penRequestID = req.body.penRequestID;
   penRequest.pen = req.body.pen;
-  penRequest.localID = thisSession.studentDemographics['localID'];
-  penRequest.postalCode = thisSession.studentDemographics['postalCode'];
-  penRequest.gradeCode = thisSession.studentDemographics['grade'];
-  penRequest.mincode = thisSession.studentDemographics['mincode'];
   penRequest.demogChanged = req.body.demogChanged;
   penRequest.bcscAutoMatchOutcome = req.body.bcscAutoMatchOutcome;
   penRequest.bcscAutoMatchDetails = req.body.bcscAutoMatchDetails;
