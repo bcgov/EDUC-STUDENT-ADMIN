@@ -632,11 +632,15 @@ function setDefaultsInRequestForComplete(request, thisSession, req) {
   request.usualMiddleNames = thisSession.studentDemographics['usualMiddle'];
   request.usualLastName = thisSession.studentDemographics['usualSurname'];
   request.email = thisSession.penRequest.email;
-  request.emailVerified = thisSession.penRequest.emailVerified;
+  request.emailVerified = 'Y'; // no request will reach the admins to complete, without email verification.
   request.reviewer = req.body.reviewer;
   request.completeComment = req.body.completeComment;
   request.identityType = thisSession.identityType;
   request.historyActivityCode = 'PEN';
+  request.localID = thisSession.studentDemographics['localID'];
+  request.postalCode = thisSession.studentDemographics['postalCode'];
+  request.gradeCode = thisSession.studentDemographics['grade'];
+  request.mincode = thisSession.studentDemographics['mincode'];
 }
 function setDefaultsForCreateApiReq(request, req) {
   request.reviewer = req.body.reviewer;
