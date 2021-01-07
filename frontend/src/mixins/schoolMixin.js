@@ -18,7 +18,7 @@ export default {
         const schoolData = await getSchoolData(mincode);
         if (!!schoolData && !!schoolData.schoolName) {
           this.schoolLabel = schoolData.schoolName;
-          this.mincodError = false;
+          this.mincodeError = false;
           this.mincodeErrors = [];
         } else {
           this.mincodeError = true;
