@@ -73,8 +73,8 @@ nconf.defaults({
       demogCodesURL: process.env.STUDENT_API_URL + '/demog-codes',
       statusCodesURL: process.env.STUDENT_API_URL + '/status-codes',
       gradeCodesURL: process.env.STUDENT_API_URL + '/grade-codes',
-      twinReasonCodesURL: process.env.STUDENT_API_URL + '/student-twin-reason-codes',
-      historyActivityCodesURL: process.env.STUDENT_API_URL + '/student-history-activity-codes',
+      twinReasonCodesURL: process.env.STUDENT_API_URL + '/twin-reason-codes',
+      historyActivityCodesURL: process.env.STUDENT_API_URL + '/history-activity-codes',
     },
     penServices: {
       rootURL: process.env.PEN_SERVICES_API_URL,

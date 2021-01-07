@@ -19,7 +19,7 @@ async function updateStudent(req, res) {
     const student = req.body.student;
     student.createDate = null;
     student.updateDate = null;
-    const result = await putData(token, config.get('server:student:rootURL') + '/', student, utils.getUser(req).idir_username);
+    const result = await putData(token, `${config.get('server:student:rootURL')}/${req.params.studentID}`, student, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'saveStudent', 'Error occurred while attempting to save a student.');
