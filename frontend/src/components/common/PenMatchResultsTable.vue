@@ -282,7 +282,7 @@ export default {
       case 'dob':
         return this.student?.dob?.replace(/\D/g, '') === value?.replace(/\D/g, ''); // match birth date without - or /
       case 'mincode':
-        return this.student?.minCode?.replace(/\s/g, '') === value?.replace(/\s/g, '');
+        return this.student?.mincode?.replace(/\s/g, '') === value?.replace(/\s/g, '');
       case 'pen':
         if (this.student.assignedPEN) {
           return this.student?.assignedPEN?.replace(/\s/g, '') === value?.replace(/\s/g, '');

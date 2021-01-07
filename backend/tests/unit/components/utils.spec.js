@@ -59,7 +59,7 @@ describe('getPaginatedListForSCGroups', () => {
       pageSize: 1,
       sort: {
         penRequestBatchStatusCode: 'DESC',
-        minCode: 'ASC',
+        mincode: 'ASC',
         submissionNumber: 'ASC'
       },
       searchQueries: [

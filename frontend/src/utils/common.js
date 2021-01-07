@@ -17,7 +17,7 @@ export function constructPenMatchObjectFromStudent(student) {
     dob: student.dob,
     sex: student.genderCode,
     enrolledGradeCode: student.gradeCode,
-    mincode: student.minCode.replace(/\s/g, ''),
+    mincode: student.mincode.replace(/\s/g, ''),
     postal: student.postalCode
   };
 }
@@ -123,13 +123,13 @@ export function updatePossibleMatchResultsBasedOnCurrentStatus(prbStudent, possi
   }
 }
 
-export function getSchoolData(minCode) {
+export function getSchoolData(mincode) {
   const params = {
     params: {
-      mincode: minCode,
+      mincode: mincode,
     }
   };
-  if (minCode) {
+  if (mincode) {
     return new Promise((resolve, reject) => {
       ApiService.apiAxios
         .get(Routes.SCHOOL_DATA_URL, params)

@@ -139,13 +139,13 @@ async function issueNewPen(req, res) {
   try {
     let studentData = req.body.prbStudent;
 
-    studentData.minCode = studentData.minCode?.replace(/ /g,'');
+    studentData.mincode = studentData.mincode?.replace(/ /g,'');
     studentData.postalCode = studentData.postalCode?.replace(/ /g,'');
     studentData.dob = studentData.dob?.replace(/\//g,'');
 
     const sagaReq = {
       ...stripAuditColumns(studentData),
-      mincode: studentData.minCode,
+      mincode: studentData.mincode,
       twinStudentIDs: req.body.twinStudentIDs
     };
 
@@ -187,7 +187,7 @@ async function userMatchSaga(req, res) {
     logDebug('student twin ids after filter ::', studentTwinIds);
     const sagaReq = {
       ...studentData,
-      mincode: studentData.minCode,
+      mincode: studentData.mincode,
       twinStudentIDs: studentTwinIds
     };
 

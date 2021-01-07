@@ -159,7 +159,7 @@ export default {
     return {
       headers: [
         { id: 'table-checkbox', type: 'select', sortable: false },
-        { topText: 'Mincode', topValue: 'minCode', sortable: false, format: formatMinCode },
+        { topText: 'Mincode', topValue: 'mincode', sortable: false, format: formatMinCode },
         { topText: 'Legal Surname', topValue: 'legalLastName', sortable: false },
         { topText: 'Legal Given', topValue: 'legalFirstName', sortable: false },
         { topText: 'Legal Middle', topValue: 'legalMiddleNames', sortable: false },

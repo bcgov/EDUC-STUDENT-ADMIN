@@ -23,7 +23,7 @@ const prbStudentData =
     'penRequestBatchStudentStatusCode':'FIXABLE',
     'localID':'123456',
     'legalFirstName':'Ben',
-    'minCode': '00807025',
+    'mincode': '00807025',
     'gradeCode': '10',
     'createUser': 'PEN_REQUEST_BATCH_API'
   };
@@ -199,7 +199,7 @@ describe('issueNewPen', () => {
 });
 
 function expectationsForUserActionsInPRBSaga(twinStudentIDs) {
-  expect(utils.postData.mock.calls[0][2].mincode).toBe(prbStudentData.minCode);
+  expect(utils.postData.mock.calls[0][2].mincode).toBe(prbStudentData.mincode);
   expect(utils.postData.mock.calls[0][2].twinStudentIDs).toEqual(twinStudentIDs);
   expect(utils.postData.mock.calls[0][2].createUser).toBeUndefined();
 }

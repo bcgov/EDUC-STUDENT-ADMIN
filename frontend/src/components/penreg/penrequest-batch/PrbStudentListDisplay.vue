@@ -9,8 +9,8 @@
             <v-row no-gutters class="py-2" style="background-color:white;">
               <v-col cols="1" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
                 <v-text-field
-                  id='minCode'
-                  v-model="prbStudentSearchParams.minCode"
+                  id='mincode'
+                  v-model="prbStudentSearchParams.mincode"
                   tabindex="1"
                   color="#003366"
                   label="Mincode"
@@ -18,7 +18,7 @@
                   minLength="8"
                   @keyup.enter="enterPushed()"
                   v-on:input="searchHasValues"
-                  :rules="validateField(prbStudentSearchParams.minCode, isValidMinCode, minCodeHint)"
+                  :rules="validateField(prbStudentSearchParams.mincode, isValidMinCode, mincodeHint)"
                   dense
                   autofocus
                 ></v-text-field>
@@ -269,7 +269,7 @@ export default {
     return {
       penHint: 'Fails check-digit test',
       postalCodeHint: 'Invalid Postal Code',
-      minCodeHint: 'Digits only',
+      mincodeHint: 'Digits only',
       genderHint: 'Invalid gender',
       gradeHint: 'Invalid grade',
       dobHint: 'Invalid Birth Date',
@@ -465,7 +465,7 @@ export default {
             operation = SEARCH_FILTER_OPERATION.EQUAL;
           } else if(element === 'genderCode' || element === 'gradeCode') {
             operation = SEARCH_FILTER_OPERATION.EQUAL;
-          } else if(element === 'minCode' || element === 'submissionNumber') {
+          } else if(element === 'mincode' || element === 'submissionNumber') {
             element = 'penRequestBatchEntity.' + element;
           }
 
@@ -486,7 +486,7 @@ export default {
         params: {
           pageNumber: this.pageNumber-1,
           sort: {
-            'penRequestBatchEntity.minCode': 'ASC',
+            'penRequestBatchEntity.mincode': 'ASC',
             legalLastName: 'ASC',
             legalFirstName: 'ASC',
             legalMiddleNames: 'ASC'
