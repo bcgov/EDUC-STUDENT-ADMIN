@@ -4,6 +4,7 @@ const config = require('../config/index');
 const log = require('../components/logger');
 const {getApiCredentials} = require('../components/auth');
 const {getData} = require('../components/utils');
+const retry = require('async-retry');
 
 let minCodeSchoolMap = new Map();
 let minCodeSchools = [];
@@ -12,21 +13,27 @@ const cacheService = {
 
   async loadAllSchoolsToMap() {
     log.debug('loading all schools during start up');
-    const data = await getApiCredentials(); // get the tokens first to make api calls.
-    const schools = await getData(data.accessToken, `${config.get('server:schoolAPIURL')}/schools`);
-    minCodeSchools = []; // reset the value.
-    minCodeSchoolMap.clear();// reset the value.
-    if (schools && schools.length > 0) {
-      for (const school of schools) {
-        const minCodeSchool = {
-          minCode: `${school.distNo}${school.schlNo}`,
-          schoolName: school.schoolName
-        };
-        minCodeSchoolMap.set(`${school.distNo}${school.schlNo}`, minCodeSchool);
-        minCodeSchools.push(minCodeSchool);
+    await retry(async () => {
+      // if anything throws, we retry
+      const data = await getApiCredentials(); // get the tokens first to make api calls.
+      const schools = await getData(data.accessToken, `${config.get('server:schoolAPIURL')}/schools`);
+      minCodeSchools = []; // reset the value.
+      minCodeSchoolMap.clear();// reset the value.
+      if (schools && schools.length > 0) {
+        for (const school of schools) {
+          const minCodeSchool = {
+            minCode: `${school.distNo}${school.schlNo}`,
+            schoolName: school.schoolName
+          };
+          minCodeSchoolMap.set(`${school.distNo}${school.schlNo}`, minCodeSchool);
+          minCodeSchools.push(minCodeSchool);
+        }
       }
-    }
-    log.info(`loaded ${minCodeSchoolMap.size} schools.`);
+      log.info(`loaded ${minCodeSchoolMap.size} schools.`);
+    }, {
+      retries: 50
+    });
+
   },
   getAllSchoolsJSON() {
     return minCodeSchools;
