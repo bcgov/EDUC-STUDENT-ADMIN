@@ -43,7 +43,7 @@
               <span v-if="header.countable" class="countable-column-data">{{ props.item[header.value] || '' }}</span>
               <span v-else-if="header.value==='submissionNumber'"><a class="submission" @click.stop="handleSubmissionNumberClicked(props.item[header.value])">{{props.item[header.value] }}</a></span>
               <span v-else>{{props.item[header.value]}}</span>
-              <v-tooltip v-if="header.value==='minCode' && isUnarchived(props.item)" right>
+              <v-tooltip v-if="header.value==='mincode' && isUnarchived(props.item)" right>
                 <template v-slot:activator="{ on }">
                   <v-icon small color="#2E8540" v-on="on">
                     {{isUnarchivedBatchChanged(props.item) ? 'fa-sync-alt' : 'fa-unlock'}}
@@ -104,7 +104,7 @@ export default {
       itemsPerPage: 15,
       headers: [
         { value: 'rowSelect', type: 'select', sortable: false },
-        { text: 'Mincode', value: 'minCode', sortable: false, align: 'start'},
+        { text: 'Mincode', value: 'mincode', sortable: false, align: 'start'},
         { text: 'School Name', value: 'schoolName', sortable: false },
         { text: 'TOT', value: 'studentCount', sortable: false, countable: true },
         { text: 'MCH', value: 'matchedCount', sortable: false, filterName: 'Matched', countable: true, isFiltered: false },
@@ -219,7 +219,7 @@ export default {
       }
       
       files.forEach(file => {
-        file.minCode && (file.minCode = formatMinCode(file.minCode));
+        file.mincode && (file.mincode = formatMinCode(file.mincode));
         file.isSelected = this.isSelected(file);
         this.countableHeaders.forEach(header => file[header.value] = +file[header.value]);
         file.filteredCount = this.headers.reduce((sum, header) => 
@@ -304,7 +304,7 @@ export default {
           pageSize: this.itemsPerPage,
           sort: {
             penRequestBatchStatusCode: 'DESC',
-            minCode: 'ASC',
+            mincode: 'ASC',
             submissionNumber: 'ASC'
           },
           searchQueries: this.searchCriteria

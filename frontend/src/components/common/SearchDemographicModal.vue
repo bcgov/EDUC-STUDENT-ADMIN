@@ -173,9 +173,9 @@
                             id="searchDemogModalMincodeTxtField"
                             :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.MINCODE)"
                             :rules="validateMinCode()" maxlength="8"
-                            :async-messages="minCodeErrors"
+                            :async-messages="mincodeErrors"
                             tabindex="11"
-                            :format="formatMinCode"
+                            :format="formatMincode"
                             v-model="student.mincode"></FormattedTextField>
                   </v-col>
                   <v-spacer/>
@@ -289,10 +289,10 @@ export default {
         }
         if (this.student.mincode) {
           if (!isValidMinCode(this.student.mincode)) {
-            return this.minCodeHint;
+            return this.mincodeHint;
           }
           if (this.student.mincode.length !== 8) {
-            return this.minCodeHint + this.minCodeAdditionalHint;
+            return this.mincodeHint + this.mincodeAdditionalHint;
           }
           this.getSchoolName(this.student.mincode);
         }

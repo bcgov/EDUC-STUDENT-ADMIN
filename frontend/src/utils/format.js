@@ -1,7 +1,7 @@
 import {LocalDate, DateTimeFormatterBuilder, ResolverStyle} from '@js-joda/core';
 
-export function formatMinCode(minCode) {
-  return minCode && (minCode.substring(0, 3) + ' ' + minCode.substring(3)) || '';
+export function formatMincode(mincode) {
+  return mincode && (mincode.substring(0, 3) + ' ' + mincode.substring(3)) || '';
 }
 
 export function formatPen(pen) {

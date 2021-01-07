@@ -6,8 +6,8 @@ const {getApiCredentials} = require('../components/auth');
 const {getData} = require('../components/utils');
 const retry = require('async-retry');
 
-let minCodeSchoolMap = new Map();
-let minCodeSchools = [];
+let mincodeSchoolMap = new Map();
+let mincodeSchools = [];
 
 const cacheService = {
 
@@ -17,29 +17,29 @@ const cacheService = {
       // if anything throws, we retry
       const data = await getApiCredentials(); // get the tokens first to make api calls.
       const schools = await getData(data.accessToken, `${config.get('server:schoolAPIURL')}/schools`);
-      minCodeSchools = []; // reset the value.
-      minCodeSchoolMap.clear();// reset the value.
+      mincodeSchools = []; // reset the value.
+      mincodeSchoolMap.clear();// reset the value.
       if (schools && schools.length > 0) {
         for (const school of schools) {
-          const minCodeSchool = {
-            minCode: `${school.distNo}${school.schlNo}`,
+          const mincodeSchool = {
+            mincode: `${school.distNo}${school.schlNo}`,
             schoolName: school.schoolName
           };
-          minCodeSchoolMap.set(`${school.distNo}${school.schlNo}`, minCodeSchool);
-          minCodeSchools.push(minCodeSchool);
+          mincodeSchoolMap.set(`${school.distNo}${school.schlNo}`, mincodeSchool);
+          mincodeSchools.push(mincodeSchool);
         }
       }
-      log.info(`loaded ${minCodeSchoolMap.size} schools.`);
+      log.info(`loaded ${mincodeSchoolMap.size} schools.`);
     }, {
       retries: 50
     });
 
   },
   getAllSchoolsJSON() {
-    return minCodeSchools;
+    return mincodeSchools;
   },
   getSchoolNameJSONByMincode(mincode) {
-    return minCodeSchoolMap.get(mincode);
+    return mincodeSchoolMap.get(mincode);
   }
 };
 

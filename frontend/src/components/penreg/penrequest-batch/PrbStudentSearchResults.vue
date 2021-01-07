@@ -48,7 +48,7 @@
             <div v-else class="table-cell">
               <span class="top-column-item">
                 <a v-if="header.topValue === 'submissionNumber'" class="submission" @click.stop="handleSubmissionNumberClicked(props.item[header.topValue])">{{props.item[header.topValue] }}</a>
-                <v-tooltip v-else-if="header.topValue === 'minCode'" right>
+                <v-tooltip v-else-if="header.topValue === 'mincode'" right>
                   <template v-slot:activator="{ on }">
                     <span v-on="on">{{ props.item[header.topValue] }}</span>
                   </template>
@@ -105,7 +105,7 @@ export default {
       itemsPerPage: 10,
       headers: [
         { id: 'table-checkbox', type: 'select', sortable: false },
-        { topText: 'Mincode', bottomText: 'Local ID', align: 'start', sortable: false, topValue: 'minCode', bottomValue: 'localID' },
+        { topText: 'Mincode', bottomText: 'Local ID', align: 'start', sortable: false, topValue: 'mincode', bottomValue: 'localID' },
         { topText: 'Legal Surname', bottomText: 'Usual Surname', topValue: 'legalLastName', bottomValue: 'usualLastName', sortable: false },
         { topText: 'Legal Given', bottomText: 'Usual Given', topValue: 'legalFirstName', bottomValue: 'usualFirstName', sortable: false },
         { topText: 'Legal Middle', bottomText: 'Usual Middle', topValue: 'legalMiddleNames', bottomValue: 'usualMiddleNames', sortable: false },
@@ -169,7 +169,7 @@ export default {
   methods: {
     ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse']),
     getSchoolName(request) {
-      return this.$store.state['prbStudentSearch'].mincodeSchoolNames.get(request?.minCode?.replace(' ',''));
+      return this.$store.state['prbStudentSearch'].mincodeSchoolNames.get(request?.mincode?.replace(' ',''));
     },
     clickViewSelected() {
       if(this.selectedRecords?.length > 0) {

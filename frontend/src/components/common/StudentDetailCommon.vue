@@ -220,7 +220,7 @@
               <v-col cols="2">
                 <p class="labelField">Mincode</p>
               </v-col>
-              <v-col cols="2" :class="{textFieldColumn: !minCodeError}">
+              <v-col cols="2" :class="{textFieldColumn: !mincodeError}">
                 <FormattedTextField
                     tabindex="9"
                     @keyup.tab.native="[editingMincode = true, hoveringMincode = true]"
@@ -228,8 +228,8 @@
                     @mouseout.native="editingMincode ? hoveringMincode = true : hoveringMincode = false"
                     @blur="[editingMincode = false, hoveringMincode = false]"
                     @focus="[editingMincode = true, hoveringMincode = true]"
-                    :classes="['onhoverEdit', 'bolder', 'customNoBorder', {onhoverPad: !hoveringMincode && !minCodeHasChanged(), darkBackgound: hoveringMincode || minCodeHasChanged()}]"
-                    :async-messages="minCodeErrors"
+                    :classes="['onhoverEdit', 'bolder', 'customNoBorder', {onhoverPad: !hoveringMincode && !mincodeHasChanged(), darkBackgound: hoveringMincode || mincodeHasChanged()}]"
+                    :async-messages="mincodeErrors"
                     v-model="studentCopy.mincode"
                     :id='STUDENT_DETAILS_FIELDS.MINCODE'
                     :filled="false"
@@ -238,7 +238,7 @@
                     :rules="validateMinCode()"
                     maxlength="8"
                     :readonly="!hoveringMincode || !editingMincode"
-                    :outlined="hoveringMincode || editingMincode || minCodeHasChanged()"
+                    :outlined="hoveringMincode || editingMincode || mincodeHasChanged()"
                     :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MINCODE)"
                 ></FormattedTextField>
               </v-col>
@@ -656,12 +656,12 @@ export default {
         if (this.studentCopy) {
           if (this.studentCopy.mincode) {
             if (!isValidMinCode(this.studentCopy.mincode)) { // format error
-              this.minCodeError = true;
-              return this.minCodeHint;
+              this.mincodeError = true;
+              return this.mincodeHint;
             }
             if (this.studentCopy.mincode.length !== 8) { // length error
-              this.minCodeError = true;
-              return this.minCodeHint + this.minCodeAdditionalHint;
+              this.mincodeError = true;
+              return this.mincodeHint + this.mincodeAdditionalHint;
             }
             this.getSchoolName(this.studentCopy.mincode);
           }
@@ -767,7 +767,7 @@ export default {
         return true;
       }
     },
-    minCodeHasChanged() {
+    mincodeHasChanged() {
       if (this.origStudent.mincode) {
         if (!this.studentCopy.mincode) {
           return true;

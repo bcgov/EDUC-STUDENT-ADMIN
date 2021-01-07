@@ -15,7 +15,7 @@ const getDefaultState = () => {
       postalCode: null,
       genderCode: null,
       dob: null,
-      minCode: null,
+      mincode: null,
       usualLastName: null,
       usualFirstName: null,
       usualMiddleNames: null,
@@ -61,10 +61,10 @@ export default {
     setPrbStudentSearchCriteria: (state, prbStudentSearchCriteria) => {
       state.prbStudentSearchCriteria = prbStudentSearchCriteria;
     },
-    setMinCodeSchoolName(state, minCodeSchoolNameList) {
+    setMinCodeSchoolName(state, mincodeSchoolNameList) {
       state.mincodeSchoolNames = new Map();
-      minCodeSchoolNameList.forEach(element => {
-        state.mincodeSchoolNames.set(element.minCode, element.schoolName);
+      mincodeSchoolNameList.forEach(element => {
+        state.mincodeSchoolNames.set(element.mincode, element.schoolName);
       });
     }
   },
@@ -72,7 +72,7 @@ export default {
     async getCodes({ commit, state}) {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
         if(state.mincodeSchoolNames.size === 0) {
-          const response = await ApiService.getMinCodeSchoolNames();
+          const response = await ApiService.getMincodeSchoolNames();
           commit('setMinCodeSchoolName', response.data);
         }
       }
