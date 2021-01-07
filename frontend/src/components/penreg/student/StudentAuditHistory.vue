@@ -1,5 +1,5 @@
 <template>
-  <div id="auditHistory" class="px-0 pt-3 ma-0" style="width: 100%">
+  <div id="auditHistory" class="px-0 pt-3 ma-0" style="width: 100%;">
     <v-row>
       <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000"></AlertMessage>
     </v-row>
@@ -46,7 +46,7 @@
         </v-row>
       </v-col>
       <v-col v-if="listDetailMode">
-        <StudentAuditHistoryDetail 
+        <StudentAuditHistoryDetail
             :studentHistory="studentHistoryResp"
             :studentHistoryId="selectedStudentHistoryId"
             @close="listDetailMode=false"
@@ -59,12 +59,12 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { Routes } from '../../../utils/constants';
+import { Routes } from '@/utils/constants';
 import AlertMessage from '../../util/AlertMessage';
 import StudentAuditHistoryDetail from '../student/StudentAuditHistoryDetailPanel';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
-import {formatMincode, formatPen, formatDob, formatPostalCode} from '../../../utils/format';
+import {formatMincode, formatPen, formatDob, formatPostalCode} from '@/utils/format';
 import {groupBy, mapValues} from 'lodash';
 
 export default {
@@ -158,17 +158,13 @@ export default {
       this.studentHistoryResp.content.forEach(hist => {
         hist.expanded = false;
         hist.hidden = false;
-        if (hist.studentHistoryID === historyId) {
-          hist.isSelected = true;
-        } else {
-          hist.isSelected = false;
-        }
+        hist.isSelected = hist.studentHistoryID === historyId;
       });
       this.selectedStudentHistoryId = historyId;
     },
     expandRow(item) {
       this.userEditHistoryGroups[item.createDate].forEach(history => {
-        if(history.studentHistoryID != item.studentHistoryID) {
+        if(history.studentHistoryID !== item.studentHistoryID) {
           history.hidden = !history.hidden;
         }
       });
@@ -203,7 +199,7 @@ export default {
         if(index < historyContent.length - 1) {
           const preHistory = history.expandable ? (historyContent[index + history.setCount] || historyContent[index + 1]) : historyContent[index + 1];
           Object.keys(history).forEach(key => {
-            if(history[key] != preHistory[key] && !['createDate', 'createUser', 'historyActivityLabel'].includes(key)) {
+            if(history[key] !== preHistory[key] && !['createDate', 'createUser', 'historyActivityLabel'].includes(key)) {
               history[`${key}_diff`] = true;
             }
           });
@@ -212,14 +208,16 @@ export default {
     },
     initializeStudentHistory(currentPageData, nextPageData) {
       [...currentPageData.content, ...nextPageData.content].forEach(history => {
-        this.formatStudentHistory(history);
+        if(history){
+          this.formatStudentHistory(history);
+        }
       });
 
       const historyGroups = groupBy(currentPageData.content, 'createDate');
       this.userEditHistoryGroups = mapValues(historyGroups, group => group.filter(history => history.historyActivityCode === 'USEREDIT'));
 
       const currentPageContent = currentPageData.content.reduce((acc, history) => {
-        if(history.historyActivityCode != 'USEREDIT') {
+        if(history.historyActivityCode !== 'USEREDIT') {
           acc.push(history);
         } else {
           const group = this.userEditHistoryGroups[history.createDate];
@@ -306,11 +304,11 @@ export default {
     font-size: 0.875rem;
   }
   #dataTable /deep/ table tr.selected-record,
-  #dataTable /deep/ table tbody tr:hover { 
+  #dataTable /deep/ table tbody tr:hover {
     background-color: #E1F5FE !important;
   }
 
-  #dataTable /deep/ table td { 
+  #dataTable /deep/ table td {
     border-bottom: none !important;
   }
 
@@ -318,7 +316,7 @@ export default {
     display: none;
   }
 
-  #dataTable /deep/ table tr.hideable { 
+  #dataTable /deep/ table tr.hideable {
     background-color: rgba(0, 0, 0, 0.06);
   }
 
