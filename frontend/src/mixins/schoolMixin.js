@@ -31,7 +31,7 @@ export default {
         this.loadingSchoolData = false;
       }
     },
-    isValidFormattedMinCode(mincode) {
+    isValidFormattedMincode(mincode) {
       return mincode && mincode.length === 9 && mincode.charAt(3) === ' ';
     },
   }

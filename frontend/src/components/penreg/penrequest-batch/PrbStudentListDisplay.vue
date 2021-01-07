@@ -18,7 +18,7 @@
                   minLength="8"
                   @keyup.enter="enterPushed()"
                   v-on:input="searchHasValues"
-                  :rules="validateField(prbStudentSearchParams.mincode, isValidMinCode, mincodeHint)"
+                  :rules="validateField(prbStudentSearchParams.mincode, isValidMincode, mincodeHint)"
                   dense
                   autofocus
                 ></v-text-field>
@@ -243,7 +243,7 @@ import ApiService from '../../../common/apiService';
 import { Routes, PEN_REQ_BATCH_STUDENT_REQUEST_CODES, SEARCH_FILTER_OPERATION, SEARCH_CONDITION, SEARCH_VALUE_TYPE } from '../../../utils/constants';
 import { mapGetters, mapMutations, mapState } from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
-import { isValidPEN, isValidMinCode, isValidPostalCode, isValidDob, isValidAlphanumericValue } from '../../../utils/validation';
+import { isValidPEN, isValidMincode, isValidPostalCode, isValidDob, isValidAlphanumericValue } from '../../../utils/validation';
 import PrbStudentSearchResults from './PrbStudentSearchResults';
 import { formatPrbStudents } from '../../../utils/penrequest-batch/format';
 import alertMixin from '../../../mixins/alertMixin';
@@ -371,7 +371,7 @@ export default {
     isValidGradeCode(code) {
       return !!(code && this.gradeCodes.includes(code.toUpperCase()));
     },
-    isValidMinCode,
+    isValidMincode,
     isValidPostalCode,
     isValidDob,
     validateField(value, validator=isValidAlphanumericValue, hint=this.alphanumericHint, length=0) {

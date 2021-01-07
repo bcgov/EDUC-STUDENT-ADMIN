@@ -65,7 +65,7 @@ import StudentSearchResults from './StudentSearchResults';
 import StudentBasicSearch from './StudentBasicSearch';
 import StudentAdvancedSearch from './StudentAdvancedSearch';
 import PrimaryButton from '../../util/PrimaryButton';
-import { isValidPEN, checkDigit, isValidMinCode, isValidPostalCode } from '../../../utils/validation';
+import { isValidPEN, checkDigit, isValidMincode, isValidPostalCode } from '../../../utils/validation';
 
 export default {
   components: {
@@ -218,7 +218,7 @@ export default {
           return [];
         }
         else {
-          if(isValidMinCode(this.studentSearchParams.mincode)){
+          if(isValidMincode(this.studentSearchParams.mincode)){
             return [];
           }
         }

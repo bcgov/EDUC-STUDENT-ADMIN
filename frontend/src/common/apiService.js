@@ -72,7 +72,7 @@ function getCodes(url) {
     }
   };
 }
-function getAllMinCodeSchoolNames(){
+function getAllMincodeSchoolNames(){
   return async function getCodesHandler() {
     try {
       return await apiAxios.get(Routes.SCHOOL_DATA_URL);
@@ -108,5 +108,5 @@ export default {
   getPrbValidationFieldCodes: getCodes(Routes.penRequestBatch.PRB_VALIDATION_FIELD_CODE_URL),
   getPrbValidationIssueSeverityCodes: getCodes(Routes.penRequestBatch.PRB_VALIDATION_ISSUE_SEVERITY_CODE_URL),
   getPrbValidationIssueTypeCodes: getCodes(Routes.penRequestBatch.PRB_VALIDATION_ISSUE_TYPE_CODE_URL),
-  getMinCodeSchoolNames: getAllMinCodeSchoolNames()
+  getMincodeSchoolNames: getAllMincodeSchoolNames()
 };

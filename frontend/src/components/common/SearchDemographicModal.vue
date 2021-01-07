@@ -172,7 +172,7 @@
                     <FormattedTextField
                             id="searchDemogModalMincodeTxtField"
                             :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.MINCODE)"
-                            :rules="validateMinCode()" maxlength="8"
+                            :rules="validateMincode()" maxlength="8"
                             :async-messages="mincodeErrors"
                             tabindex="11"
                             :format="formatMincode"
@@ -200,10 +200,10 @@
 
 <script>
 import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
-import {isValidMinCode, isValidPostalCode, isValidDOBAndAfter1900} from '@/utils/validation';
+import {isValidMincode, isValidPostalCode, isValidDOBAndAfter1900} from '@/utils/validation';
 import {mapGetters} from 'vuex';
 import FormattedTextField from '../util/FormattedTextField';
-import {formatPostalCode, formatDob, formatMinCode} from '../../utils/format';
+import {formatPostalCode, formatDob, formatMincode} from '../../utils/format';
 import schoolMixin from '../../mixins/schoolMixin';
 
 export default {
@@ -253,7 +253,7 @@ export default {
   methods: {
     formatPostalCode,
     formatDob,
-    formatMinCode,
+    formatMincode,
     upperCaseInput(fieldName) {
       if (this.student[fieldName]) {
         this.student[fieldName] = this.student[fieldName].toUpperCase();
@@ -282,13 +282,13 @@ export default {
         this.$emit('updateStudent', this.student);
       }
     },
-    validateMinCode() {
+    validateMincode() {
       return [v => {
-        if (!v || this.isValidFormattedMinCode(v)) { // skip when no input or the formatted text is set for view
+        if (!v || this.isValidFormattedMincode(v)) { // skip when no input or the formatted text is set for view
           return true;
         }
         if (this.student.mincode) {
-          if (!isValidMinCode(this.student.mincode)) {
+          if (!isValidMincode(this.student.mincode)) {
             return this.mincodeHint;
           }
           if (this.student.mincode.length !== 8) {

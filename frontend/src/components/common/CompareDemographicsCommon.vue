@@ -56,7 +56,7 @@
                 <span v-if="key==='dob'" ref="dobText">
                   {{ formatDob(students[key].replaceAll('-','')) }}
                 </span>
-          <span v-else-if="key==='mincode'">{{ formatMinCode(students[key]) }}</span>
+          <span v-else-if="key==='mincode'">{{ formatMincode(students[key]) }}</span>
           <span v-else-if="key==='postalCode'">{{ formatPostalCode(students[key]) }}</span>
           <span v-else>{{ students[key] }}</span>
         </span>
@@ -109,7 +109,7 @@
 </template>
 
 <script>
-import { formatPen, formatDob, formatMinCode, formatPostalCode } from '../../utils/format';
+import { formatPen, formatDob, formatMincode, formatPostalCode } from '../../utils/format';
 import PrimaryButton from '../util/PrimaryButton';
 import ApiService from '../../common/apiService';
 import {REQUEST_TYPES, Routes} from '../../utils/constants';
@@ -218,7 +218,7 @@ export default {
       }
     },
     formatDob,
-    formatMinCode,
+    formatMincode,
     formatPostalCode,
     formatPen,
     getSldData(pen) {
