@@ -100,7 +100,7 @@ async function searchStudent(req, res) {
 
   const baseUrl = config.get('server:student:rootURL');
   return Promise.all([
-    utils.getData(token, isAuditHistorySearch? baseUrl + '/student-history/paginated' : baseUrl + '/paginated', params),
+    utils.getData(token, isAuditHistorySearch? baseUrl + '/history/paginated' : baseUrl + '/paginated', params),
 
   ]).then(([dataResponse]) => {
     return res.status(200).json(dataResponse);
@@ -133,7 +133,7 @@ async function getStudentHistoryByStudentID(req, res) {
     }
   };
 
-  return utils.getData(token, `${config.get('server:student:rootURL')}/${req.params.id}/student-history/paginated`, params)
+  return utils.getData(token, `${config.get('server:student:rootURL')}/${req.params.id}/history/paginated`, params)
     .then((dataResponse) => {
       return res.status(200).json(dataResponse);
     }).catch((e) => {
