@@ -72,7 +72,7 @@
                       </span>
                       <span v-else-if="header.topValue==='mincode'"
                             :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
-                          {{ formatMinCode(props.item[header.topValue]) }}
+                          {{ formatMincode(props.item[header.topValue]) }}
                       </span>
                       <span v-else-if="header.topValue==='dob'"
                             :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
@@ -124,7 +124,7 @@ import CompareDemographicModal from './CompareDemographicModal';
 import TertiaryButton from '../util/TertiaryButton';
 import StudentDetailModal from '../penreg/student/StudentDetailModal';
 import {PEN_REQ_BATCH_STUDENT_REQUEST_CODES} from '@/utils/constants';
-import {formatPen, formatMinCode, formatPostalCode, formatDob} from '@/utils/format';
+import {formatPen, formatMincode, formatPostalCode, formatDob} from '@/utils/format';
 import { mapState } from 'vuex';
 import PrimaryButton from '@/components/util/PrimaryButton';
 
@@ -294,7 +294,7 @@ export default {
       }
     },
     formatPen,
-    formatMinCode,
+    formatMincode,
     formatPostalCode,
     formatDob,
     enableMatchOrUnMatch(matchedStudent) {

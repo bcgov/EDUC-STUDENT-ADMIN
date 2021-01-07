@@ -234,8 +234,8 @@
                     :id='STUDENT_DETAILS_FIELDS.MINCODE'
                     :filled="false"
                     :clearable="false"
-                    :format="formatMinCode"
-                    :rules="validateMinCode()"
+                    :format="formatMincode"
+                    :rules="validateMincode()"
                     maxlength="8"
                     :readonly="!hoveringMincode || !editingMincode"
                     :outlined="hoveringMincode || editingMincode || mincodeHasChanged()"
@@ -263,7 +263,7 @@
               <v-col class="textFieldColumn" cols="2">
                 <v-text-field
                     id='revertMincode'
-                    v-on:click="revertMinCodeField()"
+                    v-on:click="revertMincodeField()"
                     class="onhoverEdit revert customNoBorder ml-3"
                     readonly
                     v-if="hasEdits(STUDENT_DETAILS_FIELDS.MINCODE)"
@@ -434,7 +434,7 @@ import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsCo
 import StudentDetailsTextFieldSideCardReadOnly
   from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
 import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
-import {formatMinCode, formatPen, formatDob} from '../../utils/format';
+import {formatMincode, formatPen, formatDob} from '../../utils/format';
 import {sortBy,isEmpty} from 'lodash';
 import alertMixin from '../../mixins/alertMixin';
 import schoolMixin from '../../mixins/schoolMixin';
@@ -442,7 +442,7 @@ import ConfirmationDialog from '../util/ConfirmationDialog';
 import AlertMessage from '../util/AlertMessage';
 import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard';
 import CompareDemographicModal from './CompareDemographicModal';
-import {isValidMinCode, isValidDob} from '@/utils/validation';
+import {isValidMincode, isValidDob} from '@/utils/validation';
 import FormattedTextField from '@/components/util/FormattedTextField';
 
 const JSJoda = require('@js-joda/core');
@@ -572,7 +572,7 @@ export default {
   },
   methods: {
     formatPen,
-    formatMinCode,
+    formatMincode,
     formatDob,
     changeStudentObjectValue(key, value) {
       this.studentCopy[`${key}`] = value;
@@ -647,15 +647,15 @@ export default {
       ];
     },
     // Asynchronous validator returns an array of boolean or string that would be provided for :rules prop of input field
-    validateMinCode() {
+    validateMincode() {
       return [v => {
-        if (this.isValidFormattedMinCode(v)) { // skip when no input or the formatted text is set for view
+        if (this.isValidFormattedMincode(v)) { // skip when no input or the formatted text is set for view
           return true;
         }
         this.schoolLabel = '';
         if (this.studentCopy) {
           if (this.studentCopy.mincode) {
-            if (!isValidMinCode(this.studentCopy.mincode)) { // format error
+            if (!isValidMincode(this.studentCopy.mincode)) { // format error
               this.mincodeError = true;
               return this.mincodeHint;
             }
@@ -728,7 +728,7 @@ export default {
       this.revertField(value);
       this.updateDOBLabel(true);
     },
-    revertMinCodeField() {
+    revertMincodeField() {
       this.revertField(STUDENT_DETAILS_FIELDS.MINCODE);
       this.getSchoolName(this.studentCopy.mincode);
     },
@@ -896,7 +896,7 @@ export default {
         .then(response => {
           this.traxStatus = response.data.traxStatus;
           if(response.data.student?.gradDate > 0) {
-            this.gradDateAndMincode = [this.formatGradDate(response.data.student?.gradDate), formatMinCode(response.data.student?.mincodeGrad || '')];
+            this.gradDateAndMincode = [this.formatGradDate(response.data.student?.gradDate), formatMincode(response.data.student?.mincodeGrad || '')];
           }
         })
         .catch(error => {

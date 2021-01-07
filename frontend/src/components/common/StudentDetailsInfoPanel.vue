@@ -120,7 +120,7 @@ import {
 } from '@/utils/constants';
 import SearchDemographicModal from './SearchDemographicModal';
 import { deepCloneObject, getDemogValidationResults } from '../../utils/common';
-import { formatDob, formatPostalCode, formatMinCode, formatPen } from '@/utils/format';
+import { formatDob, formatPostalCode, formatMincode, formatPen } from '@/utils/format';
 import { mapState, mapMutations } from 'vuex';
 import StudentValidationWarningHint from './StudentValidationWarningHint';
 import PrimaryButton from '../util/PrimaryButton';
@@ -159,7 +159,7 @@ export default {
     return {
       headers: [
         { id: 'table-checkbox', type: 'select', sortable: false },
-        { topText: 'Mincode', topValue: 'mincode', sortable: false, format: formatMinCode },
+        { topText: 'Mincode', topValue: 'mincode', sortable: false, format: formatMincode },
         { topText: 'Legal Surname', topValue: 'legalLastName', sortable: false },
         { topText: 'Legal Given', topValue: 'legalFirstName', sortable: false },
         { topText: 'Legal Middle', topValue: 'legalMiddleNames', sortable: false },

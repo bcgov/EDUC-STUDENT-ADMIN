@@ -21,7 +21,7 @@ export function isValidPEN(pen) {
   return !!(pen && pen.length === 9 && checkDigit(pen));
 }
 
-export function isValidMinCode(code) {
+export function isValidMincode(code) {
   return !!(code && code.match('^[0-9]\\d*$'));
 }
 

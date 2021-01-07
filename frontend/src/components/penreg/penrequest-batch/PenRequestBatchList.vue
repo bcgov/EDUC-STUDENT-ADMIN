@@ -79,7 +79,7 @@
 import { mapMutations, mapState } from 'vuex';
 import ApiService from '../../../common/apiService';
 import {Routes} from '../../../utils/constants';
-import {formatMinCode} from '../../../utils/format';
+import {formatMincode} from '../../../utils/format';
 import router from '../../../router';
 import {uniqBy} from 'lodash';
 
@@ -219,7 +219,7 @@ export default {
       }
       
       files.forEach(file => {
-        file.mincode && (file.mincode = formatMinCode(file.mincode));
+        file.mincode && (file.mincode = formatMincode(file.mincode));
         file.isSelected = this.isSelected(file);
         this.countableHeaders.forEach(header => file[header.value] = +file[header.value]);
         file.filteredCount = this.headers.reduce((sum, header) => 
