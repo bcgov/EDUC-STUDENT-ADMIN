@@ -55,7 +55,6 @@
                 label="Enter date"
                 v-model="loadDate"
                 maxlength="10"
-                minLength="10"
                 :rules="loadDateRules"
                 @keyup.enter="enterPushedForRequests()"
               ></v-text-field>

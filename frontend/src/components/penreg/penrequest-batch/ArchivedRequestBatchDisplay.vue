@@ -1,16 +1,6 @@
 <template>
     <v-container fluid class="fill-height px-0 mb-4">
-        <v-alert
-          v-model="alert"
-          dense
-          text
-          dismissible
-          outlined
-          transition="scale-transition"
-          :class="`${alertType} flex-grow-1 mx-3`"
-        >
-          {{ alertMessage }}
-        </v-alert>
+        <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
         <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
           <v-col cols="9" xl="8" class="pa-0">
             <v-sheet
@@ -28,7 +18,6 @@
                     color="#003366"
                     label="Mincode"
                     maxlength="8"
-                    minLength="8"
                     @keyup.enter="enterPushed()"
                     v-on:input="searchHasValues"
                     :rules="validateField(prbStudentSearchParams.minCode, isValidMincode, minCodeHint)"
@@ -116,11 +105,13 @@ import PrimaryButton from '../../util/PrimaryButton';
 import router from '../../../router';
 import alertMixin from '../../../mixins/alertMixin';
 import { isValidMincode, isValidAlphanumericValue, isDateAfter1900 } from '../../../utils/validation';
+import AlertMessage from '../../util/AlertMessage';
 
 export default {
   name: 'ArchivedRequestBatchDisplay',
   components: {
     PrimaryButton,
+    AlertMessage,
     ArchivedRequestBatchList,
   },
   mixins: [alertMixin],
