@@ -166,7 +166,6 @@ export default {
           pageNumber: this.pageNumber-1,
           pageSize: this.itemsPerPage,
           sort: {
-            penRequestBatchStatusCode: 'DESC',
             mincode: 'ASC',
             submissionNumber: 'ASC'
           },
@@ -191,7 +190,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-  
-</style>
