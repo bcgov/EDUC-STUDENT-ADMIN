@@ -14,7 +14,7 @@
            v-on="on"
     >
       <span :class="hover ? 'text-decoration-underline': ''">{{ text }}</span>
-      <v-icon class="ml-1 pr-2 pt-1" v-if="icon" :nudge-down="4" right dark>{{ icon }}</v-icon>
+      <v-icon :class="largeIcon ? '' : 'ml-1 pr-2 pt-1'" v-if="icon" :nudge-down="4" :large="largeIcon" right dark>{{ icon }}</v-icon>
       <slot></slot>
     </v-btn>
   </v-hover>
@@ -59,6 +59,10 @@ export default {
     },
     on: {
       type: Object
+    },
+    largeIcon: {
+      type: Boolean,
+      default: false
     }
   }
 };
@@ -75,6 +79,10 @@ export default {
 .theme--light.v-btn.v-btn--disabled:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
   background-color: #003366 !important;
   opacity: 0.298039215686275;
+  color: white !important;
+}
+
+.theme--light.v-btn.v-btn--disabled:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) .v-icon {
   color: white !important;
 }
 </style>

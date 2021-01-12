@@ -30,34 +30,44 @@
       <v-col cols="4">
         <v-card v-if="isValidStudentSearchUser" flat color="#F2F2F2" class="mt-2" height="100%">
           <v-row class="pt-4 px-8">
-            <v-card-title class="pa-0"><h3>Requests Search</h3></v-card-title>
+            <v-card-title class="pa-0"><h3>Archived Requests Search</h3></v-card-title>
           </v-row>
           <v-row class="pt-4 px-8">
-            <v-col cols="19" class="pa-0">
-              <v-text-field id="requestsTextField" outlined dense background-color="white" label="Enter district or full mincode"></v-text-field>
+            <v-col cols="6" class="pa-0">
+              <v-text-field 
+                id="requestsMincodeField" 
+                outlined 
+                dense 
+                background-color="white" 
+                label="Enter district or mincode" 
+                v-model="mincode"
+                maxlength="8" 
+                :rules="mincodeRules"
+                @keyup.enter="enterPushedForRequests()"
+              ></v-text-field>
             </v-col>
-            <v-col cols="3" class="py-0 px-2">
-
-              <v-menu id="requestSearchMenu" offset-y allow-overflow>
-                <template v-slot:activator="{ on, attrs }">
-                  <PrimaryButton
-                          id="requestsSearchBtn"
-                          text="Search"
-                          icon="fa-angle-down"
-                          width="100%"
-                          :bind="attrs"
-                          :on="on"></PrimaryButton>
-                </template>
-                <v-list class="py-0">
-                  <v-list-item
-                          v-for="(item, index) in searchDropDownItems"
-                          :key="index"
-                          dense
-                  >
-                    <v-list-item-title>{{ item.title }}</v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
+            <v-col cols="4" class="pa-0 pl-1">
+              <v-text-field 
+                id="requestsDateField" 
+                outlined 
+                dense 
+                background-color="white" 
+                label="Enter date"
+                v-model="loadDate"
+                maxlength="10"
+                minLength="10"
+                :rules="loadDateRules"
+                @keyup.enter="enterPushedForRequests()"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="2" class="py-0 pl-2">
+              <PrimaryButton
+                id="requestsSearchBtn"
+                text="Search"
+                width="100%"
+                :disabled="!isValidRequestsSearchInput"
+                @click.native="searchRequests"
+              ></PrimaryButton>
             </v-col>
 
           </v-row>
@@ -142,7 +152,7 @@ import ApiService from '../common/apiService';
 import { Routes } from '../utils/constants';
 import PrimaryButton from './util/PrimaryButton';
 import router from '../router';
-import { isValidPEN } from '../utils/validation';
+import { isValidPEN, isValidMinCode, isDateAfter1900 } from '../utils/validation';
 
 export default {
   name: 'home',
@@ -156,6 +166,8 @@ export default {
       penRequestData: [],
       studentData: [],
       pen: null,
+      mincode: null,
+      loadDate: null,
       isLoadingBatch: true,
       isLoadingGmpUmp: true,
       searchDropDownItems: [
@@ -165,7 +177,9 @@ export default {
       searchError: false,
       searchErrorMessage: 'PEN not found in Student table',
       penRules: [ v => (!v || isValidPEN(v)) || this.penHint],
-      penHint: 'Fails check-digit test'
+      penHint: 'Fails check-digit test',
+      mincodeRules: [ v => (!v || this.isValidDistrictOrMincode(v)) || 'Invalid district or mincode'],
+      loadDateRules: [ v => (!v || isDateAfter1900(v)) || 'Invalid date'],
     };
   },
   mounted() {
@@ -231,9 +245,18 @@ export default {
     requestTypes() {
       return REQUEST_TYPES;
     },
-    isValidPEN(){
+    isValidPEN() {
       return isValidPEN(this.pen);
-    }
+    },
+    isValidRequestsSearchInput() {
+      if(this.mincode) {
+        return this.isValidDistrictOrMincode(this.mincode);
+      } else if(this.loadDate) {
+        return isDateAfter1900(this.loadDate);
+      } else {
+        return false;
+      }
+    },
   },
   methods: {
     quickSearch() {
@@ -252,6 +275,17 @@ export default {
       if(this.pen && this.isValidPEN){
         this.quickSearch();
       }
+    },
+    enterPushedForRequests() {
+      if(this.isValidRequestsSearchInput){
+        this.searchRequests();
+      }
+    },
+    isValidDistrictOrMincode(v) {
+      return isValidMinCode(v) && (v.length === 3 || v.length === 8);
+    },
+    searchRequests() {
+      router.push({ name: 'archivedRequestBatch', query: {mincode: this.mincode, loadDate: this.loadDate}});
     },
   }
 };

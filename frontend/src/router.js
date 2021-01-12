@@ -14,6 +14,7 @@ import StudentRequestDetail from './components/ump/StudentRequestDetail';
 import PenRequestBatchDisplay from './components/penreg/penrequest-batch/PenRequestBatchDisplay';
 import PrbStudentListDisplay from './components/penreg/penrequest-batch/PrbStudentListDisplay';
 import PrbStudentDetailsDisplay from './components/penreg/penrequest-batch/PrbStudentDetailsDisplay';
+import ArchivedRequestBatchDisplay from './components/penreg/penrequest-batch/ArchivedRequestBatchDisplay';
 import CreateNewPEN from './components/CreateNewPEN';
 import UnAuthorized from './components/UnAuthorized';
 import { REQUEST_TYPES, PAGE_TITLES } from './utils/constants';
@@ -205,6 +206,23 @@ const router = new VueRouter({
         requiresAuth: true,
         role: 'isValidPenRequestBatchUser'
       },
+    },
+    {
+      path: '/archivedRequestBatch',
+      name: 'archivedRequestBatch',
+      component: ArchivedRequestBatchDisplay,
+      props: (route) => ({ mincode: route.query.mincode, loadDate: route.query.loadDate }),
+      meta: {
+        pageTitle: PAGE_TITLES.ARCHIVED_REQ_FILES,
+        requiresAuth: true,
+        role: 'isValidPenRequestBatchUser'
+      },
+      beforeEnter(to, from, next) {
+        if(!from.path.includes('/prb')) {
+          store.commit('archivedRequestBatch/clearPenRequestBatchState');
+        }
+        next();
+      }
     },
     {
       path: '/penMatch',
