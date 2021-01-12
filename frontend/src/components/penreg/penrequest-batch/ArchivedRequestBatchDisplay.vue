@@ -31,7 +31,7 @@
                     minLength="8"
                     @keyup.enter="enterPushed()"
                     v-on:input="searchHasValues"
-                    :rules="validateField(prbStudentSearchParams.minCode, isValidMinCode, minCodeHint)"
+                    :rules="validateField(prbStudentSearchParams.minCode, isValidMincode, minCodeHint)"
                     dense
                     autofocus
                   ></v-text-field>
@@ -115,7 +115,7 @@ import ArchivedRequestBatchList from './ArchivedRequestBatchList';
 import PrimaryButton from '../../util/PrimaryButton';
 import router from '../../../router';
 import alertMixin from '../../../mixins/alertMixin';
-import { isValidMinCode, isValidAlphanumericValue, isDateAfter1900 } from '../../../utils/validation';
+import { isValidMincode, isValidAlphanumericValue, isDateAfter1900 } from '../../../utils/validation';
 
 export default {
   name: 'ArchivedRequestBatchDisplay',
@@ -219,7 +219,7 @@ export default {
     searchPenRequests() {
 
     },
-    isValidMinCode,
+    isValidMincode,
     isDateAfter1900,
     validateField(value, validator=isValidAlphanumericValue, hint=this.alphanumericHint, length=0) {
       if(!value || validator(value)) {

@@ -15,7 +15,7 @@ import { mapMutations, mapState } from 'vuex';
 import PenRequestBatchDataTable from './PenRequestBatchDataTable';
 import ApiService from '../../../common/apiService';
 import {Routes, SEARCH_FILTER_OPERATION, SEARCH_CONDITION, SEARCH_VALUE_TYPE} from '../../../utils/constants';
-import {formatMinCode, formatDateTime} from '../../../utils/format';
+import {formatMincode, formatDateTime} from '../../../utils/format';
 import router from '../../../router';
 import {compact} from 'lodash';
 
@@ -137,7 +137,7 @@ export default {
       }
       
       files.forEach(file => {
-        file.mincode && (file.mincode = formatMinCode(file.mincode));
+        file.mincode && (file.mincode = formatMincode(file.mincode));
         file.extractDate && (file.extractDate = formatDateTime(file.extractDate, 'uuuu-MM-dd\'T\'HH:mm:ss', 'uuuu/MM/dd'));
         file.isSelected = this.isSelected(file);
         this.countableHeaders.forEach(header => file[header.value] = +file[header.value]);

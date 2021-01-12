@@ -152,7 +152,7 @@ import ApiService from '../common/apiService';
 import { Routes } from '../utils/constants';
 import PrimaryButton from './util/PrimaryButton';
 import router from '../router';
-import { isValidPEN, isValidMinCode, isDateAfter1900 } from '../utils/validation';
+import { isValidPEN, isValidMincode, isDateAfter1900 } from '../utils/validation';
 
 export default {
   name: 'home',
@@ -282,7 +282,7 @@ export default {
       }
     },
     isValidDistrictOrMincode(v) {
-      return isValidMinCode(v) && (v.length === 3 || v.length === 8);
+      return isValidMincode(v) && (v.length === 3 || v.length === 8);
     },
     searchRequests() {
       router.push({ name: 'archivedRequestBatch', query: {mincode: this.mincode, loadDate: this.loadDate}});
