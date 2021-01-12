@@ -9,6 +9,7 @@ import studentSearch from './modules/studentSearch';
 import prbStudentSearch from './modules/prbStudentSearch';
 import penRequestBatch from './modules/penRequestBatch';
 import setNavigation from './modules/setNavigation';
+import archivedRequestBatch from './modules/archivedRequestBatch';
 
 Vue.use(Vuex);
 
@@ -23,7 +24,8 @@ const store = new Vuex.Store({
     studentSearch,
     prbStudentSearch,
     penRequestBatch,
-    setNavigation
+    setNavigation,
+    archivedRequestBatch
   }
 });
 

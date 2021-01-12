@@ -245,7 +245,8 @@ export const PAGE_TITLES = Object.freeze(
     PEN_MATCH: 'PEN Match',
     PEN_REQ_BATCH_STUDENT_LIST: 'PEN Request List',
     PEN_REQ_BATCH_STUDENT_DETAILS: 'PEN Request Details',
-    CREATE_NEW_PEN: 'Create New PEN'
+    CREATE_NEW_PEN: 'Create New PEN',
+    ARCHIVED_REQ_FILES: 'Archived PEN Request Files',
   }
 );
 
