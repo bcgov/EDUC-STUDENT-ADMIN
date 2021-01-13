@@ -39,18 +39,6 @@ describe('getStudentByStudentId', () => {
   });
 });
 
-async function createStudentAndValidateExpectations(req, res) {
-  await student.createNewStudent(req, res);
-  expect(utils.getData).toHaveBeenCalledTimes(1);
-  expect(utils.postData).toHaveBeenCalledTimes(1);
-  expect(req.session.create_new_student_transactionID).toBeFalsy();
-  expect(utils.errorResponse).toHaveBeenCalledTimes(0);
-  expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
-  expect(res.json).toHaveBeenCalledWith({student: {}});
-}
-
-
-
 describe('getStudentTwinsByStudentId', () => {
   let req;
   let res;

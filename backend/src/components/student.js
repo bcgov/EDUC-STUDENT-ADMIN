@@ -4,8 +4,7 @@ const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const log = require('./logger');
 const utils = require('./utils');
-const {putData, postData, getData, deleteData} = require('./utils');
-const {v4: uuidv4} = require('uuid');
+const {putData, deleteData} = require('./utils');
 
 async function updateStudent(req, res) {
   try {
