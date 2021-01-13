@@ -214,7 +214,7 @@
 
             <StudentDetailsTextFieldReadOnly :model="spacePostalCode?spacePostalCode:''" :name="STUDENT_DETAILS_FIELDS.POSTAL_CODE"
                                               colspan="2" label="Postal Code"
-                                              :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.LOCAL_ID)"></StudentDetailsTextFieldReadOnly>
+                                              :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"></StudentDetailsTextFieldReadOnly>
 
             <v-row no-gutters class="py-1">
               <v-col cols="2">
@@ -604,7 +604,7 @@ export default {
         this.studentCopy.genderCode = this.studentCopy.genderCode.toUpperCase();
       }
     },
-    getDateFormatter(pattern = 'uuuu-MM-dd') {
+    getDateFormatter(pattern = 'uuuu/MM/dd') {
       return (new JSJoda.DateTimeFormatterBuilder)
         .appendPattern(pattern)
         .toFormatter(JSJoda.ResolverStyle.STRICT);

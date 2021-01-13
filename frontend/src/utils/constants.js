@@ -152,6 +152,11 @@ export const REQUEST_TYPES = Object.freeze(
       label: 'student detail',
       path: '/student/'
     },
+    mergeStudents: {
+      name: 'mergeStudents',
+      label: 'Merge PENs',
+      path: '/mergeStudents/'
+    },
     penRequestBatch: {
       name: 'penRequestBatch',
       label: 'PEN Request Files',
@@ -241,6 +246,7 @@ export const PAGE_TITLES = Object.freeze(
     UMP_DETAILS: 'UMP Details',
     STUDENT_SEARCH: 'Student Search',
     STUDENT_DETAILS: 'Student Details',
+    MERGE_STUDENTS: 'Merge PENs',
     PEN_REQ_FILES: 'PEN Request Files',
     PEN_MATCH: 'PEN Match',
     PEN_REQ_BATCH_STUDENT_LIST: 'PEN Request List',

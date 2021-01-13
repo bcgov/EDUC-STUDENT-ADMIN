@@ -1,6 +1,6 @@
 <template>
   <v-row no-gutters class="py-1">
-    <v-col cols="2">
+    <v-col :cols="labelSpan">
       <p class="labelField">{{ this.fieldLabel }}</p>
     </v-col>
     <v-col :class="{textFieldColumn: validationRequired?validationRules().length ===0:true}" :cols="colspan">
@@ -45,6 +45,10 @@
 export default {
   name: 'StudentDetailsTextField',
   props: {
+    labelSpan: {
+      type: String,
+      default: '2',
+    },
     colspan: {
       type: String,
       required: true
