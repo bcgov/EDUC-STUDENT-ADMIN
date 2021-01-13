@@ -44,7 +44,10 @@
     </v-simple-table>
     <div v-for="(students, index) in studentRecords" :key="index" class="pb-2">
       <v-row id="studentDemographicsTableTopRow" class="studentDemographicsTable" no-gutters>
-        <span class="px-4">
+        <span class="px-2 flexBox">
+          <v-checkbox dense class="sldCheckbox pa-0 ma-0" color="#606060"
+                      v-model="checkedStudents[index]"
+                      @change.native="validateMerge"></v-checkbox>
           <a @click="updateSldRowDisplay(students.pen, !sldDataTablesToDisplay[students.pen])">
             <v-icon small color="#1A5A96">{{sldDataTablesToDisplay[students.pen]?'fa-angle-down':'fa-angle-up'}}</v-icon>
           </a>
@@ -66,7 +69,7 @@
           Demog Code: {{ students.demogCode }}
         </span>
         <v-spacer></v-spacer>
-        <a class="removePenLink pr-3" @click="removeRecord(students.studentID)">
+        <a class="removePenLink pr-3" @click="removeRecord(students.studentID, index)">
             <v-icon small color="#38598A">mdi-close</v-icon>
             Remove PEN
         </a>
@@ -102,7 +105,7 @@
       <v-divider></v-divider>
       <v-card-actions class="px-0">
         <v-spacer></v-spacer>
-        <slot name="actions" :clearError="clearError"></slot>
+        <slot name="actions" :clearError="clearError" :validateMerge="validateMerge" :merge="merge"></slot>
       </v-card-actions>
     </div>
   </v-card>
@@ -171,7 +174,8 @@ export default {
       alertMessage: 'Error! This student does not exist in the system.',
       sldData: {},
       sldDataTablesToDisplay: {},
-      sldDataTablesNumberOfRows: {}
+      sldDataTablesNumberOfRows: {},
+      checkedStudents: []
     };
   },
   mounted() {
@@ -179,6 +183,7 @@ export default {
     this.studentRecords.forEach(student => {
       this.getSldData(student.pen);
     });
+    this.checkedStudents = [];
   },
   computed: {
     studentRecords: {
@@ -239,8 +244,9 @@ export default {
       const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
       window.open(route.href, '_blank');
     },
-    removeRecord(studentID) {
+    removeRecord(studentID, index) {
       this.studentRecords = this.studentRecords.filter(item => item.studentID !== studentID);
+      this.checkedStudents.splice(index, 1);
     },
     updateSldRowDisplay(id, value) {
       this.$set(this.sldDataTablesToDisplay, id, value);
@@ -252,6 +258,28 @@ export default {
         value = this.sldData[id]?.length;
       }
       this.$set(this.sldDataTablesNumberOfRows, id, value);
+    },
+    getMergedFromPen() {
+      return this.selectedRecords[0];
+    },
+    getMergedToPen() {
+      return this.selectedRecords[1];
+    },
+    validateMerge() {
+      let cnt = 0;
+      this.checkedStudents.forEach(checked => cnt += checked? 1 : 0);
+      return cnt !== 2;
+    },
+    merge() {
+      router.push(
+        {
+          name: 'mergeStudents',
+          params: {
+            mergedToPen: this.getMergedToPen(),
+            mergedFromPen: this.getMergedFromPen()
+          }
+        }
+      );
     }
   }
 };
@@ -361,5 +389,17 @@ export default {
   .sldTable /deep/ tr td:nth-child(7),
   .sldTable /deep/ tr td:nth-child(8) {
     width: 12%;
+  }
+
+  .flexBox {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+
+    /*padding: 8px 12px;*/
+  }
+  .flexBox a {
+    margin-top: 2px;
+    margin-left: 12px;
   }
 </style>
