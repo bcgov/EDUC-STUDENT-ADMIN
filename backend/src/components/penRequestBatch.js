@@ -146,7 +146,7 @@ async function issueNewPen(req, res) {
     const sagaReq = {
       ...stripAuditColumns(studentData),
       mincode: studentData.mincode,
-      twinStudentIDs: req.body.twinStudentIDs
+      matchedStudentIDList: req.body.matchedStudentIDList
     };
 
     const sagaId = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/new-pen`, sagaReq, null, getUser(req).idir_username);
@@ -164,7 +164,7 @@ async function issueNewPen(req, res) {
  * This method will do the following.
  *   <pre>
  *     1. First get the PRB Student and only update required fields
- *     2. call student api to get student twins and only add twins which is not already existing, to avoid creation of duplicate twins.
+ *     2. call pen match api to get student matches and only add matches which are not already existing, to avoid creation of duplicate possible matches.
  *     3. call PRB Saga API to initiate the saga process
  *     4. Add saga record to redis and return success if API call is success, return error otherwise.
  *   </pre>
@@ -178,17 +178,18 @@ async function userMatchSaga(req, res) {
     if (!req.body.matchedPEN || req.body.matchedPEN.length !== 9) {
       return res.status(400).json({'message': 'Matching student PEN is mandatory and should be exactly 9 digits in this flow.'});
     }
-    const studentTwinUrl = `${config.get('server:student:rootURL')}/${req.body.studentID}/twins`;
-    const twins = getData(token, studentTwinUrl);
+    const possibleMatchUrl = `${config.get('server:penMatch:possibleMatch')}/${req.body.studentID}`;
+    const possibleMatches = await getData(token, possibleMatchUrl);
     const studentData = stripAuditColumns(req.body.prbStudent);
     studentData.assignedPEN = req.body.matchedPEN;
     studentData.studentID = req.body.studentID;
-    const studentTwinIds = filterStudentTwinIds(twins, req.body.twinStudentIDs);
-    logDebug('student twin ids after filter ::', studentTwinIds);
+    const possibleMatchIds = filterPossibleMatchIds(possibleMatches, req.body.matchedStudentIDList);
+    logDebug('student twin ids after filter ::', possibleMatchIds);
     const sagaReq = {
       ...studentData,
       mincode: studentData.mincode,
-      twinStudentIDs: studentTwinIds
+      studentID: req.body.studentID,
+      matchedStudentIDList: possibleMatchIds
     };
 
     const sagaId = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/user-match`, sagaReq, null, getUser(req).idir_username);
@@ -206,18 +207,18 @@ async function userMatchSaga(req, res) {
 }
 
 /**
- * This function will remove the duplicates and will return only those student ids which are not already twinned to the student.
- * @param studentTwinResponse the response from student api containing all the twins for the student.
- * @param studentTwinIds the twinIds which needs to be added for the student.
+ * This function will remove the duplicates and will return only those student ids which are not already matched to the student.
+ * @param studentPossibleMatchResponse the response from student api containing all the twins for the student.
+ * @param studentPossibleMatchIds the possible match ids which needs to be added for the student.
  */
-function filterStudentTwinIds(studentTwinResponse, studentTwinIds) {
-  logDebug('studentTwinResponse ::', studentTwinResponse);
-  logDebug('studentTwinIds ::', studentTwinIds);
-  if (studentTwinResponse?.length > 0) {
-    const twinStudentIDsFromStudentAPI = lodash.map(studentTwinResponse, 'twinStudentID');
-    return lodash.pullAll(studentTwinIds, twinStudentIDsFromStudentAPI);
+function filterPossibleMatchIds(studentPossibleMatchResponse, studentPossibleMatchIds) {
+  logDebug('studentPossibleMatchResponse ::', studentPossibleMatchResponse);
+  logDebug('studentPossibleMatchIds ::', studentPossibleMatchIds);
+  if (studentPossibleMatchResponse?.length > 0) {
+    const twinStudentIDsFromStudentAPI = lodash.map(studentPossibleMatchResponse, 'matchedStudentID');
+    return lodash.pullAll(studentPossibleMatchIds, twinStudentIDsFromStudentAPI);
   }
-  return studentTwinIds;
+  return studentPossibleMatchIds;
 }
 
 /**
@@ -235,17 +236,18 @@ function filterStudentTwinIds(studentTwinResponse, studentTwinIds) {
 async function userUnmatchSaga(req, res) {
   const token = getBackendToken(req, res);
   try {
-    const studentTwinUrl = `${config.get('server:student:rootURL')}/${req.body.studentID}/twins`;
+    const possibleMatchUrl = `${config.get('server:penMatch:possibleMatch')}/${req.body.studentID}`;
     const prbStudentUrl = `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${req.params.id}/student/${req.params.studentId}`;
-    const results = await Promise.all([getData(token, studentTwinUrl), getData(token, prbStudentUrl)]);
+    const results = await Promise.all([getData(token, possibleMatchUrl), getData(token, prbStudentUrl)]);
     const studentData = stripAuditColumns(results[1]);
-    const studentTwinIds = lodash.compact(req.body.twinStudentIDs.map(twinStudentID => 
-      lodash.find(results[0], ['twinStudentID', twinStudentID])?.studentTwinID
+    const possibleMatchIds = lodash.compact(req.body.matchedStudentIDList.map(twinStudentID =>
+      lodash.find(results[0], ['matchedStudentID', twinStudentID])?.matchedStudentID
     ));
-    logDebug('student twin ids after filter ::', studentTwinIds);
+    logDebug('possible match ids after filter ::', possibleMatchIds);
     const sagaReq = {
       ...studentData,
-      studentTwinIDs: studentTwinIds
+      studentID: req.body.studentID,
+      matchedStudentIDList: possibleMatchIds
     };
 
     const sagaId = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/user-unmatch`, sagaReq, null, getUser(req).idir_username);

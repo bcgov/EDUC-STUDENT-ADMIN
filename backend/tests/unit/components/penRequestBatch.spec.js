@@ -153,7 +153,7 @@ describe('getPenRequestBatchStudentMatchOutcome', () => {
 describe('issueNewPen', () => {
   let req;
   let res;
-  const twinStudentIDs = ['201', '202'];
+  const matchedStudentIDList = ['201', '202'];
 
   beforeEach(() => {
     utils.getBackendToken.mockReturnValue('token');
@@ -164,7 +164,7 @@ describe('issueNewPen', () => {
       studentId: 'c0a8014d-74e1-1d99-8174-e10db8410001'
     };
     req.body = {
-      twinStudentIDs: twinStudentIDs,
+      matchedStudentIDList,
       prbStudent: prbStudentData
     };
   });
@@ -178,7 +178,7 @@ describe('issueNewPen', () => {
     utils.getData.mockResolvedValue(prbStudentData);
     utils.postData.mockResolvedValue(resp);
     await penRequestBatch.issueNewPen(req, res);
-    expectationsForUserActionsInPRBSaga(twinStudentIDs);
+    expectationsForUserActionsInPRBSaga(matchedStudentIDList);
     expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenCalledWith({
       sagaId: resp,
       penRequestBatchStudentID: req.params.studentId,
@@ -198,9 +198,9 @@ describe('issueNewPen', () => {
 
 });
 
-function expectationsForUserActionsInPRBSaga(twinStudentIDs) {
+function expectationsForUserActionsInPRBSaga(matchedStudentIDList) {
   expect(utils.postData.mock.calls[0][2].mincode).toBe(prbStudentData.mincode);
-  expect(utils.postData.mock.calls[0][2].twinStudentIDs).toEqual(twinStudentIDs);
+  expect(utils.postData.mock.calls[0][2].matchedStudentIDList).toEqual(matchedStudentIDList);
   expect(utils.postData.mock.calls[0][2].createUser).toBeUndefined();
 }
 
@@ -218,8 +218,8 @@ describe('user match saga', () => {
 
   it('should return sagaId if success', async () => {
     const resp = 'c0a8014d-74e1-1d99-8174-e10db8410003';
-    utils.getData.mockImplementation((token, url) => 
-      url.includes('twins') ? [{twinStudentID: '201'}, {twinStudentID: '301'}] : prbStudentData
+    utils.getData.mockImplementation((token, url) =>
+      url.includes('possible-match') ? [{possibleMatchID: '801', matchedStudentID: '201'}, {possibleMatchID: '901', matchedStudentID: '301'}] : prbStudentData
     );
     utils.postData.mockResolvedValue(resp);
     await penRequestBatch.userMatchSaga(req, res);
@@ -311,11 +311,11 @@ describe('user unmatch saga', () => {
     const resp = 'c0a8014d-74e1-1d99-8174-e10db8410004';
     utils.getData.mockResolvedValue(prbStudentData);
     utils.getData.mockImplementation((token, url) => 
-      url.includes('twins') ? [{twinStudentID: '201', studentTwinID: '801'}, {twinStudentID: '301', studentTwinID: '901'}] : prbStudentData
+      url.includes('possible-match') ? [{possibleMatchID: '801', matchedStudentID: '201'}, {possibleMatchID: '901', matchedStudentID: '301'}] : prbStudentData
     );
     utils.postData.mockResolvedValue(resp);
     await penRequestBatch.userUnmatchSaga(req, res);
-    expect(utils.postData.mock.calls[0][2].studentTwinIDs).toEqual(['801']);
+    expect(utils.postData.mock.calls[0][2].matchedStudentIDList).toEqual(['201']);
     expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenCalledWith({
       sagaId: resp,
       penRequestBatchStudentID: req.params.studentId,
@@ -342,7 +342,7 @@ describe('user unmatch saga', () => {
 });
 
 function initializeMatchUnmatchTestData() {
-  const twinStudentIDs = ['201', '202'];
+  const matchedStudentIDList = ['201', '202'];
   utils.getBackendToken.mockReturnValue('token');
   const req = mockRequest();
   const res = mockResponse();
@@ -353,9 +353,9 @@ function initializeMatchUnmatchTestData() {
   req.body = {
     prbStudent: prbStudentData,
     matchedPEN: '123456789',
-    twinStudentIDs
+    matchedStudentIDList
   };
-  return [req, res, twinStudentIDs];
+  return [req, res, matchedStudentIDList];
 }
 
 

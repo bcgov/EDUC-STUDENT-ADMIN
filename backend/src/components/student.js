@@ -34,10 +34,10 @@ async function deleteStudentTwinByStudentTwinId(req, res) {
 
     const endpoint = config.get('server:student:rootURL');
     const url = `${endpoint}/${req.params.studentID}/twins/${req.params.studentTwinID}`;
-    
+
     await deleteData(token, url);
     return res.status(HttpStatus.OK).json();
-  }catch(e){
+  } catch (e) {
     logApiError(e, 'deleteStudentTwinByStudentTwinId', 'Error occurred while attempting to DELETE student twin.');
     return errorResponse(res);
   }
@@ -50,10 +50,28 @@ async function getStudentByStudentId(req, res) {
   return Promise.all([
     utils.getData(token, config.get('server:student:rootURL') + '/' + id),
     utils.getData(token, `${config.get('server:student:rootURL')}/${id}/merges`),
-    utils.getData(token, `${config.get('server:student:rootURL')}/${id}/twins`)
-  ]).then(([studentResponse, mergesResponse, twinsResponse]) => {
+    utils.getData(utils.getBackendToken(req), `${config.get('server:penMatch:possibleMatch')}/${id}`)
+  ]).then(async ([studentResponse, mergesResponse, possibleMatches]) => {
     if (studentResponse) {
-      return res.status(200).json({student: studentResponse, merges: mergesResponse, twins: twinsResponse});
+      // update the response payload with student details for display in UI for possible matches.
+      if (possibleMatches && possibleMatches.length > 0) {
+        const matchedStudentIDs = possibleMatches.map((matchingRecord) => {
+          return matchingRecord.matchedStudentID;
+        }).join();
+        const studentsPage = await utils.getStudentsFromStudentAPIByTheirIds(utils.getBackendToken(req), matchedStudentIDs);
+        const students = studentsPage.content;
+        possibleMatches.forEach((possibleMatch) => {
+          possibleMatch.matchedStudent = students.find((student) => student.studentID === possibleMatch.matchedStudentID);
+        });
+        return res.status(200).json({
+          student: studentResponse,
+          merges: mergesResponse,
+          possibleMatches: possibleMatches
+        });
+      } else {
+        return res.status(200).json({student: studentResponse, merges: mergesResponse, possibleMatches: []});
+      }
+
     } else {
       log.error(`No student was found or error occurred retrieving student, for :: ${id}`);
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -69,9 +87,9 @@ async function getStudentByStudentId(req, res) {
 async function getStudentTwinsByStudentId(req, res) {
   const token = utils.getBackendToken(req);
   const id = req.params.id;
-  try{
+  try {
     return res.status(200).json(await utils.getData(token, `${config.get('server:student:rootURL')}/${id}/twins`));
-  }catch (e) {
+  } catch (e) {
     logApiError(e, 'getStudentTwinsByStudentId', 'Error occurred while attempting to GET student twins.');
     return errorResponse(res);
   }
@@ -109,33 +127,12 @@ async function getStudentByPen(req, res) {
 /**
  * This method first checks if a transaction ID is stored in session for previous attempt to create a new student,
  * if so it reuses the same transaction ID or else generate a new guid. transaction ID must be a GUID.
- * after getting the PEN NUMBER from
+ * after getting the PEN NUMBER from SERVICES API call student api to create student with associations.
  */
 async function createNewStudent(req, res) {
   try {
-    let transactionID;
-    if (req.session.create_new_student_transactionID) {
-      transactionID = req.session.create_new_student_transactionID;
-    } else {
-      transactionID = uuidv4();
-      req.session.create_new_student_transactionID = transactionID; // store it in session so that it can be reused when the api call to create student fails.
-    }
-    const params = {
-      params: {
-        transactionID
-      }
-    };
-    const token = utils.getBackendToken(req);
-    const penNumber = await getData(token, config.get('server:penServices:nextPenURL'), params);
-    const student = req.body.student;
-    student.pen = penNumber;
-    student.historyActivityCode = 'USERNEW';
-    student.statusCode = 'A';
-    student.createDate = null;
-    student.updateDate = null;
-    const result = await postData(token, config.get('server:student:rootURL') + '/', student, null, utils.getUser(req).idir_username);
-    delete req.session.create_new_student_transactionID; // delete it when student is created successfully.
-    return res.status(HttpStatus.OK).json(result);
+    // this functionality is deprecated, will be rewritten in a future date when requirements are clear.
+    return res.status(HttpStatus.GONE).json();
   } catch (e) {
     logApiError(e, 'createNewStudent', 'Error occurred while attempting to create a new student.');
     return errorResponse(res);

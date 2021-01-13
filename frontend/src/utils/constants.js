@@ -9,6 +9,7 @@ const studentRoot = baseRoot + '/students';
 const penServicesRoot = baseRoot + '/pen-services';
 const schoolRequestRoot = baseRoot + '/schools';
 const penTraxRoot = baseRoot + '/penTrax';
+const penMatchRoot = baseRoot + '/penMatches';
 let object = {
   LOGIN: authRoot + '/login',
   LOGOUT: authRoot + '/logout',
@@ -69,7 +70,6 @@ let object = {
     DEMOG_CODE_URL: studentRoot + '/demogCodes',
     STATUS_CODE_URL: studentRoot + '/statusCodes',
     GRADE_CODE_URL: studentRoot + '/gradeCodes',
-    TWIN_REASON_CODE_URL: studentRoot + '/twinReasonCodes',
     HISTORY_ACTIVITY_CODE_URL: studentRoot + '/historyActivityCodes',
     GET_ALL_STUDENTS_BY_IDS: studentRoot + '/allStudents',
   },
@@ -81,6 +81,11 @@ let object = {
   STUDENT_DATA_URL: studentRoot,
   SEARCH_BY_PEN: demographicRoot,
   PEN_TRAX_URL: penTraxRoot,
+  penMatch: {
+    ROOT_ENDPOINT: penMatchRoot,
+    POSSIBLE_MATCHES: penMatchRoot+'/possible-match',
+    POSSIBLE_MATCH_REASON_CODES:penMatchRoot+'/possible-match-reason-codes'
+  }
 };
 
 //endpoints

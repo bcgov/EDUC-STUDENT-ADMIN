@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Routes } from '../utils/constants';
+import { Routes } from '@/utils/constants';
 import AuthService from '@/common/authService';
 
 // Buffer concurrent requests while refresh token is being acquired
@@ -101,7 +101,7 @@ export default {
   getDemogCodes: getCodes(Routes.student.DEMOG_CODE_URL),
   getStatusCodes: getCodes(Routes.student.STATUS_CODE_URL),
   getGradeCodes: getCodes(Routes.student.GRADE_CODE_URL),
-  getTwinReasonCodes: getCodes(Routes.student.TWIN_REASON_CODE_URL),
+  getPossibleMatchReasonCodes: getCodes(Routes.penMatch.POSSIBLE_MATCH_REASON_CODES),
   getHistoryActivityCodes: getCodes(Routes.student.HISTORY_ACTIVITY_CODE_URL),
   getPenRequestBatchStudentStatusCodes: getCodes(Routes.penRequestBatch.STUDENT_STATUS_CODE_URL),
   getPenRequestBatchStudentInfoMacroCodes: getCodes(Routes.penRequestBatch.STUDENT_INFO_MACROS_URL),
