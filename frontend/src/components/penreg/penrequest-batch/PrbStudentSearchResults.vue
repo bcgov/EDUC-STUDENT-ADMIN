@@ -1,7 +1,8 @@
 <template>
   <div id="searchResults" class="px-3" style="width: 100%" :overlay=false>
-    <v-row no-gutters>
+    <v-row no-gutters class="d-flex align-start">
       <h3 id="numberResults" class="px-2 pb-2"><strong>{{ prbStudentSearchResponse.totalElements }} Records</strong> ({{selectedFiles.length}} files selected)</h3>
+      <v-icon class="mt-1" color="#2E8540" v-if="archived">mdi-archive</v-icon>
       <v-spacer/>
       <v-flex class="select mr-1">
         <v-select
@@ -98,6 +99,10 @@ export default {
     loading: {
       type: Boolean,
       required: true
+    },
+    archived: {
+      type: Boolean,
+      default: false
     }
   },
   data () {

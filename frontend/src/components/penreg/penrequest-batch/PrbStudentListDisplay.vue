@@ -230,6 +230,7 @@
             <v-row v-if="prbStudentSearchResponse" id="resultsRow" no-gutters class="py-2" style="background-color:white;">
               <PrbStudentSearchResults
                 :loading="searchLoading"
+                :archived="archived"
               ></PrbStudentSearchResults>
             </v-row>
           </v-card>
@@ -263,6 +264,10 @@ export default {
     statusFilters: {
       type: String,
       default: ''
+    },
+    archived: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -284,7 +289,6 @@ export default {
     ...mapGetters('student', ['gradeCodeObjects']),
     ...mapState('student', ['genders']),
     ...mapState('prbStudentSearch', ['pageNumber', 'selectedRecords', 'prbStudentSearchResponse', 'selectedStudentStatus', 'currentPrbStudentSearchParams', 'prbStudentSearchCriteria']),
-    ...mapState('penRequestBatch', ['selectedFiles']),
     prbStudentSearchParams: {
       get(){
         return this.$store.state['prbStudentSearch'].prbStudentSearchParams;
@@ -311,6 +315,9 @@ export default {
     },
     prbStudentBatchIdSearchCriteria() {
       return ({key: 'penRequestBatchEntity.penRequestBatchID', operation: SEARCH_FILTER_OPERATION.IN, value: this.batchIDs, valueType: SEARCH_VALUE_TYPE.UUID});
+    },
+    penRequestBatchStore() {
+      return this.archived ? 'archivedRequestBatch' : 'penRequestBatch';
     }
   },
   watch: {
@@ -336,7 +343,6 @@ export default {
   },
   methods: {
     ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse', 'clearPrbStudentSearchParams', 'setCurrentPrbStudentSearchParams', 'setPrbStudentSearchCriteria']),
-    ...mapMutations('penRequestBatch', ['setSelectedFiles']),
     uppercasePostal(){
       if(this.prbStudentSearchParams.postalCode){
         this.prbStudentSearchParams.postalCode = this.prbStudentSearchParams.postalCode.toUpperCase();
@@ -420,7 +426,8 @@ export default {
             this.searchLoading = false;
           });
 
-        if(!this.selectedFiles || difference(this.batchIDs.split(','), this.selectedFiles.map(file => file.penRequestBatchID)).length > 0) {
+        const selectedFiles = this.$store.state[this.penRequestBatchStore].selectedFiles;
+        if(!selectedFiles || difference(this.batchIDs.split(','), selectedFiles.map(file => file.penRequestBatchID)).length > 0) {
           this.retrieveSelectedFiles();
         }
       }else{
@@ -526,7 +533,7 @@ export default {
 
       return ApiService.apiAxios.get(Routes['penRequestBatch'].FILES_URL, params)
         .then(response => {
-          response.data && this.setSelectedFiles(response.data.content);
+          response.data && this.$store.commit(`${this.penRequestBatchStore}/setSelectedFiles`, response.data.content);
         });
     },
   }

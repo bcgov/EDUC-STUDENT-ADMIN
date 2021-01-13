@@ -225,6 +225,17 @@ const router = new VueRouter({
       }
     },
     {
+      path: '/archivedPrbStudentList',
+      name: 'archivedPrbStudentList',
+      component: PrbStudentListDisplay,
+      props: (route) => ({ batchIDs: route.query.batchIDs, archived: true}),
+      meta: {
+        pageTitle: PAGE_TITLES.ARCHIVED_REQ_BATCH_STUDENT_LIST,
+        requiresAuth: true,
+        role: 'isValidPenRequestBatchUser'
+      },
+    },
+    {
       path: '/penMatch',
       name: 'penMatch',
       component: PenMatch,
