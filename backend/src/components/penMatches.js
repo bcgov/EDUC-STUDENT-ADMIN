@@ -96,7 +96,7 @@ async function savePossibleMatchesForStudent(req, res) {
 }
 
 /**
- * this function will bulk delete the student and associated students possible matches.
+ * this function will bulk delete the student's associated possible matches.
  * @param req
  * @param res
  * @returns {Promise<void>}
