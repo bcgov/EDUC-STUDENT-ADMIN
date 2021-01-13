@@ -76,10 +76,10 @@
                 <PrimaryButton id="view-action" :disabled="!filesSelected" :on="on" text="View" icon="mdi-chevron-down" largeIcon></PrimaryButton>
               </template>
               <v-list>
-                <v-list-item id="view-list-action" @click.native="clickViewList">
+                <v-list-item id="view-list-action" @click.native="clickViewList" link>
                   <v-list-item-title>View List</v-list-item-title>
                 </v-list-item>
-                <v-list-item id="view-details-action" @click.native="clickViewDetails">
+                <v-list-item id="view-details-action" @click.native="clickViewDetails" link>
                   <v-list-item-title>View Details</v-list-item-title>
                 </v-list-item>
               </v-list>
@@ -171,7 +171,7 @@ export default {
     clickViewList() {
       const batchIDs = this.selectedFileBatchIDs;
       this.clearPrbStudentSearchState();
-      router.push({name: 'prbStudentList', query: { batchIDs, statusFilters: '' }});
+      router.push({name: 'archivedPrbStudentList', query: { batchIDs, statusFilters: '' }});
     },
     clickViewDetails() {
       const countColumn = 'studentCount';

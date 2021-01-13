@@ -114,7 +114,7 @@ export default {
       return [
         { 
           searchCriteriaList: [
-            {key: 'penRequestBatchStatusCode', operation: 'eq', value: 'ACTIVE', valueType: 'STRING'}
+            {key: 'penRequestBatchStatusCode', operation: 'eq', value: 'ARCHIVED', valueType: 'STRING'}
           ]
         },
         { 
@@ -156,7 +156,7 @@ export default {
     },
     handleSubmissionNumberClicked(batchID) {
       const statusFilters = '';
-      const route = router.resolve({name: 'prbStudentList', query: { batchIDs: batchID, statusFilters }});
+      const route = router.resolve({name: 'archivedPrbStudentList', query: { batchIDs: batchID, statusFilters }});
       window.open(route.href, '_blank');
     },
     pagination(isFilterOperation) {
