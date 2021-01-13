@@ -12,6 +12,7 @@
     </v-col>
     <v-col class="textFieldColumn" :cols="colspan">
       <v-text-field
+          v-if="!isTextArea"
           :disabled="!fieldModel || disabled"
           :value="fieldModel"
           :class="['onhoverEdit', 'customNoBorder', 'onhoverPad']"
@@ -19,6 +20,19 @@
           dense
           readonly
       ></v-text-field>
+      <v-textarea
+          v-if="isTextArea"
+          :disabled="!fieldModel || disabled"
+          :value="fieldModel"
+          :id="name"
+          :class="['onhoverEdit', 'customNoBorder', 'onhoverPad']"
+          color="#000000"
+          maxlength="4000"
+          dense
+          readonly
+          rows="3"
+          no-resize
+      ></v-textarea>
     </v-col>
   </v-row>
 </template>
@@ -50,7 +64,11 @@ export default {
     disabled: {
       type: Boolean,
       default: false,
-    }
+    },
+    isTextArea: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -71,9 +89,6 @@ export default {
     checked(newValue) {
       this.checkedFieldModel = newValue;
     },
-    gradeLevel(newValue) {
-      this.gradeLevelCode = newValue;
-    },
   },
   methods: {
     handleOnChange(checked) {
@@ -86,6 +101,7 @@ export default {
 </script>
 
 <style scoped>
+
 .textFieldColumn {
   padding-top: 2px;
 }

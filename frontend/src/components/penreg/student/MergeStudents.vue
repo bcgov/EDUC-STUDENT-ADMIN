@@ -256,11 +256,12 @@
             ></v-textarea>
           </v-col>
           <v-col offset="1" cols="3">
-            <StudentDetailsCheckBoxWithMemo maxlength="4000" :name="STUDENT_DETAILS_FIELDS.MEMO" tab-index="32"
+            <StudentDetailsCheckBoxWithOutputText maxlength="4000" :name="STUDENT_DETAILS_FIELDS.MEMO" tab-index="32"
                                             :model="mergedStudent.memo?mergedStudent.memo:''"
                                             colspan="11" @update="handleCheckBoxChanged"
                                             :disabled="student.memo === mergedStudent.memo"
-            ></StudentDetailsCheckBoxWithMemo>
+                                            :is-text-area="true"
+            ></StudentDetailsCheckBoxWithOutputText>
           </v-col>
         </v-row>
       </v-col>
@@ -284,7 +285,6 @@ import {mapGetters} from 'vuex';
 import {REQUEST_TYPES, STUDENT_DETAILS_FIELDS, STUDENT_CODES} from '@/utils/constants';
 import FormattedTextField from '@/components/util/FormattedTextField';
 import StudentDetailsCheckBoxWithOutputText from '@/components/penreg/student/StudentDetailsCheckBoxWithOutputText';
-import StudentDetailsCheckBoxWithMemo from '@/components/penreg/student/StudentDetailsCheckBoxWithMemo';
 import PrimaryButton from '@/components/util/PrimaryButton';
 import {isValidDob, isValidMincode, isValidPostalCode} from '@/utils/validation';
 import alertMixin from '@/mixins/alertMixin';
@@ -310,7 +310,6 @@ export default {
     PrimaryButton,
     FormattedTextField,
     StudentDetailsCheckBoxWithOutputText,
-    StudentDetailsCheckBoxWithMemo,
     ConfirmationDialog,
   },
   created() {
