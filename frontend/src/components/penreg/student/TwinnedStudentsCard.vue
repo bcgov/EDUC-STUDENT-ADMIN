@@ -172,13 +172,12 @@ export default {
       return reason && reason.label || code;
     },
     deleteTwinStudent() {
-      const payload = [];
-      payload.push(this.selectedTwins.map(element => {
+      const payload = this.selectedTwins.map(element => {
         return {
           studentID: element.studentID,
           matchedStudentID: element.matchedStudentID
         };
-      }));
+      });
       ApiService.apiAxios
           .post(Routes['penMatch'].POSSIBLE_MATCHES + '/bulk-delete', payload)
           .then(() => {
