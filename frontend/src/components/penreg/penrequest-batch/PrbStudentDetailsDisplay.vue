@@ -634,7 +634,7 @@ export default {
         prbStudent: this.prbStudent,
         studentID: student.studentID,
         matchedPEN: student.pen,
-        twinStudentIDs: this.possibleMatches.filter(el => el.studentID !== student.studentID).map(el=>el.studentID)
+        matchedStudentIDList: this.possibleMatches.filter(el => el.studentID !== student.studentID).map(el=>el.studentID)
       };
       ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}/user-${operation}`, payload)
         .then(response => {

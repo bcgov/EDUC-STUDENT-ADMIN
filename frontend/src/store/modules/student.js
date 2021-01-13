@@ -7,7 +7,7 @@ export default {
     demogCodeObjects: null,
     statusCodeObjects: null,
     gradeCodeObjects: null,
-    twinReasons: null,
+    possibleMatchReasons: null,
     historyActivityCodes: null
   },
   getters: {
@@ -16,7 +16,7 @@ export default {
     demogCodeObjects: state => state.demogCodeObjects,
     statusCodeObjects: state => state.statusCodeObjects,
     gradeCodeObjects: state => state.gradeCodeObjects,
-    twinReasons: state => state.twinReasons,
+    possibleMatchReasons: state => state.possibleMatchReasons,
     historyActivityCodes: state => state.historyActivityCodes,
   },
   mutations: {
@@ -32,8 +32,8 @@ export default {
     setGradeCodeObjects: (state, gradeCodeObjects) => {
       state.gradeCodeObjects = gradeCodeObjects;
     },
-    setTwinReasons: (state, twinReasons) => {
-      state.twinReasons = twinReasons;
+    setPossibleMatchReasons: (state, possibleMatchReasons) => {
+      state.possibleMatchReasons = possibleMatchReasons;
     },
     setHistoryActivityCodes: (state, historyActivityCodes) => {
       state.historyActivityCodes = historyActivityCodes;
@@ -54,15 +54,15 @@ export default {
         if (!state.gradeCodeObjects) {
           ApiService.getGradeCodes().then(responseGrade => commit('setGradeCodeObjects', responseGrade.data));
         }
-        if (!state.twinReasons) {
-          dispatch('getTwinReasonCodes');
+        if (!state.possibleMatchReasons) {
+          dispatch('getPossibleMatchReasonCodes');
         }
       }
     },
 
-    async getTwinReasonCodes({commit}) {
+    async getPossibleMatchReasonCodes({commit}) {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        ApiService.getTwinReasonCodes().then(response => commit('setTwinReasons', response.data));
+        ApiService.getPossibleMatchReasonCodes().then(response => commit('setPossibleMatchReasons', response.data));
       }
     },
     async getHistoryActivityCodes({commit}) {

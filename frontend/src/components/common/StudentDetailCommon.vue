@@ -278,7 +278,7 @@
                                               colspan="2" label="Local ID"
                                               :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.LOCAL_ID)"></StudentDetailsTextFieldReadOnly>
 
-            <StudentDetailsTemplateTextField v-if="twins.length > 0" colspan="2" label="Twin(s)?" :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.TWINS)">
+            <StudentDetailsTemplateTextField v-if="possibleMatches.length > 0" colspan="2" label="Twin(s)?" :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.TWINS)">
               <a @click="twinsDialog=true">
                 Yes
               </a>
@@ -415,7 +415,7 @@
       >
         <TwinnedStudentsCard 
           :student="studentCopy"
-          :twins="twins"
+          :possibleMatches="possibleMatches"
           @close="twinsDialog=false"
         ></TwinnedStudentsCard>
       </v-dialog>
@@ -434,7 +434,7 @@ import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsCo
 import StudentDetailsTextFieldSideCardReadOnly
   from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
 import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
-import {formatMincode, formatPen, formatDob} from '../../utils/format';
+import {formatMincode, formatPen, formatDob} from '@/utils/format';
 import {sortBy,isEmpty} from 'lodash';
 import alertMixin from '../../mixins/alertMixin';
 import schoolMixin from '../../mixins/schoolMixin';
@@ -522,7 +522,7 @@ export default {
       STUDENT_DETAILS_FIELDS:STUDENT_DETAILS_FIELDS,
       STUDENT_CODES: STUDENT_CODES,
       merges: [],
-      twins: [],
+      possibleMatches: [],
       twinsDialog: false,
       unsavedChanges: false,
       gradDateAndMincode: [],
@@ -877,11 +877,11 @@ export default {
       }
       return [];
     },
-    handleStudentDetails({student, merges, twins}) {
+    handleStudentDetails({student, merges, possibleMatches}) {
       this.compareStudent[0] = student;
       this.setStudent(student);
       this.merges = merges;
-      this.twins = twins;
+      this.possibleMatches = possibleMatches;
       this.getTraxData(student.pen);
     },
     formatGradDate(date) {

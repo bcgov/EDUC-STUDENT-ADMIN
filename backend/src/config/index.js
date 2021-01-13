@@ -55,6 +55,8 @@ nconf.defaults({
     },
     penMatch: {
       rootURL: process.env.PEN_MATCH_API_URL,
+      matchReasonCodes: process.env.PEN_MATCH_API_URL + '/match-reason-codes',
+      possibleMatch: process.env.PEN_MATCH_API_URL + '/possible-match',
       roleAdmin: process.env.STUDENT_SEARCH_ADMIN
     },
     demographicsURL: process.env.PEN_DEMOGRAPHICS_URL,
