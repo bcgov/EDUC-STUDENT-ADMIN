@@ -184,7 +184,7 @@ async function userMatchSaga(req, res) {
     studentData.assignedPEN = req.body.matchedPEN;
     studentData.studentID = req.body.studentID;
     const possibleMatchIds = filterPossibleMatchIds(possibleMatches, req.body.matchedStudentIDList);
-    logDebug('student twin ids after filter ::', possibleMatchIds);
+    logDebug('possible match ids after filter ::', possibleMatchIds);
     const sagaReq = {
       ...studentData,
       mincode: studentData.mincode,
@@ -208,15 +208,15 @@ async function userMatchSaga(req, res) {
 
 /**
  * This function will remove the duplicates and will return only those student ids which are not already matched to the student.
- * @param studentPossibleMatchResponse the response from student api containing all the twins for the student.
+ * @param studentPossibleMatchResponse the response from match api containing all the matches for the student.
  * @param studentPossibleMatchIds the possible match ids which needs to be added for the student.
  */
 function filterPossibleMatchIds(studentPossibleMatchResponse, studentPossibleMatchIds) {
   logDebug('studentPossibleMatchResponse ::', studentPossibleMatchResponse);
   logDebug('studentPossibleMatchIds ::', studentPossibleMatchIds);
   if (studentPossibleMatchResponse?.length > 0) {
-    const twinStudentIDsFromStudentAPI = lodash.map(studentPossibleMatchResponse, 'matchedStudentID');
-    return lodash.pullAll(studentPossibleMatchIds, twinStudentIDsFromStudentAPI);
+    const possibleMatchIdsFromMatchAPI = lodash.map(studentPossibleMatchResponse, 'matchedStudentID');
+    return lodash.pullAll(studentPossibleMatchIds, possibleMatchIdsFromMatchAPI);
   }
   return studentPossibleMatchIds;
 }
@@ -225,7 +225,7 @@ function filterPossibleMatchIds(studentPossibleMatchResponse, studentPossibleMat
  * This method will do the following.
  *   <pre>
  *     1. First get the PRB Student and only update required fields
- *     2. call student api to get student twins to delete.
+ *     2. call match api to get student possible matches to delete.
  *     3. call PRB Saga API to initiate the saga process
  *     4. Add saga record to redis and return success if API call is success, return error otherwise.
  *   </pre>
@@ -240,8 +240,8 @@ async function userUnmatchSaga(req, res) {
     const prbStudentUrl = `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${req.params.id}/student/${req.params.studentId}`;
     const results = await Promise.all([getData(token, possibleMatchUrl), getData(token, prbStudentUrl)]);
     const studentData = stripAuditColumns(results[1]);
-    const possibleMatchIds = lodash.compact(req.body.matchedStudentIDList.map(twinStudentID =>
-      lodash.find(results[0], ['matchedStudentID', twinStudentID])?.matchedStudentID
+    const possibleMatchIds = lodash.compact(req.body.matchedStudentIDList.map(matchedStudentID =>
+      lodash.find(results[0], ['matchedStudentID', matchedStudentID])?.matchedStudentID
     ));
     logDebug('possible match ids after filter ::', possibleMatchIds);
     const sagaReq = {
