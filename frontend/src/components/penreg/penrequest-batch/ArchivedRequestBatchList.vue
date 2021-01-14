@@ -2,11 +2,9 @@
   <PenRequestBatchDataTable
     :headers="headers"
     :penRequestBatchResponse="penRequestBatchResponse"
-    :selectedFiles="selectedFiles"
     :batchPageNumber.sync="pageNumber"
     :loadingTable="loadingTable || loadingFiles"
-    @selecte-files="selectFiles"
-    @view-file="handleSubmissionNumberClicked"
+    archived
   ></PenRequestBatchDataTable>
 </template>
 
@@ -16,8 +14,7 @@ import PenRequestBatchDataTable from './PenRequestBatchDataTable';
 import ApiService from '../../../common/apiService';
 import {Routes, SEARCH_FILTER_OPERATION, SEARCH_CONDITION, SEARCH_VALUE_TYPE} from '../../../utils/constants';
 import {formatMincode, formatDateTime} from '../../../utils/format';
-import router from '../../../router';
-import {compact} from 'lodash';
+import {compact, partialRight} from 'lodash';
 
 export default {
   name: 'ArchivedRequestBatchList',
@@ -39,7 +36,7 @@ export default {
       itemsPerPage: 15,
       headers: [
         { value: 'rowSelect', type: 'select', sortable: false },
-        { text: 'Mincode', value: 'mincode', sortable: false, align: 'start'},
+        { text: 'Mincode', value: 'mincode', sortable: false, align: 'start', format: formatMincode },
         { text: 'School Name', value: 'schoolName', sortable: false },
         { text: 'TOT', value: 'studentCount', sortable: false, countable: true },
         { text: 'MCH', value: 'matchedCount', sortable: false, countable: true },
@@ -48,7 +45,7 @@ export default {
         { text: 'REP', value: 'repeatCount', sortable: false, countable: true },
         { text: 'FIX', value: 'fixableCount', sortable: false, countable: true },
         { text: 'SRCH', value: 'filteredCount', sortable: false, countable: true },
-        { text: 'Load Date', value: 'extractDate', sortable: false },
+        { text: 'Load Date', value: 'extractDate', sortable: false, format: partialRight(formatDateTime,'uuuu-MM-dd\'T\'HH:mm:ss', 'uuuu/MM/dd') },
         { text: 'SUB #', value: 'submissionNumber', sortable: false },
       ],
       loadingTable: true,
@@ -137,27 +134,15 @@ export default {
       }
       
       files.forEach(file => {
-        file.mincode && (file.mincode = formatMincode(file.mincode));
-        file.extractDate && (file.extractDate = formatDateTime(file.extractDate, 'uuuu-MM-dd\'T\'HH:mm:ss', 'uuuu/MM/dd'));
         file.isSelected = this.isSelected(file);
         this.countableHeaders.forEach(header => file[header.value] = +file[header.value]);
       });
 
-      this.allSelected = !!files && files.length > 0 && files.every(file => file.isSelected);
-      this.partialSelected = files.some(file => file.isSelected) && !this.allSelected;
       return files;
     },
     isSelected(file) {
       const foundItem = this.selectedFiles?.find(item => item?.penRequestBatchID === file.penRequestBatchID);
       return !!foundItem;
-    },
-    selectFiles(files) {
-      this.setSelectedFiles(files);
-    },
-    handleSubmissionNumberClicked(batchID) {
-      const statusFilters = '';
-      const route = router.resolve({name: 'archivedPrbStudentList', query: { batchIDs: batchID, statusFilters }});
-      window.open(route.href, '_blank');
     },
     pagination(isFilterOperation) {
       this.loadingTable = true;

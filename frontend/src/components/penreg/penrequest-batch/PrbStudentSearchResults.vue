@@ -126,7 +126,7 @@ export default {
   },
   computed: {
     ...mapState('prbStudentSearch', ['prbStudentSearchResponse', 'prbStudentSearchCriteria', 'currentPrbStudentSearchParams']),
-    ...mapState('penRequestBatch', ['selectedFiles', 'prbStudentStatuses']),
+    ...mapState('penRequestBatch', ['prbStudentStatuses']),
     pageNumber: {
       get(){
         return this.$store.state['prbStudentSearch'].pageNumber;
@@ -169,7 +169,10 @@ export default {
     viewEnabled() {
       return this.prbStudentSearchResponse.totalElements > 0 && !this.loading;
     },
-
+    selectedFiles() {
+      const store = this.archived ? 'archivedRequestBatch' : 'penRequestBatch';
+      return this.$store.state[store].selectedFiles;
+    }
   },
   methods: {
     ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse']),
