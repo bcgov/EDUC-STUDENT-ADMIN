@@ -149,8 +149,8 @@ import {
   constructPenMatchObjectFromStudent,
   deepCloneObject,
   getDemogValidationResults,
-  getPossibleMatches,
   getMatchedRecordsByStudent,
+  getPossibleMatches,
   updatePossibleMatchResultsBasedOnCurrentStatus
 } from '@/utils/common';
 import {formatPen} from '@/utils/format';
@@ -575,7 +575,7 @@ export default {
     async confirmToProceed() {
       let result = true;
       if(this.demogValidationResult.length > 0) {
-        result = await this.$refs.confirmationDialog.open('Are you sure you want to proceed?', null, 
+        result = await this.$refs.confirmationDialog.open('Are you sure you want to proceed?', null,
           { width: '680px', messagePadding: 'px-4 pt-1', color: '', dark: false, titleBold: true, closeIcon: true, divider: true, resolveText: 'Confirm' });
       }
       return result;
@@ -615,7 +615,7 @@ export default {
      */
     async matchUnmatchStudentToPRBStudent(student, buttonText){
       let operation;
-      
+
       if('Match' ===  buttonText){
         const result = await this.confirmToProceed();
         if(!result) {
@@ -655,6 +655,11 @@ export default {
       this.possibleMatches = updatePossibleMatchResultsBasedOnCurrentStatus(this.prbStudent, this.possibleMatchesPlaceHolder, this.matchedStudentRecords);
 
     },
+    /**
+     * this function returns stored possible matches from DB for a particular student, backed by PEN_MATCH_API,
+     * and not from fresh run of  pen match algorithm.
+     * @returns {Promise<void>}
+     */
     async getMatchedRecordsForStudent(){
       this.matchedStudentRecords = await getMatchedRecordsByStudent(this.prbStudent?.studentID);
     },
