@@ -22,7 +22,7 @@
           :indeterminate="partialSelected" 
           @change="selectAllFiles"
         ></v-checkbox>
-        <span  :key="h.id" :class="{'file-column' : !header.countable}">
+        <span v-else :key="h.id" :class="{'file-column' : !header.countable}">
           {{ header.text }}
         </span>
         <template v-if="hasFilterHeader">
@@ -45,7 +45,7 @@
             <div v-else :class="{'countable-column-div': header.countable}">
               <span v-if="header.countable" class="countable-column-data">{{ props.item[header.value] || '' }}</span>
               <span v-else-if="header.value==='submissionNumber'"><a class="submission" @click.stop="handleSubmissionNumberClicked(props.item[header.value])">{{props.item[header.value] }}</a></span>
-              <span v-else>{{props.item[header.value]}}</span>
+              <span v-else>{{formatTableColumn(header.format, props.item[header.value]) }}</span>
               <v-tooltip v-if="header.value==='mincode' && isUnarchived(props.item)" right>
                 <template v-slot:activator="{ on }">
                   <v-icon small color="#2E8540" v-on="on">
@@ -80,6 +80,7 @@
 
 <script>
 import {uniqBy} from 'lodash';
+import router from '../../../router';
 
 export default {
   name: 'PenRequestBatchDataTable',
@@ -92,10 +93,6 @@ export default {
       type: Object,
       required: true
     },
-    selectedFiles: {
-      type: Array,
-      required: true
-    },
     batchPageNumber: {
       type: Number,
       required: true
@@ -104,6 +101,10 @@ export default {
       type: Boolean,
       required: true
     },
+    archived: {
+      type: Boolean,
+      default: false
+    },
     pageCommands: {
       type: Boolean,
       default: false
@@ -111,10 +112,20 @@ export default {
   },
   data () {
     return {
-      itemsPerPage: 15,
       allSelected: false,
       partialSelected: false,
     };
+  },
+  watch: {
+    loadingTable: {
+      handler(v) {
+        if(!v) {
+          const files = this.penRequestBatchResponse.content;
+          this.allSelected = files?.length > 0 && files?.every(file => file.isSelected);
+          this.partialSelected = files?.some(file => file.isSelected) && !this.allSelected;
+        }
+      }
+    }
   },
   computed: {
     pageNumber: {
@@ -134,8 +145,17 @@ export default {
     showingEndNumber() {
       return ((this.pageNumber-1) * this.penRequestBatchResponse.pageable.pageSize + this.penRequestBatchResponse.numberOfElements);
     },
+    penRequestBatchStore() {
+      return this.archived ? 'archivedRequestBatch' : 'penRequestBatch';
+    }, 
+    selectedFiles() {
+      return this.$store.state[this.penRequestBatchStore].selectedFiles;
+    }
   },
   methods: {
+    formatTableColumn(format, column) {
+      return (format && column) ? format(column) : (column || ' ');
+    },
     tableRowClass(item) {
       let rowClass = [item.firstActiveFile ? 'first-active-file' : 'batch-file'];
       item.isSelected && rowClass.push('selected-file');
@@ -162,7 +182,7 @@ export default {
       } else {
         newSelectedFiles = this.selectedFiles.filter(file => file.submissionNumber !== item.submissionNumber);
       }
-      this.$emit('selecte-files', newSelectedFiles);
+      this.$store.commit(`${this.penRequestBatchStore}/setSelectedFiles`, newSelectedFiles);
     },
     selectItem(item) {
       item.isSelected = !item.isSelected;
@@ -183,14 +203,16 @@ export default {
           newSelectedFiles = newSelectedFiles.filter(item => item.submissionNumber !== file.submissionNumber);
         });
       }
-      this.$emit('selecte-files', newSelectedFiles);
+      this.$store.commit(`${this.penRequestBatchStore}/setSelectedFiles`, newSelectedFiles);
     },
     selectFilter(header) {
       this.$emit('select-filter', header);
     },
     handleSubmissionNumberClicked(submissionNumber) {
       const batchID = this.penRequestBatchResponse.content.find(file => file.submissionNumber === submissionNumber)?.penRequestBatchID;
-      this.$emit('view-file', batchID);
+      const name = this.archived ? 'archivedPrbStudentList' : 'prbStudentList';
+      const route = router.resolve({name, query: { batchIDs: batchID, statusFilters: '' }});
+      window.open(route.href, '_blank');
     },
   }
 };
