@@ -6,6 +6,7 @@ import {filter, sortBy} from 'lodash';
 import ApiService from '../common/apiService';
 
 const clone = require('rfdc')();
+
 export function constructPenMatchObjectFromStudent(student) {
   return {
     surname: student.legalLastName,
@@ -75,10 +76,20 @@ export function getDemogValidationResults(student) {
   });
 }
 
-export function getStudentTwinsByStudentID(studentID) {
-  if(studentID){
+/**
+ * this function will only return the below structure
+ String possibleMatchID;
+ String studentID;
+ String matchedStudentID;
+ String matchReasonCode;
+ <b>if student demographics information is needed, caller need to make separate api call.</b>
+ * @param studentID
+ * @returns {Promise<*[]>|Promise<unknown>}
+ */
+export function getMatchedRecordsByStudent(studentID) {
+  if (studentID) {
     return new Promise((resolve, reject) => {
-      ApiService.apiAxios.get(`${Routes.student.ROOT_ENDPOINT}/${studentID}/twins`)
+      ApiService.apiAxios.get(`${Routes.penMatch.POSSIBLE_MATCHES}/${studentID}`)
         .then(response => {
           resolve(response.data);
         })
@@ -86,12 +97,12 @@ export function getStudentTwinsByStudentID(studentID) {
           reject(error);
         });
     });
-  }else {
+  } else {
     return Promise.resolve([]); // resolve blank array if student id is not present.
   }
 }
 
-export function updatePossibleMatchResultsBasedOnCurrentStatus(prbStudent, possibleMatches, matchedStudentTwinRecords) {
+export function updatePossibleMatchResultsBasedOnCurrentStatus(prbStudent, possibleMatches, studentPossibleMatches) {
   if ((prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR
     || prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS
     || prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS
@@ -102,15 +113,15 @@ export function updatePossibleMatchResultsBasedOnCurrentStatus(prbStudent, possi
     possibleMatches.forEach((item, index) => {
       if (item.studentID === prbStudent?.studentID) {
         item.matchedToStudent = true;
-        item.iconValue='mdi-file-check';
+        item.iconValue = 'mdi-file-check';
         item.recordNum = 1; // it is expected to be executed only once
-      } else if (matchedStudentTwinRecords && filter(matchedStudentTwinRecords, ['twinStudentID', item.studentID]).length > 0) {
+      } else if (studentPossibleMatches && filter(studentPossibleMatches, ['matchedStudentID', item.studentID]).length > 0) {
         item.twinRecordToMatchedStudent = true;
         twinRecordNumber += .1;
-        item.iconValue='mdi-account-multiple';
+        item.iconValue = 'mdi-account-multiple';
         item.recordNum = twinRecordNumber;
       } else {
-        item.iconValue='mdi-account-plus';
+        item.iconValue = 'mdi-account-plus';
         newPossibleRecordNumber += .01;
         item.recordNum = newPossibleRecordNumber;
         item.newPossibleMatch = true;

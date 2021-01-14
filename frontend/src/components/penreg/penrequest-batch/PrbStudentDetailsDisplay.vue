@@ -150,7 +150,7 @@ import {
   deepCloneObject,
   getDemogValidationResults,
   getPossibleMatches,
-  getStudentTwinsByStudentID,
+  getMatchedRecordsByStudent,
   updatePossibleMatchResultsBasedOnCurrentStatus
 } from '@/utils/common';
 import {formatPen} from '@/utils/format';
@@ -213,7 +213,7 @@ export default {
       prbStudentCopy:{},
       isIssuingNewPen: false,
       prbStudentNavInfo: [],
-      matchedStudentTwinRecords:[],
+      matchedStudentRecords:[],
       prbSagaNames: Object.values(PRB_SAGA_NAMES),
       isMatchingToStudentRecord: false,
       hasValidationIssues: false,
@@ -352,7 +352,7 @@ export default {
         if (!hasValidationFailure) {
           if (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR === this.prbStudent?.penRequestBatchStudentStatusCode
               || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR === this.prbStudent?.penRequestBatchStudentStatusCode) {
-            await Promise.all([this.getStudentTwinsForMatchedStudent(), this.runPenMatch()]);
+            await Promise.all([this.getMatchedRecordsForStudent(), this.runPenMatch()]);
           } else {
             await this.runPenMatch();
           }
@@ -652,11 +652,11 @@ export default {
         });
     },
     updatePossibleMatchResultsBasedOnCurrentStatus() {
-      this.possibleMatches = updatePossibleMatchResultsBasedOnCurrentStatus(this.prbStudent, this.possibleMatchesPlaceHolder, this.matchedStudentTwinRecords);
+      this.possibleMatches = updatePossibleMatchResultsBasedOnCurrentStatus(this.prbStudent, this.possibleMatchesPlaceHolder, this.matchedStudentRecords);
 
     },
-    async getStudentTwinsForMatchedStudent(){
-      this.matchedStudentTwinRecords = await getStudentTwinsByStudentID(this.prbStudent?.studentID);
+    async getMatchedRecordsForStudent(){
+      this.matchedStudentRecords = await getMatchedRecordsByStudent(this.prbStudent?.studentID);
     },
     async refreshMatchResults(){
       await this.runPenMatch();
