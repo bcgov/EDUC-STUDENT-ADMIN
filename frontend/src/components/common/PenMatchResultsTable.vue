@@ -40,7 +40,7 @@
                     hoveredOveredRowStudentID === props.item.studentID?'hovered-record-match-unmatch':'' ,
                     props.isSelected?'selected-record':'',
                     isMatchedToStudent(props.item)?'matchedStudentRow':'',
-                    (student.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR && student.assignedPEN != formatPen(props.item.pen)) || !!props.item.twinRecordToMatchedStudent ? 'grayout':'']">
+                    (student.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR && student.assignedPEN != formatPen(props.item.pen)) || !!props.item.possibleMatchedToStudent ? 'grayout':'']">
                 <td v-for="header in props.headers" :key="header.id" :class="header.id">
                   <div :class="[props.item[header.doubleValue] ? 'value-half-width':'','tableCell']">
                     <span v-if="header.type">
