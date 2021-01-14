@@ -170,9 +170,6 @@ export default {
     handleFileCheckBoxClicked(item) {
       this.selectFile(item);
     },
-    isSelected(file) {
-      return this.selectedFiles?.some(item => item?.penRequestBatchID === file.penRequestBatchID);
-    },
     selectFile(item) {
       this.allSelected = this.penRequestBatchResponse.content.every(file => file.isSelected);
       this.partialSelected = (item.selected || this.penRequestBatchResponse.content.some(file => file.isSelected)) && !this.allSelected;
