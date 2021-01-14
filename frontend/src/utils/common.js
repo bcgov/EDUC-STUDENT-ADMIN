@@ -102,24 +102,24 @@ export function getMatchedRecordsByStudent(studentID) {
   }
 }
 
-export function updatePossibleMatchResultsBasedOnCurrentStatus(prbStudent, possibleMatches, studentPossibleMatches) {
+export function updatePossibleMatchResultsBasedOnCurrentStatus(prbStudent, possibleMatches, matchedStudentRecords) {
   if ((prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR
     || prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS
     || prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS
     || prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR)
     && possibleMatches && possibleMatches.length > 0) {
-    let twinRecordNumber = 3.0;
+    let matchedRecordNumber = 3.0;
     let newPossibleRecordNumber = 2.0;
     possibleMatches.forEach((item, index) => {
       if (item.studentID === prbStudent?.studentID) {
         item.matchedToStudent = true;
         item.iconValue = 'mdi-file-check';
         item.recordNum = 1; // it is expected to be executed only once
-      } else if (studentPossibleMatches && filter(studentPossibleMatches, ['matchedStudentID', item.studentID]).length > 0) {
-        item.twinRecordToMatchedStudent = true;
-        twinRecordNumber += .1;
+      } else if (matchedStudentRecords && filter(matchedStudentRecords, ['matchedStudentID', item.studentID]).length > 0) {
+        item.possibleMatchedToStudent = true;
+        matchedRecordNumber += .1;
         item.iconValue = 'mdi-account-multiple';
-        item.recordNum = twinRecordNumber;
+        item.recordNum = matchedRecordNumber;
       } else {
         item.iconValue = 'mdi-account-plus';
         newPossibleRecordNumber += .01;
