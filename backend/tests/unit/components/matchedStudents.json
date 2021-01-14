@@ -21,6 +21,7 @@
       "gradeYear":"0",
       "demogCode":"F",
       "statusCode":"A",
+      "trueStudentID":null,
       "memo":null
     },
     {
@@ -45,6 +46,7 @@
       "gradeYear":"0",
       "demogCode":"F",
       "statusCode":"A",
+      "trueStudentID":null,
       "memo":null
     },
     {
@@ -69,6 +71,7 @@
       "gradeYear":"0",
       "demogCode":"A",
       "statusCode":"A",
+      "trueStudentID":null,
       "memo":null
     },
     {
@@ -93,6 +96,7 @@
       "gradeYear":"0",
       "demogCode":"F",
       "statusCode":"A",
+      "trueStudentID":null,
       "memo":null
     }
   ]
