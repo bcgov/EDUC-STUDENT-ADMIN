@@ -24,7 +24,7 @@ describe('getStudentByStudentId', () => {
     await student.getStudentByStudentId(req, res);
     expect(utils.getData).toHaveBeenCalledTimes(3);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
-    expect(res.json).toHaveBeenCalledWith({student: {}, merges: {}, possibleMatches: []});
+    expect(res.json).toHaveBeenCalledWith({student: {}, merges: [], possibleMatches: []});
   });
   it('should return 500 if getData fails', async () => {
     utils.getData.mockRejectedValue(new ApiError());
