@@ -57,6 +57,9 @@ then
 elif [ "$envValue" = "dev" ]
 then
   SERVER_FRONTEND="student-admin-$PEN_NAMESPACE-test.apps.silver.devops.gov.bc.ca"
+elif [ "$envValue" = "test" ]
+then
+  SERVER_FRONTEND="student-admin-$PEN_NAMESPACE-uat.apps.silver.devops.gov.bc.ca"
 fi
 
 echo Creating student-admin-soam Keycloak client
@@ -117,6 +120,9 @@ then
 elif [ "$envValue" = "dev" ]
 then
   BACKEND_ROOT=$APP_NAME-$PEN_NAMESPACE-test.apps.silver.devops.gov.bc.ca
+elif [ "$envValue" = "test" ]
+then
+  BACKEND_ROOT=$APP_NAME-$PEN_NAMESPACE-uat.apps.silver.devops.gov.bc.ca
 else
   BACKEND_ROOT=$APP_NAME-$PEN_NAMESPACE-$envValue.apps.silver.devops.gov.bc.ca
 fi
