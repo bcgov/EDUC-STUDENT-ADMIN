@@ -4,7 +4,7 @@ const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const log = require('./logger');
 const utils = require('./utils');
-const {putData, deleteData} = require('./utils');
+const {putData} = require('./utils');
 
 async function updateStudent(req, res) {
   try {
@@ -27,20 +27,6 @@ async function updateStudent(req, res) {
 }
 
 
-async function deleteStudentTwinByStudentTwinId(req, res) {
-  try {
-    const token = utils.getBackendToken(req);
-
-    const endpoint = config.get('server:student:rootURL');
-    const url = `${endpoint}/${req.params.studentID}/twins/${req.params.studentTwinID}`;
-
-    await deleteData(token, url);
-    return res.status(HttpStatus.OK).json();
-  } catch (e) {
-    logApiError(e, 'deleteStudentTwinByStudentTwinId', 'Error occurred while attempting to DELETE student twin.');
-    return errorResponse(res);
-  }
-}
 
 async function getStudentByStudentId(req, res) {
   const token = utils.getBackendToken(req);
@@ -48,10 +34,15 @@ async function getStudentByStudentId(req, res) {
 
   return Promise.all([
     utils.getData(token, config.get('server:student:rootURL') + '/' + id),
-    utils.getData(token, `${config.get('server:student:rootURL')}/${id}/merges`),
+    utils.getData(token, `${config.get('server:penServices:rootURL')}/${id}/merges`),
     utils.getData(utils.getBackendToken(req), `${config.get('server:penMatch:possibleMatch')}/${id}`)
   ]).then(async ([studentResponse, mergesResponse, possibleMatches]) => {
     if (studentResponse) {
+      const response ={
+        student: studentResponse,
+        merges:[],
+        possibleMatches:[]
+      };
       // update the response payload with student details for display in UI for possible matches.
       if (possibleMatches && possibleMatches.length > 0) {
         const matchedStudentIDs = possibleMatches.map((matchingRecord) => {
@@ -62,15 +53,12 @@ async function getStudentByStudentId(req, res) {
         possibleMatches.forEach((possibleMatch) => {
           possibleMatch.matchedStudent = students.find((student) => student.studentID === possibleMatch.matchedStudentID);
         });
-        return res.status(200).json({
-          student: studentResponse,
-          merges: mergesResponse,
-          possibleMatches: possibleMatches
-        });
-      } else {
-        return res.status(200).json({student: studentResponse, merges: mergesResponse, possibleMatches: []});
+        response.possibleMatches = possibleMatches;
       }
-
+      if (mergesResponse && mergesResponse.length > 0) {
+        response.merges = mergesResponse;
+      }
+      return res.status(200).json(response);
     } else {
       log.error(`No student was found or error occurred retrieving student, for :: ${id}`);
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -81,17 +69,6 @@ async function getStudentByStudentId(req, res) {
     logApiError(e, 'getStudentByStudentId', 'Error occurred while attempting to GET student.');
     return errorResponse(res);
   });
-}
-
-async function getStudentTwinsByStudentId(req, res) {
-  const token = utils.getBackendToken(req);
-  const id = req.params.id;
-  try {
-    return res.status(200).json(await utils.getData(token, `${config.get('server:student:rootURL')}/${id}/twins`));
-  } catch (e) {
-    logApiError(e, 'getStudentTwinsByStudentId', 'Error occurred while attempting to GET student twins.');
-    return errorResponse(res);
-  }
 }
 
 async function getAllStudentByStudentIds(req, res) {
@@ -144,6 +121,4 @@ module.exports = {
   getStudentByPen,
   createNewStudent,
   getAllStudentByStudentIds,
-  deleteStudentTwinByStudentTwinId,
-  getStudentTwinsByStudentId
 };
