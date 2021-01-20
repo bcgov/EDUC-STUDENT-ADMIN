@@ -11,9 +11,9 @@
     >
       {{ searchErrorMessage }}
     </v-alert>
-    <v-row>
-      <v-col cols="8">
-        <DashboardTable v-if="isValidPenRequestBatchUser && !isLoadingBatch" requestType="School" colour="#CED6E2" :tableData="penRequestData"></DashboardTable>
+    <v-row class="pb-6">
+      <v-col cols="8" v-if="isValidPenRequestBatchUser">
+        <DashboardTable v-if="!isLoadingBatch" requestType="School" colour="#CED6E2" :tableData="penRequestData"></DashboardTable>
          <v-container fluid class="full-height" v-else-if="isLoadingBatch">
            <article id="pen-display-container" class="top-banner full-height">
              <v-row align="center" justify="center">
@@ -27,8 +27,8 @@
            </article>
          </v-container>
       </v-col>
-      <v-col cols="4">
-        <v-card v-if="isValidStudentSearchUser" flat color="#F2F2F2" class="mt-2" height="100%">
+      <v-col cols="4" v-if="isValidStudentSearchUser">
+        <v-card flat color="#F2F2F2" class="mt-2" height="100%">
           <v-row class="pt-4 px-8">
             <v-card-title class="pa-0"><h3>Archived Requests Search</h3></v-card-title>
           </v-row>
@@ -98,10 +98,8 @@
           </v-row>
         </v-card>
       </v-col>
-    </v-row>
-    <v-row class="pb-6">
-      <v-col cols="8">
-        <DashboardTable v-if="(isValidGMPUser || isValidUMPUser) && !isLoadingGmpUmp" requestType="Student" colour="#F2F2F2" :tableData="studentData"></DashboardTable>
+      <v-col cols="8" v-if="(isValidGMPUser || isValidUMPUser)">
+        <DashboardTable v-if="!isLoadingGmpUmp" requestType="Student" colour="#F2F2F2" :tableData="studentData"></DashboardTable>
         <v-container fluid class="full-height" v-else-if="isLoadingGmpUmp">
           <article id="pen-display-container" class="top-banner full-height">
             <v-row align="center" justify="center">
