@@ -117,15 +117,10 @@ export default {
         authorized: this.isValidPenRequestBatchUser
       },
       {
-        title: 'Search Archived PEN Requests',
-        link: 'todo',
-        authorized: true //TODO fix when ready
-      },
-      {
         title: 'Compare PENs',
         link: 'compare',
         authorized: this.isValidStudentSearchUser
-      },
+      },/* Leaving these here commented out, so that we have a working example for when the time comes to put nested menu items back
       {
         title: 'Infrequent Processes',
         active: false,
@@ -133,11 +128,6 @@ export default {
           {
             title: 'Nominal Role',
             link: 'todo',
-            authorized: true //TODO fix when ready
-          },
-          {
-            title: 'Create New PEN',
-            link: 'createNewPEN', // create new PEN is actually creating a new student record.
             authorized: true //TODO fix when ready
           }
         ],
@@ -152,7 +142,7 @@ export default {
             authorized: true //TODO fix when ready
           },
         ],
-      },
+      },*/
     ];
   },
   computed: {
