@@ -280,9 +280,10 @@
 </template>
 
 <script>
+import ApiService from '../../../common/apiService';
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
 import {mapGetters} from 'vuex';
-import {REQUEST_TYPES, STUDENT_DETAILS_FIELDS, STUDENT_CODES} from '@/utils/constants';
+import {Routes, REQUEST_TYPES, STUDENT_DETAILS_FIELDS, STUDENT_CODES} from '@/utils/constants';
 import FormattedTextField from '@/components/util/FormattedTextField';
 import StudentDetailsCheckBoxWithOutputText from '@/components/penreg/student/StudentDetailsCheckBoxWithOutputText';
 import PrimaryButton from '@/components/util/PrimaryButton';
@@ -321,6 +322,19 @@ export default {
     this.mergedStudent = JSON.parse(JSON.stringify(this.mergedFromPen));
     this.populateDOB(true);
   },
+  watch: {
+    notification(val) {
+      if (val) {
+        const notificationData = JSON.parse(val);
+        if (notificationData && notificationData.studentRequestID && notificationData.studentRequestID === this.requestId && notificationData.sagaStatus === 'COMPLETED') {
+          if (notificationData.sagaName === 'STUDENT_MERGE_COMPLETE_SAGA') {
+            this.setSuccessAlert('Success! Merged has been completed');
+            this.completeSagaInProgress = false;
+          }
+        }
+      }
+    },
+  },
   data() {
     return {
       validForm: false,
@@ -332,10 +346,13 @@ export default {
       STUDENT_DETAILS_FIELDS:STUDENT_DETAILS_FIELDS,
       STUDENT_CODES: STUDENT_CODES,
       genderCodes: [],
+      isProcessing: false,
+      completeSagaInProgress: false,
     };
   },
   computed: {
-    ...mapGetters('student', ['genders', 'demogCodeObjects']),
+    ...mapGetters('student', ['genders']),
+    ...mapGetters('notifications', ['notification']),
   },
   methods: {
     formatPen,
@@ -443,6 +460,30 @@ export default {
         return ['Invalid Postal Code.'];
       }
     },
+    validateStudentStatuses() {
+      if (this.student.status === 'M' || this.mergedStudent.status === 'M') {
+        this.setFailureAlert('Error! PENs cannot be merged, as one of the PENs has a status of merged.');
+        return false;
+      }
+      return true;
+    },
+    validateStudentHasAnyMergedFrom(studentID) {
+      return ApiService.apiAxios
+        .get(Routes['penServices'].ROOT_ENDPOINT + '/' + studentID + '/student-merge', {params: {mergeDirection: 'FROM'}})
+        .then(response => {
+          if (response.data && response.data.length > 0) {
+            this.setFailureAlert('Error! PENs cannot be merged, as the PEN selected to be the \'merged from PEN\' has been involved in a merge. It must first be demerged, before this merge can be executed.');
+            return true;
+          } else {
+            return false;
+          }
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while loading the student merge in validation. Please try again later.');
+          console.log(error);
+          return true;  // set true to make the validation failed
+        });
+    },
     handleCheckBoxChanged({key, value}) {
       if (key) {
         if (key === 'mincode' && this.isValidFormattedMincode(value)) {
@@ -464,8 +505,42 @@ export default {
         return;
       }
 
-      // TODO (jsung) : implement request to student admin api
+      // Status validation
+      if (!this.validateStudentStatuses()) {
+        return;
+      }
 
+      this.isProcessing = true;
+
+      // Merge validation
+      const hasAnyMergedFrom = await this.validateStudentHasAnyMergedFrom(this.mergedStudent.studentID);
+      if (hasAnyMergedFrom) {
+        this.isProcessing = false;
+        return;
+      }
+
+      // Student Merge Complete Request
+      this.alert = false;
+      const mergeRequest = {...this.student,
+        mergeStudentID: this.mergedStudent.id,
+        studentMergeDirectionCode: 'FROM',
+        studentMergeSourceCode: 'MI',
+        requestStudentID: null
+      };
+      ApiService.apiAxios
+        .post(Routes['penServices'].ROOT_ENDPOINT + '/' + mergeRequest.studentID + '/student-merge-complete', mergeRequest)
+        .then(() => {
+          this.setSuccessAlert('Your request to complete is accepted.');
+          this.completeSagaInProgress = true;
+        })
+        .catch(error => {
+          console.log(error);
+          if (error.response.data && error.response.data.code && error.response.data.code === 409) {
+            this.setFailureAlert('Another saga is in progress for this request, please try again later.');
+          } else {
+            this.setFailureAlert('Student Merge Request failed to update. Please navigate to the student search and merge again at compare in the list.');
+          }
+        });
     },
   }
 };
