@@ -44,7 +44,7 @@ export default {
         { text: 'ERR', value: 'errorCount', sortable: false, countable: true },
         { text: 'REP', value: 'repeatCount', sortable: false, countable: true },
         { text: 'FIX', value: 'fixableCount', sortable: false, countable: true },
-        { text: 'SRCH', value: 'filteredCount', sortable: false, countable: true },
+        { text: 'SRCH', value: 'searchedCount', sortable: false, countable: true },
         { text: 'Load Date', value: 'extractDate', sortable: false, format: partialRight(formatDateTime,'uuuu-MM-dd\'T\'HH:mm:ss', 'uuuu/MM/dd') },
         { text: 'SUB #', value: 'submissionNumber', sortable: false },
       ],
@@ -55,6 +55,11 @@ export default {
     pageNumber: {
       handler() {
         this.pagination(false);
+      }
+    },
+    searchParams: {
+      handler() {
+        this.pagination(true);
       }
     },
     loadingFiles: {
@@ -79,34 +84,14 @@ export default {
       return this.headers.filter(header => header.countable);
     },
     searchCriteria() {
-      const searchCriteriaList = compact(Object.entries(this.searchParams).map(([paramName, paramValue]) => {
-        let operation = SEARCH_FILTER_OPERATION.EQUAL;
-        let valueType = SEARCH_VALUE_TYPE.STRING;
-        if (!paramValue) {
-          return null;
-        }
-
-        if (paramName === 'dob') {
-          paramValue = paramValue.replace(/\//g, '');
-        } else if (paramName.includes('Name')) {
-          operation = SEARCH_FILTER_OPERATION.STARTS_WITH_IGNORE_CASE;
-        } else if (paramName === 'postalCode') {
-          paramValue = paramValue.replace(/ +/g, '');
-        } else if (paramName === 'load') {
-          if (!paramValue.startDate) {
-            return null;
-          }
-          let endDate = paramValue.endDate || paramValue.startDate;
-          paramName = 'extractDate';
-          paramValue = `${paramValue.startDate.replace(/\//g, '-')}T00:00:00,${endDate.replace(/\//g, '-')}T23:59:59`;
-          operation = SEARCH_FILTER_OPERATION.BETWEEN;
-          valueType = SEARCH_VALUE_TYPE.DATE_TIME;
-        } else if(paramName === 'mincode') {
-          operation = SEARCH_FILTER_OPERATION.STARTS_WITH;
-        }
-
-        return ({key: paramName, operation, value: paramValue, valueType, condition: SEARCH_CONDITION.AND});
-      }));
+      const searchCriteriaList = compact(Object.entries(this.searchParams.prbStudent).map(([paramName, paramValue]) => 
+        this.getSearchParam(paramName, paramValue, 'penRequestBatchStudentEntities'))
+      );
+      searchCriteriaList.push(...compact(Object.entries(this.searchParams).filter(([paramName]) => 
+        paramName !== 'prbStudent'
+      ).map(([paramName, paramValue]) => 
+        this.getSearchParam(paramName, paramValue))
+      ));
       
       return [
         { 
@@ -172,6 +157,43 @@ export default {
         })
         .finally(() => (this.loadingTable = false));
     },
+    getSearchParam(paramName, paramValue, namePrefix) {
+      let operation = SEARCH_FILTER_OPERATION.EQUAL;
+      let valueType = SEARCH_VALUE_TYPE.STRING;
+      if (!paramValue) {
+        return null;
+      }
+      if (paramName === 'dob') {
+        paramValue = paramValue.replace(/\//g, '');
+      } else if (paramName.includes('Name')) {
+        operation = SEARCH_FILTER_OPERATION.STARTS_WITH_IGNORE_CASE;
+      } else if (paramName === 'postalCode') {
+        paramValue = paramValue.replace(/ +/g, '');
+      } else if (paramName === 'load') {
+        if (!paramValue.startDate && !paramValue.endDate) {
+          return null;
+        }
+
+        paramName = 'extractDate';
+        valueType = SEARCH_VALUE_TYPE.DATE_TIME;
+        const startDate = paramValue.startDate && `${paramValue.startDate.replace(/\//g, '-')}T00:00:00`;
+        const endDate = paramValue.endDate && `${paramValue.endDate.replace(/\//g, '-')}T23:59:59`;
+
+        if(startDate && !endDate) {
+          operation = SEARCH_FILTER_OPERATION.GREATER_THAN_OR_EQUAL_TO;
+          paramValue = startDate;
+        } else if(!startDate && endDate) {
+          operation = SEARCH_FILTER_OPERATION.LESS_THAN_OR_EQUAL_TO;
+          paramValue = endDate;
+        } else {
+          operation = SEARCH_FILTER_OPERATION.BETWEEN;
+          paramValue = `${startDate},${endDate}`;
+        }
+      } else if(paramName === 'mincode') {
+        operation = SEARCH_FILTER_OPERATION.STARTS_WITH;
+      }
+      return ({key: namePrefix ? `${namePrefix}.${paramName}` : paramName, operation, value: paramValue, valueType, condition: SEARCH_CONDITION.AND});
+    }
   }
 };
 </script>

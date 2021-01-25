@@ -4,23 +4,24 @@
         <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
           <v-col cols="9" xl="8" class="pa-0">
             <v-sheet
-              class="mx-0 px-2 py-1 d-flex align-center align-self-start"
+              class="mx-0 px-2 py-1 d-flex align-end align-self-start"
               color="rgba(0, 0, 0, 0.06)"
               outlined
               rounded
             >
+              <v-col class="pa-0">
               <v-row no-gutters class="pa-0">
                 <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
                   <v-text-field
                     id='minCode'
-                    v-model="prbStudentSearchParams.mincode"
+                    v-model="batchFileSearchParams.mincode"
                     tabindex="1"
                     color="#003366"
                     label="Mincode"
                     maxlength="8"
                     @keyup.enter="enterPushed()"
                     v-on:input="searchHasValues"
-                    :rules="validateField(prbStudentSearchParams.minCode, isValidMincode, minCodeHint)"
+                    :rules="validateField(batchFileSearchParams.minCode, isValidMincode, minCodeHint)"
                     dense
                     autofocus
                   ></v-text-field>
@@ -28,46 +29,130 @@
                 <v-col cols="3" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
                   <v-text-field
                     id='schoolName'
-                    v-model="prbStudentSearchParams.schoolName"
+                    v-model="batchFileSearchParams.schoolName"
                     tabindex="2"
                     color="#003366"
                     label="School Name"
                     @keyup.enter="enterPushed()"
                     v-on:input="searchHasValues"
-                    :rules="validateField(prbStudentSearchParams.schoolName)"
                     dense
                   ></v-text-field>
                 </v-col>
                 <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
                   <v-text-field
                     id='loadDateFrom'
-                    v-model="prbStudentSearchParams.load.startDate"
+                    v-model="batchFileSearchParams.load.startDate"
                     tabindex="3"
                     color="#003366"
                     label="Date From"
                     @keyup.enter="enterPushed()"
                     v-on:input="searchHasValues"
-                    :rules="validateField(prbStudentSearchParams.load.startDate, isDateAfter1900, dateHint)"
+                    :rules="validateField(batchFileSearchParams.load.startDate, isDateAfter1900, dateHint)"
                     dense
                   ></v-text-field>
                 </v-col>
                 <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
                   <v-text-field
                     id='loadDateTo'
-                    v-model="prbStudentSearchParams.load.endDate"
+                    v-model="batchFileSearchParams.load.endDate"
                     tabindex="4"
                     color="#003366"
                     label="Date To"
                     @keyup.enter="enterPushed()"
                     v-on:input="searchHasValues"
-                    :rules="validateField(prbStudentSearchParams.load.startDate, isDateAfter1900, dateHint)"
+                    :rules="validateField(batchFileSearchParams.load.endDate, isDateAfter1900, dateHint)"
                     dense
                   ></v-text-field>
                 </v-col>
               </v-row>
+              <v-row no-gutters class="pa-0" v-if="refinedSearch">
+                <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
+                  <v-text-field
+                    id='legalLastName'
+                    v-model="batchFileSearchParams.prbStudent.legalLastName"
+                    tabindex="5"
+                    color="#003366"
+                    label="Legal Surname"
+                    maxlength="255"
+                    @keyup.enter="enterPushed()"
+                    v-on:input="searchHasValues"
+                    dense
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
+                  <v-text-field
+                    id='legalFirstName'
+                    v-model="batchFileSearchParams.prbStudent.legalFirstName"
+                    tabindex="6"
+                    color="#003366"
+                    label="Legal Given"
+                    maxlength="255"
+                    @keyup.enter="enterPushed()"
+                    v-on:input="searchHasValues"
+                    dense
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
+                  <v-text-field
+                    id='legalMiddleNames'
+                    v-model="batchFileSearchParams.prbStudent.legalMiddleNames"
+                    tabindex="7"
+                    color="#003366"
+                    label="Legal Middle"
+                    maxlength="255"
+                    @keyup.enter="enterPushed()"
+                    v-on:input="searchHasValues"
+                    dense
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="1" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
+                  <v-text-field
+                    id='genderCode'
+                    v-model="batchFileSearchParams.prbStudent.genderCode"
+                    tabindex="8"
+                    color="#003366"
+                    label="Gender"
+                    maxlength="1"
+                    @keyup.enter="enterPushed()"
+                    v-on:input="[searchHasValues(), upperCaseInput(batchFileSearchParams.prbStudent, 'genderCode')]"
+                    :rules="validateField(batchFileSearchParams.prbStudent.genderCode, isValidGender, genderHint)"
+                    dense
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
+                  <v-text-field
+                    id='dob'
+                    v-model="batchFileSearchParams.prbStudent.dob"
+                    tabindex="9"
+                    color="#003366"
+                    label="Birth Date"
+                    maxlength="10"
+                    @keyup.enter="enterPushed()"
+                    v-on:input="searchHasValues"
+                    :rules="validateField(batchFileSearchParams.prbStudent.dob, isValidDob, dobHint)"
+                    dense
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
+                  <v-text-field
+                    id='assignedPEN'
+                    v-model="batchFileSearchParams.prbStudent.assignedPEN"
+                    tabindex="10"
+                    color="#003366"
+                    label="PEN"
+                    maxlength="9"
+                    @keyup.enter="enterPushed()"
+                    v-on:input="searchHasValues"
+                    :rules="validateField(batchFileSearchParams.prbStudent.assignedPEN, isValidPEN, penHint)"
+                    dense
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              </v-col>
 
-              <PrimaryButton id="refine-action" class="mr-2" secondary text="Refine"></PrimaryButton>
-              <PrimaryButton id="search-action" class="mr-0" text="Search"></PrimaryButton>
+              <PrimaryButton id="refine-action" class="mr-2 mb-3" secondary text="Clear" v-if="refinedSearch"  @click.native="clearSearchParams"></PrimaryButton>
+              <PrimaryButton id="refine-action" class="mr-2 mb-3" secondary text="Refine" v-else @click.native="refinedSearch=true"></PrimaryButton>
+              <PrimaryButton id="search-action" class="mr-0 mb-3" text="Search" :disabled="!searchEnabled" @click.native="searchBatchFiles"></PrimaryButton>
             </v-sheet>
           </v-col>
           <v-col cols="3" xl="4" class="pa-0 d-flex justify-end align-end">
@@ -89,7 +174,7 @@
         </v-row>
         <v-row no-gutters class="py-2" style="background-color:white;">
           <ArchivedRequestBatchList
-            :searchParams="prbStudentSearchParams"
+            :searchParams="searchParams"
             :loadingFiles="loadingFiles"
             @failure-alert="setFailureAlert"
           ></ArchivedRequestBatchList>
@@ -104,8 +189,9 @@ import ArchivedRequestBatchList from './ArchivedRequestBatchList';
 import PrimaryButton from '../../util/PrimaryButton';
 import router from '../../../router';
 import alertMixin from '../../../mixins/alertMixin';
-import { isValidMincode, isValidAlphanumericValue, isDateAfter1900 } from '../../../utils/validation';
+import { isValidMincode, isValidAlphanumericValue, isDateAfter1900, isValidDob, isValidPEN, isNotEmptyInputParams } from '../../../utils/validation';
 import AlertMessage from '../../util/AlertMessage';
+import { deepCloneObject, setEmptyInputParams } from '../../../utils/common';
 
 export default {
   name: 'ArchivedRequestBatchDisplay',
@@ -126,15 +212,16 @@ export default {
   data() {
     return {
       loadingFiles: false,
-
-      prbStudentSearchParams: {
-        pen: null,
-        legalLastName: null,
-        legalFirstName: null,
-        legalMiddleNames: null,
-        postalCode: null,
-        genderCode: null,
-        dob: null,
+      searchParams: null,
+      batchFileSearchParams: {
+        prbStudent: {
+          assignedPEN: null,
+          legalLastName: null,
+          legalFirstName: null,
+          legalMiddleNames: null,
+          genderCode: null,
+          dob: null,
+        },
         mincode: null,
         schoolName: null,
         load: {
@@ -151,20 +238,27 @@ export default {
       dobHint: 'Invalid Birth Date',
       dateHint: 'Invalid date',
       alphanumericHint: 'Alphanumeric only',
+      refinedSearch: false,
     };
   },
   computed: {
     ...mapState('archivedRequestBatch', ['selectedFiles']),
+    ...mapState('student', ['genders']),
     filesSelected() {
       return this.selectedFiles?.length > 0;
     },
     selectedFileBatchIDs() {
       return this.selectedFiles.map(file => file.penRequestBatchID).join(',');
     },
+    genderCodes() {
+      return this.genders ? this.genders.map(a => a.genderCode):[];
+    },
   },
   created() {
-    this.prbStudentSearchParams.mincode = this.mincode;
-    this.prbStudentSearchParams.load.startDate = this.loadDate;
+    this.$store.dispatch('penRequestBatch/getCodes');
+    this.batchFileSearchParams.mincode = this.mincode;
+    this.batchFileSearchParams.load.startDate = this.loadDate;
+    this.enterPushed();
   },
   methods: {
     ...mapMutations('prbStudentSearch', ['clearPrbStudentSearchState']),
@@ -199,19 +293,31 @@ export default {
       router.push({name: 'prbStudentDetails', query});
     },
     searchHasValues(){
-      this.searchEnabled = Object.values(this.prbStudentSearchParams).some(v => !!v);
+      this.searchEnabled = isNotEmptyInputParams(this.batchFileSearchParams);
       return this.searchEnabled;
     },
     enterPushed() {
       if(this.searchHasValues()){
-        this.searchPenRequests();
+        this.searchBatchFiles();
       }
     },
-    searchPenRequests() {
-
+    searchBatchFiles() {
+      this.searchParams = deepCloneObject(this.batchFileSearchParams);
+    },
+    clearSearchParams() {
+      setEmptyInputParams(this.batchFileSearchParams, 'mincode');
+      this.searchBatchFiles();
+    },
+    upperCaseInput(params, fieldName) {
+      params[fieldName] = params[fieldName] && params[fieldName].toUpperCase();
     },
     isValidMincode,
     isDateAfter1900,
+    isValidDob,
+    isValidPEN,
+    isValidGender(code) {
+      return !!(code && this.genderCodes.includes(code.toUpperCase()));
+    },
     validateField(value, validator=isValidAlphanumericValue, hint=this.alphanumericHint, length=0) {
       if(!value || validator(value)) {
         return [];

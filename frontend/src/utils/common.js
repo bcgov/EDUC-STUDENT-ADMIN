@@ -1,7 +1,7 @@
 'use strict';
 
 import {PEN_REQ_BATCH_STUDENT_REQUEST_CODES, Routes} from '@/utils/constants';
-import {filter, sortBy} from 'lodash';
+import {filter, sortBy, isPlainObject} from 'lodash';
 
 import ApiService from '../common/apiService';
 
@@ -154,4 +154,16 @@ export function getSchoolData(mincode) {
   } else {
     return Promise.resolve(null);
   }
+}
+
+export function setEmptyInputParams(params, ...excludedParams) {
+  Object.keys(params).forEach(key => {
+    if(!excludedParams.includes(key)) {
+      if(isPlainObject(params[key])) {
+        setEmptyInputParams(params[key]);
+      } else {
+        params[key] = null;
+      }
+    }
+  });
 }
