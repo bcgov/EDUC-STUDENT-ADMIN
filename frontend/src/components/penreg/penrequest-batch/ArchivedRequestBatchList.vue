@@ -15,6 +15,7 @@ import ApiService from '../../../common/apiService';
 import {Routes, SEARCH_FILTER_OPERATION, SEARCH_CONDITION, SEARCH_VALUE_TYPE} from '../../../utils/constants';
 import {formatMincode, formatDateTime} from '../../../utils/format';
 import {compact, partialRight} from 'lodash';
+import { deepCloneObject } from '../../../utils/common';
 
 export default {
   name: 'ArchivedRequestBatchList',
@@ -26,9 +27,9 @@ export default {
       type: Object,
       required: true
     },
-    loadingFiles: {
+    searchLoading: {
       type: Boolean,
-      required: true
+      required: false
     }
   },
   data () {
@@ -44,7 +45,7 @@ export default {
         { text: 'ERR', value: 'errorCount', sortable: false, countable: true },
         { text: 'REP', value: 'repeatCount', sortable: false, countable: true },
         { text: 'FIX', value: 'fixableCount', sortable: false, countable: true },
-        { text: 'SRCH', value: 'filteredCount', sortable: false, countable: true },
+        { text: 'SRCH', value: 'searchedCount', sortable: false, countable: true },
         { text: 'Load Date', value: 'extractDate', sortable: false, format: partialRight(formatDateTime,'uuuu-MM-dd\'T\'HH:mm:ss', 'uuuu/MM/dd') },
         { text: 'SUB #', value: 'submissionNumber', sortable: false },
       ],
@@ -57,13 +58,14 @@ export default {
         this.pagination(false);
       }
     },
-    loadingFiles: {
+    searchLoading: {
       handler(v) {
-        if(!v) {
-          this.pagination(false);
+        if(v) {
+          this.setPageNumber(1);
+          this.pagination(true);
         }
       }
-    }
+    },
   },
   computed: {
     ...mapState('archivedRequestBatch', ['selectedFiles', 'penRequestBatchResponse']),
@@ -79,34 +81,14 @@ export default {
       return this.headers.filter(header => header.countable);
     },
     searchCriteria() {
-      const searchCriteriaList = compact(Object.entries(this.searchParams).map(([paramName, paramValue]) => {
-        let operation = SEARCH_FILTER_OPERATION.EQUAL;
-        let valueType = SEARCH_VALUE_TYPE.STRING;
-        if (!paramValue) {
-          return null;
-        }
-
-        if (paramName === 'dob') {
-          paramValue = paramValue.replace(/\//g, '');
-        } else if (paramName.includes('Name')) {
-          operation = SEARCH_FILTER_OPERATION.STARTS_WITH_IGNORE_CASE;
-        } else if (paramName === 'postalCode') {
-          paramValue = paramValue.replace(/ +/g, '');
-        } else if (paramName === 'load') {
-          if (!paramValue.startDate) {
-            return null;
-          }
-          let endDate = paramValue.endDate || paramValue.startDate;
-          paramName = 'extractDate';
-          paramValue = `${paramValue.startDate.replace(/\//g, '-')}T00:00:00,${endDate.replace(/\//g, '-')}T23:59:59`;
-          operation = SEARCH_FILTER_OPERATION.BETWEEN;
-          valueType = SEARCH_VALUE_TYPE.DATE_TIME;
-        } else if(paramName === 'mincode') {
-          operation = SEARCH_FILTER_OPERATION.STARTS_WITH;
-        }
-
-        return ({key: paramName, operation, value: paramValue, valueType, condition: SEARCH_CONDITION.AND});
-      }));
+      const searchCriteriaList = compact(Object.entries(this.searchParams.prbStudent).map(([paramName, paramValue]) => 
+        this.getSearchParam(paramName, paramValue, 'penRequestBatchStudentEntities'))
+      );
+      searchCriteriaList.push(...compact(Object.entries(this.searchParams).filter(([paramName]) => 
+        paramName !== 'prbStudent'
+      ).map(([paramName, paramValue]) => 
+        this.getSearchParam(paramName, paramValue))
+      ));
       
       return [
         { 
@@ -122,15 +104,14 @@ export default {
     },
   },
   created(){
-    this.setSelectedFiles();
     this.pagination(true);
   },
   methods: {
-    ...mapMutations('archivedRequestBatch', ['setSelectedFiles', 'setPenRequestBatchResponse']),
+    ...mapMutations('archivedRequestBatch', ['setSelectedFiles', 'setPenRequestBatchResponse', 'setCurrentBatchFileSearchParams', 'setPageNumber']),
     initializeFiles(files, isFilterOperation) {
       if (isFilterOperation) {
         // reset
-        this.setSelectedFiles([]);
+        this.setSelectedFiles();
       }
       
       files.forEach(file => {
@@ -164,14 +145,55 @@ export default {
           if (response.data && response.data.content) {
             this.initializeFiles(response.data.content, isFilterOperation);
             this.setPenRequestBatchResponse(response.data);
+            this.setCurrentBatchFileSearchParams(deepCloneObject(this.searchParams));
           }
         })
         .catch(error => {
           console.log(error);
           this.$emit('failure-alert', 'An error occurred while loading the file list. Please try again later.');
         })
-        .finally(() => (this.loadingTable = false));
+        .finally(() => {
+          this.loadingTable = false;
+          this.$emit('update:searchLoading', false);
+        });
     },
+    getSearchParam(paramName, paramValue, namePrefix) {
+      let operation = SEARCH_FILTER_OPERATION.EQUAL;
+      let valueType = SEARCH_VALUE_TYPE.STRING;
+      if (!paramValue) {
+        return null;
+      }
+      if (paramName === 'dob') {
+        paramValue = paramValue.replace(/\//g, '');
+      } else if (paramName.includes('Name')) {
+        operation = SEARCH_FILTER_OPERATION.STARTS_WITH_IGNORE_CASE;
+      } else if (paramName === 'postalCode') {
+        paramValue = paramValue.replace(/ +/g, '');
+      } else if (paramName === 'load') {
+        if (!paramValue.startDate && !paramValue.endDate) {
+          return null;
+        }
+
+        paramName = 'extractDate';
+        valueType = SEARCH_VALUE_TYPE.DATE_TIME;
+        const startDate = paramValue.startDate && `${paramValue.startDate.replace(/\//g, '-')}T00:00:00`;
+        const endDate = paramValue.endDate && `${paramValue.endDate.replace(/\//g, '-')}T23:59:59`;
+
+        if(startDate && !endDate) {
+          operation = SEARCH_FILTER_OPERATION.GREATER_THAN_OR_EQUAL_TO;
+          paramValue = startDate;
+        } else if(!startDate && endDate) {
+          operation = SEARCH_FILTER_OPERATION.LESS_THAN_OR_EQUAL_TO;
+          paramValue = endDate;
+        } else {
+          operation = SEARCH_FILTER_OPERATION.BETWEEN;
+          paramValue = `${startDate},${endDate}`;
+        }
+      } else if(paramName === 'mincode') {
+        operation = SEARCH_FILTER_OPERATION.STARTS_WITH;
+      }
+      return ({key: namePrefix ? `${namePrefix}.${paramName}` : paramName, operation, value: paramValue, valueType, condition: SEARCH_CONDITION.AND});
+    }
   }
 };
 </script>
