@@ -271,11 +271,6 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-progress-linear
-        indeterminate
-        color="blue"
-        :active="isProcessing"
-    ></v-progress-linear>
     <v-divider />
     <v-row>
       <v-col cols="12">
@@ -339,7 +334,7 @@ export default {
         if (notificationData && notificationData.studentID && notificationData.studentID === this.student.studentID && notificationData.sagaStatus === 'COMPLETED') {
           if (notificationData.sagaName === 'STUDENT_MERGE_COMPLETE_SAGA') {
             this.setSuccessAlert('Success! Merged has been completed');
-            this.completeSagaInProgress = false;
+            this.isProcessing = false;
           }
         }
       }
@@ -357,7 +352,6 @@ export default {
       STUDENT_CODES: STUDENT_CODES,
       genderCodes: [],
       isProcessing: false,
-      completeSagaInProgress: false,
     };
   },
   computed: {
@@ -543,8 +537,6 @@ export default {
         .post(Routes['penServices'].ROOT_ENDPOINT + '/' + mergeRequest.studentID + '/student-merge-complete', mergeRequest)
         .then(() => {
           this.setSuccessAlert('Your request to complete is accepted.');
-          this.isProcessing = false;
-          this.completeSagaInProgress = true;
         })
         .catch(error => {
           console.log(error);
