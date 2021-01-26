@@ -151,8 +151,8 @@
               </v-col>
 
               <PrimaryButton id="refine-action" class="mr-2 mb-3" secondary text="Clear" v-if="refinedSearch"  @click.native="clearSearchParams"></PrimaryButton>
-              <PrimaryButton id="refine-action" class="mr-2 mb-3" secondary text="Refine" v-else @click.native="refinedSearch=true"></PrimaryButton>
-              <PrimaryButton id="search-action" class="mr-0 mb-3" text="Search" :disabled="!searchEnabled" @click.native="searchBatchFiles"></PrimaryButton>
+              <PrimaryButton id="refine-action" class="mr-2 mb-3" secondary text="Refine" v-else @click.native="setRefinedSearch(true)"></PrimaryButton>
+              <PrimaryButton id="search-action" class="mr-0 mb-3" text="Search" :disabled="!searchEnabled" :loading="searchLoading && searchEnabled" @click.native="searchBatchFiles"></PrimaryButton>
             </v-sheet>
           </v-col>
           <v-col cols="3" xl="4" class="pa-0 d-flex justify-end align-end">
@@ -174,8 +174,8 @@
         </v-row>
         <v-row no-gutters class="py-2" style="background-color:white;">
           <ArchivedRequestBatchList
-            :searchParams="searchParams"
-            :loadingFiles="loadingFiles"
+            :searchParams="batchFileSearchParams"
+            :searchLoading.sync="searchLoading"
             @failure-alert="setFailureAlert"
           ></ArchivedRequestBatchList>
         </v-row>
@@ -211,24 +211,9 @@ export default {
   },
   data() {
     return {
-      loadingFiles: false,
+      searchLoading: false,
       searchParams: null,
-      batchFileSearchParams: {
-        prbStudent: {
-          assignedPEN: null,
-          legalLastName: null,
-          legalFirstName: null,
-          legalMiddleNames: null,
-          genderCode: null,
-          dob: null,
-        },
-        mincode: null,
-        schoolName: null,
-        load: {
-          startDate: null,
-          endDate: null
-        },
-      },
+      batchFileSearchParams: null,
       searchEnabled: false,
       penHint: 'Fails check-digit test',
       postalCodeHint: 'Invalid Postal Code',
@@ -238,11 +223,10 @@ export default {
       dobHint: 'Invalid Birth Date',
       dateHint: 'Invalid date',
       alphanumericHint: 'Alphanumeric only',
-      refinedSearch: false,
     };
   },
   computed: {
-    ...mapState('archivedRequestBatch', ['selectedFiles']),
+    ...mapState('archivedRequestBatch', ['selectedFiles', 'currentBatchFileSearchParams', 'refinedSearch']),
     ...mapState('student', ['genders']),
     filesSelected() {
       return this.selectedFiles?.length > 0;
@@ -256,12 +240,14 @@ export default {
   },
   created() {
     this.$store.dispatch('penRequestBatch/getCodes');
-    this.batchFileSearchParams.mincode = this.mincode;
-    this.batchFileSearchParams.load.startDate = this.loadDate;
+    this.batchFileSearchParams = deepCloneObject(this.currentBatchFileSearchParams);
+    this.batchFileSearchParams.mincode = this.batchFileSearchParams.mincode || this.mincode;
+    this.batchFileSearchParams.load.startDate = this.batchFileSearchParams.load.startDate || this.loadDate;
     this.enterPushed();
   },
   methods: {
     ...mapMutations('prbStudentSearch', ['clearPrbStudentSearchState']),
+    ...mapMutations('archivedRequestBatch', ['setRefinedSearch']),
     clickViewList() {
       const batchIDs = this.selectedFileBatchIDs;
       this.clearPrbStudentSearchState();
@@ -302,7 +288,7 @@ export default {
       }
     },
     searchBatchFiles() {
-      this.searchParams = deepCloneObject(this.batchFileSearchParams);
+      this.searchLoading = true;
     },
     clearSearchParams() {
       setEmptyInputParams(this.batchFileSearchParams, 'mincode');

@@ -15,6 +15,7 @@ import ApiService from '../../../common/apiService';
 import {Routes, SEARCH_FILTER_OPERATION, SEARCH_CONDITION, SEARCH_VALUE_TYPE} from '../../../utils/constants';
 import {formatMincode, formatDateTime} from '../../../utils/format';
 import {compact, partialRight} from 'lodash';
+import { deepCloneObject } from '../../../utils/common';
 
 export default {
   name: 'ArchivedRequestBatchList',
@@ -26,9 +27,9 @@ export default {
       type: Object,
       required: true
     },
-    loadingFiles: {
+    searchLoading: {
       type: Boolean,
-      required: true
+      required: false
     }
   },
   data () {
@@ -57,18 +58,14 @@ export default {
         this.pagination(false);
       }
     },
-    searchParams: {
-      handler() {
-        this.pagination(true);
-      }
-    },
-    loadingFiles: {
+    searchLoading: {
       handler(v) {
-        if(!v) {
-          this.pagination(false);
+        if(v) {
+          this.setPageNumber(1);
+          this.pagination(true);
         }
       }
-    }
+    },
   },
   computed: {
     ...mapState('archivedRequestBatch', ['selectedFiles', 'penRequestBatchResponse']),
@@ -107,15 +104,14 @@ export default {
     },
   },
   created(){
-    this.setSelectedFiles();
     this.pagination(true);
   },
   methods: {
-    ...mapMutations('archivedRequestBatch', ['setSelectedFiles', 'setPenRequestBatchResponse']),
+    ...mapMutations('archivedRequestBatch', ['setSelectedFiles', 'setPenRequestBatchResponse', 'setCurrentBatchFileSearchParams', 'setPageNumber']),
     initializeFiles(files, isFilterOperation) {
       if (isFilterOperation) {
         // reset
-        this.setSelectedFiles([]);
+        this.setSelectedFiles();
       }
       
       files.forEach(file => {
@@ -149,13 +145,17 @@ export default {
           if (response.data && response.data.content) {
             this.initializeFiles(response.data.content, isFilterOperation);
             this.setPenRequestBatchResponse(response.data);
+            this.setCurrentBatchFileSearchParams(deepCloneObject(this.searchParams));
           }
         })
         .catch(error => {
           console.log(error);
           this.$emit('failure-alert', 'An error occurred while loading the file list. Please try again later.');
         })
-        .finally(() => (this.loadingTable = false));
+        .finally(() => {
+          this.loadingTable = false;
+          this.$emit('update:searchLoading', false);
+        });
     },
     getSearchParam(paramName, paramValue, namePrefix) {
       let operation = SEARCH_FILTER_OPERATION.EQUAL;

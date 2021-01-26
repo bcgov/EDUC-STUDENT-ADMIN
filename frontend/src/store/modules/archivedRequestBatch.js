@@ -6,6 +6,23 @@ const getDefaultState = () => {
       content: [],
       pageable: {}
     },
+    refinedSearch: false,
+    currentBatchFileSearchParams: {
+      prbStudent: {
+        assignedPEN: null,
+        legalLastName: null,
+        legalFirstName: null,
+        legalMiddleNames: null,
+        genderCode: null,
+        dob: null,
+      },
+      mincode: null,
+      schoolName: null,
+      load: {
+        startDate: null,
+        endDate: null
+      },
+    },
   };
 };
 
@@ -24,6 +41,12 @@ export default {
     },
     clearPenRequestBatchState: (state) => {
       Object.assign(state, {...getDefaultState()});
+    },
+    setCurrentBatchFileSearchParams: (state, batchFileSearchParams) => {
+      state.currentBatchFileSearchParams = batchFileSearchParams;
+    },
+    setRefinedSearch: (state, refinedSearch) => {
+      state.refinedSearch = refinedSearch;
     },
   },
 };
