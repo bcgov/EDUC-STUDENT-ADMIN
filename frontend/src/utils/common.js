@@ -160,7 +160,7 @@ export function setEmptyInputParams(params, ...excludedParams) {
   Object.keys(params).forEach(key => {
     if(!excludedParams.includes(key)) {
       if(isPlainObject(params[key])) {
-        setEmptyInputParams(params[key]);
+        setEmptyInputParams(params[key], ...excludedParams);
       } else {
         params[key] = null;
       }
