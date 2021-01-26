@@ -32,7 +32,7 @@ async function getMergeByStudentIDAndMergeDirection(req, res) {
     if (result && result.length > 0) {
       return res.status(200).json(result);
     } else {
-      return [];
+      return res.status(200).json([]);
     }
   } catch (e) {
     logApiError(e, 'getMergeByStudentIDAndMergeDirection', 'Error occurred while attempting to GET merge.');

@@ -16,6 +16,11 @@
           </v-col>
         </v-row>
         <v-divider/>
+        <v-progress-linear
+            indeterminate
+            color="blue"
+            :active="isProcessing"
+        ></v-progress-linear>
         <v-row no-gutters class="mt-4 py-1">
           <v-col cols="2">
             <p class="labelField">Legal Surname</p>
@@ -266,11 +271,16 @@
         </v-row>
       </v-col>
     </v-row>
+    <v-progress-linear
+        indeterminate
+        color="blue"
+        :active="isProcessing"
+    ></v-progress-linear>
     <v-divider />
     <v-row>
       <v-col cols="12">
         <v-card-actions style="float: right;">
-          <PrimaryButton :disabled="!hasAnyEdits() || !validForm" @click.native="performMerge()" text="Merge"></PrimaryButton>
+          <PrimaryButton :disabled="!hasAnyEdits() || !validForm || isProcessing" @click.native="performMerge()" text="Merge"></PrimaryButton>
         </v-card-actions>
       </v-col>
     </v-row>
@@ -326,7 +336,7 @@ export default {
     notification(val) {
       if (val) {
         const notificationData = JSON.parse(val);
-        if (notificationData && notificationData.studentRequestID && notificationData.studentRequestID === this.requestId && notificationData.sagaStatus === 'COMPLETED') {
+        if (notificationData && notificationData.studentID && notificationData.studentID === this.student.studentID && notificationData.sagaStatus === 'COMPLETED') {
           if (notificationData.sagaName === 'STUDENT_MERGE_COMPLETE_SAGA') {
             this.setSuccessAlert('Success! Merged has been completed');
             this.completeSagaInProgress = false;
@@ -505,6 +515,8 @@ export default {
         return;
       }
 
+      window.scrollTo(0,0);
+
       // Status validation
       if (!this.validateStudentStatuses()) {
         return;
@@ -531,10 +543,12 @@ export default {
         .post(Routes['penServices'].ROOT_ENDPOINT + '/' + mergeRequest.studentID + '/student-merge-complete', mergeRequest)
         .then(() => {
           this.setSuccessAlert('Your request to complete is accepted.');
+          this.isProcessing = false;
           this.completeSagaInProgress = true;
         })
         .catch(error => {
           console.log(error);
+          this.isProcessing = false;
           if (error.response.data && error.response.data.code && error.response.data.code === 409) {
             this.setFailureAlert('Another saga is in progress for this request, please try again later.');
           } else {
