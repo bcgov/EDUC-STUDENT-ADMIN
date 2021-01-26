@@ -27,75 +27,78 @@
            </article>
          </v-container>
       </v-col>
-      <v-col cols="4" v-if="isValidStudentSearchUser">
+      <v-col cols="4" v-if="isValidStudentSearchUser || isValidPenRequestBatchUser">
         <v-card flat color="#F2F2F2" class="mt-2" height="100%">
-          <v-row class="pt-4 px-8">
-            <v-card-title class="pa-0"><h3>Archived Requests Search</h3></v-card-title>
-          </v-row>
-          <v-row class="pt-4 px-8">
-            <v-col cols="6" class="pa-0">
-              <v-text-field 
-                id="requestsMincodeField" 
-                outlined 
-                dense 
-                background-color="white" 
-                label="Enter district or mincode" 
-                v-model="mincode"
-                maxlength="8" 
-                :rules="mincodeRules"
-                @keyup.enter="enterPushedForRequests()"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="4" class="pa-0 pl-1">
-              <v-text-field 
-                id="requestsDateField" 
-                outlined 
-                dense 
-                background-color="white" 
-                label="Enter date"
-                v-model="loadDate"
-                maxlength="10"
-                :rules="loadDateRules"
-                @keyup.enter="enterPushedForRequests()"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="2" class="py-0 pl-2">
-              <PrimaryButton
-                id="requestsSearchBtn"
-                text="Search"
-                width="100%"
-                :disabled="!isValidRequestsSearchInput"
-                @click.native="searchRequests"
-              ></PrimaryButton>
-            </v-col>
-
-          </v-row>
-          <v-row class="pt-4 px-8">
-            <v-card-title class="pa-0"><h3>Student Quick Search</h3></v-card-title>
-          </v-row>
-          <v-row class="pt-4 px-8">
-            <v-col cols="5" class="pa-0">
-              <v-text-field
-                      id="penTextField"
-                      outlined
-                      dense
-                      background-color="white"
-                      label="Enter PEN"
-                      v-model="pen"
-                      @keyup.enter="enterPushed()"
-                      maxlength="9"
-                      :rules="penRules">
-              </v-text-field>
-            </v-col>
-            <v-col cols="2" class="py-0 px-2">
-              <PrimaryButton id="quickSearchBtn" :disabled="!isValidPEN" text="Search" width="100%" @click.native="quickSearch"></PrimaryButton>
-            </v-col>
-            <v-col cols="5" class="pl-4 pt-1">
-              <router-link :to="REQUEST_TYPES.studentSearch.path.basic">
-                <span style="text-decoration: underline">Student Full Search</span>
-              </router-link>
-            </v-col>
-          </v-row>
+          <template v-if="isValidPenRequestBatchUser">
+            <v-row class="pt-4 px-8" >
+              <v-card-title class="pa-0"><h3>Archived Requests Search</h3></v-card-title>
+            </v-row>
+            <v-row class="pt-4 px-8">
+              <v-col cols="6" class="pa-0">
+                <v-text-field 
+                  id="requestsMincodeField" 
+                  outlined 
+                  dense 
+                  background-color="white" 
+                  label="Enter district or mincode" 
+                  v-model="mincode"
+                  maxlength="8" 
+                  :rules="mincodeRules"
+                  @keyup.enter="enterPushedForRequests()"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="4" class="pa-0 pl-1">
+                <v-text-field 
+                  id="requestsDateField" 
+                  outlined 
+                  dense 
+                  background-color="white" 
+                  label="Enter date"
+                  v-model="loadDate"
+                  maxlength="10"
+                  :rules="loadDateRules"
+                  @keyup.enter="enterPushedForRequests()"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="2" class="py-0 pl-2">
+                <PrimaryButton
+                  id="requestsSearchBtn"
+                  text="Search"
+                  width="100%"
+                  :disabled="!isValidRequestsSearchInput"
+                  @click.native="searchRequests"
+                ></PrimaryButton>
+              </v-col>
+            </v-row>
+          </template>
+          <template v-if="isValidStudentSearchUser">
+            <v-row class="pt-4 px-8">
+              <v-card-title class="pa-0"><h3>Student Quick Search</h3></v-card-title>
+            </v-row>
+            <v-row class="pt-4 px-8">
+              <v-col cols="5" class="pa-0">
+                <v-text-field
+                        id="penTextField"
+                        outlined
+                        dense
+                        background-color="white"
+                        label="Enter PEN"
+                        v-model="pen"
+                        @keyup.enter="enterPushed()"
+                        maxlength="9"
+                        :rules="penRules">
+                </v-text-field>
+              </v-col>
+              <v-col cols="2" class="py-0 px-2">
+                <PrimaryButton id="quickSearchBtn" :disabled="!isValidPEN" text="Search" width="100%" @click.native="quickSearch"></PrimaryButton>
+              </v-col>
+              <v-col cols="5" class="pl-4 pt-1">
+                <router-link :to="REQUEST_TYPES.studentSearch.path.basic">
+                  <span style="text-decoration: underline">Student Full Search</span>
+                </router-link>
+              </v-col>
+            </v-row>
+          </template>
         </v-card>
       </v-col>
       <v-col cols="8" v-if="(isValidGMPUser || isValidUMPUser)">
@@ -236,9 +239,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('auth', ['isAuthenticated','isAuthorizedUser','isValidGMPUser','isValidUMPUser', 'isValidStudentSearchUser', 'isValidPenRequestBatchUser']),
-    ...mapState('app', ['selectedRequest', 'requestType']),
-    ...mapState('student', ['selectedStudent']),
+    ...mapState('auth', ['isValidGMPUser','isValidUMPUser', 'isValidStudentSearchUser', 'isValidPenRequestBatchUser']),
     requestTypes() {
       return REQUEST_TYPES;
     },
@@ -246,13 +247,12 @@ export default {
       return isValidPEN(this.pen);
     },
     isValidRequestsSearchInput() {
-      if(this.mincode) {
-        return this.isValidDistrictOrMincode(this.mincode);
-      } else if(this.loadDate) {
-        return isDateAfter1900(this.loadDate);
-      } else {
+      if(!this.mincode && !this.loadDate) {
         return false;
       }
+
+      return (!this.mincode || this.isValidDistrictOrMincode(this.mincode)) &&
+        (!this.loadDate || isDateAfter1900(this.loadDate));
     },
   },
   methods: {
