@@ -464,30 +464,6 @@ export default {
         return ['Invalid Postal Code.'];
       }
     },
-    validateStudentStatuses() {
-      if (this.student.status === 'M' || this.mergedStudent.status === 'M') {
-        this.setFailureAlert('Error! PENs cannot be merged, as one of the PENs has a status of merged.');
-        return false;
-      }
-      return true;
-    },
-    validateStudentHasAnyMergedFrom(studentID) {
-      return ApiService.apiAxios
-        .get(Routes['penServices'].ROOT_ENDPOINT + '/' + studentID + '/student-merge', {params: {mergeDirection: 'FROM'}})
-        .then(response => {
-          if (response.data && response.data.length > 0) {
-            this.setFailureAlert('Error! PENs cannot be merged, as the PEN selected to be the \'merged from PEN\' has been involved in a merge. It must first be demerged, before this merge can be executed.');
-            return true;
-          } else {
-            return false;
-          }
-        })
-        .catch(error => {
-          this.setFailureAlert('An error occurred while loading the student merge in validation. Please try again later.');
-          console.log(error);
-          return true;  // set true to make the validation failed
-        });
-    },
     handleCheckBoxChanged({key, value}) {
       if (key) {
         if (key === 'mincode' && this.isValidFormattedMincode(value)) {
@@ -510,20 +486,6 @@ export default {
       }
 
       window.scrollTo(0,0);
-
-      // Status validation
-      if (!this.validateStudentStatuses()) {
-        return;
-      }
-
-      this.isProcessing = true;
-
-      // Merge validation
-      const hasAnyMergedFrom = await this.validateStudentHasAnyMergedFrom(this.mergedStudent.studentID);
-      if (hasAnyMergedFrom) {
-        this.isProcessing = false;
-        return;
-      }
 
       // Student Merge Complete Request
       this.alert = false;

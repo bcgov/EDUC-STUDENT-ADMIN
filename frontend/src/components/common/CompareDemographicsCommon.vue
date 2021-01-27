@@ -69,7 +69,7 @@
           Demog Code: {{ students.demogCode }}
         </span>
         <v-spacer></v-spacer>
-        <a class="removePenLink pr-3" @click="removeRecord(students.studentID, index)">
+        <a class="removePenLink pr-3" @click="removeRecord(students.studentID, students.pen)">
             <v-icon small color="#38598A">mdi-close</v-icon>
             Remove PEN
         </a>
@@ -101,6 +101,9 @@
         <TertiaryButton text="Less" icon="$minus" @click.native="updateSldTableRows(students.pen, sldDataTablesNumberOfRows[students.pen] - 10)"></TertiaryButton>
       </v-row>
     </div>
+    <v-row>
+      <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
+    </v-row>
     <div v-if="selectedRecords && selectedRecords.length">
       <v-divider></v-divider>
       <v-card-actions class="px-0">
@@ -116,13 +119,15 @@ import { formatPen, formatDob, formatMincode, formatPostalCode } from '../../uti
 import PrimaryButton from '../util/PrimaryButton';
 import ApiService from '../../common/apiService';
 import {REQUEST_TYPES, Routes} from '../../utils/constants';
-import { isValidPEN } from '../../utils/validation';
+import { isValidPEN, isOlderThan } from '../../utils/validation';
 import AlertMessage from '../util/AlertMessage';
+import alertMixin from '@/mixins/alertMixin';
 import router from '../../router';
 import TertiaryButton from '../util/TertiaryButton';
 
 export default {
   name: 'CompareDemographicsCommon',
+  mixins: [alertMixin],
   components: {
     TertiaryButton,
     AlertMessage,
@@ -179,7 +184,7 @@ export default {
     };
   },
   mounted() {
-    _.sortBy(this.selectedRecords, o => o.pen);
+    this.selectedRecords = _.sortBy(this.selectedRecords, o => o.pen);
     this.studentRecords.forEach(student => {
       this.getSldData(student.pen);
     });
@@ -197,6 +202,7 @@ export default {
   },
   methods: {
     addPEN() {
+      this.alert = false;
       this.searchError = false;
       this.getSldData(this.penToAdd);
       ApiService.apiAxios
@@ -216,6 +222,7 @@ export default {
     clearError() {
       this.searchError = false;
       this.penToAdd = null;
+      this.alert = false;
     },
     enterPushed() {
       if (this.penToAdd && this.isValidPEN(this.penToAdd) && (!this.studentRecords || this.studentRecords?.length<3)) {
@@ -246,7 +253,8 @@ export default {
     },
     removeRecord(studentID, index) {
       this.studentRecords = this.studentRecords.filter(item => item.studentID !== studentID);
-      this.checkedStudents.splice(index, 1);
+      this.checkedStudents = this.checkedStudents.filter((item, idx) => idx !== index);
+      this.validateMerge();
     },
     updateSldRowDisplay(id, value) {
       this.$set(this.sldDataTablesToDisplay, id, value);
@@ -259,24 +267,73 @@ export default {
       }
       this.$set(this.sldDataTablesNumberOfRows, id, value);
     },
-    getMergedFromPen() {
-      return this.selectedRecords[0];
-    },
-    getMergedToPen() {
-      return this.selectedRecords[1];
-    },
     validateMerge() {
       let cnt = 0;
-      this.checkedStudents.forEach(checked => cnt += checked? 1 : 0);
+      this.checkedStudents.forEach(checked => cnt += checked ? 1 : 0);
       return cnt !== 2;
     },
-    merge() {
-      router.push(
+    validateStudentStatuses(mergedToStudent, mergedFromStudent) {
+      if (mergedToStudent.status === 'M' || mergedFromStudent.status === 'M') {
+        this.setFailureAlert('Error! PENs cannot be merged, as one of the PENs has a status of merged.');
+        return false;
+      }
+      return true;
+    },
+    validateStudentHasAnyMergedFrom(studentID) {
+      return ApiService.apiAxios
+        .get(Routes['penServices'].ROOT_ENDPOINT + '/' + studentID + '/student-merge', {params: {mergeDirection: 'FROM'}})
+        .then(response => {
+          if (response.data && response.data.length > 0) {
+            this.setFailureAlert('Error! PENs cannot be merged, as the PEN selected to be the \'merged from PEN\' has been involved in a merge. It must first be demerged, before this merge can be executed.');
+            return true;
+          } else {
+            return false;
+          }
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while loading the student merge in validation. Please try again later.');
+          console.log(error);
+          return true;  // set true to make the validation failed
+        });
+    },
+    async merge() {
+      this.selectedRecords.forEach((item, index) => console.log(index + ': ' + item.pen));
+      let selectedStudents = this.checkedStudents.map((checked, idx) => {
+        if (!checked) {
+          return false;
+        } else {
+          return this.selectedRecords[idx];
+        }
+      }).filter(item => !!item);
+
+      // Determine which is the oldest, which will be mergedToPen
+      let mergedToPen = null;
+      let mergedFromPen = null;
+      if (isOlderThan(selectedStudents[0].createDate, selectedStudents[1].createDate)) {
+        mergedToPen = selectedStudents[0];
+        mergedFromPen = selectedStudents[1];
+      } else {
+        mergedToPen = selectedStudents[1];
+        mergedFromPen = selectedStudents[0];
+      }
+
+      // Status validation
+      if (!this.validateStudentStatuses(mergedToPen, mergedFromPen)) {
+        return;
+      }
+
+      // Merge validation
+      const hasAnyMergedFrom = await this.validateStudentHasAnyMergedFrom(mergedFromPen.studentID);
+      if (hasAnyMergedFrom) {
+        return;
+      }
+
+      await router.push(
         {
           name: 'mergeStudents',
           params: {
-            mergedToPen: this.getMergedToPen(),
-            mergedFromPen: this.getMergedFromPen()
+            mergedToPen: mergedToPen,
+            mergedFromPen: mergedFromPen
           }
         }
       );
