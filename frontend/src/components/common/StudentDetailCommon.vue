@@ -55,7 +55,7 @@
                                     :disabled="isFieldDisabled('statusCode')"></StudentDetailsComboBox>
           </v-card>
         </v-col>
-        <v-col cols="8" class="py-0 pl-0">
+        <v-col cols="7" class="py-0 pl-0">
           <v-card class="pa-0" height="100%" width="100%" elevation=0>
 
             <StudentDetailsTextField max-length="255" :name="STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME" tab-index="1"
@@ -242,7 +242,7 @@
                     :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MINCODE)"
                 ></FormattedTextField>
               </v-col>
-              <v-col cols="4" class="textFieldColumn">
+              <v-col cols="5" class="textFieldColumn">
                 <v-progress-circular
                     v-if="loadingSchoolData"
                     color="primary"
@@ -355,6 +355,18 @@
         <v-col cols="1">
           <CompareDemographicModal :clearOnExit="false" :disabled="false" :selectedRecords.sync="compareStudent"></CompareDemographicModal>
         </v-col>
+          <v-col cols="1">
+            <TertiaryButton
+                class="ma-0"
+                color="#38598A"
+                text="Copy"
+                v-clipboard:copy="copyTxt"
+                v-clipboard:error="onError"
+                :model="copyTxt"
+                @click.native="copyInfo"
+            >
+            </TertiaryButton>
+          </v-col>
       </v-row>
       <slot
               v-if="!isLoading"
@@ -431,9 +443,7 @@ import {REQUEST_TYPES, Routes, STUDENT_DETAILS_FIELDS, STUDENT_CODES} from '@/ut
 import StudentDetailsTextField from '@/components/penreg/student/StudentDetailsTextField';
 import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly';
 import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsComboBox';
-import StudentDetailsTextFieldSideCardReadOnly
-  from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
-import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
+import StudentDetailsTextFieldSideCardReadOnly from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
 import {formatMincode, formatPen, formatDob} from '@/utils/format';
 import {sortBy,isEmpty} from 'lodash';
 import alertMixin from '../../mixins/alertMixin';
@@ -444,6 +454,7 @@ import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard
 import CompareDemographicModal from './CompareDemographicModal';
 import {isValidMincode, isValidDob} from '@/utils/validation';
 import FormattedTextField from '@/components/util/FormattedTextField';
+import TertiaryButton from '@/components/util/TertiaryButton';
 
 const JSJoda = require('@js-joda/core');
 
@@ -482,7 +493,7 @@ export default {
     StudentDetailsComboBox,
     StudentDetailsTextFieldReadOnly,
     StudentDetailsTextField,
-    StudentDetailsTemplateTextField,
+    TertiaryButton
   },
   data() {
     return {
@@ -529,7 +540,10 @@ export default {
       traxStatus: '',
       loadingTraxData: false,
       loadingSchoolData: false,
-      compareStudent: []
+      compareStudent: [],
+      copyTxt: '',
+      dobCopy:'',
+      diff:''
     };
   },
   created() {
@@ -574,6 +588,28 @@ export default {
     formatPen,
     formatMincode,
     formatDob,
+    boldFormatter: function (char){
+      if(/[A-Z]/.test(char)){
+        this.diff = '𝗔'.codePointAt (0) - 'A'.codePointAt (0);
+      }else{
+        this.diff = '𝗮'.codePointAt (0) - 'a'.codePointAt (0);
+      }
+      return String.fromCodePoint(char.codePointAt(0)+this.diff);
+    },
+    copyInfo: function(){
+      this.dobCopy=formatDob(this.studentCopy.dob,'uuuu-MM-dd','uuuu/MM/dd');
+      this.copyTxt=
+          'PEN: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.studentCopy.pen==null?'':this.studentCopy.pen)+'\n'+
+          'Legal Surname: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.studentCopy.legalLastName == null ? '' : this.studentCopy.legalLastName)+'\n'+
+          'Legal Given: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.studentCopy.legalFirstName == null ? '' : this.studentCopy.legalFirstName)+'\n'+
+          'Legal Middle: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.studentCopy.legalMiddleNames == null ? '' : this.studentCopy.legalMiddleNames) + '\n'+
+          'Birth Date: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.dobCopy == null ? '' : (this.dobCopy))+'\n'+
+          'Gender: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.studentCopy.genderCode == null ? '' : this.studentCopy.genderCode);
+      this.$copyText(this.copyTxt);
+    },
+    onError: function (e) {
+      console.log(e);
+    },
     changeStudentObjectValue(key, value) {
       this.studentCopy[`${key}`] = value;
       if (key === STUDENT_DETAILS_FIELDS.STATUS_CODE) {

@@ -9,6 +9,7 @@
            :to="to"
            :width="width"
            :text="true"
+
     >
       <v-icon v-if="icon" :class="[iconStyle, 'mr-1']" left>{{ icon }}</v-icon>
       <strong>{{ text }}</strong>
