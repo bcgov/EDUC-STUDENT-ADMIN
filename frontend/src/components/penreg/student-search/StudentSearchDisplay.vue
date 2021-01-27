@@ -132,6 +132,14 @@ export default {
       this.searchHasValues();
     }
   },
+  watch: {
+    studentSearchResponse: {
+      async handler() {
+        await this.$nextTick();
+        document.getElementById('resultsRow').scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  },
   methods: {
     ...mapMutations('studentSearch', ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse', 'clearStudentSearchParams', 'clearStudentSearchResults']),
     setCurrentSearchObject(searchParams){
