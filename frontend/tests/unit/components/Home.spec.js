@@ -39,6 +39,15 @@ describe('Archived Request Search Button', () => {
   let routerSpy;
   let store;
 
+  const testLoadDateAndMincodeInputs = async (loadDate, mincode) => {
+    const mincodeInput = wrapper.find('#requestsMincodeField');
+    mincodeInput.setValue(mincode);
+    const dateInput = wrapper.find('#requestsDateField');
+    dateInput.setValue(loadDate);
+    await Vue.nextTick();
+    wrapper.find('#requestsSearchBtn').trigger('click');
+  }
+
   beforeEach(() => {
     routerSpy = jest.spyOn(appRouter, 'push').mockImplementation(() => {});
 
@@ -96,12 +105,7 @@ describe('Archived Request Search Button', () => {
   });
 
   it('should be clickable when valid mincode input and valid load date input', async () => {
-    const mincodeInput = wrapper.find('#requestsMincodeField');
-    mincodeInput.setValue("102");
-    const dateInput = wrapper.find('#requestsDateField');
-    dateInput.setValue("2021/01/10");
-    await Vue.nextTick();
-    wrapper.find('#requestsSearchBtn').trigger('click');
+    await testLoadDateAndMincodeInputs("2021/01/10", "102");
     expect(routerSpy).toHaveBeenCalled();
   });
 
@@ -122,32 +126,17 @@ describe('Archived Request Search Button', () => {
   });
 
   it('should be not clickable when invalid mincode input and valid load date input', async () => {
-    const mincodeInput = wrapper.find('#requestsMincodeField');
-    mincodeInput.setValue("10");
-    const dateInput = wrapper.find('#requestsDateField');
-    dateInput.setValue("2021/01/10");
-    await Vue.nextTick();
-    wrapper.find('#requestsSearchBtn').trigger('click');
+    await testLoadDateAndMincodeInputs("2021/01/10", "10");
     expect(routerSpy).not.toHaveBeenCalled();
   });
 
   it('should be not clickable when valid mincode input and invalid load date input', async () => {
-    const mincodeInput = wrapper.find('#requestsMincodeField');
-    mincodeInput.setValue("10212345");
-    const dateInput = wrapper.find('#requestsDateField');
-    dateInput.setValue("2021/01");
-    await Vue.nextTick();
-    wrapper.find('#requestsSearchBtn').trigger('click');
+    await testLoadDateAndMincodeInputs("2021/01", "10212345");
     expect(routerSpy).not.toHaveBeenCalled();
   });
 
   it('should be not clickable when invalid mincode input and invalid load date input', async () => {
-    const mincodeInput = wrapper.find('#requestsMincodeField');
-    mincodeInput.setValue("102123");
-    const dateInput = wrapper.find('#requestsDateField');
-    dateInput.setValue("2021/01");
-    await Vue.nextTick();
-    wrapper.find('#requestsSearchBtn').trigger('click');
+    await testLoadDateAndMincodeInputs("2021/01", "102123");
     expect(routerSpy).not.toHaveBeenCalled();
   });
 
