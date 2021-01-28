@@ -26,8 +26,8 @@
                       @validationRun="checkValidationResults">
                 <template v-slot:headerPanel="{ openSearchDemographicsModal }">
                   <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center" style="background-color:white;">
-                    <v-icon dense v-if="isUnarchived" color="#2E8540">
-                      unarchive
+                    <v-icon v-if="isUnarchived || isArchived" :dense="isUnarchived" color="#2E8540" class="mr-1">
+                      {{isUnarchived ? 'fa-unlock' : 'mdi-package-up'}}
                     </v-icon>
                     <span class="mr-4 batch-title">
                       <strong>{{seqNumberInBatch}} of {{totalNumberInBatch}} filtered</strong> | Record {{prbStudent.recordNumber}} of {{batchFile.studentCount}} in submission {{prbStudent.submissionNumber}}
@@ -275,10 +275,10 @@ export default {
     ...mapState('penRequestBatch', ['selectedFiles', 'prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
     ...mapState('notifications', ['notification']),
     disableMatchUnmatch() {
-      return this.prbStudent?.sagaInProgress;
+      return this.prbStudent?.sagaInProgress || this.isArchived;
     },
     disableInfoReqBtn() {
-      return this.loading || this.prbStudent?.sagaInProgress
+      return this.loading || this.prbStudent?.sagaInProgress || this.isArchived
           || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
           || ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE]
             .some(element => element === this.prbStudent?.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
@@ -287,18 +287,21 @@ export default {
       return this.prbStudent?.repeatRequestOriginalID;
     },
     disableIssueNewPen() {
-      return this.loading || this.prbStudent?.sagaInProgress
+      return this.loading || this.prbStudent?.sagaInProgress || this.isArchived
           || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
           || (![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ]
             .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus)
               && (this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR') && (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.prbStudent.penRequestBatchStudentStatusCode )));
     },
     disableModifySearch(){
-      return this.loading || this.prbStudent?.sagaInProgress
+      return this.loading || this.prbStudent?.sagaInProgress || this.isArchived
           || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode);
     },
     isUnarchived(){
       return this.batchFile?.penRequestBatchStatusCode === 'UNARCHIVED';
+    },
+    isArchived(){
+      return this.batchFile?.penRequestBatchStatusCode === 'ARCHIVED';
     }
   },
   created() {

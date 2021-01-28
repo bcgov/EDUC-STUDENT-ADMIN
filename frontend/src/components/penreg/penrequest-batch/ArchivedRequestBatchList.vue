@@ -3,7 +3,7 @@
     :headers="headers"
     :penRequestBatchResponse="penRequestBatchResponse"
     :batchPageNumber.sync="pageNumber"
-    :loadingTable="loadingTable || loadingFiles"
+    :loadingTable="loadingTable"
     archived
   ></PenRequestBatchDataTable>
 </template>
@@ -154,7 +154,9 @@ export default {
         })
         .finally(() => {
           this.loadingTable = false;
-          this.$emit('update:searchLoading', false);
+          if(this.searchLoading) {
+            this.$emit('update:searchLoading', false);
+          }
         });
     },
     getSearchParam(paramName, paramValue, namePrefix) {

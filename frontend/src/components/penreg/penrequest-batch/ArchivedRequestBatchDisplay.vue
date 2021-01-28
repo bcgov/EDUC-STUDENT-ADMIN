@@ -243,7 +243,7 @@ export default {
     this.batchFileSearchParams = deepCloneObject(this.currentBatchFileSearchParams);
     this.batchFileSearchParams.mincode = this.batchFileSearchParams.mincode || this.mincode;
     this.batchFileSearchParams.load.startDate = this.batchFileSearchParams.load.startDate || this.loadDate;
-    this.enterPushed();
+    this.searchHasValues();
   },
   methods: {
     ...mapMutations('prbStudentSearch', ['clearPrbStudentSearchState']),
