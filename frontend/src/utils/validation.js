@@ -79,6 +79,21 @@ export function isValidDOBAndAfter1900(dob, pattern='uuuu/MM/dd') {
   return false;
 }
 
+export function isOlderThan(date1, date2, pattern='uuuu/MM/dd') {
+  const formatter = (new DateTimeFormatterBuilder).appendPattern(pattern).toFormatter(ResolverStyle.STRICT);
+  try {
+    const dateObject1 = LocalDate.parse(date1, formatter);
+    const dateObject2 = LocalDate.parse(date2, formatter);
+    if(dateObject1.isBefore(dateObject2)){
+      return true;
+    }
+  }
+  catch(err){
+    //Do nothing
+  }
+  return false;
+}
+
 
 export function isNotEmptyInputParams(obj) {
   const groups = groupBy(Object.values(obj), isPlainObject);
