@@ -48,10 +48,11 @@ async function mergeStudents(req, res) {
 
     mergeData.mincode = mergeData.mincode?.replace(/ /g,'');
     mergeData.postalCode = mergeData.postalCode?.replace(/ /g,'');
-    mergeData.dob = mergeData.dob?.replace(/\//g,'');
+    mergeData.dob = mergeData.dob?.replace(/-/g,'');
 
     const sagaReq = {
-      ...stripAuditColumns(mergeData)
+      ...stripAuditColumns(mergeData),
+      historyActivityCode: 'MERGE'
     };
 
     const sagaId = await postData(token, `${config.get('server:penServices:mergeStudentsURL')}`, sagaReq, null, getUser(req).idir_username);

@@ -490,7 +490,9 @@ export default {
       // Student Merge Complete Request
       this.alert = false;
       const mergeRequest = {...this.student,
-        mergeStudentID: this.mergedStudent.id,
+        mergedToPen: this.student.pen,
+        mergeStudentID: this.mergedStudent.studentID,
+        mergedFromPen: this.mergedStudent.pen,
         studentMergeDirectionCode: 'FROM',
         studentMergeSourceCode: 'MI',
         requestStudentID: null
