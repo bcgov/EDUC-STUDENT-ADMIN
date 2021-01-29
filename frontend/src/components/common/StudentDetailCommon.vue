@@ -541,9 +541,7 @@ export default {
       loadingTraxData: false,
       loadingSchoolData: false,
       compareStudent: [],
-      copyTxt: '',
-      dobCopy:'',
-      diff:''
+      copyTxt:''
     };
   },
   created() {
@@ -588,26 +586,27 @@ export default {
     formatPen,
     formatMincode,
     formatDob,
-    boldFormatter: function (char){
+    boldFormatter(char){
+      let diff='';
       if(/[A-Z]/.test(char)){
-        this.diff = '𝗔'.codePointAt (0) - 'A'.codePointAt (0);
+        diff = '𝗔'.codePointAt (0) - 'A'.codePointAt (0);
       }else{
-        this.diff = '𝗮'.codePointAt (0) - 'a'.codePointAt (0);
+        diff = '𝗮'.codePointAt (0) - 'a'.codePointAt (0);
       }
-      return String.fromCodePoint(char.codePointAt(0)+this.diff);
+      return String.fromCodePoint(char.codePointAt(0)+diff);
     },
-    copyInfo: function(){
-      this.dobCopy=formatDob(this.studentCopy.dob,'uuuu-MM-dd','uuuu/MM/dd');
+    copyInfo(){
+      let dobCopy=formatDob(this.studentCopy.dob,'uuuu-MM-dd','uuuu/MM/dd');
       this.copyTxt=
           'PEN: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.studentCopy.pen==null?'':this.studentCopy.pen)+'\n'+
-          'Legal Surname: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.studentCopy.legalLastName == null ? '' : this.studentCopy.legalLastName)+'\n'+
-          'Legal Given: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.studentCopy.legalFirstName == null ? '' : this.studentCopy.legalFirstName)+'\n'+
-          'Legal Middle: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.studentCopy.legalMiddleNames == null ? '' : this.studentCopy.legalMiddleNames) + '\n'+
-          'Birth Date: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.dobCopy == null ? '' : (this.dobCopy))+'\n'+
-          'Gender: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.studentCopy.genderCode == null ? '' : this.studentCopy.genderCode);
+          'Legal Surname: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.studentCopy.legalLastName || '')+'\n'+
+          'Legal Given: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.studentCopy.legalFirstName || '')+'\n'+
+          'Legal Middle: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.studentCopy.legalMiddleNames || '') + '\n'+
+          'Birth Date: '.replace(/[A-Za-z]/g,this.boldFormatter)+(dobCopy || '')+'\n'+
+          'Gender: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.studentCopy.genderCode || '');
       this.$copyText(this.copyTxt);
     },
-    onError: function (e) {
+    onError (e) {
       console.log(e);
     },
     changeStudentObjectValue(key, value) {
