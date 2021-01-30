@@ -506,13 +506,13 @@ export default {
 };
 </script>
 <style scoped>
-  .v-text-field>.v-input__control>.v-text-field__details {
+  .v-text-field/deep/.v-text-field__details {
     max-width:300%;
     width:300%;
     margin-bottom: 0 !important;
     padding-left: 0 !important;
   }
-  .v-text-field>.v-input__control>.v-input__slot {
+  .v-text-field/deep/.v-input__slot {
     margin-bottom: 0 !important;
   }
 </style>

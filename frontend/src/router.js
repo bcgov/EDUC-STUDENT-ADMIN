@@ -230,7 +230,7 @@ const router = new VueRouter({
         role: 'isValidPenRequestBatchUser'
       },
       beforeEnter(to, from, next) {
-        if(!from.path.includes('/prb')) {
+        if(!from.path.includes('/archivedPrb')) {
           store.commit('archivedRequestBatch/clearPenRequestBatchState');
         }
         next();

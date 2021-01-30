@@ -3,6 +3,25 @@
   <v-app id="app">
     <Header/>
     <NavBar v-if="pageTitle && isAuthenticated" :title="pageTitle"></NavBar>
+    <v-btn
+            v-scroll="onScroll"
+            id="toTopBtn"
+            v-show="showToTopBtn"
+            fab
+            tile
+            x-small
+            dark
+            fixed
+            bottom
+            right
+            color="#606060"
+            class="rounded"
+            @click="toTop"
+    >
+      <v-icon>
+        mdi-format-vertical-align-top
+      </v-icon>
+    </v-btn>
     <v-main fluid class="align-start px-8 mb-0">
       <ModalIdle v-if="isAuthenticated && isIdle"/>
       <router-view/>
@@ -25,6 +44,11 @@ export default {
     Header,
     Footer,
     ModalIdle
+  },
+  data() {
+    return {
+      showToTopBtn: false
+    };
   },
   computed: {
     ...mapGetters('auth', ['getJwtToken','isAuthenticated','isValidGMPUser','isValidUMPUser', 'isValidPenRequestBatchUser']),
@@ -50,12 +74,26 @@ export default {
       } else {
         this.$webSocketsDisconnect();
       }
+    },
+    onScroll(e) {
+      if (typeof window === 'undefined') return;
+      const top = window.pageYOffset ||   e.target.scrollTop || 0;
+      this.showToTopBtn = top > 20;
+    },
+    toTop() {
+      this.$vuetify.goTo(0);
     }
   }
 };
 </script>
 
 <style>
+  #toTopBtn {
+    opacity: 0.5;
+  }
+  #toTopBtn:hover {
+    opacity: 1;
+  }
   .v-alert.bootstrap-success {
     color: #234720 !important;
     background-color: #d9e7d8 !important;
