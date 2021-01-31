@@ -35,7 +35,6 @@ const schoolsRouter = require('./routes/schools');
 const penTraxRouter = require('./routes/penTrax');
 const promMid = require('express-prometheus-middleware');
 const actuator = require('express-actuator');
-const expressStatusMonitor = require('express-status-monitor');
 const messagePubSub = require('./messaging/message-pub-sub');
 messagePubSub.init();
 messagePubSub.callbacks();
@@ -43,7 +42,6 @@ messagePubSub.callbacks();
 const app = express();
 const nocache = require('nocache');
 app.set('trust proxy', 1);
-app.use(expressStatusMonitor({path: '/api/status'}));
 //sets security measures (headers, etc)
 // NOSONAR
 app.use(cors());
