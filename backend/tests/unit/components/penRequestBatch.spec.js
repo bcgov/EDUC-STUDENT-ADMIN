@@ -8,6 +8,7 @@ jest.mock('../../../src/components/utils', () => {
     getData: jest.fn(),
     putData: jest.fn(),
     postData: jest.fn(),
+    getUser: jest.fn().mockReturnValue({idir_username: 'User'})
   };
 });
 jest.mock('../../../src/util/redis/redis-utils');
@@ -429,4 +430,48 @@ describe('archiveFiles', () => {
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
 
+});
+
+describe('unarchiveFiles', () => {
+  let req;
+  let res;
+  const penRequestBatchIDs = ['c0a8014d-74e1-1d99-8174-e10db81f0001', 'c0a8014d-74e1-1d99-8174-e10db81f0002'];
+  const batchFiles = {
+    content: penRequestBatchIDs.map(id => ({
+      penRequestBatchID: id,
+      penRequestBatchStatusCode: 'ACTIVE'
+    }))
+  };
+
+  beforeEach(() => {
+    utils.getBackendToken.mockReturnValue('token');
+    req = mockRequest();
+    res = mockResponse();
+    req.body = {
+      penRequestBatchIDs,
+    };
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return all batch files if all success', async () => {
+    const userName = 'User';
+    const resp = penRequestBatchIDs.map(id => ({
+      penRequestBatchID: id,
+      penRequestBatchStatusCode: 'UNARCHIVED',
+      unarchivedUser: userName
+    }));
+    const request = resp;
+    utils.getData.mockResolvedValue(batchFiles);
+    utils.putData.mockImplementation((token, url, data) => 
+      Promise.resolve(data)
+    );
+    await penRequestBatch.unarchiveFiles(req, res);
+    expect(utils.putData).toHaveBeenCalled();
+    expect(utils.putData.mock.calls[0][2]).toEqual(resp[0]);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+    expect(res.json).toHaveBeenCalledWith(resp);
+  });
 });

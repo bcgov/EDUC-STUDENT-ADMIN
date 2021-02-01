@@ -169,14 +169,15 @@
                 </v-list-item>
               </v-list>
             </v-menu>
-            <PrimaryButton id="view-list-action" class="ml-2" :disabled="!filesSelected" text="Unarchive"></PrimaryButton>
+            <PrimaryButton id="view-list-action" class="ml-2" :disabled="!filesSelected" text="Unarchive" :loading="unarchiving" @click.native="unarchive"></PrimaryButton>
           </v-col>
         </v-row>
         <v-row no-gutters class="py-2" style="background-color:white;">
           <ArchivedRequestBatchList
-            :searchParams="batchFileSearchParams"
-            :searchLoading.sync="searchLoading"
+            :searchParams="searchParams"
+            :reloading="!unarchiving"
             @failure-alert="setFailureAlert"
+            @table-load="searchLoading=false"
           ></ArchivedRequestBatchList>
         </v-row>
     </v-container>
@@ -192,6 +193,9 @@ import alertMixin from '../../../mixins/alertMixin';
 import { isValidMincode, isValidAlphanumericValue, isDateAfter1900, isValidDob, isValidPEN, isNotEmptyInputParams } from '../../../utils/validation';
 import AlertMessage from '../../util/AlertMessage';
 import { deepCloneObject, setEmptyInputParams } from '../../../utils/common';
+import pluralize from 'pluralize';
+import ApiService from '@/common/apiService';
+import {Routes} from '@/utils/constants';
 
 export default {
   name: 'ArchivedRequestBatchDisplay',
@@ -212,7 +216,8 @@ export default {
   data() {
     return {
       searchLoading: false,
-      searchParams: null,
+      unarchiving: false,
+      searchParams: { prbStudent: { } },
       batchFileSearchParams: null,
       searchEnabled: false,
       penHint: 'Fails check-digit test',
@@ -226,7 +231,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('archivedRequestBatch', ['selectedFiles', 'currentBatchFileSearchParams', 'refinedSearch']),
+    ...mapState('archivedRequestBatch', ['selectedFiles', 'currentBatchFileSearchParams', 'refinedSearch', 'penRequestBatchResponse']),
     ...mapState('student', ['genders']),
     filesSelected() {
       return this.selectedFiles?.length > 0;
@@ -247,7 +252,7 @@ export default {
   },
   methods: {
     ...mapMutations('prbStudentSearch', ['clearPrbStudentSearchState']),
-    ...mapMutations('archivedRequestBatch', ['setRefinedSearch']),
+    ...mapMutations('archivedRequestBatch', ['setRefinedSearch', 'setSelectedFiles']),
     clickViewList() {
       const batchIDs = this.selectedFileBatchIDs;
       this.clearPrbStudentSearchState();
@@ -289,6 +294,7 @@ export default {
     },
     searchBatchFiles() {
       this.searchLoading = true;
+      this.searchParams = deepCloneObject(this.batchFileSearchParams);
     },
     clearSearchParams() {
       setEmptyInputParams(this.batchFileSearchParams, 'mincode');
@@ -317,6 +323,35 @@ export default {
         ];
       }
     },
+    async unarchive() {
+      const fileNumber = this.selectedFiles.length;
+
+      const payload = {
+        penRequestBatchIDs: this.selectedFiles.map(file => file.penRequestBatchID)
+      };
+      this.unarchiving = true;
+      ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/unarchiveFiles`, payload)
+        .then(response => {
+          const archivedNumber = response.data.length;
+          const archivedMessage = `${archivedNumber} ${pluralize('file', archivedNumber)} ${pluralize('has', archivedNumber)} been unarchived.`;
+          if(archivedNumber === fileNumber) {
+            this.setSuccessAlert(`Success! ${archivedMessage}`);
+          } else {
+            this.setFailureAlert(`An error occurred while unarchiving PEN Request Files! ${archivedMessage} Please try again later.`);
+          }
+          this.penRequestBatchResponse.content = this.penRequestBatchResponse.content.filter(file => 
+            response.data.some(archivedFile => archivedFile.penRequestBatchID === file.penRequestBatchID)
+          );
+          this.setSelectedFiles();
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while unarchiving PEN Request Files! Please try again later.');
+          console.log(error);
+        })
+        .finally(() => {
+          this.unarchiving = false;
+        });
+    }
   }
 };
 </script>

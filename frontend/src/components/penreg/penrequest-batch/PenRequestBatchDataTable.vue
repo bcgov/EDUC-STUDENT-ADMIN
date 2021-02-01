@@ -48,11 +48,11 @@
               <span v-else>{{formatTableColumn(header.format, props.item[header.value]) }}</span>
               <v-tooltip v-if="header.value==='mincode' && isUnarchived(props.item)" right>
                 <template v-slot:activator="{ on }">
-                  <v-icon small color="#2E8540" v-on="on">
+                  <v-icon small color="#2E8540" v-on="on" class="ml-1">
                     {{isUnarchivedBatchChanged(props.item) ? 'fa-sync-alt' : 'fa-unlock'}}
                   </v-icon>
                 </template>
-              <span>{{props.item.unarchivedUser}}</span>
+                <span>{{props.item.unarchivedUser}}</span>
               </v-tooltip>
             </div>
           </td>
