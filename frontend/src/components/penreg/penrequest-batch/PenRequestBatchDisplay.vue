@@ -47,7 +47,7 @@
           <PrimaryButton id="view-details-action" class="mx-2" :disabled="!filesSelected" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
           <v-menu offset-y>
             <template v-slot:activator="{ on }">
-              <PrimaryButton id="archive-action" :disabled="!filesSelected" :on="on" text="Finish Submission" icon="mdi-chevron-down" largeIcon>
+              <PrimaryButton id="archive-action" :disabled="!filesSelected || loadingFiles" :on="on" text="Finish Submission" icon="mdi-chevron-down" largeIcon>
               </PrimaryButton>
             </template>
             <v-list>

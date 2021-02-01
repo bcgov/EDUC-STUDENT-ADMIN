@@ -27,7 +27,7 @@ export default {
       type: Object,
       required: true
     },
-    searchLoading: {
+    reloading: {
       type: Boolean,
       required: false
     }
@@ -50,19 +50,29 @@ export default {
         { text: 'SUB #', value: 'submissionNumber', sortable: false },
       ],
       loadingTable: true,
+      isFilterOperation: false,
     };
   },
   watch: {
     pageNumber: {
       handler() {
-        this.pagination(false);
+        this.pagination();
       }
     },
-    searchLoading: {
+    searchParams: {
+      handler() {
+        this.isFilterOperation = true;
+        if (this.pageNumber === 1) {
+          this.pagination();
+        } else {
+          this.pageNumber = 1;
+        } 
+      }
+    },
+    reloading: {
       handler(v) {
         if(v) {
-          this.setPageNumber(1);
-          this.pagination(true);
+          this.pagination();
         }
       }
     },
@@ -104,14 +114,16 @@ export default {
     },
   },
   created(){
-    this.pagination(true);
+    this.isFilterOperation = true;
+    this.pagination();
   },
   methods: {
-    ...mapMutations('archivedRequestBatch', ['setSelectedFiles', 'setPenRequestBatchResponse', 'setCurrentBatchFileSearchParams', 'setPageNumber']),
-    initializeFiles(files, isFilterOperation) {
-      if (isFilterOperation) {
+    ...mapMutations('archivedRequestBatch', ['setSelectedFiles', 'setPenRequestBatchResponse', 'setCurrentBatchFileSearchParams']),
+    initializeFiles(files) {
+      if (this.isFilterOperation) {
         // reset
         this.setSelectedFiles();
+        this.isFilterOperation = false;
       }
       
       files.forEach(file => {
@@ -125,7 +137,7 @@ export default {
       const foundItem = this.selectedFiles?.find(item => item?.penRequestBatchID === file.penRequestBatchID);
       return !!foundItem;
     },
-    pagination(isFilterOperation) {
+    pagination() {
       this.loadingTable = true;
       const req = {
         params: {
@@ -143,7 +155,7 @@ export default {
         .get(Routes.penRequestBatch.FILES_URL, req)
         .then(response => {
           if (response.data && response.data.content) {
-            this.initializeFiles(response.data.content, isFilterOperation);
+            this.initializeFiles(response.data.content);
             this.setPenRequestBatchResponse(response.data);
             this.setCurrentBatchFileSearchParams(deepCloneObject(this.searchParams));
           }
@@ -154,9 +166,7 @@ export default {
         })
         .finally(() => {
           this.loadingTable = false;
-          if(this.searchLoading) {
-            this.$emit('update:searchLoading', false);
-          }
+          this.$emit('table-load');
         });
     },
     getSearchParam(paramName, paramValue, namePrefix) {

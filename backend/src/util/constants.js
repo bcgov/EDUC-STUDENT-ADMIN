@@ -99,8 +99,17 @@ const VALUE_TYPE = Object.freeze(
     UUID:'UUID'
   }
 );
+
+const PEN_REQ_BATCH_STATUS_CODES = Object.freeze(
+  {
+    ARCHIVED: 'ARCHIVED',
+    UNARCHIVED: 'UNARCHIVED',
+  }
+);
+
 module.exports = {
   FILTER_OPERATION,
   CONDITION,
-  VALUE_TYPE
+  VALUE_TYPE,
+  PEN_REQ_BATCH_STATUS_CODES
 };

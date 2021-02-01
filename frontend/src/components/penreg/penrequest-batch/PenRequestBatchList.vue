@@ -52,18 +52,24 @@ export default {
         { text: 'Submission', value: 'submissionNumber', sortable: false },
       ],
       loadingTable: true,
+      isFilterOperation: false,
     };
   },
   watch: {
     pageNumber: {
       handler() {
-        this.pagination(false);
+        this.pagination();
       }
     },
     filters: {
       handler() {
         this.selectFilters();
-        this.pagination(true);
+        this.isFilterOperation = true;
+        if (this.pageNumber === 1) {
+          this.pagination();
+        } else {
+          this.pageNumber = 1;
+        }        
       }
     },
     schoolGroup: {
@@ -74,7 +80,7 @@ export default {
     loadingFiles: {
       handler(v) {
         if(!v) {
-          this.pagination(false);
+          this.pagination();
         }
       }
     }
@@ -123,13 +129,14 @@ export default {
         this.filters.push('Fixable');
       }      
     },
-    initializeFiles(files, isFilterOperation) {
+    initializeFiles(files) {
       let activeFile = files?.find(f => f.penRequestBatchStatusCode === 'ACTIVE');
       activeFile && (activeFile.firstActiveFile = true);
 
-      if (isFilterOperation) {
+      if (this.isFilterOperation) {
         // reset
         this.setSelectedFiles([]);
+        this.isFilterOperation = false;
       }
       
       files.forEach(file => {
@@ -166,7 +173,7 @@ export default {
 
       this.$emit('filter-change', this.filters);
     },
-    pagination(isFilterOperation) {
+    pagination() {
       this.loadingTable = true;
       const req = {
         params: {
@@ -185,7 +192,7 @@ export default {
         .get(Routes.penRequestBatch.FILES_URL, req)
         .then(response => {
           if (response.data && response.data.content) {
-            this.initializeFiles(response.data.content, isFilterOperation);
+            this.initializeFiles(response.data.content);
             this.setPenRequestBatchResponse(response.data);
           }
         })

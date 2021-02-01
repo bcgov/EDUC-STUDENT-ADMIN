@@ -9,6 +9,7 @@ const HttpStatus = require('http-status-codes');
 const redisUtil = require('../util/redis/redis-utils');
 const log = require('./logger');
 const lodash = require('lodash');
+const { PEN_REQ_BATCH_STATUS_CODES } = require('../util/constants');
 
 async function getPENBatchRequestStats(req, res) {
   const schoolGroupCodes = [
@@ -292,7 +293,7 @@ async function addSagaStatus(prbStudents) {
   });
 }
 
-async function archiveFiles(req, res) {
+async function updateFilesByIDs(req, res, updateFile) {
   const token = getBackendToken(req, res);
 
   try {
@@ -313,21 +314,36 @@ async function archiveFiles(req, res) {
 
     const dataResponse = await getData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/paginated`, params);
     const promises = dataResponse.content.map(batchFile => {
-      batchFile.penRequestBatchStatusCode = 'ARCHIVED';
+      updateFile(batchFile);
       return putData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${batchFile.penRequestBatchID}`, batchFile, getUser(req).idir_username);
     });
 
     const results = await Promise.allSettled(promises);
     const resultGroups = lodash.groupBy(results, 'status');
-
+    
     resultGroups.rejected?.forEach(result => {
       log.error(result);
     });
     return res.status(200).json(resultGroups.fulfilled?.map(result => result.value) || []);
   } catch (e) {
-    logApiError(e, 'archiveFiles', 'Error archiving batch files.');
+    logApiError(e, 'updateFilesByIDs', `Error upating batch files.`);
     return errorResponse(res);
   }
+}
+
+function archiveFiles(req, res) {
+  return updateFilesByIDs(req, res, batchFile => {
+    batchFile.penRequestBatchStatusCode = PEN_REQ_BATCH_STATUS_CODES.ARCHIVED;
+    return batchFile;
+  });
+}
+
+function unarchiveFiles(req, res) {
+  return updateFilesByIDs(req, res, batchFile => {
+    batchFile.penRequestBatchStatusCode = PEN_REQ_BATCH_STATUS_CODES.UNARCHIVED;
+    batchFile.unarchivedUser = getUser(req).idir_username;
+    return batchFile;
+  });
 }
 
 module.exports = {
@@ -340,5 +356,6 @@ module.exports = {
   issueNewPen,
   userMatchSaga,
   userUnmatchSaga,
-  archiveFiles
+  archiveFiles,
+  unarchiveFiles
 };
