@@ -41,7 +41,7 @@
             <v-pagination color="#38598A" v-model="pageNumber" :length="studentHistoryResp.totalPages"></v-pagination>
           </v-col>
           <v-col cols="4" id="currentItemsDisplay">
-            Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ studentHistoryResp.totalElements }}
+            Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ studentHistoryResp.totalElements || 0 }}
           </v-col>
         </v-row>
       </v-col>
@@ -120,10 +120,10 @@ export default {
   computed: {
     ...mapGetters('student', ['historyActivityCodes']),
     showingFirstNumber() {
-      return ((this.pageNumber-1) * this.studentHistoryResp.pageable.pageSize + (this.studentHistoryResp.numberOfElements > 0 ? 1 : 0));
+      return ((this.pageNumber-1) * (this.studentHistoryResp.pageable.pageSize || 0) + ((this.studentHistoryResp.numberOfElements || 0) > 0 ? 1 : 0));
     },
     showingEndNumber() {
-      return ((this.pageNumber-1) * this.studentHistoryResp.pageable.pageSize + this.studentHistoryResp.numberOfElements);
+      return ((this.pageNumber-1) * (this.studentHistoryResp.pageable.pageSize || 0) + (this.studentHistoryResp.numberOfElements || 0));
     },
   },
   mounted() {

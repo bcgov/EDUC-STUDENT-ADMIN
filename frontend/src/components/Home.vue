@@ -152,7 +152,7 @@ import ApiService from '../common/apiService';
 import { Routes } from '../utils/constants';
 import PrimaryButton from './util/PrimaryButton';
 import router from '../router';
-import { isValidPEN, isValidMincode, isDateAfter1900 } from '../utils/validation';
+import { isValidPEN, isValidMincode, isPresentDateAndAfter1900 } from '../utils/validation';
 
 export default {
   name: 'home',
@@ -179,8 +179,11 @@ export default {
       penRules: [ v => (!v || isValidPEN(v)) || this.penHint],
       penHint: 'Fails check-digit test',
       mincodeRules: [ v => (!v || this.isValidDistrictOrMincode(v)) || 'Invalid district or mincode'],
-      loadDateRules: [ v => (!v || isDateAfter1900(v)) || 'Invalid date'],
+      loadDateRules: [ v => (!v || isPresentDateAndAfter1900(v)) || 'Invalid date'],
     };
+  },
+  async beforeMount() {
+    await this.$store.dispatch('app/getCodes');
   },
   mounted() {
     if(this.isValidPenRequestBatchUser) {
@@ -240,6 +243,7 @@ export default {
   },
   computed: {
     ...mapState('auth', ['isValidGMPUser','isValidUMPUser', 'isValidStudentSearchUser', 'isValidPenRequestBatchUser']),
+    ...mapState('app', ['mincodeSchoolNames', 'districtCodes']),
     requestTypes() {
       return REQUEST_TYPES;
     },
@@ -252,7 +256,7 @@ export default {
       }
 
       return (!this.mincode || this.isValidDistrictOrMincode(this.mincode)) &&
-        (!this.loadDate || isDateAfter1900(this.loadDate));
+        (!this.loadDate || isPresentDateAndAfter1900(this.loadDate));
     },
   },
   methods: {
@@ -279,7 +283,14 @@ export default {
       }
     },
     isValidDistrictOrMincode(v) {
-      return isValidMincode(v) && (v.length === 3 || v.length === 8);
+      if(isValidMincode(v) && (v.length === 3 || v.length === 8)) {
+        if(v.length === 3) {
+          return this.districtCodes.has(v);
+        } else {
+          return this.mincodeSchoolNames.has(v);
+        }
+      }
+      return false;
     },
     searchRequests() {
       router.push({ name: 'archivedRequestBatch', query: {mincode: this.mincode, loadDate: this.loadDate}});
