@@ -3,6 +3,7 @@ const Redis = require('./redis-client');
 const log = require('../../components/logger');
 const SagaEventKey = 'SAGA_EVENTS';
 const PRBSagaEventKey = 'PRB_SAGA_EVENTS';
+const ServicesSagaEventKey = 'SERVICES_SAGA_EVENTS';
 const safeStringify = require('fast-safe-stringify');
 const RedLock = require('redlock');
 const {LocalDateTime} = require('@js-joda/core');
@@ -102,6 +103,20 @@ const redisUtil = {
     return getSagaEventsByRedisKey(PRBSagaEventKey);
   },
 
+  /**
+   *
+   * @param event the event object to be stored , this contains sagaId, penRequestId,digitalId, eventPayload etc..
+   * @returns {Promise<void>}
+   */
+  async createPenServicesSagaRecordInRedis(event) {
+    await createSagaRecord.call(this, event, ServicesSagaEventKey);
+  },
+  async removePenServicesSagaRecordFromRedis(event) {
+    return await removeEventRecordFromRedis.call(this, event, ServicesSagaEventKey);
+  },
+  async getPenServicesSagaEvents() {
+    return getSagaEventsByRedisKey(ServicesSagaEventKey);
+  },
 
   getRedLock() {
     if (redLock) {

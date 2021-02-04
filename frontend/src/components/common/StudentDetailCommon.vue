@@ -468,6 +468,7 @@ import StudentDetailsTextField from '@/components/penreg/student/StudentDetailsT
 import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly';
 import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsComboBox';
 import StudentDetailsTextFieldSideCardReadOnly from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
+import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
 import {formatMincode, formatPen, formatDob} from '@/utils/format';
 import {sortBy,isEmpty} from 'lodash';
 import alertMixin from '../../mixins/alertMixin';
@@ -516,6 +517,7 @@ export default {
     StudentDetailsComboBox,
     StudentDetailsTextFieldReadOnly,
     StudentDetailsTextField,
+    StudentDetailsTemplateTextField,
     TertiaryButton,
     PrimaryButton
   },

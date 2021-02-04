@@ -56,6 +56,15 @@ async function getStudentByStudentId(req, res) {
         response.possibleMatches = possibleMatches;
       }
       if (mergesResponse && mergesResponse.length > 0) {
+        const mergeStudentIDs = mergesResponse.map((mergeRecord) => {
+          return mergeRecord.mergeStudentID;
+        }).join();
+        const studentsPage = await utils.getStudentsFromStudentAPIByTheirIds(utils.getBackendToken(req), mergeStudentIDs);
+        const students = studentsPage.content;
+        mergesResponse.forEach((merge) => {
+          merge.mergeStudent = students.find((student) => student.studentID === merge.mergeStudentID);
+        });
+
         response.merges = mergesResponse;
       }
       return res.status(200).json(response);
