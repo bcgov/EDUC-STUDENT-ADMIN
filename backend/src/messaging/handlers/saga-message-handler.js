@@ -16,7 +16,7 @@ const SagaTopics = [
   'PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_TOPIC',
   'PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_TOPIC',
   'PEN_REQUEST_BATCH_USER_UNMATCH_PROCESSING_TOPIC',
-  'MERGE_STUDENTS_SAGA_TOPIC'];
+  'PEN_SERVICES_MERGE_STUDENTS_SAGA_TOPIC'];
 
 const SagaEventWebSocketTopic = 'SAGA_EVENT_WS_TOPIC';
 
@@ -38,6 +38,8 @@ async function handleSagaMessage(msg, subject, replyTo,  nats) {
     let recordFoundInRedis;
     if (subject?.startsWith('PEN_REQUEST_BATCH')) {
       recordFoundInRedis = await redisUtil.removePenRequestBatchSagaRecordFromRedis(event);
+    } else if (subject?.startsWith('PEN_SERVICES')) {
+      recordFoundInRedis = await redisUtil.removePenServicesSagaRecordFromRedis(event);
     } else {
       recordFoundInRedis = await redisUtil.removeSagaRecordFromRedis(event);
     }

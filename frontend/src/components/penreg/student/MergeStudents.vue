@@ -332,7 +332,7 @@ export default {
       if (val) {
         const notificationData = JSON.parse(val);
         if (notificationData && notificationData.studentID && notificationData.studentID === this.student.studentID && notificationData.sagaStatus === 'COMPLETED') {
-          if (notificationData.sagaName === 'STUDENT_MERGE_COMPLETE_SAGA') {
+          if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_MERGE_COMPLETE_SAGA') {
             this.setSuccessAlert('Success! Merged has been completed');
             this.isProcessing = false;
           }

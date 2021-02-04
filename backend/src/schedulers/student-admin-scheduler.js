@@ -43,10 +43,16 @@ async function removeStaleSagas(staleSagas, sagaType) {
   try {
     const data = await getApiCredentials(); // get the tokens first to make api calls.
     for (const saga of staleSagas) {
-      if (sagaType === 'GMP_UMP') {
+      switch(sagaType) {
+      case 'GMP_UMP':
         sagaRecordFromAPIPromises.push(getData(data.accessToken, `${config.get('server:profileSagaAPIURL')}/${saga.sagaId}`));
-      } else if (sagaType === 'PEN_REQUEST_BATCH') {
+        break;
+      case 'PEN_REQUEST_BATCH':
         sagaRecordFromAPIPromises.push(getData(data.accessToken, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/${saga.sagaId}`));
+        break;
+      case 'PEN_SERVICES':
+        sagaRecordFromAPIPromises.push(getData(data.accessToken, `${config.get('server:penServices:rootURL')}/saga/${saga.sagaId}`));
+        break;
       }
     }
     const results = await Promise.allSettled(sagaRecordFromAPIPromises);
@@ -59,10 +65,16 @@ async function removeStaleSagas(staleSagas, sagaType) {
             sagaId: sagaFromAPI.sagaId,
             sagaStatus: sagaFromAPI.status
           };
-          if (sagaType === 'GMP_UMP') {
+          switch(sagaType) {
+          case 'GMP_UMP':
             recordFromRedis = await redisUtil.removeSagaRecordFromRedis(event);
-          } else if (sagaType === 'PEN_REQUEST_BATCH') {
+            break;
+          case 'PEN_REQUEST_BATCH':
             recordFromRedis = await redisUtil.removePenRequestBatchSagaRecordFromRedis(event);
+            break;
+          case 'PEN_SERVICES':
+            recordFromRedis = await redisUtil.removePenServicesSagaRecordFromRedis(event);
+            break;
           }
           if (recordFromRedis) {
             recordFromRedis.sagaStatus = sagaFromAPI.status;
@@ -92,6 +104,7 @@ try {
       await redLock.lock('locks:remove-stale-saga-record', 6000); // no need to release the lock as it will auto expire after 6000 ms.
       const staleSagas = findStaleSagaRecords(await redisUtil.getSagaEvents());
       const stalePRBSagas = findStaleSagaRecords(await redisUtil.getPenRequestBatchSagaEvents());
+      const staleServicesSagas = findStaleSagaRecords(await redisUtil.getPenServicesSagaEvents());
       if (staleSagas.length > 0) {
         log.info(`found ${staleSagas.length} stale GMP or UMP saga records`);
         removeStaleSagas(staleSagas, 'GMP_UMP').then(() => {
@@ -104,6 +117,14 @@ try {
         log.info(`found ${stalePRBSagas.length} stale PenRequestBatch saga records`);
         removeStaleSagas(stalePRBSagas, 'PEN_REQUEST_BATCH').then(() => {
           log.debug('remove stale PRB sagas completed');
+        }).catch((e) => {
+          log.error(e);
+        });
+      }
+      if (staleServicesSagas.length > 0) {
+        log.info(`found ${staleServicesSagas.length} stale PenServices saga records`);
+        removeStaleSagas(staleServicesSagas, 'PEN_SERVICES').then(() => {
+          log.debug('remove stale PenServices sagas completed');
         }).catch((e) => {
           log.error(e);
         });

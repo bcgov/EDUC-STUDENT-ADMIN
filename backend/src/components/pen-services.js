@@ -45,10 +45,8 @@ async function mergeStudents(req, res) {
 
   try {
     let mergeData = req.body;
-
     mergeData.mincode = mergeData.mincode?.replace(/ /g,'');
     mergeData.postalCode = mergeData.postalCode?.replace(/ /g,'');
-    //mergeData.dob = mergeData.dob?.replace(/-/g,'');
 
     const sagaReq = {
       ...stripAuditColumns(mergeData),
@@ -57,11 +55,14 @@ async function mergeStudents(req, res) {
 
     const sagaId = await postData(token, `${config.get('server:penServices:mergeStudentsURL')}`, sagaReq, null, getUser(req).idir_username);
 
-    await createStudentMergeCompleteSagaRecordInRedis(sagaId, 'STUDENT_MERGE_COMPLETE_SAGA', 'mergeStudents', mergeData.studentID);
+    await createStudentMergeCompleteSagaRecordInRedis(sagaId, 'PEN_SERVICES_STUDENT_MERGE_COMPLETE_SAGA', 'merge students', mergeData.studentID);
 
     return res.status(200).json(sagaId);
   } catch (e) {
-    logApiError(e, 'mergeStudents', 'Error merging students.');
+    logApiError(e, 'mergeStudents', 'Error occurred while attempting to merge students.');
+    if (e.status === HttpStatus.CONFLICT) {
+      return errorResponse(res, 'Another saga in progress', HttpStatus.CONFLICT);
+    }
     return errorResponse(res);
   }
 }
@@ -74,7 +75,7 @@ function createStudentMergeCompleteSagaRecordInRedis(sagaId, sagaName, operation
     sagaName
   };
   log.info(`going to store event object in redis for ${operation} request :: `, event);
-  return redisUtil.createSagaRecordInRedis(event);
+  return redisUtil.createPenServicesSagaRecordInRedis(event);
 }
 
 module.exports = {
