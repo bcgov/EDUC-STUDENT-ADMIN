@@ -76,7 +76,7 @@
         <v-pagination color="#38598A" v-model="pageNumber" :length="prbStudentSearchResponse.totalPages"></v-pagination>
       </v-col>
       <v-col cols="4" id="currentItemsDisplay">
-        Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ prbStudentSearchResponse.totalElements }}
+        Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ prbStudentSearchResponse.totalElements || 0 }}
       </v-col>
     </v-row>
   </div>
@@ -122,7 +122,7 @@ export default {
     };
   },
   async beforeMount() {
-    await this.$store.dispatch('prbStudentSearch/getCodes');
+    await this.$store.dispatch('app/getCodes');
   },
   computed: {
     ...mapState('prbStudentSearch', ['prbStudentSearchResponse', 'prbStudentSearchCriteria', 'currentPrbStudentSearchParams']),
@@ -144,10 +144,10 @@ export default {
       }
     },
     showingFirstNumber() {
-      return ((this.pageNumber-1) * this.prbStudentSearchResponse.pageable.pageSize + (this.prbStudentSearchResponse.numberOfElements > 0 ? 1 : 0));
+      return ((this.pageNumber-1) * (this.prbStudentSearchResponse.pageable.pageSize || 0) + ((this.prbStudentSearchResponse.numberOfElements || 0) > 0 ? 1 : 0));
     },
     showingEndNumber() {
-      return ((this.pageNumber-1) * this.prbStudentSearchResponse.pageable.pageSize + this.prbStudentSearchResponse.numberOfElements);
+      return ((this.pageNumber-1) * (this.prbStudentSearchResponse.pageable.pageSize || 0) + (this.prbStudentSearchResponse.numberOfElements || 0));
     },
     studentStatuses() {
       return sortBy(this.prbStudentStatuses.filter(status => status.penRequestBatchStudentStatusCode !== 'LOADED'), ['displayOrder']).map(status => ({
@@ -177,7 +177,7 @@ export default {
   methods: {
     ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse']),
     getSchoolName(request) {
-      return this.$store.state['prbStudentSearch'].mincodeSchoolNames.get(request?.mincode?.replace(' ',''));
+      return this.$store.state['app'].mincodeSchoolNames.get(request?.mincode?.replace(' ',''));
     },
     clickViewSelected() {
       if(this.selectedRecords?.length > 0) {

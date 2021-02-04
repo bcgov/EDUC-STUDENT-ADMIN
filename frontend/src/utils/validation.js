@@ -64,12 +64,13 @@ export function isDateAfter1900(dob, pattern='uuuu/MM/dd') {
   return false;
 }
 
-export function isValidDOBAndAfter1900(dob, pattern='uuuu/MM/dd') {
+export function isPresentDateAndAfter1900(date, pattern='uuuu/MM/dd', includingCurrentDate=true) {
   const formatter = (new DateTimeFormatterBuilder).appendPattern(pattern).toFormatter(ResolverStyle.STRICT);
   try {
-    const dateObject = LocalDate.parse(dob, formatter);
+    const dateObject = LocalDate.parse(date, formatter);
     const dateBefore1900 = LocalDate.parse('1899/12/31', datePatternWithSlash);
-    if(dateObject.isBefore(LocalDate.now()) && dateObject.isAfter(dateBefore1900)){
+    const maxDate = includingCurrentDate ? LocalDate.now().plusDays(1) : LocalDate.now();
+    if( dateObject.isBefore(maxDate) && dateObject.isAfter(dateBefore1900)){
       return true;
     }
   }
@@ -77,6 +78,10 @@ export function isValidDOBAndAfter1900(dob, pattern='uuuu/MM/dd') {
     //Do nothing
   }
   return false;
+}
+
+export function isValidDOBAndAfter1900(dob, pattern='uuuu/MM/dd') {
+  return isPresentDateAndAfter1900(dob, pattern, false);
 }
 
 export function isOlderThan(date1, date2, pattern='uuuu/MM/dd') {

@@ -48,7 +48,7 @@
         <v-pagination color="#38598A" v-model="pageNumber" :length="studentSearchResponse.totalPages"></v-pagination>
       </v-col>
       <v-col cols="4" id="currentItemsDisplay">
-        Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ studentSearchResponse.totalElements }}
+        Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ studentSearchResponse.totalElements || 0 }}
       </v-col>
     </v-row>
   </div>
@@ -124,11 +124,10 @@ export default {
       }
     },
     showingFirstNumber() {
-      return (this.studentSearchResponse.totalElements === 0) 
-        ? 0 : ((this.pageNumber-1) * this.studentSearchResponse.pageable.pageSize + 1);
+      return ((this.pageNumber-1) * (this.studentSearchResponse.pageable.pageSize || 0) + ((this.studentSearchResponse.numberOfElements || 0) > 0 ? 1 : 0));
     },
     showingEndNumber() {
-      return ((this.pageNumber-1) * this.studentSearchResponse.pageable.pageSize + this.studentSearchResponse.numberOfElements);
+      return ((this.pageNumber-1) * (this.studentSearchResponse.pageable.pageSize || 0) + (this.studentSearchResponse.numberOfElements || 0));
     }
   },
   methods: {

@@ -72,7 +72,7 @@
         <v-pagination color="#38598A" v-model="pageNumber" :length="penRequestBatchResponse.totalPages"></v-pagination>
       </v-col>
       <v-col cols="4" id="currentItemsDisplay">
-        Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ penRequestBatchResponse.totalElements }}
+        Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ (penRequestBatchResponse.totalElements || 0) }}
       </v-col>
     </v-row>
   </div>
@@ -140,10 +140,10 @@ export default {
       return this.headers.some(header => header.filterName);
     },
     showingFirstNumber() {
-      return ((this.pageNumber-1) * this.penRequestBatchResponse.pageable.pageSize + (this.penRequestBatchResponse.numberOfElements > 0 ? 1 : 0));
+      return ((this.pageNumber-1) * (this.penRequestBatchResponse.pageable.pageSize || 0) + ((this.penRequestBatchResponse.numberOfElements || 0)  > 0 ? 1 : 0));
     },
     showingEndNumber() {
-      return ((this.pageNumber-1) * this.penRequestBatchResponse.pageable.pageSize + this.penRequestBatchResponse.numberOfElements);
+      return ((this.pageNumber-1) * (this.penRequestBatchResponse.pageable.pageSize || 0) + (this.penRequestBatchResponse.numberOfElements || 0));
     },
     penRequestBatchStore() {
       return this.archived ? 'archivedRequestBatch' : 'penRequestBatch';
