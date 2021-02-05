@@ -354,6 +354,7 @@ export default {
           if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_MERGE_COMPLETE_SAGA') {
             this.setSuccessAlert('Success! Your request to merge is completed.');
             this.isProcessing = false;
+            this.mergeSagaComplete = true;
           }
         }
       }
