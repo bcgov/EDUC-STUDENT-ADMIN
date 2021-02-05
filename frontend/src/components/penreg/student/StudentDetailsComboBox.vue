@@ -33,7 +33,7 @@
     <v-row>
       <v-col class="py-0" style="margin-top: -0.5em;">
         <v-text-field
-            id='revertDemog'
+            :id="revertId"
             v-on:click="revertField(name)"
             class="my-0 onhoverEdit revert customNoBorder ml-3"
             readonly
@@ -48,7 +48,8 @@
 </template>
 
 <script>
-import { STUDENT_CODES } from '../../../utils/constants';
+import {STUDENT_CODES} from '@/utils/constants';
+
 export default {
   name: 'StudentDetailsComboBox',
   props: {
