@@ -212,6 +212,7 @@ const router = new VueRouter({
         searchCriteria: JSON.parse(route.query.searchCriteria ?? '[]'),
         prbStudentIDs: route.query.prbStudentIDs,
         prBatchIDs: route.query.batchIDs,
+        archived: String(route.query.archived).toLowerCase() === 'true'
       }),
       meta: {
         pageTitle: PAGE_TITLES.PEN_REQ_BATCH_STUDENT_DETAILS,

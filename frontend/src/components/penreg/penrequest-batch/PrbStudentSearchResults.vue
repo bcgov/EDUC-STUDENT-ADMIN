@@ -188,7 +188,8 @@ export default {
           totalNumber: this.selectedRecords.length, 
           batchCount: batchIDs.length, 
           prbStudentIDs,
-          batchIDs
+          batchIDs,
+          archived: this.archived
         };
         router.push({name: 'prbStudentDetails', query});
       } else {
@@ -201,6 +202,7 @@ export default {
         totalNumber: this.prbStudentSearchResponse.totalElements, 
         batchCount: this.selectedFiles.length, 
         searchCriteria: JSON.stringify(this.prbStudentSearchCriteria),
+        archived: this.archived
       };
       router.push({name: 'prbStudentDetails', query});
     },

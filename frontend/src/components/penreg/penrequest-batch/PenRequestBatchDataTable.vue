@@ -267,7 +267,7 @@ export default {
     border-left: thin solid #d7d7d7;
   }
   #file-list /deep/ table tr.first-active-file td{ 
-    border-top: thin solid #2E8540;
+    border-top: thin solid #d8d8d8;
   }
   #file-list /deep/ table { 
     border-top: thin solid #d7d7d7;
