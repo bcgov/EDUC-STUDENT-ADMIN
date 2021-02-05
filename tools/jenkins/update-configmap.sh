@@ -85,6 +85,7 @@ getPublicKey(){
     executorID= $KCADM_FILE_BIN_FOLDER/kcadm.sh get keys -r $SOAM_KC_REALM_ID | grep -Po 'publicKey" : "\K([^"]*)'
 }
 
+#Test comment
 echo Fetching public key from SOAM
 soamFullPublicKey="-----BEGIN PUBLIC KEY----- $(getPublicKey) -----END PUBLIC KEY-----"
 newline=$'\n'
