@@ -10,13 +10,13 @@
         <v-row no-gutters class="mb-2">
           <v-col offset="2" cols="2">
             <p class="penLabel" v-if="!mergeSagaComplete">{{formatPen(student.pen)}}</p>
-            <p class="penLabel" v-if="mergeSagaComplete"><a @click="openStudentDetails(student.studentID)">
+            <p class="penLabel" v-else><a @click="openStudentDetails(student.studentID)">
               {{ formatPen(student.pen) }}
             </a></p>
           </v-col>
           <v-col offset="2" cols="2">
             <p class="penLabel" v-if="!mergeSagaComplete">{{formatPen(mergedStudent.pen)}}</p>
-            <p class="penLabel" v-if="mergeSagaComplete"><a @click="openStudentDetails(mergedStudent.studentID)">
+            <p class="penLabel" v-else><a @click="openStudentDetails(mergedStudent.studentID)">
               {{ formatPen(mergedStudent.pen) }}
             </a></p>
           </v-col>
