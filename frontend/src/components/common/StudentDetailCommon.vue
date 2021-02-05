@@ -74,7 +74,7 @@
                                   @changeStudentObjectValue="changeStudentObjectValue"
                                   :model="studentCopy.statusCode?studentCopy.statusCode:''"
                                   :has-edits="hasEdits" tab-index="12" :revert-field="revertField"
-                                  :items="getStatusLevels()" revert-id="revertDemogCode"
+                                  :items="getStatusLevels()" revert-id="revertStatusCode"
                                   :deceased-dialog="openDeceasedDialog"
                                   :disabled="isFieldDisabled('statusCode')"></StudentDetailsComboBox>
         </v-card>
@@ -463,24 +463,26 @@
 import {mapGetters, mapState} from 'vuex';
 import moment from 'moment';
 import ApiService from '../../common/apiService';
-import {REQUEST_TYPES, Routes, STUDENT_DETAILS_FIELDS, STUDENT_CODES} from '@/utils/constants';
+import {REQUEST_TYPES, Routes, STUDENT_CODES, STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import StudentDetailsTextField from '@/components/penreg/student/StudentDetailsTextField';
 import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly';
 import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsComboBox';
-import StudentDetailsTextFieldSideCardReadOnly from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
+import StudentDetailsTextFieldSideCardReadOnly
+  from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
 import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
-import {formatMincode, formatPen, formatDob} from '@/utils/format';
-import {sortBy,isEmpty} from 'lodash';
+import {formatDob, formatMincode, formatPen} from '@/utils/format';
+import {isEmpty, sortBy} from 'lodash';
 import alertMixin from '../../mixins/alertMixin';
 import schoolMixin from '../../mixins/schoolMixin';
 import ConfirmationDialog from '../util/ConfirmationDialog';
 import AlertMessage from '../util/AlertMessage';
 import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard';
 import CompareDemographicModal from './CompareDemographicModal';
-import {isValidMincode, isValidDob} from '@/utils/validation';
+import {isValidDob, isValidMincode} from '@/utils/validation';
 import FormattedTextField from '@/components/util/FormattedTextField';
 import TertiaryButton from '@/components/util/TertiaryButton';
 import PrimaryButton from '@/components/util/PrimaryButton';
+
 const JSJoda = require('@js-joda/core');
 export default {
   name: 'studentDetailCommon',
@@ -641,14 +643,6 @@ export default {
     },
     changeStudentObjectValue(key, value) {
       this.studentCopy[`${key}`] = value;
-      if (key === STUDENT_DETAILS_FIELDS.STATUS_CODE) {
-        this.setEnableDisableForFields(false);
-      }
-      if (key === STUDENT_DETAILS_FIELDS.STATUS_CODE && value === STUDENT_CODES.MERGED) {
-        this.setEnableDisableForFields(true, STUDENT_DETAILS_FIELDS.MERGED_TO, STUDENT_DETAILS_FIELDS.PEN, STUDENT_DETAILS_FIELDS.STATUS_CODE);
-      } else if (key === STUDENT_DETAILS_FIELDS.STATUS_CODE &&( value === STUDENT_CODES.DECEASED || value === STUDENT_CODES.DELETED)) {
-        this.setEnableDisableForFields(true, STUDENT_DETAILS_FIELDS.STATUS_CODE);
-      }
     },
     setEnableDisableForFields(value, ...excludedFields) {
       this.enableDisableFieldsMap.forEach((fieldValue, fieldKey) => excludedFields.includes(fieldKey) ? this.enableDisableFieldsMap.set(fieldKey, fieldValue) : this.enableDisableFieldsMap.set(fieldKey, value));
@@ -782,11 +776,6 @@ export default {
     },
     revertField(key) {
       this.studentCopy[key] = this.origStudent[key];
-      if(key === STUDENT_DETAILS_FIELDS.STATUS_CODE && this.origStudent[key] ===STUDENT_CODES.DECEASED ){
-        this.setEnableDisableForFields(true);
-      }else if(key === STUDENT_DETAILS_FIELDS.STATUS_CODE && this.origStudent[key] ===STUDENT_CODES.ACTIVE ){
-        this.setEnableDisableForFields(false);
-      }
     },
     revertDOBField(value) {
       this.revertField(value);
@@ -848,12 +837,10 @@ export default {
     confirmDeceasedDialog() {
       this.deceasedDialog = false;
       this.studentCopy.statusCode = STUDENT_CODES.DECEASED;
-      this.setEnableDisableForFields(true);
     },
     cancelDeceasedDialog() {
       this.deceasedDialog = false;
       this.studentCopy.statusCode = STUDENT_CODES.ACTIVE;
-      this.setEnableDisableForFields(false);
     },
     openDeceasedDialog() {
       if (this.studentCopy.statusCode === STUDENT_CODES.DECEASED) {
@@ -865,6 +852,7 @@ export default {
         ApiService.apiAxios
           .put(Routes['student'].ROOT_ENDPOINT+'/'+ this.studentID, this.prepPut(this.studentCopy))
           .then(response => {
+            this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false)); // enable all the fields here, required fields to be disabled will be done in this.setStudent method.
             this.setStudent(response.data);
             this.$emit('update:student', response.data);
             this.setSuccessAlert('Student data updated successfully.');
