@@ -75,7 +75,7 @@
                                   :model="studentCopy.statusCode?studentCopy.statusCode:''"
                                   :has-edits="hasEdits" tab-index="12" :revert-field="revertField"
                                   :items="getStatusLevels()" revert-id="revertStatusCode"
-                                  :deceased-dialog="openDeceasedDialog"
+
                                   :disabled="isFieldDisabled('statusCode')"></StudentDetailsComboBox>
         </v-card>
       </v-col>
