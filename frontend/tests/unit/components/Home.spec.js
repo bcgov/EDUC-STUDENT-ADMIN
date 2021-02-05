@@ -48,8 +48,15 @@ describe('Archived Request Search Button', () => {
     wrapper.find('#requestsSearchBtn').trigger('click');
   }
 
+  const mincodeSchoolNames = new Map();
+  mincodeSchoolNames.set('10212345', 'School name');
+  const districtCodes = new Set();
+  districtCodes.add('102');
+
   beforeEach(() => {
     routerSpy = jest.spyOn(appRouter, 'push').mockImplementation(() => {});
+
+
 
     store = new Vuex.Store({
       modules: {
@@ -69,6 +76,17 @@ describe('Archived Request Search Button', () => {
               state.isValidPenRequestBatchUser = isValid;
             },
           }
+        },
+        app: {
+          namespaced: true,
+          state: {
+            mincodeSchoolNames,
+            districtCodes
+          },
+          actions: {
+            getCodes() {
+            },
+          },
         },
       }
     });
