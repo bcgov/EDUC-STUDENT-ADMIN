@@ -108,7 +108,7 @@
       <v-divider></v-divider>
       <v-card-actions class="px-0">
         <v-spacer></v-spacer>
-        <slot name="actions" :clearError="clearError" :validateMerge="validateMerge" :merge="merge"></slot>
+        <slot name="actions" :validateMerge="validateMerge" :merge="merge"></slot>
       </v-card-actions>
     </div>
   </v-card>
@@ -184,7 +184,7 @@ export default {
     };
   },
   mounted() {
-    this.selectedRecords = _.sortBy(this.selectedRecords, o => o.pen);
+    _.sortBy(this.selectedRecords, o => o.pen);
     this.studentRecords.forEach(student => {
       this.getSldData(student.pen);
     });
@@ -247,6 +247,7 @@ export default {
         });
     },
     isValidPEN,
+    isOlderThan,
     openStudentDetails(studentID) {
       const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
       window.open(route.href, '_blank');
@@ -273,7 +274,7 @@ export default {
       return cnt !== 2;
     },
     validateStudentStatuses(mergedToStudent, mergedFromStudent) {
-      if (mergedToStudent.status === 'M' || mergedFromStudent.status === 'M') {
+      if (mergedToStudent.statusCode === 'M' || mergedFromStudent.statusCode === 'M') {
         this.setFailureAlert('Error! PENs cannot be merged, as one of the PENs has a status of merged.');
         return false;
       }
@@ -309,7 +310,7 @@ export default {
       // Determine which is the oldest, which will be mergedToPen
       let mergedToPen = null;
       let mergedFromPen = null;
-      if (isOlderThan(selectedStudents[0].createDate, selectedStudents[1].createDate)) {
+      if (this.isOlderThan(selectedStudents[0].createDate, selectedStudents[1].createDate)) {
         mergedToPen = selectedStudents[0];
         mergedFromPen = selectedStudents[1];
       } else {

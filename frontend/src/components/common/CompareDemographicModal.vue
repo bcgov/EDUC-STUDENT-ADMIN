@@ -26,7 +26,7 @@
         :closeCompareModal="closeCompareModal">
         <template v-slot:actions="{clearError, validateMerge, merge}">
           <PrimaryButton id="compareModalCancelBtn" text="Cancel" secondary @click.native="[closeCompareModal(), clearError()]"></PrimaryButton>
-          <PrimaryButton id="mergeBtn" text="Merge PENs" primary :disabled="validateMerge()" @click.native="[merge(), clearError()]"></PrimaryButton>
+          <PrimaryButton id="mergeBtn" text="Merge PENs" primary :disabled="validateMerge()" @click.native="merge()"></PrimaryButton>
         </template>
       </CompareDemographicsCommon>
     </v-card>

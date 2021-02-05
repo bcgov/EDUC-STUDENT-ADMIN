@@ -2,7 +2,7 @@
   <CompareDemographicsCommon :selectedRecords.sync="selectedRecords">
     <template v-slot:actions="{clearError, validateMerge, merge}">
       <PrimaryButton id="compareClearBtn" text="Clear" secondary @click.native="[cancel(), clearError()]"></PrimaryButton>
-      <PrimaryButton id="mergeBtn" text="Merge PENs" primary :disabled="validateMerge()" @click.native="[merge(), clearError()]"></PrimaryButton>
+      <PrimaryButton id="mergeBtn" text="Merge PENs" primary :disabled="validateMerge()" @click.native="merge()"></PrimaryButton>
     </template>
   </CompareDemographicsCommon>
 </template>
