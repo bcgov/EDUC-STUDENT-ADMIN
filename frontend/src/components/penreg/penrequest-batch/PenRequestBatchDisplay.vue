@@ -188,6 +188,7 @@ export default {
         totalNumber, 
         batchCount: this.selectedFiles.length, 
         searchCriteria: JSON.stringify(searchCriteriaList),
+        archived: false,
       };
       router.push({name: 'prbStudentDetails', query});
     },

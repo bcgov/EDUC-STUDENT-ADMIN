@@ -188,6 +188,10 @@ export default {
     prBatchIDs: {
       type: [Array, String],
       default: () => []
+    },
+    archived: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -272,7 +276,6 @@ export default {
   },
   computed: {
     ...mapState('setNavigation', ['currentRoute']),
-    ...mapState('penRequestBatch', ['selectedFiles', 'prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
     ...mapState('notifications', ['notification']),
     disableMatchUnmatch() {
       return this.prbStudent?.sagaInProgress || this.isArchived;
@@ -302,6 +305,9 @@ export default {
     },
     isArchived(){
       return this.batchFile?.penRequestBatchStatusCode === 'ARCHIVED';
+    },
+    penRequestBatchStore() {
+      return this.archived ? 'archivedRequestBatch' : 'penRequestBatch';
     }
   },
   created() {
@@ -315,7 +321,6 @@ export default {
   methods: {
     ...mapMutations('setNavigation', ['setNavigation', 'clearNavigation']),
     ...mapMutations('prbStudentSearch', [ 'setSelectedRecords']),
-    ...mapMutations('penRequestBatch', ['setSelectedFiles']),
     formatPen,
     setBatchNav() {
       this.setNavigation({
@@ -480,10 +485,11 @@ export default {
       return this.getPenRequestsFromApi(params);
     },
     async retrieveBatchFile() {
-      if(!this.selectedFiles || this.selectedFiles.length === 0) {
+      const selectedFiles = this.$store.state[this.penRequestBatchStore].selectedFiles;
+      if(!selectedFiles || selectedFiles.length === 0) {
         await this.retrieveSelectedFiles();
       }
-      this.batchFile = this.selectedFiles.find(file => file.penRequestBatchID === this.prbStudent.penRequestBatchID);
+      this.batchFile = this.$store.state[this.penRequestBatchStore].selectedFiles.find(file => file.penRequestBatchID === this.prbStudent.penRequestBatchID);
     },
     retrieveSelectedFiles() {
       const searchQueries = [
@@ -504,7 +510,7 @@ export default {
 
       return ApiService.apiAxios.get(Routes['penRequestBatch'].FILES_URL, params)
         .then(response => {
-          response.data && this.setSelectedFiles(response.data.content);
+          response.data && this.$store.commit(`${this.penRequestBatchStore}/setSelectedFiles`, response.data.content);
         });
     },
     getPenRequestsFromApi(params) {
