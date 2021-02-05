@@ -1,4 +1,5 @@
 import { REQUEST_TYPES } from '../../utils/constants';
+import ApiService from '@/common/apiService';
 
 export default {
   namespaced: true,
@@ -10,7 +11,9 @@ export default {
     requestType: REQUEST_TYPES.penRequest.name,
     requestTypeLabel: REQUEST_TYPES.penRequest.label,
     pageTitle: null,
-    stickyInfoPanelHeight: null
+    stickyInfoPanelHeight: null,
+    mincodeSchoolNames: new Map(),
+    districtCodes: new Set(),
   },
   getters: {
     request: state => state.request,
@@ -45,6 +48,23 @@ export default {
     },
     setStickyInfoPanelHeight: (state, stickyInfoPanelHeight) => {
       state.stickyInfoPanelHeight = stickyInfoPanelHeight;
-    }
+    },
+    setMincodeSchoolNameAndDistrictCodes(state, mincodeSchoolNameList) {
+      state.mincodeSchoolNames = new Map();
+      mincodeSchoolNameList.forEach(element => {
+        state.mincodeSchoolNames.set(element.mincode, element.schoolName);
+        state.districtCodes.add(element.mincode?.substring(0, 3));
+      });
+    },
+  },
+  actions: {
+    async getCodes({ commit, state}) {
+      if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
+        if(state.mincodeSchoolNames.size === 0) {
+          const response = await ApiService.getMincodeSchoolNames();
+          commit('setMincodeSchoolNameAndDistrictCodes', response.data);
+        }
+      }
+    },
   },
 };

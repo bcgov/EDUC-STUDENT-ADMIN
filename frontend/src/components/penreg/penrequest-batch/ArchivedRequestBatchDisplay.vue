@@ -47,7 +47,7 @@
                     label="Date From"
                     @keyup.enter="enterPushed()"
                     v-on:input="searchHasValues"
-                    :rules="validateField(batchFileSearchParams.load.startDate, isDateAfter1900, dateHint)"
+                    :rules="validateField(batchFileSearchParams.load.startDate, isPresentDateAndAfter1900, dateHint)"
                     dense
                   ></v-text-field>
                 </v-col>
@@ -60,7 +60,7 @@
                     label="Date To"
                     @keyup.enter="enterPushed()"
                     v-on:input="searchHasValues"
-                    :rules="validateField(batchFileSearchParams.load.endDate, isDateAfter1900, dateHint)"
+                    :rules="validateField(batchFileSearchParams.load.endDate, isPresentDateAndAfter1900, dateHint)"
                     dense
                   ></v-text-field>
                 </v-col>
@@ -190,7 +190,7 @@ import ArchivedRequestBatchList from './ArchivedRequestBatchList';
 import PrimaryButton from '../../util/PrimaryButton';
 import router from '../../../router';
 import alertMixin from '../../../mixins/alertMixin';
-import { isValidMincode, isValidAlphanumericValue, isDateAfter1900, isValidDob, isValidPEN, isNotEmptyInputParams } from '../../../utils/validation';
+import { isValidMincode, isValidAlphanumericValue, isPresentDateAndAfter1900, isValidDob, isValidPEN, isNotEmptyInputParams } from '../../../utils/validation';
 import AlertMessage from '../../util/AlertMessage';
 import { deepCloneObject, setEmptyInputParams } from '../../../utils/common';
 import pluralize from 'pluralize';
@@ -246,9 +246,11 @@ export default {
   created() {
     this.$store.dispatch('penRequestBatch/getCodes');
     this.batchFileSearchParams = deepCloneObject(this.currentBatchFileSearchParams);
+  },
+  mounted() {
     this.batchFileSearchParams.mincode = this.batchFileSearchParams.mincode || this.mincode;
     this.batchFileSearchParams.load.startDate = this.batchFileSearchParams.load.startDate || this.loadDate;
-    this.searchHasValues();
+    this.enterPushed();
   },
   methods: {
     ...mapMutations('prbStudentSearch', ['clearPrbStudentSearchState']),
@@ -304,7 +306,7 @@ export default {
       params[fieldName] = params[fieldName] && params[fieldName].toUpperCase();
     },
     isValidMincode,
-    isDateAfter1900,
+    isPresentDateAndAfter1900,
     isValidDob,
     isValidPEN,
     isValidGender(code) {

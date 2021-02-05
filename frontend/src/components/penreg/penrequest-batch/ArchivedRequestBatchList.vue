@@ -113,10 +113,6 @@ export default {
       ];
     },
   },
-  created(){
-    this.isFilterOperation = true;
-    this.pagination();
-  },
   methods: {
     ...mapMutations('archivedRequestBatch', ['setSelectedFiles', 'setPenRequestBatchResponse', 'setCurrentBatchFileSearchParams']),
     initializeFiles(files) {
