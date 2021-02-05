@@ -13,7 +13,7 @@
             :id="name"
             :tabindex="tabIndex"
             v-on:keyup.tab="[editing = true, hovering = true]"
-            v-on:change="[editing = false, hovering = false, $emit('changeStudentObjectValue', name, fieldModel), name==='statusCode' ? deceasedDialog() : '' ]"
+            v-on:change="[editing = false, hovering = false, $emit('changeStudentObjectValue', name, fieldModel)]"
             class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
             :class="{darkBackgound: hovering || hasEdits(name)}"
             color="#FFFFFF"
