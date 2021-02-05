@@ -124,7 +124,8 @@ export default {
       }
     },
     showingFirstNumber() {
-      return ((this.pageNumber-1) * this.studentSearchResponse.pageable.pageSize + 1);
+      return (this.studentSearchResponse.totalElements === 0) 
+        ? 0 : ((this.pageNumber-1) * this.studentSearchResponse.pageable.pageSize + 1);
     },
     showingEndNumber() {
       return ((this.pageNumber-1) * this.studentSearchResponse.pageable.pageSize + this.studentSearchResponse.numberOfElements);
