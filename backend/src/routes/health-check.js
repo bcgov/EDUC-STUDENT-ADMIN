@@ -1,7 +1,5 @@
 'use strict';
-const redis = require('../util/redis/redis-client');
-const nats = require('../messaging/message-pub-sub');
-const express = require('express');
+
 
 class HealthCheckController {
   constructor(redis, nats, express) {
@@ -24,6 +22,8 @@ class HealthCheckController {
   }
 }
 
-
-let healthCheckController = new HealthCheckController(redis, nats, express);
+const REDIS = require('../util/redis/redis-client');
+const NATS = require('../messaging/message-pub-sub');
+const EXPRESS = require('express');
+let healthCheckController = new HealthCheckController(REDIS, NATS, EXPRESS);
 module.exports = healthCheckController;
