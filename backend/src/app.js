@@ -34,7 +34,7 @@ const penServicesRouter = require('./routes/pen-services-router');
 const schoolsRouter = require('./routes/schools');
 const penTraxRouter = require('./routes/penTrax');
 const promMid = require('express-prometheus-middleware');
-const actuator = require('express-actuator');
+
 const messagePubSub = require('./messaging/message-pub-sub');
 messagePubSub.init();
 messagePubSub.callbacks();
@@ -47,12 +47,6 @@ app.set('trust proxy', 1);
 app.use(cors());
 app.use(helmet());
 app.use(nocache());
-const options = {
-  basePath: '/api', // It will set /management/info instead of /info
-  infoGitMode: 'simple', // the amount of git information you want to expose, 'simple' or 'full'
-  customEndpoints: [] // array of extra endpoints
-};
-app.use(actuator(options));
 app.use(promMid({
   metricsPath: '/api/prometheus',
   collectDefaultMetrics: true,
@@ -153,7 +147,7 @@ passport.deserializeUser((obj, next) => next(null, obj));
 
 //set up routing to auth and main API
 app.use(/(\/api)?/, apiRouter);
-
+apiRouter.use(require('./routes/health-check').router);
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/penRequest', penRequestRouter);
 apiRouter.use('/penRequestBatch', penRequestBatchRouter);
