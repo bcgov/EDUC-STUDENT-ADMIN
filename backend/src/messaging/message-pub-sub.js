@@ -3,6 +3,7 @@ const config = require('../config/index');
 const log = require('../components/logger');
 const SagaMessageHandler = require('./handlers/saga-message-handler');
 let connection;
+let connectionClosed = false;
 const server = config.get('messaging:natsUrl');
 const nats = require('nats');
 const natsOptions = {
@@ -37,7 +38,7 @@ const NATS = {
     });
     connection.on('close', (error) => {
       log.error('NATS closed', error);
-      process.exit(1);
+      connectionClosed = true;
     });
     connection.on('reconnecting', () => {
       log.error('NATS reconnecting');
@@ -50,6 +51,9 @@ const NATS = {
     if (connection) {
       connection.close();
     }
+  },
+  isConnectionClosed() {
+    return connectionClosed;
   },
   /**
    * This is the synchronous request/reply pattern of nats. <b> It expects only one response from the responder.
