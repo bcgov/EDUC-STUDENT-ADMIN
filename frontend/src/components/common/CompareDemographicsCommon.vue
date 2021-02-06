@@ -45,7 +45,7 @@
     <div v-for="(students, index) in studentRecords" :key="index" class="pb-2">
       <v-row id="studentDemographicsTableTopRow" class="studentDemographicsTable" no-gutters>
         <span class="px-2 flexBox">
-          <v-checkbox dense class="sldCheckbox pa-0 ma-0" color="#606060"
+          <v-checkbox dense class="studentCheckbox pa-0 ma-0" color="#606060"
                       v-model="checkedStudents[index]"
                       @change.native="validateMerge"></v-checkbox>
           <a @click="updateSldRowDisplay(students.pen, !sldDataTablesToDisplay[students.pen])">
@@ -65,7 +65,7 @@
         </span>
       </v-row>
       <v-row id="studentDemographicsTableBottomRow" class="studentDemographicsTable pb-2" no-gutters>
-        <span class="px-4">
+        <span class="pl-11">
           Demog Code: {{ students.demogCode }}
         </span>
         <v-spacer></v-spacer>
@@ -84,8 +84,6 @@
         <template v-slot:item="props">
           <tr>
             <td v-for="header in props.headers" :key="header.id" :class="header.id">
-              <v-checkbox dense v-if="header.type" class="sldCheckbox pa-0 ma-0" color="#606060"
-                          @change="props.select($event)"></v-checkbox>
               <span v-if="header.value === 'mincode'">
                 {{ props.item.distNo + ' ' + props.item.schlNo }}
               </span>
@@ -353,13 +351,13 @@ export default {
   .paginatedButtons {
     color: #38598A;
   }
-  .sldCheckbox /deep/ .v-input--selection-controls__input {
+  .studentCheckbox /deep/ .v-input--selection-controls__input {
     margin: 0;
   }
-  .sldCheckbox /deep/ .v-messages {
+  .studentCheckbox /deep/ .v-messages {
     display: none;
   }
-  .sldCheckbox /deep/ .v-input__slot {
+  .studentCheckbox /deep/ .v-input__slot {
     margin-bottom: 0;
     padding-top: 0;
   }
@@ -410,6 +408,10 @@ export default {
     vertical-align: top;
     padding-top: 6px;
     width: 12%;
+  }
+
+  .sldTable {
+    font-size: 0.75rem;
   }
 
   .sldTable /deep/ tr th:nth-child(1),
