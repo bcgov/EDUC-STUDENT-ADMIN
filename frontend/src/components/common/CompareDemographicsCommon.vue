@@ -83,13 +83,27 @@
               hide-default-footer>
         <template v-slot:item="props">
           <tr>
-            <td v-for="header in props.headers" :key="header.id" :class="header.id">
-              <span v-if="header.value === 'mincode'">
-                {{ props.item.distNo + ' ' + props.item.schlNo }}
-              </span>
-              <span v-else>
-                {{ props.item[header.value] }}
-              </span>
+            <td v-for="header in props.headers" :key="header.id" :class="[header.id, existSldUsualName(props.item)? 'two-rows-column' : 'one-row-column']">
+              <div v-if="header.value === 'mincode'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+                <span class="top-field-item">{{ props.item.distNo + ' ' + props.item.schlNo }}</span>
+                <span v-if="existSldUsualName(props.item)" class="bottom-field-item"></span>
+              </div>
+              <div v-else-if="header.value === 'legalSurName'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+                <span class="top-field-item">{{ props.item[header.value] }}</span>
+                <span v-if="existSldUsualName(props.item)" class="bottom-field-item">{{ props.item['usualSurname']}}</span>
+              </div>
+              <div v-else-if="header.value === 'legalGivenName'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+                <span class="top-field-item">{{ props.item[header.value] }}</span>
+                <span v-if="existSldUsualName(props.item)" class="bottom-field-item">{{ props.item['usualGivenName']}}</span>
+              </div>
+              <div v-else-if="header.value === 'legalMiddleName'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+                <span class="top-field-item">{{ props.item[header.value] }}</span>
+                <span v-if="existSldUsualName(props.item)" class="bottom-field-item">{{ props.item['usualMiddleName']}}</span>
+              </div>
+              <div v-else :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+                <span class="top-field-item">{{ props.item[header.value] }}</span>
+                <span v-if="existSldUsualName(props.item)" class="bottom-field-item"></span>
+              </div>
             </td>
           </tr>
         </template>
@@ -246,6 +260,12 @@ export default {
     },
     isValidPEN,
     isOlderThan,
+    existSldUsualName(sldData) {
+      if (!!sldData.usualSurname || !!sldData.usualGivenName || !!sldData.usualMiddleName) {
+        return true;
+      }
+      return false;
+    },
     openStudentDetails(studentID) {
       const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
       window.open(route.href, '_blank');
@@ -361,8 +381,11 @@ export default {
     margin-bottom: 0;
     padding-top: 0;
   }
-  .sldTable /deep/ td {
+  .sldTable /deep/ td.one-row-column {
     height: 32px !important;
+  }
+  .sldTable /deep/ td.two-rows-column {
+    height: 42px !important;
   }
   .studentDemographicsTable a {
     color: #1A5A96;
@@ -411,7 +434,28 @@ export default {
   }
 
   .sldTable {
-    font-size: 0.75rem;
+    font-size: 0.67rem;
+  }
+
+  .sldTable .flex-row-div {
+    height: 21px !important;
+  }
+
+  .sldTable .flex-column-div {
+    display: flex;
+    flex-direction: column;
+    height: 42px !important;
+  }
+
+  .sldTable .top-field-item {
+    margin: 0px;
+    padding: 0px;
+  }
+
+  .sldTable .bottom-field-item {
+    font-style: italic;
+    margin: 0px;
+    padding: 0px;
   }
 
   .sldTable /deep/ tr th:nth-child(1),
