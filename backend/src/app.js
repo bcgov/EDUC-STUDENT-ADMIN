@@ -63,8 +63,6 @@ const logStream = {
     log.info(message);
   }
 };
-app.use(morgan(config.get('server:morganFormat'), {'stream': logStream}));
-
 const Redis = require('./util/redis/redis-client');
 Redis.init(); // call the init to initialize appropriate client, and reuse it across the app.
 const RedisStore = connectRedis(session);
@@ -87,7 +85,7 @@ app.use(session({
   cookie: cookie,
   store: dbSession
 }));
-
+app.use(require('./routes/health-check').router);
 //initialize routing and session. Cookies are now only reachable via requests (not js)
 app.use(passport.initialize());
 app.use(passport.session());
@@ -144,10 +142,9 @@ utils.getOidcDiscovery().then(discovery => {
 passport.serializeUser((user, next) => next(null, user));
 passport.deserializeUser((obj, next) => next(null, obj));
 
-
+app.use(morgan(config.get('server:morganFormat'), {'stream': logStream}));
 //set up routing to auth and main API
 app.use(/(\/api)?/, apiRouter);
-apiRouter.use(require('./routes/health-check').router);
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/penRequest', penRequestRouter);
 apiRouter.use('/penRequestBatch', penRequestBatchRouter);

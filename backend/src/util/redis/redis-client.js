@@ -29,6 +29,12 @@ const Redis = {
       log.error(`redis client end. ${error}`);
       connectionClosed = true;
     });
+    redisClient.on('ready', () => {
+      log.info('Redis Ready.');
+    });
+    redisClient.on('connect', () => {
+      log.info('connected to redis.');
+    });
   },
   isConnectionClosed() {
     return connectionClosed;
