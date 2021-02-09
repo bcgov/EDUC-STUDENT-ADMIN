@@ -291,7 +291,7 @@ export default {
       if(validationRequired === false || (this.$refs.studentSearchForm.validate() && this.searchHasValues())) {
         const studentSearchKeys = Object.keys(this.studentSearchParams).filter(k => (this.studentSearchParams[k] && this.studentSearchParams[k].length !== 0));
         let studentSearchFilters;
-        if (studentSearchKeys && studentSearchKeys.length >1) {
+        if (studentSearchKeys?.length >1) {
           studentSearchFilters = {};
           studentSearchKeys.forEach(element => {
             if(element === 'dob') {
@@ -326,8 +326,7 @@ export default {
     },
     prepPut(studentSearchFilters) {
       let sort = {};
-      sort[this.headerSortParams.currentSort] = this.headerSortParams.currentSortAsc ? 'ASC' : 'DESC';
-      console.log(this.pageNumber);
+      sort[this.headerSortParams.currentSort] = this.headerSortParams.currentSortAsc ? 'ASC' : 'DESC'  
       return {
         params: {
           pageNumber: this.pageNumber-1,
