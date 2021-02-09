@@ -136,6 +136,7 @@ import AlertMessage from '../util/AlertMessage';
 import alertMixin from '@/mixins/alertMixin';
 import router from '../../router';
 import TertiaryButton from '../util/TertiaryButton';
+import {getMatchedRecordsByStudent} from '@/utils/common'
 
 export default {
   name: 'CompareDemographicsCommon',
@@ -245,6 +246,7 @@ export default {
     formatMincode,
     formatPostalCode,
     formatPen,
+    getMatchedRecordsByStudent,
     getSldData(pen) {
       ApiService.apiAxios
         .get(Routes['sld'].STUDENT_HISTORY_URL + '/', { params: { pen: pen } })
@@ -315,20 +317,17 @@ export default {
           return true;  // set true to make the validation failed
         });
     },
-    validateTwins(studentID, twinStudentID) {
-      return ApiService.apiAxios
-        .get(Routes['penMatch'].POSSIBLE_MATCHES + '/' + studentID)
-        .then(response => {
-          if (response.data && response.data.length > 0) {
-            const twin = response.data.find(item => item.matchedStudentID === twinStudentID || item.studentID === twinStudentID);
+    validateTwinRecordsExist(studentID, twinStudentID) {
+      return getMatchedRecordsByStudent(studentID)
+        .then(data => {
+          if (data && data.length > 0) {
+            const twin = data.find(item => item.matchedStudentID === twinStudentID || item.studentID === twinStudentID);
             if (twin) {
               this.setFailureAlert('Error! Records are already twinned.');
               return true;
             }
-            return false;
-          } else {
-            return false;
           }
+          return false;
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while loading the possible matches in twin validation. Please try again later.');
@@ -357,7 +356,7 @@ export default {
       }
 
       // Twins validation
-      const hasAnyTwins = await this.validateTwins(student.studentID, twinStudent.studentID);
+      const hasAnyTwins = await this.validateTwinRecordsExist(student.studentID, twinStudent.studentID);
       if (hasAnyTwins) {
         return;
       }
