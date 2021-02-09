@@ -14,8 +14,8 @@
       <v-col align-self="center">
         <v-row justify="end" class="mx-3" v-if="isComparisonRequired || isRefreshRequired">
           <CompareDemographicModal :disabled="selectedRecords.length<2 || selectedRecords.length>3" :selectedRecords.sync="selectedRecords"></CompareDemographicModal>
-          <TertiaryButton v-if="isRefreshRequired" id="refreshButton" class="ma-0" iconStyle="mdi-flip-h" text="Refresh"
-                          icon="mdi-cached" @click.native="$emit('refresh-match-results')"></TertiaryButton>
+          <TertiaryButton v-if="isRefreshRequired" id="refreshButton" class="ma-0" iconStyle="mdi-flip-h" text="Refresh" 
+                          icon="mdi-cached" :disabled="disableRefresh" @click.native="$emit('refresh-match-results')"></TertiaryButton>
         </v-row>
       </v-col>
     </v-row>
@@ -40,7 +40,7 @@
                     hoveredOveredRowStudentID === props.item.studentID?'hovered-record-match-unmatch':'' ,
                     props.isSelected?'selected-record':'',
                     isMatchedToStudent(props.item)?'matchedStudentRow':'',
-                    (student.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR && student.assignedPEN != formatPen(props.item.pen)) || !!props.item.possibleMatchedToStudent ? 'grayout':'']">
+                    (student.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR && student.assignedPEN != props.item.pen) || !!props.item.possibleMatchedToStudent ? 'grayout':'']">
                 <td v-for="header in props.headers" :key="header.id" :class="header.id">
                   <div :class="[props.item[header.doubleValue] ? 'value-half-width':'','tableCell']">
                     <span v-if="header.type">
@@ -90,7 +90,7 @@
                       <span v-if="!!isMatchUnMatch && header.bottomValue==='button' && hoveredOveredRowStudentID === props.item.studentID">
                         <PrimaryButton :short="true" id="matchUnMatchButton" :text="matchUnMatchButtonText"
                                        :width="'6.5em'"
-                                       :disabled="disabled"
+                                       :disabled="disableMatchUnmatch"
                                        @click.native="$emit('match-unmatch-student-prb-student', props.item, matchUnMatchButtonText)"></PrimaryButton>
                       </span>
                       <span v-else-if="header.bottomValue==='postalCode'"
@@ -165,7 +165,11 @@ export default {
       type: Boolean,
       required: true
     },
-    disabled: {
+    disableMatchUnmatch: {
+      type: Boolean,
+      default: false
+    },
+    disableRefresh: {
       type: Boolean,
       default: false
     }

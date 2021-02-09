@@ -94,7 +94,8 @@
                                       :is-pen-link="true"
                                       :is-refresh-required="true"
                                       :is-match-un-match="true"
-                                      :disabled="disableMatchUnmatch"
+                                      :disableMatchUnmatch="disableMatchUnmatch"
+                                      :disableRefresh="disableRefresh"
                                       :demogValidationResult="demogValidationResult"
                                       @match-unmatch-student-prb-student="matchUnmatchStudentToPRBStudent"
                                       @refresh-match-results="refreshMatchResults"
@@ -149,9 +150,8 @@ import {
   constructPenMatchObjectFromStudent,
   deepCloneObject,
   getDemogValidationResults,
-  getMatchedRecordsByStudent,
+  getMatchedRecordssWithDemographicsByStudent,
   getPossibleMatches,
-  updatePossibleMatchResultsBasedOnCurrentStatus
 } from '@/utils/common';
 import {formatPen} from '@/utils/format';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
@@ -211,13 +211,11 @@ export default {
       loading: true,
       repeatRequestOriginalStatus: null,
       possibleMatches: [],
-      possibleMatchesPlaceHolder: [],
       isLoadingMatches: false,
       showPossibleMatch: false,
       prbStudentCopy:{},
       isIssuingNewPen: false,
       prbStudentNavInfo: [],
-      matchedStudentRecords:[],
       prbSagaNames: Object.values(PRB_SAGA_NAMES),
       isMatchingToStudentRecord: false,
       hasValidationIssues: false,
@@ -277,6 +275,10 @@ export default {
   computed: {
     ...mapState('setNavigation', ['currentRoute']),
     ...mapState('notifications', ['notification']),
+    disableRefresh() {
+      return this.prbStudent?.sagaInProgress || this.isArchived
+        || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE !== this.prbStudent?.penRequestBatchStudentStatusCode;
+    },
     disableMatchUnmatch() {
       return this.prbStudent?.sagaInProgress || this.isArchived;
     },
@@ -354,18 +356,20 @@ export default {
             ...this.modalStudent
           }
         };
-        this.demogValidationResult = await getDemogValidationResults(payload);
-        const hasValidationFailure = this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR');
 
-        if (!hasValidationFailure) {
-          if (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR === this.prbStudent?.penRequestBatchStudentStatusCode
-              || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR === this.prbStudent?.penRequestBatchStudentStatusCode) {
-            await Promise.all([this.getMatchedRecordsForStudent(), this.runPenMatch()]);
-          } else {
+        this.possibleMatches = [];
+        if([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR]
+          .some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)) {
+          this.demogValidationResult = await getDemogValidationResults(payload);
+          const hasValidationFailure = this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR'); 
+
+          if (!hasValidationFailure && PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE === this.prbStudent?.penRequestBatchStudentStatusCode) {
             await this.runPenMatch();
           }
+        } else {
+          await this.getMatchedRecordsForStudent();
         }
-        this.updatePossibleMatchResultsBasedOnCurrentStatus();
+
         if(this.prbStudent?.sagaInProgress) {
           switch (this.prbStudent?.sagaName) {
           case PRB_SAGA_NAMES.PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA:
@@ -552,19 +556,16 @@ export default {
       this.isLoadingMatches = true;
       this.showPossibleMatch = false;
       this.possibleMatches = [];
-      this.possibleMatchesPlaceHolder = [];
       try {
         const result = await getPossibleMatches(constructPenMatchObjectFromStudent(this.prbStudent));
         this.isIssuePenDisabled = false;
         this.showPossibleMatch = true;
-        this.possibleMatchesPlaceHolder = result.data ?? [];
+        this.possibleMatches = result.data ?? [];
       } catch (error) {
         console.log(error);
-        this.requestFailed = true;
         this.setFailureAlert('PEN Match API call failed, please try again.');
       } finally {
         this.isLoadingMatches = false;
-        this.updatePossibleMatchResultsBasedOnCurrentStatus();
       }
     },
     checkValidationResults(value) {
@@ -660,22 +661,44 @@ export default {
           this.isMatchingToStudentRecord = false;
         });
     },
-    updatePossibleMatchResultsBasedOnCurrentStatus() {
-      this.possibleMatches = updatePossibleMatchResultsBasedOnCurrentStatus(this.prbStudent, this.possibleMatchesPlaceHolder, this.matchedStudentRecords);
-
-    },
     /**
      * this function returns stored possible matches from DB for a particular student, backed by PEN_MATCH_API,
      * and not from fresh run of  pen match algorithm.
      * @returns {Promise<void>}
      */
     async getMatchedRecordsForStudent(){
-      this.matchedStudentRecords = await getMatchedRecordsByStudent(this.prbStudent?.studentID);
+      this.isLoadingMatches = true;
+      this.showPossibleMatch = false;
+      this.possibleMatches = [];
+      try {
+        const result =  await getMatchedRecordssWithDemographicsByStudent(this.prbStudent?.studentID, true);
+        let matchedIndex = -1;
+
+        result.forEach((item, index) => {
+          if (item.studentID === this.prbStudent?.studentID) {
+            item.matchedToStudent = true;
+            item.iconValue = 'mdi-file-check';
+            matchedIndex = index;
+          } else {
+            item.possibleMatchedToStudent = true;
+            item.iconValue = 'mdi-account-multiple';
+          }
+        });
+
+        this.possibleMatches = matchedIndex > 0 ? [result[matchedIndex], ...result.slice(0,matchedIndex), ...result.slice(matchedIndex + 1)] : result;
+
+        this.showPossibleMatch = true;
+      } catch (error) {
+        console.log(error);
+        this.setFailureAlert('PEN Match API call failed, please try again.');
+      } finally {
+        this.isLoadingMatches = false;
+      }
+
     },
     async refreshMatchResults(){
       await this.runPenMatch();
-      this.updatePossibleMatchResultsBasedOnCurrentStatus();
-    }
+    },
   }
 };
 </script>

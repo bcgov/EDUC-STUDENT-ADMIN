@@ -237,7 +237,8 @@ export default {
       return this.isFieldValueWithIssues(fieldName, this.validationErrorFields);
     },
     isFieldValueWarned(fieldName) {
-      return this.isFieldValueWithIssues(fieldName, this.validationWarningFields);
+      return PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE === this.studentDetails.penRequestBatchStudentStatusCode 
+        && this.isFieldValueWithIssues(fieldName, this.validationWarningFields);
     },
     isFieldValueUpdated(fieldName) {
       if(fieldName && this.studentDetailsCopy && !_.isEmpty(this.studentDetailsCopy)){
