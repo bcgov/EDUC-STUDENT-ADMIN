@@ -175,7 +175,6 @@
                             :rules="validateMincode()" maxlength="8"
                             :async-messages="mincodeErrors"
                             tabindex="11"
-                            :format="formatMincode"
                             v-model="student.mincode"></FormattedTextField>
                   </v-col>
                   <v-spacer/>
@@ -203,7 +202,7 @@ import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import {isValidMincode, isValidPostalCode, isValidDOBAndAfter1900} from '@/utils/validation';
 import {mapGetters} from 'vuex';
 import FormattedTextField from '../util/FormattedTextField';
-import {formatPostalCode, formatDob, formatMincode} from '../../utils/format';
+import {formatPostalCode, formatDob} from '../../utils/format';
 import schoolMixin from '../../mixins/schoolMixin';
 
 export default {
@@ -253,7 +252,6 @@ export default {
   methods: {
     formatPostalCode,
     formatDob,
-    formatMincode,
     upperCaseInput(fieldName) {
       if (this.student[fieldName]) {
         this.student[fieldName] = this.student[fieldName].toUpperCase();

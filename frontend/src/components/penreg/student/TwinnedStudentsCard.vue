@@ -157,7 +157,7 @@ export default {
   methods: {
     ...mapActions('student', ['getPossibleMatchReasonCodes']),
     formatDateTime(date) {
-      return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD');
+      return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY/MM/DD');
     },
     formatStudent(student) {
       return {
@@ -179,19 +179,19 @@ export default {
         };
       });
       ApiService.apiAxios
-          .post(Routes['penMatch'].POSSIBLE_MATCHES + '/bulk-delete', payload)
-          .then(() => {
-            this.selectedTwins.forEach(element => {
-              let foundElement = this.possibleMatches.find(o => o.possibleMatchID === element.possibleMatchID);
-              this.possibleMatches.splice(this.possibleMatches.indexOf(foundElement), 1);
-            });
-            this.selectedTwins = [];
-            this.setSuccessAlert('Selected twin records deleted successfully.');
-          })
-          .catch(error => {
-            console.log(error);
-            this.setFailureAlert('Selected twin records could not be deleted, Please try again.');
+        .post(Routes['penMatch'].POSSIBLE_MATCHES + '/bulk-delete', payload)
+        .then(() => {
+          this.selectedTwins.forEach(element => {
+            let foundElement = this.possibleMatches.find(o => o.possibleMatchID === element.possibleMatchID);
+            this.possibleMatches.splice(this.possibleMatches.indexOf(foundElement), 1);
           });
+          this.selectedTwins = [];
+          this.setSuccessAlert('Selected twin records deleted successfully.');
+        })
+        .catch(error => {
+          console.log(error);
+          this.setFailureAlert('Selected twin records could not be deleted, Please try again.');
+        });
 
     },
     viewStudentDetails(studentID) {

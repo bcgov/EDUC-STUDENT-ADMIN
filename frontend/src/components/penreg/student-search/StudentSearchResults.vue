@@ -34,7 +34,8 @@
           <td v-for="header in props.headers" :key="header.id" :class="{'table-checkbox' :header.id, 'row-hightlight': isMergedOrDeceased(props.item) }">
             <v-checkbox v-if="header.type" :disabled="isAuditHistorySearch" :input-value="props.isSelected" color="#606060" @change="props.select($event)"></v-checkbox>
             <div v-else @click="viewStudentDetails(props.item.studentID)" class="tableCell">
-              <span class="top-column-item">{{ props.item[header.topValue] }}</span>
+              <span v-if="header.topValue == 'dob'" class="top-column-item">{{ formatDob(props.item[header.topValue],'uuuu-MM-dd','uuuu/MM/dd') }}</span>
+              <span v-else class="top-column-item">{{ props.item[header.topValue] }}</span>
               <span class="double-column-item">{{props.item[header.doubleValue]}}</span>
               <br>
               <span class="bottom-column-item">{{ props.item[header.bottomValue] }}</span>
@@ -55,6 +56,7 @@
 </template>
 
 <script>
+import {formatDob} from '@/utils/format';
 import {mapGetters, mapMutations, mapState} from 'vuex';
 import ApiService from '../../../common/apiService';
 import {REQUEST_TYPES, Routes, STUDENT_CODES} from '../../../utils/constants';
@@ -136,6 +138,7 @@ export default {
       const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
       window.open(route.href, '_blank');
     },
+    formatDob,
     compare() {
       //TODO
     },

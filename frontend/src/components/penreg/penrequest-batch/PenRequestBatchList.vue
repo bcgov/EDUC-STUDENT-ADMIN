@@ -14,7 +14,6 @@ import { mapMutations, mapState } from 'vuex';
 import PenRequestBatchDataTable from './PenRequestBatchDataTable';
 import ApiService from '../../../common/apiService';
 import {Routes} from '../../../utils/constants';
-import {formatMincode} from '../../../utils/format';
 
 export default {
   name: 'PenRequestBatchList',
@@ -40,7 +39,7 @@ export default {
       itemsPerPage: 15,
       headers: [
         { value: 'rowSelect', type: 'select', sortable: false },
-        { text: 'Mincode', value: 'mincode', sortable: false, align: 'start', format: formatMincode },
+        { text: 'Mincode', value: 'mincode', sortable: false, align: 'start' },
         { text: 'School Name', value: 'schoolName', sortable: false },
         { text: 'TOT', value: 'studentCount', sortable: false, countable: true },
         { text: 'MCH', value: 'matchedCount', sortable: false, filterName: 'Matched', countable: true, isFiltered: false },
