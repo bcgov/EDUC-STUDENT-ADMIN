@@ -291,7 +291,7 @@ export default {
       if(validationRequired === false || (this.$refs.studentSearchForm.validate() && this.searchHasValues())) {
         const studentSearchKeys = Object.keys(this.studentSearchParams).filter(k => (this.studentSearchParams[k] && this.studentSearchParams[k].length !== 0));
         let studentSearchFilters;
-        if (studentSearchKeys?.length >1) {
+        if (studentSearchKeys?.length >0) {
           studentSearchFilters = {};
           studentSearchKeys.forEach(element => {
             if(element === 'dob') {
