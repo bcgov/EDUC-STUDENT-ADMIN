@@ -82,7 +82,7 @@ export function getDemogValidationResults(student) {
  String studentID;
  String matchedStudentID;
  String matchReasonCode;
- <b>if student demographics information is needed, caller need to make separate api call.</b>
+ <b>if student demographics information is needed, use the method getMatchedRecordssWithDemographicsByStudent.</b>
  * @param studentID
  * @returns {Promise<*[]>|Promise<unknown>}
  */
@@ -99,6 +99,33 @@ export function getMatchedRecordsByStudent(studentID) {
     });
   } else {
     return Promise.resolve([]); // resolve blank array if student id is not present.
+  }
+}
+
+
+/**
+ * this function will return the demog details of matched students
+ * 
+ <b>if student demographics information is not needed, use the method getMatchedRecordsByStudent.</b>
+ * @param studentID
+ * @param includingQueriedStudent
+ * @returns {Promise<*[]>|Promise<unknown>}
+ */
+export async function getMatchedRecordssWithDemographicsByStudent(studentID, includingQueriedStudent=false) {
+  if (studentID) {
+    const possibleMatches = await ApiService.apiAxios.get(`${Routes.penMatch.POSSIBLE_MATCHES}/${studentID}`);
+    const matchedStudentIDs = possibleMatches.data.map(match => match.matchedStudentID);
+    const studentIDs = (includingQueriedStudent ? [studentID, ...matchedStudentIDs] : matchedStudentIDs).join();
+
+    const params = {
+      params: {
+        studentIDs
+      }
+    };
+    const students = await ApiService.apiAxios.get(Routes.student.GET_ALL_STUDENTS_BY_IDS, params);
+    return students.data;
+  } else {
+    return []; // resolve blank array if student id is not present.
   }
 }
 

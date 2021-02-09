@@ -285,9 +285,9 @@ export default {
     isValidDistrictOrMincode(v) {
       if(isValidMincode(v) && (v.length === 3 || v.length === 8)) {
         if(v.length === 3) {
-          return this.districtCodes.has(v);
+          return this.districtCodes.size === 0 || this.districtCodes.has(v);
         } else {
-          return this.mincodeSchoolNames.has(v);
+          return this.mincodeSchoolNames.size === 0 || this.mincodeSchoolNames.has(v);
         }
       }
       return false;
