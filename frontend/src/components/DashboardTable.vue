@@ -77,16 +77,16 @@ export default {
       let wording = '';
       switch(key) {
       case 'pending':
-        wording = 'schools pending';
+        wording = 'submissions pending';
         break;
       case 'fixable':
-        wording = 'fixable';
+        wording = 'fixable records';
         break;
       case 'repeats':
-        wording = 'repeats';
+        wording = 'repeated records';
         break;
       case 'unarchived':
-        wording = 'unarchived';
+        wording = 'unarchived submissions';
         break;
       case 'initial':
         wording = 'initial review';
