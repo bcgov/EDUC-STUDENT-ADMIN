@@ -326,7 +326,7 @@ export default {
     },
     prepPut(studentSearchFilters) {
       let sort = {};
-      sort[this.headerSortParams.currentSort] = this.headerSortParams.currentSortAsc ? 'ASC' : 'DESC'  
+      sort[this.headerSortParams.currentSort] = this.headerSortParams.currentSortAsc ? 'ASC' : 'DESC'; 
       return {
         params: {
           pageNumber: this.pageNumber-1,
