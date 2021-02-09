@@ -24,9 +24,10 @@
         :selectedRecords.sync="studentRecords"
         title="Compare/View"
         :closeCompareModal="closeCompareModal">
-        <template v-slot:actions="{clearError, validateMerge, merge}">
+        <template v-slot:actions="{clearError, validateAction, twin, merge}">
           <PrimaryButton id="compareModalCancelBtn" text="Cancel" secondary @click.native="[closeCompareModal(), clearError()]"></PrimaryButton>
-          <PrimaryButton id="mergeBtn" text="Merge PENs" primary :disabled="validateMerge()" @click.native="merge()"></PrimaryButton>
+          <PrimaryButton id="twinBtn" text="Twin" primary :disabled="validateAction()" @click.native="twin()"></PrimaryButton>
+          <PrimaryButton id="mergeBtn" text="Merge PENs" primary :disabled="validateAction()" @click.native="merge()"></PrimaryButton>
         </template>
       </CompareDemographicsCommon>
     </v-card>

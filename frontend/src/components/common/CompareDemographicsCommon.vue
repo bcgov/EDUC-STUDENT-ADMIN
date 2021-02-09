@@ -47,7 +47,7 @@
         <span class="px-2 flexBox">
           <v-checkbox dense class="studentCheckbox pa-0 ma-0" color="#606060"
                       v-model="checkedStudents[index]"
-                      @change.native="validateMerge"></v-checkbox>
+                      @change.native="validateAction"></v-checkbox>
           <a @click="updateSldRowDisplay(students.pen, !sldDataTablesToDisplay[students.pen])">
             <v-icon small color="#1A5A96">{{sldDataTablesToDisplay[students.pen]?'fa-angle-down':'fa-angle-up'}}</v-icon>
           </a>
@@ -120,7 +120,7 @@
       <v-divider></v-divider>
       <v-card-actions class="px-0">
         <v-spacer></v-spacer>
-        <slot name="actions" :validateMerge="validateMerge" :merge="merge"></slot>
+        <slot name="actions" :validateAction="validateAction" :merge="merge" :twin="twin"></slot>
       </v-card-actions>
     </div>
   </v-card>
@@ -273,7 +273,7 @@ export default {
     removeRecord(studentID, index) {
       this.studentRecords = this.studentRecords.filter(item => item.studentID !== studentID);
       this.checkedStudents = this.checkedStudents.filter((item, idx) => idx !== index);
-      this.validateMerge();
+      this.validateAction();
     },
     updateSldRowDisplay(id, value) {
       this.$set(this.sldDataTablesToDisplay, id, value);
@@ -286,17 +286,17 @@ export default {
       }
       this.$set(this.sldDataTablesNumberOfRows, id, value);
     },
-    validateMerge() {
+    validateAction() {
       let cnt = 0;
       this.checkedStudents.forEach(checked => cnt += checked ? 1 : 0);
       return cnt !== 2;
     },
-    validateStudentStatuses(mergedToStudent, mergedFromStudent) {
-      if (mergedToStudent.statusCode === 'M' || mergedFromStudent.statusCode === 'M') {
-        this.setFailureAlert('Error! PENs cannot be merged, as one of the PENs has a status of merged.');
-        return false;
+    validateStudentIsStatusOfMerged(student1, student2, message) {
+      if (student1.statusCode === 'M' || student2.statusCode === 'M') {
+        this.setFailureAlert(message);
+        return true;
       }
-      return true;
+      return false;
     },
     validateStudentHasAnyMergedFrom(studentID) {
       return ApiService.apiAxios
@@ -315,8 +315,71 @@ export default {
           return true;  // set true to make the validation failed
         });
     },
+    validateTwins(studentID, twinStudentID) {
+      return ApiService.apiAxios
+        .get(Routes['penMatch'].POSSIBLE_MATCHES + '/' + studentID)
+        .then(response => {
+          if (response.data && response.data.length > 0) {
+            const twin = response.data.find(item => item.matchedStudentID === twinStudentID || item.studentID === twinStudentID);
+            if (twin) {
+              this.setFailureAlert('Error! Records are already twinned.');
+              return true;
+            }
+            return false;
+          } else {
+            return false;
+          }
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while loading the possible matches in twin validation. Please try again later.');
+          console.log(error);
+          return true;  // set true to make the validation failed
+        });
+    },
+    async twin() {
+      let selectedStudents = this.checkedStudents.map((checked, idx) => {
+        if (!checked) {
+          return false;
+        } else {
+          return this.selectedRecords[idx];
+        }
+      }).filter(item => !!item);
+
+      this.alert = false;
+      // Determine which is the oldest, which will be mergedToPen
+      let student = selectedStudents[0];
+      let twinStudent =  selectedStudents[1];
+
+      // Status validation
+      if (this.validateStudentIsStatusOfMerged(student, twinStudent,
+        'Error! PENs cannot be twinned, as one of the PENs has a status of merged.')) {
+        return;
+      }
+
+      // Twins validation
+      const hasAnyTwins = await this.validateTwins(student.studentID, twinStudent.studentID);
+      if (hasAnyTwins) {
+        return;
+      }
+      const twinRequests = [
+        {
+          studentID: student.studentID,
+          matchedStudentID: twinStudent.studentID,
+          matchReasonCode: 'MI',
+        }
+      ];
+
+      return ApiService.apiAxios
+        .post(Routes['penMatch'].POSSIBLE_MATCHES, twinRequests)
+        .then(() => {
+          this.setSuccessAlert('Success! The two records have been twinned.');
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while saving twinned students. Please try again later.');
+          console.log(error);
+        });
+    },
     async merge() {
-      this.selectedRecords.forEach((item, index) => console.log(index + ': ' + item.pen));
       let selectedStudents = this.checkedStudents.map((checked, idx) => {
         if (!checked) {
           return false;
@@ -337,7 +400,8 @@ export default {
       }
 
       // Status validation
-      if (!this.validateStudentStatuses(mergedToPen, mergedFromPen)) {
+      if (this.validateStudentIsStatusOfMerged(mergedToPen, mergedFromPen,
+        'Error! PENs cannot be merged, as one of the PENs has a status of merged.')) {
         return;
       }
 
