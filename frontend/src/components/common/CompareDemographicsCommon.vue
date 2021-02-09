@@ -291,12 +291,12 @@ export default {
       this.checkedStudents.forEach(checked => cnt += checked ? 1 : 0);
       return cnt !== 2;
     },
-    validateStudentStatuses(student1, student2, message) {
+    validateStudentIsStatusOfMerged(student1, student2, message) {
       if (student1.statusCode === 'M' || student2.statusCode === 'M') {
         this.setFailureAlert(message);
-        return false;
+        return true;
       }
-      return true;
+      return false;
     },
     validateStudentHasAnyMergedFrom(studentID) {
       return ApiService.apiAxios
@@ -337,7 +337,6 @@ export default {
         });
     },
     async twin() {
-      this.selectedRecords.forEach((item, index) => console.log(index + ': ' + item.pen));
       let selectedStudents = this.checkedStudents.map((checked, idx) => {
         if (!checked) {
           return false;
@@ -352,7 +351,7 @@ export default {
       let twinStudent =  selectedStudents[1];
 
       // Status validation
-      if (!this.validateStudentStatuses(student, twinStudent,
+      if (this.validateStudentIsStatusOfMerged(student, twinStudent,
         'Error! PENs cannot be twinned, as one of the PENs has a status of merged.')) {
         return;
       }
@@ -381,7 +380,6 @@ export default {
         });
     },
     async merge() {
-      this.selectedRecords.forEach((item, index) => console.log(index + ': ' + item.pen));
       let selectedStudents = this.checkedStudents.map((checked, idx) => {
         if (!checked) {
           return false;
@@ -402,7 +400,7 @@ export default {
       }
 
       // Status validation
-      if (!this.validateStudentStatuses(mergedToPen, mergedFromPen,
+      if (this.validateStudentIsStatusOfMerged(mergedToPen, mergedFromPen,
         'Error! PENs cannot be merged, as one of the PENs has a status of merged.')) {
         return;
       }
