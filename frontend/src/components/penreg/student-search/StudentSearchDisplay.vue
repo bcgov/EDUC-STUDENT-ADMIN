@@ -6,20 +6,6 @@
       <v-container fluid class="fill-height px-0">
         <v-row no-gutters>
           <v-card elevation="0" height="100%" width="100%" style="background-color:#d7d7d7;">
-            <StudentBasicSearch
-                    :enterPushed="enterPushed"
-                    :runPENSearchIfPossible="runPENSearchIfPossible"
-                    :searchHasValues="searchHasValues"
-                    :validatePen="validatePen"
-                    :uppercaseGender="uppercaseGender"
-                    :validateGender="validateGender"
-                    :validateMincode="validateMincode"
-                    :uppercasePostal="uppercasePostal"
-                    :uppercaseGrade="uppercaseGrade"
-                    :validatePostal="validatePostal"
-                    :validateGradeCode="validateGradeCode"
-                    v-if="!this.isAdvancedSearch">
-            </StudentBasicSearch>
             <StudentAdvancedSearch
                     :enterPushed="enterPushed"
                     :runPENSearchIfPossible="runPENSearchIfPossible"
@@ -32,12 +18,9 @@
                     :uppercaseGrade="uppercaseGrade"
                     :validatePostal="validatePostal"
                     :validateGradeCode="validateGradeCode"
-                    v-else>
+            >
             </StudentAdvancedSearch>
             <v-row justify="end" no-gutters class="py-3 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
-              <router-link :to="`${!this.isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`">
-                <PrimaryButton id="search-type-action" :secondary="true" class="mx-2" @click.native="clearSearchResult" :text="!this.isAdvancedSearch?'Advanced Search':'Standard Search'"></PrimaryButton>
-              </router-link>
               <PrimaryButton id="search-clear" :secondary="true" class="mr-2" @click.native="clearSearch" text="Clear"></PrimaryButton>
               <PrimaryButton id="perform-search" :disabled="!searchEnabled" :loading="searchLoading" @click.native="searchStudent(true)" text="Search"></PrimaryButton>
             </v-row>
@@ -62,7 +45,6 @@ import ApiService from '../../../common/apiService';
 import { Routes, REQUEST_TYPES } from '../../../utils/constants';
 import { mapGetters, mapMutations, mapState } from 'vuex';
 import StudentSearchResults from './StudentSearchResults';
-import StudentBasicSearch from './StudentBasicSearch';
 import StudentAdvancedSearch from './StudentAdvancedSearch';
 import PrimaryButton from '../../util/PrimaryButton';
 import { isValidPEN, checkDigit, isValidMincode, isValidPostalCode } from '../../../utils/validation';
@@ -70,7 +52,6 @@ import { isValidPEN, checkDigit, isValidMincode, isValidPostalCode } from '../..
 export default {
   components: {
     PrimaryButton,
-    StudentBasicSearch,
     StudentAdvancedSearch,
     StudentSearchResults
   },
@@ -310,7 +291,7 @@ export default {
       if(validationRequired === false || (this.$refs.studentSearchForm.validate() && this.searchHasValues())) {
         const studentSearchKeys = Object.keys(this.studentSearchParams).filter(k => (this.studentSearchParams[k] && this.studentSearchParams[k].length !== 0));
         let studentSearchFilters;
-        if (studentSearchKeys && studentSearchKeys.length > 0) {
+        if (studentSearchKeys?.length >0) {
           studentSearchFilters = {};
           studentSearchKeys.forEach(element => {
             if(element === 'dob') {
@@ -345,7 +326,7 @@ export default {
     },
     prepPut(studentSearchFilters) {
       let sort = {};
-      sort[this.headerSortParams.currentSort] = this.headerSortParams.currentSortAsc ? 'ASC' : 'DESC';
+      sort[this.headerSortParams.currentSort] = this.headerSortParams.currentSortAsc ? 'ASC' : 'DESC'; 
       return {
         params: {
           pageNumber: this.pageNumber-1,

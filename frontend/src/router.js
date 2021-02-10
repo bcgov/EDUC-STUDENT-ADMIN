@@ -138,20 +138,6 @@ const router = new VueRouter({
       }
     },
     {
-      path: '/studentSearch/advanced',
-      name: 'advancedSearch',
-      component: StudentSearchDisplay,
-      props: {
-        searchType: REQUEST_TYPES.studentSearch.type.advanced
-      },
-      meta: {
-        pageTitle: PAGE_TITLES.STUDENT_SEARCH,
-        requiresAuth: true,
-        role: 'isValidStudentSearchUser',
-        saveSearch: true
-      }
-    },
-    {
       path: '/student/:studentID',
       name: REQUEST_TYPES.student.label,
       component: StudentDetail,
