@@ -1,34 +1,40 @@
 <template>
   <div id="auditHistory" class="px-0 pt-3 ma-0" style="width: 100%;">
     <v-row>
-      <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000"></AlertMessage>
+      <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"
+                    :timeoutMs="2000"></AlertMessage>
     </v-row>
     <v-row no-gutters>
-      <div id="studentInfo" class="px-1 pt-2 pb-5"><strong class="pr-3">{{ formatPen(student.pen) }}</strong> {{ getStudentName(student)}}</div>
+      <div id="studentInfo" class="px-1 pt-2 pb-5"><strong class="pr-3">{{ formatPen(student.pen) }}</strong>
+        {{ getStudentName(student) }}
+      </div>
     </v-row>
     <v-row>
       <v-col :cols="this.listDetailMode? 6 : 12">
         <v-data-table
-          id="dataTable"
-          v-model="selectedRecords"
-          :headers="getHeaders()"
-          :items="studentHistoryResp.content"
-          :page.sync="pageNumber"
-          :items-per-page="studentHistoryResp.pageable.pageSize"
-          hide-default-footer
-          item-key="studentHistoryID"
-          :key="selectedStudentHistoryId"
-          :loading="loading"
-          @page-count="studentHistoryResp.pageable.pageNumber = $event"
+            id="dataTable"
+            :key="selectedStudentHistoryId"
+            v-model="selectedRecords"
+            :headers="getHeaders()"
+            :items="studentHistoryResp.content"
+            :items-per-page="studentHistoryResp.pageable.pageSize"
+            :loading="loading"
+            :page.sync="pageNumber"
+            hide-default-footer
+            item-key="studentHistoryID"
+            @page-count="studentHistoryResp.pageable.pageNumber = $event"
         >
           <template v-slot:item="props">
             <tr :class="tableRowClass(props.item)" @click="selectItem(props)">
               <td v-for="header in props.headers" :key="header.id" :class="header.id">
                 <div class="table-cell">
-                  <span :class="{'diff-value': props.item[`${header.value}_diff`]}">{{ props.item[header.value] || '' }}</span>
-                  <v-btn v-if="header.value === 'createDate' && props.item.expandable" icon class="ml-1" color="#38598a">
+                  <span :class="{'diff-value': props.item[`${header.value}_diff`]}">{{
+                      props.item[header.value] || ''
+                    }}</span>
+                  <v-btn v-if="header.value === 'createDate' && props.item.expandable" class="ml-1" color="#38598a"
+                         icon>
                     <v-icon @click.stop="expandRow(props.item)">
-                      {{ props.item.expanded ? 'mdi-chevron-up' : 'mdi-chevron-down'}}
+                      {{ props.item.expanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
                     </v-icon>
                   </v-btn>
                 </div>
@@ -50,6 +56,8 @@
             :studentHistory="studentHistoryResp"
             :studentHistoryId="selectedStudentHistoryId"
             @close="listDetailMode=false"
+            :is-reverting-student="isRevertingStudent"
+            @revert="revertStudentToSelectedHistoryRecord"
             @update="updateSelectedStudentHistoryId">
         </StudentAuditHistoryDetail>
       </v-col>
@@ -58,13 +66,13 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
-import { Routes } from '@/utils/constants';
+import {mapActions, mapGetters} from 'vuex';
+import {Routes} from '@/utils/constants';
 import AlertMessage from '../../util/AlertMessage';
 import StudentAuditHistoryDetail from '../student/StudentAuditHistoryDetailPanel';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
-import {formatMincode, formatPen, formatDob, formatPostalCode} from '@/utils/format';
+import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
 import {groupBy, mapValues} from 'lodash';
 
 export default {
@@ -80,27 +88,27 @@ export default {
     AlertMessage,
     StudentAuditHistoryDetail,
   },
-  data () {
+  data() {
     return {
       itemsPerPage: 10,
       headers: [
-        { text: 'Date', sortable: false, value: 'createDate'},
-        { text: 'Changed by', sortable: false, value: 'createUser'},
-        { text: 'Activity', sortable: false, value: 'historyActivityLabel'},
-        { text: 'Mincode', sortable: false, value: 'mincode'},
-        { text: 'Local ID', sortable: false, value: 'localID'},
-        { text: 'Birth Date', sortable: false, value: 'dob'},
-        { text: 'Gen', sortable: false, value: 'genderCode'},
-        { text: 'Legal Name', sortable: false, value: 'legalName'},
-        { text: 'Postal', sortable: false, value: 'postalCode'},
-        { text: 'DC', sortable: false, value: 'demogCode'},
+        {text: 'Date', sortable: false, value: 'createDate'},
+        {text: 'Changed by', sortable: false, value: 'createUser'},
+        {text: 'Activity', sortable: false, value: 'historyActivityLabel'},
+        {text: 'Mincode', sortable: false, value: 'mincode'},
+        {text: 'Local ID', sortable: false, value: 'localID'},
+        {text: 'Birth Date', sortable: false, value: 'dob'},
+        {text: 'Gen', sortable: false, value: 'genderCode'},
+        {text: 'Legal Name', sortable: false, value: 'legalName'},
+        {text: 'Postal', sortable: false, value: 'postalCode'},
+        {text: 'DC', sortable: false, value: 'demogCode'},
       ],
       shortHeaders: [
-        { text: 'Date', sortable: false, value: 'createDate'},
-        { text: 'Changed by', sortable: false, value: 'createUser'},
-        { text: 'Activity', sortable: false, value: 'historyActivityLabel'},
-        { text: 'Mincode', sortable: false, value: 'mincode'},
-        { text: 'Local ID', sortable: false, value: 'localID'},
+        {text: 'Date', sortable: false, value: 'createDate'},
+        {text: 'Changed by', sortable: false, value: 'createUser'},
+        {text: 'Activity', sortable: false, value: 'historyActivityLabel'},
+        {text: 'Mincode', sortable: false, value: 'mincode'},
+        {text: 'Local ID', sortable: false, value: 'localID'},
       ],
       loading: true,
       selectedRecords: [],
@@ -114,20 +122,21 @@ export default {
       },
       userEditHistoryGroups: null,
       listDetailMode: false,  // true: both list and detail panels are rendered,  false: list panel only
-      selectedStudentHistoryId: null, // pointing the current history record
+      selectedStudentHistoryId: null, // pointing the current history record,
+      isRevertingStudent: false,
     };
   },
   computed: {
     ...mapGetters('student', ['historyActivityCodes']),
     showingFirstNumber() {
-      return ((this.pageNumber-1) * (this.studentHistoryResp.pageable.pageSize || 0) + ((this.studentHistoryResp.numberOfElements || 0) > 0 ? 1 : 0));
+      return ((this.pageNumber - 1) * (this.studentHistoryResp.pageable.pageSize || 0) + ((this.studentHistoryResp.numberOfElements || 0) > 0 ? 1 : 0));
     },
     showingEndNumber() {
-      return ((this.pageNumber-1) * (this.studentHistoryResp.pageable.pageSize || 0) + (this.studentHistoryResp.numberOfElements || 0));
+      return ((this.pageNumber - 1) * (this.studentHistoryResp.pageable.pageSize || 0) + (this.studentHistoryResp.numberOfElements || 0));
     },
   },
   mounted() {
-    if(!this.historyActivityCodes) {
+    if (!this.historyActivityCodes) {
       this.getHistoryActivityCodes();
     }
     this.retrieveStudentHistory();
@@ -164,7 +173,7 @@ export default {
     },
     expandRow(item) {
       this.userEditHistoryGroups[item.createDate].forEach(history => {
-        if(history.studentHistoryID !== item.studentHistoryID) {
+        if (history.studentHistoryID !== item.studentHistoryID) {
           history.hidden = !history.hidden;
         }
       });
@@ -177,7 +186,7 @@ export default {
       return this.headers;
     },
     getStudentName(student) {
-      return `${student.legalLastName ? student.legalLastName + ',': ''} ${ student.legalFirstName ? student.legalFirstName: ''} ${ student.legalMiddleNames ? student.legalMiddleNames: ''}`;
+      return `${student.legalLastName ? student.legalLastName + ',' : ''} ${student.legalFirstName ? student.legalFirstName : ''} ${student.legalMiddleNames ? student.legalMiddleNames : ''}`;
     },
     formatStudentHistory(history) {
       history.mincode && (history.mincode = formatMincode(history.mincode));
@@ -196,10 +205,10 @@ export default {
     markDifferences(currentPageContent, nextPageContent) {
       const historyContent = [...currentPageContent, ...nextPageContent];
       historyContent.forEach((history, index) => {
-        if(index < historyContent.length - 1) {
+        if (index < historyContent.length - 1) {
           const preHistory = history.expandable ? (historyContent[index + history.setCount] || historyContent[index + 1]) : historyContent[index + 1];
           Object.keys(history).forEach(key => {
-            if(history[key] !== preHistory[key] && !['createDate', 'createUser', 'historyActivityLabel'].includes(key)) {
+            if (history[key] !== preHistory[key] && !['createDate', 'createUser', 'historyActivityLabel'].includes(key)) {
               history[`${key}_diff`] = true;
             }
           });
@@ -208,7 +217,7 @@ export default {
     },
     initializeStudentHistory(currentPageData, nextPageData) {
       [...currentPageData.content, ...nextPageData.content].forEach(history => {
-        if(history){
+        if (history) {
           this.formatStudentHistory(history);
         }
       });
@@ -217,11 +226,11 @@ export default {
       this.userEditHistoryGroups = mapValues(historyGroups, group => group.filter(history => history.historyActivityCode === 'USEREDIT'));
 
       const currentPageContent = currentPageData.content.reduce((acc, history) => {
-        if(history.historyActivityCode !== 'USEREDIT') {
+        if (history.historyActivityCode !== 'USEREDIT') {
           acc.push(history);
         } else {
           const group = this.userEditHistoryGroups[history.createDate];
-          if(group?.length > 1 && group[0].studentHistoryID === history.studentHistoryID) {
+          if (group?.length > 1 && group[0].studentHistoryID === history.studentHistoryID) {
             history.expandable = true;
             history.setCount = group.length;
             group.slice(1).forEach(editHistory => {
@@ -229,7 +238,7 @@ export default {
               editHistory.hidden = true;
             });
             acc.push(...group);
-          } else if(group?.length === 1) {
+          } else if (group?.length === 1) {
             acc.push(history);
           }
         }
@@ -248,7 +257,7 @@ export default {
       const currentPageParams = {
         params: {
           pageSize: 15,
-          pageNumber: this.pageNumber-1,
+          pageNumber: this.pageNumber - 1,
           sort: {
             createDate: 'DESC'
           }
@@ -266,65 +275,124 @@ export default {
       };
 
       return Promise.all([currentPageParams, nextPageParams].map(params => ApiService.apiAxios
-        .get(`${Routes['student'].ROOT_ENDPOINT}/${this.student.studentID}/history`, params)))
-        .then(([currentPageResp, nextPageResp]) => {
-          this.initializeStudentHistory(currentPageResp.data, nextPageResp.data);
-        })
-        .catch(error => {
-          this.setFailureAlert('An error occurred while loading the audit history. Please try again later.');
-          console.log(error);
-        })
-        .finally(() => this.loading = false);
+          .get(`${Routes['student'].ROOT_ENDPOINT}/${this.student.studentID}/history`, params)))
+          .then(([currentPageResp, nextPageResp]) => {
+            this.initializeStudentHistory(currentPageResp.data, nextPageResp.data);
+          })
+          .catch(error => {
+            this.setFailureAlert('An error occurred while loading the audit history. Please try again later.');
+            console.log(error);
+          })
+          .finally(() => this.loading = false);
     },
+    async revertStudentToSelectedHistoryRecord(selectedHistoryRecord) {
+      this.isRevertingStudent = true;
+      ApiService.apiAxios
+          .put(Routes['student'].ROOT_ENDPOINT + '/' + selectedHistoryRecord.studentID, this.convertFromHistoryToStudent(selectedHistoryRecord))
+          .then(() => {
+            this.setSuccessAlert('Success! The student details have been reverted.');
+            this.listDetailMode = false;
+            if (this.pageNumber === 1) {
+              this.retrieveStudentHistory();
+            } else {
+              this.pageNumber = 1; // there is a watch so vue will reload the data table from server.
+            }
+          })
+          .catch(error => {
+            console.error(error);
+            this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
+          })
+          .finally(() => {
+            this.isRevertingStudent = false;
+            window.scroll({
+              top: 0,
+              left: 0,
+              behavior: 'smooth',
+            });
+          });
+
+
+    },
+    convertFromHistoryToStudent(studentHistory) {
+      return {
+        student: {
+          deceasedDate: studentHistory.deceasedDate,
+          demogCode: studentHistory.demogCode,
+          dob: formatDob(studentHistory.dob, 'uuuu/MM/dd', 'uuuu-MM-dd'),
+          email: studentHistory.email,
+          emailVerified: studentHistory.emailVerified,
+          genderCode: studentHistory.genderCode,
+          gradeCode: studentHistory.gradeCode,
+          gradeYear: studentHistory.gradeYear,
+          historyActivityCode: 'USEREDIT',
+          legalFirstName: studentHistory.legalFirstName,
+          legalLastName: studentHistory.legalLastName,
+          legalMiddleNames: studentHistory.legalMiddleNames,
+          localID: studentHistory.localID,
+          memo: studentHistory.memo,
+          mincode: studentHistory.mincode?.replace(/ /g, ''),
+          pen: studentHistory.pen?.replace(/ /g, ''),
+          postalCode: studentHistory.postalCode?.replace(/ /g, ''),
+          sexCode: studentHistory.sexCode,
+          statusCode: studentHistory.statusCode,
+          studentID: studentHistory.studentID,
+          trueStudentID: studentHistory.trueStudentID,
+          usualFirstName: studentHistory.usualFirstName,
+          usualLastName: studentHistory.usualLastName,
+          usualMiddleNames: studentHistory.usualMiddleNames
+        }
+      };
+    }
   }
 };
 </script>
 
 <style scoped>
-  #currentItemsDisplay {
-    text-align: right;
-    font-size: 0.875rem;
-  }
+#currentItemsDisplay {
+  text-align: right;
+  font-size: 0.875rem;
+}
 
-  .table-cell {
-    cursor: pointer;
-  }
+.table-cell {
+  cursor: pointer;
+}
 
-  #auditHistory /deep/ .v-pagination__navigation > i {
-    padding-left: 0;
-  }
+#auditHistory /deep/ .v-pagination__navigation > i {
+  padding-left: 0;
+}
 
-  #dataTable /deep/ table {
-    border-spacing: 0 0.25rem;
-    border-top: thin solid #d7d7d7;
-    border-bottom: thin solid #d7d7d7;
-  }
+#dataTable /deep/ table {
+  border-spacing: 0 0.25rem;
+  border-top: thin solid #d7d7d7;
+  border-bottom: thin solid #d7d7d7;
+}
 
-  #dataTable /deep/ table th{
-    font-size: 0.875rem;
-  }
-  #dataTable /deep/ table tr.selected-record,
-  #dataTable /deep/ table tbody tr:hover {
-    background-color: #E1F5FE !important;
-  }
+#dataTable /deep/ table th {
+  font-size: 0.875rem;
+}
 
-  #dataTable /deep/ table td {
-    border-bottom: none !important;
-  }
+#dataTable /deep/ table tr.selected-record,
+#dataTable /deep/ table tbody tr:hover {
+  background-color: #E1F5FE !important;
+}
 
-  #dataTable /deep/ table tr.hide-item {
-    display: none;
-  }
+#dataTable /deep/ table td {
+  border-bottom: none !important;
+}
 
-  #dataTable /deep/ table tr.hideable {
-    background-color: rgba(0, 0, 0, 0.06);
-  }
+#dataTable /deep/ table tr.hide-item {
+  display: none;
+}
 
-  #studentInfo {
-    font-size: 1.25rem;
-  }
+#dataTable /deep/ table tr.hideable {
+  background-color: rgba(0, 0, 0, 0.06);
+}
 
-  .diff-value {
-    font-weight:bold;
-  }
+#studentInfo {
+  font-size: 1.25rem;
+}
+
+.diff-value {
+  font-weight: bold;
+}
 </style>
