@@ -256,7 +256,7 @@ const utils = {
   },
   formatCommentTimestamp(time) {
     const timestamp = LocalDateTime.parse(time);
-    const formattedTime = timestamp.format(DateTimeFormatter.ofPattern('yyyy-MM-dd h:m'));
+    const formattedTime = timestamp.format(DateTimeFormatter.ofPattern('yyyy/MM/dd h:m'));
     let hour = timestamp.hour();
     let minute = timestamp.minute();
     if (timestamp.minute() < 10) {

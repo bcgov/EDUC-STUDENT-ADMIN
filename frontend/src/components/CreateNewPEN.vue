@@ -62,7 +62,6 @@ import PrimaryButton from './util/PrimaryButton';
 import PenMatchResultsTable from '@/components/common/PenMatchResultsTable';
 import ApiService from '../common/apiService';
 import {Routes} from '@/utils/constants';
-import {formatDob} from '@/utils/format';
 import { constructPenMatchObjectFromStudent, getPossibleMatches } from '@/utils/common';
 import AlertMessage from '../components/util/AlertMessage';
 import StudentDetailsInfoPanel from './common/StudentDetailsInfoPanel';
@@ -101,7 +100,7 @@ export default {
         }
       };
       // API expects DOB to be with - not /
-      studentWithAssociations.student.dob = formatDob(this.student.dob, 'uuuu/MM/dd', 'uuuu-MM-dd');
+      studentWithAssociations.student.dob = this.student.dob;
       studentWithAssociations.student.sexCode = this.student.genderCode; // sex code is mandatory in API.
       studentWithAssociations.student.emailVerified = 'N';
       studentWithAssociations.student.postalCode = this.student.postalCode ? this.student.postalCode.replaceAll(' ', '') : null;

@@ -102,7 +102,7 @@
 
           <StudentDetailsTextFieldReadOnly max-length="9" min-length="8" :name="STUDENT_DETAILS_FIELDS.MINCODE"
                                     :highlight="studentHistoryDetail.mincode_diff"
-                                    :model="formatMincode(studentHistoryDetail.mincode)" :has-edits="false"
+                                    :model="studentHistoryDetail.mincode" :has-edits="false"
                                     labelSpan="4" colspan="6" label="Mincode" 
                                     :disabled="false"></StudentDetailsTextFieldReadOnly>
 
@@ -154,7 +154,7 @@ import moment from 'moment';
 import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly';
 import PrimaryButton from '../../util/PrimaryButton';
-import {formatMincode, formatPen, formatPostalCode} from '../../../utils/format';
+import {formatPen, formatPostalCode} from '../../../utils/format';
 import alertMixin from '../../../mixins/alertMixin';
 
 export default {
@@ -211,7 +211,6 @@ export default {
   methods: {
     formatPen,
     formatPostalCode,
-    formatMincode,
     clickPrevious() {
       if (this.rowNumber > 0) {
         this.rowNumber -= 1;

@@ -48,7 +48,7 @@
             <p class="mb-2">DOB:</p>
           </v-col>
           <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-            <p class="mb-2">{{ this.request.recordedDob ? moment(this.request.recordedDob).format('YYYY-MM-DD'):'' }}</p>
+            <p class="mb-2">{{ this.request.recordedDob ? moment(this.request.recordedDob).format('YYYY/MM/DD'):'' }}</p>
           </v-col>
         </v-row>
         <v-row no-gutters>
@@ -74,7 +74,7 @@
           <p class="update-data mb-2">{{ this.request.legalLastName || ' '}}</p>
         </v-row>
         <v-row no-gutters>
-          <p class="update-data mb-2">{{ this.request.dob ? moment(this.request.dob).format('YYYY-MM-DD'):'' }}</p>
+          <p class="update-data mb-2">{{ this.request.dob ? moment(this.request.dob).format('YYYY/MM/DD'):'' }}</p>
         </v-row>
         <v-row no-gutters>
           <p>{{ this.request.genderCode }}</p>

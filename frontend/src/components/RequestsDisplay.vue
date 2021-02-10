@@ -174,7 +174,7 @@
           <template v-slot:item="{ item }">
             <tr :class="item.sagaInProgress? 'blue-grey lighten-3 tableRow' :'tableRow'" @click="viewRequestDetails(item)">
               <td>{{item[`${requestType}StatusCode`].label}}</td>
-              <td>{{item.initialSubmitDate?moment(item.initialSubmitDate).format('YYYY-MM-DD LT'):'' }}</td>
+              <td>{{item.initialSubmitDate?moment(item.initialSubmitDate).format('YYYY/MM/DD LT'):'' }}</td>
               <td>{{item[`${penName}`]}}</td>
               <td>{{item.legalLastName}}</td>
               <td>{{item.legalFirstName}}</td>

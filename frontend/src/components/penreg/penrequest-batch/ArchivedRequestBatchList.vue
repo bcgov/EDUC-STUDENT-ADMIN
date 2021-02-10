@@ -13,7 +13,7 @@ import { mapMutations, mapState } from 'vuex';
 import PenRequestBatchDataTable from './PenRequestBatchDataTable';
 import ApiService from '../../../common/apiService';
 import {Routes, SEARCH_FILTER_OPERATION, SEARCH_CONDITION, SEARCH_VALUE_TYPE} from '../../../utils/constants';
-import {formatMincode, formatDateTime} from '../../../utils/format';
+import {formatDateTime} from '../../../utils/format';
 import {compact, partialRight} from 'lodash';
 import { deepCloneObject } from '../../../utils/common';
 
@@ -37,7 +37,7 @@ export default {
       itemsPerPage: 15,
       headers: [
         { value: 'rowSelect', type: 'select', sortable: false },
-        { text: 'Mincode', value: 'mincode', sortable: false, align: 'start', format: formatMincode },
+        { text: 'Mincode', value: 'mincode', sortable: false, align: 'start' },
         { text: 'School Name', value: 'schoolName', sortable: false },
         { text: 'TOT', value: 'studentCount', sortable: false, countable: true },
         { text: 'MCH', value: 'matchedCount', sortable: false, countable: true },
