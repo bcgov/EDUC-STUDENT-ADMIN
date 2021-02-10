@@ -164,7 +164,7 @@
             <v-spacer></v-spacer>
             <PrimaryButton :secondary="true" class="mx-1" text="Close" @click.native="$emit('close')"></PrimaryButton>
             <PrimaryButton class="mx-1" text="View PEN request"></PrimaryButton>
-            <PrimaryButton :loading="isRevertStudent" class="mx-1" text="Revert"
+            <PrimaryButton :loading="isRevertingStudent" class="mx-1" text="Revert"
                            @click.native="revertStudentDataFromStudentHistory()"></PrimaryButton>
           </v-card-actions>
 
@@ -213,7 +213,6 @@ export default {
       studentHistoryDetail: null,
       rowNumber: 0,
       STUDENT_DETAILS_FIELDS: STUDENT_DETAILS_FIELDS,
-      isRevertStudent: false,
     };
   },
   created() {
@@ -232,9 +231,6 @@ export default {
           this.rowNumber = idx;
         }
       });
-    },
-    isRevertingStudent(newValue) {
-      this.isRevertStudent = newValue;
     }
   },
   computed: {
