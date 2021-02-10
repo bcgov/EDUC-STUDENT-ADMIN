@@ -136,7 +136,7 @@ import AlertMessage from '../util/AlertMessage';
 import alertMixin from '@/mixins/alertMixin';
 import router from '../../router';
 import TertiaryButton from '../util/TertiaryButton';
-import {getMatchedRecordsByStudent} from '@/utils/common'
+import {getMatchedRecordsByStudent} from '@/utils/common';
 
 export default {
   name: 'CompareDemographicsCommon',
