@@ -43,7 +43,7 @@
         <p class="mb-2">DOB:</p>
       </v-col>
       <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-        <p class="mb-2"><strong>{{ this.request.dob ? moment(this.request.dob).format('YYYY-MM-DD'):'' }}</strong></p>
+        <p class="mb-2"><strong>{{ this.request.dob ? moment(this.request.dob).format('YYYY/MM/DD'):'' }}</strong></p>
       </v-col>
     </v-row>
     <v-row no-gutters class="px-2">

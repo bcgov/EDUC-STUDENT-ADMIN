@@ -201,14 +201,13 @@
                 :filled="false"
                 :clearable="false"
                 :async-messages="mincodeErrors"
-                :format="formatMincode"
                 :rules="validateMincode()"
                 maxlength="8"
             ></FormattedTextField>
           </v-col>
           <v-col offset="2" cols="3">
             <StudentDetailsCheckBoxWithOutputText :name="STUDENT_DETAILS_FIELDS.MINCODE" tab-index="29"
-                                                  :model="mergedStudent.mincode?formatMincode(mergedStudent.mincode):''"
+                                                  :model="mergedStudent.mincode?mergedStudent.mincode:''"
                                                   colspan="6" @update="handleCheckBoxChanged"
                                                   :disabled="student.mincode === mergedStudent.mincode || mergeSagaComplete"
             ></StudentDetailsCheckBoxWithOutputText>
@@ -304,7 +303,7 @@
 
 <script>
 import ApiService from '../../../common/apiService';
-import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
+import {formatDob, formatPen, formatPostalCode} from '@/utils/format';
 import {mapGetters} from 'vuex';
 import {Routes, REQUEST_TYPES, STUDENT_DETAILS_FIELDS, STUDENT_CODES} from '@/utils/constants';
 import FormattedTextField from '@/components/util/FormattedTextField';
@@ -381,7 +380,6 @@ export default {
   },
   methods: {
     formatPen,
-    formatMincode,
     formatDob,
     formatPostalCode,
     openStudentDetails(studentID) {
@@ -457,7 +455,7 @@ export default {
       if (initialLoad) {
         this.shortDOB = this.student.dob.replace(/[^0-9]/g, '');
       } else {
-        this.student.dob = this.shortDOB? formatDob(this.shortDOB,'uuuuMMdd','uuuu-MM-dd') : '';
+        this.student.dob = this.shortDOB? formatDob(this.shortDOB,'uuuuMMdd','uuuu/MM/dd') : '';
       }
     },
     // Asynchronous validator returns an array of boolean or string that would be provided for :rules prop of input field

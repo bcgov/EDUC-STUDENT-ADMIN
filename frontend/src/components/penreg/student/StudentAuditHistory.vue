@@ -72,7 +72,7 @@ import AlertMessage from '../../util/AlertMessage';
 import StudentAuditHistoryDetail from '../student/StudentAuditHistoryDetailPanel';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
-import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
+import { formatPen, formatDob, formatPostalCode} from '@/utils/format';
 import {groupBy, mapValues} from 'lodash';
 
 export default {
@@ -189,7 +189,6 @@ export default {
       return `${student.legalLastName ? student.legalLastName + ',' : ''} ${student.legalFirstName ? student.legalFirstName : ''} ${student.legalMiddleNames ? student.legalMiddleNames : ''}`;
     },
     formatStudentHistory(history) {
-      history.mincode && (history.mincode = formatMincode(history.mincode));
       history.dob && (history.dob = formatDob(history.dob, 'uuuu-MM-dd'));
       history.createTime = history.createDate;
       history.createDate && (history.createDate = formatDob(history.createDate.substring(0, 10), 'uuuu-MM-dd'));

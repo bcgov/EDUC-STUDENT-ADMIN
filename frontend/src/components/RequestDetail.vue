@@ -46,7 +46,7 @@
               </v-col>
               <v-col cols="12" xl="9" lg="9" md="9" sm="9">
                 <p id="asOfDate" v-if="this.request['statusUpdateDate'] == null" class="mb-2"></p>
-                <p id="asOfDate" v-else class="mb-2"><strong>{{ this.request['statusUpdateDate'] ? moment(this.request['statusUpdateDate']).fromNow():'' }}</strong>, at {{ this.request['statusUpdateDate'] ? moment(this.request['statusUpdateDate']).format('YYYY-MM-DD LT'):'' }}</p>
+                <p id="asOfDate" v-else class="mb-2"><strong>{{ this.request['statusUpdateDate'] ? moment(this.request['statusUpdateDate']).fromNow():'' }}</strong>, at {{ this.request['statusUpdateDate'] ? moment(this.request['statusUpdateDate']).format('YYYY/MM/DD LT'):'' }}</p>
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -55,7 +55,7 @@
               </v-col>
               <v-col cols="12" xl="9" lg="9" md="9" sm="9">
                 <p id="submittedDate" v-if="this.request.initialSubmitDate == null" class="mb-2"></p>
-                <p id="submittedDate" v-else><strong>{{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).fromNow():'' }}</strong>, at {{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).format('YYYY-MM-DD LT'):'' }}</p>
+                <p id="submittedDate" v-else><strong>{{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).fromNow():'' }}</strong>, at {{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).format('YYYY/MM/DD LT'):'' }}</p>
               </v-col>
             </v-row>
           </v-card>

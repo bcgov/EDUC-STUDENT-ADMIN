@@ -236,7 +236,7 @@
                                            :name="STUDENT_DETAILS_FIELDS.GRADE_YEAR" colspan="1" label="Grade School Year"
                                            :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.GRADE_YEAR)"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="spacePostalCode?spacePostalCode:''" :name="STUDENT_DETAILS_FIELDS.POSTAL_CODE"
+          <StudentDetailsTextFieldReadOnly :model="studentCopy.postalCode?studentCopy.postalCode:''" :name="STUDENT_DETAILS_FIELDS.POSTAL_CODE"
                                            colspan="2" label="Postal Code"
                                            :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"></StudentDetailsTextFieldReadOnly>
 

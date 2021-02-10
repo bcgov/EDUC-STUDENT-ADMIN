@@ -120,11 +120,11 @@
                                            labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
           <StudentDetailsTextFieldReadOnly max-length="9" min-length="8" :name="STUDENT_DETAILS_FIELDS.MINCODE"
-                                           :disabled="false"
-                                           :has-edits="false" :highlight="studentHistoryDetail.mincode_diff"
-                                           :model="formatMincode(studentHistoryDetail.mincode)" colspan="6"
-                                           label="Mincode"
-                                           labelSpan="4"></StudentDetailsTextFieldReadOnly>
+
+                                    :highlight="studentHistoryDetail.mincode_diff"
+                                    :model="studentHistoryDetail.mincode" :has-edits="false"
+                                    labelSpan="4" colspan="6" label="Mincode" 
+                                    :disabled="false"></StudentDetailsTextFieldReadOnly>
 
           <StudentDetailsTextFieldReadOnly :disabled="false"
                                            :highlight="studentHistoryDetail.localID_diff"
@@ -182,7 +182,7 @@ import moment from 'moment';
 import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly';
 import PrimaryButton from '../../util/PrimaryButton';
-import {formatMincode, formatPen, formatPostalCode} from '@/utils/format';
+import {formatPen, formatPostalCode} from '../../../utils/format';
 import alertMixin from '../../../mixins/alertMixin';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
 
@@ -245,7 +245,6 @@ export default {
   methods: {
     formatPen,
     formatPostalCode,
-    formatMincode,
     clickPrevious() {
       if (this.rowNumber > 0) {
         this.rowNumber -= 1;

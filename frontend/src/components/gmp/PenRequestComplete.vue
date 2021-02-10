@@ -82,7 +82,7 @@
                 <p class="mb-2">DOB:</p>
               </v-col>
               <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                <p class="mb-2"><strong>{{ this.demographics.dob }}</strong></p>
+                <p class="mb-2"><strong>{{ formatDob(this.demographics.dob,'uuuu-MM-dd', 'uuuu/MM/dd') }}</strong></p>
               </v-col>
             </v-row>
             <v-row no-gutters class="pt-2 px-2">
@@ -127,6 +127,7 @@
 </template>
 
 <script>
+import {formatDob} from '@/utils/format';
 import ApiService from '../../common/apiService';
 import { Routes, Statuses } from '../../utils/constants';
 import { replaceMacro } from '../../utils/macro';
@@ -275,6 +276,7 @@ export default {
       this.alertType = 'bootstrap-success';
       this.alert = true;
     },
+    formatDob,
     setFailureAlert(message) {
       this.alertMessage = message;
       this.alertType = 'bootstrap-error';
