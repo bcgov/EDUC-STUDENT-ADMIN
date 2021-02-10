@@ -5,11 +5,12 @@ const config = require('../config/index');
 const log = require('./logger');
 const utils = require('./utils');
 const {putData} = require('./utils');
+const retry = require('async-retry');
 
 async function updateStudent(req, res) {
+
   try {
     const token = utils.getBackendToken(req);
-
     if (!req.params.studentID) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'No Student ID for PUT operation.'
@@ -18,14 +19,19 @@ async function updateStudent(req, res) {
     const student = req.body.student;
     student.createDate = null;
     student.updateDate = null;
-    const result = await putData(token, `${config.get('server:student:rootURL')}/${req.params.studentID}`, student, utils.getUser(req).idir_username);
-    return res.status(HttpStatus.OK).json(result);
+    await retry(async () => {
+        const result = await putData(token, `${config.get('server:student:rootURL')}/${req.params.studentID}`, student, utils.getUser(req).idir_username);
+        return res.status(HttpStatus.OK).json(result);
+      },
+      {
+        retries: 3
+      });
   } catch (e) {
-    logApiError(e, 'saveStudent', 'Error occurred while attempting to save a student.');
+    logApiError(e, 'updateStudent', 'Error occurred while attempting to update a student.');
     return errorResponse(res);
   }
-}
 
+}
 
 
 async function getStudentByStudentId(req, res) {
@@ -38,10 +44,10 @@ async function getStudentByStudentId(req, res) {
     utils.getData(utils.getBackendToken(req), `${config.get('server:penMatch:possibleMatch')}/${id}`)
   ]).then(async ([studentResponse, mergesResponse, possibleMatches]) => {
     if (studentResponse) {
-      const response ={
+      const response = {
         student: studentResponse,
-        merges:[],
-        possibleMatches:[]
+        merges: [],
+        possibleMatches: []
       };
       // update the response payload with student details for display in UI for possible matches.
       if (possibleMatches && possibleMatches.length > 0) {

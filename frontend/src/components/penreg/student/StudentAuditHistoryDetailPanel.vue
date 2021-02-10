@@ -1,150 +1,178 @@
 <template>
   <div class="full-width mt-n15">
+
     <v-row>
+
       <v-col cols="11" class="ml-10">
         <div id="auditHistoryDetailHeader" class="pt-4 pl-2">
           <span id="headerLabel">Changed by</span>
-          <span id="headerUser">{{studentHistoryDetail.updateUser}}</span>
-          <span id="headerUpdateDate">{{frontEndDateFormat(studentHistoryDetail.updateDate)}}</span>
-          <span id="headerUpdateTime">at {{frontEndTimeFormat(studentHistoryDetail.updateDate)}}</span>
-          <span class="float-right mt-n2"> 
-            <v-btn 
-              class="mr-3"
-              id="previousHistoryDetail"
-              icon
-              dark
-              small
-              :disabled="previousDisabled"
-              @click="clickPrevious"
+          <span id="headerUser">{{ studentHistoryDetail.updateUser }}</span>
+          <span id="headerUpdateDate">{{ frontEndDateFormat(studentHistoryDetail.updateDate) }}</span>
+          <span id="headerUpdateTime">at {{ frontEndTimeFormat(studentHistoryDetail.updateDate) }}</span>
+          <span class="float-right mt-n2">
+            <v-btn
+                id="previousHistoryDetail"
+                :disabled="previousDisabled"
+                class="mr-3"
+                dark
+                icon
+                small
+                @click="clickPrevious"
             >
               <v-icon large>fa-arrow-alt-circle-left</v-icon>
-            </v-btn >
-            <v-btn 
-              class="mr-2"
-              id="nextHistoryDetail"
-              icon
-              dark
-              :disabled="nextDisabled"
-              @click="clickNext"
+            </v-btn>
+            <v-btn
+                id="nextHistoryDetail"
+                :disabled="nextDisabled"
+                class="mr-2"
+                dark
+                icon
+                @click="clickNext"
             >
               <v-icon large>fa-arrow-alt-circle-right</v-icon>
             </v-btn>
           </span>
         </div>
         <v-card id="auditHistoryDetail" class="pl-4" height="auto" width="100%" elevation=0>
-          <StudentDetailsTextFieldReadOnly :model="formatPen(studentHistoryDetail.pen)" :name="STUDENT_DETAILS_FIELDS.PEN"
-                                            labelSpan="4" colspan="4" label="PEN"
-                                            :disabled="false"></StudentDetailsTextFieldReadOnly>
+          <StudentDetailsTextFieldReadOnly :disabled="false"
+                                           :model="formatPen(studentHistoryDetail.pen)"
+                                           :name="STUDENT_DETAILS_FIELDS.PEN" colspan="4" label="PEN"
+                                           labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
           <StudentDetailsTextFieldReadOnly :model="getDemogCode()" :name="STUDENT_DETAILS_FIELDS.DEMOG_CODE"
-                                            :highlight="!!studentHistoryDetail.demogCode_diff"
-                                            labelSpan="4" colspan="4" label="Demog Code"
-                                            :disabled="false"></StudentDetailsTextFieldReadOnly>
+                                           :disabled="false"
+                                           :highlight="!!studentHistoryDetail.demogCode_diff" colspan="4"
+                                           label="Demog Code"
+                                           labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.legalLastName" :name="STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME"
-                                            :highlight="!!studentHistoryDetail.legalLastName_diff"
-                                            labelSpan="4" colspan="8" label="Legal Surname"
-                                            :disabled="false"></StudentDetailsTextFieldReadOnly>
+          <StudentDetailsTextFieldReadOnly :disabled="false"
+                                           :highlight="!!studentHistoryDetail.legalLastName_diff"
+                                           :model="studentHistoryDetail.legalLastName"
+                                           :name="STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME" colspan="8"
+                                           label="Legal Surname"
+                                           labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.legalFirstName" :name="STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME"
-                                            :highlight="!!studentHistoryDetail.legalFirstName_diff"
-                                            labelSpan="4" colspan="8" label="Legal Given"
-                                            :disabled="false"></StudentDetailsTextFieldReadOnly>
+          <StudentDetailsTextFieldReadOnly :disabled="false"
+                                           :highlight="!!studentHistoryDetail.legalFirstName_diff"
+                                           :model="studentHistoryDetail.legalFirstName"
+                                           :name="STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME" colspan="8"
+                                           label="Legal Given"
+                                           labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.legalMiddleNames || ''" :name="STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES"
-                                            :highlight="!!studentHistoryDetail.legalMiddleNames_diff"
-                                            labelSpan="4" colspan="8" label="Legal Middle"
-                                            :disabled="false"></StudentDetailsTextFieldReadOnly>
-          
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualLastName || ''" :name="STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME"
-                                            :highlight="!!studentHistoryDetail.usualLastName_diff"
-                                            labelSpan="4" colspan="8" label="Usual Surname"
-                                            :disabled="false"></StudentDetailsTextFieldReadOnly>
+          <StudentDetailsTextFieldReadOnly :disabled="false"
+                                           :highlight="!!studentHistoryDetail.legalMiddleNames_diff"
+                                           :model="studentHistoryDetail.legalMiddleNames || ''"
+                                           :name="STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES" colspan="8"
+                                           label="Legal Middle"
+                                           labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualFirstName || ''" :name="STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME"
-                                            labelSpan="4" colspan="8" label="Usual Given"
-                                            :highlight="!!studentHistoryDetail.usualFirstName_diff"
-                                            :disabled="false"></StudentDetailsTextFieldReadOnly>
+          <StudentDetailsTextFieldReadOnly :disabled="false"
+                                           :highlight="!!studentHistoryDetail.usualLastName_diff"
+                                           :model="studentHistoryDetail.usualLastName || ''"
+                                           :name="STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME" colspan="8"
+                                           label="Usual Surname"
+                                           labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.usualMiddleNames || ''" :name="STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES"
-                                            labelSpan="4" colspan="8" label="Usual Middle"
-                                            :highlight="!!studentHistoryDetail.usualMiddleNames_diff"
-                                            :disabled="false"></StudentDetailsTextFieldReadOnly>
+          <StudentDetailsTextFieldReadOnly :disabled="false"
+                                           :highlight="!!studentHistoryDetail.usualFirstName_diff"
+                                           :model="studentHistoryDetail.usualFirstName || ''"
+                                           :name="STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME" colspan="8"
+                                           label="Usual Given"
+                                           labelSpan="4"></StudentDetailsTextFieldReadOnly>
+
+          <StudentDetailsTextFieldReadOnly :disabled="false"
+                                           :highlight="!!studentHistoryDetail.usualMiddleNames_diff"
+                                           :model="studentHistoryDetail.usualMiddleNames || ''"
+                                           :name="STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES" colspan="8"
+                                           label="Usual Middle"
+                                           labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
           <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.genderCode || ''"
-                                            :highlight="!!studentHistoryDetail.genderCode_diff"
-                                            :name="STUDENT_DETAILS_FIELDS.GENDER_CODE" 
-                                            labelSpan="4" colspan="1" label="Gender"
-                                            :disabled="false"></StudentDetailsTextFieldReadOnly>
+                                           :disabled="false"
+                                           :highlight="!!studentHistoryDetail.genderCode_diff"
+                                           :name="STUDENT_DETAILS_FIELDS.GENDER_CODE" colspan="1" label="Gender"
+                                           labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
           <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.dob || ''"
-                                            :highlight="!!studentHistoryDetail.dob_diff"
-                                            :name="STUDENT_DETAILS_FIELDS.DOB" 
-                                            labelSpan="4" colspan="4" label="Date of Birth"
-                                            :disabled="false"></StudentDetailsTextFieldReadOnly>
+                                           :disabled="false"
+                                           :highlight="!!studentHistoryDetail.dob_diff"
+                                           :name="STUDENT_DETAILS_FIELDS.DOB" colspan="4" label="Date of Birth"
+                                           labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
           <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.gradeCode || ''"
-                                            :highlight="!!studentHistoryDetail.gradeCode_diff"
-                                            :name="STUDENT_DETAILS_FIELDS.GRADE_CODE" 
-                                            labelSpan="4" colspan="1" label="Grade" :grade-level="getGradeLabel()"
-                                            :disabled="false"></StudentDetailsTextFieldReadOnly>
+                                           :disabled="false"
+                                           :grade-level="getGradeLabel()"
+                                           :highlight="!!studentHistoryDetail.gradeCode_diff"
+                                           :name="STUDENT_DETAILS_FIELDS.GRADE_CODE" colspan="1" label="Grade"
+                                           labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
           <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.gradeYear || ''"
-                                            :highlight="studentHistoryDetail.gradeYear_diff"
-                                            :name="STUDENT_DETAILS_FIELDS.GRADE_YEAR"
-                                            labelSpan="4" colspan="4" label="Grade School Year"
-                                            :disabled="false"></StudentDetailsTextFieldReadOnly>
+                                           :disabled="false"
+                                           :highlight="studentHistoryDetail.gradeYear_diff"
+                                           :name="STUDENT_DETAILS_FIELDS.GRADE_YEAR" colspan="4"
+                                           label="Grade School Year"
+                                           labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="formatPostalCode(studentHistoryDetail.postalCode)" :name="STUDENT_DETAILS_FIELDS.POSTAL_CODE"
-                                          :highlight="studentHistoryDetail.postalCode_diff"
-                                          labelSpan="4" colspan="4" label="Postal Code"
-                                          :disabled="false"></StudentDetailsTextFieldReadOnly>
+          <StudentDetailsTextFieldReadOnly :disabled="false"
+                                           :highlight="studentHistoryDetail.postalCode_diff"
+                                           :model="formatPostalCode(studentHistoryDetail.postalCode)"
+                                           :name="STUDENT_DETAILS_FIELDS.POSTAL_CODE" colspan="4" label="Postal Code"
+                                           labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
           <StudentDetailsTextFieldReadOnly max-length="9" min-length="8" :name="STUDENT_DETAILS_FIELDS.MINCODE"
+
                                     :highlight="studentHistoryDetail.mincode_diff"
                                     :model="studentHistoryDetail.mincode" :has-edits="false"
                                     labelSpan="4" colspan="6" label="Mincode" 
                                     :disabled="false"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.localID || ''" :name="STUDENT_DETAILS_FIELDS.LOCAL_ID"
-                                            :highlight="studentHistoryDetail.localID_diff"
-                                            labelSpan="4" colspan="6" label="Local ID"
-                                            :disabled="false"></StudentDetailsTextFieldReadOnly>
+          <StudentDetailsTextFieldReadOnly :disabled="false"
+                                           :highlight="studentHistoryDetail.localID_diff"
+                                           :model="studentHistoryDetail.localID || ''"
+                                           :name="STUDENT_DETAILS_FIELDS.LOCAL_ID" colspan="6" label="Local ID"
+                                           labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
           <v-row>
             <v-col cols="4">
-              <p :class="['labelField', !!studentHistoryDetail.memo_diff && !studentHistoryDetail.memo? 'diff-value' : 'plain-value' ]">Memo</p>
+              <p :class="['labelField', !!studentHistoryDetail.memo_diff && !studentHistoryDetail.memo? 'diff-value' : 'plain-value' ]">
+                Memo</p>
             </v-col>
             <v-col class="textAreaColumn mr-2">
               <v-textarea
-                :class="['onhoverEdit', 'bolder', 'customNoBorder', !!studentHistoryDetail.memo_diff? 'diff-value' : 'plain-value' ]"
-                v-model="studentHistoryDetail.memo"
-                :id='STUDENT_DETAILS_FIELDS.MEMO'
-                color="#000000"
-                maxlength="4000"
-                dense
-                rows="2"
-                :readonly="true"
-                :outlined="false"
-                :disabled="false"
-                :no-resize="true"
+                  :id='STUDENT_DETAILS_FIELDS.MEMO'
+                  v-model="studentHistoryDetail.memo"
+                  :class="['onhoverEdit', 'bolder', 'customNoBorder', !!studentHistoryDetail.memo_diff? 'diff-value' : 'plain-value' ]"
+                  :disabled="false"
+                  :no-resize="true"
+                  :outlined="false"
+                  :readonly="true"
+                  color="#000000"
+                  dense
+                  maxlength="4000"
+                  rows="2"
               ></v-textarea>
             </v-col>
           </v-row>
 
-          <StudentDetailsTextFieldReadOnly no-gutters :model="getStatusCode()" :name="STUDENT_DETAILS_FIELDS.STATUS_CODE"
-                                            :highlight="!!studentHistoryDetail.statusCode_diff"
-                                            labelSpan="4" colspan="4" label="Status"
-                                            :disabled="false"></StudentDetailsTextFieldReadOnly>
+          <StudentDetailsTextFieldReadOnly :disabled="false" :highlight="!!studentHistoryDetail.statusCode_diff"
+                                           :model="getStatusCode()"
+                                           :name="STUDENT_DETAILS_FIELDS.STATUS_CODE"
+                                           colspan="4" label="Status" labelSpan="4"
+                                           no-gutters></StudentDetailsTextFieldReadOnly>
           <v-card-actions class="my-4 py-6">
+
             <v-spacer></v-spacer>
             <PrimaryButton :secondary="true" class="mx-1" text="Close" @click.native="$emit('close')"></PrimaryButton>
             <PrimaryButton class="mx-1" text="View PEN request"></PrimaryButton>
-            <PrimaryButton class="mx-1" text="Revert"></PrimaryButton>
+            <PrimaryButton :loading="isRevertingStudent" class="mx-1" text="Revert"
+                           @click.native="revertStudentDataFromStudentHistory()"></PrimaryButton>
           </v-card-actions>
+
         </v-card>
       </v-col>
+
     </v-row>
+    <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>
   </div>
 </template>
 
@@ -156,9 +184,10 @@ import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/Student
 import PrimaryButton from '../../util/PrimaryButton';
 import {formatPen, formatPostalCode} from '../../../utils/format';
 import alertMixin from '../../../mixins/alertMixin';
+import ConfirmationDialog from '../../util/ConfirmationDialog';
 
 export default {
-  name: 'studentAudtiHistoryDetail',
+  name: 'studentAuditHistoryDetail',
   mixins: [alertMixin],
   props: {
     studentHistory: {
@@ -169,16 +198,21 @@ export default {
       type: String,
       required: true
     },
+    isRevertingStudent: {
+      type: Boolean,
+      defaultValue: false
+    }
   },
   components: {
     StudentDetailsTextFieldReadOnly,
     PrimaryButton,
+    ConfirmationDialog,
   },
   data() {
     return {
       studentHistoryDetail: null,
       rowNumber: 0,
-      STUDENT_DETAILS_FIELDS:STUDENT_DETAILS_FIELDS,
+      STUDENT_DETAILS_FIELDS: STUDENT_DETAILS_FIELDS,
     };
   },
   created() {
@@ -225,6 +259,28 @@ export default {
         this.$emit('update', this.studentHistoryDetail.studentHistoryID);
       }
     },
+    revertStudentDataFromStudentHistory() {
+      const opts = {
+        width: '680px',
+        messagePadding: 'px-4 pt-1',
+        color: '',
+        dark: false,
+        titleBold: true,
+        closeIcon: true,
+        divider: false,
+        resolveText: 'Confirm'
+      };
+      this.$refs.confirmationDialog.open(undefined, `Please confirm that you would like to revert the student's current details to match those in the audit record.`,
+          opts)
+          .then((result) => {
+            if (result) { // the component returns true only when user confirms the dialog.
+              this.studentHistoryDetail = this.studentHistory.content[this.rowNumber];
+              this.$emit('revert', this.studentHistoryDetail);
+            }
+          });
+
+
+    },
     frontEndDateFormat(date) {
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY/MM/DD');
     },
@@ -232,13 +288,13 @@ export default {
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('HH:mm');
     },
     getGradeLabel() {
-      return this.studentHistoryDetail.gradeCode? this.gradeCodeObjects.filter(it => (it.gradeCode === this.studentHistoryDetail.gradeCode))[0].label : '';
+      return this.studentHistoryDetail.gradeCode ? this.gradeCodeObjects.filter(it => (it.gradeCode === this.studentHistoryDetail.gradeCode))[0].label : '';
     },
-    getStatusCode(){
-      return this.studentHistoryDetail.statusCode? this.statusCodeObjects.filter(it => (it.statusCode === this.studentHistoryDetail.statusCode))[0].label : '';
+    getStatusCode() {
+      return this.studentHistoryDetail.statusCode ? this.statusCodeObjects.filter(it => (it.statusCode === this.studentHistoryDetail.statusCode))[0].label : '';
     },
-    getDemogCode(){
-      return this.studentHistoryDetail.demogCode? this.demogCodeObjects.filter(it => (it.demogCode === this.studentHistoryDetail.demogCode))[0].label : '';
+    getDemogCode() {
+      return this.studentHistoryDetail.demogCode ? this.demogCodeObjects.filter(it => (it.demogCode === this.studentHistoryDetail.demogCode))[0].label : '';
     },
   }
 };
