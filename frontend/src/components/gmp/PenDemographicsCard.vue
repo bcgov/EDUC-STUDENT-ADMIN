@@ -52,7 +52,7 @@
           <p class="mb-0">DOB:</p>
         </v-col>
         <v-col cols="12" xl="11" lg="11" md="11" sm="11">
-          <p id="studentDOB" class="mb-0"><strong>{{ this.student.dob }}</strong></p>
+          <p id="studentDOB" class="mb-0"><strong>{{ formatDob(this.student.dob,'uuuu-MM-dd', 'uuuu/MM/dd') }}</strong></p>
         </v-col>
       </v-row>
       <v-row no-gutters class="px-2">
@@ -81,6 +81,7 @@
 <script>
 import ApiService from '../../common/apiService';
 import { Routes, Statuses } from '../../utils/constants';
+import {formatDob} from '@/utils/format';
 export default {
   name: 'penDemographicsCard',
   props: {
@@ -105,6 +106,9 @@ export default {
         genderCode: null
       },
     };
+  },
+  methods: {
+    formatDob
   },
   computed: {
     statusCodes() {
