@@ -90,7 +90,7 @@
               </div>
               <div v-else-if="header.value === 'legalSurName'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
                 <span class="top-field-item">{{ props.item[header.value] }}</span>
-                <span v-if="existSldUsualName(props.item)" class="bottom-field-item">{{ props.item['usualSurname']}}</span>
+                <span v-if="existSldUsualName(props.item)" class="bottom-field-item">{{ props.item['usualSurName']}}</span>
               </div>
               <div v-else-if="header.value === 'legalGivenName'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
                 <span class="top-field-item">{{ props.item[header.value] }}</span>
@@ -263,7 +263,7 @@ export default {
     isValidPEN,
     isOlderThan,
     existSldUsualName(sldData) {
-      if (!!sldData.usualSurname || !!sldData.usualGivenName || !!sldData.usualMiddleName) {
+      if (!!sldData.usualSurName || !!sldData.usualGivenName || !!sldData.usualMiddleName) {
         return true;
       }
       return false;
