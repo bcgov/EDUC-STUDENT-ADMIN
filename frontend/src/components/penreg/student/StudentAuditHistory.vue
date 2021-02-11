@@ -290,13 +290,9 @@ export default {
           .put(Routes['student'].ROOT_ENDPOINT + '/' + selectedHistoryRecord.studentID, this.convertFromHistoryToStudent(selectedHistoryRecord))
           .then(() => {
             this.setSuccessAlert('Success! The student details have been reverted.');
-            this.listDetailMode = false;
-            if (this.pageNumber === 1) {
-              this.retrieveStudentHistory();
-            } else {
-              this.pageNumber = 1; // there is a watch so vue will reload the data table from server.
-            }
-            this.$emit('refresh');
+            setTimeout(() => {
+              this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
+            }, 500);
           })
           .catch(error => {
             console.error(error);
