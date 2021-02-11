@@ -88,7 +88,7 @@
                 <span class="top-field-item">{{ props.item.distNo + ' ' + props.item.schlNo }}</span>
                 <span v-if="existSldUsualName(props.item)" class="bottom-field-item"></span>
               </div>
-              <div v-else-if="header.value === 'legalSurName'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+              <div v-else-if="header.value === 'legalSurname'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
                 <span class="top-field-item">{{ props.item[header.value] }}</span>
                 <span v-if="existSldUsualName(props.item)" class="bottom-field-item">{{ props.item['usualSurname']}}</span>
               </div>
@@ -178,7 +178,7 @@ export default {
         {text: 'Gr', value: 'enrolledGradeCode', key: 'grade', sortable: false},
         {text: 'Mincode', value: 'mincode', key: 'mincode', sortable: false},
         {text: 'Local ID', value: 'localStudentId', key: 'localId', sortable: false},
-        {text: 'Surame', value: 'legalSurName', key: 'surname', sortable: false},
+        {text: 'Surame', value: 'legalSurname', key: 'surname', sortable: false},
         {text: 'Given', value: 'legalGivenName', key: 'givenName', sortable: false},
         {text: 'Middle', value: 'legalMiddleName', key: 'middleName', sortable: false},
         {text: 'Gen', value: 'sex', key: 'gender', sortable: false},
