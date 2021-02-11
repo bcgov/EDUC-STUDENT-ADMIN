@@ -17,7 +17,7 @@
             <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000" class="mt-2"></AlertMessage>
           </v-row>
           <v-tabs-items v-if="!isLoading">
-            <StudentDetailCommon 
+            <StudentDetailCommon
                 :studentID="studentID"
                 :studentDetails="studentDetails"
                 :validForm="validForm"
@@ -40,7 +40,7 @@
                 </v-row>
               </template>
             </StudentDetailCommon>
-            <StudentAuditHistory v-else-if="tab===2" :student="studentDetails.student"/>
+            <StudentAuditHistory v-else-if="tab===2" :student="studentDetails.student" @refresh="refreshStudent"/>
           </v-tabs-items>
           <v-row v-else>
           <v-row fluid class="full-height align-center justify-center" >
@@ -65,7 +65,7 @@
 import StudentDetailCommon from '../../common/StudentDetailCommon';
 import StudentAuditHistory from './StudentAuditHistory';
 import PrimaryButton from '../../util/PrimaryButton';
-import { Routes } from '../../../utils/constants';
+import {Routes} from '@/utils/constants';
 import AlertMessage from '../../util/AlertMessage';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
