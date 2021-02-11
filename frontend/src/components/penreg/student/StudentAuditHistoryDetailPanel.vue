@@ -121,10 +121,10 @@
 
           <StudentDetailsTextFieldReadOnly max-length="9" min-length="8" :name="STUDENT_DETAILS_FIELDS.MINCODE"
 
-                                    :highlight="studentHistoryDetail.mincode_diff"
-                                    :model="studentHistoryDetail.mincode" :has-edits="false"
-                                    labelSpan="4" colspan="6" label="Mincode" 
-                                    :disabled="false"></StudentDetailsTextFieldReadOnly>
+                                           :highlight="studentHistoryDetail.mincode_diff"
+                                           :model="studentHistoryDetail.mincode" :has-edits="false"
+                                           colspan="6" label="Mincode" labelSpan="4"
+                                           :disabled="false"></StudentDetailsTextFieldReadOnly>
 
           <StudentDetailsTextFieldReadOnly :disabled="false"
                                            :highlight="studentHistoryDetail.localID_diff"
@@ -164,7 +164,7 @@
             <v-spacer></v-spacer>
             <PrimaryButton :secondary="true" class="mx-1" text="Close" @click.native="$emit('close')"></PrimaryButton>
             <PrimaryButton class="mx-1" text="View PEN request"></PrimaryButton>
-            <PrimaryButton :loading="isRevertingStudent" class="mx-1" text="Revert"
+            <PrimaryButton :disabled="isRevertDisabled" :loading="isRevertingStudent" class="mx-1" text="Revert"
                            @click.native="revertStudentDataFromStudentHistory()"></PrimaryButton>
           </v-card-actions>
 
@@ -213,6 +213,7 @@ export default {
       studentHistoryDetail: null,
       rowNumber: 0,
       STUDENT_DETAILS_FIELDS: STUDENT_DETAILS_FIELDS,
+      isRevertDisabled: false,
     };
   },
   created() {
@@ -222,6 +223,7 @@ export default {
         this.rowNumber = idx;
       }
     });
+    this.isRevertDisabled = this.studentHistory?.content?.length === 1;
   },
   watch: {
     studentHistoryId(newValue) {

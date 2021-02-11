@@ -72,7 +72,7 @@ import AlertMessage from '../../util/AlertMessage';
 import StudentAuditHistoryDetail from '../student/StudentAuditHistoryDetailPanel';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
-import { formatPen, formatDob, formatPostalCode} from '@/utils/format';
+import {formatDob, formatPen, formatPostalCode} from '@/utils/format';
 import {groupBy, mapValues} from 'lodash';
 
 export default {
@@ -296,6 +296,7 @@ export default {
             } else {
               this.pageNumber = 1; // there is a watch so vue will reload the data table from server.
             }
+            this.$emit('refresh');
           })
           .catch(error => {
             console.error(error);
