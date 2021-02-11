@@ -69,7 +69,7 @@
           Demog Code: {{ students.demogCode }}
         </span>
         <v-spacer></v-spacer>
-        <a class="removePenLink pr-3" @click="removeRecord(students.studentID, students.pen)">
+        <a class="removePenLink pr-3" @click="removeRecord(students.studentID, index)">
             <v-icon small color="#38598A">mdi-close</v-icon>
             Remove PEN
         </a>
