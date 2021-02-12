@@ -47,6 +47,7 @@ async function mergeStudents(req, res) {
     let mergeData = req.body;
     mergeData.mincode = mergeData.mincode?.replace(/ /g,'');
     mergeData.postalCode = mergeData.postalCode?.replace(/ /g,'');
+    mergeData.dob = mergeData.dob?.replace(/\//g,'-');
 
     const sagaReq = {
       ...stripAuditColumns(mergeData),
