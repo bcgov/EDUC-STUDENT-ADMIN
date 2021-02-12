@@ -10,13 +10,13 @@
         <v-row no-gutters class="mb-2">
           <v-col offset="2" cols="2">
             <p class="penLabel" v-if="!mergeSagaComplete">{{formatPen(student.pen)}}</p>
-            <p class="penLabel" v-else><a @click="openStudentDetails(student.studentID)">
+            <p class="penLinkLabel" v-else><a @click="openStudentDetails(student.studentID)">
               {{ formatPen(student.pen) }}
             </a></p>
           </v-col>
           <v-col offset="2" cols="2">
             <p class="penLabel" v-if="!mergeSagaComplete">{{formatPen(mergedStudent.pen)}}</p>
-            <p class="penLabel" v-else><a @click="openStudentDetails(mergedStudent.studentID)">
+            <p class="penLinkLabel" v-else><a @click="openStudentDetails(mergedStudent.studentID)">
               {{ formatPen(mergedStudent.pen) }}
             </a></p>
           </v-col>
@@ -383,7 +383,8 @@ export default {
     formatDob,
     formatPostalCode,
     openStudentDetails(studentID) {
-      router.push({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
+      const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
+      window.open(route.href, '_blank');
     },
     upperCaseInput(fieldName) {
       if (this.student[fieldName]) {
@@ -544,6 +545,13 @@ export default {
 .penLabel {
   font-size: 1.125em;
   font-weight: bolder;
+}
+
+.penLinkLabel {
+  font-size: 1.125em;
+  font-weight: bolder;
+  color: #1976d2;
+  text-decoration: underline;
 }
 
 </style>
