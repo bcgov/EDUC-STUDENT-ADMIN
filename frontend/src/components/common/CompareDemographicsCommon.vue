@@ -293,7 +293,7 @@ export default {
       this.checkedStudents.forEach(checked => cnt += checked ? 1 : 0);
       return cnt !== 2;
     },
-    validateSamePen(student1, student2, message) {
+    validateStudentsHaveSamePen(student1, student2, message) {
       if (student1.pen === student2.pen) {
         this.setFailureAlert(message);
         return true;
@@ -357,7 +357,7 @@ export default {
       let twinStudent =  selectedStudents[1];
 
       // Same Pen validation
-      if (this.validateSamePen(student, twinStudent,
+      if (this.validateStudentsHaveSamePen(student, twinStudent,
         'Error! PENs cannot be twinned, as same PENs are selected.')) {
         return;
       }
@@ -401,30 +401,30 @@ export default {
       }).filter(item => !!item);
 
       // Determine which is the oldest, which will be mergedToPen
-      let mergedToPen = null;
-      let mergedFromPen = null;
+      let mergedToStudent = null;
+      let mergedFromStudent = null;
       if (this.isOlderThan(selectedStudents[0].createDate, selectedStudents[1].createDate)) {
-        mergedToPen = selectedStudents[0];
-        mergedFromPen = selectedStudents[1];
+        mergedToStudent = selectedStudents[0];
+        mergedFromStudent = selectedStudents[1];
       } else {
-        mergedToPen = selectedStudents[1];
-        mergedFromPen = selectedStudents[0];
+        mergedToStudent = selectedStudents[1];
+        mergedFromStudent = selectedStudents[0];
       }
 
       // Same Pen validation
-      if (this.validateSamePen(mergedToPen, mergedFromPen,
+      if (this.validateStudentsHaveSamePen(mergedToStudent, mergedFromStudent,
         'Error! PENs cannot be merged, as same PENs are selected.')) {
         return;
       }
 
       // Status validation
-      if (this.validateStudentIsStatusOfMerged(mergedToPen, mergedFromPen,
+      if (this.validateStudentIsStatusOfMerged(mergedToStudent, mergedFromStudent,
         'Error! PENs cannot be merged, as one of the PENs has a status of merged.')) {
         return;
       }
 
       // Merge validation
-      const hasAnyMergedFrom = await this.validateStudentHasAnyMergedFrom(mergedFromPen.studentID);
+      const hasAnyMergedFrom = await this.validateStudentHasAnyMergedFrom(mergedFromStudent.studentID);
       if (hasAnyMergedFrom) {
         return;
       }
@@ -433,8 +433,8 @@ export default {
         {
           name: 'mergeStudents',
           params: {
-            mergedToPen: mergedToPen,
-            mergedFromPen: mergedFromPen
+            mergedToPen: mergedToStudent,
+            mergedFromPen: mergedFromStudent
           }
         }
       );
