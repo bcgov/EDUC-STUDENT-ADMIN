@@ -293,6 +293,13 @@ export default {
       this.checkedStudents.forEach(checked => cnt += checked ? 1 : 0);
       return cnt !== 2;
     },
+    validateSamePen(student1, student2, message) {
+      if (student1.pen === student2.pen) {
+        this.setFailureAlert(message);
+        return true;
+      }
+      return false;
+    },
     validateStudentIsStatusOfMerged(student1, student2, message) {
       if (student1.statusCode === 'M' || student2.statusCode === 'M') {
         this.setFailureAlert(message);
@@ -349,6 +356,12 @@ export default {
       let student = selectedStudents[0];
       let twinStudent =  selectedStudents[1];
 
+      // Same Pen validation
+      if (this.validateSamePen(student, twinStudent,
+        'Error! PENs cannot be twinned, as same PENs are selected.')) {
+        return;
+      }
+
       // Status validation
       if (this.validateStudentIsStatusOfMerged(student, twinStudent,
         'Error! PENs cannot be twinned, as one of the PENs has a status of merged.')) {
@@ -396,6 +409,12 @@ export default {
       } else {
         mergedToPen = selectedStudents[1];
         mergedFromPen = selectedStudents[0];
+      }
+
+      // Same Pen validation
+      if (this.validateSamePen(mergedToPen, mergedFromPen,
+        'Error! PENs cannot be merged, as same PENs are selected.')) {
+        return;
       }
 
       // Status validation
