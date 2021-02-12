@@ -94,7 +94,7 @@
               </v-col>
               <v-col cols="5" class="pl-4 pt-1">
                 <router-link :to="REQUEST_TYPES.studentSearch.path.basic">
-                  <span style="text-decoration: underline">Student Full Search</span>
+                  <span style="text-decoration: underline">Advanced Student Search</span>
                 </router-link>
               </v-col>
             </v-row>
