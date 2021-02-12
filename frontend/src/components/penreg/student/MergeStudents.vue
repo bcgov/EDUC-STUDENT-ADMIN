@@ -455,7 +455,7 @@ export default {
       if (initialLoad) {
         this.shortDOB = this.student.dob.replace(/[^0-9]/g, '');
       } else {
-        this.student.dob = this.shortDOB? formatDob(this.shortDOB,'uuuuMMdd','uuuu/MM/dd') : '';
+        this.student.dob = this.shortDOB? this.formatDob(this.shortDOB,'uuuuMMdd','uuuu/MM/dd') : '';
       }
     },
     // Asynchronous validator returns an array of boolean or string that would be provided for :rules prop of input field
