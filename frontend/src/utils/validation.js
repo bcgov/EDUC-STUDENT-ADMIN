@@ -84,17 +84,23 @@ export function isValidDOBAndAfter1900(dob, pattern='uuuu/MM/dd') {
   return isPresentDateAndAfter1900(dob, pattern, false);
 }
 
-export function isOlderThan(date1, date2, pattern='uuuu/MM/dd') {
-  const formatter = (new DateTimeFormatterBuilder).appendPattern(pattern).toFormatter(ResolverStyle.STRICT);
+/**
+ *
+ * @param date1       iso date format   'yyyy-MM-ddThh:mm:ss'
+ * @param date2       iso date format   'yyyy-MM-ddThh:mm:ss'
+ * @returns {boolean}
+ */
+export function isOlderThan(date1, date2) {
   try {
-    const dateObject1 = LocalDate.parse(date1, formatter);
-    const dateObject2 = LocalDate.parse(date2, formatter);
-    if(dateObject1.isBefore(dateObject2)){
+    const dateObject1 = new Date(date1);
+    const dateObject2 = new Date(date2);
+    if(dateObject1.getTime() < dateObject2.getTime()){
       return true;
     }
   }
   catch(err){
     //Do nothing
+    console.log(err);
   }
   return false;
 }
