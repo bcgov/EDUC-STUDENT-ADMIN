@@ -201,6 +201,7 @@
                 :filled="false"
                 :clearable="false"
                 :async-messages="mincodeErrors"
+                :format="formatMincode"
                 :rules="validateMincode()"
                 maxlength="8"
             ></FormattedTextField>
@@ -303,7 +304,7 @@
 
 <script>
 import ApiService from '../../../common/apiService';
-import {formatDob, formatPen, formatPostalCode} from '@/utils/format';
+import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
 import {mapGetters} from 'vuex';
 import {Routes, REQUEST_TYPES, STUDENT_DETAILS_FIELDS, STUDENT_CODES} from '@/utils/constants';
 import FormattedTextField from '@/components/util/FormattedTextField';
@@ -381,6 +382,7 @@ export default {
   methods: {
     formatPen,
     formatDob,
+    formatMincode,
     formatPostalCode,
     openStudentDetails(studentID) {
       const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
