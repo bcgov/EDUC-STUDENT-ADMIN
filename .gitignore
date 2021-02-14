@@ -2,3 +2,9 @@
 /.idea/*
 .idea
 .idea/*
+/backend/logs
+/backend/coverage
+/backend/node_modules
+/frontend/node_modules
+/frontend/dist
+/frontend/coverage
