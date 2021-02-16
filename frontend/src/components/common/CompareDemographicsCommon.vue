@@ -342,14 +342,17 @@ export default {
           return true;  // set true to make the validation failed
         });
     },
-    async twin() {
-      let selectedStudents = this.checkedStudents.map((checked, idx) => {
+    getSelectedStudents() {
+      return this.checkedStudents.map((checked, idx) => {
         if (!checked) {
           return false;
         } else {
-          return this.selectedRecords[idx];
+          return this.studentRecords[idx];
         }
       }).filter(item => !!item);
+    },
+    async twin() {
+      const selectedStudents = this.getSelectedStudents();
 
       this.alert = false;
       // Determine which is the oldest, which will be mergedToPen
@@ -392,13 +395,7 @@ export default {
         });
     },
     async merge() {
-      let selectedStudents = this.checkedStudents.map((checked, idx) => {
-        if (!checked) {
-          return false;
-        } else {
-          return this.selectedRecords[idx];
-        }
-      }).filter(item => !!item);
+      const selectedStudents = this.getSelectedStudents();
 
       // Determine which is the oldest, which will be mergedToPen
       let mergedToStudent = null;
