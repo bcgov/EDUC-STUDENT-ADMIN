@@ -347,7 +347,7 @@ export default {
         if (!checked) {
           return false;
         } else {
-          return this.selectedRecords[idx];
+          return this.studentRecords[idx];
         }
       }).filter(item => !!item);
 
@@ -396,7 +396,7 @@ export default {
         if (!checked) {
           return false;
         } else {
-          return this.selectedRecords[idx];
+          return this.studentRecords[idx];
         }
       }).filter(item => !!item);
 
