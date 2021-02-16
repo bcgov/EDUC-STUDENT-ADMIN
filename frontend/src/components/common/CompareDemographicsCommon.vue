@@ -343,14 +343,13 @@ export default {
         });
     },
     getSelectedStudents() {
-      const selectedStudents = this.checkedStudents.map((checked, idx) => {
+      return this.checkedStudents.map((checked, idx) => {
         if (!checked) {
           return false;
         } else {
           return this.studentRecords[idx];
         }
       }).filter(item => !!item);
-      return selectedStudents;
     },
     async twin() {
       const selectedStudents = this.getSelectedStudents();
