@@ -85,7 +85,7 @@
           <tr>
             <td v-for="header in props.headers" :key="header.id" :class="[header.id, existSldUsualName(props.item)? 'two-rows-column' : 'one-row-column']">
               <div v-if="header.value === 'mincode'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
-                <span class="top-field-item">{{ props.item.distNo + ' ' + props.item.schlNo }}</span>
+                <span class="top-field-item">{{ props.item.distNo + props.item.schlNo }}</span>
                 <span v-if="existSldUsualName(props.item)" class="bottom-field-item"></span>
               </div>
               <div v-else-if="header.value === 'legalSurname'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
