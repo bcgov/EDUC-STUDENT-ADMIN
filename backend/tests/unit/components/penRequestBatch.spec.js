@@ -420,12 +420,6 @@ describe('archive&unarchiveFiles', () => {
 
   it('should return all batch files if all success', async () => {
     const userName = 'User';
-    const resp = penRequestBatchIDs.map(id => ({
-      penRequestBatchID: id,
-      penRequestBatchStatusCode: 'UNARCHIVED',
-      unarchivedUser: userName
-    }));
-
     utils.getData.mockResolvedValue(batchFiles);
     utils.putData.mockImplementation((token, url, data) => 
       Promise.resolve(data)
