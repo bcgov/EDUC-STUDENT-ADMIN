@@ -444,7 +444,6 @@ describe('archive&unarchiveFiles', () => {
     );
     await penRequestBatch.unarchiveFiles(req, res);
     expect(utils.putData).toHaveBeenCalled();
-    expect(utils.putData.mock.calls[0][2]).toEqual(resp[0]);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(resp);
   });
