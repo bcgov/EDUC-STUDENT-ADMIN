@@ -162,9 +162,9 @@
           <v-card-actions class="my-4 py-6">
 
             <v-spacer></v-spacer>
-            <PrimaryButton :secondary="true" class="mx-1" text="Close" @click.native="$emit('close')"></PrimaryButton>
-            <PrimaryButton class="mx-1" text="View PEN request"></PrimaryButton>
-            <PrimaryButton :disabled="isRevertDisabled" :loading="isRevertingStudent" class="mx-1" text="Revert"
+            <PrimaryButton id="closePanel" :secondary="true" class="mx-1" text="Close" @click.native="$emit('close')"></PrimaryButton>
+            <PrimaryButton id="viewRequest" class="mx-1" text="View PEN request"></PrimaryButton>
+            <PrimaryButton id="revertData" :disabled="isRevertDisabled" :loading="isRevertingStudent" class="mx-1" text="Revert"
                            @click.native="revertStudentDataFromStudentHistory()"></PrimaryButton>
           </v-card-actions>
 
