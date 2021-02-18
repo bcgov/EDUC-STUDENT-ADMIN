@@ -433,6 +433,5 @@ describe('archive&unarchiveFiles', () => {
     await penRequestBatch.unarchiveFiles(req, res);
     expect(utils.putData).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
-    expect(res.json).toHaveBeenCalledWith(resp);
   });
 });
