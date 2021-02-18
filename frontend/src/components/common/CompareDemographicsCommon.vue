@@ -116,13 +116,27 @@
     <v-row>
       <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
     </v-row>
+    <v-progress-linear
+        indeterminate
+        color="blue"
+        :active="isProcessing"
+    ></v-progress-linear>
     <div v-if="selectedRecords && selectedRecords.length">
       <v-divider></v-divider>
       <v-card-actions class="px-0">
         <v-spacer></v-spacer>
-        <slot name="actions" :validateAction="validateAction" :merge="merge" :twin="twin"></slot>
+        <slot name="actions" :validateAction="validateAction" :validateMerge="validateMerge" :validateDemerge="validateDemerge" :merge="merge"  :demerge="demerge" :twin="twin"></slot>
       </v-card-actions>
     </div>
+    <ConfirmationDialog ref="confirmationDialog">
+      <template v-slot:message>
+        <v-col class="mt-n6">
+          <v-row class="mb-3">
+            Are you sure you want to demerge PENs&nbsp;<strong>{{mergedFromPenNumber}}</strong>&nbsp;and&nbsp;<strong>{{mergedToPenNumber}}</strong>?
+          </v-row>
+        </v-col>
+      </template>
+    </ConfirmationDialog>
   </v-card>
 </template>
 
@@ -137,6 +151,8 @@ import alertMixin from '@/mixins/alertMixin';
 import router from '../../router';
 import TertiaryButton from '../util/TertiaryButton';
 import {getMatchedRecordsByStudent} from '@/utils/common';
+import ConfirmationDialog from '@/components/util/ConfirmationDialog';
+import {mapGetters} from 'vuex';
 
 export default {
   name: 'CompareDemographicsCommon',
@@ -144,7 +160,8 @@ export default {
   components: {
     TertiaryButton,
     AlertMessage,
-    PrimaryButton
+    PrimaryButton,
+    ConfirmationDialog
   },
   props: {
     selectedRecords: {
@@ -193,7 +210,12 @@ export default {
       sldData: {},
       sldDataTablesToDisplay: {},
       sldDataTablesNumberOfRows: {},
-      checkedStudents: []
+      checkedStudents: [],
+      currentStudentID: null,
+      isProcessing: false,
+      demergeSagaComplete: false,
+      mergedToPenNumber: null,
+      mergedFromPenNumber: null,
     };
   },
   mounted() {
@@ -204,6 +226,7 @@ export default {
     this.checkedStudents = [];
   },
   computed: {
+    ...mapGetters('notifications', ['notification']),
     studentRecords: {
       get: function() {
         return _.sortBy(this.selectedRecords, o => o.pen);
@@ -212,6 +235,20 @@ export default {
         this.$emit('update:selectedRecords', value);
       }
     }
+  },
+  watch: {
+    notification(val) {
+      if (val) {
+        const notificationData = JSON.parse(val);
+        if (notificationData && notificationData.studentID && notificationData.studentID === this.currentStudentID && notificationData.sagaStatus === 'COMPLETED') {
+          if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_DEMERGE_COMPLETE_SAGA') {
+            this.setSuccessAlert('Success! Your request to demerge is completed.');
+            this.isProcessing = false;
+            this.demergeSagaComplete = true;
+          }
+        }
+      }
+    },
   },
   methods: {
     addPEN() {
@@ -292,6 +329,43 @@ export default {
       let cnt = 0;
       this.checkedStudents.forEach(checked => cnt += checked ? 1 : 0);
       return cnt !== 2;
+    },
+    validateMerge() {
+      if (this.validateAction()) {
+        return true;
+      }
+
+      const selectedStudents = this.getSelectedStudents();
+      if (selectedStudents.length === 2) {
+        return this.validateStudentsAreMerged(selectedStudents[0], selectedStudents[1]);
+      }
+      return true;
+    },
+    validateDemerge() {
+      if (this.isProcessing || this.demergeSagaComplete) {
+        return true;
+      }
+      if (this.validateAction()) {
+        return true;
+      }
+
+      const selectedStudents = this.getSelectedStudents();
+      if (selectedStudents.length === 2) {
+        return !this.validateStudentsAreMerged(selectedStudents[0], selectedStudents[1]);
+      }
+      return true;
+    },
+    validateStudentsAreMerged(student1, student2) {
+      if (student1.statusCode === 'M' && student2.statusCode === 'A') {
+        if (student1.trueStudentID === student2.studentID) {
+          return true;
+        }
+      } else if (student1.statusCode === 'A' && student2.statusCode === 'M') {
+        if (student2.trueStudentID === student1.studentID) {
+          return true;
+        }
+      }
+      return false;
     },
     validateStudentsHaveSamePen(student1, student2, message) {
       if (student1.pen === student2.pen) {
@@ -435,6 +509,55 @@ export default {
           }
         }
       );
+    },
+    async demerge() {
+      const selectedStudents = this.getSelectedStudents();
+
+      let mergedToStudent = null;
+      let mergedFromStudent = null;
+      if (selectedStudents[0].statusCode === 'M') { // This check is enough as validateDemerge is performed before.
+        mergedFromStudent = selectedStudents[0];
+        mergedToStudent = selectedStudents[1];
+      } else {
+        mergedFromStudent = selectedStudents[1];
+        mergedToStudent = selectedStudents[0];
+      }
+
+      // for confirmation message
+      this.mergedFromPenNumber = mergedFromStudent.pen;
+      this.mergedToPenNumber = mergedToStudent.pen;
+      let result = await this.$refs.confirmationDialog.open(null, null,
+        { color: '#fff', width: 580, closeIcon: true, dark: false, rejectText: 'No'});
+      if (!result) {
+        return;
+      }
+
+      // Student Demerge Complete Request
+      this.alert = false;
+      this.isProcessing = true;
+      this.currentStudentID = mergedFromStudent.studentID;
+      const demergeRequest = {
+        studentID: mergedFromStudent.studentID,
+        mergedToPen: mergedToStudent.pen,
+        mergedToStudentID: mergedToStudent.studentID,
+        mergedFromPen: mergedFromStudent.pen,
+        mergedFromStudentID: mergedFromStudent.studentID,
+        requestStudentID: null
+      };
+      ApiService.apiAxios
+        .post(Routes['penServices'].ROOT_ENDPOINT + '/' + demergeRequest.studentID + '/student-demerge-complete', demergeRequest)
+        .then(() => {
+          this.setSuccessAlert('Your request to demerge is accepted.');
+        })
+        .catch(error => {
+          console.log(error);
+          this.isProcessing = false;
+          if (error.response.data && error.response.data.code && error.response.data.code === 409) {
+            this.setFailureAlert('Another saga is in progress for this request, please try again later.');
+          } else {
+            this.setFailureAlert('Student Demerge Request failed to update. Please navigate to the student search and demerge again at compare in the list.');
+          }
+        });
     }
   }
 };

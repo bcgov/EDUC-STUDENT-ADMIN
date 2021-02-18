@@ -51,12 +51,13 @@ async function mergeStudents(req, res) {
 
     const sagaReq = {
       ...stripAuditColumns(mergeData),
-      historyActivityCode: 'MERGE'
+      historyActivityCode: 'MERGE',
+      createUser: getUser(req).idir_username,
     };
 
     const sagaId = await postData(token, `${config.get('server:penServices:mergeStudentsURL')}`, sagaReq, null, getUser(req).idir_username);
 
-    await createStudentMergeCompleteSagaRecordInRedis(sagaId, 'PEN_SERVICES_STUDENT_MERGE_COMPLETE_SAGA', 'merge students', mergeData.studentID);
+    await createPenServicesCompleteSagaRecordInRedis(sagaId, 'PEN_SERVICES_STUDENT_MERGE_COMPLETE_SAGA', 'merge students', mergeData.studentID);
 
     return res.status(200).json(sagaId);
   } catch (e) {
@@ -68,7 +69,33 @@ async function mergeStudents(req, res) {
   }
 }
 
-function createStudentMergeCompleteSagaRecordInRedis(sagaId, sagaName, operation, studentID) {
+async function demergeStudents(req, res) {
+  const token = getBackendToken(req, res);
+
+  try {
+    let demergeData = req.body;
+
+    const sagaReq = {
+      ...demergeData,
+      historyActivityCode: 'DEMERGE',
+      createUser: getUser(req).idir_username,
+    };
+
+    const sagaId = await postData(token, `${config.get('server:penServices:demergeStudentsURL')}`, sagaReq, null, getUser(req).idir_username);
+
+    await createPenServicesCompleteSagaRecordInRedis(sagaId, 'PEN_SERVICES_STUDENT_DEMERGE_COMPLETE_SAGA', 'demerge students', demergeData.mergedFromStudentID);
+
+    return res.status(200).json(sagaId);
+  } catch (e) {
+    logApiError(e, 'demergeStudents', 'Error occurred while attempting to demerge students.');
+    if (e.status === HttpStatus.CONFLICT) {
+      return errorResponse(res, 'Another saga in progress', HttpStatus.CONFLICT);
+    }
+    return errorResponse(res);
+  }
+}
+
+function createPenServicesCompleteSagaRecordInRedis(sagaId, sagaName, operation, studentID) {
   const event = {
     sagaId,
     studentID,
@@ -82,5 +109,7 @@ function createStudentMergeCompleteSagaRecordInRedis(sagaId, sagaName, operation
 module.exports = {
   validateStudentDemogData,
   getMergeByStudentIDAndMergeDirection,
-  mergeStudents
+  mergeStudents,
+  demergeStudents
 };
+
