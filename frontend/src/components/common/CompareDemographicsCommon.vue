@@ -57,7 +57,7 @@
         </span>
         <span v-for="(key, index) in studentDataHeaders" :key="index" class="pl-4 pr-3" :ref="key+`Col`">
                 <span v-if="key==='dob'" ref="dobText">
-                  {{ formatDob(students[key].replaceAll('-','')) }}
+                  {{ formatDob(students[key],'uuuu-MM-dd','uuuu/MM/dd') }}
                 </span>
           <span v-else-if="key==='mincode'">{{ formatMincode(students[key]) }}</span>
           <span v-else-if="key==='postalCode'">{{ formatPostalCode(students[key]) }}</span>
@@ -100,10 +100,15 @@
                 <span class="top-field-item">{{ props.item[header.value] }}</span>
                 <span v-if="existSldUsualName(props.item)" class="bottom-field-item">{{ props.item['usualMiddleName']}}</span>
               </div>
+              <div v-else-if="header.value === 'birthDate'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+                <span class="top-field-item">{{ formatDob(props.item[header.value],'uuuuMMdd','uuuu/MM/dd') }}</span>
+                <span v-if="existSldUsualName(props.item)" class="bottom-field-item"></span>
+              </div>
               <div v-else :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
                 <span class="top-field-item">{{ props.item[header.value] }}</span>
                 <span v-if="existSldUsualName(props.item)" class="bottom-field-item"></span>
               </div>
+
             </td>
           </tr>
         </template>
