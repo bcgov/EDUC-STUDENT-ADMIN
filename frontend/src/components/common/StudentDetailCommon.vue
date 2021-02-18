@@ -468,7 +468,7 @@
       <template v-slot:message>
         <v-col class="mt-n6">
           <v-row class="mb-3">
-            Are you sure you want to demerge PENs&nbsp;<strong>{{origStudent.pen}}</strong>&nbsp;and&nbsp;<strong>{{mergedTo.mergeStudent.pen}}</strong>?
+            Are you sure you want to demerge PENs&nbsp;<strong>{{getMergedFromPen()}}</strong>&nbsp;and&nbsp;<strong>{{getMergedToPen()}}</strong>?
           </v-row>
         </v-col>
       </template>
@@ -484,13 +484,13 @@ import {REQUEST_TYPES, Routes, STUDENT_CODES, STUDENT_DETAILS_FIELDS} from '@/ut
 import StudentDetailsTextField from '@/components/penreg/student/StudentDetailsTextField';
 import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly';
 import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsComboBox';
-import StudentDetailsTextFieldSideCardReadOnly
-  from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
+import StudentDetailsTextFieldSideCardReadOnly from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
 import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
 import {formatDob, formatMincode, formatPen} from '@/utils/format';
 import {isEmpty, sortBy} from 'lodash';
 import alertMixin from '../../mixins/alertMixin';
 import schoolMixin from '../../mixins/schoolMixin';
+import servicesSagaMixin from '../../mixins/servicesSagaMixin';
 import ConfirmationDialog from '../util/ConfirmationDialog';
 import AlertMessage from '../util/AlertMessage';
 import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard';
@@ -503,7 +503,7 @@ import PrimaryButton from '@/components/util/PrimaryButton';
 const JSJoda = require('@js-joda/core');
 export default {
   name: 'studentDetailCommon',
-  mixins: [alertMixin, schoolMixin],
+  mixins: [alertMixin,schoolMixin,servicesSagaMixin],
   props: {
     studentID: {
       type: String,
@@ -547,8 +547,6 @@ export default {
       spacePostalCode: null,
       isLoading: true,
       deceasedDialog: false,
-      isProcessing: false,
-      demergeSagaComplete: false,
       genderHint: 'Invalid Gender Code',
       genderError: false,
       dobHint: 'Invalid Date of Birth',
@@ -600,7 +598,6 @@ export default {
   computed: {
     ...mapGetters('student', ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects']),
     ...mapState('studentSearch', ['isAdvancedSearch']),
-    ...mapGetters('notifications', ['notification']),
     mergedTo() {
       return this.merges.find(merge => merge.studentMergeDirectionCode === 'TO');
     },
@@ -615,21 +612,6 @@ export default {
   watch: {
     studentID() {
       this.refreshStudent();
-    },
-    notification(val) {
-      if (val) {
-        const notificationData = JSON.parse(val);
-        if (notificationData && notificationData.studentID && notificationData.studentID === this.origStudent.studentID && notificationData.sagaStatus === 'COMPLETED') {
-          if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_DEMERGE_COMPLETE_SAGA') {
-            this.setSuccessAlert('Success! Your request to demerge is completed.');
-            this.isProcessing = false;
-            this.demergeSagaComplete = true;
-            setTimeout(() => {
-              this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
-            }, 500);
-          }
-        }
-      }
     },
   },
   beforeRouteLeave (to, from, next) {
@@ -993,46 +975,24 @@ export default {
         });
     },
     validateDemerge() {
+      if (this.isProcessing || this.demergeSagaComplete) {
+        return true;
+      }
       if (this.origStudent.statusCode === 'M' && !!this.origStudent.trueStudentID) {
         return true;
       }
       return false;
     },
     async demerge() {
-      let mergedToStudent = this.mergedTo.mergeStudent;
-      let mergedFromStudent = this.origStudent;
+      this.mergedToStudent = this.mergedTo.mergeStudent;
+      this.mergedFromStudent = this.origStudent;
 
       let result = await this.$refs.demergeConfirmationDialog.open(null, null,
         { color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, rejectText: 'No' });
       if (!result) {
         return;
       }
-
-      // Student Demerge Complete Request
-      this.alert = false;
-      this.isProcessing = true;
-      const demergeRequest = {
-        studentID: mergedFromStudent.studentID,
-        mergedToPen: mergedToStudent.pen,
-        mergedToStudentID: mergedToStudent.studentID,
-        mergedFromPen: mergedFromStudent.pen,
-        mergedFromStudentID: mergedFromStudent.studentID,
-        requestStudentID: null
-      };
-      ApiService.apiAxios
-        .post(Routes['penServices'].ROOT_ENDPOINT + '/' + demergeRequest.studentID + '/student-demerge-complete', demergeRequest)
-        .then(() => {
-          this.setSuccessAlert('Your request to demerge is accepted.');
-        })
-        .catch(error => {
-          console.log(error);
-          this.isProcessing = false;
-          if (error.response.data && error.response.data.code && error.response.data.code === 409) {
-            this.setFailureAlert('Another saga is in progress for this request, please try again later.');
-          } else {
-            this.setFailureAlert('Student Demerge Request failed to update. Please navigate to the student search and demerge again at compare in the list.');
-          }
-        });
+      await this.executeDemerge();
     },
   }
 };

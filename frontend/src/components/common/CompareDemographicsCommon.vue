@@ -125,14 +125,14 @@
       <v-divider></v-divider>
       <v-card-actions class="px-0">
         <v-spacer></v-spacer>
-        <slot name="actions" :validateAction="validateAction" :validateMerge="validateMerge" :validateDemerge="validateDemerge" :merge="merge"  :demerge="demerge" :twin="twin"></slot>
+        <slot name="actions" :clearError="clearError" :validateAction="validateAction" :validateMerge="validateMerge" :validateDemerge="validateDemerge" :merge="merge"  :demerge="demerge" :twin="twin"></slot>
       </v-card-actions>
     </div>
     <ConfirmationDialog ref="confirmationDialog">
       <template v-slot:message>
         <v-col class="mt-n6">
           <v-row class="mb-3">
-            Are you sure you want to demerge PENs&nbsp;<strong>{{mergedFromPenNumber}}</strong>&nbsp;and&nbsp;<strong>{{mergedToPenNumber}}</strong>?
+            Are you sure you want to demerge PENs&nbsp;<strong>{{getMergedFromPen()}}</strong>&nbsp;and&nbsp;<strong>{{getMergedToPen()}}</strong>?
           </v-row>
         </v-col>
       </template>
@@ -148,15 +148,15 @@ import {REQUEST_TYPES, Routes} from '../../utils/constants';
 import { isValidPEN, isOlderThan } from '../../utils/validation';
 import AlertMessage from '../util/AlertMessage';
 import alertMixin from '@/mixins/alertMixin';
+import servicesSagaMixin from '@/mixins/servicesSagaMixin';
 import router from '../../router';
 import TertiaryButton from '../util/TertiaryButton';
 import {getMatchedRecordsByStudent} from '@/utils/common';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
-import {mapGetters} from 'vuex';
 
 export default {
   name: 'CompareDemographicsCommon',
-  mixins: [alertMixin],
+  mixins: [alertMixin,servicesSagaMixin],
   components: {
     TertiaryButton,
     AlertMessage,
@@ -211,11 +211,6 @@ export default {
       sldDataTablesToDisplay: {},
       sldDataTablesNumberOfRows: {},
       checkedStudents: [],
-      currentStudentID: null,
-      isProcessing: false,
-      demergeSagaComplete: false,
-      mergedToPenNumber: null,
-      mergedFromPenNumber: null,
     };
   },
   mounted() {
@@ -226,7 +221,6 @@ export default {
     this.checkedStudents = [];
   },
   computed: {
-    ...mapGetters('notifications', ['notification']),
     studentRecords: {
       get: function() {
         return _.sortBy(this.selectedRecords, o => o.pen);
@@ -235,20 +229,6 @@ export default {
         this.$emit('update:selectedRecords', value);
       }
     }
-  },
-  watch: {
-    notification(val) {
-      if (val) {
-        const notificationData = JSON.parse(val);
-        if (notificationData && notificationData.studentID && notificationData.studentID === this.currentStudentID && notificationData.sagaStatus === 'COMPLETED') {
-          if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_DEMERGE_COMPLETE_SAGA') {
-            this.setSuccessAlert('Success! Your request to demerge is completed.');
-            this.isProcessing = false;
-            this.demergeSagaComplete = true;
-          }
-        }
-      }
-    },
   },
   methods: {
     addPEN() {
@@ -355,49 +335,6 @@ export default {
       }
       return true;
     },
-    validateStudentsAreMerged(student1, student2) {
-      if (student1.statusCode === 'M' && student2.statusCode === 'A') {
-        if (student1.trueStudentID === student2.studentID) {
-          return true;
-        }
-      } else if (student1.statusCode === 'A' && student2.statusCode === 'M') {
-        if (student2.trueStudentID === student1.studentID) {
-          return true;
-        }
-      }
-      return false;
-    },
-    validateStudentsHaveSamePen(student1, student2, message) {
-      if (student1.pen === student2.pen) {
-        this.setFailureAlert(message);
-        return true;
-      }
-      return false;
-    },
-    validateStudentIsStatusOfMerged(student1, student2, message) {
-      if (student1.statusCode === 'M' || student2.statusCode === 'M') {
-        this.setFailureAlert(message);
-        return true;
-      }
-      return false;
-    },
-    validateStudentHasAnyMergedFrom(studentID) {
-      return ApiService.apiAxios
-        .get(Routes['penServices'].ROOT_ENDPOINT + '/' + studentID + '/student-merge', {params: {mergeDirection: 'FROM'}})
-        .then(response => {
-          if (response.data && response.data.length > 0) {
-            this.setFailureAlert('Error! PENs cannot be merged, as the PEN selected to be the \'merged from PEN\' has been involved in a merge. It must first be demerged, before this merge can be executed.');
-            return true;
-          } else {
-            return false;
-          }
-        })
-        .catch(error => {
-          this.setFailureAlert('An error occurred while loading the student merge in validation. Please try again later.');
-          console.log(error);
-          return true;  // set true to make the validation failed
-        });
-    },
     validateTwinRecordsExist(studentID, twinStudentID) {
       return getMatchedRecordsByStudent(studentID)
         .then(data => {
@@ -438,18 +375,17 @@ export default {
         'Error! PENs cannot be twinned, as same PENs are selected.')) {
         return;
       }
-
       // Status validation
       if (this.validateStudentIsStatusOfMerged(student, twinStudent,
         'Error! PENs cannot be twinned, as one of the PENs has a status of merged.')) {
         return;
       }
-
       // Twins validation
       const hasAnyTwins = await this.validateTwinRecordsExist(student.studentID, twinStudent.studentID);
       if (hasAnyTwins) {
         return;
       }
+
       const twinRequests = [
         {
           studentID: student.studentID,
@@ -472,30 +408,26 @@ export default {
       const selectedStudents = this.getSelectedStudents();
 
       // Determine which is the oldest, which will be mergedToPen
-      let mergedToStudent = null;
-      let mergedFromStudent = null;
       if (this.isOlderThan(selectedStudents[0].createDate, selectedStudents[1].createDate)) {
-        mergedToStudent = selectedStudents[0];
-        mergedFromStudent = selectedStudents[1];
+        this.mergedToStudent = selectedStudents[0];
+        this.mergedFromStudent = selectedStudents[1];
       } else {
-        mergedToStudent = selectedStudents[1];
-        mergedFromStudent = selectedStudents[0];
+        this.mergedToStudent = selectedStudents[1];
+        this.mergedFromStudent = selectedStudents[0];
       }
 
       // Same Pen validation
-      if (this.validateStudentsHaveSamePen(mergedToStudent, mergedFromStudent,
+      if (this.validateStudentsHaveSamePen(this.mergedToStudent, this.mergedFromStudent,
         'Error! PENs cannot be merged, as same PENs are selected.')) {
         return;
       }
-
       // Status validation
-      if (this.validateStudentIsStatusOfMerged(mergedToStudent, mergedFromStudent,
+      if (this.validateStudentIsStatusOfMerged(this.mergedToStudent, this.mergedFromStudent,
         'Error! PENs cannot be merged, as one of the PENs has a status of merged.')) {
         return;
       }
-
       // Merge validation
-      const hasAnyMergedFrom = await this.validateStudentHasAnyMergedFrom(mergedFromStudent.studentID);
+      const hasAnyMergedFrom = await this.validateStudentHasAnyMergedFrom(this.mergedFromStudent.studentID);
       if (hasAnyMergedFrom) {
         return;
       }
@@ -504,8 +436,8 @@ export default {
         {
           name: 'mergeStudents',
           params: {
-            mergedToPen: mergedToStudent,
-            mergedFromPen: mergedFromStudent
+            mergedToPen: this.mergedToStudent,
+            mergedFromPen: this.mergedFromStudent
           }
         }
       );
@@ -513,53 +445,22 @@ export default {
     async demerge() {
       const selectedStudents = this.getSelectedStudents();
 
-      let mergedToStudent = null;
-      let mergedFromStudent = null;
       if (selectedStudents[0].statusCode === 'M') { // This check is enough as validateDemerge is performed before.
-        mergedFromStudent = selectedStudents[0];
-        mergedToStudent = selectedStudents[1];
+        this.mergedFromStudent = selectedStudents[0];
+        this.mergedToStudent = selectedStudents[1];
       } else {
-        mergedFromStudent = selectedStudents[1];
-        mergedToStudent = selectedStudents[0];
+        this.mergedFromStudent = selectedStudents[1];
+        this.mergedToStudent = selectedStudents[0];
       }
 
-      // for confirmation message
-      this.mergedFromPenNumber = mergedFromStudent.pen;
-      this.mergedToPenNumber = mergedToStudent.pen;
       let result = await this.$refs.confirmationDialog.open(null, null,
-        { color: '#fff', width: 580, closeIcon: true, dark: false, rejectText: 'No'});
+        {color: '#fff', width: 580, closeIcon: true, dark: false, rejectText: 'No'});
       if (!result) {
         return;
       }
-
-      // Student Demerge Complete Request
-      this.alert = false;
-      this.isProcessing = true;
-      this.currentStudentID = mergedFromStudent.studentID;
-      const demergeRequest = {
-        studentID: mergedFromStudent.studentID,
-        mergedToPen: mergedToStudent.pen,
-        mergedToStudentID: mergedToStudent.studentID,
-        mergedFromPen: mergedFromStudent.pen,
-        mergedFromStudentID: mergedFromStudent.studentID,
-        requestStudentID: null
-      };
-      ApiService.apiAxios
-        .post(Routes['penServices'].ROOT_ENDPOINT + '/' + demergeRequest.studentID + '/student-demerge-complete', demergeRequest)
-        .then(() => {
-          this.setSuccessAlert('Your request to demerge is accepted.');
-        })
-        .catch(error => {
-          console.log(error);
-          this.isProcessing = false;
-          if (error.response.data && error.response.data.code && error.response.data.code === 409) {
-            this.setFailureAlert('Another saga is in progress for this request, please try again later.');
-          } else {
-            this.setFailureAlert('Student Demerge Request failed to update. Please navigate to the student search and demerge again at compare in the list.');
-          }
-        });
+      await this.executeDemerge();
     }
-  }
+  },
 };
 </script>
 
