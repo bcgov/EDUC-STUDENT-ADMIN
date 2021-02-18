@@ -419,7 +419,6 @@ describe('archive&unarchiveFiles', () => {
   });
 
   it('should return all batch files if all success', async () => {
-    const userName = 'User';
     utils.getData.mockResolvedValue(batchFiles);
     utils.putData.mockImplementation((token, url, data) => 
       Promise.resolve(data)
