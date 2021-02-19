@@ -405,7 +405,7 @@
         :hasAnyEdits="hasAnyEdits"
         :saveStudent="saveStudent"
         :REQUEST_TYPES="REQUEST_TYPES"
-        :validateDemerge="validateDemerge"
+        :disableDemerge="disableDemerge"
         :demerge="demerge">
     </slot>
     <v-row fluid class="full-height align-center justify-center" v-if="isLoading">
@@ -974,14 +974,14 @@ export default {
           this.loadingTraxData = false;
         });
     },
-    validateDemerge() {
+    disableDemerge() {
       if (this.isProcessing || this.demergeSagaComplete) {
         return true;
       }
       if (this.origStudent.statusCode === 'M' && !!this.origStudent.trueStudentID) {
-        return true;
+        return false;
       }
-      return false;
+      return true;
     },
     async demerge() {
       this.mergedToStudent = this.mergedTo.mergeStudent;

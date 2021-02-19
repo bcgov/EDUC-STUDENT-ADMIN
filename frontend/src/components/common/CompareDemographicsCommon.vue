@@ -28,7 +28,7 @@
       </v-row>
     </v-card-title>
     <v-row>
-      <AlertMessage v-model="searchError" :alertMessage="alertMessage" alertType="bootstrap-error"></AlertMessage>
+      <AlertMessage v-model="searchError" :alertMessage="errorMessage" alertType="bootstrap-error"></AlertMessage>
     </v-row>
     <v-divider></v-divider>
     <v-simple-table class="sldTable pb-2">
@@ -125,7 +125,7 @@
       <v-divider></v-divider>
       <v-card-actions class="px-0">
         <v-spacer></v-spacer>
-        <slot name="actions" :clearError="clearError" :validateAction="validateAction" :validateMerge="validateMerge" :validateDemerge="validateDemerge" :merge="merge"  :demerge="demerge" :twin="twin"></slot>
+        <slot name="actions" :clearError="clearError" :validateAction="validateAction" :disableMerge="disableMerge" :disableDemerge="disableDemerge" :merge="merge"  :demerge="demerge" :twin="twin"></slot>
       </v-card-actions>
     </div>
     <ConfirmationDialog ref="confirmationDialog">
@@ -206,7 +206,7 @@ export default {
       searchError: false,
       penRules: [ v => (!v || isValidPEN(v)) || this.penHint],
       penHint: 'Invalid PEN',
-      alertMessage: 'Error! This student does not exist in the system.',
+      errorMessage: 'Error! This student does not exist in the system.',
       sldData: {},
       sldDataTablesToDisplay: {},
       sldDataTablesNumberOfRows: {},
@@ -310,7 +310,7 @@ export default {
       this.checkedStudents.forEach(checked => cnt += checked ? 1 : 0);
       return cnt !== 2;
     },
-    validateMerge() {
+    disableMerge() {
       if (this.validateAction()) {
         return true;
       }
@@ -321,7 +321,7 @@ export default {
       }
       return true;
     },
-    validateDemerge() {
+    disableDemerge() {
       if (this.isProcessing || this.demergeSagaComplete) {
         return true;
       }
@@ -366,6 +366,8 @@ export default {
       const selectedStudents = this.getSelectedStudents();
 
       this.alert = false;
+      this.searchError = false;
+
       // Determine which is the oldest, which will be mergedToPen
       let student = selectedStudents[0];
       let twinStudent =  selectedStudents[1];
@@ -407,6 +409,9 @@ export default {
     async merge() {
       const selectedStudents = this.getSelectedStudents();
 
+      this.alert = false;
+      this.searchError = false;
+
       // Determine which is the oldest, which will be mergedToPen
       if (this.isOlderThan(selectedStudents[0].createDate, selectedStudents[1].createDate)) {
         this.mergedToStudent = selectedStudents[0];
@@ -444,6 +449,9 @@ export default {
     },
     async demerge() {
       const selectedStudents = this.getSelectedStudents();
+
+      this.alert = false;
+      this.searchError = false;
 
       if (selectedStudents[0].statusCode === 'M') { // This check is enough as validateDemerge is performed before.
         this.mergedFromStudent = selectedStudents[0];
