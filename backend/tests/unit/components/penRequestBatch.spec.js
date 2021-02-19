@@ -385,31 +385,45 @@ describe('archive&unarchiveFiles', () => {
   });
 
   it('should return all batch files if all success', async () => {
+    const resp = penRequestBatchIDs.map(id => ({
+      penRequestBatchID: id,
+      penRequestBatchStatusCode: 'ARCHIVED',
+      processDate: expect.any(String)
+    }));
     utils.getData.mockResolvedValue(batchFiles);
     utils.putData.mockImplementation((token, url, data) => 
       Promise.resolve(data)
     );
     await penRequestBatch.archiveFiles(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+    expect(res.json).toHaveBeenCalledWith(resp);
   });
 
   it('should return part of batch files if partial success', async () => {
     const penRequestBatchID = 'c0a8014d-74e1-1d99-8174-e10db81f0001';
+    const resp = [{
+      penRequestBatchID,
+      penRequestBatchStatusCode: 'ARCHIVED',
+      processDate: expect.any(String)
+    }];
     utils.getData.mockResolvedValue(batchFiles);
     utils.putData.mockImplementation((token, url, data) => 
       data.penRequestBatchID === penRequestBatchID ? Promise.resolve(data) : Promise.reject({status: HttpStatus.INTERNAL_SERVER_ERROR})
     );
     await penRequestBatch.archiveFiles(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+    expect(res.json).toHaveBeenCalledWith(resp);
   });
 
   it('should return empty array if all failed', async () => {
+    const resp = [];
     utils.getData.mockResolvedValue(batchFiles);
     utils.putData.mockImplementation(() => 
       Promise.reject({status: HttpStatus.INTERNAL_SERVER_ERROR})
     );
     await penRequestBatch.archiveFiles(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+    expect(res.json).toHaveBeenCalledWith(resp);
   });
 
   it('should return INTERNAL_SERVER_ERROR if getData failed', async () => {
@@ -419,12 +433,22 @@ describe('archive&unarchiveFiles', () => {
   });
 
   it('should return all batch files if all success', async () => {
+    const userName = 'User';
+    const resp = penRequestBatchIDs.map(id => ({
+      penRequestBatchID: id,
+      penRequestBatchStatusCode: 'UNARCHIVED',
+      processDate: expect.any(String),
+      unarchivedUser: userName
+    }));
+
     utils.getData.mockResolvedValue(batchFiles);
     utils.putData.mockImplementation((token, url, data) => 
       Promise.resolve(data)
     );
     await penRequestBatch.unarchiveFiles(req, res);
     expect(utils.putData).toHaveBeenCalled();
+    expect(utils.putData.mock.calls[0][2]).toEqual(resp[0]);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+    expect(res.json).toHaveBeenCalledWith(resp);
   });
 });
