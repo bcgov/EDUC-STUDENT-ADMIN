@@ -387,7 +387,8 @@ describe('archive&unarchiveFiles', () => {
   it('should return all batch files if all success', async () => {
     const resp = penRequestBatchIDs.map(id => ({
       penRequestBatchID: id,
-      penRequestBatchStatusCode: 'ARCHIVED'
+      penRequestBatchStatusCode: 'ARCHIVED',
+      processDate: expect.any(String)
     }));
     utils.getData.mockResolvedValue(batchFiles);
     utils.putData.mockImplementation((token, url, data) => 
@@ -402,7 +403,8 @@ describe('archive&unarchiveFiles', () => {
     const penRequestBatchID = 'c0a8014d-74e1-1d99-8174-e10db81f0001';
     const resp = [{
       penRequestBatchID,
-      penRequestBatchStatusCode: 'ARCHIVED'
+      penRequestBatchStatusCode: 'ARCHIVED',
+      processDate: expect.any(String)
     }];
     utils.getData.mockResolvedValue(batchFiles);
     utils.putData.mockImplementation((token, url, data) => 
@@ -435,6 +437,7 @@ describe('archive&unarchiveFiles', () => {
     const resp = penRequestBatchIDs.map(id => ({
       penRequestBatchID: id,
       penRequestBatchStatusCode: 'UNARCHIVED',
+      processDate: expect.any(String),
       unarchivedUser: userName
     }));
 

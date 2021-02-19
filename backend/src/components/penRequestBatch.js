@@ -7,6 +7,7 @@ const {
 const {FILTER_OPERATION, CONDITION, VALUE_TYPE} = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const redisUtil = require('../util/redis/redis-utils');
+const {LocalDateTime} = require('@js-joda/core');
 const log = require('./logger');
 const lodash = require('lodash');
 const { PEN_REQ_BATCH_STATUS_CODES } = require('../util/constants');
@@ -334,6 +335,7 @@ async function updateFilesByIDs(req, res, updateFile) {
 function archiveFiles(req, res) {
   return updateFilesByIDs(req, res, batchFile => {
     batchFile.penRequestBatchStatusCode = PEN_REQ_BATCH_STATUS_CODES.ARCHIVED;
+    batchFile.processDate = LocalDateTime.now().toString();
     return batchFile;
   });
 }
