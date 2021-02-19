@@ -48,7 +48,6 @@ import { mapGetters, mapMutations, mapState } from 'vuex';
 import StudentSearchResults from './StudentSearchResults';
 import StudentAdvancedSearch from './StudentAdvancedSearch';
 import PrimaryButton from '../../util/PrimaryButton';
-import { isValidDob } from '../../../utils/validation';
 import { isValidPEN, checkDigit, isValidMincode, isValidPostalCode } from '../../../utils/validation';
 
 export default {
