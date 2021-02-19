@@ -28,7 +28,7 @@
       </v-row>
     </v-card-title>
     <v-row>
-      <AlertMessage v-model="searchError" :alertMessage="alertMessage" alertType="bootstrap-error"></AlertMessage>
+      <AlertMessage v-model="searchError" :alertMessage="errorMessage" alertType="bootstrap-error"></AlertMessage>
     </v-row>
     <v-divider></v-divider>
     <v-simple-table class="sldTable pb-2">
@@ -121,13 +121,27 @@
     <v-row>
       <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
     </v-row>
+    <v-progress-linear
+        indeterminate
+        color="blue"
+        :active="isProcessing"
+    ></v-progress-linear>
     <div v-if="selectedRecords && selectedRecords.length">
       <v-divider></v-divider>
       <v-card-actions class="px-0">
         <v-spacer></v-spacer>
-        <slot name="actions" :validateAction="validateAction" :merge="merge" :twin="twin"></slot>
+        <slot name="actions" :clearError="clearError" :validateAction="validateAction" :disableMerge="disableMerge" :disableDemerge="disableDemerge" :merge="merge"  :demerge="demerge" :twin="twin"></slot>
       </v-card-actions>
     </div>
+    <ConfirmationDialog ref="confirmationDialog">
+      <template v-slot:message>
+        <v-col class="mt-n6">
+          <v-row class="mb-3">
+            Are you sure you want to demerge PENs&nbsp;<strong>{{getMergedFromPen()}}</strong>&nbsp;and&nbsp;<strong>{{getMergedToPen()}}</strong>?
+          </v-row>
+        </v-col>
+      </template>
+    </ConfirmationDialog>
   </v-card>
 </template>
 
@@ -139,17 +153,20 @@ import {REQUEST_TYPES, Routes} from '../../utils/constants';
 import { isValidPEN, isOlderThan } from '../../utils/validation';
 import AlertMessage from '../util/AlertMessage';
 import alertMixin from '@/mixins/alertMixin';
+import servicesSagaMixin from '@/mixins/servicesSagaMixin';
 import router from '../../router';
 import TertiaryButton from '../util/TertiaryButton';
 import {getMatchedRecordsByStudent} from '@/utils/common';
+import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 
 export default {
   name: 'CompareDemographicsCommon',
-  mixins: [alertMixin],
+  mixins: [alertMixin,servicesSagaMixin],
   components: {
     TertiaryButton,
     AlertMessage,
-    PrimaryButton
+    PrimaryButton,
+    ConfirmationDialog
   },
   props: {
     selectedRecords: {
@@ -194,11 +211,11 @@ export default {
       searchError: false,
       penRules: [ v => (!v || isValidPEN(v)) || this.penHint],
       penHint: 'Invalid PEN',
-      alertMessage: 'Error! This student does not exist in the system.',
+      errorMessage: 'Error! This student does not exist in the system.',
       sldData: {},
       sldDataTablesToDisplay: {},
       sldDataTablesNumberOfRows: {},
-      checkedStudents: []
+      checkedStudents: [],
     };
   },
   mounted() {
@@ -298,36 +315,30 @@ export default {
       this.checkedStudents.forEach(checked => cnt += checked ? 1 : 0);
       return cnt !== 2;
     },
-    validateStudentsHaveSamePen(student1, student2, message) {
-      if (student1.pen === student2.pen) {
-        this.setFailureAlert(message);
+    disableMerge() {
+      if (this.validateAction()) {
         return true;
       }
-      return false;
+
+      const selectedStudents = this.getSelectedStudents();
+      if (selectedStudents.length === 2) {
+        return this.validateStudentsAreMerged(selectedStudents[0], selectedStudents[1]);
+      }
+      return true;
     },
-    validateStudentIsStatusOfMerged(student1, student2, message) {
-      if (student1.statusCode === 'M' || student2.statusCode === 'M') {
-        this.setFailureAlert(message);
+    disableDemerge() {
+      if (this.isProcessing || this.demergeSagaComplete) {
         return true;
       }
-      return false;
-    },
-    validateStudentHasAnyMergedFrom(studentID) {
-      return ApiService.apiAxios
-        .get(Routes['penServices'].ROOT_ENDPOINT + '/' + studentID + '/student-merge', {params: {mergeDirection: 'FROM'}})
-        .then(response => {
-          if (response.data && response.data.length > 0) {
-            this.setFailureAlert('Error! PENs cannot be merged, as the PEN selected to be the \'merged from PEN\' has been involved in a merge. It must first be demerged, before this merge can be executed.');
-            return true;
-          } else {
-            return false;
-          }
-        })
-        .catch(error => {
-          this.setFailureAlert('An error occurred while loading the student merge in validation. Please try again later.');
-          console.log(error);
-          return true;  // set true to make the validation failed
-        });
+      if (this.validateAction()) {
+        return true;
+      }
+
+      const selectedStudents = this.getSelectedStudents();
+      if (selectedStudents.length === 2) {
+        return !this.validateStudentsAreMerged(selectedStudents[0], selectedStudents[1]);
+      }
+      return true;
     },
     validateTwinRecordsExist(studentID, twinStudentID) {
       return getMatchedRecordsByStudent(studentID)
@@ -360,6 +371,8 @@ export default {
       const selectedStudents = this.getSelectedStudents();
 
       this.alert = false;
+      this.searchError = false;
+
       // Determine which is the oldest, which will be mergedToPen
       let student = selectedStudents[0];
       let twinStudent =  selectedStudents[1];
@@ -369,18 +382,17 @@ export default {
         'Error! PENs cannot be twinned, as same PENs are selected.')) {
         return;
       }
-
       // Status validation
       if (this.validateStudentIsStatusOfMerged(student, twinStudent,
         'Error! PENs cannot be twinned, as one of the PENs has a status of merged.')) {
         return;
       }
-
       // Twins validation
       const hasAnyTwins = await this.validateTwinRecordsExist(student.studentID, twinStudent.studentID);
       if (hasAnyTwins) {
         return;
       }
+
       const twinRequests = [
         {
           studentID: student.studentID,
@@ -402,31 +414,30 @@ export default {
     async merge() {
       const selectedStudents = this.getSelectedStudents();
 
+      this.alert = false;
+      this.searchError = false;
+
       // Determine which is the oldest, which will be mergedToPen
-      let mergedToStudent = null;
-      let mergedFromStudent = null;
       if (this.isOlderThan(selectedStudents[0].createDate, selectedStudents[1].createDate)) {
-        mergedToStudent = selectedStudents[0];
-        mergedFromStudent = selectedStudents[1];
+        this.mergedToStudent = selectedStudents[0];
+        this.mergedFromStudent = selectedStudents[1];
       } else {
-        mergedToStudent = selectedStudents[1];
-        mergedFromStudent = selectedStudents[0];
+        this.mergedToStudent = selectedStudents[1];
+        this.mergedFromStudent = selectedStudents[0];
       }
 
       // Same Pen validation
-      if (this.validateStudentsHaveSamePen(mergedToStudent, mergedFromStudent,
+      if (this.validateStudentsHaveSamePen(this.mergedToStudent, this.mergedFromStudent,
         'Error! PENs cannot be merged, as same PENs are selected.')) {
         return;
       }
-
       // Status validation
-      if (this.validateStudentIsStatusOfMerged(mergedToStudent, mergedFromStudent,
+      if (this.validateStudentIsStatusOfMerged(this.mergedToStudent, this.mergedFromStudent,
         'Error! PENs cannot be merged, as one of the PENs has a status of merged.')) {
         return;
       }
-
       // Merge validation
-      const hasAnyMergedFrom = await this.validateStudentHasAnyMergedFrom(mergedFromStudent.studentID);
+      const hasAnyMergedFrom = await this.validateStudentHasAnyMergedFrom(this.mergedFromStudent.studentID);
       if (hasAnyMergedFrom) {
         return;
       }
@@ -435,13 +446,34 @@ export default {
         {
           name: 'mergeStudents',
           params: {
-            mergedToPen: mergedToStudent,
-            mergedFromPen: mergedFromStudent
+            mergedToPen: this.mergedToStudent,
+            mergedFromPen: this.mergedFromStudent
           }
         }
       );
+    },
+    async demerge() {
+      const selectedStudents = this.getSelectedStudents();
+
+      this.alert = false;
+      this.searchError = false;
+
+      if (selectedStudents[0].statusCode === 'M') { // This check is enough as validateDemerge is performed before.
+        this.mergedFromStudent = selectedStudents[0];
+        this.mergedToStudent = selectedStudents[1];
+      } else {
+        this.mergedFromStudent = selectedStudents[1];
+        this.mergedToStudent = selectedStudents[0];
+      }
+
+      let result = await this.$refs.confirmationDialog.open(null, null,
+        {color: '#fff', width: 580, closeIcon: true, dark: false, rejectText: 'No'});
+      if (!result) {
+        return;
+      }
+      await this.executeDemerge();
     }
-  }
+  },
 };
 </script>
 

@@ -303,23 +303,23 @@
 </template>
 
 <script>
-import ApiService from '../../../common/apiService';
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
 import {mapGetters} from 'vuex';
-import {Routes, REQUEST_TYPES, STUDENT_DETAILS_FIELDS, STUDENT_CODES} from '@/utils/constants';
+import {REQUEST_TYPES, STUDENT_DETAILS_FIELDS, STUDENT_CODES} from '@/utils/constants';
 import FormattedTextField from '@/components/util/FormattedTextField';
 import StudentDetailsCheckBoxWithOutputText from '@/components/penreg/student/StudentDetailsCheckBoxWithOutputText';
 import PrimaryButton from '@/components/util/PrimaryButton';
 import {isValidDob, isValidMincode, isValidPostalCode} from '@/utils/validation';
 import alertMixin from '@/mixins/alertMixin';
 import schoolMixin from '@/mixins/schoolMixin';
+import servicesSagaMixin from '@/mixins/servicesSagaMixin';
 import AlertMessage from '@/components/util/AlertMessage';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import router from '@/router';
 
 export default {
   name: 'MergeStudents',
-  mixins: [alertMixin, schoolMixin],
+  mixins: [alertMixin,schoolMixin,servicesSagaMixin],
   props: {
     mergedToPen: {
       type: Object,
@@ -346,20 +346,6 @@ export default {
     this.mergedStudent = JSON.parse(JSON.stringify(this.mergedFromPen));
     this.populateDOB(true);
   },
-  watch: {
-    notification(val) {
-      if (val) {
-        const notificationData = JSON.parse(val);
-        if (notificationData && notificationData.studentID && notificationData.studentID === this.student.studentID && notificationData.sagaStatus === 'COMPLETED') {
-          if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_MERGE_COMPLETE_SAGA') {
-            this.setSuccessAlert('Success! Your request to merge is completed.');
-            this.isProcessing = false;
-            this.mergeSagaComplete = true;
-          }
-        }
-      }
-    },
-  },
   data() {
     return {
       validForm: false,
@@ -371,13 +357,10 @@ export default {
       STUDENT_DETAILS_FIELDS:STUDENT_DETAILS_FIELDS,
       STUDENT_CODES: STUDENT_CODES,
       genderCodes: [],
-      isProcessing: false,
-      mergeSagaComplete: false,
     };
   },
   computed: {
     ...mapGetters('student', ['genders']),
-    ...mapGetters('notifications', ['notification']),
   },
   methods: {
     formatPen,
@@ -512,31 +495,9 @@ export default {
 
       window.scrollTo(0,0);
 
-      // Student Merge Complete Request
-      this.alert = false;
-      this.isProcessing = true;
-      const mergeRequest = {...this.student,
-        mergedToPen: this.student.pen,
-        mergeStudentID: this.mergedStudent.studentID,
-        mergedFromPen: this.mergedStudent.pen,
-        studentMergeDirectionCode: 'FROM',
-        studentMergeSourceCode: 'MI',
-        requestStudentID: null
-      };
-      ApiService.apiAxios
-        .post(Routes['penServices'].ROOT_ENDPOINT + '/' + mergeRequest.studentID + '/student-merge-complete', mergeRequest)
-        .then(() => {
-          this.setSuccessAlert('Your request to merge is accepted.');
-        })
-        .catch(error => {
-          console.log(error);
-          this.isProcessing = false;
-          if (error.response.data && error.response.data.code && error.response.data.code === 409) {
-            this.setFailureAlert('Another saga is in progress for this request, please try again later.');
-          } else {
-            this.setFailureAlert('Student Merge Request failed to update. Please navigate to the student search and merge again at compare in the list.');
-          }
-        });
+      this.mergedToStudent = this.student;
+      this.mergedFromStudent = this.mergedStudent;
+      await this.executeMerge();
     },
   }
 };

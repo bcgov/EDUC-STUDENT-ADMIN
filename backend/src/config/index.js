@@ -85,7 +85,8 @@ nconf.defaults({
       prbValidationFieldCodesURL: process.env.PEN_SERVICES_API_URL + '/validation/issue-field-code',
       prbValidationSeverityCodesURL: process.env.PEN_SERVICES_API_URL + '/validation/issue-severity-code',
       prbValidationTypeCodesURL: process.env.PEN_SERVICES_API_URL + '/validation/issue-type-code',
-      mergeStudentsURL: process.env.PEN_SERVICES_API_URL + '/student-merge-complete-saga'
+      mergeStudentsURL: process.env.PEN_SERVICES_API_URL + '/student-merge-complete-saga',
+      demergeStudentsURL: process.env.PEN_SERVICES_API_URL + '/student-demerge-complete-saga'
     }
   },
   oidc: {

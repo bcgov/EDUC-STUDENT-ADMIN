@@ -374,6 +374,12 @@
           <v-row>
             <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000"></AlertMessage>
           </v-row>
+          <v-divider/>
+          <v-progress-linear
+              indeterminate
+              color="blue"
+              :active="isProcessing"
+          ></v-progress-linear>
         </v-card>
       </v-col>
       <v-col cols="1">
@@ -398,7 +404,9 @@
         :isAdvancedSearch="isAdvancedSearch"
         :hasAnyEdits="hasAnyEdits"
         :saveStudent="saveStudent"
-        :REQUEST_TYPES="REQUEST_TYPES">
+        :REQUEST_TYPES="REQUEST_TYPES"
+        :disableDemerge="disableDemerge"
+        :demerge="demerge">
     </slot>
     <v-row fluid class="full-height align-center justify-center" v-if="isLoading">
       <article id="pen-display-container" class="top-banner full-height">
@@ -456,6 +464,15 @@
       ></TwinnedStudentsCard>
     </v-dialog>
     <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>
+    <ConfirmationDialog ref="demergeConfirmationDialog">
+      <template v-slot:message>
+        <v-col class="mt-n6">
+          <v-row class="mb-3">
+            Are you sure you want to demerge PENs&nbsp;<strong>{{getMergedFromPen()}}</strong>&nbsp;and&nbsp;<strong>{{getMergedToPen()}}</strong>?
+          </v-row>
+        </v-col>
+      </template>
+    </ConfirmationDialog>
   </div>
 </template>
 
@@ -467,13 +484,13 @@ import {REQUEST_TYPES, Routes, STUDENT_CODES, STUDENT_DETAILS_FIELDS} from '@/ut
 import StudentDetailsTextField from '@/components/penreg/student/StudentDetailsTextField';
 import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly';
 import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsComboBox';
-import StudentDetailsTextFieldSideCardReadOnly
-  from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
+import StudentDetailsTextFieldSideCardReadOnly from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
 import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
 import {formatDob, formatMincode, formatPen} from '@/utils/format';
 import {isEmpty, sortBy} from 'lodash';
 import alertMixin from '../../mixins/alertMixin';
 import schoolMixin from '../../mixins/schoolMixin';
+import servicesSagaMixin from '../../mixins/servicesSagaMixin';
 import ConfirmationDialog from '../util/ConfirmationDialog';
 import AlertMessage from '../util/AlertMessage';
 import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard';
@@ -486,7 +503,7 @@ import PrimaryButton from '@/components/util/PrimaryButton';
 const JSJoda = require('@js-joda/core');
 export default {
   name: 'studentDetailCommon',
-  mixins: [alertMixin, schoolMixin],
+  mixins: [alertMixin,schoolMixin,servicesSagaMixin],
   props: {
     studentID: {
       type: String,
@@ -595,7 +612,7 @@ export default {
   watch: {
     studentID() {
       this.refreshStudent();
-    }
+    },
   },
   beforeRouteLeave (to, from, next) {
     if(this.hasAnyEdits()) {
@@ -956,6 +973,26 @@ export default {
         .finally(() => {
           this.loadingTraxData = false;
         });
+    },
+    disableDemerge() {
+      if (this.isProcessing || this.demergeSagaComplete) {
+        return true;
+      }
+      if (this.origStudent.statusCode === 'M' && !!this.origStudent.trueStudentID) {
+        return false;
+      }
+      return true;
+    },
+    async demerge() {
+      this.mergedToStudent = this.mergedTo.mergeStudent;
+      this.mergedFromStudent = this.origStudent;
+
+      let result = await this.$refs.demergeConfirmationDialog.open(null, null,
+        { color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, rejectText: 'No' });
+      if (!result) {
+        return;
+      }
+      await this.executeDemerge();
     },
   }
 };
