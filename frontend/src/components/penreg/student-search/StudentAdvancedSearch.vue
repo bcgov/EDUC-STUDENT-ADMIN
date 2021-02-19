@@ -2,8 +2,8 @@
   <v-row no-gutters style="background-color:white;" class="px-3 pt-3">
     <v-col cols="6">
       <v-row no-gutters class="textFieldRow">
-        <v-col cols="2">PEN</v-col>
-        <v-col cols="2">
+        <v-col class="mr-n8 mt-2" cols="3">PEN</v-col>
+        <v-col cols="3">
           <v-text-field
             dense
             filled
@@ -20,7 +20,10 @@
         </v-col>
       </v-row>
       <v-row no-gutters class="textFieldRow">
-        <v-col cols="2">Birth Date</v-col>
+        <v-col cols="2" class="mt-2">Birth Date</v-col>
+        <v-col cols="1" class="mr-n8" >
+          <v-checkbox v-on:change="searchHasValues" class="ma-0 pa-0" height="100%" label="" color="#606060" v-model="useDOBValue"></v-checkbox>
+        </v-col>
         <v-col cols="3">
           <v-row no-gutters>
             <v-col cols="4">
@@ -45,7 +48,7 @@
             </v-col>
           </v-row>
         </v-col>
-        <v-col cols="2">
+        <v-col cols="2"  class="mr-n3">
           <v-checkbox class="ma-0 pa-0" height="100%" label="Use range" color="#606060" v-model="advancedSearchCriteria.useDOBRange"></v-checkbox>
         </v-col>
         <v-col cols="3">
@@ -75,7 +78,7 @@
         </v-col>
       </v-row>
       <v-row no-gutters class="textFieldRow">
-        <v-col cols="2">Gender</v-col>
+        <v-col class="mr-n8 mt-2" cols="3">Gender</v-col>
         <v-col cols="1" id="genderCol">
           <v-text-field id="gender" dense filled outlined
             v-model="studentSearchParams.genderCode"
@@ -87,7 +90,7 @@
         </v-col>
       </v-row>
       <v-row no-gutters class="textFieldRow">
-        <v-col cols="2">Grade</v-col>
+        <v-col class="mr-n8 mt-2" cols="3">Grade</v-col>
         <v-col cols="1">
           <v-text-field dense filled outlined
             id="gradeCode"
@@ -100,7 +103,7 @@
         </v-col>
       </v-row>
       <v-row no-gutters class="textFieldRow">
-        <v-col cols="2">Mincode</v-col>
+        <v-col class="mr-n8 mt-2" cols="3">Mincode</v-col>
         <v-col cols="2">
           <v-text-field dense filled outlined
             id='mincode'
@@ -114,7 +117,7 @@
         </v-col>
       </v-row>
       <v-row no-gutters class="textFieldRow">
-        <v-col cols="2">Local ID</v-col>
+        <v-col class="mr-n8 mt-2" cols="3">Local ID</v-col>
         <v-col cols="2">
           <v-text-field dense filled outlined
             id='localID'
@@ -129,7 +132,7 @@
         </v-col>
       </v-row>
       <v-row no-gutters class="textFieldRow">
-        <v-col cols="2">Postal Code</v-col>
+        <v-col class="mr-n8 mt-2" cols="3">Postal Code</v-col>
         <v-col cols="2">
           <v-text-field dense filled outlined
             id='postalCode'
@@ -142,8 +145,8 @@
         </v-col>
       </v-row>
       <v-row no-gutters class="textFieldRow">
-        <v-col cols="2">Memo</v-col>
-        <v-col cols="9">
+        <v-col class="mr-n8 mt-2" cols="3">Memo</v-col>
+        <v-col cols="8">
           <v-text-field dense filled outlined
             id='memo'
             v-model="studentSearchParams.memo"
@@ -165,7 +168,7 @@
           </v-col>
         </v-row>
         <v-row no-gutters class="textFieldRow">
-          <v-col cols="3">Legal Surname</v-col>
+          <v-col cols="3" class="mt-2">Legal Surname</v-col>
           <v-text-field dense filled outlined
             id='legalLastName'
             v-model="studentSearchParams.legalLastName"
@@ -176,7 +179,7 @@
           </v-text-field>
         </v-row>
         <v-row no-gutters class="textFieldRow">
-          <v-col cols="3">Legal Given</v-col>
+          <v-col cols="3" class="mt-2">Legal Given</v-col>
           <v-text-field dense filled outlined
             id='legalFirstName'
             v-model="studentSearchParams.legalFirstName"
@@ -187,7 +190,7 @@
           </v-text-field>
         </v-row>
         <v-row no-gutters class="textFieldRow">
-          <v-col cols="3">Legal Middle</v-col>
+          <v-col cols="3" class="mt-2">Legal Middle</v-col>
           <v-text-field dense filled outlined
             id='legalMiddleNames'
             v-model="studentSearchParams.legalMiddleNames"
@@ -198,7 +201,7 @@
           </v-text-field>
         </v-row>
         <v-row no-gutters class="textFieldRow">
-          <v-col cols="3">Usual Surname</v-col>
+          <v-col cols="3" class="mt-2">Usual Surname</v-col>
           <v-text-field dense filled outlined
             id='usualLastName'
             v-model="studentSearchParams.usualLastName"
@@ -209,7 +212,7 @@
           </v-text-field>
         </v-row>
         <v-row no-gutters class="textFieldRow">
-          <v-col cols="3">Usual Given</v-col>
+          <v-col cols="3" class="mt-2">Usual Given</v-col>
           <v-text-field dense filled outlined
             id='usualFirstName'
             v-model="studentSearchParams.usualFirstName"
@@ -219,7 +222,7 @@
             ></v-text-field>
         </v-row>
         <v-row no-gutters class="textFieldRow">
-          <v-col cols="3">Usual Middle</v-col>
+          <v-col cols="3" class="mt-2">Usual Middle</v-col>
           <v-text-field dense filled outlined
             id='usualMiddleNames'
             v-model="studentSearchParams.usualMiddleNames"
@@ -288,6 +291,10 @@ export default {
       type: Function,
       required: true
     },
+    useDOB: {
+      type: Boolean,
+      required: true
+    },
     validatePostal: {
       type: Function,
       required: true
@@ -333,6 +340,14 @@ export default {
     },
   },
   computed: {
+    useDOBValue: {
+      get: function() {
+        return this.useDOB;
+      },
+      set: async function(value) {
+        this.$emit('update:useDOB', value);
+      }
+    },
     ...mapState('studentSearch', ['pageNumber', 'headerSortParams', 'studentSearchResponse', 'isAdvancedSearch', 'studentSearchParams', 'advancedSearchCriteria']),
     formattedStartDOB() {
       if(this.advancedSearchCriteria.startDate && this.advancedSearchCriteria.startDate.year) {

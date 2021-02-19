@@ -16,6 +16,7 @@
                     :validateMincode="validateMincode"
                     :uppercasePostal="uppercasePostal"
                     :uppercaseGrade="uppercaseGrade"
+                    :useDOB.sync="useDOB"
                     :validatePostal="validatePostal"
                     :validateGradeCode="validateGradeCode"
             >
@@ -70,6 +71,7 @@ export default {
       gradeHint: 'Invalid grade',
       validForm: false,
       menu: false,
+      useDOB: true,
       localDate:LocalDate,
       searchLoading: false,
       searchEnabled: false,
@@ -260,14 +262,15 @@ export default {
         this.menu = true;
       }
     },
-    searchHasValues(){
-      if((this.studentSearchParams.pen ||
+    async searchHasValues(){
+      await this.$nextTick();
+      if(this.$refs.studentSearchForm.validate() && (this.studentSearchParams.pen ||
           this.studentSearchParams.legalLastName ||
           this.studentSearchParams.legalFirstName ||
           this.studentSearchParams.legalMiddleNames ||
           this.studentSearchParams.postalCode ||
           this.studentSearchParams.genderCode ||
-          this.studentSearchParams.dob.startDate ||
+          (this.studentSearchParams.dob.startDate && this.useDOB) ||
           this.studentSearchParams.mincode ||
           this.studentSearchParams.usualLastName ||
           this.studentSearchParams.usualFirstName ||
@@ -295,7 +298,7 @@ export default {
           studentSearchFilters = {};
           studentSearchKeys.forEach(element => {
             if(element === 'dob') {
-              if(!this.studentSearchParams[element].startDate) {
+              if(!this.useDOB || !this.studentSearchParams[element].startDate) {
                 return;
               }
             }
