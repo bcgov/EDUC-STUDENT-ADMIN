@@ -1,6 +1,7 @@
 import ApiService from '@/common/apiService';
-import {Routes} from '@/utils/constants';
+import {REQUEST_TYPES, Routes} from '@/utils/constants';
 import {mapGetters} from 'vuex';
+import router from '@/router';
 
 export default {
   computed: {
@@ -24,6 +25,11 @@ export default {
             setTimeout(() => {
               this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
             }, 500);
+            // Open students in new tabs
+            this.openStudentDetails(this.mergedFromStudent.studentID);
+            setTimeout(() => {
+              this.openStudentDetails(this.mergedToStudent.studentID);
+            }, 500);
           }
         }
       }
@@ -39,6 +45,10 @@ export default {
     };
   },
   methods: {
+    openStudentDetails(studentID) {
+      const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
+      window.open(route.href, '_blank');
+    },
     getMergedToPen() {
       if (this.mergedToStudent) {
         return this.mergedToStudent.pen;
