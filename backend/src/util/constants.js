@@ -63,11 +63,11 @@ const CONDITION = Object.freeze(
     /**
      * And condition.
      */
-    AND:'AND',
+    AND: 'AND',
     /**
      * Or condition.
      */
-    OR:'OR'
+    OR: 'OR'
   }
 );
 
@@ -76,27 +76,27 @@ const VALUE_TYPE = Object.freeze(
     /**
      * String value type.
      */
-    STRING:'STRING',
+    STRING: 'STRING',
     /**
      * Integer value type.
      */
-    INTEGER:'INTEGER',
+    INTEGER: 'INTEGER',
     /**
      * Long value type.
      */
-    LONG:'LONG',
+    LONG: 'LONG',
     /**
      * Date value type.
      */
-    DATE:'DATE',
+    DATE: 'DATE',
     /**
      * Date time value type.
      */
-    DATE_TIME:'DATE_TIME',
+    DATE_TIME: 'DATE_TIME',
     /**
      * Uuid value type.
      */
-    UUID:'UUID'
+    UUID: 'UUID'
   }
 );
 
@@ -104,6 +104,7 @@ const PEN_REQ_BATCH_STATUS_CODES = Object.freeze(
   {
     ARCHIVED: 'ARCHIVED',
     UNARCHIVED: 'UNARCHIVED',
+    LOAD_FAIL: 'LOADFAIL',
   }
 );
 

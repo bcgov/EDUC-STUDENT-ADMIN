@@ -35,29 +35,29 @@
             </v-row>
             <v-row class="pt-4 px-8">
               <v-col cols="6" class="pa-0">
-                <v-text-field 
-                  id="requestsMincodeField" 
-                  outlined 
-                  dense 
-                  background-color="white" 
-                  label="Enter district or mincode" 
-                  v-model="mincode"
-                  maxlength="8" 
-                  :rules="mincodeRules"
-                  @keyup.enter="enterPushedForRequests()"
+                <v-text-field
+                    id="requestsMincodeField"
+                    background-color="white"
+                    dense
+                    label="Enter district or mincode"
+                    maxlength="8"
+                    v-model="mincode"
+                    outlined
+                    :rules="mincodeRules"
+                    @keyup.enter="enterPushedForRequests()"
                 ></v-text-field>
               </v-col>
               <v-col cols="4" class="pa-0 pl-1">
-                <v-text-field 
-                  id="requestsDateField" 
-                  outlined 
-                  dense 
-                  background-color="white" 
-                  label="Enter date"
-                  v-model="loadDate"
-                  maxlength="10"
-                  :rules="loadDateRules"
-                  @keyup.enter="enterPushedForRequests()"
+                <v-text-field
+                    id="requestsDateField"
+                    background-color="white"
+                    dense
+                    outlined
+                    label="Enter date"
+                    v-model="loadDate"
+                    maxlength="10"
+                    :rules="loadDateRules"
+                    @keyup.enter="enterPushedForRequests()"
                 ></v-text-field>
               </v-col>
               <v-col cols="2" class="py-0 pl-2">
@@ -145,14 +145,13 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import { REQUEST_TYPES } from '../utils/constants';
+import {mapState} from 'vuex';
+import {REQUEST_TYPES, Routes} from '@/utils/constants';
 import DashboardTable from './DashboardTable';
 import ApiService from '../common/apiService';
-import { Routes } from '../utils/constants';
 import PrimaryButton from './util/PrimaryButton';
 import router from '../router';
-import { isValidPEN, isValidMincode, isPresentDateAndAfter1900 } from '../utils/validation';
+import {isPresentDateAndAfter1900, isValidMincode, isValidPEN} from '@/utils/validation';
 
 export default {
   name: 'home',
@@ -196,13 +195,18 @@ export default {
           unarchived: response.data.K12.unarchived
         });
         this.penRequestData.push(
-          {
-            title: 'PSI',
-            pending: response.data.PSI.pending,
-            fixable: response.data.PSI.fixable,
-            repeats: response.data.PSI.repeats,
-            unarchived: response.data.PSI.unarchived
-          });
+            {
+              title: 'PSI',
+              pending: response.data.PSI.pending,
+              fixable: response.data.PSI.fixable,
+              repeats: response.data.PSI.repeats,
+              unarchived: response.data.PSI.unarchived
+            });
+        this.penRequestData.push(
+            {
+              title: 'ERRORS',
+              loadFailed: response.data.ERROR.loadFailed,
+            });
       }).finally(() => {
         this.isLoadingBatch = false;
       });
