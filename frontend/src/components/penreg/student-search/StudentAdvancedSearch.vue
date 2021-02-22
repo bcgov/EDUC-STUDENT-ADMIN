@@ -22,7 +22,7 @@
       <v-row no-gutters class="textFieldRow">
         <v-col cols="2" class="mt-2">Birth Date</v-col>
         <v-col cols="1" class="mr-n8" >
-          <v-checkbox v-on:change="searchHasValues" class="ma-0 pa-0" height="100%" label="" color="#606060" v-model="useDOBValue"></v-checkbox>
+          <v-checkbox id="useDOBCheckbox" v-on:change="searchHasValues" class="ma-0 pa-0" height="100%" label="" color="#606060" v-model="useDOBValue"></v-checkbox>
         </v-col>
         <v-col cols="3">
           <v-row no-gutters>
@@ -49,7 +49,7 @@
           </v-row>
         </v-col>
         <v-col cols="2"  class="mr-n3">
-          <v-checkbox class="ma-0 pa-0" height="100%" label="Use range" color="#606060" v-model="advancedSearchCriteria.useDOBRange"></v-checkbox>
+          <v-checkbox id="useDOBRangeCheckbox" class="ma-0 pa-0" height="100%" label="Use range" color="#606060" v-model="advancedSearchCriteria.useDOBRange"></v-checkbox>
         </v-col>
         <v-col cols="3">
           <v-row no-gutters v-if="advancedSearchCriteria.useDOBRange">
@@ -161,10 +161,10 @@
       <v-card class="pa-4">
         <v-row no-gutters class="textFieldRow mb-4" justify="space-between">
           <v-col cols="5">
-            <v-checkbox label="Search name variants" color="#606060" class="ma-0 pa-0" v-model="advancedSearchCriteria.useNameVariants"></v-checkbox>
+            <v-checkbox  id="searchNameVariantsCheckbox" label="Search name variants" color="#606060" class="ma-0 pa-0" v-model="advancedSearchCriteria.useNameVariants"></v-checkbox>
           </v-col>
           <v-col>
-              <v-checkbox label="Search audit history" color="#606060" class="ma-0 pa-0" v-model="advancedSearchCriteria.isAuditHistorySearch"></v-checkbox>
+              <v-checkbox  id="searchAuditHistoryCheckbox" label="Search audit history" color="#606060" class="ma-0 pa-0" v-model="advancedSearchCriteria.isAuditHistorySearch"></v-checkbox>
           </v-col>
         </v-row>
         <v-row no-gutters class="textFieldRow">
