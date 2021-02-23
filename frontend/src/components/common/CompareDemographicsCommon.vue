@@ -471,6 +471,7 @@ export default {
       if (!result) {
         return;
       }
+      this.demergeFromStudentDetail = false;
       await this.executeDemerge();
     }
   },

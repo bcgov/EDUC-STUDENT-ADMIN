@@ -992,6 +992,7 @@ export default {
       if (!result) {
         return;
       }
+      this.demergeFromStudentDetail = true;
       await this.executeDemerge();
     },
   }

@@ -22,13 +22,18 @@ export default {
             this.setSuccessAlert('Success! Your request to demerge is completed.');
             this.isProcessing = false;
             this.demergeSagaComplete = true;
+            if (this.demergeFromStudentDetail) { // demerge is initiated from student detail.
+              setTimeout(() => {
+                this.$emit('refresh'); // wait 1000 ms for the user to see saga complete banner, and then refresh the page.
+              }, 1000);
+            } else { // demerge is initiated from compare students view.
+              setTimeout(() => {
+                this.openStudentDetails(this.mergedFromStudent.studentID); // open mergedFromStudent in a new tab
+              }, 500);
+            }
+            // demerge is initiated from either student detail or compare students view.
             setTimeout(() => {
-              this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
-            }, 500);
-            // Open students in new tabs
-            this.openStudentDetails(this.mergedFromStudent.studentID);
-            setTimeout(() => {
-              this.openStudentDetails(this.mergedToStudent.studentID);
+              this.openStudentDetails(this.mergedToStudent.studentID); // open mergedToStudent in a new tab
             }, 500);
           }
         }
@@ -42,6 +47,7 @@ export default {
       isProcessing: false,
       mergeSagaComplete: false,
       demergeSagaComplete: false,
+      demergeFromStudentDetail: false, // if true, demerge is initiated from student detail page.  otherwise it is from compare students view.
     };
   },
   methods: {
