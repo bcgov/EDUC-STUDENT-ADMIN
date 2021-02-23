@@ -185,13 +185,8 @@ export default {
     await this.$store.dispatch('app/getCodes');
   },
   mounted() {
-    if(this.isValidPenRequestBatchUser) {
+    if (this.isValidPenRequestBatchUser) {
       ApiService.apiAxios.get(Routes.penRequestBatch.STATS_URL).then(response => {
-        this.penRequestData.push(
-          {
-            title: 'Errors',
-            loadFailed: response.data.ERROR.loadFailed,
-          });
         this.penRequestData.push({
           title: 'K-12',
           pending: response.data.K12.pending,
@@ -199,14 +194,17 @@ export default {
           repeats: response.data.K12.repeats,
           unarchived: response.data.K12.unarchived
         });
-        this.penRequestData.push(
-          {
-            title: 'PSI',
-            pending: response.data.PSI.pending,
-            fixable: response.data.PSI.fixable,
-            repeats: response.data.PSI.repeats,
-            unarchived: response.data.PSI.unarchived
-          });
+        this.penRequestData.push({
+          title: 'PSI',
+          pending: response.data.PSI.pending,
+          fixable: response.data.PSI.fixable,
+          repeats: response.data.PSI.repeats,
+          unarchived: response.data.PSI.unarchived
+        });
+        this.penRequestData.push({
+          title: 'Errors',
+          loadFailed: response.data.ERROR.loadFailed,
+        });
       }).finally(() => {
         this.isLoadingBatch = false;
       });
