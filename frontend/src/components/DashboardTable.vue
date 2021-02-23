@@ -17,16 +17,11 @@
           </v-alert>
           <div v-else>{{ col }} {{ dataColWording(idx) }}</div>
         </v-row>
-        <!--        <v-row class="pt-4">
-                  <router-link :to="routeTo(row.title)">
-                    <PrimaryButton :id="row.title.replace(/ /g,'')+'Btn'" :text="'View ' + buttonWording(row.title)"></PrimaryButton>
-                  </router-link>
-                </v-row>-->
       </v-col>
     </v-row>
-    <v-row>
+    <v-row class="pt-4 px-8">
       <v-col cols="2"></v-col>
-      <v-col v-for="(row, index) in sortedTableData" :key="index" class="pt-4 py-0" cols="3">
+      <v-col v-for="(row, index) in sortedTableData" :key="index" class="pt-4 py-0 px-0" cols="3">
         <router-link :to="routeTo(row.title)">
           <PrimaryButton :id="row.title.replace(/ /g,'')+'Btn'"
                          :text="'View ' + buttonWording(row.title)"></PrimaryButton>
@@ -125,7 +120,7 @@ export default {
         return REQUEST_TYPES.penRequestBatch.path + '?schoolGroup=' + 'K12';
       case 'PSI':
         return REQUEST_TYPES.penRequestBatch.path + '?schoolGroup=' + 'PSI';
-      case 'ERRORS':
+      case 'Errors':
         return REQUEST_TYPES.penRequestBatch.path + '?penRequestBatchStatusCode=' + 'LOAD_FAIL'; // this is TODO
       case 'GMP':
         return REQUEST_TYPES.penRequest.path;
@@ -138,17 +133,7 @@ export default {
 </script>
 
 <style scoped>
-  .listRow {
-    margin: 0;
-    height: 100%;
-  }
-  .oddRow {
-    background-color: #d7d7d7;
-  }
   .listCol {
     align-self: center;
-  }
-  .alert {
-    color: white;
   }
 </style>

@@ -123,8 +123,8 @@
               <v-row>
                 <v-card-title class="pa-0"><h3>Reports</h3></v-card-title>
               </v-row>
-              <v-row class="pt-2">Report A</v-row> <!--TODO I suggest these rows are done using v-for and object.. -->
-              <v-row class="pt-2">Report B</v-row> <!--TODO ..once we know what these link will be -->
+              <v-row class="pt-2">Report A</v-row>
+              <v-row class="pt-2">Report B</v-row>
               <v-row class="pt-2">Report C</v-row>
               <v-row class="pt-2">Report D</v-row>
             </v-col>
@@ -132,8 +132,8 @@
               <v-row>
                 <v-card-title class="pa-0"><h3>Analytics</h3></v-card-title>
               </v-row>
-              <v-row class="pt-2">View A</v-row> <!--TODO I suggest these rows are done using v-for and object.. -->
-              <v-row class="pt-2">View B</v-row> <!--TODO ..once we know what these link will be -->
+              <v-row class="pt-2">View A</v-row>
+              <v-row class="pt-2">View B</v-row>
               <v-row class="pt-2">View C</v-row>
               <v-row class="pt-2">View D</v-row>
             </v-col>
@@ -187,6 +187,11 @@ export default {
   mounted() {
     if(this.isValidPenRequestBatchUser) {
       ApiService.apiAxios.get(Routes.penRequestBatch.STATS_URL).then(response => {
+        this.penRequestData.push(
+          {
+            title: 'Errors',
+            loadFailed: response.data.ERROR.loadFailed,
+          });
         this.penRequestData.push({
           title: 'K-12',
           pending: response.data.K12.pending,
@@ -195,18 +200,13 @@ export default {
           unarchived: response.data.K12.unarchived
         });
         this.penRequestData.push(
-            {
-              title: 'PSI',
-              pending: response.data.PSI.pending,
-              fixable: response.data.PSI.fixable,
-              repeats: response.data.PSI.repeats,
-              unarchived: response.data.PSI.unarchived
-            });
-        this.penRequestData.push(
-            {
-              title: 'ERRORS',
-              loadFailed: response.data.ERROR.loadFailed,
-            });
+          {
+            title: 'PSI',
+            pending: response.data.PSI.pending,
+            fixable: response.data.PSI.fixable,
+            repeats: response.data.PSI.repeats,
+            unarchived: response.data.PSI.unarchived
+          });
       }).finally(() => {
         this.isLoadingBatch = false;
       });
