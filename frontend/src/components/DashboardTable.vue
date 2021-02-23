@@ -57,7 +57,6 @@ export default {
   },
   computed: {
     sortedTableData() {
-      //return this.tableData;
       return Array.prototype.slice.call(this.tableData).sort(this.compare);
     }
   },
@@ -121,7 +120,7 @@ export default {
       case 'PSI':
         return REQUEST_TYPES.penRequestBatch.path + '?schoolGroup=' + 'PSI';
       case 'Errors':
-        return REQUEST_TYPES.penRequestBatch.path + '?penRequestBatchStatusCode=' + 'LOAD_FAIL'; // this is TODO
+        return REQUEST_TYPES.penRequestBatch.path + '?penRequestBatchStatusCode=' + 'LOAD_FAIL';
       case 'GMP':
         return REQUEST_TYPES.penRequest.path;
       case 'UMP':
