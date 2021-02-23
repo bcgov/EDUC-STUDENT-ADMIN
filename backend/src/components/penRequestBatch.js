@@ -12,6 +12,21 @@ const log = require('./logger');
 const lodash = require('lodash');
 const { PEN_REQ_BATCH_STATUS_CODES } = require('../util/constants');
 
+function getLoadFailSearchCriteria() {
+  return [
+    {
+      searchCriteriaList: [
+        {
+          key: 'penRequestBatchStatusCode',
+          operation: FILTER_OPERATION.EQUAL,
+          value: PEN_REQ_BATCH_STATUS_CODES.LOAD_FAIL,
+          valueType: VALUE_TYPE.STRING
+        }
+      ]
+    }
+  ];
+}
+
 async function getPENBatchRequestStats(req, res) {
   const schoolGroupCodes = [
     {
@@ -51,15 +66,30 @@ async function getPENBatchRequestStats(req, res) {
       }),
     );
   });
+  const loadFailCriteria = getLoadFailSearchCriteria();
+  promises.push(
+    getData(getBackendToken(req), config.get('server:penRequestBatch:paginated'), {
+      params: {
+        searchCriteriaList: JSON.stringify(loadFailCriteria)
+      }
+    }),
+  );
+  schoolGroupCodes.push({schoolGroupCode: 'ERROR'}); // this is not a SGC, it is just a place holder for returning data to frontend.
   return Promise.all(promises).then((response) => {
     let formattedResponse = {};
     schoolGroupCodes.forEach((schoolGroupCode, index) => {
-      formattedResponse[schoolGroupCode.schoolGroupCode] = {
-        pending: response[index].totalElements,
-        fixable: response[index].content.reduce((a, b) => +a + (+b['fixableCount'] || 0), 0),
-        repeats: response[index].content.reduce((a, b) => +a + (+b['repeatCount'] || 0), 0),
-        unarchived: response[index].content.filter((obj) => obj.penRequestBatchStatusCode === 'UNARCHIVED').length
-      };
+      if ('ERROR' === schoolGroupCode.schoolGroupCode) {
+        formattedResponse[schoolGroupCode.schoolGroupCode] = {
+          loadFailed: response[index].totalElements
+        };
+      } else {
+        formattedResponse[schoolGroupCode.schoolGroupCode] = {
+          pending: response[index].totalElements,
+          fixable: response[index].content.reduce((a, b) => +a + (+b['fixableCount'] || 0), 0),
+          repeats: response[index].content.reduce((a, b) => +a + (+b['repeatCount'] || 0), 0),
+          unarchived: response[index].content.filter((obj) => obj.penRequestBatchStatusCode === 'UNARCHIVED').length
+        };
+      }
     });
     return res.status(200).json(formattedResponse);
   }).catch(e => {
@@ -321,13 +351,13 @@ async function updateFilesByIDs(req, res, updateFile) {
 
     const results = await Promise.allSettled(promises);
     const resultGroups = lodash.groupBy(results, 'status');
-    
+
     resultGroups.rejected?.forEach(result => {
       log.error(result);
     });
     return res.status(200).json(resultGroups.fulfilled?.map(result => result.value) || []);
   } catch (e) {
-    logApiError(e, 'updateFilesByIDs', `Error upating batch files.`);
+    logApiError(e, 'updateFilesByIDs', 'Error upating batch files.');
     return errorResponse(res);
   }
 }
