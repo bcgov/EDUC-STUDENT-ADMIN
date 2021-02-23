@@ -1,28 +1,8 @@
 import ApiService from '@/common/apiService';
 import {REQUEST_TYPES, Routes} from '@/utils/constants';
-import {mapGetters} from 'vuex';
 import router from '@/router';
 
 export default {
-  computed: {
-    ...mapGetters('notifications', ['notification'])
-  },
-  watch: {
-    notification(val) {
-      if (val) {
-        const notificationData = JSON.parse(val);
-        if (notificationData && notificationData.studentID && notificationData.studentID === this.mergedToStudent.studentID && notificationData.sagaStatus === 'COMPLETED') {
-          if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_MERGE_COMPLETE_SAGA') {
-            this.notifyCompleteMergeSaga();
-          }
-        } else if (notificationData && notificationData.studentID && notificationData.studentID === this.mergedFromStudent.studentID && notificationData.sagaStatus === 'COMPLETED') {
-          if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_DEMERGE_COMPLETE_SAGA') {
-            this.notifyCompleteDemergeSaga();
-          }
-        }
-      }
-    },
-  },
   data() {
     return {
       mergedToStudent: null,
@@ -30,32 +10,18 @@ export default {
       isProcessing: false,
       mergeSagaComplete: false,
       demergeSagaComplete: false,
-      demergeFromStudentDetail: false, // if true, demerge is initiated from student detail page.  otherwise it is from compare students view.
     };
   },
   methods: {
-    notifyCompleteMergeSaga() {
+    notifyMergeSagaCompleteMessage() {
       this.setSuccessAlert('Success! Your request to merge is completed.');
       this.isProcessing = false;
       this.mergeSagaComplete = true;
     },
-    notifyCompleteDemergeSaga() {
+    notifyDemergeSagaCompleteMessage() {
       this.setSuccessAlert('Success! Your request to demerge is completed.');
       this.isProcessing = false;
       this.demergeSagaComplete = true;
-      if (this.demergeFromStudentDetail) { // demerge is initiated from student detail.
-        setTimeout(() => {
-          this.$emit('refresh'); // wait 1000 ms for the user to see saga complete banner, and then refresh the page.
-        }, 1000);
-      } else { // demerge is initiated from compare students view.
-        setTimeout(() => {
-          this.openStudentDetails(this.mergedFromStudent.studentID); // open mergedFromStudent in a new tab
-        }, 500);
-      }
-      // demerge is initiated from either student detail or compare students view.
-      setTimeout(() => {
-        this.openStudentDetails(this.mergedToStudent.studentID); // open mergedToStudent in a new tab
-      }, 500);
     },
     openStudentDetails(studentID) {
       const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
