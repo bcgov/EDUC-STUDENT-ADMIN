@@ -598,6 +598,7 @@ export default {
   computed: {
     ...mapGetters('student', ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects']),
     ...mapState('studentSearch', ['isAdvancedSearch']),
+    ...mapGetters('notifications', ['notification']),
     mergedTo() {
       return this.merges.find(merge => merge.studentMergeDirectionCode === 'TO');
     },
@@ -612,6 +613,24 @@ export default {
   watch: {
     studentID() {
       this.refreshStudent();
+    },
+    notification(val) {
+      if (val) {
+        const notificationData = JSON.parse(val);
+        if (notificationData && notificationData.studentID && notificationData.studentID === this.mergedFromStudent.studentID && notificationData.sagaStatus === 'COMPLETED') {
+          if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_DEMERGE_COMPLETE_SAGA') {
+            this.notifyDemergeSagaCompleteMessage();
+            // Refresh mergedFromStudent in student detail
+            setTimeout(() => {
+              this.$emit('refresh'); // wait 1000 ms for the user to see saga complete banner.
+            }, 1000);
+            // Open mergedToStudent in a new tab
+            setTimeout(() => {
+              this.openStudentDetails(this.mergedToStudent.studentID);
+            }, 500);
+          }
+        }
+      }
     },
   },
   beforeRouteLeave (to, from, next) {

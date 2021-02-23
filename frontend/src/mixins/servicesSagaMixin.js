@@ -1,40 +1,8 @@
 import ApiService from '@/common/apiService';
 import {REQUEST_TYPES, Routes} from '@/utils/constants';
-import {mapGetters} from 'vuex';
 import router from '@/router';
 
 export default {
-  computed: {
-    ...mapGetters('notifications', ['notification'])
-  },
-  watch: {
-    notification(val) {
-      if (val) {
-        const notificationData = JSON.parse(val);
-        if (notificationData && notificationData.studentID && notificationData.studentID === this.mergedToStudent.studentID && notificationData.sagaStatus === 'COMPLETED') {
-          if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_MERGE_COMPLETE_SAGA') {
-            this.setSuccessAlert('Success! Your request to merge is completed.');
-            this.isProcessing = false;
-            this.mergeSagaComplete = true;
-          }
-        } else if (notificationData && notificationData.studentID && notificationData.studentID === this.mergedFromStudent.studentID && notificationData.sagaStatus === 'COMPLETED') {
-          if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_DEMERGE_COMPLETE_SAGA') {
-            this.setSuccessAlert('Success! Your request to demerge is completed.');
-            this.isProcessing = false;
-            this.demergeSagaComplete = true;
-            setTimeout(() => {
-              this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
-            }, 500);
-            // Open students in new tabs
-            this.openStudentDetails(this.mergedFromStudent.studentID);
-            setTimeout(() => {
-              this.openStudentDetails(this.mergedToStudent.studentID);
-            }, 500);
-          }
-        }
-      }
-    },
-  },
   data() {
     return {
       mergedToStudent: null,
@@ -45,6 +13,16 @@ export default {
     };
   },
   methods: {
+    notifyMergeSagaCompleteMessage() {
+      this.setSuccessAlert('Success! Your request to merge is completed.');
+      this.isProcessing = false;
+      this.mergeSagaComplete = true;
+    },
+    notifyDemergeSagaCompleteMessage() {
+      this.setSuccessAlert('Success! Your request to demerge is completed.');
+      this.isProcessing = false;
+      this.demergeSagaComplete = true;
+    },
     openStudentDetails(studentID) {
       const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
       window.open(route.href, '_blank');

@@ -337,6 +337,18 @@ export default {
     StudentDetailsCheckBoxWithOutputText,
     ConfirmationDialog,
   },
+  watch: {
+    notification(val) {
+      if (val) {
+        const notificationData = JSON.parse(val);
+        if (notificationData && notificationData.studentID && notificationData.studentID === this.mergedToStudent.studentID && notificationData.sagaStatus === 'COMPLETED') {
+          if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_MERGE_COMPLETE_SAGA') {
+            this.notifyMergeSagaCompleteMessage();
+          }
+        }
+      }
+    },
+  },
   created() {
     this.genderCodes = this.genders ? this.genders.map(a => a.genderCode) : [];
     this.resetAlert();
@@ -361,6 +373,7 @@ export default {
   },
   computed: {
     ...mapGetters('student', ['genders']),
+    ...mapGetters('notifications', ['notification'])
   },
   methods: {
     formatPen,

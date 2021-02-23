@@ -158,6 +158,7 @@ import router from '../../router';
 import TertiaryButton from '../util/TertiaryButton';
 import {getMatchedRecordsByStudent} from '@/utils/common';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
+import {mapGetters} from 'vuex';
 
 export default {
   name: 'CompareDemographicsCommon',
@@ -180,6 +181,25 @@ export default {
       type: Function,
       default: null
     }
+  },
+  watch: {
+    notification(val) {
+      if (val) {
+        const notificationData = JSON.parse(val);
+        if (notificationData && notificationData.studentID && notificationData.studentID === this.mergedFromStudent.studentID && notificationData.sagaStatus === 'COMPLETED') {
+          if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_DEMERGE_COMPLETE_SAGA') {
+            this.notifyDemergeSagaCompleteMessage();
+            // Open students in new tabs
+            setTimeout(() => {
+              this.openStudentDetails(this.mergedToStudent.studentID);
+            }, 1000);
+            setTimeout(() => {
+              this.openStudentDetails(this.mergedFromStudent.studentID);
+            }, 500);
+          }
+        }
+      }
+    },
   },
   data() {
     return {
@@ -226,6 +246,7 @@ export default {
     this.checkedStudents = [];
   },
   computed: {
+    ...mapGetters('notifications', ['notification']),
     studentRecords: {
       get: function() {
         return _.sortBy(this.selectedRecords, o => o.pen);
