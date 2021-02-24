@@ -220,7 +220,7 @@ export default {
         newSelectedRecords = uniqBy(newSelectedRecords, a => a.penRequestBatchStudentID);
         this.setSelectedRecords(newSelectedRecords);
       } else {
-        const newSelectedRecords = this.selectedRecords.filter(rec => rec.submissionNumber !== item.submissionNumber);
+        const newSelectedRecords = this.selectedRecords.filter(rec => rec.penRequestBatchStudentID !== item.penRequestBatchStudentID);
         this.setSelectedRecords(newSelectedRecords);
       }
     },
