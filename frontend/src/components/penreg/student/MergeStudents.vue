@@ -44,6 +44,7 @@
                                                   :model="mergedStudent.legalLastName?mergedStudent.legalLastName:''"
                                                   colspan="6" @update="handleCheckBoxChanged"
                                                   :disabled="student.legalLastName === mergedStudent.legalLastName || mergeSagaComplete"
+                                                  v-if="mergedStudent.legalLastName"
             ></StudentDetailsCheckBoxWithOutputText>
           </v-col>
         </v-row>
@@ -63,6 +64,7 @@
                                                   :model="mergedStudent.legalFirstName?mergedStudent.legalFirstName:''"
                                                   colspan="6" @update="handleCheckBoxChanged"
                                                   :disabled="student.legalFirstName === mergedStudent.legalFirstName || mergeSagaComplete"
+                                                  v-if="mergedStudent.legalFirstName"
             ></StudentDetailsCheckBoxWithOutputText>
           </v-col>
         </v-row>
@@ -82,6 +84,7 @@
                                                   :model="mergedStudent.legalMiddleNames?mergedStudent.legalMiddleNames:''"
                                                   colspan="6" @update="handleCheckBoxChanged"
                                                   :disabled="student.legalMiddleNames === mergedStudent.legalMiddleNames || mergeSagaComplete"
+                                                  v-if="mergedStudent.legalMiddleNames"
             ></StudentDetailsCheckBoxWithOutputText>
           </v-col>
         </v-row>
@@ -101,6 +104,7 @@
                                                   :model="mergedStudent.usualLastName?mergedStudent.usualLastName:''"
                                                   colspan="6" @update="handleCheckBoxChanged"
                                                   :disabled="student.usualLastName === mergedStudent.usualLastName || mergeSagaComplete"
+                                                  v-if="mergedStudent.usualLastName"
             ></StudentDetailsCheckBoxWithOutputText>
           </v-col>
         </v-row>
@@ -120,6 +124,7 @@
                                                   :model="mergedStudent.usualFirstName?mergedStudent.usualFirstName:''"
                                                   colspan="6" @update="handleCheckBoxChanged"
                                                   :disabled="student.usualFirstName === mergedStudent.usualFirstName || mergeSagaComplete"
+                                                  v-if="mergedStudent.usualFirstName"
             ></StudentDetailsCheckBoxWithOutputText>
           </v-col>
         </v-row>
@@ -139,6 +144,7 @@
                                                   :model="mergedStudent.usualMiddleNames?mergedStudent.usualMiddleNames:''"
                                                   colspan="6" @update="handleCheckBoxChanged"
                                                   :disabled="student.usualMiddleNames === mergedStudent.usualMiddleNames || mergeSagaComplete"
+                                                  v-if="mergedStudent.usualMiddleNames"
             ></StudentDetailsCheckBoxWithOutputText>
           </v-col>
         </v-row>
@@ -160,6 +166,7 @@
                                                   :model="mergedStudent.genderCode?mergedStudent.genderCode:''"
                                                   colspan="1" @update="handleCheckBoxChanged"
                                                   :disabled="student.genderCode === mergedStudent.genderCode || mergeSagaComplete"
+                                                  v-if="mergedStudent.genderCode"
             ></StudentDetailsCheckBoxWithOutputText>
           </v-col>
         </v-row>
@@ -185,6 +192,7 @@
                                                   :model="mergedStudent.dob?formatDob(mergedStudent.dob, 'uuuu-MM-dd', 'uuuu/MM/dd'):''"
                                                   colspan="6" @update="handleCheckBoxChanged"
                                                   :disabled="student.dob === mergedStudent.dob || mergeSagaComplete"
+                                                  v-if="mergedStudent.dob"
             ></StudentDetailsCheckBoxWithOutputText>
           </v-col>
         </v-row>
@@ -211,6 +219,7 @@
                                                   :model="mergedStudent.mincode?mergedStudent.mincode:''"
                                                   colspan="6" @update="handleCheckBoxChanged"
                                                   :disabled="student.mincode === mergedStudent.mincode || mergeSagaComplete"
+                                                  v-if="mergedStudent.mincode"
             ></StudentDetailsCheckBoxWithOutputText>
           </v-col>
         </v-row>
@@ -230,6 +239,7 @@
                                                   :model="mergedStudent.localID?mergedStudent.localID:''"
                                                   colspan="6" @update="handleCheckBoxChanged"
                                                   :disabled="student.localID === mergedStudent.localID || mergeSagaComplete"
+                                                  v-if="mergedStudent.localID"
             ></StudentDetailsCheckBoxWithOutputText>
           </v-col>
         </v-row>
@@ -256,6 +266,7 @@
                                                   :model="mergedStudent.postalCode?formatPostalCode(mergedStudent.postalCode):''"
                                                   colspan="6" @update="handleCheckBoxChanged"
                                                   :disabled="student.postalCode === mergedStudent.postalCode || mergeSagaComplete"
+                                                  v-if="mergedStudent.postalCode"
             ></StudentDetailsCheckBoxWithOutputText>
           </v-col>
         </v-row>
@@ -283,6 +294,7 @@
                                             :model="mergedStudent.memo?mergedStudent.memo:''"
                                             colspan="11" @update="handleCheckBoxChanged"
                                             :disabled="student.memo === mergedStudent.memo || mergeSagaComplete"
+                                            v-if="mergedStudent.memo"
                                             :is-text-area="true"
             ></StudentDetailsCheckBoxWithOutputText>
           </v-col>
