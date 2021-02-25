@@ -438,7 +438,7 @@ describe('archive&unarchiveFiles', () => {
       penRequestBatchID: id,
       penRequestBatchStatusCode: 'UNARCHIVED',
       processDate: expect.any(String),
-      unarchivedUser: userName
+      updateUser: userName
     }));
 
     utils.getData.mockResolvedValue(batchFiles);
