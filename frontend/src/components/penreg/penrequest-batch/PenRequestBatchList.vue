@@ -103,7 +103,7 @@ export default {
         { 
           searchCriteriaList: [
             {key: 'schoolGroupCode', operation: 'eq', value: this.schoolGroup, valueType: 'STRING'},
-            {key: 'penRequestBatchStatusCode', operation: 'in', value: 'ACTIVE,UNARCHIVED', valueType: 'STRING', condition: 'AND'}
+            {key: 'penRequestBatchStatusCode', operation: 'in', value: 'ACTIVE,UNARCHIVED,UNARCH_CHG', valueType: 'STRING', condition: 'AND'}
           ]
         },
         { 

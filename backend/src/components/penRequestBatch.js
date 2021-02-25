@@ -51,7 +51,7 @@ async function getPENBatchRequestStats(req, res) {
             condition: CONDITION.AND,
             key: 'penRequestBatchStatusCode',
             operation: FILTER_OPERATION.IN,
-            value: 'ACTIVE,UNARCHIVED',
+            value: 'ACTIVE,UNARCHIVED,UNARCH_CHG',
             valueType: VALUE_TYPE.STRING
           }
         ]
@@ -87,7 +87,7 @@ async function getPENBatchRequestStats(req, res) {
           pending: response[index].totalElements,
           fixable: response[index].content.reduce((a, b) => +a + (+b['fixableCount'] || 0), 0),
           repeats: response[index].content.reduce((a, b) => +a + (+b['repeatCount'] || 0), 0),
-          unarchived: response[index].content.filter((obj) => obj.penRequestBatchStatusCode === 'UNARCHIVED').length
+          unarchived: response[index].content.filter((obj) => obj.penRequestBatchStatusCode === 'UNARCHIVED' || obj.penRequestBatchStatusCode === 'UNARCH_CHG').length
         };
       }
     });
@@ -373,7 +373,7 @@ function archiveFiles(req, res) {
 function unarchiveFiles(req, res) {
   return updateFilesByIDs(req, res, batchFile => {
     batchFile.penRequestBatchStatusCode = PEN_REQ_BATCH_STATUS_CODES.UNARCHIVED;
-    batchFile.unarchivedUser = getUser(req).idir_username;
+    batchFile.updateUser = getUser(req).idir_username;
     return batchFile;
   });
 }

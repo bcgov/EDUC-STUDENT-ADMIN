@@ -52,7 +52,7 @@
                     {{isUnarchivedBatchChanged(props.item) ? 'fa-sync-alt' : 'fa-unlock'}}
                   </v-icon>
                 </template>
-                <span>{{props.item.unarchivedUser}}</span>
+                <span>{{getUnarchivedUser(props.item)}}</span>
               </v-tooltip>
             </div>
           </td>
@@ -162,10 +162,16 @@ export default {
       return rowClass;
     },
     isUnarchived(item) {
-      return item.penRequestBatchStatusCode === 'UNARCHIVED';
+      return item.penRequestBatchStatusCode === 'UNARCHIVED' || item.penRequestBatchStatusCode === 'UNARCH_CHG';
     },
     isUnarchivedBatchChanged(item) {
-      return item.unarchivedBatchChangedFlag === 'Y';
+      return item.penRequestBatchStatusCode === 'UNARCH_CHG';
+    },
+    getUnarchivedUser(item) {
+      if (this.isUnarchived(item)) {
+        return item.updateUser;
+      }
+      return '';
     },
     handleFileCheckBoxClicked(item) {
       this.selectFile(item);
