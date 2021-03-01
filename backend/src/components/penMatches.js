@@ -5,7 +5,6 @@ const NATS = require('../messaging/message-pub-sub');
 const {v4: guid} = require('uuid');
 const utils = require('./utils');
 const config = require('../config/index');
-const retry = require('async-retry');
 
 async function getPenMatch(req, res) {
   try {
