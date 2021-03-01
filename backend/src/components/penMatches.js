@@ -105,20 +105,12 @@ async function deletePossibleMatches(req, res) {
   try {
     const payload = req.body;
     if (payload && payload.length > 0) {
-      await retry(async () => {
-        const promises = [];
-        payload.forEach((item) => {
-          promises.push(utils.deleteData(utils.getBackendToken(req), `${config.get('server:penMatch:possibleMatch')}/${item.studentID}/${item.matchedStudentID}`, payload));
-        });
-        await Promise.all(promises);
-      }, {
-        retries: 5
-      });
+      await utils.deleteDataWithBody(utils.getBackendToken(req), config.get('server:penMatch:possibleMatch'), payload);
       return res.status(HttpStatus.NO_CONTENT).json();
     }
     return res.status(HttpStatus.BAD_REQUEST).json();
   } catch (e) {
-    logApiError(e, 'savePossibleMatchesForStudent', 'Error occurred while attempting to savePossibleMatchesForStudent.');
+    logApiError(e, 'deletePossibleMatches', 'Error occurred while attempting to deletePossibleMatches.');
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       message: 'INTERNAL SERVER ERROR'
     });

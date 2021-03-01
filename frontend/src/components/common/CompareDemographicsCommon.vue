@@ -146,11 +146,11 @@
 </template>
 
 <script>
-import { formatPen, formatDob, formatMincode, formatPostalCode } from '../../utils/format';
+import {formatDob, formatMincode, formatPen, formatPostalCode} from '../../utils/format';
 import PrimaryButton from '../util/PrimaryButton';
 import ApiService from '../../common/apiService';
 import {REQUEST_TYPES, Routes} from '../../utils/constants';
-import { isValidPEN, isOlderThan } from '../../utils/validation';
+import {isOlderThan, isValidPEN} from '../../utils/validation';
 import AlertMessage from '../util/AlertMessage';
 import alertMixin from '@/mixins/alertMixin';
 import servicesSagaMixin from '@/mixins/servicesSagaMixin';
@@ -220,7 +220,7 @@ export default {
         {text: 'Gr', value: 'enrolledGradeCode', key: 'grade', sortable: false},
         {text: 'Mincode', value: 'mincode', key: 'mincode', sortable: false},
         {text: 'Local ID', value: 'localStudentId', key: 'localId', sortable: false},
-        {text: 'Surame', value: 'legalSurname', key: 'surname', sortable: false},
+        {text: 'Surname', value: 'legalSurname', key: 'surname', sortable: false},
         {text: 'Given', value: 'legalGivenName', key: 'givenName', sortable: false},
         {text: 'Middle', value: 'legalMiddleName', key: 'middleName', sortable: false},
         {text: 'Gen', value: 'sex', key: 'gender', sortable: false},

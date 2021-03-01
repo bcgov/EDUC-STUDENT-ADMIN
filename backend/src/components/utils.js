@@ -67,6 +67,28 @@ async function deleteData(token, url) {
   }
 }
 
+async function deleteDataWithBody(token, url, data) {
+  if (!data) {
+    throw new ApiError(400, {message: 'Invalid request for delete with body'}, new Error('Empty body'));
+  }
+  try {
+    const delConfig = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: data
+    };
+
+    logRequestData('DELETE', url);
+    const response = await axios.delete(url, delConfig);
+    logResponseData(url, response, 'DELETE');
+    return response.data;
+  } catch (e) {
+    log.error('deleteDataWithBody Error', e.response ? e.response.status : e.message);
+    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
+    throw new ApiError(status, {message: 'API deleteDataWithBody error'}, e);
+  }
+}
 
 async function getData(token, url, params) {
   try {
@@ -430,7 +452,8 @@ const utils = {
   unauthorizedError,
   getCodeTable,
   getPaginatedListForSCGroups,
-  deleteData
+  deleteData,
+  deleteDataWithBody
 };
 
 module.exports = utils;
