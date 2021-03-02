@@ -1,24 +1,24 @@
 <template>
     <v-container fluid class="fill-height px-0 mb-4">
         <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
-        <v-row no-gutters class="list-actions pt-2 pb-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
+        <v-row no-gutters class="list-actions py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
           <v-col offset="9" cols="3" xl="4" class="pa-0 d-flex justify-end align-end">
-            <PrimaryButton id="view-file-action" class="ml-2" :disabled="!fileSelected()" text="Review" :loading="isProcessing" @click.native="reviewFile"></PrimaryButton>
-            <PrimaryButton id="delete-file-action" class="ml-2" :disabled="!fileSelected()" text="Delete" :loading="isProcessing" @click.native="deleteFile"></PrimaryButton>
+            <PrimaryButton id="review-file-action" class="ml-2" :disabled="!fileChecked()" text="Review" :loading="isProcessing" @click.native="reviewFile"></PrimaryButton>
+            <PrimaryButton id="delete-file-action" class="ml-2" :disabled="!fileChecked()" text="Delete" :loading="isProcessing" @click.native="deleteFile"></PrimaryButton>
           </v-col>
         </v-row>
         <v-row no-gutters class="py-1" style="background-color:white;">
-          <div id="file-list" class="px-3" style="width: 100%" :overlay="false">
+          <div id="load-failed-file-list" class="px-4" style="width: 100%" :overlay="false">
             <v-data-table
                 id="dataTable"
                 :headers="headers"
-                :items="penRequestBatchResponse.content"
+                :items="prbResponse.content"
                 :page.sync="pageNumber"
-                :items-per-page="penRequestBatchResponse.pageable.pageSize"
+                :items-per-page="prbResponse.pageable.pageSize"
                 hide-default-footer
                 item-key="penRequestBatchID"
                 :loading="loadingTable"
-                @page-count="penRequestBatchResponse.pageable.pageNumber = $event"
+                @page-count="prbResponse.pageable.pageNumber = $event"
             >
               <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
                 <span :key="h.id" :class="{'file-column' : !header.countable}">
@@ -28,7 +28,7 @@
               <template v-slot:item="props">
                 <tr @click="showFile(props.item)">
                   <td v-for="header in props.headers" :key="header.id" :class="{[header.value]: true, 'select-column': header.type}">
-                    <v-checkbox v-if="header.type" class="file-checkbox" color="#606060" v-model="props.item.isSelected" @click.stop="handleFileCheckBoxClicked(props.item)"></v-checkbox>
+                    <v-checkbox v-if="header.type" class="file-checkbox" color="#606060" v-model="props.item.isChecked" @click.stop="handleFileCheckBoxClicked(props.item)"></v-checkbox>
                     <div v-else :class="{'countable-column-div': header.countable}">
                       <span v-if="header.countable" class="countable-column-data">{{ props.item[header.value] || '' }}</span>
                       <span v-else>{{formatTableColumn(header.format, props.item[header.value]) }}</span>
@@ -47,10 +47,10 @@
                 </v-btn>
               </v-col>
               <v-col cols="4">
-                <v-pagination color="#38598A" v-model="pageNumber" :length="penRequestBatchResponse.totalPages"></v-pagination>
+                <v-pagination color="#38598A" v-model="pageNumber" :length="prbResponse.totalPages"></v-pagination>
               </v-col>
               <v-col cols="4" id="currentItemsDisplay">
-                Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ (penRequestBatchResponse.totalElements || 0) }}
+                Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ (prbResponse.totalElements || 0) }}
               </v-col>
             </v-row>
           </div>
@@ -66,10 +66,8 @@
 
 <script>
 import {Routes} from '@/utils/constants';
-import { mapState } from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
 import alertMixin from '../../../mixins/alertMixin';
-import {isValidAlphanumericValue } from '@/utils/validation';
 import AlertMessage from '../../util/AlertMessage';
 import ApiService from '@/common/apiService';
 import moment from 'moment';
@@ -83,11 +81,6 @@ export default {
     AlertMessage
   },
   mixins: [alertMixin],
-  props: {
-    loadDate: {
-      type: String,
-    }
-  },
   watch: {
     pageNumber: {
       handler() {
@@ -105,8 +98,7 @@ export default {
   data() {
     return {
       pageNumber: 1,
-      selectedFiles: [],
-      penRequestBatchResponse: {
+      prbResponse: {
         content: [],
         pageable: {}
       },
@@ -140,24 +132,16 @@ export default {
     };
   },
   computed: {
-    ...mapState('student', ['genders']),
-    selectedFileBatchIDs() {
-      return this.selectedFiles.map(file => file.penRequestBatchID).join(',');
-    },
-    genderCodes() {
-      return this.genders ? this.genders.map(a => a.genderCode) : [];
-    },
     showingFirstNumber() {
-      return ((this.pageNumber-1) * (this.penRequestBatchResponse.pageable.pageSize || 0) + ((this.penRequestBatchResponse.numberOfElements || 0)  > 0 ? 1 : 0));
+      return ((this.pageNumber-1) * (this.prbResponse.pageable.pageSize || 0) + ((this.prbResponse.numberOfElements || 0)  > 0 ? 1 : 0));
     },
     showingEndNumber() {
-      return ((this.pageNumber-1) * (this.penRequestBatchResponse.pageable.pageSize || 0) + (this.penRequestBatchResponse.numberOfElements || 0));
+      return ((this.pageNumber-1) * (this.prbResponse.pageable.pageSize || 0) + (this.prbResponse.numberOfElements || 0));
     },
     searchCriteria() {
       return [
         {
           searchCriteriaList: [
-            // {key: 'schoolGroupCode', operation: 'eq', value: this.schoolGroup, valueType: 'STRING'},
             {
               key: 'penRequestBatchStatusCode',
               operation: 'in',
@@ -183,18 +167,18 @@ export default {
     handleFileCheckBoxClicked(item) {
       this.selectFile(item);
     },
-    fileSelected() {
-      return this.penRequestBatchResponse.content.filter(file => file.isSelected).length > 0;
+    fileChecked() {
+      return this.prbResponse.content.filter(file => file.isChecked).length > 0;
     },
     selectFile(item) {
-      if (item.isSelected) {
-        this.penRequestBatchResponse.content.forEach(file => {
+      if (item.isChecked) {
+        this.prbResponse.content.forEach(file => {
           if (file.submissionNumber !== item.submissionNumber) {
-            file.isSelected = false;
+            file.isChecked = false;
           }
         });
       } else {
-        this.penRequestBatchResponse.content.forEach(file => file.isSelected = false);
+        this.prbResponse.content.forEach(file => file.isChecked = false);
       }
     },
     showFile(item) {
@@ -204,9 +188,9 @@ export default {
     closeFileViewer() {
       this.openFileViewer = false;
     },
-    initializeFiles(files) {
+    initializeData(files) {
       files.forEach(file => {
-        file.isSelected = false;
+        file.isChecked = false;
       });
       return files;
     },
@@ -229,8 +213,8 @@ export default {
         .get(Routes.penRequestBatch.FILES_URL, req)
         .then(response => {
           if (response.data && response.data.content) {
-            this.initializeFiles(response.data.content);
-            this.penRequestBatchResponse = response.data;
+            this.initializeData(response.data.content);
+            this.prbResponse = response.data;
           }
         })
         .catch(error => {
@@ -240,26 +224,13 @@ export default {
         .finally(() => (this.loadingTable = false));
     },
     reviewFile() {
-      const selectedItem = this.penRequestBatchResponse.content.find(file => file.isSelected);
+      const selectedItem = this.prbResponse.content.find(file => file.isChecked);
       if (selectedItem) {
         this.showFile(selectedItem);
       }
     },
     deleteFile() {
       // this will be implemented in PEN-1226 - Delete failed PEN Request File
-    },
-    validateField(value, validator = isValidAlphanumericValue, hint = this.alphanumericHint, length = 0) {
-      if (!value || validator(value)) {
-        return [];
-      }
-      this.searchEnabled = false;
-      if (value.length < length) {
-        return [];
-      } else {
-        return [
-          hint
-        ];
-      }
     },
   }
 };
