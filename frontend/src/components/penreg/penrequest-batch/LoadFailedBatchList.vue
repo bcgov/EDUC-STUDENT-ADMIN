@@ -140,7 +140,6 @@ export default {
     };
   },
   computed: {
-    // ...mapState('archivedRequestBatch', ['selectedFiles', 'currentBatchFileSearchParams', 'refinedSearch', 'penRequestBatchResponse']),
     ...mapState('student', ['genders']),
     selectedFileBatchIDs() {
       return this.selectedFiles.map(file => file.penRequestBatchID).join(',');
@@ -172,8 +171,6 @@ export default {
     }
   },
   mounted() {
-    // this.batchFileSearchParams.mincode = this.batchFileSearchParams.mincode || this.mincode;
-    // this.batchFileSearchParams.load.startDate = this.batchFileSearchParams.load.startDate || this.loadDate;
     this.pagination();
   },
   methods: {
@@ -249,7 +246,7 @@ export default {
       }
     },
     deleteFile() {
-      // TODO: this will be implemented in PEN-1226 - Delete failed PEN Request File
+      // this will be implemented in PEN-1226 - Delete failed PEN Request File
     },
     validateField(value, validator = isValidAlphanumericValue, hint = this.alphanumericHint, length = 0) {
       if (!value || validator(value)) {

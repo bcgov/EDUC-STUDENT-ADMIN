@@ -83,35 +83,8 @@ export default {
       if (this.content === '') return [1];
       const lineNumbers = [];
       let num = 1;
-      // Number of lines extended. Seems to work with pre-wrap (has problem with dash)
-      function getWrapTimes(sentence, width) {
-        if (width <= 0) {
-          // Protect against infinite loop
-          console.warn('Please set the min-width of textarea to allow at least one character per line.');
-          return sentence.length + 1; // Seems browser would add one additional space
-        }
-        const words = sentence.split(' ');
-        let currentLine = 1;
-        let spaceLeft = width;
-        words.forEach((word) => {
-          if (spaceLeft === width && word.length >= spaceLeft) {
-            currentLine++;
-            word = word.slice(width);
-          }
-          if (spaceLeft === width) {
-            spaceLeft -= word.length;
-            return;
-          }
-          if (word.length + 1 > spaceLeft) {
-            currentLine++;
-            spaceLeft = width;
-          }
-          spaceLeft -= spaceLeft === width ? word.length : word.length + 1;
-        });
-        return spaceLeft === width ? currentLine - 1 : currentLine;
-      }
       this.content.split('\n').forEach((line) => {
-        const wrapTimes = getWrapTimes(line, this.numPerLine) - 1;
+        const wrapTimes = this.getWrapTimes(line, this.numPerLine) - 1;
         if (wrapTimes >= 0) {
           lineNumbers.push(num);
         }
@@ -151,6 +124,32 @@ export default {
     }
   },
   methods: {
+    getWrapTimes(sentence, width) { // Number of lines extended. Seems to work with pre-wrap (has problem with dash)
+      if (width <= 0) {
+        // Protect against infinite loop
+        console.warn('Please set the min-width of textarea to allow at least one character per line.');
+        return sentence.length + 1; // Seems browser would add one additional space
+      }
+      const words = sentence.split(' ');
+      let currentLine = 1;
+      let spaceLeft = width;
+      words.forEach((word) => {
+        if (spaceLeft === width && word.length >= spaceLeft) {
+          currentLine++;
+          word = word.slice(width);
+        }
+        if (spaceLeft === width) {
+          spaceLeft -= word.length;
+          return;
+        }
+        if (word.length + 1 > spaceLeft) {
+          currentLine++;
+          spaceLeft = width;
+        }
+        spaceLeft -= spaceLeft === width ? word.length : word.length + 1;
+      });
+      return spaceLeft === width ? currentLine - 1 : currentLine;
+    },
     calculateCharactersPerLine() { // May be +-1 off real value >_<
       if (this.nowrap) {
         this.numPerLine = Number.MAX_SAFE_INTEGER;
