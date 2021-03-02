@@ -22,6 +22,7 @@ let object = {
     ROOT_ENDPOINT: penRequestBatchRoot,
     STATS_URL: penRequestBatchRoot + '/stats',
     FILES_URL: penRequestBatchRoot,
+    SOURCE_URL: penRequestBatchRoot + '/source',
     STUDENTS_SEARCH_URL: penRequestBatchRoot + '/students',
     STUDENT_STATUS_CODE_URL: penRequestBatchRoot + '/studentStatusCodes',
     MATCH_OUTCOME_URL: penRequestBatchRoot + '/matchOutcome',
@@ -166,6 +167,11 @@ export const REQUEST_TYPES = Object.freeze(
       name: 'penRequestBatch',
       label: 'PEN Request Files',
       path: '/penRequestBatch',
+    },
+    failedRequestBatch: {
+      name: 'failedRequestBatch',
+      label: 'Failed PEN Request Files',
+      path: '/failedRequestBatch',
     }
   }
 );
@@ -259,6 +265,7 @@ export const PAGE_TITLES = Object.freeze(
     CREATE_NEW_PEN: 'Create New PEN',
     ARCHIVED_REQ_FILES: 'Archived PEN Request Files',
     ARCHIVED_REQ_BATCH_STUDENT_LIST: 'Archived PEN Request List',
+    FAILED_REQ_FILES: 'Failed PEN Request Files',
   }
 );
 

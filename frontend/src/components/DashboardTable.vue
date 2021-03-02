@@ -106,7 +106,7 @@ export default {
       case 'PSI':
         return REQUEST_TYPES.penRequestBatch.path + '?schoolGroup=' + 'PSI';
       case 'Errors':
-        return REQUEST_TYPES.penRequestBatch.path + '?penRequestBatchStatusCode=' + 'LOAD_FAIL';
+        return REQUEST_TYPES.failedRequestBatch.path;
       case 'GMP':
         return REQUEST_TYPES.penRequest.path;
       case 'UMP':
