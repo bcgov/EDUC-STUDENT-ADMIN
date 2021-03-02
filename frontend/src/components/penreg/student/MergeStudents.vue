@@ -366,6 +366,7 @@ export default {
     this.resetAlert();
   },
   mounted() {
+    this.$store.dispatch('student/getCodes');
     this.student = JSON.parse(JSON.stringify(this.mergedToPen));
     this.mergedStudent = JSON.parse(JSON.stringify(this.mergedFromPen));
     this.populateDOB(true);
