@@ -27,7 +27,6 @@ nconf.defaults({
       documentTypeCodesURL: process.env.PEN_REQUEST_API_URL + '/document-types',
       rootURL: process.env.PEN_REQUEST_API_URL,
       macrosURL: process.env.PEN_REQUEST_API_URL + '/pen-request-macro',
-      sourceURL:  process.env.PEN_REQUEST_BATCH_API_URL + '/pen-request-batch/source',
       emails: process.env.PEN_REQUEST_EMAIL_API_URL,
       paginated: process.env.PEN_REQUEST_API_URL + '/paginated',
       rolesAllowed: process.env.GMP_ROLES ? process.env.GMP_ROLES.split(',') : '', // please provide comma separated values.
@@ -49,6 +48,7 @@ nconf.defaults({
     penRequestBatch: {
       rootURL: process.env.PEN_REQUEST_BATCH_API_URL,
       paginated: process.env.PEN_REQUEST_BATCH_API_URL + '/pen-request-batch/paginated',
+      sourceURL:  process.env.PEN_REQUEST_BATCH_API_URL + '/pen-request-batch/source',
       studentStatusCodesURL: process.env.PEN_REQUEST_BATCH_API_URL + '/pen-request-batch/student/pen-request-batch-student-status-codes',
       studentInfoMacrosURL: process.env.PEN_REQUEST_BATCH_API_URL + '/pen-request-batch-macro',
       roleAdmin: process.env.PEN_REQUEST_BATCH_ADMIN,
