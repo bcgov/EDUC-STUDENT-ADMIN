@@ -136,7 +136,9 @@ export default {
         matchedReason: possibleMatch.matchReasonCode,
         possibleMatchID: possibleMatch.possibleMatchID,
         matchedStudentID: possibleMatch.matchedStudentID,
-        studentID: possibleMatch.studentID
+        studentID: possibleMatch.studentID,
+        createUser: possibleMatch.createUser,
+        updateUser: possibleMatch.updateUser
       }));
     },
     totalPages() {
@@ -175,7 +177,10 @@ export default {
       const payload = this.selectedTwins.map(element => {
         return {
           studentID: element.studentID,
-          matchedStudentID: element.matchedStudentID
+          matchedStudentID: element.matchedStudentID,
+          matchReasonCode: element.matchedReason,
+          createUser:element.createUser,
+          updateUser:element.updateUser
         };
       });
       ApiService.apiAxios
@@ -189,7 +194,7 @@ export default {
           this.setSuccessAlert('Selected twin records deleted successfully.');
         })
         .catch(error => {
-          console.log(error);
+          console.error(error);
           this.setFailureAlert('Selected twin records could not be deleted, Please try again.');
         });
 
