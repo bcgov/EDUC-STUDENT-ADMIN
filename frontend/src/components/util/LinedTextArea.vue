@@ -35,10 +35,6 @@
 <script>
 export default {
   name: 'LinedTextarea',
-  mounted() {
-    this.content = this.value;
-    this.syncScroll();
-  },
   data() {
     return {
       content: '',
@@ -119,7 +115,8 @@ export default {
     value(val) {
       if (val !== this.content) {
         this.content = val;
-        this.calculateCharactersPerLine();
+        this.syncScroll();
+        this.recalculate();
       }
     }
   },
