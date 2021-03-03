@@ -55,12 +55,21 @@
             </v-row>
           </div>
         </v-row>
-      <PrbFileVModal
+      <PrbFileModal
           :open-dialog="openFileViewer"
           :submission-number="submissionNumber"
           @closeDialog="closeFileViewer"
       >
-      </PrbFileVModal>
+      </PrbFileModal>
+      <ConfirmationDialog ref="confirmationDialog">
+        <template v-slot:message>
+          <v-col class="mt-n6">
+            <v-row class="mt-n2 mb-3">
+              Are you sure you want to&nbsp;<strong>Delete</strong>&nbsp;submission&nbsp;<strong>{{submissionNumber}}</strong>?
+            </v-row>
+          </v-col>
+        </template>
+      </ConfirmationDialog>
     </v-container>
 </template>
 
@@ -71,14 +80,17 @@ import alertMixin from '../../../mixins/alertMixin';
 import AlertMessage from '../../util/AlertMessage';
 import ApiService from '@/common/apiService';
 import moment from 'moment';
-import PrbFileVModal from '@/components/penreg/penrequest-batch/PrbFileModal';
+import PrbFileModal from '@/components/penreg/penrequest-batch/PrbFileModal';
+import pluralize from "pluralize";
+import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 
 export default {
   name: 'LoadFailedBatchList',
   components: {
-    PrbFileVModal,
+    PrbFileModal,
     PrimaryButton,
-    AlertMessage
+    AlertMessage,
+    ConfirmationDialog
   },
   mixins: [alertMixin],
   watch: {
@@ -221,7 +233,7 @@ export default {
           console.log(error);
           this.setFailureAlert('An error occurred while loading the file list. Please try again later.');
         })
-        .finally(() => (this.loadingTable = false));
+        .finally(() => {this.loadingTable = false; this.reloading = false;});
     },
     reviewFile() {
       const selectedItem = this.prbResponse.content.find(file => file.isChecked);
@@ -229,8 +241,39 @@ export default {
         this.showFile(selectedItem);
       }
     },
-    deleteFile() {
-      // this will be implemented in PEN-1226 - Delete failed PEN Request File
+    async deleteFile() {
+      this.submissionNumber = this.prbResponse.content.find(file => file.isChecked).submissionNumber;
+      let result = await this.$refs.confirmationDialog.open(null, null,
+          {color: '#fff', width: 480, closeIcon: true, dark: false, rejectText: 'Cancel', resolveText: 'Confirm'});
+      if (!result) {
+        return;
+      }
+
+      const fileNumber = this.prbResponse.content.filter(file => file.isChecked).length;
+      const payload = {
+        penRequestBatchIDs: this.prbResponse.content.filter(file => file.isChecked).map(file => file.penRequestBatchID)
+      };
+      this.isProcessing = true;
+      ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/deleteFiles`, payload)
+        .then(response => {
+          const deletedNumber = response.data.length;
+          const deletedMessage = `${deletedNumber} ${pluralize('file', deletedNumber)} ${pluralize('has', deletedNumber)} been deleted.`;
+          if(deletedNumber === fileNumber) {
+            this.setSuccessAlert(`Success! ${deletedMessage}`);
+          } else {
+            this.setFailureAlert(`An error occurred while deleting PEN Request Files! Please try again later.`);
+          }
+          this.prbResponse.content = this.prbResponse.content.filter(file =>
+              response.data.some(deletedFile => deletedFile.penRequestBatchID !== file.penRequestBatchID)
+          );
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while deleting PEN Request Files! Please try again later.');
+          console.log(error);
+        })
+        .finally(() => {
+          this.isProcessing = false;
+        });
     },
   }
 };
