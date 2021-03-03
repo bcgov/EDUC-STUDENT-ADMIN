@@ -74,6 +74,11 @@ export default {
       default: () => true
     }
   },
+  mounted() {
+    this.content = this.value;
+    this.syncScroll();
+    this.calculateCharactersPerLine();
+  },
   computed: {
     lines() {
       if (this.content === '') return [1];
@@ -115,8 +120,6 @@ export default {
     value(val) {
       if (val !== this.content) {
         this.content = val;
-        this.syncScroll();
-        this.recalculate();
       }
     }
   },

@@ -6,19 +6,19 @@
       persistent
   >
     <v-card class="studentDetailDialogCard fill-height ma-0 pa-4">
+      <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
+      <div v-if="!loading" class="file-header-box">
+        <span>{{`File: ${penWebBlob.fileName}`}}</span>
+        <span>{{`Mincode: ${penWebBlob.mincode}`}}</span>
+        <span>{{`Submission #: ${penWebBlob.submissionNumber}`}}</span>
+      </div>
       <v-progress-linear
           indeterminate
           color="blue"
           :active="loading"
       ></v-progress-linear>
-      <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
-      <div class="file-header-box">
-        <span>{{`File: ${penWebBlob.fileName}`}}</span>
-        <span>{{`Mincode: ${penWebBlob.mincode}`}}</span>
-        <span>{{`Submission #: ${penWebBlob.submissionNumber}`}}</span>
-      </div>
       <div class="text-area-box">
-        <LinedTextArea :value="penWebBlob.fileContents"></LinedTextArea>
+        <LinedTextArea v-if="!loading" :value="penWebBlob.fileContents"></LinedTextArea>
       </div>
       <div class="action-buttons-box">
         <PrimaryButton
@@ -54,6 +54,10 @@ export default {
       type: Boolean,
       default: true,
     }
+  },
+  mounted() {
+    this.isFileViewerOpen = this.openDialog;
+    this.loadPenWebBlob();
   },
   watch: {
     openDialog(val) {
@@ -109,6 +113,7 @@ export default {
   display: block;
   position: relative;
   width: 100%;
+  min-height: 600px;
 }
 .action-buttons-box {
   display: flex;
