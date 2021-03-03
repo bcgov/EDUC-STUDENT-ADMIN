@@ -395,6 +395,14 @@ function unarchiveFiles(req, res) {
   });
 }
 
+function softDeleteFiles(req, res) {
+  return updateFilesByIDs(req, res, batchFile => {
+    batchFile.penRequestBatchStatusCode = PEN_REQ_BATCH_STATUS_CODES.DELETED;
+    batchFile.updateUser = getUser(req).idir_username;
+    return batchFile;
+  });
+}
+
 module.exports = {
   getPENBatchRequestStats,
   updatePrbStudentInfoRequested,
@@ -407,5 +415,6 @@ module.exports = {
   userMatchSaga,
   userUnmatchSaga,
   archiveFiles,
-  unarchiveFiles
+  unarchiveFiles,
+  softDeleteFiles
 };

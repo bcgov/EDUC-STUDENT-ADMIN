@@ -5,7 +5,7 @@ const auth = require('../components/auth');
 const utils = require('../components/utils');
 const extendSession = utils.extendSession();
 const { getPENBatchRequestStats, getPenRequestFiles, getPenRequestBatchStudents, getPenWebBlobBySubmissionNumber, getPenRequestBatchStudentById, getPenRequestBatchStudentMatchOutcome, updatePrbStudentInfoRequested,
-  issueNewPen, userMatchSaga, userUnmatchSaga, archiveFiles, unarchiveFiles } = require('../components/penRequestBatch');
+  issueNewPen, userMatchSaga, userUnmatchSaga, archiveFiles, unarchiveFiles, softDeleteFiles } = require('../components/penRequestBatch');
 
 /*
  * Get all pen request batch files
@@ -68,4 +68,5 @@ router.post('/:id/students/:studentId/user-unmatch', passport.authenticate('jwt'
 
 router.post('/archiveFiles', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, archiveFiles);
 router.post('/unarchiveFiles', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, unarchiveFiles);
+router.post('/deleteFiles', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, softDeleteFiles);
 module.exports = router;
