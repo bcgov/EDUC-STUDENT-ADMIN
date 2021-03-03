@@ -146,11 +146,11 @@
 </template>
 
 <script>
-import {formatDob, formatMincode, formatPen, formatPostalCode} from '../../utils/format';
+import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
 import PrimaryButton from '../util/PrimaryButton';
 import ApiService from '../../common/apiService';
-import {REQUEST_TYPES, Routes} from '../../utils/constants';
-import {isOlderThan, isValidPEN} from '../../utils/validation';
+import {REQUEST_TYPES, Routes} from '@/utils/constants';
+import {isOlderThan, isValidPEN} from '@/utils/validation';
 import AlertMessage from '../util/AlertMessage';
 import alertMixin from '@/mixins/alertMixin';
 import servicesSagaMixin from '@/mixins/servicesSagaMixin';

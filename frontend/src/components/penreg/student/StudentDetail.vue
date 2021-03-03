@@ -8,7 +8,7 @@
           <v-row>
             <v-tabs active-class="active-display" class="pa-0 ma-0 " v-model="tab">
               <v-tab class="student-details-tabs-style" key="Demographics"><strong>Demographics</strong></v-tab>
-              <v-tab class="student-details-tabs-style" :disabled="true"><strong>SLD Data</strong></v-tab>
+              <v-tab class="student-details-tabs-style" key="SLD"><strong>SLD History</strong></v-tab>
               <v-tab class="student-details-tabs-style" key="Audit"><strong>Audit History</strong></v-tab>
               <v-tab class="student-details-tabs-style" :disabled="true"><strong>Transcript</strong></v-tab>
             </v-tabs>
@@ -43,6 +43,7 @@
                 </v-row>
               </template>
             </StudentDetailCommon>
+            <StudentSLDHistory v-else-if="tab===1" :student="studentDetails.student" @refresh="refreshStudent"/>
             <StudentAuditHistory v-else-if="tab===2" :student="studentDetails.student" @refresh="refreshStudent"/>
           </v-tabs-items>
           <v-row v-else>
@@ -72,6 +73,7 @@ import {Routes} from '@/utils/constants';
 import AlertMessage from '../../util/AlertMessage';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
+import StudentSLDHistory from '@/components/penreg/student/StudentSLDHistory';
 
 export default {
   name: 'studentDetail',
@@ -83,6 +85,7 @@ export default {
     }
   },
   components: {
+    StudentSLDHistory,
     PrimaryButton,
     StudentDetailCommon,
     StudentAuditHistory,

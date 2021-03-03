@@ -39,7 +39,7 @@
 import PrimaryButton from '../util/PrimaryButton';
 import TertiaryButton from '../util/TertiaryButton';
 import CompareDemographicsCommon from './CompareDemographicsCommon';
-import {deepCloneObject} from '../../utils/common';
+import {deepCloneObject} from '@/utils/common';
 
 export default {
   name: 'CompareDemographicModal',
