@@ -56,6 +56,7 @@
           </div>
         </v-row>
       <PrbFileModal
+          v-if="openFileViewer"
           :open-dialog="openFileViewer"
           :submission-number="submissionNumber"
           @closeDialog="closeFileViewer"
