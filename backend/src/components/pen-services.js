@@ -107,7 +107,7 @@ async function splitPen(req, res) {
 
     const sagaId = await postData(token, `${config.get('server:penServices:rootURL')}/split-pen-saga`, sagaReq, null, getUser(req).idir_username);
 
-    await createPenServicesCompleteSagaRecordInRedis(sagaId, 'PEN_SERVICES_STUDENT_MERGE_COMPLETE_SAGA', 'merge students', reqData.studentID);
+    await createPenServicesCompleteSagaRecordInRedis(sagaId, 'PEN_SERVICES_SPLIT_PEN_SAGA', 'split pen', reqData.studentID);
 
     return res.status(200).json(sagaId);
   } catch (e) {
