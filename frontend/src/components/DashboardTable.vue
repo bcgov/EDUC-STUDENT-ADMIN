@@ -57,7 +57,7 @@ export default {
   },
   computed: {
     sortedTableData() {
-      return Array.prototype.slice.call(this.tableData).sort(this.compare);
+      return this.tableData;
     }
   },
   methods: {
