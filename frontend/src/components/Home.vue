@@ -209,39 +209,45 @@ export default {
         this.isLoadingBatch = false;
       });
     }
+    let gumpiPromises = [];
     if(this.isValidGMPUser) {
-      ApiService.apiAxios.get(Routes.penRequest.STATS_URL).then(response => {
-        this.studentData.push({
-          title: 'Get My PEN',
-          initial: response.data.numInitRev,
-          subsequent: response.data.numSubsRev
-        });
-      }).catch(() => {
-        this.studentData.push({
-          title: 'Get My PEN',
-          error: true
-        });
-      }).finally(() => {
-        this.isLoadingGmpUmp = false;
-      });
-
+      gumpiPromises.push(ApiService.apiAxios.get(Routes.penRequest.STATS_URL));
     }
     if(this.isValidUMPUser) {
-      ApiService.apiAxios.get(Routes.studentRequest.STATS_URL).then(response => {
-        this.studentData.push({
-          title: 'Update My PEN',
-          initial: response.data.numInitRev,
-          subsequent: response.data.numSubsRev
-        });
-      }).catch(() => {
-        this.studentData.push({
-          title: 'Update My PEN',
-          error: true
-        });
-      }).finally(() => {
-        this.isLoadingGmpUmp = false;
-      });
+      gumpiPromises.push(ApiService.apiAxios.get(Routes.studentRequest.STATS_URL));
     }
+    Promise.allSettled(gumpiPromises).then(([gmp, ump])=>{
+      if(gmp) {
+        if(gmp.status=== 'fulfilled'){
+          this.studentData.push({
+            title: 'Get My PEN',
+            initial: gmp.value.data.numInitRev,
+            subsequent: gmp.value.data.numSubsRev
+          });
+        }else {
+          this.studentData.push({
+            title: 'Get My PEN',
+            error: true
+          });
+        }
+      }
+      if(ump){
+        if(ump.status=== 'fulfilled'){
+          this.studentData.push({
+            title: 'Update My PEN',
+            initial: ump.value.data.numInitRev,
+            subsequent: ump.value.data.numSubsRev
+          });
+        }else {
+          this.studentData.push({
+            title: 'Update My PEN',
+            error: true
+          });
+        }
+      }
+    }).finally(()=>{
+      this.isLoadingGmpUmp = false;
+    });
   },
   computed: {
     ...mapState('auth', ['isValidGMPUser','isValidUMPUser', 'isValidStudentSearchUser', 'isValidPenRequestBatchUser']),
