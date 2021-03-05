@@ -9,7 +9,7 @@
           </h3>
         </v-card-title>
       </v-col>
-      <v-col v-for="(row, index) in sortedTableData" :key="index" class="py-0" cols="3">
+      <v-col v-for="(row, index) in tableData" :key="index" class="py-0" cols="3">
         <v-row class="pa-0"><h3>{{ row.title }}</h3></v-row>
         <v-row v-for="(col, idx) in omit(row, 'title')" :key="idx" class="pt-2 listCol">
           <v-alert v-if="row.error" color="#D8292F" dismissible width="100%" class="bootstrap-error mb-0">
@@ -21,7 +21,7 @@
     </v-row>
     <v-row class="pt-4 px-8">
       <v-col cols="2"></v-col>
-      <v-col v-for="(row, index) in sortedTableData" :key="index" class="pt-4 py-0 px-0" cols="3">
+      <v-col v-for="(row, index) in tableData" :key="index" class="pt-4 py-0 px-0" cols="3">
         <router-link :to="routeTo(row.title)">
           <PrimaryButton :id="row.title.replace(/ /g,'')+'Btn'"
                          :text="'View ' + buttonWording(row.title)"></PrimaryButton>
@@ -54,11 +54,6 @@ export default {
   },
   components: {
     PrimaryButton
-  },
-  computed: {
-    sortedTableData() {
-      return this.tableData;
-    }
   },
   methods: {
     buttonWording(title){
