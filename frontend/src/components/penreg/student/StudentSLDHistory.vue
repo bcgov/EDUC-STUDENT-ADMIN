@@ -17,13 +17,45 @@
     <v-row>
       <v-col cols="12">
         <v-data-table
+            class="sldTable"
             id="sldHistoryDataTable"
             :headers="headers"
             :items="sldData"
             :items-per-page="10"
             :loading="loading"
             no-data-text="No SLD history found"
+            :hide-default-footer="sldData.length===0"
         >
+          <template v-slot:item="props">
+            <tr>
+              <td v-for="header in props.headers" :key="header.id" :class="[header.id, existSldUsualName(props.item)? 'two-rows-column' : 'one-row-column']">
+                <div v-if="header.value === 'mincode'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+                  <span class="top-field-item">{{ props.item.distNo + props.item.schlNo }}</span>
+                  <span v-if="existSldUsualName(props.item)" class="bottom-field-item"></span>
+                </div>
+                <div v-else-if="header.value === 'legalSurname'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+                  <span class="top-field-item">{{ props.item[header.value] }}</span>
+                  <span v-if="existSldUsualName(props.item)" class="bottom-field-item">{{ props.item['usualSurname']}}</span>
+                </div>
+                <div v-else-if="header.value === 'legalGivenName'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+                  <span class="top-field-item">{{ props.item[header.value] }}</span>
+                  <span v-if="existSldUsualName(props.item)" class="bottom-field-item">{{ props.item['usualGivenName']}}</span>
+                </div>
+                <div v-else-if="header.value === 'legalMiddleName'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+                  <span class="top-field-item">{{ props.item[header.value] }}</span>
+                  <span v-if="existSldUsualName(props.item)" class="bottom-field-item">{{ props.item['usualMiddleName']}}</span>
+                </div>
+                <div v-else-if="header.value === 'birthDate'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+                  <span class="top-field-item">{{ formatDob(props.item[header.value],'uuuuMMdd','uuuu/MM/dd') }}</span>
+                  <span v-if="existSldUsualName(props.item)" class="bottom-field-item"></span>
+                </div>
+                <div v-else :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+                  <span class="top-field-item">{{ props.item[header.value] }}</span>
+                  <span v-if="existSldUsualName(props.item)" class="bottom-field-item"></span>
+                </div>
+              </td>
+            </tr>
+          </template>
         </v-data-table>
       </v-col>
     </v-row>
@@ -35,7 +67,7 @@ import {Routes} from '@/utils/constants';
 import AlertMessage from '../../util/AlertMessage';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
-import {formatPen} from '@/utils/format';
+import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
 import CompareDemographicModal from '@/components/common/CompareDemographicModal';
 
 export default {
@@ -78,6 +110,9 @@ export default {
 
   methods: {
     formatPen,
+    formatDob,
+    formatMincode,
+    formatPostalCode,
     getStudentName(student) {
       return `${student.legalLastName ? student.legalLastName + ',' : ''} ${student.legalFirstName ? student.legalFirstName : ''} ${student.legalMiddleNames ? student.legalMiddleNames : ''}`;
     },
@@ -94,6 +129,9 @@ export default {
             this.loading = false;
       });
     },
+    existSldUsualName(sldData) {
+      return !!sldData.usualSurname || !!sldData.usualGivenName || !!sldData.usualMiddleName;
+    }
   }
 };
 </script>
@@ -112,5 +150,46 @@ export default {
 }
 #studentInfo {
   font-size: 1.25rem;
+}
+
+.sldTable /deep/ td.one-row-column {
+  height: 3rem !important;
+}
+.sldTable /deep/ td.two-rows-column {
+  height: 4.2rem !important;
+}
+.sldTable {
+  font-size: 0.67rem;
+}
+
+
+.sldTable .flex-column-div {
+  display: flex;
+  flex-direction: column;
+  height: 3rem !important;
+}
+
+.sldTable .top-field-item {
+  margin: 0;
+  padding: 0;
+}
+
+.sldTable .bottom-field-item {
+  font-style: italic;
+  margin: 0;
+  padding: 0;
+}
+
+
+.flexBox {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+
+  /*padding: 8px 12px;*/
+}
+.flexBox a {
+  margin-top: 2px;
+  margin-left: 12px;
 }
 </style>
