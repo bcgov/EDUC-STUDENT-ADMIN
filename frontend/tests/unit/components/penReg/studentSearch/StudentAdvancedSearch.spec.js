@@ -18,7 +18,8 @@ describe('advancedSearch', () => {
     validateMincode: () => { return []; },
     uppercasePostal: () => { return []; },
     validatePostal: () => { return []; },
-    validateGradeCode: () => { return []; }
+    validateGradeCode: () => { return []; },
+    useDOB: true,
   };
   let wrapper;
   jest.spyOn(LocalDate, 'now');

@@ -65,8 +65,9 @@
             @close="listDetailMode=false"
             :is-reverting-student="isRevertingStudent"
             @revert="revertStudentToSelectedHistoryRecord"
-            @update="updateSelectedStudentHistoryId">
-        </StudentAuditHistoryDetail>
+            @update="updateSelectedStudentHistoryId"
+            @split="setSuccessAlert('Your request to split pen is accepted.')"
+        ></StudentAuditHistoryDetail>
       </v-col>
     </v-row>
   </div>
@@ -164,7 +165,7 @@ export default {
     },
     notification(notificationData) {
       if (notificationData) {
-        if (notificationData.studentID === this.student.studentID && notificationData.sagaStatus === 'COMPLETED') {
+        if (notificationData.studentID && notificationData.studentID === this.student.studentID && notificationData.sagaStatus === 'COMPLETED') {
           if (notificationData.sagaName === 'PEN_SERVICES_SPLIT_PEN_SAGA') {
             this.student.sagaInProgress = false;
             this.setSuccessAlert('Success! Your request to split pen is completed.');
@@ -176,6 +177,8 @@ export default {
             setTimeout(() => {
               this.openStudentDetails(notificationData.eventPayload);
             }, 500);
+          } else if(notificationData.sagaName.startsWith('PEN_SERVICES_')) {
+            this.$emit('refresh');
           }
         }
       }

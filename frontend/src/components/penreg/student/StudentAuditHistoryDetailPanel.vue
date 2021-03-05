@@ -43,6 +43,7 @@
               :currentStudentDetail="student" 
               :studentDetailForRevert="studentDetailForRevert" 
               :newStudentDetail="studentHistoryDetail" 
+              @split="$emit('split')"
             ></SplitPenModal>
             <PrimaryButton id="revertData" :disabled="isRevertDisabled" :loading="isRevertingStudent" class="mx-1" text="Revert"
                            @click.native="revertStudentDataFromStudentHistory()"></PrimaryButton>

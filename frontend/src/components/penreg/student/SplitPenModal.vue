@@ -156,10 +156,8 @@ export default {
       ApiService.apiAxios
         .post(`${Routes['penServices'].ROOT_ENDPOINT}/${this.studentDetail.studentID}/split-pen`, request)
         .then(() => {
-          this.setSuccessAlert('Your request to split pen is accepted.');
-          setTimeout(() => {
-            this.closeModal();
-          }, 3000);
+          this.closeModal();
+          this.$emit('split');
         })
         .catch(error => {
           console.log(error);

@@ -119,15 +119,15 @@ export default {
     retrieveStudentSLDData() {
       this.loading = true;
       ApiService.apiAxios
-          .get(Routes['sld'].STUDENT_HISTORY_URL + '/', {params: {pen: this.student.pen}})
-          .then(response => {
-            this.sldData = response.data;
-          }).catch(error => {
-            this.setFailureAlert('Could not retrieve data from API, Please try again later.');
-            console.log(error);
-          }).finally(() => {
-            this.loading = false;
-      });
+        .get(Routes['sld'].STUDENT_HISTORY_URL + '/', {params: {pen: this.student.pen}})
+        .then(response => {
+          this.sldData = response.data;
+        }).catch(error => {
+          this.setFailureAlert('Could not retrieve data from API, Please try again later.');
+          console.log(error);
+        }).finally(() => {
+          this.loading = false;
+        });
     },
     existSldUsualName(sldData) {
       return !!sldData.usualSurname || !!sldData.usualGivenName || !!sldData.usualMiddleName;

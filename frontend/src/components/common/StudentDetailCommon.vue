@@ -617,7 +617,7 @@ export default {
     notification(val) {
       if (val) {
         const notificationData = val;
-        if (notificationData && notificationData.studentID && notificationData.studentID === this.mergedFromStudent.studentID && notificationData.sagaStatus === 'COMPLETED') {
+        if (notificationData.studentID && notificationData.studentID === this.origStudent.studentID && notificationData.sagaStatus === 'COMPLETED') {
           if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_DEMERGE_COMPLETE_SAGA') {
             this.notifyDemergeSagaCompleteMessage();
             // Refresh mergedFromStudent in student detail
@@ -628,6 +628,8 @@ export default {
             setTimeout(() => {
               this.openStudentDetails(this.mergedToStudent.studentID);
             }, 500);
+          } else if(notificationData.sagaName.startsWith('PEN_SERVICES_')) {
+            this.$emit('refresh');
           }
         }
       }

@@ -1,18 +1,20 @@
 import ApiService from '@/common/apiService';
 import {REQUEST_TYPES, Routes} from '@/utils/constants';
+import router from '@/router';
 import {mapState, mapMutations} from 'vuex';
 
 export default {
-  computed: {
-    ...mapState('student', ['studentsInProcess'])
-  },
   data() {
     return {
+      mergedToStudent: null,
       mergedFromStudent: null,
       isProcessing: false,
       mergeSagaComplete: false,
       demergeSagaComplete: false,
     };
+  },
+  computed: {
+    ...mapState('student', ['studentsInProcess'])
   },
   methods: {
     ...mapMutations('student', ['setStudentInProcessStatus', 'resetStudentInProcessStatus']),

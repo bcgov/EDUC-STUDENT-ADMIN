@@ -14,12 +14,14 @@ export function formatDateTime(datetime, from='uuuuMMdd', to='uuuu/MM/dd') {
   const fromFormatter = getDateFormatter(from);
   const toFormatter = getDateFormatter(to);
   let result = datetime;
-  try {
-    const date = LocalDate.parse(datetime, fromFormatter);
-    result = date.format(toFormatter);
-  } catch (err) {
-    console.log(`${datetime}: ${from} to ${to}`);
-    console.log(err);
+  if(datetime) {
+    try {
+      const date = LocalDate.parse(datetime, fromFormatter);
+      result = date.format(toFormatter);
+    } catch (err) {
+      console.log(`${datetime}: ${from} to ${to}`);
+      console.log(err);
+    }
   }
   return result;
 }
