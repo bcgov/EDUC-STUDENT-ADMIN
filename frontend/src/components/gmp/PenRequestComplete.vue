@@ -256,7 +256,7 @@ export default {
     'request.completeComment': 'validateCompleteAction',
     notification(val) {
       if (val) {
-        const notificationData = JSON.parse(val);
+        const notificationData = val;
         if (notificationData && notificationData.penRequestID && notificationData.penRequestID === this.requestId && notificationData.sagaStatus === 'COMPLETED') {
           if (notificationData.sagaName === 'PEN_REQUEST_UNLINK_SAGA') {
             this.setSuccessAlert('Your request to unlink is now completed.');

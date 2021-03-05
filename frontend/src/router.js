@@ -130,7 +130,7 @@ const router = new VueRouter({
       path: '/studentSearch/basic',
       name: 'basicSearch',
       component: StudentSearchDisplay,
-      props: (route) => ({ searchType: REQUEST_TYPES.studentSearch.type.advanced, initialPenSearch: route.query.pen }),
+      props: (route) => ({ searchType: REQUEST_TYPES.studentSearch.type.advanced, searchParams: {...route.query} }),
       meta: {
         pageTitle: PAGE_TITLES.STUDENT_SEARCH,
         requiresAuth: true,

@@ -245,6 +245,23 @@ function getPaginatedListForSCGroups(apiName, url, handleResponse) {
   };
 }
 
+async function addSagaStatusToRecords(records, recordIdName, getSagaEvents) {
+  let eventsArrayFromRedis = await getSagaEvents() || [];
+  eventsArrayFromRedis = eventsArrayFromRedis.map(event => JSON.parse(event));
+  records && records.forEach(record => {
+    if (record[recordIdName]) {
+      const sagaInProgress = eventsArrayFromRedis.filter(event =>
+        event[recordIdName] === record[recordIdName]);
+      if(sagaInProgress && sagaInProgress.length > 0){
+        record.sagaInProgress = true;
+        record.sagaName = sagaInProgress[0].sagaName;
+      }else {
+        record.sagaInProgress = false;
+      }
+    }
+  });
+}
+
 const utils = {
   // Returns OIDC Discovery values
   async getOidcDiscovery() {
@@ -453,7 +470,8 @@ const utils = {
   getCodeTable,
   getPaginatedListForSCGroups,
   deleteData,
-  deleteDataWithBody
+  deleteDataWithBody,
+  addSagaStatusToRecords
 };
 
 module.exports = utils;

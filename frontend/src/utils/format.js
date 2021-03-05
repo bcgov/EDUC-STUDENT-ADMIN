@@ -18,6 +18,7 @@ export function formatDateTime(datetime, from='uuuuMMdd', to='uuuu/MM/dd') {
     const date = LocalDate.parse(datetime, fromFormatter);
     result = date.format(toFormatter);
   } catch (err) {
+    console.log(`${datetime}: ${from} to ${to}`);
     console.log(err);
   }
   return result;

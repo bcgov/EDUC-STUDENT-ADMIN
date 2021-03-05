@@ -1,11 +1,16 @@
 'use strict';
-const {logApiError, errorResponse} = require('./utils');
+const {logApiError, errorResponse, addSagaStatusToRecords} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const log = require('./logger');
 const utils = require('./utils');
 const {putData} = require('./utils');
 const retry = require('async-retry');
+const redisUtil = require('../util/redis/redis-utils');
+
+function addSagaStatus(students) {
+  return addSagaStatusToRecords(students, 'studentID', redisUtil.getPenServicesSagaEvents);
+}
 
 async function updateStudent(req, res) {
 
@@ -44,6 +49,7 @@ async function getStudentByStudentId(req, res) {
     utils.getData(utils.getBackendToken(req), `${config.get('server:penMatch:possibleMatch')}/${id}`)
   ]).then(async ([studentResponse, mergesResponse, possibleMatches]) => {
     if (studentResponse) {
+      addSagaStatus([studentResponse]);
       const response = {
         student: studentResponse,
         merges: [],

@@ -8,7 +8,8 @@ export default {
     statusCodeObjects: null,
     gradeCodeObjects: null,
     possibleMatchReasons: null,
-    historyActivityCodes: null
+    historyActivityCodes: null,
+    studentsInProcess: new Set(),
   },
   getters: {
     selectedStudent: state => state.selectedStudent,
@@ -18,6 +19,7 @@ export default {
     gradeCodeObjects: state => state.gradeCodeObjects,
     possibleMatchReasons: state => state.possibleMatchReasons,
     historyActivityCodes: state => state.historyActivityCodes,
+    studentsInProcess: state => state.studentsInProcess
   },
   mutations: {
     setGenders: (state, genders) => {
@@ -37,7 +39,14 @@ export default {
     },
     setHistoryActivityCodes: (state, historyActivityCodes) => {
       state.historyActivityCodes = historyActivityCodes;
-    }
+    },
+    setStudentInProcessStatus: (state, studentID) => {
+      state.studentsInProcess = new Set(state.studentsInProcess.add(studentID)); //reassign a new Set because Vue2 does not support reactivity on Set data types
+    },
+    resetStudentInProcessStatus: (state, studentID) => {
+      state.studentsInProcess.delete(studentID);
+      state.studentsInProcess = new Set(state.studentsInProcess);
+    },
   },
   actions: {
     async getCodes({ commit, state, dispatch}) {

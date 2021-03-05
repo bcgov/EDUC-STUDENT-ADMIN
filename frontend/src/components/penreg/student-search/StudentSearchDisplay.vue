@@ -19,6 +19,7 @@
                     :useDOB.sync="useDOB"
                     :validatePostal="validatePostal"
                     :validateGradeCode="validateGradeCode"
+                    :initialSearch="initialSearch"
             >
             </StudentAdvancedSearch>
             <v-row justify="end" no-gutters class="py-3 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
@@ -60,6 +61,10 @@ export default {
     searchType: {
       type: String,
       required: true
+    },
+    searchParams: {
+      type: Object,
+      default: () => ({})
     }
   },
   data() {
@@ -77,7 +82,8 @@ export default {
       searchEnabled: false,
       currentStudentSearchParams: {},
       studentSearchResultsKey: 0,
-      REQUEST_TYPES: REQUEST_TYPES
+      REQUEST_TYPES: REQUEST_TYPES,
+      initialSearch: false,
     };
   },
   computed:{
@@ -110,6 +116,11 @@ export default {
   },
   mounted() {
     this.$store.dispatch('student/getCodes');
+    this.studentSearchParams = {...this.studentSearchParams, ..._.omit(this.searchParams, ['dob'])};
+    if(this.searchParams.dob) {
+      this.studentSearchParams.dob.startDate = this.searchParams.dob;
+    }
+    this.initialSearch = true;
 
     if(this.studentSearchParams) {
       this.searchHasValues();
@@ -193,7 +204,7 @@ export default {
           return [];
         }
         else {
-          if(this.genderCodes.includes(this.studentSearchParams.genderCode)){
+          if(this.genderCodes.length === 0 || this.genderCodes.includes(this.studentSearchParams.genderCode)){
             return [];
           }
         }
@@ -241,7 +252,7 @@ export default {
           return [];
         }
         else {
-          if(this.gradeCodes.includes(this.studentSearchParams.gradeCode.toUpperCase())){
+          if(this.gradeCodes.length === 0 || this.gradeCodes.includes(this.studentSearchParams.gradeCode.toUpperCase())){
             return [];
           }
         }

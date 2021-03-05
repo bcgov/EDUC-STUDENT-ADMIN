@@ -2,7 +2,7 @@
 const config = require('../config/index');
 const {
   logApiError, postData, getBackendToken, getData, putData, errorResponse,
-  getPaginatedListForSCGroups, getUser, stripAuditColumns, logDebug
+  getPaginatedListForSCGroups, getUser, stripAuditColumns, logDebug, addSagaStatusToRecords
 } = require('./utils');
 const {FILTER_OPERATION, CONDITION, VALUE_TYPE} = require('../util/constants');
 const HttpStatus = require('http-status-codes');
@@ -324,21 +324,8 @@ function createPenRequestBatchSagaRecordInRedis(sagaId, sagaName, operation, pen
   return redisUtil.createPenRequestBatchSagaRecordInRedis(event);
 }
 
-async function addSagaStatus(prbStudents) {
-  let eventsArrayFromRedis = await redisUtil.getPenRequestBatchSagaEvents() || [];
-  eventsArrayFromRedis = eventsArrayFromRedis.map(event => JSON.parse(event));
-  prbStudents && prbStudents.forEach(prbStudent => {
-    if (prbStudent.penRequestBatchStudentID) {
-      const prbSagaInProgress = eventsArrayFromRedis.filter(event =>
-        event.penRequestBatchStudentID === prbStudent.penRequestBatchStudentID);
-      if(prbSagaInProgress && prbSagaInProgress.length > 0){
-        prbStudent.sagaInProgress = true;
-        prbStudent.sagaName = prbSagaInProgress[0].sagaName;
-      }else {
-        prbStudent.sagaInProgress = false;
-      }
-    }
-  });
+function addSagaStatus(prbStudents) {
+  return addSagaStatusToRecords(prbStudents, 'penRequestBatchStudentID', redisUtil.getPenRequestBatchSagaEvents);
 }
 
 async function updateFilesByIDs(req, res, updateFile) {

@@ -22,7 +22,7 @@
                 :studentDetails="studentDetails"
                 :validForm="validForm"
                 :parentRefs="this.$refs"
-                :fullReadOnly="false"
+                :fullReadOnly="hasSagaInProgress"
                 @alert="setFailureAlert"
                 @update:student="v => studentDetails.student = v"
                 @refresh="refreshStudent"
@@ -74,6 +74,7 @@ import AlertMessage from '../../util/AlertMessage';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
 import StudentSLDHistory from '@/components/penreg/student/StudentSLDHistory';
+import {mapState} from 'vuex';
 
 export default {
   name: 'studentDetail',
@@ -100,6 +101,12 @@ export default {
       studentDetails: null,
     };
   },
+  computed: {
+    ...mapState('student', ['studentsInProcess']),
+    hasSagaInProgress() {
+      return this.studentDetails && (this.studentDetails.sagaInProgress || this.studentsInProcess.has(this.studentDetails.studentID));
+    },
+  },
   mounted() {
     this.$store.dispatch('student/getCodes');
     this.refreshStudent();
@@ -116,6 +123,7 @@ export default {
         .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
         .then(response => {
           this.studentDetails = response.data;
+          this.studentDetails.student.truePen = this.studentDetails.merges?.find(merge => merge.studentMergeDirectionCode === 'TO')?.mergeStudent.pen;
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while loading the student details. Please try again later.');

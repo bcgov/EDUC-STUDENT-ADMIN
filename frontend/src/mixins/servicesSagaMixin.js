@@ -1,11 +1,13 @@
 import ApiService from '@/common/apiService';
 import {REQUEST_TYPES, Routes} from '@/utils/constants';
-import router from '@/router';
+import {mapState, mapMutations} from 'vuex';
 
 export default {
+  computed: {
+    ...mapState('student', ['studentsInProcess'])
+  },
   data() {
     return {
-      mergedToStudent: null,
       mergedFromStudent: null,
       isProcessing: false,
       mergeSagaComplete: false,
@@ -13,6 +15,7 @@ export default {
     };
   },
   methods: {
+    ...mapMutations('student', ['setStudentInProcessStatus', 'resetStudentInProcessStatus']),
     notifyMergeSagaCompleteMessage() {
       this.setSuccessAlert('Success! Your request to merge is completed.');
       this.isProcessing = false;
@@ -22,6 +25,9 @@ export default {
       this.setSuccessAlert('Success! Your request to demerge is completed.');
       this.isProcessing = false;
       this.demergeSagaComplete = true;
+    },
+    hasSagaInProgress(...students) {
+      return students.some(student => student && (student.sagaInProgress || this.studentsInProcess.has(student.studentID)));
     },
     openStudentDetails(studentID) {
       const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
@@ -82,6 +88,7 @@ export default {
     async executeMerge() {
       // Student Merge Complete Request
       this.alert = false;
+      this.setStudentInProcessStatus(this.mergedToStudent.studentID);
       this.isProcessing = true;
       const mergeRequest = {...this.mergedToStudent,
         mergedToPen: this.mergedToStudent.pen,
@@ -99,6 +106,7 @@ export default {
         .catch(error => {
           console.log(error);
           this.isProcessing = false;
+          this.resetStudentInProcessStatus(this.mergedToStudent.studentID);
           if (error.response.data && error.response.data.code && error.response.data.code === 409) {
             this.setFailureAlert('Another saga is in progress for this request, please try again later.');
           } else {
@@ -109,6 +117,7 @@ export default {
     async executeDemerge() {
       // Student Demerge Complete Request
       this.alert = false;
+      this.setStudentInProcessStatus(this.mergedFromStudent.studentID);
       this.isProcessing = true;
       const demergeRequest = {
         studentID: this.mergedFromStudent.studentID,
@@ -125,6 +134,7 @@ export default {
         })
         .catch(error => {
           console.log(error);
+          this.resetStudentInProcessStatus(this.mergedFromStudent.studentID);
           this.isProcessing = false;
           if (error.response.data && error.response.data.code && error.response.data.code === 409) {
             this.setFailureAlert('Another saga is in progress for this request, please try again later.');

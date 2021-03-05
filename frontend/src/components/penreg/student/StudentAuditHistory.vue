@@ -4,6 +4,11 @@
       <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"
                     :timeoutMs="2000"></AlertMessage>
     </v-row>
+    <v-progress-linear
+        indeterminate
+        color="blue"
+        :active="hasSagaInProgress && !loading"
+    ></v-progress-linear>
     <v-row no-gutters>
       <div id="studentInfo" class="px-1 pt-2 pb-5"><strong class="pr-3">{{ formatPen(student.pen) }}</strong>
         {{ getStudentName(student) }}
@@ -29,7 +34,7 @@
               <td v-for="header in props.headers" :key="header.id" :class="header.id">
                 <div class="table-cell">
                   <span :class="{'diff-value': props.item[`${header.value}_diff`]}">{{
-                      props.item[header.value] || ''
+                      formatTableColumn(header.format, props.item[header.value])
                     }}</span>
                   <v-btn v-if="header.value === 'createDate' && props.item.expandable" class="ml-1" color="#38598a"
                          icon>
@@ -53,6 +58,8 @@
       </v-col>
       <v-col v-if="listDetailMode">
         <StudentAuditHistoryDetail
+            :student="student"
+            :nextStudentHistoryContent="nextStudentHistoryContent"
             :studentHistory="studentHistoryResp"
             :studentHistoryId="selectedStudentHistoryId"
             @close="listDetailMode=false"
@@ -66,14 +73,15 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from 'vuex';
-import {Routes} from '@/utils/constants';
+import {mapActions, mapGetters, mapState} from 'vuex';
+import {REQUEST_TYPES, Routes} from '@/utils/constants';
 import AlertMessage from '../../util/AlertMessage';
 import StudentAuditHistoryDetail from '../student/StudentAuditHistoryDetailPanel';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
-import {formatDob, formatPen, formatPostalCode} from '@/utils/format';
+import {formatDob, formatPen} from '@/utils/format';
 import {groupBy, mapValues} from 'lodash';
+import router from '@/router';
 
 export default {
   name: 'StudentAuditHistory',
@@ -92,12 +100,12 @@ export default {
     return {
       itemsPerPage: 10,
       headers: [
-        {text: 'Date', sortable: false, value: 'createDate'},
+        {text: 'Date', sortable: false, value: 'createDate', format: this.formatDate},
         {text: 'Changed by', sortable: false, value: 'createUser'},
         {text: 'Activity', sortable: false, value: 'historyActivityLabel'},
         {text: 'Mincode', sortable: false, value: 'mincode'},
         {text: 'Local ID', sortable: false, value: 'localID'},
-        {text: 'Birth Date', sortable: false, value: 'dob'},
+        {text: 'Birth Date', sortable: false, value: 'dob', format: _.partialRight(formatDob,'uuuu-MM-dd')},
         {text: 'Gen', sortable: false, value: 'genderCode'},
         {text: 'Legal Name', sortable: false, value: 'legalName'},
         {text: 'Postal', sortable: false, value: 'postalCode'},
@@ -124,15 +132,21 @@ export default {
       listDetailMode: false,  // true: both list and detail panels are rendered,  false: list panel only
       selectedStudentHistoryId: null, // pointing the current history record,
       isRevertingStudent: false,
+      nextStudentHistoryContent: [],
     };
   },
   computed: {
     ...mapGetters('student', ['historyActivityCodes']),
+    ...mapGetters('notifications', ['notification']),
+    ...mapState('student', ['studentsInProcess']),
     showingFirstNumber() {
       return ((this.pageNumber - 1) * (this.studentHistoryResp.pageable.pageSize || 0) + ((this.studentHistoryResp.numberOfElements || 0) > 0 ? 1 : 0));
     },
     showingEndNumber() {
       return ((this.pageNumber - 1) * (this.studentHistoryResp.pageable.pageSize || 0) + (this.studentHistoryResp.numberOfElements || 0));
+    },
+    hasSagaInProgress() {
+      return this.student && (this.student.sagaInProgress || this.studentsInProcess.has(this.student.studentID));
     },
   },
   mounted() {
@@ -146,6 +160,24 @@ export default {
     pageNumber: {
       handler() {
         this.retrieveStudentHistory();
+      }
+    },
+    notification(notificationData) {
+      if (notificationData) {
+        if (notificationData.studentID === this.student.studentID && notificationData.sagaStatus === 'COMPLETED') {
+          if (notificationData.sagaName === 'PEN_SERVICES_SPLIT_PEN_SAGA') {
+            this.student.sagaInProgress = false;
+            this.setSuccessAlert('Success! Your request to split pen is completed.');
+            setTimeout(() => {
+              this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
+            }, 500);
+            // Open students in new tabs
+            this.openStudentDetails(this.student.studentID);
+            setTimeout(() => {
+              this.openStudentDetails(notificationData.eventPayload);
+            }, 500);
+          }
+        }
       }
     },
   },
@@ -189,10 +221,7 @@ export default {
       return `${student.legalLastName ? student.legalLastName + ',' : ''} ${student.legalFirstName ? student.legalFirstName : ''} ${student.legalMiddleNames ? student.legalMiddleNames : ''}`;
     },
     formatStudentHistory(history) {
-      history.dob && (history.dob = formatDob(history.dob, 'uuuu-MM-dd'));
       history.createTime = history.createDate;
-      history.createDate && (history.createDate = formatDob(history.createDate.substring(0, 10), 'uuuu-MM-dd'));
-      history.postalCode && (history.postalCode = formatPostalCode(history.postalCode));
       history.legalName = this.getStudentName(history);
       history.historyActivityLabel = this.historyActivityCodes.find(activity => activity.historyActivityCode === history.historyActivityCode)?.label || history.historyActivityCode;
       history.expandable = false;
@@ -250,6 +279,7 @@ export default {
         ...currentPageData,
         content: currentPageContent,
       };
+      this.nextStudentHistoryContent = nextPageData.content;
     },
     retrieveStudentHistory() {
       this.loading = true;
@@ -274,40 +304,38 @@ export default {
       };
 
       return Promise.all([currentPageParams, nextPageParams].map(params => ApiService.apiAxios
-          .get(`${Routes['student'].ROOT_ENDPOINT}/${this.student.studentID}/history`, params)))
-          .then(([currentPageResp, nextPageResp]) => {
-            this.initializeStudentHistory(currentPageResp.data, nextPageResp.data);
-          })
-          .catch(error => {
-            this.setFailureAlert('An error occurred while loading the audit history. Please try again later.');
-            console.log(error);
-          })
-          .finally(() => this.loading = false);
+        .get(`${Routes['student'].ROOT_ENDPOINT}/${this.student.studentID}/history`, params)))
+        .then(([currentPageResp, nextPageResp]) => {
+          this.initializeStudentHistory(currentPageResp.data, nextPageResp.data);
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while loading the audit history. Please try again later.');
+          console.log(error);
+        })
+        .finally(() => this.loading = false);
     },
     async revertStudentToSelectedHistoryRecord(selectedHistoryRecord) {
       this.isRevertingStudent = true;
       ApiService.apiAxios
-          .put(Routes['student'].ROOT_ENDPOINT + '/' + selectedHistoryRecord.studentID, this.convertFromHistoryToStudent(selectedHistoryRecord))
-          .then(() => {
-            this.setSuccessAlert('Success! The student details have been reverted.');
-            setTimeout(() => {
-              this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
-            }, 500);
-          })
-          .catch(error => {
-            console.error(error);
-            this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
-          })
-          .finally(() => {
-            this.isRevertingStudent = false;
-            window.scroll({
-              top: 0,
-              left: 0,
-              behavior: 'smooth',
-            });
+        .put(Routes['student'].ROOT_ENDPOINT + '/' + selectedHistoryRecord.studentID, this.convertFromHistoryToStudent(selectedHistoryRecord))
+        .then(() => {
+          this.setSuccessAlert('Success! The student details have been reverted.');
+          setTimeout(() => {
+            this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
+          }, 500);
+        })
+        .catch(error => {
+          console.error(error);
+          this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
+        })
+        .finally(() => {
+          this.isRevertingStudent = false;
+          window.scroll({
+            top: 0,
+            left: 0,
+            behavior: 'smooth',
           });
-
-
+        });
     },
     convertFromHistoryToStudent(studentHistory) {
       return {
@@ -338,7 +366,17 @@ export default {
           usualMiddleNames: studentHistory.usualMiddleNames
         }
       };
-    }
+    },
+    formatTableColumn(format, column) {
+      return (format && column) ? format(column) : (column || ' ');
+    },
+    formatDate(datetime) {
+      return formatDob(datetime.substring(0, 10), 'uuuu-MM-dd');
+    },
+    openStudentDetails(studentID) {
+      const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
+      window.open(route.href, '_blank');
+    },
   }
 };
 </script>

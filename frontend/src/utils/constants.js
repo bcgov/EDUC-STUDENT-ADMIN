@@ -206,7 +206,8 @@ export const STUDENT_DETAILS_FIELDS = Object.freeze(
     MINCODE: 'mincode',
     MEMO: 'memo',
     PEN: 'pen',
-    STATUS_CODE: 'statusCode'
+    STATUS_CODE: 'statusCode',
+    TRUE_STUDENT_ID: 'trueStudentID'
   }
 );
 
