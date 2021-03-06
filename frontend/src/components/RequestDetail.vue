@@ -450,7 +450,7 @@ export default {
   watch: {
     notification(val) {
       if(val) {
-        let notificationData = JSON.parse(val);
+        let notificationData = val;
         if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && notificationData.sagaStatus === 'INITIATED') {
           this.beforeSubmit();
         } else if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && (notificationData.sagaStatus === 'COMPLETED' || notificationData.sagaStatus === 'FORCE_STOPPED')) {

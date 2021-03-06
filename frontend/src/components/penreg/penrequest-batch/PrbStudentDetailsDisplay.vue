@@ -244,12 +244,7 @@ export default {
       }
     },
     notification(val) {
-      let notificationData;
-      try{
-        notificationData = JSON.parse(val);
-      }catch (e) {
-        console.error(e);
-      }
+      let notificationData = val;
       const isPRBSaga = this.prbSagaNames.some(el => el === notificationData?.sagaName);
       if (notificationData && notificationData.sagaStatus === 'COMPLETED'
           && isPRBSaga) {

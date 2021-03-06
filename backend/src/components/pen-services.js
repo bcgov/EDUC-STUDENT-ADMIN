@@ -95,6 +95,30 @@ async function demergeStudents(req, res) {
   }
 }
 
+async function splitPen(req, res) {
+  const token = getBackendToken(req, res);
+
+  try {
+    let reqData = req.body;
+
+    const sagaReq = {
+      ...stripAuditColumns(reqData),
+    };
+
+    const sagaId = await postData(token, `${config.get('server:penServices:rootURL')}/split-pen-saga`, sagaReq, null, getUser(req).idir_username);
+
+    await createPenServicesCompleteSagaRecordInRedis(sagaId, 'PEN_SERVICES_SPLIT_PEN_SAGA', 'split pen', reqData.studentID);
+
+    return res.status(200).json(sagaId);
+  } catch (e) {
+    logApiError(e, 'splitPen', 'Error occurred while attempting to split pen.');
+    if (e.status === HttpStatus.CONFLICT) {
+      return errorResponse(res, 'Another saga in progress', HttpStatus.CONFLICT);
+    }
+    return errorResponse(res);
+  }
+}
+
 function createPenServicesCompleteSagaRecordInRedis(sagaId, sagaName, operation, studentID) {
   const event = {
     sagaId,
@@ -110,6 +134,7 @@ module.exports = {
   validateStudentDemogData,
   getMergeByStudentIDAndMergeDirection,
   mergeStudents,
-  demergeStudents
+  demergeStudents,
+  splitPen
 };
 

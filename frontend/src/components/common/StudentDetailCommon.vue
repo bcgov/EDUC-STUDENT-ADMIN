@@ -378,12 +378,12 @@
           <v-progress-linear
               indeterminate
               color="blue"
-              :active="isProcessing"
+              :active="isProcessing || hasSagaInProgress(this.origStudent)"
           ></v-progress-linear>
         </v-card>
       </v-col>
       <v-col cols="1">
-        <CompareDemographicModal :clearOnExit="false" :disabled="false" :selectedRecords.sync="compareStudent"></CompareDemographicModal>
+        <CompareDemographicModal :clearOnExit="false" :disabled="hasSagaInProgress(this.origStudent)" :selectedRecords.sync="compareStudent"></CompareDemographicModal>
       </v-col>
       <v-col cols="1">
         <TertiaryButton
@@ -616,8 +616,8 @@ export default {
     },
     notification(val) {
       if (val) {
-        const notificationData = JSON.parse(val);
-        if (notificationData && notificationData.studentID && notificationData.studentID === this.mergedFromStudent.studentID && notificationData.sagaStatus === 'COMPLETED') {
+        const notificationData = val;
+        if (notificationData.studentID && notificationData.studentID === this.origStudent.studentID && notificationData.sagaStatus === 'COMPLETED') {
           if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_DEMERGE_COMPLETE_SAGA') {
             this.notifyDemergeSagaCompleteMessage();
             // Refresh mergedFromStudent in student detail
@@ -628,6 +628,8 @@ export default {
             setTimeout(() => {
               this.openStudentDetails(this.mergedToStudent.studentID);
             }, 500);
+          } else if(notificationData.sagaName.startsWith('PEN_SERVICES_')) {
+            this.$emit('refresh');
           }
         }
       }
@@ -994,7 +996,7 @@ export default {
         });
     },
     disableDemerge() {
-      if (this.isProcessing || this.demergeSagaComplete) {
+      if (this.isProcessing || this.demergeSagaComplete || this.hasSagaInProgress(this.origStudent)) {
         return true;
       }
       if (this.origStudent.statusCode === 'M' && !!this.origStudent.trueStudentID) {

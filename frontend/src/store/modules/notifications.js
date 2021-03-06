@@ -16,7 +16,15 @@ export default {
   },
   actions: {
     setNotification: ({commit}, payload) => {
-      commit('changeNotification', payload);
+      try{
+        const notificationData = JSON.parse(payload);
+        commit('changeNotification', notificationData);
+        if (notificationData && notificationData.sagaName?.startsWith('PEN_SERVICES_') && notificationData.sagaStatus === 'COMPLETED' && notificationData.studentID) {
+          commit('student/resetStudentInProcessStatus', notificationData.studentID, { root: true });
+        }
+      }catch (e) {
+        console.error(e);
+      }
     }
   }
 };

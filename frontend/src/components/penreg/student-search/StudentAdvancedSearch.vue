@@ -302,6 +302,10 @@ export default {
     validateGradeCode: {
       type: Function,
       required: true
+    },
+    initialSearch: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -319,12 +323,7 @@ export default {
     };
   },
   mounted() {
-    if(this.studentSearchParams.dob.startDate){
-      const tempStartDates = this.studentSearchParams.dob.startDate.split('/');
-      this.advancedSearchCriteria.startDate.year = tempStartDates[0];
-      this.advancedSearchCriteria.startDate.month = tempStartDates[1];
-      this.advancedSearchCriteria.startDate.day = tempStartDates[2];
-    }
+    this.setStartDateInAdvancedSearchCriteria();
     this.setIsAdvancedSearch(true);
   },
   watch: {
@@ -338,6 +337,11 @@ export default {
         this.$store.state['studentSearch'].studentSearchParams.dob.endDate = this.formattedEndDOB;
       }
     },
+    initialSearch: {
+      handler() {
+        this.setStartDateInAdvancedSearchCriteria();
+      }
+    }
   },
   computed: {
     useDOBValue: {
@@ -516,6 +520,14 @@ export default {
     },
     endDay(dateObject, isValidObject) {
       return dateObject.day && isValidObject.day? dateObject.day: LocalDate.of(dateObject.year, this.endMonth(dateObject.month, isValidObject.month), 1).lengthOfMonth();
+    },
+    setStartDateInAdvancedSearchCriteria() {
+      if(this.studentSearchParams.dob.startDate){
+        const tempStartDates = this.studentSearchParams.dob.startDate.split('/');
+        this.advancedSearchCriteria.startDate.year = tempStartDates[0];
+        this.advancedSearchCriteria.startDate.month = tempStartDates[1];
+        this.advancedSearchCriteria.startDate.day = tempStartDates[2];
+      }
     }
   }
 };

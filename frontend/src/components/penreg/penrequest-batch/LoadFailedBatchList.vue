@@ -82,7 +82,7 @@ import AlertMessage from '../../util/AlertMessage';
 import ApiService from '@/common/apiService';
 import moment from 'moment';
 import PrbFileModal from '@/components/penreg/penrequest-batch/PrbFileModal';
-import pluralize from "pluralize";
+import pluralize from 'pluralize';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 
 export default {
@@ -245,7 +245,7 @@ export default {
     async deleteFile() {
       this.submissionNumber = this.prbResponse.content.find(file => file.isChecked).submissionNumber;
       let result = await this.$refs.confirmationDialog.open(null, null,
-          {color: '#fff', width: 480, closeIcon: true, dark: false, rejectText: 'Cancel', resolveText: 'Confirm'});
+        {color: '#fff', width: 480, closeIcon: true, dark: false, rejectText: 'Cancel', resolveText: 'Confirm'});
       if (!result) {
         return;
       }
@@ -262,10 +262,10 @@ export default {
           if(deletedNumber === fileNumber) {
             this.setSuccessAlert(`Success! ${deletedMessage}`);
           } else {
-            this.setFailureAlert(`An error occurred while deleting PEN Request Files! Please try again later.`);
+            this.setFailureAlert('An error occurred while deleting PEN Request Files! Please try again later.');
           }
           this.prbResponse.content = this.prbResponse.content.filter(file =>
-              response.data.some(deletedFile => deletedFile.penRequestBatchID !== file.penRequestBatchID)
+            response.data.some(deletedFile => deletedFile.penRequestBatchID !== file.penRequestBatchID)
           );
         })
         .catch(error => {

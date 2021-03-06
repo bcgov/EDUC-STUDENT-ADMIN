@@ -156,7 +156,7 @@ export default {
   watch: {
     notification(val) {
       if (val) {
-        let notificationData = JSON.parse(val);
+        let notificationData = val;
         if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && notificationData.sagaStatus === 'COMPLETED'
           && (notificationData.sagaName === 'PEN_REQUEST_REJECT_SAGA' || notificationData.sagaName === 'STUDENT_PROFILE_REJECT_SAGA') ) {
           this.rejectOperationSuccessful = true;

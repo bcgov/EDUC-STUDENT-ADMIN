@@ -133,15 +133,23 @@ async function getStudentHistoryByStudentID(req, res) {
     }
   };
 
-  return utils.getData(token, `${config.get('server:student:rootURL')}/${req.params.id}/history/paginated`, params)
-    .then((dataResponse) => {
-      return res.status(200).json(dataResponse);
-    }).catch((e) => {
-      logApiError(e, 'getStudentHistoryByStudentID', 'Error occurred while attempting to get student history.');
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'INTERNAL SERVER ERROR'
+  try {
+    const dataResponse = await utils.getData(token, `${config.get('server:student:rootURL')}/${req.params.id}/history/paginated`, params);
+    const dataWithTrueStudentID = dataResponse.content.filter(item => item.trueStudentID);
+    const trueStudentIDs = dataWithTrueStudentID.map(item => item.trueStudentID).join();
+    if(trueStudentIDs.length > 0) {
+      const students = await utils.getStudentsFromStudentAPIByTheirIds(token, trueStudentIDs);
+      dataWithTrueStudentID.forEach(item => {
+        item.truePen = students.content.find(student => student.studentID === item.trueStudentID)?.pen
       });
+    }
+    return res.status(200).json(dataResponse);
+  } catch (e) {
+    logApiError(e, 'getStudentHistoryByStudentID', 'Error occurred while attempting to get student history.');
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'INTERNAL SERVER ERROR'
     });
+  }
 }
 
 module.exports = {

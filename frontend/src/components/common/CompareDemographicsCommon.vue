@@ -185,7 +185,7 @@ export default {
   watch: {
     notification(val) {
       if (val) {
-        const notificationData = JSON.parse(val);
+        const notificationData = val;
         if (notificationData && notificationData.studentID && notificationData.studentID === this.mergedFromStudent.studentID && notificationData.sagaStatus === 'COMPLETED') {
           if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_DEMERGE_COMPLETE_SAGA') {
             this.notifyDemergeSagaCompleteMessage();

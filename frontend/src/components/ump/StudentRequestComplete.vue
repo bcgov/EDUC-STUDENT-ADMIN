@@ -238,7 +238,7 @@ export default {
     },
     notification(val) {
       if (val) {
-        const notificationData = JSON.parse(val);
+        const notificationData = val;
         if (notificationData && notificationData.studentRequestID && notificationData.studentRequestID === this.requestId && notificationData.sagaStatus === 'COMPLETED') {
           if (notificationData.sagaName === 'STUDENT_PROFILE_COMPLETE_SAGA') {
             this.setSuccessAlert(`${this.requestTypeLabel} completed and email sent to student.`);

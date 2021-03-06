@@ -168,7 +168,7 @@ export default {
   watch: {
     notification(val) {
       if (val) {
-        let notificationData = JSON.parse(val);
+        let notificationData = val;
         if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && notificationData.sagaStatus === 'COMPLETED'
           && (notificationData.sagaName === 'PEN_REQUEST_RETURN_SAGA' || notificationData.sagaName === 'STUDENT_PROFILE_RETURN_SAGA') ) {
           this.returnMessage = 'Your request to return for more info is now completed.';

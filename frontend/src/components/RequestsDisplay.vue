@@ -361,7 +361,7 @@ export default {
       }
     },
     notification(val) {
-      let notificationData = JSON.parse(val);
+      let notificationData = val;
       if (notificationData && this.requests) {
         let sagaCompletedForThisRequest = false;
         let elementOfRequests;
