@@ -120,6 +120,7 @@ export default {
     value(val) {
       if (val !== this.content) {
         this.content = val;
+        this.recalculate();
       }
     }
   },
@@ -162,6 +163,9 @@ export default {
       const fontSize = styles.getPropertyValue('font-size');
       const fontFamily = styles.getPropertyValue('font-family');
       const width = textarea.clientWidth - paddingLeft - paddingRight;
+      if (!width || width < 0) {
+        return;
+      }
       const helper = this.$refs.helper;
       helper.style.fontSize = fontSize;
       helper.style.fontFamily = fontFamily;
@@ -181,6 +185,9 @@ export default {
     recalculate() {
       const textarea = this.$refs.textarea;
       const width = textarea.clientWidth;
+      if (!width) {
+        return;
+      }
       if (width !== this.previousWidth) {
         this.calculateCharactersPerLine();
       }

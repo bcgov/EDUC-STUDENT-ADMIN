@@ -82,7 +82,7 @@ import AlertMessage from '../../util/AlertMessage';
 import ApiService from '@/common/apiService';
 import moment from 'moment';
 import PrbFileModal from '@/components/penreg/penrequest-batch/PrbFileModal';
-import pluralize from "pluralize";
+import pluralize from 'pluralize';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 
 export default {
