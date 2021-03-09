@@ -199,7 +199,8 @@ export default {
           pending: response.data.PSI.pending,
           fixable: response.data.PSI.fixable,
           repeats: response.data.PSI.repeats,
-          unarchived: response.data.PSI.unarchived
+          unarchived: response.data.PSI.unarchived,
+          heldReview: response.data.PSI.heldForReviewCount
         });
         this.penRequestData.push({
           title: 'Errors',

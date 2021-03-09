@@ -4,7 +4,6 @@ const {
   logApiError, postData, getBackendToken, getData, putData, errorResponse,
   getPaginatedListForSCGroups, getUser, stripAuditColumns, logDebug, addSagaStatusToRecords
 } = require('./utils');
-const {FILTER_OPERATION, CONDITION, VALUE_TYPE} = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const redisUtil = require('../util/redis/redis-utils');
 const {LocalDateTime} = require('@js-joda/core');
@@ -12,90 +11,29 @@ const log = require('./logger');
 const lodash = require('lodash');
 const { PEN_REQ_BATCH_STATUS_CODES } = require('../util/constants');
 
-function getLoadFailSearchCriteria() {
-  return [
-    {
-      searchCriteriaList: [
-        {
-          key: 'penRequestBatchStatusCode',
-          operation: FILTER_OPERATION.EQUAL,
-          value: PEN_REQ_BATCH_STATUS_CODES.LOAD_FAIL,
-          valueType: VALUE_TYPE.STRING
-        }
-      ]
-    }
-  ];
-}
+
 
 async function getPENBatchRequestStats(req, res) {
-  const schoolGroupCodes = [
-    {
-      schoolGroupCode: 'K12'
-    },
-    {
-      schoolGroupCode: 'PSI'
-    }
-  ];
-  let promises = [];
-  schoolGroupCodes.forEach((schoolGroupCode) => {
-    const search = [
-      {
-        searchCriteriaList: [
-          {
-            key: 'schoolGroupCode',
-            operation: FILTER_OPERATION.EQUAL,
-            value: schoolGroupCode.schoolGroupCode,
-            valueType: VALUE_TYPE.STRING
-          },
-          {
-            condition: CONDITION.AND,
-            key: 'penRequestBatchStatusCode',
-            operation: FILTER_OPERATION.IN,
-            value: 'ACTIVE,UNARCHIVED,UNARCH_CHG',
-            valueType: VALUE_TYPE.STRING
-          }
-        ]
-      }
-    ];
-    promises.push(
-      getData(getBackendToken(req), config.get('server:penRequestBatch:paginated'), {
-        params: {
-          pageSize: config.get('server:penRequestBatch:maxPaginatedElements'),
-          searchCriteriaList: JSON.stringify(search)
-        }
-      }),
-    );
-  });
-  const loadFailCriteria = getLoadFailSearchCriteria();
-  promises.push(
-    getData(getBackendToken(req), config.get('server:penRequestBatch:paginated'), {
-      params: {
-        searchCriteriaList: JSON.stringify(loadFailCriteria)
-      }
-    }),
-  );
-  schoolGroupCodes.push({schoolGroupCode: 'ERROR'}); // this is not a SGC, it is just a place holder for returning data to frontend.
-  return Promise.all(promises).then((response) => {
+  try{
+    const response = await getData(getBackendToken(req), config.get('server:penRequestBatch:rootURL')+'/pen-request-batch/stats');
     let formattedResponse = {};
-    schoolGroupCodes.forEach((schoolGroupCode, index) => {
-      if ('ERROR' === schoolGroupCode.schoolGroupCode) {
-        formattedResponse[schoolGroupCode.schoolGroupCode] = {
-          loadFailed: response[index].totalElements
-        };
-      } else {
-        formattedResponse[schoolGroupCode.schoolGroupCode] = {
-          pending: response[index].totalElements,
-          fixable: response[index].content.reduce((a, b) => +a + (+b['fixableCount'] || 0), 0),
-          repeats: response[index].content.reduce((a, b) => +a + (+b['repeatCount'] || 0), 0),
-          unarchived: response[index].content.filter((obj) => obj.penRequestBatchStatusCode === 'UNARCHIVED' || obj.penRequestBatchStatusCode === 'UNARCH_CHG').length
-        };
-      }
+    formattedResponse['ERROR'] = {
+      loadFailed: response.loadFailCount
+    };
+    response.penRequestBatchStatList.forEach((item) => {
+      formattedResponse[item.schoolGroupCode] = {
+        pending: item.pendingCount,
+        fixable: item.fixableCount,
+        repeats: item.repeatCount,
+        unarchived: item.unarchivedCount,
+        heldForReviewCount: item.heldForReviewCount
+      };
     });
     return res.status(200).json(formattedResponse);
-  }).catch(e => {
+  }catch (e) {
     logApiError(e, 'getPENBatchRequestStats', 'Error occurred while attempting to GET number of pen batch requests.');
     return errorResponse(res);
-  });
+  }
 }
 
 async function updatePrbStudentInfoRequested(req, res) {

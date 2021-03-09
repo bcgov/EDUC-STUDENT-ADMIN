@@ -88,6 +88,9 @@ export default {
       case 'loadFailed':
         wording = 'submissions failed';
         break;
+      case 'heldReview':
+        wording = 'submission held for review';
+        break;
       }
       return wording;
     },
