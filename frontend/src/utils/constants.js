@@ -248,6 +248,13 @@ export const PEN_REQ_BATCH_STUDENT_REQUEST_CODES = Object.freeze(
     LOADED: 'LOADED'
   }
 );
+export const PEN_REQ_BATCH_STATUS_CODES = Object.freeze(
+  {
+    HOLD_SIZE: 'HOLD_SIZE',
+    DUPLICATE: 'DUPLICATE',
+    ACTIVE: 'ACTIVE',
+  }
+);
 export const PAGE_TITLES = Object.freeze(
   {
     COMPARE_STUDENTS: 'Compare/View',
@@ -267,6 +274,7 @@ export const PAGE_TITLES = Object.freeze(
     ARCHIVED_REQ_FILES: 'Archived PEN Request Files',
     ARCHIVED_REQ_BATCH_STUDENT_LIST: 'Archived PEN Request List',
     FAILED_REQ_FILES: 'Failed PEN Request Files',
+    HELD_REQ_FILES: 'Held PEN Request Files',
   }
 );
 
