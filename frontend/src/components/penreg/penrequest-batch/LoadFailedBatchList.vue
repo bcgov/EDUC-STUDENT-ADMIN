@@ -1,10 +1,10 @@
 <template>
     <v-container fluid class="fill-height px-0 mb-4">
         <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
-        <v-row no-gutters class="list-actions py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
-          <v-col offset="9" cols="3" xl="4" class="pa-0 d-flex justify-end align-end">
+        <v-row no-gutters class="list-actions py-2 px-4 d-flex justify-end" style="background-color:white;">
+          <v-col class="d-flex justify-end">
             <PrimaryButton id="review-file-action" class="ml-2" :disabled="!fileChecked()" text="Review" :loading="isProcessing" @click.native="reviewFile"></PrimaryButton>
-            <PrimaryButton id="delete-file-action" class="ml-2" :disabled="!fileChecked()" text="Delete" :loading="isProcessing" @click.native="deleteFile"></PrimaryButton>
+            <PrimaryButton id="delete-file-action" class="ml-2" :disabled="!fileChecked()" text="Delete" :loading="isDeleting" @click.native="deleteFile"></PrimaryButton>
           </v-col>
         </v-row>
         <v-row no-gutters class="py-1" style="background-color:white;">
@@ -140,6 +140,7 @@ export default {
       pageCommands: true,
       alphanumericHint: 'Alphanumeric only',
       isProcessing: false,
+      isDeleting: false,
       openFileViewer: false,
       submissionNumber: '',
     };
@@ -214,9 +215,8 @@ export default {
           pageNumber: this.pageNumber - 1,
           pageSize: this.itemsPerPage,
           sort: {
-            penRequestBatchStatusCode: 'DESC',
+            insertDate: 'DESC',
             mincode: 'ASC',
-            submissionNumber: 'ASC'
           },
           searchQueries: this.searchCriteria
         }
@@ -254,7 +254,7 @@ export default {
       const payload = {
         penRequestBatchIDs: this.prbResponse.content.filter(file => file.isChecked).map(file => file.penRequestBatchID)
       };
-      this.isProcessing = true;
+      this.isDeleting = true;
       ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/deleteFiles`, payload)
         .then(response => {
           const deletedNumber = response.data.length;
@@ -273,7 +273,7 @@ export default {
           console.log(error);
         })
         .finally(() => {
-          this.isProcessing = false;
+          this.isDeleting = false;
         });
     },
   }
