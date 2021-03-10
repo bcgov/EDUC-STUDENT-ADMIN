@@ -211,6 +211,7 @@ export default {
 };
 </script>
 
+<style scoped src="@/assets/styles/batchFileDataTable.css"></style>
 <style scoped>
   .submission {
     text-decoration: underline;

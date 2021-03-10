@@ -198,7 +198,7 @@ export default {
 };
 </script>
 
-
+<style scoped src="@/assets/styles/batchFileDataTable.css"></style>
 <style scoped>
   #dataTable /deep/ table th:nth-child(1) {
     width: 5%;
