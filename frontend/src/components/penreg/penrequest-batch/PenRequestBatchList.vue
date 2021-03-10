@@ -14,9 +14,11 @@ import { mapMutations, mapState } from 'vuex';
 import PenRequestBatchDataTable from './PenRequestBatchDataTable';
 import ApiService from '../../../common/apiService';
 import {Routes} from '../../../utils/constants';
+import filtersMixin from '@/mixins/filtersMixin';
 
 export default {
   name: 'PenRequestBatchList',
+  mixins: [filtersMixin],
   components: {
     PenRequestBatchDataTable,
   },
@@ -62,7 +64,7 @@ export default {
     },
     filters: {
       handler() {
-        this.selectFilters();
+        this.setPrbStudentStatusFilters(this.selectFilters(this.headers, 'value'));
         this.isFilterOperation = true;
         if (this.pageNumber === 1) {
           this.pagination();
@@ -151,26 +153,6 @@ export default {
     isSelected(file) {
       const foundItem = this.selectedFiles?.find(item => item?.penRequestBatchID === file.penRequestBatchID);
       return !!foundItem;
-    },
-    selectFilters() {
-      let statusFilters = [];
-      this.headers.filter(header => !!header.filterName).forEach(header => {
-        header.isFiltered = this.filters.some(filter => filter === header.filterName);
-        if(header.isFiltered) {
-          statusFilters.push(header.value);
-        }
-      });
-      this.setPrbStudentStatusFilters(statusFilters);
-    },
-    selectFilter(header) {
-      if(header.isFiltered) {
-        this.filters.push(header.filterName);
-      } else {
-        const index = this.filters.findIndex(filter => filter === header.filterName);
-        this.filters.splice(index, 1);
-      }
-
-      this.$emit('filter-change', this.filters);
     },
     pagination() {
       this.loadingTable = true;

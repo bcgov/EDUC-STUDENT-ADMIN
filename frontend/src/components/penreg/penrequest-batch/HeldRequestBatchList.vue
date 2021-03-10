@@ -2,7 +2,7 @@
   <div id="file-list" class="px-3" style="width: 100%" :overlay="false">
     <v-data-table
       id="dataTable"
-      :class="{'filterable-table': hasFilterHeader}"
+      :class="[{'filterable-table': hasFilterHeader}, 'batch-file-table']"
       :headers="headers"
       :items="penRequestBatchResponse.content"
       :page.sync="pageNumber"
@@ -40,31 +40,26 @@
         </tr>
       </template>
     </v-data-table>
-    <v-row class="pt-2" justify="end">
-      <v-col cols="4">
-        <v-btn id="page-commands" text color="#38598a" v-if="pageCommands">
-          Showing page commands
-          <v-icon>
-            mdi-chevron-down
-          </v-icon>
-        </v-btn>
-      </v-col>
-      <v-col cols="4">
-        <v-pagination color="#38598A" v-model="pageNumber" :length="penRequestBatchResponse.totalPages"></v-pagination>
-      </v-col>
-      <v-col cols="4" id="currentItemsDisplay">
-        Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ (penRequestBatchResponse.totalElements || 0) }}
-      </v-col>
-    </v-row>
+    <Pagination
+      v-model="pageNumber"
+      :dataResponse="penRequestBatchResponse"
+      pageCommands
+    />
   </div>
 </template>
 
 <script>
 import ApiService from '../../../common/apiService';
 import {Routes, PEN_REQ_BATCH_STATUS_CODES} from '../../../utils/constants';
+import filtersMixin from '@/mixins/filtersMixin';
+import Pagination from '@/components/util/Pagination';
 
 export default {
   name: 'HeldRequestBatchList',
+  mixins: [filtersMixin],
+  components: {
+    Pagination,
+  },
   props: {
     schoolGroup: {
       type: String,
@@ -80,10 +75,6 @@ export default {
     },
     selectedFile: {
       type: Object,
-    },
-    pageCommands: {
-      type: Boolean,
-      default: false
     },
   },
   data () {
@@ -116,7 +107,7 @@ export default {
     },
     filters: {
       handler() {
-        this.selectFilters();
+        this.filteredStatuses = this.selectFilters(this.headers, 'filterValue');
         if (this.pageNumber === 1) {
           this.pagination();
         } else {
@@ -135,12 +126,6 @@ export default {
   computed: {
     hasFilterHeader() {
       return this.headers.some(header => header.filterName);
-    },
-    showingFirstNumber() {
-      return ((this.pageNumber-1) * (this.penRequestBatchResponse.pageable.pageSize || 0) + ((this.penRequestBatchResponse.numberOfElements || 0)  > 0 ? 1 : 0));
-    },
-    showingEndNumber() {
-      return ((this.pageNumber-1) * (this.penRequestBatchResponse.pageable.pageSize || 0) + (this.penRequestBatchResponse.numberOfElements || 0));
     },
     countableHeaders() {
       return this.headers.filter(header => header.countable);
@@ -182,27 +167,6 @@ export default {
 
       return files;
     },
-
-    selectFilters() {
-      let statuses = [];
-      this.headers.filter(header => !!header.filterName).forEach(header => {
-        header.isFiltered = this.filters.some(filter => filter === header.filterName);
-        if(header.isFiltered) {
-          statuses.push(header.filterValue);
-        }
-      });
-      this.filteredStatuses = statuses;
-    },
-    selectFilter(header) {
-      if(header.isFiltered) {
-        this.filters.push(header.filterName);
-      } else {
-        const index = this.filters.findIndex(filter => filter === header.filterName);
-        this.filters.splice(index, 1);
-      }
-
-      this.$emit('update:filters', this.filters);
-    },
     pagination() {
       this.loadingTable = true;
       const req = {
@@ -236,85 +200,13 @@ export default {
 
 
 <style scoped>
-  #currentItemsDisplay {
-    text-align: right;
-    font-size: 0.875rem;
-  }
-  #page-commands {
-    font-size: 0.875rem;
-    text-transform: none !important;
-  }
-  .file-column {
-    float: left;
-  }
-  .countable-column-div {
-    max-width: 2rem;
-    margin: auto;
-  }
-  .countable-column-data {
-    float: right;
-  }
-  #file-list /deep/ .v-pagination__navigation > i {
-    padding-left: 0;
-  }
-  #file-list /deep/ table th .countable-column-header .v-icon {
-    padding: 0.5rem 0;
-  }
-  #file-list /deep/ table th{
-    text-align: center !important;
-    font-size: 0.875rem;
-  }
-
-  #file-list .filterable-table /deep/ table th{
-    vertical-align: top;
-    padding-top: 0.5rem;
-  }
-
-  #file-list /deep/ table td { 
-    border-bottom: none !important;
-  }
-  #file-list /deep/ table th:nth-child(1) {
+  #dataTable /deep/ table th:nth-child(1) {
     width: 5%;
   }
-  #file-list /deep/ table td:nth-child(5),
-  #file-list /deep/ table td:nth-last-child(2) ~ td,
-  #file-list /deep/ table th:nth-child(5),
-  #file-list /deep/ table th:nth-last-child(2) ~ th { 
+  
+  #dataTable /deep/ table td:nth-last-child(2) ~ td,
+  #dataTable /deep/ table th:nth-last-child(2) ~ th { 
     border-left: thin solid #d7d7d7;
   }
 
-  #file-list /deep/ table { 
-    border-top: thin solid #d7d7d7;
-    border-bottom: thin solid #d7d7d7;
-  }
-  #file-list /deep/ table tr { 
-    cursor: pointer;
-  }
-  #file-list /deep/ table tr.selected-file,
-  #file-list /deep/ table tbody tr:hover { 
-    background-color: #E1F5FE
-  }
-
-  #file-list /deep/ table .file-checkbox .v-icon.fa-minus-square {
-    color: #039BE5 !important;
-  }
-
-  .file-checkbox {
-    margin-top: 0;
-  }
-  .file-checkbox /deep/ .v-input__slot {
-    margin-bottom: 0;
-  }
-  .file-checkbox /deep/ .v-input__slot .v-input--selection-controls__input {
-    margin-right: 0;
-  }
-
-  .filter-checkbox /deep/ .v-input__slot {
-    justify-content: center;
-    padding-top: 0;
-  }
-
-  .select-column {
-    vertical-align: bottom !important;
-  }
 </style>

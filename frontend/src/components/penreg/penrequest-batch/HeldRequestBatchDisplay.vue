@@ -22,9 +22,9 @@
         </FilterTag>
       </v-sheet>
       <v-spacer v-else></v-spacer>
-      <PrimaryButton id="view-list-action" class="mr-2" :disabled="!filesSelected" @click.native="clickReview" text="Review"></PrimaryButton>
-      <PrimaryButton id="view-details-action" class="mx-2" :disabled="!filesSelected" @click.native="clickProcess" text="Process"></PrimaryButton>
-      <PrimaryButton id="view-details-action" class="mx-2" :disabled="!filesSelected" @click.native="clickDelete" text="Delete"></PrimaryButton>
+      <PrimaryButton id="review-action" class="mr-2" :disabled="!filesSelected" text="Review"></PrimaryButton>
+      <PrimaryButton id="process-action" class="mx-2" :disabled="!filesSelected" text="Process"></PrimaryButton>
+      <PrimaryButton id="delete-action" class="mx-2" :disabled="!filesSelected" text="Delete"></PrimaryButton>
     </v-row>
     <v-row no-gutters class="py-2" style="background-color:white;">
       <HeldRequestBatchList
@@ -32,7 +32,6 @@
         :filters.sync="filters"
         :loadingFiles="loadingFiles"
         :selectedFile.sync="selectedFile"
-        pageCommands
         @failure-alert="setFailureAlert"
       ></HeldRequestBatchList>
     </v-row>
@@ -68,22 +67,16 @@ export default {
   },
   computed: {
     filesSelected() {
-      return this.selectedFile?.isSelected;
+      return !!this.selectedFile;
     },
     selectedFileBatchID() {
-      return this.selectedFile.penRequestBatchID;
+      return this.selectedFile?.penRequestBatchID;
     },
   },
   methods: {
     removeFilter(index) {
       this.filters.splice(index, 1);
     },
-    clickReview() {
-    },
-    clickProcess() {
-    },
-    clickDelete() {
-    }
   }
 };
 </script>

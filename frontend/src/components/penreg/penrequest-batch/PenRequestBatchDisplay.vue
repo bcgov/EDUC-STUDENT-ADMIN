@@ -69,9 +69,8 @@
         <v-row no-gutters class="py-2" style="background-color:white;">
           <PenRequestBatchList
             :schoolGroup="selectedSchoolGroup"
-            :filters="filters"
+            :filters.sync="filters"
             :loadingFiles="loadingFiles"
-            @filter-change="filterChange"
             @failure-alert="setFailureAlert"
           ></PenRequestBatchList>
         </v-row>
@@ -149,9 +148,6 @@ export default {
     ...mapMutations('prbStudentSearch', ['clearPrbStudentSearchState']),
     removeFilter(index) {
       this.filters.splice(index, 1);
-    },
-    filterChange(filters) {
-      this.filters = filters;
     },
     clickViewList() {
       const batchIDs = this.selectedFileBatchIDs;
