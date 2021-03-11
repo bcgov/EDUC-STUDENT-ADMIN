@@ -30,7 +30,7 @@
         </template>
       </template>
       <template v-slot:item="props">
-        <tr :class="{'selected-file': props.item.isSelected}" @click="selectItem(props.item)">
+        <tr :class="{'selected-file': props.item.isSelected}" @click="clickItem(props.item)">
           <td v-for="header in props.headers" :key="header.id" :class="{[header.value]: true, 'select-column': header.type}">
             <v-checkbox v-if="header.type" class="file-checkbox" color="#606060" v-model="props.item.isSelected" @click.stop="selectFile(props.item)"></v-checkbox>
             <div v-else :class="{'countable-column-div': header.countable}">
@@ -150,9 +150,8 @@ export default {
       this.selectedFile && (this.selectedFile.isSelected = false);
       this.$emit('update:selectedFile', file?.isSelected ? file : null);
     },
-    selectItem(item) {
-      item.isSelected = !item.isSelected;
-      this.selectFile(item);
+    clickItem(item) {
+      this.$emit('file-click', item);
     },
     initializeFiles(files) {
       //reset
