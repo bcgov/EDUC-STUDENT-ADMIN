@@ -106,6 +106,7 @@ const PEN_REQ_BATCH_STATUS_CODES = Object.freeze(
     UNARCHIVED: 'UNARCHIVED',
     LOAD_FAIL: 'LOADFAIL',
     DELETED: 'DELETED',
+    LOADED: 'LOADED'
   }
 );
 

@@ -327,6 +327,13 @@ function softDeleteFiles(req, res) {
     return batchFile;
   });
 }
+function releaseBatchFilesForFurtherProcessing(req, res){
+  return updateFilesByIDs(req, res, batchFile => {
+    batchFile.penRequestBatchStatusCode = PEN_REQ_BATCH_STATUS_CODES.LOADED; // batch api will process further, when it is updated to LOADED status
+    batchFile.updateUser = getUser(req).idir_username;
+    return batchFile;
+  });
+}
 
 module.exports = {
   getPENBatchRequestStats,
@@ -341,5 +348,6 @@ module.exports = {
   userUnmatchSaga,
   archiveFiles,
   unarchiveFiles,
-  softDeleteFiles
+  softDeleteFiles,
+  releaseBatchFilesForFurtherProcessing
 };
