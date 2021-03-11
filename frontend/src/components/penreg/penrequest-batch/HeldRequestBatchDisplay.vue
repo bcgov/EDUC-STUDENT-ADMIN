@@ -107,7 +107,7 @@ export default {
     async deleteFile() {
       this.submissionNumber = this.selectedFile.submissionNumber;
       let result = await this.$refs.confirmationDialog.open(null, null,
-          {color: '#fff', width: 480, closeIcon: true, dark: false, rejectText: 'Cancel', resolveText: 'Confirm'});
+        {color: '#fff', width: 480, closeIcon: true, dark: false, rejectText: 'Cancel', resolveText: 'Confirm'});
       if (!result) {
         return;
       }
@@ -118,17 +118,17 @@ export default {
       };
       this.isDeleting = true;
       ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/deleteFiles`, payload)
-          .then(() => {
-            const deletedMessage = `${this.submissionNumber} been deleted.`;
-            this.setSuccessAlert(`Success! ${deletedMessage}`);
-          })
-          .catch(error => {
-            this.setFailureAlert('An error occurred while deleting PEN Request Files! Please try again later.');
-            console.error(error);
-          })
-          .finally(() => {
-            this.isDeleting = false;
-          });
+        .then(() => {
+          const deletedMessage = `${this.submissionNumber} been deleted.`;
+          this.setSuccessAlert(`Success! ${deletedMessage}`);
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while deleting PEN Request Files! Please try again later.');
+          console.error(error);
+        })
+        .finally(() => {
+          this.isDeleting = false;
+        });
     },
     clickFile(file) {
       this.submissionNumber = file.submissionNumber;
