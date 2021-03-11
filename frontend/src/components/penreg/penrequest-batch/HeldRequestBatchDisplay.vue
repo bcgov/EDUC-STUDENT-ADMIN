@@ -24,20 +24,28 @@
         </FilterTag>
       </v-sheet>
       <v-spacer v-else></v-spacer>
-      <PrimaryButton id="review-action" class="mr-2" :disabled="!filesSelected" text="Review"></PrimaryButton>
+      <PrimaryButton id="review-action" class="mr-2" :disabled="!filesSelected" @click.native="clickReview" text="Review"></PrimaryButton>
       <PrimaryButton id="process-action" class="mx-2" :disabled="!filesSelected" text="Process"></PrimaryButton>
       <PrimaryButton id="delete-action" class="mx-2" :disabled="!filesSelected" text="Delete" :loading="isDeleting"
                      @click.native="deleteFile"></PrimaryButton>
     </v-row>
     <v-row no-gutters class="py-2" style="background-color:white;">
       <HeldRequestBatchList
-          :schoolGroup="schoolGroup"
-          :filters.sync="filters"
-          :loadingFiles="loadingFiles"
-          :selectedFile.sync="selectedFile"
-          @failure-alert="setFailureAlert"
+        :schoolGroup="schoolGroup"
+        :filters.sync="filters"
+        :loadingFiles="loadingFiles"
+        :selectedFile.sync="selectedFile"
+        @failure-alert="setFailureAlert"
+        @file-click="clickFile"
       ></HeldRequestBatchList>
     </v-row>
+    <PrbFileModal
+      v-if="openFileViewer"
+      :open-dialog="openFileViewer"
+      :submission-number="submissionNumber"
+      @closeDialog="closeFileViewer"
+    >
+    </PrbFileModal>
     <ConfirmationDialog ref="confirmationDialog">
       <template v-slot:message>
         <v-col class="mt-n6">
@@ -60,6 +68,7 @@ import ConfirmationDialog from '../../util/ConfirmationDialog';
 import AlertMessage from '../../util/AlertMessage';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
+import PrbFileModal from '@/components/penreg/penrequest-batch/PrbFileModal';
 
 export default {
   name: 'HeldRequestBatchDisplay',
@@ -68,7 +77,8 @@ export default {
     PrimaryButton,
     HeldRequestBatchList,
     ConfirmationDialog,
-    AlertMessage
+    AlertMessage,
+    PrbFileModal
   },
   mixins: [alertMixin],
   data() {
@@ -78,6 +88,8 @@ export default {
       loadingFiles: false,
       selectedFile: null,
       isDeleting: false,
+      openFileViewer: false,
+      submissionNumber: '',
     };
   },
   computed: {
@@ -118,6 +130,17 @@ export default {
             this.isDeleting = false;
           });
     },
-  }
+    clickFile(file) {
+      this.submissionNumber = file.submissionNumber;
+      this.openFileViewer = true;
+    },
+    clickReview() {
+      this.submissionNumber = this.selectedFile.submissionNumber;
+      this.openFileViewer = true;
+    },
+    closeFileViewer() {
+      this.openFileViewer = false;
+    },
+  },
 };
 </script>
