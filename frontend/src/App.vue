@@ -141,5 +141,5 @@ export default {
   .full-height {
     height: 100%;
   }
-  
+    
 </style>

@@ -16,6 +16,7 @@ import PrbStudentListDisplay from './components/penreg/penrequest-batch/PrbStude
 import PrbStudentDetailsDisplay from './components/penreg/penrequest-batch/PrbStudentDetailsDisplay';
 import ArchivedRequestBatchDisplay from './components/penreg/penrequest-batch/ArchivedRequestBatchDisplay';
 import LoadFailedBatchList from './components/penreg/penrequest-batch/LoadFailedBatchList';
+import HeldRequestBatchDisplay from './components/penreg/penrequest-batch/HeldRequestBatchDisplay';
 import CreateNewPEN from './components/CreateNewPEN';
 import UnAuthorized from './components/UnAuthorized';
 import { REQUEST_TYPES, PAGE_TITLES } from './utils/constants';
@@ -241,6 +242,16 @@ const router = new VueRouter({
       component: LoadFailedBatchList,
       meta: {
         pageTitle: PAGE_TITLES.FAILED_REQ_FILES,
+        requiresAuth: true,
+        role: 'isValidPenRequestBatchUser'
+      },
+    },
+    {
+      path: '/heldRequestBatch',
+      name: 'heldRequestBatch',
+      component: HeldRequestBatchDisplay,
+      meta: {
+        pageTitle: PAGE_TITLES.HELD_REQ_FILES,
         requiresAuth: true,
         role: 'isValidPenRequestBatchUser'
       },
