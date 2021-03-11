@@ -174,7 +174,6 @@ export default {
     },
     searchPen() {
       const searchParams = {
-        pen: this.newStudentDetail.pen,
         legalLastName: this.newStudentDetail.legalLastName,
         legalFirstName: this.newStudentDetail.legalFirstName,
         legalMiddleNames: this.newStudentDetail.legalMiddleNames,
