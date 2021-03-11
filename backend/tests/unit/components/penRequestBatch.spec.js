@@ -452,7 +452,7 @@ describe('archive&unarchiveFiles&releaseBatchFilesForFurtherProcessing', () => {
     expect(res.json).toHaveBeenCalledWith(resp);
   });
   it('test_releaseBatchFilesForFurtherProcessing_shouldReturnAllBatchFilesWithStatusCodeLOADED_givenAllApiCallSuccess', async () => {
-    const resp = penRequestBatchIDs.map(id => ({
+    const releaseResponse = penRequestBatchIDs.map(id => ({
       penRequestBatchID: id,
       penRequestBatchStatusCode: 'LOADED',
       updateUser: 'User'
@@ -463,6 +463,6 @@ describe('archive&unarchiveFiles&releaseBatchFilesForFurtherProcessing', () => {
     );
     await penRequestBatch.releaseBatchFilesForFurtherProcessing(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
-    expect(res.json).toHaveBeenCalledWith(resp);
+    expect(res.json).toHaveBeenCalledWith(releaseResponse);
   });
 });
