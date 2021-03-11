@@ -273,7 +273,7 @@ async function updateFilesByIDs(req, res, updateFile) {
     const params = {
       params: {
         pageNumber: 0,
-        pageSize: 20,
+        pageSize: req.body.penRequestBatchIDs?.length,
         searchCriteriaList: JSON.stringify([{
           searchCriteriaList:[{
             key: 'penRequestBatchID',
