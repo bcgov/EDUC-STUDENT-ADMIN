@@ -455,6 +455,7 @@ describe('archive&unarchiveFiles&releaseBatchFilesForFurtherProcessing', () => {
     const releaseResponse = penRequestBatchIDs.map(id => ({
       penRequestBatchID: id,
       penRequestBatchStatusCode: 'LOADED',
+      processDate: expect.any(String),
       updateUser: 'User'
     }));
     utils.getData.mockResolvedValue(batchFiles);
