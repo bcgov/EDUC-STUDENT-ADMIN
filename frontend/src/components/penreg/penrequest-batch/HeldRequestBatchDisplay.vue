@@ -24,26 +24,27 @@
         </FilterTag>
       </v-sheet>
       <v-spacer v-else></v-spacer>
-      <PrimaryButton id="review-action" class="mr-2" :disabled="!filesSelected" @click.native="clickReview" text="Review"></PrimaryButton>
-      <PrimaryButton id="process-action" class="mx-2" :disabled="!filesSelected" text="Process"></PrimaryButton>
+      <PrimaryButton id="review-action" class="mr-2" :disabled="!filesSelected" text="Review" @click.native="clickReview"></PrimaryButton>
+      <PrimaryButton id="process-action" class="mx-2" :disabled="!filesSelected" text="Process" :loading="isProcessing"
+                     @click.native="markRecordForProcessing"></PrimaryButton>
       <PrimaryButton id="delete-action" class="mx-2" :disabled="!filesSelected" text="Delete" :loading="isDeleting"
                      @click.native="deleteFile"></PrimaryButton>
     </v-row>
     <v-row no-gutters class="py-2" style="background-color:white;">
       <HeldRequestBatchList
-        :schoolGroup="schoolGroup"
-        :filters.sync="filters"
-        :loadingFiles="loadingFiles"
-        :selectedFile.sync="selectedFile"
-        @failure-alert="setFailureAlert"
-        @file-click="clickFile"
+          :schoolGroup="schoolGroup"
+          :filters.sync="filters"
+          :loadingFiles="loadingFiles"
+          :selectedFile.sync="selectedFile"
+          @failure-alert="setFailureAlert"
+          @file-click="clickFile"
       ></HeldRequestBatchList>
     </v-row>
     <PrbFileModal
-      v-if="openFileViewer"
-      :open-dialog="openFileViewer"
-      :submission-number="submissionNumber"
-      @closeDialog="closeFileViewer"
+        v-if="openFileViewer"
+        :open-dialog="openFileViewer"
+        :submission-number="submissionNumber"
+        @closeDialog="closeFileViewer"
     >
     </PrbFileModal>
     <ConfirmationDialog ref="confirmationDialog">
@@ -51,7 +52,7 @@
         <v-col class="mt-n6">
           <v-row class="mt-n2 mb-3">
             Are you sure you want
-            to&nbsp;<strong>Delete</strong>&nbsp;submission&nbsp;<strong>{{ submissionNumber }}</strong>?
+            to&nbsp;<strong>{{ operation }}</strong>&nbsp;submission&nbsp;<strong>{{ submissionNumber }}</strong>?
           </v-row>
         </v-col>
       </template>
@@ -88,6 +89,8 @@ export default {
       loadingFiles: false,
       selectedFile: null,
       isDeleting: false,
+      isProcessing: false,
+      operation:undefined,
       openFileViewer: false,
       submissionNumber: '',
     };
@@ -105,30 +108,56 @@ export default {
       this.filters.splice(index, 1);
     },
     async deleteFile() {
-      this.submissionNumber = this.selectedFile.submissionNumber;
-      let result = await this.$refs.confirmationDialog.open(null, null,
-        {color: '#fff', width: 480, closeIcon: true, dark: false, rejectText: 'Cancel', resolveText: 'Confirm'});
-      if (!result) {
-        return;
+      const userConfirmed = await this.isConfirmedByUser('Delete');
+      if (!!userConfirmed) {
+        const penRequestBatchIDs = [];
+        penRequestBatchIDs.push(this.selectedFile.penRequestBatchID);
+        const payload = {
+          penRequestBatchIDs
+        };
+        this.isDeleting = true;
+        ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/deleteFiles`, payload)
+            .then(() => {
+              const deletedMessage = `${this.submissionNumber} been deleted.`;
+              this.setSuccessAlert(`Success! ${deletedMessage}`);
+            })
+            .catch(error => {
+              this.setFailureAlert('An error occurred while deleting PEN Request Files! Please try again later.');
+              console.error(error);
+            })
+            .finally(() => {
+              this.isDeleting = false;
+            });
       }
-      const penRequestBatchIDs = [];
-      penRequestBatchIDs.push(this.selectedFile.penRequestBatchID);
-      const payload = {
-        penRequestBatchIDs
-      };
-      this.isDeleting = true;
-      ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/deleteFiles`, payload)
-        .then(() => {
-          const deletedMessage = `${this.submissionNumber} been deleted.`;
-          this.setSuccessAlert(`Success! ${deletedMessage}`);
-        })
-        .catch(error => {
-          this.setFailureAlert('An error occurred while deleting PEN Request Files! Please try again later.');
-          console.error(error);
-        })
-        .finally(() => {
-          this.isDeleting = false;
-        });
+    },
+    async markRecordForProcessing(){
+      const userConfirmed = await this.isConfirmedByUser('Process');
+      if (!!userConfirmed) {
+        const penRequestBatchIDs = [];
+        penRequestBatchIDs.push(this.selectedFile.penRequestBatchID);
+        const payload = {
+          penRequestBatchIDs
+        };
+        this.isProcessing = true;
+        ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/release-batch-files`, payload)
+            .then(() => {
+              const message = `${this.submissionNumber} is put into processing.`;
+              this.setSuccessAlert(`Success! ${message}`);
+            })
+            .catch(error => {
+              this.setFailureAlert('An error occurred while putting the PEN Request to processing! Please try again later.');
+              console.error(error);
+            })
+            .finally(() => {
+              this.isProcessing = false;
+            });
+      }
+    },
+    async isConfirmedByUser(operation){
+      this.operation = operation;
+      this.submissionNumber = this.selectedFile.submissionNumber;
+      return this.$refs.confirmationDialog.open(null, null,
+          {color: '#fff', width: 480, closeIcon: true, dark: false, rejectText: 'Cancel', resolveText: 'Confirm'});
     },
     clickFile(file) {
       this.submissionNumber = file.submissionNumber;
@@ -141,6 +170,6 @@ export default {
     closeFileViewer() {
       this.openFileViewer = false;
     },
-  },
+  }
 };
 </script>
