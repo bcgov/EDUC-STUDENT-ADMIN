@@ -433,7 +433,6 @@ describe('archive&unarchiveFiles&releaseBatchFilesForFurtherProcessing', () => {
   });
 
   it('should return all batch files if all success', async () => {
-    const userName = 'User';
     const resp = penRequestBatchIDs.map(id => ({
       penRequestBatchID: id,
       penRequestBatchStatusCode: 'UNARCHIVED',
