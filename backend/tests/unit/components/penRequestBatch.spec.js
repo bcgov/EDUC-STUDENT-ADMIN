@@ -438,7 +438,6 @@ describe('archive&unarchiveFiles&releaseBatchFilesForFurtherProcessing', () => {
       penRequestBatchID: id,
       penRequestBatchStatusCode: 'UNARCHIVED',
       processDate: expect.any(String),
-      updateUser: userName
     }));
 
     utils.getData.mockResolvedValue(batchFiles);
@@ -456,7 +455,6 @@ describe('archive&unarchiveFiles&releaseBatchFilesForFurtherProcessing', () => {
       penRequestBatchID: id,
       penRequestBatchStatusCode: 'LOADED',
       processDate: expect.any(String),
-      updateUser: 'User'
     }));
     utils.getData.mockResolvedValue(batchFiles);
     utils.putData.mockImplementation((token, url, data) =>
