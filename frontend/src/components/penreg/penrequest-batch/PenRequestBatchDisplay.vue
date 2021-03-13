@@ -51,7 +51,7 @@
               </PrimaryButton>
             </template>
             <v-list>
-              <v-list-item>
+              <v-list-item @click="archiveAndReturnFixedOnly">
                 <v-list-item-title>Return All Except FIX</v-list-item-title>
               </v-list-item>
               <v-list-item>
@@ -74,7 +74,19 @@
             @failure-alert="setFailureAlert"
           ></PenRequestBatchList>
         </v-row>
-        <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>
+        <ConfirmationDialog ref="confirmationDialog">
+          <template v-slot:title="cancel">
+            <v-row justify="space-between" no-gutters>
+              <v-col class="pl-4 pt-4">
+                {{ archiveAndReturnMessage }}<br><br>
+                Note this action will not return any files to the submitting school if FIXABLE requests exist.
+              </v-col>
+              <v-btn id="closeBtn" text icon @click.native="cancel">
+                <v-icon color="#38598A">mdi-close</v-icon>
+              </v-btn>
+            </v-row>
+          </template>
+        </ConfirmationDialog>
     </v-container>
 </template>
 
@@ -87,7 +99,7 @@ import PrimaryButton from '../../util/PrimaryButton';
 import router from '../../../router';
 import alertMixin from '../../../mixins/alertMixin';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
-import pluralize from 'pluralize'; 
+import pluralize from 'pluralize';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 
@@ -111,6 +123,7 @@ export default {
       schoolGroups: [{value: 'K12', text: 'K-12'}, {value: 'PSI', text: 'PSI'}],
       filters:['Fixable'],
       loadingFiles: false,
+      archiveAndReturnMessage: ''
     };
   },
   computed: {
@@ -160,18 +173,18 @@ export default {
       const totalNumber = this.selectedFiles.reduce((sum, file) => sum + file[countColumn], 0);
     
       const searchCriteriaList = [
-        { 
+        {
           searchCriteriaList: [
             {
-              key: 'penRequestBatchEntity.penRequestBatchID', 
-              operation: SEARCH_FILTER_OPERATION.IN, 
-              value: this.selectedFileBatchIDs, 
+              key: 'penRequestBatchEntity.penRequestBatchID',
+              operation: SEARCH_FILTER_OPERATION.IN,
+              value: this.selectedFileBatchIDs,
               valueType: SEARCH_VALUE_TYPE.UUID
             },
             {
-              key: 'penRequestBatchStudentStatusCode', 
-              operation: this.selectedFilterNames.length > 0 ? SEARCH_FILTER_OPERATION.IN : SEARCH_FILTER_OPERATION.NOT_EQUAL, 
-              value: this.selectedFilterNames.length > 0 ? this.selectedFilterNames : PEN_REQ_BATCH_STUDENT_REQUEST_CODES.LOADED, 
+              key: 'penRequestBatchStudentStatusCode',
+              operation: this.selectedFilterNames.length > 0 ? SEARCH_FILTER_OPERATION.IN : SEARCH_FILTER_OPERATION.NOT_EQUAL,
+              value: this.selectedFilterNames.length > 0 ? this.selectedFilterNames : PEN_REQ_BATCH_STUDENT_REQUEST_CODES.LOADED,
               valueType: SEARCH_VALUE_TYPE.STRING,
               condition: SEARCH_CONDITION.AND
             }
@@ -179,10 +192,10 @@ export default {
         },
       ];
       
-      const query = { 
+      const query = {
         seqNumber: 1,
-        totalNumber, 
-        batchCount: this.selectedFiles.length, 
+        totalNumber,
+        batchCount: this.selectedFiles.length,
         searchCriteria: JSON.stringify(searchCriteriaList),
         archived: false,
       };
@@ -210,6 +223,41 @@ export default {
               this.setFailureAlert(`An error occurred while archiving PEN Request Files! ${archivedMessage} Please try again later.`);
             }
           })
+          .catch(error => {
+            this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
+            console.log(error);
+          })
+          .finally(() => {
+            this.loadingFiles = false;
+          });
+      }
+    },
+    async archiveAndReturnFixedOnly() {
+      const fileNumber = this.selectedFiles.length;
+      this.archiveAndReturnMessage = `Please confirm that you would like to return the response files to ${fileNumber} PEN request ${pluralize('file', fileNumber)}.`;
+      const result = await this.$refs.confirmationDialog.open(null,null,
+        { width: '520px', messagePadding: 'px-4 pt-4', color: '', dark: false, closeIcon: true, divider: true, subtitle: true, resolveText: 'Confirm' }
+      );
+      if(result) {
+        const filesIDsWithFixable = this.selectedFiles.filter(prb => prb?.fixableCount > 0).map(file => file.penRequestBatchID);
+        const filesIDsWithoutFixable = this.selectedFiles.filter(prb => prb?.fixableCount === 0).map(file => file.penRequestBatchID);
+
+        this.loadingFiles = true;
+        Promise.allSettled([
+          ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/archiveFiles`, { penRequestBatchIDs: filesIDsWithFixable}),
+          ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/archiveAndReturnFiles`, { penRequestBatchIDs: filesIDsWithoutFixable})
+        ]).then(([archiveFixable, archiveAndReturn]) => {
+          const archivedFixableNumber = archiveFixable?.value?.data?.length;
+          const archivedAndReturnedNumber = archiveAndReturn?.value?.data?.length;
+          const totalArchivedNumber = archivedFixableNumber + archivedAndReturnedNumber;
+          const archivedMessage = `${totalArchivedNumber} PEN Request ${pluralize('File', totalArchivedNumber)} ${pluralize('has', totalArchivedNumber)} been archived.`;
+          
+          if(totalArchivedNumber === fileNumber) {
+            this.setSuccessAlert(`Success! ${archivedMessage}`);
+          } else {
+            this.setFailureAlert(`An error occurred while archiving PEN Request Files! ${archivedMessage} Please try again later.`);
+          }
+        })
           .catch(error => {
             this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
             console.log(error);
