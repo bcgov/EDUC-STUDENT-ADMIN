@@ -311,7 +311,7 @@ describe('user unmatch saga', () => {
   it('should return sagaId if success', async () => {
     const resp = 'c0a8014d-74e1-1d99-8174-e10db8410004';
     utils.getData.mockResolvedValue(prbStudentData);
-    utils.getData.mockImplementation((token, url) => 
+    utils.getData.mockImplementation((token, url) =>
       url.includes('possible-match') ? [{possibleMatchID: '801', matchedStudentID: '201'}, {possibleMatchID: '901', matchedStudentID: '301'}] : prbStudentData
     );
     utils.postData.mockResolvedValue(resp);
@@ -360,7 +360,7 @@ function initializeMatchUnmatchTestData() {
 }
 
 
-describe('archive&unarchiveFiles', () => {
+describe('archive&unarchiveFiles&releaseBatchFilesForFurtherProcessing', () => {
   let req;
   let res;
   const penRequestBatchIDs = ['c0a8014d-74e1-1d99-8174-e10db81f0001', 'c0a8014d-74e1-1d99-8174-e10db81f0002'];
@@ -391,7 +391,7 @@ describe('archive&unarchiveFiles', () => {
       processDate: expect.any(String)
     }));
     utils.getData.mockResolvedValue(batchFiles);
-    utils.putData.mockImplementation((token, url, data) => 
+    utils.putData.mockImplementation((token, url, data) =>
       Promise.resolve(data)
     );
     await penRequestBatch.archiveFiles(req, res);
@@ -407,7 +407,7 @@ describe('archive&unarchiveFiles', () => {
       processDate: expect.any(String)
     }];
     utils.getData.mockResolvedValue(batchFiles);
-    utils.putData.mockImplementation((token, url, data) => 
+    utils.putData.mockImplementation((token, url, data) =>
       data.penRequestBatchID === penRequestBatchID ? Promise.resolve(data) : Promise.reject({status: HttpStatus.INTERNAL_SERVER_ERROR})
     );
     await penRequestBatch.archiveFiles(req, res);
@@ -418,7 +418,7 @@ describe('archive&unarchiveFiles', () => {
   it('should return empty array if all failed', async () => {
     const resp = [];
     utils.getData.mockResolvedValue(batchFiles);
-    utils.putData.mockImplementation(() => 
+    utils.putData.mockImplementation(() =>
       Promise.reject({status: HttpStatus.INTERNAL_SERVER_ERROR})
     );
     await penRequestBatch.archiveFiles(req, res);
@@ -433,16 +433,14 @@ describe('archive&unarchiveFiles', () => {
   });
 
   it('should return all batch files if all success', async () => {
-    const userName = 'User';
     const resp = penRequestBatchIDs.map(id => ({
       penRequestBatchID: id,
       penRequestBatchStatusCode: 'UNARCHIVED',
       processDate: expect.any(String),
-      updateUser: userName
     }));
 
     utils.getData.mockResolvedValue(batchFiles);
-    utils.putData.mockImplementation((token, url, data) => 
+    utils.putData.mockImplementation((token, url, data) =>
       Promise.resolve(data)
     );
     await penRequestBatch.unarchiveFiles(req, res);
@@ -450,6 +448,20 @@ describe('archive&unarchiveFiles', () => {
     expect(utils.putData.mock.calls[0][2]).toEqual(resp[0]);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(resp);
+  });
+  it('test_releaseBatchFilesForFurtherProcessing_shouldReturnAllBatchFilesWithStatusCodeLOADED_givenAllApiCallSuccess', async () => {
+    const releaseResponse = penRequestBatchIDs.map(id => ({
+      penRequestBatchID: id,
+      penRequestBatchStatusCode: 'LOADED',
+      processDate: expect.any(String),
+    }));
+    utils.getData.mockResolvedValue(batchFiles);
+    utils.putData.mockImplementation((token, url, data) =>
+      Promise.resolve(data)
+    );
+    await penRequestBatch.releaseBatchFilesForFurtherProcessing(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+    expect(res.json).toHaveBeenCalledWith(releaseResponse);
   });
 });
 

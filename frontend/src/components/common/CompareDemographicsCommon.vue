@@ -68,6 +68,12 @@
         <span class="pl-11">
           Demog Code: {{ students.demogCode }}
         </span>
+        <span class="pl-4 pr-3"></span>
+        <span class="pl-4 pr-3"></span>
+        <span class="pl-4 pr-3"></span>
+        <span class="pl-4 pr-3 bottom-field-item">{{students.legalLastName.toLowerCase() === students.usualLastName.toLowerCase()? '' : students.usualLastName}}</span>
+        <span class="pl-4 pr-3 bottom-field-item">{{students.legalFirstName.toLowerCase() === students.usualFirstName.toLowerCase()? '' : students.usualFirstName}}</span>
+        <span class="pl-4 pr-3 bottom-field-item">{{students.legalMiddleNames.toLowerCase() === students.usualMiddleNames.toLowerCase()? '' : students.usualMiddleNames}}</span>
         <v-spacer></v-spacer>
         <a class="removePenLink pr-3" @click="removeRecord(students.studentID, index)">
             <v-icon small color="#38598A">mdi-close</v-icon>
@@ -533,6 +539,9 @@ export default {
     font-weight: bold;
     color: rgba(0, 0, 0, 0.6);
   }
+  .studentDemographicsTable .bottom-field-item {
+    font-style: italic;
+  }
   #studentDemographicsTableTopRow /deep/ span:nth-child(1) {
     vertical-align: top;
     padding-top: 6px;
@@ -567,6 +576,26 @@ export default {
   #studentDemographicsTableTopRow /deep/ span:nth-child(7) {
     vertical-align: top;
     padding-top: 6px;
+    width: 12%;
+  }
+
+  #studentDemographicsTableBottomRow /deep/ span:nth-child(1) {
+    vertical-align: top;
+    width: 15%;
+  }
+  #studentDemographicsTableBottomRow /deep/ span:nth-child(2) {
+    vertical-align: top;
+    width: 5%;
+  }
+  #studentDemographicsTableBottomRow /deep/ span:nth-child(3),
+  #studentDemographicsTableBottomRow /deep/ span:nth-child(4) {
+    vertical-align: top;
+    width: 10%;
+  }
+  #studentDemographicsTableBottomRow /deep/ span:nth-child(5),
+  #studentDemographicsTableBottomRow /deep/ span:nth-child(6),
+  #studentDemographicsTableBottomRow /deep/ span:nth-child(7) {
+    vertical-align: top;
     width: 12%;
   }
 
