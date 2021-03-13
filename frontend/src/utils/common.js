@@ -1,7 +1,7 @@
 'use strict';
 
 import {PEN_REQ_BATCH_STUDENT_REQUEST_CODES, Routes} from '@/utils/constants';
-import {filter, sortBy, isPlainObject} from 'lodash';
+import {filter, isPlainObject, sortBy} from 'lodash';
 
 import ApiService from '../common/apiService';
 
@@ -105,7 +105,7 @@ export function getMatchedRecordsByStudent(studentID) {
 
 /**
  * this function will return the demog details of matched students
- * 
+ *
  <b>if student demographics information is not needed, use the method getMatchedRecordsByStudent.</b>
  * @param studentID
  * @param includingQueriedStudent
@@ -193,4 +193,8 @@ export function setEmptyInputParams(params, ...excludedParams) {
       }
     }
   });
+}
+
+export function equalsIgnoreCase(param1, param2) {
+return param1?.toLowerCase() === param2?.toLowerCase();
 }

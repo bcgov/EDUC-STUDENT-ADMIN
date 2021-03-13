@@ -32,7 +32,7 @@
             <p class="labelField">Legal Surname</p>
           </v-col>
           <v-col cols="3">
-            <v-text-field outlined dense max-length="25"
+            <v-text-field outlined dense maxlength="25"
                           :id="STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME"
                           :disabled="mergeSagaComplete"
                           tabindex="1" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
@@ -53,7 +53,7 @@
             <p class="labelField">Legal Given</p>
           </v-col>
           <v-col cols="3">
-            <v-text-field outlined dense max-length="25"
+            <v-text-field outlined dense maxlength="25"
                           :id="STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME"
                           :disabled="mergeSagaComplete"
                           tabindex="2" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
@@ -73,7 +73,7 @@
             <p class="labelField">Legal Middle</p>
           </v-col>
           <v-col cols="3">
-            <v-text-field outlined dense max-length="25"
+            <v-text-field outlined dense maxlength="25"
                           :id="STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES"
                           :disabled="mergeSagaComplete"
                           tabindex="3" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
@@ -93,7 +93,7 @@
             <p class="labelField">Usual Surname</p>
           </v-col>
           <v-col cols="3">
-            <v-text-field outlined dense max-length="25"
+            <v-text-field outlined dense maxlength="25"
                           :id="STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME"
                           :disabled="mergeSagaComplete"
                           tabindex="4" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
@@ -113,7 +113,7 @@
             <p class="labelField">Usual Given</p>
           </v-col>
           <v-col cols="3">
-            <v-text-field outlined dense max-length="25"
+            <v-text-field outlined dense maxlength="25"
                           :id="STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME"
                           :disabled="mergeSagaComplete"
                           tabindex="5" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
@@ -133,7 +133,7 @@
             <p class="labelField">Usual Middle</p>
           </v-col>
           <v-col cols="3">
-            <v-text-field outlined dense max-length="25"
+            <v-text-field outlined dense maxlength="25"
                           :id="STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES"
                           :disabled="mergeSagaComplete"
                           tabindex="6" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"

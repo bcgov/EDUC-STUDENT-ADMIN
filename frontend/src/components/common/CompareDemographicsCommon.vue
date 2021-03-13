@@ -71,9 +71,9 @@
         <span class="pl-4 pr-3"></span>
         <span class="pl-4 pr-3"></span>
         <span class="pl-4 pr-3"></span>
-        <span class="pl-4 pr-3 bottom-field-item">{{students.legalLastName.toLowerCase() === students.usualLastName.toLowerCase()? '' : students.usualLastName}}</span>
-        <span class="pl-4 pr-3 bottom-field-item">{{students.legalFirstName.toLowerCase() === students.usualFirstName.toLowerCase()? '' : students.usualFirstName}}</span>
-        <span class="pl-4 pr-3 bottom-field-item">{{students.legalMiddleNames.toLowerCase() === students.usualMiddleNames.toLowerCase()? '' : students.usualMiddleNames}}</span>
+        <span class="pl-4 pr-3 bottom-field-item">{{equalsIgnoreCase(students.legalLastName,students.usualLastName)? '' : students.usualLastName}}</span>
+        <span class="pl-4 pr-3 bottom-field-item">{{equalsIgnoreCase(students.legalFirstName, students.usualFirstName)? '' : students.usualFirstName}}</span>
+        <span class="pl-4 pr-3 bottom-field-item">{{equalsIgnoreCase(students.legalMiddleNames, students.usualMiddleNames)? '' : students.usualMiddleNames}}</span>
         <v-spacer></v-spacer>
         <a class="removePenLink pr-3" @click="removeRecord(students.studentID, index)">
             <v-icon small color="#38598A">mdi-close</v-icon>
@@ -162,7 +162,7 @@ import alertMixin from '@/mixins/alertMixin';
 import servicesSagaMixin from '@/mixins/servicesSagaMixin';
 import router from '../../router';
 import TertiaryButton from '../util/TertiaryButton';
-import {getMatchedRecordsByStudent} from '@/utils/common';
+import {getMatchedRecordsByStudent, equalsIgnoreCase} from '@/utils/common';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import {mapGetters} from 'vuex';
 
@@ -263,6 +263,7 @@ export default {
     }
   },
   methods: {
+    equalsIgnoreCase,
     addPEN() {
       this.alert = false;
       this.searchError = false;
