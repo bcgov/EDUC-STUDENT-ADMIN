@@ -82,7 +82,7 @@
       <v-col cols="7" class="py-0 pl-0">
         <v-card class="pa-0" height="100%" width="100%" elevation=0>
 
-          <StudentDetailsTextField max-length="255" :name="STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME" tab-index="1"
+          <StudentDetailsTextField max-length="25" :name="STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME" tab-index="1"
                                    @changeStudentObjectValue="changeStudentObjectValue"
                                    :model="studentCopy.legalLastName?studentCopy.legalLastName:''"
                                    :has-edits="hasEdits" revert-id="revertLegalLastName"
@@ -90,35 +90,35 @@
                                    :revert-field="revertField" label="Legal Surname" colspan="5"
                                    :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"></StudentDetailsTextField>
 
-          <StudentDetailsTextField max-length="255" :name="STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME" tab-index="2"
+          <StudentDetailsTextField max-length="25" :name="STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME" tab-index="2"
                                    @changeStudentObjectValue="changeStudentObjectValue"
                                    :model="studentCopy.legalFirstName?studentCopy.legalFirstName:''"
                                    :has-edits="hasEdits" revert-id="revertLegalFirstName"
                                    :revert-field="revertField" label="Legal Given" colspan="5"
                                    :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"></StudentDetailsTextField>
 
-          <StudentDetailsTextField max-length="255" :name="STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES" tab-index="3"
+          <StudentDetailsTextField max-length="25" :name="STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES" tab-index="3"
                                    @changeStudentObjectValue="changeStudentObjectValue"
                                    :model="studentCopy.legalMiddleNames?studentCopy.legalMiddleNames:''"
                                    :has-edits="hasEdits" revert-id="revertLegalMiddleNames"
                                    :revert-field="revertField" label="Legal Middle" colspan="5"
                                    :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"></StudentDetailsTextField>
 
-          <StudentDetailsTextField max-length="255" :name="STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME" tab-index="4"
+          <StudentDetailsTextField max-length="25" :name="STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME" tab-index="4"
                                    @changeStudentObjectValue="changeStudentObjectValue"
                                    :model="studentCopy.usualLastName?studentCopy.usualLastName:''"
                                    :has-edits="hasEdits" revert-id="revertUsualLastName"
                                    :revert-field="revertField" label="Usual Surname" colspan="5"
                                    :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"></StudentDetailsTextField>
 
-          <StudentDetailsTextField max-length="255" :name="STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME" tab-index="5"
+          <StudentDetailsTextField max-length="25" :name="STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME" tab-index="5"
                                    @changeStudentObjectValue="changeStudentObjectValue"
                                    :model="studentCopy.usualFirstName?studentCopy.usualFirstName:''"
                                    :has-edits="hasEdits" revert-id="revertUsualFirstName"
                                    :revert-field="revertField" label="Usual Given" colspan="5"
                                    :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"></StudentDetailsTextField>
 
-          <StudentDetailsTextField max-length="255" :name="STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES" tab-index="6"
+          <StudentDetailsTextField max-length="25" :name="STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES" tab-index="6"
                                    @changeStudentObjectValue="changeStudentObjectValue"
                                    :model="studentCopy.usualMiddleNames?studentCopy.usualMiddleNames:''"
                                    :has-edits="hasEdits" revert-id="revertUsualMiddleNames"
