@@ -191,7 +191,7 @@
             <StudentDetailsCheckBoxWithOutputText :name="STUDENT_DETAILS_FIELDS.DOB" tab-index="28"
                                                   :model="mergedStudent.dob?formatDob(mergedStudent.dob, 'uuuu-MM-dd', 'uuuu/MM/dd'):''"
                                                   colspan="6" @update="handleCheckBoxChanged"
-                                                  :disabled="student.dob === mergedStudent.dob || mergeSagaComplete"
+                                                  :disabled="isSameDate(student.dob, mergedStudent.dob) || mergeSagaComplete"
                                                   v-if="!!mergedStudent.dob"
             ></StudentDetailsCheckBoxWithOutputText>
           </v-col>
@@ -469,6 +469,11 @@ export default {
       } else {
         this.student.dob = this.shortDOB? this.formatDob(this.shortDOB,'uuuuMMdd','uuuu/MM/dd') : '';
       }
+    },
+    isSameDate(date1, date2) {
+      const dateStr1 = date1.replace(/[^0-9]/g, '');
+      const dateStr2 = date2.replace(/[^0-9]/g, '');
+      return dateStr1 === dateStr2;
     },
     // Asynchronous validator returns an array of boolean or string that would be provided for :rules prop of input field
     validateMincode() {

@@ -1,6 +1,6 @@
 <template>
     <v-container fluid class="fill-height px-0 mb-4">
-        <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
+        <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000"></AlertMessage>
         <v-row no-gutters class="list-actions py-2 px-4 d-flex justify-end" style="background-color:white;">
           <v-col class="d-flex justify-end">
             <PrimaryButton id="review-file-action" class="ml-2" :disabled="!fileChecked()" text="Review" :loading="isProcessing" @click.native="reviewFile"></PrimaryButton>
@@ -124,12 +124,6 @@ export default {
         {
           text: 'DATE and TIME SUBMITTED',
           value: 'insertDate',
-          sortable: false,
-          format: this.frontEndDateTimeFormat
-        },
-        {
-          text: 'DATE and TIME EXTRACTED',
-          value: 'extractDate',
           sortable: false,
           format: this.frontEndDateTimeFormat
         },
@@ -264,9 +258,7 @@ export default {
           } else {
             this.setFailureAlert('An error occurred while deleting PEN Request Files! Please try again later.');
           }
-          this.prbResponse.content = this.prbResponse.content.filter(file =>
-            response.data.some(deletedFile => deletedFile.penRequestBatchID !== file.penRequestBatchID)
-          );
+          this.pagination();
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while deleting PEN Request Files! Please try again later.');

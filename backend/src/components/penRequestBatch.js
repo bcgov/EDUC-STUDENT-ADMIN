@@ -273,7 +273,7 @@ async function updateFilesByIDs(req, res, updateFile) {
     const params = {
       params: {
         pageNumber: 0,
-        pageSize: 20,
+        pageSize: req.body.penRequestBatchIDs?.length,
         searchCriteriaList: JSON.stringify([{
           searchCriteriaList:[{
             key: 'penRequestBatchID',
@@ -343,7 +343,6 @@ async function archiveAndReturnFiles(req, res) {
 function unarchiveFiles(req, res) {
   return updateFilesByIDs(req, res, batchFile => {
     batchFile.penRequestBatchStatusCode = PEN_REQ_BATCH_STATUS_CODES.UNARCHIVED;
-    batchFile.updateUser = getUser(req).idir_username;
     return batchFile;
   });
 }
@@ -351,7 +350,12 @@ function unarchiveFiles(req, res) {
 function softDeleteFiles(req, res) {
   return updateFilesByIDs(req, res, batchFile => {
     batchFile.penRequestBatchStatusCode = PEN_REQ_BATCH_STATUS_CODES.DELETED;
-    batchFile.updateUser = getUser(req).idir_username;
+    return batchFile;
+  });
+}
+function releaseBatchFilesForFurtherProcessing(req, res){
+  return updateFilesByIDs(req, res, batchFile => {
+    batchFile.penRequestBatchStatusCode = PEN_REQ_BATCH_STATUS_CODES.LOADED; // batch api will process further, when it is updated to LOADED status
     return batchFile;
   });
 }
@@ -370,5 +374,6 @@ module.exports = {
   archiveFiles,
   archiveAndReturnFiles,
   unarchiveFiles,
-  softDeleteFiles
+  softDeleteFiles,
+  releaseBatchFilesForFurtherProcessing
 };

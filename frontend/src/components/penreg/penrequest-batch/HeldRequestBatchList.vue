@@ -1,4 +1,4 @@
-<template>  
+<template>
   <div id="file-list" class="px-3" style="width: 100%" :overlay="false">
     <v-data-table
       id="dataTable"
@@ -19,18 +19,18 @@
         <template v-if="hasFilterHeader">
           <br :key="h.id" />
           <span :key="h.id" :class="header.countable ? 'countable-column-header' : 'file-column'">
-            <v-checkbox 
-              v-if="header.filterName" 
-              class="file-checkbox filter-checkbox" 
+            <v-checkbox
+              v-if="header.filterName"
+              class="file-checkbox filter-checkbox"
               color="#606060"
-              v-model="header.isFiltered" 
+              v-model="header.isFiltered"
               @change="selectFilter(header)"
             ></v-checkbox>
           </span>
         </template>
       </template>
       <template v-slot:item="props">
-        <tr :class="{'selected-file': props.item.isSelected}" @click="selectItem(props.item)">
+        <tr :class="{'selected-file': props.item.isSelected}" @click="clickItem(props.item)">
           <td v-for="header in props.headers" :key="header.id" :class="{[header.value]: true, 'select-column': header.type}">
             <v-checkbox v-if="header.type" class="file-checkbox" color="#606060" v-model="props.item.isSelected" @click.stop="selectFile(props.item)"></v-checkbox>
             <div v-else :class="{'countable-column-div': header.countable}">
@@ -50,7 +50,7 @@
 
 <script>
 import ApiService from '../../../common/apiService';
-import {Routes, PEN_REQ_BATCH_STATUS_CODES} from '../../../utils/constants';
+import {Routes, PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
 import filtersMixin from '@/mixins/filtersMixin';
 import Pagination from '@/components/util/Pagination';
 
@@ -112,7 +112,7 @@ export default {
           this.pagination();
         } else {
           this.pageNumber = 1;
-        }        
+        }
       }
     },
     loadingFiles: {
@@ -133,7 +133,7 @@ export default {
     searchCriteria() {
       const statusCriteriaList = this.filteredStatuses.length <= 0 ? this.defaultStatuses : this.filteredStatuses.join();
       return [
-        { 
+        {
           searchCriteriaList: [
             {key: 'schoolGroupCode', operation: 'eq', value: this.schoolGroup, valueType: 'STRING'},
             {key: 'penRequestBatchStatusCode', operation: 'in', value: statusCriteriaList, valueType: 'STRING', condition: 'AND'}
@@ -150,14 +150,13 @@ export default {
       this.selectedFile && (this.selectedFile.isSelected = false);
       this.$emit('update:selectedFile', file?.isSelected ? file : null);
     },
-    selectItem(item) {
-      item.isSelected = !item.isSelected;
-      this.selectFile(item);
+    clickItem(item) {
+      this.$emit('file-click', item);
     },
     initializeFiles(files) {
       //reset
       this.selectFile();
-      
+
       files.forEach(file => {
         file.isSelected = false;
         file.lrgCount = file.penRequestBatchStatusCode === PEN_REQ_BATCH_STATUS_CODES.HOLD_SIZE ? file.studentCount : 0;
@@ -203,9 +202,9 @@ export default {
   #dataTable /deep/ table th:nth-child(1) {
     width: 5%;
   }
-  
+
   #dataTable /deep/ table td:nth-last-child(2) ~ td,
-  #dataTable /deep/ table th:nth-last-child(2) ~ th { 
+  #dataTable /deep/ table th:nth-last-child(2) ~ th {
     border-left: thin solid #d7d7d7;
   }
 
