@@ -24,14 +24,15 @@
         </FilterTag>
       </v-sheet>
       <v-spacer v-else></v-spacer>
-      <PrimaryButton id="review-action" class="mr-2" :disabled="!filesSelected" text="Review" @click.native="clickReview"></PrimaryButton>
-      <PrimaryButton id="process-action" class="mx-2" :disabled="!filesSelected" text="Process" :loading="isProcessing"
+      <PrimaryButton id="review-action" class="mr-2" :disabled="!filesSelected || isActioned" text="Review" @click.native="clickReview"></PrimaryButton>
+      <PrimaryButton id="process-action" class="mx-2" :disabled="!filesSelected || isActioned" text="Process" :loading="isProcessing"
                      @click.native="markRecordForProcessing"></PrimaryButton>
-      <PrimaryButton id="delete-action" class="mx-2" :disabled="!filesSelected" text="Delete" :loading="isDeleting"
+      <PrimaryButton id="delete-action" class="mx-2" :disabled="!filesSelected || isActioned" text="Delete" :loading="isDeleting"
                      @click.native="deleteFile"></PrimaryButton>
     </v-row>
     <v-row no-gutters class="py-2" style="background-color:white;">
       <HeldRequestBatchList
+          :key="heldRequestBatchListKey"
           :schoolGroup="schoolGroup"
           :filters.sync="filters"
           :loadingFiles="loadingFiles"
@@ -93,6 +94,8 @@ export default {
       operation:undefined,
       openFileViewer: false,
       submissionNumber: '',
+      isActioned: false,
+      heldRequestBatchListKey: 0
     };
   },
   computed: {
@@ -116,10 +119,12 @@ export default {
           penRequestBatchIDs
         };
         this.isDeleting = true;
+        this.isActioned = true;
         ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/deleteFiles`, payload)
             .then(() => {
               const deletedMessage = `${this.submissionNumber} been deleted.`;
               this.setSuccessAlert(`Success! ${deletedMessage}`);
+              this.heldRequestBatchListKey = this.heldRequestBatchListKey + 1;
             })
             .catch(error => {
               this.setFailureAlert('An error occurred while deleting PEN Request Files! Please try again later.');
@@ -127,6 +132,7 @@ export default {
             })
             .finally(() => {
               this.isDeleting = false;
+              this.isActioned = false;
             });
       }
     },
@@ -139,10 +145,12 @@ export default {
           penRequestBatchIDs
         };
         this.isProcessing = true;
+        this.isActioned = true;
         ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/release-batch-files`, payload)
             .then(() => {
               const message = `${this.submissionNumber} is put into processing.`;
               this.setSuccessAlert(`Success! ${message}`);
+              this.heldRequestBatchListKey = this.heldRequestBatchListKey + 1;
             })
             .catch(error => {
               this.setFailureAlert('An error occurred while putting the PEN Request to processing! Please try again later.');
@@ -150,6 +158,7 @@ export default {
             })
             .finally(() => {
               this.isProcessing = false;
+              this.isActioned = false;
             });
       }
     },
