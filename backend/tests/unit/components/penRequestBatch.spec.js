@@ -372,12 +372,9 @@ describe('archive&unarchiveFiles&releaseBatchFilesForFurtherProcessing', () => {
   };
 
   beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
-    req = mockRequest();
-    res = mockResponse();
-    req.body = {
-      penRequestBatchIDs,
-    };
+    const prep = prepArchiveAndReturnTests(req, res, penRequestBatchIDs);
+    req = prep.req;
+    res = prep.res;
   });
 
   afterEach(() => {
@@ -465,18 +462,25 @@ describe('archive&unarchiveFiles&releaseBatchFilesForFurtherProcessing', () => {
   });
 });
 
+function prepArchiveAndReturnTests(req, res, penRequestBatchIDs) {
+  utils.getBackendToken.mockReturnValue('token');
+  req = mockRequest();
+  res = mockResponse();
+  req.body = {
+    penRequestBatchIDs,
+  };
+  return { req: req, res: res };
+}
+
 describe('archiveAndReturnFiles', () => {
   let req;
   let res;
   const penRequestBatchIDs = ['c0a8014d-74e1-1d99-8174-e10db81f0001', 'c0a8014d-74e1-1d99-8174-e10db81f0002'];
 
   beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
-    req = mockRequest();
-    res = mockResponse();
-    req.body = {
-      penRequestBatchIDs,
-    };
+    const prep = prepArchiveAndReturnTests(req, res, penRequestBatchIDs);
+    req = prep.req;
+    res = prep.res;
   });
 
   afterEach(() => {
