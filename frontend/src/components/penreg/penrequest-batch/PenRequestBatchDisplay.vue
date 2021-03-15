@@ -250,7 +250,7 @@ export default {
           const archivedFixableNumber = archiveFixable?.value?.data?.length;
           const archivedAndReturnedNumber = archiveAndReturn?.value?.data?.length;
           const totalArchivedNumber = archivedFixableNumber + archivedAndReturnedNumber;
-          const archivedMessage = `${totalArchivedNumber} PEN Request ${pluralize('File', totalArchivedNumber)} ${pluralize('has', totalArchivedNumber)} been archived.`;
+          const archivedMessage = `Archive requests for ${totalArchivedNumber} PEN Request ${pluralize('File', totalArchivedNumber)} ${pluralize('has', totalArchivedNumber)} been initiated.`;
           
           if(totalArchivedNumber === fileNumber) {
             this.setSuccessAlert(`Success! ${archivedMessage}`);
