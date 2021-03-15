@@ -5,7 +5,7 @@ const auth = require('../components/auth');
 const utils = require('../components/utils');
 const extendSession = utils.extendSession();
 const { getPENBatchRequestStats, getPenRequestFiles, getPenRequestBatchStudents, getPenWebBlobBySubmissionNumber, getPenRequestBatchStudentById, getPenRequestBatchStudentMatchOutcome, updatePrbStudentInfoRequested,
-  issueNewPen, userMatchSaga, userUnmatchSaga, archiveFiles, unarchiveFiles, softDeleteFiles, releaseBatchFilesForFurtherProcessing } = require('../components/penRequestBatch');
+  issueNewPen, userMatchSaga, userUnmatchSaga, archiveFiles, archiveAndReturnFiles, unarchiveFiles, softDeleteFiles, releaseBatchFilesForFurtherProcessing } = require('../components/penRequestBatch');
 
 /*
  * Get all pen request batch files
@@ -67,6 +67,11 @@ router.post('/:id/students/:studentId/user-match', passport.authenticate('jwt', 
 router.post('/:id/students/:studentId/user-unmatch', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, userUnmatchSaga);
 
 router.post('/archiveFiles', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, archiveFiles);
+
+/*
+ * Post batch ids to batch api to archive and return saga
+ */
+router.post('/archiveAndReturnFiles', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, archiveAndReturnFiles);
 router.post('/unarchiveFiles', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, unarchiveFiles);
 router.post('/deleteFiles', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, softDeleteFiles);
 router.post('/release-batch-files', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, releaseBatchFilesForFurtherProcessing);

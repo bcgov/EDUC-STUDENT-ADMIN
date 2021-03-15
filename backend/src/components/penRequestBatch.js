@@ -305,11 +305,39 @@ async function updateFilesByIDs(req, res, updateFile) {
 }
 
 function archiveFiles(req, res) {
-  return updateFilesByIDs(req, res, batchFile => {
-    batchFile.penRequestBatchStatusCode = PEN_REQ_BATCH_STATUS_CODES.ARCHIVED;
-    batchFile.processDate = LocalDateTime.now().toString();
-    return batchFile;
-  });
+  if(req.body.penRequestBatchIDs?.length) {
+    return updateFilesByIDs(req, res, batchFile => {
+      batchFile.penRequestBatchStatusCode = PEN_REQ_BATCH_STATUS_CODES.ARCHIVED;
+      batchFile.processDate = LocalDateTime.now().toString();
+      return batchFile;
+    });
+  } else {
+    logDebug('No pen request batch ids provided to archiveFiles. Doing nothing.');
+    return res.status(200).json();
+  }
+}
+
+async function archiveAndReturnFiles(req, res) {
+
+  if(req.body.penRequestBatchIDs?.length) {
+    const token = getBackendToken(req, res);
+    try {
+      const sagaReq = {
+        penRequestBatchIDs: req.body.penRequestBatchIDs
+      };
+      let sagaIds = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/archive-and-return`, sagaReq, null, getUser(req).idir_username);
+      sagaIds.forEach(async (sagaId) => {
+        await createPenRequestBatchSagaRecordInRedis(sagaId.sagaId, 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_TOPIC', 'archiveAndReturn', sagaId.penRequestBatchID);
+      });
+      return res.status(200).json(sagaIds);
+    } catch (e) {
+      logApiError(e, 'archiveAndReturnFiles', 'Error calling archive and return saga.');
+      return errorResponse(res);
+    }
+  } else {
+    logDebug('No pen request batch ids provided to archiveAndReturnFiles. Doing nothing.');
+    return res.status(200).json();
+  }
 }
 
 function unarchiveFiles(req, res) {
@@ -344,6 +372,7 @@ module.exports = {
   userMatchSaga,
   userUnmatchSaga,
   archiveFiles,
+  archiveAndReturnFiles,
   unarchiveFiles,
   softDeleteFiles,
   releaseBatchFilesForFurtherProcessing

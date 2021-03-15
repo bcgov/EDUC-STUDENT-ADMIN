@@ -372,12 +372,9 @@ describe('archive&unarchiveFiles&releaseBatchFilesForFurtherProcessing', () => {
   };
 
   beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
-    req = mockRequest();
-    res = mockResponse();
-    req.body = {
-      penRequestBatchIDs,
-    };
+    const prep = prepArchiveAndReturnTests(req, res, penRequestBatchIDs);
+    req = prep.req;
+    res = prep.res;
   });
 
   afterEach(() => {
@@ -462,5 +459,74 @@ describe('archive&unarchiveFiles&releaseBatchFilesForFurtherProcessing', () => {
     await penRequestBatch.releaseBatchFilesForFurtherProcessing(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(releaseResponse);
+  });
+});
+
+function prepArchiveAndReturnTests(req, res, penRequestBatchIDs) {
+  utils.getBackendToken.mockReturnValue('token');
+  req = mockRequest();
+  res = mockResponse();
+  req.body = {
+    penRequestBatchIDs,
+  };
+  return { req: req, res: res };
+}
+
+describe('archiveAndReturnFiles', () => {
+  let req;
+  let res;
+  const penRequestBatchIDs = ['c0a8014d-74e1-1d99-8174-e10db81f0001', 'c0a8014d-74e1-1d99-8174-e10db81f0002'];
+
+  beforeEach(() => {
+    const prep = prepArchiveAndReturnTests(req, res, penRequestBatchIDs);
+    req = prep.req;
+    res = prep.res;
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return all batch files and saga ids', async () => {
+    const resp = [
+      {
+        penRequestBatchID: 'c0a8014d-74e1-1d99-8174-e10db8410011',
+        sagaId: 'c0a8014d-74e1-1d99-8174-e10db8410003'
+      },
+      {
+        penRequestBatchID: 'c0a8014d-74e1-1d99-8174-e10db8410012',
+        sagaId: 'c0a8014d-74e1-1d99-8174-e10db8410004'
+      }];
+    utils.postData.mockResolvedValue(resp);
+    await penRequestBatch.archiveAndReturnFiles(req, res);
+    expect(utils.postData.mock.calls[0][2]).toEqual({penRequestBatchIDs: penRequestBatchIDs});
+    expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenCalledTimes(2);
+    expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenNthCalledWith(1,{
+      sagaId: resp[0].sagaId,
+      penRequestBatchStudentID: resp[0].penRequestBatchID,
+      sagaStatus: 'INITIATED',
+      sagaName: 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_TOPIC'
+    });
+    expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenNthCalledWith(2,{
+      sagaId: resp[1].sagaId,
+      penRequestBatchStudentID: resp[1].penRequestBatchID,
+      sagaStatus: 'INITIATED',
+      sagaName: 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_TOPIC'
+    });
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+    expect(res.json).toHaveBeenCalledWith(resp);
+  });
+
+  it('should nothing given no batch ids provided', async () => {
+    req.body = [];
+    await penRequestBatch.archiveAndReturnFiles(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+    expect(res.json).toHaveBeenCalledWith();
+  });
+
+  it('should return INTERNAL_SERVER_ERROR if postData failed', async () => {
+    utils.postData.mockRejectedValue(new Error('Test error'));
+    await penRequestBatch.archiveAndReturnFiles(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
   });
 });

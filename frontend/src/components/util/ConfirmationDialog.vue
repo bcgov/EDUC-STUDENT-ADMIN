@@ -1,15 +1,17 @@
 <template>
   <v-dialog v-model="dialog" :max-width="options.width" :style="{ zIndex: options.zIndex }" @keydown.esc="cancel">
     <v-card>
-      <v-toolbar :dark="options.dark" :color="options.color" :dense="options.dense" flat>
-        <v-toolbar-title :class="{'white--text': options.dark, 'align-self-end': options.closeIcon, 'font-weight-bold': options.titleBold, 'dialog-subtitle':  options.subtitle}">
-          {{ title }}
-        </v-toolbar-title>
-        <v-spacer/>
-        <v-btn id="closeBtn" v-if="options.closeIcon" text icon @click.native="cancel">
-          <v-icon color="#38598A">mdi-close</v-icon>
-        </v-btn>
-      </v-toolbar>
+      <slot name="title" :cancel="cancel">
+        <v-toolbar :dark="options.dark" :color="options.color" :dense="options.dense" flat>
+            <v-toolbar-title :class="{'white--text': options.dark, 'align-self-end': options.closeIcon, 'font-weight-bold': options.titleBold, 'dialog-subtitle':  options.subtitle}">
+              {{ title }}
+            </v-toolbar-title>
+          <v-spacer/>
+          <v-btn id="closeBtn" v-if="options.closeIcon" text icon @click.native="cancel">
+            <v-icon color="#38598A">mdi-close</v-icon>
+          </v-btn>
+        </v-toolbar>
+      </slot>
       <v-card-text :class="[options.messagePadding, { 'black--text': !options.dark }]">
         {{ message }}
         <slot name="message"></slot>
