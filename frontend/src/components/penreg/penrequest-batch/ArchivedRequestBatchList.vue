@@ -12,7 +12,7 @@
 import { mapMutations, mapState } from 'vuex';
 import PenRequestBatchDataTable from './PenRequestBatchDataTable';
 import ApiService from '../../../common/apiService';
-import {Routes, SEARCH_FILTER_OPERATION, SEARCH_CONDITION, SEARCH_VALUE_TYPE} from '../../../utils/constants';
+import {Routes, SEARCH_FILTER_OPERATION, SEARCH_CONDITION, SEARCH_VALUE_TYPE, PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
 import {formatDateTime} from '../../../utils/format';
 import {compact, partialRight} from 'lodash';
 import { deepCloneObject } from '../../../utils/common';
@@ -100,10 +100,11 @@ export default {
         this.getSearchParam(paramName, paramValue))
       ));
       
+      const statusCodeList = [PEN_REQ_BATCH_STATUS_CODES.ARCHIVED, PEN_REQ_BATCH_STATUS_CODES.REARCHIVED].join();
       return [
         { 
           searchCriteriaList: [
-            {key: 'penRequestBatchStatusCode', operation: 'eq', value: 'ARCHIVED', valueType: 'STRING'}
+            {key: 'penRequestBatchStatusCode', operation: 'in', value: statusCodeList, valueType: 'STRING'}
           ]
         },
         { 

@@ -253,6 +253,11 @@ export const PEN_REQ_BATCH_STATUS_CODES = Object.freeze(
     HOLD_SIZE: 'HOLD_SIZE',
     DUPLICATE: 'DUPLICATE',
     ACTIVE: 'ACTIVE',
+    ARCHIVED: 'ARCHIVED',
+    REARCHIVED: 'REARCHIVED',
+    UNARCHIVED: 'UNARCHIVED',
+    UNARCH_CHG: 'UNARCH_CHG',
+    LOAD_FAIL: 'LOADFAIL',
   }
 );
 export const PAGE_TITLES = Object.freeze(
