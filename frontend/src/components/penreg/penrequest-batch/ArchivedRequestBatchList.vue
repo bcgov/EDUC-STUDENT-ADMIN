@@ -103,7 +103,7 @@ export default {
       return [
         { 
           searchCriteriaList: [
-            {key: 'penRequestBatchStatusCode', operation: 'eq', value: 'ARCHIVED', valueType: 'STRING'}
+            {key: 'penRequestBatchStatusCode', operation: 'in', value: 'ARCHIVED,REARCHIVED', valueType: 'STRING'}
           ]
         },
         { 

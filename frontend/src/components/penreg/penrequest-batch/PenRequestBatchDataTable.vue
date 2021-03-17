@@ -52,7 +52,15 @@
                     {{isUnarchivedBatchChanged(props.item) ? 'fa-sync-alt' : 'fa-unlock'}}
                   </v-icon>
                 </template>
-                <span>{{getUnarchivedUser(props.item)}}</span>
+                <span>{{getUpdateUser(props.item)}}</span>
+              </v-tooltip>
+              <v-tooltip v-if="header.value==='mincode' && isRearchived(props.item)" right>
+                <template v-slot:activator="{ on }">
+                  <v-icon color="#2E8540" v-on="on" class="ml-1">
+                    {{'preview'}}
+                  </v-icon>
+                </template>
+                <span>{{getUpdateUser(props.item)}}</span>
               </v-tooltip>
             </div>
           </td>
@@ -154,8 +162,11 @@ export default {
     isUnarchivedBatchChanged(item) {
       return item.penRequestBatchStatusCode === 'UNARCH_CHG';
     },
-    getUnarchivedUser(item) {
-      if (this.isUnarchived(item)) {
+    isRearchived(item) {
+      return item.penRequestBatchStatusCode === 'REARCHIVED';
+    },
+    getUpdateUser(item) {
+      if (this.isUnarchived(item) || this.isRearchived(item)) {
         return item.updateUser;
       }
       return '';
