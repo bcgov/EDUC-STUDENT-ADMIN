@@ -13,7 +13,7 @@
 import { mapMutations, mapState } from 'vuex';
 import PenRequestBatchDataTable from './PenRequestBatchDataTable';
 import ApiService from '../../../common/apiService';
-import {Routes} from '../../../utils/constants';
+import {Routes, PEN_REQ_BATCH_STATUS_CODES} from '../../../utils/constants';
 import filtersMixin from '@/mixins/filtersMixin';
 
 export default {
@@ -101,11 +101,12 @@ export default {
     },
     searchCriteria() {
       const statusCriteriaList = this.prbStudentStatusFilters.map(statusCriteria => ({key: statusCriteria, operation: 'gt', value: 0, valueType: 'LONG', condition: 'OR'}));
+      const statusCodeList = [PEN_REQ_BATCH_STATUS_CODES.ACTIVE, PEN_REQ_BATCH_STATUS_CODES.UNARCHIVED, PEN_REQ_BATCH_STATUS_CODES.UNARCH_CHG].join();
       return [
         { 
           searchCriteriaList: [
             {key: 'schoolGroupCode', operation: 'eq', value: this.schoolGroup, valueType: 'STRING'},
-            {key: 'penRequestBatchStatusCode', operation: 'in', value: 'ACTIVE,UNARCHIVED,UNARCH_CHG', valueType: 'STRING', condition: 'AND'}
+            {key: 'penRequestBatchStatusCode', operation: 'in', value: statusCodeList, valueType: 'STRING', condition: 'AND'}
           ]
         },
         { 
@@ -131,7 +132,7 @@ export default {
       }      
     },
     initializeFiles(files) {
-      let activeFile = files?.find(f => f.penRequestBatchStatusCode === 'ACTIVE');
+      let activeFile = files?.find(f => f.penRequestBatchStatusCode === PEN_REQ_BATCH_STATUS_CODES.ACTIVE);
       activeFile && (activeFile.firstActiveFile = true);
 
       if (this.isFilterOperation) {

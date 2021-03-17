@@ -79,6 +79,7 @@
 import {uniqBy} from 'lodash';
 import router from '../../../router';
 import Pagination from '@/components/util/Pagination';
+import {PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
 
 export default {
   name: 'PenRequestBatchDataTable',
@@ -157,13 +158,14 @@ export default {
       return rowClass;
     },
     isUnarchived(item) {
-      return item.penRequestBatchStatusCode === 'UNARCHIVED' || item.penRequestBatchStatusCode === 'UNARCH_CHG';
+      return item.penRequestBatchStatusCode === PEN_REQ_BATCH_STATUS_CODES.UNARCHIVED 
+      || item.penRequestBatchStatusCode === PEN_REQ_BATCH_STATUS_CODES.UNARCH_CHG;
     },
     isUnarchivedBatchChanged(item) {
-      return item.penRequestBatchStatusCode === 'UNARCH_CHG';
+      return item.penRequestBatchStatusCode === PEN_REQ_BATCH_STATUS_CODES.UNARCH_CHG;
     },
     isRearchived(item) {
-      return item.penRequestBatchStatusCode === 'REARCHIVED';
+      return item.penRequestBatchStatusCode === PEN_REQ_BATCH_STATUS_CODES.REARCHIVED;
     },
     getUpdateUser(item) {
       if (this.isUnarchived(item) || this.isRearchived(item)) {

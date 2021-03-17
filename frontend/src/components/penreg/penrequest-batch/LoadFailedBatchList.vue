@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import {Routes} from '@/utils/constants';
+import {Routes, PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
 import PrimaryButton from '../../util/PrimaryButton';
 import alertMixin from '../../../mixins/alertMixin';
 import AlertMessage from '../../util/AlertMessage';
@@ -153,7 +153,7 @@ export default {
             {
               key: 'penRequestBatchStatusCode',
               operation: 'in',
-              value: 'LOADFAIL',
+              value: PEN_REQ_BATCH_STATUS_CODES.LOAD_FAIL,
               valueType: 'STRING',
               condition: 'AND'
             }
