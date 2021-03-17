@@ -80,14 +80,15 @@ export default {
       this.loading = true;
       const req = {
         params: {
-          submissionNumber: this.submissionNumber
+          submissionNumber: this.submissionNumber,
+          fileType: 'PEN'
         }
       };
       ApiService.apiAxios
         .get(Routes.penRequestBatch.SOURCE_URL, req)
         .then(response => {
-          if (response.data) {
-            this.penWebBlob = response.data;
+          if (response.data && response.data.length > 0) {
+            this.penWebBlob = response.data[0];
           }
         })
         .catch(error => {

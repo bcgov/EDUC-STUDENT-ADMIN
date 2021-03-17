@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../components/auth');
 const utils = require('../components/utils');
 const extendSession = utils.extendSession();
-const { getPENBatchRequestStats, getPenRequestFiles, getPenRequestBatchStudents, getPenWebBlobBySubmissionNumber, getPenRequestBatchStudentById, getPenRequestBatchStudentMatchOutcome, updatePrbStudentInfoRequested,
+const { getPENBatchRequestStats, getPenRequestFiles, getPenRequestBatchStudents, getPenWebBlobs, getPenRequestBatchStudentById, getPenRequestBatchStudentMatchOutcome, updatePrbStudentInfoRequested,
   issueNewPen, userMatchSaga, userUnmatchSaga, archiveFiles, archiveAndReturnFiles, unarchiveFiles, softDeleteFiles, releaseBatchFilesForFurtherProcessing } = require('../components/penRequestBatch');
 
 /*
@@ -25,7 +25,7 @@ router.get('/students', passport.authenticate('jwt', {session: false}, undefined
 /*
  * Get pen web blob
  */
-router.get('/source', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, getPenWebBlobBySubmissionNumber);
+router.get('/source', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, getPenWebBlobs);
 
 /*
  * Get pen request batch students match results
