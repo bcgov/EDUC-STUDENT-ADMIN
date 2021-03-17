@@ -103,7 +103,7 @@
                                  :name="prefixFieldName(STUDENT_DETAILS_FIELDS.TRUE_STUDENT_ID)" colspan="6" label="Merged To"
                                  labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
-    <v-row>
+    <v-row no-gutters class="py-1">
       <v-col cols="4">
         <p :class="['labelField', highlightDiff && !!studentHistoryDetail.memo_diff && !studentHistoryDetail.memo? 'diff-value' : 'plain-value' ]">
           Memo</p>
