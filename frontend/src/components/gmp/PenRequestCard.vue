@@ -126,7 +126,7 @@ export default {
   },
   computed: {
     disableSearchBtn() {
-      return !this.request.legalLastName && !this.request.legalLastName
+      return !this.request.legalLastName && !this.request.legalFirstName
           && !this.request.genderCode && !this.request.dob;
     },
   },
