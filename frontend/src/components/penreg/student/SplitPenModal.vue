@@ -201,6 +201,6 @@ export default {
   }
   .title{
     padding-top: 9px;
-    padding-bottom: 15px;
+    padding-bottom: 11px;
   }
 </style>

@@ -15,9 +15,9 @@
           <v-alert v-if="row.error" color="#D8292F" dismissible width="100%" class="bootstrap-error mb-0">
             <strong>Error</strong> loading {{ row.title }} row data. Try refreshing the page.
           </v-alert>
-          <div v-else-if="idx==='heldReview'">
+          <div v-else-if="idx==='heldReview' && col > 0">
             <router-link to="heldRequestBatch">
-              {{ col }} {{ dataColWording(idx) }}
+              <strong>{{ col }} {{ dataColWording(idx) }}</strong>
             </router-link>
           </div>
           <div v-else>{{ col }} {{ dataColWording(idx) }}</div>
