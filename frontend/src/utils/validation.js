@@ -1,6 +1,5 @@
 import {LocalDate, DateTimeFormatterBuilder, ResolverStyle} from '@js-joda/core';
 import {groupBy, isPlainObject} from 'lodash';
-import moment from 'moment';
 
 const datePatternWithSlash = (new DateTimeFormatterBuilder).appendPattern('uuuu/MM/dd').toFormatter(ResolverStyle.STRICT);
 export function checkDigit(pen) {
@@ -50,35 +49,27 @@ export function isValidDob(dob, pattern='uuuu/MM/dd') {
   return false;
 }
 
-export function isValidEndDate(
-  { startDate, endDate, hint = 'Must be after Date From'},
-  button = null)
-{
+export function isValidEndDate({ startDate, endDate }) {
   /*
   * is this just to compare if end date is a future date from start date
   * this does not validate the date itself
   * sample date: 2021/03/15, doesn't have to be slashes, as long as works with moment
   *
-  * button should consist of two keys components _this and field
-  * sample: { _this: this, field: 'searchEnabled' }, this sample is from ArchivedRequestBatchDisplay.vue
-  * _this passes the whole component to this function
-  * field is the data field in that vue component we want to set to false
   * */
   if(startDate && endDate) {
     // length to be the same in order not to do checks everytime
     if(startDate.length === endDate.length) {
+      const parseJoda = date => LocalDate.parse(date.replaceAll('/', '-'));
       // using moment's build-in function to do checks
       // cannot only use isBefore() because same date will return false
-      // so using isSame() before isBefore() to check if dates are the same first
-      if(moment(startDate).isSame(endDate)) return [];
-      if(moment(endDate).isBefore(startDate)) {
-        // if there's a button need to be disabled when validation fails
-        if (button) button._this[button.field] = false;
-        return [hint] ;
-      }
+      // so using equals() before isBefore() to check if dates are the same first
+      const startDateJoda = parseJoda(startDate);
+      const endDateJoda = parseJoda(endDate);
+      if(startDateJoda.equals(endDateJoda)) return true;
+      if(endDateJoda.isBefore(startDateJoda)) return false ;
     }
+    return true;
   }
-  return [];
 }
 
 export function isDateAfter1900(dob, pattern='uuuu/MM/dd') {

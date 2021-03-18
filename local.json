@@ -1,0 +1,112 @@
+{
+  "logoutEndpoint": "https://soam-tools.apps.silver.devops.gov.bc.ca/auth/realms/master/protocol/openid-connect/logout",
+  "siteMinder_logout_endpoint": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=",
+  "server": {
+    "frontend": "http://localhost:8081",
+    "backend": "http://localhost:8080' + '/api",
+    "logLevel": "debug",
+    "morganFormat": "dev",
+    "port": "8080",
+    "scheduler": {
+      "schedulerCronStaleSagaRecordRedis": "0 0 0 * * *",
+      "minTimeBeforeSagaIsStaleInMinutes": 1
+    },
+    "penRequest": {
+      "statusCodeURL": "https://pen-request-api-75e61b-tools.apps.silver.devops.gov.bc.ca/statuses",
+      "documentTypeCodesURL": "https://pen-request-api-75e61b-tools.apps.silver.devops.gov.bc.ca/document-types",
+      "rootURL": "https://pen-request-api-75e61b-tools.apps.silver.devops.gov.bc.ca",
+      "macrosURL": "https://pen-request-api-75e61b-tools.apps.silver.devops.gov.bc.ca/pen-request-macro",
+      "emails": "https://student-profile-email-api-8878b4-tools.apps.silver.devops.gov.bc.ca/gmp",
+      "paginated": "https://pen-request-api-75e61b-tools.apps.silver.devops.gov.bc.ca/paginated",
+      "rolesAllowed":["STUDENT_ADMIN","STUDENT_ADMIN_READ_ONLY"],
+      "roleAdmin":"STUDENT_ADMIN"
+    },
+    "studentSearch": {
+      "roleAdmin": "STUDENT_SEARCH_ADMIN"
+    },
+    "studentRequest": {
+      "statusCodeURL": "https://student-profile-api-75e61b-tools.apps.silver.devops.gov.bc.ca/statuses",
+      "documentTypeCodesURL": "https://student-profile-api-75e61b-tools.apps.silver.devops.gov.bc.ca/document-types",
+      "rootURL": "https://student-profile-api-75e61b-tools.apps.silver.devops.gov.bc.ca",
+      "macrosURL": "https://student-profile-api-75e61b-tools.apps.silver.devops.gov.bc.ca/student-profile-macro",
+      "emails": "https://student-profile-api-75e61b-tools.apps.silver.devops.gov.bc.ca/ump",
+      "paginated": "https://student-profile-api-75e61b-tools.apps.silver.devops.gov.bc.ca/paginated",
+      "rolesAllowed":["STUDENT_PROFILE_ADMIN","STUDENT_PROFILE_READ_ONLY"],
+      "roleAdmin":"STUDENT_PROFILE_ADMIN"
+    },
+    "penRequestBatch": {
+      "rootURL1": "http://localhost:3002/api/v1",
+      "rootURL": "https://pen-reg-batch-api-8878b4-tools.apps.silver.devops.gov.bc.ca/api/v1",
+      "paginated": "https://pen-reg-batch-api-8878b4-tools.apps.silver.devops.gov.bc.ca/api/v1/pen-request-batch/paginated",
+      "studentStatusCodesURL": "https://pen-reg-batch-api-8878b4-tools.apps.silver.devops.gov.bc.ca/api/v1/pen-request-batch/student/pen-request-batch-student-status-codes",
+      "studentInfoMacrosURL": "https://pen-reg-batch-api-8878b4-tools.apps.silver.devops.gov.bc.ca/api/v1/pen-request-batch-macro",
+      "roleAdmin": "PEN_REQUEST_BATCH_ADMIN",
+      "sourceURL":  "https://pen-reg-batch-api-8878b4-tools.apps.silver.devops.gov.bc.ca/api/v1/pen-request-batch/source"
+    },
+    "penMatch": {
+      "rootURL": "https://pen-match-api-8878b4-tools.apps.silver.devops.gov.bc.ca/api/v1/pen-match",
+      "matchReasonCodes": "https://pen-match-api-8878b4-tools.apps.silver.devops.gov.bc.ca/api/v1/pen-match/match-reason-codes",
+      "possibleMatch": "https://pen-match-api-8878b4-tools.apps.silver.devops.gov.bc.ca/api/v1/pen-match/possible-match",
+      "roleAdmin": "STUDENT_SEARCH_ADMIN"
+    },
+    "demographicsURL": "https://pen-demographics-api-75e61b-tools.apps.silver.devops.gov.bc.ca",
+    "digitalIdURL": "https://digitalid-api-75e61b-tools.apps.silver.devops.gov.bc.ca",
+    "digitalIdIdentityTypeCodesURL": "https://digitalid-api-75e61b-tools.apps.silver.devops.gov.bc.ca/identityTypeCodes",
+    "studentURL": "https://student-api-75e61b-tools.apps.silver.devops.gov.bc.ca",
+    "studentGenderCodesURL": "https://student-api-75e61b-tools.apps.silver.devops.gov.bc.ca/gender-codes",
+    "studentDemogCodesURL": "https://student-api-75e61b-tools.apps.silver.devops.gov.bc.ca/demog-codes",
+    "studentStatusCodesURL": "https://student-api-75e61b-tools.apps.silver.devops.gov.bc.ca/status-codes",
+    "studentGradeCodesURL": "https://student-api-75e61b-tools.apps.silver.devops.gov.bc.ca/grade-codes",
+    "profileSagaAPIURL": "https://student-profile-saga-api-8878b4-tools.apps.silver.devops.gov.bc.ca",
+    "schoolAPIURL": "https://school-api-75e61b-tools.apps.silver.devops.gov.bc.ca/api/v1",
+    "schoolAPIURL1": "http://localhost:3031/api/v1",
+    "penTraxURL": "https://pen-trax-api-75e61b-tools.apps.silver.devops.gov.bc.ca/api/v1",
+    "sld": {
+      "rootURL": "https://sld-api-75e61b-tools.apps.silver.devops.gov.bc.ca/api/v1",
+      "studentHistoryURL": "https://sld-api-75e61b-tools.apps.silver.devops.gov.bc.ca/api/v1/student-history/"
+    },
+    "student": {
+      "rootURL": "https://student-api-75e61b-tools.apps.silver.devops.gov.bc.ca/api/v1/student",
+      "genderCodesURL": "https://student-api-75e61b-tools.apps.silver.devops.gov.bc.ca/api/v1/student/gender-codes",
+      "demogCodesURL": "https://student-api-75e61b-tools.apps.silver.devops.gov.bc.ca/api/v1/student/demog-codes",
+      "statusCodesURL": "https://student-api-75e61b-tools.apps.silver.devops.gov.bc.ca/api/v1/student/status-codes",
+      "gradeCodesURL": "https://student-api-75e61b-tools.apps.silver.devops.gov.bc.ca/api/v1/student/grade-codes",
+      "twinReasonCodesURL": "https://student-api-75e61b-tools.apps.silver.devops.gov.bc.ca/api/v1/student/twin-reason-codes",
+      "historyActivityCodesURL": "https://student-api-75e61b-tools.apps.silver.devops.gov.bc.ca/api/v1/student/history-activity-codes"
+    },
+    "penServices": {
+      "rootURL": "https://pen-services-api-8878b4-tools.apps.silver.devops.gov.bc.ca/api/v1/pen-services",
+      "nextPenURL": "https://pen-services-api-8878b4-tools.apps.silver.devops.gov.bc.ca/api/v1/pen-services/next-pen-number",
+      "validateDemographicsURL": "https://pen-services-api-8878b4-tools.apps.silver.devops.gov.bc.ca/api/v1/pen-services/validation/student-request",
+      "prbValidationFieldCodesURL": "https://pen-services-api-8878b4-tools.apps.silver.devops.gov.bc.ca/api/v1/pen-services/validation/issue-field-code",
+      "prbValidationSeverityCodesURL": "https://pen-services-api-8878b4-tools.apps.silver.devops.gov.bc.ca/api/v1/pen-services/validation/issue-severity-code",
+      "prbValidationTypeCodesURL": "https://pen-services-api-8878b4-tools.apps.silver.devops.gov.bc.ca/api/v1/pen-services/validation/issue-type-code"
+    }
+  },
+  "oidc": {
+    "publicKey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq61DP/tD00qMXNcfqdVH\nHX50OcND3m2NbDBmMQuLFx4eRmaBWsihqt2Zusfrdfh0boMKGTf8/ZPRkdsKx3Gm\ndJT4ZFbNuiDIM9PEUR58u2PsrK1qMJM7v5oFOTddxCJfvHQjoF3CgAOBf0FNRY/k\n1x7yZZXZRlGGd9h5Fi9N+z4ocnjvVwSCXgTaOGLRZloneIaUdvGY+99LufOh915L\nKHePiyzhNFpz5arzgo6jX+ELpmxv6Isv/ZiBxCTV+Vcbk/gBRN05L06V6dMDEu4n\nmU8+e8or1ZFCSzffCXz38zLz0HokK+UeE3SxClFzTwwvrfOpK27/ylJvva08rl2T\nPQIDAQAB \n-----END PUBLIC KEY-----",
+    "clientId": "student-admin-soam",
+    "clientSecret": "3bc99adb-28ef-4f5e-b97a-2d9a38d8938a",
+    "discovery": "https://soam-tools.apps.silver.devops.gov.bc.ca/auth/realms/master/.well-known/openid-configuration",
+    "staffRole": "STUDENT_ADMIN"
+  },
+  "tokenGenerate": {
+    "privateKey": "-----BEGIN RSA PRIVATE KEY-----\n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\n-----END RSA PRIVATE KEY-----",
+    "publicKey": "-----BEGIN RSA PUBLIC KEY-----\nMIICCgKCAgEAxga5SFMrlty4yiybOeGLZlCONjsCQu5xdbU/h2THXpp7P3DHQUJm\nXxCuvg/akoYpgkkbfWiZNHAX43KSsjmG8ToLgGSC+jwjq4KLfCG6sfD+foZosV2T\njMP4VHKzsc0iIo3DBnKSLAwUu5T6Rn3Y9KV4WoiMSwsfVwBt0tzocovKSDf8iV52\nRPiNTI/X81H0Rk6W96YG7lqoB6wJziNshxR19SbXTXhIdpdA/0z+XSPds0I9nfIh\n1q93fmrep6DNmxgdU9qxlXHF6s9xhe3unnZrYNeAsmOJRy/Rp6ArzLiBD97x/+rI\nQ9p69OmJ7nqdBrLgDH0j1LEvny+k5OcQFIs95oikAlTa/rWi7kUXFVOcqDFyoHjb\ngao19uTUdtnpjetReTdElrWcl+mJ8NV8KnjuJJRacEPK2QJhD0ECEEHwIfFx98FK\nEAVTU31ObiMK4FTF45FIbPFKBF8txNX/3+sfZXyf5+Od6d2NHTvRafK54ey6s1M5\n1wnu6/ioYhkJGsa/3Uw4mR0KAdXL+OkdsdNkXFKW3OROaDzU/of84LRmq3p0b+Yd\n/xLTY7NkOsD3FclY6Lw6GyptZh3seQIYYnA65MmZQGnR8dyn/pXlDkjuwXE7wNa1\nmUFtNF0+aRNWaAtddcOKzGU2YlaUR6CrbbZueQD6GHPv4sdIo84h5QsCAwEAAQ==\n-----END RSA PUBLIC KEY-----",
+    "audience": "http://localhost:8081",
+    "issuer": "STUDENT_ADMIN_APPLICATION"
+  },
+  "redis": {
+    "host": "localhost",
+    "port": 6379
+  },
+  "messaging":{
+    "natsUrl":"nats://localhost:4222",
+    "natsCluster":"test-cluster",
+    "queueGroupName": "student-admin-node-queue-group-om"
+  },
+  "scheduler": {
+    "schedulerCronStaleSagaRecordRedis": "* * * 31 2 *",
+    "minTimeBeforeSagaIsStaleInSeconds": "20"
+  }
+}
