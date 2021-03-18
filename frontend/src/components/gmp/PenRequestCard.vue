@@ -4,8 +4,19 @@
       <v-col cols="12" xl="3" lg="3" md="3" sm="3">
         <p class="mb-2">Legal:</p>
       </v-col>
-      <v-col cols="12" xl="9" lg="9" md="9" sm="9">
+      <v-col cols="12" xl="8" lg="8" md="8" sm="8">
         <p class="mb-2"><strong>{{ this.request.legalLastName ? this.request.legalLastName: '(none)'}}, {{ this.request.legalFirstName ? this.request.legalFirstName: '(none)'}}, {{ this.request.legalMiddleNames ? this.request.legalMiddleNames: '(none)'}}</strong></p>
+      </v-col>
+      <v-col cols="1">
+        <PrimaryButton
+            color="#38598A"
+            text="Search"
+            :short="true"
+            :disabled="disableSearchBtn"
+            class="mt-1 ml-n3"
+            @click.native="searchStudent"
+        >
+        </PrimaryButton>
       </v-col>
     </v-row>
     <v-row no-gutters class="px-2">
@@ -98,13 +109,38 @@
 </template>
 
 <script>
+import router from '@/router';
+import PrimaryButton from '@/components/util/PrimaryButton';
+
 export default {
   name: 'penRequestCard',
+  components: {
+    PrimaryButton
+  },
   props: {
     request: {
       type: Object,
       required: true
     },
   },
+  methods: {
+    disableSearchBtn() {
+      return !this.request.legalLastName && !this.request.legalLastName
+        && !this.request.genderCode && !this.request.dob;
+    },
+    searchStudent() {
+      const searchParams = {
+        pen: null,
+        legalLastName: this.request.legalLastName,
+        legalFirstName: this.request.legalFirstName,
+        genderCode: this.request.genderCode,
+        dob: this.request.dob,
+      };
+      console.log('Search button is clicked!!!');
+
+      const route = router.resolve({ name: 'basicSearch', query: { ...searchParams }});
+      window.open(route.href, '_blank');
+    },
+  }
 };
 </script>
