@@ -60,7 +60,7 @@
                     label="Date To"
                     @keyup.enter="enterPushed()"
                     v-on:input="searchHasValues"
-                    :rules="[...validateField(batchFileSearchParams.load.endDate, isPresentDateAndAfter1900, dateHint), ...isValidEndDate(batchFileSearchParams.load)]"
+                    :rules="[...validateField(batchFileSearchParams.load.endDate, isPresentDateAndAfter1900, dateHint), ...isValidEndDate(batchFileSearchParams.load, { _this: this, field: 'searchEnabled' })]"
                     dense
                   ></v-text-field>
                 </v-col>

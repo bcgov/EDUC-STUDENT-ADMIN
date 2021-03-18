@@ -50,11 +50,19 @@ export function isValidDob(dob, pattern='uuuu/MM/dd') {
   return false;
 }
 
-export function isValidEndDate({ startDate, endDate, hint = 'Must be after Date From'}) {
+export function isValidEndDate(
+  { startDate, endDate, hint = 'Must be after Date From'},
+  button = null)
+{
   /*
   * is this just to compare if end date is a future date from start date
   * this does not validate the date itself
   * sample date: 2021/03/15, doesn't have to be slashes, as long as works with moment
+  *
+  * button should consist of two keys components _this and field
+  * sample: { _this: this, field: 'searchEnabled' }, this sample is from ArchivedRequestBatchDisplay.vue
+  * _this passes the whole component to this function
+  * field is the data field in that vue component we want to set to false
   * */
   if(startDate && endDate) {
     // length to be the same in order not to do checks everytime
@@ -63,7 +71,11 @@ export function isValidEndDate({ startDate, endDate, hint = 'Must be after Date 
       // cannot only use isBefore() because same date will return false
       // so using isSame() before isBefore() to check if dates are the same first
       if(moment(startDate).isSame(endDate)) return [];
-      if(moment(endDate).isBefore(startDate)) return [hint];
+      if(moment(endDate).isBefore(startDate)) {
+        // if there's a button need to be disabled when validation fails
+        if (button) button._this[button.field] = false;
+        return [hint] ;
+      }
     }
   }
   return [];
