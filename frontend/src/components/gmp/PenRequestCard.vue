@@ -111,6 +111,7 @@
 <script>
 import router from '@/router';
 import PrimaryButton from '@/components/util/PrimaryButton';
+import moment from 'moment';
 
 export default {
   name: 'penRequestCard',
@@ -123,22 +124,22 @@ export default {
       required: true
     },
   },
-  methods: {
+  computed: {
     disableSearchBtn() {
       return !this.request.legalLastName && !this.request.legalLastName
-        && !this.request.genderCode && !this.request.dob;
+          && !this.request.genderCode && !this.request.dob;
     },
+  },
+  methods: {
     searchStudent() {
       const searchParams = {
-        pen: null,
-        legalLastName: this.request.legalLastName,
-        legalFirstName: this.request.legalFirstName,
-        genderCode: this.request.genderCode,
-        dob: this.request.dob,
+        legalLastName: this.request.legalLastName?? null,
+        legalFirstName: this.request.legalFirstName?? null,
+        genderCode: this.request.genderCode?? null,
+        dob: this.request.dob? moment(this.request.dob).format('YYYY/MM/DD') : null,
       };
-      console.log('Search button is clicked!!!');
 
-      const route = router.resolve({ name: 'basicSearch', query: { ...searchParams }});
+      const route = router.resolve({name: 'basicSearch', query: { ...searchParams }});
       window.open(route.href, '_blank');
     },
   }
