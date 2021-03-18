@@ -60,7 +60,10 @@
                     label="Date To"
                     @keyup.enter="enterPushed()"
                     v-on:input="searchHasValues"
-                    :rules="[...validateField(batchFileSearchParams.load.endDate, isPresentDateAndAfter1900, dateHint), ...isValidEndDate(batchFileSearchParams.load, { _this: this, field: 'searchEnabled' })]"
+                    :rules="[
+                        ...validateField(batchFileSearchParams.load.endDate, isPresentDateAndAfter1900, dateHint),
+                        ...validateField(batchFileSearchParams.load, isValidEndDate, endDateHint)
+                    ]"
                     dense
                   ></v-text-field>
                 </v-col>
@@ -228,6 +231,7 @@ export default {
       dobHint: 'Invalid Birth Date',
       dateHint: 'Invalid date',
       alphanumericHint: 'Alphanumeric only',
+      endDateHint: 'Must be after Date From',
     };
   },
   computed: {
