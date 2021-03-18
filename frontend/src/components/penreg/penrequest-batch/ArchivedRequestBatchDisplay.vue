@@ -60,7 +60,7 @@
                     label="Date To"
                     @keyup.enter="enterPushed()"
                     v-on:input="searchHasValues"
-                    :rules="validateField(batchFileSearchParams.load.endDate, isPresentDateAndAfter1900, dateHint)"
+                    :rules="[...validateField(batchFileSearchParams.load.endDate, isPresentDateAndAfter1900, dateHint), ...isValidEndDate(batchFileSearchParams.load)]"
                     dense
                   ></v-text-field>
                 </v-col>
@@ -190,7 +190,7 @@ import ArchivedRequestBatchList from './ArchivedRequestBatchList';
 import PrimaryButton from '../../util/PrimaryButton';
 import router from '../../../router';
 import alertMixin from '../../../mixins/alertMixin';
-import { isValidMincode, isValidAlphanumericValue, isPresentDateAndAfter1900, isValidDob, isValidPEN, isNotEmptyInputParams } from '../../../utils/validation';
+import { isValidMincode, isValidAlphanumericValue, isPresentDateAndAfter1900, isValidDob, isValidPEN, isValidEndDate, isNotEmptyInputParams } from '../../../utils/validation';
 import AlertMessage from '../../util/AlertMessage';
 import { deepCloneObject, setEmptyInputParams } from '../../../utils/common';
 import pluralize from 'pluralize';
@@ -310,6 +310,7 @@ export default {
     isPresentDateAndAfter1900,
     isValidDob,
     isValidPEN,
+    isValidEndDate,
     isValidGender(code) {
       return !!(code && this.genderCodes.includes(code.toUpperCase()));
     },

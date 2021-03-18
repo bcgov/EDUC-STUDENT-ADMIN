@@ -1,5 +1,6 @@
 import {LocalDate, DateTimeFormatterBuilder, ResolverStyle} from '@js-joda/core';
 import {groupBy, isPlainObject} from 'lodash';
+import moment from 'moment';
 
 const datePatternWithSlash = (new DateTimeFormatterBuilder).appendPattern('uuuu/MM/dd').toFormatter(ResolverStyle.STRICT);
 export function checkDigit(pen) {
@@ -47,6 +48,25 @@ export function isValidDob(dob, pattern='uuuu/MM/dd') {
     //Do nothing
   }
   return false;
+}
+
+export function isValidEndDate({ startDate, endDate, hint = 'Must be after Date From'}) {
+  /*
+  * is this just to compare if end date is a future date from start date
+  * this does not validate the date itself
+  * sample date: 2021/03/15, doesn't have to be slashes, as long as works with moment
+  * */
+  if(startDate && endDate) {
+    // length to be the same in order not to do checks everytime
+    if(startDate.length === endDate.length) {
+      // using moment's build-in function to do checks
+      // cannot only use isBefore() because same date will return false
+      // so using isSame() before isBefore() to check if dates are the same first
+      if(moment(startDate).isSame(endDate)) return [];
+      if(moment(endDate).isBefore(startDate)) return [hint];
+    }
+  }
+  return [];
 }
 
 export function isDateAfter1900(dob, pattern='uuuu/MM/dd') {
