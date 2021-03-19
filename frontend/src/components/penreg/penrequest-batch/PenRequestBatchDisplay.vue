@@ -74,8 +74,8 @@
             @failure-alert="setFailureAlert"
           ></PenRequestBatchList>
         </v-row>
-        <ConfirmationDialog ref="confirmationDialog">
-          <template v-slot:title="cancel">
+      <ConfirmationDialog ref="fixableConfirmationDialog">
+          <template v-slot:title="{cancel}">
             <v-row justify="space-between" no-gutters>
               <v-col class="pl-4 pt-4">
                 {{ archiveAndReturnMessage }}<br><br>
@@ -87,6 +87,7 @@
             </v-row>
           </template>
         </ConfirmationDialog>
+      <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>
     </v-container>
 </template>
 
@@ -235,7 +236,7 @@ export default {
     async archiveAndReturnFixedOnly() {
       const fileNumber = this.selectedFiles.length;
       this.archiveAndReturnMessage = `Please confirm that you would like to return the response files to ${fileNumber} PEN request ${pluralize('file', fileNumber)}.`;
-      const result = await this.$refs.confirmationDialog.open(null,null,
+      const result = await this.$refs.fixableConfirmationDialog.open(null,null,
         { width: '520px', messagePadding: 'px-4 pt-4', color: '', dark: false, closeIcon: true, divider: true, subtitle: true, resolveText: 'Confirm' }
       );
       if(result) {
