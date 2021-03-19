@@ -49,27 +49,25 @@ export function isValidDob(dob, pattern='uuuu/MM/dd') {
   return false;
 }
 
-export function isValidEndDate({ startDate, endDate }) {
+export function isValidEndDate({ startDate, endDate }, delimiter = '/') {
   /*
   * is this just to compare if end date is a future date from start date
   * this does not validate the date itself
-  * sample date: 2021/03/15, doesn't have to be slashes, as long as works with moment
+  * sample date: 2015/03/03, because joda uses dash so replacing delimiter (default is slash) to dash
   *
   * */
   if(startDate && endDate) {
     // length to be the same in order not to do checks everytime
     if(startDate.length === endDate.length) {
-      const parseJoda = date => LocalDate.parse(date.replaceAll('/', '-'));
-      // using moment's build-in function to do checks
-      // cannot only use isBefore() because same date will return false
-      // so using equals() before isBefore() to check if dates are the same first
-      const startDateJoda = parseJoda(startDate);
-      const endDateJoda = parseJoda(endDate);
-      if(startDateJoda.equals(endDateJoda)) return true;
-      if(endDateJoda.isBefore(startDateJoda)) return false ;
+      const parseJoda = date => LocalDate.parse(date.replaceAll(delimiter, '-'));
+      if(parseJoda(endDate).isBefore(parseJoda(startDate))){
+        return false;
+      } else {
+        return true;
+      }
     }
-    return true;
   }
+  return true;
 }
 
 export function isDateAfter1900(dob, pattern='uuuu/MM/dd') {
