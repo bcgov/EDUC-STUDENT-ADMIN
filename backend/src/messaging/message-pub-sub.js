@@ -9,43 +9,43 @@ const nats = require('nats');
 const natsOptions = {
   url: server,
   servers: [server],
-  maxReconnectAttempts: 60,
+  maxReconnectAttempts: 24,
   name: 'STUDENT-ADMIN-NODE',
   reconnectTimeWait: 5000, // wait 5 seconds before retrying...
   waitOnFirstConnect: true,
-  pingInterval: 5000
+  pingInterval: 2000,
+  encoding: 'binary',
 };
 
 const NATS = {
   init() {
     try {
       connection = nats.connect(server, natsOptions);
+      connection.on('connect', function () {
+        log.info('NATS connected!', connection?.currentServer?.url?.host);
+        SagaMessageHandler.subscribe(connection);
+      });
+
+      connection.on('error', function (reason) {
+        log.error(`error on NATS ${reason}`);
+      });
+      connection.on('connection_lost', (error) => {
+        log.error('disconnected from NATS', error);
+        connectionClosed = true;
+      });
+      connection.on('close', (error) => {
+        log.error('NATS closed', error);
+        connectionClosed = true;
+      });
+      connection.on('reconnecting', () => {
+        log.error('NATS reconnecting');
+      });
+      connection.on('reconnect', () => {
+        log.info('NATS reconnected');
+      });
     } catch (e) {
       log.error(`error ${e}`);
     }
-  },
-  callbacks() {
-    connection.on('connect', function () {
-      log.info('NATS connected!', connection?.currentServer?.url?.host);
-      SagaMessageHandler.subscribe(connection);
-    });
-
-    connection.on('error', function (reason) {
-      log.error(`error on NATS ${reason}`);
-    });
-    connection.on('connection_lost', (error) => {
-      log.error('disconnected from NATS', error);
-    });
-    connection.on('close', (error) => {
-      log.error('NATS closed', error);
-      connectionClosed = true;
-    });
-    connection.on('reconnecting', () => {
-      log.error('NATS reconnecting');
-    });
-    connection.on('reconnect', () => {
-      log.info('NATS reconnected');
-    });
   },
   close() {
     if (connection) {
@@ -97,6 +97,9 @@ const NATS = {
       });
     });
   },
+  getConnection(){
+    return connection;
+  }
 };
 
 module.exports = NATS;

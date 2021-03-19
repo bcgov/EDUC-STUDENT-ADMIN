@@ -34,10 +34,12 @@ const penServicesRouter = require('./routes/pen-services-router');
 const schoolsRouter = require('./routes/schools');
 const penTraxRouter = require('./routes/penTrax');
 const promMid = require('express-prometheus-middleware');
-
+const Redis = require('./util/redis/redis-client');
+Redis.init(); // call the init to initialize appropriate client, and reuse it across the app.
 const messagePubSub = require('./messaging/message-pub-sub');
 messagePubSub.init();
-messagePubSub.callbacks();
+const stan = require('./messaging/stan-client');
+stan.init();
 //initialize app
 const app = express();
 const nocache = require('nocache');
@@ -63,8 +65,7 @@ const logStream = {
     log.info(message);
   }
 };
-const Redis = require('./util/redis/redis-client');
-Redis.init(); // call the init to initialize appropriate client, and reuse it across the app.
+
 const RedisStore = connectRedis(session);
 const dbSession = new RedisStore({
   client: Redis.getRedisClient(),

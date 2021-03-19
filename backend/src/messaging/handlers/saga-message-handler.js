@@ -3,7 +3,7 @@ const log = require('../../components/logger');
 const config= require('../../config/index');
 const redisUtil = require('../../util/redis/redis-utils');
 const webSocket = require('../../socket/web-socket');
-
+const CONSTANTS = require('../../util/constants');
 
 const SagaTopics = [
   'PEN_REQUEST_RETURN_SAGA_TOPIC',
@@ -20,7 +20,7 @@ const SagaTopics = [
   'PEN_SERVICES_DEMERGE_STUDENTS_SAGA_TOPIC',
   'PEN_SERVICES_SPLIT_PEN_SAGA_TOPIC'];
 
-const SagaEventWebSocketTopic = 'SAGA_EVENT_WS_TOPIC';
+
 
 function subscribeSagaMessages(nats, topic, handleMessage) {
   const opts = {
@@ -53,7 +53,7 @@ async function handleSagaMessage(msg, subject, replyTo,  nats) {
     isWebSocketBroadcastingRequired = true;
   }
   if (isWebSocketBroadcastingRequired) {
-    nats.publish(SagaEventWebSocketTopic, msg);
+    nats.publish(CONSTANTS.EVENT_WS_TOPIC, msg);
   }
 }
 
@@ -71,11 +71,12 @@ function broadCastMessageToWebSocketClients(msg) {
 }
 
 function subscribeToWebSocketMessageTopic(nats) {
-  nats.subscribe(SagaEventWebSocketTopic, {}, (msg, reply, subject, sid) => {
+  nats.subscribe(CONSTANTS.EVENT_WS_TOPIC, {}, (msg, reply, subject, sid) => {
     log.silly(`Received message, on ${subject} , Subscription Id ::  [${sid}], Reply to ::  [${reply}] :: Data ::`, JSON.parse(msg));
     broadCastMessageToWebSocketClients(msg);
   });
 }
+
 
 const SagaMessageHandler = {
   subscribe(nats) {
