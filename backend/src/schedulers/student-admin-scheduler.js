@@ -11,7 +11,7 @@ log.info(`${schedulerCronStaleSagaRecordRedis} :: ${minimumTimeBeforeSagaIsStale
 const redisUtil = require('../util/redis/redis-utils');
 const {LocalDateTime} = require('@js-joda/core');
 const NATS = require('../messaging/message-pub-sub');
-
+const CONSTANTS = require('../util/constants');
 /**
  * @property minimumTimeBeforeSagaIsStale - this is the value which will be subtracted from current time.
  * This method will check whether the saga record was created @property minimumTimeBeforeSagaIsStale before, if so add it to the list
@@ -79,8 +79,8 @@ async function removeStaleSagas(staleSagas, sagaType) {
           if (recordFromRedis) {
             recordFromRedis.sagaStatus = sagaFromAPI.status;
             recordFromRedis.sagaName = sagaFromAPI.sagaName;
-            NATS.publishMessage('SAGA_EVENT_WS_TOPIC', safeStringify(recordFromRedis)).then(() => {
-              log.info('message published to SAGA_EVENT_WS_TOPIC', recordFromRedis);
+            NATS.publishMessage(CONSTANTS.EVENT_WS_TOPIC, safeStringify(recordFromRedis)).then(() => {
+              log.info(`message published to ${CONSTANTS.EVENT_WS_TOPIC}`, recordFromRedis);
             });
           }
 

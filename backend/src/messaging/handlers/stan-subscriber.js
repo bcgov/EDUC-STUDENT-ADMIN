@@ -16,8 +16,8 @@ async function handleStudentUpdatedEvent(data) {
   if(value){ // it means the key was present and it was successfully deleted, need to broadcast this to websocket for page refresh.
     logger.info('locked pen deleted from redis', student.pen);
   }
-  NATS.publishMessage(CONSTANTS.EVENT_WS_TOPIC, data.eventPayload).then(() => {
-    logger.info(`message published to ${CONSTANTS.EVENT_WS_TOPIC}`, student);
+  NATS.publishMessage(CONSTANTS.EVENT_WS_TOPIC, data).then(() => {
+    logger.info(`message published to ${CONSTANTS.EVENT_WS_TOPIC}`, data);
   });
 }
 
