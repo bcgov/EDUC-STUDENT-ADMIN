@@ -56,15 +56,13 @@ export function isValidEndDate({ startDate, endDate }, delimiter = '/') {
   * sample date: 2015/03/03, because joda uses dash so replacing delimiter (default is slash) to dash
   *
   * */
-  if(startDate && endDate) {
-    // length to be the same in order not to do checks everytime
-    if(startDate.length === endDate.length) {
-      const parseJoda = date => LocalDate.parse(date.replaceAll(delimiter, '-'));
-      if(parseJoda(endDate).isBefore(parseJoda(startDate))){
-        return false;
-      } else {
-        return true;
-      }
+
+  // (startDate?.length && endDate?.length) is needed because on page load, both value would be null and statement will run
+  if( (startDate?.length && endDate?.length) &&
+      startDate?.length === endDate?.length ) {
+    const parseJoda = date => LocalDate.parse(date.replaceAll(delimiter, '-'));
+    if(parseJoda(endDate).isBefore(parseJoda(startDate))){
+      return false;
     }
   }
   return true;
