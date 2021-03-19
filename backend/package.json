@@ -47,6 +47,7 @@
     "nats": "^1.4.12",
     "nconf": "^0.11.0",
     "nocache": "^2.1.0",
+    "node-nats-streaming": "^0.3.2",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "passport-openidconnect-kc-idp": "^0.0.7",

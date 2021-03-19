@@ -29,6 +29,7 @@ async function createSagaRecord(event, redisKey) {
     log.error(`Error ${e}`);
   }
 }
+
 async function removeEventRecordFromRedis(event, redisKey) {
   let recordFoundFromRedis;
   const redisClient = Redis.getRedisClient();
@@ -51,7 +52,7 @@ async function removeEventRecordFromRedis(event, redisKey) {
             break;
           }
         }
-      }else {
+      } else {
         log.silly(`no record found in REDIS for :: ${redisKey} :: for Event ::`, event);
       }
     } catch (e) {
@@ -131,15 +132,15 @@ const redisUtil = {
 
           // the max number of times Redlock will attempt
           // to lock a resource before erroring
-          retryCount: 6,
+          retryCount: 3,
 
           // the time in ms between attempts
-          retryDelay: 50, // time in ms
+          retryDelay: 25, // time in ms
 
           // the max time in ms randomly added to retries
           // to improve performance under high contention
           // see https://www.awsarchitectureblog.com/2015/03/backoff.html
-          retryJitter: 25 // time in ms
+          retryJitter: 15 // time in ms
         }
       );
     }
@@ -148,7 +149,15 @@ const redisUtil = {
       log.error('A redis connection error has occurred in getRedLock of redis-util:', err);
     });
     return redLock;
-  }
+  },
+  /**
+   * this is central so that it is in one common place accessed by different js , files, accidental update wont cause any damage to the app, as it will be referred from all the files.
+   * @param pen
+   * @returns {string}
+   */
+  constructKeyForPenLock(pen) {
+    return `locked-${pen}`;
+  },
 
 };
 

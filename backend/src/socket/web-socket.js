@@ -1,7 +1,4 @@
 'use strict';
-const jsonwebtoken = require('jsonwebtoken');
-const config = require('../config/index');
-const log = require('../components/logger');
 let connectedClients = [];
 const webSocket = {
 
@@ -12,33 +9,9 @@ const webSocket = {
    */
   init(app, server) {
     require('express-ws')(app, server);
-    const utils = require('../components/utils');
-    app.ws('/api/socket', function (ws, req) {
-      const jwtToken = utils.getBackendToken(req);
-      if (!jwtToken) {
-        ws.close();
-      } else {
-        try {
-          const userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
-          if (userToken['realm_access'] && userToken['realm_access'].roles
-            && (userToken['realm_access'].roles['includes'](config.get('server:penRequest:roleAdmin'))
-              || userToken['realm_access'].roles['includes'](config.get('server:studentRequest:roleAdmin')))) {
-            connectedClients.push(ws);
-          } else {
-            ws.close();
-          }
-        } catch (e) {
-          if ('jwt expired' === e?.message) {
-            log.silly('error is from verify', e.message);
-          } else {
-            log.error('error from verify', e);
-          }
-
-          ws.close();
-        }
-      }
+    app.ws('/api/socket', (ws) => {
+      connectedClients.push(ws);
     });
-
   },
   getWebSocketClients() {
     for (let i = connectedClients.length - 1; i >= 0; --i) {
