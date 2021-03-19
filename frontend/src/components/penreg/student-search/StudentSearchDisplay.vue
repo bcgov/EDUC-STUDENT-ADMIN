@@ -125,6 +125,13 @@ export default {
     if(this.studentSearchParams) {
       this.searchHasValues();
     }
+
+    // if any of these fields exist, automatically perform search
+    if (this.searchParams && 
+      (this.searchParams.legalLastName || this.searchParams.legalFirstName
+       || this.searchParams.genderCode || this.searchParams.dob)) {
+      this.enterPushed();
+    }
   },
   watch: {
     studentSearchResponse: {
@@ -162,7 +169,7 @@ export default {
       }
     },
     enterPushed() {
-      if(this.searchHasValues){
+      if(this.searchHasValues()){
         this.searchStudent(true, true);
       }
     },
