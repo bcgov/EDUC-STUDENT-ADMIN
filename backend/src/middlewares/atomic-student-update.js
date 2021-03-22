@@ -4,7 +4,7 @@ const redisUtil = require('../util/redis/redis-utils');
 const HttpStatus = require('http-status-codes');
 const utils = require('../components/utils');
 const safeStringify = require('fast-safe-stringify');
-
+const config = require('../config/index');
 /**
  *  <b> The main aim here is to restrict multiple actions updating the same student. </b>
  *
@@ -13,12 +13,15 @@ const safeStringify = require('fast-safe-stringify');
  * Next it will check redis to see if an operation involving any of the PEN is in progress, the request which won the previous check will fail here if there is already a record in redis for the student PEN.
  * If there is no record in redis put a record and  move forward.
  * it expects this `penNumbersInOps` as a query param with list of pen numbers that is involved in the operation. <b> its a comma separated string.</b>
- *
+ * <b> since it is not possible to run NATS and STAN using port forward , it is difficult to manage this running for local system. turn off the check in local,json</b>
  * @param req express request
  * @param res express response
  * @param next express next
  */
 const handleConcurrentStudentModification = async (req, res, next) => {
+  if(false === config.get('server:studentAtomicUpdate')){
+    return next(); // just move forward, this is useful in local systems.
+  }
   const user = utils.getUser(req);
   const redLock = redisUtil.getRedLock();
   try {
