@@ -5,6 +5,7 @@ const CONSTANTS = require('../../util/constants');
 const redis = require('../../util/redis/redis-client');
 const redisUtil = require('../../util/redis/redis-utils');
 const NATS = require('../../messaging/message-pub-sub');
+const safeStringify = require('fast-safe-stringify');
 /**
  * this function will process the choreographed event of student update, remove the record from redis if it is locked and publish the message to websocket
  *
@@ -16,7 +17,7 @@ async function handleStudentUpdatedEvent(data) {
   if(value){ // it means the key was present and it was successfully deleted, need to broadcast this to websocket for page refresh.
     logger.info('locked pen deleted from redis', student.pen);
   }
-  NATS.publishMessage(CONSTANTS.EVENT_WS_TOPIC, data).then(() => {
+  NATS.publishMessage(CONSTANTS.EVENT_WS_TOPIC, safeStringify(data)).then(() => {
     logger.info(`message published to ${CONSTANTS.EVENT_WS_TOPIC}`, data);
   });
 }
