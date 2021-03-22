@@ -4,6 +4,7 @@ const router = express.Router();
 const auth = require('../components/auth');
 const utils = require('../components/utils');
 const extendSession = utils.extendSession();
+const atomicStudentUpdate = require('../middlewares/atomic-student-update');
 const { getPENBatchRequestStats, getPenRequestFiles, getPenRequestBatchStudents, getPenWebBlobs, getPenRequestBatchStudentById, getPenRequestBatchStudentMatchOutcome, updatePrbStudentInfoRequested,
   issueNewPen, userMatchSaga, userUnmatchSaga, archiveFiles, archiveAndReturnFiles, unarchiveFiles, softDeleteFiles, releaseBatchFilesForFurtherProcessing } = require('../components/penRequestBatch');
 
@@ -60,7 +61,7 @@ router.post('/:id/students/:studentId/issueNewPen', passport.authenticate('jwt',
 /*
  * User Match saga
  */
-router.post('/:id/students/:studentId/user-match', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, userMatchSaga);
+router.post('/:id/students/:studentId/user-match', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, atomicStudentUpdate.handleConcurrentStudentModification, userMatchSaga);
 /*
  * User Unmatch saga
  */

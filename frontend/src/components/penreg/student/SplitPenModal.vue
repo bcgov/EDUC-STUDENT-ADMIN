@@ -7,9 +7,9 @@
     :disabled="disabled"
   >
     <template v-slot:activator="{ on, attrs }">
-      <PrimaryButton 
-        id="splitPen" 
-        class="mx-1" 
+      <PrimaryButton
+        id="splitPen"
+        class="mx-1"
         text="Split PEN"
         :disabled="disabled"
         @click.native="openModal"
@@ -25,18 +25,18 @@
               <h4>Current PEN</h4>
             </v-col>
             <v-col>
-              <v-checkbox 
-                class="ma-0 pa-0 ml-4 mt-1" 
-                height="100%" 
-                label="Revert" 
-                color="#606060" 
-                dense 
+              <v-checkbox
+                class="ma-0 pa-0 ml-4 mt-1"
+                height="100%"
+                label="Revert"
+                color="#606060"
+                dense
                 v-model="revertCurrentStudent"
                 :disabled="!studentDetailForRevert"
               ></v-checkbox>
             </v-col>
           </v-row>
-          <StudentAuditHistoryDetailCard 
+          <StudentAuditHistoryDetailCard
             :studentHistoryDetail="studentDetail"
             :highlightDiff="false"
             idPrefix="current"
@@ -49,7 +49,7 @@
               <v-icon large color="#38598A">mdi-close</v-icon>
             </v-btn>
           </div>
-          <StudentAuditHistoryDetailCard 
+          <StudentAuditHistoryDetailCard
             :studentHistoryDetail="newStudentDetail"
             :highlightDiff="false"
             idPrefix="new"
@@ -77,7 +77,7 @@ import {Routes} from '@/utils/constants';
 import AlertMessage from '../../util/AlertMessage';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
-import {mapMutations, mapState} from 'vuex';
+import {mapGetters, mapMutations, mapState} from 'vuex';
 
 export default {
   name: 'SplitPenModal',
@@ -114,6 +114,7 @@ export default {
   },
   computed: {
     ...mapState('student', ['studentsInProcess']),
+    ...mapGetters('notifications', ['notification']),
     hasSagaInProgress() {
       return this.studentDetail && (this.studentDetail.sagaInProgress || this.studentsInProcess.has(this.studentDetail.studentID));
     },
@@ -128,7 +129,21 @@ export default {
       } else {
         this.studentDetail = this.currentStudentDetail;
       }
-    }
+    },
+    notification(notificationData) {
+      if (notificationData) {
+        if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
+          try {
+            const student = JSON.parse(notificationData.eventPayload);
+            if (student?.pen && student?.pen === this.studentDetail?.pen) {
+              this.setWarningAlert(`student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      }
+    },
   },
   methods: {
     ...mapMutations('student', ['setStudentInProcessStatus', 'resetStudentInProcessStatus']),
@@ -140,7 +155,7 @@ export default {
       this.revertCurrentStudent = false;
     },
     splitPen() {
-      this.isProcessing = true; 
+      this.isProcessing = true;
       this.setStudentInProcessStatus(this.studentDetail.studentID);
       const request = {
         ...this.studentDetail,
@@ -153,8 +168,11 @@ export default {
           historyActivityCode: 'SPLITNEW'
         }
       };
+      const params = {
+        penNumbersInOps: this.studentDetail.pen
+      };
       ApiService.apiAxios
-        .post(`${Routes['penServices'].ROOT_ENDPOINT}/${this.studentDetail.studentID}/split-pen`, request)
+        .post(`${Routes['penServices'].ROOT_ENDPOINT}/${this.studentDetail.studentID}/split-pen`, request,{params})
         .then(() => {
           this.closeModal();
           this.$emit('split');
@@ -187,7 +205,7 @@ export default {
         localID: this.newStudentDetail.localID,
         gradeCode: this.newStudentDetail.gradeCode
       };
-      
+
       const route = router.resolve({ name: 'basicSearch', query: { ...searchParams }});
       window.open(route.href, '_blank');
     }

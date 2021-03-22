@@ -631,6 +631,15 @@ export default {
           } else if(notificationData.sagaName.startsWith('PEN_SERVICES_')) {
             this.$emit('refresh');
           }
+        } else if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
+          try {
+            const student = JSON.parse(notificationData.eventPayload);
+            if (student?.pen && student?.pen === this.origStudent?.pen) {
+              this.setWarningAlert(`student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+            }
+          } catch (e) {
+            console.error(e);
+          }
         }
       }
     },
@@ -887,8 +896,11 @@ export default {
     },
     saveStudent() {
       if (this.parentRefs.studentDetailForm.validate()) {
+        const params = {
+          penNumbersInOps: this.origStudent.pen
+        };
         ApiService.apiAxios
-          .put(Routes['student'].ROOT_ENDPOINT+'/'+ this.studentID, this.prepPut(this.studentCopy))
+          .put(Routes['student'].ROOT_ENDPOINT+'/'+ this.studentID, this.prepPut(this.studentCopy),{params})
           .then(response => {
             this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false)); // enable all the fields here, required fields to be disabled will be done in this.setStudent method.
             this.setStudent(response.data);
@@ -896,8 +908,11 @@ export default {
             this.setSuccessAlert('Student data updated successfully.');
           })
           .catch(error => {
-            console.log(error);
-            this.setFailureAlert('Student data could not be updated, please try again.');
+            if (error?.response?.status === 409 && error?.response?.data?.message) {
+              this.setFailureAlert(error?.response?.data?.message);
+            }else {
+              this.setFailureAlert('Student data could not be updated, please try again.');
+            }
           })
           .finally(() => {
           });

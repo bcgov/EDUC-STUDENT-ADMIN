@@ -180,6 +180,15 @@ export default {
           } else if(notificationData.sagaName.startsWith('PEN_SERVICES_')) {
             this.$emit('refresh');
           }
+        } else if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
+          try {
+            const student = JSON.parse(notificationData.eventPayload);
+            if (student?.pen && student?.pen === this.studentHistoryResp?.content[0]?.pen) { // since history is always for a single student, grabbing the first record will work.
+              this.setWarningAlert(`student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+            }
+          } catch (e) {
+            console.error(e);
+          }
         }
       }
     },
@@ -319,26 +328,30 @@ export default {
     },
     async revertStudentToSelectedHistoryRecord(selectedHistoryRecord) {
       this.isRevertingStudent = true;
+      const payload = this.convertFromHistoryToStudent(selectedHistoryRecord);
+      const params = {
+        penNumbersInOps: payload.student.pen
+      };
       ApiService.apiAxios
-        .put(Routes['student'].ROOT_ENDPOINT + '/' + selectedHistoryRecord.studentID, this.convertFromHistoryToStudent(selectedHistoryRecord))
-        .then(() => {
-          this.setSuccessAlert('Success! The student details have been reverted.');
-          setTimeout(() => {
-            this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
-          }, 500);
-        })
-        .catch(error => {
-          console.error(error);
-          this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
-        })
-        .finally(() => {
-          this.isRevertingStudent = false;
-          window.scroll({
-            top: 0,
-            left: 0,
-            behavior: 'smooth',
+          .put(Routes['student'].ROOT_ENDPOINT + '/' + selectedHistoryRecord.studentID, payload, {params})
+          .then(() => {
+            this.setSuccessAlert('Success! The student details have been reverted.');
+            setTimeout(() => {
+              this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
+            }, 500);
+          })
+          .catch(error => {
+            console.error(error);
+            this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
+          })
+          .finally(() => {
+            this.isRevertingStudent = false;
+            window.scroll({
+              top: 0,
+              left: 0,
+              behavior: 'smooth',
+            });
           });
-        });
     },
     convertFromHistoryToStudent(studentHistory) {
       return {
