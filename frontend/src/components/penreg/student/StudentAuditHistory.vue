@@ -342,7 +342,11 @@ export default {
           })
           .catch(error => {
             console.error(error);
-            this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
+            if (error?.response?.data?.code === 409) {
+              this.setFailureAlert(error?.response?.data?.message);
+            }else{
+              this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
+            }
           })
           .finally(() => {
             this.isRevertingStudent = false;

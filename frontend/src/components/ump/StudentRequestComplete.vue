@@ -295,9 +295,9 @@ export default {
           this.completeSagaInProgress = true;
         })
         .catch(error => {
-          console.log(error);
-          if (error.response.data && error.response.data.code && error.response.data.code === 409) {
-            this.setFailureAlert('Another saga is in progress for this request, please try again later.');
+          console.error(error);
+          if (error?.response?.data?.code === 409) {
+            this.setFailureAlert(error?.response?.data?.message);
           } else {
             this.setFailureAlert(`${this.requestTypeLabel} failed to update. Please navigate to the list and select this ${this.requestTypeLabel} again.`);
           }

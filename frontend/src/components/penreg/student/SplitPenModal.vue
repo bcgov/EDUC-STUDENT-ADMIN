@@ -178,10 +178,10 @@ export default {
           this.$emit('split');
         })
         .catch(error => {
-          console.log(error);
+          console.error(error);
           this.resetStudentInProcessStatus(this.studentDetail.studentID);
-          if (error.response.data && error.response.data.code && error.response.data.code === 409) {
-            this.setFailureAlert('Another saga is in progress for this request. Please try again later.');
+          if (error?.response?.data?.code === 409) {
+            this.setFailureAlert(error?.response?.data?.message);
           } else {
             this.setFailureAlert('Your request to split pen could not be accepted. Please try again later.');
           }

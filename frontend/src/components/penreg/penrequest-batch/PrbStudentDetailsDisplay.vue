@@ -704,6 +704,9 @@ export default {
             }
           })
           .catch(error => {
+            if (error?.response?.data?.code === 409) {
+              this.setFailureAlert(error?.response?.data?.message);
+            }
             this.setFailureAlert(`Your request to ${operation} student to Pen Request could not be accepted,  Please try again later.`);
             console.log(error);
           })

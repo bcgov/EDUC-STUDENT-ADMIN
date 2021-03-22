@@ -27,7 +27,7 @@ function unauthorizedError(res) {
 }
 
 function errorResponse(res, msg, code) {
-  return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+  return res.status(code || HttpStatus.INTERNAL_SERVER_ERROR).json({
     message: msg || 'INTERNAL SERVER ERROR',
     code: code || HttpStatus.INTERNAL_SERVER_ERROR
   });

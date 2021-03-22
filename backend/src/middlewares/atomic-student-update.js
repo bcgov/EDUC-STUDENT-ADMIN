@@ -38,7 +38,7 @@ const handleConcurrentStudentModification = async (req, res, next) => {
       const resultsFromRedis = await redisMultiGet.exec(); // sample  result === [[null, 'OK'], [null, 'bar']]
       const value = resultsFromRedis.find(element => element[1] !== null);
       if (value && value.length>0 && value[1]) { // if it is present , it is always a JSON string.
-        return res.status(HttpStatus.CONFLICT).json({message: `User ${JSON.parse(value[1])?.user} is actioning the student. Please wait for this to be completed and try after refreshing the page.`});
+        return utils.errorResponse(res,`User ${JSON.parse(value[1])?.user} is actioning the student. Please wait for this to be completed and try after refreshing the page.`,HttpStatus.CONFLICT);
       } else {
         const redisMultiSet = redis.getRedisClient().multi();
         const data = {
@@ -56,7 +56,7 @@ const handleConcurrentStudentModification = async (req, res, next) => {
 
   } catch (e) {
     utils.logError(`acquireLockAndPutStudentDataIntoRedisForConcurrentUpdate failed to acquire lock for :: ${user?.idir_username}`, e);
-    res.status(HttpStatus.CONFLICT).json({message: 'multiple users trying to update the same student record in different operation. Please try again later.'});
+    return utils.errorResponse(res,'multiple users trying to update the same student record in different operation. Please try again later.',HttpStatus.CONFLICT);
   }
 };
 
