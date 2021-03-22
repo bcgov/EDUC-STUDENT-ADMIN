@@ -53,7 +53,6 @@ const intercept = apiAxios.interceptors.response.use(config => config, error => 
         .catch(e => {
           processQueue(e, null);
           localStorage.removeItem('jwtToken');
-          reject(e);
           window.location='/token-expired';
         })
         .finally(() => {
