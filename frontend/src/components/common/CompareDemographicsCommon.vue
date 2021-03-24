@@ -206,15 +206,7 @@ export default {
             }, 500);
           }
         }else if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
-          try {
-            const student = JSON.parse(notificationData.eventPayload);
-            if (student?.pen &&  !this.isProcessing && this.studentRecords?.some(el => el?.pen === student.pen)) {
-              this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
-              this.isStudentDataUpdated = true;
-            }
-          } catch (e) {
-            console.error(e);
-          }
+          this.showWarningAndDisableActionIfUpdatedStudentMatched(notificationData);
         }
       }
     },
@@ -509,6 +501,17 @@ export default {
         return;
       }
       await this.executeDemerge();
+    },
+    showWarningAndDisableActionIfUpdatedStudentMatched(notificationData){
+      try {
+        const student = JSON.parse(notificationData.eventPayload);
+        if (student?.pen &&  !this.isProcessing && this.studentRecords?.some(el => el?.pen === student.pen)) {
+          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+          this.isStudentDataUpdated = true;
+        }
+      } catch (e) {
+        console.error(e);
+      }
     }
   },
 };

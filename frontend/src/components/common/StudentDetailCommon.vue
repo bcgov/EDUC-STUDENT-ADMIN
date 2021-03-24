@@ -639,17 +639,7 @@ export default {
             this.$emit('refresh');
           }
         }else if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
-          try {
-            const student = JSON.parse(notificationData.eventPayload);
-            if (student?.pen && student?.pen === this.studentDetails?.student?.pen && this.isStudentUpdatedInDifferentTab) { // show only when it is in a diff tab or diff user.
-              this.isStudentUpdated = true;
-              this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
-            }else if(student?.pen && student?.pen === this.studentDetails?.student?.pen && !this.isStudentUpdatedInDifferentTab){
-              this.isStudentUpdatedInDifferentTab = true; // make it true for future messages.
-            }
-          } catch (e) {
-            console.error(e);
-          }
+         this.showWarningAndDisableActionIfUpdatedStudentMatched(notificationData);
         }
       }
     },
@@ -1040,6 +1030,19 @@ export default {
       }
       await this.executeDemerge();
     },
+    showWarningAndDisableActionIfUpdatedStudentMatched(notificationData) {
+      try {
+        const student = JSON.parse(notificationData.eventPayload);
+        if (student?.pen && student?.pen === this.studentDetails?.student?.pen && this.isStudentUpdatedInDifferentTab) { // show only when it is in a diff tab or diff user.
+          this.isStudentUpdated = true;
+          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+        }else if(student?.pen && student?.pen === this.studentDetails?.student?.pen && !this.isStudentUpdatedInDifferentTab){
+          this.isStudentUpdatedInDifferentTab = true; // make it true for future messages.
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
   }
 };
 </script>

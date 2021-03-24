@@ -188,18 +188,7 @@ export default {
             this.$emit('refresh');
           }
         } else if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
-          try {
-            const student = JSON.parse(notificationData.eventPayload);
-            if (student?.pen && student?.pen === this.studentHistoryResp?.content[0]?.pen && this.isActionedInDifferentTab && !this.hasSagaInProgress){ // show only when it is in a diff tab or diff user or not part of the saga.
-              this.isStudentUpdated = true;
-              this.studentAuditHistoryDetailKey += 1;
-              this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
-            }else if(student?.pen && student?.pen === this.studentHistoryResp?.content[0]?.pen && !this.isActionedInDifferentTab){
-              this.isActionedInDifferentTab = true; // make it true for future messages.
-            }
-          } catch (e) {
-            console.error(e);
-          }
+          this.showWarningAndDisableActionIfUpdatedStudentMatched(notificationData);
         }
       }
     },
@@ -410,6 +399,20 @@ export default {
       const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
       window.open(route.href, '_blank');
     },
+    showWarningAndDisableActionIfUpdatedStudentMatched(notificationData){
+      try {
+        const student = JSON.parse(notificationData.eventPayload);
+        if (student?.pen && student?.pen === this.studentHistoryResp?.content[0]?.pen && this.isActionedInDifferentTab && !this.hasSagaInProgress){ // show only when it is in a diff tab or diff user or not part of the saga.
+          this.isStudentUpdated = true;
+          this.studentAuditHistoryDetailKey += 1;
+          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+        }else if(student?.pen && student?.pen === this.studentHistoryResp?.content[0]?.pen && !this.isActionedInDifferentTab){
+          this.isActionedInDifferentTab = true; // make it true for future messages.
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
   }
 };
 </script>
