@@ -38,14 +38,14 @@
           <v-card-actions class="pb-2">
             <v-spacer></v-spacer>
             <PrimaryButton id="closePanel" :secondary="true" class="mx-1" text="Close" @click.native="$emit('close')"></PrimaryButton>
-            <SplitPenModal 
-              :disabled="isSplitPenDisabled" 
-              :currentStudentDetail="student" 
-              :studentDetailForRevert="studentDetailForRevert" 
-              :newStudentDetail="studentHistoryDetail" 
+            <SplitPenModal
+              :disabled="isSplitPenDisabled || isStudentUpdated"
+              :currentStudentDetail="student"
+              :studentDetailForRevert="studentDetailForRevert"
+              :newStudentDetail="studentHistoryDetail"
               @split="$emit('split')"
             ></SplitPenModal>
-            <PrimaryButton id="revertData" :disabled="isRevertDisabled" :loading="isRevertingStudent" class="mx-1" text="Revert"
+            <PrimaryButton id="revertData" :disabled="isRevertDisabled || isStudentUpdated" :loading="isRevertingStudent" class="mx-1" text="Revert"
                            @click.native="revertStudentDataFromStudentHistory()"></PrimaryButton>
           </v-card-actions>
 
@@ -62,7 +62,7 @@ import {mapGetters, mapState} from 'vuex';
 import moment from 'moment';
 import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import PrimaryButton from '../../util/PrimaryButton';
-import {formatPen, formatPostalCode} from '../../../utils/format';
+import {formatPen, formatPostalCode} from '@/utils/format';
 import alertMixin from '../../../mixins/alertMixin';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
 import SplitPenModal from './SplitPenModal';
@@ -89,6 +89,10 @@ export default {
       required: true
     },
     isRevertingStudent: {
+      type: Boolean,
+      defaultValue: false
+    },
+    isStudentUpdated: {
       type: Boolean,
       defaultValue: false
     }

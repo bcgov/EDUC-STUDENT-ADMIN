@@ -258,10 +258,11 @@ export default {
             this.completeSagaInProgress = false;
             this.setSuccessAlert(`${this.requestTypeLabel} completed and email sent to student.`);
           }
-        }else if(this.penSearchId && notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload){
+        }else if(this.penSearchId && notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload ){
           const student = JSON.parse(notificationData.eventPayload);
-          if(student?.pen === this.penSearchId){
-            this.setWarningAlert(`student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+          if(student?.pen === this.penSearchId && !this.completeSagaInProgress){ // dont show message when there is a complete saga in progress for the pen.
+            this.setWarningAlert(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+            this.enableCompleteButton = false;
           }
         }
       }

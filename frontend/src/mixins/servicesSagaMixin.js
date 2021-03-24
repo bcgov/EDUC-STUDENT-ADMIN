@@ -112,8 +112,8 @@ export default {
           console.log(error);
           this.isProcessing = false;
           this.resetStudentInProcessStatus(this.mergedToStudent.studentID);
-          if (error.response.data && error.response.data.code && error.response.data.code === 409) {
-            this.setFailureAlert('Another saga is in progress for this request, please try again later.');
+          if (error?.response?.status === 409 && error?.response?.data?.message) {
+            this.setFailureAlert(error?.response?.data?.message);
           } else {
             this.setFailureAlert('Student Merge Request failed to update. Please navigate to the student search and merge again at compare in the list.');
           }
@@ -144,8 +144,8 @@ export default {
           console.error(error);
           this.resetStudentInProcessStatus(this.mergedFromStudent.studentID);
           this.isProcessing = false;
-          if (error?.response?.data?.code === 409) {
-            this.setFailureAlert('Another saga is in progress for this request, please try again later.');
+          if (error?.response?.status === 409 && error?.response?.data?.message) {
+            this.setFailureAlert(error?.response?.data?.message);
           } else {
             this.setFailureAlert('Student Demerge Request failed to update. Please navigate to the student search and demerge again at compare in the list.');
           }

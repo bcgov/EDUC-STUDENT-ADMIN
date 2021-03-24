@@ -14,6 +14,7 @@
             ></v-progress-linear>
             <v-row>
               <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
+              <AlertMessage v-model="studentUpdateAlert" :alertMessage="studentUpdateAlertMessage" :alertType="studentUpdateAlertType" ></AlertMessage>
             </v-row>
             <div v-if="!loading && prbStudent" style="width: 100%;" :overlay=false>
 
@@ -153,6 +154,7 @@ import PrbStudentStatusChip from './PrbStudentStatusChip';
 import InfoDialog from './prb-student-details/InfoDialog';
 import ApiService from '../../../common/apiService';
 import StudentDetailsInfoPanel from '../../common/StudentDetailsInfoPanel';
+import studentUpdateAlertMixin from '../../../mixins/student-update-alert-mixin';
 import AlertMessage from '../../util/AlertMessage';
 import {
   PEN_REQ_BATCH_STUDENT_REQUEST_CODES,
@@ -186,7 +188,7 @@ export default {
     StudentDetailsInfoPanel,
     ConfirmationDialog
   },
-  mixins: [alertMixin],
+  mixins: [alertMixin, studentUpdateAlertMixin],
   props: {
     totalNumber: {
       type: Number,
@@ -244,7 +246,8 @@ export default {
         PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS,
         PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR,
       ],
-      demogValidationResult: []
+      demogValidationResult: [],
+      isStudentDataUpdated: false, // make it true, if any of the student gets updated from possible match list
     };
   },
   watch: {
@@ -286,9 +289,10 @@ export default {
       } else if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
         try {
           const student = JSON.parse(notificationData.eventPayload);
-          if (student?.pen &&
-              (student?.pen === this.prbStudent?.assignedPEN || this.possibleMatches?.some(el => el?.pen === student.pen))) {
-            this.setWarningAlert(`student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+          if (student?.pen && !this.prbStudent?.sagaInProgress &&
+              (this.possibleMatches?.some(el => el?.pen === student.pen))) {
+            this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the pen match.`);
+            this.isStudentDataUpdated = true;
           }
         } catch (e) {
           console.error(e);
@@ -304,7 +308,7 @@ export default {
           || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE !== this.prbStudent?.penRequestBatchStudentStatusCode;
     },
     disableMatchUnmatch() {
-      return this.prbStudent?.sagaInProgress || this.isArchived;
+      return this.isStudentDataUpdated || this.prbStudent?.sagaInProgress || this.isArchived;
     },
     disableInfoReqBtn() {
       return this.loading || this.prbStudent?.sagaInProgress || this.isArchived
@@ -602,6 +606,7 @@ export default {
         this.isIssuePenDisabled = false;
         this.showPossibleMatch = true;
         this.possibleMatches = result.data ?? [];
+        this.isStudentDataUpdated = false; // pen match result is refreshed now enable the table.
       } catch (error) {
         console.log(error);
         this.setFailureAlert('PEN Match API call failed, please try again.');

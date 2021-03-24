@@ -28,7 +28,7 @@
                 @refresh="refreshStudent"
                 v-if="tab===0"
             >
-              <template v-slot:buttonbar="{ isAdvancedSearch, hasAnyEdits, saveStudent, REQUEST_TYPES, disableDemerge, demerge }">
+              <template v-slot:buttonbar="{ isAdvancedSearch, hasAnyEdits, saveStudent, REQUEST_TYPES, disableDemerge, demerge, isStudentUpdated }">
                 <v-row>
                   <v-col cols="12">
                     <v-card-actions style="float: right;">
@@ -36,8 +36,8 @@
                         <PrimaryButton :secondary="true" class="mx-1" text="Cancel"></PrimaryButton>
                       </router-link>
                       <PrimaryButton v-if="studentDetails.student.statusCode === 'M'"
-                          :disabled="disableDemerge()" @click.native="demerge()" text="Demerge"></PrimaryButton>
-                      <PrimaryButton :disabled="!hasAnyEdits() || !validForm" @click.native="saveStudent()" text="Save"></PrimaryButton>
+                          :disabled="disableDemerge() || isStudentUpdatedByAnotherUser" @click.native="demerge()" text="Demerge"></PrimaryButton>
+                      <PrimaryButton :disabled="isStudentUpdated || !hasAnyEdits() || !validForm " @click.native="saveStudent()" text="Save"></PrimaryButton>
                     </v-card-actions>
                   </v-col>
                 </v-row>

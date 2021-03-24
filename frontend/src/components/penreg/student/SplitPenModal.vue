@@ -136,7 +136,7 @@ export default {
           try {
             const student = JSON.parse(notificationData.eventPayload);
             if (student?.pen && student?.pen === this.studentDetail?.pen) {
-              this.setWarningAlert(`student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+              this.setWarningAlert(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
             }
           } catch (e) {
             console.error(e);

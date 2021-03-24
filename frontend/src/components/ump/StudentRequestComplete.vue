@@ -239,8 +239,9 @@ export default {
           }
         }else if(this.penSearchId && notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload){
           const student = JSON.parse(notificationData.eventPayload);
-          if(student?.pen === this.penSearchId){
+          if(student?.pen === this.penSearchId && !this.completeSagaInProgress){
             this.setWarningAlert(`student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+            this.enableCompleteButton = false;
           }
         }
       }
