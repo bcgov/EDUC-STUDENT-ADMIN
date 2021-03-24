@@ -4,6 +4,7 @@
   <v-container fluid class="fill-height ma-0 pa-2 studentDetail">
     <v-row>
       <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
+      <AlertMessage v-model="studentUpdateAlert" :alertMessage="studentUpdateAlertMessage" :alertType="studentUpdateAlertType" ></AlertMessage>
     </v-row>
     <v-row>
       <v-col cols="12">
@@ -305,7 +306,7 @@
     <v-row>
       <v-col cols="12">
         <v-card-actions style="float: right;">
-          <PrimaryButton :disabled="!hasAnyEdits() || !validForm || isProcessing || mergeSagaComplete" @click.native="performMerge()" text="Merge"></PrimaryButton>
+          <PrimaryButton :disabled="isStudentUpdated || !hasAnyEdits() || !validForm || isProcessing || mergeSagaComplete" @click.native="performMerge()" text="Merge"></PrimaryButton>
         </v-card-actions>
       </v-col>
     </v-row>
@@ -328,10 +329,11 @@ import servicesSagaMixin from '@/mixins/servicesSagaMixin';
 import AlertMessage from '@/components/util/AlertMessage';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import router from '@/router';
+import studentUpdateAlertMixin from '@/mixins/student-update-alert-mixin';
 
 export default {
   name: 'MergeStudents',
-  mixins: [alertMixin,schoolMixin,servicesSagaMixin],
+  mixins: [alertMixin,schoolMixin,servicesSagaMixin,studentUpdateAlertMixin],
   props: {
     mergedToPen: {
       type: Object,
@@ -357,6 +359,8 @@ export default {
           if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_MERGE_COMPLETE_SAGA') {
             this.notifyMergeSagaCompleteMessage();
           }
+        }else if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
+          this.showWarningAndDisableActionIfUpdatedStudentMatched(notificationData);
         }
       }
     },
@@ -382,6 +386,7 @@ export default {
       STUDENT_DETAILS_FIELDS:STUDENT_DETAILS_FIELDS,
       STUDENT_CODES: STUDENT_CODES,
       genderCodes: [],
+      isStudentUpdated: false,
     };
   },
   computed: {
@@ -530,6 +535,18 @@ export default {
       this.mergedFromStudent = this.mergedStudent;
       await this.executeMerge();
     },
+    showWarningAndDisableActionIfUpdatedStudentMatched(notificationData) {
+      try {
+        const student = JSON.parse(notificationData.eventPayload);
+        if (student?.pen && (student?.pen === this.student?.pen || student?.pen === this.mergedStudent?.pen) && !this.isProcessing) { // show only when it is in a diff tab or diff user.
+          this.isStudentUpdated = true;
+          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
   }
 };
 </script>
