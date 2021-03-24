@@ -100,8 +100,11 @@ export default {
         studentMergeSourceCode: 'MI',
         requestStudentID: null
       };
+      const params = {
+        penNumbersInOps: `${this.mergedToStudent.pen},${this.mergedFromStudent.pen}`
+      };
       ApiService.apiAxios
-        .post(Routes['penServices'].ROOT_ENDPOINT + '/' + mergeRequest.studentID + '/student-merge-complete', mergeRequest)
+        .post(Routes['penServices'].ROOT_ENDPOINT + '/' + mergeRequest.studentID + '/student-merge-complete', mergeRequest,{params})
         .then(() => {
           this.setSuccessAlert('Your request to merge is accepted.');
         })
@@ -109,8 +112,8 @@ export default {
           console.log(error);
           this.isProcessing = false;
           this.resetStudentInProcessStatus(this.mergedToStudent.studentID);
-          if (error.response.data && error.response.data.code && error.response.data.code === 409) {
-            this.setFailureAlert('Another saga is in progress for this request, please try again later.');
+          if (error?.response?.status === 409 && error?.response?.data?.message) {
+            this.setFailureAlert(error?.response?.data?.message);
           } else {
             this.setFailureAlert('Student Merge Request failed to update. Please navigate to the student search and merge again at compare in the list.');
           }
@@ -129,17 +132,20 @@ export default {
         mergedFromStudentID: this.mergedFromStudent.studentID,
         requestStudentID: null
       };
+      const params = {
+        penNumbersInOps: `${this.mergedToStudent.pen},${this.mergedFromStudent.pen}`
+      };
       ApiService.apiAxios
-        .post(Routes['penServices'].ROOT_ENDPOINT + '/' + demergeRequest.studentID + '/student-demerge-complete', demergeRequest)
+        .post(Routes['penServices'].ROOT_ENDPOINT + '/' + demergeRequest.studentID + '/student-demerge-complete', demergeRequest, {params})
         .then(() => {
           this.setSuccessAlert('Your request to demerge is accepted.');
         })
         .catch(error => {
-          console.log(error);
+          console.error(error);
           this.resetStudentInProcessStatus(this.mergedFromStudent.studentID);
           this.isProcessing = false;
-          if (error.response.data && error.response.data.code && error.response.data.code === 409) {
-            this.setFailureAlert('Another saga is in progress for this request, please try again later.');
+          if (error?.response?.status === 409 && error?.response?.data?.message) {
+            this.setFailureAlert(error?.response?.data?.message);
           } else {
             this.setFailureAlert('Student Demerge Request failed to update. Please navigate to the student search and demerge again at compare in the list.');
           }

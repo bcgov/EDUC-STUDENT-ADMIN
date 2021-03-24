@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../components/auth');
 const utils = require('../components/utils');
+const atomicStudentUpdate = require('../middlewares/atomic-student-update');
 const { createStudentRequestApiServiceReq, getUMPRequestStats, returnProfileRequest, rejectProfileRequest, completeProfileRequest } = require('../components/studentRequests');
 const { getAllRequests, getMacros, getRequestById, getRequestCommentById, putRequest } = require('../components/requests');
 
@@ -41,7 +42,7 @@ router.get('/stats', passport.authenticate('jwt', {session: false}, undefined), 
  */
 router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPUserToken, getRequestById(requestType));
 
-router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, verifyStudentRequestInSession, completeProfileRequest);
+router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, verifyStudentRequestInSession,atomicStudentUpdate.handleConcurrentStudentModification, completeProfileRequest);
 
 router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, verifyStudentRequestInSession, rejectProfileRequest);
 

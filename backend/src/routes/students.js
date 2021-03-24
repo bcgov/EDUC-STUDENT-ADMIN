@@ -8,6 +8,7 @@ const {createNewStudent, updateStudent, getStudentByStudentId, getStudentByPen, 
 const roles = require('../components/roles');
 const utils = require('../components/utils');
 const extendSession = utils.extendSession();
+const atomicStudentUpdate = require('../middlewares/atomic-student-update');
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles('GMP & UMP & PenRequestBatch & StudentSearch', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.StudentSearch]);
 
 router.get('/allStudents', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getAllStudentByStudentIds);
@@ -20,7 +21,7 @@ router.get('/search', passport.authenticate('jwt', {session: false}, undefined),
 router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentById);
 router.get('/', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentByPen);
 router.get('/detail/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentByStudentId);
-router.put('/:studentID', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, updateStudent);
+router.put('/:studentID', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, atomicStudentUpdate.handleConcurrentStudentModification, updateStudent);
 router.post('/', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, createNewStudent);
 router.get('/:id/history', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, extendSession, getStudentHistoryByStudentID);
 

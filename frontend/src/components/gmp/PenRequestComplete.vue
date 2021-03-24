@@ -1,16 +1,6 @@
 <template>
   <div>
-    <v-alert
-      v-model="alert"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      :class="alertType"
-    >
-      {{ alertMessage }}
-    </v-alert>
+    <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
     <v-alert
       :value="notAPenError"
       dense
@@ -129,15 +119,19 @@
 <script>
 import {formatDob} from '@/utils/format';
 import ApiService from '../../common/apiService';
-import { Routes, Statuses } from '../../utils/constants';
-import { replaceMacro } from '../../utils/macro';
-import { mapGetters, mapMutations } from 'vuex';
-import {AccessEnabledForUser} from '../../common/role-based-access';
+import {Routes, Statuses} from '@/utils/constants';
+import {replaceMacro} from '@/utils/macro';
+import {mapGetters, mapMutations} from 'vuex';
+import {AccessEnabledForUser} from '@/common/role-based-access';
 import PrimaryButton from '../util/PrimaryButton';
-import { checkDigit } from '../../utils/validation';
+import {checkDigit} from '@/utils/validation';
+import alertMixin from '@/mixins/alertMixin';
+import AlertMessage from '../util/AlertMessage';
+
 export default {
   name: 'penRequestComplete',
-  components: {PrimaryButton},
+  components: {PrimaryButton, AlertMessage},
+  mixins: [alertMixin],
   props: {
     request: {
       type: Object,
@@ -163,7 +157,7 @@ export default {
       type: Function,
       required: true
     }
-    
+
   },
   data () {
     return {
@@ -197,7 +191,7 @@ export default {
     actionName() {
       return 'PROVIDE_PEN';
     },
-    autoMatchCodes() { 
+    autoMatchCodes() {
       return Statuses.AUTO_MATCH_RESULT_CODES;
     },
     completedRules() {
@@ -264,6 +258,12 @@ export default {
             this.completeSagaInProgress = false;
             this.setSuccessAlert(`${this.requestTypeLabel} completed and email sent to student.`);
           }
+        }else if(this.penSearchId && notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload ){
+          const student = JSON.parse(notificationData.eventPayload);
+          if(student?.pen === this.penSearchId && !this.completeSagaInProgress){ // dont show message when there is a complete saga in progress for the pen.
+            this.setWarningAlert(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+            this.enableCompleteButton = false;
+          }
         }
       }
     },
@@ -301,16 +301,19 @@ export default {
           this.request.bcscAutoMatchDetails = 'WRONG auto-match to: ' + this.request.bcscAutoMatchDetails;
         }
         this.request.reviewer = this.myself.name;
+        const params = {
+          penNumbersInOps: this.request.pen
+        };
         ApiService.apiAxios
-          .post(Routes[this.requestType].COMPLETE_URL, this.prepPut(this.requestId, this.request))
+          .post(Routes[this.requestType].COMPLETE_URL, this.prepPut(this.requestId, this.request),{params})
           .then(() => {
             this.setSuccessAlert('Your request to complete is accepted.');
             this.completeSagaInProgress = true;
           })
           .catch(error => {
-            console.log(error);
-            if (error.response.data && error.response.data.code && error.response.data.code === 409) {
-              this.setFailureAlert('Another saga is in progress for this request, please try again later.');
+            console.error(error);
+            if (error?.response?.data?.code === 409) {
+              this.setFailureAlert(error?.response?.data?.message);
             } else {
               this.setFailureAlert(`${this.requestTypeLabel} failed to update. Please navigate to the list and select this ${this.requestTypeLabel} again.`);
             }

@@ -126,6 +126,7 @@
     </div>
     <v-row>
       <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
+      <AlertMessage v-model="studentUpdateAlert" :alertMessage="studentUpdateAlertMessage" :alertType="studentUpdateAlertType" ></AlertMessage>
     </v-row>
     <v-progress-linear
         indeterminate
@@ -165,10 +166,11 @@ import TertiaryButton from '../util/TertiaryButton';
 import {getMatchedRecordsByStudent, equalsIgnoreCase} from '@/utils/common';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import {mapGetters} from 'vuex';
+import studentUpdateAlertMixin from '@/mixins/student-update-alert-mixin';
 
 export default {
   name: 'CompareDemographicsCommon',
-  mixins: [alertMixin,servicesSagaMixin],
+  mixins: [alertMixin,servicesSagaMixin, studentUpdateAlertMixin],
   components: {
     TertiaryButton,
     AlertMessage,
@@ -203,6 +205,8 @@ export default {
               this.openStudentDetails(this.mergedFromStudent.studentID);
             }, 500);
           }
+        }else if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
+          this.showWarningAndDisableActionIfUpdatedStudentMatched(notificationData);
         }
       }
     },
@@ -242,6 +246,7 @@ export default {
       sldDataTablesToDisplay: {},
       sldDataTablesNumberOfRows: {},
       checkedStudents: [],
+      isStudentDataUpdated: false,
     };
   },
   mounted() {
@@ -313,10 +318,7 @@ export default {
     isValidPEN,
     isOlderThan,
     existSldUsualName(sldData) {
-      if (!!sldData.usualSurname || !!sldData.usualGivenName || !!sldData.usualMiddleName) {
-        return true;
-      }
-      return false;
+      return !!sldData.usualSurname || !!sldData.usualGivenName || !!sldData.usualMiddleName;
     },
     openStudentDetails(studentID) {
       const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
@@ -341,13 +343,12 @@ export default {
     validateAction() {
       let cnt = 0;
       this.checkedStudents.forEach(checked => cnt += checked ? 1 : 0);
-      return cnt !== 2;
+      return cnt !== 2 || this.isStudentDataUpdated;
     },
     disableMerge() {
       if (this.validateAction()) {
         return true;
       }
-
       const selectedStudents = this.getSelectedStudents();
       if (selectedStudents.length === 2) {
         return this.validateStudentsAreMerged(selectedStudents[0], selectedStudents[1]);
@@ -500,6 +501,17 @@ export default {
         return;
       }
       await this.executeDemerge();
+    },
+    showWarningAndDisableActionIfUpdatedStudentMatched(notificationData){
+      try {
+        const student = JSON.parse(notificationData.eventPayload);
+        if (student?.pen &&  !this.isProcessing && this.studentRecords?.some(el => el?.pen === student.pen)) {
+          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+          this.isStudentDataUpdated = true;
+        }
+      } catch (e) {
+        console.error(e);
+      }
     }
   },
 };

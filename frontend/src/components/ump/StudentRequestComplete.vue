@@ -1,16 +1,6 @@
 <template>
   <div>
-    <v-alert
-      v-model="alert"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      :class="alertType"
-    >
-      {{ alertMessage }}
-    </v-alert>
+    <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
     <v-alert
       v-model="notAPenError"
       dense
@@ -24,7 +14,7 @@
     </v-alert>
 
     <v-card flat :disabled="!isProvidePenEnabledForUser">
-      <v-row class="mx-0"> 
+      <v-row class="mx-0">
         <v-col cols="12" xl="6" lg="6" class="py-0">
           <v-row class="mx-0" justify="space-between">
             <v-col class="my-0 pl-0 py-0">
@@ -130,14 +120,17 @@
 <script>
 import {formatDob} from '@/utils/format';
 import ApiService from '../../common/apiService';
-import { Routes, Statuses } from '../../utils/constants';
-import { replaceMacro } from '../../utils/macro';
+import { Routes, Statuses } from '@/utils/constants';
+import { replaceMacro } from '@/utils/macro';
 import { mapGetters, mapMutations } from 'vuex';
-import {AccessEnabledForUser} from '../../common/role-based-access';
+import {AccessEnabledForUser} from '@/common/role-based-access';
 import PrimaryButton from '../util/PrimaryButton';
+import alertMixin from '@/mixins/alertMixin';
+import AlertMessage from '../util/AlertMessage';
 export default {
   name: 'studentRequestComplete',
-  components: {PrimaryButton},
+  components: {PrimaryButton, AlertMessage},
+  mixins: [alertMixin],
   props: {
     request: {
       type: Object,
@@ -244,6 +237,12 @@ export default {
             this.setSuccessAlert(`${this.requestTypeLabel} completed and email sent to student.`);
             this.completeSagaInProgress = false;
           }
+        }else if(this.penSearchId && notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload){
+          const student = JSON.parse(notificationData.eventPayload);
+          if(student?.pen === this.penSearchId && !this.completeSagaInProgress){
+            this.setWarningAlert(`student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+            this.enableCompleteButton = false;
+          }
         }
       }
     },
@@ -287,16 +286,19 @@ export default {
       this.beforeSubmit();
       this.alert = false;
       this.request.reviewer = this.myself.name;
+      const params = {
+        penNumbersInOps: this.request.pen
+      };
       ApiService.apiAxios
-        .post(Routes[this.requestType].COMPLETE_URL, this.prepPut(this.requestId, this.request))
+        .post(Routes[this.requestType].COMPLETE_URL, this.prepPut(this.requestId, this.request),{params})
         .then(() => {
           this.setSuccessAlert('Your request to complete is accepted.');
           this.completeSagaInProgress = true;
         })
         .catch(error => {
-          console.log(error);
-          if (error.response.data && error.response.data.code && error.response.data.code === 409) {
-            this.setFailureAlert('Another saga is in progress for this request, please try again later.');
+          console.error(error);
+          if (error?.response?.data?.code === 409) {
+            this.setFailureAlert(error?.response?.data?.message);
           } else {
             this.setFailureAlert(`${this.requestTypeLabel} failed to update. Please navigate to the list and select this ${this.requestTypeLabel} again.`);
           }

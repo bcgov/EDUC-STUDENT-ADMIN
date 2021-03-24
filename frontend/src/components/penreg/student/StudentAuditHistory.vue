@@ -3,6 +3,7 @@
     <v-row>
       <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"
                     :timeoutMs="2000"></AlertMessage>
+      <AlertMessage v-model="studentUpdateAlert" :alertMessage="studentUpdateAlertMessage" :alertType="studentUpdateAlertType" ></AlertMessage>
     </v-row>
     <v-progress-linear
         indeterminate
@@ -58,6 +59,7 @@
       </v-col>
       <v-col v-if="listDetailMode">
         <StudentAuditHistoryDetail
+            :key="studentAuditHistoryDetailKey"
             :student="student"
             :nextStudentHistoryContent="nextStudentHistoryContent"
             :studentHistory="studentHistoryResp"
@@ -67,6 +69,7 @@
             @revert="revertStudentToSelectedHistoryRecord"
             @update="updateSelectedStudentHistoryId"
             @split="setSuccessAlert('Your request to split pen is accepted.')"
+            :is-student-updated="isStudentUpdated"
         ></StudentAuditHistoryDetail>
       </v-col>
     </v-row>
@@ -83,10 +86,11 @@ import alertMixin from '../../../mixins/alertMixin';
 import {formatDob, formatPen} from '@/utils/format';
 import {groupBy, mapValues} from 'lodash';
 import router from '@/router';
+import studentUpdateAlertMixin from '../../../mixins/student-update-alert-mixin';
 
 export default {
   name: 'StudentAuditHistory',
-  mixins: [alertMixin],
+  mixins: [alertMixin, studentUpdateAlertMixin],
   props: {
     student: {
       type: Object,
@@ -134,6 +138,9 @@ export default {
       selectedStudentHistoryId: null, // pointing the current history record,
       isRevertingStudent: false,
       nextStudentHistoryContent: [],
+      isActionedInDifferentTab : true,
+      isStudentUpdated: false,
+      studentAuditHistoryDetailKey: 0,
     };
   },
   computed: {
@@ -180,6 +187,8 @@ export default {
           } else if(notificationData.sagaName.startsWith('PEN_SERVICES_')) {
             this.$emit('refresh');
           }
+        } else if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
+          this.showWarningAndDisableActionIfUpdatedStudentMatched(notificationData);
         }
       }
     },
@@ -319,26 +328,36 @@ export default {
     },
     async revertStudentToSelectedHistoryRecord(selectedHistoryRecord) {
       this.isRevertingStudent = true;
+      const payload = this.convertFromHistoryToStudent(selectedHistoryRecord);
+      const params = {
+        penNumbersInOps: payload.student.pen
+      };
+      this.isActionedInDifferentTab = false;
       ApiService.apiAxios
-        .put(Routes['student'].ROOT_ENDPOINT + '/' + selectedHistoryRecord.studentID, this.convertFromHistoryToStudent(selectedHistoryRecord))
-        .then(() => {
-          this.setSuccessAlert('Success! The student details have been reverted.');
-          setTimeout(() => {
-            this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
-          }, 500);
-        })
-        .catch(error => {
-          console.error(error);
-          this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
-        })
-        .finally(() => {
-          this.isRevertingStudent = false;
-          window.scroll({
-            top: 0,
-            left: 0,
-            behavior: 'smooth',
+          .put(Routes['student'].ROOT_ENDPOINT + '/' + selectedHistoryRecord.studentID, payload, {params})
+          .then(() => {
+            this.setSuccessAlert('Success! The student details have been reverted.');
+            setTimeout(() => {
+              this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
+            }, 500);
+          })
+          .catch(error => {
+            console.error(error);
+            if (error?.response?.data?.code === 409) {
+              this.setFailureAlert(error?.response?.data?.message);
+            }else{
+              this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
+            }
+            this.isActionedInDifferentTab = true;
+          })
+          .finally(() => {
+            this.isRevertingStudent = false;
+            window.scroll({
+              top: 0,
+              left: 0,
+              behavior: 'smooth',
+            });
           });
-        });
     },
     convertFromHistoryToStudent(studentHistory) {
       return {
@@ -380,6 +399,20 @@ export default {
       const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
       window.open(route.href, '_blank');
     },
+    showWarningAndDisableActionIfUpdatedStudentMatched(notificationData){
+      try {
+        const student = JSON.parse(notificationData.eventPayload);
+        if (student?.pen && student?.pen === this.studentHistoryResp?.content[0]?.pen && this.isActionedInDifferentTab && !this.hasSagaInProgress){ // show only when it is in a diff tab or diff user or not part of the saga.
+          this.isStudentUpdated = true;
+          this.studentAuditHistoryDetailKey += 1;
+          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+        }else if(student?.pen && student?.pen === this.studentHistoryResp?.content[0]?.pen && !this.isActionedInDifferentTab){
+          this.isActionedInDifferentTab = true; // make it true for future messages.
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
   }
 };
 </script>

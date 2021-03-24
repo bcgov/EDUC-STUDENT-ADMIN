@@ -7,7 +7,7 @@ const {findPenRequestsByPen, createPenRequestApiServiceReq, returnPenRequest, un
 const {getAllRequests, getMacros, getRequestById, getRequestCommentById, putRequest} = require('../components/requests');
 
 const {getDocuments, getDocumentById, updateDocumentTypeById} = require('../components/documents');
-
+const atomicStudentUpdate = require('../middlewares/atomic-student-update');
 const requestType = 'penRequest';
 const verifyPenRequestInSession = utils.verifyRequestInSession(requestType);
 /**
@@ -40,7 +40,7 @@ router.get('/stats', passport.authenticate('jwt', {session: false}, undefined), 
  */
 router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPUserToken, getRequestById(requestType));
 
-router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, verifyPenRequestInSession, completePenRequest);
+router.post('/complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, verifyPenRequestInSession, atomicStudentUpdate.handleConcurrentStudentModification, completePenRequest);
 
 router.post('/reject', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, verifyPenRequestInSession, rejectPenRequest);
 

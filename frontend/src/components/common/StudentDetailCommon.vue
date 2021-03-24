@@ -373,6 +373,7 @@
           </v-row>
           <v-row>
             <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000"></AlertMessage>
+            <AlertMessage v-model="studentUpdateAlert" :alertMessage="studentUpdateAlertMessage" :alertType="studentUpdateAlertType" ></AlertMessage>
           </v-row>
           <v-divider/>
           <v-progress-linear
@@ -406,6 +407,7 @@
         :saveStudent="saveStudent"
         :REQUEST_TYPES="REQUEST_TYPES"
         :disableDemerge="disableDemerge"
+        :isStudentUpdated="isStudentUpdated"
         :demerge="demerge">
     </slot>
     <v-row fluid class="full-height align-center justify-center" v-if="isLoading">
@@ -484,13 +486,15 @@ import {REQUEST_TYPES, Routes, STUDENT_CODES, STUDENT_DETAILS_FIELDS} from '@/ut
 import StudentDetailsTextField from '@/components/penreg/student/StudentDetailsTextField';
 import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly';
 import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsComboBox';
-import StudentDetailsTextFieldSideCardReadOnly from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
+import StudentDetailsTextFieldSideCardReadOnly
+  from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
 import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
 import {formatDob, formatMincode, formatPen} from '@/utils/format';
 import {isEmpty, sortBy} from 'lodash';
 import alertMixin from '../../mixins/alertMixin';
 import schoolMixin from '../../mixins/schoolMixin';
 import servicesSagaMixin from '../../mixins/servicesSagaMixin';
+import studentUpdateAlertMixin from '../../mixins/student-update-alert-mixin';
 import ConfirmationDialog from '../util/ConfirmationDialog';
 import AlertMessage from '../util/AlertMessage';
 import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard';
@@ -503,7 +507,7 @@ import PrimaryButton from '@/components/util/PrimaryButton';
 const JSJoda = require('@js-joda/core');
 export default {
   name: 'studentDetailCommon',
-  mixins: [alertMixin,schoolMixin,servicesSagaMixin],
+  mixins: [alertMixin,schoolMixin,servicesSagaMixin,studentUpdateAlertMixin],
   props: {
     studentID: {
       type: String,
@@ -586,7 +590,9 @@ export default {
       loadingTraxData: false,
       loadingSchoolData: false,
       compareStudent: [],
-      copyTxt:''
+      copyTxt:'',
+      isStudentUpdated: false,
+      isStudentUpdatedInDifferentTab: true
     };
   },
   created() {
@@ -599,6 +605,7 @@ export default {
     ...mapGetters('student', ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects']),
     ...mapState('studentSearch', ['isAdvancedSearch']),
     ...mapGetters('notifications', ['notification']),
+    ...mapGetters('auth', ['userInfo']),
     mergedTo() {
       return this.merges.find(merge => merge.studentMergeDirectionCode === 'TO');
     },
@@ -631,6 +638,8 @@ export default {
           } else if(notificationData.sagaName.startsWith('PEN_SERVICES_')) {
             this.$emit('refresh');
           }
+        }else if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
+         this.showWarningAndDisableActionIfUpdatedStudentMatched(notificationData);
         }
       }
     },
@@ -887,8 +896,12 @@ export default {
     },
     saveStudent() {
       if (this.parentRefs.studentDetailForm.validate()) {
+        const params = {
+          penNumbersInOps: this.origStudent.pen
+        };
+        this.isStudentUpdatedInDifferentTab = false; //make sure that notification for current tab is ignored.
         ApiService.apiAxios
-          .put(Routes['student'].ROOT_ENDPOINT+'/'+ this.studentID, this.prepPut(this.studentCopy))
+          .put(Routes['student'].ROOT_ENDPOINT+'/'+ this.studentID, this.prepPut(this.studentCopy),{params})
           .then(response => {
             this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false)); // enable all the fields here, required fields to be disabled will be done in this.setStudent method.
             this.setStudent(response.data);
@@ -896,8 +909,12 @@ export default {
             this.setSuccessAlert('Student data updated successfully.');
           })
           .catch(error => {
-            console.log(error);
-            this.setFailureAlert('Student data could not be updated, please try again.');
+            if (error?.response?.status === 409 && error?.response?.data?.message) {
+              this.setFailureAlert(error?.response?.data?.message);
+              this.isStudentUpdatedInDifferentTab = true; // turn it back to true in case of errors
+            }else {
+              this.setFailureAlert('Student data could not be updated, please try again.');
+            }
           })
           .finally(() => {
           });
@@ -999,10 +1016,8 @@ export default {
       if (this.isProcessing || this.demergeSagaComplete || this.hasSagaInProgress(this.origStudent)) {
         return true;
       }
-      if (this.origStudent.statusCode === 'M' && !!this.origStudent.trueStudentID) {
-        return false;
-      }
-      return true;
+      return !(this.origStudent.statusCode === 'M' && !!this.origStudent.trueStudentID);
+
     },
     async demerge() {
       this.mergedToStudent = this.mergedTo.mergeStudent;
@@ -1015,6 +1030,19 @@ export default {
       }
       await this.executeDemerge();
     },
+    showWarningAndDisableActionIfUpdatedStudentMatched(notificationData) {
+      try {
+        const student = JSON.parse(notificationData.eventPayload);
+        if (student?.pen && student?.pen === this.studentDetails?.student?.pen && this.isStudentUpdatedInDifferentTab) { // show only when it is in a diff tab or diff user.
+          this.isStudentUpdated = true;
+          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+        }else if(student?.pen && student?.pen === this.studentDetails?.student?.pen && !this.isStudentUpdatedInDifferentTab){
+          this.isStudentUpdatedInDifferentTab = true; // make it true for future messages.
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
   }
 };
 </script>

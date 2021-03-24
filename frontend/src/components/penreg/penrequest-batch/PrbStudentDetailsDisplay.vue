@@ -6,61 +6,79 @@
         <v-row class="pt-0">
           <v-col cols="12 pt-0">
             <v-progress-linear
-              absolute
-              top
-              indeterminate
-              color="blue"
-              :active="loading"
+                absolute
+                top
+                indeterminate
+                color="blue"
+                :active="loading"
             ></v-progress-linear>
             <v-row>
               <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
+              <AlertMessage v-model="studentUpdateAlert" :alertMessage="studentUpdateAlertMessage" :alertType="studentUpdateAlertType" ></AlertMessage>
             </v-row>
             <div v-if="!loading && prbStudent" style="width: 100%;" :overlay=false>
 
               <StudentDetailsInfoPanel
-                      :student.sync="prbStudent"
-                      key="info-panel"
-                      :runPenMatch="runPenMatch"
-                      :studentDetailsCopy="prbStudentCopy"
-                      :demogValidationResult="demogValidationResult"
-                      @validationRun="checkValidationResults">
+                  :student.sync="prbStudent"
+                  key="info-panel"
+                  :runPenMatch="runPenMatch"
+                  :studentDetailsCopy="prbStudentCopy"
+                  :demogValidationResult="demogValidationResult"
+                  @validationRun="checkValidationResults">
                 <template v-slot:headerPanel="{ openSearchDemographicsModal }">
-                  <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center" style="background-color:white;">
+                  <v-row no-gutters
+                         class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center"
+                         style="background-color:white;">
                     <v-icon v-if="isUnarchived || isArchived" :dense="isUnarchived" color="#2E8540" class="mr-1">
-                      {{isUnarchived ? 'fa-unlock' : 'mdi-package-up'}}
+                      {{ isUnarchived ? 'fa-unlock' : 'mdi-package-up' }}
                     </v-icon>
                     <span class="mr-4 batch-title">
-                      <strong>{{seqNumberInBatch}} of {{totalNumberInBatch}} filtered</strong> | Record {{prbStudent.recordNumber}} of {{batchFile.studentCount}} in submission {{prbStudent.submissionNumber}}
+                      <strong>{{ seqNumberInBatch }} of {{
+                          totalNumberInBatch
+                        }} filtered</strong> | Record {{ prbStudent.recordNumber }} of {{ batchFile.studentCount }} in submission {{
+                        prbStudent.submissionNumber
+                      }}
                     </span>
                     <PrbStudentStatusChip
-                            :prbStudent="prbStudent"
+                        :prbStudent="prbStudent"
                     ></PrbStudentStatusChip>
                     <v-spacer></v-spacer>
-                    <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2" :disabled="disableModifySearch" text="Modify search" @click.native="openSearchDemographicsModal"></PrimaryButton>
-                    <PrimaryButton id="issue-pen-action" class="mr-2" :disabled="disableIssueNewPen" :loading="isIssuingNewPen" text="Issue new PEN" @click.native="issueNewPen"></PrimaryButton>
+                    <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2"
+                                   :disabled="disableModifySearch" text="Modify search"
+                                   @click.native="openSearchDemographicsModal"></PrimaryButton>
+                    <PrimaryButton id="issue-pen-action" class="mr-2" :disabled="disableIssueNewPen"
+                                   :loading="isIssuingNewPen" text="Issue new PEN"
+                                   @click.native="issueNewPen"></PrimaryButton>
                     <InfoDialog
-                            :disabled="disableInfoReqBtn"
-                            @updateInfoRequested="updateInfoRequested"
-                            :text="prbStudent.infoRequest"
+                        :disabled="disableInfoReqBtn"
+                        @updateInfoRequested="updateInfoRequested"
+                        :text="prbStudent.infoRequest"
                     ></InfoDialog>
                   </v-row>
                   <v-row no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
                     <span>
-                      <strong>{{prbStudent.mincode}} {{batchFile.schoolName}}</strong>
+                      <strong>{{ prbStudent.mincode }} {{ batchFile.schoolName }}</strong>
                     </span>
                     <v-spacer></v-spacer>
                     <span class="mr-6">
                       <span class="mr-3">Submitted PEN</span>
-                      <span :class="{'pen-placeholder': !prbStudent.submittedPen}"><strong>{{formatPen(prbStudent.submittedPen)}}</strong></span>
+                      <span
+                          :class="{'pen-placeholder': !prbStudent.submittedPen}"><strong>{{
+                          formatPen(prbStudent.submittedPen)
+                        }}</strong></span>
                     </span>
                     <span>
                       <span class="mr-3">Assigned PEN</span>
-                      <span :class="{'pen-placeholder': !prbStudent.assignedPEN}"><strong>{{formatPen(prbStudent.assignedPEN)}}</strong></span>
+                      <span
+                          :class="{'pen-placeholder': !prbStudent.assignedPEN}"><strong>{{
+                          formatPen(prbStudent.assignedPEN)
+                        }}</strong></span>
                     </span>
                   </v-row>
                 </template>
                 <template v-slot:footerPanel>
-                  <v-row v-if="prbStudent.infoRequest" no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
+                  <v-row v-if="prbStudent.infoRequest" no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
+                         style="background-color:white;">
                     <v-col cols="12">
                       <v-row no-gutters class="d-flex align-center">
                         <span class="mr-3"><strong>Info requested</strong></span>
@@ -69,7 +87,7 @@
                         </v-btn>
                       </v-row>
                       <v-row no-gutters>
-                        <pre class="pre-style">{{prbStudent.infoRequest}}</pre>
+                        <pre class="pre-style">{{ prbStudent.infoRequest }}</pre>
                       </v-row>
                     </v-col>
                   </v-row>
@@ -108,16 +126,18 @@
       <ConfirmationDialog ref="confirmationDialog">
         <template v-slot:message>
           <v-col class="pt-0">
-            <v-row class="mb-3">There is <strong>&nbsp;{{demogValidationResult.length}}&nbsp;</strong> questionable {{`error${demogValidationResult.length > 1 ? 's' : ''}`}} with this PEN request:</v-row>
+            <v-row class="mb-3">There is <strong>&nbsp;{{ demogValidationResult.length }}&nbsp;</strong> questionable
+              {{ `error${demogValidationResult.length > 1 ? 's' : ''}` }} with this PEN request:
+            </v-row>
             <v-row v-for="warning in demogValidationResult" :key="warning.penRequestBatchValidationIssueTypeCode">
               <v-col class="pb-0">
                 <v-row>
-                  <strong>{{warning.uiFieldName}}</strong>
+                  <strong>{{ warning.uiFieldName }}</strong>
                   <v-icon small color="#FCBA19" class="ml-2">
                     fa-exclamation-circle
                   </v-icon>
                 </v-row>
-                <v-row>{{warning.penRequestBatchValidationIssueTypeCode}}</v-row>
+                <v-row>{{ warning.penRequestBatchValidationIssueTypeCode }}</v-row>
               </v-col>
             </v-row>
           </v-col>
@@ -134,6 +154,7 @@ import PrbStudentStatusChip from './PrbStudentStatusChip';
 import InfoDialog from './prb-student-details/InfoDialog';
 import ApiService from '../../../common/apiService';
 import StudentDetailsInfoPanel from '../../common/StudentDetailsInfoPanel';
+import studentUpdateAlertMixin from '../../../mixins/student-update-alert-mixin';
 import AlertMessage from '../../util/AlertMessage';
 import {
   PEN_REQ_BATCH_STUDENT_REQUEST_CODES,
@@ -167,7 +188,7 @@ export default {
     StudentDetailsInfoPanel,
     ConfirmationDialog
   },
-  mixins: [alertMixin],
+  mixins: [alertMixin, studentUpdateAlertMixin],
   props: {
     totalNumber: {
       type: Number,
@@ -213,7 +234,7 @@ export default {
       possibleMatches: [],
       isLoadingMatches: false,
       showPossibleMatch: false,
-      prbStudentCopy:{},
+      prbStudentCopy: {},
       isIssuingNewPen: false,
       prbStudentNavInfo: [],
       prbSagaNames: Object.values(PRB_SAGA_NAMES),
@@ -225,7 +246,8 @@ export default {
         PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS,
         PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR,
       ],
-      demogValidationResult: []
+      demogValidationResult: [],
+      isStudentDataUpdated: false, // make it true, if any of the student gets updated from possible match list
     };
   },
   watch: {
@@ -236,11 +258,11 @@ export default {
     },
     repeatRequestOriginal: {
       handler() {
-        if(this.prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.REPEAT && this.prbStudent?.repeatRequestOriginalID)
+        if (this.prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.REPEAT && this.prbStudent?.repeatRequestOriginalID)
           return ApiService.apiAxios.get(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.repeatRequestOriginalID}`)
-            .then(response => {
-              this.repeatRequestOriginalStatus = response.data?.repeatRequestOriginalStatus;
-            });
+              .then(response => {
+                this.repeatRequestOriginalStatus = response.data?.repeatRequestOriginalStatus;
+              });
       }
     },
     notification(val) {
@@ -264,6 +286,17 @@ export default {
           this.setSelectedRecords();
           this.initializeDetails();
         }
+      } else if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
+        try {
+          const student = JSON.parse(notificationData.eventPayload);
+          if (student?.pen && !this.prbStudent?.sagaInProgress &&
+              (this.possibleMatches?.some(el => el?.pen === student.pen))) {
+            this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the pen match.`);
+            this.isStudentDataUpdated = true;
+          }
+        } catch (e) {
+          console.error(e);
+        }
       }
     },
   },
@@ -272,16 +305,16 @@ export default {
     ...mapState('notifications', ['notification']),
     disableRefresh() {
       return this.prbStudent?.sagaInProgress || this.isArchived
-        || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE !== this.prbStudent?.penRequestBatchStudentStatusCode;
+          || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE !== this.prbStudent?.penRequestBatchStudentStatusCode;
     },
     disableMatchUnmatch() {
-      return this.prbStudent?.sagaInProgress || this.isArchived;
+      return this.isStudentDataUpdated || this.prbStudent?.sagaInProgress || this.isArchived;
     },
     disableInfoReqBtn() {
       return this.loading || this.prbStudent?.sagaInProgress || this.isArchived
           || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
           || ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE]
-            .some(element => element === this.prbStudent?.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
+              .some(element => element === this.prbStudent?.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
     },
     repeatRequestOriginal() {
       return this.prbStudent?.repeatRequestOriginalID;
@@ -290,17 +323,17 @@ export default {
       return this.loading || this.prbStudent?.sagaInProgress || this.isArchived
           || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
           || (![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ]
-            .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus)
-              && (this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR') && (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.prbStudent.penRequestBatchStudentStatusCode )));
+                  .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus)
+              && (this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR') && (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.prbStudent.penRequestBatchStudentStatusCode)));
     },
-    disableModifySearch(){
+    disableModifySearch() {
       return this.loading || this.prbStudent?.sagaInProgress || this.isArchived
           || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode);
     },
-    isUnarchived(){
+    isUnarchived() {
       return this.batchFile?.penRequestBatchStatusCode === 'UNARCHIVED';
     },
-    isArchived(){
+    isArchived() {
       return this.batchFile?.penRequestBatchStatusCode === 'ARCHIVED';
     },
     penRequestBatchStore() {
@@ -317,19 +350,33 @@ export default {
   },
   methods: {
     ...mapMutations('setNavigation', ['setNavigation', 'clearNavigation']),
-    ...mapMutations('prbStudentSearch', [ 'setSelectedRecords']),
+    ...mapMutations('prbStudentSearch', ['setSelectedRecords']),
     formatPen,
     setBatchNav() {
       this.setNavigation({
         seqNumber: this.seqNumber,
         totalNumber: this.totalNumber,
         title: `Record ${this.seqNumber} of ${this.totalNumber} (${this.batchCount} ${this.batchCount > 1 ? 'files' : 'file'} selected)`,
-        preRoute: { name: 'prbStudentDetails', query: { seqNumber: this.seqNumber - 1, seqInBatch: this.seqNumberInBatch - 1, totalInBatch: this.totalNumberInBatch }},
-        nextRoute: { name: 'prbStudentDetails', query: { seqNumber: this.seqNumber + 1, seqInBatch: this.seqNumberInBatch + 1, totalInBatch: this.totalNumberInBatch }},
+        preRoute: {
+          name: 'prbStudentDetails',
+          query: {
+            seqNumber: this.seqNumber - 1,
+            seqInBatch: this.seqNumberInBatch - 1,
+            totalInBatch: this.totalNumberInBatch
+          }
+        },
+        nextRoute: {
+          name: 'prbStudentDetails',
+          query: {
+            seqNumber: this.seqNumber + 1,
+            seqInBatch: this.seqNumberInBatch + 1,
+            totalInBatch: this.totalNumberInBatch
+          }
+        },
       });
     },
     async initializeDetails() {
-      if(!isEmpty(this.currentRoute)) {
+      if (!isEmpty(this.currentRoute)) {
         this.seqNumber = this.currentRoute.query?.seqNumber;
         this.seqNumberInBatch = this.currentRoute.query?.seqInBatch;
         this.totalNumberInBatch = this.currentRoute.query?.totalInBatch;
@@ -338,7 +385,7 @@ export default {
       this.loading = true;
 
       try {
-        if(this.prbStudentNavInfo.length === 0 || this.prbStudentNavInfo.length < this.seqNumber) {
+        if (this.prbStudentNavInfo.length === 0 || this.prbStudentNavInfo.length < this.seqNumber) {
           await this.retrievePaginatedPenRequests(studentIDs);
         } else {
           await this.retrievePenRequestByID();
@@ -353,10 +400,10 @@ export default {
         };
 
         this.possibleMatches = [];
-        if([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR]
-          .some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)) {
+        if ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR]
+            .some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)) {
           this.demogValidationResult = await getDemogValidationResults(payload);
-          const hasValidationFailure = this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR'); 
+          const hasValidationFailure = this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR');
 
           if (!hasValidationFailure && PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE === this.prbStudent?.penRequestBatchStudentStatusCode) {
             await this.runPenMatch();
@@ -365,7 +412,7 @@ export default {
           await this.getMatchedRecordsForStudent();
         }
 
-        if(this.prbStudent?.sagaInProgress) {
+        if (this.prbStudent?.sagaInProgress) {
           switch (this.prbStudent?.sagaName) {
           case PRB_SAGA_NAMES.PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA:
             this.setSuccessAlert('The request to issue new PEN is currently being processed.');
@@ -386,12 +433,12 @@ export default {
       this.loading = false;
     },
     async retrievePenRequestByID() {
-      const navInfo = this.prbStudentNavInfo[this.seqNumber-1];
+      const navInfo = this.prbStudentNavInfo[this.seqNumber - 1];
       this.seqNumberInBatch = navInfo.seqNumberInBatch;
       this.totalNumberInBatch = navInfo.totalNumberInBatch;
 
       const response = await ApiService.apiAxios.get(`${Routes['penRequestBatch'].FILES_URL}/${navInfo.penRequestBatchID}/students/${navInfo.penRequestBatchStudentID}`);
-      if(response.data) {
+      if (response.data) {
         this.prbStudent = response.data;
         this.setModalStudentFromPrbStudent(this.prbStudent);
         this.prbStudentCopy = deepCloneObject(this.prbStudent);
@@ -401,7 +448,7 @@ export default {
     },
     async retrievePaginatedPenRequests(studentIDs) {
       let searchQueries;
-      if(studentIDs.length > 0) {
+      if (studentIDs.length > 0) {
         this.batchIDs = [this.prBatchIDs].flat();
         searchQueries = [
           {
@@ -429,7 +476,7 @@ export default {
 
       const params = {
         params: {
-          pageNumber: this.seqNumber-1,
+          pageNumber: this.seqNumber - 1,
           pageSize: 1,
           sort: this.sortParams,
           searchQueries,
@@ -437,16 +484,16 @@ export default {
       };
 
       const response = await this.getPenRequestsFromApi(params);
-      if(response.data && response.data.content) {
+      if (response.data && response.data.content) {
         this.prbStudent = response.data.content[0];
         this.setModalStudentFromPrbStudent(this.prbStudent);
         this.prbStudentCopy = deepCloneObject(this.prbStudent);
-        if(this.seqNumberInBatch < 1 || this.seqNumberInBatch > this.totalNumberInBatch || (this.seqNumberInBatch === 1 && this.seqNumber === 1)) {
+        if (this.seqNumberInBatch < 1 || this.seqNumberInBatch > this.totalNumberInBatch || (this.seqNumberInBatch === 1 && this.seqNumber === 1)) {
           const penRequestInBatchResp = await this.retrievePenRequestsInBatch(this.prbStudent.penRequestBatchID, searchQueries);
-          if(penRequestInBatchResp.data) {
-            if(this.seqNumberInBatch < 1) {
+          if (penRequestInBatchResp.data) {
+            if (this.seqNumberInBatch < 1) {
               this.seqNumberInBatch = penRequestInBatchResp.data.totalElements;
-            } else if(this.seqNumberInBatch > this.totalNumberInBatch) {
+            } else if (this.seqNumberInBatch > this.totalNumberInBatch) {
               this.seqNumberInBatch = 1;
             }
             this.totalNumberInBatch = penRequestInBatchResp.data.totalElements;
@@ -468,7 +515,7 @@ export default {
     retrievePenRequestsInBatch(batchID, searchQueries) {
       let criteria = cloneDeep(searchQueries);
       let batchIdSearchCriteria = this.getBatchIdSearchCriteria(criteria);
-      if(batchIdSearchCriteria) {
+      if (batchIdSearchCriteria) {
         batchIdSearchCriteria.operation = SEARCH_FILTER_OPERATION.EQUAL;
         batchIdSearchCriteria.value = batchID;
       }
@@ -485,7 +532,7 @@ export default {
     },
     async retrieveBatchFile() {
       const selectedFiles = this.$store.state[this.penRequestBatchStore].selectedFiles;
-      if(!selectedFiles || selectedFiles.length === 0) {
+      if (!selectedFiles || selectedFiles.length === 0) {
         await this.retrieveSelectedFiles();
       }
       this.batchFile = this.$store.state[this.penRequestBatchStore].selectedFiles.find(file => file.penRequestBatchID === this.prbStudent.penRequestBatchID);
@@ -494,7 +541,10 @@ export default {
       const searchQueries = [
         {
           searchCriteriaList: [{
-            key: 'penRequestBatchID', operation: SEARCH_FILTER_OPERATION.IN, value: this.batchIDs.join(','), valueType: SEARCH_VALUE_TYPE.UUID
+            key: 'penRequestBatchID',
+            operation: SEARCH_FILTER_OPERATION.IN,
+            value: this.batchIDs.join(','),
+            valueType: SEARCH_VALUE_TYPE.UUID
           }],
         },
       ];
@@ -508,22 +558,22 @@ export default {
       };
 
       return ApiService.apiAxios.get(Routes['penRequestBatch'].FILES_URL, params)
-        .then(response => {
-          response.data && this.$store.commit(`${this.penRequestBatchStore}/setSelectedFiles`, response.data.content);
-        });
+          .then(response => {
+            response.data && this.$store.commit(`${this.penRequestBatchStore}/setSelectedFiles`, response.data.content);
+          });
     },
     getPenRequestsFromApi(params) {
       return ApiService.apiAxios.get(Routes['penRequestBatch'].STUDENTS_SEARCH_URL, params);
     },
     getBatchIdSearchCriteria(searchCriteria) {
       const batchIdSearchQuery = searchCriteria.find(query =>
-        query.searchCriteriaList.some(criteria => criteria.key === 'penRequestBatchEntity.penRequestBatchID'));
+          query.searchCriteriaList.some(criteria => criteria.key === 'penRequestBatchEntity.penRequestBatchID'));
       return batchIdSearchQuery?.searchCriteriaList.find(criteria => criteria.key === 'penRequestBatchEntity.penRequestBatchID');
     },
     updateInfoRequested(infoRequest) {
       this.loading = true;
       let req;
-      if(infoRequest) {
+      if (infoRequest) {
         req = {
           infoRequest: infoRequest,
           penRequestBatchStudentStatusCode: PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ
@@ -535,16 +585,16 @@ export default {
         };
       }
       ApiService.apiAxios.put(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}`, req)
-        .then(response => {
-          response.data && (this.prbStudent = response.data);
-        })
-        .catch(error => {
-          this.setFailureAlert('An error occurred while updating the PEN request. Please try again later.');
-          console.log(error);
-        })
-        .finally(() => {
-          this.loading = false;
-        });
+          .then(response => {
+            response.data && (this.prbStudent = response.data);
+          })
+          .catch(error => {
+            this.setFailureAlert('An error occurred while updating the PEN request. Please try again later.');
+            console.log(error);
+          })
+          .finally(() => {
+            this.loading = false;
+          });
     },
 
     async runPenMatch() {
@@ -556,6 +606,7 @@ export default {
         this.isIssuePenDisabled = false;
         this.showPossibleMatch = true;
         this.possibleMatches = result.data ?? [];
+        this.isStudentDataUpdated = false; // pen match result is refreshed now enable the table.
       } catch (error) {
         console.log(error);
         this.setFailureAlert('PEN Match API call failed, please try again.');
@@ -567,7 +618,7 @@ export default {
       this.hasValidationIssues = value.hasValidationError;
       this.demogValidationResult = value.validationIssues;
     },
-    setModalStudentFromPrbStudent(prbStudent){
+    setModalStudentFromPrbStudent(prbStudent) {
       this.modalStudent = deepCloneObject(prbStudent);
     },
     //TODO need to find out when we implement validation in next story, which other status maps to what and may be update it to get from a MAP.
@@ -579,15 +630,24 @@ export default {
     },
     async confirmToProceed() {
       let result = true;
-      if(this.demogValidationResult.length > 0) {
+      if (this.demogValidationResult.length > 0) {
         result = await this.$refs.confirmationDialog.open('Are you sure you want to proceed?', null,
-          { width: '680px', messagePadding: 'px-4 pt-1', color: '', dark: false, titleBold: true, closeIcon: true, divider: true, resolveText: 'Confirm' });
+            {
+              width: '680px',
+              messagePadding: 'px-4 pt-1',
+              color: '',
+              dark: false,
+              titleBold: true,
+              closeIcon: true,
+              divider: true,
+              resolveText: 'Confirm'
+            });
       }
       return result;
     },
     async issueNewPen() {
       let result = await this.confirmToProceed();
-      if(!result) {
+      if (!result) {
         return;
       }
       this.isIssuingNewPen = true;
@@ -596,19 +656,19 @@ export default {
         prbStudent: this.prbStudent
       };
       ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}/issueNewPen`, req)
-        .then(response => {
-          if(response.data) {
-            this.prbStudent.sagaInProgress = true;
-            this.setSuccessAlert('Your request to issue new PEN is accepted.');
-          }
-        })
-        .catch(error => {
-          this.setFailureAlert('An error occurred while issuing new PEN. Please try again later.');
-          console.log(error);
-        })
-        .finally(() => {
-          this.isIssuingNewPen = false;
-        });
+          .then(response => {
+            if (response.data) {
+              this.prbStudent.sagaInProgress = true;
+              this.setSuccessAlert('Your request to issue new PEN is accepted.');
+            }
+          })
+          .catch(error => {
+            this.setFailureAlert('An error occurred while issuing new PEN. Please try again later.');
+            console.log(error);
+          })
+          .finally(() => {
+            this.isIssuingNewPen = false;
+          });
     },
     /**
      * This method is responsible to do match/unmatch of student to Pen Request.
@@ -618,55 +678,58 @@ export default {
      * @param buttonText whether match or unmatch was clicked.
      * @returns {Promise<void>}
      */
-    async matchUnmatchStudentToPRBStudent(student, buttonText){
+    async matchUnmatchStudentToPRBStudent(student, buttonText) {
       let operation;
-
-      if('Match' ===  buttonText){
+      if ('Match' === buttonText) {
         const result = await this.confirmToProceed();
-        if(!result) {
+        if (!result) {
           return;
         }
-
         this.prbStudent.assignedPEN = student.pen;
         this.prbStudent.studentID = student.studentID;
         operation = 'match';
       } else {
         operation = 'unmatch';
       }
-
       this.isMatchingToStudentRecord = true;
       const payload = {
         prbStudent: this.prbStudent,
         studentID: student.studentID,
         matchedPEN: student.pen,
-        matchedStudentIDList: this.possibleMatches.filter(el => el.studentID !== student.studentID).map(el=>el.studentID)
+        matchedStudentIDList: this.possibleMatches.filter(el => el.studentID !== student.studentID).map(el => el.studentID)
       };
-      ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}/user-${operation}`, payload)
-        .then(response => {
-          if(response.data) {
-            this.prbStudent.sagaInProgress = true;
-            this.setSuccessAlert(`Your request to ${operation} student to Pen Request is accepted.`);
-          }
-        })
-        .catch(error => {
-          this.setFailureAlert(`Your request to ${operation} student to Pen Request could not be accepted,  Please try again later.`);
-          console.log(error);
-        })
-        .finally(() => {
-          this.isMatchingToStudentRecord = false;
-        });
+      const params = {
+        penNumbersInOps: student.pen
+      };
+      ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}/user-${operation}`, payload, {params})
+          .then(response => {
+            if (response.data) {
+              this.prbStudent.sagaInProgress = true;
+              this.setSuccessAlert(`Your request to ${operation} student to Pen Request is accepted.`);
+            }
+          })
+          .catch(error => {
+            if (error?.response?.data?.code === 409) {
+              this.setFailureAlert(error?.response?.data?.message);
+            }
+            this.setFailureAlert(`Your request to ${operation} student to Pen Request could not be accepted,  Please try again later.`);
+            console.log(error);
+          })
+          .finally(() => {
+            this.isMatchingToStudentRecord = false;
+          });
     },
     /**
      * this function returns stored possible matches from DB for a particular student, backed by PEN_MATCH_API,
      * and not from fresh run of  pen match algorithm.
      * @returns {Promise<void>}
      */
-    async getMatchedRecordsForStudent(){
+    async getMatchedRecordsForStudent() {
       this.isLoadingMatches = true;
       this.showPossibleMatch = false;
       this.possibleMatches = [];
       try {
-        const result =  await getMatchedRecordssWithDemographicsByStudent(this.prbStudent?.studentID, true);
+        const result = await getMatchedRecordssWithDemographicsByStudent(this.prbStudent?.studentID, true);
         let matchedIndex = -1;
 
         result.forEach((item, index) => {
@@ -680,7 +743,7 @@ export default {
           }
         });
 
-        this.possibleMatches = matchedIndex > 0 ? [result[matchedIndex], ...result.slice(0,matchedIndex), ...result.slice(matchedIndex + 1)] : result;
+        this.possibleMatches = matchedIndex > 0 ? [result[matchedIndex], ...result.slice(0, matchedIndex), ...result.slice(matchedIndex + 1)] : result;
 
         this.showPossibleMatch = true;
       } catch (error) {
@@ -691,7 +754,7 @@ export default {
       }
 
     },
-    async refreshMatchResults(){
+    async refreshMatchResults() {
       await this.runPenMatch();
     },
   }
@@ -699,52 +762,52 @@ export default {
 </script>
 
 <style scoped>
-  .batch-title {
-    font-size: 1.065rem;
-  }
+.batch-title {
+  font-size: 1.065rem;
+}
 
-  .pre-style {
-    white-space: pre-wrap;       /* Since CSS 2.1 */
-    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-    white-space: -o-pre-wrap;    /* Opera 7 */
-    word-wrap: break-word;
-    max-height: 10em;
-    overflow-y: auto;
-  }
+.pre-style {
+  white-space: pre-wrap; /* Since CSS 2.1 */
+  white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+  white-space: -o-pre-wrap; /* Opera 7 */
+  word-wrap: break-word;
+  max-height: 10em;
+  overflow-y: auto;
+}
 
-  .pen-placeholder {
-    margin-right: 5.7em;
-  }
+.pen-placeholder {
+  margin-right: 5.7em;
+}
 
-  #bottom-table /deep/ table th,
-  #top-table /deep/ table th {
-    border-bottom: none !important;
-    font-size: 0.875rem;
-    font-weight: normal;
-    color: rgba(0, 0, 0, 0.87) !important;
-    height: 1.5rem;
-  }
+#bottom-table /deep/ table th,
+#top-table /deep/ table th {
+  border-bottom: none !important;
+  font-size: 0.875rem;
+  font-weight: normal;
+  color: rgba(0, 0, 0, 0.87) !important;
+  height: 1.5rem;
+}
 
 
+.details-table /deep/ table > tbody > tr > td {
+  height: 1.5rem;
+}
 
-  .details-table /deep/ table > tbody > tr > td {
-    height: 1.5rem;
-  }
+.details-table /deep/ table > tbody > tr:hover {
+  background: transparent !important;
+}
 
-  .details-table /deep/ table > tbody > tr:hover {
-    background: transparent !important;
-  }
+.details-table /deep/ table > tbody > tr:not(:last-child) > td {
+  border-bottom: none !important;
+}
 
-  .details-table /deep/ table > tbody > tr:not(:last-child) > td {
-    border-bottom: none !important;
-  }
-  .full-width {
-    margin-left: -32px;
-    margin-right: -32px;
-  }
+.full-width {
+  margin-left: -32px;
+  margin-right: -32px;
+}
 
-  pre {
-    font-family: inherit;
-    font-size: inherit;
-  }
+pre {
+  font-family: inherit;
+  font-size: inherit;
+}
 </style>
