@@ -156,7 +156,7 @@ const redisUtil = {
    * @returns {string}
    */
   constructKeyForPenLock(pen) {
-    return `locked-${pen}`;
+    return `{locked-pen}${pen}`;
   },
 
 };
