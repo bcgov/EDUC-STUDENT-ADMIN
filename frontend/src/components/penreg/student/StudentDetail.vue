@@ -7,9 +7,9 @@
         <v-col cols="12" class="fill-height ma-0 pa-0">
           <v-row>
             <v-tabs active-class="active-display" class="pa-0 ma-0 " v-model="tab">
-              <v-tab class="student-details-tabs-style" key="Demographics"><strong>Demographics</strong></v-tab>
-              <v-tab class="student-details-tabs-style" key="SLD"><strong>SLD History</strong></v-tab>
-              <v-tab class="student-details-tabs-style" key="Audit"><strong>Audit History</strong></v-tab>
+              <v-tab class="student-details-tabs-style" key="Demographics" :disabled="isStudentDataUpdated"><strong>Demographics</strong></v-tab>
+              <v-tab class="student-details-tabs-style" key="SLD" :disabled="isStudentDataUpdated"><strong>SLD History</strong></v-tab>
+              <v-tab class="student-details-tabs-style" key="Audit" :disabled="isStudentDataUpdated"><strong>Audit History</strong></v-tab>
               <v-tab class="student-details-tabs-style" :disabled="true"><strong>Transcript</strong></v-tab>
             </v-tabs>
           </v-row>
@@ -25,6 +25,7 @@
                 :fullReadOnly="hasSagaInProgress"
                 @alert="setFailureAlert"
                 @update:student="v => studentDetails.student = v"
+                @isStudentUpdated="v=> isStudentDataUpdated = v"
                 @refresh="refreshStudent"
                 v-if="tab===0"
             >
@@ -36,15 +37,15 @@
                         <PrimaryButton :secondary="true" class="mx-1" text="Cancel"></PrimaryButton>
                       </router-link>
                       <PrimaryButton v-if="studentDetails.student.statusCode === 'M'"
-                          :disabled="disableDemerge() || isStudentUpdatedByAnotherUser" @click.native="demerge()" text="Demerge"></PrimaryButton>
+                          :disabled="disableDemerge() || isStudentUpdated" @click.native="demerge()" text="Demerge"></PrimaryButton>
                       <PrimaryButton :disabled="isStudentUpdated || !hasAnyEdits() || !validForm " @click.native="saveStudent()" text="Save"></PrimaryButton>
                     </v-card-actions>
                   </v-col>
                 </v-row>
               </template>
             </StudentDetailCommon>
-            <StudentSLDHistory v-else-if="tab===1" :student="studentDetails.student" @refresh="refreshStudent"/>
-            <StudentAuditHistory v-else-if="tab===2" :student="studentDetails.student" @refresh="refreshStudent"/>
+            <StudentSLDHistory v-else-if="tab===1" :student="studentDetails.student" @refresh="refreshStudent"  @isStudentUpdated="v=> isStudentDataUpdated = v"/>
+            <StudentAuditHistory v-else-if="tab===2" :student="studentDetails.student" @refresh="refreshStudent"  @isStudentUpdated="v=> isStudentDataUpdated = v"/>
           </v-tabs-items>
           <v-row v-else>
           <v-row fluid class="full-height align-center justify-center" >
@@ -99,6 +100,7 @@ export default {
       tab: 0,
       isLoading: true,
       studentDetails: null,
+      isStudentDataUpdated: false,
     };
   },
   computed: {
@@ -120,18 +122,18 @@ export default {
     refreshStudent() {
       this.isLoading = true;
       ApiService.apiAxios
-        .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
-        .then(response => {
-          this.studentDetails = response.data;
-          this.studentDetails.student.truePen = this.studentDetails.merges?.find(merge => merge.studentMergeDirectionCode === 'TO')?.mergeStudent.pen;
-        })
-        .catch(error => {
-          this.setFailureAlert('An error occurred while loading the student details. Please try again later.');
-          console.log(error);
-        })
-        .finally(() => {
-          this.isLoading = false;
-        });
+          .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
+          .then(response => {
+            this.studentDetails = response.data;
+            this.studentDetails.student.truePen = this.studentDetails.merges?.find(merge => merge.studentMergeDirectionCode === 'TO')?.mergeStudent.pen;
+          })
+          .catch(error => {
+            this.setFailureAlert('An error occurred while loading the student details. Please try again later.');
+            console.log(error);
+          })
+          .finally(() => {
+            this.isLoading = false;
+          });
     },
   }
 };

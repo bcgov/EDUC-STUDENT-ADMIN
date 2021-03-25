@@ -3,6 +3,7 @@
     <v-row>
       <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"
                     :timeoutMs="2000"></AlertMessage>
+      <AlertMessage v-model="studentUpdateAlert" :alertMessage="studentUpdateAlertMessage" :alertType="studentUpdateAlertType" ></AlertMessage>
     </v-row>
     <v-row no-gutters>
       <v-col cols="11">
@@ -11,7 +12,7 @@
       </div>
       </v-col>
       <v-col cols="1">
-        <CompareDemographicModal :clearOnExit="false" :disabled="false" :selectedRecords.sync="compareStudent"></CompareDemographicModal>
+        <CompareDemographicModal :clearOnExit="false" :disabled="isStudentUpdated" :selectedRecords.sync="compareStudent"></CompareDemographicModal>
       </v-col>
     </v-row>
     <v-row>
@@ -69,10 +70,12 @@ import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
 import CompareDemographicModal from '@/components/common/CompareDemographicModal';
+import studentUpdateAlertMixin from '@/mixins/student-update-alert-mixin';
+import {mapGetters} from 'vuex';
 
 export default {
   name: 'StudentSLDHistory',
-  mixins: [alertMixin],
+  mixins: [alertMixin, studentUpdateAlertMixin],
   props: {
     student: {
       type: Object,
@@ -100,9 +103,31 @@ export default {
       loading: true,
       sldData: [],
       compareStudent: [],
+      isStudentUpdated: false,
     };
   },
-
+  computed:{
+  ...mapGetters('notifications', ['notification']),
+  },
+  watch: {
+    notification(val) {
+      if (val) {
+        const notificationData = val;
+       if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
+         try {
+           const student = JSON.parse(notificationData.eventPayload);
+           if (student?.pen && student?.pen === this.student?.pen) {
+             this.isStudentUpdated = true;
+             this.$emit('isStudentUpdated', true);
+             this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+           }
+         } catch (e) {
+           console.error(e);
+         }
+        }
+      }
+    }
+  },
   created() {
     this.compareStudent[0] = this.student;
     this.retrieveStudentSLDData();

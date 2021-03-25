@@ -405,6 +405,7 @@ export default {
         if (student?.pen && student?.pen === this.studentHistoryResp?.content[0]?.pen && this.isActionedInDifferentTab && !this.hasSagaInProgress){ // show only when it is in a diff tab or diff user or not part of the saga.
           this.isStudentUpdated = true;
           this.studentAuditHistoryDetailKey += 1;
+          this.$emit('isStudentUpdated', true);
           this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
         }else if(student?.pen && student?.pen === this.studentHistoryResp?.content[0]?.pen && !this.isActionedInDifferentTab){
           this.isActionedInDifferentTab = true; // make it true for future messages.

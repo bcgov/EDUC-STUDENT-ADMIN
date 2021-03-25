@@ -384,13 +384,14 @@
         </v-card>
       </v-col>
       <v-col cols="1">
-        <CompareDemographicModal :clearOnExit="false" :disabled="hasSagaInProgress(this.origStudent)" :selectedRecords.sync="compareStudent"></CompareDemographicModal>
+        <CompareDemographicModal :clearOnExit="false" :disabled="isStudentUpdated || hasSagaInProgress(this.origStudent)" :selectedRecords.sync="compareStudent"></CompareDemographicModal>
       </v-col>
       <v-col cols="1">
         <TertiaryButton
             class="ma-0"
             color="#38598A"
             text="Copy"
+            :disabled="isStudentUpdated"
             v-clipboard:copy="copyTxt"
             v-clipboard:error="onError"
             :model="copyTxt"
@@ -913,7 +914,8 @@ export default {
             if (error?.response?.status === 409 && error?.response?.data?.message) {
               this.setErrorAlertForStudentUpdate(error?.response?.data?.message);
               this.isStudentUpdated = true;
-              if(this.isStudentUpdatedInDifferentTab){ // if it is already true that means the message has already arrived.
+              this.$emit('isStudentUpdated', true);
+              if(this.isStudentUpdatedInDifferentTab){ // if it is already true that means the message has already arrived from STAN.
                 this.setWarningAlertForStudentUpdate(this.lastMessageFromSTANForStudentUpdate);
               }else {
                 this.isStudentUpdatedInDifferentTab = true; // turn it back to true in case of errors
@@ -1041,6 +1043,7 @@ export default {
         const student = JSON.parse(notificationData.eventPayload);
         if (student?.pen && student?.pen === this.studentDetails?.student?.pen && this.isStudentUpdatedInDifferentTab) { // show only when it is in a diff tab or diff user.
           this.isStudentUpdated = true;
+          this.$emit('isStudentUpdated', true);
           this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
         }else if(student?.pen && student?.pen === this.studentDetails?.student?.pen && !this.isStudentUpdatedInDifferentTab){
           this.isStudentUpdatedInDifferentTab = true; // make it true for future messages.

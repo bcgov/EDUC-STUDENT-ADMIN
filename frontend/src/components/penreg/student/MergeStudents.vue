@@ -540,7 +540,7 @@ export default {
         const student = JSON.parse(notificationData.eventPayload);
         if (student?.pen && (student?.pen === this.student?.pen || student?.pen === this.mergedStudent?.pen) && !this.isProcessing) { // show only when it is in a diff tab or diff user.
           this.isStudentUpdated = true;
-          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please start from compare screen again.`);
         }
       } catch (e) {
         console.error(e);
