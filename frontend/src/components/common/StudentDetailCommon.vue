@@ -912,6 +912,7 @@ export default {
           .catch(error => {
             if (error?.response?.status === 409 && error?.response?.data?.message) {
               this.setErrorAlertForStudentUpdate(error?.response?.data?.message);
+              this.isStudentUpdated = true;
               if(this.isStudentUpdatedInDifferentTab){ // if it is already true that means the message has already arrived.
                 this.setWarningAlertForStudentUpdate(this.lastMessageFromSTANForStudentUpdate);
               }else {
