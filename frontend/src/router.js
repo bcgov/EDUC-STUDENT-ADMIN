@@ -152,7 +152,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: '/mergeStudents',
+      path: '/mergeStudents/:mergedToStudentID/:mergedFromStudentID',
       name: REQUEST_TYPES.mergeStudents.name,
       component: MergeStudents,
       props: true,
@@ -194,7 +194,7 @@ const router = new VueRouter({
       path: '/prbStudentDetails',
       name: 'prbStudentDetails',
       component: PrbStudentDetailsDisplay,
-      props: (route) => ({ 
+      props: (route) => ({
         totalNumber: +(route.query.totalNumber ?? 1),
         batchCount: +(route.query.batchCount ?? 1),
         searchCriteria: JSON.parse(route.query.searchCriteria ?? '[]'),

@@ -475,8 +475,8 @@ export default {
         {
           name: 'mergeStudents',
           params: {
-            mergedToPen: this.mergedToStudent,
-            mergedFromPen: this.mergedFromStudent
+            mergedToStudentID: this.mergedToStudent.studentID,
+            mergedFromStudentID: this.mergedFromStudent.studentID
           }
         }
       );

@@ -26,7 +26,7 @@
         <v-progress-linear
             indeterminate
             color="blue"
-            :active="isProcessing"
+            :active="isProcessing || isLoading"
         ></v-progress-linear>
         <v-row no-gutters class="mt-4 py-1">
           <v-col cols="2">
@@ -318,7 +318,7 @@
 <script>
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
 import {mapGetters} from 'vuex';
-import {REQUEST_TYPES, STUDENT_DETAILS_FIELDS, STUDENT_CODES} from '@/utils/constants';
+import {REQUEST_TYPES, STUDENT_DETAILS_FIELDS, STUDENT_CODES, Routes} from '@/utils/constants';
 import FormattedTextField from '@/components/util/FormattedTextField';
 import StudentDetailsCheckBoxWithOutputText from '@/components/penreg/student/StudentDetailsCheckBoxWithOutputText';
 import PrimaryButton from '@/components/util/PrimaryButton';
@@ -330,17 +330,18 @@ import AlertMessage from '@/components/util/AlertMessage';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import router from '@/router';
 import studentUpdateAlertMixin from '@/mixins/student-update-alert-mixin';
+import ApiService from '@/common/apiService';
 
 export default {
   name: 'MergeStudents',
   mixins: [alertMixin,schoolMixin,servicesSagaMixin,studentUpdateAlertMixin],
   props: {
-    mergedToPen: {
-      type: Object,
+    mergedToStudentID: {
+      type: String,
       required: true
     },
-    mergedFromPen: {
-      type: Object,
+    mergedFromStudentID: {
+      type: String,
       required: true
     },
   },
@@ -368,12 +369,28 @@ export default {
   created() {
     this.genderCodes = this.genders ? this.genders.map(a => a.genderCode) : [];
     this.resetAlert();
-  },
-  mounted() {
     this.$store.dispatch('student/getCodes');
-    this.student = JSON.parse(JSON.stringify(this.mergedToPen));
-    this.mergedStudent = JSON.parse(JSON.stringify(this.mergedFromPen));
-    this.populateDOB(true);
+  },
+  async mounted() {
+
+    const params = {
+      params: {
+        studentIDs:`${this.mergedToStudentID},${this.mergedFromStudentID}`
+      }
+    };
+    try{
+      this.isLoading = true;
+      const students = await ApiService.apiAxios.get(Routes.student.GET_ALL_STUDENTS_BY_IDS, params);
+      this.student = students.data.find(student=> student.studentID === this.mergedToStudentID);// JSON.parse(JSON.stringify(this.mergedToPen));
+      this.mergedStudent = students.data.find(student=> student.studentID === this.mergedFromStudentID);//JSON.parse(JSON.stringify(this.mergedFromPen));
+      this.populateDOB(true);
+    }catch (e) {
+      console.error(e);
+      this.setFailureAlert(`Failed to Load student details, please try again later.`);
+    }finally {
+      this.isLoading = false;
+    }
+
   },
   data() {
     return {
@@ -387,6 +404,7 @@ export default {
       STUDENT_CODES: STUDENT_CODES,
       genderCodes: [],
       isStudentUpdated: false,
+      isLoading: false,
     };
   },
   computed: {
@@ -540,7 +558,7 @@ export default {
         const student = JSON.parse(notificationData.eventPayload);
         if (student?.pen && (student?.pen === this.student?.pen || student?.pen === this.mergedStudent?.pen) && !this.isProcessing) { // show only when it is in a diff tab or diff user.
           this.isStudentUpdated = true;
-          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please start from compare screen again.`);
+          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
         }
       } catch (e) {
         console.error(e);
