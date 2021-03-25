@@ -1021,7 +1021,7 @@ export default {
         });
     },
     disableDemerge() {
-      if (this.isProcessing || this.demergeSagaComplete || this.hasSagaInProgress(this.origStudent)) {
+      if (this.isStudentUpdated || this.isProcessing || this.demergeSagaComplete || this.hasSagaInProgress(this.origStudent)) {
         return true;
       }
       return !(this.origStudent.statusCode === 'M' && !!this.origStudent.trueStudentID);
