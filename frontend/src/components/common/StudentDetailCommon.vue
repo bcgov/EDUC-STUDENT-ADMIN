@@ -592,7 +592,8 @@ export default {
       compareStudent: [],
       copyTxt:'',
       isStudentUpdated: false,
-      isStudentUpdatedInDifferentTab: true
+      isStudentUpdatedInDifferentTab: true,
+      lastMessageFromSTANForStudentUpdate: null,
     };
   },
   created() {
@@ -910,8 +911,12 @@ export default {
           })
           .catch(error => {
             if (error?.response?.status === 409 && error?.response?.data?.message) {
-              this.setFailureAlert(error?.response?.data?.message);
-              this.isStudentUpdatedInDifferentTab = true; // turn it back to true in case of errors
+              this.setErrorAlertForStudentUpdate(error?.response?.data?.message);
+              if(this.isStudentUpdatedInDifferentTab){ // if it is already true that means the message has already arrived.
+                this.setWarningAlertForStudentUpdate(this.lastMessageFromSTANForStudentUpdate);
+              }else {
+                this.isStudentUpdatedInDifferentTab = true; // turn it back to true in case of errors
+              }
             }else {
               this.setFailureAlert('Student data could not be updated, please try again.');
             }
@@ -1038,6 +1043,7 @@ export default {
           this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
         }else if(student?.pen && student?.pen === this.studentDetails?.student?.pen && !this.isStudentUpdatedInDifferentTab){
           this.isStudentUpdatedInDifferentTab = true; // make it true for future messages.
+          this.lastMessageFromSTANForStudentUpdate =`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`; // store it to show after recieving 409 http response, this helps in race condition where STAN is sending message faster than http response.
         }
       } catch (e) {
         console.error(e);

@@ -56,7 +56,7 @@ const handleConcurrentStudentModification = async (req, res, next) => {
 
   } catch (e) {
     utils.logError(`acquireLockAndPutStudentDataIntoRedisForConcurrentUpdate failed to acquire lock for :: ${user?.idir_username}`, e);
-    return utils.errorResponse(res,'multiple users trying to update the same student record in different operation. Please try again later.',HttpStatus.CONFLICT);
+    return utils.errorResponse(res,'Multiple users trying to update the same student record. Please try again later after refreshing the page.',HttpStatus.CONFLICT);
   }
 };
 

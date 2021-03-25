@@ -12,6 +12,11 @@ export default {
       this.studentUpdateAlertType = 'bootstrap-warning';
       this.studentUpdateAlert = true;
     },
+    setErrorAlertForStudentUpdate(message) {
+      this.studentUpdateAlertMessage = message;
+      this.studentUpdateAlertType = 'bootstrap-error';
+      this.studentUpdateAlert = true;
+    },
     resetAlertForStudentUpdate() {
       this.studentUpdateAlert = false;
       this.alertMessage = null;
