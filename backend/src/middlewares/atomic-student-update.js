@@ -31,7 +31,7 @@ const handleConcurrentStudentModification = async (req, res, next) => {
     }
     const redisMultiGet = redis.getRedisClient().multi();
     for (const pen of peNumbersInvolvedInOperation) {
-      await redLock.lock(`locks:atomic-student-update-${pen}`, 1000); // no need to release the lock as it will auto expire after 1000 ms.
+      await redLock.lock(`locks:atomic-student-update-${pen}`, 200); // no need to release the lock as it will auto expire after 200 ms.
       redisMultiGet.get(redisUtil.constructKeyForPenLock(pen));
     }
     try {
