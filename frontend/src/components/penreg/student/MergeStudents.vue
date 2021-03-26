@@ -306,7 +306,7 @@
     <v-row>
       <v-col cols="12">
         <v-card-actions style="float: right;">
-          <PrimaryButton :disabled="isStudentUpdated || !hasAnyEdits() || !validForm || isProcessing || mergeSagaComplete" @click.native="performMerge()" text="Merge"></PrimaryButton>
+          <PrimaryButton :disabled="isStudentUpdated || !hasAnyEdits() || !validForm || isProcessing || mergeSagaComplete || isAMergedStudent" @click.native="performMerge()" text="Merge"></PrimaryButton>
         </v-card-actions>
       </v-col>
     </v-row>
@@ -383,6 +383,7 @@ export default {
       const students = await ApiService.apiAxios.get(Routes.student.GET_ALL_STUDENTS_BY_IDS, params);
       this.student = students.data.find(student=> student.studentID === this.mergedToStudentID);// JSON.parse(JSON.stringify(this.mergedToPen));
       this.mergedStudent = students.data.find(student=> student.studentID === this.mergedFromStudentID);//JSON.parse(JSON.stringify(this.mergedFromPen));
+      this.isAMergedStudent =this.student?.statusCode === 'M' || this.mergedStudent?.statusCode === 'M';
       this.populateDOB(true);
     }catch (e) {
       console.error(e);
@@ -405,6 +406,7 @@ export default {
       genderCodes: [],
       isStudentUpdated: false,
       isLoading: false,
+      isAMergedStudent: false,
     };
   },
   computed: {

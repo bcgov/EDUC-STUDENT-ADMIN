@@ -126,6 +126,7 @@ export default {
           .then(response => {
             this.studentDetails = response.data;
             this.studentDetails.student.truePen = this.studentDetails.merges?.find(merge => merge.studentMergeDirectionCode === 'TO')?.mergeStudent.pen;
+            this.isStudentDataUpdated = false; // make sure that once it is refreshed enable everything back.
           })
           .catch(error => {
             this.setFailureAlert('An error occurred while loading the student details. Please try again later.');

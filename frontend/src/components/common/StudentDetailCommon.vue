@@ -635,7 +635,7 @@ export default {
             }, 1000);
             // Open mergedToStudent in a new tab
             setTimeout(() => {
-              this.openStudentDetails(this.mergedToStudent.studentID);
+              this.openStudentDetails(this.mergedToStudent?.studentID);
             }, 500);
           } else if(notificationData.sagaName.startsWith('PEN_SERVICES_')) {
             this.$emit('refresh');

@@ -38,14 +38,18 @@ const handleConcurrentStudentModification = async (req, res, next) => {
       const resultsFromRedis = await redisMultiGet.exec(); // sample  result === [[null, 'OK'], [null, 'bar']]
       const value = resultsFromRedis.find(element => element[1] !== null);
       if (value && value.length>0 && value[1]) { // if it is present , it is always a JSON string.
-        return utils.errorResponse(res,`User ${JSON.parse(value[1])?.user} is actioning the student. Please wait for this to be completed and try after refreshing the page.`,HttpStatus.CONFLICT);
+        const data = JSON.parse(value[1]);
+        return utils.errorResponse(res,`User ${data?.user} is actioning the student ${data?.pen}. Please wait for this to be completed and try after refreshing the page.`,HttpStatus.CONFLICT);
       } else {
         const redisMultiSet = redis.getRedisClient().multi();
         const data = {
           user: user?.idir_username
         };
         // the value is in seconds here. if for any reason , it could not be deleted after operation success, the lock will auto expire after 10 minutes.
-        peNumbersInvolvedInOperation.forEach(pen => redisMultiSet.set(redisUtil.constructKeyForPenLock(pen), safeStringify(data), 'EX', 600));
+        peNumbersInvolvedInOperation.forEach(pen => {
+          data.pen = pen;
+          redisMultiSet.set(redisUtil.constructKeyForPenLock(pen), safeStringify(data), 'EX', 600);
+        });
         await redisMultiSet.exec();
         next();// all well here lets move forward with the request.
       }

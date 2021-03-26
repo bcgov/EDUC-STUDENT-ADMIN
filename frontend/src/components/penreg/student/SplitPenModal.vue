@@ -58,11 +58,12 @@
       </v-row>
       <v-row>
         <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000" class="mt-2"></AlertMessage>
+        <AlertMessage v-model="studentUpdateAlert" :alertMessage="studentUpdateAlertMessage" :alertType="studentUpdateAlertType" ></AlertMessage>
       </v-row>
       <v-card-actions class="pt-0 pr-0">
         <v-spacer></v-spacer>
         <PrimaryButton id="closeSplitPenModal" class="mx-1" text="Cancel" secondary @click.native="closeModal"></PrimaryButton>
-        <PrimaryButton id="acceptSplitPen" class="mx-1" text="Accept" :disabled="hasSagaInProgress" :loading="isProcessing" @click.native="splitPen"></PrimaryButton>
+        <PrimaryButton id="acceptSplitPen" class="mx-1" text="Accept" :disabled="isStudentDataUpdated || hasSagaInProgress" :loading="isProcessing" @click.native="splitPen"></PrimaryButton>
         <PrimaryButton id="searchPen" class="ml-1" text="Search" @click.native="searchPen"></PrimaryButton>
       </v-card-actions>
     </v-card>
@@ -78,10 +79,11 @@ import AlertMessage from '../../util/AlertMessage';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
 import {mapGetters, mapMutations, mapState} from 'vuex';
+import studentUpdateAlertMixin from '@/mixins/student-update-alert-mixin';
 
 export default {
   name: 'SplitPenModal',
-  mixins: [alertMixin],
+  mixins: [alertMixin, studentUpdateAlertMixin],
   components: {
     StudentAuditHistoryDetailCard,
     PrimaryButton,
@@ -110,6 +112,7 @@ export default {
       revertCurrentStudent: false,
       modalOpen: false,
       isProcessing: false,
+      isStudentDataUpdated: false,
     };
   },
   computed: {
@@ -135,8 +138,10 @@ export default {
         if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
           try {
             const student = JSON.parse(notificationData.eventPayload);
-            if (student?.pen && student?.pen === this.studentDetail?.pen) {
-              this.setWarningAlert(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+            if (student?.pen && student?.pen === this.studentDetail?.pen && !this.hasSagaInProgress) { // dont show if it is part of the saga.
+              this.isStudentDataUpdated = true;
+              this.$emit('isStudentUpdated', true);
+              this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
             }
           } catch (e) {
             console.error(e);
@@ -181,7 +186,7 @@ export default {
           console.error(error);
           this.resetStudentInProcessStatus(this.studentDetail.studentID);
           if (error?.response?.data?.code === 409) {
-            this.setFailureAlert(error?.response?.data?.message);
+            this.setErrorAlertForStudentUpdate(error?.response?.data?.message);
           } else {
             this.setFailureAlert('Your request to split pen could not be accepted. Please try again later.');
           }
