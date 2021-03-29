@@ -101,34 +101,21 @@ try {
     log.debug('starting findAndRemoveStaleSagaRecord');
     const redLock = redisUtil.getRedLock();
     try {
-      await redLock.lock('locks:remove-stale-saga-record', 6000); // no need to release the lock as it will auto expire after 6000 ms.
-      const staleSagas = findStaleSagaRecords(await redisUtil.getSagaEvents());
-      const stalePRBSagas = findStaleSagaRecords(await redisUtil.getPenRequestBatchSagaEvents());
-      const staleServicesSagas = findStaleSagaRecords(await redisUtil.getPenServicesSagaEvents());
-      if (staleSagas.length > 0) {
-        log.info(`found ${staleSagas.length} stale GMP or UMP saga records`);
-        removeStaleSagas(staleSagas, 'GMP_UMP').then(() => {
-          log.debug('remove stale sagas completed');
-        }).catch((e) => {
-          log.error(e);
-        });
-      }
-      if (stalePRBSagas.length > 0) {
-        log.info(`found ${stalePRBSagas.length} stale PenRequestBatch saga records`);
-        removeStaleSagas(stalePRBSagas, 'PEN_REQUEST_BATCH').then(() => {
-          log.debug('remove stale PRB sagas completed');
-        }).catch((e) => {
-          log.error(e);
-        });
-      }
-      if (staleServicesSagas.length > 0) {
-        log.info(`found ${staleServicesSagas.length} stale PenServices saga records`);
-        removeStaleSagas(staleServicesSagas, 'PEN_SERVICES').then(() => {
-          log.debug('remove stale PenServices sagas completed');
-        }).catch((e) => {
-          log.error(e);
-        });
-      }
+      await redLock.lock('locks:remove-stale-saga-record', 1000); // no need to release the lock as it will auto expire after 1000 ms.
+      const data = new Map();
+      data.set('GMP_UMP', findStaleSagaRecords(await redisUtil.getSagaEvents()));
+      data.set('PEN_REQUEST_BATCH', findStaleSagaRecords(await redisUtil.getPenRequestBatchSagaEvents()));
+      data.set('PEN_SERVICES', findStaleSagaRecords(await redisUtil.getPenServicesSagaEvents()));
+      data.forEach((value, key) => {
+        if (value && value.length > 0) {
+          log.info(`found ${value.length} stale ${key} saga records`);
+          removeStaleSagas(value, key).then(() => {
+            log.debug(`remove stale ${key} completed`);
+          }).catch((e) => {
+            log.error(e);
+          });
+        }
+      });
     } catch (e) {
       log.debug(`locks:remove-stale-saga-record, check other pods. ${e}`);
     }

@@ -177,11 +177,12 @@ export default {
         penNumbersInOps: this.studentDetail.pen
       };
       ApiService.apiAxios
-        .post(`${Routes['penServices'].ROOT_ENDPOINT}/${this.studentDetail.studentID}/split-pen`, request,{params})
-        .then(() => {
-          this.closeModal();
-          this.$emit('split');
-        })
+          .post(`${Routes['penServices'].ROOT_ENDPOINT}/${this.studentDetail.studentID}/split-pen`, request, {params})
+          .then((response) => {
+            const sagaId = response.data;
+            this.$emit('split', sagaId);
+            this.closeModal();
+          })
         .catch(error => {
           console.error(error);
           this.resetStudentInProcessStatus(this.studentDetail.studentID);

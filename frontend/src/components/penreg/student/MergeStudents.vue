@@ -318,7 +318,7 @@
 <script>
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
 import {mapGetters} from 'vuex';
-import {REQUEST_TYPES, STUDENT_DETAILS_FIELDS, STUDENT_CODES, Routes} from '@/utils/constants';
+import {REQUEST_TYPES, Routes, STUDENT_CODES, STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import FormattedTextField from '@/components/util/FormattedTextField';
 import StudentDetailsCheckBoxWithOutputText from '@/components/penreg/student/StudentDetailsCheckBoxWithOutputText';
 import PrimaryButton from '@/components/util/PrimaryButton';
@@ -356,11 +356,11 @@ export default {
     notification(val) {
       if (val) {
         const notificationData = val;
-        if (notificationData && notificationData.studentID && notificationData.studentID === this.mergedToStudent.studentID && notificationData.sagaStatus === 'COMPLETED') {
+        if (this.sagaId && this.sagaId === notificationData.sagaId && notificationData && notificationData.studentID && notificationData.studentID === this.mergedToStudent.studentID && notificationData.sagaStatus === 'COMPLETED') {
           if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_MERGE_COMPLETE_SAGA') {
             this.notifyMergeSagaCompleteMessage();
           }
-        }else if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
+        } else if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
           this.showWarningAndDisableActionIfUpdatedStudentMatched(notificationData);
         }
       }

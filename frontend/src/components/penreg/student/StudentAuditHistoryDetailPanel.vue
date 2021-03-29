@@ -39,11 +39,11 @@
             <v-spacer></v-spacer>
             <PrimaryButton id="closePanel" :secondary="true" class="mx-1" text="Close" @click.native="$emit('close')"></PrimaryButton>
             <SplitPenModal
-              :disabled="isSplitPenDisabled || isStudentUpdated"
-              :currentStudentDetail="student"
-              :studentDetailForRevert="studentDetailForRevert"
-              :newStudentDetail="studentHistoryDetail"
-              @split="$emit('split')"
+                :disabled="isSplitPenDisabled || isStudentUpdated"
+                :currentStudentDetail="student"
+                :studentDetailForRevert="studentDetailForRevert"
+                :newStudentDetail="studentHistoryDetail"
+                @split="split"
             ></SplitPenModal>
             <PrimaryButton id="revertData" :disabled="isRevertDisabled || isStudentUpdated" :loading="isRevertingStudent" class="mx-1" text="Revert"
                            @click.native="revertStudentDataFromStudentHistory()"></PrimaryButton>
@@ -207,6 +207,9 @@ export default {
     },
     getDemogCode() {
       return this.studentHistoryDetail.demogCode ? this.demogCodeObjects.filter(it => (it.demogCode === this.studentHistoryDetail.demogCode))[0].label : '';
+    },
+    split(sagaId) {
+      this.$emit('split', sagaId);
     },
   }
 };

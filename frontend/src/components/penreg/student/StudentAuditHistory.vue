@@ -68,7 +68,7 @@
             :is-reverting-student="isRevertingStudent"
             @revert="revertStudentToSelectedHistoryRecord"
             @update="updateSelectedStudentHistoryId"
-            @split="setSuccessAlert('Your request to split pen is accepted.')"
+            @split="split"
             :is-student-updated="isStudentUpdated"
         ></StudentAuditHistoryDetail>
       </v-col>
@@ -138,9 +138,10 @@ export default {
       selectedStudentHistoryId: null, // pointing the current history record,
       isRevertingStudent: false,
       nextStudentHistoryContent: [],
-      isActionedInDifferentTab : true,
+      isActionedInDifferentTab: true,
       isStudentUpdated: false,
       studentAuditHistoryDetailKey: 0,
+      sagaId: undefined,
     };
   },
   computed: {
@@ -172,7 +173,7 @@ export default {
     },
     notification(notificationData) {
       if (notificationData) {
-        if (notificationData.studentID && notificationData.studentID === this.student.studentID && notificationData.sagaStatus === 'COMPLETED') {
+        if (notificationData.studentID && notificationData.studentID === this.student.studentID && notificationData.sagaStatus === 'COMPLETED' && this.sagaId && this.sagaId === notificationData.sagaId) {
           if (notificationData.sagaName === 'PEN_SERVICES_SPLIT_PEN_SAGA') {
             this.student.sagaInProgress = false;
             this.setSuccessAlert('Success! Your request to split pen is completed.');
@@ -407,13 +408,17 @@ export default {
           this.studentAuditHistoryDetailKey += 1;
           this.$emit('isStudentUpdated', true);
           this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
-        }else if(student?.pen && student?.pen === this.studentHistoryResp?.content[0]?.pen && !this.isActionedInDifferentTab){
+        } else if (student?.pen && student?.pen === this.studentHistoryResp?.content[0]?.pen && !this.isActionedInDifferentTab) {
           this.isActionedInDifferentTab = true; // make it true for future messages.
         }
       } catch (e) {
         console.error(e);
       }
-    }
+    },
+    split(sagaId) {
+      this.sagaId = sagaId;
+      this.setSuccessAlert('Your request to split pen is accepted.');
+    },
   }
 };
 </script>

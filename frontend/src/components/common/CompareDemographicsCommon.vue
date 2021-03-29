@@ -163,7 +163,7 @@ import alertMixin from '@/mixins/alertMixin';
 import servicesSagaMixin from '@/mixins/servicesSagaMixin';
 import router from '../../router';
 import TertiaryButton from '../util/TertiaryButton';
-import {getMatchedRecordsByStudent, equalsIgnoreCase} from '@/utils/common';
+import {equalsIgnoreCase, getMatchedRecordsByStudent} from '@/utils/common';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import {mapGetters} from 'vuex';
 import studentUpdateAlertMixin from '@/mixins/student-update-alert-mixin';
@@ -194,7 +194,7 @@ export default {
     notification(val) {
       if (val) {
         const notificationData = val;
-        if (notificationData && notificationData.studentID && notificationData.studentID === this.mergedFromStudent.studentID && notificationData.sagaStatus === 'COMPLETED') {
+        if (this.sagaId && this.sagaId === notificationData.sagaId && notificationData && notificationData.studentID && notificationData.studentID === this.mergedFromStudent.studentID && notificationData.sagaStatus === 'COMPLETED') {
           if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_DEMERGE_COMPLETE_SAGA') {
             this.notifyDemergeSagaCompleteMessage();
             // Open students in new tabs

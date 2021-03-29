@@ -1,7 +1,7 @@
 import ApiService from '@/common/apiService';
 import {REQUEST_TYPES, Routes} from '@/utils/constants';
 import router from '@/router';
-import {mapState, mapMutations} from 'vuex';
+import {mapMutations, mapState} from 'vuex';
 
 export default {
   data() {
@@ -11,6 +11,7 @@ export default {
       isProcessing: false,
       mergeSagaComplete: false,
       demergeSagaComplete: false,
+      sagaId: undefined,
     };
   },
   computed: {
@@ -104,9 +105,10 @@ export default {
         penNumbersInOps: `${this.mergedToStudent.pen},${this.mergedFromStudent.pen}`
       };
       ApiService.apiAxios
-        .post(Routes['penServices'].ROOT_ENDPOINT + '/' + mergeRequest.studentID + '/student-merge-complete', mergeRequest,{params})
-        .then(() => {
+        .post(Routes['penServices'].ROOT_ENDPOINT + '/' + mergeRequest.studentID + '/student-merge-complete', mergeRequest, {params})
+        .then((result) => {
           this.setSuccessAlert('Your request to merge is accepted.');
+          this.sagaId = result.data;
         })
         .catch(error => {
           console.log(error);
@@ -137,8 +139,9 @@ export default {
       };
       ApiService.apiAxios
         .post(Routes['penServices'].ROOT_ENDPOINT + '/' + demergeRequest.studentID + '/student-demerge-complete', demergeRequest, {params})
-        .then(() => {
+        .then((result) => {
           this.setSuccessAlert('Your request to demerge is accepted.');
+          this.sagaId = result.data;
         })
         .catch(error => {
           console.error(error);
