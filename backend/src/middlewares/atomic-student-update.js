@@ -41,10 +41,11 @@ const handleConcurrentStudentModification = async (req, res, next) => {
         const data = JSON.parse(value[1]);
         return utils.errorResponse(res,`User ${data?.user} is actioning the student ${data?.pen}. Please wait for this to be completed and try after refreshing the page.`,HttpStatus.CONFLICT);
       } else {
-        const redisMultiSet = redis.getRedisClient().multi();
+
         const data = {
           user: user?.idir_username
         };
+        const redisMultiSet = redis.getRedisClient().multi();
         // the value is in seconds here. if for any reason , it could not be deleted after operation success, the lock will auto expire after 10 minutes.
         peNumbersInvolvedInOperation.forEach(pen => {
           data.pen = pen;

@@ -38,8 +38,10 @@ const Redis = require('./util/redis/redis-client');
 Redis.init(); // call the init to initialize appropriate client, and reuse it across the app.
 const messagePubSub = require('./messaging/message-pub-sub');
 messagePubSub.init();
-const stan = require('./messaging/stan-client');
-stan.init();
+if('true' === config.get('messaging:stanEnabled')){
+  const stan = require('./messaging/stan-client');
+  stan.init();
+}
 //initialize app
 const app = express();
 const nocache = require('nocache');

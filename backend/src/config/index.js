@@ -111,7 +111,8 @@ nconf.defaults({
   messaging: {
     natsUrl: process.env.NATS_URL,
     natsCluster: process.env.NATS_CLUSTER,
-    queueGroupName: process.env.QUEUE_GROUP_NAME
+    queueGroupName: process.env.QUEUE_GROUP_NAME,
+    stanEnabled: process.env.STAN_ENABLED // in local stan wont work when connected to NATS in OS using port forward, this is disabled in local to keep app running.
   },
   scheduler: {
     schedulerCronStaleSagaRecordRedis: process.env.SCHEDULER_CRON_STALE_SAGA_RECORD_REDIS,

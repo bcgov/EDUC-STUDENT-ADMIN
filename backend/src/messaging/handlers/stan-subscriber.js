@@ -16,10 +16,11 @@ async function handleStudentUpdatedEvent(data) {
   const value = await redis.getRedisClient().del(redisUtil.constructKeyForPenLock(student.pen));
   if(value){ // it means the key was present and it was successfully deleted, need to broadcast this to websocket for page refresh.
     logger.info('locked pen deleted from redis', student.pen);
+    NATS.publishMessage(CONSTANTS.EVENT_WS_TOPIC, safeStringify(data)).then(() => { // publish the message only if key was present in redis, otherwise just acknowledge to STAN.
+      logger.info(`message published to ${CONSTANTS.EVENT_WS_TOPIC}`, data);
+    });
   }
-  NATS.publishMessage(CONSTANTS.EVENT_WS_TOPIC, safeStringify(data)).then(() => {
-    logger.info(`message published to ${CONSTANTS.EVENT_WS_TOPIC}`, data);
-  });
+
 }
 
 const subscribe = (stanConnection) => {
@@ -43,7 +44,7 @@ const subscribe = (stanConnection) => {
     });
     subscription.on('message', async (msg) => {
       const data = JSON.parse(msg.getData().toString()); // it would always be a JSON string. ii will always be choreographed event.
-      logger.silly(`Received message, on ${msg.getSubject()} , Sequence ::  [${msg.getSequence()}] :: Data ::`, data);
+      logger.info(`Received message, on ${msg.getSubject()} , Sequence ::  [${msg.getSequence()}] :: Data ::`, data);
       try {
         if (data.eventType === CONSTANTS.EVENT_TYPE.UPDATE_STUDENT && data.eventOutcome === CONSTANTS.EVENT_OUTCOME.STUDENT_UPDATED) {
           await handleStudentUpdatedEvent(data);
