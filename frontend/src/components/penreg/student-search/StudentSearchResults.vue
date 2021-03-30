@@ -38,7 +38,9 @@
               <span v-else class="top-column-item">{{ props.item[header.topValue] }}</span>
               <span class="double-column-item">{{props.item[header.doubleValue]}}</span>
               <br>
-              <span class="bottom-column-item">{{ props.item[header.bottomValue] }}</span>
+              <!-- if top and bottom value are the same, do not display the bottom value -->
+              <span class="bottom-column-item" v-if="props.item[header.bottomValue] === props.item[header.topValue]"></span>
+              <span class="bottom-column-item" v-else>{{ props.item[header.bottomValue] }}</span>
             </div>
           </td>
         </tr>
