@@ -499,7 +499,7 @@ describe('archiveAndReturnFiles', () => {
       }];
     utils.postData.mockResolvedValue(resp);
     await penRequestBatch.archiveAndReturnFiles(req, res);
-    expect(utils.postData.mock.calls[0][2]).toEqual({penRequestBatchIDs: penRequestBatchIDs});
+    expect(utils.postData.mock.calls[0][2]).toEqual({penRequestBatchArchiveAndReturnSagaData: penRequestBatchIDs});
     expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenCalledTimes(2);
     expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenNthCalledWith(1,{
       sagaId: resp[0].sagaId,

@@ -321,7 +321,7 @@ async function archiveAndReturnFiles(req, res) {
     const token = getBackendToken(req, res);
     try {
       const sagaReq = {
-        penRequestBatchIDs: req.body.penRequestBatchIDs
+        penRequestBatchArchiveAndReturnSagaData: req.body.penRequestBatchIDs
       };
       let sagaIds = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/archive-and-return`, sagaReq, null, getUser(req).idir_username);
       sagaIds.forEach(async (sagaId) => {

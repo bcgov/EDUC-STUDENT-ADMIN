@@ -129,6 +129,7 @@ export default {
   },
   computed: {
     ...mapState('penRequestBatch', ['selectedFiles', 'prbStudentStatusFilters']),
+    ...mapState('app', ['mincodeSchoolNames']),
     selectedSchoolGroup: {
       get(){
         return this.$store.state['penRequestBatch'].selectedSchoolGroup;
@@ -241,7 +242,12 @@ export default {
       );
       if(result) {
         const filesIDsWithFixable = this.selectedFiles.filter(prb => prb?.fixableCount > 0).map(file => file.penRequestBatchID);
-        const filesIDsWithoutFixable = this.selectedFiles.filter(prb => prb?.fixableCount === 0).map(file => file.penRequestBatchID);
+        const filesIDsWithoutFixable = this.selectedFiles.filter(prb => prb?.fixableCount === 0).map(file => {
+          return {
+            penRequestBatchID: file.penRequestBatchID,
+            schoolName: this.mincodeSchoolNames.get(file?.mincode?.replace(' ', ''))
+          };
+        });
 
         this.loadingFiles = true;
         Promise.allSettled([
@@ -256,7 +262,7 @@ export default {
           if(totalArchivedNumber === fileNumber) {
             this.setSuccessAlert(`Success! ${archivedMessage}`);
           } else {
-            this.setFailureAlert(`An error occurred while archiving PEN Request Files! ${archivedMessage} Please try again later.`);
+            this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
           }
         })
           .catch(error => {
