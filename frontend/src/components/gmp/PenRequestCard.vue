@@ -7,7 +7,7 @@
       <v-col cols="12" xl="8" lg="8" md="8" sm="8">
         <p class="mb-2"><strong>{{ this.request.legalLastName ? this.request.legalLastName: '(none)'}}, {{ this.request.legalFirstName ? this.request.legalFirstName: '(none)'}}, {{ this.request.legalMiddleNames ? this.request.legalMiddleNames: '(none)'}}</strong></p>
       </v-col>
-      <v-col cols="1">
+      <v-col cols="1" v-if="isValidStudentSearchUser">
         <PrimaryButton
             color="#38598A"
             text="Search"
@@ -111,6 +111,7 @@
 <script>
 import router from '@/router';
 import PrimaryButton from '@/components/util/PrimaryButton';
+import {mapState} from "vuex";
 
 export default {
   name: 'penRequestCard',
@@ -124,6 +125,7 @@ export default {
     },
   },
   computed: {
+    ...mapState('auth', ['isValidStudentSearchUser']),
     disableSearchBtn() {
       return !this.request.legalLastName && !this.request.legalFirstName
           && !this.request.genderCode && !this.request.dob;
