@@ -1,31 +1,32 @@
 <template>
   <div>
     <v-alert
-            :value="searchError"
-            dense
-            text
-            dismissible
-            outlined
-            transition="scale-transition"
-            class="bootstrap-error"
+        :value="searchError"
+        class="bootstrap-error"
+        dense
+        dismissible
+        outlined
+        text
+        transition="scale-transition"
     >
       {{ searchErrorMessage }}
     </v-alert>
     <v-row class="pb-6">
       <v-col cols="8" v-if="isValidPenRequestBatchUser">
-        <DashboardTable v-if="!isLoadingBatch" requestType="School" colour="#CED6E2" :tableData="penRequestData"></DashboardTable>
-         <v-container fluid class="full-height" v-else-if="isLoadingBatch">
-           <article id="pen-display-container" class="top-banner full-height">
-             <v-row align="center" justify="center">
-               <v-progress-circular
-                   :size="70"
-                   :width="7"
-                   color="primary"
-                   indeterminate
-               ></v-progress-circular>
-             </v-row>
-           </article>
-         </v-container>
+        <DashboardTable v-if="!isLoadingBatch" requestType="School" colour="#CED6E2"
+                        :tableData="penRequestData"></DashboardTable>
+        <v-container v-else-if="isLoadingBatch" class="full-height" fluid>
+          <article id="pen-display-container" class="top-banner full-height">
+            <v-row align="center" justify="center">
+              <v-progress-circular
+                  :size="70"
+                  :width="7"
+                  color="primary"
+                  indeterminate
+              ></v-progress-circular>
+            </v-row>
+          </article>
+        </v-container>
       </v-col>
       <v-col cols="4" v-if="isValidStudentSearchUser || isValidPenRequestBatchUser">
         <v-card flat color="#F2F2F2" class="mt-2" height="100%">
@@ -62,11 +63,11 @@
               </v-col>
               <v-col cols="2" class="py-0 pl-2">
                 <PrimaryButton
-                  id="requestsSearchBtn"
-                  text="Search"
-                  width="100%"
-                  :disabled="!isValidRequestsSearchInput"
-                  @click.native="searchRequests"
+                    id="requestsSearchBtn"
+                    :disabled="!isValidRequestsSearchInput"
+                    text="Search"
+                    width="100%"
+                    @click.native="searchRequests"
                 ></PrimaryButton>
               </v-col>
             </v-row>
@@ -78,24 +79,24 @@
             <v-row class="pt-4 px-8">
               <v-col cols="5" class="pa-0">
                 <v-text-field
-                        id="penTextField"
-                        outlined
-                        dense
-                        background-color="white"
-                        label="Enter PEN"
-                        v-model="pen"
-                        @keyup.enter="enterPushed()"
-                        maxlength="9"
-                        :rules="penRules">
+                    id="penTextField"
+                    v-model="pen"
+                    :rules="penRules"
+                    background-color="white"
+                    dense
+                    label="Enter PEN"
+                    maxlength="9"
+                    outlined
+                    @keyup.enter="enterPushed()">
                 </v-text-field>
               </v-col>
               <v-col cols="2" class="py-0 px-2">
-                <PrimaryButton id="quickSearchBtn" :disabled="!isValidPEN" text="Search" width="100%" @click.native="quickSearch"></PrimaryButton>
+                <PrimaryButton id="quickSearchBtn" :disabled="!isValidPEN" text="Search" width="100%"
+                               @click.native="quickSearch"></PrimaryButton>
               </v-col>
-              <v-col cols="5" class="pl-4 pt-1">
-                <router-link :to="REQUEST_TYPES.studentSearch.path.basic">
-                  <span style="text-decoration: underline">Advanced Student Search</span>
-                </router-link>
+              <v-col class="py-0 px-2" cols="5">
+                <PrimaryButton id="advanceSearchBtn" text="Advanced Student Search"
+                               @click.native="advanceSearch"></PrimaryButton>
               </v-col>
             </v-row>
           </template>
@@ -265,29 +266,32 @@ export default {
       }
 
       return (!this.mincode || this.isValidDistrictOrMincode(this.mincode)) &&
-        (!this.loadDate || isPresentDateAndAfter1900(this.loadDate));
+          (!this.loadDate || isPresentDateAndAfter1900(this.loadDate));
     },
   },
   methods: {
     quickSearch() {
       this.searchError = false;
       ApiService.apiAxios
-        .get(Routes['student'].ROOT_ENDPOINT + '/', { params: { pen: this.pen } })
-        .then(response => {
-          router.push({ name: REQUEST_TYPES.student.label, params: {studentID: response.data.studentID}});
-        })
-        .catch(error => {
-          console.log(error);
-          this.searchError = true;
-        });
+          .get(Routes['student'].ROOT_ENDPOINT + '/', {params: {pen: this.pen}})
+          .then(response => {
+            router.push({name: REQUEST_TYPES.student.label, params: {studentID: response.data.studentID}});
+          })
+          .catch(error => {
+            console.log(error);
+            this.searchError = true;
+          });
+    },
+    advanceSearch() {
+      router.push(REQUEST_TYPES.studentSearch.path.basic);
     },
     enterPushed() {
-      if(this.pen && this.isValidPEN){
+      if (this.pen && this.isValidPEN) {
         this.quickSearch();
       }
     },
     enterPushedForRequests() {
-      if(this.isValidRequestsSearchInput){
+      if (this.isValidRequestsSearchInput) {
         this.searchRequests();
       }
     },
@@ -308,10 +312,11 @@ export default {
 };
 </script>
 <style scoped>
-  #requestsSearchBtn, #quickSearchBtn {
-    height: 2.858em;
-  }
-  .full-height {
-    height: 100%;
-  }
+#requestsSearchBtn, #quickSearchBtn, #advanceSearchBtn {
+  height: 2.858em;
+}
+
+.full-height {
+  height: 100%;
+}
 </style>
