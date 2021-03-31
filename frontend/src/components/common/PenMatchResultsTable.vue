@@ -97,7 +97,9 @@
                             :class="['bottom-column-item', props.item[header.bottomValue] && demogValuesMatch(header.bottomValue, props.item[header.bottomValue])? 'font-weight-bold':'']">
                         {{ formatPostalCode(props.item[header.bottomValue]) }}
                       </span>
-                      <span v-else
+
+                      <!-- if top and bottom value are the same, do not display the bottom value -->
+                      <span v-else-if="props.item[header.bottomValue] !== props.item[header.topValue]"
                             :class="['bottom-column-item', props.item[header.bottomValue] && demogValuesMatch(header.bottomValue, props.item[header.bottomValue])? 'font-weight-bold':'']">
                         {{ props.item[header.bottomValue] }}
                     </span>
