@@ -46,10 +46,10 @@ const handleConcurrentStudentModification = async (req, res, next) => {
           user: user?.idir_username
         };
         const redisMultiSet = redis.getRedisClient().multi();
-        // the value is in seconds here. if for any reason , it could not be deleted after operation success, the lock will auto expire after 10 minutes.
+        // the value is in seconds here. if for any reason , it could not be deleted after operation success, the lock will auto expire after 1 minute.
         peNumbersInvolvedInOperation.forEach(pen => {
           data.pen = pen;
-          redisMultiSet.set(redisUtil.constructKeyForPenLock(pen), safeStringify(data), 'EX', 600);
+          redisMultiSet.set(redisUtil.constructKeyForPenLock(pen), safeStringify(data), 'EX', 60);
         });
         await redisMultiSet.exec();
         next();// all well here lets move forward with the request.
