@@ -52,16 +52,13 @@
             </template>
             <v-list>
               <v-list-item @click="archiveAndReturnFixedOnly">
-                <v-list-item-title>Return All Except FIX</v-list-item-title>
+                <v-list-item-title>Return Except Fix</v-list-item-title>
               </v-list-item>
               <v-list-item>
-                <v-list-item-title>Return All</v-list-item-title>
+                <v-list-item-title>Return With Fix</v-list-item-title>
               </v-list-item>
               <v-list-item @click="archiveOnly">
                 <v-list-item-title>Archive Only</v-list-item-title>
-              </v-list-item>
-              <v-list-item>
-                <v-list-item-title>Delete Request File</v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
