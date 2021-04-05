@@ -156,7 +156,7 @@ async function postData(token, url, data, params, user) {
 function throwError(e, url, operationType) {
   logApiError(e, operationType, `Error during ${operationType} on ${url}`);
   const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-  throw new ApiError(status, {message: 'API Put error'}, e);
+  throw new ApiError(status, {message: `API  ${operationType} error, on ${url}`}, e);
 }
 
 async function putData(token, url, data, user) {
