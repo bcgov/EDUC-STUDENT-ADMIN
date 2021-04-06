@@ -177,6 +177,7 @@ import {
 import {formatPen} from '@/utils/format';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
 
+
 export default {
   name: 'PrbStudentDetailsDisplay',
   components: {
@@ -269,39 +270,10 @@ export default {
     notification(val) {
       let notificationData = val;
       const isPRBSaga = this.prbSagaNames.some(el => el === notificationData?.sagaName);
-      if (notificationData && notificationData.sagaStatus === 'COMPLETED' && isPRBSaga && this.sagaId) {
-        const updatedPrbStudent = JSON.parse(notificationData.eventPayload);
-        if (updatedPrbStudent?.penRequestBatchStudentID === this.prbStudent.penRequestBatchStudentID) {
-          let refreshAutomatically = true;
-          switch (notificationData?.sagaName) {
-          case PRB_SAGA_NAMES.PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA:
-            this.setSuccessAlert('The request to issue new PEN is now completed.');
-            break;
-          case PRB_SAGA_NAMES.PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_SAGA:
-            if (!this.sagaId) {
-              refreshAutomatically = false;
-            }
-            this.setSuccessAlert('The request to match student to Pen Request is now completed.');
-            break;
-          case PRB_SAGA_NAMES.PEN_REQUEST_BATCH_USER_UNMATCH_PROCESSING_SAGA:
-            this.setSuccessAlert('The request to unmatch student to Pen Request is now completed.');
-            break;
-          }
-          if (refreshAutomatically) {
-            this.setSelectedRecords();
-            this.initializeDetails();
-          }
-        }
-      } else if (!this.sagaId && notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
-        try {
-          const student = JSON.parse(notificationData.eventPayload);
-          if (student?.pen && !this.prbStudent?.sagaInProgress && (this.possibleMatches?.some(el => el?.pen === student.pen))) {
-            this.setWarningAlertForStudentUpdate(`Student details for ${student.pen}, present in possible matches is updated by ${student.updateUser}.`);
-            this.isStudentDataUpdated = true;
-          }
-        } catch (e) {
-          console.error(e);
-        }
+      if (notificationData && isPRBSaga) {
+        this.handlePRBSagaNotification(notificationData);
+      } else if (!this.sagaId && !this.prbStudent?.sagaInProgress && notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
+        this.handleStudentUpdateEvent(notificationData);
       }
     },
   },
@@ -762,6 +734,51 @@ export default {
     },
     async refreshMatchResults() {
       await this.runPenMatch();
+    },
+    handlePRBSagaNotification(notificationData) {
+      const updatedPrbStudent = JSON.parse(notificationData.eventPayload);
+      if (updatedPrbStudent?.penRequestBatchStudentID === this.prbStudent.penRequestBatchStudentID) {
+        if (notificationData.sagaStatus === 'COMPLETED') {
+          switch (notificationData?.sagaName) {
+          case PRB_SAGA_NAMES.PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA:
+            if (this.sagaId) {
+              this.setSuccessAlert('Your request to issue new PEN is now completed.');
+            } else {
+              this.setSuccessAlert(`${updatedPrbStudent.updateUser} issued a new PEN to this pen request.`);
+            }
+            break;
+          case PRB_SAGA_NAMES.PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_SAGA:
+            if (this.sagaId) {
+              this.setSuccessAlert('Your request to match student to this Pen Request is now completed.');
+            } else {
+              this.setSuccessAlert(`${updatedPrbStudent.updateUser} matched a student to this Pen Request.`);
+            }
+            break;
+          case PRB_SAGA_NAMES.PEN_REQUEST_BATCH_USER_UNMATCH_PROCESSING_SAGA:
+            if (this.sagaId) {
+              this.setSuccessAlert('Your request to unmatch student to this Pen Request is now completed.');
+            } else {
+              this.setSuccessAlert(`${updatedPrbStudent.updateUser} unmatched student from Pen Request.`);
+            }
+            break;
+          }
+          this.setSelectedRecords();
+          this.initializeDetails();
+        } else if (notificationData.sagaStatus === 'INITIATED') {
+          this.prbStudent.sagaInProgress = true;
+        }
+      }
+    },
+    handleStudentUpdateEvent(notificationData) {
+      try {
+        const student = JSON.parse(notificationData.eventPayload);
+        if (student?.pen && (this.possibleMatches?.some(el => el?.pen === student.pen))) {
+          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen}, present in possible matches is updated by ${student.updateUser}.`);
+          this.isStudentDataUpdated = true;
+        }
+      } catch (e) {
+        console.error(e);
+      }
     },
   }
 };
