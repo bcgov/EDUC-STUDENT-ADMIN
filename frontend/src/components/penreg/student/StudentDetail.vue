@@ -122,19 +122,19 @@ export default {
     refreshStudent() {
       this.isLoading = true;
       ApiService.apiAxios
-          .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
-          .then(response => {
-            this.studentDetails = response.data;
-            this.studentDetails.student.truePen = this.studentDetails.merges?.find(merge => merge.studentMergeDirectionCode === 'TO')?.mergeStudent.pen;
-            this.isStudentDataUpdated = false; // make sure that once it is refreshed enable everything back.
-          })
-          .catch(error => {
-            this.setFailureAlert('An error occurred while loading the student details. Please try again later.');
-            console.log(error);
-          })
-          .finally(() => {
-            this.isLoading = false;
-          });
+        .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
+        .then(response => {
+          this.studentDetails = response.data;
+          this.studentDetails.student.truePen = this.studentDetails.merges?.find(merge => merge.studentMergeDirectionCode === 'TO')?.mergeStudent.pen;
+          this.isStudentDataUpdated = false; // make sure that once it is refreshed enable everything back.
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while loading the student details. Please try again later.');
+          console.log(error);
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
     },
   }
 };

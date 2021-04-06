@@ -262,9 +262,9 @@ export default {
       handler() {
         if (this.prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.REPEAT && this.prbStudent?.repeatRequestOriginalID)
           return ApiService.apiAxios.get(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.repeatRequestOriginalID}`)
-              .then(response => {
-                this.repeatRequestOriginalStatus = response.data?.repeatRequestOriginalStatus;
-              });
+            .then(response => {
+              this.repeatRequestOriginalStatus = response.data?.repeatRequestOriginalStatus;
+            });
       }
     },
     notification(val) {
@@ -291,7 +291,7 @@ export default {
       return this.loading || this.prbStudent?.sagaInProgress || this.isArchived
           || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
           || ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE]
-              .some(element => element === this.prbStudent?.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
+            .some(element => element === this.prbStudent?.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
     },
     repeatRequestOriginal() {
       return this.prbStudent?.repeatRequestOriginalID;
@@ -300,8 +300,8 @@ export default {
       return this.loading || this.prbStudent?.sagaInProgress || this.isArchived
           || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
           || (![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ]
-                  .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus)
-              && (this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR') && (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.prbStudent.penRequestBatchStudentStatusCode)));
+            .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus)
+            && (this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR') && (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.prbStudent.penRequestBatchStudentStatusCode)));
     },
     disableModifySearch() {
       return this.loading || this.prbStudent?.sagaInProgress || this.isArchived
@@ -378,7 +378,7 @@ export default {
 
         this.possibleMatches = [];
         if ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR]
-            .some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)) {
+          .some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)) {
           this.demogValidationResult = await getDemogValidationResults(payload);
           const hasValidationFailure = this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR');
 
@@ -535,16 +535,16 @@ export default {
       };
 
       return ApiService.apiAxios.get(Routes['penRequestBatch'].FILES_URL, params)
-          .then(response => {
-            response.data && this.$store.commit(`${this.penRequestBatchStore}/setSelectedFiles`, response.data.content);
-          });
+        .then(response => {
+          response.data && this.$store.commit(`${this.penRequestBatchStore}/setSelectedFiles`, response.data.content);
+        });
     },
     getPenRequestsFromApi(params) {
       return ApiService.apiAxios.get(Routes['penRequestBatch'].STUDENTS_SEARCH_URL, params);
     },
     getBatchIdSearchCriteria(searchCriteria) {
       const batchIdSearchQuery = searchCriteria.find(query =>
-          query.searchCriteriaList.some(criteria => criteria.key === 'penRequestBatchEntity.penRequestBatchID'));
+        query.searchCriteriaList.some(criteria => criteria.key === 'penRequestBatchEntity.penRequestBatchID'));
       return batchIdSearchQuery?.searchCriteriaList.find(criteria => criteria.key === 'penRequestBatchEntity.penRequestBatchID');
     },
     updateInfoRequested(infoRequest) {
@@ -562,16 +562,16 @@ export default {
         };
       }
       ApiService.apiAxios.put(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}`, req)
-          .then(response => {
-            response.data && (this.prbStudent = response.data);
-          })
-          .catch(error => {
-            this.setFailureAlert('An error occurred while updating the PEN request. Please try again later.');
-            console.log(error);
-          })
-          .finally(() => {
-            this.loading = false;
-          });
+        .then(response => {
+          response.data && (this.prbStudent = response.data);
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while updating the PEN request. Please try again later.');
+          console.log(error);
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     },
 
     async runPenMatch() {
@@ -609,16 +609,16 @@ export default {
       let result = true;
       if (this.demogValidationResult.length > 0) {
         result = await this.$refs.confirmationDialog.open('Are you sure you want to proceed?', null,
-            {
-              width: '680px',
-              messagePadding: 'px-4 pt-1',
-              color: '',
-              dark: false,
-              titleBold: true,
-              closeIcon: true,
-              divider: true,
-              resolveText: 'Confirm'
-            });
+          {
+            width: '680px',
+            messagePadding: 'px-4 pt-1',
+            color: '',
+            dark: false,
+            titleBold: true,
+            closeIcon: true,
+            divider: true,
+            resolveText: 'Confirm'
+          });
       }
       return result;
     },
@@ -633,19 +633,19 @@ export default {
         prbStudent: this.prbStudent
       };
       ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}/issueNewPen`, req)
-          .then(response => {
-            if (response.data) {
-              this.prbStudent.sagaInProgress = true;
-              this.setSuccessAlert('Your request to issue new PEN is accepted.');
-            }
-          })
-          .catch(error => {
-            this.setFailureAlert('An error occurred while issuing new PEN. Please try again later.');
-            console.log(error);
-          })
-          .finally(() => {
-            this.isIssuingNewPen = false;
-          });
+        .then(response => {
+          if (response.data) {
+            this.prbStudent.sagaInProgress = true;
+            this.setSuccessAlert('Your request to issue new PEN is accepted.');
+          }
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while issuing new PEN. Please try again later.');
+          console.log(error);
+        })
+        .finally(() => {
+          this.isIssuingNewPen = false;
+        });
     },
     /**
      * This method is responsible to do match/unmatch of student to Pen Request.
@@ -679,23 +679,23 @@ export default {
         penNumbersInOps: student.pen
       };
       ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}/user-${operation}`, payload, {params})
-          .then(response => {
-            if (response.data) {
-              this.sagaId = response.data;
-              this.prbStudent.sagaInProgress = true;
-              this.setSuccessAlert(`Your request to ${operation} student to Pen Request is accepted.`);
-            }
-          })
-          .catch(error => {
-            if (error?.response?.data?.code === 409) {
-              this.setFailureAlert(error?.response?.data?.message);
-            }
-            this.setFailureAlert(`Your request to ${operation} student to Pen Request could not be accepted,  Please try again later.`);
-            console.log(error);
-          })
-          .finally(() => {
-            this.isMatchingToStudentRecord = false;
-          });
+        .then(response => {
+          if (response.data) {
+            this.sagaId = response.data;
+            this.prbStudent.sagaInProgress = true;
+            this.setSuccessAlert(`Your request to ${operation} student to Pen Request is accepted.`);
+          }
+        })
+        .catch(error => {
+          if (error?.response?.data?.code === 409) {
+            this.setFailureAlert(error?.response?.data?.message);
+          }
+          this.setFailureAlert(`Your request to ${operation} student to Pen Request could not be accepted,  Please try again later.`);
+          console.log(error);
+        })
+        .finally(() => {
+          this.isMatchingToStudentRecord = false;
+        });
     },
     /**
      * this function returns stored possible matches from DB for a particular student, backed by PEN_MATCH_API,

@@ -273,14 +273,14 @@ export default {
     quickSearch() {
       this.searchError = false;
       ApiService.apiAxios
-          .get(Routes['student'].ROOT_ENDPOINT + '/', {params: {pen: this.pen}})
-          .then(response => {
-            router.push({name: REQUEST_TYPES.student.label, params: {studentID: response.data.studentID}});
-          })
-          .catch(error => {
-            console.log(error);
-            this.searchError = true;
-          });
+        .get(Routes['student'].ROOT_ENDPOINT + '/', {params: {pen: this.pen}})
+        .then(response => {
+          router.push({name: REQUEST_TYPES.student.label, params: {studentID: response.data.studentID}});
+        })
+        .catch(error => {
+          console.log(error);
+          this.searchError = true;
+        });
     },
     advanceSearch() {
       router.push(REQUEST_TYPES.studentSearch.path.basic);
