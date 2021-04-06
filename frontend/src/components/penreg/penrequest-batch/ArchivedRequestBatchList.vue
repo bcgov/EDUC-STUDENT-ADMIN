@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex';
+import { mapMutations, mapState, mapGetters } from 'vuex';
 import PenRequestBatchDataTable from './PenRequestBatchDataTable';
 import ApiService from '../../../common/apiService';
 import {Routes, SEARCH_FILTER_OPERATION, SEARCH_CONDITION, SEARCH_VALUE_TYPE, PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
@@ -48,6 +48,7 @@ export default {
         { text: 'SRCH', value: 'searchedCount', sortable: false, countable: true },
         { text: 'Load Date', value: 'extractDate', sortable: false, format: partialRight(formatDateTime,'uuuu-MM-dd\'T\'HH:mm:ss', 'uuuu/MM/dd') },
         { text: 'SUB #', value: 'submissionNumber', sortable: false },
+        { value: 'actions', sortable: false },
       ],
       loadingTable: true,
       isFilterOperation: false,
@@ -76,9 +77,18 @@ export default {
         }
       }
     },
+    notification(notificationData) {
+      if (notificationData && notificationData.sagaStatus === 'COMPLETED' && notificationData.sagaName === 'PEN_REQUEST_BATCH_REPOST_REPORTS_SAGA') {
+        const batchFile = this.penRequestBatchResponse.content?.find(batch => batch.penRequestBatchID === notificationData.penRequestBatchID);
+        if(batchFile) {
+          batchFile.sagaInProgress = false;
+        }
+      }
+    },
   },
   computed: {
     ...mapState('archivedRequestBatch', ['selectedFiles', 'penRequestBatchResponse']),
+    ...mapGetters('notifications', ['notification']),
     pageNumber: {
       get(){
         return this.$store.state['archivedRequestBatch'].pageNumber;

@@ -1,4 +1,4 @@
-import {LocalDate, DateTimeFormatterBuilder, ResolverStyle} from '@js-joda/core';
+import {LocalDateTime, DateTimeFormatterBuilder, ResolverStyle} from '@js-joda/core';
 
 export function formatPen(pen) {
   return pen && (pen.substring(0, 3) + ' ' + pen.substring(3, 6) + ' ' + pen.substring(6)) || '';
@@ -16,7 +16,7 @@ export function formatDateTime(datetime, from='uuuuMMdd', to='uuuu/MM/dd') {
   let result = datetime;
   if(datetime) {
     try {
-      const date = LocalDate.parse(datetime, fromFormatter);
+      const date = LocalDateTime.parse(datetime, fromFormatter);
       result = date.format(toFormatter);
     } catch (err) {
       console.log(`${datetime}: ${from} to ${to}`);
@@ -24,6 +24,10 @@ export function formatDateTime(datetime, from='uuuuMMdd', to='uuuu/MM/dd') {
     }
   }
   return result;
+}
+
+export function formatTableColumn(format, column) {
+  return (format && column) ? format(column) : (column || ' ');
 }
 
 export function formatMincode(mincode) {

@@ -14,7 +14,7 @@
     >
       <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
         <v-checkbox 
-          v-if="header.type" 
+          v-if="header.type === 'select'" 
           :key="h.id" 
           :class="['file-checkbox', {'header-checkbox': hasFilterHeader}]" 
           color="#606060"
@@ -39,12 +39,25 @@
         </template>
       </template>
       <template v-slot:item="props">
-        <tr :class="tableRowClass(props.item)" @click="selectItem(props.item)">
+        <tr :class="tableRowClass(props.item)"
+          @click="selectItem(props.item)"
+          @mouseover="enableActions(props.item)"
+          @mouseleave="disableActions(props.item)"
+        >
           <td v-for="header in props.headers" :key="header.id" :class="{[header.value]: true, 'select-column': header.type}">
-            <v-checkbox v-if="header.type" class="file-checkbox" color="#606060" v-model="props.item.isSelected" @click.stop="handleFileCheckBoxClicked(props.item)"></v-checkbox>
+            <v-checkbox v-if="header.type === 'select'" class="file-checkbox" color="#606060" v-model="props.item.isSelected" @click.stop="handleFileCheckBoxClicked(props.item)"></v-checkbox>
             <div v-else :class="{'countable-column-div': header.countable}">
               <span v-if="header.countable" class="countable-column-data">{{ props.item[header.value] || '' }}</span>
-              <span v-else-if="header.value==='submissionNumber'"><a class="submission" @click.stop="handleSubmissionNumberClicked(props.item[header.value])">{{props.item[header.value] }}</a></span>
+              <span v-else-if="header.value==='submissionNumber'">
+                <a class="submission" @click.stop="handleSubmissionNumberClicked(props.item[header.value])">{{props.item[header.value] }}</a>
+              </span>
+              <PrimaryButton v-else-if="header.value === 'actions'" 
+                :id="hoveredOveredRowBatchID === props.item.penRequestBatchID ? 'more-info-action': ''"
+                :class="{'file-action': hoveredOveredRowBatchID != props.item.penRequestBatchID}"
+                short 
+                text="More Info"
+                @click.native="clickMoreInfo"
+              ></PrimaryButton>
               <span v-else>{{formatTableColumn(header.format, props.item[header.value]) }}</span>
               <v-tooltip v-if="header.value==='mincode' && isUnarchived(props.item)" right>
                 <template v-slot:activator="{ on }">
@@ -72,6 +85,11 @@
       :dataResponse="penRequestBatchResponse"
       :pageCommands="pageCommands"
     />
+    <PenRequestBatchHistoryModal
+      v-if="historyModalOpen"
+      v-model="historyModalOpen"
+      :batchFile="hoveredOveredRow"
+    />
   </div>
 </template>
 
@@ -80,11 +98,15 @@ import {uniqBy} from 'lodash';
 import router from '../../../router';
 import Pagination from '@/components/util/Pagination';
 import {PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
+import PrimaryButton from '@/components/util/PrimaryButton';
+import PenRequestBatchHistoryModal from './PenRequestBatchHistoryModal';
 
 export default {
   name: 'PenRequestBatchDataTable',
   components: {
     Pagination,
+    PrimaryButton,
+    PenRequestBatchHistoryModal
   },
   props: {
     headers: {
@@ -116,6 +138,9 @@ export default {
     return {
       allSelected: false,
       partialSelected: false,
+      hoveredOveredRowBatchID: null,
+      historyModalOpen: false,
+      hoveredOveredRow: null
     };
   },
   watch: {
@@ -220,6 +245,18 @@ export default {
       const route = router.resolve({name, query: { batchIDs: batchID, statusFilters: '' }});
       window.open(route.href, '_blank');
     },
+    enableActions(item) {
+      this.hoveredOveredRowBatchID = item.penRequestBatchID;
+    },
+    disableActions() {
+      this.hoveredOveredRowBatchID = null;
+    },
+    clickMoreInfo(event) {
+      event.stopPropagation();
+      console.log('clickMoreInfo');
+      this.historyModalOpen = true;
+      this.hoveredOveredRow = this.penRequestBatchResponse.content.find(batch => batch.penRequestBatchID === this.hoveredOveredRowBatchID);
+    }
   }
 };
 </script>
@@ -228,5 +265,9 @@ export default {
 <style scoped>
   .submission {
     text-decoration: underline;
+  }
+
+  .file-action {
+    visibility: hidden;
   }
 </style>

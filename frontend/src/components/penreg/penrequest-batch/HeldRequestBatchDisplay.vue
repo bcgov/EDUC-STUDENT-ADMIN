@@ -121,7 +121,7 @@ export default {
     },
     async deleteFile() {
       const userConfirmed = await this.isConfirmedByUser('Delete');
-      if (!!userConfirmed) {
+      if (userConfirmed) {
         const penRequestBatchIDs = [];
         penRequestBatchIDs.push(this.selectedFile.penRequestBatchID);
         const payload = {
@@ -130,24 +130,24 @@ export default {
         this.isDeleting = true;
         this.isActioned = true;
         ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/deleteFiles`, payload)
-            .then(() => {
-              const deletedMessage = `${this.submissionNumber} been deleted.`;
-              this.setSuccessAlert(`Success! ${deletedMessage}`);
-              this.heldRequestBatchListKey = this.heldRequestBatchListKey + 1;
-            })
-            .catch(error => {
-              this.setFailureAlert('An error occurred while deleting PEN Request Files! Please try again later.');
-              console.error(error);
-            })
-            .finally(() => {
-              this.isDeleting = false;
-              this.isActioned = false;
-            });
+          .then(() => {
+            const deletedMessage = `${this.submissionNumber} been deleted.`;
+            this.setSuccessAlert(`Success! ${deletedMessage}`);
+            this.heldRequestBatchListKey = this.heldRequestBatchListKey + 1;
+          })
+          .catch(error => {
+            this.setFailureAlert('An error occurred while deleting PEN Request Files! Please try again later.');
+            console.error(error);
+          })
+          .finally(() => {
+            this.isDeleting = false;
+            this.isActioned = false;
+          });
       }
     },
     async markRecordForProcessing(){
       const userConfirmed = await this.isConfirmedByUser('Process');
-      if (!!userConfirmed) {
+      if (userConfirmed) {
         const penRequestBatchIDs = [];
         penRequestBatchIDs.push(this.selectedFile.penRequestBatchID);
         const payload = {
@@ -156,26 +156,26 @@ export default {
         this.isProcessing = true;
         this.isActioned = true;
         ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/release-batch-files`, payload)
-            .then(() => {
-              const message = `${this.submissionNumber} is put into processing.`;
-              this.setSuccessAlert(`Success! ${message}`);
-              this.heldRequestBatchListKey = this.heldRequestBatchListKey + 1;
-            })
-            .catch(error => {
-              this.setFailureAlert('An error occurred while putting the PEN Request to processing! Please try again later.');
-              console.error(error);
-            })
-            .finally(() => {
-              this.isProcessing = false;
-              this.isActioned = false;
-            });
+          .then(() => {
+            const message = `${this.submissionNumber} is put into processing.`;
+            this.setSuccessAlert(`Success! ${message}`);
+            this.heldRequestBatchListKey = this.heldRequestBatchListKey + 1;
+          })
+          .catch(error => {
+            this.setFailureAlert('An error occurred while putting the PEN Request to processing! Please try again later.');
+            console.error(error);
+          })
+          .finally(() => {
+            this.isProcessing = false;
+            this.isActioned = false;
+          });
       }
     },
     async isConfirmedByUser(operation){
       this.operation = operation;
       this.submissionNumber = this.selectedFile.submissionNumber;
       return this.$refs.confirmationDialog.open(null, null,
-          {color: '#fff', width: 480, closeIcon: true, dark: false, rejectText: 'Cancel', resolveText: 'Confirm'});
+        {color: '#fff', width: 480, closeIcon: true, dark: false, rejectText: 'Cancel', resolveText: 'Confirm'});
     },
     clickFile(file) {
       this.submissionNumber = file.submissionNumber;

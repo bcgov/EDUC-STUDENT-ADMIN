@@ -68,7 +68,7 @@ async function getPenRequestBatchStudentById(req, res) {
     const url = `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/${req.params.id}/student/${req.params.studentId}`;
     let studentData = await getData(token, url);
     studentData.repeatRequestOriginalStatus = studentData.penRequestBatchStudentStatusCode;
-    await addSagaStatus([studentData]);
+    await addPenRequestBatchStudentSagaStatus([studentData]);
     return res.status(200).json(studentData);
   } catch (e) {
     logApiError(e, 'getPenRequestBatchStudentById', 'Error getting a PrbStudent.');
@@ -136,7 +136,7 @@ async function issueNewPen(req, res) {
 
     const sagaId = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/new-pen`, sagaReq, null, getUser(req).idir_username);
 
-    await createPenRequestBatchSagaRecordInRedis(sagaId, 'PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA', 'issueNewPen', studentData.penRequestBatchStudentID);
+    await createPenRequestBatchSagaRecordInRedis(sagaId, 'PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA', 'issueNewPen', studentData.penRequestBatchStudentID, studentData.penRequestBatchID);
 
     return res.status(200).json(sagaId);
   } catch (e) {
@@ -179,7 +179,7 @@ async function userMatchSaga(req, res) {
 
     const sagaId = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/user-match`, sagaReq, null, getUser(req).idir_username);
 
-    await createPenRequestBatchSagaRecordInRedis(sagaId, 'PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_SAGA', 'user match', studentData.penRequestBatchStudentID);
+    await createPenRequestBatchSagaRecordInRedis(sagaId, 'PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_SAGA', 'user match', studentData.penRequestBatchStudentID, studentData.penRequestBatchID);
 
     return res.status(200).json(sagaId);
   } catch (e) {
@@ -237,7 +237,7 @@ async function userUnmatchSaga(req, res) {
 
     const sagaId = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/user-unmatch`, sagaReq, null, getUser(req).idir_username);
 
-    await createPenRequestBatchSagaRecordInRedis(sagaId, 'PEN_REQUEST_BATCH_USER_UNMATCH_PROCESSING_SAGA', 'user unmatch', studentData.penRequestBatchStudentID);
+    await createPenRequestBatchSagaRecordInRedis(sagaId, 'PEN_REQUEST_BATCH_USER_UNMATCH_PROCESSING_SAGA', 'user unmatch', studentData.penRequestBatchStudentID, studentData.penRequestBatchID);
 
     return res.status(200).json(sagaId);
   } catch (e) {
@@ -249,9 +249,10 @@ async function userUnmatchSaga(req, res) {
   }
 }
 
-function createPenRequestBatchSagaRecordInRedis(sagaId, sagaName, operation, penRequestBatchStudentID) {
+function createPenRequestBatchSagaRecordInRedis(sagaId, sagaName, operation, penRequestBatchStudentID, penRequestBatchID) {
   const event = {
     sagaId,
+    penRequestBatchID,
     penRequestBatchStudentID,
     sagaStatus: 'INITIATED',
     sagaName
@@ -260,8 +261,12 @@ function createPenRequestBatchSagaRecordInRedis(sagaId, sagaName, operation, pen
   return redisUtil.createPenRequestBatchSagaRecordInRedis(event);
 }
 
-function addSagaStatus(prbStudents) {
+function addPenRequestBatchStudentSagaStatus(prbStudents) {
   return addSagaStatusToRecords(prbStudents, 'penRequestBatchStudentID', redisUtil.getPenRequestBatchSagaEvents);
+}
+
+function addPenRequestBatchSagaStatus(batchFiles) {
+  return addSagaStatusToRecords(batchFiles, 'penRequestBatchID', redisUtil.getPenRequestBatchSagaEvents);
 }
 
 async function updateFilesByIDs(req, res, updateFile) {
@@ -325,7 +330,7 @@ async function archiveAndReturnFiles(req, res) {
       };
       let sagaIds = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/archive-and-return`, sagaReq, null, getUser(req).idir_username);
       sagaIds.forEach(async (sagaId) => {
-        await createPenRequestBatchSagaRecordInRedis(sagaId.sagaId, 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_TOPIC', 'archiveAndReturn', sagaId.penRequestBatchID);
+        await createPenRequestBatchSagaRecordInRedis(sagaId.sagaId, 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_TOPIC', 'archiveAndReturn', null, sagaId.penRequestBatchID);
       });
       return res.status(200).json(sagaIds);
     } catch (e) {
@@ -358,11 +363,25 @@ function releaseBatchFilesForFurtherProcessing(req, res){
   });
 }
 
+
+async function repostReports(req, res) {
+  const token = getBackendToken(req, res);
+  try {
+    const sagaReq = req.body;
+    const sagaId = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/repost-reports`, sagaReq, null, getUser(req).idir_username);
+    await createPenRequestBatchSagaRecordInRedis(sagaId, 'PEN_REQUEST_BATCH_REPOST_REPORTS_SAGA', 'repostReports', null, req.body.penRequestBatchID);
+    return res.status(200).json(sagaId);
+  } catch (e) {
+    logApiError(e, 'repostReports', 'Error calling repost reports saga.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getPENBatchRequestStats,
   updatePrbStudentInfoRequested,
-  getPenRequestFiles: getPaginatedListForSCGroups('getPenRequestFiles', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/paginated`),
-  getPenRequestBatchStudents: getPaginatedListForSCGroups('getPenRequestBatchStudents', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/student/paginated`, addSagaStatus),
+  getPenRequestFiles: getPaginatedListForSCGroups('getPenRequestFiles', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/paginated`, addPenRequestBatchSagaStatus),
+  getPenRequestBatchStudents: getPaginatedListForSCGroups('getPenRequestBatchStudents', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/student/paginated`, addPenRequestBatchStudentSagaStatus),
   getPenRequestBatchStudentById,
   getPenRequestBatchStudentMatchOutcome,
   getPenWebBlobs,
@@ -373,5 +392,6 @@ module.exports = {
   archiveAndReturnFiles,
   unarchiveFiles,
   softDeleteFiles,
-  releaseBatchFilesForFurtherProcessing
+  releaseBatchFilesForFurtherProcessing,
+  repostReports,
 };

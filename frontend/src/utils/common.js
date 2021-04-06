@@ -196,5 +196,5 @@ export function setEmptyInputParams(params, ...excludedParams) {
 }
 
 export function equalsIgnoreCase(param1, param2) {
-return param1?.toLowerCase() === param2?.toLowerCase();
+  return param1?.toLowerCase() === param2?.toLowerCase();
 }

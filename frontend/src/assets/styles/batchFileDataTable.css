@@ -1,5 +1,5 @@
 /** Batch File Data Table */
-#dataTable.batch-file-table .file-column {
+  #dataTable.batch-file-table .file-column {
     float: left;
   }
   #dataTable.batch-file-table .countable-column-div {
@@ -23,6 +23,10 @@
   #dataTable.batch-file-table.filterable-table /deep/ table th{
     vertical-align: top;
     padding-top: 0.5rem;
+  }
+
+  #dataTable.batch-file-table /deep/ table th:nth-child(13) {
+    width: 5%;
   }
 
   #dataTable.batch-file-table /deep/ table td { 
