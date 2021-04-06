@@ -253,7 +253,6 @@ export default {
     },
     clickMoreInfo(event) {
       event.stopPropagation();
-      console.log('clickMoreInfo');
       this.historyModalOpen = true;
       this.hoveredOveredRow = this.penRequestBatchResponse.content.find(batch => batch.penRequestBatchID === this.hoveredOveredRowBatchID);
     }
