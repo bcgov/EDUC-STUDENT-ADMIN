@@ -758,7 +758,7 @@ export default {
             if (this.sagaId) {
               this.setSuccessAlert('Your request to unmatch student to this Pen Request is now completed.');
             } else {
-              this.setSuccessAlert(`${updatedPrbStudent.updateUser} unmatched student from Pen Request.`);
+              this.setSuccessAlert(`${updatedPrbStudent.updateUser} unmatched student from this Pen Request.`);
             }
             break;
           }
