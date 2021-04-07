@@ -335,30 +335,30 @@ export default {
       };
       this.isActionedInDifferentTab = false;
       ApiService.apiAxios
-          .put(Routes['student'].ROOT_ENDPOINT + '/' + selectedHistoryRecord.studentID, payload, {params})
-          .then(() => {
-            this.setSuccessAlert('Success! The student details have been reverted.');
-            setTimeout(() => {
-              this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
-            }, 500);
-          })
-          .catch(error => {
-            console.error(error);
-            if (error?.response?.data?.code === 409) {
-              this.setFailureAlert(error?.response?.data?.message);
-            }else{
-              this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
-            }
-            this.isActionedInDifferentTab = true;
-          })
-          .finally(() => {
-            this.isRevertingStudent = false;
-            window.scroll({
-              top: 0,
-              left: 0,
-              behavior: 'smooth',
-            });
+        .put(Routes['student'].ROOT_ENDPOINT + '/' + selectedHistoryRecord.studentID, payload, {params})
+        .then(() => {
+          this.setSuccessAlert('Success! The student details have been reverted.');
+          setTimeout(() => {
+            this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
+          }, 500);
+        })
+        .catch(error => {
+          console.error(error);
+          if (error?.response?.data?.code === 409) {
+            this.setFailureAlert(error?.response?.data?.message);
+          }else{
+            this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
+          }
+          this.isActionedInDifferentTab = true;
+        })
+        .finally(() => {
+          this.isRevertingStudent = false;
+          window.scroll({
+            top: 0,
+            left: 0,
+            behavior: 'smooth',
           });
+        });
     },
     convertFromHistoryToStudent(studentHistory) {
       return {

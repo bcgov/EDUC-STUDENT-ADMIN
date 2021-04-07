@@ -111,7 +111,7 @@
 <script>
 import router from '@/router';
 import PrimaryButton from '@/components/util/PrimaryButton';
-import {mapState} from "vuex";
+import {mapState} from 'vuex';
 
 export default {
   name: 'penRequestCard',

@@ -6,7 +6,7 @@
           :dismissible="!timeoutMs"
           outlined
           transition="scale-transition"
-          :class="`${alertType} flex-grow-1 mx-3`"
+          :class="`${alertType} flex-grow-1 ${margin}`"
   >
     {{ alertMessage }}
   </v-alert>
@@ -35,7 +35,11 @@ export default {
     value: {
       type: Boolean,
       required: true
-    }
+    },
+    margin: {
+      type: String,
+      default: 'mx-3'
+    },
   },
   computed: {
     displayAlert: {

@@ -387,7 +387,7 @@ export default {
       this.populateDOB(true);
     }catch (e) {
       console.error(e);
-      this.setFailureAlert(`Failed to Load student details, please try again later.`);
+      this.setFailureAlert('Failed to Load student details, please try again later.');
     }finally {
       this.isLoading = false;
     }

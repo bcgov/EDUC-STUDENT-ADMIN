@@ -182,6 +182,7 @@ describe('issueNewPen', () => {
     expectationsForUserActionsInPRBSaga(matchedStudentIDList);
     expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenCalledWith({
       sagaId: resp,
+      penRequestBatchID: req.body.prbStudent.penRequestBatchID,
       penRequestBatchStudentID: req.params.studentId,
       sagaStatus: 'INITIATED',
       sagaName: 'PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA'
@@ -228,6 +229,7 @@ describe('user match saga', () => {
     expect(utils.postData.mock.calls[0][2].gradeCode).toBe(prbStudentData.gradeCode);
     expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenCalledWith({
       sagaId: resp,
+      penRequestBatchID: req.body.prbStudent.penRequestBatchID,
       penRequestBatchStudentID: req.params.studentId,
       sagaStatus: 'INITIATED',
       sagaName: 'PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_SAGA'
@@ -319,6 +321,7 @@ describe('user unmatch saga', () => {
     expect(utils.postData.mock.calls[0][2].matchedStudentIDList).toEqual(['201']);
     expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenCalledWith({
       sagaId: resp,
+      penRequestBatchID: req.body.prbStudent.penRequestBatchID,
       penRequestBatchStudentID: req.params.studentId,
       sagaStatus: 'INITIATED',
       sagaName: 'PEN_REQUEST_BATCH_USER_UNMATCH_PROCESSING_SAGA'
@@ -503,13 +506,15 @@ describe('archiveAndReturnFiles', () => {
     expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenCalledTimes(2);
     expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenNthCalledWith(1,{
       sagaId: resp[0].sagaId,
-      penRequestBatchStudentID: resp[0].penRequestBatchID,
+      penRequestBatchStudentID: null,
+      penRequestBatchID: resp[0].penRequestBatchID,
       sagaStatus: 'INITIATED',
       sagaName: 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_TOPIC'
     });
     expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenNthCalledWith(2,{
       sagaId: resp[1].sagaId,
-      penRequestBatchStudentID: resp[1].penRequestBatchID,
+      penRequestBatchStudentID: null,
+      penRequestBatchID: resp[1].penRequestBatchID,
       sagaStatus: 'INITIATED',
       sagaName: 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_TOPIC'
     });

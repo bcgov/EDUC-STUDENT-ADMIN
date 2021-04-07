@@ -107,23 +107,23 @@ export default {
     };
   },
   computed:{
-  ...mapGetters('notifications', ['notification']),
+    ...mapGetters('notifications', ['notification']),
   },
   watch: {
     notification(val) {
       if (val) {
         const notificationData = val;
-       if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
-         try {
-           const student = JSON.parse(notificationData.eventPayload);
-           if (student?.pen && student?.pen === this.student?.pen) {
-             this.isStudentUpdated = true;
-             this.$emit('isStudentUpdated', true);
-             this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
-           }
-         } catch (e) {
-           console.error(e);
-         }
+        if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
+          try {
+            const student = JSON.parse(notificationData.eventPayload);
+            if (student?.pen && student?.pen === this.student?.pen) {
+              this.isStudentUpdated = true;
+              this.$emit('isStudentUpdated', true);
+              this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+            }
+          } catch (e) {
+            console.error(e);
+          }
         }
       }
     }
