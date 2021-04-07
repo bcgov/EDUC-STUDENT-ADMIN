@@ -1,15 +1,21 @@
 <template>
   <div id="searchResults" class="px-3" style="width: 100%" :overlay=false>
+    <v-row>
+      <AlertMessage v-model="studentUpdateAlert" :alertMessage="studentUpdateAlertMessage"
+                    :alertType="studentUpdateAlertType"></AlertMessage>
+    </v-row>
     <v-row no-gutters>
       <v-col>
         <span id="numberResults" class="px-4 pb-2">{{ studentSearchResponse.totalElements }} Results</span>
       </v-col>
       <v-col>
-        <CompareDemographicModal :disabled="selectedRecords.length<2 || selectedRecords.length>3" :selectedRecords.sync="selectedRecords"></CompareDemographicModal>
+        <CompareDemographicModal
+            :disabled="isStudentDataUpdated || selectedRecords.length<2 || selectedRecords.length>3"
+            :selectedRecords.sync="selectedRecords"></CompareDemographicModal>
       </v-col>
     </v-row>
     <v-data-table
-            id="dataTable"
+        id="dataTable"
             v-model="selectedRecords"
             :headers="headers"
             :items="studentSearchResponse.content"
@@ -34,7 +40,9 @@
           <td v-for="header in props.headers" :key="header.id" :class="{'table-checkbox' :header.id, 'row-hightlight': isMergedOrDeceased(props.item) }">
             <v-checkbox v-if="header.type" :disabled="isAuditHistorySearch" :input-value="props.isSelected" color="#606060" @change="props.select($event)"></v-checkbox>
             <div v-else @click="viewStudentDetails(props.item.studentID)" class="tableCell">
-              <span v-if="header.topValue == 'dob'" class="top-column-item">{{ formatDob(props.item[header.topValue],'uuuu-MM-dd','uuuu/MM/dd') }}</span>
+              <span v-if="header.topValue === 'dob'" class="top-column-item">{{
+                  formatDob(props.item[header.topValue], 'uuuu-MM-dd', 'uuuu/MM/dd')
+                }}</span>
               <span v-else class="top-column-item">{{ props.item[header.topValue] }}</span>
               <span class="double-column-item">{{props.item[header.doubleValue]}}</span>
               <br>
@@ -60,13 +68,16 @@
 import {formatDob} from '@/utils/format';
 import {mapGetters, mapMutations, mapState} from 'vuex';
 import ApiService from '../../../common/apiService';
-import {REQUEST_TYPES, Routes, STUDENT_CODES} from '../../../utils/constants';
+import {REQUEST_TYPES, Routes, STUDENT_CODES} from '@/utils/constants';
 import router from '../../../router';
 import CompareDemographicModal from '../../common/CompareDemographicModal';
+import studentUpdateAlertMixin from '@/mixins/student-update-alert-mixin';
+import AlertMessage from '@/components/util/AlertMessage';
 
 export default {
   name: 'SearchResults',
-  components: { CompareDemographicModal },
+  components: {CompareDemographicModal, AlertMessage,},
+  mixins: [studentUpdateAlertMixin],
   props: {
     searchCriteria: {
       type: Object,
@@ -82,16 +93,43 @@ export default {
       pageCount: 0,
       itemsPerPage: 10,
       headers: [
-        { id: 'table-checkbox', type: 'select', sortable: false },
-        { topText: 'PEN', align: 'start', sortable: false, topValue: 'pen'},
-        { topText: 'Legal Surname', bottomText: 'Usual Surname', topValue: 'legalLastName', bottomValue: 'usualLastName', sortable: false },
-        { topText: 'Legal Given', bottomText: 'Usual Given', topValue: 'legalFirstName', bottomValue: 'usualFirstName', sortable: false },
-        { topText: 'Legal Middle', bottomText: 'Usual Middle', topValue: 'legalMiddleNames', bottomValue: 'usualMiddleNames', sortable: false },
-        { topText: 'Postal Code', bottomText: 'Memo', topValue: 'postalCode', bottomValue: 'memo', sortable: false },
-        { topText: 'DC', doubleText: 'Gen', bottomText: 'Local ID', topValue: 'dc', doubleValue: 'genderCode', bottomValue: 'localID', sortable: false },
-        { topText: 'Birth Date', bottomText: 'Grade', topValue: 'dob', bottomValue: 'gradeCode', sortable: false },
-        { topText: 'Mincode', bottomText: 'Twinned', topValue: 'mincode', bottomValue: 'twinned', sortable: false },
+        {id: 'table-checkbox', type: 'select', sortable: false},
+        {topText: 'PEN', align: 'start', sortable: false, topValue: 'pen'},
+        {
+          topText: 'Legal Surname',
+          bottomText: 'Usual Surname',
+          topValue: 'legalLastName',
+          bottomValue: 'usualLastName',
+          sortable: false
+        },
+        {
+          topText: 'Legal Given',
+          bottomText: 'Usual Given',
+          topValue: 'legalFirstName',
+          bottomValue: 'usualFirstName',
+          sortable: false
+        },
+        {
+          topText: 'Legal Middle',
+          bottomText: 'Usual Middle',
+          topValue: 'legalMiddleNames',
+          bottomValue: 'usualMiddleNames',
+          sortable: false
+        },
+        {topText: 'Postal Code', bottomText: 'Memo', topValue: 'postalCode', bottomValue: 'memo', sortable: false},
+        {
+          topText: 'DC',
+          doubleText: 'Gen',
+          bottomText: 'Local ID',
+          topValue: 'dc',
+          doubleValue: 'genderCode',
+          bottomValue: 'localID',
+          sortable: false
+        },
+        {topText: 'Birth Date', bottomText: 'Grade', topValue: 'dob', bottomValue: 'gradeCode', sortable: false},
+        {topText: 'Mincode', bottomText: 'Twinned', topValue: 'mincode', bottomValue: 'twinned', sortable: false},
       ],
+      isStudentDataUpdated: false,
     };
   },
   watch: {
@@ -105,21 +143,39 @@ export default {
         this.pagination();
       },
       deep: true
-    }
+    },
+    studentSearchResponse: {
+      async handler() {
+        await this.$nextTick();
+        this.isStudentDataUpdated = false;
+      }
+    },
+    notification(val) {
+      let notificationData = val;
+      if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
+        const student = JSON.parse(notificationData.eventPayload);
+        const isUpdatedStudentPresent = this.studentSearchResponse.content.some(el => el.studentID === student?.studentID);
+        if (isUpdatedStudentPresent) {
+          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen}, is updated by ${student.updateUser}. Please do a search again`);
+          this.isStudentDataUpdated = true;
+        }
+      }
+    },
   },
   computed: {
     ...mapGetters('studentSearch', ['useNameVariants', 'isAuditHistorySearch', 'statusCode']),  // For advanced search criteria
     ...mapState('studentSearch', ['headerSortParams', 'studentSearchResponse']),
+    ...mapState('notifications', ['notification']),
     pageNumber: {
-      get(){
+      get() {
         return this.$store.state['studentSearch'].pageNumber;
       },
-      set(newPage){
+      set(newPage) {
         return this.$store.state['studentSearch'].pageNumber = newPage;
       }
     },
     selectedRecords: {
-      get(){
+      get() {
         return this.$store.state['studentSearch'].selectedRecords;
       },
       set(newRecord){
@@ -168,6 +224,7 @@ export default {
         .get(Routes.student.SEARCH_URL,this.prepPut(studentSearchFilters))
         .then(response => {
           this.setStudentSearchResponse(response.data);
+          this.isStudentDataUpdated = false;
         })
         .catch(error => {
           console.log(error);
@@ -210,10 +267,12 @@ export default {
   .tableCell {
     cursor: pointer;
   }
+
   #searchResults /deep/ .v-pagination__navigation > i {
     padding-left: 0;
   }
-  .row-hightlight { 
+
+  .row-hightlight {
     background-color: rgba(0, 0, 0, 0.06);
     color: #1A5A96;
     font-weight: bold;

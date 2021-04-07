@@ -764,6 +764,8 @@ export default {
           }
           this.setSelectedRecords();
           this.initializeDetails();
+          this.prbStudent.sagaInProgress = false;
+          this.sagaId = undefined; // change it after the saga is completed.
         } else if (notificationData.sagaStatus === 'INITIATED') {
           this.prbStudent.sagaInProgress = true;
         }
@@ -773,7 +775,7 @@ export default {
       try {
         const student = JSON.parse(notificationData.eventPayload);
         if (student?.pen && (this.possibleMatches?.some(el => el?.pen === student.pen))) {
-          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen}, present in possible matches is updated by ${student.updateUser}.`);
+          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen}, present in possible matches is updated by ${student.updateUser}. Please select this record from pen request files again.`);
           this.isStudentDataUpdated = true;
         }
       } catch (e) {
