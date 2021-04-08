@@ -913,14 +913,7 @@ export default {
     },
     async saveStudent() {
       if (this.parentRefs.studentDetailForm.validate()) {
-        let isUpdateStudentAllowed = true;
-        if (this.origStudent?.demogCode === STUDENT_DEMOG_CODES.CONFIRMED) {
-          const confirmation = await this.$refs.confirmedStudentUpdateConfirmationDialog.open(null, null,
-              {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false});
-          if (!confirmation) {
-            isUpdateStudentAllowed = false;
-          }
-        }
+        const isUpdateStudentAllowed = await this.isStudentUpdateConfirmed();
         if (isUpdateStudentAllowed) {
           const params = {
             penNumbersInOps: this.origStudent.pen
@@ -935,18 +928,7 @@ export default {
                 this.setSuccessAlert('Student data updated successfully.');
               })
               .catch(error => {
-                if (error?.response?.status === 409 && error?.response?.data?.message) {
-                  this.setErrorAlertForStudentUpdate(error?.response?.data?.message);
-                  this.isStudentUpdated = true;
-                  this.$emit('isStudentUpdated', true);
-                  if (this.isStudentUpdatedInDifferentTab) { // if it is already true that means the message has already arrived from STAN.
-                    this.setWarningAlertForStudentUpdate(this.lastMessageFromSTANForStudentUpdate);
-                  } else {
-                    this.isStudentUpdatedInDifferentTab = true; // turn it back to true in case of errors
-                  }
-                } else {
-                  this.setFailureAlert('Student data could not be updated, please try again.');
-                }
+                this.processSaveStudentError(error);
               })
               .finally(() => {
               });
@@ -1071,12 +1053,37 @@ export default {
           this.isStudentUpdated = true;
           this.$emit('isStudentUpdated', true);
           this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
-        }else if(student?.pen && student?.pen === this.studentDetails?.student?.pen && !this.isStudentUpdatedInDifferentTab){
+        } else if (student?.pen && student?.pen === this.studentDetails?.student?.pen && !this.isStudentUpdatedInDifferentTab) {
           this.isStudentUpdatedInDifferentTab = true; // make it true for future messages.
-          this.lastMessageFromSTANForStudentUpdate =`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`; // store it to show after recieving 409 http response, this helps in race condition where STAN is sending message faster than http response.
+          this.lastMessageFromSTANForStudentUpdate = `Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`; // store it to show after recieving 409 http response, this helps in race condition where STAN is sending message faster than http response.
         }
       } catch (e) {
         console.error(e);
+      }
+    },
+    async isStudentUpdateConfirmed() {
+      let isUpdateStudentAllowed = true;
+      if (this.origStudent?.demogCode === STUDENT_DEMOG_CODES.CONFIRMED) {
+        const confirmation = await this.$refs.confirmedStudentUpdateConfirmationDialog.open(null, null,
+            {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false});
+        if (!confirmation) {
+          isUpdateStudentAllowed = false;
+        }
+      }
+      return isUpdateStudentAllowed;
+    },
+    processSaveStudentError(error) {
+      if (error?.response?.status === 409 && error?.response?.data?.message) {
+        this.setErrorAlertForStudentUpdate(error?.response?.data?.message);
+        this.isStudentUpdated = true;
+        this.$emit('isStudentUpdated', true);
+        if (this.isStudentUpdatedInDifferentTab) { // if it is already true that means the message has already arrived from STAN.
+          this.setWarningAlertForStudentUpdate(this.lastMessageFromSTANForStudentUpdate);
+        } else {
+          this.isStudentUpdatedInDifferentTab = true; // turn it back to true in case of errors
+        }
+      } else {
+        this.setFailureAlert('Student data could not be updated, please try again.');
       }
     }
   }
