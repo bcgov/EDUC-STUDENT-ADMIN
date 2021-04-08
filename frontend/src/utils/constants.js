@@ -235,6 +235,12 @@ export const STUDENT_CODES = Object.freeze(
     MERGED: 'M'
   }
 );
+export const STUDENT_DEMOG_CODES = Object.freeze(
+  {
+    ACTIVE: 'A',
+    CONFIRMED: 'C'
+  }
+);
 export const PEN_REQ_BATCH_STUDENT_REQUEST_CODES = Object.freeze(
   {
     FIXABLE: 'FIXABLE',

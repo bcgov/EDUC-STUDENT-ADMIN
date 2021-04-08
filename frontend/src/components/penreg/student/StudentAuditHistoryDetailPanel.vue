@@ -60,7 +60,7 @@
 <script>
 import {mapGetters, mapState} from 'vuex';
 import moment from 'moment';
-import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
+import {STUDENT_CODES, STUDENT_DEMOG_CODES, STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import PrimaryButton from '../../util/PrimaryButton';
 import {formatPen, formatPostalCode} from '@/utils/format';
 import alertMixin from '../../../mixins/alertMixin';
@@ -145,10 +145,10 @@ export default {
       }
     },
     isSplitPenDisabled() {
-      return this.studentHistory?.totalElements === 1 || !this.studentDetailForRevert || this.hasSagaInProgress;
+      return this.studentHistory?.totalElements === 1 || !this.studentDetailForRevert || this.hasSagaInProgress || this.student?.statusCode === STUDENT_CODES.MERGED;
     },
     isRevertDisabled() {
-      return this.studentHistory?.content?.length === 1 || this.hasSagaInProgress;
+      return this.studentHistory?.content?.length === 1 || this.hasSagaInProgress || this.student?.demogCode === STUDENT_DEMOG_CODES.CONFIRMED || this.student?.statusCode === STUDENT_CODES.MERGED;
     },
     hasSagaInProgress() {
       return this.student && (this.student.sagaInProgress || this.studentsInProcess.has(this.student.studentID));

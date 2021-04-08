@@ -467,11 +467,23 @@
       ></TwinnedStudentsCard>
     </v-dialog>
     <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>
-    <ConfirmationDialog ref="demergeConfirmationDialog">
+    <ConfirmationDialog ref="confirmedStudentUpdateConfirmationDialog">
       <template v-slot:message>
         <v-col class="mt-n6">
           <v-row class="mb-3">
-            Are you sure you want to demerge PENs&nbsp;<strong>{{getMergedFromPen()}}</strong>&nbsp;and&nbsp;<strong>{{getMergedToPen()}}</strong>?
+            Are you sure you want to edit this&nbsp;<strong>Confirmed</strong>&nbsp;student?
+          </v-row>
+        </v-col>
+      </template>
+    </ConfirmationDialog>
+    <ConfirmationDialog ref="demergeConfirmationDialog">
+      <template v-slot:message>
+        <v-col class="mt-n6">
+          <v-row v-if="isConfirmedStudent" class="mb-3">
+            Are you sure you want to de-merge this&nbsp;<strong>Confirmed</strong>&nbsp;student?
+          </v-row>
+          <v-row v-else class="mb-3">
+            Are you sure you want to demerge PENs&nbsp;<strong>{{ getMergedFromPen() }}</strong>&nbsp;and&nbsp;<strong>{{ getMergedToPen() }}</strong>?
           </v-row>
         </v-col>
       </template>
@@ -483,7 +495,7 @@
 import {mapGetters, mapState} from 'vuex';
 import moment from 'moment';
 import ApiService from '../../common/apiService';
-import {REQUEST_TYPES, Routes, STUDENT_CODES, STUDENT_DETAILS_FIELDS} from '@/utils/constants';
+import {REQUEST_TYPES, Routes, STUDENT_CODES, STUDENT_DEMOG_CODES, STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import StudentDetailsTextField from '@/components/penreg/student/StudentDetailsTextField';
 import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly';
 import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsComboBox';
@@ -613,6 +625,9 @@ export default {
     },
     mergedFrom() {
       return sortBy(this.merges.filter(merge => merge.studentMergeDirectionCode === 'FROM'), ['mergeStudent.pen']);
+    },
+    isConfirmedStudent() {
+      return this.origStudent?.demogCode === STUDENT_DEMOG_CODES.CONFIRMED;
     }
   },
   mounted() {
@@ -896,36 +911,29 @@ export default {
         this.deceasedDialog = true;
       }
     },
-    saveStudent() {
+    async saveStudent() {
       if (this.parentRefs.studentDetailForm.validate()) {
-        const params = {
-          penNumbersInOps: this.origStudent.pen
-        };
-        this.isStudentUpdatedInDifferentTab = false; //make sure that notification for current tab is ignored.
-        ApiService.apiAxios
-          .put(Routes['student'].ROOT_ENDPOINT+'/'+ this.studentID, this.prepPut(this.studentCopy),{params})
-          .then(response => {
-            this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false)); // enable all the fields here, required fields to be disabled will be done in this.setStudent method.
-            this.setStudent(response.data);
-            this.$emit('update:student', response.data);
-            this.setSuccessAlert('Student data updated successfully.');
-          })
-          .catch(error => {
-            if (error?.response?.status === 409 && error?.response?.data?.message) {
-              this.setErrorAlertForStudentUpdate(error?.response?.data?.message);
-              this.isStudentUpdated = true;
-              this.$emit('isStudentUpdated', true);
-              if(this.isStudentUpdatedInDifferentTab){ // if it is already true that means the message has already arrived from STAN.
-                this.setWarningAlertForStudentUpdate(this.lastMessageFromSTANForStudentUpdate);
-              }else {
-                this.isStudentUpdatedInDifferentTab = true; // turn it back to true in case of errors
-              }
-            }else {
-              this.setFailureAlert('Student data could not be updated, please try again.');
-            }
-          })
-          .finally(() => {
-          });
+        const isUpdateStudentAllowed = await this.isStudentUpdateConfirmed();
+        if (isUpdateStudentAllowed) {
+          const params = {
+            penNumbersInOps: this.origStudent.pen
+          };
+          this.isStudentUpdatedInDifferentTab = false; //make sure that notification for current tab is ignored.
+          ApiService.apiAxios
+              .put(Routes['student'].ROOT_ENDPOINT + '/' + this.studentID, this.prepPut(this.studentCopy), {params})
+              .then(response => {
+                this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false)); // enable all the fields here, required fields to be disabled will be done in this.setStudent method.
+                this.setStudent(response.data);
+                this.$emit('update:student', response.data);
+                this.setSuccessAlert('Student data updated successfully.');
+              })
+              .catch(error => {
+                this.processSaveStudentError(error);
+              })
+              .finally(() => {
+              });
+        }
+
       }
     },
     prepPut(student) {
@@ -1045,12 +1053,37 @@ export default {
           this.isStudentUpdated = true;
           this.$emit('isStudentUpdated', true);
           this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
-        }else if(student?.pen && student?.pen === this.studentDetails?.student?.pen && !this.isStudentUpdatedInDifferentTab){
+        } else if (student?.pen && student?.pen === this.studentDetails?.student?.pen && !this.isStudentUpdatedInDifferentTab) {
           this.isStudentUpdatedInDifferentTab = true; // make it true for future messages.
-          this.lastMessageFromSTANForStudentUpdate =`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`; // store it to show after recieving 409 http response, this helps in race condition where STAN is sending message faster than http response.
+          this.lastMessageFromSTANForStudentUpdate = `Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`; // store it to show after recieving 409 http response, this helps in race condition where STAN is sending message faster than http response.
         }
       } catch (e) {
         console.error(e);
+      }
+    },
+    async isStudentUpdateConfirmed() {
+      let isUpdateStudentAllowed = true;
+      if (this.origStudent?.demogCode === STUDENT_DEMOG_CODES.CONFIRMED) {
+        const confirmation = await this.$refs.confirmedStudentUpdateConfirmationDialog.open(null, null,
+            {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false});
+        if (!confirmation) {
+          isUpdateStudentAllowed = false;
+        }
+      }
+      return isUpdateStudentAllowed;
+    },
+    processSaveStudentError(error) {
+      if (error?.response?.status === 409 && error?.response?.data?.message) {
+        this.setErrorAlertForStudentUpdate(error?.response?.data?.message);
+        this.isStudentUpdated = true;
+        this.$emit('isStudentUpdated', true);
+        if (this.isStudentUpdatedInDifferentTab) { // if it is already true that means the message has already arrived from STAN.
+          this.setWarningAlertForStudentUpdate(this.lastMessageFromSTANForStudentUpdate);
+        } else {
+          this.isStudentUpdatedInDifferentTab = true; // turn it back to true in case of errors
+        }
+      } else {
+        this.setFailureAlert('Student data could not be updated, please try again.');
       }
     }
   }
