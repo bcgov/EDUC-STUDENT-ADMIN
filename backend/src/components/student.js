@@ -38,6 +38,16 @@ async function updateStudent(req, res) {
 
 }
 
+async function getStudentDemographicsOnlyByStudentId(req, res) {
+  const token = utils.getBackendToken(req);
+  const id = req.params.id;
+  try {
+    const studentResponse = await utils.getData(token, config.get('server:student:rootURL') + '/' + id);
+    return res.status(HttpStatus.OK).json(studentResponse);
+  } catch (e) {
+    return errorResponse(res);
+  }
+}
 
 async function getStudentByStudentId(req, res) {
   const token = utils.getBackendToken(req);
@@ -110,10 +120,9 @@ async function getStudentByPen(req, res) {
     if (result && result[0] && result[0].studentID) {
       return res.status(200).json(result[0]);
     } else {
-      log.error(`No student was found or error occurred retrieving student, for pen :: ${pen}`);
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'INTERNAL SERVER ERROR'
-      });
+      const message = `No student record was found for pen :: ${pen}`;
+      log.error(message);
+      return errorResponse(res, message, HttpStatus.NOT_FOUND);
     }
   } catch (e) {
     logApiError(e, 'getStudentByStudentId', 'Error occurred while attempting to GET student.');
@@ -142,4 +151,5 @@ module.exports = {
   getStudentByPen,
   createNewStudent,
   getAllStudentByStudentIds,
+  getStudentDemographicsOnlyByStudentId,
 };
