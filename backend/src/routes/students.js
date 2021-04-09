@@ -4,7 +4,14 @@ const router = express.Router();
 const auth = require('../components/auth');
 const {getStudentById} = require('../components/requests');
 const {searchStudent, getStudentHistoryByStudentID} = require('../components/studentSearch');
-const {createNewStudent, updateStudent, getStudentByStudentId, getStudentByPen, getAllStudentByStudentIds} = require('../components/student');
+const {
+  createNewStudent,
+  updateStudent,
+  getStudentByStudentId,
+  getStudentByPen,
+  getAllStudentByStudentIds,
+  getStudentDemographicsOnlyByStudentId
+} = require('../components/student');
 const roles = require('../components/roles');
 const utils = require('../components/utils');
 const extendSession = utils.extendSession();
@@ -21,6 +28,7 @@ router.get('/search', passport.authenticate('jwt', {session: false}, undefined),
 router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentById);
 router.get('/', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentByPen);
 router.get('/detail/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentByStudentId);
+router.get('/demographics/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentDemographicsOnlyByStudentId);
 router.put('/:studentID', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, atomicStudentUpdate.handleConcurrentStudentModification, updateStudent);
 router.post('/', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, createNewStudent);
 router.get('/:id/history', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, extendSession, getStudentHistoryByStudentID);

@@ -7,21 +7,30 @@
         </v-col>
         <v-col cols="2" class="pb-0 pr-0">
           <v-text-field
-                  id="enterAPenTxtField"
-                  v-model="penToAdd"
-                  outlined
-                  dense
-                  label="Enter a PEN"
-                  @keyup.enter="enterPushed()"
-                  maxlength="9"
-                  :rules="penRules"
+              id="enterAPenTxtField"
+              v-model="penToAdd"
+              outlined
+              dense
+              label="Enter a PEN"
+              @keyup.enter="enterPushed()"
+              @keyup="checkStudentStatusForValidPen()"
+              maxlength="9"
+              :rules="penRules"
           ></v-text-field>
         </v-col>
         <v-col cols="1" class="pb-0">
-          <PrimaryButton id="addPenBtn" :disabled="!isValidPEN(penToAdd) || studentRecords.length >= 3" text="Add PEN" @click.native="addPEN"></PrimaryButton>
+          <PrimaryButton id="addPenBtn"
+                         :disabled=" isLoadingStudent || !isValidPEN(penToAdd) || studentRecords.length >= 3"
+                         :loading="isLoadingStudent" text="Add PEN" @click.native="addPEN"></PrimaryButton>
+        </v-col>
+        <v-col class="pl-6 pb-1" cols="5">
+          <span v-if="isSearchedPENMerged" id="truePenMessage">{{ truePenMessage }} <a :tabindex="0"
+                                                                                       @click="updateAddPen()"
+                                                                                       @keyup.enter="updateAddPen()"> {{ truePen }}</a></span>
         </v-col>
         <v-col class="pt-0">
-          <v-btn v-if="closeCompareModal" id="closeCompareModalBtn" text icon @click="[closeCompareModal(), clearError()]">
+          <v-btn v-if="closeCompareModal" id="closeCompareModalBtn" text icon
+                 @click="[closeCompareModal(), clearError()]">
             <v-icon large color="#38598A">mdi-close</v-icon>
           </v-btn>
         </v-col>
@@ -156,7 +165,7 @@
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
 import PrimaryButton from '../util/PrimaryButton';
 import ApiService from '../../common/apiService';
-import {REQUEST_TYPES, Routes} from '@/utils/constants';
+import {REQUEST_TYPES, Routes, STUDENT_CODES} from '@/utils/constants';
 import {isOlderThan, isValidPEN} from '@/utils/validation';
 import AlertMessage from '../util/AlertMessage';
 import alertMixin from '@/mixins/alertMixin';
@@ -239,7 +248,7 @@ export default {
       ],
       penToAdd: null,
       searchError: false,
-      penRules: [ v => (!v || isValidPEN(v)) || this.penHint],
+      penRules: [v => (!v || isValidPEN(v)) || this.penHint],
       penHint: 'Invalid PEN',
       errorMessage: 'Error! This student does not exist in the system.',
       sldData: {},
@@ -247,6 +256,9 @@ export default {
       sldDataTablesNumberOfRows: {},
       checkedStudents: [],
       isStudentDataUpdated: false,
+      isLoadingStudent: false,
+      isSearchedPENMerged: false,
+      studentDataMap: new Map(),
     };
   },
   mounted() {
@@ -270,22 +282,38 @@ export default {
   methods: {
     equalsIgnoreCase,
     addPEN() {
+      const isRecordAlreadyAdded = this.studentRecords.find(el => el.pen === this.penToAdd);
+      if (isRecordAlreadyAdded) {
+        this.searchError = true;
+        this.errorMessage = 'Pen already added to compare list.';
+        return;
+      }
       this.alert = false;
       this.searchError = false;
       this.getSldData(this.penToAdd);
-      ApiService.apiAxios
-        .get(Routes['student'].ROOT_ENDPOINT + '/', { params: { pen: this.penToAdd } })
-        .then(response => {
-          this.studentRecords.push(response.data);
-          this.studentRecords = _.sortBy(this.studentRecords, o => o.pen);
-        })
-        .catch(error => {
-          console.log(error);
-          this.searchError = true;
-        })
-        .finally(() => {
-          this.penToAdd = null;
-        });
+      const student = this.studentDataMap.get(this.penToAdd);
+      if (student) {
+        this.studentRecords.push(student);
+        this.studentRecords = _.sortBy(this.studentRecords, o => o.pen);
+        this.penToAdd = null;
+        this.truePenMessage = null;
+        this.truePen = null;
+        this.isSearchedPENMerged = false;
+      } else {
+        ApiService.apiAxios
+            .get(Routes['student'].ROOT_ENDPOINT + '/', {params: {pen: this.penToAdd}})
+            .then(response => {
+              this.studentRecords.push(response.data);
+              this.studentRecords = _.sortBy(this.studentRecords, o => o.pen);
+            })
+            .catch(error => {
+              console.log(error);
+              this.searchError = true;
+            })
+            .finally(() => {
+              this.penToAdd = null;
+            });
+      }
     },
     clearError() {
       this.searchError = false;
@@ -293,8 +321,44 @@ export default {
       this.alert = false;
     },
     enterPushed() {
-      if (this.penToAdd && this.isValidPEN(this.penToAdd) && (!this.studentRecords || this.studentRecords?.length<3)) {
-        this.addPEN();
+      this.addPEN();
+    },
+    updateAddPen() {
+      const isRecordAlreadyAdded = this.studentRecords.find(el => el.pen === this.truePen);
+      if (isRecordAlreadyAdded) {
+        this.searchError = true;
+        this.errorMessage = 'Pen already added to compare list.';
+        return;
+      }
+      this.penToAdd = this.truePen;
+      this.addPEN();
+    },
+    async checkStudentStatusForValidPen() {
+      const isProceed = this.penToAdd && this.isValidPEN(this.penToAdd) && (!this.studentRecords || this.studentRecords?.length < 3);
+      if (isProceed) {
+        this.isLoadingStudent = true;
+        try {
+          const studentResponse = await ApiService.apiAxios
+              .get(Routes['student'].ROOT_ENDPOINT + '/', {params: {pen: this.penToAdd}});
+          const student = studentResponse.data;
+          this.studentDataMap.set(student.pen, student);
+          if (student.statusCode === STUDENT_CODES.MERGED) {
+            const trueStudentResponse = await ApiService.apiAxios.get(Routes['student'].ROOT_ENDPOINT + '/demographics/' + student.trueStudentID);
+            this.studentDataMap.set(trueStudentResponse.data.pen, trueStudentResponse.data);
+            this.truePenMessage = `${student.pen} is Merged to `;
+            this.truePen = trueStudentResponse.data.pen;
+            this.isSearchedPENMerged = true;
+          }
+        } catch (error) {
+          if (error?.response?.status === 404 && error?.response?.data?.message) {
+            this.searchError = true;
+          } else {
+            this.searchError = true;
+            this.errorMessage = 'Error occurred while fetching student, Please try again later.';
+          }
+        } finally {
+          this.isLoadingStudent = false;
+        }
       }
     },
     formatDob,
@@ -304,9 +368,9 @@ export default {
     getMatchedRecordsByStudent,
     getSldData(pen) {
       ApiService.apiAxios
-        .get(Routes['sld'].STUDENT_HISTORY_URL + '/', { params: { pen: pen } })
-        .then(response => {
-          this.$set(this.sldData, pen, response.data);
+          .get(Routes['sld'].STUDENT_HISTORY_URL + '/', {params: {pen: pen}})
+          .then(response => {
+            this.$set(this.sldData, pen, response.data);
           this.updateSldRowDisplay(pen, true);
           this.updateSldTableRows(pen, 10);
         })
