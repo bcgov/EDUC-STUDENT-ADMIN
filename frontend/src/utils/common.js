@@ -9,6 +9,8 @@ const clone = require('rfdc')();
 
 export function constructPenMatchObjectFromStudent(student) {
   return {
+    pen: student.submittedPen,
+    localID: student.localID,
     surname: student.legalLastName,
     givenName: student.legalFirstName,
     middleName: student.legalMiddleNames,
