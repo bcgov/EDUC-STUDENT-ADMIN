@@ -1065,7 +1065,7 @@ export default {
       let isUpdateStudentAllowed = true;
       if (this.origStudent?.demogCode === STUDENT_DEMOG_CODES.CONFIRMED) {
         const confirmation = await this.$refs.confirmedStudentUpdateConfirmationDialog.open(null, null,
-            {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false});
+            {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, resolveText: 'Confirm'});
         if (!confirmation) {
           isUpdateStudentAllowed = false;
         }
