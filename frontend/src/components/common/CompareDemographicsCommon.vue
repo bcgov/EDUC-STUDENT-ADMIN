@@ -15,6 +15,7 @@
               @keyup.enter="enterPushed()"
               @keyup="checkStudentStatusForValidPen()"
               maxlength="9"
+              :disabled="studentRecords.length > 2"
               :rules="penRules"
           ></v-text-field>
         </v-col>
@@ -23,10 +24,12 @@
                          :disabled=" isLoadingStudent || !isValidPEN(penToAdd) || studentRecords.length >= 3"
                          :loading="isLoadingStudent" text="Add PEN" @click.native="addPEN"></PrimaryButton>
         </v-col>
-        <v-col class="pl-6 pb-1" cols="5">
+        <v-col class="pl-0 pb-0" cols="5">
           <span v-if="isSearchedPENMerged" id="truePenMessage">{{ truePenMessage }} <a :tabindex="0"
                                                                                        @click="updateAddPen()"
-                                                                                       @keyup.enter="updateAddPen()"> {{ truePen }}</a></span>
+                                                                                       @keyup.enter="updateAddPen()"> {{
+              truePen
+            }}</a></span>
         </v-col>
         <v-col class="pt-0">
           <v-btn v-if="closeCompareModal" id="closeCompareModalBtn" text icon
@@ -337,6 +340,9 @@ export default {
       const isProceed = this.penToAdd && this.isValidPEN(this.penToAdd) && (!this.studentRecords || this.studentRecords?.length < 3);
       if (isProceed) {
         this.isLoadingStudent = true;
+        this.truePenMessage = null;
+        this.truePen = null;
+        this.isSearchedPENMerged = false;
         try {
           const studentResponse = await ApiService.apiAxios
               .get(Routes['student'].ROOT_ENDPOINT + '/', {params: {pen: this.penToAdd}});
@@ -359,6 +365,11 @@ export default {
         } finally {
           this.isLoadingStudent = false;
         }
+      } else {
+        // reset values if the entered pen is removed
+        this.truePenMessage = null;
+        this.truePen = null;
+        this.isSearchedPENMerged = false;
       }
     },
     formatDob,
