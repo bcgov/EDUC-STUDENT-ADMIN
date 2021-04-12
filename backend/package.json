@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "The backend portion of the Student Administration ruest web app",
   "scripts": {
-    "build": "babel /opt/app-root/src/ --out-dir dist --ignore 'node_modules/**/*.js'",
     "serve": "npm run setlocal && npm run servecmd",
     "setlocal": "set NODE_ENV=local",
     "servecmd": "nodemon ./src/server.js",
