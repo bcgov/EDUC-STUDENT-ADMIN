@@ -47,14 +47,23 @@ function logout(req) {
 
 //removes tokens and destroys session
 router.get('/logout', async (req, res) => {
-  logout(req);
-  let retUrl;
-  if (req.query && req.query.sessionExpired) {
-    retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/session-expired');
+  if (req?.session?.passport?.user) {
+    logout(req);
+    let retUrl;
+    if (req.query && req.query.sessionExpired) {
+      retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/session-expired');
+    } else {
+      retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/logout');
+    }
+    res.redirect(config.get('siteMinder_logout_endpoint') + retUrl);
   } else {
-    retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend') + '/logout');
+    if (req.query && req.query.sessionExpired) {
+      res.redirect(config.get('server:frontend') + '/session-expired');
+    } else {
+      res.redirect(config.get('server:frontend') + '/logout');
+    }
   }
-  res.redirect(config.get('siteMinder_logout_endpoint')+ retUrl);
+
 });
 
 //refreshes jwt on refresh if refreshToken is valid
@@ -145,6 +154,16 @@ router.get('/user', passport.authenticate('jwt', {session: false}), (req, res) =
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
   }
 
+});
+
+router.get('/user-session-remaining-time', passport.authenticate('jwt', {session: false}), (req, res) => {
+  if (req?.session?.cookie && req?.session?.passport?.user) {
+    const remainingTime = req.session.cookie.maxAge;
+    log.info(`session remaining time is :: ${remainingTime} for user`, req.session?.passport?.user?.displayName);
+    return res.status(HttpStatus.OK).json(req.session.cookie.maxAge);
+  } else {
+    return res.sendStatus(HttpStatus.UNAUTHORIZED);
+  }
 });
 
 module.exports = router;

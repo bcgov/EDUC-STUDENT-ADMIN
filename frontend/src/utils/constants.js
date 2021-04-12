@@ -17,6 +17,7 @@ let object = {
   REFRESH: authRoot + '/refresh',
   TOKEN: authRoot + '/token',
   USER: authRoot + '/user',
+  SESSION_REMAINING_TIME: authRoot + '/user-session-remaining-time',
 
   penRequestBatch: {
     ROOT_ENDPOINT: penRequestBatchRoot,

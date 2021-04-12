@@ -21,7 +21,8 @@
 </template>
 
 <script>
-import { Routes } from '../utils/constants';
+import {Routes} from '../utils/constants';
+
 export default {
   name: 'Logout',
 
@@ -30,7 +31,7 @@ export default {
       routes: Routes
     };
   },
-  mounted() {
+  created() {
     this.$store.commit('auth/setJwtToken');
   },
   methods: {

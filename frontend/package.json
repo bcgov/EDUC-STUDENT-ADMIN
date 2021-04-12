@@ -32,7 +32,6 @@
     "dotenv": "^8.2.0",
     "geckodriver": "^1.21.0",
     "glob-all": "^3.2.1",
-    "idle-vue": "^2.0.5",
     "jest-junit": "^7.0.0",
     "lodash": "^4.17.15",
     "moment": "^2.29.1",
