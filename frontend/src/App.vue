@@ -23,7 +23,7 @@
       </v-icon>
     </v-btn>
     <v-main fluid class="align-start px-8 mb-0">
-      <ModalIdle v-if="isAuthenticated && isIdle"/>
+      <ModalIdle v-if="isAuthenticated"/>
       <router-view/>
     </v-main>
     <Footer/>
@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions, mapState } from 'vuex';
+import {mapActions, mapGetters, mapState} from 'vuex';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ModalIdle from './components/ModalIdle';
@@ -51,12 +51,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['getJwtToken','isAuthenticated','isValidGMPUser','isValidUMPUser', 'isValidPenRequestBatchUser']),
+    ...mapGetters('auth', ['jwtToken', 'isAuthenticated', 'isValidGMPUser', 'isValidUMPUser', 'isValidPenRequestBatchUser']),
     ...mapGetters('auth', ['userInfo']),
     ...mapState('app', ['pageTitle']),
-    isIdle(){
-      return this.$store.state.idleVue.isIdle;
-    }
   },
   watch: {
     isAuthenticated()  {
@@ -141,5 +138,5 @@ export default {
   .full-height {
     height: 100%;
   }
-    
+
 </style>
