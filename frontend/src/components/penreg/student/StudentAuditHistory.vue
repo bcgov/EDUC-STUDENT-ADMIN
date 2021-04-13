@@ -334,31 +334,41 @@ export default {
         penNumbersInOps: payload.student.pen
       };
       this.isActionedInDifferentTab = false;
-      ApiService.apiAxios
-        .put(Routes['student'].ROOT_ENDPOINT + '/' + selectedHistoryRecord.studentID, payload, {params})
-        .then(() => {
-          this.setSuccessAlert('Success! The student details have been reverted.');
-          setTimeout(() => {
-            this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
-          }, 500);
-        })
-        .catch(error => {
-          console.error(error);
-          if (error?.response?.data?.code === 409) {
-            this.setFailureAlert(error?.response?.data?.message);
-          }else{
-            this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
-          }
-          this.isActionedInDifferentTab = true;
-        })
-        .finally(() => {
-          this.isRevertingStudent = false;
-          window.scroll({
-            top: 0,
-            left: 0,
-            behavior: 'smooth',
-          });
-        });
+      try {
+        // update the payload with current status and true student ID of the student
+        const studentData = await ApiService.apiAxios.get(Routes['student'].ROOT_ENDPOINT + '/demographics/' + selectedHistoryRecord.studentID);
+        payload.statusCode = studentData.data.statusCode;
+        payload.trueStudentID = studentData.data.trueStudentID;
+        ApiService.apiAxios
+            .put(Routes['student'].ROOT_ENDPOINT + '/' + selectedHistoryRecord.studentID, payload, {params})
+            .then(() => {
+              this.setSuccessAlert('Success! The student details have been reverted.');
+              setTimeout(() => {
+                this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
+              }, 500);
+            })
+            .catch(error => {
+              console.error(error);
+              if (error?.response?.data?.code === 409) {
+                this.setFailureAlert(error?.response?.data?.message);
+              } else {
+                this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
+              }
+              this.isActionedInDifferentTab = true;
+            })
+            .finally(() => {
+              this.isRevertingStudent = false;
+              window.scroll({
+                top: 0,
+                left: 0,
+                behavior: 'smooth',
+              });
+            });
+      } catch (e) {
+        console.error(e);
+        this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
+      }
+
     },
     convertFromHistoryToStudent(studentHistory) {
       return {
