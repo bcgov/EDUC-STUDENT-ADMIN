@@ -25,9 +25,10 @@
                          :loading="isLoadingStudent" text="Add PEN" @click.native="addPEN"></PrimaryButton>
         </v-col>
         <v-col class="pl-0 pb-0" cols="5">
-          <span v-if="isSearchedPENMerged" id="truePenMessage">{{ truePenMessage }} <a :tabindex="0"
-                                                                                       @click="updateAddPen()"
-                                                                                       @keyup.enter="updateAddPen()"> {{
+          <span v-if="isSearchedPENMerged" id="truePenMessage" style="font-size: 1rem;">{{ truePenMessage }} <a
+              :tabindex="0"
+              @click="updateAddPen()"
+              @keyup.enter="updateAddPen()"> {{
               truePen
             }}</a></span>
         </v-col>
