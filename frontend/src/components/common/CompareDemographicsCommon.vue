@@ -19,18 +19,18 @@
               :rules="penRules"
           ></v-text-field>
         </v-col>
-        <v-col cols="1" class="pb-0">
+        <v-col class="pb-0" cols="5">
           <PrimaryButton id="addPenBtn"
                          :disabled=" isLoadingStudent || !isValidPEN(penToAdd) || studentRecords.length >= 3"
                          :loading="isLoadingStudent" text="Add PEN" @click.native="addPEN"></PrimaryButton>
-        </v-col>
-        <v-col class="pl-0 pb-0" cols="5">
-          <span v-if="isSearchedPENMerged" id="truePenMessage" style="font-size: 1rem;">{{ truePenMessage }} <a
-              :tabindex="0"
-              @click="updateAddPen()"
-              @keyup.enter="updateAddPen()"> {{
-              truePen
-            }}</a></span>
+          <span v-if="isSearchedPENMerged" id="truePenMessage" class="pl-1" style="font-size: 1rem;">{{
+              truePenMessage
+            }} <a
+                :tabindex="0"
+                @click="updateAddPen()"
+                @keyup.enter="updateAddPen()"> {{
+                truePen
+              }}</a></span>
         </v-col>
         <v-col class="pt-0">
           <v-btn v-if="closeCompareModal" id="closeCompareModalBtn" text icon
