@@ -365,7 +365,7 @@ export default {
               });
             });
       } catch (e) {
-        console.error(error);
+        console.error(e);
         this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
       }
 
