@@ -1,163 +1,172 @@
 <template>
     <v-container fluid class="fill-height px-0 mb-4">
         <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
-        <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
+      <v-form v-model="isValidSearchForm">
+        <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
+               style="background-color:white;">
+
           <v-col cols="9" xl="8" class="pa-0">
             <v-sheet
-              class="mx-0 px-2 py-1 d-flex align-end align-self-start"
-              color="rgba(0, 0, 0, 0.06)"
-              outlined
-              rounded
+                class="mx-0 px-2 py-1 d-flex align-end align-self-start"
+                color="rgba(0, 0, 0, 0.06)"
+                outlined
+                rounded
             >
               <v-col class="pa-0">
-              <v-row no-gutters class="pa-0">
-                <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                  <v-text-field
-                    id='minCode'
-                    v-model="batchFileSearchParams.mincode"
-                    tabindex="1"
-                    color="#003366"
-                    label="Mincode"
-                    maxlength="8"
-                    @keyup.enter="enterPushed()"
-                    v-on:input="searchHasValues"
-                    :rules="validateField(batchFileSearchParams.minCode, isValidMincode, minCodeHint)"
-                    dense
-                    autofocus
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="3" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                  <v-text-field
-                    id='schoolName'
-                    v-model="batchFileSearchParams.schoolName"
-                    tabindex="2"
-                    color="#003366"
-                    label="School Name"
-                    @keyup.enter="enterPushed()"
-                    v-on:input="searchHasValues"
-                    dense
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                  <v-text-field
-                    id='loadDateFrom'
-                    v-model="batchFileSearchParams.load.startDate"
-                    tabindex="3"
-                    color="#003366"
-                    label="Date From"
-                    @keyup.enter="enterPushed()"
-                    v-on:input="searchHasValues"
-                    :rules="validateField(batchFileSearchParams.load.startDate, isPresentDateAndAfter1900, dateHint)"
-                    dense
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                  <v-text-field
-                    id='loadDateTo'
-                    v-model="batchFileSearchParams.load.endDate"
-                    tabindex="4"
-                    color="#003366"
-                    label="Date To"
-                    @keyup.enter="enterPushed()"
-                    v-on:input="searchHasValues"
-                    :rules="[
-                        ...validateField(batchFileSearchParams.load.endDate, isPresentDateAndAfter1900, dateHint),
-                        ...validateField(batchFileSearchParams.load, isValidEndDate, endDateHint)
-                    ]"
-                    dense
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-              <v-row no-gutters class="pa-0" v-if="refinedSearch">
-                <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                  <v-text-field
-                    id='legalLastName'
-                    v-model="batchFileSearchParams.prbStudent.legalLastName"
-                    tabindex="5"
-                    color="#003366"
-                    label="Legal Surname"
-                    maxlength="255"
-                    @keyup.enter="enterPushed()"
-                    v-on:input="searchHasValues"
-                    dense
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                  <v-text-field
-                    id='legalFirstName'
-                    v-model="batchFileSearchParams.prbStudent.legalFirstName"
-                    tabindex="6"
-                    color="#003366"
-                    label="Legal Given"
-                    maxlength="255"
-                    @keyup.enter="enterPushed()"
-                    v-on:input="searchHasValues"
-                    dense
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                  <v-text-field
-                    id='legalMiddleNames'
-                    v-model="batchFileSearchParams.prbStudent.legalMiddleNames"
-                    tabindex="7"
-                    color="#003366"
-                    label="Legal Middle"
-                    maxlength="255"
-                    @keyup.enter="enterPushed()"
-                    v-on:input="searchHasValues"
-                    dense
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="1" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                  <v-text-field
-                    id='genderCode'
-                    v-model="batchFileSearchParams.prbStudent.genderCode"
-                    tabindex="8"
-                    color="#003366"
-                    label="Gender"
-                    maxlength="1"
-                    @keyup.enter="enterPushed()"
-                    v-on:input="[searchHasValues(), upperCaseInput(batchFileSearchParams.prbStudent, 'genderCode')]"
-                    :rules="validateField(batchFileSearchParams.prbStudent.genderCode, isValidGender, genderHint)"
-                    dense
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                  <v-text-field
-                    id='dob'
-                    v-model="batchFileSearchParams.prbStudent.dob"
-                    tabindex="9"
-                    color="#003366"
-                    label="Birth Date"
-                    maxlength="10"
-                    @keyup.enter="enterPushed()"
-                    v-on:input="searchHasValues"
-                    :rules="validateField(batchFileSearchParams.prbStudent.dob, isValidDob, dobHint)"
-                    dense
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                  <v-text-field
-                    id='assignedPEN'
-                    v-model="batchFileSearchParams.prbStudent.assignedPEN"
-                    tabindex="10"
-                    color="#003366"
-                    label="PEN"
-                    maxlength="9"
-                    @keyup.enter="enterPushed()"
-                    v-on:input="searchHasValues"
-                    :rules="validateField(batchFileSearchParams.prbStudent.assignedPEN, isValidPEN, penHint)"
-                    dense
-                  ></v-text-field>
-                </v-col>
-              </v-row>
+                <v-row no-gutters class="pa-0">
+                  <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
+                    <v-text-field
+                        id='minCode'
+                        v-model="batchFileSearchParams.mincode"
+                        tabindex="1"
+                        color="#003366"
+                        label="Mincode"
+                        maxlength="8"
+                        @keyup.enter="enterPushed()"
+                        v-on:input="searchHasValues"
+                        :rules="validateField(batchFileSearchParams.minCode, isValidMincode, minCodeHint)"
+                        dense
+                        autofocus
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="3" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
+                    <v-text-field
+                        id='schoolName'
+                        v-model="batchFileSearchParams.schoolName"
+                        tabindex="2"
+                        color="#003366"
+                        label="School Name"
+                        @keyup.enter="enterPushed()"
+                        v-on:input="searchHasValues"
+                        dense
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
+                    <FormattedTextField
+                        :id="'loadDateFrom'"
+                        v-model="batchFileSearchParams.load.startDate"
+                        :clearable="false"
+                        :filled="false"
+                        :format="formatDob"
+                        :label="'Date From'"
+                        :outlined="false"
+                        :rules="[validateStartDate,validateEndDate]"
+                        :tabindex="'3'"
+                        maxlength="8"
+                        @input="searchHasValues"
+                        @keyup.enter.native="enterPushed()"
+                    ></FormattedTextField>
+                  </v-col>
+                  <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
+                    <FormattedTextField
+                        :id="'loadDateTo'"
+                        v-model="batchFileSearchParams.load.endDate"
+                        :clearable="false"
+                        :filled="false"
+                        :format="formatDob"
+                        :label="'Date To'"
+                        :outlined="false"
+                        :rules="[validateEndDate]"
+                        :tabindex="'4'"
+                        maxlength="8"
+                        @input="searchHasValues"
+                        @keyup.enter.native="enterPushed()"
+                    ></FormattedTextField>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters class="pa-0" v-if="refinedSearch">
+                  <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
+                    <v-text-field
+                        id='legalLastName'
+                        v-model="batchFileSearchParams.prbStudent.legalLastName"
+                        tabindex="5"
+                        color="#003366"
+                        label="Legal Surname"
+                        maxlength="255"
+                        @keyup.enter="enterPushed()"
+                        v-on:input="searchHasValues"
+                        dense
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
+                    <v-text-field
+                        id='legalFirstName'
+                        v-model="batchFileSearchParams.prbStudent.legalFirstName"
+                        tabindex="6"
+                        color="#003366"
+                        label="Legal Given"
+                        maxlength="255"
+                        @keyup.enter="enterPushed()"
+                        v-on:input="searchHasValues"
+                        dense
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
+                    <v-text-field
+                        id='legalMiddleNames'
+                        v-model="batchFileSearchParams.prbStudent.legalMiddleNames"
+                        tabindex="7"
+                        color="#003366"
+                        label="Legal Middle"
+                        maxlength="255"
+                        @keyup.enter="enterPushed()"
+                        v-on:input="searchHasValues"
+                        dense
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="1" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
+                    <v-text-field
+                        id='genderCode'
+                        v-model="batchFileSearchParams.prbStudent.genderCode"
+                        tabindex="8"
+                        color="#003366"
+                        label="Gender"
+                        maxlength="1"
+                        @keyup.enter="enterPushed()"
+                        v-on:input="[searchHasValues(), upperCaseInput(batchFileSearchParams.prbStudent, 'genderCode')]"
+                        :rules="validateField(batchFileSearchParams.prbStudent.genderCode, isValidGender, genderHint)"
+                        dense
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
+                    <v-text-field
+                        id='dob'
+                        v-model="batchFileSearchParams.prbStudent.dob"
+                        tabindex="9"
+                        color="#003366"
+                        label="Birth Date"
+                        maxlength="10"
+                        @keyup.enter="enterPushed()"
+                        v-on:input="searchHasValues"
+                        :rules="validateField(batchFileSearchParams.prbStudent.dob, isValidDob, dobHint)"
+                        dense
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
+                    <v-text-field
+                        id='assignedPEN'
+                        v-model="batchFileSearchParams.prbStudent.assignedPEN"
+                        tabindex="10"
+                        color="#003366"
+                        label="PEN"
+                        maxlength="9"
+                        @keyup.enter="enterPushed()"
+                        v-on:input="searchHasValues"
+                        :rules="validateField(batchFileSearchParams.prbStudent.assignedPEN, isValidPEN, penHint)"
+                        dense
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
               </v-col>
 
-              <PrimaryButton id="refine-action" class="mr-2 mb-3" secondary text="Clear" v-if="refinedSearch"  @click.native="clearSearchParams"></PrimaryButton>
+              <PrimaryButton id="refine-action" class="mr-2 mb-3" secondary text="Clear" v-if="refinedSearch" @click.native="clearSearchParams"></PrimaryButton>
               <PrimaryButton id="refine-action" class="mr-2 mb-3" secondary text="Refine" v-else @click.native="setRefinedSearch(true)"></PrimaryButton>
-              <PrimaryButton id="search-action" class="mr-0 mb-3" text="Search" :disabled="!searchEnabled" :loading="searchLoading && searchEnabled" @click.native="searchBatchFiles"></PrimaryButton>
+              <PrimaryButton id="search-action" :disabled="!isValidSearchForm || !searchEnabled"
+                             :loading="searchLoading && searchEnabled" class="mr-0 mb-3" text="Search"
+                             @click.native="searchBatchFiles"></PrimaryButton>
             </v-sheet>
           </v-col>
+
           <v-col cols="3" xl="4" class="pa-0 d-flex justify-end align-end">
             <v-menu offset-y>
               <template v-slot:activator="{ on }">
@@ -172,9 +181,12 @@
                 </v-list-item>
               </v-list>
             </v-menu>
-            <PrimaryButton id="view-list-action" class="ml-2" :disabled="!filesSelected" text="Unarchive" :loading="unarchiving" @click.native="unarchive"></PrimaryButton>
+            <PrimaryButton id="view-list-action" class="ml-2" :disabled="!filesSelected" text="Unarchive"
+                           :loading="unarchiving" @click.native="unarchive"></PrimaryButton>
           </v-col>
+
         </v-row>
+      </v-form>
         <v-row no-gutters class="py-2" style="background-color:white;">
           <ArchivedRequestBatchList
             :searchParams="searchParams"
@@ -187,18 +199,27 @@
 </template>
 
 <script>
-import { SEARCH_FILTER_OPERATION, SEARCH_VALUE_TYPE } from '../../../utils/constants';
-import { mapState, mapMutations } from 'vuex';
+import {Routes, SEARCH_FILTER_OPERATION, SEARCH_VALUE_TYPE} from '@/utils/constants';
+import {mapMutations, mapState} from 'vuex';
 import ArchivedRequestBatchList from './ArchivedRequestBatchList';
 import PrimaryButton from '../../util/PrimaryButton';
-import router from '../../../router';
-import alertMixin from '../../../mixins/alertMixin';
-import { isValidMincode, isValidAlphanumericValue, isPresentDateAndAfter1900, isValidDob, isValidPEN, isValidEndDate, isNotEmptyInputParams } from '../../../utils/validation';
+import router from '@/router';
+import alertMixin from '@/mixins/alertMixin';
+import {
+  isNotEmptyInputParams,
+  isPresentDateAndAfter1900,
+  isValidAlphanumericValue,
+  isValidDob,
+  isValidEndDate,
+  isValidMincode,
+  isValidPEN
+} from '@/utils/validation';
 import AlertMessage from '../../util/AlertMessage';
-import { deepCloneObject, setEmptyInputParams } from '../../../utils/common';
+import {deepCloneObject, setEmptyInputParams} from '@/utils/common';
 import pluralize from 'pluralize';
 import ApiService from '@/common/apiService';
-import {Routes} from '@/utils/constants';
+import {formatDob} from '@/utils/format';
+import FormattedTextField from '@/components/util/FormattedTextField';
 
 export default {
   name: 'ArchivedRequestBatchDisplay',
@@ -206,6 +227,7 @@ export default {
     PrimaryButton,
     AlertMessage,
     ArchivedRequestBatchList,
+    FormattedTextField
   },
   mixins: [alertMixin],
   props: {
@@ -231,7 +253,8 @@ export default {
       dobHint: 'Invalid Birth Date',
       dateHint: 'Invalid date',
       alphanumericHint: 'Alphanumeric only',
-      endDateHint: 'Must be after Date From',
+      endDateHint: 'Date to Must be after Date From',
+      isValidSearchForm: false,
     };
   },
   computed: {
@@ -267,24 +290,24 @@ export default {
     clickViewDetails() {
       const countColumn = 'studentCount';
       const totalNumber = this.selectedFiles.reduce((sum, file) => sum + file[countColumn], 0);
-    
+
       const searchCriteriaList = [
-        { 
+        {
           searchCriteriaList: [
             {
-              key: 'penRequestBatchEntity.penRequestBatchID', 
-              operation: SEARCH_FILTER_OPERATION.IN, 
-              value: this.selectedFileBatchIDs, 
+              key: 'penRequestBatchEntity.penRequestBatchID',
+              operation: SEARCH_FILTER_OPERATION.IN,
+              value: this.selectedFileBatchIDs,
               valueType: SEARCH_VALUE_TYPE.UUID
             },
           ],
         },
       ];
-      
-      const query = { 
+
+      const query = {
         seqNumber: 1,
-        totalNumber, 
-        batchCount: this.selectedFiles.length, 
+        totalNumber,
+        batchCount: this.selectedFiles.length,
         searchCriteria: JSON.stringify(searchCriteriaList),
         archived: true,
       };
@@ -315,20 +338,41 @@ export default {
     isValidDob,
     isValidPEN,
     isValidEndDate,
+    formatDob,
     isValidGender(code) {
       return !!(code && this.genderCodes.includes(code.toUpperCase()));
     },
-    validateField(value, validator=isValidAlphanumericValue, hint=this.alphanumericHint, length=0) {
-      if(!value || validator(value)) {
+    validateField(value, validator = isValidAlphanumericValue, hint = this.alphanumericHint, length = 0) {
+      if (!value || validator(value)) {
         return [];
       }
       this.searchEnabled = false;
-      if(value.length < length) {
+      if (value.length < length) {
         return [];
       } else {
         return [
           hint
         ];
+      }
+    },
+    validateStartDate() {
+      if (!this.batchFileSearchParams?.load?.startDate || isPresentDateAndAfter1900(this.batchFileSearchParams?.load?.startDate) || isPresentDateAndAfter1900(this.batchFileSearchParams?.load?.startDate, 'uuuuMMdd')) {
+        return true;
+      } else {
+        return this.dateHint;
+      }
+    },
+    validateEndDate() {
+      if (!this.batchFileSearchParams?.load?.endDate) {
+        return true;
+      } else if (this.batchFileSearchParams?.load?.endDate.length < 8 || isNaN(this.batchFileSearchParams?.load?.endDate)) {
+        return this.dateHint;
+      } else if (!isPresentDateAndAfter1900(this.batchFileSearchParams?.load?.endDate, 'uuuuMMdd')) {
+        return this.dateHint;
+      } else if (!isValidEndDate(this.batchFileSearchParams.load)) {
+        return this.endDateHint;
+      } else {
+        return true;
       }
     },
     async unarchive() {
@@ -339,17 +383,17 @@ export default {
       };
       this.unarchiving = true;
       ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/unarchiveFiles`, payload)
-        .then(response => {
-          const archivedNumber = response.data.length;
+          .then(response => {
+            const archivedNumber = response.data.length;
           const archivedMessage = `${archivedNumber} ${pluralize('file', archivedNumber)} ${pluralize('has', archivedNumber)} been unarchived.`;
           if(archivedNumber === fileNumber) {
             this.setSuccessAlert(`Success! ${archivedMessage}`);
           } else {
             this.setFailureAlert(`An error occurred while unarchiving PEN Request Files! ${archivedMessage} Please try again later.`);
           }
-          this.penRequestBatchResponse.content = this.penRequestBatchResponse.content.filter(file => 
-            response.data.some(archivedFile => archivedFile.penRequestBatchID === file.penRequestBatchID)
-          );
+            this.penRequestBatchResponse.content = this.penRequestBatchResponse.content.filter(file =>
+                response.data.some(archivedFile => archivedFile.penRequestBatchID === file.penRequestBatchID)
+            );
           this.setSelectedFiles();
         })
         .catch(error => {
