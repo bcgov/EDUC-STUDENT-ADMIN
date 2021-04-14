@@ -117,6 +117,11 @@ export default {
         authorized: this.isValidPenRequestBatchUser
       },
       {
+        title: PAGE_TITLES.ARCHIVED_REQ_FILES,
+        link: 'archivedRequestBatch',
+        authorized: this.isValidPenRequestBatchUser
+      },
+      {
         title: 'Compare PENs',
         link: 'compare',
         authorized: this.isValidStudentSearchUser
