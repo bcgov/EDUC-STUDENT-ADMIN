@@ -14,7 +14,7 @@ export function formatDateTime(datetime, from='uuuuMMdd', to='uuuu/MM/dd') {
   const fromFormatter = getDateFormatter(from);
   const toFormatter = getDateFormatter(to);
   let result = datetime;
-  if(datetime) {
+  if (datetime && datetime.length === from.length) {
     try {
       const date = LocalDate.parse(datetime, fromFormatter);
       result = date.format(toFormatter);

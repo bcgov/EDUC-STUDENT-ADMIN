@@ -1,4 +1,4 @@
-import {LocalDate, DateTimeFormatterBuilder, ResolverStyle} from '@js-joda/core';
+import {DateTimeFormatterBuilder, LocalDate, ResolverStyle} from '@js-joda/core';
 import {groupBy, isPlainObject} from 'lodash';
 
 const datePatternWithSlash = (new DateTimeFormatterBuilder).appendPattern('uuuu/MM/dd').toFormatter(ResolverStyle.STRICT);
@@ -60,8 +60,14 @@ export function isValidEndDate({ startDate, endDate }, delimiter = '/') {
   // (startDate?.length && endDate?.length) is needed because on page load, both value would be null and statement will run
   if( (startDate?.length && endDate?.length) &&
       startDate?.length === endDate?.length ) {
-    const parseJoda = date => LocalDate.parse(date.replaceAll(delimiter, '-'));
-    if(parseJoda(endDate).isBefore(parseJoda(startDate))){
+    let parseJoda;
+    if (endDate.length === 8) { // if the length is 8 then there was no delimiter used.
+      const formatter = (new DateTimeFormatterBuilder).appendPattern('uuuuMMdd').toFormatter(ResolverStyle.STRICT);
+      parseJoda = date => LocalDate.parse(date, formatter);
+    } else {
+      parseJoda = date => LocalDate.parse(date.replaceAll(delimiter, '-'));
+    }
+    if (parseJoda(endDate).isBefore(parseJoda(startDate))) {
       return false;
     }
   }
