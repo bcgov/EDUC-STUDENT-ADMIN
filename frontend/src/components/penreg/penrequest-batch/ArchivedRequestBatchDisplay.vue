@@ -56,18 +56,6 @@
                         @input="searchHasValues"
                         @keyup.enter.native="enterPushed()"
                     ></FormattedTextField>
-                    <!--                  <v-text-field
-                                        id='loadDateFrom'
-                                        v-model="batchFileSearchParams.load.startDate"
-                                        tabindex="3"
-                                        color="#003366"
-                                        label="Date From"
-                                        maxlength="8"
-                                        @keyup.enter="enterPushed()"
-                                        v-on:input="searchHasValues"
-                                        :rules="[validateStartDate]"
-                                        dense
-                                      ></v-text-field>-->
                   </v-col>
                   <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
                     <FormattedTextField
@@ -84,20 +72,6 @@
                         @input="searchHasValues"
                         @keyup.enter.native="enterPushed()"
                     ></FormattedTextField>
-                    <!--                  <v-text-field
-                                        id='loadDateTo'
-                                        v-model="batchFileSearchParams.load.endDate"
-                                        tabindex="4"
-                                        color="#003366"
-                                        label="Date To"
-                                        @keyup.enter="enterPushed()"
-                                        v-on:input="searchHasValues"
-                                        :rules="[
-                                            ...validateField(batchFileSearchParams.load.endDate, isPresentDateAndAfter1900(this.batchFileSearchParams?.load?.endDate, 'uuuuMMdd'), dateHint),
-                                            ...validateField(batchFileSearchParams.load, isValidEndDate, endDateHint)
-                                        ]"
-                                        dense
-                                      ></v-text-field>-->
                   </v-col>
                 </v-row>
                 <v-row no-gutters class="pa-0" v-if="refinedSearch">
