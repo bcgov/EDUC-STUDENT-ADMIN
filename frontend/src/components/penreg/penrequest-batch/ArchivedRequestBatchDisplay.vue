@@ -277,7 +277,9 @@ export default {
   mounted() {
     this.batchFileSearchParams.mincode = this.batchFileSearchParams.mincode || this.mincode;
     this.batchFileSearchParams.load.startDate = this.batchFileSearchParams.load.startDate || this.loadDate;
-    this.enterPushed();
+    if (this.batchFileSearchParams.mincode || this.batchFileSearchParams.load.startDate) {
+      this.enterPushed();
+    }
   },
   methods: {
     ...mapMutations('prbStudentSearch', ['clearPrbStudentSearchState']),

@@ -9,13 +9,19 @@
 </template>
 
 <script>
-import { mapMutations, mapState, mapGetters } from 'vuex';
+import {mapGetters, mapMutations, mapState} from 'vuex';
 import PenRequestBatchDataTable from './PenRequestBatchDataTable';
 import ApiService from '../../../common/apiService';
-import {Routes, SEARCH_FILTER_OPERATION, SEARCH_CONDITION, SEARCH_VALUE_TYPE, PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
-import {formatDateTime} from '../../../utils/format';
+import {
+  PEN_REQ_BATCH_STATUS_CODES,
+  Routes,
+  SEARCH_CONDITION,
+  SEARCH_FILTER_OPERATION,
+  SEARCH_VALUE_TYPE
+} from '@/utils/constants';
+import {formatDateTime} from '@/utils/format';
 import {compact, partialRight} from 'lodash';
-import { deepCloneObject } from '../../../utils/common';
+import {deepCloneObject} from '@/utils/common';
 
 export default {
   name: 'ArchivedRequestBatchList',
@@ -40,17 +46,22 @@ export default {
         { text: 'Mincode', value: 'mincode', sortable: false, align: 'start' },
         { text: 'School Name', value: 'schoolName', sortable: false },
         { text: 'TOT', value: 'studentCount', sortable: false, countable: true },
-        { text: 'MCH', value: 'matchedCount', sortable: false, countable: true },
-        { text: 'NEW', value: 'newPenCount', sortable: false, countable: true },
-        { text: 'ERR', value: 'errorCount', sortable: false, countable: true },
-        { text: 'REP', value: 'repeatCount', sortable: false, countable: true },
-        { text: 'FIX', value: 'fixableCount', sortable: false, countable: true },
-        { text: 'SRCH', value: 'searchedCount', sortable: false, countable: true },
-        { text: 'Load Date', value: 'extractDate', sortable: false, format: partialRight(formatDateTime,'uuuu-MM-dd\'T\'HH:mm:ss', 'uuuu/MM/dd') },
-        { text: 'SUB #', value: 'submissionNumber', sortable: false },
-        { value: 'actions', sortable: false },
+        {text: 'MCH', value: 'matchedCount', sortable: false, countable: true},
+        {text: 'NEW', value: 'newPenCount', sortable: false, countable: true},
+        {text: 'ERR', value: 'errorCount', sortable: false, countable: true},
+        {text: 'REP', value: 'repeatCount', sortable: false, countable: true},
+        {text: 'FIX', value: 'fixableCount', sortable: false, countable: true},
+        {text: 'SRCH', value: 'searchedCount', sortable: false, countable: true},
+        {
+          text: 'Load Date',
+          value: 'extractDate',
+          sortable: false,
+          format: partialRight(formatDateTime, 'uuuu-MM-dd\'T\'HH:mm:ss', 'uuuu/MM/dd')
+        },
+        {text: 'SUB #', value: 'submissionNumber', sortable: false},
+        {value: 'actions', sortable: false},
       ],
-      loadingTable: true,
+      loadingTable: false,
       isFilterOperation: false,
     };
   },
@@ -67,7 +78,7 @@ export default {
           this.pagination();
         } else {
           this.pageNumber = 1;
-        } 
+        }
       }
     },
     reloading: {
@@ -101,24 +112,24 @@ export default {
       return this.headers.filter(header => header.countable);
     },
     searchCriteria() {
-      const searchCriteriaList = compact(Object.entries(this.searchParams.prbStudent).map(([paramName, paramValue]) => 
+      const searchCriteriaList = compact(Object.entries(this.searchParams.prbStudent).map(([paramName, paramValue]) =>
         this.getSearchParam(paramName, paramValue, 'penRequestBatchStudentEntities'))
       );
-      searchCriteriaList.push(...compact(Object.entries(this.searchParams).filter(([paramName]) => 
+      searchCriteriaList.push(...compact(Object.entries(this.searchParams).filter(([paramName]) =>
         paramName !== 'prbStudent'
-      ).map(([paramName, paramValue]) => 
-        this.getSearchParam(paramName, paramValue))
+        ).map(([paramName, paramValue]) =>
+          this.getSearchParam(paramName, paramValue))
       ));
-      
+
       const statusCodeList = [PEN_REQ_BATCH_STATUS_CODES.ARCHIVED, PEN_REQ_BATCH_STATUS_CODES.REARCHIVED].join();
       return [
-        { 
+        {
           searchCriteriaList: [
             {key: 'penRequestBatchStatusCode', operation: 'in', value: statusCodeList, valueType: 'STRING'}
           ]
         },
-        { 
-          condition: 'AND', 
+        {
+          condition: 'AND',
           searchCriteriaList
         },
       ];
@@ -132,7 +143,7 @@ export default {
         this.setSelectedFiles();
         this.isFilterOperation = false;
       }
-      
+
       files.forEach(file => {
         file.isSelected = this.isSelected(file);
         this.countableHeaders.forEach(header => file[header.value] = +file[header.value]);
@@ -195,13 +206,23 @@ export default {
 
         paramName = 'extractDate';
         valueType = SEARCH_VALUE_TYPE.DATE_TIME;
-        const startDate = paramValue.startDate && `${paramValue.startDate.replace(/\//g, '-')}T00:00:00`;
-        const endDate = paramValue.endDate && `${paramValue.endDate.replace(/\//g, '-')}T23:59:59`;
+        let startDate;
+        let endDate;
+        if (paramValue.startDate && paramValue.startDate.length === 8) { // it has reached here means it is a valid date
+          startDate = `${paramValue.startDate.substring(0, 4)}-${paramValue.startDate.substring(4, 6)}-${paramValue.startDate.substring(6, 8)}T00:00:00`;
+        } else {
+          startDate = paramValue.startDate && `${paramValue.startDate.replace(/\//g, '-')}T00:00:00`;
+        }
+        if (paramValue.endDate && paramValue.endDate.length === 8) { // it has reached here means it is a valid date
+          endDate = `${paramValue.endDate.substring(0, 4)}-${paramValue.endDate.substring(4, 6)}-${paramValue.endDate.substring(6, 8)}T23:59:59`;
+        } else {
+          endDate = paramValue.endDate && `${paramValue.endDate.replace(/\//g, '-')}T23:59:59`;
+        }
 
-        if(startDate && !endDate) {
+        if (startDate && !endDate) {
           operation = SEARCH_FILTER_OPERATION.GREATER_THAN_OR_EQUAL_TO;
           paramValue = startDate;
-        } else if(!startDate && endDate) {
+        } else if (!startDate && endDate) {
           operation = SEARCH_FILTER_OPERATION.LESS_THAN_OR_EQUAL_TO;
           paramValue = endDate;
         } else {
