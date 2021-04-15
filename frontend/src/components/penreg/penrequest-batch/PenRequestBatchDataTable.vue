@@ -51,6 +51,7 @@
                   class="file-checkbox"
                   color="#606060"
                   v-model="props.item.isSelected"
+                  :disabled="props.item.sagaInProgress"
                   @click.stop="handleFileCheckBoxClicked(props.item)"
                 ></v-checkbox>
                 <v-tooltip bottom v-if="props.item.sagaInProgress">
@@ -202,27 +203,26 @@ export default {
       }
     },
     notification(val) {
-      if (val) {
-        const notificationData = val;
-        if (notificationData.sagaName === 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_SAGA') {
-          this.inProgressSagaIDs.forEach(sagaObjects => {
-            if(sagaObjects.sagaID === notificationData.sagaId && notificationData.sagaStatus === 'COMPLETED') {
-              this.$emit('sagaCompleted', `Archive and Return completed for Batch Submission Number ${this.penRequestBatchResponse.content.find(x => x.penRequestBatchID === notificationData.penRequestBatchID).submissionNumber}`);
-            }
-          });
-        }
-        this.penRequestBatchResponse.content.forEach((x, index) => {
-          if(x.penRequestBatchID === notificationData.penRequestBatchID || x.penRequestBatchID === JSON.parse(notificationData?.eventPayload)?.penRequestBatchID) {
-            if(notificationData.sagaStatus === 'INITIATED') {
-              x.sagaInProgress = true;
-              this.selectItem(x);
-            } else if(notificationData.sagaStatus === 'COMPLETED') {
-              this.penRequestBatchResponse.content.splice(index, 1);
-            }
-            
+      if (!val) {
+        return;
+      }
+      const notificationData = val;
+      if (notificationData.sagaName === 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_SAGA') {
+        this.inProgressSagaIDs.forEach(sagaObjects => {
+          if(sagaObjects.sagaID === notificationData.sagaId && notificationData.sagaStatus === 'COMPLETED') {
+            this.$emit('sagaCompleted', `Archive and Return completed for Batch Submission Number ${this.penRequestBatchResponse.content.find(x => x.penRequestBatchID === notificationData.penRequestBatchID).submissionNumber}`);
           }
         });
       }
+      this.penRequestBatchResponse.content.forEach((x, index) => {
+        const pageHasObjectsRunningSagas = x.penRequestBatchID === notificationData.penRequestBatchID || x.penRequestBatchID === JSON.parse(notificationData?.eventPayload)?.penRequestBatchID;
+        if(pageHasObjectsRunningSagas && notificationData.sagaStatus === 'INITIATED') {
+          x.sagaInProgress = true;
+          this.selectItem(x);
+        } else if(pageHasObjectsRunningSagas && notificationData.sagaStatus === 'COMPLETED') {
+          this.penRequestBatchResponse.content.splice(index, 1);
+        }
+      });
     },
   },
   methods: {
