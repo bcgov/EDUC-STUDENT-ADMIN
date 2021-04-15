@@ -6,6 +6,8 @@
     :loadingTable="loadingTable || loadingFiles"
     pageCommands
     @select-filter="selectFilter"
+    :inProgressSagaIDs="inProgressSagaIDs"
+    @sagaCompleted="sagaCompleted"
   ></PenRequestBatchDataTable>
 </template>
 
@@ -34,6 +36,9 @@ export default {
     loadingFiles: {
       type: Boolean,
       required: true
+    },
+    inProgressSagaIDs: {
+      type: Array
     }
   },
   data () {
@@ -184,6 +189,9 @@ export default {
         })
         .finally(() => (this.loadingTable = false));
     },
+    sagaCompleted(args) {
+      this.$emit('sagaCompleted', args);
+    }
   }
 };
 </script>

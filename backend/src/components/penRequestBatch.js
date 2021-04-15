@@ -321,7 +321,6 @@ function archiveFiles(req, res) {
 }
 
 async function archiveAndReturnFiles(req, res) {
-
   if(req.body.penRequestBatchIDs?.length) {
     const token = getBackendToken(req, res);
     try {
