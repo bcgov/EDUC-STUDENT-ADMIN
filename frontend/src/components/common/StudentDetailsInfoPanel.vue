@@ -36,21 +36,22 @@
                 dense
         >
           <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-            <span :key="h.id || h.topText" class="top-column-item" :class="{'header-half-width': header.doubleText && !isFieldValueWarned(header.topValue)}">
+            <span :key="h.id || h.topText" class="top-column-item"
+                  :class="{'header-half-width': header.doubleText && !isFieldValueWarned(header.topValue)}">
               {{ header.topText }}
             </span>
-            <StudentValidationWarningHint 
-              v-if="header.topValue && isFieldValueWarned(header.topValue)" 
-              :key="h.topValue" 
-              :hasDoubleText="!!header.doubleText" 
+            <StudentValidationWarningHint
+              v-if="header.topValue && isFieldValueWarned(header.topValue)"
+              :key="h.topValue"
+              :hasDoubleText="!!header.doubleText"
               :validationWarnings="getValidationWarnings(header.topValue)"
             />
-            
-            <span :key="h.id || h.doubleValue" class="double-column-item">{{header.doubleText}}</span>
-            <StudentValidationWarningHint 
-              v-if="header.doubleValue && isFieldValueWarned(header.doubleValue)" 
-              :key="h.doubleValue" 
-              :hasDoubleText="!!header.doubleText" 
+
+            <span :key="h.id || h.doubleValue" class="double-column-item">{{ header.doubleText }}</span>
+            <StudentValidationWarningHint
+              v-if="header.doubleValue && isFieldValueWarned(header.doubleValue)"
+              :key="h.doubleValue"
+              :hasDoubleText="!!header.doubleText"
               :validationWarnings="getValidationWarnings(header.doubleValue)"
             />
           </template>
@@ -79,9 +80,9 @@
             <span :key="h.id || h.text">
               {{ header.text }}
             </span>
-            <StudentValidationWarningHint 
-              v-if="header.value && isFieldValueWarned(header.value)" 
-              :key="h.id || h.value" 
+            <StudentValidationWarningHint
+              v-if="header.value && isFieldValueWarned(header.value)"
+              :key="h.id || h.value"
               :validationWarnings="getValidationWarnings(header.value)"
             />
           </template>
@@ -115,16 +116,16 @@
 
 <script>
 import {
-  PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER,
-  PEN_REQ_BATCH_STUDENT_REQUEST_CODES
+  PEN_REQ_BATCH_STUDENT_REQUEST_CODES,
+  PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER
 } from '@/utils/constants';
 import SearchDemographicModal from './SearchDemographicModal';
-import { deepCloneObject, getDemogValidationResults } from '../../utils/common';
-import { formatDob, formatPostalCode, formatMincode, formatPen } from '@/utils/format';
-import { mapState, mapMutations } from 'vuex';
+import {deepCloneObject, getDemogValidationResults} from '../../utils/common';
+import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
+import {mapMutations, mapState} from 'vuex';
 import StudentValidationWarningHint from './StudentValidationWarningHint';
 import PrimaryButton from '../util/PrimaryButton';
-import { partialRight } from 'lodash';
+import {partialRight} from 'lodash';
 
 export default {
   name: 'StudentDetailsInfoPanel',
@@ -237,7 +238,8 @@ export default {
       return this.isFieldValueWithIssues(fieldName, this.validationErrorFields);
     },
     isFieldValueWarned(fieldName) {
-      return PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE === this.studentDetails.penRequestBatchStudentStatusCode 
+      return (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE === this.studentDetails.penRequestBatchStudentStatusCode
+        || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.studentDetails.penRequestBatchStudentStatusCode)
         && this.isFieldValueWithIssues(fieldName, this.validationWarningFields);
     },
     isFieldValueUpdated(fieldName) {
