@@ -194,28 +194,36 @@ export default {
           align: 'start',
           sortable: false,
           topValue: 'mincode',
-          bottomValue: 'localID'
+          bottomValue: 'localID',
+          topTooltip: 'Mincode',
+          bottomTooltip: 'Local ID'
         },
         {
           topText: 'Legal Surname',
           bottomText: 'Usual Surname',
           topValue: 'legalLastName',
           bottomValue: 'usualLastName',
-          sortable: false
+          sortable: false,
+          topTooltip: 'Legal Surname',
+          bottomTooltip: 'Usual Surname'
         },
         {
           topText: 'Legal Given',
           bottomText: 'Usual Given',
           topValue: 'legalFirstName',
           bottomValue: 'usualFirstName',
-          sortable: false
+          sortable: false,
+          topTooltip: 'Legal Given',
+          bottomTooltip: 'Usual Given'
         },
         {
           topText: 'Legal Middle',
           bottomText: 'Usual Middle',
           topValue: 'legalMiddleNames',
           bottomValue: 'usualMiddleNames',
-          sortable: false
+          sortable: false,
+          topTooltip: 'Legal Middle',
+          bottomTooltip: 'Usual Middle'
         },
         {
           topText: 'DC',
@@ -224,10 +232,13 @@ export default {
           topValue: 'dc',
           doubleValue: 'genderCode',
           bottomValue: 'postalCode',
-          sortable: false
+          sortable: false,
+          topTooltip: 'Demographic Code',
+          bottomTooltip: 'Postal Code',
+          doubleTooltip: 'Gender'
         },
-        {topText: 'Birth Date', bottomText: 'Grade', topValue: 'dob', bottomValue: 'gradeCode', sortable: false},
-        {topText: 'Sugg. PEN', bottomText: '', topValue: 'pen', bottomValue: 'button', sortable: false},
+        {topText: 'Birth Date', bottomText: 'Grade', topValue: 'dob', bottomValue: 'gradeCode', sortable: false, topTooltip: 'Birth Date', bottomTooltip: 'Grade Code'},
+        {topText: 'Sugg. PEN', bottomText: '', topValue: 'pen', bottomValue: 'button', sortable: false, topTooltip: 'Suggested PEN'},
       ],
       studentPossibleMatches: [],
       loadingMatchResults: false,

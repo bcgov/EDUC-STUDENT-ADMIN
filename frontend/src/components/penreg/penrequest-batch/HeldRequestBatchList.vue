@@ -13,7 +13,7 @@
       @page-count="penRequestBatchResponse.pageable.pageNumber = $event"
     >
       <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-        <span :key="h.id" :class="{'file-column' : !header.countable}">
+        <span :title="header.tooltip"  :key="h.id" :class="{'file-column' : !header.countable}">
           {{ header.text }}
         </span>
         <template v-if="hasFilterHeader">
@@ -82,12 +82,12 @@ export default {
       itemsPerPage: 15,
       headers: [
         { value: 'rowSelect', type: 'select', sortable: false },
-        { text: 'Mincode', value: 'mincode', sortable: false, align: 'start' },
-        { text: 'School Name', value: 'schoolName', sortable: false },
-        { text: 'TOT', value: 'studentCount', sortable: false, countable: true },
-        { text: 'LRG', value: 'lrgCount', sortable: false, filterName: 'Large', filterValue: PEN_REQ_BATCH_STATUS_CODES.HOLD_SIZE, countable: true, isFiltered: false },
-        { text: 'DPF', value: 'dpfCount', sortable: false, filterName: 'Duplicate File', filterValue: PEN_REQ_BATCH_STATUS_CODES.DUPLICATE, countable: true, isFiltered: false },
-        { text: 'Submission', value: 'submissionNumber', sortable: false },
+        { text: 'Mincode', value: 'mincode', sortable: false, align: 'start', tooltip: 'Mincode' },
+        { text: 'School Name', value: 'schoolName', sortable: false, tooltip: 'School Name' },
+        { text: 'TOT', value: 'studentCount', sortable: false, countable: true, tooltip: 'Total Requests' },
+        { text: 'LRG', value: 'lrgCount', sortable: false, filterName: 'Large', filterValue: PEN_REQ_BATCH_STATUS_CODES.HOLD_SIZE, countable: true, isFiltered: false, tooltip: 'Large File Request Count' },
+        { text: 'DPF', value: 'dpfCount', sortable: false, filterName: 'Duplicate File', filterValue: PEN_REQ_BATCH_STATUS_CODES.DUPLICATE, countable: true, isFiltered: false, tooltip: 'Duplicate File Request Count' },
+        { text: 'Submission', value: 'submissionNumber', sortable: false, tooltip: 'Submission Number' },
       ],
       loadingTable: true,
       pageNumber: 1,

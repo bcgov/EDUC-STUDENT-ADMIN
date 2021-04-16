@@ -23,6 +23,7 @@ export default {
       this.setSuccessAlert('Success! Your request to merge is completed.');
       this.isProcessing = false;
       this.mergeSagaComplete = true;
+      this.openStudentDetailsCurrentTab(this.mergedToStudent.studentID);
     },
     notifyDemergeSagaCompleteMessage() {
       this.setSuccessAlert('Success! Your request to demerge is completed.');
@@ -35,6 +36,10 @@ export default {
     openStudentDetails(studentID) {
       const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
       window.open(route.href, '_blank');
+    },
+    openStudentDetailsCurrentTab(studentID) {
+      const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
+      window.open(route.href,'_self');
     },
     getMergedToPen() {
       if (this.mergedToStudent) {

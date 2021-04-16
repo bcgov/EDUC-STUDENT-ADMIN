@@ -6,6 +6,8 @@
     :loadingTable="loadingTable || loadingFiles"
     pageCommands
     @select-filter="selectFilter"
+    :inProgressSagaIDs="inProgressSagaIDs"
+    @sagaCompleted="sagaCompleted"
   ></PenRequestBatchDataTable>
 </template>
 
@@ -34,6 +36,9 @@ export default {
     loadingFiles: {
       type: Boolean,
       required: true
+    },
+    inProgressSagaIDs: {
+      type: Array
     }
   },
   data () {
@@ -41,16 +46,16 @@ export default {
       itemsPerPage: 15,
       headers: [
         { value: 'rowSelect', type: 'select', sortable: false },
-        { text: 'Mincode', value: 'mincode', sortable: false, align: 'start' },
-        { text: 'School Name', value: 'schoolName', sortable: false },
-        { text: 'TOT', value: 'studentCount', sortable: false, countable: true },
-        { text: 'MCH', value: 'matchedCount', sortable: false, filterName: 'Matched', countable: true, isFiltered: false },
-        { text: 'NEW', value: 'newPenCount', sortable: false, filterName: 'New PENs', countable: true, isFiltered: false },
-        { text: 'ERR', value: 'errorCount', sortable: false, filterName: 'Errors', countable: true, isFiltered: false },
-        { text: 'REP', value: 'repeatCount', sortable: false, filterName: 'Repeated', countable: true, isFiltered: false },
-        { text: 'FIX', value: 'fixableCount', sortable: false, filterName: 'Fixable', countable: true, isFiltered: false },
-        { text: 'FLT', value: 'filteredCount', sortable: false, countable: true },
-        { text: 'Submission', value: 'submissionNumber', sortable: false },
+        { text: 'Mincode', value: 'mincode', sortable: false, align: 'start', tooltip: 'Mincode' },
+        { text: 'School Name', value: 'schoolName', sortable: false, tooltip: 'School Name' },
+        { text: 'TOT', value: 'studentCount', sortable: false, countable: true, tooltip: 'Total Requests' },
+        { text: 'MCH', value: 'matchedCount', sortable: false, filterName: 'Matched', countable: true, isFiltered: false, tooltip: 'Matched Requests' },
+        { text: 'NEW', value: 'newPenCount', sortable: false, filterName: 'New PENs', countable: true, isFiltered: false, tooltip: 'New PEN Issued' },
+        { text: 'ERR', value: 'errorCount', sortable: false, filterName: 'Errors', countable: true, isFiltered: false, tooltip: 'Requests with errors' },
+        { text: 'REP', value: 'repeatCount', sortable: false, filterName: 'Repeated', countable: true, isFiltered: false, tooltip: 'Repeated Requests' },
+        { text: 'FIX', value: 'fixableCount', sortable: false, filterName: 'Fixable', countable: true, isFiltered: false, tooltip: 'Fixed Requests' },
+        { text: 'FLT', value: 'filteredCount', sortable: false, countable: true, tooltip: 'Filtered Item Count' },
+        { text: 'Submission', value: 'submissionNumber', sortable: false, tooltip: 'Submission Number' },
       ],
       loadingTable: true,
       isFilterOperation: false,
@@ -184,6 +189,9 @@ export default {
         })
         .finally(() => (this.loadingTable = false));
     },
+    sagaCompleted(args) {
+      this.$emit('sagaCompleted', args);
+    }
   }
 };
 </script>

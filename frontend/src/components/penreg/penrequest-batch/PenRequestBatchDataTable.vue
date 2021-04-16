@@ -22,7 +22,7 @@
           :indeterminate="partialSelected" 
           @change="selectAllFiles"
         ></v-checkbox>
-        <span v-else :key="h.id" :class="{'file-column' : !header.countable}">
+        <span v-else :key="h.id" :class="{'file-column' : !header.countable}" :title="header.tooltip">
           {{ header.text }}
         </span>
         <template v-if="hasFilterHeader">
@@ -45,7 +45,31 @@
           @mouseleave="disableActions(props.item)"
         >
           <td v-for="header in props.headers" :key="header.id" :class="{[header.value]: true, 'select-column': header.type}">
-            <v-checkbox v-if="header.type === 'select'" class="file-checkbox" color="#606060" v-model="props.item.isSelected" @click.stop="handleFileCheckBoxClicked(props.item)"></v-checkbox>
+            <div v-if="header.type === 'select'">
+              <v-row no-gutters>
+                <v-checkbox
+                  class="file-checkbox"
+                  color="#606060"
+                  v-model="props.item.isSelected"
+                  :disabled="props.item.sagaInProgress"
+                  @click.stop="handleFileCheckBoxClicked(props.item)"
+                ></v-checkbox>
+                <v-tooltip bottom v-if="props.item.sagaInProgress">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                      color="warning"
+                      dark
+                      v-bind="attrs"
+                      v-on="on"
+                      class="pl-2"
+                    >
+                      info
+                    </v-icon>
+                  </template>
+                  <span>This batch is currently being updated and cannot be actioned. Please try again later.</span>
+                </v-tooltip>
+              </v-row>
+            </div>
             <div v-else :class="{'countable-column-div': header.countable}">
               <span v-if="header.countable" class="countable-column-data">{{ props.item[header.value] || '' }}</span>
               <span v-else-if="header.value==='submissionNumber'">
@@ -56,6 +80,7 @@
                 :class="{'file-action': hoveredOveredRowBatchID != props.item.penRequestBatchID}"
                 short 
                 text="More Info"
+                :disabled="props.item.sagaInProgress"
                 @click.native="clickMoreInfo"
               ></PrimaryButton>
               <span v-else>{{formatTableColumn(header.format, props.item[header.value]) }}</span>
@@ -100,6 +125,7 @@ import Pagination from '@/components/util/Pagination';
 import {PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
 import PrimaryButton from '@/components/util/PrimaryButton';
 import PenRequestBatchHistoryModal from './PenRequestBatchHistoryModal';
+import {mapState} from 'vuex';
 
 export default {
   name: 'PenRequestBatchDataTable',
@@ -133,6 +159,9 @@ export default {
       type: Boolean,
       default: false
     },
+    inProgressSagaIDs: {
+      type: Array
+    }
   },
   data () {
     return {
@@ -143,18 +172,8 @@ export default {
       hoveredOveredRow: null
     };
   },
-  watch: {
-    loadingTable: {
-      handler(v) {
-        if(!v) {
-          const files = this.penRequestBatchResponse.content;
-          this.allSelected = files?.length > 0 && files?.every(file => file.isSelected);
-          this.partialSelected = files?.some(file => file.isSelected) && !this.allSelected;
-        }
-      }
-    }
-  },
   computed: {
+    ...mapState('notifications', ['notification']),
     pageNumber: {
       get(){
         return this.batchPageNumber;
@@ -168,10 +187,43 @@ export default {
     },
     penRequestBatchStore() {
       return this.archived ? 'archivedRequestBatch' : 'penRequestBatch';
-    }, 
+    },
     selectedFiles() {
       return this.$store.state[this.penRequestBatchStore].selectedFiles;
     }
+  },
+  watch: {
+    loadingTable: {
+      handler(v) {
+        if(!v) {
+          const files = this.penRequestBatchResponse.content;
+          this.allSelected = files?.length > 0 && files?.every(file => file.isSelected);
+          this.partialSelected = files?.some(file => file.isSelected) && !this.allSelected;
+        }
+      }
+    },
+    notification(val) {
+      if (!val) {
+        return;
+      }
+      const notificationData = val;
+      if (notificationData.sagaName === 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_SAGA') {
+        this.inProgressSagaIDs.forEach(sagaObjects => {
+          if(sagaObjects.sagaID === notificationData.sagaId && notificationData.sagaStatus === 'COMPLETED') {
+            this.$emit('sagaCompleted', `Archive and Return completed for Batch Submission Number ${this.penRequestBatchResponse.content.find(x => x.penRequestBatchID === notificationData.penRequestBatchID).submissionNumber}`);
+          }
+        });
+      }
+      this.penRequestBatchResponse.content.forEach((x, index) => {
+        const pageHasObjectsRunningSagas = x.penRequestBatchID === notificationData.penRequestBatchID || x.penRequestBatchID === JSON.parse(notificationData?.eventPayload)?.penRequestBatchID;
+        if(pageHasObjectsRunningSagas && notificationData.sagaStatus === 'INITIATED') {
+          x.sagaInProgress = true;
+          this.selectItem(x);
+        } else if(pageHasObjectsRunningSagas && notificationData.sagaStatus === 'COMPLETED') {
+          this.penRequestBatchResponse.content.splice(index, 1);
+        }
+      });
+    },
   },
   methods: {
     formatTableColumn(format, column) {
@@ -216,7 +268,11 @@ export default {
       this.$store.commit(`${this.penRequestBatchStore}/setSelectedFiles`, newSelectedFiles);
     },
     selectItem(item) {
-      item.isSelected = !item.isSelected;
+      if(!item.sagaInProgress) {
+        item.isSelected = !item.isSelected;
+      } else {
+        item.isSelected = false;
+      }
       this.selectFile(item);
     },
     selectAllFiles(selected) {
