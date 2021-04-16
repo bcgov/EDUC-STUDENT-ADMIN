@@ -48,7 +48,7 @@
       <template v-slot:default>
         <thead>
         <tr>
-          <th v-for="(header, index) in headers" :key="index" :id="`${header.text}Header`">
+          <th :title="header.tooltip" v-for="(header, index) in headers" :key="index" :id="`${header.text}Header`">
             {{ header.text }}
           </th>
         </tr>
@@ -239,16 +239,16 @@ export default {
       ],
       headers: [
         { id: 'table-checkbox', type: 'select', sortable: false },
-        {text: 'Date', value: 'reportDate', key: 'date', sortable: false},
-        {text: 'Gr', value: 'enrolledGradeCode', key: 'grade', sortable: false},
-        {text: 'Mincode', value: 'mincode', key: 'mincode', sortable: false},
-        {text: 'Local ID', value: 'localStudentId', key: 'localId', sortable: false},
-        {text: 'Surname', value: 'legalSurname', key: 'surname', sortable: false},
-        {text: 'Given', value: 'legalGivenName', key: 'givenName', sortable: false},
-        {text: 'Middle', value: 'legalMiddleName', key: 'middleName', sortable: false},
-        {text: 'Gen', value: 'sex', key: 'gender', sortable: false},
-        {text: 'Postal Code', value: 'postal', key: 'postalCode', sortable: false},
-        {text: 'Birth Date', value: 'birthDate', key: 'dob', sortable: false}
+        {text: 'Date', value: 'reportDate', key: 'date', sortable: false, tooltip: 'Date of Activity'},
+        {text: 'Gr', value: 'enrolledGradeCode', key: 'grade', sortable: false, tooltip: 'Student Grade'},
+        {text: 'Mincode', value: 'mincode', key: 'mincode', sortable: false, tooltip: 'Mincode'},
+        {text: 'Local ID', value: 'localStudentId', key: 'localId', sortable: false, tooltip: 'Local ID'},
+        {text: 'Surname', value: 'legalSurname', key: 'surname', sortable: false, tooltip: 'Legal Surname'},
+        {text: 'Given', value: 'legalGivenName', key: 'givenName', sortable: false, tooltip: 'Legal Given Name'},
+        {text: 'Middle', value: 'legalMiddleName', key: 'middleName', sortable: false, tooltip: 'Legal Middle Name'},
+        {text: 'Gen', value: 'sex', key: 'gender', sortable: false, tooltip: 'Gender'},
+        {text: 'Postal Code', value: 'postal', key: 'postalCode', sortable: false, tooltip: 'Postal Code'},
+        {text: 'Birth Date', value: 'birthDate', key: 'dob', sortable: false, tooltip: 'Birth Date'}
       ],
       penToAdd: null,
       searchError: false,
@@ -305,18 +305,18 @@ export default {
         this.isSearchedPENMerged = false;
       } else {
         ApiService.apiAxios
-            .get(Routes['student'].ROOT_ENDPOINT + '/', {params: {pen: this.penToAdd}})
-            .then(response => {
-              this.studentRecords.push(response.data);
-              this.studentRecords = _.sortBy(this.studentRecords, o => o.pen);
-            })
-            .catch(error => {
-              console.log(error);
-              this.searchError = true;
-            })
-            .finally(() => {
-              this.penToAdd = null;
-            });
+          .get(Routes['student'].ROOT_ENDPOINT + '/', {params: {pen: this.penToAdd}})
+          .then(response => {
+            this.studentRecords.push(response.data);
+            this.studentRecords = _.sortBy(this.studentRecords, o => o.pen);
+          })
+          .catch(error => {
+            console.log(error);
+            this.searchError = true;
+          })
+          .finally(() => {
+            this.penToAdd = null;
+          });
       }
     },
     clearError() {
@@ -346,7 +346,7 @@ export default {
         this.isSearchedPENMerged = false;
         try {
           const studentResponse = await ApiService.apiAxios
-              .get(Routes['student'].ROOT_ENDPOINT + '/', {params: {pen: this.penToAdd}});
+            .get(Routes['student'].ROOT_ENDPOINT + '/', {params: {pen: this.penToAdd}});
           const student = studentResponse.data;
           this.studentDataMap.set(student.pen, student);
           if (student.statusCode === STUDENT_CODES.MERGED) {
@@ -380,9 +380,9 @@ export default {
     getMatchedRecordsByStudent,
     getSldData(pen) {
       ApiService.apiAxios
-          .get(Routes['sld'].STUDENT_HISTORY_URL + '/', {params: {pen: pen}})
-          .then(response => {
-            this.$set(this.sldData, pen, response.data);
+        .get(Routes['sld'].STUDENT_HISTORY_URL + '/', {params: {pen: pen}})
+        .then(response => {
+          this.$set(this.sldData, pen, response.data);
           this.updateSldRowDisplay(pen, true);
           this.updateSldTableRows(pen, 10);
         })

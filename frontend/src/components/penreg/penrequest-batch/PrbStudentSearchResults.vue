@@ -35,12 +35,12 @@
       @page-count="prbStudentSearchResponse.pageable.pageNumber = $event"
     >
       <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-        <span :key="h.id" class="top-column-item">
+        <span :title="header.topTooltip" :key="h.id" class="top-column-item">
           {{ header.topText }}
         </span>
-        <span :key="h.id" class="double-column-item">{{header.doubleText}}</span>
+        <span :title="header.doubleTooltip" :key="h.id" class="double-column-item">{{header.doubleText}}</span>
         <br :key="h.id" />
-        <span :key="h.id" class="bottom-column-item">{{ header.bottomText }}</span>
+        <span :title="header.bottomTooltip" :key="h.id" class="bottom-column-item">{{ header.bottomText }}</span>
       </template>
       <template v-slot:item="props">
         <tr :class="{'selected-record' : props.item.isSelected}" @click="selectItem(props.item)">
@@ -110,14 +110,14 @@ export default {
       itemsPerPage: 10,
       headers: [
         { id: 'table-checkbox', type: 'select', sortable: false },
-        { topText: 'Mincode', bottomText: 'Local ID', align: 'start', sortable: false, topValue: 'mincode', bottomValue: 'localID' },
-        { topText: 'Legal Surname', bottomText: 'Usual Surname', topValue: 'legalLastName', bottomValue: 'usualLastName', sortable: false },
-        { topText: 'Legal Given', bottomText: 'Usual Given', topValue: 'legalFirstName', bottomValue: 'usualFirstName', sortable: false },
-        { topText: 'Legal Middle', bottomText: 'Usual Middle', topValue: 'legalMiddleNames', bottomValue: 'usualMiddleNames', sortable: false },
-        { topText: 'DC', doubleText: 'Gen', bottomText: 'Postal Code', topValue: 'dc', doubleValue: 'genderCode', bottomValue: 'postalCode', sortable: false },
-        { topText: 'Birth Date', bottomText: 'Grade', topValue: 'dob', bottomValue: 'gradeCode', sortable: false },
-        { topText: 'Suggested PEN', bottomText: 'Submitted PEN', topValue: 'bestMatchPEN', bottomValue: 'submittedPen', sortable: false },
-        { topText: 'Submission', bottomText: 'Status', topValue: 'submissionNumber', bottomValue: 'penRequestBatchStudentStatusCode', sortable: false },
+        { topText: 'Mincode', bottomText: 'Local ID', align: 'start', sortable: false, topValue: 'mincode', bottomValue: 'localID', topTooltip: 'Mincode', bottomTooltip: 'Local ID' },
+        { topText: 'Legal Surname', bottomText: 'Usual Surname', topValue: 'legalLastName', bottomValue: 'usualLastName', sortable: false, topTooltip: 'Legal Surname', bottomTooltip: 'Legal Surname' },
+        { topText: 'Legal Given', bottomText: 'Usual Given', topValue: 'legalFirstName', bottomValue: 'usualFirstName', sortable: false, topTooltip: 'Legal Given Name', bottomTooltip: 'Usual Given Name' },
+        { topText: 'Legal Middle', bottomText: 'Usual Middle', topValue: 'legalMiddleNames', bottomValue: 'usualMiddleNames', sortable: false, topTooltip: 'Legal Middle Name', bottomTooltip: 'Usual Middle Name' },
+        { topText: 'DC', doubleText: 'Gen', bottomText: 'Postal Code', topValue: 'dc', doubleValue: 'genderCode', bottomValue: 'postalCode', sortable: false, topTooltip: 'Demographic Code', bottomTooltip: 'Postal Code', doubleTooltip: 'Gender' },
+        { topText: 'Birth Date', bottomText: 'Grade', topValue: 'dob', bottomValue: 'gradeCode', sortable: false, topTooltip: 'Birth Date', bottomTooltip: 'Grade Code' },
+        { topText: 'Suggested PEN', bottomText: 'Submitted PEN', topValue: 'bestMatchPEN', bottomValue: 'submittedPen', sortable: false, topTooltip: 'Suggested PEN', bottomTooltip: 'Submitted PEN' },
+        { topText: 'Submission', bottomText: 'Status', topValue: 'submissionNumber', bottomValue: 'penRequestBatchStudentStatusCode', sortable: false, topTooltip: 'Submission Number', bottomTooltip: 'Status' },
       ],
     };
   },

@@ -19,6 +19,7 @@
       <v-col :cols="this.listDetailMode? 6 : 12">
         <v-data-table
             id="dataTable"
+            class="batch-file-table"
             :key="selectedStudentHistoryId"
             v-model="selectedRecords"
             :headers="getHeaders()"
@@ -30,6 +31,11 @@
             item-key="studentHistoryID"
             @page-count="studentHistoryResp.pageable.pageNumber = $event"
         >
+          <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
+              <span :title="header.tooltip" :key="h.id" :class="{'file-column' : !header.countable}">
+                {{ header.text }}
+              </span>
+          </template>
           <template v-slot:item="props">
             <tr :class="tableRowClass(props.item)" @click="selectItem(props)">
               <td v-for="header in props.headers" :key="header.id" :class="header.id">
@@ -105,23 +111,23 @@ export default {
     return {
       itemsPerPage: 10,
       headers: [
-        {text: 'Date', sortable: false, value: 'createDate', format: this.formatDate},
-        {text: 'Changed by', sortable: false, value: 'createUser'},
-        {text: 'Activity', sortable: false, value: 'historyActivityLabel'},
-        {text: 'Mincode', sortable: false, value: 'mincode'},
-        {text: 'Local ID', sortable: false, value: 'localID'},
-        {text: 'Birth Date', sortable: false, value: 'dob', format: _.partialRight(formatDob,'uuuu-MM-dd')},
-        {text: 'Gen', sortable: false, value: 'genderCode'},
-        {text: 'Legal Name', sortable: false, value: 'legalName'},
-        {text: 'Postal', sortable: false, value: 'postalCode'},
-        {text: 'DC', sortable: false, value: 'demogCode'},
+        {text: 'Date', sortable: false, value: 'createDate', format: this.formatDate, tooltip: 'Activity Date'},
+        {text: 'Changed by', sortable: false, value: 'createUser', tooltip: 'Changed By'},
+        {text: 'Activity', sortable: false, value: 'historyActivityLabel', tooltip: 'Activity'},
+        {text: 'Mincode', sortable: false, value: 'mincode', tooltip: 'Mincode'},
+        {text: 'Local ID', sortable: false, value: 'localID', tooltip: 'Local ID'},
+        {text: 'Birth Date', sortable: false, value: 'dob', format: _.partialRight(formatDob,'uuuu-MM-dd'), tooltip: 'Birth Date'},
+        {text: 'Gen', sortable: false, value: 'genderCode', tooltip: 'Gender'},
+        {text: 'Legal Name', sortable: false, value: 'legalName', tooltip: 'Legal Name'},
+        {text: 'Postal', sortable: false, value: 'postalCode', tooltip: 'Postal Code'},
+        {text: 'DC', sortable: false, value: 'demogCode', tooltip: 'Demographic Code'},
       ],
       shortHeaders: [
-        {text: 'Date', sortable: false, value: 'createDate'},
-        {text: 'Changed by', sortable: false, value: 'createUser'},
-        {text: 'Activity', sortable: false, value: 'historyActivityLabel'},
-        {text: 'Mincode', sortable: false, value: 'mincode'},
-        {text: 'Local ID', sortable: false, value: 'localID'},
+        {text: 'Date', sortable: false, value: 'createDate', tooltip: 'Activity Date'},
+        {text: 'Changed by', sortable: false, value: 'createUser', tooltip: 'Changed By'},
+        {text: 'Activity', sortable: false, value: 'historyActivityLabel', tooltip: 'Activity'},
+        {text: 'Mincode', sortable: false, value: 'mincode', tooltip: 'Mincode'},
+        {text: 'Local ID', sortable: false, value: 'localID', tooltip: 'Local ID'},
       ],
       loading: true,
       selectedRecords: [],
@@ -340,30 +346,30 @@ export default {
         payload.statusCode = studentData.data.statusCode;
         payload.trueStudentID = studentData.data.trueStudentID;
         ApiService.apiAxios
-            .put(Routes['student'].ROOT_ENDPOINT + '/' + selectedHistoryRecord.studentID, payload, {params})
-            .then(() => {
-              this.setSuccessAlert('Success! The student details have been reverted.');
-              setTimeout(() => {
-                this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
-              }, 500);
-            })
-            .catch(error => {
-              console.error(error);
-              if (error?.response?.data?.code === 409) {
-                this.setFailureAlert(error?.response?.data?.message);
-              } else {
-                this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
-              }
-              this.isActionedInDifferentTab = true;
-            })
-            .finally(() => {
-              this.isRevertingStudent = false;
-              window.scroll({
-                top: 0,
-                left: 0,
-                behavior: 'smooth',
-              });
+          .put(Routes['student'].ROOT_ENDPOINT + '/' + selectedHistoryRecord.studentID, payload, {params})
+          .then(() => {
+            this.setSuccessAlert('Success! The student details have been reverted.');
+            setTimeout(() => {
+              this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
+            }, 500);
+          })
+          .catch(error => {
+            console.error(error);
+            if (error?.response?.data?.code === 409) {
+              this.setFailureAlert(error?.response?.data?.message);
+            } else {
+              this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
+            }
+            this.isActionedInDifferentTab = true;
+          })
+          .finally(() => {
+            this.isRevertingStudent = false;
+            window.scroll({
+              top: 0,
+              left: 0,
+              behavior: 'smooth',
             });
+          });
       } catch (e) {
         console.error(e);
         this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
@@ -449,7 +455,6 @@ export default {
 
 #dataTable /deep/ table {
   border-spacing: 0 0.25rem;
-  border-top: thin solid #d7d7d7;
   border-bottom: thin solid #d7d7d7;
 }
 

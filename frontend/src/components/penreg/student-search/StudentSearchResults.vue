@@ -25,15 +25,15 @@
             item-key="studentID"
             @page-count="studentSearchResponse.pageable.pageNumber = $event">
       <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-        <span :key="h.id" class="top-column-item">
+        <span :key="h.id" class="top-column-item" :title="header.topTooltip">
           {{ header.topText }}
         </span>
         <em :key="h.id" v-if="header.topValue === 'dob'" @click="updateSortParams(header.topValue)"
             :class="['dob-sort pl-2 v-icon v-data-table-header__icon fas active', headerSortParams.currentSortAsc ? 'fa-sort-down' : 'fa-sort-up']"
         ></em>
-        <span :key="h.id" class="double-column-item">{{header.doubleText}}</span>
+        <span :key="h.id" class="double-column-item" :title="header.doubleTooltip">{{header.doubleText}}</span>
         <br :key="h.id" />
-        <span :key="h.id" class="bottom-column-item">{{ header.bottomText }}</span>
+        <span :key="h.id" class="bottom-column-item" :title="header.bottomTooltip">{{ header.bottomText }}</span>
       </template>
       <template v-slot:item="props">
         <tr>
@@ -94,29 +94,35 @@ export default {
       itemsPerPage: 10,
       headers: [
         {id: 'table-checkbox', type: 'select', sortable: false},
-        {topText: 'PEN', align: 'start', sortable: false, topValue: 'pen'},
+        {topText: 'PEN', align: 'start', sortable: false, topValue: 'pen', topTooltip: 'Personal Education Number'},
         {
           topText: 'Legal Surname',
           bottomText: 'Usual Surname',
           topValue: 'legalLastName',
           bottomValue: 'usualLastName',
-          sortable: false
+          sortable: false,
+          topTooltip: 'Legal Surname',
+          bottomTooltip: 'Usual Surname'
         },
         {
           topText: 'Legal Given',
           bottomText: 'Usual Given',
           topValue: 'legalFirstName',
           bottomValue: 'usualFirstName',
-          sortable: false
+          sortable: false,
+          topTooltip: 'Legal Given',
+          bottomTooltip: 'Usual Given'
         },
         {
           topText: 'Legal Middle',
           bottomText: 'Usual Middle',
           topValue: 'legalMiddleNames',
           bottomValue: 'usualMiddleNames',
-          sortable: false
+          sortable: false,
+          topTooltip: 'Legal Middle',
+          bottomTooltip: 'Usual Middle'
         },
-        {topText: 'Postal Code', bottomText: 'Memo', topValue: 'postalCode', bottomValue: 'memo', sortable: false},
+        {topText: 'Postal Code', bottomText: 'Memo', topValue: 'postalCode', bottomValue: 'memo', sortable: false, topTooltip: 'Postal Code', bottomTooltip: 'Memo'},
         {
           topText: 'DC',
           doubleText: 'Gen',
@@ -124,10 +130,13 @@ export default {
           topValue: 'dc',
           doubleValue: 'genderCode',
           bottomValue: 'localID',
-          sortable: false
+          sortable: false,
+          topTooltip: 'Demographic Code',
+          doubleTooltip: 'Gender',
+          bottomTooltip: 'Local ID'
         },
-        {topText: 'Birth Date', bottomText: 'Grade', topValue: 'dob', bottomValue: 'gradeCode', sortable: false},
-        {topText: 'Mincode', bottomText: 'Twinned', topValue: 'mincode', bottomValue: 'twinned', sortable: false},
+        {topText: 'Birth Date', bottomText: 'Grade', topValue: 'dob', bottomValue: 'gradeCode', sortable: false, topTooltip: 'Birth Date', bottomTooltip: 'Grade'},
+        {topText: 'Mincode', bottomText: 'Twinned', topValue: 'mincode', bottomValue: 'twinned', sortable: false, topTooltip: 'Mincode', bottomTooltip: 'Twinned'},
       ],
       isStudentDataUpdated: false,
     };
