@@ -22,7 +22,7 @@
           :indeterminate="partialSelected" 
           @change="selectAllFiles"
         ></v-checkbox>
-        <span v-else :key="h.id" :class="{'file-column' : !header.countable}">
+        <span v-else :key="h.id" :class="{'file-column' : !header.countable}" :title="header.tooltip">
           {{ header.text }}
         </span>
         <template v-if="hasFilterHeader">

@@ -36,7 +36,7 @@
                 dense
         >
           <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-            <span :key="h.id || h.topText" class="top-column-item" :class="{'header-half-width': header.doubleText && !isFieldValueWarned(header.topValue)}">
+            <span :title="header.topTooltip" :key="h.id || h.topText" class="top-column-item" :class="{'header-half-width': header.doubleText && !isFieldValueWarned(header.topValue)}">
               {{ header.topText }}
             </span>
             <StudentValidationWarningHint 
@@ -46,7 +46,7 @@
               :validationWarnings="getValidationWarnings(header.topValue)"
             />
             
-            <span :key="h.id || h.doubleValue" class="double-column-item">{{header.doubleText}}</span>
+            <span :title="header.doubleTooltip" :key="h.id || h.doubleValue" class="double-column-item">{{header.doubleText}}</span>
             <StudentValidationWarningHint 
               v-if="header.doubleValue && isFieldValueWarned(header.doubleValue)" 
               :key="h.doubleValue" 
@@ -76,7 +76,7 @@
                 dense
         >
           <template v-for="h in bottomTableHeaders" v-slot:[`header.${h.value}`]="{ header }">
-            <span :key="h.id || h.text">
+            <span :title="header.tooltip" :key="h.id || h.text">
               {{ header.text }}
             </span>
             <StudentValidationWarningHint 
@@ -159,22 +159,22 @@ export default {
     return {
       headers: [
         { id: 'table-checkbox', type: 'select', sortable: false },
-        { topText: 'Mincode', topValue: 'mincode', sortable: false, format: formatMincode },
-        { topText: 'Legal Surname', topValue: 'legalLastName', sortable: false },
-        { topText: 'Legal Given', topValue: 'legalFirstName', sortable: false },
-        { topText: 'Legal Middle', topValue: 'legalMiddleNames', sortable: false },
-        { topText: 'DC', doubleText: 'Gen', topValue: 'dc', doubleValue: 'genderCode', sortable: false },
-        { topText: 'Birth Date', topValue: 'dob', sortable: false, format: partialRight(formatDob,'uuuuMMdd','uuuu/MM/dd') },
-        { topText: 'Sugg. PEN', topValue: 'bestMatchPEN', sortable: false, format: formatPen }
+        { topText: 'Mincode', topValue: 'mincode', sortable: false, format: formatMincode, topTooltip: 'Mincode' },
+        { topText: 'Legal Surname', topValue: 'legalLastName', sortable: false, topTooltip: 'Legal Surname' },
+        { topText: 'Legal Given', topValue: 'legalFirstName', sortable: false, topTooltip: 'Legal Given Name' },
+        { topText: 'Legal Middle', topValue: 'legalMiddleNames', sortable: false, topTooltip: 'Legal Middle Names' },
+        { topText: 'DC', doubleText: 'Gen', topValue: 'dc', doubleValue: 'genderCode', sortable: false, topTooltip: 'Demographic Code', doubleTooltip: 'Gender' },
+        { topText: 'Birth Date', topValue: 'dob', sortable: false, topTooltip: 'Birth Date', format: partialRight(formatDob,'uuuuMMdd','uuuu/MM/dd') },
+        { topText: 'Sugg. PEN', topValue: 'bestMatchPEN', topTooltip: 'Suggested PEN', sortable: false, format: formatPen }
       ],
       bottomTableHeaders: [
         { id: 'table-checkbox', type: 'select', sortable: false },
-        { text: 'Local ID', value: 'localID', sortable: false },
-        { text: 'Usual Surname', value: 'usualLastName', sortable: false },
-        { text: 'Usual Given', value: 'usualFirstName', sortable: false },
-        { text: 'Usual Middle', value: 'usualMiddleNames', sortable: false },
-        { text: 'Postal Code', value: 'postalCode', sortable: false, format: formatPostalCode },
-        { text: 'Grade', value: 'gradeCode', sortable: false },
+        { text: 'Local ID', value: 'localID', sortable: false, tooltip: 'Local ID' },
+        { text: 'Usual Surname', value: 'usualLastName', sortable: false, tooltip: 'Usual Surname' },
+        { text: 'Usual Given', value: 'usualFirstName', sortable: false, tooltip: 'Usual Given Name' },
+        { text: 'Usual Middle', value: 'usualMiddleNames', sortable: false, tooltip: 'Usual Middle Name' },
+        { text: 'Postal Code', value: 'postalCode', sortable: false, format: formatPostalCode, tooltip: 'Postal Code' },
+        { text: 'Grade', value: 'gradeCode', sortable: false, tooltip: 'Grade Code' },
         { text: '', value: '', sortable: false }
       ],
       validationWarningFields: null,

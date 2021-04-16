@@ -32,6 +32,11 @@
         hide-default-footer
         :loading="loadingTable"
       >
+        <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
+          <span :title="header.tooltip" :key="h.id" :class="{'file-column' : !header.countable}">
+            {{ header.text }}
+          </span>
+        </template>
         <template v-slot:item="props">
           <tr>
             <td v-for="header in props.headers" :key="header.id">
@@ -79,10 +84,10 @@ export default {
       isProcessing: false,
       penWebBlobs: [],
       headers: [
-        { text: 'Type', value: 'fileType', sortable: false, align: 'start' },
-        { text: 'Ins Date', value: 'insertDateTime', sortable: false, format: this.formateDate },
-        { text: 'Ins Time', value: 'insertDateTime', sortable: false, format: this.formateTime },
-        { text: 'Ext Date', value: 'extractDateTime', sortable: false, format: this.formateDate },
+        { text: 'Type', value: 'fileType', sortable: false, align: 'start', tooltip: 'Type' },
+        { text: 'Insert Date', value: 'insertDateTime', sortable: false, format: this.formateDate, tooltip: 'Insert Date' },
+        { text: 'Insert Time', value: 'insertDateTime', sortable: false, format: this.formateTime, tooltip: 'Insert Time' },
+        { text: 'Extract Date', value: 'extractDateTime', sortable: false, format: this.formateDate, tooltip: 'Extract Date' },
         { text: '', value: '', sortable: false},
       ],
     };
