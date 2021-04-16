@@ -385,17 +385,17 @@ export default {
       };
       this.unarchiving = true;
       ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/unarchiveFiles`, payload)
-          .then(response => {
-            const archivedNumber = response.data.length;
+        .then(response => {
+          const archivedNumber = response.data.length;
           const archivedMessage = `${archivedNumber} ${pluralize('file', archivedNumber)} ${pluralize('has', archivedNumber)} been unarchived.`;
           if(archivedNumber === fileNumber) {
             this.setSuccessAlert(`Success! ${archivedMessage}`);
           } else {
             this.setFailureAlert(`An error occurred while unarchiving PEN Request Files! ${archivedMessage} Please try again later.`);
           }
-            this.penRequestBatchResponse.content = this.penRequestBatchResponse.content.filter(file =>
-                response.data.some(archivedFile => archivedFile.penRequestBatchID === file.penRequestBatchID)
-            );
+          this.penRequestBatchResponse.content = this.penRequestBatchResponse.content.filter(file =>
+            response.data.some(archivedFile => archivedFile.penRequestBatchID === file.penRequestBatchID)
+          );
           this.setSelectedFiles();
         })
         .catch(error => {
