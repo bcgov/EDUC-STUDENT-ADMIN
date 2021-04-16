@@ -47,7 +47,16 @@
               <span class="double-column-item">{{props.item[header.doubleValue]}}</span>
               <br>
               <!-- if top and bottom value are the same, do not display the bottom value -->
-              <span class="bottom-column-item" v-if="props.item[header.bottomValue] !== props.item[header.topValue]">{{ props.item[header.bottomValue] }}</span>
+              <v-tooltip v-if="header.bottomValue === 'memo'" bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <span v-on="on" class="bottom-column-item">{{
+                      firstMemoChars(props.item[header.bottomValue])
+                    }}</span>
+                </template>
+                <span>{{props.item[header.bottomValue]}}</span>
+              </v-tooltip>
+              <span v-else-if="['usualLastName','usualFirstName','usualMiddleNames'].includes(header.bottomValue)" class="bottom-column-item" >{{getUsualName(props.item[header.bottomValue], props.item[header.topValue] )}}</span>
+              <span v-else class="bottom-column-item" >{{props.item[header.bottomValue]}}</span>
             </div>
           </td>
         </tr>
@@ -207,6 +216,17 @@ export default {
     formatDob,
     compare() {
       //TODO
+    },
+    firstMemoChars(memo) {
+      if(memo){
+        return memo.substring(0,25);
+      }
+    },
+    getUsualName(usual, legal) {
+      if(usual === legal){
+        return '';
+      }
+      return usual;
     },
     pagination() {
       const studentSearchKeys = Object.keys(this.searchCriteria).filter(k => (this.searchCriteria[k] && this.searchCriteria[k].length !== 0));
