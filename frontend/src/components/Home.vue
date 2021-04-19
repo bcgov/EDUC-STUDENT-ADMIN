@@ -35,7 +35,7 @@
               <v-card-title class="pa-0"><h3>Archived Requests Search</h3></v-card-title>
             </v-row>
             <v-row class="pt-4 px-8">
-              <v-col cols="6" class="pa-0">
+              <v-col cols="5" class="pa-0">
                 <v-text-field
                     id="requestsMincodeField"
                     background-color="white"
@@ -48,27 +48,13 @@
                     @keyup.enter="enterPushedForRequests()"
                 ></v-text-field>
               </v-col>
-              <v-col cols="4" class="pa-0 pl-1">
-                <v-text-field
-                    id="requestsDateField"
-                    background-color="white"
-                    dense
-                    outlined
-                    label="Enter date"
-                    v-model="loadDate"
-                    maxlength="10"
-                    :rules="loadDateRules"
-                    @keyup.enter="enterPushedForRequests()"
-                ></v-text-field>
+              <v-col cols="2" class="py-0 px-2">
+                <PrimaryButton id="requestsSearchBtn" :disabled="!isValidRequestsSearchInput" text="Search" width="100%"
+                               @click.native="searchRequests"></PrimaryButton>
               </v-col>
-              <v-col cols="2" class="py-0 pl-2">
-                <PrimaryButton
-                    id="requestsSearchBtn"
-                    :disabled="!isValidRequestsSearchInput"
-                    text="Search"
-                    width="100%"
-                    @click.native="searchRequests"
-                ></PrimaryButton>
+              <v-col class="py-0 px-2" cols="5">
+                <PrimaryButton id="advanceSearchBtn" text="Archived File Search"
+                               @click.native="archiveSearch"></PrimaryButton>
               </v-col>
             </v-row>
           </template>
@@ -95,7 +81,7 @@
                                @click.native="quickSearch"></PrimaryButton>
               </v-col>
               <v-col class="py-0 px-2" cols="5">
-                <PrimaryButton id="advanceSearchBtn" text="Advanced Student Search"
+                <PrimaryButton id="advanceSearchBtn" text="Student Search"
                                @click.native="advanceSearch"></PrimaryButton>
               </v-col>
             </v-row>
@@ -284,6 +270,9 @@ export default {
     },
     advanceSearch() {
       router.push(REQUEST_TYPES.studentSearch.path.basic);
+    },
+    archiveSearch() {
+      router.push(REQUEST_TYPES.archivedPENRequestBatch.path);
     },
     enterPushed() {
       if (this.pen && this.isValidPEN) {
