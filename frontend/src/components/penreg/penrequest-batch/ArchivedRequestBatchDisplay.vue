@@ -129,18 +129,20 @@
                     ></v-text-field>
                   </v-col>
                   <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                    <v-text-field
-                        id='dob'
-                        v-model="batchFileSearchParams.prbStudent.dob"
-                        tabindex="9"
-                        color="#003366"
-                        label="Birth Date"
-                        maxlength="10"
-                        @keyup.enter="enterPushed()"
-                        v-on:input="searchHasValues"
-                        :rules="validateField(batchFileSearchParams.prbStudent.dob, isValidDob, dobHint)"
-                        dense
-                    ></v-text-field>
+                    <FormattedTextField
+                      :id="'dob'"
+                      v-model="batchFileSearchParams.prbStudent.dob"
+                      :clearable="false"
+                      :filled="false"
+                      :format="formatDob"
+                      :label="'Birth Date'"
+                      :outlined="false"
+                      :rules="[validateDOB]"
+                      :tabindex="'9'"
+                      maxlength="8"
+                      @input="searchHasValues"
+                      @keyup.enter.native="enterPushed()"
+                    ></FormattedTextField>
                   </v-col>
                   <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
                     <v-text-field
@@ -362,6 +364,13 @@ export default {
         return true;
       } else {
         return this.dateHint;
+      }
+    },
+    validateDOB() {
+      if (!this.batchFileSearchParams.prbStudent.dob || isPresentDateAndAfter1900(this.batchFileSearchParams.prbStudent.dob, 'uuuuMMdd')) {
+        return true;
+      } else {
+        return this.dobHint;
       }
     },
     validateEndDate() {
