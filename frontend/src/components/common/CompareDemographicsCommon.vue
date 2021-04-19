@@ -239,7 +239,7 @@ export default {
       ],
       headers: [
         { id: 'table-checkbox', type: 'select', sortable: false },
-        {text: 'Date', value: 'reportDate', key: 'date', sortable: false, tooltip: 'Date of Activity'},
+        {text: 'Date', value: 'reportDate', key: 'date', sortable: false, tooltip: 'Activity Date'},
         {text: 'Gr', value: 'enrolledGradeCode', key: 'grade', sortable: false, tooltip: 'Student Grade'},
         {text: 'Mincode', value: 'mincode', key: 'mincode', sortable: false, tooltip: 'Mincode'},
         {text: 'Local ID', value: 'localStudentId', key: 'localId', sortable: false, tooltip: 'Local ID'},
