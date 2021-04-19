@@ -169,6 +169,11 @@ export const REQUEST_TYPES = Object.freeze(
       label: 'PEN Request Files',
       path: '/penRequestBatch',
     },
+    archivedPENRequestBatch: {
+      name: 'archivedRequestBatch',
+      label: 'Archived PEN Request Files',
+      path: '/archivedRequestBatch',
+    },
     failedRequestBatch: {
       name: 'failedRequestBatch',
       label: 'Failed PEN Request Files',
