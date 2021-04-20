@@ -258,9 +258,12 @@ export default {
           const archivedAndReturnedNumber = archiveAndReturn?.value?.data?.length;
           const totalArchivedNumber = archivedFixableNumber + archivedAndReturnedNumber;
           const archivedMessage = `Archive requests for ${totalArchivedNumber} PEN Request ${pluralize('File', totalArchivedNumber)} ${pluralize('has', totalArchivedNumber)} been initiated.`;
-          archiveAndReturn?.value?.data?.forEach(response => {
-            this.inProgressSagaIDs.push({sagaID: response.sagaId, penRequestBatchID: response.penRequestBatchID});
-          });
+          
+          if(archiveAndReturn?.value?.data) {
+            archiveAndReturn?.value?.data?.forEach(response => {
+              this.inProgressSagaIDs.push({sagaID: response.sagaId, penRequestBatchID: response.penRequestBatchID});
+            });
+          }
           if(totalArchivedNumber === fileNumber) {
             this.setSuccessAlert(`Success! ${archivedMessage}`);
           } else {
