@@ -23,7 +23,7 @@ const SagaTopics = [
   'PEN_SERVICES_SPLIT_PEN_SAGA_TOPIC',
   'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_TOPIC'];
 
-function subscribeSagaMessages(nats, topic, handleMessage) {
+async function subscribeSagaMessages(nats, topic, handleMessage) {
   const opts = {
     queue: config.get('messaging:queueGroupName'), //'student-admin-node-queue-group'
   };
