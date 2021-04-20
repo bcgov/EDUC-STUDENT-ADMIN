@@ -53,7 +53,7 @@
                                @click.native="searchRequests"></PrimaryButton>
               </v-col>
               <v-col class="py-0 px-2" cols="5">
-                <PrimaryButton id="advanceSearchBtn" text="Archived File Search"
+                <PrimaryButton class="advanceSearchButtonStyle" id="advanceSearchBtn" text="Advanced Archived Search"
                                @click.native="archiveSearch"></PrimaryButton>
               </v-col>
             </v-row>
@@ -81,7 +81,7 @@
                                @click.native="quickSearch"></PrimaryButton>
               </v-col>
               <v-col class="py-0 px-2" cols="5">
-                <PrimaryButton id="advanceSearchBtn" text="Student Search"
+                <PrimaryButton id="advanceSearchBtn" text="Advanced Student Search"
                                @click.native="advanceSearch"></PrimaryButton>
               </v-col>
             </v-row>
@@ -303,6 +303,11 @@ export default {
 <style scoped>
 #requestsSearchBtn, #quickSearchBtn, #advanceSearchBtn {
   height: 2.858em;
+}
+
+.advanceSearchButtonStyle{
+  padding-left: 12px !important;
+  padding-right: 12px !important;
 }
 
 .full-height {
