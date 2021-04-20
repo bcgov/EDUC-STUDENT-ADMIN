@@ -104,12 +104,14 @@ process.on('SIGINT', () => {
   NATS.close();
   server.close(() => {
     log.info('process terminated');
+    process.exit(0);
   });
 });
 process.on('SIGTERM', () => {
   NATS.close();
   server.close(() => {
     log.info('process terminated');
+    process.exit(0);
   });
 });
 //exports are purely for testing

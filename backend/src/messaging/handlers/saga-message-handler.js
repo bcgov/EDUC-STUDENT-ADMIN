@@ -1,10 +1,12 @@
 'use strict';
 const log = require('../../components/logger');
-const config= require('../../config/index');
+const config = require('../../config/index');
 const redisUtil = require('../../util/redis/redis-utils');
 const webSocket = require('../../socket/web-socket');
 const CONSTANTS = require('../../util/constants');
-
+const NATS = require('../message-pub-sub');
+const {StringCodec} = require('nats');
+const sc = StringCodec();
 const SagaTopics = [
   'PEN_REQUEST_RETURN_SAGA_TOPIC',
   'PEN_REQUEST_UNLINK_SAGA_TOPIC',
@@ -21,25 +23,26 @@ const SagaTopics = [
   'PEN_SERVICES_SPLIT_PEN_SAGA_TOPIC',
   'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_TOPIC'];
 
-function subscribeSagaMessages(nats, topic, handleMessage) {
+async function subscribeSagaMessages(nats, topic, handleMessage) {
   const opts = {
-    queue : config.get('messaging:queueGroupName')//'student-admin-node-queue-group'
+    queue: config.get('messaging:queueGroupName'), //'student-admin-node-queue-group'
   };
-
-  nats.subscribe(topic, opts, (msg, reply, subject, sid) => {
-    log.silly(`Received message, on ${subject} , Subscription Id ::  [${sid}], Reply to ::  [${reply}] :: Data ::`, JSON.parse(msg));
-    handleMessage(msg, subject, reply, nats);
-  });
+  const sub = nats.subscribe(topic, opts);
+  log.info(`${opts.queue},  listening to ${topic}`);
+  for await (const m of sub) {
+    handleMessage(m);
+  }
 }
 
-async function handleSagaMessage(msg, subject, replyTo,  nats) {
+async function handleSagaMessage(msg) {
+  log.debug(`Received message, on ${msg.subject} , Subscription Id ::  [${msg.sid}], Reply to ::  [${msg.reply}] :: Data ::`, JSON.parse(sc.decode(msg.data)));
   let isWebSocketBroadcastingRequired = false;
-  const event = JSON.parse(msg); // it is always a JSON string of Event object.
+  const event = JSON.parse(sc.decode(msg.data)); // it is always a JSON string of Event object.
   if ('COMPLETED' === event.sagaStatus || 'FORCE_STOPPED' === event.sagaStatus) {
     let recordFoundInRedis;
-    if (subject?.startsWith('PEN_REQUEST_BATCH')) {
+    if (msg.subject?.startsWith('PEN_REQUEST_BATCH')) {
       recordFoundInRedis = await redisUtil.removePenRequestBatchSagaRecordFromRedis(event);
-    } else if (subject?.startsWith('PEN_SERVICES')) {
+    } else if (msg.subject?.startsWith('PEN_SERVICES')) {
       recordFoundInRedis = await redisUtil.removePenServicesSagaRecordFromRedis(event);
     } else {
       recordFoundInRedis = await redisUtil.removeSagaRecordFromRedis(event);
@@ -52,9 +55,10 @@ async function handleSagaMessage(msg, subject, replyTo,  nats) {
     isWebSocketBroadcastingRequired = true;
   }
   if (isWebSocketBroadcastingRequired) {
-    nats.publish(CONSTANTS.EVENT_WS_TOPIC, msg);
+    await NATS.publishMessage(CONSTANTS.EVENT_WS_TOPIC, msg.data);
   }
 }
+
 
 function broadCastMessageToWebSocketClients(msg) {
   const connectedClients = webSocket.getWebSocketClients();
@@ -69,20 +73,26 @@ function broadCastMessageToWebSocketClients(msg) {
   }
 }
 
-function subscribeToWebSocketMessageTopic(nats) {
-  nats.subscribe(CONSTANTS.EVENT_WS_TOPIC, {}, (msg, reply, subject, sid) => {
-    log.silly(`Received message, on ${subject} , Subscription Id ::  [${sid}], Reply to ::  [${reply}] :: Data ::`, JSON.parse(msg));
-    broadCastMessageToWebSocketClients(msg);
-  });
+async function subscribeToWebSocketMessageTopic(nats) {
+
+  const opts = {};
+  const sub = nats.subscribe(CONSTANTS.EVENT_WS_TOPIC, opts);
+  log.info(` listening to ${CONSTANTS.EVENT_WS_TOPIC}`);
+  for await (const msg of sub) {
+    const dataStr = sc.decode(msg.data);
+    const data = JSON.parse(dataStr);
+    log.debug(`Received message, on ${msg.subject} , Subscription Id ::  [${msg.sid}], Reply to ::  [${msg.reply}] :: Data ::`, data);
+    broadCastMessageToWebSocketClients(dataStr);
+  }
 }
 
 
 const SagaMessageHandler = {
-  subscribe(nats) {
+  subscribe() {
     SagaTopics.forEach((topic) => {
-      subscribeSagaMessages(nats, topic, handleSagaMessage);
+      subscribeSagaMessages(NATS.getConnection(), topic, handleSagaMessage);
     });
-    subscribeToWebSocketMessageTopic(nats);
+    subscribeToWebSocketMessageTopic(NATS.getConnection());
   },
 
 };
