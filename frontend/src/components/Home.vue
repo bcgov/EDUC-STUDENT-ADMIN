@@ -53,14 +53,14 @@
                                @click.native="searchRequests"></PrimaryButton>
               </v-col>
               <v-col class="py-0 px-2" cols="5">
-                <PrimaryButton class="advanceSearchButtonStyle" id="advanceSearchBtn" text="Advanced Archived Search"
+                <PrimaryButton class="advanceSearchButtonStyle" id="advanceSearchBtn" text="Advanced Archive Search"
                                @click.native="archiveSearch"></PrimaryButton>
               </v-col>
             </v-row>
           </template>
           <template v-if="isValidStudentSearchUser">
             <v-row class="pt-4 px-8">
-              <v-card-title class="pa-0"><h3>Student Quick Search</h3></v-card-title>
+              <v-card-title class="pa-0"><h3>Student Search</h3></v-card-title>
             </v-row>
             <v-row class="pt-4 px-8">
               <v-col cols="5" class="pa-0">
@@ -306,8 +306,8 @@ export default {
 }
 
 .advanceSearchButtonStyle{
-  padding-left: 12px !important;
-  padding-right: 12px !important;
+  padding-left: 0.9em !important;
+  padding-right: 0.9em !important;
 }
 
 .full-height {
