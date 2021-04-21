@@ -231,7 +231,7 @@ export default {
     },
     tableRowClass(item) {
       let rowClass = [item.firstActiveFile ? 'first-active-file' : 'batch-file'];
-      item.isSelected && rowClass.push('selected-file');
+      (item.isSelected || item.viewMore) && rowClass.push('selected-file');
       return rowClass;
     },
     isUnarchived(item) {
@@ -302,6 +302,7 @@ export default {
       window.open(route.href, '_blank');
     },
     enableActions(item) {
+      this.hoveredOveredRow && (this.hoveredOveredRow.viewMore = false);
       this.hoveredOveredRowBatchID = item.penRequestBatchID;
     },
     disableActions() {
@@ -311,6 +312,7 @@ export default {
       event.stopPropagation();
       this.historyModalOpen = true;
       this.hoveredOveredRow = this.penRequestBatchResponse.content.find(batch => batch.penRequestBatchID === this.hoveredOveredRowBatchID);
+      this.hoveredOveredRow.viewMore = true;
     }
   }
 };

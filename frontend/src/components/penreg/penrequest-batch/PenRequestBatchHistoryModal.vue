@@ -31,7 +31,7 @@
         :items="penWebBlobs"
         hide-default-footer
         :loading="loadingTable"
-        items-per-page="1000"
+        :items-per-page="1000"
       >
         <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
           <span :title="header.tooltip" :key="h.id" :class="{'file-column' : !header.countable}">
@@ -229,6 +229,7 @@ export default {
 
   #fileHistoryTable /deep/ table td{
     text-align: center !important;
+    border-bottom: none !important;
   }
 
   #fileHistoryTable /deep/ table td:nth-child(2),
