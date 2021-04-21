@@ -264,7 +264,7 @@ async function addSagaStatusToRecords(records, recordIdName, getSagaEvents) {
 
 function forwardGet(apiName, urlKey, extraPath) {
   return async function forwardGetHandler(req, res) {
-    const token = getBackendToken(req, res);
+    const token = getBackendToken(req);
     try {
       const params = {
         params: req.query
