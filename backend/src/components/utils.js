@@ -271,8 +271,8 @@ function forwardGet(apiName, urlKey, extraPath) {
       };
 
       const url = config.get(urlKey);
-      const penWebBlob = await getData(token, extraPath ? `${url}${extraPath}` : url, params);
-      return res.status(200).json(penWebBlob);
+      const data = await getData(token, extraPath ? `${url}${extraPath}` : url, params);
+      return res.status(200).json(data);
     } catch (e) {
       logApiError(e, 'forwardGet', `Error getting ${apiName}.`);
       return errorResponse(res);
