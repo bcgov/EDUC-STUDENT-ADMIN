@@ -262,6 +262,24 @@ async function addSagaStatusToRecords(records, recordIdName, getSagaEvents) {
   });
 }
 
+function forwardGet(apiName, urlKey, extraPath) {
+  return async function forwardGetHandler(req, res) {
+    const token = getBackendToken(req, res);
+    try {
+      const params = {
+        params: req.query
+      };
+
+      const url = config.get(urlKey);
+      const penWebBlob = await getData(token, extraPath ? `${url}${extraPath}` : url, params);
+      return res.status(200).json(penWebBlob);
+    } catch (e) {
+      logApiError(e, 'forwardGet', `Error getting ${apiName}.`);
+      return errorResponse(res);
+    }
+  }
+}
+
 const utils = {
   // Returns OIDC Discovery values
   async getOidcDiscovery() {
@@ -471,7 +489,8 @@ const utils = {
   getPaginatedListForSCGroups,
   deleteData,
   deleteDataWithBody,
-  addSagaStatusToRecords
+  addSagaStatusToRecords,
+  forwardGet
 };
 
 module.exports = utils;
