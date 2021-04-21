@@ -31,6 +31,7 @@
         :items="penWebBlobs"
         hide-default-footer
         :loading="loadingTable"
+        items-per-page="1000"
       >
         <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
           <span :title="header.tooltip" :key="h.id" :class="{'file-column' : !header.countable}">
@@ -166,10 +167,10 @@ export default {
         }
       };
       ApiService.apiAxios
-        .get(Routes.penRequestBatch.SOURCE_URL, req)
+        .get(Routes.penRequestBatch.SOURCE_METADATA_URL, req)
         .then(response => {
           if (response.data) {
-            this.penWebBlobs = response.data;
+            this.penWebBlobs = _.orderBy(response.data, ['insertDateTime'], ['desc']);
           }
         })
         .catch(error => {
@@ -203,10 +204,10 @@ export default {
         });
     },
     formateDate(dateTime) {
-      return formatDateTime(dateTime,'uuuu-MM-dd\'T\'HH:mm:ss','uuuu/MM/dd');
+      return formatDateTime(dateTime,'uuuu-MM-dd\'T\'HH:mm:ss','uuuu/MM/dd', true);
     },
     formateTime(dateTime, timeFormat = 'HH:mm:ss') {
-      return formatDateTime(dateTime,'uuuu-MM-dd\'T\'HH:mm:ss', timeFormat);
+      return formatDateTime(dateTime,'uuuu-MM-dd\'T\'HH:mm:ss', timeFormat, true);
     }
   }
 };
