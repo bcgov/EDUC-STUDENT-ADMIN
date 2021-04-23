@@ -74,7 +74,6 @@
 import ApiService from '../../common/apiService';
 import { Routes, Statuses } from '../../utils/constants';
 import {formatDob} from '@/utils/format';
-import {mapMutations} from 'vuex';
 export default {
   name: 'penDemographicsCard',
   props: {

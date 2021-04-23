@@ -68,7 +68,6 @@ export default {
     addAlertNotification(state, text) {
       state.alertNotificationQueue.push(text);
       if (!state.alertNotification) {
-        //state.alertNotificationText = state.alertNotificationQueue.shift();
         state.alertNotification = true;
       }
     }
