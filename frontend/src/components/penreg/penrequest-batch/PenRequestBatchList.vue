@@ -7,7 +7,6 @@
     pageCommands
     @select-filter="selectFilter"
     :inProgressSagaIDs="inProgressSagaIDs"
-    @sagaCompleted="sagaCompleted"
   ></PenRequestBatchDataTable>
 </template>
 
@@ -17,10 +16,11 @@ import PenRequestBatchDataTable from './PenRequestBatchDataTable';
 import ApiService from '../../../common/apiService';
 import {Routes, PEN_REQ_BATCH_STATUS_CODES} from '../../../utils/constants';
 import filtersMixin from '@/mixins/filtersMixin';
+import alertMixin from '../../../mixins/alertMixin';
 
 export default {
   name: 'PenRequestBatchList',
-  mixins: [filtersMixin],
+  mixins: [alertMixin, filtersMixin],
   components: {
     PenRequestBatchDataTable,
   },
@@ -185,12 +185,9 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          this.$emit('failure-alert', 'An error occurred while loading the file list. Please try again later.');
+          this.setFailureAlert('An error occurred while loading the file list. Please try again later.')
         })
         .finally(() => (this.loadingTable = false));
-    },
-    sagaCompleted(args) {
-      this.$emit('sagaCompleted', args);
     }
   }
 };

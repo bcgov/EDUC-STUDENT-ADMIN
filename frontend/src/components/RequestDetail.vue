@@ -10,17 +10,6 @@
                   color="blue"
                   :active="loadingPen || loadingClaimAction"
           ></v-progress-linear>
-          <v-alert
-                  :value="claimError"
-                  dense
-                  text
-                  dismissible
-                  outlined
-                  transition="scale-transition"
-                  class="bootstrap-error"
-          >
-            {{ claimErrorMessage }}
-          </v-alert>
         </v-card>
       </v-row>
       <v-row>
@@ -118,17 +107,6 @@
                     color="blue"
                     :active="loadingPen"
             ></v-progress-linear>
-            <v-alert
-              :value="documentError"
-              dense
-              text
-              dismissible
-              outlined
-              transition="scale-transition"
-              class="bootstrap-error"
-            >
-              {{ documentErrorMessage }}
-            </v-alert>
             <v-data-table
                     :headers="headers"
                     :items="filteredResults"
@@ -197,6 +175,7 @@ import { humanFileSize } from '../utils/file';
 import {AccessEnabledForUser} from '../common/role-based-access';
 import router from '../router';
 import PrimaryButton from './util/PrimaryButton';
+import alertMixin from '../mixins/alertMixin';
 export default {
   name: 'requestDetail',
   props: {
@@ -225,6 +204,7 @@ export default {
     PrimaryButton,
     Chat
   },
+  mixins: [alertMixin],
   data () {
     return {
       headers: [
@@ -250,9 +230,7 @@ export default {
       activeTab: 0,
       documentTypes: [],
       oldDocumentTypeCode: '',
-      documentError: false,
       documentErrorMessage: '',
-      claimError: false,
       claimErrorMessage: '',
       isClaimActionEnabledForUser: false,
       isDocumentTypeChangeEnabledForUser:false,
@@ -355,7 +333,6 @@ export default {
     },
     claimRequest() {
       this.loadingClaimAction = true;
-      this.claimError = false;
       this.claimErrorMessage='';
       this.disableActionButtons();
       let body = this.prepPut(this.requestId, this.request);
@@ -371,8 +348,8 @@ export default {
           this.request.reviewer = response.data.reviewer;
         })
         .catch(error => {
-          this.claimError = true;
           this.claimErrorMessage=`There was an error trying to claim the ${this.requestTypeLabel} Request, please navigate to the list and select this ${this.requestTypeLabel} Request again.`;
+          this.setFailureAlert(this.claimErrorMessage);
           console.log(error);
         })
         .finally(() => {
@@ -390,8 +367,8 @@ export default {
       router.push({ name: REQUEST_TYPES[this.requestType].label, params: { requestType: this.requestType } });
     },
     setDocumentError(message) {
-      this.documentError = true;
       this.documentErrorMessage = message;
+      this.setFailureAlert(this.documentErrorMessage);
     },
     setDocumentTypeLabel(document) {
       const documentTypeInfo = this.$store.state[this.requestType].documentTypes.find(typeInfo =>

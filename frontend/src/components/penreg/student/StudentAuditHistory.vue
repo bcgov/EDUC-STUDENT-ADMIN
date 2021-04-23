@@ -1,10 +1,5 @@
 <template>
   <div id="auditHistory" class="px-0 pt-3 ma-0" style="width: 100%;">
-    <v-row>
-      <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"
-                    :timeoutMs="2000"></AlertMessage>
-      <AlertMessage v-model="studentUpdateAlert" :alertMessage="studentUpdateAlertMessage" :alertType="studentUpdateAlertType" ></AlertMessage>
-    </v-row>
     <v-progress-linear
         indeterminate
         color="blue"
@@ -79,18 +74,16 @@
 <script>
 import {mapActions, mapGetters, mapState} from 'vuex';
 import {REQUEST_TYPES, Routes} from '@/utils/constants';
-import AlertMessage from '../../util/AlertMessage';
 import StudentAuditHistoryDetail from '../student/StudentAuditHistoryDetailPanel';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
 import {formatDob, formatPen} from '@/utils/format';
 import {groupBy, mapValues} from 'lodash';
 import router from '@/router';
-import studentUpdateAlertMixin from '../../../mixins/student-update-alert-mixin';
 
 export default {
   name: 'StudentAuditHistory',
-  mixins: [alertMixin, studentUpdateAlertMixin],
+  mixins: [alertMixin],
   props: {
     student: {
       type: Object,
@@ -98,7 +91,6 @@ export default {
     }
   },
   components: {
-    AlertMessage,
     StudentAuditHistoryDetail,
   },
   data() {
@@ -340,30 +332,30 @@ export default {
         payload.statusCode = studentData.data.statusCode;
         payload.trueStudentID = studentData.data.trueStudentID;
         ApiService.apiAxios
-            .put(Routes['student'].ROOT_ENDPOINT + '/' + selectedHistoryRecord.studentID, payload, {params})
-            .then(() => {
-              this.setSuccessAlert('Success! The student details have been reverted.');
-              setTimeout(() => {
-                this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
-              }, 500);
-            })
-            .catch(error => {
-              console.error(error);
-              if (error?.response?.data?.code === 409) {
-                this.setFailureAlert(error?.response?.data?.message);
-              } else {
-                this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
-              }
-              this.isActionedInDifferentTab = true;
-            })
-            .finally(() => {
-              this.isRevertingStudent = false;
-              window.scroll({
-                top: 0,
-                left: 0,
-                behavior: 'smooth',
-              });
+          .put(Routes['student'].ROOT_ENDPOINT + '/' + selectedHistoryRecord.studentID, payload, {params})
+          .then(() => {
+            this.setSuccessAlert('Success! The student details have been reverted.');
+            setTimeout(() => {
+              this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
+            }, 500);
+          })
+          .catch(error => {
+            console.error(error);
+            if (error?.response?.data?.code === 409) {
+              this.setFailureAlert(error?.response?.data?.message);
+            } else {
+              this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
+            }
+            this.isActionedInDifferentTab = true;
+          })
+          .finally(() => {
+            this.isRevertingStudent = false;
+            window.scroll({
+              top: 0,
+              left: 0,
+              behavior: 'smooth',
             });
+          });
       } catch (e) {
         console.error(e);
         this.setFailureAlert('Error! The student details could not be reverted, Please try again later.');
@@ -417,7 +409,7 @@ export default {
           this.isStudentUpdated = true;
           this.studentAuditHistoryDetailKey += 1;
           this.$emit('isStudentUpdated', true);
-          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+          this.setWarningAlert(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
         } else if (student?.pen && student?.pen === this.studentHistoryResp?.content[0]?.pen && !this.isActionedInDifferentTab) {
           this.isActionedInDifferentTab = true; // make it true for future messages.
         }

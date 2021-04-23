@@ -14,6 +14,9 @@ export default {
     stickyInfoPanelHeight: null,
     mincodeSchoolNames: new Map(),
     districtCodes: new Set(),
+    alertNotificationText: '',
+    alertNotificationQueue: [],
+    alertNotification: false
   },
   getters: {
     request: state => state.request,
@@ -56,6 +59,19 @@ export default {
         state.districtCodes.add(element.mincode?.substring(0, 3));
       });
     },
+    setAlertNotificationText: (state, alertNotificationText) => {
+      state.alertNotificationText = alertNotificationText;
+    },
+    setAlertNotification: (state, alertNotification) => {
+      state.alertNotification = alertNotification;
+    },
+    addAlertNotification(state, text) {
+      state.alertNotificationQueue.push(text);
+      if (!state.alertNotification) {
+        //state.alertNotificationText = state.alertNotificationQueue.shift();
+        state.alertNotification = true;
+      }
+    }
   },
   actions: {
     async getCodes({ commit, state}) {

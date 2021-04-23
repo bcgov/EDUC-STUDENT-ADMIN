@@ -1,10 +1,5 @@
 <template>
   <div id="sldHistory" class="px-0 pt-3 ma-0" style="width: 100%;">
-    <v-row>
-      <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"
-                    :timeoutMs="2000"></AlertMessage>
-      <AlertMessage v-model="studentUpdateAlert" :alertMessage="studentUpdateAlertMessage" :alertType="studentUpdateAlertType" ></AlertMessage>
-    </v-row>
     <v-row no-gutters>
       <v-col cols="11">
       <div id="studentInfo" class="px-1 pt-2 pb-5"><strong class="pr-3">{{ formatPen(student.pen) }}</strong>
@@ -65,17 +60,15 @@
 
 <script>
 import {Routes} from '@/utils/constants';
-import AlertMessage from '../../util/AlertMessage';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
 import CompareDemographicModal from '@/components/common/CompareDemographicModal';
-import studentUpdateAlertMixin from '@/mixins/student-update-alert-mixin';
 import {mapGetters} from 'vuex';
 
 export default {
   name: 'StudentSLDHistory',
-  mixins: [alertMixin, studentUpdateAlertMixin],
+  mixins: [alertMixin],
   props: {
     student: {
       type: Object,
@@ -83,7 +76,6 @@ export default {
     }
   },
   components: {
-    AlertMessage,
     CompareDemographicModal
   },
   data() {
@@ -119,7 +111,7 @@ export default {
             if (student?.pen && student?.pen === this.student?.pen) {
               this.isStudentUpdated = true;
               this.$emit('isStudentUpdated', true);
-              this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+              this.setWarningAlert(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
             }
           } catch (e) {
             console.error(e);

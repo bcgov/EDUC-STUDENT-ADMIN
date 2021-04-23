@@ -213,17 +213,6 @@
               color="blue"
               :active="searchLoading && !prbStudentSearchResponse"
             ></v-progress-linear>
-            <v-alert
-              v-model="alert"
-              dense
-              text
-              dismissible
-              outlined
-              transition="scale-transition"
-              :class="`${alertType} flex-grow-1 mx-3`"
-            >
-              {{ alertMessage }}
-            </v-alert>
             <v-row v-if="prbStudentSearchResponse" no-gutters class="py-2" style="background-color:white;">
               <v-divider class="mx-3 header-divider"/>
             </v-row>

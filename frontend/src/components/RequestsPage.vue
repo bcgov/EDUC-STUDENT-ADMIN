@@ -1,3 +1,4 @@
+<!--Depracated -->
 <template>
   <v-container fluid class="my-10 px-16">
     <v-tabs

@@ -12,6 +12,7 @@
 import {mapGetters, mapMutations, mapState} from 'vuex';
 import PenRequestBatchDataTable from './PenRequestBatchDataTable';
 import ApiService from '../../../common/apiService';
+import alertMixin from '@/mixins/alertMixin';
 import {
   PEN_REQ_BATCH_STATUS_CODES,
   Routes,
@@ -25,6 +26,7 @@ import {deepCloneObject} from '@/utils/common';
 
 export default {
   name: 'ArchivedRequestBatchList',
+  mixins: [alertMixin],
   components: {
     PenRequestBatchDataTable,
   },
@@ -117,8 +119,8 @@ export default {
       );
       searchCriteriaList.push(...compact(Object.entries(this.searchParams).filter(([paramName]) =>
         paramName !== 'prbStudent'
-        ).map(([paramName, paramValue]) =>
-          this.getSearchParam(paramName, paramValue))
+      ).map(([paramName, paramValue]) =>
+        this.getSearchParam(paramName, paramValue))
       ));
 
       const statusCodeList = [PEN_REQ_BATCH_STATUS_CODES.ARCHIVED, PEN_REQ_BATCH_STATUS_CODES.REARCHIVED].join();
@@ -180,7 +182,7 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          this.$emit('failure-alert', 'An error occurred while loading the file list. Please try again later.');
+          this.setFailureAlert('An error occurred while loading the file list. Please try again later.');
         })
         .finally(() => {
           this.loadingTable = false;

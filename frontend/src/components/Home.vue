@@ -1,16 +1,5 @@
 <template>
   <div>
-    <v-alert
-        :value="searchError"
-        class="bootstrap-error"
-        dense
-        dismissible
-        outlined
-        text
-        transition="scale-transition"
-    >
-      {{ searchErrorMessage }}
-    </v-alert>
     <v-row class="pb-6">
       <v-col cols="8" v-if="isValidPenRequestBatchUser">
         <DashboardTable v-if="!isLoadingBatch" requestType="School" colour="#CED6E2"
@@ -153,6 +142,7 @@ import ApiService from '../common/apiService';
 import PrimaryButton from './util/PrimaryButton';
 import router from '../router';
 import {isPresentDateAndAfter1900, isValidMincode, isValidPEN} from '@/utils/validation';
+import alertMixin from '../mixins/alertMixin';
 
 export default {
   name: 'home',
@@ -160,6 +150,7 @@ export default {
     PrimaryButton,
     DashboardTable
   },
+  mixins: [alertMixin],
   data () {
     return {
       REQUEST_TYPES: REQUEST_TYPES,
@@ -174,7 +165,6 @@ export default {
         { title: 'Archived' },
         { title: 'Active' }
       ],
-      searchError: false,
       searchErrorMessage: 'PEN not found in Student table',
       penRules: [ v => (!v || isValidPEN(v)) || this.penHint],
       penHint: 'Fails check-digit test',
@@ -271,7 +261,6 @@ export default {
   },
   methods: {
     quickSearch() {
-      this.searchError = false;
       ApiService.apiAxios
         .get(Routes['student'].ROOT_ENDPOINT + '/', {params: {pen: this.pen}})
         .then(response => {
@@ -279,7 +268,7 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          this.searchError = true;
+          this.setFailureAlert(this.searchErrorMessage);
         });
     },
     advanceSearch() {

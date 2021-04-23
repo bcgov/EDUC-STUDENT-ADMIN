@@ -1,6 +1,5 @@
 <template>
     <v-container fluid class="fill-height px-0 mb-4">
-        <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000"></AlertMessage>
         <v-row no-gutters class="list-actions py-2 px-4 d-flex justify-end" style="background-color:white;">
           <v-col class="d-flex justify-end">
             <PrimaryButton id="review-file-action" class="ml-2" :disabled="!fileChecked()" text="Review" :loading="isProcessing" @click.native="reviewFile"></PrimaryButton>
@@ -78,7 +77,6 @@
 import {Routes, PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
 import PrimaryButton from '../../util/PrimaryButton';
 import alertMixin from '../../../mixins/alertMixin';
-import AlertMessage from '../../util/AlertMessage';
 import ApiService from '@/common/apiService';
 import moment from 'moment';
 import PrbFileModal from '@/components/penreg/penrequest-batch/PrbFileModal';
@@ -90,7 +88,6 @@ export default {
   components: {
     PrbFileModal,
     PrimaryButton,
-    AlertMessage,
     ConfirmationDialog
   },
   mixins: [alertMixin],

@@ -19,17 +19,6 @@
       <v-card-title class="headline">
         Request Info
       </v-card-title>
-      <v-alert
-              v-model="macroAlert"
-              dense
-              text
-              dismissible
-              outlined
-              transition="scale-transition"
-              class="bootstrap-error"
-      >
-        {{ macroAlertMessage }}
-      </v-alert>
       <v-card-text id="requestInfoDialogCardText" class="pb-0">
         <v-textarea
                 id="requestInfoDialogTextArea"
@@ -85,8 +74,11 @@ import PrimaryButton from '../../../util/PrimaryButton';
 import { replaceMacro } from '../../../../utils/macro';
 import { mapState } from 'vuex';
 import ConfirmationDialog from '../../../util/ConfirmationDialog';
+import alertMixin from '@/mixins/alertMixin';
+
 export default {
   name: 'InfoDialog',
+  mixins: [alertMixin],
   components: {
     PrimaryButton,
     ConfirmationDialog
@@ -105,7 +97,6 @@ export default {
     return {
       requestInfoDialogOpen: false,
       requestInfoDialogText: '',
-      macroAlert: false,
       macroAlertMessage: 'Insufficient space remaining for this macro'
     };
   },
@@ -133,9 +124,8 @@ export default {
     },
     insertMacroText(macroText) {
       if(this.requestInfoDialogText?.length + macroText?.length > 4000) {
-        this.macroAlert = true;
+        this.setFailureAlert(this.macroAlertMessage);
       } else {
-        this.macroAlert = false;
         if(this.requestInfoDialogText){
           const element = this.$refs.requestInfoDialogTextArea.$refs.input;
           let cursorLocation = element.selectionEnd;
@@ -148,9 +138,8 @@ export default {
     macroHotKey() {
       const replacedText = replaceMacro(this.requestInfoDialogText, this.studentInfoMacros);
       if(replacedText?.length > 4000) {
-        this.macroAlert = true;
+        this.setFailureAlert(this.macroAlertMessage);
       } else {
-        this.macroAlert = false;
         this.requestInfoDialogText = replacedText;
       }
     }

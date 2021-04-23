@@ -7,14 +7,6 @@
             :active="loadingDemographics"
     ></v-progress-linear>
     <v-alert
-      :value="studentError"
-      width="100%"
-      outlined
-      transition="scale-transition"
-      class="bootstrap-error">
-      There was an error while attempting to load student demographics.
-    </v-alert>
-    <v-alert
       :value="showDemographics"
       width="100%"
       outlined
@@ -82,6 +74,7 @@
 import ApiService from '../../common/apiService';
 import { Routes, Statuses } from '../../utils/constants';
 import {formatDob} from '@/utils/format';
+import {mapMutations} from 'vuex';
 export default {
   name: 'penDemographicsCard',
   props: {
@@ -93,7 +86,7 @@ export default {
   data () {
     return {
       showDemographics:false,
-      studentError: false,
+      studentErrorMessage: 'There was an error while attempting to load student demographics.',
       loadingDemographics:false,
       student: {
         legalFirstName: null,
@@ -127,7 +120,7 @@ export default {
             this.student = demographicsResponse.data;
           })
           .catch(error => {
-            this.studentError = true;
+            this.setFailureAlert(this.studentErrorMessage);
             console.log(error);
           })
           .finally(()=>{this.loadingDemographics = false;});
