@@ -185,7 +185,7 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          this.setFailureAlert('An error occurred while loading the file list. Please try again later.')
+          this.setFailureAlert('An error occurred while loading the file list. Please try again later.');
         })
         .finally(() => (this.loadingTable = false));
     }
