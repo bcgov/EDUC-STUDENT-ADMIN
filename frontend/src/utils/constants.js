@@ -24,6 +24,7 @@ let object = {
     STATS_URL: penRequestBatchRoot + '/stats',
     FILES_URL: penRequestBatchRoot,
     SOURCE_URL: penRequestBatchRoot + '/source',
+    SOURCE_METADATA_URL: penRequestBatchRoot + '/sourceMetadata',
     STUDENTS_SEARCH_URL: penRequestBatchRoot + '/students',
     STUDENT_STATUS_CODE_URL: penRequestBatchRoot + '/studentStatusCodes',
     MATCH_OUTCOME_URL: penRequestBatchRoot + '/matchOutcome',
@@ -168,6 +169,11 @@ export const REQUEST_TYPES = Object.freeze(
       name: 'penRequestBatch',
       label: 'PEN Request Files',
       path: '/penRequestBatch',
+    },
+    archivedPENRequestBatch: {
+      name: 'archivedRequestBatch',
+      label: 'Archived PEN Request Files',
+      path: '/archivedRequestBatch',
     },
     failedRequestBatch: {
       name: 'failedRequestBatch',

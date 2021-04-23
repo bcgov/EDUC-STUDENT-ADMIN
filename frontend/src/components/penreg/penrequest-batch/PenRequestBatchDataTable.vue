@@ -22,7 +22,7 @@
           :indeterminate="partialSelected" 
           @change="selectAllFiles"
         ></v-checkbox>
-        <span v-else :key="h.id" :class="{'file-column' : !header.countable}">
+        <span v-else :key="h.id" :class="{'file-column' : !header.countable}" :title="header.tooltip">
           {{ header.text }}
         </span>
         <template v-if="hasFilterHeader">
@@ -218,11 +218,11 @@ export default {
         });
       }
       this.penRequestBatchResponse.content.forEach((x, index) => {
-        const pageHasObjectsRunningSagas = x.penRequestBatchID === notificationData.penRequestBatchID || x.penRequestBatchID === JSON.parse(notificationData?.eventPayload)?.penRequestBatchID;
+        const pageHasObjectsRunningSagas = x.penRequestBatchID === notificationData.penRequestBatchID || (notificationData?.eventPayload && x.penRequestBatchID === JSON.parse(notificationData?.eventPayload)?.penRequestBatchID);
         if(pageHasObjectsRunningSagas && notificationData.sagaStatus === 'INITIATED') {
           x.sagaInProgress = true;
           this.selectItem(x);
-        } else if(pageHasObjectsRunningSagas && notificationData.sagaStatus === 'COMPLETED') {
+        } else if(pageHasObjectsRunningSagas && notificationData.sagaStatus === 'COMPLETED' && notificationData.sagaName === 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_SAGA') {
           this.penRequestBatchResponse.content.splice(index, 1);
         }
       });
@@ -234,7 +234,7 @@ export default {
     },
     tableRowClass(item) {
       let rowClass = [item.firstActiveFile ? 'first-active-file' : 'batch-file'];
-      item.isSelected && rowClass.push('selected-file');
+      (item.isSelected || item.viewMore) && rowClass.push('selected-file');
       return rowClass;
     },
     isUnarchived(item) {
@@ -305,6 +305,7 @@ export default {
       window.open(route.href, '_blank');
     },
     enableActions(item) {
+      this.hoveredOveredRow && (this.hoveredOveredRow.viewMore = false);
       this.hoveredOveredRowBatchID = item.penRequestBatchID;
     },
     disableActions() {
@@ -314,6 +315,7 @@ export default {
       event.stopPropagation();
       this.historyModalOpen = true;
       this.hoveredOveredRow = this.penRequestBatchResponse.content.find(batch => batch.penRequestBatchID === this.hoveredOveredRowBatchID);
+      this.hoveredOveredRow.viewMore = true;
     }
   }
 };

@@ -36,17 +36,16 @@
                 dense
         >
           <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-            <span :key="h.id || h.topText" class="top-column-item" :class="{'header-half-width': header.doubleText && !isFieldValueWarned(header.topValue)}">
+            <span :title="header.topTooltip" :key="h.id || h.topText" class="top-column-item" :class="{'header-half-width': header.doubleText && !isFieldValueWarned(header.topValue)}">
               {{ header.topText }}
             </span>
-            <StudentValidationWarningHint 
-              v-if="header.topValue && isFieldValueWarned(header.topValue)" 
-              :key="h.topValue" 
-              :hasDoubleText="!!header.doubleText" 
+            <StudentValidationWarningHint
+              v-if="header.topValue && isFieldValueWarned(header.topValue)"
+              :key="h.topValue"
+              :hasDoubleText="!!header.doubleText"
               :validationWarnings="getValidationWarnings(header.topValue)"
-            />
-            
-            <span :key="h.id || h.doubleValue" class="double-column-item">{{header.doubleText}}</span>
+            />        
+            <span :title="header.doubleTooltip" :key="h.id || h.doubleValue" class="double-column-item">{{header.doubleText}}</span>
             <StudentValidationWarningHint 
               v-if="header.doubleValue && isFieldValueWarned(header.doubleValue)" 
               :key="h.doubleValue" 
@@ -76,12 +75,12 @@
                 dense
         >
           <template v-for="h in bottomTableHeaders" v-slot:[`header.${h.value}`]="{ header }">
-            <span :key="h.id || h.text">
+            <span :title="header.tooltip" :key="h.id || h.text">
               {{ header.text }}
             </span>
-            <StudentValidationWarningHint 
-              v-if="header.value && isFieldValueWarned(header.value)" 
-              :key="h.id || h.value" 
+            <StudentValidationWarningHint
+              v-if="header.value && isFieldValueWarned(header.value)"
+              :key="h.id || h.value"
               :validationWarnings="getValidationWarnings(header.value)"
             />
           </template>
@@ -115,16 +114,16 @@
 
 <script>
 import {
-  PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER,
-  PEN_REQ_BATCH_STUDENT_REQUEST_CODES
+  PEN_REQ_BATCH_STUDENT_REQUEST_CODES,
+  PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER
 } from '@/utils/constants';
 import SearchDemographicModal from './SearchDemographicModal';
-import { deepCloneObject, getDemogValidationResults } from '../../utils/common';
-import { formatDob, formatPostalCode, formatMincode, formatPen } from '@/utils/format';
-import { mapState, mapMutations } from 'vuex';
+import {deepCloneObject, getDemogValidationResults} from '../../utils/common';
+import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
+import {mapMutations, mapState} from 'vuex';
 import StudentValidationWarningHint from './StudentValidationWarningHint';
 import PrimaryButton from '../util/PrimaryButton';
-import { partialRight } from 'lodash';
+import {partialRight} from 'lodash';
 
 export default {
   name: 'StudentDetailsInfoPanel',
@@ -159,22 +158,22 @@ export default {
     return {
       headers: [
         { id: 'table-checkbox', type: 'select', sortable: false },
-        { topText: 'Mincode', topValue: 'mincode', sortable: false, format: formatMincode },
-        { topText: 'Legal Surname', topValue: 'legalLastName', sortable: false },
-        { topText: 'Legal Given', topValue: 'legalFirstName', sortable: false },
-        { topText: 'Legal Middle', topValue: 'legalMiddleNames', sortable: false },
-        { topText: 'DC', doubleText: 'Gen', topValue: 'dc', doubleValue: 'genderCode', sortable: false },
-        { topText: 'Birth Date', topValue: 'dob', sortable: false, format: partialRight(formatDob,'uuuuMMdd','uuuu/MM/dd') },
-        { topText: 'Sugg. PEN', topValue: 'bestMatchPEN', sortable: false, format: formatPen }
+        { topText: 'Mincode', topValue: 'mincode', sortable: false, format: formatMincode, topTooltip: 'Mincode' },
+        { topText: 'Legal Surname', topValue: 'legalLastName', sortable: false, topTooltip: 'Legal Surname' },
+        { topText: 'Legal Given', topValue: 'legalFirstName', sortable: false, topTooltip: 'Legal Given Name' },
+        { topText: 'Legal Middle', topValue: 'legalMiddleNames', sortable: false, topTooltip: 'Legal Middle Names' },
+        { topText: 'DC', doubleText: 'Gen', topValue: 'dc', doubleValue: 'genderCode', sortable: false, topTooltip: 'Demographic Code', doubleTooltip: 'Gender' },
+        { topText: 'Birth Date', topValue: 'dob', sortable: false, topTooltip: 'Birth Date', format: partialRight(formatDob,'uuuuMMdd','uuuu/MM/dd') },
+        { topText: 'Sugg. PEN', topValue: 'bestMatchPEN', topTooltip: 'Suggested PEN', sortable: false, format: formatPen }
       ],
       bottomTableHeaders: [
         { id: 'table-checkbox', type: 'select', sortable: false },
-        { text: 'Local ID', value: 'localID', sortable: false },
-        { text: 'Usual Surname', value: 'usualLastName', sortable: false },
-        { text: 'Usual Given', value: 'usualFirstName', sortable: false },
-        { text: 'Usual Middle', value: 'usualMiddleNames', sortable: false },
-        { text: 'Postal Code', value: 'postalCode', sortable: false, format: formatPostalCode },
-        { text: 'Grade', value: 'gradeCode', sortable: false },
+        { text: 'Local ID', value: 'localID', sortable: false, tooltip: 'Local ID' },
+        { text: 'Usual Surname', value: 'usualLastName', sortable: false, tooltip: 'Usual Surname' },
+        { text: 'Usual Given', value: 'usualFirstName', sortable: false, tooltip: 'Usual Given Name' },
+        { text: 'Usual Middle', value: 'usualMiddleNames', sortable: false, tooltip: 'Usual Middle Name' },
+        { text: 'Postal Code', value: 'postalCode', sortable: false, format: formatPostalCode, tooltip: 'Postal Code' },
+        { text: 'Grade', value: 'gradeCode', sortable: false, tooltip: 'Grade Code' },
         { text: '', value: '', sortable: false }
       ],
       validationWarningFields: null,
@@ -237,7 +236,8 @@ export default {
       return this.isFieldValueWithIssues(fieldName, this.validationErrorFields);
     },
     isFieldValueWarned(fieldName) {
-      return PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE === this.studentDetails.penRequestBatchStudentStatusCode 
+      return (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE === this.studentDetails.penRequestBatchStudentStatusCode
+        || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.studentDetails.penRequestBatchStudentStatusCode)
         && this.isFieldValueWithIssues(fieldName, this.validationWarningFields);
     },
     isFieldValueUpdated(fieldName) {

@@ -20,7 +20,7 @@
                 @page-count="prbResponse.pageable.pageNumber = $event"
             >
               <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-                <span :key="h.id" :class="{'file-column' : !header.countable}">
+                <span :title="header.tooltip" :key="h.id" :class="{'file-column' : !header.countable}">
                   {{ header.text }}
                 </span>
               </template>
@@ -115,16 +115,17 @@ export default {
       itemsPerPage: 15,
       headers: [
         {value: 'rowSelect', type: 'select', sortable: false},
-        {text: 'Mincode', value: 'mincode', sortable: false, align: 'start'},
-        {text: 'School Name', value: 'schoolName', sortable: false},
-        {text: 'Failed Reason', value: 'penRequestBatchStatusReason', sortable: false},
+        {text: 'Mincode', value: 'mincode', sortable: false, align: 'start', tooltip: 'Mincode'},
+        {text: 'School Name', value: 'schoolName', sortable: false, tooltip: 'School Name'},
+        {text: 'Failed Reason', value: 'penRequestBatchStatusReason', sortable: false, tooltip: 'Failed Reason'},
         {
-          text: 'DATE and TIME SUBMITTED',
+          text: 'Date and Time Submitted',
           value: 'insertDate',
           sortable: false,
-          format: this.frontEndDateTimeFormat
+          format: this.frontEndDateTimeFormat,
+          tooltip: 'Date and Time Submitted'
         },
-        {text: 'Submission', value: 'submissionNumber', sortable: false},
+        {text: 'Submission', value: 'submissionNumber', sortable: false, tooltip: 'Submission Number'},
       ],
       loadingTable: true,
       reloading: false,

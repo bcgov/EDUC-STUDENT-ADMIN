@@ -109,7 +109,7 @@ export default {
         {text: 'PEN', align: 'start', sortable: false, value: 'pen', topTable: true},
         {text: 'Legal Name', value: 'legalName', sortable: false, topTable: true},
         {text: 'Birth Date', value: 'dob', sortable: false, topTable: true},
-        {text: 'Gen', value: 'genderCode', sortable: false, topTable: true},
+        {text: 'Gender', value: 'genderCode', sortable: false, topTable: true},
         {text: 'Twinned', value: 'matchedDate', sortable: false},
         {text: 'Reason', value: 'matchedReason', sortable: false},
       ],
@@ -266,7 +266,7 @@ export default {
 }
 
 #details-table /deep/ table th:nth-child(5) {
-  width: 8%;
+  width: 11%;
 }
 
 #details-table /deep/ table th:nth-child(6) {

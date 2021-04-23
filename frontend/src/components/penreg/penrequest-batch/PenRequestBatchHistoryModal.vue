@@ -30,7 +30,13 @@
         :items="penWebBlobs"
         hide-default-footer
         :loading="loadingTable"
+        :items-per-page="1000"
       >
+        <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
+          <span :title="header.tooltip" :key="h.id" :class="{'file-column' : !header.countable}">
+            {{ header.text }}
+          </span>
+        </template>
         <template v-slot:item="props">
           <tr>
             <td v-for="header in props.headers" :key="header.id">
@@ -76,10 +82,10 @@ export default {
       isProcessing: false,
       penWebBlobs: [],
       headers: [
-        { text: 'Type', value: 'fileType', sortable: false, align: 'start' },
-        { text: 'Ins Date', value: 'insertDateTime', sortable: false, format: this.formateDate },
-        { text: 'Ins Time', value: 'insertDateTime', sortable: false, format: this.formateTime },
-        { text: 'Ext Date', value: 'extractDateTime', sortable: false, format: this.formateDate },
+        { text: 'Type', value: 'fileType', sortable: false, align: 'start', tooltip: 'Type' },
+        { text: 'Insert Date', value: 'insertDateTime', sortable: false, format: this.formateDate, tooltip: 'Insert Date' },
+        { text: 'Insert Time', value: 'insertDateTime', sortable: false, format: this.formateTime, tooltip: 'Insert Time' },
+        { text: 'Extract Date', value: 'extractDateTime', sortable: false, format: this.formateDate, tooltip: 'Extract Date' },
         { text: '', value: '', sortable: false},
       ],
     };
@@ -158,10 +164,10 @@ export default {
         }
       };
       ApiService.apiAxios
-        .get(Routes.penRequestBatch.SOURCE_URL, req)
+        .get(Routes.penRequestBatch.SOURCE_METADATA_URL, req)
         .then(response => {
           if (response.data) {
-            this.penWebBlobs = response.data;
+            this.penWebBlobs = _.orderBy(response.data, ['insertDateTime'], ['desc']);
           }
         })
         .catch(error => {
@@ -195,10 +201,10 @@ export default {
         });
     },
     formateDate(dateTime) {
-      return formatDateTime(dateTime,'uuuu-MM-dd\'T\'HH:mm:ss','uuuu/MM/dd');
+      return formatDateTime(dateTime,'uuuu-MM-dd\'T\'HH:mm:ss','uuuu/MM/dd', true);
     },
     formateTime(dateTime, timeFormat = 'HH:mm:ss') {
-      return formatDateTime(dateTime,'uuuu-MM-dd\'T\'HH:mm:ss', timeFormat);
+      return formatDateTime(dateTime,'uuuu-MM-dd\'T\'HH:mm:ss', timeFormat, true);
     }
   }
 };
@@ -220,6 +226,7 @@ export default {
 
   #fileHistoryTable /deep/ table td{
     text-align: center !important;
+    border-bottom: none !important;
   }
 
   #fileHistoryTable /deep/ table td:nth-child(2),
