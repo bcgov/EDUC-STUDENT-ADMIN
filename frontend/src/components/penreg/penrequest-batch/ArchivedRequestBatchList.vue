@@ -12,6 +12,7 @@
 import {mapGetters, mapMutations, mapState} from 'vuex';
 import PenRequestBatchDataTable from './PenRequestBatchDataTable';
 import ApiService from '../../../common/apiService';
+import alertMixin from '@/mixins/alertMixin';
 import {
   PEN_REQ_BATCH_STATUS_CODES,
   Routes,
@@ -25,6 +26,7 @@ import {deepCloneObject} from '@/utils/common';
 
 export default {
   name: 'ArchivedRequestBatchList',
+  mixins: [alertMixin],
   components: {
     PenRequestBatchDataTable,
   },
@@ -181,7 +183,7 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          this.$emit('failure-alert', 'An error occurred while loading the file list. Please try again later.');
+          this.setFailureAlert('An error occurred while loading the file list. Please try again later.');
         })
         .finally(() => {
           this.loadingTable = false;

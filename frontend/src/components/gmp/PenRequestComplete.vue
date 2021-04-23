@@ -1,17 +1,5 @@
 <template>
   <div>
-    <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
-    <v-alert
-      :value="notAPenError"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      class="bootstrap-error"
-    >
-      The provided PEN is not valid.
-    </v-alert>
     <v-card flat :disabled="!isProvidePenEnabledForUser">
       <v-row class="mx-0">
           <v-col cols="12" xl="2" lg="2" md="2" class="py-0">
@@ -126,11 +114,10 @@ import {AccessEnabledForUser} from '@/common/role-based-access';
 import PrimaryButton from '../util/PrimaryButton';
 import {checkDigit} from '@/utils/validation';
 import alertMixin from '@/mixins/alertMixin';
-import AlertMessage from '../util/AlertMessage';
 
 export default {
   name: 'penRequestComplete',
-  components: {PrimaryButton, AlertMessage},
+  components: {PrimaryButton},
   mixins: [alertMixin],
   props: {
     request: {
@@ -163,7 +150,7 @@ export default {
     return {
       validForm: false,
       requiredRules: [v => !!v || 'Required'],
-      notAPenError: false,
+      notAPenErrorMessage: 'The provided PEN is not valid.',
       penSearchId: null,
       demographics: {
         legalFirst: null,
@@ -178,9 +165,6 @@ export default {
       enableCompleteButton: false,
       numberOfDuplicatePenRequests:0,
       isProvidePenEnabledForUser:false,
-      alert: false,
-      alertMessage: null,
-      alertType: null,
       completeSagaInProgress: false,
     };
   },
@@ -271,17 +255,7 @@ export default {
   methods: {
     ...mapMutations('app', ['setRequest']),
     ...mapMutations('app', ['pushMessage']),
-    setSuccessAlert(message) {
-      this.alertMessage = message;
-      this.alertType = 'bootstrap-success';
-      this.alert = true;
-    },
     formatDob,
-    setFailureAlert(message) {
-      this.alertMessage = message;
-      this.alertType = 'bootstrap-error';
-      this.alert = true;
-    },
     validateCompleteAction() {
       this.$refs.completeForm.validate();
     },
@@ -291,7 +265,6 @@ export default {
     completeRequest() {
       if(this.$refs.completeForm.validate()) {
         this.beforeSubmit();
-        this.alert = false;
         this.request.pen = this.penSearchId;
         if (this.request.bcscAutoMatchOutcome === Statuses.AUTO_MATCH_RESULT_CODES.ONE_MATCH && this.autoPenResults === this.penSearchId) {
           this.request.bcscAutoMatchOutcome = Statuses.AUTO_MATCH_RESULT_CODES.RIGHT_PEN;
@@ -323,7 +296,6 @@ export default {
     },
     unlinkRequest() {
       this.beforeSubmit();
-      this.alert = false;
       this.request.reviewer = this.myself.name;
       ApiService.apiAxios
         .post(Routes[this.requestType].UNLINK_URL, this.prepPut(this.requestId, this.request))
@@ -342,7 +314,6 @@ export default {
         });
     },
     validatePen() {
-      this.notAPenError = false;
       this.demographics.legalFirst = null;
       this.demographics.legalMiddle = null;
       this.demographics.legalLast = null;
@@ -359,7 +330,7 @@ export default {
             this.searchByPen();
             this.searchDuplicatePenRequestsByPen();
           } else {
-            this.notAPenError = true;
+            this.setFailureAlert(this.notAPenErrorMessage);
           }
         }
       }

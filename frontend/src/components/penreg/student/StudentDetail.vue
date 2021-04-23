@@ -13,9 +13,6 @@
               <v-tab class="student-details-tabs-style" :disabled="true"><strong>Transcript</strong></v-tab>
             </v-tabs>
           </v-row>
-          <v-row>
-            <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000" class="mt-2"></AlertMessage>
-          </v-row>
           <v-tabs-items v-if="!isLoading">
             <StudentDetailCommon
                 :studentID="studentID"
@@ -23,7 +20,6 @@
                 :validForm="validForm"
                 :parentRefs="this.$refs"
                 :fullReadOnly="hasSagaInProgress"
-                @alert="setFailureAlert"
                 @update:student="v => studentDetails.student = v"
                 @isStudentUpdated="v=> isStudentDataUpdated = v"
                 @refresh="refreshStudent"
@@ -71,7 +67,6 @@ import StudentDetailCommon from '../../common/StudentDetailCommon';
 import StudentAuditHistory from './StudentAuditHistory';
 import PrimaryButton from '../../util/PrimaryButton';
 import {Routes} from '@/utils/constants';
-import AlertMessage from '../../util/AlertMessage';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
 import StudentSLDHistory from '@/components/penreg/student/StudentSLDHistory';
@@ -90,8 +85,7 @@ export default {
     StudentSLDHistory,
     PrimaryButton,
     StudentDetailCommon,
-    StudentAuditHistory,
-    AlertMessage
+    StudentAuditHistory
   },
   data() {
     return {

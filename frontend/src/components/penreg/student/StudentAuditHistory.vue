@@ -1,10 +1,5 @@
 <template>
   <div id="auditHistory" class="px-0 pt-3 ma-0" style="width: 100%;">
-    <v-row>
-      <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"
-                    :timeoutMs="2000"></AlertMessage>
-      <AlertMessage v-model="studentUpdateAlert" :alertMessage="studentUpdateAlertMessage" :alertType="studentUpdateAlertType" ></AlertMessage>
-    </v-row>
     <v-progress-linear
         indeterminate
         color="blue"
@@ -85,18 +80,16 @@
 <script>
 import {mapActions, mapGetters, mapState} from 'vuex';
 import {REQUEST_TYPES, Routes} from '@/utils/constants';
-import AlertMessage from '../../util/AlertMessage';
 import StudentAuditHistoryDetail from '../student/StudentAuditHistoryDetailPanel';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
 import {formatDob, formatPen} from '@/utils/format';
 import {groupBy, mapValues} from 'lodash';
 import router from '@/router';
-import studentUpdateAlertMixin from '../../../mixins/student-update-alert-mixin';
 
 export default {
   name: 'StudentAuditHistory',
-  mixins: [alertMixin, studentUpdateAlertMixin],
+  mixins: [alertMixin],
   props: {
     student: {
       type: Object,
@@ -104,7 +97,6 @@ export default {
     }
   },
   components: {
-    AlertMessage,
     StudentAuditHistoryDetail,
   },
   data() {
@@ -423,7 +415,7 @@ export default {
           this.isStudentUpdated = true;
           this.studentAuditHistoryDetailKey += 1;
           this.$emit('isStudentUpdated', true);
-          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+          this.setWarningAlert(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
         } else if (student?.pen && student?.pen === this.studentHistoryResp?.content[0]?.pen && !this.isActionedInDifferentTab) {
           this.isActionedInDifferentTab = true; // make it true for future messages.
         }

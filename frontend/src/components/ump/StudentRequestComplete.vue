@@ -1,18 +1,5 @@
 <template>
   <div>
-    <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
-    <v-alert
-      v-model="notAPenError"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      class="bootstrap-error"
-    >
-      The provided PEN is not valid.
-    </v-alert>
-
     <v-card flat :disabled="!isProvidePenEnabledForUser">
       <v-row class="mx-0">
         <v-col cols="12" xl="6" lg="6" class="py-0">
@@ -126,10 +113,9 @@ import { mapGetters, mapMutations } from 'vuex';
 import {AccessEnabledForUser} from '@/common/role-based-access';
 import PrimaryButton from '../util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
-import AlertMessage from '../util/AlertMessage';
 export default {
   name: 'studentRequestComplete',
-  components: {PrimaryButton, AlertMessage},
+  components: {PrimaryButton},
   mixins: [alertMixin],
   props: {
     request: {
@@ -162,7 +148,7 @@ export default {
       validForm: false,
       requiredRules: [v => !!v || 'Required'],
       completedUpdateSuccess:null,
-      notAPenError: false,
+      notAPenErrorMessage: 'The provided PEN is not valid.',
       penSearchId: null,
       autoPenResults: null,
       demographics: {
@@ -178,9 +164,6 @@ export default {
       enableCompleteButton: false,
       numberOfDuplicatePenRequests:0,
       isProvidePenEnabledForUser:false,
-      alert: false,
-      alertMessage: null,
-      alertType: null,
       completeSagaInProgress: false,
       dialog: false,
     };
@@ -250,17 +233,7 @@ export default {
   methods: {
     ...mapMutations('app', ['setRequest']),
     ...mapMutations('app', ['pushMessage']),
-    setSuccessAlert(message) {
-      this.alertMessage = message;
-      this.alertType = 'bootstrap-success';
-      this.alert = true;
-    },
     formatDob,
-    setFailureAlert(message) {
-      this.alertMessage = message;
-      this.alertType = 'bootstrap-error';
-      this.alert = true;
-    },
     validateCompleteAction() {
       this.$refs.completeForm.validate();
     },
@@ -284,7 +257,6 @@ export default {
     },
     completeRequest() {
       this.beforeSubmit();
-      this.alert = false;
       this.request.reviewer = this.myself.name;
       const params = {
         penNumbersInOps: this.request.pen
@@ -321,11 +293,10 @@ export default {
         });
     },
     refreshStudentInfo() {
-      this.notAPenError = false;
       if(this.penSearchId && this.penSearchId.length === 9) {
         this.searchByPen();
       } else {
-        this.notAPenError = true;
+        this.setFailureAlert(this.notAPenErrorMessage);
       }
     },
     differentDemographicsData(request, demographics) {

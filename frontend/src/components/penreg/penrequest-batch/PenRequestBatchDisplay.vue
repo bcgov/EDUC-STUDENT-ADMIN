@@ -1,16 +1,5 @@
 <template>
     <v-container fluid class="fill-height px-0 mb-4">
-        <v-alert
-          v-model="alert"
-          dense
-          text
-          dismissible
-          outlined
-          transition="scale-transition"
-          :class="`${alertType} flex-grow-1 mx-3`"
-        >
-          {{ alertMessage }}
-        </v-alert>
         <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
           <v-col cols="1">
             <v-select
@@ -68,9 +57,7 @@
             :schoolGroup="selectedSchoolGroup"
             :filters.sync="filters"
             :loadingFiles="loadingFiles"
-            @failure-alert="setFailureAlert"
             :inProgressSagaIDs="inProgressSagaIDs"
-            @sagaCompleted="setSuccessAlert"
           ></PenRequestBatchList>
         </v-row>
       <ConfirmationDialog ref="fixableConfirmationDialog">

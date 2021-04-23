@@ -371,10 +371,6 @@
               ></v-text-field>
             </v-col>
           </v-row>
-          <v-row>
-            <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000"></AlertMessage>
-            <AlertMessage v-model="studentUpdateAlert" :alertMessage="studentUpdateAlertMessage" :alertType="studentUpdateAlertType" ></AlertMessage>
-          </v-row>
           <v-divider/>
           <v-progress-linear
               indeterminate
@@ -507,9 +503,7 @@ import {isEmpty, sortBy} from 'lodash';
 import alertMixin from '../../mixins/alertMixin';
 import schoolMixin from '../../mixins/schoolMixin';
 import servicesSagaMixin from '../../mixins/servicesSagaMixin';
-import studentUpdateAlertMixin from '../../mixins/student-update-alert-mixin';
 import ConfirmationDialog from '../util/ConfirmationDialog';
-import AlertMessage from '../util/AlertMessage';
 import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard';
 import CompareDemographicModal from './CompareDemographicModal';
 import {isValidDob, isValidMincode} from '@/utils/validation';
@@ -520,7 +514,7 @@ import PrimaryButton from '@/components/util/PrimaryButton';
 const JSJoda = require('@js-joda/core');
 export default {
   name: 'studentDetailCommon',
-  mixins: [alertMixin,schoolMixin,servicesSagaMixin,studentUpdateAlertMixin],
+  mixins: [alertMixin,schoolMixin,servicesSagaMixin],
   props: {
     studentID: {
       type: String,
@@ -545,7 +539,6 @@ export default {
   },
   components: {
     FormattedTextField,
-    AlertMessage,
     CompareDemographicModal,
     ConfirmationDialog,
     TwinnedStudentsCard,
@@ -573,7 +566,6 @@ export default {
       statusLabels: [],
       gradeLabels: [],
       gradeLabel: null,
-      alert: false,
       createdDateTime: null,
       updatedDateTime: null,
       shortDOB: null,
@@ -821,7 +813,7 @@ export default {
           })
           .catch(error => {
             console.log(error);
-            this.$emit('alert', 'An error occurred while loading the student details. Please try again later.');
+            this.setFailureAlert('An error occurred while loading the student details. Please try again later.');
           })
           .finally(() => {
             this.isLoading = false;
@@ -920,18 +912,18 @@ export default {
           };
           this.isStudentUpdatedInDifferentTab = false; //make sure that notification for current tab is ignored.
           ApiService.apiAxios
-              .put(Routes['student'].ROOT_ENDPOINT + '/' + this.studentID, this.prepPut(this.studentCopy), {params})
-              .then(response => {
-                this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false)); // enable all the fields here, required fields to be disabled will be done in this.setStudent method.
-                this.setStudent(response.data);
-                this.$emit('update:student', response.data);
-                this.setSuccessAlert('Student data updated successfully.');
-              })
-              .catch(error => {
-                this.processSaveStudentError(error);
-              })
-              .finally(() => {
-              });
+            .put(Routes['student'].ROOT_ENDPOINT + '/' + this.studentID, this.prepPut(this.studentCopy), {params})
+            .then(response => {
+              this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false)); // enable all the fields here, required fields to be disabled will be done in this.setStudent method.
+              this.setStudent(response.data);
+              this.$emit('update:student', response.data);
+              this.setSuccessAlert('Student data updated successfully.');
+            })
+            .catch(error => {
+              this.processSaveStudentError(error);
+            })
+            .finally(() => {
+            });
         }
 
       }
@@ -1022,7 +1014,7 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          this.$emit('alert', 'An error occurred while loading the TRAX status. Please try again later.');
+          this.setFailureAlert('An error occurred while loading the TRAX status. Please try again later.');
         })
         .finally(() => {
           this.loadingTraxData = false;
@@ -1052,7 +1044,7 @@ export default {
         if (student?.pen && student?.pen === this.studentDetails?.student?.pen && this.isStudentUpdatedInDifferentTab) { // show only when it is in a diff tab or diff user.
           this.isStudentUpdated = true;
           this.$emit('isStudentUpdated', true);
-          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+          this.setWarningAlert(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
         } else if (student?.pen && student?.pen === this.studentDetails?.student?.pen && !this.isStudentUpdatedInDifferentTab) {
           this.isStudentUpdatedInDifferentTab = true; // make it true for future messages.
           this.lastMessageFromSTANForStudentUpdate = `Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`; // store it to show after recieving 409 http response, this helps in race condition where STAN is sending message faster than http response.
@@ -1065,7 +1057,7 @@ export default {
       let isUpdateStudentAllowed = true;
       if (this.origStudent?.demogCode === STUDENT_DEMOG_CODES.CONFIRMED) {
         const confirmation = await this.$refs.confirmedStudentUpdateConfirmationDialog.open(null, null,
-            {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, resolveText: 'Yes'});
+          {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, resolveText: 'Yes'});
         if (!confirmation) {
           isUpdateStudentAllowed = false;
         }
@@ -1074,11 +1066,11 @@ export default {
     },
     processSaveStudentError(error) {
       if (error?.response?.status === 409 && error?.response?.data?.message) {
-        this.setErrorAlertForStudentUpdate(error?.response?.data?.message);
+        this.setFailureAlert(error?.response?.data?.message);
         this.isStudentUpdated = true;
         this.$emit('isStudentUpdated', true);
         if (this.isStudentUpdatedInDifferentTab) { // if it is already true that means the message has already arrived from STAN.
-          this.setWarningAlertForStudentUpdate(this.lastMessageFromSTANForStudentUpdate);
+          this.setWarningAlert(this.lastMessageFromSTANForStudentUpdate);
         } else {
           this.isStudentUpdatedInDifferentTab = true; // turn it back to true in case of errors
         }

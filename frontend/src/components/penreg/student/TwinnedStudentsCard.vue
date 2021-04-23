@@ -23,10 +23,6 @@
         </v-col>
       </v-row>
       <v-divider class="mt-2"></v-divider>
-      <v-row>
-        <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"
-                      :timeoutMs="3000"></AlertMessage>
-      </v-row>
       <v-row no-gutters justify="end">
         <v-col class="mt-4">
           <span id="twins-number" class="px-4"><strong>{{ possibleMatches.length }} Twins</strong></span>
@@ -86,14 +82,12 @@ import {REQUEST_TYPES, Routes} from '@/utils/constants';
 import {formatPen} from '@/utils/format';
 import router from '@/router';
 import alertMixin from '@/mixins/alertMixin';
-import AlertMessage from '../../util/AlertMessage';
 
 export default {
   name: 'TwinnedStudentsCard',
   mixins: [alertMixin],
   components: {
-    TertiaryButton: TertiaryButton,
-    AlertMessage
+    TertiaryButton: TertiaryButton
   },
   props: {
     student: {

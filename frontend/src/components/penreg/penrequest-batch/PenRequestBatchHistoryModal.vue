@@ -8,7 +8,6 @@
     <v-card fluid class="px-6 pt-2" elevation="0">
       <v-row>
         <div class="flex-grow-1 pt-0 px-3">
-          <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000" margin="mx-0"></AlertMessage>
           <DataListItem
             v-for="(item, i) in fileItems"
             :key="item.name + i"
@@ -52,7 +51,6 @@
 
 <script>
 import PrimaryButton from '@/components/util/PrimaryButton';
-import AlertMessage from '@/components/util/AlertMessage';
 import alertMixin from '@/mixins/alertMixin';
 import DataListItem from '@/components/util/DataListItem';
 import ApiService from '@/common/apiService';
@@ -65,7 +63,6 @@ export default {
   mixins: [alertMixin],
   components: {
     PrimaryButton,
-    AlertMessage,
     DataListItem,
   },
   props: {

@@ -1,3 +1,4 @@
+<!--Deprecated -->
 <template>
   <v-row no-gutters class="py-2" style="background-color:white;">
     <v-col cols="1" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
