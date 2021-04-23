@@ -21,15 +21,15 @@
             item-key="studentID"
             @page-count="studentSearchResponse.pageable.pageNumber = $event">
       <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-        <span :key="h.id" class="top-column-item">
+        <span :key="h.id" class="top-column-item" :title="header.topTooltip">
           {{ header.topText }}
         </span>
         <em :key="h.id" v-if="header.topValue === 'dob'" @click="updateSortParams(header.topValue)"
             :class="['dob-sort pl-2 v-icon v-data-table-header__icon fas active', headerSortParams.currentSortAsc ? 'fa-sort-down' : 'fa-sort-up']"
         ></em>
-        <span :key="h.id" class="double-column-item">{{header.doubleText}}</span>
+        <span :key="h.id" class="double-column-item" :title="header.doubleTooltip">{{header.doubleText}}</span>
         <br :key="h.id" />
-        <span :key="h.id" class="bottom-column-item">{{ header.bottomText }}</span>
+        <span :key="h.id" class="bottom-column-item" :title="header.bottomTooltip">{{ header.bottomText }}</span>
       </template>
       <template v-slot:item="props">
         <tr>
@@ -43,7 +43,16 @@
               <span class="double-column-item">{{props.item[header.doubleValue]}}</span>
               <br>
               <!-- if top and bottom value are the same, do not display the bottom value -->
-              <span class="bottom-column-item" v-if="props.item[header.bottomValue] !== props.item[header.topValue]">{{ props.item[header.bottomValue] }}</span>
+              <v-tooltip v-if="header.bottomValue === 'memo'" bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <span v-on="on" class="bottom-column-item">{{
+                      firstMemoChars(props.item[header.bottomValue])
+                    }}</span>
+                </template>
+                <span>{{props.item[header.bottomValue]}}</span>
+              </v-tooltip>
+              <span v-else-if="['usualLastName','usualFirstName','usualMiddleNames'].includes(header.bottomValue)" class="bottom-column-item" >{{getUsualName(props.item[header.bottomValue], props.item[header.topValue] )}}</span>
+              <span v-else class="bottom-column-item" >{{props.item[header.bottomValue]}}</span>
             </div>
           </td>
         </tr>
@@ -89,29 +98,35 @@ export default {
       itemsPerPage: 10,
       headers: [
         {id: 'table-checkbox', type: 'select', sortable: false},
-        {topText: 'PEN', align: 'start', sortable: false, topValue: 'pen'},
+        {topText: 'PEN', align: 'start', sortable: false, topValue: 'pen', topTooltip: 'Personal Education Number'},
         {
           topText: 'Legal Surname',
           bottomText: 'Usual Surname',
           topValue: 'legalLastName',
           bottomValue: 'usualLastName',
-          sortable: false
+          sortable: false,
+          topTooltip: 'Legal Surname',
+          bottomTooltip: 'Usual Surname'
         },
         {
           topText: 'Legal Given',
           bottomText: 'Usual Given',
           topValue: 'legalFirstName',
           bottomValue: 'usualFirstName',
-          sortable: false
+          sortable: false,
+          topTooltip: 'Legal Given',
+          bottomTooltip: 'Usual Given'
         },
         {
           topText: 'Legal Middle',
           bottomText: 'Usual Middle',
           topValue: 'legalMiddleNames',
           bottomValue: 'usualMiddleNames',
-          sortable: false
+          sortable: false,
+          topTooltip: 'Legal Middle',
+          bottomTooltip: 'Usual Middle'
         },
-        {topText: 'Postal Code', bottomText: 'Memo', topValue: 'postalCode', bottomValue: 'memo', sortable: false},
+        {topText: 'Postal Code', bottomText: 'Memo', topValue: 'postalCode', bottomValue: 'memo', sortable: false, topTooltip: 'Postal Code', bottomTooltip: 'Memo'},
         {
           topText: 'DC',
           doubleText: 'Gen',
@@ -119,10 +134,13 @@ export default {
           topValue: 'dc',
           doubleValue: 'genderCode',
           bottomValue: 'localID',
-          sortable: false
+          sortable: false,
+          topTooltip: 'Demographic Code',
+          doubleTooltip: 'Gender',
+          bottomTooltip: 'Local ID'
         },
-        {topText: 'Birth Date', bottomText: 'Grade', topValue: 'dob', bottomValue: 'gradeCode', sortable: false},
-        {topText: 'Mincode', bottomText: 'Twinned', topValue: 'mincode', bottomValue: 'twinned', sortable: false},
+        {topText: 'Birth Date', bottomText: 'Grade', topValue: 'dob', bottomValue: 'gradeCode', sortable: false, topTooltip: 'Birth Date', bottomTooltip: 'Grade'},
+        {topText: 'Mincode', bottomText: 'Twinned', topValue: 'mincode', bottomValue: 'twinned', sortable: false, topTooltip: 'Mincode', bottomTooltip: 'Twinned'},
       ],
       isStudentDataUpdated: false,
     };
@@ -193,6 +211,17 @@ export default {
     formatDob,
     compare() {
       //TODO
+    },
+    firstMemoChars(memo) {
+      if(memo){
+        return memo.substring(0,25);
+      }
+    },
+    getUsualName(usual, legal) {
+      if(usual === legal){
+        return '';
+      }
+      return usual;
     },
     pagination() {
       const studentSearchKeys = Object.keys(this.searchCriteria).filter(k => (this.searchCriteria[k] && this.searchCriteria[k].length !== 0));

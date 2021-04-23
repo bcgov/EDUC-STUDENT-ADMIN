@@ -22,6 +22,11 @@
             no-data-text="No SLD history found"
             :hide-default-footer="sldData.length===0"
         >
+          <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
+              <span :title="header.tooltip" :key="h.id" :class="{'file-column' : !header.countable}">
+                {{ header.text }}
+              </span>
+          </template>
           <template v-slot:item="props">
             <tr>
               <td v-for="header in props.headers" :key="header.id" :class="[header.id, existSldUsualName(props.item)? 'two-rows-column' : 'one-row-column']">
@@ -81,16 +86,16 @@ export default {
   data() {
     return {
       headers: [
-        {text: 'Date', value: 'reportDate', key: 'date', sortable: false},
-        {text: 'Gr', value: 'enrolledGradeCode', key: 'grade', sortable: false},
-        {text: 'Mincode', value: 'mincode', key: 'mincode', sortable: false},
-        {text: 'Local ID', value: 'localStudentId', key: 'localId', sortable: false},
-        {text: 'Surname', value: 'legalSurname', key: 'surname', sortable: false},
-        {text: 'Given', value: 'legalGivenName', key: 'givenName', sortable: false},
-        {text: 'Middle', value: 'legalMiddleName', key: 'middleName', sortable: false},
-        {text: 'Gen', value: 'sex', key: 'gender', sortable: false},
-        {text: 'Postal Code', value: 'postal', key: 'postalCode', sortable: false},
-        {text: 'Birth Date', value: 'birthDate', key: 'dob', sortable: false}
+        {text: 'Date', value: 'reportDate', key: 'date', sortable: false, tooltip: 'Activity Date'},
+        {text: 'Gr', value: 'enrolledGradeCode', key: 'grade', sortable: false, tooltip: 'Grade Code'},
+        {text: 'Mincode', value: 'mincode', key: 'mincode', sortable: false, tooltip: 'Mincode'},
+        {text: 'Local ID', value: 'localStudentId', key: 'localId', sortable: false, tooltip: 'Local ID'},
+        {text: 'Surname', value: 'legalSurname', key: 'surname', sortable: false, tooltip: 'Legal Surname'},
+        {text: 'Given', value: 'legalGivenName', key: 'givenName', sortable: false, tooltip: 'Legal Given Name'},
+        {text: 'Middle', value: 'legalMiddleName', key: 'middleName', sortable: false, tooltip: 'Legal Middle Name'},
+        {text: 'Gen', value: 'sex', key: 'gender', sortable: false, tooltip: 'Gender'},
+        {text: 'Postal Code', value: 'postal', key: 'postalCode', sortable: false, tooltip: 'Postal Code'},
+        {text: 'Birth Date', value: 'birthDate', key: 'dob', sortable: false, tooltip: 'Birth Date'}
       ],
       loading: true,
       sldData: [],
@@ -154,15 +159,15 @@ export default {
 </script>
 
 <style scoped>
-#dataTable /deep/ table {
+#sldHistoryDataTable /deep/ table {
   border-spacing: 0 0.25rem;
-  border-top: thin solid #d7d7d7;
   border-bottom: thin solid #d7d7d7;
 }
-#dataTable /deep/ table th {
+#sldHistoryDataTable /deep/ table th {
   font-size: 0.875rem;
 }
-#dataTable /deep/ table td {
+
+#sldHistoryDataTable /deep/ table td {
   border-bottom: none !important;
 }
 #studentInfo {
@@ -196,7 +201,6 @@ export default {
   margin: 0;
   padding: 0;
 }
-
 
 .flexBox {
   display: flex;

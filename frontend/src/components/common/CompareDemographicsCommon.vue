@@ -45,7 +45,7 @@
       <template v-slot:default>
         <thead>
         <tr>
-          <th v-for="(header, index) in headers" :key="index" :id="`${header.text}Header`">
+          <th :title="header.tooltip" v-for="(header, index) in headers" :key="index" :id="`${header.text}Header`">
             {{ header.text }}
           </th>
         </tr>
@@ -229,16 +229,16 @@ export default {
       ],
       headers: [
         { id: 'table-checkbox', type: 'select', sortable: false },
-        {text: 'Date', value: 'reportDate', key: 'date', sortable: false},
-        {text: 'Gr', value: 'enrolledGradeCode', key: 'grade', sortable: false},
-        {text: 'Mincode', value: 'mincode', key: 'mincode', sortable: false},
-        {text: 'Local ID', value: 'localStudentId', key: 'localId', sortable: false},
-        {text: 'Surname', value: 'legalSurname', key: 'surname', sortable: false},
-        {text: 'Given', value: 'legalGivenName', key: 'givenName', sortable: false},
-        {text: 'Middle', value: 'legalMiddleName', key: 'middleName', sortable: false},
-        {text: 'Gen', value: 'sex', key: 'gender', sortable: false},
-        {text: 'Postal Code', value: 'postal', key: 'postalCode', sortable: false},
-        {text: 'Birth Date', value: 'birthDate', key: 'dob', sortable: false}
+        {text: 'Date', value: 'reportDate', key: 'date', sortable: false, tooltip: 'Activity Date'},
+        {text: 'Gr', value: 'enrolledGradeCode', key: 'grade', sortable: false, tooltip: 'Student Grade'},
+        {text: 'Mincode', value: 'mincode', key: 'mincode', sortable: false, tooltip: 'Mincode'},
+        {text: 'Local ID', value: 'localStudentId', key: 'localId', sortable: false, tooltip: 'Local ID'},
+        {text: 'Surname', value: 'legalSurname', key: 'surname', sortable: false, tooltip: 'Legal Surname'},
+        {text: 'Given', value: 'legalGivenName', key: 'givenName', sortable: false, tooltip: 'Legal Given Name'},
+        {text: 'Middle', value: 'legalMiddleName', key: 'middleName', sortable: false, tooltip: 'Legal Middle Name'},
+        {text: 'Gen', value: 'sex', key: 'gender', sortable: false, tooltip: 'Gender'},
+        {text: 'Postal Code', value: 'postal', key: 'postalCode', sortable: false, tooltip: 'Postal Code'},
+        {text: 'Birth Date', value: 'birthDate', key: 'dob', sortable: false, tooltip: 'Birth Date'}
       ],
       penToAdd: null,
       penRules: [v => (!v || isValidPEN(v)) || this.penHint],

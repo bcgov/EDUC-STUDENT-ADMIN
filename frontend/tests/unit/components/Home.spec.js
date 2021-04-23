@@ -39,11 +39,9 @@ describe('Archived Request Search Button', () => {
   let routerSpy;
   let store;
 
-  const testLoadDateAndMincodeInputs = async (loadDate, mincode) => {
+  const testLoadDateAndMincodeInputs = async (mincode) => {
     const mincodeInput = wrapper.find('#requestsMincodeField');
     mincodeInput.setValue(mincode);
-    const dateInput = wrapper.find('#requestsDateField');
-    dateInput.setValue(loadDate);
     await Vue.nextTick();
     wrapper.find('#requestsSearchBtn').trigger('click');
   }
@@ -114,16 +112,8 @@ describe('Archived Request Search Button', () => {
     expect(routerSpy).toHaveBeenCalled();
   });
 
-  it('should be clickable when valid load date input', async () => {
-    const dateInput = wrapper.find('#requestsDateField');
-    dateInput.setValue("2021/01/10");
-    await Vue.nextTick();
-    wrapper.find('#requestsSearchBtn').trigger('click');
-    expect(routerSpy).toHaveBeenCalled();
-  });
-
   it('should be clickable when valid mincode input and valid load date input', async () => {
-    await testLoadDateAndMincodeInputs("2021/01/10", "102");
+    await testLoadDateAndMincodeInputs( "102");
     expect(routerSpy).toHaveBeenCalled();
   });
 
@@ -132,29 +122,6 @@ describe('Archived Request Search Button', () => {
     mincodeInput.setValue("102123");
     await Vue.nextTick();
     wrapper.find('#requestsSearchBtn').trigger('click');
-    expect(routerSpy).not.toHaveBeenCalled();
-  });
-
-  it('should be not clickable when invalid load date input', async () => {
-    const dateInput = wrapper.find('#requestsDateField');
-    dateInput.setValue("2021/1/1");
-    await Vue.nextTick();
-    wrapper.find('#requestsSearchBtn').trigger('click');
-    expect(routerSpy).not.toHaveBeenCalled();
-  });
-
-  it('should be not clickable when invalid mincode input and valid load date input', async () => {
-    await testLoadDateAndMincodeInputs("2021/01/10", "10");
-    expect(routerSpy).not.toHaveBeenCalled();
-  });
-
-  it('should be not clickable when valid mincode input and invalid load date input', async () => {
-    await testLoadDateAndMincodeInputs("2021/01", "10212345");
-    expect(routerSpy).not.toHaveBeenCalled();
-  });
-
-  it('should be not clickable when invalid mincode input and invalid load date input', async () => {
-    await testLoadDateAndMincodeInputs("2021/01", "102123");
     expect(routerSpy).not.toHaveBeenCalled();
   });
 
