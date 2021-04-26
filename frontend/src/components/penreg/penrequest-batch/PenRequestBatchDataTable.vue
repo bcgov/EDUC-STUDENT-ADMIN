@@ -73,8 +73,8 @@
             <div v-else :class="{'countable-column-div': header.countable}">
               <span v-if="header.countable" class="countable-column-data">{{ props.item[header.value] || '' }}</span>
               <span v-else-if="header.value==='submissionNumber'">
-                <a v-if="props.item.sagaInProgress" class="submission" @click.stop="handleSubmissionNumberClicked(props.item[header.value])">{{props.item[header.value] }}</a>
-                <span v-else class="submission" @click.stop="handleSubmissionNumberClicked(props.item[header.value])">{{props.item[header.value] }}</span>
+                <a v-if="!props.item.sagaInProgress" class="submission" @click.stop="handleSubmissionNumberClicked(props.item[header.value])">{{props.item[header.value] }}</a>
+                <span v-else class="submission">{{props.item[header.value] }}</span>
               </span>
               <PrimaryButton v-else-if="header.value === 'actions'" 
                 :id="hoveredOveredRowBatchID === props.item.penRequestBatchID ? 'more-info-action': ''"
@@ -210,7 +210,7 @@ export default {
         return;
       }
       const notificationData = val;
-      if (notificationData.sagaName === 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_SAGA') {
+      if (notificationData.sagaName === 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_SAGA' && this.inProgressSagaIDs) {
         this.inProgressSagaIDs.forEach(sagaObjects => {
           if(sagaObjects.sagaID === notificationData.sagaId && notificationData.sagaStatus === 'COMPLETED') {
             this.setSuccessAlert(`Archive and Return completed for Batch Submission Number ${this.penRequestBatchResponse.content.find(x => x.penRequestBatchID === notificationData.penRequestBatchID).submissionNumber}`);

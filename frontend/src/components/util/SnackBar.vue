@@ -3,8 +3,8 @@
     v-model="showSnackBar"
     timeout="5000"
     multi-line
-    bottom
-    left
+    top
+    right
     :color="colour"
     text
   >{{ alertNotificationText }}
