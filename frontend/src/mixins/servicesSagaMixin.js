@@ -103,7 +103,7 @@ export default {
         mergeStudentID: this.mergedFromStudent.studentID,
         mergedFromPen: this.mergedFromStudent.pen,
         studentMergeDirectionCode: 'FROM',
-        studentMergeSourceCode: 'MI',
+        studentMergeSourceCode: 'MINISTRY',
         requestStudentID: null
       };
       const params = {

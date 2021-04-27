@@ -502,7 +502,7 @@ export default {
         {
           studentID: student.studentID,
           matchedStudentID: twinStudent.studentID,
-          matchReasonCode: 'MI',
+          matchReasonCode: 'MINISTRY',
         }
       ];
 
