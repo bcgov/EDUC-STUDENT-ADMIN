@@ -3,10 +3,6 @@
           v-model="validForm" class="fill-height">
   <v-container fluid class="fill-height ma-0 pa-2 studentDetail">
     <v-row>
-      <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
-      <AlertMessage v-model="studentUpdateAlert" :alertMessage="studentUpdateAlertMessage" :alertType="studentUpdateAlertType" ></AlertMessage>
-    </v-row>
-    <v-row>
       <v-col cols="12">
         <v-row no-gutters class="mb-2">
           <v-col offset="2" cols="2">
@@ -326,15 +322,13 @@ import {isValidDob, isValidMincode, isValidPostalCode} from '@/utils/validation'
 import alertMixin from '@/mixins/alertMixin';
 import schoolMixin from '@/mixins/schoolMixin';
 import servicesSagaMixin from '@/mixins/servicesSagaMixin';
-import AlertMessage from '@/components/util/AlertMessage';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import router from '@/router';
-import studentUpdateAlertMixin from '@/mixins/student-update-alert-mixin';
 import ApiService from '@/common/apiService';
 
 export default {
   name: 'MergeStudents',
-  mixins: [alertMixin,schoolMixin,servicesSagaMixin,studentUpdateAlertMixin],
+  mixins: [alertMixin,schoolMixin,servicesSagaMixin],
   props: {
     mergedToStudentID: {
       type: String,
@@ -346,7 +340,6 @@ export default {
     },
   },
   components: {
-    AlertMessage,
     PrimaryButton,
     FormattedTextField,
     StudentDetailsCheckBoxWithOutputText,
@@ -368,7 +361,6 @@ export default {
   },
   created() {
     this.genderCodes = this.genders ? this.genders.map(a => a.genderCode) : [];
-    this.resetAlert();
     this.$store.dispatch('student/getCodes');
   },
   async mounted() {
@@ -560,7 +552,7 @@ export default {
         const student = JSON.parse(notificationData.eventPayload);
         if (student?.pen && (student?.pen === this.student?.pen || student?.pen === this.mergedStudent?.pen) && !this.isProcessing) { // show only when it is in a diff tab or diff user.
           this.isStudentUpdated = true;
-          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+          this.setWarningAlert(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
         }
       } catch (e) {
         console.error(e);

@@ -1,3 +1,6 @@
+import {ALERT_NOTIFICATION_TYPES} from '../utils/constants/AlertNotificationTypes';
+import {mapMutations} from 'vuex';
+
 export default {
   data() {
     return {
@@ -7,25 +10,15 @@ export default {
     };
   },
   methods: {
+    ...mapMutations('app', ['addAlertNotification']),
     setSuccessAlert(message) {
-      this.alertMessage = message;
-      this.alertType = 'bootstrap-success';
-      this.alert = true;
+      this.addAlertNotification({text: message, alertType: ALERT_NOTIFICATION_TYPES.SUCCESS});
     },
     setFailureAlert(message) {
-      this.alertMessage = message;
-      this.alertType = 'bootstrap-error';
-      this.alert = true;
+      this.addAlertNotification({text: message, alertType: ALERT_NOTIFICATION_TYPES.ERROR});
     },
     setWarningAlert(message) {
-      this.alertMessage = message;
-      this.alertType = 'bootstrap-warning';
-      this.alert = true;
-    },
-    resetAlert() {
-      this.alert = false;
-      this.alertMessage = null;
-      this.alertType = null;
+      this.addAlertNotification({text: message, alertType: ALERT_NOTIFICATION_TYPES.WARN});
     }
   }
 };

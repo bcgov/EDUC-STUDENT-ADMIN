@@ -53,10 +53,11 @@ import ApiService from '../../../common/apiService';
 import {Routes, PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
 import filtersMixin from '@/mixins/filtersMixin';
 import Pagination from '@/components/util/Pagination';
+import alertMixin from '../../../mixins/alertMixin';
 
 export default {
   name: 'HeldRequestBatchList',
-  mixins: [filtersMixin],
+  mixins: [alertMixin, filtersMixin],
   components: {
     Pagination,
   },
@@ -189,7 +190,8 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          this.$emit('failure-alert', 'An error occurred while loading the file list. Please try again later.');
+          this.setFailureAlert('An error occurred while loading the file list. Please try again later.');
+          
         })
         .finally(() => (this.loadingTable = false));
     },

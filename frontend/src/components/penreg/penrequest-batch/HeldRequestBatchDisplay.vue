@@ -1,7 +1,5 @@
 <template>
   <v-container fluid class="fill-height px-0 mb-4">
-    <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000"
-                  class="mt-2"></AlertMessage>
     <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
            style="background-color:white;">
       <v-col cols="1">
@@ -46,7 +44,6 @@
           :filters.sync="filters"
           :loadingFiles="loadingFiles"
           :selectedFile.sync="selectedFile"
-          @failure-alert="setFailureAlert"
           @file-click="clickFile"
       ></HeldRequestBatchList>
     </v-row>
@@ -76,7 +73,6 @@ import FilterTag from '../../util/FilterTag';
 import PrimaryButton from '../../util/PrimaryButton';
 import alertMixin from '../../../mixins/alertMixin';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
-import AlertMessage from '../../util/AlertMessage';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import PrbFileModal from '@/components/penreg/penrequest-batch/PrbFileModal';
@@ -88,7 +84,6 @@ export default {
     PrimaryButton,
     HeldRequestBatchList,
     ConfirmationDialog,
-    AlertMessage,
     PrbFileModal
   },
   mixins: [alertMixin],

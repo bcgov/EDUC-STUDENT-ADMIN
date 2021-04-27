@@ -95,7 +95,6 @@ export default {
     },
     async executeMerge() {
       // Student Merge Complete Request
-      this.alert = false;
       this.setStudentInProcessStatus(this.mergedToStudent.studentID);
       this.isProcessing = true;
       const mergeRequest = {...this.mergedToStudent,
@@ -128,7 +127,6 @@ export default {
     },
     async executeDemerge() {
       // Student Demerge Complete Request
-      this.alert = false;
       this.setStudentInProcessStatus(this.mergedFromStudent.studentID);
       this.isProcessing = true;
       const demergeRequest = {

@@ -1,50 +1,6 @@
 <template>
   <div>
     <v-alert
-      :value="returnAlertSuccess"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      class="bootstrap-success"
-    >
-      {{`${requestTypeLabel} status updated and email sent to student.`}}
-    </v-alert>
-    <v-alert
-      :value="returnAlertFailure"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      class="bootstrap-error"
-    >
-      {{`${requestTypeLabel} failed to update status. Please navigate to the list and select this ${requestTypeLabel} again.`}}
-    </v-alert>
-    <v-alert
-      :value="returnAlertWarning"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      class="bootstrap-warning"
-    >
-      {{`${requestTypeLabel} status and comment updated, but email to student failed. Please contact support.`}}
-    </v-alert>
-    <!-- This alert component is used to refresh the page automatically when saga is completed.-->
-    <v-alert
-      :value="false"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      class="bootstrap-success" >
-      {{notification}}
-    </v-alert>
-    <v-alert
       :value="returnOperationSuccessful"
       dense
       text
@@ -99,6 +55,7 @@ import { replaceMacro } from '../utils/macro';
 import { mapGetters, mapMutations } from 'vuex';
 import {AccessEnabledForUser} from '../common/role-based-access';
 import PrimaryButton from './util/PrimaryButton';
+import alertMixin from '../mixins/alertMixin';
 export default {
   name: 'requestReturn',
   components: {PrimaryButton},
@@ -125,16 +82,13 @@ export default {
     },
     
   },
+  mixins: [alertMixin],
   data () {
     return {
       validForm: false,
       requiredRules: [v => !!v || 'Required'],
-      returnAlertSuccess: false,
-      returnAlertFailure: false,
-      returnAlertWarning: false,
       returnComment: null,
       isRequestMoreInfoEnabledForUser:false,
-      returnOperationSuccessful: null,
       returnMessage : null,
     };
   },
@@ -172,6 +126,7 @@ export default {
         if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && notificationData.sagaStatus === 'COMPLETED'
           && (notificationData.sagaName === 'PEN_REQUEST_RETURN_SAGA' || notificationData.sagaName === 'STUDENT_PROFILE_RETURN_SAGA') ) {
           this.returnMessage = 'Your request to return for more info is now completed.';
+          this.setSuccessAlert(this.returnMessage);
         }
       }
     }
@@ -186,10 +141,6 @@ export default {
       this.returnComment = replaceMacro(this.returnComment, this.returnMacros);
     },
     returnToStudent() {
-      this.returnOperationSuccessful = null;
-      this.returnAlertWarning = false;
-      this.returnAlertSuccess = false;
-      this.returnAlertFailure = false;
       if (this.$refs.returnForm.validate()) {
         this.beforeSubmit();
         this.request.reviewer = this.myself.name;
@@ -198,18 +149,19 @@ export default {
         ApiService.apiAxios
           .post(Routes[this.requestType].ROOT_ENDPOINT + '/' + this.requestId + '/return', body)
           .then(() => {
-            this.returnOperationSuccessful = true;
             this.returnMessage = 'Your request to return for more info is accepted.';
+            this.setSuccessAlert(this.returnMessage);
             this.$refs.returnForm.resetValidation();
           })
           .catch(error => {
             console.log(error);
             if (error.response.data && error.response.data.code && error.response.data.code === 409) {
-              this.returnOperationSuccessful = false;
               this.returnMessage = 'Another saga is in progress for this request, please try again later.';
+              this.setFailureAlert(this.returnMessage);
+              
             } else {
-              this.returnOperationSuccessful = false;
               this.returnMessage = 'Your request to return for more info could not be accepted, please try again later.';
+              this.setFailureAlert(this.returnMessage);
             }
             this.submitted();
           });

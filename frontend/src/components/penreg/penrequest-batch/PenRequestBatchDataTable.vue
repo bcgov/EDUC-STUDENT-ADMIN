@@ -73,7 +73,8 @@
             <div v-else :class="{'countable-column-div': header.countable}">
               <span v-if="header.countable" class="countable-column-data">{{ props.item[header.value] || '' }}</span>
               <span v-else-if="header.value==='submissionNumber'">
-                <a class="submission" @click.stop="handleSubmissionNumberClicked(props.item[header.value])">{{props.item[header.value] }}</a>
+                <a v-if="props.item.sagaInProgress" class="submission" @click.stop="handleSubmissionNumberClicked(props.item[header.value])">{{props.item[header.value] }}</a>
+                <span v-else class="submission" @click.stop="handleSubmissionNumberClicked(props.item[header.value])">{{props.item[header.value] }}</span>
               </span>
               <PrimaryButton v-else-if="header.value === 'actions'" 
                 :id="hoveredOveredRowBatchID === props.item.penRequestBatchID ? 'more-info-action': ''"
@@ -126,9 +127,11 @@ import {PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
 import PrimaryButton from '@/components/util/PrimaryButton';
 import PenRequestBatchHistoryModal from './PenRequestBatchHistoryModal';
 import {mapState} from 'vuex';
+import alertMixin from '../../../mixins/alertMixin';
 
 export default {
   name: 'PenRequestBatchDataTable',
+  mixins: [alertMixin],
   components: {
     Pagination,
     PrimaryButton,
@@ -210,16 +213,16 @@ export default {
       if (notificationData.sagaName === 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_SAGA') {
         this.inProgressSagaIDs.forEach(sagaObjects => {
           if(sagaObjects.sagaID === notificationData.sagaId && notificationData.sagaStatus === 'COMPLETED') {
-            this.$emit('sagaCompleted', `Archive and Return completed for Batch Submission Number ${this.penRequestBatchResponse.content.find(x => x.penRequestBatchID === notificationData.penRequestBatchID).submissionNumber}`);
+            this.setSuccessAlert(`Archive and Return completed for Batch Submission Number ${this.penRequestBatchResponse.content.find(x => x.penRequestBatchID === notificationData.penRequestBatchID).submissionNumber}`);
           }
         });
       }
       this.penRequestBatchResponse.content.forEach((x, index) => {
-        const pageHasObjectsRunningSagas = x.penRequestBatchID === notificationData.penRequestBatchID || x.penRequestBatchID === JSON.parse(notificationData?.eventPayload)?.penRequestBatchID;
+        const pageHasObjectsRunningSagas = x.penRequestBatchID === notificationData.penRequestBatchID || (notificationData?.eventPayload && x.penRequestBatchID === JSON.parse(notificationData?.eventPayload)?.penRequestBatchID);
         if(pageHasObjectsRunningSagas && notificationData.sagaStatus === 'INITIATED') {
           x.sagaInProgress = true;
           this.selectItem(x);
-        } else if(pageHasObjectsRunningSagas && notificationData.sagaStatus === 'COMPLETED') {
+        } else if(pageHasObjectsRunningSagas && notificationData.sagaStatus === 'COMPLETED' && notificationData.sagaName === 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_SAGA') {
           this.penRequestBatchResponse.content.splice(index, 1);
         }
       });
@@ -231,7 +234,7 @@ export default {
     },
     tableRowClass(item) {
       let rowClass = [item.firstActiveFile ? 'first-active-file' : 'batch-file'];
-      item.isSelected && rowClass.push('selected-file');
+      (item.isSelected || item.viewMore) && rowClass.push('selected-file');
       return rowClass;
     },
     isUnarchived(item) {
@@ -302,6 +305,7 @@ export default {
       window.open(route.href, '_blank');
     },
     enableActions(item) {
+      this.hoveredOveredRow && (this.hoveredOveredRow.viewMore = false);
       this.hoveredOveredRowBatchID = item.penRequestBatchID;
     },
     disableActions() {
@@ -311,6 +315,7 @@ export default {
       event.stopPropagation();
       this.historyModalOpen = true;
       this.hoveredOveredRow = this.penRequestBatchResponse.content.find(batch => batch.penRequestBatchID === this.hoveredOveredRowBatchID);
+      this.hoveredOveredRow.viewMore = true;
     }
   }
 };

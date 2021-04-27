@@ -25,6 +25,7 @@
     <v-main fluid class="align-start px-8 mb-0">
       <ModalIdle v-if="isAuthenticated"/>
       <router-view/>
+      <SnackBar></SnackBar>
     </v-main>
     <Footer/>
   </v-app>
@@ -36,10 +37,12 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import ModalIdle from './components/ModalIdle';
 import NavBar from './components/util/NavBar';
+import SnackBar from './components/util/SnackBar';
 
 export default {
   name: 'app',
   components: {
+    SnackBar,
     NavBar,
     Header,
     Footer,

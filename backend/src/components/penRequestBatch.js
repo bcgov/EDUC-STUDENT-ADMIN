@@ -103,21 +103,6 @@ async function getPenRequestBatchStudentMatchOutcome(req, res) {
   }
 }
 
-async function getPenWebBlobs(req, res) {
-  const token = getBackendToken(req, res);
-  try {
-    const params = {
-      params: req.query
-    };
-    const url = config.get('server:penRequestBatch:sourceURL');
-    const penWebBlob = await getData(token, url, params);
-    return res.status(200).json(penWebBlob);
-  } catch (e) {
-    logApiError(e, 'getPenWebBlobs', 'Error getting PenWebBlobs.');
-    return errorResponse(res);
-  }
-}
-
 async function issueNewPen(req, res) {
   const token = getBackendToken(req, res);
 
@@ -383,7 +368,6 @@ module.exports = {
   getPenRequestBatchStudents: getPaginatedListForSCGroups('getPenRequestBatchStudents', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/student/paginated`, addPenRequestBatchStudentSagaStatus),
   getPenRequestBatchStudentById,
   getPenRequestBatchStudentMatchOutcome,
-  getPenWebBlobs,
   issueNewPen,
   userMatchSaga,
   userUnmatchSaga,

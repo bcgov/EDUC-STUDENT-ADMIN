@@ -1,6 +1,5 @@
 <template>
     <v-container fluid class="fill-height px-0 mb-4">
-        <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
       <v-form v-model="isValidSearchForm">
         <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
                style="background-color:white;">
@@ -193,7 +192,6 @@
           <ArchivedRequestBatchList
             :searchParams="searchParams"
             :reloading="!unarchiving"
-            @failure-alert="setFailureAlert"
             @table-load="searchLoading=false"
           ></ArchivedRequestBatchList>
         </v-row>
@@ -216,7 +214,6 @@ import {
   isValidMincode,
   isValidPEN
 } from '@/utils/validation';
-import AlertMessage from '../../util/AlertMessage';
 import {deepCloneObject, setEmptyInputParams} from '@/utils/common';
 import pluralize from 'pluralize';
 import ApiService from '@/common/apiService';
@@ -227,7 +224,6 @@ export default {
   name: 'ArchivedRequestBatchDisplay',
   components: {
     PrimaryButton,
-    AlertMessage,
     ArchivedRequestBatchList,
     FormattedTextField
   },

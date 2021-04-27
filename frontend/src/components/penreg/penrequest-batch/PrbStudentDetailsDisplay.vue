@@ -12,10 +12,6 @@
                 color="blue"
                 :active="loading"
             ></v-progress-linear>
-            <v-row>
-              <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
-              <AlertMessage v-model="studentUpdateAlert" :alertMessage="studentUpdateAlertMessage" :alertType="studentUpdateAlertType" ></AlertMessage>
-            </v-row>
             <div v-if="!loading && prbStudent" style="width: 100%;" :overlay=false>
 
               <StudentDetailsInfoPanel
@@ -154,8 +150,6 @@ import PrbStudentStatusChip from './PrbStudentStatusChip';
 import InfoDialog from './prb-student-details/InfoDialog';
 import ApiService from '../../../common/apiService';
 import StudentDetailsInfoPanel from '../../common/StudentDetailsInfoPanel';
-import studentUpdateAlertMixin from '../../../mixins/student-update-alert-mixin';
-import AlertMessage from '../../util/AlertMessage';
 import {
   PEN_REQ_BATCH_STUDENT_REQUEST_CODES,
   PRB_SAGA_NAMES,
@@ -181,7 +175,6 @@ import ConfirmationDialog from '../../util/ConfirmationDialog';
 export default {
   name: 'PrbStudentDetailsDisplay',
   components: {
-    AlertMessage,
     PrimaryButton,
     PrbStudentStatusChip,
     InfoDialog,
@@ -189,7 +182,7 @@ export default {
     StudentDetailsInfoPanel,
     ConfirmationDialog
   },
-  mixins: [alertMixin, studentUpdateAlertMixin],
+  mixins: [alertMixin],
   props: {
     totalNumber: {
       type: Number,
@@ -319,7 +312,6 @@ export default {
   },
   created() {
     this.$store.dispatch('penRequestBatch/getCodes');
-    this.resetAlert();
     this.initializeDetails();
   },
   beforeDestroy() {
@@ -775,7 +767,7 @@ export default {
       try {
         const student = JSON.parse(notificationData.eventPayload);
         if (student?.pen && (this.possibleMatches?.some(el => el?.pen === student.pen))) {
-          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen}, present in possible matches is updated by ${student.updateUser}. Please select this record from pen request files again.`);
+          this.setWarningAlert(`Student details for ${student.pen}, present in possible matches is updated by ${student.updateUser}. Please select this record from pen request files again.`);
           this.isStudentDataUpdated = true;
         }
       } catch (e) {

@@ -37,11 +37,10 @@ const promMid = require('express-prometheus-middleware');
 const Redis = require('./util/redis/redis-client');
 Redis.init(); // call the init to initialize appropriate client, and reuse it across the app.
 const messagePubSub = require('./messaging/message-pub-sub');
-messagePubSub.init();
-if('true' === config.get('messaging:stanEnabled')){
-  const stan = require('./messaging/stan-client');
-  stan.init();
-}
+messagePubSub.init().then(() => {
+  require('./messaging/handlers/saga-message-handler').subscribe();
+  require('./messaging/handlers/jetstream-subscriber').subscribe();
+}).catch((e) => log.error(e));
 //initialize app
 const app = express();
 const nocache = require('nocache');

@@ -1,58 +1,5 @@
 <template>
   <div>
-    <v-alert
-      :value="rejectAlertSuccess"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      class="bootstrap-success"
-    >
-      {{`${requestTypeLabel} updated and email sent to student.`}}
-    </v-alert>
-    <v-alert
-      :value="rejectAlertFailure"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      class="bootstrap-error"
-    >
-      {{`${requestTypeLabel} failed to update. Please navigate to the list and select this ${requestTypeLabel} again.`}}
-    </v-alert>
-    <v-alert
-      :value="rejectAlertWarning"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      class="bootstrap-warning"
-    >
-      {{`${requestTypeLabel} updated, but email to student failed. Please contact support.`}}
-    </v-alert>
-    <v-alert
-      :value="rejectOperationSuccessful"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      class="bootstrap-success" >
-      {{rejectOperationOutcomeMessage}}
-    </v-alert>
-    <v-alert
-      :value="rejectOperationSuccessful === false"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      class="bootstrap-error">
-      {{rejectOperationOutcomeMessage}}
-    </v-alert>
     <v-card flat class="pa-3" :disabled="!isRejectEnabledForUser">
       <v-form ref="form" v-model="validForm">
         <v-card-text class="pa-0">
@@ -88,6 +35,7 @@ import { replaceMacro } from '../utils/macro';
 import {mapGetters, mapMutations} from 'vuex';
 import {AccessEnabledForUser} from '../common/role-based-access';
 import PrimaryButton from './util/PrimaryButton';
+import alertMixin from '../mixins/alertMixin';
 export default {
   name: 'requestReject',
   components: {PrimaryButton},
@@ -113,16 +61,13 @@ export default {
       required: true
     },
   },
+  mixins: [alertMixin],
   data () {
     return {
       validForm: false,
       requiredRules: [v => !!v || 'Required'],
-      rejectAlertSuccess: false,
-      rejectAlertFailure: false,
-      rejectAlertWarning: false,
       rejectComment: null,
       isRejectEnabledForUser:false,
-      rejectOperationSuccessful: null,
       rejectOperationOutcomeMessage : null,
     };
   },
@@ -159,8 +104,8 @@ export default {
         let notificationData = val;
         if (notificationData[`${this.requestType}ID`] && notificationData[`${this.requestType}ID`] === this.requestId && notificationData.sagaStatus === 'COMPLETED'
           && (notificationData.sagaName === 'PEN_REQUEST_REJECT_SAGA' || notificationData.sagaName === 'STUDENT_PROFILE_REJECT_SAGA') ) {
-          this.rejectOperationSuccessful = true;
           this.rejectOperationOutcomeMessage = 'Your request to reject is now completed.';
+          this.setSuccessAlert(this.rejectOperationOutcomeMessage);
         }
       }
     }
@@ -175,7 +120,6 @@ export default {
       this.rejectComment = replaceMacro(this.rejectComment, this.rejectMacros);
     },
     submitReject() {
-      this.rejectOperationSuccessful = null;
       this.rejectOperationOutcomeMessage = null;
       if (this.$refs.form.validate()) {
         this.beforeSubmit();
@@ -184,17 +128,17 @@ export default {
         ApiService.apiAxios
           .post(Routes[this.requestType].REJECT_URL, this.prepPut(this.requestId, this.request))
           .then(() => {
-            this.rejectOperationSuccessful = true;
             this.rejectOperationOutcomeMessage = 'Your request to reject is accepted.';
+            this.setSuccessAlert(this.rejectOperationOutcomeMessage);
           })
           .catch(error => {
             console.log(error);
             if (error.response.data && error.response.data.code && error.response.data.code === 409) {
-              this.rejectOperationSuccessful = false;
               this.rejectOperationOutcomeMessage = 'Another saga is in progress for this request, please try again later.';
+              this.setFailureAlert(this.rejectOperationOutcomeMessage);
             } else {
-              this.rejectOperationSuccessful = false;
               this.rejectOperationOutcomeMessage = 'Your request to reject could not be accepted, please try again later.';
+              this.setFailureAlert(this.rejectOperationOutcomeMessage);
             }
             this.submitted();
           });

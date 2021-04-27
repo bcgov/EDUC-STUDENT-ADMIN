@@ -8,7 +8,6 @@
     <v-card fluid class="px-6 pt-2" elevation="0">
       <v-row>
         <div class="flex-grow-1 pt-0 px-3">
-          <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000" margin="mx-0"></AlertMessage>
           <DataListItem
             v-for="(item, i) in fileItems"
             :key="item.name + i"
@@ -31,6 +30,7 @@
         :items="penWebBlobs"
         hide-default-footer
         :loading="loadingTable"
+        :items-per-page="1000"
       >
         <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
           <span :title="header.tooltip" :key="h.id" :class="{'file-column' : !header.countable}">
@@ -51,7 +51,6 @@
 
 <script>
 import PrimaryButton from '@/components/util/PrimaryButton';
-import AlertMessage from '@/components/util/AlertMessage';
 import alertMixin from '@/mixins/alertMixin';
 import DataListItem from '@/components/util/DataListItem';
 import ApiService from '@/common/apiService';
@@ -64,7 +63,6 @@ export default {
   mixins: [alertMixin],
   components: {
     PrimaryButton,
-    AlertMessage,
     DataListItem,
   },
   props: {
@@ -166,10 +164,10 @@ export default {
         }
       };
       ApiService.apiAxios
-        .get(Routes.penRequestBatch.SOURCE_URL, req)
+        .get(Routes.penRequestBatch.SOURCE_METADATA_URL, req)
         .then(response => {
           if (response.data) {
-            this.penWebBlobs = response.data;
+            this.penWebBlobs = _.orderBy(response.data, ['insertDateTime'], ['desc']);
           }
         })
         .catch(error => {
@@ -203,10 +201,10 @@ export default {
         });
     },
     formateDate(dateTime) {
-      return formatDateTime(dateTime,'uuuu-MM-dd\'T\'HH:mm:ss','uuuu/MM/dd');
+      return formatDateTime(dateTime,'uuuu-MM-dd\'T\'HH:mm:ss','uuuu/MM/dd', true);
     },
     formateTime(dateTime, timeFormat = 'HH:mm:ss') {
-      return formatDateTime(dateTime,'uuuu-MM-dd\'T\'HH:mm:ss', timeFormat);
+      return formatDateTime(dateTime,'uuuu-MM-dd\'T\'HH:mm:ss', timeFormat, true);
     }
   }
 };
@@ -228,6 +226,7 @@ export default {
 
   #fileHistoryTable /deep/ table td{
     text-align: center !important;
+    border-bottom: none !important;
   }
 
   #fileHistoryTable /deep/ table td:nth-child(2),

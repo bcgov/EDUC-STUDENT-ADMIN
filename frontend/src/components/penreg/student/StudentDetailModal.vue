@@ -16,14 +16,10 @@
           </v-list-item-icon>
         </v-list-item>
         <v-col>
-          <v-row class="mx-3">
-            <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000" class="mt-2 px-6"></AlertMessage>
-          </v-row>
           <StudentDetailCommon 
             class="mx-3"
             :studentID="studentID"
             :fullReadOnly="true"
-            @alert="setFailureAlert"
           >
             <template v-slot:buttonbar>
               <v-row>
@@ -50,7 +46,6 @@ import StudentDetailCommon from '../../common/StudentDetailCommon';
 import PrimaryButton from '../../util/PrimaryButton';
 import router from '../../../router';
 import {REQUEST_TYPES} from '@/utils/constants';
-import AlertMessage from '../../util/AlertMessage';
 import alertMixin from '../../../mixins/alertMixin';
 
 export default {
@@ -77,8 +72,7 @@ export default {
   },
   components: {
     PrimaryButton,
-    StudentDetailCommon,
-    AlertMessage
+    StudentDetailCommon
   },
   data() {
     return {

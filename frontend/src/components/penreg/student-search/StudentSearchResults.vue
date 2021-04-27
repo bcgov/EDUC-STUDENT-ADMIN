@@ -1,9 +1,5 @@
 <template>
   <div id="searchResults" class="px-3" style="width: 100%" :overlay=false>
-    <v-row>
-      <AlertMessage v-model="studentUpdateAlert" :alertMessage="studentUpdateAlertMessage"
-                    :alertType="studentUpdateAlertType"></AlertMessage>
-    </v-row>
     <v-row no-gutters>
       <v-col>
         <span id="numberResults" class="px-4 pb-2">{{ studentSearchResponse.totalElements }} Results</span>
@@ -80,13 +76,12 @@ import ApiService from '../../../common/apiService';
 import {REQUEST_TYPES, Routes, STUDENT_CODES} from '@/utils/constants';
 import router from '../../../router';
 import CompareDemographicModal from '../../common/CompareDemographicModal';
-import studentUpdateAlertMixin from '@/mixins/student-update-alert-mixin';
-import AlertMessage from '@/components/util/AlertMessage';
+import alertMixin from '../../../mixins/alertMixin';
 
 export default {
   name: 'SearchResults',
-  components: {CompareDemographicModal, AlertMessage,},
-  mixins: [studentUpdateAlertMixin],
+  components: {CompareDemographicModal},
+  mixins: [alertMixin],
   props: {
     searchCriteria: {
       type: Object,
@@ -174,7 +169,7 @@ export default {
         const student = JSON.parse(notificationData.eventPayload);
         const isUpdatedStudentPresent = this.studentSearchResponse.content.some(el => el.studentID === student?.studentID);
         if (isUpdatedStudentPresent) {
-          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen}, is updated by ${student.updateUser}. Please do a search again`);
+          this.setWarningAlert(`Student details for ${student.pen}, is updated by ${student.updateUser}. Please do a search again`);
           this.isStudentDataUpdated = true;
         }
       }

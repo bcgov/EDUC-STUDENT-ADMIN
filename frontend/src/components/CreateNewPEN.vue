@@ -5,10 +5,6 @@
       <div class="full-width">
         <v-row class="pt-0">
           <v-col cols="12 pt-0">
-            <v-row>
-              <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"
-                            :timeout-ms="5000"></AlertMessage>
-            </v-row>
             <StudentDetailsInfoPanel
                     :student.sync="student"
                     key="info-panel"
@@ -63,7 +59,6 @@ import PenMatchResultsTable from '@/components/common/PenMatchResultsTable';
 import ApiService from '../common/apiService';
 import {Routes} from '@/utils/constants';
 import { constructPenMatchObjectFromStudent, getPossibleMatches } from '@/utils/common';
-import AlertMessage from '../components/util/AlertMessage';
 import StudentDetailsInfoPanel from './common/StudentDetailsInfoPanel';
 
 export default {
@@ -71,8 +66,7 @@ export default {
   components: {
     StudentDetailsInfoPanel,
     PenMatchResultsTable,
-    PrimaryButton,
-    AlertMessage
+    PrimaryButton
   },
   mixins: [alertMixin],
   data() {

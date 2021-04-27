@@ -6,7 +6,6 @@
       persistent
   >
     <v-card class="studentDetailDialogCard fill-height ma-0 pa-4">
-      <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
       <div v-if="!loading" class="file-header-box">
         <span>{{`File: ${penWebBlob.fileName}`}}</span>
         <span>{{`Mincode: ${penWebBlob.mincode}`}}</span>
@@ -32,7 +31,6 @@
 </template>
 <script>
 import alertMixin from '@/mixins/alertMixin';
-import AlertMessage from '../../util/AlertMessage';
 import LinedTextArea from '../../util/LinedTextArea';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
@@ -40,7 +38,6 @@ import PrimaryButton from '@/components/util/PrimaryButton';
 export default {
   name: 'PrbFileModal',
   components: {
-    AlertMessage,
     PrimaryButton,
     LinedTextArea,
   },

@@ -40,9 +40,6 @@
         </v-col>
       </v-row>
     </v-card-title>
-    <v-row>
-      <AlertMessage v-model="searchError" :alertMessage="errorMessage" alertType="bootstrap-error"></AlertMessage>
-    </v-row>
     <v-divider></v-divider>
     <v-simple-table class="sldTable pb-2">
       <template v-slot:default>
@@ -137,10 +134,6 @@
         <TertiaryButton text="Less" icon="$minus" @click.native="updateSldTableRows(students.pen, sldDataTablesNumberOfRows[students.pen] - 10)"></TertiaryButton>
       </v-row>
     </div>
-    <v-row>
-      <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType"></AlertMessage>
-      <AlertMessage v-model="studentUpdateAlert" :alertMessage="studentUpdateAlertMessage" :alertType="studentUpdateAlertType" ></AlertMessage>
-    </v-row>
     <v-progress-linear
         indeterminate
         color="blue"
@@ -171,7 +164,6 @@ import PrimaryButton from '../util/PrimaryButton';
 import ApiService from '../../common/apiService';
 import {REQUEST_TYPES, Routes, STUDENT_CODES} from '@/utils/constants';
 import {isOlderThan, isValidPEN} from '@/utils/validation';
-import AlertMessage from '../util/AlertMessage';
 import alertMixin from '@/mixins/alertMixin';
 import servicesSagaMixin from '@/mixins/servicesSagaMixin';
 import router from '../../router';
@@ -179,14 +171,12 @@ import TertiaryButton from '../util/TertiaryButton';
 import {equalsIgnoreCase, getMatchedRecordsByStudent} from '@/utils/common';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import {mapGetters} from 'vuex';
-import studentUpdateAlertMixin from '@/mixins/student-update-alert-mixin';
 
 export default {
   name: 'CompareDemographicsCommon',
-  mixins: [alertMixin,servicesSagaMixin, studentUpdateAlertMixin],
+  mixins: [alertMixin,servicesSagaMixin],
   components: {
     TertiaryButton,
-    AlertMessage,
     PrimaryButton,
     ConfirmationDialog
   },
@@ -251,10 +241,11 @@ export default {
         {text: 'Birth Date', value: 'birthDate', key: 'dob', sortable: false, tooltip: 'Birth Date'}
       ],
       penToAdd: null,
-      searchError: false,
       penRules: [v => (!v || isValidPEN(v)) || this.penHint],
       penHint: 'Invalid PEN',
-      errorMessage: 'Error! This student does not exist in the system.',
+      studentDNEErrorMessage: 'Error! This student does not exist in the system.',
+      penAlreadyAddedErrorMessage: 'Pen already added to compare list.',
+      fetchingStudentErrorMessage: 'Error occurred while fetching student, Please try again later.',
       sldData: {},
       sldDataTablesToDisplay: {},
       sldDataTablesNumberOfRows: {},
@@ -288,12 +279,9 @@ export default {
     addPEN() {
       const isRecordAlreadyAdded = this.studentRecords.find(el => el.pen === this.penToAdd);
       if (isRecordAlreadyAdded) {
-        this.searchError = true;
-        this.errorMessage = 'Pen already added to compare list.';
+        this.setFailureAlert(this.penAlreadyAddedErrorMessage);
         return;
       }
-      this.alert = false;
-      this.searchError = false;
       this.getSldData(this.penToAdd);
       const student = this.studentDataMap.get(this.penToAdd);
       if (student) {
@@ -312,7 +300,7 @@ export default {
           })
           .catch(error => {
             console.log(error);
-            this.searchError = true;
+            this.setFailureAlert(this.studentDNEErrorMessage);
           })
           .finally(() => {
             this.penToAdd = null;
@@ -320,9 +308,7 @@ export default {
       }
     },
     clearError() {
-      this.searchError = false;
       this.penToAdd = null;
-      this.alert = false;
     },
     enterPushed() {
       this.addPEN();
@@ -330,8 +316,7 @@ export default {
     updateAddPen() {
       const isRecordAlreadyAdded = this.studentRecords.find(el => el.pen === this.truePen);
       if (isRecordAlreadyAdded) {
-        this.searchError = true;
-        this.errorMessage = 'Pen already added to compare list.';
+        this.setFailureAlert(this.penAlreadyAddedErrorMessage);
         return;
       }
       this.penToAdd = this.truePen;
@@ -358,10 +343,9 @@ export default {
           }
         } catch (error) {
           if (error?.response?.status === 404 && error?.response?.data?.message) {
-            this.searchError = true;
+            this.setFailureAlert(this.studentDNEErrorMessage);
           } else {
-            this.searchError = true;
-            this.errorMessage = 'Error occurred while fetching student, Please try again later.';
+            this.setFailureAlert(this.fetchingStudentErrorMessage);
           }
         } finally {
           this.isLoadingStudent = false;
@@ -388,7 +372,7 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          this.searchError = true;
+          this.setFailureAlert(this.studentDNEErrorMessage);
         });
     },
     isValidPEN,
@@ -475,9 +459,6 @@ export default {
     async twin() {
       const selectedStudents = this.getSelectedStudents();
 
-      this.alert = false;
-      this.searchError = false;
-
       // Determine which is the oldest, which will be mergedToPen
       let student = selectedStudents[0];
       let twinStudent =  selectedStudents[1];
@@ -519,9 +500,6 @@ export default {
     async merge() {
       const selectedStudents = this.getSelectedStudents();
 
-      this.alert = false;
-      this.searchError = false;
-
       // Determine which is the oldest, which will be mergedToPen
       if (this.isOlderThan(selectedStudents[0].createDate, selectedStudents[1].createDate)) {
         this.mergedToStudent = selectedStudents[0];
@@ -560,9 +538,6 @@ export default {
     async demerge() {
       const selectedStudents = this.getSelectedStudents();
 
-      this.alert = false;
-      this.searchError = false;
-
       if (selectedStudents[0].statusCode === 'M') { // This check is enough as validateDemerge is performed before.
         this.mergedFromStudent = selectedStudents[0];
         this.mergedToStudent = selectedStudents[1];
@@ -582,7 +557,7 @@ export default {
       try {
         const student = JSON.parse(notificationData.eventPayload);
         if (student?.pen &&  !this.isProcessing && this.studentRecords?.some(el => el?.pen === student.pen)) {
-          this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+          this.setWarningAlert(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
           this.isStudentDataUpdated = true;
         }
       } catch (e) {

@@ -56,10 +56,6 @@
           ></StudentAuditHistoryDetailCard>
         </v-col>
       </v-row>
-      <v-row>
-        <AlertMessage v-model="alert" :alertMessage="alertMessage" :alertType="alertType" :timeoutMs="3000" class="mt-2"></AlertMessage>
-        <AlertMessage v-model="studentUpdateAlert" :alertMessage="studentUpdateAlertMessage" :alertType="studentUpdateAlertType" ></AlertMessage>
-      </v-row>
       <v-card-actions class="pt-0 pr-0">
         <v-spacer></v-spacer>
         <PrimaryButton id="closeSplitPenModal" class="mx-1" text="Cancel" secondary @click.native="closeModal"></PrimaryButton>
@@ -75,19 +71,16 @@ import PrimaryButton from '../../util/PrimaryButton';
 import StudentAuditHistoryDetailCard from './StudentAuditHistoryDetailCard';
 import router from '../../../router';
 import {Routes} from '@/utils/constants';
-import AlertMessage from '../../util/AlertMessage';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
 import {mapGetters, mapMutations, mapState} from 'vuex';
-import studentUpdateAlertMixin from '@/mixins/student-update-alert-mixin';
 
 export default {
   name: 'SplitPenModal',
-  mixins: [alertMixin, studentUpdateAlertMixin],
+  mixins: [alertMixin],
   components: {
     StudentAuditHistoryDetailCard,
     PrimaryButton,
-    AlertMessage
   },
   props: {
     disabled: {
@@ -141,7 +134,7 @@ export default {
             if (student?.pen && student?.pen === this.studentDetail?.pen && !this.hasSagaInProgress) { // dont show if it is part of the saga.
               this.isStudentDataUpdated = true;
               this.$emit('isStudentUpdated', true);
-              this.setWarningAlertForStudentUpdate(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+              this.setWarningAlert(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
             }
           } catch (e) {
             console.error(e);
@@ -187,7 +180,7 @@ export default {
           console.error(error);
           this.resetStudentInProcessStatus(this.studentDetail.studentID);
           if (error?.response?.data?.code === 409) {
-            this.setErrorAlertForStudentUpdate(error?.response?.data?.message);
+            this.setFailureAlert(error?.response?.data?.message);
           } else {
             this.setFailureAlert('Your request to split pen could not be accepted. Please try again later.');
           }
