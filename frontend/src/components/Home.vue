@@ -203,6 +203,7 @@ export default {
             subsequent: gmp.value.data.numSubsRev
           });
         }else {
+          this.setFailureAlert('Error loading Get My PEN row data. Try refreshing the page.');
           this.studentData.push({
             title: 'Get My PEN',
             error: true
@@ -217,6 +218,7 @@ export default {
             subsequent: ump.value.data.numSubsRev
           });
         }else {
+          this.setFailureAlert('Error loading Update My PEN row data. Try refreshing the page.');
           this.studentData.push({
             title: 'Update My PEN',
             error: true
