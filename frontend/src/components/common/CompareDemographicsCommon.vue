@@ -13,7 +13,7 @@
               dense
               label="Enter a PEN"
               @keyup.enter="enterPushed()"
-              @keyup="checkStudentStatusForValidPen()"
+              @input="checkStudentStatusForValidPen()"
               maxlength="9"
               :disabled="studentRecords.length > 2"
               :rules="penRules"

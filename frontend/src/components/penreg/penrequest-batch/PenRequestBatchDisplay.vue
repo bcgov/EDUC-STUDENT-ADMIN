@@ -228,7 +228,7 @@ export default {
         { width: '520px', messagePadding: 'px-4 pt-4', color: '', dark: false, closeIcon: true, divider: true, subtitle: true, resolveText: 'Confirm' }
       );
       if(result) {
-        const filesIDsWithFixable = this.selectedFiles.filter(prb => prb?.fixableCount > 0).map(file => file.penRequestBatchID);
+        const filesIDsWithFixableNumber = this.selectedFiles.filter(prb => prb?.fixableCount > 0).map(file => file.penRequestBatchID).length;
         const filesIDsWithoutFixable = this.selectedFiles.filter(prb => prb?.fixableCount === 0).map(file => {
           return {
             penRequestBatchID: file.penRequestBatchID,
@@ -237,26 +237,25 @@ export default {
         });
 
         this.loadingFiles = true;
-        Promise.allSettled([
-          ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/archiveFiles`, { penRequestBatchIDs: filesIDsWithFixable}),
-          ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/archiveAndReturnFiles`, { penRequestBatchIDs: filesIDsWithoutFixable})
-        ]).then(([archiveFixable, archiveAndReturn]) => {
-          const archivedFixableNumber = archiveFixable?.value?.data?.length;
-          const archivedAndReturnedNumber = archiveAndReturn?.value?.data?.length;
-          const totalArchivedNumber = archivedFixableNumber + archivedAndReturnedNumber;
-          const archivedMessage = `Archive requests for ${totalArchivedNumber} PEN Request ${pluralize('File', totalArchivedNumber)} ${pluralize('has', totalArchivedNumber)} been initiated.`;
-          
-          if(archiveAndReturn?.value?.data) {
-            archiveAndReturn?.value?.data?.forEach(response => {
-              this.inProgressSagaIDs.push({sagaID: response.sagaId, penRequestBatchID: response.penRequestBatchID});
-            });
-          }
-          if(totalArchivedNumber === fileNumber) {
-            this.setSuccessAlert(`Success! ${archivedMessage}`);
-          } else {
-            this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
-          }
-        })
+        ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/archiveAndReturnFiles`, { penRequestBatchIDs: filesIDsWithoutFixable})
+          .then((archiveAndReturnResponse) => {
+            const archivedAndReturnedNumber = archiveAndReturnResponse?.data?.length;
+            let archivedMessage = `Archive requests for ${archivedAndReturnedNumber} PEN Request ${pluralize('File', archivedAndReturnedNumber)} ${pluralize('has', archivedAndReturnedNumber)} been initiated.`;
+            if (filesIDsWithFixableNumber > 0) {
+              archivedMessage += `\n${filesIDsWithFixableNumber} PEN Request ${pluralize('File', filesIDsWithFixableNumber)} with FIXABLE records ${pluralize('has', filesIDsWithFixableNumber)} been withheld.`;
+            }
+            
+            if(archiveAndReturnResponse?.data) {
+              archiveAndReturnResponse?.data?.forEach(response => {
+                this.inProgressSagaIDs.push({sagaID: response.sagaId, penRequestBatchID: response.penRequestBatchID});
+              });
+            }
+            if(archivedAndReturnedNumber + filesIDsWithFixableNumber === fileNumber) {
+              this.setSuccessAlert(`Success! ${archivedMessage}`);
+            } else {
+              this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
+            }
+          })
           .catch(error => {
             this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
             console.log(error);

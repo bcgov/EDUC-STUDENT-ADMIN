@@ -2,6 +2,7 @@
 
   <v-app id="app">
     <Header/>
+    <SnackBar></SnackBar>
     <NavBar v-if="pageTitle && isAuthenticated" :title="pageTitle"></NavBar>
     <v-btn
             v-scroll="onScroll"
@@ -25,7 +26,6 @@
     <v-main fluid class="align-start px-8 mb-0">
       <ModalIdle v-if="isAuthenticated"/>
       <router-view/>
-      <SnackBar></SnackBar>
     </v-main>
     <Footer/>
   </v-app>
@@ -93,33 +93,6 @@ export default {
   }
   #toTopBtn:hover {
     opacity: 1;
-  }
-  .v-alert.bootstrap-success {
-    color: #234720 !important;
-    background-color: #d9e7d8 !important;
-    border-color: #accbaa !important;
-  }
-
-  .v-alert.bootstrap-info {
-    color: #4e6478;
-    background-color: #eaf2fa !important;
-    border-color: #b8d4ee !important;
-  }
-
-  .v-alert.bootstrap-warning {
-    color: #81692c;
-    background-color: #fef4dd !important;
-    border-color: #fbdb8b !important;
-  }
-
-  .v-alert.bootstrap-error {
-    color: #712024;
-    background-color: #f7d8da !important;
-    border-color: #eeaaad !important;
-  }
-
-  .v-alert--text:before {
-    background-color: transparent;
   }
 
   .v-application {

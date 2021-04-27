@@ -4,8 +4,6 @@ import {mapMutations} from 'vuex';
 export default {
   data() {
     return {
-      alert: false,
-      alertMessage: null,
       alertType: null,
     };
   },

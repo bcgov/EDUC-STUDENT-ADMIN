@@ -1,25 +1,5 @@
 <template>
   <div>
-    <v-alert
-      :value="returnOperationSuccessful"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      class="bootstrap-success" >
-      {{returnMessage}}
-    </v-alert>
-    <v-alert
-      :value="returnOperationSuccessful === false"
-      dense
-      text
-      dismissible
-      outlined
-      transition="scale-transition"
-      class="bootstrap-error">
-      {{returnMessage}}
-    </v-alert>
     <v-card flat class="pa-3" :disabled="!isRequestMoreInfoEnabledForUser">
       <v-form ref="returnForm">
         <v-card-text class="pa-0">
