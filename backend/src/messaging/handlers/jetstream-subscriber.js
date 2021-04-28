@@ -29,7 +29,7 @@ const handleJetStreamMessage = async (err, msg) => {
     return;
   }
   const data = JSON.parse(StringCodec().decode(msg.data)); // it would always be a JSON string. ii will always be choreographed event.
-  logger.debug(`Received message, on ${msg.subject} , Sequence ::  [${msg.seq}], sid ::  [${msg.sid}], redelivered ::  [${msg.redelivered}] :: Data ::`, data);
+  logger.info(`Received message, on ${msg.subject} , Sequence ::  [${msg.seq}], sid ::  [${msg.sid}], redelivered ::  [${msg.redelivered}] :: Data ::`, data);
   try {
     if (data.eventType === CONSTANTS.EVENT_TYPE.UPDATE_STUDENT && data.eventOutcome === CONSTANTS.EVENT_OUTCOME.STUDENT_UPDATED) {
       await handleStudentUpdatedEvent(data);
