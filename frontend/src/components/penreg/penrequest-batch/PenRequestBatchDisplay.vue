@@ -277,12 +277,7 @@ export default {
         { width: '520px', messagePadding: 'px-4 pt-4', color: '', dark: false, closeIcon: true, divider: true, subtitle: true, resolveText: 'Confirm' }
       );
       if(result) {
-        const files = this.selectedFiles.map(file => {
-          return {
-            penRequestBatchID: file.penRequestBatchID,
-            schoolName: this.mincodeSchoolNames.get(file?.mincode?.replace(' ', ''))
-          };
-        });
+        const files = this.selectedFiles.map(file => this.formatArchivePayload(file));
 
         this.loadingFiles = true;
         ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/archiveAndReturnFiles`, { penRequestBatchIDs: files})
@@ -310,6 +305,12 @@ export default {
             this.setSelectedFiles([]);
           });
       }
+    },
+    formatArchivePayload(file) {
+      return {
+        penRequestBatchID: file.penRequestBatchID,
+        schoolName: this.mincodeSchoolNames.get(file?.mincode?.replace(' ', ''))
+      };
     }
   }
 };
