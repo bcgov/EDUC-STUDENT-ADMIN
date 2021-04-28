@@ -43,7 +43,7 @@
               <v-list-item @click="archiveAndReturnFixedOnly">
                 <v-list-item-title>Return Except Fix</v-list-item-title>
               </v-list-item>
-              <v-list-item>
+              <v-list-item @click="archiveAndReturnAll">
                 <v-list-item-title>Return With Fix</v-list-item-title>
               </v-list-item>
               <v-list-item @click="archiveOnly">
@@ -65,7 +65,7 @@
             <v-row justify="space-between" no-gutters>
               <v-col class="pl-4 pt-4">
                 {{ archiveAndReturnMessage }}<br><br>
-                Note this action will not return any files to the submitting school if FIXABLE requests exist.
+                {{ archiveAndReturnSubtext }}
               </v-col>
               <v-btn id="closeBtn" text icon @click.native="cancel">
                 <v-icon color="#38598A">mdi-close</v-icon>
@@ -111,6 +111,7 @@ export default {
       filters:['Fixable'],
       loadingFiles: false,
       archiveAndReturnMessage: '',
+      archiveAndReturnSubtext: '',
       inProgressSagaIDs: []
     };
   },
@@ -225,6 +226,7 @@ export default {
     async archiveAndReturnFixedOnly() {
       const fileNumber = this.selectedFiles.length;
       this.archiveAndReturnMessage = `Please confirm that you would like to return the response files to ${fileNumber} PEN request ${pluralize('file', fileNumber)}.`;
+      this.archiveAndReturnSubtext = 'Note this action will not return any files to the submitting school if FIXABLE requests exist.';
       const result = await this.$refs.fixableConfirmationDialog.open(null,null,
         { width: '520px', messagePadding: 'px-4 pt-4', color: '', dark: false, closeIcon: true, divider: true, subtitle: true, resolveText: 'Confirm' }
       );
@@ -252,6 +254,48 @@ export default {
               });
             }
             if(archivedAndReturnedNumber + filesIDsWithFixableNumber === fileNumber) {
+              this.setSuccessAlert(`Success! ${archivedMessage}`);
+            } else {
+              this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
+            }
+          })
+          .catch(error => {
+            this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
+            console.log(error);
+          })
+          .finally(() => {
+            this.loadingFiles = false;
+            this.setSelectedFiles([]);
+          });
+      }
+    },
+    async archiveAndReturnAll() {
+      const fileNumber = this.selectedFiles.length;
+      this.archiveAndReturnMessage = `Please confirm that you would like to return the response files to ${fileNumber} PEN request ${pluralize('file', fileNumber)}.`;
+      this.archiveAndReturnSubtext = 'Note this action will not return all files to the submitting school.';
+      const result = await this.$refs.fixableConfirmationDialog.open(null,null,
+        { width: '520px', messagePadding: 'px-4 pt-4', color: '', dark: false, closeIcon: true, divider: true, subtitle: true, resolveText: 'Confirm' }
+      );
+      if(result) {
+        const files = this.selectedFiles.map(file => {
+          return {
+            penRequestBatchID: file.penRequestBatchID,
+            schoolName: this.mincodeSchoolNames.get(file?.mincode?.replace(' ', ''))
+          };
+        });
+
+        this.loadingFiles = true;
+        ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/archiveAndReturnFiles`, { penRequestBatchIDs: files})
+          .then((archiveAndReturnResponse) => {
+            const archivedAndReturnedNumber = archiveAndReturnResponse?.data?.length;
+            let archivedMessage = `Archive requests for ${archivedAndReturnedNumber} PEN Request ${pluralize('File', archivedAndReturnedNumber)} ${pluralize('has', archivedAndReturnedNumber)} been initiated.`;
+
+            if(archiveAndReturnResponse?.data) {
+              archiveAndReturnResponse?.data?.forEach(response => {
+                this.inProgressSagaIDs.push({sagaID: response.sagaId, penRequestBatchID: response.penRequestBatchID});
+              });
+            }
+            if(archivedAndReturnedNumber === fileNumber) {
               this.setSuccessAlert(`Success! ${archivedMessage}`);
             } else {
               this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
