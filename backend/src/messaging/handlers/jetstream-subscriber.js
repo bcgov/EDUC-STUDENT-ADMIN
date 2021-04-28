@@ -35,7 +35,10 @@ const handleJetStreamMessage = async (err, msg) => {
       await handleStudentUpdatedEvent(data);
     } else if (data.eventType === CONSTANTS.EVENT_TYPE.CREATE_STUDENT && data.eventOutcome === CONSTANTS.EVENT_OUTCOME.STUDENT_CREATED) { // this scenario occurs for GMP complete as data is not migrated from VMS yet
       const student = JSON.parse(data.eventPayload); // the event payload is expected to be a student object as json string, so we parse it here.
-      await redis.getRedisClient().del(redisUtil.constructKeyForPenLock(student.pen)); // just delete the pen from redis lock
+      const value = await redis.getRedisClient().del(redisUtil.constructKeyForPenLock(student.pen)); // just delete the pen from redis lock
+      if (value) {
+        logger.info('locked pen deleted from redis', student.pen);
+      }
     }
     msg.ack(); // acknowledge to JetStream
   } catch (e) {
