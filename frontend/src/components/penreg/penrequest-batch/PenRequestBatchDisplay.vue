@@ -148,6 +148,7 @@ export default {
   },
   methods: {
     ...mapMutations('prbStudentSearch', ['clearPrbStudentSearchState']),
+    ...mapMutations('penRequestBatch', ['setSelectedFiles']),
     removeFilter(index) {
       this.filters.splice(index, 1);
     },
@@ -262,6 +263,7 @@ export default {
           })
           .finally(() => {
             this.loadingFiles = false;
+            this.setSelectedFiles([]);
           });
       }
     }
