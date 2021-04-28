@@ -232,12 +232,7 @@ export default {
       );
       if(result) {
         const filesIDsWithFixableNumber = this.selectedFiles.filter(prb => prb?.fixableCount > 0).map(file => file.penRequestBatchID).length;
-        const filesIDsWithoutFixable = this.selectedFiles.filter(prb => prb?.fixableCount === 0).map(file => {
-          return {
-            penRequestBatchID: file.penRequestBatchID,
-            schoolName: this.mincodeSchoolNames.get(file?.mincode?.replace(' ', ''))
-          };
-        });
+        const filesIDsWithoutFixable = this.selectedFiles.filter(prb => prb?.fixableCount === 0).map(file => this.formatArchivePayload(file));
 
         this.loadingFiles = true;
         ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/archiveAndReturnFiles`, { penRequestBatchIDs: filesIDsWithoutFixable})
