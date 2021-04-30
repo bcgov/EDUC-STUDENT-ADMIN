@@ -6,7 +6,15 @@
         <p class="mb-0">{{ this.label }}</p>
       </v-col>
       <v-col :cols="colspan" :id="name">
-        <p class="mb-0">{{ this.value }}</p>
+        <v-progress-circular
+          v-if="loading"
+          color="primary"
+          indeterminate
+          :size="18"
+          :width="2"
+          class="ml-3"
+        ></v-progress-circular>
+        <p v-else class="mb-0">{{ this.value }}</p>
       </v-col>
     </template>
   </v-row>
@@ -36,6 +44,10 @@ export default {
       type: String,
       required: true
     },
+    loading: {
+      type: Boolean,
+      default: false
+    }
   },
   computed: {
     breakLine() {
