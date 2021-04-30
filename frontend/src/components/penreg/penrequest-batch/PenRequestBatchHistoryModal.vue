@@ -14,6 +14,7 @@
             :name="item.name"
             :label="item.label"
             :value="item.value"
+            :loading="loadingPenCoord && item.type === 'coord'"
           ></DataListItem>
         </div>
         <div class="pt-0 d-flex justify-end">
@@ -79,6 +80,7 @@ export default {
     return {
       modalOpen: false,
       loadingTable: false,
+      loadingPenCoord: false,
       isProcessing: false,
       penWebBlobs: [],
       headers: [
@@ -88,6 +90,7 @@ export default {
         { text: 'Extract Date', value: 'extractDateTime', sortable: false, format: this.formateDate, tooltip: 'Extract Date' },
         { text: '', value: '', sortable: false},
       ],
+      penCoordinator: {},
     };
   },
   computed: {
@@ -96,8 +99,8 @@ export default {
       return [
         { name: 'district', label: this.districtFieldLabel, value: this.districtName },
         { name: 'school', label: this.schoolFieldLabel, value: this.batchFile.schoolName },
-        { name: 'coord', label: 'PEN Coord:', value: this.batchFile.contactName },
-        { name: 'email', label: 'Email:', value: this.batchFile.email },
+        { name: 'coord', label: 'PEN Coord:', value: this.penCoordinator.penCoordinatorName, type: 'coord' },
+        { name: 'email', label: 'Email:', value: this.penCoordinator.penCoordinatorEmail, type: 'coord' },
         { name: 'breakLine', label: '', value: '' },
         { name: 'fileName', label: 'File Name:', value: this.batchFile.fileName },
         { name: 'submission', label: 'Submission #:', value: this.batchFile.submissionNumber },
@@ -131,6 +134,7 @@ export default {
   },
   created() {
     this.modalOpen = this.value;
+    this.loadPenCoord();
     this.loadPenWebBlobs();
   },
   watch: {
@@ -175,6 +179,21 @@ export default {
           this.setFailureAlert('An error occurred while loading the pen web blob. Please try again later.');
         })
         .finally(() => (this.loadingTable = false));
+    },
+    loadPenCoord() {
+      this.loadingPenCoord = true;
+      ApiService.apiAxios
+        .get(`${Routes.SCHOOL_DATA_URL}/${this.batchFile.mincode}/penCoordinator`)
+        .then(response => {
+          if (response.data) {
+            this.penCoordinator = response.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          this.setFailureAlert('An error occurred while loading the pen coordinator data. Please try again later.');
+        })
+        .finally(() => (this.loadingPenCoord = false));
     },
     repostReports() {
       this.isProcessing = true;

@@ -1,5 +1,6 @@
 'use strict';
-const {logApiError, errorResponse} = require('./utils');
+const config = require('../config/index');
+const {getBackendToken, getData, logApiError, errorResponse} = require('./utils');
 const cacheService = require('./cache-service');
 
 async function getSchoolByMincode(req, res) {
@@ -24,6 +25,19 @@ async function getSchoolByMincode(req, res) {
   }
 }
 
+async function getPenCoordinatorByMincode(req, res) {
+  const token = getBackendToken(req);
+  try {
+    const url = `${config.get('server:schoolAPIURL')}/schools/${req.params.mincode}/pen-coordinator`;
+    const data = await getData(token, url);
+    return res.status(200).json(data);
+  } catch (e) {
+    logApiError(e, 'getPenCoordinatorByMincode', 'Error occurred while attempting to GET pen coordinator entity.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getSchoolByMincode,
+  getPenCoordinatorByMincode
 };
