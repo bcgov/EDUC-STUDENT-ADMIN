@@ -390,7 +390,7 @@ export default {
   }
   .v-data-table /deep/ tr td:nth-child(3),
   .v-data-table /deep/ tr td:nth-child(4) {
-    width: 18%;
+    width: 17%;
   }
   .v-data-table /deep/ tr td:nth-child(5) {
     width: 17%;
@@ -399,8 +399,11 @@ export default {
     width: 11%;
   }
   .v-data-table /deep/ tr td:nth-child(2),
-  .v-data-table /deep/ tr td:nth-child(7),
-  .v-data-table /deep/ tr td:nth-child(8) {
+  .v-data-table /deep/ tr td:nth-child(7) {
     width: 10%;
+  }
+
+  .v-data-table /deep/ tr td:nth-child(8) {
+    width: 12%;
   }
 </style>

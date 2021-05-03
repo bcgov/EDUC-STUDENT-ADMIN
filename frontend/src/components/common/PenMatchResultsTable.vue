@@ -59,16 +59,26 @@
                       <span v-else class="bottom-column-item"> </span>
                     </span>
                     <span v-else>
-                      <a class="pen-link" @click="popStudentDialog(props.item['studentID'])"
-                         v-if="header.topValue==='pen' && isPenLink">
-                        <span
-                            :class="['top-column-item', 'pen-link', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
+                      <span v-if="header.topValue==='pen'">
+                        <a class="pen-link" @click="popStudentDialog(props.item['studentID'])" v-if="isPenLink">
+                          <span
+                              :class="['top-column-item', 'pen-link', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
+                            {{ formatPen(props.item[header.topValue]) }}
+                          </span>
+                        </a>
+                        <span v-else :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
                           {{ formatPen(props.item[header.topValue]) }}
                         </span>
-                      </a>
-                      <span v-else-if="header.topValue==='pen'"
-                            :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
-                      {{ formatPen(props.item[header.topValue]) }}
+                        <v-tooltip top max-width="40vw" v-if="props.item['memo']">
+                          <template v-slot:activator="{ on }">
+                            <v-icon class="mx-1" v-on="on">
+                              sticky_note_2
+                            </v-icon>
+                          </template>
+                          <span>
+                            {{ props.item['memo'] }}
+                          </span>
+                        </v-tooltip>
                       </span>
                       <span v-else-if="header.topValue==='mincode'"
                             :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
@@ -102,7 +112,7 @@
                       <span v-else-if="props.item[header.bottomValue] !== props.item[header.topValue]"
                             :class="['bottom-column-item', props.item[header.bottomValue] && demogValuesMatch(header.bottomValue, props.item[header.bottomValue])? 'font-weight-bold':'']">
                         {{ props.item[header.bottomValue] }}
-                    </span>
+                      </span>
                     </span>
                   </div>
                 </td>
@@ -377,7 +387,7 @@ export default {
 }
 .v-data-table /deep/ tr td:nth-child(3),
 .v-data-table /deep/ tr td:nth-child(4) {
-  width: 18%;
+  width: 17%;
 }
 .v-data-table /deep/ tr td:nth-child(5) {
   width: 17%;
@@ -386,9 +396,12 @@ export default {
   width: 11%;
 }
 .v-data-table /deep/ tr td:nth-child(2),
-.v-data-table /deep/ tr td:nth-child(7),
-.v-data-table /deep/ tr td:nth-child(8) {
+.v-data-table /deep/ tr td:nth-child(7) {
   width: 10%;
+}
+
+.v-data-table /deep/ tr td:nth-child(8) {
+  width: 12%;
 }
 
 .pen-link {
