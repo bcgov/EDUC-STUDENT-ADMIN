@@ -99,6 +99,12 @@ export default {
     font-family: 'BCSans', Verdana, Arial, sans-serif !important;
   }
 
+  .v-alert.bootstrap-success {
+    color: #234720 !important;
+    background-color: #d9e7d8 !important;
+    border-color: #accbaa !important;
+  }
+
   .v-menu__content .v-btn {
     background-color: #38598a !important;
     margin-left: 1rem;
