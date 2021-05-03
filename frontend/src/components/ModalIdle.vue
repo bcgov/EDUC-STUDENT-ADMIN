@@ -28,7 +28,7 @@ export default {
       if (this.isAuthenticated) {
         try {
           const response = await ApiService.apiAxios
-              .get(Routes.SESSION_REMAINING_TIME);
+            .get(Routes.SESSION_REMAINING_TIME);
           if (response.data > 0) {
             setTimeout(() => {
               this.checkAndLogoutUserOnSessionExpiry();

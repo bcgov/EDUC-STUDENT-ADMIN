@@ -54,16 +54,23 @@
     </v-simple-table>
     <div v-for="(students, index) in studentRecords" :key="index" class="pb-2">
       <v-row id="studentDemographicsTableTopRow" class="studentDemographicsTable" no-gutters>
-        <span class="px-2 flexBox">
+        <span class="pl-2 pr-0 flexBox">
           <v-checkbox dense class="studentCheckbox pa-0 ma-0" color="#606060"
                       v-model="checkedStudents[index]"
                       @change.native="validateAction"></v-checkbox>
-          <a @click="updateSldRowDisplay(students.pen, !sldDataTablesToDisplay[students.pen])">
+          <a @click="updateSldRowDisplay(students.pen, !sldDataTablesToDisplay[students.pen])" class="ml-2">
             <v-icon small color="#1A5A96">{{sldDataTablesToDisplay[students.pen]?'fa-angle-down':'fa-angle-up'}}</v-icon>
           </a>
-          <a @click="openStudentDetails(students.studentID)">
+        <a @click="openStudentDetails(students.studentID)" class="ml-1 pr-1">
             {{ formatPen(students.pen) }}
           </a>
+          <v-tooltip bottom v-if="students['statusCode']==='M'">
+            <template v-slot:activator="{ on, attrs }">
+              <v-chip color="deep-purple" text-color="white" small v-if="students['statusCode']==='M'" class="px-2" v-bind="attrs"
+                      v-on="on">M</v-chip>
+            </template>
+            <span>Merged to {{students.truePen}}</span>
+          </v-tooltip>
         </span>
         <span v-for="(key, index) in studentDataHeaders" :key="index" class="pl-4 pr-3" :ref="key+`Col`">
                 <span v-if="key==='dob'" ref="dobText">
@@ -87,7 +94,7 @@
         <v-spacer></v-spacer>
         <a class="removePenLink pr-3" @click="removeRecord(students.studentID, index)">
             <v-icon small color="#38598A">mdi-close</v-icon>
-            Remove PEN
+            Remove Student
         </a>
       </v-row>
       <v-data-table v-show="sldDataTablesToDisplay[students.pen]"
@@ -260,6 +267,9 @@ export default {
     _.sortBy(this.selectedRecords, o => o.pen);
     this.studentRecords.forEach(student => {
       this.getSldData(student.pen);
+      if(student.trueStudentID) {
+        this.getTrueStudent(student, student.trueStudentID);
+      }
     });
     this.checkedStudents = [];
   },
@@ -335,7 +345,7 @@ export default {
           const student = studentResponse.data;
           this.studentDataMap.set(student.pen, student);
           if (student.statusCode === STUDENT_CODES.MERGED) {
-            const trueStudentResponse = await ApiService.apiAxios.get(Routes['student'].ROOT_ENDPOINT + '/demographics/' + student.trueStudentID);
+            const trueStudentResponse = await this.getTrueStudent(student, student.trueStudentID);
             this.studentDataMap.set(trueStudentResponse.data.pen, trueStudentResponse.data);
             this.truePenMessage = `${student.pen} is Merged to `;
             this.truePen = trueStudentResponse.data.pen;
@@ -374,6 +384,11 @@ export default {
           console.log(error);
           this.setFailureAlert(this.studentDNEErrorMessage);
         });
+    },
+    async getTrueStudent(student, trueStudentID) {
+      const trueStudent = await ApiService.apiAxios.get(Routes['student'].ROOT_ENDPOINT + '/demographics/' + trueStudentID);
+      student.truePen = trueStudent.data.pen;
+      return trueStudent;
     },
     isValidPEN,
     isOlderThan,
@@ -599,45 +614,45 @@ export default {
   }
   .studentDemographicsTable {
     background-color: #eeeeee;
-    font-size: 0.75rem;
-    font-weight: bold;
-    color: rgba(0, 0, 0, 0.6);
+    font-size: 0.875rem;
+    color: rgba(0, 0, 0, 1);
   }
   .studentDemographicsTable .bottom-field-item {
     font-style: italic;
   }
-  #studentDemographicsTableTopRow /deep/ span:nth-child(1) {
+  
+  #studentDemographicsTableTopRow > span:nth-child(1) {
     vertical-align: top;
     padding-top: 6px;
     width: 15%;
   }
 
-  #studentDemographicsTableTopRow /deep/ span:nth-child(2),
-  #studentDemographicsTableTopRow /deep/ span:nth-child(8) {
+  #studentDemographicsTableTopRow > span:nth-child(2),
+  #studentDemographicsTableTopRow > span:nth-child(8) {
     vertical-align: top;
     padding-top: 6px;
     width: 5%;
   }
-  #studentDemographicsTableTopRow /deep/ span:nth-child(3),
-  #studentDemographicsTableTopRow /deep/ span:nth-child(4) {
+  #studentDemographicsTableTopRow > span:nth-child(3),
+  #studentDemographicsTableTopRow > span:nth-child(4) {
     vertical-align: top;
     padding-top: 6px;
     width: 10%;
   }
-  #studentDemographicsTableTopRow /deep/ span:nth-child(9) {
+  #studentDemographicsTableTopRow > span:nth-child(9) {
     vertical-align: top;
     padding-top: 6px;
     width: 9%;
   }
-  #studentDemographicsTableTopRow /deep/ span:nth-child(10) {
+  #studentDemographicsTableTopRow > span:nth-child(10) {
     vertical-align: top;
     padding-top: 6px;
     text-align: right;
     width: 10%;
   }
-  #studentDemographicsTableTopRow /deep/ span:nth-child(5),
-  #studentDemographicsTableTopRow /deep/ span:nth-child(6),
-  #studentDemographicsTableTopRow /deep/ span:nth-child(7) {
+  #studentDemographicsTableTopRow > span:nth-child(5),
+  #studentDemographicsTableTopRow > span:nth-child(6),
+  #studentDemographicsTableTopRow > span:nth-child(7) {
     vertical-align: top;
     padding-top: 6px;
     width: 12%;
