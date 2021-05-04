@@ -70,6 +70,7 @@ import alertMixin from '../../../mixins/alertMixin';
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
 import CompareDemographicModal from '@/components/common/CompareDemographicModal';
 import {mapGetters} from 'vuex';
+import {sortArrayByDate} from '@/utils/common';
 
 export default {
   name: 'StudentSLDHistory',
@@ -135,6 +136,7 @@ export default {
     formatDob,
     formatMincode,
     formatPostalCode,
+    sortArrayByDate,
     getStudentName(student) {
       return `${student.legalLastName ? student.legalLastName + ',' : ''} ${student.legalFirstName ? student.legalFirstName : ''} ${student.legalMiddleNames ? student.legalMiddleNames : ''}`;
     },
@@ -143,7 +145,9 @@ export default {
       ApiService.apiAxios
         .get(Routes['sld'].STUDENT_HISTORY_URL + '/', {params: {pen: this.student.pen}})
         .then(response => {
-          this.sldData = response.data;
+          if (response?.data?.length > 0) {
+            this.sldData = this.sortArrayByDate(response.data, 'reportDate', false);
+          }
         }).catch(error => {
           this.setFailureAlert('Could not retrieve data from API, Please try again later.');
           console.log(error);

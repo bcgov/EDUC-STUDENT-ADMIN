@@ -175,7 +175,7 @@ import alertMixin from '@/mixins/alertMixin';
 import servicesSagaMixin from '@/mixins/servicesSagaMixin';
 import router from '../../router';
 import TertiaryButton from '../util/TertiaryButton';
-import {equalsIgnoreCase, getMatchedRecordsByStudent} from '@/utils/common';
+import {equalsIgnoreCase, getMatchedRecordsByStudent, sortArrayByDate} from '@/utils/common';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import {mapGetters} from 'vuex';
 
@@ -371,11 +371,15 @@ export default {
     formatMincode,
     formatPostalCode,
     formatPen,
+    sortArrayByDate,
     getMatchedRecordsByStudent,
     getSldData(pen) {
       ApiService.apiAxios
         .get(Routes['sld'].STUDENT_HISTORY_URL + '/', {params: {pen: pen}})
         .then(response => {
+          if (response?.data?.length > 0) {
+            response.data = this.sortArrayByDate(response.data, 'reportDate', false);
+          }
           this.$set(this.sldData, pen, response.data);
           this.updateSldRowDisplay(pen, true);
           this.updateSldTableRows(pen, 10);
@@ -620,7 +624,7 @@ export default {
   .studentDemographicsTable .bottom-field-item {
     font-style: italic;
   }
-  
+
   #studentDemographicsTableTopRow > span:nth-child(1) {
     vertical-align: top;
     padding-top: 6px;
