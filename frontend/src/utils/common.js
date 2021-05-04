@@ -2,8 +2,9 @@
 
 import {PEN_REQ_BATCH_STUDENT_REQUEST_CODES, Routes} from '@/utils/constants';
 import {filter, isPlainObject, sortBy} from 'lodash';
-
+import {getDateFormatter} from '@/utils/format';
 import ApiService from '../common/apiService';
+import {LocalDate} from '@js-joda/core';
 
 const clone = require('rfdc')();
 
@@ -200,3 +201,20 @@ export function setEmptyInputParams(params, ...excludedParams) {
 export function equalsIgnoreCase(param1, param2) {
   return param1?.toLowerCase() === param2?.toLowerCase();
 }
+
+export function sortArrayByDate(array, dateFieldName, isAscending, datePattern = 'uuuuMMdd') {
+  return array.sort((a, b) => {
+    const dateA = getLocalDateFromString(a[`${dateFieldName}`].toString(), datePattern);
+    const dateB = getLocalDateFromString(b[`${dateFieldName}`].toString(), datePattern);
+    return isAscending ? dateA.compareTo(dateB) : dateB.compareTo(dateA);
+  });
+}
+
+export const getLocalDateFromString = (date, pattern = 'uuuuMMdd') => {
+  const formatter = getDateFormatter(pattern);
+  try {
+    return LocalDate.parse(date, formatter);
+  } catch (e) {
+    console.error(`Error is ${e}`);
+  }
+};

@@ -4,11 +4,12 @@ export function formatPen(pen) {
   return pen && (pen.substring(0, 3) + ' ' + pen.substring(3, 6) + ' ' + pen.substring(6)) || '';
 }
 
-function getDateFormatter(pattern) {
+export function getDateFormatter(pattern) {
   return (new DateTimeFormatterBuilder)
     .appendPattern(pattern)
     .toFormatter(ResolverStyle.STRICT);
 }
+
 
 export function formatDateTime(datetime, from='uuuuMMdd', to='uuuu/MM/dd', hasTimePart=false) {
   const fromFormatter = getDateFormatter(from);
