@@ -3,7 +3,6 @@ import {Routes} from '@/utils/constants';
 import AuthService from '@/common/authService';
 
 // Buffer concurrent requests while refresh token is being acquired
-let isRefreshing = false;
 let failedQueue = [];
 
 function processQueue(error, token = null) {
@@ -34,7 +33,6 @@ const intercept = apiAxios.interceptors.response.use(config => config, error => 
           apiAxios.defaults.headers.common['Authorization'] = `Bearer ${response.jwtFrontend}`;
           originalRequest.headers['Authorization'] = `Bearer ${response.jwtFrontend}`;
         }
-
         processQueue(null, response.jwtFrontend);
         resolve(axios(originalRequest));
       })
@@ -43,9 +41,6 @@ const intercept = apiAxios.interceptors.response.use(config => config, error => 
         localStorage.removeItem('jwtToken');
         window.location = '/token-expired';
         reject(e);
-      })
-      .finally(() => {
-        isRefreshing = false;
       });
   });
 });
