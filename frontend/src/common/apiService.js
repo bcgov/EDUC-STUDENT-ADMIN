@@ -1,9 +1,8 @@
 import axios from 'axios';
-import { Routes } from '@/utils/constants';
+import {Routes} from '@/utils/constants';
 import AuthService from '@/common/authService';
 
 // Buffer concurrent requests while refresh token is being acquired
-let isRefreshing = false;
 let failedQueue = [];
 
 function processQueue(error, token = null) {
@@ -22,47 +21,28 @@ function processQueue(error, token = null) {
 const apiAxios = axios.create();
 const intercept = apiAxios.interceptors.response.use(config => config, error => {
   const originalRequest = error.config;
-  if (error.response.status === 401 && !originalRequest._retry) {
-    if (isRefreshing) {
-      return new Promise((resolve, reject) => {
-        try {
-          const token = failedQueue.push({ resolve, reject });
-          originalRequest.headers['Authorization'] = `Bearer ${token}`;
-          return axios(originalRequest);
-        } catch (e) {
-          return e;
-        }
-      });
-    }
-
-    originalRequest._retry = true;
-    isRefreshing = true;
-
-    return new Promise((resolve, reject) => {
-      AuthService.refreshAuthToken(localStorage.getItem('jwtToken'))
-        .then(response => {
-          if (response.jwtFrontend) {
-            localStorage.setItem('jwtToken', response.jwtFrontend);
-            apiAxios.defaults.headers.common['Authorization'] = `Bearer ${response.jwtFrontend}`;
-            originalRequest.headers['Authorization'] = `Bearer ${response.jwtFrontend}`;
-          }
-
-          processQueue(null, response.jwtFrontend);
-          resolve(axios(originalRequest));
-        })
-        .catch(e => {
-          processQueue(e, null);
-          localStorage.removeItem('jwtToken');
-          window.location='/token-expired';
-          reject(e);
-        })
-        .finally(() => {
-          isRefreshing = false;
-        });
-    });
+  if (error.response.status !== 401) {
+    return Promise.reject(error);
   }
-
-  return Promise.reject(error);
+  axios.interceptors.response.eject(intercept);
+  return new Promise((resolve, reject) => {
+    AuthService.refreshAuthToken(localStorage.getItem('jwtToken'))
+      .then(response => {
+        if (response.jwtFrontend) {
+          localStorage.setItem('jwtToken', response.jwtFrontend);
+          apiAxios.defaults.headers.common['Authorization'] = `Bearer ${response.jwtFrontend}`;
+          originalRequest.headers['Authorization'] = `Bearer ${response.jwtFrontend}`;
+        }
+        processQueue(null, response.jwtFrontend);
+        resolve(axios(originalRequest));
+      })
+      .catch(e => {
+        processQueue(e, null);
+        localStorage.removeItem('jwtToken');
+        window.location = '/token-expired';
+        reject(e);
+      });
+  });
 });
 
 function getCodes(url) {
