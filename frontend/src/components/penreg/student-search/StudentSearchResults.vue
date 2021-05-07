@@ -5,9 +5,18 @@
         <span id="numberResults" class="px-4 pb-2">{{ studentSearchResponse.totalElements }} Results</span>
       </v-col>
       <v-col>
+        <MergeStudentsModal v-if=mergeStudentsModalOpen
+            :mergeStudentsModalOpen=mergeStudentsModalOpen
+            :mergedToStudentID=mergedToStudentID
+            :mergedFromStudentID=mergedFromStudentID
+        />
+      </v-col>
+      <v-col>
         <CompareDemographicModal
             :disabled="isStudentDataUpdated || selectedRecords.length<2 || selectedRecords.length>3"
-            :selectedRecords.sync="selectedRecords"></CompareDemographicModal>
+            :selectedRecords.sync="selectedRecords"
+            @mergeStudentsModalOpenEmit=mergeStudentsModalOpenEmit
+            @mergeStudentsModalDataEmit=mergeStudentsModalDataEmit></CompareDemographicModal>
       </v-col>
     </v-row>
     <v-data-table
@@ -76,11 +85,12 @@ import ApiService from '../../../common/apiService';
 import {REQUEST_TYPES, Routes, STUDENT_CODES} from '@/utils/constants';
 import router from '../../../router';
 import CompareDemographicModal from '../../common/CompareDemographicModal';
+import MergeStudentsModal from '../../common/MergeStudentsModal';
 import alertMixin from '../../../mixins/alertMixin';
 
 export default {
   name: 'SearchResults',
-  components: {CompareDemographicModal},
+  components: {CompareDemographicModal, MergeStudentsModal},
   mixins: [alertMixin],
   props: {
     searchCriteria: {
@@ -143,6 +153,9 @@ export default {
         {topText: 'Mincode', bottomText: 'Twinned', topValue: 'mincode', bottomValue: 'twinned', sortable: false, topTooltip: 'Mincode', bottomTooltip: 'Twinned'},
       ],
       isStudentDataUpdated: false,
+      mergeStudentsModalOpen: false,
+      mergedToStudentID: '',
+      mergedFromStudentID: ''
     };
   },
   watch: {
@@ -256,6 +269,14 @@ export default {
     },
     isMergedOrDeceased(student) {
       return [STUDENT_CODES.MERGED, STUDENT_CODES.DECEASED].some(status => status === student.statusCode);
+    },
+    mergeStudentsModalOpenEmit(value){
+      this.mergeStudentsModalOpen = value;
+    },
+    mergeStudentsModalDataEmit(data){
+      console.log(data, 'data in student search results');
+      this.mergedToStudentID = data.mergedToStudentID;
+      this.mergedFromStudentID = data.mergedFromStudentID;
     }
   }
 };

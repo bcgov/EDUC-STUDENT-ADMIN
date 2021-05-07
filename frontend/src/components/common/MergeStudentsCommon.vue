@@ -1,5 +1,4 @@
 <template>
-  <!-- changed to MergeStudentsCommon with MergeStudentsModal (not sure if this file should be kept -->
   <v-form id="mergeStudentForm"
           v-model="validForm" class="fill-height">
   <v-container fluid class="fill-height ma-0 pa-2 studentDetail">
@@ -328,7 +327,7 @@ import router from '@/router';
 import ApiService from '@/common/apiService';
 
 export default {
-  name: 'MergeStudents',
+  name: 'MergeStudentsCommon',
   mixins: [alertMixin,schoolMixin,servicesSagaMixin],
   props: {
     mergedToStudentID: {

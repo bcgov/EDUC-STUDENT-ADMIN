@@ -544,15 +544,22 @@ export default {
         return;
       }
 
-      await router.push(
+      this.$emit('mergeStudentsModalDataEmit',
         {
-          name: 'mergeStudents',
-          params: {
-            mergedToStudentID: this.mergedToStudent.studentID,
-            mergedFromStudentID: this.mergedFromStudent.studentID
-          }
+          mergedToStudentID: this.mergedToStudent.studentID,
+          mergedFromStudentID: this.mergedFromStudent.studentID
         }
       );
+      console.log('hello');
+      // await router.push(
+      //   {
+      //     name: 'mergeStudents',
+      //     params: {
+      //       mergedToStudentID: this.mergedToStudent.studentID,
+      //       mergedFromStudentID: this.mergedFromStudent.studentID
+      //     }
+      //   }
+      // );
     },
     async demerge() {
       const selectedStudents = this.getSelectedStudents();
