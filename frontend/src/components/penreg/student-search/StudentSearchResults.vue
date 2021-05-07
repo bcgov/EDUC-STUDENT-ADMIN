@@ -5,6 +5,8 @@
         <span id="numberResults" class="px-4 pb-2">{{ studentSearchResponse.totalElements }} Results</span>
       </v-col>
       <v-col>
+      </v-col>
+      <v-col>
         <CompareDemographicModal
             :disabled="isStudentDataUpdated || selectedRecords.length<2 || selectedRecords.length>3"
             :selectedRecords.sync="selectedRecords"></CompareDemographicModal>
@@ -142,7 +144,7 @@ export default {
         {topText: 'Birth Date', bottomText: 'Grade', topValue: 'dob', bottomValue: 'gradeCode', sortable: false, topTooltip: 'Birth Date', bottomTooltip: 'Grade'},
         {topText: 'Mincode', bottomText: 'Twinned', topValue: 'mincode', bottomValue: 'twinned', sortable: false, topTooltip: 'Mincode', bottomTooltip: 'Twinned'},
       ],
-      isStudentDataUpdated: false,
+      isStudentDataUpdated: false
     };
   },
   watch: {
@@ -256,7 +258,7 @@ export default {
     },
     isMergedOrDeceased(student) {
       return [STUDENT_CODES.MERGED, STUDENT_CODES.DECEASED].some(status => status === student.statusCode);
-    }
+    },
   }
 };
 </script>

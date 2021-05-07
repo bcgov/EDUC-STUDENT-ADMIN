@@ -28,7 +28,6 @@ import BackendSessionExpired from '@/components/BackendSessionExpired';
 import UnAuthorizedPage from './components/UnAuthorizedPage';
 import PenMatch from './components/penreg/PenMatch';
 import CompareStudents from './components/CompareStudents';
-import MergeStudents from './components/penreg/student/MergeStudents';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -149,17 +148,6 @@ const router = new VueRouter({
         requiresAuth: true,
         role: 'isValidStudentSearchUser',
         saveSearch: true
-      }
-    },
-    {
-      path: '/mergeStudents/:mergedToStudentID/:mergedFromStudentID',
-      name: REQUEST_TYPES.mergeStudents.name,
-      component: MergeStudents,
-      props: true,
-      meta: {
-        pageTitle: PAGE_TITLES.MERGE_STUDENTS,
-        requiresAuth: true,
-        role: 'isValidStudentSearchUser',
       }
     },
     {

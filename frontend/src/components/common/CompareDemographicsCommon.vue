@@ -1,5 +1,11 @@
 <template>
   <v-card fluid class="px-4" elevation="0">
+    <MergeStudentsModal v-if=mergeStudentsModalOpen
+                        :mergeStudentsModalOpen=mergeStudentsModalOpen
+                        :mergedToStudentID=mergedToStudentID
+                        :mergedFromStudentID=mergedFromStudentID
+                        @mergeStudentsModalOpenEmit=mergeStudentsModalOpenEmit
+    />
     <v-card-title class="px-0 pb-0">
       <v-row>
         <v-col v-if="title" cols="2" class="pr-0">
@@ -178,6 +184,7 @@ import TertiaryButton from '../util/TertiaryButton';
 import {equalsIgnoreCase, getMatchedRecordsByStudent, sortArrayByDate} from '@/utils/common';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import {mapGetters} from 'vuex';
+import MergeStudentsModal from '@/components/common/MergeStudentsModal';
 
 export default {
   name: 'CompareDemographicsCommon',
@@ -185,7 +192,8 @@ export default {
   components: {
     TertiaryButton,
     PrimaryButton,
-    ConfirmationDialog
+    ConfirmationDialog,
+    MergeStudentsModal
   },
   props: {
     selectedRecords: {
@@ -261,6 +269,9 @@ export default {
       isLoadingStudent: false,
       isSearchedPENMerged: false,
       studentDataMap: new Map(),
+      mergeStudentsModalOpen: false,
+      mergedToStudentID: '',
+      mergedFromStudentID: ''
     };
   },
   mounted() {
@@ -544,15 +555,10 @@ export default {
         return;
       }
 
-      await router.push(
-        {
-          name: 'mergeStudents',
-          params: {
-            mergedToStudentID: this.mergedToStudent.studentID,
-            mergedFromStudentID: this.mergedFromStudent.studentID
-          }
-        }
-      );
+      // open the merge student / pen modal and the following two values are its props
+      this.mergeStudentsModalOpen = true;
+      this.mergedToStudentID = this.mergedToStudent.studentID;
+      this.mergedFromStudentID = this.mergedFromStudent.studentID;
     },
     async demerge() {
       const selectedStudents = this.getSelectedStudents();
@@ -582,6 +588,9 @@ export default {
       } catch (e) {
         console.error(e);
       }
+    },
+    mergeStudentsModalOpenEmit(value){
+      this.mergeStudentsModalOpen = value;
     }
   },
 };

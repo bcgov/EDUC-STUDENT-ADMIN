@@ -38,6 +38,8 @@
 </template>
 
 <script>
+import {STUDENT_MERGE_FIELD_PREFIX} from '@/utils/constants';
+
 export default {
   name: 'StudentDetailsCheckBoxWithOutputText',
   props: {
@@ -75,6 +77,7 @@ export default {
       fieldModel: null,
       checkedFieldModel: false,
       fieldDisabled: false,
+      STUDENT_MERGE_FIELD_PREFIX
     };
   },
   beforeMount() {
@@ -93,7 +96,13 @@ export default {
   methods: {
     handleOnChange(checked) {
       if (checked) {
-        this.$emit('update', { key: this.name, value: this.fieldModel});
+        // string replacement because MergeStudentCommon would have warning for having same id
+        // same id was used because of merge to and merge from needed the id to carry over the value when checkbox checked
+        // added extra prefix to bypass the warning, but still need to replace it onChange so the value would carry over
+        // even though this component is not used from anywhere yet, in case for any component reuse, please consider the code below
+        const key = this.name.includes(STUDENT_MERGE_FIELD_PREFIX) ? this.name.replace(STUDENT_MERGE_FIELD_PREFIX, '') : this.name;
+
+        this.$emit('update', { key, value: this.fieldModel});
       }
     }
   }

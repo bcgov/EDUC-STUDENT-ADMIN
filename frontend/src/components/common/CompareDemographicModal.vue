@@ -92,7 +92,7 @@ export default {
     },
     compare() {
       this.compareModalOpen = true;
-    },
+    }
   }
 };
 </script>
