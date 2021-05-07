@@ -95,10 +95,12 @@ export default {
       this.compareModalOpen = true;
     },
     mergeStudentsModal(data){
-      // console.log('merge clicked');
-      // console.log(data, 'data from merge students modal');
-
       this.compareModalOpen = false;
+      if(!this.clearOnExit) {
+        this.studentRecords = this.initialSelectedRecord;
+      } else {
+        this.studentRecords = [];
+      }
       this.$emit('mergeStudentsModalOpenEmit', true);
       this.$emit('mergeStudentsModalDataEmit', data);
     }

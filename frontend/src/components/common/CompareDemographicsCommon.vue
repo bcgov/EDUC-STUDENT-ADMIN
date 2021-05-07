@@ -550,16 +550,6 @@ export default {
           mergedFromStudentID: this.mergedFromStudent.studentID
         }
       );
-      console.log('hello inside demographic common');
-      // await router.push(
-      //   {
-      //     name: 'mergeStudents',
-      //     params: {
-      //       mergedToStudentID: this.mergedToStudent.studentID,
-      //       mergedFromStudentID: this.mergedFromStudent.studentID
-      //     }
-      //   }
-      // );
     },
     async demerge() {
       const selectedStudents = this.getSelectedStudents();

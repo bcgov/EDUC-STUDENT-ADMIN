@@ -272,11 +272,9 @@ export default {
       return [STUDENT_CODES.MERGED, STUDENT_CODES.DECEASED].some(status => status === student.statusCode);
     },
     mergeStudentsModalOpenEmit(value){
-      console.log(value, 'in students search mdal open emit');
       this.mergeStudentsModalOpen = value;
     },
     mergeStudentsModalDataEmit(data){
-      console.log(data, 'data in student search results');
       this.mergedToStudentID = data.mergedToStudentID;
       this.mergedFromStudentID = data.mergedFromStudentID;
     }

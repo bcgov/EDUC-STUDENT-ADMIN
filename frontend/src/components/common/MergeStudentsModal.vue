@@ -10,7 +10,7 @@
           :mergeStudentsModalOpen=mergeStudentsModalOpen
           :mergedToStudentID=mergedToStudentID
           :mergedFromStudentID=mergedFromStudentID
-          title="Merge PENs"
+          :title=PAGE_TITLES.MERGE_STUDENTS
           @mergeStudentsModalOpenEmit=mergeStudentsModalOpenEmit
       />
     </v-card>
@@ -20,6 +20,7 @@
 <script>
 
 import MergeStudentsCommon from '@/components/common/MergeStudentsCommon';
+import { PAGE_TITLES } from '../../utils/constants';
 
 export default {
   name: 'MergeStudentModal',
@@ -40,9 +41,13 @@ export default {
       required: true
     },
   },
+  data() {
+    return {
+      PAGE_TITLES
+    };
+  },
   methods: {
     mergeStudentsModalOpenEmit(value){
-      console.log(value, 'mergeStudentsModalOpenEmit in modal');
       this.$emit('mergeStudentsModalOpenEmit', value);
     }
   }
