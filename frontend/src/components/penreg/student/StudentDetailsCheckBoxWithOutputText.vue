@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import {STUDENT_MERGE_FIELD_SUFFIX} from '@/utils/constants';
+import {STUDENT_MERGE_FIELD_PREFIX} from '@/utils/constants';
 
 export default {
   name: 'StudentDetailsCheckBoxWithOutputText',
@@ -77,7 +77,7 @@ export default {
       fieldModel: null,
       checkedFieldModel: false,
       fieldDisabled: false,
-      STUDENT_MERGE_FIELD_SUFFIX
+      STUDENT_MERGE_FIELD_PREFIX
     };
   },
   beforeMount() {
@@ -100,7 +100,7 @@ export default {
         // same id was used because of merge to and merge from needed the id to carry over the value when checkbox checked
         // added extra prefix to bypass the warning, but still need to replace it onChange so the value would carry over
         // even though this component is not used from anywhere yet, in case for any component reuse, please consider the code below
-        const key = this.name.includes(STUDENT_MERGE_FIELD_SUFFIX) ? this.name.replace(STUDENT_MERGE_FIELD_SUFFIX, '') : this.name;
+        const key = this.name.includes(STUDENT_MERGE_FIELD_PREFIX) ? this.name.replace(STUDENT_MERGE_FIELD_PREFIX, '') : this.name;
 
         this.$emit('update', { key, value: this.fieldModel});
       }
