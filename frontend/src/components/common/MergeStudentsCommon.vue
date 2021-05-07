@@ -401,8 +401,8 @@ export default {
     try {
       this.isLoading = true;
       const students = await ApiService.apiAxios.get(Routes.student.GET_ALL_STUDENTS_BY_IDS, params);
-      this.student = students.data.find(student => student.studentID === this.mergedToStudentID);// JSON.parse(JSON.stringify(this.mergedToPen));
-      this.mergedStudent = students.data.find(student => student.studentID === this.mergedFromStudentID);//JSON.parse(JSON.stringify(this.mergedFromPen));
+      this.student = students.data.find(student => student.studentID === this.mergedToStudentID);
+      this.mergedStudent = students.data.find(student => student.studentID === this.mergedFromStudentID);
       this.isAMergedStudent = this.student?.statusCode === 'M' || this.mergedStudent?.statusCode === 'M';
       this.populateDOB(true);
     } catch (e) {
