@@ -23,8 +23,7 @@
         v-if="compareModalOpen"
         :selectedRecords.sync="studentRecords"
         title="Compare/View"
-        :closeCompareModal="closeCompareModal"
-        @mergeStudentsModalDataEmit=mergeStudentsModal>
+        :closeCompareModal="closeCompareModal">
         <template v-slot:actions="{clearError, validateAction, disableMerge, disableDemerge, twin, merge, demerge}">
           <PrimaryButton id="compareModalCancelBtn" text="Cancel" secondary @click.native="[closeCompareModal(), clearError()]"></PrimaryButton>
           <PrimaryButton id="twinBtn" text="Twin" primary :disabled="validateAction()" @click.native="twin()"></PrimaryButton>
@@ -93,16 +92,6 @@ export default {
     },
     compare() {
       this.compareModalOpen = true;
-    },
-    mergeStudentsModal(data){
-      this.compareModalOpen = false;
-      if(!this.clearOnExit) {
-        this.studentRecords = this.initialSelectedRecord;
-      } else {
-        this.studentRecords = [];
-      }
-      this.$emit('mergeStudentsModalOpenEmit', true);
-      this.$emit('mergeStudentsModalDataEmit', data);
     }
   }
 };
