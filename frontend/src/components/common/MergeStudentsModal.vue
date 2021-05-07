@@ -7,8 +7,11 @@
   >
     <v-card id="mergeStudentsDialogCard">
       <MergeStudentsCommon
+          :mergeStudentsModalOpen=mergeStudentsModalOpen
           :mergedToStudentID=mergedToStudentID
           :mergedFromStudentID=mergedFromStudentID
+          title="Merge PENs"
+          @mergeStudentsModalOpenEmit=mergeStudentsModalOpenEmit
       />
     </v-card>
   </v-dialog>
@@ -20,7 +23,6 @@ import MergeStudentsCommon from '@/components/common/MergeStudentsCommon';
 
 export default {
   name: 'MergeStudentModal',
-  mixins: [],
   components: {
     MergeStudentsCommon
   },
@@ -38,6 +40,12 @@ export default {
       required: true
     },
   },
+  methods: {
+    mergeStudentsModalOpenEmit(value){
+      console.log(value, 'mergeStudentsModalOpenEmit in modal');
+      this.$emit('mergeStudentsModalOpenEmit', value);
+    }
+  }
 };
 </script>
 

@@ -9,6 +9,7 @@
             :mergeStudentsModalOpen=mergeStudentsModalOpen
             :mergedToStudentID=mergedToStudentID
             :mergedFromStudentID=mergedFromStudentID
+            @mergeStudentsModalOpenEmit=mergeStudentsModalOpenEmit
         />
       </v-col>
       <v-col>
@@ -271,6 +272,7 @@ export default {
       return [STUDENT_CODES.MERGED, STUDENT_CODES.DECEASED].some(status => status === student.statusCode);
     },
     mergeStudentsModalOpenEmit(value){
+      console.log(value, 'in students search mdal open emit');
       this.mergeStudentsModalOpen = value;
     },
     mergeStudentsModalDataEmit(data){

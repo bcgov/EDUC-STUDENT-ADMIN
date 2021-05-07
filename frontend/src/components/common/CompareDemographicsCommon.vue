@@ -550,7 +550,7 @@ export default {
           mergedFromStudentID: this.mergedFromStudent.studentID
         }
       );
-      console.log('hello');
+      console.log('hello inside demographic common');
       // await router.push(
       //   {
       //     name: 'mergeStudents',
