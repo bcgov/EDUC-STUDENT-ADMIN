@@ -176,7 +176,7 @@ import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/for
 import PrimaryButton from '../util/PrimaryButton';
 import ApiService from '../../common/apiService';
 import {REQUEST_TYPES, Routes, STUDENT_CODES} from '@/utils/constants';
-import {isOlderThan, isValidPEN} from '@/utils/validation';
+import {isValidPEN} from '@/utils/validation';
 import alertMixin from '@/mixins/alertMixin';
 import servicesSagaMixin from '@/mixins/servicesSagaMixin';
 import router from '../../router';
@@ -406,7 +406,6 @@ export default {
       return trueStudent;
     },
     isValidPEN,
-    isOlderThan,
     existSldUsualName(sldData) {
       return !!sldData.usualSurname || !!sldData.usualGivenName || !!sldData.usualMiddleName;
     },
@@ -531,13 +530,7 @@ export default {
       const selectedStudents = this.getSelectedStudents();
 
       // Determine which is the oldest, which will be mergedToPen
-      if (this.isOlderThan(selectedStudents[0].createDate, selectedStudents[1].createDate)) {
-        this.mergedToStudent = selectedStudents[0];
-        this.mergedFromStudent = selectedStudents[1];
-      } else {
-        this.mergedToStudent = selectedStudents[1];
-        this.mergedFromStudent = selectedStudents[0];
-      }
+      [this.mergedToStudent, this.mergedFromStudent] = _.sortBy(selectedStudents, ['createDate', 'pen']);
 
       // Same Pen validation
       if (this.validateStudentsHaveSamePen(this.mergedToStudent, this.mergedFromStudent,
