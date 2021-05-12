@@ -2,7 +2,7 @@
   <v-card fluid class="px-4" elevation="0">
     <v-card-title class="px-0 pb-0">
       <v-row>
-        <v-col v-if="title" cols="11" class="pr-0">
+        <v-col v-if="title" cols="10" class="pr-0 ml-2">
           {{ title }}
         </v-col>
 
@@ -16,19 +16,19 @@
     </v-card-title>
     <v-form id="mergeStudentForm"
             v-model="validForm" class="fill-height">
-      <v-container fluid class="fill-height ma-0 pa-2 studentDetail">
-        <v-row>
+      <v-container fluid class="fill-height ma-0 pa-2 pt-0 studentDetail">
+        <v-row class="mt-0 pt-0">
           <v-col cols="12">
             <v-row no-gutters class="mb-2">
-              <v-col offset="2" cols="2">
-                <p class="penLabel" v-if="!mergeSagaComplete">{{ formatPen(student.pen) }}</p>
-                <p class="penLinkLabel" v-else><a @click="openStudentDetails(student.studentID)">
+              <v-col offset="2" cols="3">
+                <span class="penLabel">TO:</span>
+                <p class="penLinkLabel"><a @click="openStudentDetails(student.studentID)">
                   {{ formatPen(student.pen) }}
                 </a></p>
               </v-col>
-              <v-col offset="3" cols="2">
-                <p class="penLabel" v-if="!mergeSagaComplete">{{ formatPen(mergedStudent.pen) }}</p>
-                <p class="penLinkLabel" v-else><a @click="openStudentDetails(mergedStudent.studentID)">
+              <v-col offset="2" cols="3">
+                <span class="penLabel">FROM:</span>
+                <p class="penLinkLabel"><a @click="openStudentDetails(mergedStudent.studentID)">
                   {{ formatPen(mergedStudent.pen) }}
                 </a></p>
               </v-col>
