@@ -3,7 +3,7 @@
     <v-col :cols="checkBoxSpan">
       <v-checkbox
           :disabled="!fieldModel || disabled"
-          class="mt-n1"
+          style="margin-top: -0.4em"
           dense
           color="#606060"
           v-model="checkedFieldModel"
@@ -12,6 +12,7 @@
     </v-col>
     <v-col class="textFieldColumn" :cols="colspan">
       <v-text-field
+          style="margin-top: 0.2em"
           v-if="!isTextArea"
           :disabled="!fieldModel || disabled"
           :value="fieldModel"
@@ -25,6 +26,7 @@
           :disabled="!fieldModel || disabled"
           :value="fieldModel"
           :id="name"
+          style="margin-top: 0.2em"
           :class="['onhoverEdit', 'customNoBorder', 'onhoverPad']"
           color="#000000"
           maxlength="4000"
