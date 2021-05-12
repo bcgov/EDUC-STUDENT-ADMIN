@@ -3,7 +3,7 @@
           id="mergeStudentsModal"
           v-model="mergeStudentsModalOpen"
           persistent
-          max-width="95%"
+          max-width="50%"
   >
     <v-card id="mergeStudentsDialogCard">
       <MergeStudentsCommon
