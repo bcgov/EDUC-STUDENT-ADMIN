@@ -26,7 +26,7 @@
                   {{ formatPen(student.pen) }}
                 </a></p>
               </v-col>
-              <v-col offset="2" cols="2">
+              <v-col offset="3" cols="2">
                 <p class="penLabel" v-if="!mergeSagaComplete">{{ formatPen(mergedStudent.pen) }}</p>
                 <p class="penLinkLabel" v-else><a @click="openStudentDetails(mergedStudent.studentID)">
                   {{ formatPen(mergedStudent.pen) }}
@@ -39,7 +39,7 @@
                 color="blue"
                 :active="isProcessing || isLoading"
             ></v-progress-linear>
-            <v-row no-gutters class="mt-4 py-1">
+            <v-row no-gutters class="mb-n1 mt-4 py-1">
               <v-col cols="2">
                 <p class="labelField">Legal Surname</p>
               </v-col>
@@ -51,16 +51,16 @@
                               :rules="validateLegalLastName()"
                               v-model="student.legalLastName"></v-text-field>
               </v-col>
-              <v-col offset="1" cols="6">
+              <v-col offset="2" cols="5">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.LEGAL_LAST_NAME" tab-index="21"
                                                       :model="mergedStudent.legalLastName?mergedStudent.legalLastName:''"
-                                                      colspan="3" @update="handleCheckBoxChanged"
+                                                      colspan="11" @update="handleCheckBoxChanged"
                                                       :disabled="student.legalLastName === mergedStudent.legalLastName || mergeSagaComplete"
                                                       v-if="!!mergedStudent.legalLastName"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
             </v-row>
-            <v-row no-gutters>
+            <v-row no-gutters class="mb-n1">
               <v-col cols="2">
                 <p class="labelField">Legal Given</p>
               </v-col>
@@ -71,16 +71,16 @@
                               tabindex="2" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
                               v-model="student.legalFirstName"></v-text-field>
               </v-col>
-              <v-col offset="1" cols="6">
+              <v-col offset="2" cols="5">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.LEGAL_FIRST_NAME" tab-index="22"
                                                       :model="mergedStudent.legalFirstName?mergedStudent.legalFirstName:''"
-                                                      colspan="3" @update="handleCheckBoxChanged"
+                                                      colspan="11" @update="handleCheckBoxChanged"
                                                       :disabled="student.legalFirstName === mergedStudent.legalFirstName || mergeSagaComplete"
                                                       v-if="!!mergedStudent.legalFirstName"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
             </v-row>
-            <v-row no-gutters class="py-1">
+            <v-row no-gutters class="mb-n1">
               <v-col cols="2">
                 <p class="labelField">Legal Middle</p>
               </v-col>
@@ -91,16 +91,16 @@
                               tabindex="3" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
                               v-model="student.legalMiddleNames"></v-text-field>
               </v-col>
-              <v-col offset="1" cols="6">
+              <v-col offset="2" cols="5">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES" tab-index="23"
                                                       :model="mergedStudent.legalMiddleNames?mergedStudent.legalMiddleNames:''"
-                                                      colspan="3" @update="handleCheckBoxChanged"
+                                                      colspan="11" @update="handleCheckBoxChanged"
                                                       :disabled="student.legalMiddleNames === mergedStudent.legalMiddleNames || mergeSagaComplete"
                                                       v-if="!!mergedStudent.legalMiddleNames"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
             </v-row>
-            <v-row no-gutters class="py-1">
+            <v-row no-gutters class="mb-n1">
               <v-col cols="2">
                 <p class="labelField">Usual Surname</p>
               </v-col>
@@ -111,16 +111,16 @@
                               tabindex="4" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
                               v-model="student.usualLastName"></v-text-field>
               </v-col>
-              <v-col offset="1" cols="6">
+              <v-col offset="2" cols="5">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.USUAL_LAST_NAME" tab-index="24"
                                                       :model="mergedStudent.usualLastName?mergedStudent.usualLastName:''"
-                                                      colspan="3" @update="handleCheckBoxChanged"
+                                                      colspan="11" @update="handleCheckBoxChanged"
                                                       :disabled="student.usualLastName === mergedStudent.usualLastName || mergeSagaComplete"
                                                       v-if="!!mergedStudent.usualLastName"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
             </v-row>
-            <v-row no-gutters class="py-1">
+            <v-row no-gutters class="mb-n1">
               <v-col cols="2">
                 <p class="labelField">Usual Given</p>
               </v-col>
@@ -131,16 +131,16 @@
                               tabindex="5" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
                               v-model="student.usualFirstName"></v-text-field>
               </v-col>
-              <v-col offset="1" cols="6">
+              <v-col offset="2" cols="5">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.USUAL_FIRST_NAME" tab-index="25"
                                                       :model="mergedStudent.usualFirstName?mergedStudent.usualFirstName:''"
-                                                      colspan="3" @update="handleCheckBoxChanged"
+                                                      colspan="11" @update="handleCheckBoxChanged"
                                                       :disabled="student.usualFirstName === mergedStudent.usualFirstName || mergeSagaComplete"
                                                       v-if="!!mergedStudent.usualFirstName"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
             </v-row>
-            <v-row no-gutters class="py-1">
+            <v-row no-gutters class="mb-n1">
               <v-col cols="2">
                 <p class="labelField">Usual Middle</p>
               </v-col>
@@ -151,16 +151,16 @@
                               tabindex="6" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
                               v-model="student.usualMiddleNames"></v-text-field>
               </v-col>
-              <v-col offset="1" cols="6">
+              <v-col offset="2" cols="5">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.USUAL_MIDDLE_NAMES" tab-index="26"
                                                       :model="mergedStudent.usualMiddleNames?mergedStudent.usualMiddleNames:''"
-                                                      colspan="3" @update="handleCheckBoxChanged"
+                                                      colspan="11" @update="handleCheckBoxChanged"
                                                       :disabled="student.usualMiddleNames === mergedStudent.usualMiddleNames || mergeSagaComplete"
                                                       v-if="!!mergedStudent.usualMiddleNames"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
             </v-row>
-            <v-row no-gutters class="py-1">
+            <v-row no-gutters class="mb-n1">
               <v-col cols="2">
                 <p class="labelField">Gender</p>
               </v-col>
@@ -173,16 +173,16 @@
                               :rules="validateGender()"
                               v-model="student.genderCode"/>
               </v-col>
-              <v-col offset="3" cols="6">
+              <v-col offset="4" cols="5">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.GENDER_CODE" tab-index="27"
                                                       :model="mergedStudent.genderCode?mergedStudent.genderCode:''"
-                                                      colspan="1" @update="handleCheckBoxChanged"
+                                                      colspan="11" @update="handleCheckBoxChanged"
                                                       :disabled="student.genderCode === mergedStudent.genderCode || mergeSagaComplete"
                                                       v-if="!!mergedStudent.genderCode"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
             </v-row>
-            <v-row no-gutters class="py-1">
+            <v-row no-gutters class="mb-n1">
               <v-col cols="2">
                 <p class="labelField">Date of Birth</p>
               </v-col>
@@ -199,16 +199,16 @@
                     maxlength="8"
                 ></FormattedTextField>
               </v-col>
-              <v-col offset="2" cols="6">
+              <v-col offset="3" cols="5">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.DOB" tab-index="28"
                                                       :model="mergedStudent.dob?formatDob(mergedStudent.dob, 'uuuu-MM-dd', 'uuuu/MM/dd'):''"
-                                                      colspan="3" @update="handleCheckBoxChanged"
+                                                      colspan="11" @update="handleCheckBoxChanged"
                                                       :disabled="isSameDate(student.dob, mergedStudent.dob) || mergeSagaComplete"
                                                       v-if="!!mergedStudent.dob"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
             </v-row>
-            <v-row no-gutters class="py-1">
+            <v-row no-gutters class="mb-n1">
               <v-col cols="2">
                 <p class="labelField">Mincode</p>
               </v-col>
@@ -226,16 +226,16 @@
                     maxlength="8"
                 ></FormattedTextField>
               </v-col>
-              <v-col offset="2" cols="6">
+              <v-col offset="3" cols="5">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.MINCODE" tab-index="29"
                                                       :model="mergedStudent.mincode?mergedStudent.mincode:''"
-                                                      colspan="3" @update="handleCheckBoxChanged"
+                                                      colspan="11" @update="handleCheckBoxChanged"
                                                       :disabled="student.mincode === mergedStudent.mincode || mergeSagaComplete"
                                                       v-if="!!mergedStudent.mincode"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
             </v-row>
-            <v-row no-gutters class="py-1">
+            <v-row no-gutters class="mb-n1">
               <v-col cols="2">
                 <p class="labelField">Local ID</p>
               </v-col>
@@ -246,16 +246,16 @@
                               tabindex="10"
                               v-model="student.localID"/>
               </v-col>
-              <v-col offset="2" cols="6">
+              <v-col offset="3" cols="5">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.LOCAL_ID" tab-index="30"
                                                       :model="mergedStudent.localID?mergedStudent.localID:''"
-                                                      colspan="3" @update="handleCheckBoxChanged"
+                                                      colspan="11" @update="handleCheckBoxChanged"
                                                       :disabled="student.localID === mergedStudent.localID || mergeSagaComplete"
                                                       v-if="!!mergedStudent.localID"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
             </v-row>
-            <v-row no-gutters class="py-1">
+            <v-row no-gutters class="mb-n1">
               <v-col cols="2">
                 <p class="labelField">Postal Code</p>
               </v-col>
@@ -273,26 +273,26 @@
                     maxlength="6"
                 ></FormattedTextField>
               </v-col>
-              <v-col offset="2" cols="6">
+              <v-col offset="3" cols="5">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.POSTAL_CODE" tab-index="31"
                                                       :model="mergedStudent.postalCode?formatPostalCode(mergedStudent.postalCode):''"
-                                                      colspan="3" @update="handleCheckBoxChanged"
+                                                      colspan="11" @update="handleCheckBoxChanged"
                                                       :disabled="student.postalCode === mergedStudent.postalCode || mergeSagaComplete"
                                                       v-if="!!mergedStudent.postalCode"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
             </v-row>
-            <v-row no-gutters class="py-1">
+            <v-row no-gutters class="mb-n1">
               <v-col cols="2">
                 <p class="labelField">Memo</p>
               </v-col>
-              <v-col cols="3">
+              <v-col cols="4">
                 <v-textarea
                     tabindex="12"
                     v-model="student.memo"
                     :id='STUDENT_DETAILS_FIELDS.MEMO'
-                    class="customBorder"
                     :disabled="mergeSagaComplete"
+                    class="memoscroll"
                     color="#000000"
                     maxlength="4000"
                     dense
@@ -301,7 +301,7 @@
                     outlined
                 ></v-textarea>
               </v-col>
-              <v-col offset="1" cols="6">
+              <v-col offset="1" cols="5" class="mt-n1">
                 <StudentDetailsCheckBoxWithOutputText maxlength="4000" :name="STUDENT_DETAILS_FIELDS.MEMO"
                                                       tab-index="32"
                                                       :model="mergedStudent.memo?mergedStudent.memo:''"
@@ -609,4 +609,9 @@ export default {
   text-decoration: underline;
 }
 
+.memoscroll.v-textarea >>> .v-input__control > .v-input__slot > .v-text-field__slot > #memo{
+  margin-bottom: 0px;
+  margin-top: 0px;
+  margin-right: 0px;
+}
 </style>
