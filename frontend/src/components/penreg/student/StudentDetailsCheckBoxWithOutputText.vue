@@ -1,5 +1,5 @@
 <template>
-  <v-row no-gutters class="py-1">
+  <v-row no-gutters>
     <v-col :cols="checkBoxSpan">
       <v-checkbox
           :disabled="!fieldModel || disabled"

@@ -51,10 +51,10 @@
                               :rules="validateLegalLastName()"
                               v-model="student.legalLastName"></v-text-field>
               </v-col>
-              <v-col offset="1" cols="3">
+              <v-col offset="1" cols="6">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.LEGAL_LAST_NAME" tab-index="21"
                                                       :model="mergedStudent.legalLastName?mergedStudent.legalLastName:''"
-                                                      colspan="6" @update="handleCheckBoxChanged"
+                                                      colspan="3" @update="handleCheckBoxChanged"
                                                       :disabled="student.legalLastName === mergedStudent.legalLastName || mergeSagaComplete"
                                                       v-if="!!mergedStudent.legalLastName"
                 ></StudentDetailsCheckBoxWithOutputText>
@@ -71,10 +71,10 @@
                               tabindex="2" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
                               v-model="student.legalFirstName"></v-text-field>
               </v-col>
-              <v-col offset="1" cols="3">
+              <v-col offset="1" cols="6">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.LEGAL_FIRST_NAME" tab-index="22"
                                                       :model="mergedStudent.legalFirstName?mergedStudent.legalFirstName:''"
-                                                      colspan="6" @update="handleCheckBoxChanged"
+                                                      colspan="3" @update="handleCheckBoxChanged"
                                                       :disabled="student.legalFirstName === mergedStudent.legalFirstName || mergeSagaComplete"
                                                       v-if="!!mergedStudent.legalFirstName"
                 ></StudentDetailsCheckBoxWithOutputText>
@@ -91,10 +91,10 @@
                               tabindex="3" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
                               v-model="student.legalMiddleNames"></v-text-field>
               </v-col>
-              <v-col offset="1" cols="3">
+              <v-col offset="1" cols="6">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES" tab-index="23"
                                                       :model="mergedStudent.legalMiddleNames?mergedStudent.legalMiddleNames:''"
-                                                      colspan="6" @update="handleCheckBoxChanged"
+                                                      colspan="3" @update="handleCheckBoxChanged"
                                                       :disabled="student.legalMiddleNames === mergedStudent.legalMiddleNames || mergeSagaComplete"
                                                       v-if="!!mergedStudent.legalMiddleNames"
                 ></StudentDetailsCheckBoxWithOutputText>
@@ -111,10 +111,10 @@
                               tabindex="4" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
                               v-model="student.usualLastName"></v-text-field>
               </v-col>
-              <v-col offset="1" cols="3">
+              <v-col offset="1" cols="6">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.USUAL_LAST_NAME" tab-index="24"
                                                       :model="mergedStudent.usualLastName?mergedStudent.usualLastName:''"
-                                                      colspan="6" @update="handleCheckBoxChanged"
+                                                      colspan="3" @update="handleCheckBoxChanged"
                                                       :disabled="student.usualLastName === mergedStudent.usualLastName || mergeSagaComplete"
                                                       v-if="!!mergedStudent.usualLastName"
                 ></StudentDetailsCheckBoxWithOutputText>
@@ -131,10 +131,10 @@
                               tabindex="5" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
                               v-model="student.usualFirstName"></v-text-field>
               </v-col>
-              <v-col offset="1" cols="3">
+              <v-col offset="1" cols="6">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.USUAL_FIRST_NAME" tab-index="25"
                                                       :model="mergedStudent.usualFirstName?mergedStudent.usualFirstName:''"
-                                                      colspan="6" @update="handleCheckBoxChanged"
+                                                      colspan="3" @update="handleCheckBoxChanged"
                                                       :disabled="student.usualFirstName === mergedStudent.usualFirstName || mergeSagaComplete"
                                                       v-if="!!mergedStudent.usualFirstName"
                 ></StudentDetailsCheckBoxWithOutputText>
@@ -151,10 +151,10 @@
                               tabindex="6" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
                               v-model="student.usualMiddleNames"></v-text-field>
               </v-col>
-              <v-col offset="1" cols="3">
+              <v-col offset="1" cols="6">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.USUAL_MIDDLE_NAMES" tab-index="26"
                                                       :model="mergedStudent.usualMiddleNames?mergedStudent.usualMiddleNames:''"
-                                                      colspan="6" @update="handleCheckBoxChanged"
+                                                      colspan="3" @update="handleCheckBoxChanged"
                                                       :disabled="student.usualMiddleNames === mergedStudent.usualMiddleNames || mergeSagaComplete"
                                                       v-if="!!mergedStudent.usualMiddleNames"
                 ></StudentDetailsCheckBoxWithOutputText>
@@ -164,7 +164,7 @@
               <v-col cols="2">
                 <p class="labelField">Gender</p>
               </v-col>
-              <v-col cols="2">
+              <v-col cols="1">
                 <v-text-field outlined dense maxlength="1"
                               :id="STUDENT_DETAILS_FIELDS.GENDER_CODE"
                               :disabled="mergeSagaComplete"
@@ -173,7 +173,7 @@
                               :rules="validateGender()"
                               v-model="student.genderCode"/>
               </v-col>
-              <v-col offset="2" cols="3">
+              <v-col offset="3" cols="6">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.GENDER_CODE" tab-index="27"
                                                       :model="mergedStudent.genderCode?mergedStudent.genderCode:''"
                                                       colspan="1" @update="handleCheckBoxChanged"
@@ -199,10 +199,10 @@
                     maxlength="8"
                 ></FormattedTextField>
               </v-col>
-              <v-col offset="2" cols="3">
+              <v-col offset="2" cols="6">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.DOB" tab-index="28"
                                                       :model="mergedStudent.dob?formatDob(mergedStudent.dob, 'uuuu-MM-dd', 'uuuu/MM/dd'):''"
-                                                      colspan="6" @update="handleCheckBoxChanged"
+                                                      colspan="3" @update="handleCheckBoxChanged"
                                                       :disabled="isSameDate(student.dob, mergedStudent.dob) || mergeSagaComplete"
                                                       v-if="!!mergedStudent.dob"
                 ></StudentDetailsCheckBoxWithOutputText>
@@ -226,10 +226,10 @@
                     maxlength="8"
                 ></FormattedTextField>
               </v-col>
-              <v-col offset="2" cols="3">
+              <v-col offset="2" cols="6">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.MINCODE" tab-index="29"
                                                       :model="mergedStudent.mincode?mergedStudent.mincode:''"
-                                                      colspan="6" @update="handleCheckBoxChanged"
+                                                      colspan="3" @update="handleCheckBoxChanged"
                                                       :disabled="student.mincode === mergedStudent.mincode || mergeSagaComplete"
                                                       v-if="!!mergedStudent.mincode"
                 ></StudentDetailsCheckBoxWithOutputText>
@@ -246,10 +246,10 @@
                               tabindex="10"
                               v-model="student.localID"/>
               </v-col>
-              <v-col offset="2" cols="3">
+              <v-col offset="2" cols="6">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.LOCAL_ID" tab-index="30"
                                                       :model="mergedStudent.localID?mergedStudent.localID:''"
-                                                      colspan="6" @update="handleCheckBoxChanged"
+                                                      colspan="3" @update="handleCheckBoxChanged"
                                                       :disabled="student.localID === mergedStudent.localID || mergeSagaComplete"
                                                       v-if="!!mergedStudent.localID"
                 ></StudentDetailsCheckBoxWithOutputText>
@@ -273,10 +273,10 @@
                     maxlength="6"
                 ></FormattedTextField>
               </v-col>
-              <v-col offset="2" cols="3">
+              <v-col offset="2" cols="6">
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.POSTAL_CODE" tab-index="31"
                                                       :model="mergedStudent.postalCode?formatPostalCode(mergedStudent.postalCode):''"
-                                                      colspan="6" @update="handleCheckBoxChanged"
+                                                      colspan="3" @update="handleCheckBoxChanged"
                                                       :disabled="student.postalCode === mergedStudent.postalCode || mergeSagaComplete"
                                                       v-if="!!mergedStudent.postalCode"
                 ></StudentDetailsCheckBoxWithOutputText>
@@ -291,7 +291,7 @@
                     tabindex="12"
                     v-model="student.memo"
                     :id='STUDENT_DETAILS_FIELDS.MEMO'
-                    class="bolder customBorder"
+                    class="customBorder"
                     :disabled="mergeSagaComplete"
                     color="#000000"
                     maxlength="4000"
@@ -301,7 +301,7 @@
                     outlined
                 ></v-textarea>
               </v-col>
-              <v-col offset="1" cols="3">
+              <v-col offset="1" cols="6">
                 <StudentDetailsCheckBoxWithOutputText maxlength="4000" :name="STUDENT_DETAILS_FIELDS.MEMO"
                                                       tab-index="32"
                                                       :model="mergedStudent.memo?mergedStudent.memo:''"
