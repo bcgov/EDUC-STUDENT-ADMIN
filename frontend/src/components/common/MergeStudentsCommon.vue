@@ -301,7 +301,7 @@
                     outlined
                 ></v-textarea>
               </v-col>
-              <v-col offset="1" cols="5">
+              <v-col offset="1" cols="5" class="mt-n1">
                 <StudentDetailsCheckBoxWithOutputText maxlength="4000" :name="STUDENT_DETAILS_FIELDS.MEMO"
                                                       tab-index="32"
                                                       :model="mergedStudent.memo?mergedStudent.memo:''"
