@@ -255,7 +255,11 @@ export default {
             }
           })
           .catch(error => {
-            this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
+            if(error?.response?.data?.code === 409) {
+              this.setFailureAlert('Another saga is in progress for this file, please try again later.');
+            } else {
+              this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
+            }
             console.log(error);
           })
           .finally(() => {
@@ -292,7 +296,11 @@ export default {
             }
           })
           .catch(error => {
-            this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
+            if(error?.response?.data?.code === 409) {
+              this.setFailureAlert('Another saga is in progress for this file, please try again later.');
+            } else {
+              this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
+            }
             console.log(error);
           })
           .finally(() => {
