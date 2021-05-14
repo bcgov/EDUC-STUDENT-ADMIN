@@ -219,7 +219,7 @@ export default {
       }
       this.penRequestBatchResponse.content.forEach((x, index) => {
         const pageHasObjectsRunningSagas = x.penRequestBatchID === notificationData.penRequestBatchID || (notificationData?.eventPayload && x.penRequestBatchID === JSON.parse(notificationData?.eventPayload)?.penRequestBatchID);
-        if(pageHasObjectsRunningSagas && notificationData.sagaStatus === 'INITIATED') {
+        if(pageHasObjectsRunningSagas && notificationData.sagaStatus === 'INITIATED' && notificationData.sagaName === 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_SAGA') {
           x.sagaInProgress = true;
           this.selectItem(x);
         } else if(pageHasObjectsRunningSagas && notificationData.sagaStatus === 'COMPLETED' && notificationData.sagaName === 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_SAGA') {

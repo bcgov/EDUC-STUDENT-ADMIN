@@ -254,10 +254,7 @@ export default {
               this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
             }
           })
-          .catch(error => {
-            this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
-            console.log(error);
-          })
+          .catch(error => this.setSagaErrorMessage(error))
           .finally(() => {
             this.loadingFiles = false;
             this.setSelectedFiles([]);
@@ -291,10 +288,7 @@ export default {
               this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
             }
           })
-          .catch(error => {
-            this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
-            console.log(error);
-          })
+          .catch(error => this.setSagaErrorMessage(error))
           .finally(() => {
             this.loadingFiles = false;
             this.setSelectedFiles([]);
@@ -306,6 +300,14 @@ export default {
         penRequestBatchID: file.penRequestBatchID,
         schoolName: this.mincodeSchoolNames.get(file?.mincode?.replace(' ', ''))
       };
+    },
+    setSagaErrorMessage(error) {
+      if(error?.response?.data?.code === 409) {
+        this.setFailureAlert('Another saga is in progress for this file, please try again later.');
+      } else {
+        this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
+      }
+      console.log(error);
     }
   }
 };
