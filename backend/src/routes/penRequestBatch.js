@@ -9,7 +9,7 @@ const { getPENBatchRequestStats, getPenRequestFiles, getPenRequestBatchStudents,
   issueNewPen, userMatchSaga, userUnmatchSaga, archiveFiles, archiveAndReturnFiles, unarchiveFiles, softDeleteFiles, releaseBatchFilesForFurtherProcessing, repostReports } = require('../components/penRequestBatch');
 
 /*
- * Get all pen request batch files and checks
+ * Get all pen request batch files
  */
 router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, getPenRequestFiles);
 
