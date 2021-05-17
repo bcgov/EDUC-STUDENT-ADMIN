@@ -36,6 +36,8 @@ import {mapGetters, mapMutations} from 'vuex';
 import {AccessEnabledForUser} from '../common/role-based-access';
 import PrimaryButton from './util/PrimaryButton';
 import alertMixin from '../mixins/alertMixin';
+import {isValidLength} from '../utils/validation';
+
 export default {
   name: 'requestReject',
   components: {PrimaryButton},
@@ -65,9 +67,7 @@ export default {
   data () {
     return {
       validForm: false,
-      requiredRules: [v => !!v || 'Required',
-        v => v && v.length <= 4000 || 'Max 4000 characters'
-      ],
+      requiredRules: isValidLength(4000),
       rejectComment: null,
       isRejectEnabledForUser:false,
       rejectOperationOutcomeMessage : null,
