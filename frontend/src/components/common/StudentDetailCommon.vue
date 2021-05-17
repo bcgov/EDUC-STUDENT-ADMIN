@@ -524,8 +524,7 @@ export default {
     },
     studentDetails: {
       type: Object,
-      default: () => {
-      }
+      default: {}
     },
     validForm: {
       type: Boolean,
