@@ -126,6 +126,9 @@ async function issueNewPen(req, res) {
     return res.status(200).json(sagaId);
   } catch (e) {
     logApiError(e, 'issueNewPen', 'Error issuing new pen.');
+    if (e.status === HttpStatus.CONFLICT) {
+      return errorResponse(res, 'Another saga in progress', HttpStatus.CONFLICT);
+    }
     return errorResponse(res);
   }
 }
@@ -288,6 +291,9 @@ async function updateFilesByIDs(req, res, updateFile) {
     return res.status(200).json(resultGroups.fulfilled?.map(result => result.value) || []);
   } catch (e) {
     logApiError(e, 'updateFilesByIDs', 'Error upating batch files.');
+    if (e.status === HttpStatus.CONFLICT) {
+      return errorResponse(res, 'Another saga in progress', HttpStatus.CONFLICT);
+    }
     return errorResponse(res);
   }
 }
@@ -319,6 +325,9 @@ async function archiveAndReturnFiles(req, res) {
       return res.status(200).json(sagaIds);
     } catch (e) {
       logApiError(e, 'archiveAndReturnFiles', 'Error calling archive and return saga.');
+      if (e.status === HttpStatus.CONFLICT) {
+        return errorResponse(res, 'Another saga in progress', HttpStatus.CONFLICT);
+      }
       return errorResponse(res);
     }
   } else {
@@ -357,6 +366,9 @@ async function repostReports(req, res) {
     return res.status(200).json(sagaId);
   } catch (e) {
     logApiError(e, 'repostReports', 'Error calling repost reports saga.');
+    if (e.status === HttpStatus.CONFLICT) {
+      return errorResponse(res, 'Another saga in progress', HttpStatus.CONFLICT);
+    }
     return errorResponse(res);
   }
 }
