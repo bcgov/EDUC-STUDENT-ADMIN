@@ -66,7 +66,9 @@ export default {
   data () {
     return {
       validForm: false,
-      requiredRules: [v => !!v || 'Required'],
+      requiredRules: [v => !!v || 'Required',
+        v => v && v.length <= 4000 || 'Max 4000 characters'
+      ],
       returnComment: null,
       isRequestMoreInfoEnabledForUser:false,
       returnMessage : null,
