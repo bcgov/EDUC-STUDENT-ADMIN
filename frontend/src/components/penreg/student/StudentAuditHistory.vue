@@ -86,10 +86,11 @@ import alertMixin from '../../../mixins/alertMixin';
 import {formatDob, formatPen} from '@/utils/format';
 import {groupBy, mapValues} from 'lodash';
 import router from '@/router';
+import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 
 export default {
   name: 'StudentAuditHistory',
-  mixins: [alertMixin],
+  mixins: [alertMixin, staleStudentRecordMixin],
   props: {
     student: {
       type: Object,
@@ -411,11 +412,14 @@ export default {
     showWarningAndDisableActionIfUpdatedStudentMatched(notificationData){
       try {
         const student = JSON.parse(notificationData.eventPayload);
-        if (student?.pen && student?.pen === this.studentHistoryResp?.content[0]?.pen && this.isActionedInDifferentTab && !this.hasSagaInProgress){ // show only when it is in a diff tab or diff user or not part of the saga.
+        if (student?.pen && student?.pen === this.studentHistoryResp?.content[0]?.pen && this.isActionedInDifferentTab && !this.hasSagaInProgress) { // show only when it is in a diff tab or diff user or not part of the saga.
           this.isStudentUpdated = true;
           this.studentAuditHistoryDetailKey += 1;
           this.$emit('isStudentUpdated', true);
-          this.setWarningAlert(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+          const warningMessage = `Student details for ${student.pen} is updated by ${student.updateUser}, Please refresh the page.`;
+          this.setWarningAlert(warningMessage);
+          const studentID = student.studentID;
+          this.addStaleDataToMap({studentID, warningMessage});
         } else if (student?.pen && student?.pen === this.studentHistoryResp?.content[0]?.pen && !this.isActionedInDifferentTab) {
           this.isActionedInDifferentTab = true; // make it true for future messages.
         }

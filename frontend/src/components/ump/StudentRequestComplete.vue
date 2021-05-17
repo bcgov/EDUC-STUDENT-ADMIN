@@ -107,12 +107,13 @@
 <script>
 import {formatDob} from '@/utils/format';
 import ApiService from '../../common/apiService';
-import { Routes, Statuses } from '@/utils/constants';
-import { replaceMacro } from '@/utils/macro';
-import { mapGetters, mapMutations } from 'vuex';
+import {Routes, Statuses} from '@/utils/constants';
+import {replaceMacro} from '@/utils/macro';
+import {mapGetters, mapMutations} from 'vuex';
 import {AccessEnabledForUser} from '@/common/role-based-access';
 import PrimaryButton from '../util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
+
 export default {
   name: 'studentRequestComplete',
   components: {PrimaryButton},
@@ -223,7 +224,7 @@ export default {
         }else if(this.penSearchId && notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload){
           const student = JSON.parse(notificationData.eventPayload);
           if(student?.pen === this.penSearchId && !this.completeSagaInProgress){
-            this.setWarningAlert(`student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+            this.setWarningAlert(`Student details for ${student.pen} is updated by ${student.updateUser}, Please do a search for the pen again.`);
             this.enableCompleteButton = false;
           }
         }

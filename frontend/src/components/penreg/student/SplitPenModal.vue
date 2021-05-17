@@ -59,7 +59,8 @@
       <v-card-actions class="pt-0 pr-0">
         <v-spacer></v-spacer>
         <PrimaryButton id="closeSplitPenModal" class="mx-1" text="Cancel" secondary @click.native="closeModal"></PrimaryButton>
-        <PrimaryButton id="acceptSplitPen" class="mx-1" text="Accept" :disabled="isStudentDataUpdated || hasSagaInProgress" :loading="isProcessing" @click.native="splitPen"></PrimaryButton>
+        <PrimaryButton id="acceptSplitPen" :disabled="hasSagaInProgress" :loading="isProcessing" class="mx-1"
+                       text="Accept" @click.native="splitPen"></PrimaryButton>
         <PrimaryButton id="searchPen" class="ml-1" text="Search" @click.native="searchPen"></PrimaryButton>
       </v-card-actions>
     </v-card>
@@ -74,10 +75,11 @@ import {Routes} from '@/utils/constants';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
 import {mapGetters, mapMutations, mapState} from 'vuex';
+import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 
 export default {
   name: 'SplitPenModal',
-  mixins: [alertMixin],
+  mixins: [alertMixin, staleStudentRecordMixin],
   components: {
     StudentAuditHistoryDetailCard,
     PrimaryButton,
@@ -97,6 +99,10 @@ export default {
     newStudentDetail: {
       type: Object,
       required: true
+    },
+    isStudentUpdated: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -133,8 +139,11 @@ export default {
             const student = JSON.parse(notificationData.eventPayload);
             if (student?.pen && student?.pen === this.studentDetail?.pen && !this.hasSagaInProgress) { // dont show if it is part of the saga.
               this.isStudentDataUpdated = true;
+              const warningMessage = `Student details for ${student.pen}, is updated by ${student.updateUser}. Please refresh the page`;
+              const studentID = student.studentID;
+              this.addStaleDataToMap({studentID, warningMessage});
               this.$emit('isStudentUpdated', true);
-              this.setWarningAlert(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+              this.setWarningAlert(warningMessage);
             }
           } catch (e) {
             console.error(e);
@@ -153,6 +162,11 @@ export default {
       this.revertCurrentStudent = false;
     },
     splitPen() {
+      if (this.isStudentDataUpdated || this.isStudentUpdated) {
+        const warningMessage = this.getMessageForStudent(this.studentDetail?.studentID);
+        this.setWarningAlert(warningMessage);
+        return;
+      }
       this.isProcessing = true;
       this.setStudentInProcessStatus(this.studentDetail.studentID);
       const request = {
