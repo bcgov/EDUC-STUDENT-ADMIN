@@ -36,6 +36,8 @@ import { mapGetters, mapMutations } from 'vuex';
 import {AccessEnabledForUser} from '../common/role-based-access';
 import PrimaryButton from './util/PrimaryButton';
 import alertMixin from '../mixins/alertMixin';
+import {isValidLength} from '../utils/validation';
+
 export default {
   name: 'requestReturn',
   components: {PrimaryButton},
@@ -66,7 +68,7 @@ export default {
   data () {
     return {
       validForm: false,
-      requiredRules: [v => !!v || 'Required'],
+      requiredRules: isValidLength(4000),
       returnComment: null,
       isRequestMoreInfoEnabledForUser:false,
       returnMessage : null,

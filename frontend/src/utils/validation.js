@@ -135,3 +135,9 @@ export function isNotEmptyInputParams(obj) {
   const groups = groupBy(Object.values(obj), isPlainObject);
   return groups.false?.some(v => !!v) || groups.true?.some(v => isNotEmptyInputParams(v));
 }
+
+export function isValidLength(length) {
+  return [str => !!str || 'Required',
+    str => str && str.length <= length || 'Max ' + length + ' characters'
+  ];
+}
