@@ -7,9 +7,9 @@
         <v-col cols="12" class="fill-height ma-0 pa-0">
           <v-row>
             <v-tabs active-class="active-display" class="pa-0 ma-0 " v-model="tab">
-              <v-tab class="student-details-tabs-style" key="Demographics" :disabled="isStudentDataUpdated"><strong>Demographics</strong></v-tab>
-              <v-tab class="student-details-tabs-style" key="SLD" :disabled="isStudentDataUpdated"><strong>SLD History</strong></v-tab>
-              <v-tab class="student-details-tabs-style" key="Audit" :disabled="isStudentDataUpdated"><strong>Audit History</strong></v-tab>
+              <v-tab key="Demographics" class="student-details-tabs-style"><strong>Demographics</strong></v-tab>
+              <v-tab key="SLD" class="student-details-tabs-style"><strong>SLD History</strong></v-tab>
+              <v-tab key="Audit" class="student-details-tabs-style"><strong>Audit History</strong></v-tab>
               <v-tab class="student-details-tabs-style" :disabled="true"><strong>Transcript</strong></v-tab>
             </v-tabs>
           </v-row>
@@ -29,12 +29,15 @@
                 <v-row>
                   <v-col cols="12">
                     <v-card-actions style="float: right;">
-                      <router-link :to="`${isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`">
+                      <router-link
+                        :to="`${isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`">
                         <PrimaryButton :secondary="true" class="mx-1" text="Cancel"></PrimaryButton>
                       </router-link>
                       <PrimaryButton v-if="studentDetails.student.statusCode === 'M'"
-                          :disabled="disableDemerge() || isStudentUpdated" @click.native="demerge()" text="Demerge"></PrimaryButton>
-                      <PrimaryButton :disabled="isStudentUpdated || !hasAnyEdits() || !validForm " @click.native="saveStudent()" text="Save"></PrimaryButton>
+                                     :disabled="disableDemerge()" text="Demerge"
+                                     @click.native="demerge()"></PrimaryButton>
+                      <PrimaryButton :disabled="!hasAnyEdits() || !validForm " text="Save"
+                                     @click.native="saveStudent()"></PrimaryButton>
                     </v-card-actions>
                   </v-col>
                 </v-row>
@@ -71,10 +74,11 @@ import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
 import StudentSLDHistory from '@/components/penreg/student/StudentSLDHistory';
 import {mapState} from 'vuex';
+import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 
 export default {
   name: 'studentDetail',
-  mixins: [alertMixin],
+  mixins: [alertMixin, staleStudentRecordMixin],
   props: {
     studentID: {
       type: String,
@@ -121,6 +125,7 @@ export default {
           this.studentDetails = response.data;
           this.studentDetails.student.truePen = this.studentDetails.merges?.find(merge => merge.studentMergeDirectionCode === 'TO')?.mergeStudent.pen;
           this.isStudentDataUpdated = false; // make sure that once it is refreshed enable everything back.
+          this.clearStaleData();
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while loading the student details. Please try again later.');
@@ -130,6 +135,12 @@ export default {
           this.isLoading = false;
         });
     },
+    handleUpdatedStudent(studentDetails) {
+      this.studentDetails = studentDetails;
+      this.studentDetails.student.truePen = this.studentDetails.merges?.find(merge => merge.studentMergeDirectionCode === 'TO')?.mergeStudent.pen;
+      this.isStudentDataUpdated = false; // make sure that once it is refreshed enable everything back.
+      this.clearStaleData();
+    }
   }
 };
 </script>

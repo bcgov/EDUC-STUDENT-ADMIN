@@ -10,6 +10,7 @@ export default {
     possibleMatchReasons: null,
     historyActivityCodes: null,
     studentsInProcess: new Set(),
+    staleStudentRecordsMap: new Map(),// this stores the studentID as key and the message as value
   },
   getters: {
     selectedStudent: state => state.selectedStudent,
@@ -19,7 +20,8 @@ export default {
     gradeCodeObjects: state => state.gradeCodeObjects,
     possibleMatchReasons: state => state.possibleMatchReasons,
     historyActivityCodes: state => state.historyActivityCodes,
-    studentsInProcess: state => state.studentsInProcess
+    studentsInProcess: state => state.studentsInProcess,
+    staleStudentRecordsMap: (state) => state.staleStudentRecordsMap,
   },
   mutations: {
     setGenders: (state, genders) => {
@@ -46,6 +48,15 @@ export default {
     resetStudentInProcessStatus: (state, studentID) => {
       state.studentsInProcess.delete(studentID);
       state.studentsInProcess = new Set(state.studentsInProcess);
+    },
+    clearStaleData: (state) => {
+      state.staleStudentRecordsMap = new Map();
+    },
+    addStaleDataToMap: (state, {studentID, warningMessage}) => {
+      state.staleStudentRecordsMap.set(studentID, warningMessage);
+    },
+    removeStaleDataFromMap: (state, studentID) => {
+      state.staleStudentRecordsMap.delete(studentID);
     },
   },
   actions: {

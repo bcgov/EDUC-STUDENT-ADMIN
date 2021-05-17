@@ -8,8 +8,8 @@
       </v-col>
       <v-col>
         <CompareDemographicModal
-            :disabled="isStudentDataUpdated || selectedRecords.length<2 || selectedRecords.length>3"
-            :selectedRecords.sync="selectedRecords"></CompareDemographicModal>
+          :disabled="selectedRecords.length<2 || selectedRecords.length>3"
+          :selectedRecords.sync="selectedRecords"></CompareDemographicModal>
       </v-col>
     </v-row>
     <v-data-table
@@ -74,16 +74,17 @@
 <script>
 import {formatDob} from '@/utils/format';
 import {mapGetters, mapMutations, mapState} from 'vuex';
-import ApiService from '../../../common/apiService';
+import ApiService from '@/common/apiService';
 import {REQUEST_TYPES, Routes, STUDENT_CODES} from '@/utils/constants';
-import router from '../../../router';
+import router from '@/router';
 import CompareDemographicModal from '../../common/CompareDemographicModal';
-import alertMixin from '../../../mixins/alertMixin';
+import alertMixin from '@/mixins/alertMixin';
+import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 
 export default {
   name: 'SearchResults',
   components: {CompareDemographicModal},
-  mixins: [alertMixin],
+  mixins: [alertMixin, staleStudentRecordMixin],
   props: {
     searchCriteria: {
       type: Object,
@@ -141,11 +142,29 @@ export default {
           doubleTooltip: 'Gender',
           bottomTooltip: 'Local ID'
         },
-        {topText: 'Birth Date', bottomText: 'Grade', topValue: 'dob', bottomValue: 'gradeCode', sortable: false, topTooltip: 'Birth Date', bottomTooltip: 'Grade'},
-        {topText: 'Mincode', bottomText: 'Twinned', topValue: 'mincode', bottomValue: 'twinned', sortable: false, topTooltip: 'Mincode', bottomTooltip: 'Twinned'},
+        {
+          topText: 'Birth Date',
+          bottomText: 'Grade',
+          topValue: 'dob',
+          bottomValue: 'gradeCode',
+          sortable: false,
+          topTooltip: 'Birth Date',
+          bottomTooltip: 'Grade'
+        },
+        {
+          topText: 'Mincode',
+          bottomText: 'Twinned',
+          topValue: 'mincode',
+          bottomValue: 'twinned',
+          sortable: false,
+          topTooltip: 'Mincode',
+          bottomTooltip: 'Twinned'
+        },
       ],
-      isStudentDataUpdated: false
     };
+  },
+  mounted() {
+    this.clearStaleData();
   },
   watch: {
     pageNumber: {
@@ -163,6 +182,7 @@ export default {
       async handler() {
         await this.$nextTick();
         this.isStudentDataUpdated = false;
+        this.clearStaleData();
       }
     },
     notification(val) {
@@ -171,8 +191,10 @@ export default {
         const student = JSON.parse(notificationData.eventPayload);
         const isUpdatedStudentPresent = this.studentSearchResponse.content.some(el => el.studentID === student?.studentID);
         if (isUpdatedStudentPresent) {
-          this.setWarningAlert(`Student details for ${student.pen}, is updated by ${student.updateUser}. Please do a search again`);
-          this.isStudentDataUpdated = true;
+          const warningMessage = `Student details for ${student.pen}, is updated by ${student.updateUser}. Please do a search again`;
+          this.setWarningAlert(warningMessage);
+          const studentID = student.studentID;
+          this.addStaleDataToMap({studentID, warningMessage});
         }
       }
     },
@@ -211,9 +233,6 @@ export default {
       window.open(route.href, '_blank');
     },
     formatDob,
-    compare() {
-      //TODO
-    },
     firstMemoChars(memo) {
       if(memo){
         return memo.substring(0,25);

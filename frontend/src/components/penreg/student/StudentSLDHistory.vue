@@ -117,7 +117,10 @@ export default {
             if (student?.pen && student?.pen === this.student?.pen) {
               this.isStudentUpdated = true;
               this.$emit('isStudentUpdated', true);
-              this.setWarningAlert(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+              const warningMessage = `Student details for ${student.pen} is updated by ${student.updateUser}, Please refresh the page.`;
+              this.setWarningAlert(warningMessage);
+              const studentID = student.studentID;
+              this.addStaleDataToMap({studentID, warningMessage});
             }
           } catch (e) {
             console.error(e);

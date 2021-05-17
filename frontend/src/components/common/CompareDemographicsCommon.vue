@@ -185,10 +185,11 @@ import {equalsIgnoreCase, getMatchedRecordsByStudent, sortArrayByDate} from '@/u
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import {mapGetters} from 'vuex';
 import MergeStudentsModal from '@/components/common/MergeStudentsModal';
+import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 
 export default {
   name: 'CompareDemographicsCommon',
-  mixins: [alertMixin,servicesSagaMixin],
+  mixins: [alertMixin, servicesSagaMixin, staleStudentRecordMixin],
   components: {
     TertiaryButton,
     PrimaryButton,
@@ -432,7 +433,7 @@ export default {
     validateAction() {
       let cnt = 0;
       this.checkedStudents.forEach(checked => cnt += checked ? 1 : 0);
-      return cnt !== 2 || this.isStudentDataUpdated;
+      return cnt !== 2;
     },
     disableMerge() {
       if (this.validateAction()) {
@@ -487,10 +488,14 @@ export default {
     },
     async twin() {
       const selectedStudents = this.getSelectedStudents();
-
+      let warningMessage = this.getWarningMessage();
+      if (warningMessage) {
+        this.setWarningAlert(warningMessage);
+        return;
+      }
       // Determine which is the oldest, which will be mergedToPen
       let student = selectedStudents[0];
-      let twinStudent =  selectedStudents[1];
+      let twinStudent = selectedStudents[1];
 
       // Same Pen validation
       if (this.validateStudentsHaveSamePen(student, twinStudent,
@@ -528,7 +533,11 @@ export default {
     },
     async merge() {
       const selectedStudents = this.getSelectedStudents();
-
+      let warningMessage = this.getWarningMessage();
+      if (warningMessage) {
+        this.setWarningAlert(warningMessage);
+        return;
+      }
       // Determine which is the oldest, which will be mergedToPen
       [this.mergedToStudent, this.mergedFromStudent] = _.sortBy(selectedStudents, ['createDate', 'pen']);
 
@@ -555,7 +564,11 @@ export default {
     },
     async demerge() {
       const selectedStudents = this.getSelectedStudents();
-
+      let warningMessage = this.getWarningMessage();
+      if (warningMessage) {
+        this.setWarningAlert(warningMessage);
+        return;
+      }
       if (selectedStudents[0].statusCode === 'M') { // This check is enough as validateDemerge is performed before.
         this.mergedFromStudent = selectedStudents[0];
         this.mergedToStudent = selectedStudents[1];
@@ -575,15 +588,28 @@ export default {
       try {
         const student = JSON.parse(notificationData.eventPayload);
         if (student?.pen &&  !this.isProcessing && this.studentRecords?.some(el => el?.pen === student.pen)) {
-          this.setWarningAlert(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
           this.isStudentDataUpdated = true;
+          const warningMessage = `Student details for ${student.pen} is updated by ${student.updateUser}, Please refresh the page.`;
+          this.setWarningAlert(warningMessage);
+          const studentID = student.studentID;
+          this.addStaleDataToMap({studentID, warningMessage});
         }
       } catch (e) {
         console.error(e);
       }
     },
-    mergeStudentsModalOpenEmit(value){
+    mergeStudentsModalOpenEmit(value) {
       this.mergeStudentsModalOpen = value;
+    },
+    getWarningMessage() {
+      let warningMessage;
+      for (const stud of this.getSelectedStudents()) {
+        warningMessage = this.getMessageForStudent(stud.studentID);
+        if (!!warningMessage) {
+          break;
+        }
+      }
+      return warningMessage;
     }
   },
 };

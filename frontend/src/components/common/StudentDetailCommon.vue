@@ -11,11 +11,12 @@
           <v-row no-gutters>
             <v-col cols="5">
               <v-text-field
-                  v-model="studentCopy.pen"
-                  class="onhoverEdit bolder customNoBorder"
-                  :id='STUDENT_DETAILS_FIELDS.PEN'
-                  color="#000000"
-                  dense
+                v-model="studentCopy.pen"
+                readonly
+                class="onhoverEdit bolder customNoBorder"
+                :id='STUDENT_DETAILS_FIELDS.PEN'
+                color="#000000"
+                dense
               ></v-text-field>
             </v-col>
             <v-col cols="1">
@@ -380,14 +381,14 @@
         </v-card>
       </v-col>
       <v-col cols="1">
-        <CompareDemographicModal :clearOnExit="false" :disabled="isStudentUpdated || hasSagaInProgress(this.origStudent)" :selectedRecords.sync="compareStudent"></CompareDemographicModal>
+        <CompareDemographicModal :clearOnExit="false" :disabled="hasSagaInProgress(this.origStudent)"
+                                 :selectedRecords.sync="compareStudent"></CompareDemographicModal>
       </v-col>
       <v-col cols="1">
         <TertiaryButton
             class="ma-0"
             color="#38598A"
             text="Copy"
-            :disabled="isStudentUpdated"
             v-clipboard:copy="copyTxt"
             v-clipboard:error="onError"
             :model="copyTxt"
@@ -499,7 +500,7 @@ import StudentDetailsTextFieldSideCardReadOnly
   from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
 import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
 import {formatDob, formatMincode, formatPen} from '@/utils/format';
-import {isEmpty, sortBy} from 'lodash';
+import {sortBy} from 'lodash';
 import alertMixin from '../../mixins/alertMixin';
 import schoolMixin from '../../mixins/schoolMixin';
 import servicesSagaMixin from '../../mixins/servicesSagaMixin';
@@ -510,11 +511,12 @@ import {isValidDob, isValidMincode} from '@/utils/validation';
 import FormattedTextField from '@/components/util/FormattedTextField';
 import TertiaryButton from '@/components/util/TertiaryButton';
 import PrimaryButton from '@/components/util/PrimaryButton';
+import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 
 const JSJoda = require('@js-joda/core');
 export default {
   name: 'studentDetailCommon',
-  mixins: [alertMixin,schoolMixin,servicesSagaMixin],
+  mixins: [alertMixin, schoolMixin, servicesSagaMixin, staleStudentRecordMixin],
   props: {
     studentID: {
       type: String,
@@ -522,7 +524,9 @@ export default {
     },
     studentDetails: {
       type: Object,
-      default: () => {}
+      default: () => {
+        // this is intentional
+      }
     },
     validForm: {
       type: Boolean,
@@ -679,15 +683,20 @@ export default {
       }
       return String.fromCodePoint(char.codePointAt(0)+diff);
     },
-    copyInfo(){
-      let dobCopy=formatDob(this.studentCopy.dob,'uuuu-MM-dd','uuuu/MM/dd');
-      this.copyTxt=
-          'PEN: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.studentCopy.pen || '')+'\n'+
-          'Legal Surname: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.studentCopy.legalLastName || '')+'\n'+
-          'Legal Given: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.studentCopy.legalFirstName || '')+'\n'+
-          'Legal Middle: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.studentCopy.legalMiddleNames || '') + '\n'+
-          'Birth Date: '.replace(/[A-Za-z]/g,this.boldFormatter)+(dobCopy || '')+'\n'+
-          'Gender: '.replace(/[A-Za-z]/g,this.boldFormatter)+(this.studentCopy.genderCode || '');
+    copyInfo() {
+      if (this.isStudentUpdated) {
+        const warningMessage = this.getMessageForStudent(this.studentID);
+        this.setWarningAlert(warningMessage);
+        return;
+      }
+      let dobCopy = formatDob(this.studentCopy.dob, 'uuuu-MM-dd', 'uuuu/MM/dd');
+      this.copyTxt =
+        'PEN: '.replace(/[A-Za-z]/g, this.boldFormatter) + (this.studentCopy.pen || '') + '\n' +
+        'Legal Surname: '.replace(/[A-Za-z]/g, this.boldFormatter) + (this.studentCopy.legalLastName || '') + '\n' +
+        'Legal Given: '.replace(/[A-Za-z]/g, this.boldFormatter) + (this.studentCopy.legalFirstName || '') + '\n' +
+        'Legal Middle: '.replace(/[A-Za-z]/g, this.boldFormatter) + (this.studentCopy.legalMiddleNames || '') + '\n' +
+        'Birth Date: '.replace(/[A-Za-z]/g, this.boldFormatter) + (dobCopy || '') + '\n' +
+        'Gender: '.replace(/[A-Za-z]/g, this.boldFormatter) + (this.studentCopy.genderCode || '');
       this.$copyText(this.copyTxt);
     },
     copyPen(){
@@ -802,14 +811,13 @@ export default {
     refreshStudent() {
       this.isLoading = true;
       this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false));
-      if(!isEmpty(this.studentDetails)) {
-        this.handleStudentDetails(this.studentDetails);
-        this.isLoading = false;
-      } else {
         ApiService.apiAxios
           .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
           .then(response => {
+            this.origStudent.truePen = response.data.merges?.find(merge => merge.studentMergeDirectionCode === 'TO')?.mergeStudent.pen;
             this.handleStudentDetails(response.data);
+            this.clearStaleData();
+            this.$emit('handleUpdatedStudent', response.data);
           })
           .catch(error => {
             console.log(error);
@@ -818,7 +826,6 @@ export default {
           .finally(() => {
             this.isLoading = false;
           });
-      }
     },
     hasEdits(key) {
       let studentCopy = this.studentCopy[key];
@@ -905,6 +912,11 @@ export default {
     },
     async saveStudent() {
       if (this.parentRefs.studentDetailForm.validate()) {
+        if (this.isStudentUpdated) {
+          const warningMessage = this.getMessageForStudent(this.studentID);
+          this.setWarningAlert(warningMessage);
+          return;
+        }
         const isUpdateStudentAllowed = await this.isStudentUpdateConfirmed();
         if (isUpdateStudentAllowed) {
           const params = {
@@ -921,8 +933,6 @@ export default {
             })
             .catch(error => {
               this.processSaveStudentError(error);
-            })
-            .finally(() => {
             });
         }
 
@@ -1021,18 +1031,23 @@ export default {
         });
     },
     disableDemerge() {
-      if (this.isStudentUpdated || this.isProcessing || this.demergeSagaComplete || this.hasSagaInProgress(this.origStudent)) {
+      if (this.isProcessing || this.demergeSagaComplete || this.hasSagaInProgress(this.origStudent)) {
         return true;
       }
       return !(this.origStudent.statusCode === 'M' && !!this.origStudent.trueStudentID);
 
     },
     async demerge() {
+      if (this.isStudentUpdated) {
+        const warningMessage = this.getMessageForStudent(this.studentID);
+        this.setWarningAlert(warningMessage);
+        return;
+      }
       this.mergedToStudent = this.mergedTo.mergeStudent;
       this.mergedFromStudent = this.origStudent;
 
       let result = await this.$refs.demergeConfirmationDialog.open(null, null,
-        { color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, rejectText: 'No' });
+        {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, rejectText: 'No'});
       if (!result) {
         return;
       }
@@ -1041,13 +1056,16 @@ export default {
     showWarningAndDisableActionIfUpdatedStudentMatched(notificationData) {
       try {
         const student = JSON.parse(notificationData.eventPayload);
+        const warningMessage = `Student details for ${student.pen}, is updated by ${student.updateUser}. Please refresh the page.`;
         if (student?.pen && student?.pen === this.studentDetails?.student?.pen && this.isStudentUpdatedInDifferentTab) { // show only when it is in a diff tab or diff user.
           this.isStudentUpdated = true;
           this.$emit('isStudentUpdated', true);
-          this.setWarningAlert(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+          this.setWarningAlert(warningMessage);
+          const studentID = student.studentID;
+          this.addStaleDataToMap({studentID, warningMessage});
         } else if (student?.pen && student?.pen === this.studentDetails?.student?.pen && !this.isStudentUpdatedInDifferentTab) {
           this.isStudentUpdatedInDifferentTab = true; // make it true for future messages.
-          this.lastMessageFromSTANForStudentUpdate = `Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`; // store it to show after recieving 409 http response, this helps in race condition where STAN is sending message faster than http response.
+          this.lastMessageFromSTANForStudentUpdate = warningMessage; // store it to show after receiving 409 http response, this helps in race condition where JetStream is sending message faster than http response.
         }
       } catch (e) {
         console.error(e);
@@ -1069,8 +1087,11 @@ export default {
         this.setFailureAlert(error?.response?.data?.message);
         this.isStudentUpdated = true;
         this.$emit('isStudentUpdated', true);
-        if (this.isStudentUpdatedInDifferentTab) { // if it is already true that means the message has already arrived from STAN.
-          this.setWarningAlert(this.lastMessageFromSTANForStudentUpdate);
+        if (this.isStudentUpdatedInDifferentTab) { // if it is already true that means the message has already arrived from JetStream..
+          const warningMsg = this.lastMessageFromSTANForStudentUpdate;
+          const studentID = this.studentDetails.student.studentID;
+          this.addStaleDataToMap({studentID, warningMsg});
+          this.setWarningAlert(warningMsg);
         } else {
           this.isStudentUpdatedInDifferentTab = true; // turn it back to true in case of errors
         }

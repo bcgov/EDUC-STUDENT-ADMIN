@@ -39,13 +39,15 @@
             <v-spacer></v-spacer>
             <PrimaryButton id="closePanel" :secondary="true" class="mx-1" text="Close" @click.native="$emit('close')"></PrimaryButton>
             <SplitPenModal
-                :disabled="isSplitPenDisabled || isStudentUpdated"
-                :currentStudentDetail="student"
-                :studentDetailForRevert="studentDetailForRevert"
-                :newStudentDetail="studentHistoryDetail"
-                @split="split"
+              :disabled="isSplitPenDisabled"
+              :currentStudentDetail="student"
+              :studentDetailForRevert="studentDetailForRevert"
+              :newStudentDetail="studentHistoryDetail"
+              :isStudentUpdated="isStudentUpdated"
+              @split="split"
             ></SplitPenModal>
-            <PrimaryButton id="revertData" :disabled="isRevertDisabled || isStudentUpdated" :loading="isRevertingStudent" class="mx-1" text="Revert"
+            <PrimaryButton id="revertData" :disabled="isRevertDisabled" :loading="isRevertingStudent" class="mx-1"
+                           text="Revert"
                            @click.native="revertStudentDataFromStudentHistory()"></PrimaryButton>
           </v-card-actions>
 
@@ -67,10 +69,11 @@ import alertMixin from '../../../mixins/alertMixin';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
 import SplitPenModal from './SplitPenModal';
 import StudentAuditHistoryDetailCard from './StudentAuditHistoryDetailCard';
+import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 
 export default {
   name: 'StudentAuditHistoryDetailPanel',
-  mixins: [alertMixin],
+  mixins: [alertMixin, staleStudentRecordMixin],
   props: {
     student: {
       type: Object,
@@ -172,6 +175,12 @@ export default {
       }
     },
     revertStudentDataFromStudentHistory() {
+      this.studentHistoryDetail = this.studentHistory.content[this.rowNumber];
+      if (this.isStudentUpdated) {
+        const warningMessage = this.getMessageForStudent(this.studentHistoryDetail?.studentID);
+        this.setWarningAlert(warningMessage);
+        return;
+      }
       const opts = {
         width: '680px',
         messagePadding: 'px-4 pt-1',
@@ -186,7 +195,6 @@ export default {
         opts)
         .then((result) => {
           if (result) { // the component returns true only when user confirms the dialog.
-            this.studentHistoryDetail = this.studentHistory.content[this.rowNumber];
             this.$emit('revert', this.studentHistoryDetail);
           }
         });

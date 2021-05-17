@@ -326,8 +326,8 @@
             <v-card-actions style="float: right;">
               <PrimaryButton id="compareModalCancelBtn" text="Cancel" secondary @click.native=closeStudentsMergeModal></PrimaryButton>
               <PrimaryButton
-                  :disabled="isStudentUpdated || !hasAnyEdits() || !validForm || isProcessing || mergeSagaComplete || isAMergedStudent"
-                  @click.native="performMerge()" text="Merge"></PrimaryButton>
+                :disabled="!hasAnyEdits() || !validForm || isProcessing || mergeSagaComplete || isAMergedStudent"
+                @click.native="performMerge()" text="Merge"></PrimaryButton>
             </v-card-actions>
           </v-col>
         </v-row>
@@ -340,7 +340,13 @@
 <script>
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
 import {mapGetters} from 'vuex';
-import {REQUEST_TYPES, Routes, STUDENT_CODES, STUDENT_DETAILS_FIELDS, STUDENT_MERGE_DETAILS_FIELDS} from '@/utils/constants';
+import {
+  REQUEST_TYPES,
+  Routes,
+  STUDENT_CODES,
+  STUDENT_DETAILS_FIELDS,
+  STUDENT_MERGE_DETAILS_FIELDS
+} from '@/utils/constants';
 import FormattedTextField from '@/components/util/FormattedTextField';
 import StudentDetailsCheckBoxWithOutputText from '@/components/penreg/student/StudentDetailsCheckBoxWithOutputText';
 import PrimaryButton from '@/components/util/PrimaryButton';
@@ -351,10 +357,11 @@ import servicesSagaMixin from '@/mixins/servicesSagaMixin';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import router from '@/router';
 import ApiService from '@/common/apiService';
+import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 
 export default {
   name: 'MergeStudentsCommon',
-  mixins: [alertMixin, schoolMixin, servicesSagaMixin],
+  mixins: [alertMixin, schoolMixin, servicesSagaMixin, staleStudentRecordMixin],
   props: {
     mergeStudentsModalOpen: {
       type: Boolean,
@@ -570,6 +577,11 @@ export default {
       }
     },
     async performMerge() {
+      if (this.isStudentUpdated) {
+        const warningMessage = this.getMessageForStudent(this.student?.studentID) || this.getMessageForStudent(this.mergedStudent?.studentID);
+        this.setWarningAlert(warningMessage);
+        return;
+      }
       let result = await this.$refs.confirmationDialog.open('Are you sure you want to merge PENs?', 'Merging these records will break any twinned connections.',
         {color: '#fff', width: 520, closeIcon: true, dark: false, rejectText: 'No'});
       if (!result) {
@@ -587,7 +599,10 @@ export default {
         const student = JSON.parse(notificationData.eventPayload);
         if (student?.pen && (student?.pen === this.student?.pen || student?.pen === this.mergedStudent?.pen) && !this.isProcessing) { // show only when it is in a diff tab or diff user.
           this.isStudentUpdated = true;
-          this.setWarningAlert(`Student details for ${student.pen} is updated by ${student.updateUser}, please refresh the page.`);
+          const warningMessage = `Student details for ${student.pen} is updated by ${student.updateUser}, Please refresh the page.`;
+          this.setWarningAlert(warningMessage);
+          const studentID = student.studentID;
+          this.addStaleDataToMap({studentID, warningMessage});
         }
       } catch (e) {
         console.error(e);

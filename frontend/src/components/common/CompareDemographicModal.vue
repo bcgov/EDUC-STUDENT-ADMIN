@@ -40,9 +40,12 @@ import PrimaryButton from '../util/PrimaryButton';
 import TertiaryButton from '../util/TertiaryButton';
 import CompareDemographicsCommon from './CompareDemographicsCommon';
 import {deepCloneObject} from '@/utils/common';
+import alertMixin from '@/mixins/alertMixin';
+import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 
 export default {
   name: 'CompareDemographicModal',
+  mixins: [alertMixin, staleStudentRecordMixin],
   components: {
     CompareDemographicsCommon,
     PrimaryButton,
@@ -91,7 +94,18 @@ export default {
       }
     },
     compare() {
-      this.compareModalOpen = true;
+      let warningMessage;
+      for (const student of this.studentRecords) {
+        warningMessage = this.getMessageForStudent(student.studentID);
+        if (!!warningMessage) {
+          break;
+        }
+      }
+      if (warningMessage) {
+        this.setWarningAlert(warningMessage);
+      } else {
+        this.compareModalOpen = true;
+      }
     }
   }
 };
