@@ -21,7 +21,6 @@
           <v-row class="d-flex justify-space-between">
             <MacroMenu
               :macros="rejectMacros"
-              text="View or Add Macro"
               @select="insertMacroText"
             />
             <v-col cols="12" xl="3" lg="5" md="5" class="py-0" justify="end" align-content="end">

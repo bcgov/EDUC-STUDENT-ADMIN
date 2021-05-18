@@ -95,7 +95,6 @@
         <MacroMenu
           padding="pt-3"
           :macros="completeMacros"
-          text="View or Add Macro"
           @select="insertMacroText"
           :disabled="isCompleteCommentDisabled"
         />
