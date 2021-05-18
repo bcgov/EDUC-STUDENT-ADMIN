@@ -755,6 +755,8 @@ export default {
             }
             break;
           }
+          this.setSelectedRecords();
+          this.initializeDetails();
           this.prbStudent.sagaInProgress = false;
           this.sagaId = undefined; // change it after the saga is completed.
         } else if (notificationData.sagaStatus === 'INITIATED') {
