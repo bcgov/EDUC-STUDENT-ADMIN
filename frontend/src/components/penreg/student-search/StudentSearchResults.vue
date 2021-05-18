@@ -46,7 +46,7 @@
               <br>
               <!-- if top and bottom value are the same, do not display the bottom value -->
               <v-tooltip v-if="header.bottomValue === 'memo'" bottom>
-                <template v-slot:activator="{ on, attrs }">
+                <template v-slot:activator="{ on }">
                   <span v-on="on" class="bottom-column-item">{{
                       firstMemoChars(props.item[header.bottomValue])
                     }}</span>

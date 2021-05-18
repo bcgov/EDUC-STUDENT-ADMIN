@@ -72,10 +72,6 @@ const router = new VueRouter({
             requiresAuth: true,
             role: 'isValidGMPUser'
           },
-          beforeEnter(to, from, next) {
-            store.commit('app/setRequestType',REQUEST_TYPES.penRequest.name);
-            next();
-          }
         },
         {
           path: ':requestId',
@@ -88,7 +84,11 @@ const router = new VueRouter({
             role: 'isValidGMPUser'
           }
         },
-      ]
+      ],
+      beforeEnter(to, from, next) {
+        store.commit('app/setRequestType',REQUEST_TYPES.penRequest.name);
+        next();
+      }
     },
     {
       path: '/ump',
@@ -108,10 +108,6 @@ const router = new VueRouter({
             requiresAuth: true,
             role: 'isValidUMPUser'
           },
-          beforeEnter(to, from, next) {
-            store.commit('app/setRequestType',REQUEST_TYPES.studentRequest.name);
-            next();
-          }
         },
         {
           path: ':requestId',
@@ -124,7 +120,11 @@ const router = new VueRouter({
             role: 'isValidUMPUser'
           }
         }
-      ]
+      ],
+      beforeEnter(to, from, next) {
+        store.commit('app/setRequestType',REQUEST_TYPES.studentRequest.name);
+        next();
+      }
     },
     {
       path: '/studentSearch/basic',

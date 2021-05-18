@@ -15,9 +15,15 @@
               auto-grow
               @input="replaceRejectMacro"
               class="pa-0 ma-0"
+              ref="rejectCommentTextarea"
             ></v-textarea>
           </v-row>
-          <v-row justify="end" align-content="end">
+          <v-row class="d-flex justify-space-between">
+            <MacroMenu
+              :macros="rejectMacros"
+              text="View or Add Macro"
+              @select="insertMacroText"
+            />
             <v-col cols="12" xl="3" lg="5" md="5" class="py-0" justify="end" align-content="end">
               <PrimaryButton id="reject-request" text="Reject" :disabled="isRejectDisabled || !isRejectEnabledForUser" width="100%" @click.native="submitReject"></PrimaryButton>
             </v-col>
@@ -31,16 +37,20 @@
 <script>
 import ApiService from '../common/apiService';
 import { Routes, Statuses } from '../utils/constants';
-import { replaceMacro } from '../utils/macro';
+import { replaceMacro, insertMacro } from '../utils/macro';
 import {mapGetters, mapMutations} from 'vuex';
 import {AccessEnabledForUser} from '../common/role-based-access';
 import PrimaryButton from './util/PrimaryButton';
 import alertMixin from '../mixins/alertMixin';
 import {isValidLength} from '../utils/validation';
+import MacroMenu from './common/MacroMenu';
 
 export default {
   name: 'requestReject',
-  components: {PrimaryButton},
+  components: {
+    PrimaryButton,
+    MacroMenu
+  },
   props: {
     request: {
       type: Object,
@@ -145,7 +155,10 @@ export default {
             this.submitted();
           });
       }
-    }
+    },
+    insertMacroText(macroText) {
+      this.rejectComment = insertMacro(macroText, this.rejectComment, this.$refs.rejectCommentTextarea.$refs.input);
+    },
   }
 };
 </script>
