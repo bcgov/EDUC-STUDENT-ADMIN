@@ -118,10 +118,9 @@ import {replaceMacro, insertMacro} from '@/utils/macro';
 import {mapGetters, mapMutations} from 'vuex';
 import {AccessEnabledForUser} from '@/common/role-based-access';
 import PrimaryButton from '../util/PrimaryButton';
-import {checkDigit} from '@/utils/validation';
+import {checkDigit, isValidLength} from '@/utils/validation';
 import alertMixin from '@/mixins/alertMixin';
 import MacroMenu from '../common/MacroMenu';
-import {isValidLength} from '@/utils/validation';
 
 export default {
   name: 'penRequestComplete',
