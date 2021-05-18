@@ -31,9 +31,7 @@
                     <span class="mr-4 batch-title">
                       <strong>{{ seqNumberInBatch }} of {{
                           totalNumberInBatch
-                        }} filtered</strong> | Record {{ prbStudent.recordNumber }} of {{ batchFile.studentCount }} in submission {{
-                        prbStudent.submissionNumber
-                      }}
+                        }} filtered</strong> | {{ title }}
                     </span>
                     <PrbStudentStatusChip
                         :prbStudent="prbStudent"
@@ -271,7 +269,7 @@ export default {
     },
   },
   computed: {
-    ...mapState('setNavigation', ['currentRoute']),
+    ...mapState('setNavigation', ['currentRoute', 'title']),
     ...mapState('notifications', ['notification']),
     disableRefresh() {
       return this.prbStudent?.sagaInProgress || this.isArchived
@@ -398,7 +396,6 @@ export default {
         this.setFailureAlert('An error occurred while loading the PEN request. Please try again later.');
         console.log(error);
       }
-
       this.loading = false;
     },
     async retrievePenRequestByID() {
