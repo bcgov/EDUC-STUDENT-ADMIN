@@ -69,7 +69,6 @@
           <v-row class="pr-3 pt-3 d-flex justify-space-between">
             <MacroMenu
               :macros="completeMacros"
-              text="View or Add Macro"
               @select="insertMacroText"
             />
             <PrimaryButton id="send-changes-to-student" text="Send Changes to Student" :disabled="isCompleteDisabled || !isProvidePenEnabledForUser" @click.native="sendChanges"></PrimaryButton>
