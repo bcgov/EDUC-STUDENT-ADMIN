@@ -33,33 +33,14 @@
       </v-card-text>
       <v-card-actions class="pt-0 px-6 pb-4">
         <v-col class="pl-0 pa-0">
-          <v-menu id="chooseMessageMenu" max-height="30%" offset-y max-width="46.8%">
-            <template v-slot:activator="{ on, attrs }">
-              <PrimaryButton
-                      id="requestInfoDialogChooseMessageBtn"
-                      text="Choose Message"
-                      icon="fa-angle-down"
-                      secondary
-                      :bind="attrs"
-                      :on="on"></PrimaryButton>
-            </template>
-            <v-list class="py-0 overflow-y-auto">
-              <v-list-item
-                      v-for="(item, index) in studentInfoMacros"
-                      :key="index"
-                      dense
-                      class="macroListItem"
-                      @click="insertMacroText(item.macroText)"
-              >
-                  <v-list-item-title>
-                  <v-row class="macroRow">
-                    <v-col cols="1" class="py-2 pr-0"><strong>{{ item.macroCode }}</strong></v-col>
-                    <v-col cols="11" class="text-wrap py-2 pl-0">{{ item.macroText }}</v-col>
-                  </v-row>
-                  </v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+          <MacroMenu
+            id="requestInfoDialogChooseMessageBtn"
+            :macros="studentInfoMacros"
+            text="Choose Message"
+            @select="insertMacroText"
+            margin="ml-0"
+            menuMaxWidth="46.8%"
+          />
         </v-col>
         <PrimaryButton id="requestInfoDialogCancelBtn" text="Cancel" secondary @click.native="closeRequestInfoDialog"></PrimaryButton>
         <PrimaryButton id="requestInfoDialogPostBtn" text="Post" :disabled="requestInfoDialogText===null" @click.native="$emit('updateInfoRequested', requestInfoDialogText)"></PrimaryButton>
@@ -71,17 +52,19 @@
 
 <script>
 import PrimaryButton from '../../../util/PrimaryButton';
-import { replaceMacro } from '../../../../utils/macro';
+import { replaceMacro, insertMacro } from '../../../../utils/macro';
 import { mapState } from 'vuex';
 import ConfirmationDialog from '../../../util/ConfirmationDialog';
 import alertMixin from '@/mixins/alertMixin';
+import MacroMenu from '@/components/common/MacroMenu';
 
 export default {
   name: 'InfoDialog',
   mixins: [alertMixin],
   components: {
     PrimaryButton,
-    ConfirmationDialog
+    ConfirmationDialog,
+    MacroMenu
   },
   props: {
     text: {
@@ -126,13 +109,7 @@ export default {
       if(this.requestInfoDialogText?.length + macroText?.length > 4000) {
         this.setFailureAlert(this.macroAlertMessage);
       } else {
-        if(this.requestInfoDialogText){
-          const element = this.$refs.requestInfoDialogTextArea.$refs.input;
-          let cursorLocation = element.selectionEnd;
-          this.requestInfoDialogText = this.requestInfoDialogText.substring(0, cursorLocation) + macroText + this.requestInfoDialogText.substring(cursorLocation);
-        } else {
-          this.requestInfoDialogText = macroText;
-        }
+        this.requestInfoDialogText = insertMacro(macroText, this.requestInfoDialogText, this.$refs.requestInfoDialogTextArea.$refs.input);
       }
     },
     macroHotKey() {
@@ -154,11 +131,4 @@ export default {
 #requestInfoDialogCardText /deep/ .v-icon {
   color: #003366 !important;
 }
-.macroListItem {
-  min-height: 0;
-}
-  .macroListItem:hover {
-    cursor: pointer;
-    background-color: #F2F2F2;
-  }
 </style>

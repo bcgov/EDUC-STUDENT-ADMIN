@@ -136,8 +136,9 @@ export function isNotEmptyInputParams(obj) {
   return groups.false?.some(v => !!v) || groups.true?.some(v => isNotEmptyInputParams(v));
 }
 
-export function isValidLength(length) {
-  return [str => !!str || 'Required',
-    str => str && str.length <= length || 'Max ' + length + ' characters'
+export function isValidLength(length, required = true) {
+  const rules = required ? [str => !!str || 'Required'] : [];
+  return [ ...rules,
+    str => (!str || (str && str.length <= length)) || 'Max ' + length + ' characters'
   ];
 }

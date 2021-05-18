@@ -86,18 +86,24 @@
               clearable
               @input="replaceCompleteMacro"
               class="pa-0 ma-0"
+              ref="completeCommentTextarea"
             ></v-textarea>
           </v-form>
         </v-col>
       </v-row>
-      <v-row justify="end" class="px-4">
-          <v-checkbox v-model="request.demogChanged" true-value="Y" false-value="N" justify="flex-end" class="pa-0" cols="12" label="Student demographics changed"></v-checkbox>
-          <v-col cols="2" xl="2" lg="2" md="2" class="pt-3">
-            <PrimaryButton id="unlink-button" text="Unlink" width="100%" :disabled="isUnlinkDisabled || !isProvidePenEnabledForUser" @click.native="unlinkRequest"></PrimaryButton>
-          </v-col>
-        <v-col cols="3" xl="3" lg="3" md="3" class="pt-3">
-          <PrimaryButton id="provide-pen-to-student" text="Provide PEN to Student" width="100%" :disabled="isCompleteDisabled || !isProvidePenEnabledForUser" @click.native="completeRequest"></PrimaryButton>
-        </v-col>
+      <v-row class="px-3 d-flex justify-space-between">
+        <MacroMenu
+          padding="pt-3"
+          :macros="completeMacros"
+          text="View or Add Macro"
+          @select="insertMacroText"
+          :disabled="isCompleteCommentDisabled"
+        />
+        <div class="d-flex">
+          <v-checkbox v-model="request.demogChanged" true-value="Y" false-value="N" class="pa-0" cols="12" label="Student demographics changed"></v-checkbox>
+          <PrimaryButton id="unlink-button" class="mt-3 mx-3" text="Unlink" :disabled="isUnlinkDisabled || !isProvidePenEnabledForUser" @click.native="unlinkRequest"></PrimaryButton>
+          <PrimaryButton id="provide-pen-to-student" class="mt-3 mx-3" text="Provide PEN to Student" :disabled="isCompleteDisabled || !isProvidePenEnabledForUser" @click.native="completeRequest"></PrimaryButton>
+        </div>
       </v-row>
     </v-card>
 
@@ -108,16 +114,21 @@
 import {formatDob} from '@/utils/format';
 import ApiService from '../../common/apiService';
 import {Routes, Statuses} from '@/utils/constants';
-import {replaceMacro} from '@/utils/macro';
+import {replaceMacro, insertMacro} from '@/utils/macro';
 import {mapGetters, mapMutations} from 'vuex';
 import {AccessEnabledForUser} from '@/common/role-based-access';
 import PrimaryButton from '../util/PrimaryButton';
 import {checkDigit} from '@/utils/validation';
 import alertMixin from '@/mixins/alertMixin';
+import MacroMenu from '../common/MacroMenu';
+import {isValidLength} from '@/utils/validation';
 
 export default {
   name: 'penRequestComplete',
-  components: {PrimaryButton},
+  components: {
+    PrimaryButton,
+    MacroMenu
+  },
   mixins: [alertMixin],
   props: {
     request: {
@@ -179,12 +190,7 @@ export default {
       return Statuses.AUTO_MATCH_RESULT_CODES;
     },
     completedRules() {
-      const rules = [];
-      if (this.request.demogChanged==='Y') {
-        const rule = v => !!v || 'Required';
-        rules.push(rule);
-      }
-      return rules;
+      return isValidLength(4000, this.request.demogChanged==='Y');
     },
     requestStatusCodeName() {
       return `${this.requestType}StatusCode`;
@@ -193,7 +199,7 @@ export default {
       return this.selectedRequest;
     },
     completeMacros() {
-      return this.$store.getters[`${this.requestType}/completeMacros`];
+      return this.$store.getters[`${this.requestType}/completeMacros`] || [];
     },
     statusCodes() {
       return Statuses[this.requestType];
@@ -370,6 +376,9 @@ export default {
     populateAutoMatchedPen() {
       this.penSearchId = this.autoPenResults;
       this.validatePen();
+    },
+    insertMacroText(macroText) {
+      this.request.completeComment = insertMacro(macroText, this.request.completeComment, this.$refs.completeCommentTextarea.$refs.input);
     },
   }
 };
