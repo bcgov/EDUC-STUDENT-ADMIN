@@ -24,12 +24,12 @@ async function searchStudent(req, res) {
     if (useNameVariants) {
       if (searchQueries['legalFirstName']) {
         legalNicknames = await getNicknames(token, searchQueries['legalFirstName']);
-      } 
+      }
       if (searchQueries['usualFirstName']) {
         usualNicknames = await getNicknames(token, searchQueries['usualFirstName']);
       }
     }
-    
+
     Object.keys(searchQueries).forEach(element => {
       let operation = FILTER_OPERATION.STARTS_WITH;
       let valueType = VALUE_TYPE.STRING;
@@ -59,13 +59,13 @@ async function searchStudent(req, res) {
             operation = FILTER_OPERATION.ENDS_WITH;
             searchQueries[element] = searchQueries[element].substring(1);
           }
-          
+
           if (useNameVariants) {
             if (element === 'legalFirstName') {
               operation = FILTER_OPERATION.IN;
               legalNicknames.push(searchQueries[element].toUpperCase());
               searchQueries[element] = legalNicknames.join(',');
-            } 
+            }
             if (element === 'usualFirstName') {
               operation = FILTER_OPERATION.IN;
               usualNicknames.push(searchQueries[element].toUpperCase());
@@ -73,6 +73,8 @@ async function searchStudent(req, res) {
             }
           }
         }
+      } else if (element === 'gradeCode' || element === 'genderCode') {
+        operation = FILTER_OPERATION.EQUAL;
       } else if (element === 'memo') {
         operation = FILTER_OPERATION.CONTAINS_IGNORE_CASE;
       } else if (element === 'postalCode') {
@@ -81,7 +83,6 @@ async function searchStudent(req, res) {
         operation = FILTER_OPERATION.IN;
         searchQueries[element] = searchQueries[element].join(',');
       }
-
       searchListCriteria.push({key: element, condition: CONDITION.AND, operation: operation, value: searchQueries[element], valueType: valueType});
     });
   }
@@ -124,7 +125,7 @@ async function getNicknames(token, givenName) {
 
 async function getStudentHistoryByStudentID(req, res) {
   const token = utils.getBackendToken(req);
-  
+
   const params = {
     params: {
       pageSize: req.query.pageSize <= 20 ? req.query.pageSize : 20,
