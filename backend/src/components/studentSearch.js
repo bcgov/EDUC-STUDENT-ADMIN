@@ -1,5 +1,5 @@
 'use strict';
-const { logApiError } = require('./utils');
+const {logApiError, logInfo} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const utils = require('./utils');
@@ -100,17 +100,22 @@ async function searchStudent(req, res) {
   };
 
   const baseUrl = config.get('server:student:rootURL');
-  return Promise.all([
-    utils.getData(token, isAuditHistorySearch? baseUrl + '/history/paginated' : baseUrl + '/paginated', params),
-
-  ]).then(([dataResponse]) => {
+  try {
+    const dataResponse = await utils.getData(token, isAuditHistorySearch ? baseUrl + '/history/paginated' : baseUrl + '/paginated', params);
+    if (dataResponse?.totalElements > 2000000) {
+      logInfo(`Search Criteria produced ${dataResponse?.totalElements} records`, params?.params);
+      return res.status(400).json({
+        message: 'Search criteria produced more than 2 million results, Please narrow down the search criteria.'
+      });
+    }
     return res.status(200).json(dataResponse);
-  }).catch((e) => {
+  } catch (e) {
     logApiError(e, 'getStudentById', 'Error occurred while attempting to search student.');
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       message: 'INTERNAL SERVER ERROR'
     });
-  });
+  }
+
 }
 
 async function getNicknames(token, givenName) {
@@ -141,7 +146,7 @@ async function getStudentHistoryByStudentID(req, res) {
     if(trueStudentIDs.length > 0) {
       const students = await utils.getStudentsFromStudentAPIByTheirIds(token, trueStudentIDs);
       dataWithTrueStudentID.forEach(item => {
-        item.truePen = students.content.find(student => student.studentID === item.trueStudentID)?.pen
+        item.truePen = students.content.find(student => student.studentID === item.trueStudentID)?.pen;
       });
     }
     return res.status(200).json(dataResponse);

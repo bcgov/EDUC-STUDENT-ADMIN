@@ -44,12 +44,13 @@
 <script>
 import {LocalDate} from '@js-joda/core';
 import ApiService from '../../../common/apiService';
-import { Routes, REQUEST_TYPES } from '../../../utils/constants';
-import { mapGetters, mapMutations, mapState } from 'vuex';
+import {REQUEST_TYPES, Routes} from '@/utils/constants';
+import {mapGetters, mapMutations, mapState} from 'vuex';
 import StudentSearchResults from './StudentSearchResults';
 import StudentAdvancedSearch from './StudentAdvancedSearch';
 import PrimaryButton from '../../util/PrimaryButton';
-import { isValidPEN, checkDigit, isValidMincode, isValidPostalCode } from '../../../utils/validation';
+import {checkDigit, isValidMincode, isValidPEN, isValidPostalCode} from '@/utils/validation';
+import alertMixin from '@/mixins/alertMixin';
 
 export default {
   components: {
@@ -57,6 +58,7 @@ export default {
     StudentAdvancedSearch,
     StudentSearchResults
   },
+  mixins: [alertMixin],
   props: {
     searchType: {
       type: String,
@@ -127,9 +129,9 @@ export default {
     }
 
     // if any of these fields exist, automatically perform search
-    if (this.searchParams && 
+    if (this.searchParams &&
       (this.searchParams.legalLastName || this.searchParams.legalFirstName
-       || this.searchParams.genderCode || this.searchParams.dob)) {
+        || this.searchParams.genderCode || this.searchParams.dob)) {
       this.enterPushed();
     }
   },
@@ -336,7 +338,10 @@ export default {
             this.currentStudentSearchParams = JSON.parse(JSON.stringify(this.studentSearchParams));
           })
           .catch(error => {
-            console.log(error);
+            if (error?.response?.status === 400) {
+              this.setFailureAlert(error?.response?.data?.message);
+            }
+            console.error(error.response);
           })
           .finally(() => {
             this.searchLoading = false;
@@ -347,7 +352,7 @@ export default {
     },
     prepPut(studentSearchFilters) {
       let sort = {};
-      sort[this.headerSortParams.currentSort] = this.headerSortParams.currentSortAsc ? 'ASC' : 'DESC'; 
+      sort[this.headerSortParams.currentSort] = this.headerSortParams.currentSortAsc ? 'ASC' : 'DESC';
       return {
         params: {
           pageNumber: this.pageNumber-1,
