@@ -33,6 +33,7 @@
               <StudentSearchResults
                       :searchCriteria="this.currentStudentSearchParams"
                       :prepPut="prepPut"
+                      :searchLoading="searchLoading"
               ></StudentSearchResults>
             </v-row>
           </v-card>
@@ -335,11 +336,13 @@ export default {
           .get(Routes['student'].SEARCH_URL,this.prepPut(studentSearchFilters))
           .then(response => {
             this.setStudentSearchResponse(response.data);
-            this.currentStudentSearchParams = JSON.parse(JSON.stringify(this.studentSearchParams));
+            this.currentStudentSearchParams = JSON.parse(JSON.stringify(studentSearchFilters));
           })
           .catch(error => {
             if (error?.response?.status === 400) {
               this.setFailureAlert(error?.response?.data?.message);
+            } else {
+              this.setFailureAlert('An error occurred while loading the search results. Please try again later.');
             }
             console.error(error.response);
           })
