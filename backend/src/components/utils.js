@@ -104,12 +104,14 @@ async function getData(token, url, params) {
 }
 
 async function logApiError(e, functionName, message) {
-  if (message) {
-    log.error(message);
-  }
-  log.error(functionName, ' Error', e.stack);
-  if (e.response && e.response.data) {
+  if (e?.response?.status === 404) {
+    log.info('Entity not found', e);
+  } else if (e?.response?.data) {
     log.error(fsStringify(e.response.data));
+  } else if (message) {
+    log.error(message);
+  } else {
+    log.error(functionName, ' Error', e.stack);
   }
 }
 
@@ -445,7 +447,7 @@ const utils = {
       }
     };
 
-    return await utils.getData(token, config.get('server:student:rootURL') + '/paginated', params);
+    return utils.getData(token, config.get('server:student:rootURL') + '/paginated', params);
   },
   async logDebug(message, data) {
     log.debug(message, data ?? '');
