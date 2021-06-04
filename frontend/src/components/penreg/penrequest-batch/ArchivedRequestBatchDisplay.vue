@@ -318,7 +318,7 @@ export default {
       return this.searchEnabled;
     },
     enterPushed() {
-      if(this.searchHasValues()){
+      if (this.isValidSearchForm && this.searchHasValues()) {
         this.searchBatchFiles();
       }
     },
