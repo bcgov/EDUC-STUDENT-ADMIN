@@ -11,7 +11,12 @@ async function getPenMatch(req, res) {
     if (req.body.dob) {
       req.body.dob = req.body.dob.replace(/\//g, '');
     }
-    req.body.usualGivenName = req.body.usualGiven; // the match api expects usualGivenName
+    req.body.usualGivenName = req.body.usualGiven || null; // the match api expects usualGivenName
+    req.body.givenName = req.body.givenName || null; // send null instead of blank string
+    req.body.middleName = req.body.middleName || null; // send null instead of blank string
+    req.body.usualSurname = req.body.usualSurname || null; // send null instead of blank string
+    req.body.usualMiddleName = req.body.usualMiddleName || null; // send null instead of blank string
+    req.body.usualGivenName = req.body.usualGivenName || null; // send null instead of blank string
     delete req.body.usualGiven;
     const event = {
       sagaId: guid(), // this should be a guid, otherwise it would break
