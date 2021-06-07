@@ -1,42 +1,35 @@
 const getDefaultState = () => {
   return {
-    seqNumber: 0,
-    totalNumber: 0,
-    title: '',
-    preRoute: null,
-    nextRoute: null,
-    currentRoute: {},
+    selectedIDs: {},
+    currentRequest: 0,
+    archived: false
   };
 };
 
 export default {
   namespaced: true,
   state: getDefaultState,
+  getters: {
+    title: state => {
+      let numberOfSelectedFiles = [...new Set(state.selectedIDs?.map(item => item.penRequestBatchID))]?.length;
+      return `Record ${state.currentRequest + 1} of ${Object.keys(state.selectedIDs)?.length} (${numberOfSelectedFiles} ${numberOfSelectedFiles > 1 ? 'files' : 'file'} selected)`;
+    }
+  },
   mutations: {
-    /**
-     * call the setNavigation in the created method of a component to show SetNavigation component 
-     */
-    setNavigation: (state, {seqNumber, totalNumber, title,  preRoute, nextRoute}) => {
-      state.seqNumber = seqNumber;
-      state.totalNumber = totalNumber;
-      state.title = title;
-      state.preRoute = preRoute;
-      state.nextRoute = nextRoute;
-    },
     /**
      * call the clearNavigation in the beforeDestroy method of a component to hide SetNavigation component
      */
     clearNavigation: (state) => {
       Object.assign(state, getDefaultState());
     },
-    setPreRoute: (state, preRoute) => {
-      state.preRoute = preRoute;
+    setSelectedIDs: (state, selectedIDs) => {
+      state.selectedIDs = selectedIDs;
     },
-    setNextRoute: (state, nextRoute) => {
-      state.nextRoute = nextRoute;
+    setCurrentRequest: (state, currentRequest) => {
+      state.currentRequest = currentRequest;
     },
-    setCurrentRoute: (state, currentRoute) => {
-      state.currentRoute = Object.assign({}, state.currentRoute, currentRoute);
-    },
+    setArchived: (state, archived) => {
+      state.archived = archived;
+    }
   },
 };

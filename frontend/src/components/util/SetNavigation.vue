@@ -1,5 +1,5 @@
 <template>
-  <div v-if="totalNumber > 0">
+  <div v-if="total > 0">
     <span class="mr-8 nav-title">{{title}}</span>
     <v-btn 
       class="mr-3"
@@ -23,34 +23,35 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex';
+import { mapState, mapMutations, mapGetters } from 'vuex';
 import router from '../../router';
 
 export default {
   name: 'SetNavigation',
-  props: {
-    stateful: {
-      type: Boolean,
-      default: true,
-    },
-  },
   computed:{
-    ...mapState('setNavigation', ['seqNumber', 'totalNumber', 'title', 'preRoute', 'nextRoute']),
+    ...mapState('setNavigation', ['selectedIDs', 'currentRequest', 'archived']),
+    ...mapGetters('setNavigation', ['title']),
     preDisabled() {
-      return this.seqNumber <= 1;
+      return this.currentRequest <= 0;
     },
     nextDisabled() {
-      return this.seqNumber >= this.totalNumber;
-    }
+      return this.currentRequest >= this.total - 1;
+    },
+    preRoute() {
+      return this.currentRequest <= 0 ? this.currentRequest : this.currentRequest - 1;
+    },
+    nextRoute() {
+      return this.currentRequest >= this.total - 1 ? this.currentRequest : this.currentRequest + 1;
+    },
+    total() {
+      return Object.keys(this.selectedIDs).length;
+    },
   },
   methods: {
-    ...mapMutations('setNavigation', ['setCurrentRoute']),
+    ...mapMutations('setNavigation', ['setCurrentRequest']),
     clickBtn(route) {
-      if(this.stateful) {
-        this.setCurrentRoute(route);
-      } else {
-        router.push(route);
-      }
+      this.setCurrentRequest(route);
+      router.push({name: 'prbStudentDetails', params: {prbStudentID: this.selectedIDs[route].penRequestBatchStudentID}, query: {archived: this.archived}});
     }
   }
 };

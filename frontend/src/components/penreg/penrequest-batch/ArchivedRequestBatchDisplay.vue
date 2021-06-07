@@ -199,7 +199,7 @@
 </template>
 
 <script>
-import {Routes, SEARCH_FILTER_OPERATION, SEARCH_VALUE_TYPE} from '@/utils/constants';
+import {Routes} from '@/utils/constants';
 import {mapMutations, mapState} from 'vuex';
 import ArchivedRequestBatchList from './ArchivedRequestBatchList';
 import PrimaryButton from '../../util/PrimaryButton';
@@ -219,6 +219,7 @@ import pluralize from 'pluralize';
 import ApiService from '@/common/apiService';
 import {formatDob} from '@/utils/format';
 import FormattedTextField from '@/components/util/FormattedTextField';
+import {PEN_REQ_BATCH_STUDENT_REQUEST_CODES} from '../../../utils/constants';
 
 export default {
   name: 'ArchivedRequestBatchDisplay',
@@ -282,36 +283,31 @@ export default {
   methods: {
     ...mapMutations('prbStudentSearch', ['clearPrbStudentSearchState']),
     ...mapMutations('archivedRequestBatch', ['setRefinedSearch', 'setSelectedFiles']),
+    ...mapMutations('setNavigation', ['setSelectedIDs', 'setCurrentRequest', 'setArchived']),
     clickViewList() {
       const batchIDs = this.selectedFileBatchIDs;
       this.clearPrbStudentSearchState();
       router.push({name: 'archivedPrbStudentList', query: { batchIDs, statusFilters: '' }});
     },
     clickViewDetails() {
-      const countColumn = 'studentCount';
-      const totalNumber = this.selectedFiles.reduce((sum, file) => sum + file[countColumn], 0);
-
-      const searchCriteriaList = [
-        {
-          searchCriteriaList: [
-            {
-              key: 'penRequestBatchEntity.penRequestBatchID',
-              operation: SEARCH_FILTER_OPERATION.IN,
-              value: this.selectedFileBatchIDs,
-              valueType: SEARCH_VALUE_TYPE.UUID
-            },
-          ],
-        },
-      ];
-
       const query = {
-        seqNumber: 1,
-        totalNumber,
-        batchCount: this.selectedFiles.length,
-        searchCriteria: JSON.stringify(searchCriteriaList),
-        archived: true,
+        params: {
+          penRequestBatchIDs: this.selectedFileBatchIDs,
+          penRequestBatchStudentStatusCodes: Object.values(PEN_REQ_BATCH_STUDENT_REQUEST_CODES).toString()
+        }
       };
-      router.push({name: 'prbStudentDetails', query});
+
+      ApiService.apiAxios.get(`${Routes['penRequestBatch'].FILES_URL}/penRequestBatchStudentIDs`, query)
+        .then(response => {
+          const sortedResponse = response.data.sort((x,y) => x.penRequestBatchID - y.penRequestBatchID || x.penRequestBatchStudentID - y.penRequestBatchStudentID);
+          this.setSelectedIDs(sortedResponse);
+          this.setArchived(true);
+          router.push({name: 'prbStudentDetails', params: {prbStudentID: sortedResponse[0].penRequestBatchStudentID}, query: {archived: true}});
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while fetching PEN Request Files! Please try again later.');
+          console.log(error);
+        });
     },
     searchHasValues(){
       this.searchEnabled = isNotEmptyInputParams(this.batchFileSearchParams);

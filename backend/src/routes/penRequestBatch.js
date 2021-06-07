@@ -5,7 +5,7 @@ const auth = require('../components/auth');
 const utils = require('../components/utils');
 const extendSession = utils.extendSession();
 const atomicStudentUpdate = require('../middlewares/atomic-student-update');
-const { getPENBatchRequestStats, getPenRequestFiles, getPenRequestBatchStudents, getPenRequestBatchStudentById, getPenRequestBatchStudentMatchOutcome, updatePrbStudentInfoRequested,
+const { getPENBatchRequestStats, getPenRequestFiles, getPenRequestBatchStudents, getPenRequestBatchStudentIDs, getPenRequestBatchStudentById, getPenRequestBatchStudentMatchOutcome, updatePrbStudentInfoRequested,
   issueNewPen, userMatchSaga, userUnmatchSaga, archiveFiles, archiveAndReturnFiles, unarchiveFiles, softDeleteFiles, releaseBatchFilesForFurtherProcessing, repostReports } = require('../components/penRequestBatch');
 
 /*
@@ -22,6 +22,10 @@ router.get('/stats', passport.authenticate('jwt', {session: false}, undefined), 
  * Get pen request students
  */
 router.get('/students', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, getPenRequestBatchStudents);
+/*
+ * Get pen request student IDs
+ */
+router.get('/penRequestBatchStudentIDs', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, getPenRequestBatchStudentIDs);
 
 /*
  * Get pen web blob

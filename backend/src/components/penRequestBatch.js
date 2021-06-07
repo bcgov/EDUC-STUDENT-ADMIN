@@ -62,6 +62,33 @@ async function updatePrbStudentInfoRequested(req, res) {
   }
 }
 
+async function getPenRequestBatchStudentIDs(req, res) {
+  try {
+    const token = getBackendToken(req);
+    if (!token) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'No access token'
+      });
+    }
+
+    const params = {
+      params: {
+        penRequestBatchIDs: req.query.penRequestBatchIDs,
+        penRequestBatchStudentStatusCodes: req.query.penRequestBatchStudentStatusCodes
+      }
+    };
+
+    const dataResponse = await getData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/pen-request-batch-ids`, params);
+    return res.status(200).json(dataResponse);
+
+  } catch (e) {
+    logApiError(e, 'getPaginatedListForSCGroups', 'Error occurred while attempting to get prb student IDs.');
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'INTERNAL SERVER ERROR'
+    });
+  }
+}
+
 async function getPenRequestBatchStudentById(req, res) {
   const token = getBackendToken(req, res);
   try {
@@ -378,6 +405,7 @@ module.exports = {
   updatePrbStudentInfoRequested,
   getPenRequestFiles: getPaginatedListForSCGroups('getPenRequestFiles', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/paginated`, addPenRequestBatchSagaStatus),
   getPenRequestBatchStudents: getPaginatedListForSCGroups('getPenRequestBatchStudents', `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/student/paginated`, addPenRequestBatchStudentSagaStatus),
+  getPenRequestBatchStudentIDs,
   getPenRequestBatchStudentById,
   getPenRequestBatchStudentMatchOutcome,
   issueNewPen,
