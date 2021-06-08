@@ -343,6 +343,7 @@ export default {
       });
     },
     async initializeDetails() {
+      this.demogValidationResult = []; // reset the validation results, on clicking next or previous
       if (!isEmpty(this.currentRoute)) {
         this.seqNumber = this.currentRoute.query?.seqNumber;
         this.seqNumberInBatch = this.currentRoute.query?.seqInBatch;
