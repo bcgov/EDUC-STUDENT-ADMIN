@@ -86,8 +86,10 @@
 import {mapMutations, mapState} from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
 import PrbStudentStatusChip from './PrbStudentStatusChip';
-import {sortBy, uniq, uniqBy, values} from 'lodash';
+import {sortBy, uniqBy, values} from 'lodash';
 import router from '../../../router';
+import {PEN_REQ_BATCH_STUDENT_REQUEST_CODES, Routes} from '../../../utils/constants';
+import ApiService from '@/common/apiService';
 
 export default {
   name: 'PrbStudentSearchResults',
@@ -176,35 +178,88 @@ export default {
   },
   methods: {
     ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse']),
+    ...mapMutations('setNavigation', ['setSelectedIDs', 'setArchived']),
     getSchoolName(request) {
       return this.$store.state['app'].mincodeSchoolNames.get(request?.mincode?.replace(' ',''));
     },
     clickViewSelected() {
       if(this.selectedRecords?.length > 0) {
-        const batchIDs = uniq(this.selectedRecords.map(record => record.penRequestBatchID));
-        const prbStudentIDs = this.selectedRecords.map(record => record.penRequestBatchStudentID);
-        const query = { 
-          seqNumber: 1,
-          totalNumber: this.selectedRecords.length, 
-          batchCount: batchIDs.length, 
-          prbStudentIDs,
-          batchIDs,
-          archived: this.archived
-        };
-        router.push({name: 'prbStudentDetails', query});
+        const sortedResponse = this.selectedRecords.sort((x,y) => x.penRequestBatchID - y.penRequestBatchID || x.penRequestBatchStudentID - y.penRequestBatchStudentID);
+        this.setSelectedIDs(sortedResponse);
+        this.setArchived(this.archived);
+        router.push({name: 'prbStudentDetails', params: {prbStudentID: sortedResponse[0].penRequestBatchStudentID}, query: {archived: this.archived}});
       } else {
         this.clickViewDetails();
       }
     },
     clickViewDetails() {
-      const query = { 
-        seqNumber: 1,
-        totalNumber: this.prbStudentSearchResponse.totalElements, 
-        batchCount: this.selectedFiles.length, 
-        searchCriteria: JSON.stringify(this.prbStudentSearchCriteria),
-        archived: this.archived
+      let searchCriteria = {};
+      let batchIDs = null;
+      let statusCodes = null;
+      this.prbStudentSearchCriteria[0].searchCriteriaList.forEach(obj => {
+        switch (obj.key) {
+        case ('penRequestBatchStudentStatusCode'):
+          if(obj.operation === 'neq') { //default search criteria for archived files is a not equals, so we have to account for that
+            statusCodes = Object.values(PEN_REQ_BATCH_STUDENT_REQUEST_CODES).filter(code => code !== obj.value).join(',');
+          } else {
+            statusCodes = obj.value;
+          }
+          break;
+        case ('penRequestBatchEntity.penRequestBatchID'):
+          batchIDs = obj.value;
+          break;
+        case ('penRequestBatchEntity.mincode'):
+          searchCriteria.mincode = obj.value;
+          break;
+        case ('penRequestBatchEntity.submissionNumber'):
+          searchCriteria.submissionNumber = obj.value;
+          break;
+        case ('legalFirstName'):
+          searchCriteria.legalGivenName = obj.value + '%'; //appending '%' for like query
+          break;
+        case ('legalLastName'):
+          searchCriteria.legalSurname = obj.value + '%';
+          break;
+        case ('legalMiddleNames'):
+          searchCriteria.legalMiddleNames = obj.value + '%';
+          break;
+        case ('usualFirstName'):
+          searchCriteria.usualGivenName = obj.value + '%';
+          break;
+        case ('usualLastName'):
+          searchCriteria.usualSurname = obj.value + '%';
+          break;
+        case ('usualMiddleNames'):
+          searchCriteria.usualMiddleNames = obj.value + '%';
+          break;
+        case ('genderCode'):
+          searchCriteria.gender = obj.value;
+          break;
+        case ('gradeCode'):
+          searchCriteria.grade = obj.value;
+          break;
+        default:
+          searchCriteria[obj.key] = obj.value;
+          break;
+        }
+      });
+      const query = {
+        params: {
+          searchCriteria: searchCriteria,
+          penRequestBatchIDs: batchIDs,
+          penRequestBatchStudentStatusCodes: statusCodes.length > 0 ? statusCodes : PEN_REQ_BATCH_STUDENT_REQUEST_CODES.LOADED
+        }
       };
-      router.push({name: 'prbStudentDetails', query});
+      ApiService.apiAxios.get(`${Routes['penRequestBatch'].FILES_URL}/penRequestBatchStudentIDs`, query)
+        .then(response => {
+          const sortedResponse = response.data.sort((x,y) => x.penRequestBatchID - y.penRequestBatchID || x.penRequestBatchStudentID - y.penRequestBatchStudentID);
+          this.setSelectedIDs(sortedResponse);
+          router.push({name: 'prbStudentDetails', params: {prbStudentID: sortedResponse[0].penRequestBatchStudentID}});
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while fetching PEN Request Files! Please try again later.');
+          console.log(error);
+        });
     },
     handleRecordCheckBoxClicked(item) {
       this.selectRecord(item);

@@ -74,7 +74,8 @@ async function getPenRequestBatchStudentIDs(req, res) {
     const params = {
       params: {
         penRequestBatchIDs: req.query.penRequestBatchIDs,
-        penRequestBatchStudentStatusCodes: req.query.penRequestBatchStudentStatusCodes
+        penRequestBatchStudentStatusCodes: req.query.penRequestBatchStudentStatusCodes,
+        searchCriteria: req.query.searchCriteria
       }
     };
 

@@ -45,20 +45,28 @@ describe('SetNavigation Component initialized with namespaced Vuex module.', () 
   });
 
   test('It should render the component and display title.', async () => {
-    store.commit('setNavigation/setNavigation', {seqNumber: 1, totalNumber: 10, title: 'Record 1 of 10 (5 files selected)', preRoute: 'previous', nextRoute: 'next'});
+    const selectedIDs = [{'penRequestBatchStudentID':'1b63','penRequestBatchID':'7809'},{'penRequestBatchStudentID':'79ea','penRequestBatchID':'166a'}];
+    const currentRequest = 1;
+    store.commit('setNavigation/setSelectedIDs', selectedIDs);
+    store.commit('setNavigation/setCurrentRequest', currentRequest);
     await Vue.nextTick();
-    expect(store.state.setNavigation.totalNumber).toBe(10);
-    expect(wrapper.html()).toContain(`Record 1 of 10 (5 files selected)`);
+    expect(wrapper.html()).toContain('Record 2 of 2 (2 files selected)');
   });
 
   test('It should not display title.', async () => {
-    store.commit('setNavigation/setNavigation', {seqNumber: 0, totalNumber: 0, title: '', preRoute: 'previous', nextRoute: 'next'});
+    const selectedIDs = {};
+    const currentRequest = 0;
+    store.commit('setNavigation/setSelectedIDs', selectedIDs);
+    store.commit('setNavigation/setCurrentRequest', currentRequest);
     await Vue.nextTick();
     expect(wrapper.html()).toBeUndefined();
   });
 
   test('Its previous button should not be clickable when seqNumber is 1.', async () => {
-    store.commit('setNavigation/setNavigation', {seqNumber: 1, totalNumber: 10, title: 'Record 1 of 10 (5 files selected)', preRoute: 'previous', nextRoute: 'next'});
+    const selectedIDs = [{'penRequestBatchStudentID':'1b63','penRequestBatchID':'7809'},{'penRequestBatchStudentID':'79ea','penRequestBatchID':'166a'}];
+    const currentRequest = 0;
+    store.commit('setNavigation/setSelectedIDs', selectedIDs);
+    store.commit('setNavigation/setCurrentRequest', currentRequest);
     await Vue.nextTick();
     const button = wrapper.find('#preRecord');
     const spy = jest.spyOn(appRouter, 'push');
@@ -67,16 +75,22 @@ describe('SetNavigation Component initialized with namespaced Vuex module.', () 
   });
 
   test('Its next button should be clickable when seqNumber is 1 and seqNumber is less than totalNumber.', async () => {
-    store.commit('setNavigation/setNavigation', {seqNumber: 1, totalNumber: 10, title: 'Record 1 of 10 (5 files selected)', preRoute: 'previous', nextRoute: 'next'});
+    const selectedIDs = [{'penRequestBatchStudentID':'1b63','penRequestBatchID':'7809'},{'penRequestBatchStudentID':'79ea','penRequestBatchID':'166a'}];
+    const currentRequest = 0;
+    store.commit('setNavigation/setSelectedIDs', selectedIDs);
+    store.commit('setNavigation/setCurrentRequest', currentRequest);
     await Vue.nextTick();
     const button = wrapper.find('#nextRecord');
     const spy = jest.spyOn(appRouter, 'push');
     button.trigger('click');
-    expect(spy).toBeCalledWith('next');
+    expect(spy).toBeCalledWith({'name': 'prbStudentDetails', 'params': {'prbStudentID': '79ea'}, 'query': {'archived': false}});
   });
 
   test('Its next button should not be clickable when seqNumber is equal to totalNumber.', async () => {
-    store.commit('setNavigation/setNavigation', {seqNumber: 10, totalNumber: 10, title: 'Record 10 of 10 (5 files selected)', preRoute: 'previous', nextRoute: 'next'});
+    const selectedIDs = [{'penRequestBatchStudentID':'1b63','penRequestBatchID':'7809'},{'penRequestBatchStudentID':'79ea','penRequestBatchID':'166a'}];
+    const currentRequest = 1;
+    store.commit('setNavigation/setSelectedIDs', selectedIDs);
+    store.commit('setNavigation/setCurrentRequest', currentRequest);
     await Vue.nextTick();
     const button = wrapper.find('#nextRecord');
     const spy = jest.spyOn(appRouter, 'push');
@@ -85,20 +99,25 @@ describe('SetNavigation Component initialized with namespaced Vuex module.', () 
   });
 
   test('It previous button should be clickable when seqNumber is larger than 1 and equal to totalNumber.', async () => {
-    store.commit('setNavigation/setNavigation', {seqNumber: 10, totalNumber: 10, title: 'Record 10 of 10 (5 files selected)', preRoute: 'previous', nextRoute: 'next'});
+    const selectedIDs = [{'penRequestBatchStudentID':'1b63','penRequestBatchID':'7809'},{'penRequestBatchStudentID':'79ea','penRequestBatchID':'166a'}];
+    const currentRequest = 1;
+    store.commit('setNavigation/setSelectedIDs', selectedIDs);
+    store.commit('setNavigation/setCurrentRequest', currentRequest);
     await Vue.nextTick();
     const button = wrapper.find('#preRecord');
     const spy = jest.spyOn(appRouter, 'push');
     button.trigger('click');
-    expect(spy).toBeCalledWith('previous');
+    expect(spy).toBeCalledWith({'name': 'prbStudentDetails', 'params': {'prbStudentID': '1b63'}, 'query': {'archived': false}});
   });
 
   test('Current route should be set in the store when click on the button.', async () => {
-    await wrapper.setProps({ stateful: true });
-    store.commit('setNavigation/setNavigation', {seqNumber: 1, totalNumber: 2, title: 'Record 1 of 2', preRoute: {name: 'previous'}, nextRoute: {name: 'next'}});
+    const selectedIDs = [{'penRequestBatchStudentID':'1b63','penRequestBatchID':'7809'},{'penRequestBatchStudentID':'79ea','penRequestBatchID':'166a'}];
+    const currentRequest = 0;
+    store.commit('setNavigation/setSelectedIDs', selectedIDs);
+    store.commit('setNavigation/setCurrentRequest', currentRequest);
     await Vue.nextTick();
     const button = wrapper.find('#nextRecord');
     button.trigger('click');
-    expect(store.state.setNavigation.currentRoute.name).toBe('next');
+    expect(store.state.setNavigation.currentRequest).toBe(1);
   });
 });
