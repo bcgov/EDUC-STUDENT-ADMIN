@@ -19,7 +19,7 @@
         ></v-select>
       </v-flex>
       <PrimaryButton id="viewSelected" v-if="selected" :disabled="!viewEnabled" @click.native="clickViewSelected" text="View Selected"></PrimaryButton>
-      <PrimaryButton id="viewDetails" v-else :disabled="!viewEnabled" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
+      <PrimaryButton id="viewDetails" v-else :loading="loadingRequestIDs" :disabled="!viewEnabled" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
     </v-row>
     <v-divider class="mb-1 subheader-divider"/>
     <v-data-table
@@ -121,6 +121,7 @@ export default {
         { topText: 'Suggested PEN', bottomText: 'Submitted PEN', topValue: 'bestMatchPEN', bottomValue: 'submittedPen', sortable: false, topTooltip: 'Suggested PEN', bottomTooltip: 'Submitted PEN' },
         { topText: 'Submission', bottomText: 'Status', topValue: 'submissionNumber', bottomValue: 'penRequestBatchStudentStatusCode', sortable: false, topTooltip: 'Submission Number', bottomTooltip: 'Status' },
       ],
+      loadingRequestIDs: false
     };
   },
   async beforeMount() {
@@ -192,6 +193,7 @@ export default {
       }
     },
     clickViewDetails() {
+      this.loadingRequestIDs = true;
       let searchCriteria = {};
       let batchIDs = null;
       let statusCodes = null;
@@ -254,6 +256,9 @@ export default {
           this.setSelectedIDs(response.data);
           this.setArchived(this.archived);
           router.push({name: 'prbStudentDetails', params: {prbStudentID: response.data[0].penRequestBatchStudentID}, query: {archived: this.archived}});
+        })
+        .finally(() => {
+          this.loadingRequestIDs = false;
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while fetching PEN Request Files! Please try again later.');

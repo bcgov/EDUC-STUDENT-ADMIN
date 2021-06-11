@@ -171,7 +171,7 @@
           <v-col cols="3" xl="4" class="pa-0 d-flex justify-end align-end">
             <v-menu offset-y>
               <template v-slot:activator="{ on }">
-                <PrimaryButton id="view-action" :disabled="!filesSelected" :on="on" text="View" icon="mdi-chevron-down" largeIcon></PrimaryButton>
+                <PrimaryButton id="view-action" :loading="loadingRequestIDs" :disabled="!filesSelected" :on="on" text="View" icon="mdi-chevron-down" largeIcon></PrimaryButton>
               </template>
               <v-list>
                 <v-list-item id="view-list-action" @click.native="clickViewList" link>
@@ -254,6 +254,7 @@ export default {
       alphanumericHint: 'Alphanumeric only',
       endDateHint: 'Date to Must be after Date From',
       isValidSearchForm: false,
+      loadingRequestIDs: false
     };
   },
   computed: {
@@ -290,6 +291,7 @@ export default {
       router.push({name: 'archivedPrbStudentList', query: { batchIDs, statusFilters: '' }});
     },
     clickViewDetails() {
+      this.loadingRequestIDs = true;
       const query = {
         params: {
           penRequestBatchIDs: this.selectedFileBatchIDs,
@@ -302,6 +304,9 @@ export default {
           this.setSelectedIDs(response.data);
           this.setArchived(true);
           router.push({name: 'prbStudentDetails', params: {prbStudentID: response.data[0].penRequestBatchStudentID}, query: {archived: true}});
+        })
+        .finally(() => {
+          this.loadingRequestIDs = false;
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while fetching PEN Request Files! Please try again later.');

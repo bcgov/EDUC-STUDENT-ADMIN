@@ -33,7 +33,12 @@
           </v-sheet>
           <v-spacer v-else></v-spacer>
           <PrimaryButton id="view-list-action" class="mr-2" :disabled="!filesSelected" @click.native="clickViewList" text="View List"></PrimaryButton>
-          <PrimaryButton id="view-details-action" class="mx-2" :disabled="!filesSelected" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
+          <PrimaryButton id="view-details-action"
+                         class="mx-2"
+                         :disabled="!filesSelected"
+                         :loading="loadingRequestIDs"
+                         @click.native="clickViewDetails"
+                         text="View Details"></PrimaryButton>
           <v-menu offset-y>
             <template v-slot:activator="{ on }">
               <PrimaryButton id="archive-action" :disabled="!filesSelected || loadingFiles" :on="on" text="Finish Submission" icon="mdi-chevron-down" largeIcon>
@@ -112,7 +117,8 @@ export default {
       loadingFiles: false,
       archiveAndReturnMessage: '',
       archiveAndReturnSubtext: '',
-      inProgressSagaIDs: []
+      inProgressSagaIDs: [],
+      loadingRequestIDs: false
     };
   },
   computed: {
@@ -161,6 +167,7 @@ export default {
       router.push({name: 'prbStudentList', query: { batchIDs, statusFilters }});
     },
     async clickViewDetails() {
+      this.loadingRequestIDs = true;
       const query = {
         params: {
           penRequestBatchIDs: this.selectedFileBatchIDs,
@@ -172,6 +179,9 @@ export default {
         .then(response => {
           this.setSelectedIDs(response.data);
           router.push({name: 'prbStudentDetails', params: {prbStudentID: response.data[0].penRequestBatchStudentID}});
+        })
+        .finally(() => {
+          this.loadingRequestIDs = false;
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while fetching PEN Request Files! Please try again later.');
