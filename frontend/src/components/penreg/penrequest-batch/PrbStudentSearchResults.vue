@@ -254,7 +254,7 @@ export default {
         .then(response => {
           const sortedResponse = response.data.sort((x,y) => x.penRequestBatchID - y.penRequestBatchID || x.penRequestBatchStudentID - y.penRequestBatchStudentID);
           this.setSelectedIDs(sortedResponse);
-          router.push({name: 'prbStudentDetails', params: {prbStudentID: sortedResponse[0].penRequestBatchStudentID}});
+          router.push({name: 'prbStudentDetails', params: {prbStudentID: sortedResponse[0].penRequestBatchStudentID}, query: {archived: this.archived}});
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while fetching PEN Request Files! Please try again later.');
