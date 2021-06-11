@@ -299,10 +299,9 @@ export default {
 
       ApiService.apiAxios.get(`${Routes['penRequestBatch'].FILES_URL}/penRequestBatchStudentIDs`, query)
         .then(response => {
-          const sortedResponse = response.data.sort((x,y) => x.penRequestBatchID - y.penRequestBatchID || x.penRequestBatchStudentID - y.penRequestBatchStudentID);
-          this.setSelectedIDs(sortedResponse);
+          this.setSelectedIDs(response.data);
           this.setArchived(true);
-          router.push({name: 'prbStudentDetails', params: {prbStudentID: sortedResponse[0].penRequestBatchStudentID}, query: {archived: true}});
+          router.push({name: 'prbStudentDetails', params: {prbStudentID: response.data[0].penRequestBatchStudentID}, query: {archived: true}});
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while fetching PEN Request Files! Please try again later.');

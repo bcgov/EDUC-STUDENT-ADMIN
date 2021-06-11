@@ -184,10 +184,9 @@ export default {
     },
     clickViewSelected() {
       if(this.selectedRecords?.length > 0) {
-        const sortedResponse = this.selectedRecords.sort((x,y) => x.penRequestBatchID - y.penRequestBatchID || x.penRequestBatchStudentID - y.penRequestBatchStudentID);
-        this.setSelectedIDs(sortedResponse);
+        this.setSelectedIDs(this.selectedRecords);
         this.setArchived(this.archived);
-        router.push({name: 'prbStudentDetails', params: {prbStudentID: sortedResponse[0].penRequestBatchStudentID}, query: {archived: this.archived}});
+        router.push({name: 'prbStudentDetails', params: {prbStudentID: this.selectedRecords[0].penRequestBatchStudentID}, query: {archived: this.archived}});
       } else {
         this.clickViewDetails();
       }
@@ -252,9 +251,9 @@ export default {
       };
       ApiService.apiAxios.get(`${Routes['penRequestBatch'].FILES_URL}/penRequestBatchStudentIDs`, query)
         .then(response => {
-          const sortedResponse = response.data.sort((x,y) => x.penRequestBatchID - y.penRequestBatchID || x.penRequestBatchStudentID - y.penRequestBatchStudentID);
-          this.setSelectedIDs(sortedResponse);
-          router.push({name: 'prbStudentDetails', params: {prbStudentID: sortedResponse[0].penRequestBatchStudentID}, query: {archived: this.archived}});
+          this.setSelectedIDs(response.data);
+          this.setArchived(this.archived);
+          router.push({name: 'prbStudentDetails', params: {prbStudentID: response.data[0].penRequestBatchStudentID}, query: {archived: this.archived}});
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while fetching PEN Request Files! Please try again later.');
