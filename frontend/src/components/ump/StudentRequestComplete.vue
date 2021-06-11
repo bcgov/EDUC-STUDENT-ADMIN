@@ -66,7 +66,11 @@
           </v-row>
         </v-col>
         <v-col cols="12" xl="6" lg="6" class="py-0 pl-0">
-          <v-row justify="end" class="pr-3 pt-3">
+          <v-row class="pr-3 pt-3 d-flex justify-space-between">
+            <MacroMenu
+              :macros="completeMacros"
+              @select="insertMacroText"
+            />
             <PrimaryButton id="send-changes-to-student" text="Send Changes to Student" :disabled="isCompleteDisabled || !isProvidePenEnabledForUser" @click.native="sendChanges"></PrimaryButton>
           </v-row>
           <v-form ref="completeForm">
@@ -75,11 +79,13 @@
                     name="description"
                     label="Enter comment"
                     v-model="request.completeComment"
+                    :rules="completedRules"
                     filled
                     clearable
                     @input="replaceCompleteMacro"
                     class="pt-5"
                     rows="6"
+                    ref="completeCommentTextarea"
             ></v-textarea>
           </v-form>
         </v-col>
@@ -107,16 +113,21 @@
 <script>
 import {formatDob} from '@/utils/format';
 import ApiService from '../../common/apiService';
-import {Routes, Statuses} from '@/utils/constants';
-import {replaceMacro} from '@/utils/macro';
-import {mapGetters, mapMutations} from 'vuex';
+import { Routes, Statuses } from '@/utils/constants';
+import { replaceMacro, insertMacro } from '@/utils/macro';
+import { mapGetters, mapMutations } from 'vuex';
 import {AccessEnabledForUser} from '@/common/role-based-access';
 import PrimaryButton from '../util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
+import MacroMenu from '../common/MacroMenu';
+import {isValidLength} from '@/utils/validation';
 
 export default {
   name: 'studentRequestComplete',
-  components: {PrimaryButton},
+  components: {
+    PrimaryButton,
+    MacroMenu
+  },
   mixins: [alertMixin],
   props: {
     request: {
@@ -173,7 +184,6 @@ export default {
     ...mapGetters('auth', ['userInfo']),
     ...mapGetters('app', ['selectedRequest', 'requestType', 'requestTypeLabel']),
     ...mapGetters('notifications', ['notification']),
-    //...mapGetters(this.requestType, ['completeMacros']),
     actionName() {
       return 'SEND_UPDATE';
     },
@@ -181,7 +191,7 @@ export default {
       return this.selectedRequest;
     },
     completeMacros() {
-      return this.$store.getters[`${this.requestType}/completeMacros`];
+      return this.$store.getters[`${this.requestType}/completeMacros`] || [];
     },
     statusCodes() {
       return Statuses[this.requestType];
@@ -203,7 +213,10 @@ export default {
     },
     isRefreshStudInfoDark(){
       return this.enableActions && this.request.penRequestStatusCode!=='DRAFT' && this.request.penRequestStatusCode!=='ABANDONED';
-    }
+    },
+    completedRules() {
+      return isValidLength(4000, false);
+    },
   },
   mounted() {
     this.isProvidePenEnabledForUser = AccessEnabledForUser(this.requestType, this.actionName, this.userInfo);
@@ -306,6 +319,9 @@ export default {
         request.legalLastName !== demographics.legalLast ||
         request.dob !== demographics.dob ||
         request.genderCode !== demographics.gender;
+    },
+    insertMacroText(macroText) {
+      this.request.completeComment = insertMacro(macroText, this.request.completeComment, this.$refs.completeCommentTextarea.$refs.input);
     },
   }
 };

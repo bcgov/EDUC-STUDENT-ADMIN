@@ -21,6 +21,7 @@
             :items-per-page="studentSearchResponse.pageable.pageSize"
             hide-default-footer
             item-key="studentID"
+            :loading="searchLoading || loading"
             @page-count="studentSearchResponse.pageable.pageNumber = $event">
       <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
         <span :key="h.id" class="top-column-item" :title="header.topTooltip">
@@ -46,7 +47,7 @@
               <br>
               <!-- if top and bottom value are the same, do not display the bottom value -->
               <v-tooltip v-if="header.bottomValue === 'memo'" bottom>
-                <template v-slot:activator="{ on, attrs }">
+                <template v-slot:activator="{ on }">
                   <span v-on="on" class="bottom-column-item">{{
                       firstMemoChars(props.item[header.bottomValue])
                     }}</span>
@@ -93,12 +94,17 @@ export default {
     prepPut: {
       type: Function,
       required: true
+    },
+    searchLoading: {
+      type: Boolean,
+      required: true
     }
   },
   data () {
     return {
       pageCount: 0,
       itemsPerPage: 10,
+      loading: false,
       headers: [
         {id: 'table-checkbox', type: 'select', sortable: false},
         {topText: 'PEN', align: 'start', sortable: false, topValue: 'pen', topTooltip: 'Personal Education Number'},
@@ -169,7 +175,9 @@ export default {
   watch: {
     pageNumber: {
       handler() {
-        this.pagination();
+        if(!this.searchLoading) {
+          this.pagination();
+        }
       }
     },
     headerSortParams: {
@@ -245,34 +253,19 @@ export default {
       return usual;
     },
     pagination() {
-      const studentSearchKeys = Object.keys(this.searchCriteria).filter(k => (this.searchCriteria[k] && this.searchCriteria[k].length !== 0));
-      let studentSearchFilters;
-      if (studentSearchKeys && studentSearchKeys.length > 0) {
-        studentSearchFilters = {};
-        studentSearchKeys.forEach(element => {
-          if(element === 'dob') {
-            if(!this.searchCriteria[element].startDate) {
-              return;
-            }
-          }
-          studentSearchFilters[element] = this.searchCriteria[element];
-        });
-
-        // Advanced search criteria settings
-        studentSearchFilters['useNameVariants'] = this.useNameVariants;
-        studentSearchFilters['isAuditHistorySearch'] = this.isAuditHistorySearch;
-        if(this.statusCode.length > 0) {
-          studentSearchFilters['statusCode'] = this.statusCode;
-        }
-      }
+      this.loading = true;
       ApiService.apiAxios
-        .get(Routes.student.SEARCH_URL,this.prepPut(studentSearchFilters))
+        .get(Routes.student.SEARCH_URL,this.prepPut(this.searchCriteria))
         .then(response => {
           this.setStudentSearchResponse(response.data);
           this.isStudentDataUpdated = false;
         })
         .catch(error => {
+          this.setFailureAlert('An error occurred while loading the search results. Please try again later.');
           console.log(error);
+        })
+        .finally(() => {
+          this.loading = false;
         });
     },
     isMergedOrDeceased(student) {

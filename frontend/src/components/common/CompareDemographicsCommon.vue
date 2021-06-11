@@ -605,7 +605,7 @@ export default {
       let warningMessage;
       for (const stud of this.getSelectedStudents()) {
         warningMessage = this.getMessageForStudent(stud.studentID);
-        if (!!warningMessage) {
+        if (warningMessage) {
           break;
         }
       }

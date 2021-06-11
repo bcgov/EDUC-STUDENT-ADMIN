@@ -8,10 +8,13 @@ const config = require('../config/index');
 
 async function getPenMatch(req, res) {
   try {
+    Object.keys(req.body).forEach(key => {
+      req.body[key] = req.body[key] || null; // send null than empty string
+    });
     if (req.body.dob) {
       req.body.dob = req.body.dob.replace(/\//g, '');
     }
-    req.body.usualGivenName = req.body.usualGiven; // the match api expects usualGivenName
+    req.body.usualGivenName = req.body.usualGiven || null; // the match api expects usualGivenName
     delete req.body.usualGiven;
     const event = {
       sagaId: guid(), // this should be a guid, otherwise it would break

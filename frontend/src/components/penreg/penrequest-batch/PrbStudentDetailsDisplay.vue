@@ -314,6 +314,7 @@ export default {
     ...mapMutations('prbStudentSearch', ['setSelectedRecords']),
     formatPen,
     async initializeDetails() {
+      this.demogValidationResult = []; // reset the validation results, on clicking next or previous
       this.loading = true;
       try {
         await this.retrievePenRequestByID();

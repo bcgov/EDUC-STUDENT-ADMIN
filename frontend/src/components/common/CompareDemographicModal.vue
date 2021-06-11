@@ -97,7 +97,7 @@ export default {
       let warningMessage;
       for (const student of this.studentRecords) {
         warningMessage = this.getMessageForStudent(student.studentID);
-        if (!!warningMessage) {
+        if (warningMessage) {
           break;
         }
       }

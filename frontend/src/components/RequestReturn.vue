@@ -15,9 +15,14 @@
               auto-grow
               @input="replaceReturnMacro"
               class="pa-0 ma-0"
+              ref="returnCommentTextarea"
             ></v-textarea>
           </v-row>
-          <v-row justify="end" align-content="end">
+          <v-row class="d-flex justify-space-between">
+            <MacroMenu
+              :macros="returnMacros"
+              @select="insertMacroText"
+            />
             <v-col cols="12" xl="3" lg="5" md="5" class="py-0" justify="end" align-content="end">
               <PrimaryButton id="return-to-student" text="Return to Student" :disabled="isReturnToStudentDisabled || !isRequestMoreInfoEnabledForUser" width="100%" @click.native="returnToStudent"></PrimaryButton>
             </v-col>
@@ -31,16 +36,20 @@
 <script>
 import ApiService from '../common/apiService';
 import {Routes, Statuses} from '../utils/constants';
-import { replaceMacro } from '../utils/macro';
+import { replaceMacro, insertMacro } from '../utils/macro';
 import { mapGetters, mapMutations } from 'vuex';
 import {AccessEnabledForUser} from '../common/role-based-access';
 import PrimaryButton from './util/PrimaryButton';
 import alertMixin from '../mixins/alertMixin';
 import {isValidLength} from '../utils/validation';
+import MacroMenu from './common/MacroMenu';
 
 export default {
   name: 'requestReturn',
-  components: {PrimaryButton},
+  components: {
+    PrimaryButton,
+    MacroMenu
+  },
   props: {
     request: {
       type: Object,
@@ -148,6 +157,9 @@ export default {
             this.submitted();
           });
       }
+    },
+    insertMacroText(macroText) {
+      this.returnComment = insertMacro(macroText, this.returnComment, this.$refs.returnCommentTextarea.$refs.input);
     },
   }
 };

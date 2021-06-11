@@ -13,9 +13,12 @@
       </v-col>
       <v-col align-self="center">
         <v-row justify="end" class="mx-3" v-if="isComparisonRequired || isRefreshRequired">
-          <CompareDemographicModal :disabled="selectedRecords.length<2 || selectedRecords.length>3" :selectedRecords.sync="selectedRecords"></CompareDemographicModal>
-          <TertiaryButton v-if="isRefreshRequired" id="refreshButton" class="ma-0" iconStyle="mdi-flip-h" text="Refresh" 
-                          icon="mdi-cached" :disabled="disableRefresh" @click.native="$emit('refresh-match-results')"></TertiaryButton>
+          <CompareDemographicModal :disabled="selectedRecords.length<2 || selectedRecords.length>3"
+                                   :selectedRecords.sync="selectedRecords"></CompareDemographicModal>
+          <TertiaryButton v-if="isRefreshRequired" id="refreshButton" :disabled="disableRefresh" class="ma-0"
+                          icon="mdi-cached"
+                          iconStyle="mdi-flip-h" text="Refresh"
+                          @click.native="$emit('refresh-match-results')"></TertiaryButton>
         </v-row>
       </v-col>
     </v-row>
@@ -136,8 +139,8 @@ import CompareDemographicModal from './CompareDemographicModal';
 import TertiaryButton from '../util/TertiaryButton';
 import StudentDetailModal from '../penreg/student/StudentDetailModal';
 import {PEN_REQ_BATCH_STUDENT_REQUEST_CODES} from '@/utils/constants';
-import {formatPen, formatMincode, formatPostalCode, formatDob} from '@/utils/format';
-import { mapState } from 'vuex';
+import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
+import {mapState} from 'vuex';
 import PrimaryButton from '@/components/util/PrimaryButton';
 
 export default {
@@ -299,9 +302,6 @@ export default {
     closeDialog() {
       this.openStudentDialog = false;
     },
-    refresh() {
-
-    },
     demogValuesMatch(valueType, value) {
       switch (valueType) {
       case 'postalCode':
@@ -327,13 +327,12 @@ export default {
     enableMatchOrUnMatch(matchedStudent) {
       if (this.student && matchedStudent) {
         if (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE === this.student.penRequestBatchStudentStatusCode
-            || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ === this.student.penRequestBatchStudentStatusCode
-            || (!this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR')
-                && PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.student.penRequestBatchStudentStatusCode )) {
+          || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ === this.student.penRequestBatchStudentStatusCode
+          || (!this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR')
+            && PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.student.penRequestBatchStudentStatusCode)) {
           this.hoveredOveredRowStudentID = matchedStudent.studentID;
           this.matchUnMatchButtonText = 'Match';
-        } else if ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR, 
-          PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR]
+        } else if ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR]
           .some(element => element === this.student.penRequestBatchStudentStatusCode) && matchedStudent.studentID === this.student.studentID) {
           this.hoveredOveredRowStudentID = matchedStudent.studentID;
           this.matchUnMatchButtonText = 'Unmatch';
