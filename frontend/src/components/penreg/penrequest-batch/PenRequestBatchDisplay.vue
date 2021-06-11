@@ -33,7 +33,12 @@
           </v-sheet>
           <v-spacer v-else></v-spacer>
           <PrimaryButton id="view-list-action" class="mr-2" :disabled="!filesSelected" @click.native="clickViewList" text="View List"></PrimaryButton>
-          <PrimaryButton id="view-details-action" class="mx-2" :disabled="!filesSelected" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
+          <PrimaryButton id="view-details-action"
+                         class="mx-2"
+                         :disabled="!filesSelected"
+                         :loading="loadingRequestIDs"
+                         @click.native="clickViewDetails"
+                         text="View Details"></PrimaryButton>
           <v-menu offset-y>
             <template v-slot:activator="{ on }">
               <PrimaryButton id="archive-action" :disabled="!filesSelected || loadingFiles" :on="on" text="Finish Submission" icon="mdi-chevron-down" largeIcon>
@@ -78,7 +83,7 @@
 </template>
 
 <script>
-import { PEN_REQ_BATCH_STUDENT_REQUEST_CODES, SEARCH_FILTER_OPERATION, SEARCH_CONDITION, SEARCH_VALUE_TYPE } from '../../../utils/constants';
+import { PEN_REQ_BATCH_STUDENT_REQUEST_CODES } from '../../../utils/constants';
 import { mapState, mapMutations } from 'vuex';
 import PenRequestBatchList from './PenRequestBatchList';
 import FilterTag from '../../util/FilterTag';
@@ -112,7 +117,8 @@ export default {
       loadingFiles: false,
       archiveAndReturnMessage: '',
       archiveAndReturnSubtext: '',
-      inProgressSagaIDs: []
+      inProgressSagaIDs: [],
+      loadingRequestIDs: false
     };
   },
   computed: {
@@ -150,6 +156,7 @@ export default {
   methods: {
     ...mapMutations('prbStudentSearch', ['clearPrbStudentSearchState']),
     ...mapMutations('penRequestBatch', ['setSelectedFiles']),
+    ...mapMutations('setNavigation', ['setSelectedIDs', 'setCurrentRequest']),
     removeFilter(index) {
       this.filters.splice(index, 1);
     },
@@ -159,38 +166,27 @@ export default {
       this.clearPrbStudentSearchState();
       router.push({name: 'prbStudentList', query: { batchIDs, statusFilters }});
     },
-    clickViewDetails() {
-      const countColumn = (this.prbStudentStatusFilters.length > 0) ? 'filteredCount' : 'studentCount';
-      const totalNumber = this.selectedFiles.reduce((sum, file) => sum + file[countColumn], 0);
-    
-      const searchCriteriaList = [
-        {
-          searchCriteriaList: [
-            {
-              key: 'penRequestBatchEntity.penRequestBatchID',
-              operation: SEARCH_FILTER_OPERATION.IN,
-              value: this.selectedFileBatchIDs,
-              valueType: SEARCH_VALUE_TYPE.UUID
-            },
-            {
-              key: 'penRequestBatchStudentStatusCode',
-              operation: this.selectedFilterNames.length > 0 ? SEARCH_FILTER_OPERATION.IN : SEARCH_FILTER_OPERATION.NOT_EQUAL,
-              value: this.selectedFilterNames.length > 0 ? this.selectedFilterNames : PEN_REQ_BATCH_STUDENT_REQUEST_CODES.LOADED,
-              valueType: SEARCH_VALUE_TYPE.STRING,
-              condition: SEARCH_CONDITION.AND
-            }
-          ],
-        },
-      ];
-      
+    async clickViewDetails() {
+      this.loadingRequestIDs = true;
       const query = {
-        seqNumber: 1,
-        totalNumber,
-        batchCount: this.selectedFiles.length,
-        searchCriteria: JSON.stringify(searchCriteriaList),
-        archived: false,
+        params: {
+          penRequestBatchIDs: this.selectedFileBatchIDs,
+          penRequestBatchStudentStatusCodes: this.selectedFilterNames.length > 0 ? this.selectedFilterNames : PEN_REQ_BATCH_STUDENT_REQUEST_CODES.LOADED
+        }
       };
-      router.push({name: 'prbStudentDetails', query});
+      
+      ApiService.apiAxios.get(`${Routes['penRequestBatch'].FILES_URL}/penRequestBatchStudentIDs`, query)
+        .then(response => {
+          this.setSelectedIDs(response.data);
+          router.push({name: 'prbStudentDetails', params: {prbStudentID: response.data[0].penRequestBatchStudentID}});
+        })
+        .finally(() => {
+          this.loadingRequestIDs = false;
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while fetching PEN Request Files! Please try again later.');
+          console.log(error);
+        });
     },
     async archiveOnly() {
       const fileNumber = this.selectedFiles.length;

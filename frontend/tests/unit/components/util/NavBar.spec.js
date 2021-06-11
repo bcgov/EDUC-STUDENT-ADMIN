@@ -30,7 +30,9 @@ describe('NavBar Component initialized with namespaced Vuex module.\'', () => {
       setNavigation: {
         namespaced: true,
         state: {
-          totalNumber: 0,
+          selectedIDs: {},
+          currentRequest: 0,
+          archived: false
         }
       }
     }

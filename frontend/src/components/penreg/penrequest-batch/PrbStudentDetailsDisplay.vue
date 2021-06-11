@@ -142,7 +142,7 @@
 </template>
 
 <script>
-import {mapMutations, mapState} from 'vuex';
+import {mapMutations, mapState, mapGetters} from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
 import PrbStudentStatusChip from './PrbStudentStatusChip';
 import InfoDialog from './prb-student-details/InfoDialog';
@@ -152,11 +152,9 @@ import {
   PEN_REQ_BATCH_STUDENT_REQUEST_CODES,
   PRB_SAGA_NAMES,
   Routes,
-  SEARCH_CONDITION,
   SEARCH_FILTER_OPERATION,
   SEARCH_VALUE_TYPE
 } from '@/utils/constants';
-import {cloneDeep, isEmpty} from 'lodash';
 import alertMixin from '../../../mixins/alertMixin';
 import PenMatchResultsTable from '@/components/common/PenMatchResultsTable';
 import {
@@ -168,7 +166,7 @@ import {
 } from '@/utils/common';
 import {formatPen} from '@/utils/format';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
-
+import router from '../../../router';
 
 export default {
   name: 'PrbStudentDetailsDisplay',
@@ -182,25 +180,9 @@ export default {
   },
   mixins: [alertMixin],
   props: {
-    totalNumber: {
-      type: Number,
-      default: 1,
-    },
-    batchCount: {
-      type: Number,
-      default: 1,
-    },
-    searchCriteria: {
-      type: Array,
-      default: () => []
-    },
-    prbStudentIDs: {
-      type: [Array, String],
-      default: () => []
-    },
-    prBatchIDs: {
-      type: [Array, String],
-      default: () => []
+    prbStudentID: {
+      type: String,
+      required: true
     },
     archived: {
       type: Boolean,
@@ -212,15 +194,6 @@ export default {
       batchFile: null,
       prbStudent: null,
       modalStudent: null,
-      seqNumber: 1,
-      seqNumberInBatch: 1,
-      totalNumberInBatch: 1,
-      sortParams: {
-        'penRequestBatchEntity.mincode': 'ASC',
-        'penRequestBatchEntity.submissionNumber': 'ASC',
-        recordNumber: 'ASC',
-      },
-      batchIDs: null,
       loading: true,
       repeatRequestOriginalStatus: null,
       possibleMatches: [],
@@ -228,7 +201,6 @@ export default {
       showPossibleMatch: false,
       prbStudentCopy: {},
       isIssuingNewPen: false,
-      prbStudentNavInfo: [],
       prbSagaNames: Object.values(PRB_SAGA_NAMES),
       isMatchingToStudentRecord: false,
       hasValidationIssues: false,
@@ -244,11 +216,6 @@ export default {
     };
   },
   watch: {
-    currentRoute: {
-      handler() {
-        this.initializeDetails();
-      }
-    },
     repeatRequestOriginal: {
       handler() {
         if (this.prbStudent?.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.REPEAT && this.prbStudent?.repeatRequestOriginalID)
@@ -267,9 +234,16 @@ export default {
         this.handleStudentUpdateEvent(notificationData);
       }
     },
+    //prbStudentID changes when route changes, so reload details
+    prbStudentID: {
+      handler() {
+        this.initializeDetails();
+      }
+    }
   },
   computed: {
-    ...mapState('setNavigation', ['currentRoute', 'title']),
+    ...mapState('setNavigation', ['selectedIDs', 'currentRequest']),
+    ...mapGetters('setNavigation', ['title']),
     ...mapState('notifications', ['notification']),
     disableRefresh() {
       return this.prbStudent?.sagaInProgress || this.isArchived
@@ -292,7 +266,7 @@ export default {
           || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
           || (![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ]
             .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus)
-            && (this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR') && (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.prbStudent.penRequestBatchStudentStatusCode)));
+              && (this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR') && (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.prbStudent.penRequestBatchStudentStatusCode)));
     },
     disableModifySearch() {
       return this.loading || this.prbStudent?.sagaInProgress || this.isArchived
@@ -306,61 +280,45 @@ export default {
     },
     penRequestBatchStore() {
       return this.archived ? 'archivedRequestBatch' : 'penRequestBatch';
+    },
+    recordsInBatch() {
+      return this.selectedIDs.filter(obj => obj.penRequestBatchID === this.selectedIDs[this.currentRequest].penRequestBatchID);
+    },
+    seqNumberInBatch() {
+      return this.recordsInBatch.findIndex(obj => obj.penRequestBatchStudentID === this.prbStudentID) + 1;
+    },
+    totalNumberInBatch() {
+      return this.recordsInBatch.length;
+    },
+    batchIDs() {
+      return [...new Set(this.selectedIDs.map(item => item.penRequestBatchID))].join(',');
     }
   },
   created() {
-    this.$store.dispatch('penRequestBatch/getCodes');
-    this.initializeDetails();
+    //Go back to Files page if refresh button is pressed
+    if(Object.keys(this.selectedIDs).length > 0) {
+      this.$store.dispatch('penRequestBatch/getCodes');
+      this.initializeDetails();
+    } else if(this.archived) {
+      router.push({name: 'archivedRequestBatch'});
+    } else {
+      router.push({name: 'penRequestBatch'});
+    }
+
   },
   beforeDestroy() {
     this.clearNavigation();
   },
   methods: {
-    ...mapMutations('setNavigation', ['setNavigation', 'clearNavigation']),
+    ...mapMutations('setNavigation', ['clearNavigation']),
     ...mapMutations('prbStudentSearch', ['setSelectedRecords']),
     formatPen,
-    setBatchNav() {
-      this.setNavigation({
-        seqNumber: this.seqNumber,
-        totalNumber: this.totalNumber,
-        title: `Record ${this.seqNumber} of ${this.totalNumber} (${this.batchCount} ${this.batchCount > 1 ? 'files' : 'file'} selected)`,
-        preRoute: {
-          name: 'prbStudentDetails',
-          query: {
-            seqNumber: this.seqNumber - 1,
-            seqInBatch: this.seqNumberInBatch - 1,
-            totalInBatch: this.totalNumberInBatch
-          }
-        },
-        nextRoute: {
-          name: 'prbStudentDetails',
-          query: {
-            seqNumber: this.seqNumber + 1,
-            seqInBatch: this.seqNumberInBatch + 1,
-            totalInBatch: this.totalNumberInBatch
-          }
-        },
-      });
-    },
     async initializeDetails() {
       this.demogValidationResult = []; // reset the validation results, on clicking next or previous
-      if (!isEmpty(this.currentRoute)) {
-        this.seqNumber = this.currentRoute.query?.seqNumber;
-        this.seqNumberInBatch = this.currentRoute.query?.seqInBatch;
-        this.totalNumberInBatch = this.currentRoute.query?.totalInBatch;
-      }
-      const studentIDs = [this.prbStudentIDs].flat();
       this.loading = true;
-
       try {
-        if (this.prbStudentNavInfo.length === 0 || this.prbStudentNavInfo.length < this.seqNumber) {
-          await this.retrievePaginatedPenRequests(studentIDs);
-        } else {
-          await this.retrievePenRequestByID();
-        }
-
+        await this.retrievePenRequestByID();
         await this.retrieveBatchFile();
-        this.setBatchNav();
         const payload = {
           student: {
             ...this.modalStudent
@@ -400,102 +358,14 @@ export default {
       this.loading = false;
     },
     async retrievePenRequestByID() {
-      const navInfo = this.prbStudentNavInfo[this.seqNumber - 1];
-      this.seqNumberInBatch = navInfo.seqNumberInBatch;
-      this.totalNumberInBatch = navInfo.totalNumberInBatch;
-
-      const response = await ApiService.apiAxios.get(`${Routes['penRequestBatch'].FILES_URL}/${navInfo.penRequestBatchID}/students/${navInfo.penRequestBatchStudentID}`);
+      const response = await ApiService.apiAxios.get(`${Routes['penRequestBatch'].FILES_URL}/${this.selectedIDs[this.currentRequest].penRequestBatchID}/students/${this.prbStudentID}`);
       if (response.data) {
         this.prbStudent = response.data;
         this.setModalStudentFromPrbStudent(this.prbStudent);
         this.prbStudentCopy = deepCloneObject(this.prbStudent);
       } else {
-        throw new Error('No PrbStudent data for penRequestBatchStudentID:' + navInfo.penRequestBatchStudentID);
+        throw new Error('No PrbStudent data for penRequestBatchStudentID:' + this.prbStudentID);
       }
-    },
-    async retrievePaginatedPenRequests(studentIDs) {
-      let searchQueries;
-      if (studentIDs.length > 0) {
-        this.batchIDs = [this.prBatchIDs].flat();
-        searchQueries = [
-          {
-            searchCriteriaList: [
-              {
-                key: 'penRequestBatchEntity.penRequestBatchID',
-                operation: SEARCH_FILTER_OPERATION.IN,
-                value: this.batchIDs.join(','),
-                valueType: SEARCH_VALUE_TYPE.UUID
-              },
-              {
-                key: 'penRequestBatchStudentID',
-                operation: SEARCH_FILTER_OPERATION.IN,
-                value: studentIDs.join(','),
-                valueType: SEARCH_VALUE_TYPE.UUID,
-                condition: SEARCH_CONDITION.AND
-              }
-            ],
-          },
-        ];
-      } else {
-        searchQueries = this.searchCriteria;
-        this.batchIDs = this.getBatchIdSearchCriteria(this.searchCriteria).value.split(',');
-      }
-
-      const params = {
-        params: {
-          pageNumber: this.seqNumber - 1,
-          pageSize: 1,
-          sort: this.sortParams,
-          searchQueries,
-        }
-      };
-
-      const response = await this.getPenRequestsFromApi(params);
-      if (response.data && response.data.content) {
-        this.prbStudent = response.data.content[0];
-        this.setModalStudentFromPrbStudent(this.prbStudent);
-        this.prbStudentCopy = deepCloneObject(this.prbStudent);
-        if (this.seqNumberInBatch < 1 || this.seqNumberInBatch > this.totalNumberInBatch || (this.seqNumberInBatch === 1 && this.seqNumber === 1)) {
-          const penRequestInBatchResp = await this.retrievePenRequestsInBatch(this.prbStudent.penRequestBatchID, searchQueries);
-          if (penRequestInBatchResp.data) {
-            if (this.seqNumberInBatch < 1) {
-              this.seqNumberInBatch = penRequestInBatchResp.data.totalElements;
-            } else if (this.seqNumberInBatch > this.totalNumberInBatch) {
-              this.seqNumberInBatch = 1;
-            }
-            this.totalNumberInBatch = penRequestInBatchResp.data.totalElements;
-          } else {
-            throw new Error('No Batch data for penRequestBatchID:' + this.prbStudent.penRequestBatchID);
-          }
-        }
-        this.prbStudentNavInfo.push({
-          penRequestBatchID: this.prbStudent.penRequestBatchID,
-          penRequestBatchStudentID: this.prbStudent.penRequestBatchStudentID,
-          seqNumberInBatch: this.seqNumberInBatch,
-          totalNumberInBatch: this.totalNumberInBatch
-        });
-
-      } else {
-        throw new Error('No PrbStudent data for seqNumber:' + this.seqNumber);
-      }
-    },
-    retrievePenRequestsInBatch(batchID, searchQueries) {
-      let criteria = cloneDeep(searchQueries);
-      let batchIdSearchCriteria = this.getBatchIdSearchCriteria(criteria);
-      if (batchIdSearchCriteria) {
-        batchIdSearchCriteria.operation = SEARCH_FILTER_OPERATION.EQUAL;
-        batchIdSearchCriteria.value = batchID;
-      }
-
-      const params = {
-        params: {
-          pageNumber: 0,
-          pageSize: 1,
-          searchQueries: criteria,
-        }
-      };
-
-      return this.getPenRequestsFromApi(params);
     },
     async retrieveBatchFile() {
       const selectedFiles = this.$store.state[this.penRequestBatchStore].selectedFiles;
@@ -510,7 +380,7 @@ export default {
           searchCriteriaList: [{
             key: 'penRequestBatchID',
             operation: SEARCH_FILTER_OPERATION.IN,
-            value: this.batchIDs.join(','),
+            value: this.batchIDs,
             valueType: SEARCH_VALUE_TYPE.UUID
           }],
         },
@@ -523,19 +393,10 @@ export default {
           searchQueries
         }
       };
-
       return ApiService.apiAxios.get(Routes['penRequestBatch'].FILES_URL, params)
         .then(response => {
           response.data && this.$store.commit(`${this.penRequestBatchStore}/setSelectedFiles`, response.data.content);
         });
-    },
-    getPenRequestsFromApi(params) {
-      return ApiService.apiAxios.get(Routes['penRequestBatch'].STUDENTS_SEARCH_URL, params);
-    },
-    getBatchIdSearchCriteria(searchCriteria) {
-      const batchIdSearchQuery = searchCriteria.find(query =>
-        query.searchCriteriaList.some(criteria => criteria.key === 'penRequestBatchEntity.penRequestBatchID'));
-      return batchIdSearchQuery?.searchCriteriaList.find(criteria => criteria.key === 'penRequestBatchEntity.penRequestBatchID');
     },
     updateInfoRequested(infoRequest) {
       this.loading = true;

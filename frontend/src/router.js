@@ -179,15 +179,11 @@ const router = new VueRouter({
       },
     },
     {
-      path: '/prbStudentDetails',
+      path: '/prbStudentDetails/:prbStudentID',
       name: 'prbStudentDetails',
       component: PrbStudentDetailsDisplay,
       props: (route) => ({
-        totalNumber: +(route.query.totalNumber ?? 1),
-        batchCount: +(route.query.batchCount ?? 1),
-        searchCriteria: JSON.parse(route.query.searchCriteria ?? '[]'),
-        prbStudentIDs: route.query.prbStudentIDs,
-        prBatchIDs: route.query.batchIDs,
+        prbStudentID: route.params.prbStudentID,
         archived: String(route.query.archived).toLowerCase() === 'true'
       }),
       meta: {
