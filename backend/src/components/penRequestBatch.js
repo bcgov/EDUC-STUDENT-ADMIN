@@ -64,13 +64,6 @@ async function updatePrbStudentInfoRequested(req, res) {
 
 async function getPenRequestBatchStudentIDs(req, res) {
   try {
-    const token = getBackendToken(req);
-    if (!token) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
-      });
-    }
-
     const params = {
       params: {
         penRequestBatchIDs: req.query.penRequestBatchIDs,
@@ -79,7 +72,7 @@ async function getPenRequestBatchStudentIDs(req, res) {
       }
     };
 
-    const dataResponse = await getData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/pen-request-batch-ids`, params);
+    const dataResponse = await getData(getBackendToken(req), `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/pen-request-batch-ids`, params);
     return res.status(200).json(dataResponse);
 
   } catch (e) {
