@@ -68,7 +68,7 @@ nconf.defaults({
     penTraxURL: process.env.PEN_TRAX_API_URL,
     sld: {
       rootURL: process.env.SLD_API_URL,
-      studentHistoryURL: process.env.SLD_API_URL + '/student-history/'
+      studentHistoryURL: process.env.SLD_API_URL + '/student'
     },
     student: {
       rootURL: process.env.STUDENT_API_URL,

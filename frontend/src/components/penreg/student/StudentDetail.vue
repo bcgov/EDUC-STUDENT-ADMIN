@@ -25,7 +25,7 @@
                 @refresh="refreshStudent"
                 v-if="tab===0"
             >
-              <template v-slot:buttonbar="{ isAdvancedSearch, hasAnyEdits, saveStudent, REQUEST_TYPES, disableDemerge, demerge, isStudentUpdated }">
+              <template v-slot:buttonbar="{ isAdvancedSearch, hasAnyEdits, saveStudent, REQUEST_TYPES, disableDemerge, demerge }">
                 <v-row>
                   <v-col cols="12">
                     <v-card-actions style="float: right;">

@@ -1,41 +1,42 @@
 <template>
   <div>
     <v-card flat :disabled="!isProvidePenEnabledForUser">
-      <v-row class="mx-0">
-          <v-col cols="12" xl="2" lg="2" md="2" class="py-0">
-              <v-text-field
-                      id="pen-search-text-field"
-                      v-model="penSearchId"
-                      :disabled="isProvidePenDisabled"
-                      label="PEN:"
-                      clearable
-                      class="pt-0"
-                      @input="validatePen"
-              ></v-text-field>
-          </v-col>
-          <v-col cols="12" xl="2" lg="2" md="2" class="py-0" align-self="center">
-              <span class="pt-4 pr-1" id="prior-pen-count" v-if="this.numberOfDuplicatePenRequests > 0"><span
-                      class="red--text font-weight-bold">{{this.numberOfDuplicatePenRequests}}</span><span
-                      class="red--text"> prior PEN Requests</span></span>
-          </v-col>
-        <v-col cols="12" xl="8" lg="8" md="8" class="py-0">
-          <v-row>
-            <v-col v-if="this.request.bcscAutoMatchOutcome === this.autoMatchCodes.ONE_MATCH" cols="2">
-              <v-btn color="success" dark class="mr-4" @click="populateAutoMatchedPen">
-                <v-icon class="pa-0" large>mdi-arrow-left-bold</v-icon>
-              </v-btn>
-            </v-col>
-            <v-col align-self="center">
-              <p v-if="this.request.pen || this.request.penRequestStatusCode === this.statusCodes.AUTO_MATCH || this.request.penRequestStatusCode === this.statusCodes.MANUAL_MATCH"></p>
-              <p v-else-if="!this.request.bcscAutoMatchOutcome" class="text--darken-1 grey--text pa-0 ma-0">No auto-match performed for Basic BCeID</p>
-              <p v-else-if="this.request.bcscAutoMatchOutcome === this.autoMatchCodes.ONE_MATCH" class="green--text pa-0 ma-0"><strong>{{ this.autoPenResults }}</strong> {{ this.request.bcscAutoMatchDetails.split(' ').slice(1).join(' ') }}</p>
-              <p v-else class="orange--text pa-0 ma-0"><strong>{{ this.autoPenResults }}</strong> {{ this.request.bcscAutoMatchDetails.split(' ').slice(1).join(' ') }}</p>
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
       <v-row>
         <v-col class="pt-0" cols="6" height="100%">
+          <v-row class="mx-0">
+            <v-col cols="12" xl="3" lg="3" md="3" class="py-0">
+                <v-text-field
+                        id="pen-search-text-field"
+                        v-model="penSearchId"
+                        :disabled="isProvidePenDisabled"
+                        label="PEN:"
+                        clearable
+                        class="pt-0"
+                        @input="validatePen"
+                ></v-text-field>
+            </v-col>
+            <v-col cols="12" xl="2" lg="2" md="2" class="py-0" align-self="center">
+                <span class="pt-4 pr-1" id="prior-pen-count" v-if="this.numberOfDuplicatePenRequests > 0"><span
+                        class="red--text font-weight-bold">{{this.numberOfDuplicatePenRequests}}</span><span
+                        class="red--text"> prior PEN Requests</span></span>
+            </v-col>
+            <v-col cols="12" xl="7" lg="7" md="7" class="py-0">
+              <v-row>
+                <v-col v-if="this.request.bcscAutoMatchOutcome === this.autoMatchCodes.ONE_MATCH" cols="2">
+                  <v-btn color="success" dark class="mr-4" @click="populateAutoMatchedPen">
+                    <v-icon class="pa-0" large>mdi-arrow-left-bold</v-icon>
+                  </v-btn>
+                </v-col>
+                <v-col align-self="center">
+                  <p v-if="this.request.pen || this.request.penRequestStatusCode === this.statusCodes.AUTO_MATCH || this.request.penRequestStatusCode === this.statusCodes.MANUAL_MATCH"></p>
+                  <p v-else-if="!this.request.bcscAutoMatchOutcome" class="text--darken-1 grey--text pa-0 ma-0">No auto-match performed for Basic BCeID</p>
+                  <p v-else-if="this.request.bcscAutoMatchOutcome === this.autoMatchCodes.ONE_MATCH" class="green--text pa-0 ma-0"><strong>{{ this.autoPenResults }}</strong> {{ this.request.bcscAutoMatchDetails.split(' ').slice(1).join(' ') }}</p>
+                  <p v-else class="orange--text pa-0 ma-0"><strong>{{ this.autoPenResults }}</strong> {{ this.request.bcscAutoMatchDetails.split(' ').slice(1).join(' ') }}</p>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+
           <v-card class="ml-3">
             <v-row no-gutters class="pt-2 px-2">
               <v-col cols="12" xl="3" lg="3" md="3" sm="3">
@@ -74,7 +75,14 @@
           </v-card>
         </v-col>
         <v-col class="pa-0 pr-6" cols="6">
-          <v-form ref="completeForm">
+          <MacroMenu
+            padding="pt-3"
+            margin="ml-0"
+            :macros="completeMacros"
+            @select="insertMacroText"
+            :disabled="isCompleteCommentDisabled"
+          />
+          <v-form ref="completeForm" class="pt-4">
             <v-textarea
               id="complete-comment-textarea"
               name="description"
@@ -86,18 +94,17 @@
               clearable
               @input="replaceCompleteMacro"
               class="pa-0 ma-0"
+              ref="completeCommentTextarea"
             ></v-textarea>
           </v-form>
         </v-col>
       </v-row>
-      <v-row justify="end" class="px-4">
-          <v-checkbox v-model="request.demogChanged" true-value="Y" false-value="N" justify="flex-end" class="pa-0" cols="12" label="Student demographics changed"></v-checkbox>
-          <v-col cols="2" xl="2" lg="2" md="2" class="pt-3">
-            <PrimaryButton id="unlink-button" text="Unlink" width="100%" :disabled="isUnlinkDisabled || !isProvidePenEnabledForUser" @click.native="unlinkRequest"></PrimaryButton>
-          </v-col>
-        <v-col cols="3" xl="3" lg="3" md="3" class="pt-3">
-          <PrimaryButton id="provide-pen-to-student" text="Provide PEN to Student" width="100%" :disabled="isCompleteDisabled || !isProvidePenEnabledForUser" @click.native="completeRequest"></PrimaryButton>
-        </v-col>
+      <v-row class="px-3 d-flex justify-end">
+        <div class="d-flex">
+          <v-checkbox v-model="request.demogChanged" true-value="Y" false-value="N" class="pa-0" cols="12" label="Student demographics changed"></v-checkbox>
+          <PrimaryButton id="unlink-button" class="mt-3 mx-3" text="Unlink" :disabled="isUnlinkDisabled || !isProvidePenEnabledForUser" @click.native="unlinkRequest"></PrimaryButton>
+          <PrimaryButton id="provide-pen-to-student" class="mt-3 mx-3" text="Provide PEN to Student" :disabled="isCompleteDisabled || !isProvidePenEnabledForUser" @click.native="completeRequest"></PrimaryButton>
+        </div>
       </v-row>
     </v-card>
 
@@ -108,16 +115,20 @@
 import {formatDob} from '@/utils/format';
 import ApiService from '../../common/apiService';
 import {Routes, Statuses} from '@/utils/constants';
-import {replaceMacro} from '@/utils/macro';
+import {replaceMacro, insertMacro} from '@/utils/macro';
 import {mapGetters, mapMutations} from 'vuex';
 import {AccessEnabledForUser} from '@/common/role-based-access';
 import PrimaryButton from '../util/PrimaryButton';
-import {checkDigit} from '@/utils/validation';
+import {checkDigit, isValidLength} from '@/utils/validation';
 import alertMixin from '@/mixins/alertMixin';
+import MacroMenu from '../common/MacroMenu';
 
 export default {
   name: 'penRequestComplete',
-  components: {PrimaryButton},
+  components: {
+    PrimaryButton,
+    MacroMenu
+  },
   mixins: [alertMixin],
   props: {
     request: {
@@ -179,12 +190,7 @@ export default {
       return Statuses.AUTO_MATCH_RESULT_CODES;
     },
     completedRules() {
-      const rules = [];
-      if (this.request.demogChanged==='Y') {
-        const rule = v => !!v || 'Required';
-        rules.push(rule);
-      }
-      return rules;
+      return isValidLength(4000, this.request.demogChanged==='Y');
     },
     requestStatusCodeName() {
       return `${this.requestType}StatusCode`;
@@ -193,7 +199,7 @@ export default {
       return this.selectedRequest;
     },
     completeMacros() {
-      return this.$store.getters[`${this.requestType}/completeMacros`];
+      return this.$store.getters[`${this.requestType}/completeMacros`] || [];
     },
     statusCodes() {
       return Statuses[this.requestType];
@@ -370,6 +376,9 @@ export default {
     populateAutoMatchedPen() {
       this.penSearchId = this.autoPenResults;
       this.validatePen();
+    },
+    insertMacroText(macroText) {
+      this.request.completeComment = insertMacro(macroText, this.request.completeComment, this.$refs.completeCommentTextarea.$refs.input);
     },
   }
 };

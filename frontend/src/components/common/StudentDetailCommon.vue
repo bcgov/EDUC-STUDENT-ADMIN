@@ -811,21 +811,21 @@ export default {
     refreshStudent() {
       this.isLoading = true;
       this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false));
-        ApiService.apiAxios
-          .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
-          .then(response => {
-            this.origStudent.truePen = response.data.merges?.find(merge => merge.studentMergeDirectionCode === 'TO')?.mergeStudent.pen;
-            this.handleStudentDetails(response.data);
-            this.clearStaleData();
-            this.$emit('handleUpdatedStudent', response.data);
-          })
-          .catch(error => {
-            console.log(error);
-            this.setFailureAlert('An error occurred while loading the student details. Please try again later.');
-          })
-          .finally(() => {
-            this.isLoading = false;
-          });
+      ApiService.apiAxios
+        .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
+        .then(response => {
+          this.origStudent.truePen = response.data.merges?.find(merge => merge.studentMergeDirectionCode === 'TO')?.mergeStudent.pen;
+          this.handleStudentDetails(response.data);
+          this.clearStaleData();
+          this.$emit('handleUpdatedStudent', response.data);
+        })
+        .catch(error => {
+          console.log(error);
+          this.setFailureAlert('An error occurred while loading the student details. Please try again later.');
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
     },
     hasEdits(key) {
       let studentCopy = this.studentCopy[key];

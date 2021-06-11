@@ -108,19 +108,24 @@
                     :active="loadingPen"
             ></v-progress-linear>
             <v-data-table
-                    :headers="headers"
-                    :items="filteredResults"
-                    :sort-by="['createDate']"
-                    :items-per-page="15"
-                    class="fill-height">
+              :headers="headers"
+              :items="filteredResults"
+              :items-per-page="15"
+              :sort-by="['createDate']"
+              class="fill-height">
               <template v-slot:item.createDate="{ item }">
-                <span>{{item.createDate.toString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
+                <span>{{ item.createDate.toString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
               </template>
               <template v-slot:item.fileName="{item: document}">
-                <router-link :to="{ path: documentUrl(requestId, document) }" target="_blank">{{document.fileName}}</router-link>
+                <router-link v-if="document.fileSize" :to="{ path: documentUrl(requestId, document) }" target="_blank">
+                  {{ document.fileName }}
+                </router-link>
+                <span v-else>{{ document.fileName }}</span>
               </template>
-
-              <template v-if="isDocumentTypeChangeEnabledForUser"  v-slot:item.documentTypeLabel="{item: document}" >
+              <template v-slot:item.fileSize="{ item }">
+                <span v-if="item.fileSize">{{ item.fileSize }}</span>
+              </template>
+              <template v-if="isDocumentTypeChangeEnabledForUser" v-slot:item.documentTypeLabel="{item: document}">
                 <v-edit-dialog
                   :return-value.sync="document.documentTypeCode"
                   large
@@ -170,12 +175,13 @@
 import Chat from './Chat';
 import ApiService from '../common/apiService';
 import {REQUEST_TYPES, Routes, Statuses} from '../utils/constants';
-import { mapGetters, mapMutations } from 'vuex';
-import { humanFileSize } from '../utils/file';
+import {mapGetters, mapMutations} from 'vuex';
+import {humanFileSize} from '../utils/file';
 import {AccessEnabledForUser} from '../common/role-based-access';
 import router from '../router';
 import PrimaryButton from './util/PrimaryButton';
 import alertMixin from '../mixins/alertMixin';
+
 export default {
   name: 'requestDetail',
   props: {
