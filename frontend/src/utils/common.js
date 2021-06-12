@@ -28,7 +28,7 @@ export function constructPenMatchObjectFromStudent(student) {
 
 export function getPossibleMatches(penMatch) {
   return new Promise((resolve, reject) => {
-    ApiService.apiAxios.post('api/penMatches/', penMatch)
+    ApiService.apiAxios.post('/api/penMatches/', penMatch)
       .then(response => {
         if (response.data && response.data.matchingRecords && response.data.matchingRecords.length > 0) {
           const studentIDs = response.data.matchingRecords.map((matchingRecord) => {
