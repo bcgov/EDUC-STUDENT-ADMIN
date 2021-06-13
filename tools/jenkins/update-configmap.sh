@@ -171,10 +171,11 @@ FLB_CONFIG="[SERVICE]
    Log_Level    debug
    HTTP_Server   On
    HTTP_Listen   0.0.0.0
-   HTTP_Port     2020
+   Parsers_File parsers.conf
 [INPUT]
    Name   tail
    Path   /mnt/log/*
+   Parser docker
    Mem_Buf_Limit 20MB
 [FILTER]
    Name record_modifier
@@ -193,6 +194,10 @@ FLB_CONFIG="[SERVICE]
    Message_Key $APP_NAME
    Splunk_Token $SPLUNK_TOKEN
 "
-
+PARSER_CONFIG="
+[PARSER]
+    Name        docker
+    Format      json
+"
 echo Creating config map $APP_NAME-flb-sc-config-map
-oc create -n $PEN_NAMESPACE-$envValue configmap $APP_NAME-flb-sc-config-map --from-literal=fluent-bit.conf="$FLB_CONFIG" --dry-run -o yaml | oc apply -f -
+oc create -n $PEN_NAMESPACE-$envValue configmap $APP_NAME-flb-sc-config-map --from-literal=fluent-bit.conf="$FLB_CONFIG" --from-literal=parsers.conf="$PARSER_CONFIG" --dry-run -o yaml | oc apply -f -
