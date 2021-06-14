@@ -171,7 +171,7 @@ export default {
       const query = {
         params: {
           penRequestBatchIDs: this.selectedFileBatchIDs,
-          penRequestBatchStudentStatusCodes: this.selectedFilterNames.length > 0 ? this.selectedFilterNames : PEN_REQ_BATCH_STUDENT_REQUEST_CODES.LOADED
+          penRequestBatchStudentStatusCodes: this.selectedFilterNames.length > 0 ? this.selectedFilterNames : Object.values(PEN_REQ_BATCH_STUDENT_REQUEST_CODES).join(',')
         }
       };
       
