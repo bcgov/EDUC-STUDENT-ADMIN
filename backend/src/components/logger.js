@@ -101,7 +101,7 @@ const logger = createLogger({
       filename: 'app-%DATE%.log',
       dirname: './logs',
       datePattern: 'YYYY-MM-DD',
-      maxsize: '5m',
+      maxSize: '5m',
       maxFiles: 1,
       zippedArchive: true,
     })
