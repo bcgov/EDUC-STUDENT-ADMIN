@@ -69,7 +69,7 @@ function getDomainWinstonLoggerJsonFormat() {
     format.errors({ stack: true }),
     format.printf((info) => {
       const stackTrace = info.stack || '';
-      
+
       let message;
       // handle single object
       if (!info.message) {
@@ -101,8 +101,9 @@ const logger = createLogger({
       filename: 'app-%DATE%.log',
       dirname: './logs',
       datePattern: 'YYYY-MM-DD',
-      maxsize: '200m',
-      maxFiles: 1
+      maxsize: '5m',
+      maxFiles: 1,
+      zippedArchive: true,
     })
   ]
 });
