@@ -36,7 +36,7 @@
     "has-ansi": "^4.0.0",
     "helmet": "^4.4.1",
     "http-status-codes": "^1.4.0",
-    "ioredis": "^4.27.2",
+    "ioredis": "^4.27.6",
     "jest-junit": "^7.0.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
