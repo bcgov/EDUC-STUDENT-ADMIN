@@ -36,9 +36,9 @@ async function subscribeSagaMessages(nats, topic, handleMessage) {
 }
 
 async function handleSagaMessage(msg) {
-  log.debug(`Received message, on ${msg.subject} , Subscription Id ::  [${msg.sid}], Reply to ::  [${msg.reply}] :: Data ::`, JSON.parse(sc.decode(msg.data)));
-  let isWebSocketBroadcastingRequired = false;
   const event = JSON.parse(sc.decode(msg.data)); // it is always a JSON string of Event object.
+  log.info(`Received message, on ${msg.subject} , Subscription Id ::  [${msg.sid}], Reply to ::  [${msg.reply}] :: Data ::`, event);
+  let isWebSocketBroadcastingRequired = false;
   if ('COMPLETED' === event.sagaStatus || 'FORCE_STOPPED' === event.sagaStatus) {
     let recordFoundInRedis;
     if (msg.subject?.startsWith('PEN_REQUEST_BATCH')) {
@@ -82,7 +82,7 @@ async function subscribeToWebSocketMessageTopic(nats) {
   for await (const msg of sub) {
     const dataStr = sc.decode(msg.data);
     const data = JSON.parse(dataStr);
-    log.debug(`Received message, on ${msg.subject} , Subscription Id ::  [${msg.sid}], Reply to ::  [${msg.reply}] :: Data ::`, data);
+    log.info(`Received message, on ${msg.subject} , Subscription Id ::  [${msg.sid}], Reply to ::  [${msg.reply}] :: Data ::`, data);
     broadCastMessageToWebSocketClients(dataStr);
   }
 }
