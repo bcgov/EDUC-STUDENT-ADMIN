@@ -539,7 +539,7 @@ export default {
         return;
       }
       // Determine which is the oldest, which will be mergedToPen
-      [this.mergedToStudent, this.mergedFromStudent] = _.sortBy(selectedStudents, ['createDate', 'pen']);
+      [this.mergedToStudent, this.mergedFromStudent] = _.sortBy(selectedStudents, ['pen', 'createDate']);
 
       // Same Pen validation
       if (this.validateStudentsHaveSamePen(this.mergedToStudent, this.mergedFromStudent,
