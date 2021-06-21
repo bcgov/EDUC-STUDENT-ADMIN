@@ -95,7 +95,7 @@ fi
 echo
 echo Removing student-admin-soam if exists
 curl -sX DELETE "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$studentAdminClientID" \
-  -H "Authorization: Bearer $TKN" \
+  -H "Authorization: Bearer $TKN"
 
 if [ "$studentAdminClientSecret" != "" ] && [ "$envValue" = "tools" ]; then
   echo
@@ -140,6 +140,7 @@ studentAdminClientSecret=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOA
   -H "Authorization: Bearer $TKN" \
   | jq -r '.value')
 
+echo Retrieving scope id for offline access
 offlineAccessID=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/client-scopes" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
