@@ -59,7 +59,7 @@ const subscribe = () => {
         deliver_subject: 'STUDENT_EVENTS_STUDENT_ADMIN_NODE'
       },
       mack: true,
-      subQueue: 'student-admin-node-queue',
+      queue: 'student-admin-node-js-queue-group',
       stream: 'STUDENT_EVENTS',
       callbackFn: handleJetStreamMessage,
     };
