@@ -30,9 +30,10 @@ export default {
           const response = await ApiService.apiAxios
             .get(Routes.SESSION_REMAINING_TIME);
           if (response.data > 0) {
+            const timeOutValue = parseInt(response.data) + 200; // add 200 ms
             setTimeout(() => {
               this.checkAndLogoutUserOnSessionExpiry();
-            }, response.data);
+            }, timeOutValue);
           } else {
             window.location = document.getElementById('logout_href').href;
           }

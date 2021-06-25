@@ -66,6 +66,25 @@ router.get('/logout', async (req, res) => {
 
 });
 
+async function generateTokens(req, res) {
+  const newTokens = await auth.renew(req['user'].refreshToken);
+  if (newTokens && newTokens.jwt && newTokens.refreshToken) {
+    req['user'].jwt = newTokens.jwt;
+    req['user'].refreshToken = newTokens.refreshToken;
+    req['user'].jwtFrontend = auth.generateUiToken();
+    const isAuthorizedUser = isValidStaffUserWithRoles(req);
+    const isValidUsers = auth.isValidUsers(req);
+    const responseJson = {
+      jwtFrontend: req.user.jwtFrontend,
+      isAuthorizedUser: isAuthorizedUser,
+      ...isValidUsers
+    };
+    return res.status(HttpStatus.OK).json(responseJson);
+  } else {
+    res.status(HttpStatus.UNAUTHORIZED).json();
+  }
+}
+
 //refreshes jwt on refresh if refreshToken is valid
 router.post('/refresh', [
   body('refreshToken').exists()
@@ -76,24 +95,12 @@ router.post('/refresh', [
       errors: errors.array()
     });
   }
-  if (!req['user'] || !req['user'].refreshToken) {
+  if (!req['user'] || !req['user'].refreshToken || !req?.user?.jwt) {
     res.status(HttpStatus.UNAUTHORIZED).json();
   } else {
     if (auth.isTokenExpired(req.user.jwt)) {
-      const newTokens = await auth.renew(req['user'].refreshToken);
-      if (newTokens && newTokens.jwt && newTokens.refreshToken) {
-        req['user'].jwt = newTokens.jwt;
-        req['user'].refreshToken = newTokens.refreshToken;
-        req['user'].jwtFrontend = auth.generateUiToken();
-        const isAuthorizedUser = isValidStaffUserWithRoles(req);
-        const isValidUsers = auth.isValidUsers(req);
-        const responseJson = {
-          jwtFrontend: req.user.jwtFrontend,
-          isAuthorizedUser: isAuthorizedUser,
-          ...isValidUsers
-        };
-
-        return res.status(HttpStatus.OK).json(responseJson);
+      if (req?.user?.refreshToken && auth.isRenewable(req.user.refreshToken)) {
+        return generateTokens(req, res);
       } else {
         res.status(HttpStatus.UNAUTHORIZED).json();
       }
@@ -138,7 +145,7 @@ router.get('/user', passport.authenticate('jwt', {session: false}), (req, res) =
     if (userToken === undefined || userToken.realm_access === undefined || userToken.realm_access.roles === undefined) {
       return res.status(HttpStatus.UNAUTHORIZED).json();
     }
-  }catch (e){
+  } catch (e) {
     log.error('error is from verify', e);
     return res.status(HttpStatus.UNAUTHORIZED).json();
   }
