@@ -127,7 +127,8 @@ utils.getOidcDiscovery().then(discovery => {
     audience: config.get('server:frontend'),
     issuer: config.get('tokenGenerate:issuer'),
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: config.get('tokenGenerate:publicKey')
+    secretOrKey: config.get('tokenGenerate:publicKey'),
+    ignoreExpiration: true
   }, (jwtPayload, done) => {
     if ((typeof (jwtPayload) === 'undefined') || (jwtPayload === null)) {
       return done('No JWT token', null);

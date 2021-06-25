@@ -151,13 +151,13 @@ const auth = {
   // Update or remove token based on JWT and user state
   async refreshJWT(req, _res, next) {
     try {
-      if (!!req.user && !!req.user.jwt) {
+      if (req?.user?.jwt) {
         log.verbose('refreshJWT', 'User & JWT exists');
 
         if (auth.isTokenExpired(req.user.jwt)) {
           log.verbose('refreshJWT', 'JWT has expired');
 
-          if (!!req.user.refreshToken && auth.isRenewable(req.user.refreshToken)) {
+          if (req?.user?.refreshToken && auth.isRenewable(req.user.refreshToken)) {
             log.verbose('refreshJWT', 'Can refresh JWT token');
             // Get new JWT and Refresh Tokens and update the request
             const result = await auth.renew(req.user.refreshToken);
