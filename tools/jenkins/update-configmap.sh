@@ -191,8 +191,8 @@ fi
 regConfigStaff="var studentAdminConfig = (function() {
   return {
     \"VUE_APP_IDLE_TIMEOUT_IN_MILLIS\" : $vueIdleTimeout,
-    \"BANNER_ENVIRONMENT\" : $bannerEnvironment,
-    \"BANNER_COLOR\" : $bannerColor,
+    \"BANNER_ENVIRONMENT\" : \"$bannerEnvironment\",
+    \"BANNER_COLOR\" : \"$bannerColor\",
     \"WEB_SOCKET_URL\":\"wss://$SERVER_FRONTEND/api/socket\"
   };
 })();"
