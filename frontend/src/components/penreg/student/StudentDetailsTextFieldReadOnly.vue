@@ -13,18 +13,8 @@
           :disabled="fieldDisabled"
       ></v-text-field>
     </v-col>
-    <v-col v-if="name==='gradeCode'" cols="3" class="textFieldColumn gradeLabelColumn">
-      <v-text-field v-if="name==='gradeCode'"
-                    class="onhoverEdit customNoBorder onhoverPad"
-                    :value="gradeLevelCode"
-                    id='gradeLabel'
-                    color="#000000"
-                    dense
-                    readonly
-                    tabindex="-1"
-                    :disabled="fieldDisabled"
-      ></v-text-field>
-    </v-col>
+    <slot>
+    </slot>
   </v-row>
 </template>
 
