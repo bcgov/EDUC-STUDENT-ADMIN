@@ -156,12 +156,21 @@ if [ "$envValue" == "test" ]; then
   tokenExpiresIn="60m"
 fi
 
+bannerEnvironment=""
+bannerColor=""
+
 if [ "$envValue" = "tools" ]; then
   BACKEND_ROOT=$APP_NAME-$PEN_NAMESPACE-dev.apps.silver.devops.gov.bc.ca
+  bannerEnvironment="DEV"
+  bannerColor="#dba424"
 elif [ "$envValue" = "dev" ]; then
   BACKEND_ROOT=$APP_NAME-$PEN_NAMESPACE-test.apps.silver.devops.gov.bc.ca
+  bannerEnvironment="TEST"
+  bannerColor="#8d28d7"
 elif [ "$envValue" = "test" ]; then
   BACKEND_ROOT=$APP_NAME-$PEN_NAMESPACE-uat.apps.silver.devops.gov.bc.ca
+  bannerEnvironment="UAT"
+  bannerColor="#58fe01"
 else
   BACKEND_ROOT=$APP_NAME-$PEN_NAMESPACE-$envValue.apps.silver.devops.gov.bc.ca
 fi
@@ -182,6 +191,8 @@ fi
 regConfigStaff="var studentAdminConfig = (function() {
   return {
     \"VUE_APP_IDLE_TIMEOUT_IN_MILLIS\" : $vueIdleTimeout,
+    \"BANNER_ENVIRONMENT\" : $bannerEnvironment,
+    \"BANNER_COLOR\" : $bannerColor,
     \"WEB_SOCKET_URL\":\"wss://$SERVER_FRONTEND/api/socket\"
   };
 })();"
