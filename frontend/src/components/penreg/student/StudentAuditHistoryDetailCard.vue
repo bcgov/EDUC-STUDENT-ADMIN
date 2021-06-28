@@ -56,21 +56,37 @@
     <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.genderCode || ''"
                                      :disabled="false"
                                      :highlight="highlightDiff && !!studentHistoryDetail.genderCode_diff"
-                                     :name="prefixFieldName(STUDENT_DETAILS_FIELDS.GENDER_CODE)" colspan="1" label="Gender"
+                                     :name="prefixFieldName(STUDENT_DETAILS_FIELDS.GENDER_CODE)" colspan="1"
+                                     label="Gender"
                                      labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
     <StudentDetailsTextFieldReadOnly :model="formatDob(studentHistoryDetail.dob || '', 'uuuu-MM-dd')"
                                      :disabled="false"
                                      :highlight="highlightDiff && !!studentHistoryDetail.dob_diff"
-                                     :name="prefixFieldName(STUDENT_DETAILS_FIELDS.DOB)" colspan="4" label="Date of Birth"
+                                     :name="prefixFieldName(STUDENT_DETAILS_FIELDS.DOB)" colspan="4"
+                                     label="Date of Birth"
                                      labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
     <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.gradeCode || ''"
                                      :disabled="false"
                                      :grade-level="getGradeLabel()"
                                      :highlight="highlightDiff && !!studentHistoryDetail.gradeCode_diff"
-                                     :name="prefixFieldName(STUDENT_DETAILS_FIELDS.GRADE_CODE)" colspan="1" label="Grade"
-                                     labelSpan="4"></StudentDetailsTextFieldReadOnly>
+                                     :name="prefixFieldName(STUDENT_DETAILS_FIELDS.GRADE_CODE)" colspan="1"
+                                     label="Grade"
+                                     labelSpan="4">
+      <v-col cols="3" class="textFieldColumn gradeLabelColumn">
+        <v-text-field
+            class="onhoverEdit customNoBorder onhoverPad"
+            :value="getGradeLabel()"
+            id='gradeLabel'
+            color="#000000"
+            dense
+            readonly
+            tabindex="-1"
+            :disabled="true"
+        ></v-text-field>
+      </v-col>
+    </StudentDetailsTextFieldReadOnly>
 
     <StudentDetailsTextFieldReadOnly :model="studentHistoryDetail.gradeYear || ''"
                                      :disabled="false"
@@ -78,30 +94,44 @@
                                      :name="prefixFieldName(STUDENT_DETAILS_FIELDS.GRADE_YEAR)" colspan="4"
                                      label="Grade School Year"
                                      labelSpan="4"></StudentDetailsTextFieldReadOnly>
-                                           
+
     <StudentDetailsTextFieldReadOnly :disabled="false"
                                      :highlight="highlightDiff && studentHistoryDetail.postalCode_diff"
                                      :model="formatPostalCode(studentHistoryDetail.postalCode)"
-                                     :name="prefixFieldName(STUDENT_DETAILS_FIELDS.POSTAL_CODE)" colspan="4" label="Postal Code"
+                                     :name="prefixFieldName(STUDENT_DETAILS_FIELDS.POSTAL_CODE)" colspan="4"
+                                     label="Postal Code"
                                      labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
-    <StudentDetailsTextFieldReadOnly max-length="9" min-length="8" :name="prefixFieldName(STUDENT_DETAILS_FIELDS.MINCODE)"
+    <StudentDetailsTextFieldReadOnly max-length="9" min-length="8"
+                                     :name="prefixFieldName(STUDENT_DETAILS_FIELDS.MINCODE)"
                                      :highlight="highlightDiff && studentHistoryDetail.mincode_diff"
                                      :model="studentHistoryDetail.mincode" :has-edits="false"
-                                     colspan="6" label="Mincode" labelSpan="4"
-                                     :disabled="false"></StudentDetailsTextFieldReadOnly>
+                                     colspan="2" label="Mincode" labelSpan="4"
+                                     :disabled="false">
+      <v-col class="textFieldColumn" cols="4">
+        <v-text-field
+            :value="getSchoolName(studentHistoryDetail.mincode)"
+            class="onhoverEdit customNoBorder onhoverPad"
+            dense
+            readonly
+            :disabled="false"
+        ></v-text-field>
+      </v-col>
+    </StudentDetailsTextFieldReadOnly>
 
     <StudentDetailsTextFieldReadOnly :disabled="false"
                                      :highlight="highlightDiff && studentHistoryDetail.localID_diff"
                                      :model="studentHistoryDetail.localID || ''"
-                                     :name="prefixFieldName(STUDENT_DETAILS_FIELDS.LOCAL_ID)" colspan="6" label="Local ID"
+                                     :name="prefixFieldName(STUDENT_DETAILS_FIELDS.LOCAL_ID)" colspan="6"
+                                     label="Local ID"
                                      labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
     <StudentDetailsTextFieldReadOnly :disabled="false"
-                                 :highlight="highlightDiff && studentHistoryDetail.trueStudentID_diff"
-                                 :model="formatPen(studentHistoryDetail.truePen || '')"
-                                 :name="prefixFieldName(STUDENT_DETAILS_FIELDS.TRUE_STUDENT_ID)" colspan="6" label="Merged To"
-                                 labelSpan="4"></StudentDetailsTextFieldReadOnly>
+                                     :highlight="highlightDiff && studentHistoryDetail.trueStudentID_diff"
+                                     :model="formatPen(studentHistoryDetail.truePen || '')"
+                                     :name="prefixFieldName(STUDENT_DETAILS_FIELDS.TRUE_STUDENT_ID)" colspan="6"
+                                     label="Merged To"
+                                     labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
     <v-row no-gutters class="py-1">
       <v-col cols="4">
@@ -125,7 +155,8 @@
       </v-col>
     </v-row>
 
-    <StudentDetailsTextFieldReadOnly :disabled="false" :highlight="highlightDiff && !!studentHistoryDetail.statusCode_diff"
+    <StudentDetailsTextFieldReadOnly :disabled="false"
+                                     :highlight="highlightDiff && !!studentHistoryDetail.statusCode_diff"
                                      :model="getStatusCode()"
                                      :name="prefixFieldName(STUDENT_DETAILS_FIELDS.STATUS_CODE)"
                                      colspan="4" label="Status" labelSpan="4"
@@ -156,6 +187,9 @@ export default {
       default: ''
     }
   },
+  async beforeMount() {
+    await this.$store.dispatch('app/getCodes');
+  },
   components: {
     StudentDetailsTextFieldReadOnly,
   },
@@ -179,6 +213,9 @@ export default {
     },
     getDemogCode() {
       return this.studentHistoryDetail.demogCode ? this.demogCodeObjects.filter(it => (it.demogCode === this.studentHistoryDetail.demogCode))[0].label : '';
+    },
+    getSchoolName(mincode) {
+      return this.$store.state['app'].mincodeSchoolNames.get(mincode?.replace(' ', ''));
     },
     prefixFieldName(fieldName) {
       return this.idPrefix + fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
@@ -211,4 +248,13 @@ p.diff-value {
   font-size: 0.95rem;
 }
 
+.plain-value >>> .v-text-field__slot input {
+  font-weight: bold;
+  color: #000000 !important;
+}
+
+.diff-value >>> .v-text-field__slot input {
+  font-weight: bold;
+  color: #008000 !important;
+}
 </style>

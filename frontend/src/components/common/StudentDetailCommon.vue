@@ -11,12 +11,12 @@
           <v-row no-gutters>
             <v-col cols="5">
               <v-text-field
-                v-model="studentCopy.pen"
-                readonly
-                class="onhoverEdit bolder customNoBorder"
-                :id='STUDENT_DETAILS_FIELDS.PEN'
-                color="#000000"
-                dense
+                  v-model="studentCopy.pen"
+                  readonly
+                  class="onhoverEdit bolder customNoBorder"
+                  :id='STUDENT_DETAILS_FIELDS.PEN'
+                  color="#000000"
+                  dense
               ></v-text-field>
             </v-col>
             <v-col cols="1">
@@ -69,7 +69,8 @@
             <v-chip color="#003366"
                     small
                     dark>
-              <Strong>{{ statusCodeObjects.filter(obj => obj.statusCode === studentCopy.statusCode)[0].label }}</Strong></v-chip>
+              <Strong>{{ statusCodeObjects.filter(obj => obj.statusCode === studentCopy.statusCode)[0].label }}</Strong>
+            </v-chip>
           </div>
           <StudentDetailsComboBox v-else label="Status" colspan="1" name="statusCode"
                                   @changeStudentObjectValue="changeStudentObjectValue"
@@ -175,7 +176,8 @@
                   Date of Birth
                 </div>
                 <div style="display: inline-block">
-                  <img title="YYYYMMDD" :class="{'ml-3': true, 'dob-disabled': isFieldDisabled(STUDENT_DETAILS_FIELDS.DOB)}"
+                  <img title="YYYYMMDD"
+                       :class="{'ml-3': true, 'dob-disabled': isFieldDisabled(STUDENT_DETAILS_FIELDS.DOB)}"
                        src="@/assets/images/information.svg"
                        alt="YYYYMMDD"
                   >
@@ -230,14 +232,30 @@
             </v-col>
           </v-row>
           <StudentDetailsTextFieldReadOnly :model="studentCopy.gradeCode?studentCopy.gradeCode:''"
-                                           :name="STUDENT_DETAILS_FIELDS.GRADE_CODE" colspan="1" label="Grade" :grade-level="gradeLabel"
-                                           :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.GRADE_CODE)"></StudentDetailsTextFieldReadOnly>
+                                           :name="STUDENT_DETAILS_FIELDS.GRADE_CODE" colspan="1" label="Grade"
+                                           :grade-level="gradeLabel"
+                                           :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.GRADE_CODE)">
+            <v-col cols="3" class="textFieldColumn gradeLabelColumn">
+              <v-text-field
+                  class="onhoverEdit customNoBorder onhoverPad"
+                  :value="gradeLabel"
+                  id='gradeLabel'
+                  color="#000000"
+                  dense
+                  readonly
+                  tabindex="-1"
+                  :disabled="true"
+              ></v-text-field>
+            </v-col>
+          </StudentDetailsTextFieldReadOnly>
 
           <StudentDetailsTextFieldReadOnly :model="studentCopy.gradeYear?studentCopy.gradeYear:''"
-                                           :name="STUDENT_DETAILS_FIELDS.GRADE_YEAR" colspan="1" label="Grade School Year"
+                                           :name="STUDENT_DETAILS_FIELDS.GRADE_YEAR" colspan="1"
+                                           label="Grade School Year"
                                            :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.GRADE_YEAR)"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentCopy.postalCode?studentCopy.postalCode:''" :name="STUDENT_DETAILS_FIELDS.POSTAL_CODE"
+          <StudentDetailsTextFieldReadOnly :model="studentCopy.postalCode?studentCopy.postalCode:''"
+                                           :name="STUDENT_DETAILS_FIELDS.POSTAL_CODE"
                                            colspan="2" label="Postal Code"
                                            :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"></StudentDetailsTextFieldReadOnly>
 
@@ -276,7 +294,7 @@
               ></v-progress-circular>
               <v-text-field
                   v-else
-                  class="onhoverEdit bolder customNoBorder onhoverPad"
+                  class="onhoverEdit customNoBorder onhoverPad"
                   v-model="schoolLabel"
                   id='schoolFill'
                   color="#000000"
@@ -299,28 +317,32 @@
               ></v-text-field>
             </v-col>
           </v-row>
-          <StudentDetailsTextFieldReadOnly :model="studentCopy.localID?studentCopy.localID:''" :name="STUDENT_DETAILS_FIELDS.LOCAL_ID"
+          <StudentDetailsTextFieldReadOnly :model="studentCopy.localID?studentCopy.localID:''"
+                                           :name="STUDENT_DETAILS_FIELDS.LOCAL_ID"
                                            colspan="2" label="Local ID"
                                            :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.LOCAL_ID)"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTemplateTextField v-if="possibleMatches.length > 0" colspan="2" label="Twin(s)?" :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.TWINS)">
+          <StudentDetailsTemplateTextField v-if="possibleMatches.length > 0" colspan="2" label="Twin(s)?"
+                                           :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.TWINS)">
             <a @click="twinsDialog=true">
               Yes
             </a>
           </StudentDetailsTemplateTextField>
 
-          <StudentDetailsTemplateTextField v-if="mergedTo" colspan="8" label="Merged To" :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MERGED_TO)">
+          <StudentDetailsTemplateTextField v-if="mergedTo" colspan="8" label="Merged To"
+                                           :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MERGED_TO)">
             <div>
               <router-link :to="{params: {studentID: mergedTo.mergeStudentID}}" class="pr-4">
-                {{formatPen(mergedTo.mergeStudent.pen)}}
+                {{ formatPen(mergedTo.mergeStudent.pen) }}
               </router-link>
-              <span class="pr-4">{{formatUpdateTime(mergedTo.updateDate)}}</span>
-              <span class="pr-4">{{mergedTo.studentMergeSourceCode}}</span>
-              <span>{{mergedTo.updateUser}}</span>
+              <span class="pr-4">{{ formatUpdateTime(mergedTo.updateDate) }}</span>
+              <span class="pr-4">{{ mergedTo.studentMergeSourceCode }}</span>
+              <span>{{ mergedTo.updateUser }}</span>
             </div>
           </StudentDetailsTemplateTextField>
 
-          <StudentDetailsTemplateTextField v-if="mergedFrom.length > 0" colspan="8" label="Merged From" :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MERGED_FROM)">
+          <StudentDetailsTemplateTextField v-if="mergedFrom.length > 0" colspan="8" label="Merged From"
+                                           :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MERGED_FROM)">
             <div class="d-flex flex-wrap">
               <router-link
                   v-for="merge in mergedFrom"
@@ -328,7 +350,7 @@
                   :to="{params: {studentID: merge.mergeStudentID}}"
                   class="pr-4 pen"
               >
-                {{formatPen(merge.mergeStudent.pen)}}
+                {{ formatPen(merge.mergeStudent.pen) }}
               </router-link>
             </div>
           </StudentDetailsTemplateTextField>
@@ -480,7 +502,9 @@
             Are you sure you want to de-merge this&nbsp;<strong>Confirmed</strong>&nbsp;student?
           </v-row>
           <v-row v-else class="mb-3">
-            Are you sure you want to demerge PENs&nbsp;<strong>{{ getMergedFromPen() }}</strong>&nbsp;and&nbsp;<strong>{{ getMergedToPen() }}</strong>?
+            Are you sure you want to demerge PENs&nbsp;<strong>{{ getMergedFromPen() }}</strong>&nbsp;and&nbsp;<strong>{{
+              getMergedToPen()
+            }}</strong>?
           </v-row>
         </v-col>
       </template>
@@ -587,8 +611,8 @@ export default {
       hoveringMemo: false,
       enableDisableFieldsMap: new Map(),
       fieldNames: Object.values(STUDENT_DETAILS_FIELDS),
-      tab:'Demographics',
-      STUDENT_DETAILS_FIELDS:STUDENT_DETAILS_FIELDS,
+      tab: 'Demographics',
+      STUDENT_DETAILS_FIELDS: STUDENT_DETAILS_FIELDS,
       STUDENT_CODES: STUDENT_CODES,
       merges: [],
       possibleMatches: [],
@@ -599,7 +623,7 @@ export default {
       loadingTraxData: false,
       loadingSchoolData: false,
       compareStudent: [],
-      copyTxt:'',
+      copyTxt: '',
       isStudentUpdated: false,
       isStudentUpdatedInDifferentTab: true,
       lastMessageFromSTANForStudentUpdate: null,
@@ -657,10 +681,13 @@ export default {
       }
     },
   },
-  beforeRouteLeave (to, from, next) {
-    if(this.hasAnyEdits()) {
-      this.$refs.confirmationDialog.open('Warning!', 'Changes will be lost. Are you sure?', { color: '#003366', rejectText: 'No, go back' }).then((result) => {
-        if(result) {
+  beforeRouteLeave(to, from, next) {
+    if (this.hasAnyEdits()) {
+      this.$refs.confirmationDialog.open('Warning!', 'Changes will be lost. Are you sure?', {
+        color: '#003366',
+        rejectText: 'No, go back'
+      }).then((result) => {
+        if (result) {
           next();
         } else {
           next(false);
@@ -674,14 +701,14 @@ export default {
     formatPen,
     formatMincode,
     formatDob,
-    boldFormatter(char){
-      let diff='';
-      if(/[A-Z]/.test(char)){
-        diff = '𝗔'.codePointAt (0) - 'A'.codePointAt (0);
-      }else{
-        diff = '𝗮'.codePointAt (0) - 'a'.codePointAt (0);
+    boldFormatter(char) {
+      let diff = '';
+      if (/[A-Z]/.test(char)) {
+        diff = '𝗔'.codePointAt(0) - 'A'.codePointAt(0);
+      } else {
+        diff = '𝗮'.codePointAt(0) - 'a'.codePointAt(0);
       }
-      return String.fromCodePoint(char.codePointAt(0)+diff);
+      return String.fromCodePoint(char.codePointAt(0) + diff);
     },
     copyInfo() {
       if (this.isStudentUpdated) {
@@ -691,19 +718,19 @@ export default {
       }
       let dobCopy = formatDob(this.studentCopy.dob, 'uuuu-MM-dd', 'uuuu/MM/dd');
       this.copyTxt =
-        'PEN: '.replace(/[A-Za-z]/g, this.boldFormatter) + (this.studentCopy.pen || '') + '\n' +
-        'Legal Surname: '.replace(/[A-Za-z]/g, this.boldFormatter) + (this.studentCopy.legalLastName || '') + '\n' +
-        'Legal Given: '.replace(/[A-Za-z]/g, this.boldFormatter) + (this.studentCopy.legalFirstName || '') + '\n' +
-        'Legal Middle: '.replace(/[A-Za-z]/g, this.boldFormatter) + (this.studentCopy.legalMiddleNames || '') + '\n' +
-        'Birth Date: '.replace(/[A-Za-z]/g, this.boldFormatter) + (dobCopy || '') + '\n' +
-        'Gender: '.replace(/[A-Za-z]/g, this.boldFormatter) + (this.studentCopy.genderCode || '');
+          'PEN: '.replace(/[A-Za-z]/g, this.boldFormatter) + (this.studentCopy.pen || '') + '\n' +
+          'Legal Surname: '.replace(/[A-Za-z]/g, this.boldFormatter) + (this.studentCopy.legalLastName || '') + '\n' +
+          'Legal Given: '.replace(/[A-Za-z]/g, this.boldFormatter) + (this.studentCopy.legalFirstName || '') + '\n' +
+          'Legal Middle: '.replace(/[A-Za-z]/g, this.boldFormatter) + (this.studentCopy.legalMiddleNames || '') + '\n' +
+          'Birth Date: '.replace(/[A-Za-z]/g, this.boldFormatter) + (dobCopy || '') + '\n' +
+          'Gender: '.replace(/[A-Za-z]/g, this.boldFormatter) + (this.studentCopy.genderCode || '');
       this.$copyText(this.copyTxt);
     },
-    copyPen(){
-      this.copyTxt= this.studentCopy.pen || '';
+    copyPen() {
+      this.copyTxt = this.studentCopy.pen || '';
       this.$copyText(this.copyTxt);
     },
-    onError (e) {
+    onError(e) {
       console.log(e);
     },
     changeStudentObjectValue(key, value) {
@@ -719,7 +746,7 @@ export default {
       if (initialLoad) {
         this.shortDOB = this.studentCopy.dob = this.studentCopy.dob.replace(/[^0-9]/g, '');
       } else {
-        this.studentCopy.dob = this.shortDOB? formatDob(this.shortDOB,'uuuuMMdd','uuuu-MM-dd') : '';
+        this.studentCopy.dob = this.shortDOB ? formatDob(this.shortDOB, 'uuuuMMdd', 'uuuu-MM-dd') : '';
       }
       this.longDOB = this.frontEndDOBFormat(this.studentCopy.dob);
     },
@@ -730,8 +757,8 @@ export default {
     },
     getDateFormatter(pattern = 'uuuu/MM/dd') {
       return (new JSJoda.DateTimeFormatterBuilder)
-        .appendPattern(pattern)
-        .toFormatter(JSJoda.ResolverStyle.STRICT);
+          .appendPattern(pattern)
+          .toFormatter(JSJoda.ResolverStyle.STRICT);
     },
     validateDOB() {
       if (this.studentCopy) {
@@ -812,20 +839,20 @@ export default {
       this.isLoading = true;
       this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false));
       ApiService.apiAxios
-        .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
-        .then(response => {
-          this.origStudent.truePen = response.data.merges?.find(merge => merge.studentMergeDirectionCode === 'TO')?.mergeStudent.pen;
-          this.handleStudentDetails(response.data);
-          this.clearStaleData();
-          this.$emit('handleUpdatedStudent', response.data);
-        })
-        .catch(error => {
-          console.log(error);
-          this.setFailureAlert('An error occurred while loading the student details. Please try again later.');
-        })
-        .finally(() => {
-          this.isLoading = false;
-        });
+          .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
+          .then(response => {
+            this.origStudent.truePen = response.data.merges?.find(merge => merge.studentMergeDirectionCode === 'TO')?.mergeStudent.pen;
+            this.handleStudentDetails(response.data);
+            this.clearStaleData();
+            this.$emit('handleUpdatedStudent', response.data);
+          })
+          .catch(error => {
+            console.log(error);
+            this.setFailureAlert('An error occurred while loading the student details. Please try again later.');
+          })
+          .finally(() => {
+            this.isLoading = false;
+          });
     },
     hasEdits(key) {
       let studentCopy = this.studentCopy[key];
@@ -924,16 +951,16 @@ export default {
           };
           this.isStudentUpdatedInDifferentTab = false; //make sure that notification for current tab is ignored.
           ApiService.apiAxios
-            .put(Routes['student'].ROOT_ENDPOINT + '/' + this.studentID, this.prepPut(this.studentCopy), {params})
-            .then(response => {
-              this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false)); // enable all the fields here, required fields to be disabled will be done in this.setStudent method.
-              this.setStudent(response.data);
-              this.$emit('update:student', response.data);
-              this.setSuccessAlert('Student data updated successfully.');
-            })
-            .catch(error => {
-              this.processSaveStudentError(error);
-            });
+              .put(Routes['student'].ROOT_ENDPOINT + '/' + this.studentID, this.prepPut(this.studentCopy), {params})
+              .then(response => {
+                this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false)); // enable all the fields here, required fields to be disabled will be done in this.setStudent method.
+                this.setStudent(response.data);
+                this.$emit('update:student', response.data);
+                this.setSuccessAlert('Student data updated successfully.');
+              })
+              .catch(error => {
+                this.processSaveStudentError(error);
+              });
         }
 
       }
@@ -950,7 +977,7 @@ export default {
       }
       return this.genderCodes;
     },
-    getDemogCodeComboBox(){
+    getDemogCodeComboBox() {
       const demogCodeComboBox = [];
       if (this.demogCodeObjects) {
         for (const element of this.demogCodeObjects) {
@@ -964,12 +991,12 @@ export default {
       }
       return demogCodeComboBox;
     },
-    getStatusLevels(){
+    getStatusLevels() {
       const statusCodeComboBox = [];
       if (this.statusCodeObjects) {
         for (const element of this.statusCodeObjects) {
-          if(([STUDENT_CODES.ACTIVE,STUDENT_CODES.DECEASED].includes(element.statusCode) && this.studentCopy.statusCode !== STUDENT_CODES.DELETED) ||
-              ([STUDENT_CODES.DELETED,STUDENT_CODES.ACTIVE].includes(element.statusCode) && this.studentCopy.statusCode === STUDENT_CODES.DELETED)) {
+          if (([STUDENT_CODES.ACTIVE, STUDENT_CODES.DECEASED].includes(element.statusCode) && this.studentCopy.statusCode !== STUDENT_CODES.DELETED) ||
+              ([STUDENT_CODES.DELETED, STUDENT_CODES.ACTIVE].includes(element.statusCode) && this.studentCopy.statusCode === STUDENT_CODES.DELETED)) {
             const item = {
               value: element.statusCode,
               text: element.label,
@@ -980,19 +1007,19 @@ export default {
       }
       return statusCodeComboBox;
     },
-    getCreatedDateTime(){
+    getCreatedDateTime() {
       return this.createdDateTime;
     },
-    getUpdatedDateTime(){
+    getUpdatedDateTime() {
       return this.updatedDateTime;
     },
-    isFieldDisabled(fieldName){
+    isFieldDisabled(fieldName) {
       return (!!this.enableDisableFieldsMap.get(fieldName) || this.fullReadOnly);
     },
     formatUpdateTime(datetime) {
       return moment(JSON.stringify(datetime), 'YYYY-MM-DDTHH:mm:ss').format('YYYY/MM/DD H:mma');
     },
-    validateLegalLastName(){
+    validateLegalLastName() {
       if (this.studentCopy) {
         if (!this.studentCopy.legalLastName || this.studentCopy.legalLastName.length < 2) {
           return ['Legal Surname is required and must be more than one character.'];
@@ -1015,20 +1042,20 @@ export default {
       this.gradDateAndMincode = [];
       this.loadingTraxData = true;
       ApiService.apiAxios
-        .get(Routes.PEN_TRAX_URL, { params: { pen } })
-        .then(response => {
-          this.traxStatus = response.data.traxStatus;
-          if(response.data.student?.gradDate > 0) {
-            this.gradDateAndMincode = [this.formatGradDate(response.data.student?.gradDate), formatMincode(response.data.student?.mincodeGrad || '')];
-          }
-        })
-        .catch(error => {
-          console.log(error);
-          this.setFailureAlert('An error occurred while loading the TRAX status. Please try again later.');
-        })
-        .finally(() => {
-          this.loadingTraxData = false;
-        });
+          .get(Routes.PEN_TRAX_URL, {params: {pen}})
+          .then(response => {
+            this.traxStatus = response.data.traxStatus;
+            if (response.data.student?.gradDate > 0) {
+              this.gradDateAndMincode = [this.formatGradDate(response.data.student?.gradDate), formatMincode(response.data.student?.mincodeGrad || '')];
+            }
+          })
+          .catch(error => {
+            console.log(error);
+            this.setFailureAlert('An error occurred while loading the TRAX status. Please try again later.');
+          })
+          .finally(() => {
+            this.loadingTraxData = false;
+          });
     },
     disableDemerge() {
       if (this.isProcessing || this.demergeSagaComplete || this.hasSagaInProgress(this.origStudent)) {
@@ -1047,7 +1074,7 @@ export default {
       this.mergedFromStudent = this.origStudent;
 
       let result = await this.$refs.demergeConfirmationDialog.open(null, null,
-        {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, rejectText: 'No'});
+          {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, rejectText: 'No'});
       if (!result) {
         return;
       }
@@ -1075,7 +1102,7 @@ export default {
       let isUpdateStudentAllowed = true;
       if (this.origStudent?.demogCode === STUDENT_DEMOG_CODES.CONFIRMED) {
         const confirmation = await this.$refs.confirmedStudentUpdateConfirmationDialog.open(null, null,
-          {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, resolveText: 'Yes'});
+            {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, resolveText: 'Yes'});
         if (!confirmation) {
           isUpdateStudentAllowed = false;
         }
@@ -1108,77 +1135,96 @@ export default {
   align-items: center;
   justify-content: center;
 }
+
 .onhoverEdit.v-text-field > .v-input__control > .v-input__slot:before {
   border-style: none;
 }
+
 .onhoverEdit.v-text-field > .v-input__control > .v-input__slot:after {
   border-style: none;
 }
+
 .onhoverPad {
   padding-left: 12px !important;
   padding-top: 2px !important;
 }
+
 .memo-style > .v-input > .v-input__control > .v-input__slot > .v-text-field__slot > textarea {
   margin-right: 2px;
   margin-bottom: 3px;
 }
+
 .onEditPad {
   padding-left: 12px !important;
   padding-top: 2px !important;
 }
+
 .textFieldColumn {
   display: table-cell;
   height: 1rem;
   margin-top: -2px;
 }
+
 .darkBackgound.v-text-field > .v-input__control > .v-input__slot {
   background-color: #eeeeee;
 }
+
 .textAreaColumn {
   display: table-cell;
   height: 5em;
 }
+
 .sideCardField {
   display: table-cell;
   height: 3em;
 }
+
 .labelField {
   display: table-cell;
   height: 1em;
   padding-top: 8px !important;
 }
+
 .customNoBorder.v-text-field > .v-input__control > .v-input__slot {
   padding-top: 0px !important;
   padding-bottom: 0px !important;
 }
+
 .revert.v-text-field > .v-input__control > .v-input__slot > .v-text-field__slot > input {
   color: #1a5a96 !important;
   font-weight: bolder;
   cursor: pointer;
 }
+
 .bolder {
   color: #000000 !important;
   font-weight: bolder;
 }
+
 .top-banner {
   background-color: white;
   background-size: cover;
   align-items: center;
   display: flex;
 }
+
 .full-height {
   height: 100%;
 }
+
 .active-display {
   background-color: #eaf8fe;
 }
+
 .pen {
   white-space: nowrap;
 }
+
 .dob-disabled {
   visibility: hidden;
 }
-.student-details-tabs-style{
+
+.student-details-tabs-style {
   text-transform: none;
 }
 </style>
