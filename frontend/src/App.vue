@@ -23,15 +23,15 @@
         mdi-format-vertical-align-top
       </v-icon>
     </v-btn>
-    <v-main fluid class="align-start px-8 mb-0">
+    <v-main fluid >
       <v-app-bar v-if="bannerColor !== ''"
           style="color:white;"
           :color="bannerColor"
           sticky
           dense
       ><div><h3>{{ bannerEnvironment }} Environment</h3></div></v-app-bar>
-      <ModalIdle v-if="isAuthenticated"/>
-      <router-view/>
+      <ModalIdle class="align-start px-8 mb-0" v-if="isAuthenticated"/>
+      <router-view class="align-start px-8 mb-0"/>
     </v-main>
     <Footer/>
   </v-app>
