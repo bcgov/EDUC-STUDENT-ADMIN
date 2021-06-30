@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const path = require('path');
 dotenv.config();
 
-const env = process.env.NODE_ENV;
+const env = 'local'; //process.env.NODE_ENV;
 
 nconf.argv()
   .file({file: path.join(__dirname, `${env}.json`)});
@@ -44,6 +44,9 @@ nconf.defaults({
     },
     studentSearch: {
       roleAdmin: process.env.STUDENT_SEARCH_ADMIN
+    },
+    administration: {
+      roleAdmin: process.env.STUDENT_ADMIN_ADMINISTRATOR
     },
     penRequestBatch: {
       rootURL: process.env.PEN_REQUEST_BATCH_API_URL,
