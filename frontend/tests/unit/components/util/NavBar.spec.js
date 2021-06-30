@@ -24,7 +24,8 @@ describe('NavBar Component initialized with namespaced Vuex module.\'', () => {
         state: {
           isAuthorizedUser: true,
           isValidStudentSearchUser: true,
-          isValidPenRequestBatchUser: true
+          isValidPenRequestBatchUser: true,
+          isValidStaffAdministrationUser: true
         }
       },
       setNavigation: {

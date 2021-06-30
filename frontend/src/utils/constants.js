@@ -313,6 +313,8 @@ export const PAGE_TITLES = Object.freeze(
     PEN_REQ_BATCH_STUDENT_DETAILS: 'PEN Request Details',
     CREATE_NEW_PEN: 'Create New PEN',
     ARCHIVED_REQ_FILES: 'Archived PEN Request Files',
+    COMPARE_PENS: 'Compare Students',
+    ADMINISTRATION: 'Administration',
     ARCHIVED_REQ_BATCH_STUDENT_LIST: 'Archived PEN Request List',
     FAILED_REQ_FILES: 'Failed PEN Request Files',
     HELD_REQ_FILES: 'Held PEN Request Files',

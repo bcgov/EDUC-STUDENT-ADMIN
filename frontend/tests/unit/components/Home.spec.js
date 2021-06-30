@@ -64,7 +64,8 @@ describe('Archived Request Search Button', () => {
             isValidGMPUser: false,
             isValidUMPUser: false,
             isValidStudentSearchUser: true,
-            isValidPenRequestBatchUser: true
+            isValidPenRequestBatchUser: true,
+            isValidStaffAdministrationUser: true
           },
           mutations: {
             setIsValidStudentSearchUser (state, isValid) {
@@ -72,6 +73,9 @@ describe('Archived Request Search Button', () => {
             },
             setIsValidPenRequestBatchUser (state, isValid) {
               state.isValidPenRequestBatchUser = isValid;
+            },
+            setIsValidStaffAdministrationUser (state, isValid) {
+              state.isValidStaffAdministrationUser = isValid;
             },
           }
         },

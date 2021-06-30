@@ -12,7 +12,8 @@ export default {
     isValidGMPUser: localStorage.getItem('isValidGMPUser') !== null,
     isValidUMPUser: localStorage.getItem('isValidUMPUser') !== null,
     isValidStudentSearchUser: localStorage.getItem('isValidStudentSearchUser') !== null,
-    isValidPenRequestBatchUser: localStorage.getItem('isValidPenRequestBatchUser') !== null
+    isValidPenRequestBatchUser: localStorage.getItem('isValidPenRequestBatchUser') !== null,
+    isValidStaffAdministrationUser: localStorage.getItem('isValidStaffAdministrationUser') !== null
   },
   getters: {
     acronyms: state => state.acronyms,
@@ -24,6 +25,7 @@ export default {
     isValidUMPUser: state => state.isValidUMPUser,
     isValidStudentSearchUser: state => state.isValidStudentSearchUser,
     isValidPenRequestBatchUser: state => state.isValidPenRequestBatchUser,
+    isValidStaffAdministrationUser: state => state.isValidStaffAdministrationUser
   },
   mutations: {
     //sets Json web token and determines whether user is authenticated
@@ -70,6 +72,15 @@ export default {
       } else {
         state.isValidStudentSearchUser = false;
         localStorage.removeItem(('isValidStudentSearchUser'));
+      }
+    },
+    setStaffAdministrationUser: (state, isValidStaffAdministrationUser) => {
+      if (isValidStaffAdministrationUser) {
+        state.isValidStaffAdministrationUser = true;
+        localStorage.setItem('isValidStaffAdministrationUser', 'true');
+      } else {
+        state.isValidStaffAdministrationUser = false;
+        localStorage.removeItem(('isValidStaffAdministrationUser'));
       }
     },
     penRequestBatchUser: (state, isValidPenRequestBatchUser) => {
@@ -124,10 +135,10 @@ export default {
           context.commit('setUMPUser', response.isValidUMPUser);
           context.commit('setStudentSearchUser', response.isValidStudentSearchUser);
           context.commit('penRequestBatchUser', response.isValidPenRequestBatchUser);
+          context.commit('setStaffAdministrationUser', response.isValidStaffAdministrationUser);
           ApiService.setAuthHeader(response.jwtFrontend);
         } else {
           const response = await AuthService.getAuthToken();
-
           if (response.jwtFrontend) {
             context.commit('setJwtToken', response.jwtFrontend);
           }
@@ -136,6 +147,7 @@ export default {
           context.commit('setUMPUser', response.isValidUMPUser);
           context.commit('setStudentSearchUser', response.isValidStudentSearchUser);
           context.commit('penRequestBatchUser', response.isValidPenRequestBatchUser);
+          context.commit('setStaffAdministrationUser', response.isValidStaffAdministrationUser);
           ApiService.setAuthHeader(response.jwtFrontend);
         }
       } catch (e) {
