@@ -210,6 +210,17 @@ const router = new VueRouter({
       }
     },
     {
+      path: '/administration',
+      name: 'administration',
+      component: ArchivedRequestBatchDisplay,
+      props: (route) => ({ mincode: route.query.mincode, loadDate: route.query.loadDate }),
+      meta: {
+        pageTitle: PAGE_TITLES.ADMINISTRATION,
+        requiresAuth: true,
+        role: 'isValidStaffAdministrationUser'
+      },
+    },
+    {
       path: '/archivedPrbStudentList',
       name: 'archivedPrbStudentList',
       component: PrbStudentListDisplay,

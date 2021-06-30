@@ -7,7 +7,7 @@
           app
           color="#E9EBEF"
           :style="`margin-top: ${$vuetify.application.top + $vuetify.application.bar}px`"
-          width="30%"
+          width="20%"
           temporary>
     <v-list>
       <v-list-item
@@ -15,17 +15,12 @@
             :key="item.title+`1`"
             class="menuRow pl-10"
             :id="stripWhitespace(item.title + `MenuBtn`)">
-          <router-link v-if="!['todo'].includes(item.link)" :to="{ name: item.link }" class="router">
+          <router-link :to="{ name: item.link }" class="router">
             <v-list-item-content>
               <v-list-item-title v-if="item.link === $route.name" class="menuItem"><strong>{{item.title}}</strong></v-list-item-title>
               <v-list-item-title v-else class="menuItem">{{item.title}}</v-list-item-title>
             </v-list-item-content>
           </router-link>
-        <v-list-item-content v-else><!--REMOVE ONCE ALL LINKS ARE FINALIZED-->
-          <v-list-item-title v-if="item.link === $route.name" class="menuItem"><strong>{{item.title}}</strong></v-list-item-title>
-          <v-list-item-title v-else class="menuItem">{{item.title}}</v-list-item-title>
-        </v-list-item-content>
-
       </v-list-item>
       <v-list-group
               v-for="(item) in items.filter(obj => obj.items)"
@@ -51,16 +46,12 @@
                 class="subMenuRow pl-9"
                 :id="stripWhitespace(subItem.title) + `MenuBtn`"
         >
-          <router-link v-if="!['todo'].includes(subItem.link)" :to="{ name: subItem.link }" class="router">
+          <router-link :to="{ name: subItem.link }" class="router">
             <v-list-item-content>
               <v-list-item-title v-if="subItem.link === $route.name" class="menuItem"><strong>{{ subItem.title }}</strong></v-list-item-title>
               <v-list-item-title v-else v-text="subItem.title" class="menuItem"></v-list-item-title>
             </v-list-item-content>
           </router-link>
-          <v-list-item-content v-else> <!--REMOVE ONCE ALL LINKS ARE FINALIZED-->
-            <v-list-item-title v-if="subItem.link === $route.name" class="menuItem"><strong>{{ subItem.title }}</strong></v-list-item-title>
-            <v-list-item-title v-else v-text="subItem.title" class="menuItem"></v-list-item-title>
-          </v-list-item-content>
         </v-list-item>
       </v-list-group>
     </v-list>
@@ -112,6 +103,11 @@ export default {
         authorized: this.isValidStudentSearchUser
       },
       {
+        title: PAGE_TITLES.COMPARE_PENS,
+        link: 'compare',
+        authorized: this.isValidStudentSearchUser
+      },
+      {
         title: PAGE_TITLES.PEN_REQ_FILES,
         link: 'penRequestBatch',
         authorized: this.isValidPenRequestBatchUser
@@ -122,36 +118,14 @@ export default {
         authorized: this.isValidPenRequestBatchUser
       },
       {
-        title: 'Compare PENs',
-        link: 'compare',
-        authorized: this.isValidStudentSearchUser
-      },/* Leaving these here commented out, so that we have a working example for when the time comes to put nested menu items back
-      {
-        title: 'Infrequent Processes',
-        active: false,
-        items: [
-          {
-            title: 'Nominal Role',
-            link: 'todo',
-            authorized: true //TODO fix when ready
-          }
-        ],
-      },
-      {
-        title: 'System Admin',
-        active: false,
-        items: [
-          {
-            title: 'TODO',
-            link: 'todo',
-            authorized: true //TODO fix when ready
-          },
-        ],
-      },*/
+        title: PAGE_TITLES.ADMINISTRATION,
+        link: 'administration',
+        authorized: this.isValidStaffAdministrationUser
+      }
     ];
   },
   computed: {
-    ...mapState('auth', ['isAuthorizedUser', 'isValidStudentSearchUser', 'isValidPenRequestBatchUser'])
+    ...mapState('auth', ['isAuthorizedUser', 'isValidStudentSearchUser', 'isValidPenRequestBatchUser', 'isValidStaffAdministrationUser'])
   },
   methods: {
     setActive(item) {

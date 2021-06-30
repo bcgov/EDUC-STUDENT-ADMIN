@@ -14,7 +14,7 @@ const {
   validationResult
 } = require('express-validator');
 
-const isValidStaffUserWithRoles = auth.isValidUserWithRoles('GMP & UMP & PenRequestBatch & StudentSearch', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.StudentSearch]);
+const isValidStaffUserWithRoles = auth.isValidUserWithRoles('GMP & UMP & PenRequestBatch & StudentSearch & StaffAdministration', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.StudentSearch, ...roles.Admin.StaffAdministration]);
 
 const router = express.Router();
 
@@ -120,7 +120,6 @@ router.post('/refresh', [
 
 //provides a jwt to authenticated users
 router.get('/token', auth.refreshJWT, (req, res) => {
-
   const isAuthorizedUser = isValidStaffUserWithRoles(req);
   const isValidUsers = auth.isValidUsers(req);
   if (req['user'] && req['user'].jwtFrontend && req['user'].refreshToken) {

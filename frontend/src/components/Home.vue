@@ -230,7 +230,7 @@ export default {
     });
   },
   computed: {
-    ...mapState('auth', ['isValidGMPUser','isValidUMPUser', 'isValidStudentSearchUser', 'isValidPenRequestBatchUser']),
+    ...mapState('auth', ['isValidGMPUser','isValidUMPUser', 'isValidStudentSearchUser', 'isValidPenRequestBatchUser', 'isValidStaffAdministrationUser']),
     ...mapState('app', ['mincodeSchoolNames', 'districtCodes']),
     requestTypes() {
       return REQUEST_TYPES;
