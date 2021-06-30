@@ -55,6 +55,7 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/client-scope
   -H "Authorization: Bearer $TKN" \
   -d "{\"name\" : \"STUDENT_ADMIN_ADMINISTRATOR\",\"description\" : \"Allows staff administration\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
+
 echo
 echo Creating STUDENT_PROFILE_ADMIN role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/client-scopes" \
@@ -80,15 +81,15 @@ echo
 echo Retrieving client ID for student-admin-soam
 studentAdminClientID=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN" |
-  jq '.[] | select(.clientId=="student-admin-soam")' | jq -r '.id')
+  -H "Authorization: Bearer $TKN" \
+  | jq '.[] | select(.clientId=="student-admin-soam")' | jq -r '.id')
 
 echo
 echo Retrieving client secret for student-admin-soam
 studentAdminClientSecret=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$studentAdminClientID/client-secret" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN" |
-  jq -r '.value')
+  -H "Authorization: Bearer $TKN" \
+  | jq -r '.value')
 
 SERVER_FRONTEND="student-admin-$PEN_NAMESPACE-$envValue.apps.silver.devops.gov.bc.ca"
 if [ "$envValue" = "tools" ]; then
@@ -123,8 +124,8 @@ fi
 echo Fetching public key from SOAM
 fullKey=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/keys" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN" |
-  jq -r '.keys | .[] | select(has("publicKey")) | .publicKey')
+  -H "Authorization: Bearer $TKN" \
+  | jq -r '.keys | .[] | select(has("publicKey")) | .publicKey')
 
 soamFullPublicKey="-----BEGIN PUBLIC KEY----- $fullKey -----END PUBLIC KEY-----"
 newline=$'\n'
@@ -137,15 +138,16 @@ echo
 echo Retrieving client ID for student-admin-soam
 studentAdminClientID=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN" |
-  jq '.[] | select(.clientId=="student-admin-soam")' | jq -r '.id')
+  -H "Authorization: Bearer $TKN" \
+  | jq '.[] | select(.clientId=="student-admin-soam")' | jq -r '.id')
 
 echo
 echo Retrieving client secret for student-admin-soam
 studentAdminClientSecret=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$studentAdminClientID/client-secret" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TKN" |
-  jq -r '.value')
+  -H "Authorization: Bearer $TKN" \
+  | jq -r '.value')
+
 
 echo Generating private and public keys
 ssh-keygen -b 4096 -t rsa -f tempStudentAdminBackendkey -q -N ""
