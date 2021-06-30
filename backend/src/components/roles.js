@@ -12,7 +12,7 @@ const roles = {
     StudentSearch: [config.get('server:studentSearch:roleAdmin')],
     //Help functions created in auth module: isValidPenRequestBatchUserToken, isValidPenRequestBatchUser
     PenRequestBatch: [config.get('server:penRequestBatch:roleAdmin')],
-    //Help functions created in auth module: isValidStaffAdministrationAdmin
+    //Help functions created in auth module: isValidStaffAdministrationUser
     StaffAdministration: [config.get('server:administration:roleAdmin')]
   },
   Admin: {
