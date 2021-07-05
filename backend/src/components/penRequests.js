@@ -5,7 +5,7 @@ const config = require('../config/index');
 const utils = require('./utils');
 const redisUtil = require('../util/redis/redis-utils');
 const {ApiError} = require('./error');
-const {LocalDateTime} = require('@js-joda/core');
+const {LocalDateTime, ChronoUnit} = require('@js-joda/core');
 const log = require('./logger');
 const commonRequest = require('./requests');
 
@@ -27,9 +27,12 @@ async function findPenRequestsByPen(req, res) {
         message: 'No access token'
       });
     }
-    const url = `${config.get('server:penRequest:rootURL')}/?pen=${req.query.pen}`;
+    var yearAgo = LocalDateTime.now().minus(1, ChronoUnit.YEARS);
+    var now = LocalDateTime.now();
+    const url = `${config.get('server:penRequest:rootURL')}/paginated?pageNumber=0&pageSize=200&searchCriteriaList=[{"key":"initialSubmitDate","operation":"btn","value":"${yearAgo},${now}","valueType":"DATE_TIME"},{"key":"pen","operation":"eq","value":"${req.query.pen}","valueType":"STRING"}]}]`
+
     const response = await getData(token, url);
-    return res.status(200).json(response.length);
+    return res.status(200).json(response.numberOfElements);
   } catch (e) {
     logApiError(e, 'findPenRequestsByPen', 'Failed to get pen requests for the given pen.');
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
