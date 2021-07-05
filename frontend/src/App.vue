@@ -23,7 +23,7 @@
         mdi-format-vertical-align-top
       </v-icon>
     </v-btn>
-    <v-main fluid >
+    <v-main fluid class="align-start">
       <v-app-bar v-if="bannerColor !== ''"
           style="color:white;"
           :color="bannerColor"
