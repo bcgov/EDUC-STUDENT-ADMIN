@@ -31,7 +31,6 @@ async function findPenRequestsByPen(req, res) {
     var now = LocalDateTime.now();
     const url = `${config.get('server:penRequest:rootURL')}/paginated?pageNumber=0&pageSize=200&searchCriteriaList=[{"key":"initialSubmitDate","operation":"btn","value":"${yearAgo},${now}","valueType":"DATE_TIME"},{"key":"pen","operation":"eq","value":"${req.query.pen}","valueType":"STRING"}]}]`
 
-    console.log('Output: ' + url);
     const response = await getData(token, url);
     return res.status(200).json(response.numberOfElements);
   } catch (e) {
