@@ -10,8 +10,8 @@
           width="20%"
           temporary>
     <v-list>
-      <v-list-item
-            v-for="item in items.filter(obj => !obj.items && obj.authorized)"
+      <div v-for="(item) in items" v-bind:key="item">
+      <v-list-item v-if="!item.items"
             :key="item.title+`1`"
             class="menuRow pl-10"
             :id="stripWhitespace(item.title + `MenuBtn`)">
@@ -23,7 +23,7 @@
           </router-link>
       </v-list-item>
       <v-list-group
-              v-for="(item) in items.filter(obj => obj.items)"
+              v-else
               :key="item.title"
               no-action
               active-class="active"
@@ -41,7 +41,7 @@
         </template>
 
         <v-list-item
-                v-for="subItem in item.items.filter(obj => obj.authorized)"
+                v-for="subItem in item.items"
                 :key="subItem.title"
                 class="subMenuRow pl-9"
                 :id="stripWhitespace(subItem.title) + `MenuBtn`"
@@ -54,6 +54,7 @@
           </router-link>
         </v-list-item>
       </v-list-group>
+      </div>
     </v-list>
   </v-navigation-drawer>
   <v-app-bar app absolute elevation="0" color="#38598A" :dark="true" id="navBar" class="pl-16 pr-8">
@@ -70,7 +71,7 @@
 </template>
 
 <script>
-import {PAGE_TITLES} from '../../utils/constants';
+import {PAGE_TITLES, REQUEST_TYPES} from '../../utils/constants';
 import { mapState } from 'vuex';
 import SetNavigation from './SetNavigation';
 export default {
@@ -98,6 +99,22 @@ export default {
         authorized: this.isAuthorizedUser
       },
       {
+        title: PAGE_TITLES.STUDENT_REQUESTS,
+        authorized: this.isAuthorizedUser,
+        items: [
+          {
+            title: PAGE_TITLES.GMP,
+            link: REQUEST_TYPES.penRequest.label,
+            authorized: this.isAuthorizedUser
+          },
+          {
+            title: PAGE_TITLES.UMP,
+            link: REQUEST_TYPES.studentRequest.label,
+            authorized: this.isAuthorizedUser
+          }
+        ],
+      },
+      {
         title: PAGE_TITLES.STUDENT_SEARCH,
         link: 'basicSearch',
         authorized: this.isValidStudentSearchUser
@@ -118,9 +135,25 @@ export default {
         authorized: this.isValidPenRequestBatchUser
       },
       {
+        title: PAGE_TITLES.PEN_COORDINATORS,
+        link: 'home',
+        authorized: true
+      },
+      {
         title: PAGE_TITLES.ADMINISTRATION,
-        link: 'administration',
-        authorized: this.isValidStaffAdministrationUser
+        authorized: this.isValidStaffAdministrationUser,
+        items: [
+          {
+            title: 'Macro Management',
+            link: 'home',
+            authorized: this.isValidStaffAdministrationUser
+          },
+          {
+            title: 'Role Management',
+            link: 'home',
+            authorized: this.isValidStaffAdministrationUser
+          }
+        ],
       }
     ];
   },
