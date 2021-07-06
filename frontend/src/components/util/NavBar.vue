@@ -17,7 +17,8 @@
             :id="stripWhitespace(item.title + `MenuBtn`)">
           <router-link :to="{ name: item.link }" class="router">
             <v-list-item-content>
-              <v-list-item-title class="menuItem">{{item.title}}</v-list-item-title>
+              <v-list-item-title v-if="item.link === $route.name" class="menuItem"><strong>{{item.title}}</strong></v-list-item-title>
+              <v-list-item-title v-else class="menuItem">{{item.title}}</v-list-item-title>
             </v-list-item-content>
           </router-link>
       </v-list-item>
@@ -47,7 +48,8 @@
         >
           <router-link :to="{ name: subItem.link }" class="router">
             <v-list-item-content>
-              <v-list-item-title v-text="subItem.title" class="menuItem" style="margin-left: 1em"></v-list-item-title>
+              <v-list-item-title v-if="subItem.link === $route.name" class="menuItem"><strong>{{ subItem.title }}</strong></v-list-item-title>
+              <v-list-item-title v-else v-text="subItem.title" class="menuItem"></v-list-item-title>
             </v-list-item-content>
           </router-link>
         </v-list-item>
