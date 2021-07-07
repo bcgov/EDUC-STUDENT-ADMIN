@@ -287,13 +287,11 @@ export default {
   watch: {
     requestType: {
       handler() {
-        console.log('HELLOOm');
         this.runInit();
       }
     },
     pageNumber: {
       handler() {
-        console.log('HELLO2');
         this.$store.state[this.requestType].pageNumber = this.pageNumber;
         if (!this.initialLoad) {
           //stop watch from sending multiple getPenRequests calls on initial page load
@@ -303,7 +301,6 @@ export default {
     },
     pageSize: {
       handler() {
-        console.log('HELLO3');
         this.$store.state[this.requestType].pageSize = this.pageSize;
         if (!this.initialLoad) {
           //stop watch from sending multiple getPenRequests calls on initial page load
@@ -314,7 +311,6 @@ export default {
     headerSortParams: {
       deep: true,
       handler() {
-        console.log('HELLO4');
         if (!this.initialLoad) {
           //stop watch from sending multiple getRequests calls on initial page load
           this.getRequests();
@@ -323,7 +319,6 @@ export default {
     },
     selectedStatuses: {
       handler() {
-        console.log('HELLO5');
         this.$store.state[
           this.requestType
         ].selectedStatuses = this.selectedStatuses;
@@ -336,7 +331,6 @@ export default {
     headerSearchParams: {
       deep: true,
       handler() {
-        console.log('HELLO6');
         if (!this.initialLoad) {
           //stop watch from sending multiple getRequests calls on initial page load
           this.getRequests();
