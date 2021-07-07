@@ -24,8 +24,8 @@
       >
         <v-list-item-title>
           <v-row class="macroRow">
-            <v-col cols="1" class="py-2 pr-0"><strong>{{ item.macroCode }}</strong></v-col>
-            <v-col cols="11" class="text-wrap py-2 pl-0">{{ item.macroText }}</v-col>
+            <v-col :cols="small ? '2' : '1'" class="py-2 pr-0"><strong>{{ item.macroCode }}</strong></v-col>
+            <v-col :cols="small ? '10' : '11'" class="text-wrap py-2 pl-0">{{ item.macroText }}</v-col>
           </v-row>
         </v-list-item-title>
       </v-list-item>
@@ -69,6 +69,10 @@ export default {
     menuMaxWidth: {
       type: String,
       default: '50%'
+    },
+    small: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {

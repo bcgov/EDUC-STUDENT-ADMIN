@@ -757,8 +757,8 @@ export default {
     },
     getDateFormatter(pattern = 'uuuu/MM/dd') {
       return (new JSJoda.DateTimeFormatterBuilder)
-          .appendPattern(pattern)
-          .toFormatter(JSJoda.ResolverStyle.STRICT);
+        .appendPattern(pattern)
+        .toFormatter(JSJoda.ResolverStyle.STRICT);
     },
     validateDOB() {
       if (this.studentCopy) {
@@ -839,20 +839,20 @@ export default {
       this.isLoading = true;
       this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false));
       ApiService.apiAxios
-          .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
-          .then(response => {
-            this.origStudent.truePen = response.data.merges?.find(merge => merge.studentMergeDirectionCode === 'TO')?.mergeStudent.pen;
-            this.handleStudentDetails(response.data);
-            this.clearStaleData();
-            this.$emit('handleUpdatedStudent', response.data);
-          })
-          .catch(error => {
-            console.log(error);
-            this.setFailureAlert('An error occurred while loading the student details. Please try again later.');
-          })
-          .finally(() => {
-            this.isLoading = false;
-          });
+        .get(Routes['student'].ROOT_ENDPOINT + '/detail/' + this.studentID)
+        .then(response => {
+          this.origStudent.truePen = response.data.merges?.find(merge => merge.studentMergeDirectionCode === 'TO')?.mergeStudent.pen;
+          this.handleStudentDetails(response.data);
+          this.clearStaleData();
+          this.$emit('handleUpdatedStudent', response.data);
+        })
+        .catch(error => {
+          console.log(error);
+          this.setFailureAlert('An error occurred while loading the student details. Please try again later.');
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
     },
     hasEdits(key) {
       let studentCopy = this.studentCopy[key];
@@ -951,16 +951,16 @@ export default {
           };
           this.isStudentUpdatedInDifferentTab = false; //make sure that notification for current tab is ignored.
           ApiService.apiAxios
-              .put(Routes['student'].ROOT_ENDPOINT + '/' + this.studentID, this.prepPut(this.studentCopy), {params})
-              .then(response => {
-                this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false)); // enable all the fields here, required fields to be disabled will be done in this.setStudent method.
-                this.setStudent(response.data);
-                this.$emit('update:student', response.data);
-                this.setSuccessAlert('Student data updated successfully.');
-              })
-              .catch(error => {
-                this.processSaveStudentError(error);
-              });
+            .put(Routes['student'].ROOT_ENDPOINT + '/' + this.studentID, this.prepPut(this.studentCopy), {params})
+            .then(response => {
+              this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false)); // enable all the fields here, required fields to be disabled will be done in this.setStudent method.
+              this.setStudent(response.data);
+              this.$emit('update:student', response.data);
+              this.setSuccessAlert('Student data updated successfully.');
+            })
+            .catch(error => {
+              this.processSaveStudentError(error);
+            });
         }
 
       }
@@ -1042,20 +1042,20 @@ export default {
       this.gradDateAndMincode = [];
       this.loadingTraxData = true;
       ApiService.apiAxios
-          .get(Routes.PEN_TRAX_URL, {params: {pen}})
-          .then(response => {
-            this.traxStatus = response.data.traxStatus;
-            if (response.data.student?.gradDate > 0) {
-              this.gradDateAndMincode = [this.formatGradDate(response.data.student?.gradDate), formatMincode(response.data.student?.mincodeGrad || '')];
-            }
-          })
-          .catch(error => {
-            console.log(error);
-            this.setFailureAlert('An error occurred while loading the TRAX status. Please try again later.');
-          })
-          .finally(() => {
-            this.loadingTraxData = false;
-          });
+        .get(Routes.PEN_TRAX_URL, {params: {pen}})
+        .then(response => {
+          this.traxStatus = response.data.traxStatus;
+          if (response.data.student?.gradDate > 0) {
+            this.gradDateAndMincode = [this.formatGradDate(response.data.student?.gradDate), formatMincode(response.data.student?.mincodeGrad || '')];
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          this.setFailureAlert('An error occurred while loading the TRAX status. Please try again later.');
+        })
+        .finally(() => {
+          this.loadingTraxData = false;
+        });
     },
     disableDemerge() {
       if (this.isProcessing || this.demergeSagaComplete || this.hasSagaInProgress(this.origStudent)) {
@@ -1074,7 +1074,7 @@ export default {
       this.mergedFromStudent = this.origStudent;
 
       let result = await this.$refs.demergeConfirmationDialog.open(null, null,
-          {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, rejectText: 'No'});
+        {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, rejectText: 'No'});
       if (!result) {
         return;
       }
@@ -1102,7 +1102,7 @@ export default {
       let isUpdateStudentAllowed = true;
       if (this.origStudent?.demogCode === STUDENT_DEMOG_CODES.CONFIRMED) {
         const confirmation = await this.$refs.confirmedStudentUpdateConfirmationDialog.open(null, null,
-            {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, resolveText: 'Yes'});
+          {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, resolveText: 'Yes'});
         if (!confirmation) {
           isUpdateStudentAllowed = false;
         }

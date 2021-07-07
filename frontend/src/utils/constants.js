@@ -79,7 +79,8 @@ let object = {
   SCHOOL_DATA_URL: schoolRequestRoot,
   penServices: {
     ROOT_ENDPOINT: penServicesRoot,
-    VALIDATE_DEMOGRAPHICS: penServicesRoot + '/demog-validation'
+    VALIDATE_DEMOGRAPHICS: penServicesRoot + '/demog-validation',
+    MACRO_URL: penServicesRoot + '/macros',
   },
   STUDENT_DATA_URL: studentRoot,
   SEARCH_BY_PEN: demographicRoot,
