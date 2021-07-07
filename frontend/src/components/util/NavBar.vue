@@ -7,13 +7,13 @@
           app
           color="#E9EBEF"
           :style="`margin-top: ${$vuetify.application.top + $vuetify.application.bar}px`"
-          width="20%"
+          width="15%"
           temporary>
     <v-list>
       <div v-for="(item) in items" v-bind:key="item">
       <v-list-item v-if="!item.items"
             :key="item.title+`1`"
-            class="menuRow pl-10"
+            class="menuRow"
             :id="stripWhitespace(item.title + `MenuBtn`)">
           <router-link :to="{ name: item.link }" class="router">
             <v-list-item-content>
@@ -33,7 +33,7 @@
               @click="setActive(item)"
       >
         <template v-slot:activator>
-          <v-list-item-content class="pl-6">
+          <v-list-item-content>
             <v-list-item-title v-text="item.title" class="menuItem"></v-list-item-title>
           </v-list-item-content>
           <v-icon color="#003366" v-if="!item.active">$plus</v-icon>
