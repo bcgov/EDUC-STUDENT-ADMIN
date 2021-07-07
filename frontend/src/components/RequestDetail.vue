@@ -181,6 +181,8 @@ import {AccessEnabledForUser} from '../common/role-based-access';
 import router from '../router';
 import PrimaryButton from './util/PrimaryButton';
 import alertMixin from '../mixins/alertMixin';
+import Mousetrap from 'mousetrap';
+import 'mousetrap/plugins/global-bind/mousetrap-global-bind';
 
 export default {
   name: 'requestDetail',
@@ -284,7 +286,11 @@ export default {
     },
 
   },
+  beforeDestroy() {
+    Mousetrap.reset();
+  },
   mounted() {
+    Mousetrap.bindGlobal('ctrl+b', () => this.backToList() );
     this.enableActions = false;
     this.loadingPen = true;
     this.loadingComments = true;
