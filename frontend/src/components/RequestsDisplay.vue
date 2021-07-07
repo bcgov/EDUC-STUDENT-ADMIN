@@ -231,35 +231,7 @@ export default {
     };
   },
   mounted() {
-    this.initialLoad = true; //stop watch from sending multiple getRequests calls on initial page load
-    this.headerSearchParams = this.$store.state[
-      this.requestType
-    ].headerSearchParams;
-    this.headerSortParams = this.$store.state[
-      this.requestType
-    ].headerSortParams;
-    this.pageSize = this.$store.state[this.requestType].pageSize;
-    this.pageNumber = this.$store.state[this.requestType].pageNumber;
-    ApiService.apiAxios
-      .get(Routes[this.requestType].STATUSES_URL)
-      .then(response => {
-        this.codeTable = response.data;
-        this.statusCodes = this.getStatusCodes();
-        this.selectedStatuses = this.$store.state[
-          this.requestType
-        ].selectedStatuses;
-        this.comboboxKey += 1; //force component to re-render
-      })
-      .catch(error => {
-        console.log(error);
-        this.errored = true;
-      })
-      .finally(() => {
-        this.initialLoad = false;
-        this.getRequests();
-        this.getDocumentTypes();
-        this.loadingSelect = false;
-      });
+    this.runInit();
   },
   computed: {
     ...mapGetters('notifications', ['notification']),
@@ -313,6 +285,11 @@ export default {
     },
   },
   watch: {
+    requestType: {
+      handler() {
+        this.runInit();
+      }
+    },
     pageNumber: {
       handler() {
         this.$store.state[this.requestType].pageNumber = this.pageNumber;
@@ -404,6 +381,38 @@ export default {
     remove(item) {
       this.selectedStatuses.splice(this.selectedStatuses.indexOf(item), 1);
       this.selectedStatuses = [...this.selectedStatuses];
+    },
+    runInit() {
+      this.requests = [];
+      this.initialLoad = true; //stop watch from sending multiple getRequests calls on initial page load
+      this.headerSearchParams = this.$store.state[
+        this.requestType
+      ].headerSearchParams;
+      this.headerSortParams = this.$store.state[
+        this.requestType
+      ].headerSortParams;
+      this.pageSize = this.$store.state[this.requestType].pageSize;
+      this.pageNumber = this.$store.state[this.requestType].pageNumber;
+      ApiService.apiAxios
+        .get(Routes[this.requestType].STATUSES_URL)
+        .then(response => {
+          this.codeTable = response.data;
+          this.statusCodes = this.getStatusCodes();
+          this.selectedStatuses = this.$store.state[
+            this.requestType
+          ].selectedStatuses;
+          this.comboboxKey += 1; //force component to re-render
+        })
+        .catch(error => {
+          console.log(error);
+          this.errored = true;
+        })
+        .finally(() => {
+          this.initialLoad = false;
+          this.getRequests();
+          this.getDocumentTypes();
+          this.loadingSelect = false;
+        });
     },
     getStatusCodes() {
       const labels = [];
