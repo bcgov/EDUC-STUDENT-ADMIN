@@ -174,13 +174,15 @@
 <script>
 import Chat from './Chat';
 import ApiService from '../common/apiService';
-import {REQUEST_TYPES, Routes, Statuses} from '../utils/constants';
+import {Routes, Statuses} from '../utils/constants';
 import {mapGetters, mapMutations} from 'vuex';
 import {humanFileSize} from '../utils/file';
 import {AccessEnabledForUser} from '../common/role-based-access';
 import router from '../router';
 import PrimaryButton from './util/PrimaryButton';
 import alertMixin from '../mixins/alertMixin';
+import Mousetrap from 'mousetrap';
+import 'mousetrap/plugins/global-bind/mousetrap-global-bind';
 
 export default {
   name: 'requestDetail',
@@ -284,7 +286,11 @@ export default {
     },
 
   },
+  beforeDestroy() {
+    Mousetrap.reset();
+  },
   mounted() {
+    Mousetrap.bindGlobal('ctrl+b', () => this.backToList() );
     this.enableActions = false;
     this.loadingPen = true;
     this.loadingComments = true;
@@ -370,7 +376,7 @@ export default {
       this.enableActions = true;
     },
     backToList() {
-      router.push({ name: REQUEST_TYPES[this.requestType].label, params: { requestType: this.requestType } });
+      router.go(-1);
     },
     setDocumentError(message) {
       this.documentErrorMessage = message;
