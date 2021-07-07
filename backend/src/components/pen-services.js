@@ -6,6 +6,7 @@ const redisUtil = require('../util/redis/redis-utils');
 const log = require('./logger');
 const {getBackendToken, getData, postData, stripAuditColumns, getUser, errorResponse} = require('./utils');
 const {v4: uuidv4} = require('uuid');
+const {groupBy} = require('lodash');
 
 async function validateStudentDemogData(req, res) {
   try {
@@ -130,11 +131,29 @@ function createPenServicesCompleteSagaRecordInRedis(sagaId, sagaName, operation,
   return redisUtil.createPenServicesSagaRecordInRedis(event);
 }
 
+async function getMacros(req, res) {
+  try {
+    const token = getBackendToken(req);
+
+    const result = await getData(token, `${config.get('server:penServices:rootURL')}/pen-services-macro`);
+    result.forEach(element => {
+      stripAuditColumns(element);
+      delete element['macroId'];
+    });
+    const macros = groupBy(result, e => e.macroTypeCode.toLowerCase() + 'Macros');
+    return res.status(200).json(macros);
+  } catch (e) {
+    logApiError(e, 'getMacros', 'Error occurred while attempting to GET macros.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   validateStudentDemogData,
   getMergeByStudentIDAndMergeDirection,
   mergeStudents,
   demergeStudents,
-  splitPen
+  splitPen,
+  getMacros
 };
 

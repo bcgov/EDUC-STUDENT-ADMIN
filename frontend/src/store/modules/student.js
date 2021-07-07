@@ -1,4 +1,5 @@
 import ApiService from '../../common/apiService';
+import {Routes} from '../../utils/constants';
 
 export default {
   namespaced: true,
@@ -11,6 +12,7 @@ export default {
     historyActivityCodes: null,
     studentsInProcess: new Set(),
     staleStudentRecordsMap: new Map(),// this stores the studentID as key and the message as value
+    mergeMacros: [],
   },
   getters: {
     selectedStudent: state => state.selectedStudent,
@@ -58,6 +60,9 @@ export default {
     removeStaleDataFromMap: (state, studentID) => {
       state.staleStudentRecordsMap.delete(studentID);
     },
+    setMergeMacros: (state, macros) => {
+      state.mergeMacros = macros;
+    }
   },
   actions: {
     async getCodes({ commit, state, dispatch}) {
@@ -89,6 +94,16 @@ export default {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
         ApiService.getHistoryActivityCodes().then(response => commit('setHistoryActivityCodes', response.data));
       }
+    },
+    getMacros({commit}) {
+      ApiService.apiAxios
+        .get(Routes.penServices.MACRO_URL)
+        .then(response => {
+          commit('setMergeMacros', response.data.mergeMacros);
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
   }
 };

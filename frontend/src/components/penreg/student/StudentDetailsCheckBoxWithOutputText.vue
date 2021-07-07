@@ -97,15 +97,13 @@ export default {
   },
   methods: {
     handleOnChange(checked) {
-      if (checked) {
-        // string replacement because MergeStudentCommon would have warning for having same id
-        // same id was used because of merge to and merge from needed the id to carry over the value when checkbox checked
-        // added extra prefix to bypass the warning, but still need to replace it onChange so the value would carry over
-        // even though this component is not used from anywhere yet, in case for any component reuse, please consider the code below
-        const key = this.name.includes(STUDENT_MERGE_FIELD_PREFIX) ? this.name.replace(STUDENT_MERGE_FIELD_PREFIX, '') : this.name;
+      // string replacement because MergeStudentCommon would have warning for having same id
+      // same id was used because of merge to and merge from needed the id to carry over the value when checkbox checked
+      // added extra prefix to bypass the warning, but still need to replace it onChange so the value would carry over
+      // even though this component is not used from anywhere yet, in case for any component reuse, please consider the code below
+      const key = this.name.includes(STUDENT_MERGE_FIELD_PREFIX) ? this.name.replace(STUDENT_MERGE_FIELD_PREFIX, '') : this.name;
 
-        this.$emit('update', { key, value: this.fieldModel});
-      }
+      this.$emit('update', { key, value: checked});
     }
   }
 };

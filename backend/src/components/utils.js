@@ -110,6 +110,7 @@ async function logApiError(e, functionName, message) {
     log.error(fsStringify(e.response.data));
   } else if (message) {
     log.error(message);
+    log.error(functionName, ' Error', e.stack);
   } else {
     log.error(functionName, ' Error', e.stack);
   }
