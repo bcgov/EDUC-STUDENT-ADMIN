@@ -174,7 +174,7 @@
 <script>
 import Chat from './Chat';
 import ApiService from '../common/apiService';
-import {Routes, Statuses} from '../utils/constants';
+import {REQUEST_TYPES, Routes, Statuses} from '../utils/constants';
 import {mapGetters, mapMutations} from 'vuex';
 import {humanFileSize} from '../utils/file';
 import {AccessEnabledForUser} from '../common/role-based-access';
@@ -376,7 +376,7 @@ export default {
       this.enableActions = true;
     },
     backToList() {
-      router.go(-1);
+      router.push({ name: REQUEST_TYPES[this.requestType].label, params: { requestType: this.requestType } });
     },
     setDocumentError(message) {
       this.documentErrorMessage = message;
