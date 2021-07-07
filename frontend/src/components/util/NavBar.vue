@@ -10,7 +10,7 @@
           width="15%"
           temporary>
     <v-list>
-      <div v-for="(item) in items" v-bind:key="item">
+      <div v-for="(item) in items" v-bind:key="item.title">
       <v-list-item v-if="!item.items"
             :key="item.title+`1`"
             class="menuRow"
