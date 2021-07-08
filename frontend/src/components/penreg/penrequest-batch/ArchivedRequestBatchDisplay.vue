@@ -15,9 +15,23 @@
                 <v-row no-gutters class="pa-0">
                   <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
                     <v-text-field
+                        id='submissionNumber'
+                        v-model="batchFileSearchParams.submissionNumber"
+                        tabindex="1"
+                        color="#003366"
+                        label="Submission #"
+                        maxlength="8"
+                        @keyup.enter="enterPushed()"
+                        v-on:input="searchHasValues"
+                        dense
+                        autofocus
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
+                    <v-text-field
                         id='minCode'
                         v-model="batchFileSearchParams.mincode"
-                        tabindex="1"
+                        tabindex="2"
                         color="#003366"
                         label="Mincode"
                         maxlength="8"
@@ -32,7 +46,7 @@
                     <v-text-field
                         id='schoolName'
                         v-model="batchFileSearchParams.schoolName"
-                        tabindex="2"
+                        tabindex="3"
                         color="#003366"
                         label="School Name"
                         @keyup.enter="enterPushed()"
@@ -50,7 +64,7 @@
                         :label="'Date From'"
                         :outlined="false"
                         :rules="[validateStartDate,validateEndDate]"
-                        :tabindex="'3'"
+                        :tabindex="'4'"
                         maxlength="8"
                         @input="searchHasValues"
                         @keyup.enter.native="enterPushed()"
@@ -66,19 +80,19 @@
                         :label="'Date To'"
                         :outlined="false"
                         :rules="[validateEndDate]"
-                        :tabindex="'4'"
+                        :tabindex="'5'"
                         maxlength="8"
                         @input="searchHasValues"
                         @keyup.enter.native="enterPushed()"
                     ></FormattedTextField>
                   </v-col>
                 </v-row>
-                <v-row no-gutters class="pa-0" v-if="refinedSearch">
+                <v-row no-gutters class="pa-0">
                   <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
                     <v-text-field
                         id='legalLastName'
                         v-model="batchFileSearchParams.prbStudent.legalLastName"
-                        tabindex="5"
+                        tabindex="6"
                         color="#003366"
                         label="Legal Surname"
                         maxlength="255"
@@ -91,7 +105,7 @@
                     <v-text-field
                         id='legalFirstName'
                         v-model="batchFileSearchParams.prbStudent.legalFirstName"
-                        tabindex="6"
+                        tabindex="7"
                         color="#003366"
                         label="Legal Given"
                         maxlength="255"
@@ -104,7 +118,7 @@
                     <v-text-field
                         id='legalMiddleNames'
                         v-model="batchFileSearchParams.prbStudent.legalMiddleNames"
-                        tabindex="7"
+                        tabindex="8"
                         color="#003366"
                         label="Legal Middle"
                         maxlength="255"
@@ -117,7 +131,7 @@
                     <v-text-field
                         id='genderCode'
                         v-model="batchFileSearchParams.prbStudent.genderCode"
-                        tabindex="8"
+                        tabindex="9"
                         color="#003366"
                         label="Gender"
                         maxlength="1"
@@ -137,7 +151,7 @@
                       :label="'Birth Date'"
                       :outlined="false"
                       :rules="[validateDOB]"
-                      :tabindex="'9'"
+                      :tabindex="'10'"
                       maxlength="8"
                       @input="searchHasValues"
                       @keyup.enter.native="enterPushed()"
@@ -147,7 +161,7 @@
                     <v-text-field
                         id='assignedPEN'
                         v-model="batchFileSearchParams.prbStudent.assignedPEN"
-                        tabindex="10"
+                        tabindex="11"
                         color="#003366"
                         label="PEN"
                         maxlength="9"
@@ -160,8 +174,7 @@
                 </v-row>
               </v-col>
 
-              <PrimaryButton id="refine-action" class="mr-2 mb-3" secondary text="Clear" v-if="refinedSearch" @click.native="clearSearchParams"></PrimaryButton>
-              <PrimaryButton id="refine-action" class="mr-2 mb-3" secondary text="Refine" v-else @click.native="setRefinedSearch(true)"></PrimaryButton>
+              <PrimaryButton id="refine-action" class="mr-2 mb-3" secondary text="Clear" @click.native="clearSearchParams"></PrimaryButton>
               <PrimaryButton id="search-action" :disabled="!isValidSearchForm || !searchEnabled"
                              :loading="searchLoading && searchEnabled" class="mr-0 mb-3" text="Search"
                              @click.native="searchBatchFiles"></PrimaryButton>
@@ -219,7 +232,7 @@ import pluralize from 'pluralize';
 import ApiService from '@/common/apiService';
 import {formatDob} from '@/utils/format';
 import FormattedTextField from '@/components/util/FormattedTextField';
-import {PEN_REQ_BATCH_STUDENT_REQUEST_CODES} from '../../../utils/constants';
+import {PEN_REQ_BATCH_STUDENT_REQUEST_CODES} from '@/utils/constants';
 
 export default {
   name: 'ArchivedRequestBatchDisplay',
@@ -415,9 +428,3 @@ export default {
 };
 </script>
 
-<style scoped>
-  .v-btn {
-    text-transform: none !important;
-  }
-
-</style>
