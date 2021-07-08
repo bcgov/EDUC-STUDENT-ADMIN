@@ -41,6 +41,9 @@ export default {
     },
     clearPenRequestBatchState: (state) => {
       Object.assign(state, {...getDefaultState()});
+    },
+    setCurrentBatchFileSearchParams: (state, batchFileSearchParams) => {
+      state.currentBatchFileSearchParams = batchFileSearchParams;
     }
   },
 };
