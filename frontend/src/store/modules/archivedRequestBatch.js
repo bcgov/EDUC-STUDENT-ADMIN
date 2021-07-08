@@ -44,9 +44,6 @@ export default {
     },
     setCurrentBatchFileSearchParams: (state, batchFileSearchParams) => {
       state.currentBatchFileSearchParams = batchFileSearchParams;
-    },
-    setRefinedSearch: (state, refinedSearch) => {
-      state.refinedSearch = refinedSearch;
-    },
+    }
   },
 };

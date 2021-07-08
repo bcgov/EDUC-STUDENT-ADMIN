@@ -232,7 +232,7 @@ export default {
           operation = SEARCH_FILTER_OPERATION.BETWEEN;
           paramValue = `${startDate},${endDate}`;
         }
-      } else if(paramName === 'mincode') {
+      } else if(paramName === 'mincode' || paramName === 'submissionNumber') {
         operation = SEARCH_FILTER_OPERATION.STARTS_WITH;
       }
       return ({key: namePrefix ? `${namePrefix}.${paramName}` : paramName, operation, value: paramValue, valueType, condition: SEARCH_CONDITION.AND});
