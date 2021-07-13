@@ -44,12 +44,12 @@
               :key="h.topValue"
               :hasDoubleText="!!header.doubleText"
               :validationWarnings="getValidationWarnings(header.topValue)"
-            />        
+            />
             <span :title="header.doubleTooltip" :key="h.id || h.doubleValue" class="double-column-item">{{header.doubleText}}</span>
-            <StudentValidationWarningHint 
-              v-if="header.doubleValue && isFieldValueWarned(header.doubleValue)" 
-              :key="h.doubleValue" 
-              :hasDoubleText="!!header.doubleText" 
+            <StudentValidationWarningHint
+              v-if="header.doubleValue && isFieldValueWarned(header.doubleValue)"
+              :key="h.doubleValue"
+              :hasDoubleText="!!header.doubleText"
               :validationWarnings="getValidationWarnings(header.doubleValue)"
             />
           </template>
@@ -118,7 +118,7 @@ import {
   PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER
 } from '@/utils/constants';
 import SearchDemographicModal from './SearchDemographicModal';
-import {deepCloneObject, getDemogValidationResults} from '../../utils/common';
+import {deepCloneObject, getDemogValidationResults} from '@/utils/common';
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
 import {mapMutations, mapState} from 'vuex';
 import StudentValidationWarningHint from './StudentValidationWarningHint';
@@ -297,11 +297,6 @@ export default {
       this.validationWarningFields = validationIssues.filter(x => x.penRequestBatchValidationIssueSeverityCode === 'WARNING');
 
       if (!(this.student.penRequestBatchStudentStatusCode === 'MATCHEDSYS' || this.student.penRequestBatchStudentStatusCode === 'MATCHEDUSR')) {
-        if (this.validationErrorFields?.length > 0) {
-          this.studentDetails.penRequestBatchStudentStatusCode = PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR;
-        } else {
-          this.studentDetails.penRequestBatchStudentStatusCode = this.originalStatusCode;
-        }
         const hasValidationError = this.validationErrorFields?.length > 0;
         this.$emit('validationRun', {validationIssues, hasValidationError});
         return hasValidationError;

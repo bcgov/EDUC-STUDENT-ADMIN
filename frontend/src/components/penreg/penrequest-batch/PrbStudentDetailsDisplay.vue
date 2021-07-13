@@ -142,7 +142,7 @@
 </template>
 
 <script>
-import {mapMutations, mapState, mapGetters} from 'vuex';
+import {mapGetters, mapMutations, mapState} from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
 import PrbStudentStatusChip from './PrbStudentStatusChip';
 import InfoDialog from './prb-student-details/InfoDialog';
@@ -160,7 +160,6 @@ import PenMatchResultsTable from '@/components/common/PenMatchResultsTable';
 import {
   constructPenMatchObjectFromStudent,
   deepCloneObject,
-  getDemogValidationResults,
   getMatchedRecordssWithDemographicsByStudent,
   getPossibleMatches,
 } from '@/utils/common';
@@ -319,19 +318,14 @@ export default {
       try {
         await this.retrievePenRequestByID();
         await this.retrieveBatchFile();
-        const payload = {
-          student: {
-            ...this.modalStudent
-          }
-        };
 
         this.possibleMatches = [];
+        this.demogValidationResult = await this.getValidationIssuesByBatchStudentID(this.prbStudent.penRequestBatchStudentID);
         if ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR]
           .some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)) {
-          this.demogValidationResult = await getDemogValidationResults(payload);
           const hasValidationFailure = this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR');
 
-          if (!hasValidationFailure && PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE === this.prbStudent?.penRequestBatchStudentStatusCode) {
+          if (!hasValidationFailure) {
             await this.runPenMatch();
           }
         } else {
@@ -637,6 +631,10 @@ export default {
         console.error(e);
       }
     },
+    async getValidationIssuesByBatchStudentID(prbStudentID) {
+      const result = await ApiService.apiAxios.get(Routes.penRequestBatch.ROOT_ENDPOINT + `/students/${prbStudentID}/validation-issues`);
+      return result.data;
+    }
   }
 };
 </script>
