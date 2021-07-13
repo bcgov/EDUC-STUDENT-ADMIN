@@ -12,6 +12,9 @@ async function validateStudentDemogData(req, res) {
   try {
     const token = getBackendToken(req);
     const student = req.body.student;
+    Object.keys(student).forEach(key => {
+      student[key] = student[key] || ''; // send empty string than null or undefined.
+    });
     student.isInteractive = true;
     student.transactionID = uuidv4();
     const dataResponse = await postData(token, config.get('server:penServices:validateDemographicsURL'), student, null);

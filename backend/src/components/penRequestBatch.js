@@ -394,6 +394,18 @@ async function repostReports(req, res) {
   }
 }
 
+const findValidationIssuesByPrbStudentID = async (req, res) =>{
+  const token = getBackendToken(req, res);
+  try {
+    const prbStudentID = req.params.id;
+    const validationIssues = await getData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/students/${prbStudentID}/validation-issues`);
+    return res.status(200).json(validationIssues);
+  } catch (e) {
+    logApiError(e, 'findValidationIssuesByPrbStudentID', 'Error calling findValidationIssuesByPrbStudentID.');
+    return errorResponse(res);
+  }
+};
+
 module.exports = {
   getPENBatchRequestStats,
   updatePrbStudentInfoRequested,
@@ -411,4 +423,5 @@ module.exports = {
   softDeleteFiles,
   releaseBatchFilesForFurtherProcessing,
   repostReports,
+  findValidationIssuesByPrbStudentID
 };
