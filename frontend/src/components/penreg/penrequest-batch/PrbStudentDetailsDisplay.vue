@@ -318,11 +318,6 @@ export default {
       try {
         await this.retrievePenRequestByID();
         await this.retrieveBatchFile();
-        const payload = {
-          student: {
-            ...this.modalStudent
-          }
-        };
 
         this.possibleMatches = [];
         this.demogValidationResult = await this.getValidationIssuesByBatchStudentID(this.prbStudent.penRequestBatchStudentID);
