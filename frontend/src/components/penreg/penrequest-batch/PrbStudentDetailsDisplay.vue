@@ -261,7 +261,7 @@ export default {
       return this.prbStudent?.repeatRequestOriginalID;
     },
     disableIssueNewPen() {
-      return this.loading || this.prbStudent?.sagaInProgress || this.isArchived
+      return this.loading || this.prbStudent?.sagaInProgress || this.isArchived || this.hasValidationIssues
           || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
           || (![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ]
             .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus)
