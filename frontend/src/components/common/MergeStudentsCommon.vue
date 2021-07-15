@@ -47,7 +47,7 @@
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.LEGAL_LAST_NAME" tab-index="21"
                                                       :model="mergedStudent.legalLastName?mergedStudent.legalLastName:''"
                                                       colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="mergeSagaComplete"
+                                                      :disabled="fieldDisabled('legalLastName')"
                                                       v-if="!!mergedStudent.legalLastName"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
@@ -69,7 +69,7 @@
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.LEGAL_FIRST_NAME" tab-index="22"
                                                       :model="mergedStudent.legalFirstName?mergedStudent.legalFirstName:''"
                                                       colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="mergeSagaComplete"
+                                                      :disabled="fieldDisabled('legalFirstName')"
                                                       v-if="!!mergedStudent.legalFirstName"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
@@ -91,7 +91,7 @@
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES" tab-index="23"
                                                       :model="mergedStudent.legalMiddleNames?mergedStudent.legalMiddleNames:''"
                                                       colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="mergeSagaComplete"
+                                                      :disabled="fieldDisabled('legalMiddleNames')"
                                                       v-if="!!mergedStudent.legalMiddleNames"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
@@ -113,7 +113,7 @@
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.USUAL_LAST_NAME" tab-index="24"
                                                       :model="mergedStudent.usualLastName?mergedStudent.usualLastName:''"
                                                       colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="mergeSagaComplete"
+                                                      :disabled="fieldDisabled('usualLastName')"
                                                       v-if="!!mergedStudent.usualLastName"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
@@ -135,7 +135,7 @@
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.USUAL_FIRST_NAME" tab-index="25"
                                                       :model="mergedStudent.usualFirstName?mergedStudent.usualFirstName:''"
                                                       colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="mergeSagaComplete"
+                                                      :disabled="fieldDisabled('usualFirstName')"
                                                       v-if="!!mergedStudent.usualFirstName"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
@@ -156,7 +156,7 @@
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.USUAL_MIDDLE_NAMES" tab-index="26"
                                                       :model="mergedStudent.usualMiddleNames?mergedStudent.usualMiddleNames:''"
                                                       colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="mergeSagaComplete"
+                                                      :disabled="fieldDisabled('usualMiddleNames')"
                                                       v-if="!!mergedStudent.usualMiddleNames"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
@@ -177,7 +177,7 @@
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.GENDER_CODE" tab-index="27"
                                                       :model="mergedStudent.genderCode?mergedStudent.genderCode:''"
                                                       colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="mergeSagaComplete"
+                                                      :disabled="fieldDisabled('genderCode')"
                                                       v-if="!!mergedStudent.genderCode"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
@@ -200,7 +200,7 @@
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.DOB" tab-index="28"
                                                       :model="mergedStudent.dob?formatDob(mergedStudent.dob, 'uuuu-MM-dd', 'uuuu/MM/dd'):''"
                                                       colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="mergeSagaComplete"
+                                                      :disabled="fieldDisabled('dob', isSameDate)"
                                                       v-if="!!mergedStudent.dob"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
@@ -227,7 +227,7 @@
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.MINCODE" tab-index="29"
                                                       :model="mergedStudent.mincode?mergedStudent.mincode:''"
                                                       colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="mergeSagaComplete"
+                                                      :disabled="fieldDisabled('mincode')"
                                                       v-if="!!mergedStudent.mincode"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
@@ -255,7 +255,7 @@
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.LOCAL_ID" tab-index="30"
                                                       :model="mergedStudent.localID?mergedStudent.localID:''"
                                                       colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="mergeSagaComplete"
+                                                      :disabled="fieldDisabled('localID')"
                                                       v-if="!!mergedStudent.localID"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
@@ -277,7 +277,7 @@
                 <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.POSTAL_CODE" tab-index="31"
                                                       :model="mergedStudent.postalCode?formatPostalCode(mergedStudent.postalCode):''"
                                                       colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="mergeSagaComplete"
+                                                      :disabled="fieldDisabled('postalCode')"
                                                       v-if="!!mergedStudent.postalCode"
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
@@ -307,7 +307,7 @@
                                                       tab-index="32"
                                                       :model="mergedStudent.memo?mergedStudent.memo:''"
                                                       colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="mergeSagaComplete"
+                                                      :disabled="fieldDisabled('memo')"
                                                       v-if="!!mergedStudent.memo"
                                                       :is-text-area="true"
                 ></StudentDetailsCheckBoxWithOutputText>
@@ -463,6 +463,7 @@ export default {
       const students = await ApiService.apiAxios.get(Routes.student.GET_ALL_STUDENTS_BY_IDS, params);
       this.student = students.data.find(student => student.studentID === this.mergedToStudentID);
       this.studentBackup = deepCloneObject(this.student);
+      this.checkedFields = _.mapValues(this.student, () => false);
       this.mergedStudent = students.data.find(student => student.studentID === this.mergedFromStudentID);
       this.isAMergedStudent = this.student?.statusCode === 'M' || this.mergedStudent?.statusCode === 'M';
       this.populateDOB(true);
@@ -490,6 +491,7 @@ export default {
       isStudentUpdated: false,
       isLoading: false,
       isAMergedStudent: false,
+      checkedFields: {},
     };
   },
   computed: {
@@ -617,6 +619,7 @@ export default {
     },
     handleCheckBoxChanged({key, value: checked}) {
       if (key) {
+        this.checkedFields[key] = checked;
         let fieldValue = checked ? this.mergedStudent[key] : this.studentBackup[key];
         if (key === 'mincode' && this.isValidFormattedMincode(fieldValue)) {
           fieldValue = fieldValue.replace(/[^0-9]/g, '');
@@ -671,6 +674,11 @@ export default {
     replaceMemoMacro() {
       this.student.memo = replaceMacro(this.student.memo, this.mergeMacros);
     },
+    fieldDisabled(fieldName, equalityCompare) {
+      const isSameValue = equalityCompare ? equalityCompare(this.student[fieldName], this.mergedStudent[fieldName]) && equalityCompare(this.student[fieldName], this.studentBackup[fieldName]) : 
+        this.student[fieldName] === this.mergedStudent[fieldName] && this.student[fieldName] === this.studentBackup[fieldName];
+      return (isSameValue && !this.checkedFields[fieldName]) || this.mergeSagaComplete;
+    }
   }
 };
 </script>
