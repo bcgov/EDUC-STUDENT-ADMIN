@@ -320,9 +320,9 @@ export default {
         await this.retrieveBatchFile();
 
         this.possibleMatches = [];
-        this.demogValidationResult = await this.getValidationIssuesByBatchStudentID(this.prbStudent.penRequestBatchStudentID);
         if ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR]
           .some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)) {
+          this.demogValidationResult = await this.getValidationIssuesByBatchStudentID(this.prbStudent.penRequestBatchStudentID);
           const hasValidationFailure = this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR');
 
           if (!hasValidationFailure) {
