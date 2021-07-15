@@ -428,6 +428,12 @@ export default {
         this.isIssuePenDisabled = false;
         this.showPossibleMatch = true;
         this.possibleMatches = result.data ?? [];
+        if(this.prbStudent?.bestMatchPEN){ // rearrange the array and if there is a best match pen then put that record on top.
+          const bestMatchPen = this.prbStudent?.bestMatchPEN;
+          this.possibleMatches.sort(function (a, b) {
+            return (a.pen !== bestMatchPen) - (b.pen !== bestMatchPen);
+          });
+        }
         this.isStudentDataUpdated = false; // pen match result is refreshed now enable the table.
       } catch (error) {
         console.log(error);
