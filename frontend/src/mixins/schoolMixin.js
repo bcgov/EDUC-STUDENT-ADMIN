@@ -13,22 +13,24 @@ export default {
   },
   methods: {
     async getSchoolName(mincode) {
-      this.loadingSchoolData = true;
-      try {
-        const schoolData = await getSchoolData(mincode);
-        if (!!schoolData && !!schoolData.schoolName) {
-          this.schoolLabel = schoolData.schoolName;
-          this.mincodeError = false;
-          this.mincodeErrors = [];
-        } else {
+      if(!!mincode){
+        this.loadingSchoolData = true;
+        try {
+          const schoolData = await getSchoolData(mincode);
+          if (!!schoolData && !!schoolData.schoolName) {
+            this.schoolLabel = schoolData.schoolName;
+            this.mincodeError = false;
+            this.mincodeErrors = [];
+          } else {
+            this.mincodeError = true;
+            this.mincodeErrors = [this.mincodeHint];
+          }
+        } catch (e) {
           this.mincodeError = true;
           this.mincodeErrors = [this.mincodeHint];
+        } finally {
+          this.loadingSchoolData = false;
         }
-      } catch (e) {
-        this.mincodeError = true;
-        this.mincodeErrors = [this.mincodeHint];
-      } finally {
-        this.loadingSchoolData = false;
       }
     },
     isValidFormattedMincode(mincode) {

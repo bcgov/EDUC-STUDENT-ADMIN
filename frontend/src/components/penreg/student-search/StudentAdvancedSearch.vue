@@ -30,21 +30,21 @@
               <v-text-field id="start-dob-year" class="doubleWidthInput" v-model="advancedSearchCriteria.startDate.year" dense filled outlined maxlength="4" placeholder="YYYY"
                 :rules="validateStartDOBYear()"
                 @keyup.enter="enterPushed()"
-                v-on:input="searchHasValues"></v-text-field>
+                v-on:input="[searchHasValues(), $emit('valueChange')]"></v-text-field>
             </v-col>
             <v-col cols="3" class="mx-2">
               <v-text-field id="start-dob-month" v-model="advancedSearchCriteria.startDate.month" dense filled outlined maxlength="2" placeholder="MM"
                 :disabled="!isValidStartDOB.year"
                 :rules="validateStartDOBMonth()"
                 @keyup.enter="enterPushed()"
-               v-on:input="searchHasValues"></v-text-field>
+               v-on:input="[searchHasValues(), $emit('valueChange')]"></v-text-field>
             </v-col>
             <v-col cols="3">
               <v-text-field id="start-dob-day" v-model="advancedSearchCriteria.startDate.day" dense filled outlined maxlength="2" placeholder="DD"
                 :disabled="!isValidStartDOB.month || !isValidStartDOB.year"
                 :rules="validateStartDOBDay()"
                 @keyup.enter="enterPushed()"
-                v-on:input="searchHasValues"></v-text-field>
+                v-on:input="[searchHasValues(), $emit('valueChange')]"></v-text-field>
             </v-col>
           </v-row>
         </v-col>
@@ -57,7 +57,7 @@
               <v-text-field id="end-dob-year" dense filled outlined placeholder="YYYY" maxlength="4" v-model="advancedSearchCriteria.endDate.year"
                 :rules="validateEndDOBYear()"
                 @keyup.enter="enterPushed()"
-                v-on:input="searchHasValues"
+                v-on:input="[searchHasValues(), $emit('valueChange')]"
               ></v-text-field>
             </v-col>
             <v-col cols="3" class="mx-2">
@@ -65,14 +65,14 @@
                 :rules="validateEndDOBMonth()"
                 :disabled="!isValidEndDOB.year"
                 @keyup.enter="enterPushed()"
-                v-on:input="searchHasValues"></v-text-field>
+                v-on:input="[searchHasValues(), $emit('valueChange')]"></v-text-field>
             </v-col>
             <v-col cols="3">
               <v-text-field id="end-dob-day" dense filled outlined placeholder="DD" minLength="2" maxlength="2" v-model="advancedSearchCriteria.endDate.day"
                 :rules="validateEndDOBDay()"
                 :disabled="!isValidEndDOB.month || !isValidEndDOB.year"
                 @keyup.enter="enterPushed()"
-                v-on:input="searchHasValues"></v-text-field>
+                v-on:input="[searchHasValues(), $emit('valueChange')]"></v-text-field>
             </v-col>
           </v-row>
         </v-col>
@@ -83,7 +83,7 @@
           <v-text-field id="gender" dense filled outlined
             v-model="studentSearchParams.genderCode"
             @keyup.enter="enterPushed()"
-            v-on:input="[searchHasValues(),uppercaseGender()]"
+            v-on:input="[searchHasValues(),uppercaseGender(), $emit('valueChange')]"
             maxlength="1"
             :rules="validateGender()">
           </v-text-field>
@@ -97,7 +97,7 @@
             v-model="studentSearchParams.gradeCode"
             maxlength="2"
             @keyup.enter="enterPushed()"
-            v-on:input="[searchHasValues(), uppercaseGrade()]"
+            v-on:input="[searchHasValues(), uppercaseGrade(), $emit('valueChange')]"
             :rules="validateGradeCode()">
           </v-text-field>
         </v-col>
@@ -109,7 +109,7 @@
             id='mincode'
             v-model="studentSearchParams.mincode"
             @keyup.enter="enterPushed()"
-            v-on:input="searchHasValues"
+            v-on:input="[searchHasValues(), $emit('valueChange')]"
             maxlength="8"
             minLength="8"
             :rules="validateMincode()">
@@ -123,7 +123,7 @@
             id='localID'
             v-model="studentSearchParams.localID"
             @keyup.enter="enterPushed()"
-            v-on:input="searchHasValues"
+            v-on:input="[searchHasValues(), $emit('valueChange')]"
             maxlength="12">
           </v-text-field>
         </v-col>
@@ -137,7 +137,7 @@
           <v-text-field dense filled outlined
             id='postalCode'
             v-model="studentSearchParams.postalCode"
-            v-on:input="[searchHasValues(),uppercasePostal()]"
+            v-on:input="[searchHasValues(),uppercasePostal(), $emit('valueChange')]"
             @keyup.enter="enterPushed()"
             maxlength="7"
             :rules="validatePostal()">
@@ -151,7 +151,7 @@
             id='memo'
             v-model="studentSearchParams.memo"
             @keyup.enter="enterPushed()"
-            v-on:input="searchHasValues"
+            v-on:input="[searchHasValues(), $emit('valueChange')]"
             maxlength="25">
           </v-text-field>
         </v-col>
@@ -173,7 +173,7 @@
             id='legalLastName'
             v-model="studentSearchParams.legalLastName"
             @keyup.enter="enterPushed()"
-            v-on:input="searchHasValues"
+            v-on:input="[searchHasValues(), $emit('valueChange')]"
             maxlength="255"
             >
           </v-text-field>
@@ -184,7 +184,7 @@
             id='legalFirstName'
             v-model="studentSearchParams.legalFirstName"
             @keyup.enter="enterPushed()"
-            v-on:input="searchHasValues"
+            v-on:input="[searchHasValues(), $emit('valueChange')]"
             maxlength="255"
             >
           </v-text-field>
@@ -194,7 +194,7 @@
           <v-text-field dense filled outlined
             id='legalMiddleNames'
             v-model="studentSearchParams.legalMiddleNames"
-            v-on:input="searchHasValues"
+            v-on:input="[searchHasValues(), $emit('valueChange')]"
             @keyup.enter="enterPushed()"
             maxlength="255"
             >
@@ -206,7 +206,7 @@
             id='usualLastName'
             v-model="studentSearchParams.usualLastName"
             @keyup.enter="enterPushed()"
-            v-on:input="searchHasValues"
+            v-on:input="[searchHasValues(), $emit('valueChange')]"
             maxlength="255"
             >
           </v-text-field>
@@ -217,7 +217,7 @@
             id='usualFirstName'
             v-model="studentSearchParams.usualFirstName"
             @keyup.enter="enterPushed()"
-            v-on:input="searchHasValues"
+            v-on:input="[searchHasValues(), $emit('valueChange')]"
             maxlength="255"
             ></v-text-field>
         </v-row>
@@ -227,19 +227,19 @@
             id='usualMiddleNames'
             v-model="studentSearchParams.usualMiddleNames"
             @keyup.enter="enterPushed()"
-            v-on:input="searchHasValues"
+            v-on:input="[searchHasValues(), $emit('valueChange')]"
             maxlength="255"
             ></v-text-field>
         </v-row>
         <v-row no-gutters class="textFieldRow" >
           <v-col cols="3" class="mt-2">Status</v-col>
-          <v-checkbox  
-            v-for="status in statusCodes" 
-            :key="status.label" 
-            :label="status.label" 
-            color="#606060" 
-            class="ma-0 mr-5 pa-0" 
-            v-model="advancedSearchCriteria.statusCode" 
+          <v-checkbox
+            v-for="status in statusCodes"
+            :key="status.label"
+            :label="status.label"
+            color="#606060"
+            class="ma-0 mr-5 pa-0"
+            v-model="advancedSearchCriteria.statusCode"
             :value="status.value"
           ></v-checkbox>
         </v-row>
@@ -249,9 +249,10 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex';
+import {mapMutations, mapState} from 'vuex';
 import {LocalDate} from '@js-joda/core';
-import { STUDENT_CODES } from '../../../utils/constants';
+import {STUDENT_CODES} from '@/utils/constants';
+
 export default {
   name: 'SearchAdvancedSearch',
   props: {
@@ -388,7 +389,7 @@ export default {
         {label: 'Merged', value: STUDENT_CODES.MERGED},
         {label: 'Deceased', value: STUDENT_CODES.DECEASED}
       ];
-    }, 
+    },
   },
   methods: {
     ...mapMutations('studentSearch', ['setIsAdvancedSearch']),

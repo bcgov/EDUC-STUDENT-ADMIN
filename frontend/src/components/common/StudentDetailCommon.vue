@@ -536,6 +536,7 @@ import FormattedTextField from '@/components/util/FormattedTextField';
 import TertiaryButton from '@/components/util/TertiaryButton';
 import PrimaryButton from '@/components/util/PrimaryButton';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
+import {deepCloneObject} from '@/utils/common';
 
 const JSJoda = require('@js-joda/core');
 export default {
@@ -701,6 +702,7 @@ export default {
     formatPen,
     formatMincode,
     formatDob,
+    deepCloneObject,
     boldFormatter(char) {
       let diff = '';
       if (/[A-Z]/.test(char)) {
@@ -803,25 +805,23 @@ export default {
           return true;
         }
         this.schoolLabel = '';
-        if (this.studentCopy) {
-          if (this.studentCopy.mincode) {
-            if (!isValidMincode(this.studentCopy.mincode)) { // format error
-              this.mincodeError = true;
-              return this.mincodeHint;
-            }
-            if (this.studentCopy.mincode.length !== 8) { // length error
-              this.mincodeError = true;
-              return this.mincodeHint + this.mincodeAdditionalHint;
-            }
-            this.getSchoolName(this.studentCopy.mincode);
+        if (this.studentCopy?.mincode?.trim().length > 0) {
+          if (!isValidMincode(this.studentCopy.mincode)) { // format error
+            this.mincodeError = true;
+            return this.mincodeHint;
           }
+          if (this.studentCopy.mincode.length !== 8) { // length error
+            this.mincodeError = true;
+            return this.mincodeHint + this.mincodeAdditionalHint;
+          }
+          this.getSchoolName(this.studentCopy.mincode);
         }
         return true;
       }];
     },
     setStudent(student) {
       this.origStudent = student;
-      this.studentCopy = JSON.parse(JSON.stringify(this.origStudent));
+      this.studentCopy = this.deepCloneObject(this.origStudent);
       this.createdDateTime = this.frontEndDateTimeFormat(this.studentCopy.createDate);
       this.updatedDateTime = this.frontEndDateTimeFormat(this.studentCopy.updateDate);
       this.updateDOBLabel(true);

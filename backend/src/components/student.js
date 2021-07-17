@@ -7,6 +7,7 @@ const utils = require('./utils');
 const {putData} = require('./utils');
 const retry = require('async-retry');
 const redisUtil = require('../util/redis/redis-utils');
+const {v4: uuidv4} = require('uuid');
 
 function addSagaStatus(students) {
   return addSagaStatusToRecords(students, 'studentID', redisUtil.getPenServicesSagaEvents);
@@ -25,12 +26,12 @@ async function updateStudent(req, res) {
     student.createDate = null;
     student.updateDate = null;
     await retry(async () => {
-        const result = await putData(token, `${config.get('server:student:rootURL')}/${req.params.studentID}`, student, utils.getUser(req).idir_username);
-        return res.status(HttpStatus.OK).json(result);
-      },
-      {
-        retries: 3
-      });
+      const result = await putData(token, `${config.get('server:student:rootURL')}/${req.params.studentID}`, student, utils.getUser(req).idir_username);
+      return res.status(HttpStatus.OK).json(result);
+    },
+    {
+      retries: 3
+    });
   } catch (e) {
     logApiError(e, 'updateStudent', 'Error occurred while attempting to update a student.');
     return errorResponse(res);
@@ -137,8 +138,30 @@ async function getStudentByPen(req, res) {
  */
 async function createNewStudent(req, res) {
   try {
-    // this functionality is deprecated, will be rewritten in a future date when requirements are clear.
-    return res.status(HttpStatus.GONE).json();
+    let transactionID;
+    if (req.session.create_new_student_transactionID) {
+      transactionID = req.session.create_new_student_transactionID;
+    } else {
+      transactionID = uuidv4();
+      req.session.create_new_student_transactionID = transactionID; // store it in session so that it can be reused when the api call to create student fails.
+    }
+    const params = {
+      params: {
+        transactionID
+      }
+    };
+    const token = utils.getBackendToken(req);
+    const penNumber = await utils.getData(token, config.get('server:penServices:nextPenURL'), params);
+    const student = req.body.student;
+    student.pen = penNumber;
+    student.sexCode = student.genderCode; // sex code is mandatory in API.
+    student.historyActivityCode = 'REQNEW';
+    student.emailVerified = 'N';
+    student.createDate = null;
+    student.updateDate = null;
+    const result = await utils.postData(token, config.get('server:student:rootURL') + '/', student, null, utils.getUser(req).idir_username);
+    delete req.session.create_new_student_transactionID; // delete it when student is created successfully.
+    return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'createNewStudent', 'Error occurred while attempting to create a new student.');
     return errorResponse(res);
