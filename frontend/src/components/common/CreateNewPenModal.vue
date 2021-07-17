@@ -144,12 +144,10 @@
 </template>
 
 <script>
-import FormattedTextField from '../util/FormattedTextField';
 import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import {formatDob, formatPostalCode} from '@/utils/format';
 
 export default {
-  components: {FormattedTextField},
   name: 'CreateNewPenModal',
   props: {
     dialog: {
