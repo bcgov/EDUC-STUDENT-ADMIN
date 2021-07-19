@@ -154,11 +154,13 @@ async function createNewStudent(req, res) {
     const token = utils.getBackendToken(req);
     const penNumber = await utils.getData(token, config.get('server:penServices:nextPenURL'), params);
     const student = req.body.student;
-    student.dob = utils.formatDate(student.dob?.replace(/\D/g,''));
+    student.dob = utils.formatDate(student.dob?.replace(/\D/g, ''));
     student.pen = penNumber;
-    student.sexCode = student.genderCode; // sex code is mandatory in API.
-    student.historyActivityCode = 'REQNEW';
-    student.emailVerified = 'N';
+    student.sexCode = student.sexCode || student.genderCode; // sex code is mandatory in API.
+    student.historyActivityCode = student.historyActivityCode || 'REQNEW';
+    student.emailVerified = student.emailVerified || 'N';
+    student.demogCode = student.demogCode || 'A';
+    student.statusCode = student.statusCode || 'A';
     student.createDate = null;
     student.updateDate = null;
     const result = await utils.postData(token, config.get('server:student:rootURL') + '/', student, null, utils.getUser(req).idir_username);
