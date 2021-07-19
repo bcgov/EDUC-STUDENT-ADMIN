@@ -1,4 +1,5 @@
 'use strict';
+
 const {logApiError, errorResponse, addSagaStatusToRecords} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
@@ -153,6 +154,7 @@ async function createNewStudent(req, res) {
     const token = utils.getBackendToken(req);
     const penNumber = await utils.getData(token, config.get('server:penServices:nextPenURL'), params);
     const student = req.body.student;
+    student.dob = utils.formatDate(student.dob?.replace(/\D/g,''));
     student.pen = penNumber;
     student.sexCode = student.genderCode; // sex code is mandatory in API.
     student.historyActivityCode = 'REQNEW';

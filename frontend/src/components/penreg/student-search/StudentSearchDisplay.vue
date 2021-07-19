@@ -417,8 +417,6 @@ export default {
       }
     },
     async createNewPen(student) {
-      console.info(student);
-      student.dob= formatDob(student.dob, 'uuuuMMdd','uuuu-MM-dd');
       this.createNewPenLoading = true;
       try{
         const body = {
