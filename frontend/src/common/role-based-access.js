@@ -1,5 +1,5 @@
 const roleActionMap = {
-  penRequest: {
+  penRequest: { // GMP
     'CLAIM_REQUEST': ['STUDENT_ADMIN'],
     'PROVIDE_PEN': ['STUDENT_ADMIN'],
     'REQUEST_MORE_INFO': ['STUDENT_ADMIN'],
@@ -7,7 +7,7 @@ const roleActionMap = {
     'CHANGE_DOCUMENT_TYPE': ['STUDENT_ADMIN'],
     'RELEASE_REQUEST': ['STUDENT_ADMIN']
   },
-  studentRequest: {
+  studentRequest: { //UMP
     'CLAIM_REQUEST': ['STUDENT_PROFILE_ADMIN'],
     'SEND_UPDATE': ['STUDENT_PROFILE_ADMIN'],
     'REQUEST_MORE_INFO': ['STUDENT_PROFILE_ADMIN'],
@@ -15,6 +15,9 @@ const roleActionMap = {
     'CHANGE_DOCUMENT_TYPE': ['STUDENT_PROFILE_ADMIN'],
     'RELEASE_REQUEST': ['STUDENT_PROFILE_ADMIN']
   },
+  student:{ // core student
+    'CREATE_NEW_PEN':['STUDENT_ADMIN_ADMINISTRATOR'],
+  }
 };
 
 function isAccessEnabledForUser(requestType, actionName, userInfo) {

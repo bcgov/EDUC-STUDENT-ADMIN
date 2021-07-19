@@ -1,5 +1,23 @@
 <template>
   <v-container fluid class="full-height px-0">
+    <CreateNewPenModal @closeDialog="closeDialog" @submitForm="createNewPen" :dialog="createNewPenDialog"
+                       :student-data="student">
+      <template v-slot:actions="{ isFormValid, isValidForm }">
+        <PrimaryButton id="cancel" :secondary="true" text="Cancel"
+                       @click.native="closeDialog"
+        >
+        </PrimaryButton>
+
+        <PrimaryButton width="15%"
+                       text="Create PEN"
+                       id="createNewPENSubmitButton"
+                       :loading="createNewPenLoading"
+                       :disabled="isValidForm"
+                       @click.native="isFormValid()"
+        >
+        </PrimaryButton>
+      </template>
+    </CreateNewPenModal>
     <v-form ref="studentSearchForm" id="searchStudentForm"
             v-model="validForm"
     >
@@ -7,33 +25,41 @@
         <v-row no-gutters>
           <v-card elevation="0" height="100%" width="100%" style="background-color:#d7d7d7;">
             <StudentAdvancedSearch
-                    :enterPushed="enterPushed"
-                    :runPENSearchIfPossible="runPENSearchIfPossible"
-                    :searchHasValues="searchHasValues"
-                    :validatePen="validatePen"
-                    :uppercaseGender="uppercaseGender"
-                    :validateGender="validateGender"
-                    :validateMincode="validateMincode"
-                    :uppercasePostal="uppercasePostal"
-                    :uppercaseGrade="uppercaseGrade"
-                    :useDOB.sync="useDOB"
-                    :validatePostal="validatePostal"
-                    :validateGradeCode="validateGradeCode"
-                    :initialSearch="initialSearch"
+              :enterPushed="enterPushed"
+              :runPENSearchIfPossible="runPENSearchIfPossible"
+              :searchHasValues="searchHasValues"
+              :validatePen="validatePen"
+              :uppercaseGender="uppercaseGender"
+              :validateGender="validateGender"
+              :validateMincode="validateMincode"
+              :uppercasePostal="uppercasePostal"
+              :uppercaseGrade="uppercaseGrade"
+              :useDOB.sync="useDOB"
+              :validatePostal="validatePostal"
+              :validateGradeCode="validateGradeCode"
+              :initialSearch="initialSearch"
+              @valueChange="handleValueChange"
             >
             </StudentAdvancedSearch>
-            <v-row justify="end" no-gutters class="py-3 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
-              <PrimaryButton id="search-clear" :secondary="true" class="mr-2" @click.native="clearSearch" text="Clear"></PrimaryButton>
-              <PrimaryButton id="perform-search" :disabled="!searchEnabled" :loading="searchLoading" @click.native="searchStudent(true)" text="Search"></PrimaryButton>
+            <v-row justify="end" no-gutters class="py-3 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
+                   style="background-color:white;">
+              <PrimaryButton v-if="createNewPenButtonAvailableForUser" id="create-new-pen" class="mr-2"
+                             :disabled="createNewPenDisabled" @click.native="openCreatePenModal"
+                             text="Create PEN"></PrimaryButton>
+              <PrimaryButton id="search-clear" :secondary="true" class="mr-2" @click.native="clearSearch"
+                             text="Clear"></PrimaryButton>
+              <PrimaryButton id="perform-search" :disabled="!searchEnabled" :loading="searchLoading"
+                             @click.native="searchStudent(true)" text="Search"></PrimaryButton>
             </v-row>
             <v-row v-if="this.studentSearchResponse" no-gutters class="py-2" style="background-color:white;">
               <v-divider class="mx-3"/>
             </v-row>
-            <v-row v-if="this.studentSearchResponse" id="resultsRow" no-gutters class="py-2" style="background-color:white;">
+            <v-row v-if="this.studentSearchResponse" id="resultsRow" no-gutters class="py-2"
+                   style="background-color:white;">
               <StudentSearchResults
-                      :searchCriteria="this.currentStudentSearchParams"
-                      :prepPut="prepPut"
-                      :searchLoading="searchLoading"
+                :searchCriteria="this.currentStudentSearchParams"
+                :prepPut="prepPut"
+                :searchLoading="searchLoading"
               ></StudentSearchResults>
             </v-row>
           </v-card>
@@ -52,9 +78,12 @@ import StudentAdvancedSearch from './StudentAdvancedSearch';
 import PrimaryButton from '../../util/PrimaryButton';
 import {checkDigit, isValidMincode, isValidPEN, isValidPostalCode} from '@/utils/validation';
 import alertMixin from '@/mixins/alertMixin';
+import {AccessEnabledForUser} from '@/common/role-based-access';
+import CreateNewPenModal from '@/components/common/CreateNewPenModal';
 
 export default {
   components: {
+    CreateNewPenModal,
     PrimaryButton,
     StudentAdvancedSearch,
     StudentSearchResults
@@ -80,16 +109,22 @@ export default {
       validForm: false,
       menu: false,
       useDOB: true,
-      localDate:LocalDate,
+      localDate: LocalDate,
       searchLoading: false,
       searchEnabled: false,
       currentStudentSearchParams: {},
       studentSearchResultsKey: 0,
       REQUEST_TYPES: REQUEST_TYPES,
       initialSearch: false,
+      createNewPenButtonAvailableForUser: false,
+      createNewPenDisabled: true,
+      createNewPenDialog: false,
+      createNewPenLoading: false,
+      student: {},
     };
   },
-  computed:{
+  computed: {
+    ...mapGetters('auth', ['userInfo']),
     ...mapGetters('student', ['gradeCodeObjects']),
     ...mapState('student', ['genders']),
     ...mapState('studentSearch', ['pageNumber', 'headerSortParams', 'advancedSearchCriteria', 'studentSearchResponse']),
@@ -97,19 +132,19 @@ export default {
       return this.searchType === REQUEST_TYPES.studentSearch.type.advanced;
     },
     studentSearchParams: {
-      get(){
+      get() {
         this.setCurrentSearchObject(this.$store.state['studentSearch'].studentSearchParams);
         return this.$store.state['studentSearch'].studentSearchParams;
       },
-      set(newPage){
+      set(newPage) {
         return this.$store.state['studentSearch'].studentSearchParams = newPage;
       }
     },
     genderCodes() {
-      return this.genders ? this.genders.map(a => a.genderCode):[];
+      return this.genders ? this.genders.map(a => a.genderCode) : [];
     },
     gradeCodes() {
-      return this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.gradeCode):[];
+      return this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.gradeCode) : [];
     },
     charRules() {
       return [
@@ -120,12 +155,12 @@ export default {
   mounted() {
     this.$store.dispatch('student/getCodes');
     this.studentSearchParams = {...this.studentSearchParams, ..._.omit(this.searchParams, ['dob'])};
-    if(this.searchParams.dob) {
+    if (this.searchParams.dob) {
       this.studentSearchParams.dob.startDate = this.searchParams.dob;
     }
     this.initialSearch = true;
-
-    if(this.studentSearchParams) {
+    this.createNewPenButtonAvailableForUser = AccessEnabledForUser('student', 'CREATE_NEW_PEN', this.userInfo);
+    if (this.studentSearchParams) {
       this.searchHasValues();
     }
 
@@ -140,44 +175,45 @@ export default {
     studentSearchResponse: {
       async handler() {
         await this.$nextTick();
-        document.getElementById('resultsRow').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('resultsRow').scrollIntoView({behavior: 'smooth'});
       }
     }
   },
   methods: {
     ...mapMutations('studentSearch', ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse', 'clearStudentSearchParams', 'clearStudentSearchResults']),
-    setCurrentSearchObject(searchParams){
+    setCurrentSearchObject(searchParams) {
       this.currentStudentSearchParams = JSON.parse(JSON.stringify(searchParams));
     },
     clearSearch() {
       this.clearStudentSearchParams();
       this.searchHasValues();
+      this.createNewPenDisabled = true;
     },
     clearSearchResult() {
       this.clearStudentSearchResults();
     },
-    uppercasePostal(){
-      if(this.studentSearchParams.postalCode){
+    uppercasePostal() {
+      if (this.studentSearchParams.postalCode) {
         this.studentSearchParams.postalCode = this.studentSearchParams.postalCode.toUpperCase();
       }
     },
-    uppercaseGender(){
-      if(this.studentSearchParams.genderCode){
+    uppercaseGender() {
+      if (this.studentSearchParams.genderCode) {
         this.studentSearchParams.genderCode = this.studentSearchParams.genderCode.toUpperCase();
       }
     },
     uppercaseGrade() {
-      if(this.studentSearchParams.gradeCode) {
+      if (this.studentSearchParams.gradeCode) {
         this.studentSearchParams.gradeCode = this.studentSearchParams.gradeCode.toUpperCase();
       }
     },
     enterPushed() {
-      if(this.searchHasValues()){
+      if (this.searchHasValues()) {
         this.searchStudent(true, true);
       }
     },
-    runPENSearchIfPossible(){
-      if(this.studentSearchParams && isValidPEN(this.studentSearchParams.pen)){
+    runPENSearchIfPossible() {
+      if (this.studentSearchParams && isValidPEN(this.studentSearchParams.pen)) {
         const pen = this.studentSearchParams.pen;
         this.clearStudentSearchParams();
         this.studentSearchParams.pen = pen;
@@ -186,8 +222,8 @@ export default {
     },
     validatePen() {
       let validPEN = false;
-      if(this.studentSearchParams) {
-        if (!this.studentSearchParams.pen){
+      if (this.studentSearchParams) {
+        if (!this.studentSearchParams.pen) {
           validPEN = true;
         } else if (this.studentSearchParams.pen.length === 9) {
           if (checkDigit(this.studentSearchParams.pen)) {
@@ -195,11 +231,11 @@ export default {
           }
         }
       }
-      if(validPEN){
+      if (validPEN) {
         return [];
-      }else{
+      } else {
         this.searchEnabled = false;
-        if(this.studentSearchParams.pen.length < 9) {
+        if (this.studentSearchParams.pen.length < 9) {
           return [];
         } else {
           return [
@@ -208,13 +244,12 @@ export default {
         }
       }
     },
-    validateGender(){
-      if(this.studentSearchParams) {
-        if(!this.studentSearchParams.genderCode){
+    validateGender() {
+      if (this.studentSearchParams) {
+        if (!this.studentSearchParams.genderCode) {
           return [];
-        }
-        else {
-          if(this.genderCodes.length === 0 || this.genderCodes.includes(this.studentSearchParams.genderCode)){
+        } else {
+          if (this.genderCodes.length === 0 || this.genderCodes.includes(this.studentSearchParams.genderCode)) {
             return [];
           }
         }
@@ -224,13 +259,12 @@ export default {
         this.genderHint
       ];
     },
-    validateMincode(){
-      if(this.studentSearchParams) {
-        if(!this.studentSearchParams.mincode){
+    validateMincode() {
+      if (this.studentSearchParams) {
+        if (!this.studentSearchParams.mincode) {
           return [];
-        }
-        else {
-          if(isValidMincode(this.studentSearchParams.mincode)){
+        } else {
+          if (isValidMincode(this.studentSearchParams.mincode)) {
             return [];
           }
         }
@@ -240,13 +274,12 @@ export default {
         this.mincodeHint
       ];
     },
-    validatePostal(){
-      if(this.studentSearchParams) {
-        if(!this.studentSearchParams.postalCode){
+    validatePostal() {
+      if (this.studentSearchParams) {
+        if (!this.studentSearchParams.postalCode) {
           return [];
-        }
-        else {
-          if(isValidPostalCode(this.studentSearchParams.postalCode)){
+        } else {
+          if (isValidPostalCode(this.studentSearchParams.postalCode)) {
             return [];
           }
         }
@@ -257,12 +290,11 @@ export default {
       ];
     },
     validateGradeCode() {
-      if(this.studentSearchParams) {
-        if(!this.studentSearchParams.gradeCode){
+      if (this.studentSearchParams) {
+        if (!this.studentSearchParams.gradeCode) {
           return [];
-        }
-        else {
-          if(this.gradeCodes.length === 0 || this.gradeCodes.includes(this.studentSearchParams.gradeCode.toUpperCase())){
+        } else {
+          if (this.gradeCodes.length === 0 || this.gradeCodes.includes(this.studentSearchParams.gradeCode.toUpperCase())) {
             return [];
           }
         }
@@ -279,47 +311,47 @@ export default {
       ];
     },
     focusBirthdateField(event) {
-      if(event.key === 'Tab' && event.type === 'keyup') {
+      if (event.key === 'Tab' && event.type === 'keyup') {
         this.menu = true;
       }
     },
-    async searchHasValues(){
+    async searchHasValues() {
       await this.$nextTick();
-      if(this.$refs.studentSearchForm.validate() && (this.studentSearchParams.pen ||
-          this.studentSearchParams.legalLastName ||
-          this.studentSearchParams.legalFirstName ||
-          this.studentSearchParams.legalMiddleNames ||
-          this.studentSearchParams.postalCode ||
-          this.studentSearchParams.genderCode ||
-          (this.studentSearchParams.dob.startDate && this.useDOB) ||
-          this.studentSearchParams.mincode ||
-          this.studentSearchParams.usualLastName ||
-          this.studentSearchParams.usualFirstName ||
-          this.studentSearchParams.usualMiddleNames ||
-          this.studentSearchParams.memo ||
-          this.studentSearchParams.localID ||
-          this.studentSearchParams.gradeCode)){
+      if (this.$refs.studentSearchForm.validate() && (this.studentSearchParams.pen ||
+        this.studentSearchParams.legalLastName ||
+        this.studentSearchParams.legalFirstName ||
+        this.studentSearchParams.legalMiddleNames ||
+        this.studentSearchParams.postalCode ||
+        this.studentSearchParams.genderCode ||
+        (this.studentSearchParams.dob.startDate && this.useDOB) ||
+        this.studentSearchParams.mincode ||
+        this.studentSearchParams.usualLastName ||
+        this.studentSearchParams.usualFirstName ||
+        this.studentSearchParams.usualMiddleNames ||
+        this.studentSearchParams.memo ||
+        this.studentSearchParams.localID ||
+        this.studentSearchParams.gradeCode)) {
         this.searchEnabled = true;
         return true;
-      }else{
+      } else {
         this.searchEnabled = false;
       }
     },
-    searchStudent(validationRequired=true) {
+    searchStudent(validationRequired = true) {
       this.searchLoading = true;
       this.studentSearchResultsKey += 1; //forces StudentSearchResults to rerender and update curPage
       this.setSelectedRecords();
       this.setPageNumber(1);
       this.headerSortParams['currentSortAsc'] = true;
 
-      if(validationRequired === false || (this.$refs.studentSearchForm.validate() && this.searchHasValues())) {
+      if (validationRequired === false || (this.$refs.studentSearchForm.validate() && this.searchHasValues())) {
         const studentSearchKeys = Object.keys(this.studentSearchParams).filter(k => (this.studentSearchParams[k] && this.studentSearchParams[k].length !== 0));
         let studentSearchFilters;
-        if (studentSearchKeys?.length >0) {
+        if (studentSearchKeys?.length > 0) {
           studentSearchFilters = {};
           studentSearchKeys.forEach(element => {
-            if(element === 'dob') {
-              if(!this.useDOB || !this.studentSearchParams[element].startDate) {
+            if (element === 'dob') {
+              if (!this.useDOB || !this.studentSearchParams[element].startDate) {
                 return;
               }
             }
@@ -328,15 +360,16 @@ export default {
 
           studentSearchFilters['useNameVariants'] = this.isAdvancedSearch && this.advancedSearchCriteria.useNameVariants;
           studentSearchFilters['isAuditHistorySearch'] = this.isAdvancedSearch && this.advancedSearchCriteria.isAuditHistorySearch;
-          if(this.isAdvancedSearch && this.advancedSearchCriteria.statusCode.length > 0) {
+          if (this.isAdvancedSearch && this.advancedSearchCriteria.statusCode.length > 0) {
             studentSearchFilters['statusCode'] = this.advancedSearchCriteria.statusCode;
           }
         }
         ApiService.apiAxios
-          .get(Routes['student'].SEARCH_URL,this.prepPut(studentSearchFilters))
+          .get(Routes['student'].SEARCH_URL, this.prepPut(studentSearchFilters))
           .then(response => {
             this.setStudentSearchResponse(response.data);
             this.currentStudentSearchParams = JSON.parse(JSON.stringify(studentSearchFilters));
+            this.checkAndEnableCreatePen();
           })
           .catch(error => {
             if (error?.response?.status === 400) {
@@ -349,7 +382,7 @@ export default {
           .finally(() => {
             this.searchLoading = false;
           });
-      }else{
+      } else {
         this.searchLoading = false;
       }
     },
@@ -358,7 +391,7 @@ export default {
       sort[this.headerSortParams.currentSort] = this.headerSortParams.currentSortAsc ? 'ASC' : 'DESC';
       return {
         params: {
-          pageNumber: this.pageNumber-1,
+          pageNumber: this.pageNumber - 1,
           sort: sort,
           searchQueries: studentSearchFilters
         }
@@ -367,6 +400,49 @@ export default {
     save(date) {
       this.$refs.menu.save(date);
       this.$refs.birthdate.$el.querySelectorAll('#birthdate')[0].focus();
+    },
+    handleValueChange() {
+      this.createNewPenDisabled = true;
+    },
+    checkAndEnableCreatePen() {
+      if (this.createNewPenButtonAvailableForUser) { // do the logic only when the button is available for the user.
+        this.createNewPenDisabled = !(
+          this.studentSearchParams.legalLastName &&
+          this.studentSearchParams.legalFirstName &&
+          this.studentSearchParams.genderCode &&
+          !this.studentSearchParams.useDOBRange &&
+          this.studentSearchParams.dob?.startDate
+        );
+      }
+    },
+    async createNewPen(student) {
+      this.createNewPenLoading = true;
+      try{
+        const body = {
+          student
+        };
+        const result = await ApiService.apiAxios.post(Routes.student.ROOT_ENDPOINT, body);
+        await this.$router.push(`/student/${result.data.studentID}`);
+      }catch (e) {
+        console.error(e);
+        this.setFailureAlert('Pen Could not be created, Please retry later.');
+      }finally {
+        this.createNewPenLoading = false;
+        this.createNewPenDialog = false;
+      }
+
+    },
+    async closeDialog() {
+      this.createNewPenDialog = false;
+      await this.$nextTick(); //need to wait so update can me made in parent and propagated back down to child component
+    },
+    openCreatePenModal() {
+      this.student = null; //clear the data.
+      this.student = {
+        ...this.studentSearchParams
+      };
+      this.student.dob = this.studentSearchParams.dob?.startDate?.replace(/\D/g,'');
+      this.createNewPenDialog = true;
     }
   }
 };
