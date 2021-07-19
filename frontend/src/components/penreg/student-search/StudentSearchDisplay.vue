@@ -80,7 +80,6 @@ import {checkDigit, isValidMincode, isValidPEN, isValidPostalCode} from '@/utils
 import alertMixin from '@/mixins/alertMixin';
 import {AccessEnabledForUser} from '@/common/role-based-access';
 import CreateNewPenModal from '@/components/common/CreateNewPenModal';
-import {formatDob} from '@/utils/format';
 
 export default {
   components: {
