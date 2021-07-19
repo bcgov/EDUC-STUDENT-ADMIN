@@ -281,7 +281,7 @@
                   :rules="validateMincode()"
                   maxlength="8"
                   :readonly="!hoveringMincode || !editingMincode"
-                  :outlined="hoveringMincode || editingMincode || mincodeHasChanged()"
+                  :outlined="hoveringMincode || editingMincode || mincodeHasChanged() || false"
                   :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MINCODE)"
               ></FormattedTextField>
             </v-col>
