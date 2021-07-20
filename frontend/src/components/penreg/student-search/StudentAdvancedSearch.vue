@@ -160,8 +160,20 @@
     <v-col>
       <v-card class="pa-4">
         <v-row no-gutters class="textFieldRow mb-4" justify="space-between">
-          <v-col cols="5">
+          <v-col cols="3">
             <v-checkbox  id="searchNameVariantsCheckbox" label="Search name variants" color="#606060" class="ma-0 pa-0" v-model="advancedSearchCriteria.useNameVariants"></v-checkbox>
+          </v-col>
+          <v-col cols="2">
+            <v-tooltip left>
+              <template v-slot:activator="{ on }">
+                <v-icon small color="#FCBA19" style="margin-top: 0.9em" v-on="on">
+                  fa-exclamation-circle
+                </v-icon>
+              </template>
+              <span>
+                Searching by name variant cannot be used in conjunction with wildcards on Legal and Usual Given names<br/>
+              </span>
+            </v-tooltip>
           </v-col>
           <v-col>
               <v-checkbox  id="searchAuditHistoryCheckbox" label="Search audit history" color="#606060" class="ma-0 pa-0" v-model="advancedSearchCriteria.isAuditHistorySearch"></v-checkbox>
