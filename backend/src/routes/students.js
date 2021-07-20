@@ -30,7 +30,7 @@ router.get('/', passport.authenticate('jwt', {session: false}, undefined), isVal
 router.get('/detail/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentByStudentId);
 router.get('/demographics/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentDemographicsOnlyByStudentId);
 router.put('/:studentID', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, atomicStudentUpdate.handleConcurrentStudentModification, updateStudent);
-router.post('/', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, createNewStudent);
+router.post('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStaffAdministrationAdmin, extendSession, createNewStudent);
 router.get('/:id/history', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, extendSession, getStudentHistoryByStudentID);
 
 module.exports = router;

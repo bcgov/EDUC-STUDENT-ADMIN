@@ -801,6 +801,10 @@ export default {
     // Asynchronous validator returns an array of boolean or string that would be provided for :rules prop of input field
     validateMincode() {
       return [v => {
+        // reset the values.
+        this.mincodeErrors = [];
+        this.mincodeError = false;
+        // reset the values.
         if (this.isValidFormattedMincode(v)) { // skip when no input or the formatted text is set for view
           return true;
         }
