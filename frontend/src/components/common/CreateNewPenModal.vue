@@ -179,7 +179,7 @@ export default {
     formatPostalCode,
     formatDob,
     upperCaseInput(fieldName) {
-      if (!!this.student[fieldName]) {
+      if (this.student[fieldName]) {
         this.student[fieldName] = this.student[fieldName].toUpperCase();
       }
     },
