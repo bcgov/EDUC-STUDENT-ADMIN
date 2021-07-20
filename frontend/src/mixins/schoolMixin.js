@@ -13,7 +13,7 @@ export default {
   },
   methods: {
     async getSchoolName(mincode) {
-      if(!!mincode){
+      if(mincode && mincode.length === 8){
         this.loadingSchoolData = true;
         try {
           const schoolData = await getSchoolData(mincode);
