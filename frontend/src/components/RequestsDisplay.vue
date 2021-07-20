@@ -190,7 +190,7 @@
 <script>
 import { mapMutations, mapGetters } from 'vuex';
 import ApiService from '../common/apiService';
-import {REQUEST_TYPES, Routes} from '../utils/constants';
+import {REQUEST_TYPES, Routes} from '@/utils/constants';
 import router from '../router';
 import PrimaryButton from './util/PrimaryButton';
 import FilterTag from './util/FilterTag';
@@ -333,6 +333,7 @@ export default {
       handler() {
         if (!this.initialLoad) {
           //stop watch from sending multiple getRequests calls on initial page load
+          this.pageNumber = 1; // make it 1 on filter change.
           this.getRequests();
         }
       }
