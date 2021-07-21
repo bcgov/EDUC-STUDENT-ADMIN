@@ -47,7 +47,7 @@ async function getPenCoordinators(req, res) {
     coords.forEach(coord => coord.schoolName = cacheService.getSchoolNameJSONByMincode(coord.mincode)?.schoolName || '');
     return res.status(200).json(coords);
   } catch (e) {
-    logApiError(e, 'getPenCoordinatorByMincode', 'Error occurred while attempting to GET pen coordinator entity.');
+    logApiError(e, 'getPenCoordinators', 'Error occurred while attempting to GET pen coordinator entities.');
     return errorResponse(res);
   }
 }
