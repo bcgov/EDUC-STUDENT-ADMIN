@@ -41,7 +41,7 @@
           <PrimaryButton id="clear-action" class="mr-2" secondary text="Clear" @click.native="clearSearchParams"></PrimaryButton>
           <PrimaryButton id="search-action" :disabled="!isValidSearchForm || !searchEnabled"
                         class="mr-0" text="Search"
-                        @click.native="searchBatchFiles"></PrimaryButton>
+                        @click.native="searchPenCoordinators"></PrimaryButton>
         </v-col>
       </v-sheet>
     </v-form>
@@ -142,10 +142,10 @@ export default {
     },
     enterPushed() {
       if (this.isValidSearchForm && this.searchHasValues()) {
-        this.searchBatchFiles();
+        this.searchPenCoordinators();
       }
     },
-    searchBatchFiles() {
+    searchPenCoordinators() {
       let filterParams = deepCloneObject(this.searchParams);
       if(filterParams.mincode && filterParams.mincode.length < 8) {
         filterParams.districtNumber = filterParams.mincode;
