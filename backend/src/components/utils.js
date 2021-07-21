@@ -13,6 +13,11 @@ const {Locale} = require('@js-joda/locale_en');
 const {FILTER_OPERATION, VALUE_TYPE} = require('../util/constants');
 const fsStringify = require('fast-safe-stringify');
 
+axios.interceptors.request.use((axiosRequestConfig)=>{
+  axiosRequestConfig.headers['X-Client-Name'] =  'PEN-STUDENT-ADMIN';
+  return axiosRequestConfig;
+});
+
 let discovery = null;
 let memCache = new cache.Cache();
 
