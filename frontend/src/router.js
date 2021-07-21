@@ -28,6 +28,7 @@ import BackendSessionExpired from '@/components/BackendSessionExpired';
 import UnAuthorizedPage from './components/UnAuthorizedPage';
 import PenMatch from './components/penreg/PenMatch';
 import CompareStudents from './components/CompareStudents';
+import PenCoordinatorsDisplay from './components/penreg/coordinator/PenCoordinatorsDisplay';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -269,6 +270,15 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.CREATE_NEW_PEN,
         requiresAuth: true
       }
+    },
+    {
+      path: '/penCoordinators',
+      name: 'penCoordinators',
+      component: PenCoordinatorsDisplay,
+      meta: {
+        pageTitle: PAGE_TITLES.PEN_COORDINATORS,
+        requiresAuth: true,
+      },
     },
     {
       path: '/login',

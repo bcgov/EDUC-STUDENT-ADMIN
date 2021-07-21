@@ -15,7 +15,7 @@
             :key="item.title+`1`"
             class="menuRow"
             :id="stripWhitespace(item.title + `MenuBtn`)">
-          <router-link :to="{ name: item.link }" class="router">
+          <router-link :to="{ name: item.link }"  :target="item.newTab ? '_blank' : '_self'" class="router">
             <v-list-item-content>
               <v-list-item-title v-if="item.link === $route.name" class="menuItem"><strong>{{item.title}}</strong></v-list-item-title>
               <v-list-item-title v-else class="menuItem">{{item.title}}</v-list-item-title>
@@ -46,7 +46,7 @@
                 class="subMenuRow pl-9"
                 :id="stripWhitespace(subItem.title) + `MenuBtn`"
         >
-          <router-link :to="{ name: subItem.link }" class="router">
+          <router-link :to="{ name: subItem.link }" :target="subItem.newTab ? '_blank' : '_self'" class="router">
             <v-list-item-content>
               <v-list-item-title v-if="subItem.link === $route.name" class="menuItem"><strong>{{ subItem.title }}</strong></v-list-item-title>
               <v-list-item-title v-else v-text="subItem.title" class="menuItem"></v-list-item-title>
@@ -136,8 +136,9 @@ export default {
       },
       {
         title: PAGE_TITLES.PEN_COORDINATORS,
-        link: 'home',
-        authorized: true
+        link: 'penCoordinators',
+        newTab: true,
+        authorized: this.isAuthorizedUser
       },
       {
         title: PAGE_TITLES.ADMINISTRATION,
