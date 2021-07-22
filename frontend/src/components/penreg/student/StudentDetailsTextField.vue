@@ -104,7 +104,7 @@ export default {
     },
     asyncMessages: {
       type: Array,
-      default: []
+      required: false
     }
   },
   data() {
