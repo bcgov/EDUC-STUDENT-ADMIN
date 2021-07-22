@@ -37,6 +37,7 @@
                     <v-text-field id="createNewPenFormLegalLastName" outlined dense filled readonly required
                                   tabindex="1" maxlength="25"
                                   :rules="validateNameFields(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
+                                  :error-messages="err.legalLastNameError"
                                   v-model="student.legalLastName"></v-text-field>
                   </v-col>
                   <v-spacer/>
@@ -45,6 +46,7 @@
                                   id="createNewPenFormLegalFirstName"
                                   readonly required tabindex="2" maxlength="25"
                                   :rules="validateNameFields(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
+                                  :error-messages="err.legalFirstNameError"
                                   v-model="student.legalFirstName"></v-text-field>
                   </v-col>
                   <v-spacer/>
@@ -54,6 +56,8 @@
                                   tabindex="3" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
                                   :rules="validateNameFields(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
                                   clearable maxlength="25"
+                                  @input="clearError('legalMiddleNamesError')"
+                                  :error-messages="err.legalMiddleNamesError"
                                   v-model="student.legalMiddleNames"></v-text-field>
                   </v-col>
                   <v-spacer/>
@@ -73,6 +77,8 @@
                                   tabindex="4" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
                                   :rules="validateNameFields(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
                                   clearable maxlength="25"
+                                  :error-messages="err.usualLastNameError"
+                                  @input="clearError('usualLastNameError')"
                                   v-model="student.usualLastName"></v-text-field>
                   </v-col>
                   <v-spacer/>
@@ -82,6 +88,8 @@
                                   tabindex="5" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
                                   :rules="validateNameFields(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
                                   clearable maxlength="25"
+                                  :error-messages="err.usualFirstNameError"
+                                  @input="clearError('usualFirstNameError')"
                                   v-model="student.usualFirstName"></v-text-field>
                   </v-col>
                   <v-spacer/>
@@ -91,6 +99,8 @@
                                   tabindex="6" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
                                   :rules="validateNameFields(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
                                   clearable maxlength="25"
+                                  :error-messages="err.usualMiddleNamesError"
+                                  @input="clearError('usualMiddleNamesError')"
                                   v-model="student.usualMiddleNames"></v-text-field>
                   </v-col>
                   <v-spacer/>
@@ -121,6 +131,7 @@
                   <v-col cols="3">
                     <v-text-field
                       id="createNewPenFormDOB" readonly outlined dense filled
+                      :error-messages="err.birthDateError"
                       v-model="student.dob"></v-text-field>
                   </v-col>
                   <v-spacer/>
@@ -135,7 +146,7 @@
 
         <v-card-actions class="mr-4 pb-6">
           <v-spacer/>
-          <slot name="actions" :isFormValid="isFormValid">
+          <slot name="actions" :createNewPenLoading="isLoading" :isFormValid="isFormValid">
           </slot>
         </v-card-actions>
       </v-card>
@@ -144,11 +155,15 @@
 </template>
 
 <script>
-import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
+import ApiService from '../../common/apiService';
+import {STUDENT_DETAILS_FIELDS, Routes} from '@/utils/constants';
 import {formatDob, formatPostalCode} from '@/utils/format';
-
+import {getDemogValidationResults} from '@/utils/common';
+import alertMixin from '@/mixins/alertMixin';
+import {mapState} from 'vuex';
 export default {
   name: 'CreateNewPenModal',
+  mixins: [alertMixin],
   props: {
     dialog: {
       type: Boolean,
@@ -165,7 +180,14 @@ export default {
     },
     studentData(newValue) {
       this.student = newValue;
+      //reset errors
+      Object.keys(this.err).forEach(key => {
+        this.err[key] = '';
+      });
     }
+  },
+  computed: {
+    ...mapState('penRequestBatch', ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
   },
   data() {
     return {
@@ -173,6 +195,16 @@ export default {
       student: {},
       isValidForm: false,
       STUDENT_DETAILS_FIELDS: STUDENT_DETAILS_FIELDS,
+      err: {
+        usualMiddleNamesError: '',
+        usualFirstNameError: '',
+        usualLastNameError: '',
+        legalMiddleNamesError: '',
+        legalFirstNameError: '',
+        legalLastNameError: '',
+        birthDateError: '',
+      },
+      isLoading: false,
     };
   },
   methods: {
@@ -183,9 +215,39 @@ export default {
         this.student[fieldName] = this.student[fieldName].toUpperCase();
       }
     },
-    isFormValid() {
+    async isFormValid() {
       if (this.$refs.createNewPenForm.validate()) {
-        this.$emit('submitForm', this.student);
+        this.isLoading = true;
+        try {
+          const payload = {
+            student: {
+              ...this.student
+            }
+          };
+          const result = await getDemogValidationResults(payload);
+          const onlyErrors = result.filter(el => el.penRequestBatchValidationIssueSeverityCode === 'ERROR');
+          let validationIssues = onlyErrors.map(y => {
+            y.penRequestBatchValidationIssueTypeCode = this.prbValidationIssueTypeCodes.find(obj => obj.code === y.penRequestBatchValidationIssueTypeCode)?.description || y.penRequestBatchValidationIssueTypeCode;
+            return y;
+          });
+          if (validationIssues?.length > 0) {
+            this.err.legalLastNameError = validationIssues.find(el => el.penRequestBatchValidationFieldCode === 'LEGALLAST')?.penRequestBatchValidationIssueTypeCode || '';
+            this.err.legalFirstNameError = validationIssues.find(el => el.penRequestBatchValidationFieldCode === 'LEGALFIRST')?.penRequestBatchValidationIssueTypeCode || '';
+            this.err.legalMiddleNamesError = validationIssues.find(el => el.penRequestBatchValidationFieldCode === 'LEGALMID')?.penRequestBatchValidationIssueTypeCode || '';
+            this.err.usualFirstNameError = validationIssues.find(el => el.penRequestBatchValidationFieldCode === 'USUALFIRST')?.penRequestBatchValidationIssueTypeCode || '';
+            this.err.usualLastNameError = validationIssues.find(el => el.penRequestBatchValidationFieldCode === 'USUALLAST')?.penRequestBatchValidationIssueTypeCode || '';
+            this.err.usualMiddleNamesError = validationIssues.find(el => el.penRequestBatchValidationFieldCode === 'USUALMID')?.penRequestBatchValidationIssueTypeCode || '';
+            this.err.birthDateError = validationIssues.find(el => el.penRequestBatchValidationFieldCode === 'BIRTHDATE')?.penRequestBatchValidationIssueTypeCode || '';
+          } else {
+            const studentResponse = await ApiService.apiAxios.post(Routes.student.ROOT_ENDPOINT, payload);
+            await this.$router.push(`/student/${studentResponse.data.studentID}`);
+          }
+        } catch (e) {
+          console.error(e);
+          this.setFailureAlert('Pen Could not be created, Please retry later.');
+        } finally {
+          this.isLoading = false;
+        }
       }
     },
     validateNameFields(fieldName) {
@@ -195,6 +257,9 @@ export default {
         return ['Field value should not contain wildcard(*).'];
       }
       return [];
+    },
+    clearError(errFieldName) {
+      this.err[errFieldName] = '';
     }
   }
 };

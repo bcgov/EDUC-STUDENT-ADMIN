@@ -3,7 +3,7 @@
     <v-col :cols="labelSpan">
       <p class="labelField">{{ this.fieldLabel }}</p>
     </v-col>
-    <v-col :class="{textFieldColumn: validationRequired?validationRules().length ===0:true}" :cols="colspan">
+    <v-col :class="{textFieldColumn: ((validationRequired?validationRules().length ===0:true) && asyncMessages.length === 0) }" :cols="colspan">
       <v-text-field
           :tabindex="tabIndex"
           v-on:keyup.tab="[edited=true, hovered=true]"
@@ -24,6 +24,7 @@
           :readonly="!hovered || !edited"
           :outlined="hovered || edited || hasEdits(name)"
           :rules="validationRequired?validationRules():[]"
+          :error-messages="asyncMessages"
       ></v-text-field>
     </v-col>
     <v-col class="textFieldColumn" cols="2">
@@ -100,6 +101,10 @@ export default {
     },
     handleOnInput:{
       type: Function
+    },
+    asyncMessages: {
+      type: Array,
+      required: false
     }
   },
   data() {
