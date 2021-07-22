@@ -1,8 +1,8 @@
 <template>
   <v-container fluid class="full-height px-0">
-    <CreateNewPenModal @closeDialog="closeDialog" @submitForm="createNewPen" :dialog="createNewPenDialog"
+    <CreateNewPenModal @closeDialog="closeDialog" :dialog="createNewPenDialog"
                        :student-data="student">
-      <template v-slot:actions="{ isFormValid, isValidForm }">
+      <template v-slot:actions="{ isFormValid, isValidForm, createNewPenLoading }">
         <PrimaryButton id="cancel" :secondary="true" text="Cancel"
                        @click.native="closeDialog"
         >
@@ -71,7 +71,7 @@
 <script>
 import {LocalDate} from '@js-joda/core';
 import ApiService from '../../../common/apiService';
-import {REQUEST_TYPES, Routes} from '@/utils/constants';
+import {REQUEST_TYPES, Routes, STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import {mapGetters, mapMutations, mapState} from 'vuex';
 import StudentSearchResults from './StudentSearchResults';
 import StudentAdvancedSearch from './StudentAdvancedSearch';
@@ -80,7 +80,7 @@ import {checkDigit, isValidMincode, isValidPEN, isValidPostalCode} from '@/utils
 import alertMixin from '@/mixins/alertMixin';
 import {AccessEnabledForUser} from '@/common/role-based-access';
 import CreateNewPenModal from '@/components/common/CreateNewPenModal';
-
+import {pick, cloneDeep} from 'lodash';
 export default {
   components: {
     CreateNewPenModal,
@@ -128,6 +128,7 @@ export default {
     ...mapGetters('student', ['gradeCodeObjects']),
     ...mapState('student', ['genders']),
     ...mapState('studentSearch', ['pageNumber', 'headerSortParams', 'advancedSearchCriteria', 'studentSearchResponse']),
+    ...mapState('penRequestBatch', ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
     isAdvancedSearch() {
       return this.searchType === REQUEST_TYPES.studentSearch.type.advanced;
     },
@@ -154,6 +155,7 @@ export default {
   },
   mounted() {
     this.$store.dispatch('student/getCodes');
+    this.$store.dispatch('penRequestBatch/getCodes');
     this.studentSearchParams = {...this.studentSearchParams, ..._.omit(this.searchParams, ['dob'])};
     if (this.searchParams.dob) {
       this.studentSearchParams.dob.startDate = this.searchParams.dob;
@@ -415,32 +417,14 @@ export default {
         );
       }
     },
-    async createNewPen(student) {
-      this.createNewPenLoading = true;
-      try{
-        const body = {
-          student
-        };
-        const result = await ApiService.apiAxios.post(Routes.student.ROOT_ENDPOINT, body);
-        await this.$router.push(`/student/${result.data.studentID}`);
-      }catch (e) {
-        console.error(e);
-        this.setFailureAlert('Pen Could not be created, Please retry later.');
-      }finally {
-        this.createNewPenLoading = false;
-        this.createNewPenDialog = false;
-      }
-
-    },
     async closeDialog() {
       this.createNewPenDialog = false;
       await this.$nextTick(); //need to wait so update can me made in parent and propagated back down to child component
     },
     openCreatePenModal() {
       this.student = null; //clear the data.
-      this.student = {
-        ...this.studentSearchParams
-      };
+      const pickList = [STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME, STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME, STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES, STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME,STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME,STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES,STUDENT_DETAILS_FIELDS.DOB];
+      this.student =  cloneDeep(pick(this.studentSearchParams, pickList));
       this.student.dob = this.studentSearchParams.dob?.startDate?.replace(/\D/g,'');
       this.createNewPenDialog = true;
     }

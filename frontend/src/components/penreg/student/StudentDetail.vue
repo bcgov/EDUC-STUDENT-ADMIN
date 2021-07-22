@@ -25,7 +25,7 @@
                 @refresh="refreshStudent"
                 v-if="tab===0"
             >
-              <template v-slot:buttonbar="{ isAdvancedSearch, hasAnyEdits, saveStudent, REQUEST_TYPES, disableDemerge, demerge }">
+              <template v-slot:buttonbar="{ isAdvancedSearch, hasAnyEdits, saveStudent, REQUEST_TYPES, disableDemerge, demerge, saveStudentLoading }">
                 <v-row>
                   <v-col cols="12">
                     <v-card-actions style="float: right;">
@@ -36,7 +36,7 @@
                       <PrimaryButton v-if="studentDetails.student.statusCode === 'M'"
                                      :disabled="disableDemerge()" text="Demerge"
                                      @click.native="demerge()"></PrimaryButton>
-                      <PrimaryButton :disabled="!hasAnyEdits() || !validForm " text="Save"
+                      <PrimaryButton :disabled="!hasAnyEdits() || !validForm " text="Save" :loading="saveStudentLoading"
                                      @click.native="saveStudent()"></PrimaryButton>
                     </v-card-actions>
                   </v-col>
