@@ -80,7 +80,8 @@ import {checkDigit, isValidMincode, isValidPEN, isValidPostalCode} from '@/utils
 import alertMixin from '@/mixins/alertMixin';
 import {AccessEnabledForUser} from '@/common/role-based-access';
 import CreateNewPenModal from '@/components/common/CreateNewPenModal';
-import {pick, cloneDeep} from 'lodash';
+import {cloneDeep, pick} from 'lodash';
+
 export default {
   components: {
     CreateNewPenModal,
@@ -423,7 +424,7 @@ export default {
     },
     openCreatePenModal() {
       this.student = null; //clear the data.
-      const pickList = [STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME, STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME, STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES, STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME,STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME,STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES,STUDENT_DETAILS_FIELDS.DOB];
+      const pickList = [STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME, STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME, STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES, STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME, STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME, STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES, STUDENT_DETAILS_FIELDS.DOB, STUDENT_DETAILS_FIELDS.GENDER_CODE];
       this.student =  cloneDeep(pick(this.studentSearchParams, pickList));
       this.student.dob = this.studentSearchParams.dob?.startDate?.replace(/\D/g,'');
       this.createNewPenDialog = true;
