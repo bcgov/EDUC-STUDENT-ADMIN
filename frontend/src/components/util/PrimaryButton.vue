@@ -1,7 +1,7 @@
 <template>
   <v-hover v-slot:default="{ hover }">
     <v-btn :id="id"
-           :class="[hover ? secondary ? 'button-hover white--text':'button-hover':'']"
+           :class="[(hover && !disabled) ? secondary ? 'button-hover white--text':'button-hover':'']"
            color="#003366"
            :outlined="secondary"
            :small="short"

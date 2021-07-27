@@ -142,3 +142,7 @@ export function isValidLength(length, required = true) {
     str => (!str || (str && str.length <= length)) || 'Max ' + length + ' characters'
   ];
 }
+
+export function isValidEmail(value) {
+  return !!(value && /^[\w!#$%&’*+/=?`{|}~^-]+(?:\.[\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}$/.test(value));
+}

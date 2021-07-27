@@ -20,7 +20,7 @@
       <v-card-actions class="pt-0">
         <v-spacer></v-spacer>
         <PrimaryButton id="rejectBtn" secondary :text="options.rejectText || 'Cancel'" @click.native="cancel"></PrimaryButton>
-        <PrimaryButton id="resolveBtn" :text="options.resolveText || 'Yes'" @click.native="agree"></PrimaryButton>
+        <PrimaryButton id="resolveBtn" :text="options.resolveText || 'Yes'" :disabled="options.resolveDisabled" @click.native="agree"></PrimaryButton>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -48,6 +48,7 @@ export default {
       titleBold: false,
       subtitle: false,
       divider: false,
+      resolveDisabled: false,
     }
   }),
   methods: {

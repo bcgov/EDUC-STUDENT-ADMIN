@@ -47,24 +47,89 @@
     </v-form>
       <v-row no-gutters class="py-2" style="background-color:white;">
         <div id="pen-coordinator-list" class="px-3" style="width: 100%" :overlay="false">
-          <v-data-table
-            id="dataTable"
-            class="pen-coordinator-table"
-            :headers="headers"
-            :items="searchResult"
-            :page.sync="pageNumber"
-            :items-per-page="itemsPerPage"
-            hide-default-footer
-            item-key="penRequestBatchID"
-            :loading="searchLoading"
-            @page-count="pageCount = $event"
-          ></v-data-table>
+          <v-form v-model="isValidPenCoordForm">
+            <v-data-table
+              id="dataTable"
+              class="pen-coordinator-table"
+              :headers="headers"
+              :items="searchResult"
+              :page.sync="pageNumber"
+              :items-per-page="itemsPerPage"
+              hide-default-footer
+              item-key="penRequestBatchID"
+              :loading="searchLoading"
+              @page-count="pageCount = $event"
+              @current-items="setCurrentItems"
+            >
+              <template v-slot:item="props">
+                <tr @mouseover="enableActions(props.item)" @mouseleave="disableActions()" >
+                  <td v-for="header in props.headers" :key="header.id" @mouseover="enableEdit(header)" @mouseleave="disableEdit()">
+                    <v-row
+                      no-gutters
+                      v-if="header.editable && hoveredOveredRowID === props.item.mincode && ((hoveredOveredHeader === header.value && !dataLoading) || hasEdits(header.value))"
+                    >
+                      <v-col cols="9">
+                        <v-text-field
+                          dense
+                          outlined
+                          v-model="props.item[header.value]"
+                          :maxlength="header.maxLength"
+                          :rules="header.rules"
+                          :disabled="dataLoading"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="2">
+                        <TertiaryButton
+                          :id="`revert-${header.value}`"
+                          :class="[{'revert-action': !hasEdits(header.value) || dataLoading}, 'ml-3', 'mt-2']"
+                          short
+                          text="Revert"
+                          @click.native="revertField(header.value)"
+                        ></TertiaryButton>
+                      </v-col>
+                    </v-row>
+                    <div v-else-if="header.value === 'actions'">
+                      <PrimaryButton
+                        id="cancel-action"
+                        class="mr-2"
+                        short 
+                        secondary
+                        text="Cancel"
+                        :disabled="!hasAnyEdits() || dataLoading"
+                        @click.native="clickCancel"
+                        v-if="hoveredOveredRowID === props.item.mincode"
+                      ></PrimaryButton>
+                      <PrimaryButton
+                        id="save-action"
+                        short 
+                        text="Save"
+                        :disabled="!hasAnyEdits() || !isValidPenCoordForm || dataLoading"
+                        :loading="dataLoading"
+                        @click.native="clickSave"
+                        v-if="hoveredOveredRowID === props.item.mincode"
+                      ></PrimaryButton>
+                    </div>
+                    <span v-else>{{props.item[header.value]}}</span>
+                  </td>
+                </tr>
+              </template>
+            </v-data-table>
+          </v-form>
           <Pagination
             v-model="pageNumber"
             :dataResponse="penCoordinatorPage"
           />
         </div>
       </v-row>
+      <ConfirmationDialog ref="confirmationDialog">
+        <template v-slot:message>
+          <v-col class="mt-n6">
+            <v-row class="mt-n2 mb-0">
+              You have unsaved changes. Do you wish to proceed and cancel changes?
+            </v-row>
+          </v-col>
+        </template>
+      </ConfirmationDialog>
   </v-container>
 </template>
 
@@ -72,12 +137,15 @@
 import {Routes} from '@/utils/constants';
 import {mapState} from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
+import TertiaryButton from '../../util/TertiaryButton';
+import ConfirmationDialog from '../../util/ConfirmationDialog';
 import Pagination from '@/components/util/Pagination';
 import ApiService from '../../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import {
   isNotEmptyInputParams,
   isValidMincode,
+  isValidEmail,
 } from '@/utils/validation';
 import {deepCloneObject, setEmptyInputParams} from '@/utils/common';
 
@@ -85,6 +153,8 @@ export default {
   name: 'PenCoordinatorsDisplay',
   components: {
     PrimaryButton,
+    TertiaryButton,
+    ConfirmationDialog,
     Pagination
   },
   mixins: [alertMixin],
@@ -106,15 +176,23 @@ export default {
       headers: [
         { text: 'Mincode', value: 'mincode', sortable: false, align: 'start', tooltip: 'Mincode' },
         { text: 'School', value: 'schoolName', sortable: false, tooltip: 'School Name' },
-        { text: 'PEN Coordinator Name', value: 'penCoordinatorName', sortable: false, tooltip: 'PEN Coordinator Name' },
-        { text: 'Email', value: 'penCoordinatorEmail', sortable: false, tooltip: 'Eamil'},
+        { text: 'PEN Coordinator Name', value: 'penCoordinatorName', sortable: false, tooltip: 'PEN Coordinator Name', editable: true, maxLength: '40', rules: [v => v?.trim().length >= 1 || 'Required']},
+        { text: 'Email', value: 'penCoordinatorEmail', sortable: false, tooltip: 'Eamil', editable: true, maxLength: '100', rules: [v => isValidEmail(v) || 'Valid Email Required']},
+        { value: 'actions', sortable: false },
       ],
+      isValidPenCoordForm: false,
       penCoordinators: [],
       searchResult: [],
+      hoveredOveredRowID: null,
+      hoveredOveredRow: null,
+      hoveredOveredHeader: null,
+      originalPenCoordinators: [],
+      dataLoading: false,
     };
   },
   computed: {
     ...mapState('app', ['mincodeSchoolNames']),
+    ...mapState('auth', ['isValidStaffAdministrationUser']),
     schools() {
       return _.sortedUniq([...this.mincodeSchoolNames.values()].sort());
     },
@@ -127,6 +205,9 @@ export default {
           pageSize: this.itemsPerPage
         }
       };
+    },
+    originalPenCoordinator() {
+      return this.originalPenCoordinators.find(coord => coord.mincode === this.hoveredOveredRowID);
     }
   },
   created() {
@@ -177,10 +258,82 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          this.setFailureAlert('An error occurred while loading the pen coordinator data. Please try again later.');
+          this.setFailureAlert('An error occurred while loading the PEN coordinator data. Please try again later.');
         })
         .finally(() => (this.searchLoading = false));
     },
+    enableActions(item) {
+      if(!this.hasAnyEdits() && !this.dataLoading && this.isValidStaffAdministrationUser) {
+        this.hoveredOveredRowID = item.mincode;
+        this.hoveredOveredRow = item;
+      }
+    },
+    disableActions() {
+      if(!this.dataLoading) {
+        if(this.hasAnyEdits()) {
+          this.$refs.confirmationDialog.open(null, null, {
+            color: '#fff', width: 480, closeIcon: true, dark: false, resolveText: 'Save Changes', resolveDisabled: !this.isValidPenCoordForm
+          }).then((result) => {
+            if (result) {
+              this.clickSave();
+            } else {
+              this.clickCancel();
+              this.hoveredOveredRowID = null;
+            }
+          });
+        } else {
+          this.hoveredOveredRowID = null;
+        }
+      }
+    },
+    enableEdit(header) {
+      this.hoveredOveredHeader = header.value;
+    },
+    disableEdit() {
+      this.hoveredOveredHeader = null;
+    },
+    hasEdits(key) {
+      let current = this.hoveredOveredRow[key] || '';
+      let original = this.originalPenCoordinator[key] || '';
+      return current !== original;
+    },
+    hasAnyEdits() {
+      return this.hoveredOveredRow && this.originalPenCoordinator && JSON.stringify(this.hoveredOveredRow) !== JSON.stringify(this.originalPenCoordinator);
+    },
+    revertField(key) {
+      this.hoveredOveredRow[key] = this.originalPenCoordinator[key];
+    },
+    clickCancel() {
+      Object.assign(this.hoveredOveredRow, this.originalPenCoordinator);
+    },
+    clickSave() {
+      this.dataLoading = true;
+      ApiService.apiAxios
+        .put(`${Routes.SCHOOL_DATA_URL}/${this.hoveredOveredRow.mincode}/penCoordinator`, this.hoveredOveredRow)
+        .then((result) => {
+          this.setSuccessAlert('Success! The PEN coordinator data has been updated.');
+          this.updatePenCoordInList(result.data, this.penCoordinators);
+          this.updatePenCoordInList(result.data, this.originalPenCoordinators);
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while updating the PEN coordinator data. Please try again later.');
+          this.updatePenCoordInList(this.originalPenCoordinator, this.penCoordinators);
+          console.error(error);
+        })
+        .finally(() => {
+          this.dataLoading = false;
+          this.hoveredOveredRowID = null;
+        });
+    },
+    setCurrentItems(items) {
+      if(!this.dataLoading) {
+        this.originalPenCoordinators = deepCloneObject(items);
+      }
+    },
+    updatePenCoordInList(updated, list) {
+      let record = list.find(coord => coord.mincode === updated.mincode);
+      record && Object.assign(record, updated);
+    }
   }
 };
 </script>
@@ -200,7 +353,34 @@ export default {
   }
   
   #dataTable.pen-coordinator-table /deep/ table tbody tr:hover { 
-    background-color: #E1F5FE
+    background-color: #E1F5FE;
+  }
+
+  #dataTable.pen-coordinator-table /deep/ .v-text-field__details{
+    min-height: 0;
+    margin-bottom: 0;
+  }
+  
+  #dataTable.pen-coordinator-table /deep/ .v-messages{
+    min-height: 0;
+  }
+
+  .pen-coordinator-table /deep/ tr td:nth-child(1) {
+    width: 10%;
+  }
+  .pen-coordinator-table /deep/ tr td:nth-child(2),
+  .pen-coordinator-table /deep/ tr td:nth-child(3) {
+    width: 22%;
+  }
+  .pen-coordinator-table /deep/ tr td:nth-child(4) {
+    width: 31%;
+  }
+  .pen-coordinator-table /deep/ tr td:nth-child(5) {
+    width: 15%;
+  }
+
+  .revert-action {
+    visibility: hidden;
   }
   
 </style>
