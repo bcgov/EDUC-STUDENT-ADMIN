@@ -116,7 +116,7 @@
                     </v-btn>
                   </strong></v-col>
                   <v-spacer/>
-                  <v-col cols="3"><strong></strong></v-col>
+                  <v-col cols="3"><strong>Local ID</strong></v-col>
                   <v-spacer/>
                 </v-row>
                 <v-row dense>
@@ -131,11 +131,17 @@
                   <v-col cols="3">
                     <v-text-field
                       id="createNewPenFormDOB" readonly outlined dense filled
-                      :error-messages="err.birthDateError"
+                      :error-messages="err.birthDateError"  tabindex="8"
                       v-model="student.dob"></v-text-field>
                   </v-col>
                   <v-spacer/>
-                  <v-col cols="3"></v-col>
+                  <v-col cols="3">
+                    <v-text-field outlined dense filled
+                                  id="createNewPenFormLocalID"
+                                  tabindex="9"
+                                  clearable maxlength="12"
+                                  v-model="student.localID"></v-text-field>
+                  </v-col>
                   <v-spacer/>
                 </v-row>
               </v-col>
