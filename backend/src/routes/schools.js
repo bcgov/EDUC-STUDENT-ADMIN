@@ -1,8 +1,9 @@
 const passport = require('passport');
 const express = require('express');
 const router = express.Router();
-const { getSchoolByMincode, getPenCoordinatorByMincode, getPenCoordinators } = require('../components/school');
+const { getSchoolByMincode, getPenCoordinatorByMincode, getPenCoordinators, updatePenCoordinatorByMincode } = require('../components/school');
 const utils = require('../components/utils');
+const auth = require('../components/auth');
 const extendSession = utils.extendSession();
 
 
@@ -15,6 +16,11 @@ router.get('/', passport.authenticate('jwt', {session: false}, undefined), exten
  * Get a pen coordinator entity by mincode
  */
 router.get('/:mincode/penCoordinator', passport.authenticate('jwt', {session: false}, undefined), extendSession, getPenCoordinatorByMincode);
+
+/*
+ * Update a pen coordinator entity by mincode
+ */
+router.put('/:mincode/penCoordinator', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStaffAdministrationAdmin, extendSession, updatePenCoordinatorByMincode);
 
 /*
  * Get all pen coordinator entities

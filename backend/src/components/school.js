@@ -1,8 +1,10 @@
 'use strict';
 const config = require('../config/index');
-const {getBackendToken, getData, logApiError, errorResponse} = require('./utils');
+const {getBackendToken, getData, putData, getUser, logApiError, errorResponse} = require('./utils');
+const HttpStatus = require('http-status-codes');
 const cacheService = require('./cache-service');
 const lodash = require('lodash');
+const retry = require('async-retry');
 
 async function getSchoolByMincode(req, res) {
   try {
@@ -38,6 +40,25 @@ async function getPenCoordinatorByMincode(req, res) {
   }
 }
 
+async function updatePenCoordinatorByMincode(req, res) {
+  try {
+    const token = getBackendToken(req);
+    const url = `${config.get('server:schoolAPIURL')}/schools/${req.params.mincode}/pen-coordinator`;
+
+    await retry(async () => {
+      const result = await putData(token, url, req.body, getUser(req).idir_username);
+      return res.status(HttpStatus.OK).json(result);
+    },
+    {
+      retries: 3
+    });
+  } catch (e) {
+    logApiError(e, 'updatePenCoordinatorByMincode', 'Error occurred while attempting to update a PEN Coordinator.');
+    return errorResponse(res);
+  }
+
+}
+
 async function getPenCoordinators(req, res) {
   const token = getBackendToken(req);
   try {
@@ -55,5 +76,6 @@ async function getPenCoordinators(req, res) {
 module.exports = {
   getSchoolByMincode,
   getPenCoordinatorByMincode,
+  updatePenCoordinatorByMincode,
   getPenCoordinators,
 };
