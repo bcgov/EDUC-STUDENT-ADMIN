@@ -29,6 +29,7 @@ import UnAuthorizedPage from './components/UnAuthorizedPage';
 import PenMatch from './components/penreg/PenMatch';
 import CompareStudents from './components/CompareStudents';
 import PenCoordinatorsDisplay from './components/penreg/coordinator/PenCoordinatorsDisplay';
+import MacrosDisplay from './components/admin/MacrosDisplay';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -278,6 +279,16 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.PEN_COORDINATORS,
         requiresAuth: true,
+      },
+    },
+    {
+      path: '/macros',
+      name: 'macros',
+      component: MacrosDisplay,
+      meta: {
+        pageTitle: PAGE_TITLES.MACRO_MANAGEMENT,
+        requiresAuth: true,
+        role: 'isValidStaffAdministrationUser'
       },
     },
     {

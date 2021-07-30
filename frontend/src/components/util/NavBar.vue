@@ -146,7 +146,7 @@ export default {
         items: [
           {
             title: 'Macro Management',
-            link: 'home',
+            link: 'macros',
             authorized: this.isValidStaffAdministrationUser
           },
           {
