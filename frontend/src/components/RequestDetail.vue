@@ -290,7 +290,10 @@ export default {
     Mousetrap.reset();
   },
   mounted() {
-    Mousetrap.bindGlobal('ctrl+b', () => this.backToList() );
+    Mousetrap.bindGlobal('ctrl+b', () => {
+      this.backToList();
+      return false;
+    });
     this.enableActions = false;
     this.loadingPen = true;
     this.loadingComments = true;
