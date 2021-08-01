@@ -57,7 +57,7 @@ objects:
           - containerPort: 8080
             protocol: TCP
           - containerPort: 443
-            protocol: TCP 
+            protocol: TCP
           readinessProbe:
             initialDelaySeconds: 10
             failureThreshold: 5
@@ -106,11 +106,11 @@ objects:
               name: metrics
           resources:
             requests:
-              cpu: "5m"
-              memory: "32Mi"
+              cpu: "25m"
+              memory: "50Mi"
             limits:
-              cpu: "15m"
-              memory: "64Mi"
+              cpu: "50m"
+              memory: "100Mi"
         volumes:
         - name: log-storage
           emptyDir: {}
@@ -141,7 +141,7 @@ objects:
       targetPort: 8080
     - name: 443-https
       port: 443
-      protocol: TCP 
+      protocol: TCP
       targetPort: 443
     selector:
       app: "${APP_NAME}-${JOB_NAME}"
@@ -198,7 +198,7 @@ parameters:
   description: Application name
   required: true
 - name: HOST_ROUTE
-  description: The host the route will use to expose service outside cluster 
+  description: The host the route will use to expose service outside cluster
   required: true
 - name: TAG
   description: The identifying tag for this specific deployment
