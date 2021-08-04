@@ -3,10 +3,8 @@ import {DateTimeFormatterBuilder, LocalDate, LocalDateTime, ResolverStyle} from 
 export function formatPen(pen) {
   if(pen.length === 9) {
     return pen && (pen.substring(0, 3) + ' ' + pen.substring(3, 6) + ' ' + pen.substring(6)) || '';
-  } else {
-    return pen;
   }
-
+  return pen;
 }
 
 export function getDateFormatter(pattern) {
