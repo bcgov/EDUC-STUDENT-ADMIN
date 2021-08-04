@@ -761,7 +761,7 @@ export default {
       console.log(e);
     },
     changeStudentObjectValue(key, value) {
-      this.studentCopy[`${key}`] = value;
+      this.studentCopy[`${key}`] = value?.toUpperCase();
       this.clearFieldError(key);
     },
     setEnableDisableForFields(value, ...excludedFields) {
