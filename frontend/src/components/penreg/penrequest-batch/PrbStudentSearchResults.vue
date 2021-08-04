@@ -64,6 +64,10 @@
                   v-if="header.bottomValue === 'penRequestBatchStudentStatusCode'" 
                   :prbStudent="props.item"
                 ></PrbStudentStatusChip>
+                <span v-else-if="header.bottomValue === 'submittedPen'"
+                  class="bottom-column-item">
+                  {{props.item[header.bottomValue]}}
+                </span>
                 <span v-else class="bottom-column-item">{{ props.item[header.bottomValue] !== props.item[header.topValue] ? props.item[header.bottomValue]: '' }}</span>
               </span>
             </div>
