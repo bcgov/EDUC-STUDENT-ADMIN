@@ -1097,8 +1097,8 @@ export default {
     },
     validateLegalLastName() {
       if (this.studentCopy) {
-        if (!this.studentCopy.legalLastName || this.studentCopy.legalLastName.length < 2) {
-          return ['Legal Surname is required and must be more than one character.'];
+        if (!this.studentCopy.legalLastName) {
+          return ['Legal Surname is required.'];
         }
       }
       return [];
