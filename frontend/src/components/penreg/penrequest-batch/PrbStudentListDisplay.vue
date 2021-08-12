@@ -204,7 +204,9 @@
                   :rules="validateField(prbStudentSearchParams.submissionNumber)"
                 ></v-text-field>
                 <div class="d-flex justify-end pt-2">
+                  <PrimaryButton id="clear-search" :disabled="!searchEnabled" class="mr-2" :secondary="true" @click.native="clearSearch" text="Clear"></PrimaryButton>
                   <PrimaryButton id="perform-search" :disabled="!searchEnabled" :loading="searchLoading && searchEnabled" @click.native="searchPenRequests" text="Search"></PrimaryButton>
+
                 </div>
               </v-col>
             </v-row>
@@ -230,14 +232,26 @@
 </template>
 <script>
 import ApiService from '../../../common/apiService';
-import { Routes, PEN_REQ_BATCH_STUDENT_REQUEST_CODES, SEARCH_FILTER_OPERATION, SEARCH_CONDITION, SEARCH_VALUE_TYPE } from '../../../utils/constants';
-import { mapGetters, mapMutations, mapState } from 'vuex';
+import {
+  PEN_REQ_BATCH_STUDENT_REQUEST_CODES,
+  Routes,
+  SEARCH_CONDITION,
+  SEARCH_FILTER_OPERATION,
+  SEARCH_VALUE_TYPE
+} from '@/utils/constants';
+import {mapGetters, mapMutations, mapState} from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
-import { isValidPEN, isValidMincode, isValidPostalCode, isValidDob, isValidAlphanumericValue } from '../../../utils/validation';
+import {
+  isValidAlphanumericValue,
+  isValidDob,
+  isValidMincode,
+  isValidPEN,
+  isValidPostalCode
+} from '@/utils/validation';
 import PrbStudentSearchResults from './PrbStudentSearchResults';
-import { formatPrbStudents } from '../../../utils/penrequest-batch/format';
+import {formatPrbStudents} from '@/utils/penrequest-batch/format';
 import alertMixin from '../../../mixins/alertMixin';
-import { difference } from 'lodash';
+import {difference} from 'lodash';
 
 export default {
   components: {
@@ -295,9 +309,9 @@ export default {
     prbStudentStatusSearchCriteria() {
       const statuses = this.selectedStudentStatus || this.statusFilters;
       return {
-        key: 'penRequestBatchStudentStatusCode', 
-        operation: statuses.length > 0 ? SEARCH_FILTER_OPERATION.IN : SEARCH_FILTER_OPERATION.NOT_EQUAL, 
-        value: statuses.length > 0 ? statuses : PEN_REQ_BATCH_STUDENT_REQUEST_CODES.LOADED, 
+        key: 'penRequestBatchStudentStatusCode',
+        operation: statuses.length > 0 ? SEARCH_FILTER_OPERATION.IN : SEARCH_FILTER_OPERATION.NOT_EQUAL,
+        value: statuses.length > 0 ? statuses : PEN_REQ_BATCH_STUDENT_REQUEST_CODES.LOADED,
         valueType: SEARCH_VALUE_TYPE.STRING,
         condition: SEARCH_CONDITION.AND
       };
@@ -423,6 +437,13 @@ export default {
         this.searchLoading = false;
       }
     },
+    clearSearch(){
+      Object.keys(this.prbStudentSearchParams).forEach(key => {
+        this.prbStudentSearchParams[key] = undefined;
+      });
+      this.searchPenRequests(true);
+      this.searchEnabled = false;
+    },
     initializePrbStudents(students, isFilterOperation) {
       if (isFilterOperation) {
         // reset
@@ -432,7 +453,7 @@ export default {
       students.forEach(rec => {
         rec.isSelected = this.isSelected(rec);
       });
-     
+
       formatPrbStudents(students);
       return students;
     },
@@ -470,7 +491,7 @@ export default {
       }
 
       const searchCriteriaList = [
-        { 
+        {
           searchCriteriaList: [this.prbStudentBatchIdSearchCriteria, ... optionalCriteriaList],
         },
       ];
@@ -505,7 +526,7 @@ export default {
     },
     retrieveSelectedFiles() {
       const searchQueries = [
-        { 
+        {
           searchCriteriaList: [{
             key: 'penRequestBatchID', operation: SEARCH_FILTER_OPERATION.IN, value: this.batchIDs, valueType: SEARCH_VALUE_TYPE.UUID
           }],
