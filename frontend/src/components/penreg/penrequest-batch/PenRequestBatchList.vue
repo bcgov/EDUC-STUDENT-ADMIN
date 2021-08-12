@@ -14,7 +14,7 @@
 import { mapMutations, mapState } from 'vuex';
 import PenRequestBatchDataTable from './PenRequestBatchDataTable';
 import ApiService from '../../../common/apiService';
-import {Routes, PEN_REQ_BATCH_STATUS_CODES} from '../../../utils/constants';
+import {Routes, PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
 import filtersMixin from '@/mixins/filtersMixin';
 import alertMixin from '../../../mixins/alertMixin';
 
@@ -54,6 +54,7 @@ export default {
         { text: 'ERR', value: 'errorCount', sortable: false, filterName: 'Errors', countable: true, isFiltered: false, tooltip: 'Requests with errors' },
         { text: 'REP', value: 'repeatCount', sortable: false, filterName: 'Repeated', countable: true, isFiltered: false, tooltip: 'Repeated Requests' },
         { text: 'FIX', value: 'fixableCount', sortable: false, filterName: 'Fixable', countable: true, isFiltered: false, tooltip: 'Fixed Requests' },
+        { text: 'DUP', value: 'duplicateCount', sortable: false, filterName: 'Duplicates', countable: true, isFiltered: false, tooltip: 'Duplicate Requests' },
         { text: 'FLT', value: 'filteredCount', sortable: false, countable: true, tooltip: 'Filtered Item Count' },
         { text: 'Submission', value: 'submissionNumber', sortable: false, tooltip: 'Submission Number' },
       ],
@@ -75,7 +76,7 @@ export default {
           this.pagination();
         } else {
           this.pageNumber = 1;
-        }        
+        }
       }
     },
     schoolGroup: {
@@ -108,14 +109,14 @@ export default {
       const statusCriteriaList = this.prbStudentStatusFilters.map(statusCriteria => ({key: statusCriteria, operation: 'gt', value: 0, valueType: 'LONG', condition: 'OR'}));
       const statusCodeList = [PEN_REQ_BATCH_STATUS_CODES.ACTIVE, PEN_REQ_BATCH_STATUS_CODES.UNARCHIVED, PEN_REQ_BATCH_STATUS_CODES.UNARCH_CHG].join();
       return [
-        { 
+        {
           searchCriteriaList: [
             {key: 'schoolGroupCode', operation: 'eq', value: this.schoolGroup, valueType: 'STRING'},
             {key: 'penRequestBatchStatusCode', operation: 'in', value: statusCodeList, valueType: 'STRING', condition: 'AND'}
           ]
         },
-        { 
-          condition: 'AND', 
+        {
+          condition: 'AND',
           searchCriteriaList: statusCriteriaList
         },
       ];
@@ -134,7 +135,7 @@ export default {
       } else {
         this.filters.splice(0);
         this.filters.push('Fixable');
-      }      
+      }
     },
     initializeFiles(files) {
       let activeFile = files?.find(f => f.penRequestBatchStatusCode === PEN_REQ_BATCH_STATUS_CODES.ACTIVE);
@@ -145,11 +146,11 @@ export default {
         this.setSelectedFiles([]);
         this.isFilterOperation = false;
       }
-      
+
       files.forEach(file => {
         file.isSelected = this.isSelected(file);
         this.countableHeaders.forEach(header => file[header.value] = +file[header.value]);
-        file.filteredCount = this.headers.reduce((sum, header) => 
+        file.filteredCount = this.headers.reduce((sum, header) =>
           header.isFiltered ? sum + file[header.value] : sum
         , 0);
       });

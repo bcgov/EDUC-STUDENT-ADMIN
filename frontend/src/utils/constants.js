@@ -223,7 +223,7 @@ export const STUDENT_DETAILS_FIELDS = Object.freeze(
 /*  can be made into an object, if more options are needed in the future for example
  *  export const STUDENT_MERGE_FIELDS = {
        FROM_PREFIX: 'mergeFrom_'
-    }; 
+    };
  **/
 export const STUDENT_MERGE_FIELD_PREFIX = 'mergeFrom_';
 export const STUDENT_MERGE_DETAILS_FIELDS = Object.freeze(
@@ -282,7 +282,8 @@ export const PEN_REQ_BATCH_STUDENT_REQUEST_CODES = Object.freeze(
     NEWPENUSR: 'NEWPENUSR',
     ERROR: 'ERROR',
     REPEAT: 'REPEAT',
-    LOADED: 'LOADED'
+    LOADED: 'LOADED',
+    DUPLICATE: 'DUPLICATE',
   }
 );
 export const PEN_REQ_BATCH_STATUS_CODES = Object.freeze(
