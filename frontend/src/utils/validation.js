@@ -3,6 +3,10 @@ import {groupBy, isPlainObject} from 'lodash';
 
 const datePatternWithSlash = (new DateTimeFormatterBuilder).appendPattern('uuuu/MM/dd').toFormatter(ResolverStyle.STRICT);
 export function checkDigit(pen) {
+  const parsedPen = parseInt(pen);
+  if(parsedPen === 0 || isNaN(parsedPen)){
+    return false;
+  }
   const penDigits = [];
 
   for(let i = 0; i < pen.length; i++) {
@@ -20,7 +24,7 @@ export function checkDigit(pen) {
 }
 
 export function isValidPEN(pen) {
-  return !!(pen && pen.length === 9 && parseInt(pen) !== 0 && checkDigit(pen));
+  return !!(pen && pen.length === 9 && checkDigit(pen));
 }
 
 export function isValidMincode(code) {

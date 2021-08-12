@@ -332,7 +332,7 @@ export default {
       this.enableCompleteButton = false;
       this.numberOfDuplicatePenRequests=0;
       if (this.penSearchId?.length === 9) {
-        if (parseInt(this.penSearchId) !== 0 && checkDigit(this.penSearchId)) {
+        if (checkDigit(this.penSearchId)) {
           this.searchByPen();
           this.searchDuplicatePenRequestsByPen();
         } else {
