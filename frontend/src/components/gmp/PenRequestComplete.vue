@@ -9,6 +9,7 @@
                         id="pen-search-text-field"
                         v-model="penSearchId"
                         :disabled="isProvidePenDisabled"
+                        maxlength="9"
                         label="PEN:"
                         clearable
                         class="pt-0"
@@ -115,7 +116,7 @@
 import {formatDob} from '@/utils/format';
 import ApiService from '../../common/apiService';
 import {Routes, Statuses} from '@/utils/constants';
-import {replaceMacro, insertMacro} from '@/utils/macro';
+import {insertMacro, replaceMacro} from '@/utils/macro';
 import {mapGetters, mapMutations} from 'vuex';
 import {AccessEnabledForUser} from '@/common/role-based-access';
 import PrimaryButton from '../util/PrimaryButton';
@@ -330,14 +331,12 @@ export default {
       this.demographics.gender = null;
       this.enableCompleteButton = false;
       this.numberOfDuplicatePenRequests=0;
-      if(this.penSearchId) {
-        if (this.penSearchId.length === 9) {
-          if (checkDigit(this.penSearchId)) {
-            this.searchByPen();
-            this.searchDuplicatePenRequestsByPen();
-          } else {
-            this.setFailureAlert(this.notAPenErrorMessage);
-          }
+      if (this.penSearchId?.length === 9) {
+        if (checkDigit(this.penSearchId)) {
+          this.searchByPen();
+          this.searchDuplicatePenRequestsByPen();
+        } else {
+          this.setFailureAlert(this.notAPenErrorMessage);
         }
       }
     },
