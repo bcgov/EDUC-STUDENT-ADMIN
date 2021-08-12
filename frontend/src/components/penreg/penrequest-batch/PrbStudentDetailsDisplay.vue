@@ -254,7 +254,7 @@ export default {
     disableInfoReqBtn() {
       return this.loading || this.prbStudent?.sagaInProgress || this.isArchived
           || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
-          || ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE]
+          || ![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.DUPLICATE]
             .some(element => element === this.prbStudent?.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus);
     },
     repeatRequestOriginal() {
@@ -318,13 +318,11 @@ export default {
       try {
         await this.retrievePenRequestByID();
         await this.retrieveBatchFile();
-
         this.possibleMatches = [];
-        if ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR]
+        if ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.DUPLICATE]
           .some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)) {
           this.demogValidationResult = await this.getValidationIssuesByBatchStudentID(this.prbStudent.penRequestBatchStudentID);
           const hasValidationFailure = this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR');
-
           if (!hasValidationFailure) {
             await this.runPenMatch();
           }

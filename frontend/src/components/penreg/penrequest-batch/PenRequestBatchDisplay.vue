@@ -83,7 +83,7 @@
 </template>
 
 <script>
-import { PEN_REQ_BATCH_STUDENT_REQUEST_CODES } from '../../../utils/constants';
+import { PEN_REQ_BATCH_STUDENT_REQUEST_CODES, Routes } from '@/utils/constants';
 import { mapState, mapMutations } from 'vuex';
 import PenRequestBatchList from './PenRequestBatchList';
 import FilterTag from '../../util/FilterTag';
@@ -93,7 +93,6 @@ import alertMixin from '../../../mixins/alertMixin';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
 import pluralize from 'pluralize';
 import ApiService from '@/common/apiService';
-import {Routes} from '@/utils/constants';
 
 export default {
   name: 'PenRequestBatchDisplay',
@@ -144,9 +143,10 @@ export default {
         newPenCount: [PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR],
         errorCount: [PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ],
         repeatCount: [PEN_REQ_BATCH_STUDENT_REQUEST_CODES.REPEAT],
-        fixableCount: [PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE]
+        fixableCount: [PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE],
+        duplicateCount: [PEN_REQ_BATCH_STUDENT_REQUEST_CODES.DUPLICATE],
       };
-      
+
       return this.prbStudentStatusFilters.map(filter => filterNames[filter]).join(',');
     }
   },
@@ -174,7 +174,7 @@ export default {
           penRequestBatchStudentStatusCodes: this.selectedFilterNames.length > 0 ? this.selectedFilterNames : Object.values(PEN_REQ_BATCH_STUDENT_REQUEST_CODES).join(',')
         }
       };
-      
+
       ApiService.apiAxios.get(`${Routes['penRequestBatch'].FILES_URL}/penRequestBatchStudentIDs`, query)
         .then(response => {
           this.setSelectedIDs(response.data);
@@ -191,8 +191,8 @@ export default {
     async archiveOnly() {
       const fileNumber = this.selectedFiles.length;
       const result = await this.$refs.confirmationDialog.open(
-        `Please confirm that you would like to Archive ${fileNumber} ${pluralize('file', fileNumber)}`, 
-        'Note this action will not return any files to the submitting school.', 
+        `Please confirm that you would like to Archive ${fileNumber} ${pluralize('file', fileNumber)}`,
+        'Note this action will not return any files to the submitting school.',
         { width: '520px', messagePadding: 'px-4 pt-4', color: '', dark: false, closeIcon: true, divider: true, subtitle: true, resolveText: 'Confirm' }
       );
       if(result) {
@@ -238,7 +238,7 @@ export default {
             if (filesIDsWithFixableNumber > 0) {
               archivedMessage += `\n${filesIDsWithFixableNumber} PEN Request ${pluralize('File', filesIDsWithFixableNumber)} with FIXABLE records ${pluralize('has', filesIDsWithFixableNumber)} been withheld.`;
             }
-            
+
             if(archiveAndReturnResponse?.data) {
               archiveAndReturnResponse?.data?.forEach(response => {
                 this.inProgressSagaIDs.push({sagaID: response.sagaId, penRequestBatchID: response.penRequestBatchID});
