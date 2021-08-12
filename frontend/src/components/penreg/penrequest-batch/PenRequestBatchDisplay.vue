@@ -83,7 +83,7 @@
 </template>
 
 <script>
-import { PEN_REQ_BATCH_STUDENT_REQUEST_CODES } from '@/utils/constants';
+import { PEN_REQ_BATCH_STUDENT_REQUEST_CODES, Routes } from '@/utils/constants';
 import { mapState, mapMutations } from 'vuex';
 import PenRequestBatchList from './PenRequestBatchList';
 import FilterTag from '../../util/FilterTag';
@@ -93,7 +93,6 @@ import alertMixin from '../../../mixins/alertMixin';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
 import pluralize from 'pluralize';
 import ApiService from '@/common/apiService';
-import {Routes} from '@/utils/constants';
 
 export default {
   name: 'PenRequestBatchDisplay',
