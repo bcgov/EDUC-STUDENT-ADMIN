@@ -161,7 +161,7 @@
                     <FormattedTextField
                             id="searchDemogModalPostalCodeTxtField"
                             :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
-                            :rules="validatePostalCode()" maxlength="6"
+                            maxlength="7"
                             tabindex="10" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
                             :format="formatPostalCode"
                             v-model="student.postalCode">
