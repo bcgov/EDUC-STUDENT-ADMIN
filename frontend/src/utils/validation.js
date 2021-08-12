@@ -20,7 +20,7 @@ export function checkDigit(pen) {
 }
 
 export function isValidPEN(pen) {
-  return !!(pen && pen.length === 9 && checkDigit(pen));
+  return !!(pen && pen.length === 9 && parseInt(pen) !== 0 && checkDigit(pen));
 }
 
 export function isValidMincode(code) {

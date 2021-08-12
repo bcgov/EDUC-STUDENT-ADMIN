@@ -229,7 +229,7 @@ export default {
         if (!this.studentSearchParams.pen) {
           validPEN = true;
         } else if (this.studentSearchParams.pen.length === 9) {
-          if (checkDigit(this.studentSearchParams.pen)) {
+          if (parseInt(this.studentSearchParams.pen) !== 0 && checkDigit(this.studentSearchParams.pen)) {
             validPEN = true;
           }
         }
