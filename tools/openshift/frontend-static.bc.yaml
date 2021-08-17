@@ -15,7 +15,7 @@ objects:
     creationTimestamp:
     labels:
       build: "${REPO_NAME}-frontend-static"
-    name: s2i-caddy
+    name: caddy
   spec:
     lookupPolicy:
       local: false
