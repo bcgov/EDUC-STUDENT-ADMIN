@@ -90,7 +90,6 @@ describe('getPaginatedListForSCGroups', () => {
 describe('createMacro', () => {
   let req;
   let res;
-  let macroCode;
 
   beforeEach(() => {
     utils.__Rewire__('getBackendToken', () => 'token');
