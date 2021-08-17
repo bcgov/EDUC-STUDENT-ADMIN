@@ -54,7 +54,13 @@ router.get('/:id/students/:studentId', passport.authenticate('jwt', {session: fa
 
 router.get('/studentStatusCodes', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, utils.cacheMiddleware(), utils.getCodes('server:penRequestBatch:studentStatusCodesURL', 'penRequestBatchStudentStatusCodes'));
 
-router.get('/studentInfoMacros', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, utils.cacheMiddleware(), utils.getCodes('server:penRequestBatch:studentInfoMacrosURL', 'penRequestBatchStudentInfoMacros'));
+
+router.get('/studentInfoMacros', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, utils.forwardGet('getStudentInfoMacros', 'server:penRequestBatch:studentInfoMacrosURL'));
+
+router.put('/studentInfoMacros/:macroId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStaffAdministrationAdmin, utils.updateMacroByMacroId('server:penRequestBatch:studentInfoMacrosURL'));
+
+router.post('/studentInfoMacros', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStaffAdministrationAdmin, utils.createMacro('server:penRequestBatch:studentInfoMacrosURL'));
+
 
 router.get('/prbValidationFieldCodes', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, utils.cacheMiddleware(), utils.getCodes('server:penServices:prbValidationFieldCodesURL', 'prbValidationFieldCodes'));
 

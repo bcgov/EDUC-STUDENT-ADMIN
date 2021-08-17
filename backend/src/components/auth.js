@@ -21,6 +21,7 @@ function createRoleHelpers(roles) {
   const userTokenHelpers = Object.entries(roles.User).map(([roleType, roleNames]) => [
     `isValid${roleType}UserToken`, isValidUiToken(isUserHasRoles, roleType, roleNames)
   ]);
+  // userHelpers is called to generate object { isValidGMPUser: ture, isValidUMPUser: true, isValidStudentSearchUser: false, ...} which will be passed to the frontend.
   const userHelpers = Object.entries(roles.User).map(([roleType, roleNames]) => [
     `isValid${roleType}User`, isValidUser(isUserHasRoles, roleType, roleNames)
   ]);

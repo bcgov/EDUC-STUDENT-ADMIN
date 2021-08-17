@@ -141,7 +141,6 @@ async function getMacros(req, res) {
     const result = await getData(token, `${config.get('server:penServices:rootURL')}/pen-services-macro`);
     result.forEach(element => {
       stripAuditColumns(element);
-      delete element['macroId'];
     });
     const macros = groupBy(result, e => e.macroTypeCode.toLowerCase() + 'Macros');
     return res.status(200).json(macros);

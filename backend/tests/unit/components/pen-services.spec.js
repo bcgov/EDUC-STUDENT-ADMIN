@@ -20,10 +20,10 @@ const { ApiError } = require('../../../src/components/error');
 describe('getMacros', () => {
   let req;
   let res;
-  const macroObject = {label: 'data', createUser: 'user', macroId: '1', macroTypeCode: 'MERGE'};
+  const macroObject = {macroText: 'data', createUser: 'user', macroId: '1', macroTypeCode: 'MERGE'};
 
   const formattedResponse = {
-    mergeMacros: [{label: 'data', macroTypeCode: 'MERGE'}]
+    mergeMacros: [{macroText: 'data', macroId: '1', macroTypeCode: 'MERGE'}]
   };
 
 

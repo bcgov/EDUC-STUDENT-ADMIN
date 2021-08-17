@@ -661,13 +661,12 @@ describe('completeRequest', () => {
 describe('getMacroData', () => {
   let req;
   let res;
-  const macroObject = {label: 'data', createUser: 'user', macroId: '1'};
-  const strippedMacroObject = {label: 'data', macroId: '1'};
+  const macroObject = [
+    {macroText: 'data', createUser: 'user', macroId: '1', macroTypeCode: 'MOREINFO'},
+  ];
 
   const formattedResponse = {
-    returnMacros: [{label: 'data'}],
-    rejectMacros: [{label: 'data'}],
-    completeMacros: [{label: 'data'}]
+    returnMacros: [{macroText: 'data', macroId: '1', macroTypeCode: 'MOREINFO'}],
   };
 
   const getMacros = requests.getMacros('penRequest');
@@ -683,7 +682,7 @@ describe('getMacroData', () => {
 
   it('should return all macros correctly', async () => {
     utils.getData.mockResolvedValue([macroObject]);
-    utils.stripAuditColumns.mockReturnValue(strippedMacroObject);
+    utils.stripAuditColumns.mockReturnValue(formattedResponse.returnMacros[0]);
 
     await getMacros(req,res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
@@ -691,7 +690,6 @@ describe('getMacroData', () => {
   });
   it('should return 500 if getData fails', async () => {
     utils.getData.mockResolvedValue(new ApiError());
-    utils.stripAuditColumns.mockReturnValue(strippedMacroObject);
 
     await getMacros(req,res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
