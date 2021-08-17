@@ -166,6 +166,7 @@ import {
 import {formatPen} from '@/utils/format';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
 import router from '../../../router';
+import Mousetrap from 'mousetrap';
 
 export default {
   name: 'PrbStudentDetailsDisplay',
@@ -307,6 +308,12 @@ export default {
   },
   beforeDestroy() {
     this.clearNavigation();
+  },
+  mounted() {
+    Mousetrap.bindGlobal('ctrl+b', () => {
+      window.history.back();
+      return false;
+    });
   },
   methods: {
     ...mapMutations('setNavigation', ['clearNavigation']),
