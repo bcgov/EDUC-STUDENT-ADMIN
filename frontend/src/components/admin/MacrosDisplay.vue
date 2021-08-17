@@ -284,21 +284,21 @@ export default {
         this.currentMacro = null;
       }
     },
-    openConfirmation(cancel= () => {}, save=() => {}) {
+    openConfirmation(cancel, save) {
       if(this.hasAnyEdits() && !this.loading) {
         this.$refs.confirmationDialog.open(null, null, {
           color: '#fff', width: 480, closeIcon: true, dark: false, resolveText: 'Save Changes', resolveDisabled: !this.isValidForm
         }).then((result) => {
           if (result) {
             this.updateMacro(this.currentMacro);
-            save();
+            save && save();
           } else {
             this.clickCancel();
-            cancel();
+            cancel && cancel();
           }
         });
       } else {
-        cancel();
+        cancel && cancel();
       }
     },
     clickTreeView() {
