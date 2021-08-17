@@ -7,6 +7,7 @@ const utils = require('./utils');
 const redisUtil = require('../util/redis/redis-utils');
 const {ApiError, ServiceError} = require('./error');
 const {LocalDateTime} = require('@js-joda/core');
+const {groupBy} = require('lodash');
 
 function completeRequest(requestType, createRequestApiServiceReq) {
   return async function completeRequestHandler(req, res) {
@@ -172,28 +173,19 @@ function getMacros(requestType) {
       return unauthorizedError(res);
     }
     const url = config.get(`server:${requestType}:macrosURL`);
-    return Promise.all([
-      getData(token, url, {params: {macroTypeCode: 'MOREINFO'}}),
-      getData(token, url, {params: {macroTypeCode: 'REJECT'}}),
-      getData(token, url, {params: {macroTypeCode: 'COMPLETE'}})
-    ]).then(([returnResponse, rejectResponse, completeResponse]) => {
-      returnResponse.forEach((element, i) => {
-        returnResponse[i] = utils.stripAuditColumns(element);
-        delete returnResponse[i]['macroId'];
+    const macroTypeCodes = {
+      MOREINFO: 'returnMacros',
+      REJECT: 'rejectMacros',
+      COMPLETE: 'completeMacros'
+    };
+    return getData(token, url)
+    .then((result) => {
+      result.forEach((element, i) => {
+        result[i] = utils.stripAuditColumns(element);
       });
-      rejectResponse.forEach((element, i) => {
-        rejectResponse[i] = utils.stripAuditColumns(element);
-        delete rejectResponse[i]['macroId'];
-      });
-      completeResponse.forEach((element, i) => {
-        completeResponse[i] = utils.stripAuditColumns(element);
-        delete completeResponse[i]['macroId'];
-      });
-      return res.status(200).json({
-        returnMacros: returnResponse,
-        rejectMacros: rejectResponse,
-        completeMacros: completeResponse
-      });
+
+      const macros = groupBy(result, e => macroTypeCodes[e.macroTypeCode]);
+      return res.status(200).json(macros);
     }).catch((e) => {
       logApiError(e, 'getMacros', 'Error occurred while attempting to GET macros.');
       return errorResponse(res);

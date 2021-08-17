@@ -14,6 +14,8 @@ router.get('/:id/student-merge', passport.authenticate('jwt', {session: false}, 
 router.post('/:id/student-merge-complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, extendSession, atomicStudentUpdate.handleConcurrentStudentModification, mergeStudents);
 router.post('/:id/student-demerge-complete', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, extendSession, atomicStudentUpdate.handleConcurrentStudentModification, demergeStudents);
 router.post('/:id/split-pen', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, extendSession, atomicStudentUpdate.handleConcurrentStudentModification, splitPen);
-router.get('/macros', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, utils.cacheMiddleware(), getMacros);
+router.get('/macros', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, getMacros);
+router.put('/macros/:macroId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStaffAdministrationAdmin, utils.updateMacroByMacroId('server:penServices:rootURL', '/pen-services-macro'));
+router.post('/macros', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStaffAdministrationAdmin, utils.createMacro('server:penServices:rootURL', '/pen-services-macro'));
 
 module.exports = router;

@@ -85,3 +85,49 @@ describe('getPaginatedListForSCGroups', () => {
   });
 
 });
+
+
+describe('createMacro', () => {
+  let req;
+  let res;
+  let macroCode;
+
+  beforeEach(() => {
+    utils.__Rewire__('getBackendToken', () => 'token');
+    utils.__Rewire__('getData', () => Promise.resolve([
+      {macroText: 'data', macroId: '1', macroCode: 'ABC', macroTypeCode: 'MOREINFO'},
+      {macroText: 'data', macroId: '2', macroCode: 'DEF', macroTypeCode: 'REJECT'}
+    ]));
+    utils.__Rewire__('postData', (token, url, data) => Promise.resolve({...data, macroId: '3'}));
+    req = mockRequest();
+    res = mockResponse();
+    req.body = {macroText: 'new macro', macroTypeCode: 'MOREINFO'};
+  });
+
+  afterEach(() => {
+    utils.__ResetDependency__('getBackendToken');
+    utils.__ResetDependency__('getData');
+    utils.__ResetDependency__('postData');
+    jest.clearAllMocks();
+  });
+  it('should return new macro data', async () => {
+    await utils.createMacro('urlKey')(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      macroText: 'new macro',
+      macroTypeCode: 'MOREINFO',
+      macroId: '3',
+      macroCode: expect.stringMatching(/^[A-Z]{3}$/),
+    }));
+  });
+  it('should return INTERNAL_SERVER_ERROR if getData exceptions thrown', async () => {
+    utils.__Rewire__('getData', () => Promise.reject(new Error('test error senario')));
+    await utils.createMacro('urlKey')(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+  });
+  it('should return INTERNAL_SERVER_ERROR if postData exceptions thrown', async () => {
+    utils.__Rewire__('postData', () => Promise.reject(new Error('test error senario')));
+    await utils.createMacro('urlKey')(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+  });
+});

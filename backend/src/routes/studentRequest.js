@@ -32,7 +32,11 @@ router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.
  */
 //router.get('/duplicateRequests', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, findPenRequestsByPen);
 
-router.get('/macros', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, utils.cacheMiddleware(), getMacros(requestType));
+router.get('/macros', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, getMacros(requestType));
+
+router.put('/macros/:macroId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStaffAdministrationAdmin, utils.updateMacroByMacroId(`server:${requestType}:macrosURL`));
+
+router.post('/macros', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStaffAdministrationAdmin, utils.createMacro(`server:${requestType}:macrosURL`));
 
 //Returns the number of pen requests in initial and subsequent review
 router.get('/stats', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPUserToken, getUMPRequestStats);

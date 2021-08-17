@@ -289,6 +289,61 @@ function forwardGet(apiName, urlKey, extraPath) {
   };
 }
 
+function updateMacroByMacroId(urlKey, extraPath='') {
+  return async function updateMacroHandler(req, res) {
+    try {
+      const token = utils.getBackendToken(req);
+      utils.stripAuditColumns(req.body);
+      
+      const url = `${config.get(urlKey)}${extraPath}/${req.params.macroId}`;
+      const macroRes = await putData(token, url, req.body, utils.getUser(req).idir_username);
+      return res.status(200).json(macroRes);
+    } catch (e) {
+      logApiError(e, 'updateMacroByMacroId', 'Error updating a Macro.');
+      return errorResponse(res);
+    }
+  };
+}
+
+function genRandomMacroCode(length = 3) {
+  let result = '';
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const charsLength = chars.length;
+  for ( let i = 0; i < length; i++ ) {
+    result += chars.charAt(Math.floor(Math.random() * charsLength));
+  }
+  return result;
+}
+
+function createMacroCode(macros, macroTypeCode) {
+  let macroCode;
+  do {
+    macroCode = genRandomMacroCode();
+  } while(macros.some(macro => macro.macroCode === macroCode && macro.macroTypeCode === macroTypeCode));
+  return macroCode;
+}
+
+function createMacro(urlKey, extraPath='') {
+  return async function createMacroHandler(req, res) {
+    try {
+      const token = utils.getBackendToken(req);
+      const newMacro = req.body;
+      utils.stripAuditColumns(newMacro);
+
+      const url = `${config.get(urlKey)}${extraPath}`;
+
+      const currentMacros = await getData(token, url);
+      newMacro.macroCode = createMacroCode(currentMacros, newMacro.macroTypeCode);
+
+      const macroRes = await postData(token, url, newMacro, null, utils.getUser(req).idir_username);
+      return res.status(200).json(macroRes);
+    } catch (e) {
+      logApiError(e, 'createMacro', 'Error creating a Macro.');
+      return errorResponse(res);
+    }
+  };
+}
+
 const utils = {
   // Returns OIDC Discovery values
   async getOidcDiscovery() {
@@ -482,7 +537,9 @@ const utils = {
   deleteData,
   deleteDataWithBody,
   addSagaStatusToRecords,
-  forwardGet
+  forwardGet,
+  updateMacroByMacroId,
+  createMacro
 };
 
 module.exports = utils;
