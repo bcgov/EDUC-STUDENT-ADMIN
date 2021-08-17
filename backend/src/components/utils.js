@@ -165,7 +165,13 @@ async function postData(token, url, data, params, user) {
 function throwError(e, url, operationType) {
   logApiError(e, operationType, `Error during ${operationType} on ${url}`);
   const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-  throw new ApiError(status, {message: `API  ${operationType} error, on ${url}`}, e);
+  let data;
+  if (e?.response?.data) {
+    data = e.response.data;
+  } else {
+    data = {message: `API  ${operationType} error, on ${url}`};
+  }
+  throw new ApiError(status, data, e);
 }
 
 async function putData(token, url, data, user) {
@@ -294,7 +300,7 @@ function updateMacroByMacroId(urlKey, extraPath='') {
     try {
       const token = utils.getBackendToken(req);
       utils.stripAuditColumns(req.body);
-      
+
       const url = `${config.get(urlKey)}${extraPath}/${req.params.macroId}`;
       const macroRes = await putData(token, url, req.body, utils.getUser(req).idir_username);
       return res.status(200).json(macroRes);

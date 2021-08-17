@@ -211,8 +211,12 @@ export default {
             }
           })
           .catch(error => {
-            this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
             console.log(error);
+            if(error?.response?.data?.code === 400) {
+              this.setFailureAlert(`Unable to archive all the selected files due to the following reason. ${error?.response?.data?.message}`);
+            }else {
+              this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
+            }
           })
           .finally(() => {
             this.loadingFiles = false;
@@ -249,11 +253,11 @@ export default {
             } else {
               this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
             }
+            this.setSelectedFiles([]);
           })
           .catch(error => this.setSagaErrorMessage(error))
           .finally(() => {
             this.loadingFiles = false;
-            this.setSelectedFiles([]);
           });
       }
     },
@@ -283,11 +287,11 @@ export default {
             } else {
               this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
             }
+            this.setSelectedFiles([]);
           })
           .catch(error => this.setSagaErrorMessage(error))
           .finally(() => {
             this.loadingFiles = false;
-            this.setSelectedFiles([]);
           });
       }
     },
@@ -300,6 +304,8 @@ export default {
     setSagaErrorMessage(error) {
       if(error?.response?.data?.code === 409) {
         this.setFailureAlert('Another saga is in progress for this file, please try again later.');
+      }else if(error?.response?.data?.code === 400) {
+        this.setFailureAlert(`Unable to archive all the selected files due to the following reason. ${error?.response?.data?.message}`);
       } else {
         this.setFailureAlert('An error occurred while archiving PEN Request Files! Please try again later.');
       }
