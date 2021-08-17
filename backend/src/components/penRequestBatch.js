@@ -358,7 +358,6 @@ async function archiveAndReturnFiles(req, res) {
       if (e.status === HttpStatus.CONFLICT) {
         return errorResponse(res, 'Another saga in progress', HttpStatus.CONFLICT);
       }else if(e.status === HttpStatus.BAD_REQUEST){
-        console.log(e.data);
         return errorResponse(res, e.data?.message, HttpStatus.BAD_REQUEST);
       }
       return errorResponse(res);
