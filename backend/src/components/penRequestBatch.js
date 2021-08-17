@@ -6,7 +6,6 @@ const {
 } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const redisUtil = require('../util/redis/redis-utils');
-const {LocalDateTime} = require('@js-joda/core');
 const log = require('./logger');
 const lodash = require('lodash');
 const { PEN_REQ_BATCH_STATUS_CODES } = require('../util/constants');
@@ -319,13 +318,23 @@ async function updateFilesByIDs(req, res, updateFile) {
   }
 }
 
-function archiveFiles(req, res) {
+async function archiveFiles(req, res) {
   if(req.body.penRequestBatchIDs?.length) {
-    return updateFilesByIDs(req, res, batchFile => {
-      batchFile.penRequestBatchStatusCode = PEN_REQ_BATCH_STATUS_CODES.ARCHIVED;
-      batchFile.processDate = LocalDateTime.now().toString();
-      return batchFile;
+    const token = getBackendToken(req, res);
+    const body = lodash.map(req.body.penRequestBatchIDs, function(item) {
+      return { penRequestBatchID: item };
     });
+    try{
+      const data = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/archive`, body, null, getUser(req).idir_username);
+      return res.status(200).json(data);
+    }catch (e){
+      if (e.status === HttpStatus.CONFLICT) {
+        return errorResponse(res, 'Another saga in progress', HttpStatus.CONFLICT);
+      }else if(e.status === HttpStatus.BAD_REQUEST){
+        return errorResponse(res, e.data?.message, HttpStatus.BAD_REQUEST);
+      }
+      return errorResponse(res);
+    }
   } else {
     logDebug('No pen request batch ids provided to archiveFiles. Doing nothing.');
     return res.status(200).json();
@@ -348,6 +357,9 @@ async function archiveAndReturnFiles(req, res) {
       logApiError(e, 'archiveAndReturnFiles', 'Error calling archive and return saga.');
       if (e.status === HttpStatus.CONFLICT) {
         return errorResponse(res, 'Another saga in progress', HttpStatus.CONFLICT);
+      }else if(e.status === HttpStatus.BAD_REQUEST){
+        console.log(e.data);
+        return errorResponse(res, e.data?.message, HttpStatus.BAD_REQUEST);
       }
       return errorResponse(res);
     }
