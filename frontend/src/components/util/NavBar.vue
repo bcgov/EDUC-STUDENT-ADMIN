@@ -10,7 +10,7 @@
           width="15%"
           temporary>
     <v-list>
-      <div v-for="(item) in items" v-bind:key="item.title">
+      <div v-for="(item) in items.filter(obj => obj.authorized)" v-bind:key="item.title">
       <v-list-item v-if="!item.items"
             :key="item.title+`1`"
             class="menuRow"
@@ -41,7 +41,7 @@
         </template>
 
         <v-list-item
-                v-for="subItem in item.items"
+                v-for="subItem in item.items.filter(obj => obj.authorized)"
                 :key="subItem.title"
                 class="subMenuRow pl-9"
                 :id="stripWhitespace(subItem.title) + `MenuBtn`"
@@ -105,12 +105,12 @@ export default {
           {
             title: PAGE_TITLES.GMP,
             link: REQUEST_TYPES.penRequest.label,
-            authorized: this.isAuthorizedUser
+            authorized: this.isValidGMPUser
           },
           {
             title: PAGE_TITLES.UMP,
             link: REQUEST_TYPES.studentRequest.label,
-            authorized: this.isAuthorizedUser
+            authorized: this.isValidUMPUser
           }
         ],
       },
@@ -148,18 +148,13 @@ export default {
             title: 'Macro Management',
             link: 'macros',
             authorized: this.isValidStaffAdministrationUser
-          },
-          {
-            title: 'Role Management',
-            link: 'home',
-            authorized: this.isValidStaffAdministrationUser
           }
         ],
       }
     ];
   },
   computed: {
-    ...mapState('auth', ['isAuthorizedUser', 'isValidStudentSearchUser', 'isValidPenRequestBatchUser', 'isValidStaffAdministrationUser'])
+    ...mapState('auth', ['isAuthorizedUser', 'isValidStudentSearchUser', 'isValidPenRequestBatchUser', 'isValidStaffAdministrationUser', 'isValidGMPUser', 'isValidUMPUser'])
   },
   methods: {
     setActive(item) {
