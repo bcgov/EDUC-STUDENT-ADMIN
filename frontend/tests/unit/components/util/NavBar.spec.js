@@ -68,12 +68,15 @@ describe('NavBar Component initialized with namespaced Vuex module.\'', () => {
     const dummyItem = {
       title: 'Home',
       active: false,
+      authorized: true,
       items: [
         {
-          title: 'child1'
+          title: 'child1',
+          authorized: true
         },
         {
-          title: 'child2'
+          title: 'child2',
+          authorized: true
         }
       ],
     };
@@ -90,12 +93,15 @@ describe('NavBar Component initialized with namespaced Vuex module.\'', () => {
     const dummyItem = {
       title: 'Home',
       active: true,
+      authorized: true,
       items: [
         {
-          title: 'child1'
+          title: 'child1',
+          authorized: true
         },
         {
-          title: 'child2'
+          title: 'child2',
+          authorized: true
         }
       ],
     };
