@@ -41,7 +41,7 @@ objects:
             mountPath: "/etc/tls-certs"
             readOnly: true
           - name: config-env
-            mountPath: "/var/www/html/js/config"
+            mountPath: "/srv/js/config"
           livenessProbe:
             failureThreshold: 3
             httpGet:
