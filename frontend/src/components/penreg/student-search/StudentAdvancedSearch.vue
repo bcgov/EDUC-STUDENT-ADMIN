@@ -49,7 +49,7 @@
           </v-row>
         </v-col>
         <v-col cols="2"  class="mr-n3">
-          <v-checkbox id="useDOBRangeCheckbox" class="ma-0 pa-0" height="100%" label="Use range" color="#606060" v-model="advancedSearchCriteria.useDOBRange"></v-checkbox>
+          <v-checkbox v-on:change="[searchHasValues(), $emit('valueChange')]" id="useDOBRangeCheckbox" class="ma-0 pa-0" height="100%" label="Use range" color="#606060" v-model="advancedSearchCriteria.useDOBRange"></v-checkbox>
         </v-col>
         <v-col cols="3">
           <v-row no-gutters v-if="advancedSearchCriteria.useDOBRange">
