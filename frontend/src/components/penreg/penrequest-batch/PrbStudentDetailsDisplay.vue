@@ -311,7 +311,7 @@ export default {
   },
   mounted() {
     Mousetrap.bindGlobal('ctrl+b', () => {
-      window.history.back();
+      router.push({name: 'penRequestBatch'});
       return false;
     });
   },
