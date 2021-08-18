@@ -89,7 +89,7 @@ objects:
       dockerStrategy:
         from:
           kind: ImageStreamTag
-          name: s2i-caddy:v1-stable
+          name: caddy:v2
       type: Docker
 parameters:
 - name: REPO_NAME
