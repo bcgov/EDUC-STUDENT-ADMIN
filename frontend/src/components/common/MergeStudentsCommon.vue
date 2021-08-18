@@ -292,8 +292,7 @@
                     :filled="false"
                     :clearable="false"
                     :format="formatPostalCode"
-                    :rules="validatePostalCode()"
-                    maxlength="6"
+                    maxlength="7"
                 ></FormattedTextField>
               </v-col>
 
@@ -675,7 +674,7 @@ export default {
       this.student.memo = replaceMacro(this.student.memo, this.mergeMacros);
     },
     fieldDisabled(fieldName, equalityCompare) {
-      const isSameValue = equalityCompare ? equalityCompare(this.student[fieldName], this.mergedStudent[fieldName]) && equalityCompare(this.student[fieldName], this.studentBackup[fieldName]) : 
+      const isSameValue = equalityCompare ? equalityCompare(this.student[fieldName], this.mergedStudent[fieldName]) && equalityCompare(this.student[fieldName], this.studentBackup[fieldName]) :
         this.student[fieldName] === this.mergedStudent[fieldName] && this.student[fieldName] === this.studentBackup[fieldName];
       return (isSameValue && !this.checkedFields[fieldName]) || this.mergeSagaComplete;
     }
