@@ -252,6 +252,8 @@ import PrbStudentSearchResults from './PrbStudentSearchResults';
 import {formatPrbStudents} from '@/utils/penrequest-batch/format';
 import alertMixin from '../../../mixins/alertMixin';
 import {difference} from 'lodash';
+import Mousetrap from 'mousetrap';
+import router from '@/router';
 
 export default {
   components: {
@@ -340,6 +342,10 @@ export default {
     },
   },
   mounted() {
+    Mousetrap.bindGlobal('ctrl+b', () => {
+      router.push({name: 'penRequestBatch'});
+      return false;
+    });
     this.$store.dispatch('penRequestBatch/getCodes');
     this.setSelectedRecords();
     this.initialSearch();
