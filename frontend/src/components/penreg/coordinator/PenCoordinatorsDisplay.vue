@@ -57,12 +57,12 @@
               :items-per-page="itemsPerPage"
               hide-default-footer
               item-key="penRequestBatchID"
-              :loading="searchLoading"
+              :loading="dataLoading"
               @page-count="pageCount = $event"
               @current-items="setCurrentItems"
             >
               <template v-slot:item="props">
-                <tr @mouseover="enableActions(props.item)" @mouseleave="disableActions()" >
+                <tr @mouseover="enableActions(props.item)" @mouseleave="disableActions()" @click="clickCoordinatorText(props.item)">
                   <td v-for="header in props.headers" :key="header.id" @mouseover="enableEdit(header)" @mouseleave="disableEdit()">
                     <v-row
                       no-gutters
@@ -116,8 +116,9 @@
             </v-data-table>
           </v-form>
           <Pagination
-            v-model="pageNumber"
+            :value="pageNumber"
             :dataResponse="penCoordinatorPage"
+            @input="changePage"
           />
         </div>
       </v-row>
@@ -160,11 +161,11 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
-      searchLoading: false,
       searchParams: { 
         mincode: null,
         schoolName: null,
       },
+      validSearchParams: null,
       searchEnabled: false,
       
       mincodeRules: [ v => (!v || this.isValidDistrictOrMincode(v)) || 'Invalid district or mincode'],
@@ -216,6 +217,9 @@ export default {
   mounted() {
     this.loadPenCoords();
   },
+  beforeRouteLeave(to, from, next) {
+    this.openConfirmation(() => next(), () => next(false));
+  },
   methods: {
     searchHasValues(){
       this.searchEnabled = isNotEmptyInputParams(this.searchParams);
@@ -227,40 +231,46 @@ export default {
       }
     },
     searchPenCoordinators() {
-      let filterParams = deepCloneObject(this.searchParams);
-      if(filterParams.mincode && filterParams.mincode.length < 8) {
-        filterParams.districtNumber = filterParams.mincode;
-        filterParams.mincode = null;
-      } 
-      filterParams = _.pickBy(filterParams, _.isString);
-      this.searchResult = _.filter(this.penCoordinators, filterParams);
-      this.pageNumber = 1;
+      this.openConfirmation(() => {
+        this.validSearchParams = deepCloneObject(this.searchParams);
+        
+        if(this.validSearchParams.mincode && this.validSearchParams.mincode.length < 8) {
+          this.validSearchParams.districtNumber = this.validSearchParams.mincode;
+          this.validSearchParams.mincode = null;
+        } 
+        this.validSearchParams = _.pickBy(this.validSearchParams, _.isString);
+        this.searchResult = _.filter(this.penCoordinators, this.validSearchParams);
+        this.pageNumber = 1;
+      });
     },
     clearSearchParams() {
-      setEmptyInputParams(this.searchParams);
-      this.searchEnabled = false;
-      this.searchResult = this.penCoordinators;
-      this.pageNumber = 1;
+      this.openConfirmation(() => {
+        setEmptyInputParams(this.searchParams);
+        this.validSearchParams = null;
+        this.searchEnabled = false;
+        this.searchResult = this.penCoordinators;
+        this.pageNumber = 1;
+      });
     },
     isValidMincode,
     isValidDistrictOrMincode(v) {
       return (isValidMincode(v) && (v.length === 3 || v.length === 8));
     },
     loadPenCoords() {
-      this.searchLoading = true;
+      this.dataLoading = true;
       ApiService.apiAxios
         .get(`${Routes.SCHOOL_DATA_URL}/penCoordinators`)
         .then(response => {
           if (response.data) {
             this.penCoordinators = response.data;
-            this.searchResult = this.penCoordinators;
+            this.searchResult = _.filter(this.penCoordinators, this.validSearchParams);
           }
         })
         .catch(error => {
           console.log(error);
           this.setFailureAlert('An error occurred while loading the PEN coordinator data. Please try again later.');
         })
-        .finally(() => (this.searchLoading = false));
+        .finally(() => (this.dataLoading = false));
     },
     enableActions(item) {
       if(!this.hasAnyEdits() && !this.dataLoading && this.isValidStaffAdministrationUser) {
@@ -269,21 +279,34 @@ export default {
       }
     },
     disableActions() {
-      if(!this.dataLoading) {
-        if(this.hasAnyEdits()) {
-          this.$refs.confirmationDialog.open(null, null, {
-            color: '#fff', width: 480, closeIcon: true, dark: false, resolveText: 'Save Changes', resolveDisabled: !this.isValidPenCoordForm
-          }).then((result) => {
-            if (result) {
-              this.clickSave();
-            } else {
-              this.clickCancel();
-              this.hoveredOveredRowID = null;
-            }
-          });
-        } else {
-          this.hoveredOveredRowID = null;
-        }
+      if(!this.hasAnyEdits() && !this.dataLoading) {
+        this.resetHoveredOveredRow();
+      }
+    },
+    resetHoveredOveredRow() {
+      this.hoveredOveredRowID = null;
+      this.hoveredOveredRow = null;
+    },
+    openConfirmation(cancel, save) {
+      if(this.hasAnyEdits() && !this.dataLoading) {
+        this.$refs.confirmationDialog.open(null, null, {
+          color: '#fff', width: 480, closeIcon: true, dark: false, resolveText: 'Save Changes', resolveDisabled: !this.isValidPenCoordForm
+        }).then((result) => {
+          if (result) {
+            this.clickSave();
+            save && save();
+          } else {
+            this.clickCancel();
+            cancel && cancel();
+          }
+        });
+      } else {
+        cancel && cancel();
+      }
+    },
+    clickCoordinatorText(item) {
+      if(this.hasAnyEdits() &&  this.hoveredOveredRowID != item.mincode && !this.dataLoading) {
+        this.openConfirmation();
       }
     },
     enableEdit(header) {
@@ -293,12 +316,12 @@ export default {
       this.hoveredOveredHeader = null;
     },
     hasEdits(key) {
-      let current = this.hoveredOveredRow[key] || '';
-      let original = this.originalPenCoordinator[key] || '';
-      return current !== original;
+      let current = this.hoveredOveredRow?.[key] || '';
+      let original = this.originalPenCoordinator?.[key] || '';
+      return this.hoveredOveredRow && this.originalPenCoordinator && (current !== original);
     },
     hasAnyEdits() {
-      return this.hoveredOveredRow && this.originalPenCoordinator && JSON.stringify(this.hoveredOveredRow) !== JSON.stringify(this.originalPenCoordinator);
+      return this.hoveredOveredRow && this.originalPenCoordinator && (JSON.stringify(this.hoveredOveredRow) !== JSON.stringify(this.originalPenCoordinator));
     },
     revertField(key) {
       this.hoveredOveredRow[key] = this.originalPenCoordinator[key];
@@ -310,30 +333,29 @@ export default {
       this.dataLoading = true;
       ApiService.apiAxios
         .put(`${Routes.SCHOOL_DATA_URL}/${this.hoveredOveredRow.mincode}/penCoordinator`, this.hoveredOveredRow)
-        .then((result) => {
+        .then(() => {
+          this.resetHoveredOveredRow();
+          this.loadPenCoords();
           this.setSuccessAlert('Success! The PEN coordinator data has been updated.');
-          this.updatePenCoordInList(result.data, this.penCoordinators);
-          this.updatePenCoordInList(result.data, this.originalPenCoordinators);
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while updating the PEN coordinator data. Please try again later.');
-          this.updatePenCoordInList(this.originalPenCoordinator, this.penCoordinators);
           console.error(error);
-        })
-        .finally(() => {
           this.dataLoading = false;
-          this.hoveredOveredRowID = null;
         });
     },
     setCurrentItems(items) {
-      if(!this.dataLoading) {
-        this.originalPenCoordinators = deepCloneObject(items);
-      }
+      this.originalPenCoordinators = deepCloneObject(items);
     },
     updatePenCoordInList(updated, list) {
       let record = list.find(coord => coord.mincode === updated.mincode);
       record && Object.assign(record, updated);
-    }
+    },
+    changePage(newPageNumber) {
+      this.openConfirmation(() => {
+        this.pageNumber = newPageNumber;
+      });
+    },
   }
 };
 </script>
