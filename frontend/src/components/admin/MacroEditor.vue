@@ -5,6 +5,7 @@
       outlined
       v-model="macro.macroText"
       :disabled="loading"
+      :rules="validateMaxLength()"
       :rows="rows"
     ></v-textarea>
     <v-card-actions class="pt-0">
@@ -12,7 +13,7 @@
       <PrimaryButton
         id="cancel-action"
         class="mr-2"
-        :short="short" 
+        :short="short"
         secondary
         text="Cancel"
         :disabled="loading"
@@ -20,7 +21,7 @@
       ></PrimaryButton>
       <PrimaryButton
         id="save-action"
-        :short="short" 
+        :short="short"
         text="Save"
         :disabled="!isValidForm || loading"
         :loading="loading"
@@ -56,10 +57,18 @@ export default {
       default: false
     }
   },
-  computed: {
-    isValidForm() {
-      return !!this.macro.macroText;
+  methods:{
+    validateMaxLength(){
+      if(!this.macro?.macroText){
+        this.isValidForm = false;
+        return ['Macro Text is required.'];
+      }else if(this.macro?.macroText?.length > 4000){
+        this.isValidForm = false;
+        return ['Macro Text, maximum 4000 characters allowed.'];
+      }
+      this.isValidForm = true;
+      return [];
     }
-  },
+  }
 };
 </script>
