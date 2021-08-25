@@ -323,6 +323,7 @@ export const PAGE_TITLES = Object.freeze(
     ARCHIVED_REQ_BATCH_STUDENT_LIST: 'Archived PEN Request List',
     FAILED_REQ_FILES: 'Failed PEN Request Files',
     HELD_REQ_FILES: 'Held PEN Request Files',
+    VIEW_DOC: 'View Document',
   }
 );
 
