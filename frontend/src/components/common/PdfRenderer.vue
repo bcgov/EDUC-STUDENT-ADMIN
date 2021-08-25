@@ -63,13 +63,11 @@ import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import pdf from 'vue-pdf';
 import alertMixin from '@/mixins/alertMixin';
-import PrimaryButton from '@/components/util/PrimaryButton';
 
 export default {
   name: 'PdfRenderer',
   mixins: [alertMixin],
   components: {
-    PrimaryButton,
     pdf
   },
   data() {
@@ -118,7 +116,7 @@ export default {
         };
         ApiService.apiAxios.get(`${Routes[this.requestType].ROOT_ENDPOINT}/${this.requestId}/documents/${this.documentId}`, config).then((response) => {
           const bytes = new Uint8Array(response.data);
-          const binary = bytes.reduce((data, b) => data += String.fromCharCode(b), '');
+          const binary = bytes.reduce((data, b) => data + String.fromCharCode(b), '');
           this.src = 'data:application/pdf;base64,' + btoa(binary);
         }).catch(e => {
           console.error(e);

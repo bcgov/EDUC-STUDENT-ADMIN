@@ -96,7 +96,7 @@ export default {
         };
         ApiService.apiAxios.get(`${Routes[this.requestType].ROOT_ENDPOINT}/${this.requestId}/documents/${this.documentID}`, config).then((response) => {
           const bytes = new Uint8Array(response.data);
-          const binary = bytes.reduce((data, b) => data += String.fromCharCode(b), '');
+          const binary = bytes.reduce((data, b) => data + String.fromCharCode(b), '');
           this.src = 'data:image/jpeg;base64,' + btoa(binary);
         }).catch(e => {
           console.error(e);
