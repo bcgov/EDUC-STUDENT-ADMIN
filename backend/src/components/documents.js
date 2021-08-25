@@ -54,7 +54,7 @@ function getDocumentById(requestType) {
     getData(token, url).then(resData =>{
       res.setHeader('Content-disposition', 'attachment; filename=' + resData.fileName);
       res.setHeader('Content-type', resData.fileExtension);
-      return res.status(200).send(Buffer.from(resData.documentData, 'base64'));
+      return res.status(200).send(resData.documentData);
     }).catch(error=>{
       log.error('An error occurred attempting to get documents.');
       log.error(error);
