@@ -111,13 +111,8 @@ export default {
       this.isLoading = true;
       this.src = undefined;
       if (this.documentID?.length > 0) {
-        let config = {
-          responseType: 'arraybuffer'
-        };
-        ApiService.apiAxios.get(`${Routes[this.requestType].ROOT_ENDPOINT}/${this.requestId}/documents/${this.documentId}`, config).then((response) => {
-          const bytes = new Uint8Array(response.data);
-          const binary = bytes.reduce((data, b) => data + String.fromCharCode(b), '');
-          this.src = 'data:application/pdf;base64,' + btoa(binary);
+        ApiService.apiAxios.get(`${Routes[this.requestType].ROOT_ENDPOINT}/${this.requestId}/documents/${this.documentId}`).then((response) => {
+          this.src = 'data:application/pdf;base64,' + response.data;
         }).catch(e => {
           console.error(e);
           this.setFailureAlert('Could not load document. Please try again later.');
