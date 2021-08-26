@@ -140,7 +140,7 @@ export default {
           topText: 'DC',
           doubleText: 'Gen',
           bottomText: 'Local ID',
-          topValue: 'dc',
+          topValue: 'demogCode',
           doubleValue: 'genderCode',
           bottomValue: 'localID',
           sortable: false,
