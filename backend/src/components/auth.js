@@ -59,7 +59,7 @@ function isValidUiToken(isUserHasRole, roleType, roleNames) {
       try {
         userToken = jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
       } catch (e) {
-        log.error('error is from verify', e);
+        log.debug('error is from verify', e);
         return res.status(HttpStatus.UNAUTHORIZED).json();
       }
       if (userToken['realm_access'] && userToken['realm_access'].roles

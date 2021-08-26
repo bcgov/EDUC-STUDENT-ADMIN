@@ -101,7 +101,7 @@ async function searchStudent(req, res) {
 
   const baseUrl = config.get('server:student:rootURL');
   try {
-    const dataResponse = await utils.getData(token, isAuditHistorySearch ? baseUrl + '/history/paginated' : baseUrl + '/paginated', params);
+    const dataResponse = await utils.getData(token, isAuditHistorySearch ? baseUrl + '/history/paginated/distinct/students' : baseUrl + '/paginated', params);
     if (dataResponse?.totalElements > 2000000) {
       logInfo(`Search Criteria produced ${dataResponse?.totalElements} records`, params?.params);
       return res.status(400).json({
