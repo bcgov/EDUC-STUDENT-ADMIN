@@ -127,9 +127,6 @@
             maxlength="12">
           </v-text-field>
         </v-col>
-        <v-col cols="3" class="ml-3">
-          <v-checkbox disabled class="ma-0 pa-0" height="100%" color="#606060" label="Audit history"></v-checkbox>
-        </v-col>
       </v-row>
       <v-row no-gutters class="textFieldRow">
         <v-col class="mr-n8 mt-2" cols="3">Postal Code</v-col>

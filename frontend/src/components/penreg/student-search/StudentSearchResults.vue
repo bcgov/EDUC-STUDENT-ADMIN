@@ -37,7 +37,7 @@
       <template v-slot:item="props">
         <tr>
           <td v-for="header in props.headers" :key="header.id" :class="{'table-checkbox' :header.id, 'row-hightlight': isMergedOrDeceased(props.item) }">
-            <v-checkbox v-if="header.type" :disabled="isAuditHistorySearch" :input-value="props.isSelected" color="#606060" @change="props.select($event)"></v-checkbox>
+            <v-checkbox v-if="header.type" :input-value="props.isSelected" color="#606060" @change="props.select($event)"></v-checkbox>
             <div v-else @click="viewStudentDetails(props.item.studentID)" class="tableCell">
               <span v-if="header.topValue === 'dob'" class="top-column-item">{{
                   formatDob(props.item[header.topValue], 'uuuu-MM-dd', 'uuuu/MM/dd')
