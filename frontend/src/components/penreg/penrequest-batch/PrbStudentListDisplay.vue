@@ -191,17 +191,17 @@
               </v-col>
               <v-col class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
                 <v-text-field
-                  id='submission'
-                  v-model="prbStudentSearchParams.submissionNumber"
+                  id='assignedPEN'
+                  v-model="prbStudentSearchParams.assignedPEN"
                   color="#003366"
-                  label="Submission #"
-                  maxlength="8"
-                  minlength="8"
+                  label="Assigned PEN"
+                  maxlength="9"
+                  minlength="9"
                   @keyup.enter="enterPushed()"
                   v-on:input="searchHasValues"
                   tabindex="8"
                   dense
-                  :rules="validateField(prbStudentSearchParams.submissionNumber)"
+                  :rules="validatePen(prbStudentSearchParams.assignedPEN)"
                 ></v-text-field>
                 <div class="d-flex justify-end pt-2">
                   <PrimaryButton id="clear-search" :disabled="!searchEnabled" class="mr-2" :secondary="true" @click.native="clearSearch" text="Clear"></PrimaryButton>
@@ -241,13 +241,7 @@ import {
 } from '@/utils/constants';
 import {mapGetters, mapMutations, mapState} from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
-import {
-  isValidAlphanumericValue,
-  isValidDob,
-  isValidMincode,
-  isValidPEN,
-  isValidPostalCode
-} from '@/utils/validation';
+import {isValidAlphanumericValue, isValidDob, isValidMincode, isValidPEN, isValidPostalCode} from '@/utils/validation';
 import PrbStudentSearchResults from './PrbStudentSearchResults';
 import {formatPrbStudents} from '@/utils/penrequest-batch/format';
 import alertMixin from '../../../mixins/alertMixin';
@@ -403,6 +397,10 @@ export default {
       }
     },
     validatePen(pen) {
+      if (pen && pen.length < 9) {
+        this.searchEnabled = false;
+        return ['Pen must be nine digits.'];
+      }
       return this.validateField(pen, isValidPEN, this.penHint, 9);
     },
     searchHasValues(){
@@ -486,7 +484,7 @@ export default {
           } else if (element === 'postalCode') {
             value = value.replace(/ +/g, '');
             operation = SEARCH_FILTER_OPERATION.EQUAL;
-          } else if(element === 'genderCode' || element === 'gradeCode') {
+          } else if(element === 'genderCode' || element === 'gradeCode'|| element === 'assignedPEN') {
             operation = SEARCH_FILTER_OPERATION.EQUAL;
           } else if(element === 'mincode' || element === 'submissionNumber') {
             element = 'penRequestBatchEntity.' + element;
@@ -495,14 +493,10 @@ export default {
           optionalCriteriaList.push({key: element, operation: operation, value: value, valueType: valueType, condition: SEARCH_CONDITION.AND});
         });
       }
+      return [{
+          searchCriteriaList: [this.prbStudentBatchIdSearchCriteria, ...optionalCriteriaList],
+        }];
 
-      const searchCriteriaList = [
-        {
-          searchCriteriaList: [this.prbStudentBatchIdSearchCriteria, ... optionalCriteriaList],
-        },
-      ];
-
-      return searchCriteriaList;
     },
     retrievePenRequests(searchCriteria, isFilterOperation) {
       const params = {
