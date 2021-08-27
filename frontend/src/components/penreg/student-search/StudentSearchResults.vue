@@ -159,12 +159,9 @@ export default {
         },
         {
           topText: 'Mincode',
-          bottomText: 'Twinned',
           topValue: 'mincode',
-          bottomValue: 'twinned',
           sortable: false,
-          topTooltip: 'Mincode',
-          bottomTooltip: 'Twinned'
+          topTooltip: 'Mincode'
         },
       ],
     };
