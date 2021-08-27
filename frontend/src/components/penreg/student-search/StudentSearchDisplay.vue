@@ -178,7 +178,7 @@ export default {
     studentSearchResponse: {
       async handler() {
         await this.$nextTick();
-        document.getElementById('resultsRow').scrollIntoView({behavior: 'smooth'});
+        document.getElementById('resultsRow')?.scrollIntoView({behavior: 'smooth'});
       }
     }
   },
