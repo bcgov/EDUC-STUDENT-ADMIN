@@ -282,6 +282,7 @@ export default {
       searchLoading: false,
       searchEnabled: false,
       prbStudentSearchResultsKey: 0,
+      disablePageHandler: false,
     };
   },
   computed:{
@@ -322,11 +323,13 @@ export default {
   watch: {
     pageNumber: {
       handler() {
-        this.searchLoading = true;
-        this.retrievePenRequests(this.prbStudentSearchCriteria, false)
-          .finally(() => {
-            this.searchLoading = false;
-          });
+        if(!this.disablePageHandler){
+          this.searchLoading = true;
+          this.retrievePenRequests(this.prbStudentSearchCriteria, false)
+            .finally(() => {
+              this.searchLoading = false;
+            });
+        }
       }
     },
     selectedStudentStatus: {
@@ -420,6 +423,7 @@ export default {
       this.searchLoading = true;
       this.prbStudentSearchResultsKey += 1; //forces prbStudentSearchResults to rerender and update curPage
       //this.setSelectedRecords();
+      this.disablePageHandler=true;
       this.setPageNumber(1);
 
       if(initial || (this.$refs.prbStudentSearchForm.validate() && this.searchHasValues())) {
@@ -431,6 +435,7 @@ export default {
           })
           .finally(() => {
             this.searchLoading = false;
+            this.disablePageHandler = false;
           });
 
         const selectedFiles = this.$store.state[this.penRequestBatchStore].selectedFiles;
