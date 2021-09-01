@@ -6,7 +6,7 @@ const redisUtil = require('../util/redis/redis-utils');
 const log = require('./logger');
 const {getBackendToken, getData, postData, stripAuditColumns, getUser, errorResponse} = require('./utils');
 const {v4: uuidv4} = require('uuid');
-const {groupBy} = require('lodash');
+const SAGAS = require('./saga');
 
 async function validateStudentDemogData(req, res) {
   try {
@@ -131,23 +131,7 @@ function createPenServicesCompleteSagaRecordInRedis(sagaId, sagaName, operation,
     sagaName
   };
   log.info(`going to store event object in redis for ${operation} request :: `, event);
-  return redisUtil.createPenServicesSagaRecordInRedis(event);
-}
-
-async function getMacros(req, res) {
-  try {
-    const token = getBackendToken(req);
-
-    const result = await getData(token, `${config.get('server:penServices:rootURL')}/pen-services-macro`);
-    result.forEach(element => {
-      stripAuditColumns(element);
-    });
-    const macros = groupBy(result, e => e.macroTypeCode.toLowerCase() + 'Macros');
-    return res.status(200).json(macros);
-  } catch (e) {
-    logApiError(e, 'getMacros', 'Error occurred while attempting to GET macros.');
-    return errorResponse(res);
-  }
+  return redisUtil.createSagaRecord(event, SAGAS.PEN_SERVICES.sagaEventRedisKey);
 }
 
 module.exports = {
@@ -156,6 +140,5 @@ module.exports = {
   mergeStudents,
   demergeStudents,
   splitPen,
-  getMacros
 };
 

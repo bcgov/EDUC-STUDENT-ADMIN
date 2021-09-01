@@ -1,5 +1,6 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '../../utils/constants';
+import {groupBy} from 'lodash';
 
 export default {
   namespaced: true,
@@ -44,9 +45,10 @@ export default {
       ApiService.apiAxios
         .get(Routes[requestType].MACRO_URL)
         .then(response => {
-          context.commit('setReturnMacros', response.data.returnMacros);
-          context.commit('setRejectMacros', response.data.rejectMacros);
-          context.commit('setCompleteMacros', response.data.completeMacros);
+          const macros = groupBy(response.data, 'macroTypeCode');
+          context.commit('setReturnMacros', macros.MOREINFO);
+          context.commit('setRejectMacros', macros.REJECT);
+          context.commit('setCompleteMacros', macros.COMPLETE);
         })
         .catch(error => {
           console.log(error);

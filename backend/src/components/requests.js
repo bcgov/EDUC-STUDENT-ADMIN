@@ -2,12 +2,12 @@
 const { getBackendToken, getData, putData, logApiError, errorResponse, unauthorizedError } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
+const SAGAS = require('./saga');
 const config = require('../config/index');
 const utils = require('./utils');
 const redisUtil = require('../util/redis/redis-utils');
 const {ApiError, ServiceError} = require('./error');
 const {LocalDateTime} = require('@js-joda/core');
-const {groupBy} = require('lodash');
 
 function getAllRequests(requestType) {
   return async function getAllRequestsHandler(req, res) {
@@ -75,7 +75,7 @@ function getAllRequests(requestType) {
       getData(token, config.get(`server:${requestType}:rootURL`) + '/paginated', params)
     ])
       .then(async ([statusCodeResponse, dataResponse]) => {
-        const eventsArrayFromRedis = await redisUtil.getSagaEvents();
+        const eventsArrayFromRedis = await redisUtil.getSagaEventsByRedisKey(SAGAS.GMP_UMP.sagaEventRedisKey);
         dataResponse['content'].forEach((element, i) => {
           const penRequestID = element['penRequestID'];
           const studentRequestID = element['studentRequestID'];
@@ -106,33 +106,6 @@ function getAllRequests(requestType) {
         logApiError(e, 'getAllRequests', `Error occurred while attempting to GET all ${requestType} requests.`);
         return errorResponse(res);
       });
-  };
-}
-
-function getMacros(requestType) {
-  return async function getMacrosHandler(req, res) {
-    const token = utils.getBackendToken(req);
-    if (!token) {
-      return unauthorizedError(res);
-    }
-    const url = config.get(`server:${requestType}:macrosURL`);
-    const macroTypeCodes = {
-      MOREINFO: 'returnMacros',
-      REJECT: 'rejectMacros',
-      COMPLETE: 'completeMacros'
-    };
-    return getData(token, url)
-    .then((result) => {
-      result.forEach((element, i) => {
-        result[i] = utils.stripAuditColumns(element);
-      });
-
-      const macros = groupBy(result, e => macroTypeCodes[e.macroTypeCode]);
-      return res.status(200).json(macros);
-    }).catch((e) => {
-      logApiError(e, 'getMacros', 'Error occurred while attempting to GET macros.');
-      return errorResponse(res);
-    });
   };
 }
 
@@ -203,7 +176,7 @@ function getRequestById(requestType) {
             dataResponse[`${requestType}StatusCodeLabel`] = utils.getCodeLabel(statusCodesResponse, `${requestType}StatusCode`, dataResponse[`${requestType}StatusCode`]);
           }
           const id = dataResponse[`${requestType}ID`];
-          const eventsArrayFromRedis = await redisUtil.getSagaEvents();
+          const eventsArrayFromRedis = await redisUtil.getSagaEventsByRedisKey(SAGAS.GMP_UMP.sagaEventRedisKey);
           if (id && eventsArrayFromRedis) {
             for (const eventString of eventsArrayFromRedis) {
               const event = JSON.parse(eventString);
@@ -425,7 +398,6 @@ function setDefaultsForCreateApiReq(request, req) {
 
 module.exports = {
   getAllRequests,
-  getMacros,
   getRequestCommentById,
   getRequestById,
   getStudentById,

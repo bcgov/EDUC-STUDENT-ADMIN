@@ -16,6 +16,7 @@ const { mockRequest, mockResponse } = require('../helpers');
 const utils = require('../../../src/components/utils');
 const redisUtil = require('../../../src/util/redis/redis-utils');
 const penRequestBatch = require('../../../src/components/penRequestBatch');
+const SAGAS = require('../../../src/components/saga');
 
 const prbStudentData =
   {
@@ -180,13 +181,13 @@ describe('issueNewPen', () => {
     utils.postData.mockResolvedValue(resp);
     await penRequestBatch.issueNewPen(req, res);
     expectationsForUserActionsInPRBSaga(matchedStudentIDList);
-    expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenCalledWith({
+    expect(redisUtil.createSagaRecord).toHaveBeenCalledWith({
       sagaId: resp,
       penRequestBatchID: req.body.prbStudent.penRequestBatchID,
       penRequestBatchStudentID: req.params.studentId,
       sagaStatus: 'INITIATED',
       sagaName: 'PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA'
-    });
+    }, SAGAS.PEN_REQUEST_BATCH.sagaEventRedisKey);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(resp);
   });
@@ -227,13 +228,13 @@ describe('user match saga', () => {
     await penRequestBatch.userMatchSaga(req, res);
     expectationsForUserActionsInPRBSaga(['202']);
     expect(utils.postData.mock.calls[0][2].gradeCode).toBe(prbStudentData.gradeCode);
-    expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenCalledWith({
+    expect(redisUtil.createSagaRecord).toHaveBeenCalledWith({
       sagaId: resp,
       penRequestBatchID: req.body.prbStudent.penRequestBatchID,
       penRequestBatchStudentID: req.params.studentId,
       sagaStatus: 'INITIATED',
       sagaName: 'PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_SAGA'
-    });
+    }, SAGAS.PEN_REQUEST_BATCH.sagaEventRedisKey);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(resp);
   });
@@ -267,7 +268,7 @@ describe('getPenRequestBatchStudentById', () => {
 
   it('should return true sagaInProgress if penRequestBatchStudentID in redis', async () => {
     utils.getData.mockResolvedValue(prbStudentData);
-    redisUtil.getPenRequestBatchSagaEvents.mockResolvedValue([`{
+    redisUtil.getSagaEventsByRedisKey.mockResolvedValue([`{
       "sagaId": "c0a8014d-74e1-1d99-8174-e10db8410003",
       "penRequestBatchStudentID": "${prbStudentData.penRequestBatchStudentID}",
       "sagaStatus": "INITIATED"
@@ -280,7 +281,7 @@ describe('getPenRequestBatchStudentById', () => {
 
   it('should return false sagaInProgress if penRequestBatchStudentID not in redis', async () => {
     utils.getData.mockResolvedValue(prbStudentData);
-    redisUtil.getPenRequestBatchSagaEvents.mockResolvedValue([`{
+    redisUtil.getSagaEventsByRedisKey.mockResolvedValue([`{
       "sagaId": "c0a8014d-74e1-1d99-8174-e10db8410003",
       "penRequestBatchStudentID": "c0a8014d-74e1-1d99-8174-e10db8419999",
       "sagaStatus": "INITIATED"
@@ -319,13 +320,13 @@ describe('user unmatch saga', () => {
     utils.postData.mockResolvedValue(resp);
     await penRequestBatch.userUnmatchSaga(req, res);
     expect(utils.postData.mock.calls[0][2].matchedStudentIDList).toEqual(['201']);
-    expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenCalledWith({
+    expect(redisUtil.createSagaRecord).toHaveBeenCalledWith({
       sagaId: resp,
       penRequestBatchID: req.body.prbStudent.penRequestBatchID,
       penRequestBatchStudentID: req.params.studentId,
       sagaStatus: 'INITIATED',
       sagaName: 'PEN_REQUEST_BATCH_USER_UNMATCH_PROCESSING_SAGA'
-    });
+    }, SAGAS.PEN_REQUEST_BATCH.sagaEventRedisKey);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(resp);
   });
@@ -474,21 +475,21 @@ describe('archiveAndReturnFiles', () => {
     utils.postData.mockResolvedValue(resp);
     await penRequestBatch.archiveAndReturnFiles(req, res);
     expect(utils.postData.mock.calls[0][2]).toEqual({penRequestBatchArchiveAndReturnSagaData: penRequestBatchIDs});
-    expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenCalledTimes(2);
-    expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenNthCalledWith(1,{
+    expect(redisUtil.createSagaRecord).toHaveBeenCalledTimes(2);
+    expect(redisUtil.createSagaRecord).toHaveBeenNthCalledWith(1,{
       sagaId: resp[0].sagaId,
       penRequestBatchStudentID: null,
       penRequestBatchID: resp[0].penRequestBatchID,
       sagaStatus: 'INITIATED',
       sagaName: 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_TOPIC'
-    });
-    expect(redisUtil.createPenRequestBatchSagaRecordInRedis).toHaveBeenNthCalledWith(2,{
+    }, SAGAS.PEN_REQUEST_BATCH.sagaEventRedisKey);
+    expect(redisUtil.createSagaRecord).toHaveBeenNthCalledWith(2,{
       sagaId: resp[1].sagaId,
       penRequestBatchStudentID: null,
       penRequestBatchID: resp[1].penRequestBatchID,
       sagaStatus: 'INITIATED',
       sagaName: 'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_TOPIC'
-    });
+    }, SAGAS.PEN_REQUEST_BATCH.sagaEventRedisKey);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(resp);
   });

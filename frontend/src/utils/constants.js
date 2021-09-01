@@ -10,6 +10,7 @@ const penServicesRoot = baseRoot + '/pen-services';
 const schoolRequestRoot = baseRoot + '/schools';
 const penTraxRoot = baseRoot + '/penTrax';
 const penMatchRoot = baseRoot + '/penMatches';
+const macroRoot = baseRoot + '/macros';
 let object = {
   LOGIN: authRoot + '/login',
   LOGOUT: authRoot + '/logout',
@@ -28,7 +29,7 @@ let object = {
     STUDENTS_SEARCH_URL: penRequestBatchRoot + '/students',
     STUDENT_STATUS_CODE_URL: penRequestBatchRoot + '/studentStatusCodes',
     MATCH_OUTCOME_URL: penRequestBatchRoot + '/matchOutcome',
-    STUDENT_INFO_MACROS_URL: penRequestBatchRoot + '/studentInfoMacros',
+    STUDENT_INFO_MACROS_URL: macroRoot + '/?businessUseTypeCode=PENREG&macroTypeCode=INFOREQ',
     PRB_VALIDATION_FIELD_CODE_URL: penRequestBatchRoot + '/prbValidationFieldCodes',
     PRB_VALIDATION_ISSUE_SEVERITY_CODE_URL: penRequestBatchRoot + '/prbValidationSeverityCodes',
     PRB_VALIDATION_ISSUE_TYPE_CODE_URL: penRequestBatchRoot + '/prbValidationTypeCodes',
@@ -43,7 +44,7 @@ let object = {
     COMPLETE_URL: penRequestRoot + '/complete',
     REJECT_URL: penRequestRoot + '/reject',
     RETURN_URL: penRequestRoot + '/return',
-    MACRO_URL: penRequestRoot + '/macros',
+    MACRO_URL: macroRoot + '/?businessUseTypeCode=GMP',
     UNLINK_URL: penRequestRoot + '/unlink',
     STATS_URL: penRequestRoot + '/stats'
   },
@@ -62,7 +63,7 @@ let object = {
     COMPLETE_URL: studentRequestRoot + '/complete',
     REJECT_URL: studentRequestRoot + '/reject',
     RETURN_URL: studentRequestRoot + '/return',
-    MACRO_URL: studentRequestRoot + '/macros',
+    MACRO_URL: macroRoot + '/?businessUseTypeCode=UMP',
     STATS_URL: studentRequestRoot + '/stats'
   },
 
@@ -81,7 +82,7 @@ let object = {
   penServices: {
     ROOT_ENDPOINT: penServicesRoot,
     VALIDATE_DEMOGRAPHICS: penServicesRoot + '/demog-validation',
-    MACRO_URL: penServicesRoot + '/macros',
+    MACRO_URL: macroRoot + '/?businessUseTypeCode=PENREG&macroTypeCode=MERGE',
   },
   STUDENT_DATA_URL: studentRoot,
   SEARCH_BY_PEN: demographicRoot,
@@ -90,7 +91,8 @@ let object = {
     ROOT_ENDPOINT: penMatchRoot,
     POSSIBLE_MATCHES: penMatchRoot + '/possible-match',
     POSSIBLE_MATCH_REASON_CODES: penMatchRoot + '/possible-match-reason-codes'
-  }
+  },
+  MACRO_URL: macroRoot,
 };
 
 //endpoints

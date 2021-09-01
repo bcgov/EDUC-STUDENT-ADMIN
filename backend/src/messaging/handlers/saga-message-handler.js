@@ -1,5 +1,6 @@
 'use strict';
 const log = require('../../components/logger');
+const SAGAS = require('../../components/saga');
 const config = require('../../config/index');
 const redisUtil = require('../../util/redis/redis-utils');
 const webSocket = require('../../socket/web-socket');
@@ -7,22 +8,6 @@ const CONSTANTS = require('../../util/constants');
 const NATS = require('../message-pub-sub');
 const {StringCodec} = require('nats');
 const sc = StringCodec();
-const SagaTopics = [
-  'PEN_REQUEST_RETURN_SAGA_TOPIC',
-  'PEN_REQUEST_UNLINK_SAGA_TOPIC',
-  'PEN_REQUEST_REJECT_SAGA_TOPIC',
-  'PEN_REQUEST_COMPLETE_SAGA_TOPIC',
-  'STUDENT_PROFILE_REQUEST_REJECT_SAGA_TOPIC',
-  'STUDENT_PROFILE_REQUEST_RETURN_SAGA_TOPIC',
-  'STUDENT_PROFILE_COMPLETE_SAGA_TOPIC',
-  'PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_TOPIC',
-  'PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_TOPIC',
-  'PEN_REQUEST_BATCH_USER_UNMATCH_PROCESSING_TOPIC',
-  'PEN_SERVICES_MERGE_STUDENTS_SAGA_TOPIC',
-  'PEN_SERVICES_DEMERGE_STUDENTS_SAGA_TOPIC',
-  'PEN_SERVICES_SPLIT_PEN_SAGA_TOPIC',
-  'PEN_REQUEST_BATCH_ARCHIVE_AND_RETURN_TOPIC',
-  'PEN_REQUEST_BATCH_REPOST_REPORTS_TOPIC'];
 
 async function subscribeSagaMessages(nats, topic, handleMessage) {
   const opts = {
@@ -40,18 +25,15 @@ async function handleSagaMessage(msg) {
   log.info(`Received message, on ${msg.subject} , Subscription Id ::  [${msg.sid}], Reply to ::  [${msg.reply}] :: Data ::`, event);
   let isWebSocketBroadcastingRequired = false;
   if ('COMPLETED' === event.sagaStatus || 'FORCE_STOPPED' === event.sagaStatus) {
-    let recordFoundInRedis;
-    if (msg.subject?.startsWith('PEN_REQUEST_BATCH')) {
-      recordFoundInRedis = await redisUtil.removePenRequestBatchSagaRecordFromRedis(event);
-    } else if (msg.subject?.startsWith('PEN_SERVICES')) {
-      recordFoundInRedis = await redisUtil.removePenServicesSagaRecordFromRedis(event);
-    } else {
-      recordFoundInRedis = await redisUtil.removeSagaRecordFromRedis(event);
+    const saga = Object.values(SAGAS).find(sagaData => sagaData.sagaTopics.includes(msg.subject));
+    if(saga) {
+      const recordFoundInRedis = await redisUtil.removeEventRecordFromRedis(event, saga.sagaEventRedisKey);
+      // if record is not found in redis means duplicate message which was already processed.
+      if (recordFoundInRedis) {
+        isWebSocketBroadcastingRequired = true;
+      }
     }
-    // if record is not found in redis means duplicate message which was already processed.
-    if (recordFoundInRedis) {
-      isWebSocketBroadcastingRequired = true;
-    }
+
   } else if ('INITIATED' === event.sagaStatus) {
     isWebSocketBroadcastingRequired = true;
   }
@@ -90,7 +72,8 @@ async function subscribeToWebSocketMessageTopic(nats) {
 
 const SagaMessageHandler = {
   subscribe() {
-    SagaTopics.forEach((topic) => {
+    const sagaTopics = Object.values(SAGAS).flatMap(saga => saga.sagaTopics);
+    sagaTopics.forEach((topic) => {
       subscribeSagaMessages(NATS.getConnection(), topic, handleSagaMessage);
     });
     subscribeToWebSocketMessageTopic(NATS.getConnection());
