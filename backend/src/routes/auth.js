@@ -74,10 +74,12 @@ async function generateTokens(req, res) {
     req['user'].jwtFrontend = auth.generateUiToken();
     const isAuthorizedUser = isValidStaffUserWithRoles(req);
     const isValidUsers = auth.isValidUsers(req);
+    const isValidAdminUsers=auth.isValidAdminUsers(req);
     const responseJson = {
       jwtFrontend: req.user.jwtFrontend,
       isAuthorizedUser: isAuthorizedUser,
-      ...isValidUsers
+      ...isValidUsers,
+      ...isValidAdminUsers
     };
     return res.status(HttpStatus.OK).json(responseJson);
   } else {
@@ -107,10 +109,12 @@ router.post('/refresh', [
     } else {
       const isAuthorizedUser = isValidStaffUserWithRoles(req);
       const isValidUsers = auth.isValidUsers(req);
+      const isValidAdminUsers=auth.isValidAdminUsers(req);
       const responseJson = {
         jwtFrontend: req.user.jwtFrontend,
         isAuthorizedUser: isAuthorizedUser,
-        ...isValidUsers
+        ...isValidUsers,
+        ...isValidAdminUsers
       };
       return res.status(HttpStatus.OK).json(responseJson);
     }
@@ -122,11 +126,13 @@ router.post('/refresh', [
 router.get('/token', auth.refreshJWT, (req, res) => {
   const isAuthorizedUser = isValidStaffUserWithRoles(req);
   const isValidUsers = auth.isValidUsers(req);
+  const isValidAdminUsers=auth.isValidAdminUsers(req);
   if (req['user'] && req['user'].jwtFrontend && req['user'].refreshToken) {
     const responseJson = {
       jwtFrontend: req['user'].jwtFrontend,
       isAuthorizedUser: isAuthorizedUser,
-      ...isValidUsers
+      ...isValidUsers,
+      ...isValidAdminUsers
     };
     res.status(HttpStatus.OK).json(responseJson);
   } else {
