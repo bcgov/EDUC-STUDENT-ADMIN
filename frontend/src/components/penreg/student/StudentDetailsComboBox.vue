@@ -23,6 +23,7 @@
             dense
             type="solo"
             :disabled="fieldDisabled"
+            :rules="rules"
 
         ><template #selection="{ item }">
           <v-chip v-if="name==='statusCode' && [STUDENT_CODES.DECEASED,STUDENT_CODES.DELETED].includes(fieldModel)" small dark color="#003366">{{ item.text }}</v-chip>
@@ -95,6 +96,10 @@ export default {
     disabled: {
       type:Boolean,
       required: true
+    },
+    rules: {
+      type: Array,
+      defaultValue: []
     }
   },
   data() {

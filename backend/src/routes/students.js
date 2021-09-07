@@ -10,7 +10,7 @@ const {
   getStudentByStudentId,
   getStudentByPen,
   getAllStudentByStudentIds,
-  getStudentDemographicsOnlyByStudentId
+  getStudentDemographicsOnlyByStudentId,
 } = require('../components/student');
 const roles = require('../components/roles');
 const utils = require('../components/utils');
@@ -23,6 +23,7 @@ router.get('/genderCodes', passport.authenticate('jwt', {session: false}, undefi
 router.get('/demogCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:student:demogCodesURL', 'studentDemogCodes'));
 router.get('/statusCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:student:statusCodesURL', 'studentStatusCodes'));
 router.get('/gradeCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:student:gradeCodesURL', 'studentGradeCodes'));
+router.get('/document-type-codes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:student:docTypeCodesURL', 'studentDocTypeCodes'));
 router.get('/historyActivityCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:student:historyActivityCodesURL', 'studentHistoryActivityCodes'));
 router.get('/search', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, extendSession, searchStudent);
 router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentById);

@@ -84,6 +84,7 @@ export default {
   getDemogCodes: getCodes(Routes.student.DEMOG_CODE_URL),
   getStatusCodes: getCodes(Routes.student.STATUS_CODE_URL),
   getGradeCodes: getCodes(Routes.student.GRADE_CODE_URL),
+  getDocumentTypeCodesFromStudentApi: getCodes(Routes.student.DOC_TYPE_CODES_URL),
   getPossibleMatchReasonCodes: getCodes(Routes.penMatch.POSSIBLE_MATCH_REASON_CODES),
   getHistoryActivityCodes: getCodes(Routes.student.HISTORY_ACTIVITY_CODE_URL),
   getPenRequestBatchStudentStatusCodes: getCodes(Routes.penRequestBatch.STUDENT_STATUS_CODE_URL),

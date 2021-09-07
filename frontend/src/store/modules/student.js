@@ -13,6 +13,7 @@ export default {
     studentsInProcess: new Set(),
     staleStudentRecordsMap: new Map(),// this stores the studentID as key and the message as value
     mergeMacros: [],
+    documentTypeCodes: []
   },
   getters: {
     selectedStudent: state => state.selectedStudent,
@@ -24,6 +25,7 @@ export default {
     historyActivityCodes: state => state.historyActivityCodes,
     studentsInProcess: state => state.studentsInProcess,
     staleStudentRecordsMap: (state) => state.staleStudentRecordsMap,
+    documentTypeCodes: state => state.documentTypeCodes
   },
   mutations: {
     setGenders: (state, genders) => {
@@ -62,12 +64,15 @@ export default {
     },
     setMergeMacros: (state, macros) => {
       state.mergeMacros = macros;
+    },
+    setDocumentTypeCodes: (state, codes) => {
+      state.documentTypeCodes = codes;
     }
   },
   actions: {
-    async getCodes({ commit, state, dispatch}) {
-      if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        if(!state.genders) {
+    async getCodes({commit, state, dispatch}) {
+      if (localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
+        if (!state.genders) {
           ApiService.getGenderCodes().then(responseGender => commit('setGenders', responseGender.data));
         }
         if (!state.demogCodeObjects) {
@@ -82,16 +87,19 @@ export default {
         if (!state.possibleMatchReasons) {
           dispatch('getPossibleMatchReasonCodes');
         }
+        if (state.documentTypeCodes.length === 0) {
+          ApiService.getDocumentTypeCodesFromStudentApi().then(res => commit('setDocumentTypeCodes', res.data));
+        }
       }
     },
 
     async getPossibleMatchReasonCodes({commit}) {
-      if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
+      if (localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
         ApiService.getPossibleMatchReasonCodes().then(response => commit('setPossibleMatchReasons', response.data));
       }
     },
     async getHistoryActivityCodes({commit}) {
-      if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
+      if (localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
         ApiService.getHistoryActivityCodes().then(response => commit('setHistoryActivityCodes', response.data));
       }
     },

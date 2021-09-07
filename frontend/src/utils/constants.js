@@ -75,6 +75,7 @@ let object = {
     GRADE_CODE_URL: studentRoot + '/gradeCodes',
     HISTORY_ACTIVITY_CODE_URL: studentRoot + '/historyActivityCodes',
     GET_ALL_STUDENTS_BY_IDS: studentRoot + '/allStudents',
+    DOC_TYPE_CODES_URL: studentRoot + '/document-type-codes'
   },
   SCHOOL_DATA_URL: schoolRequestRoot,
   penServices: {
@@ -87,8 +88,8 @@ let object = {
   PEN_TRAX_URL: penTraxRoot,
   penMatch: {
     ROOT_ENDPOINT: penMatchRoot,
-    POSSIBLE_MATCHES: penMatchRoot+'/possible-match',
-    POSSIBLE_MATCH_REASON_CODES:penMatchRoot+'/possible-match-reason-codes'
+    POSSIBLE_MATCHES: penMatchRoot + '/possible-match',
+    POSSIBLE_MATCH_REASON_CODES: penMatchRoot + '/possible-match-reason-codes'
   }
 };
 
@@ -215,7 +216,9 @@ export const STUDENT_DETAILS_FIELDS = Object.freeze(
     MEMO: 'memo',
     PEN: 'pen',
     STATUS_CODE: 'statusCode',
-    TRUE_STUDENT_ID: 'trueStudentID'
+    TRUE_STUDENT_ID: 'trueStudentID',
+    DOC_TYPE_CODE: 'documentTypeCode',
+    DATE_OF_CONFIRMATION: 'dateOfConfirmation'
   }
 );
 
