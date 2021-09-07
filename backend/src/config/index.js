@@ -81,6 +81,7 @@ nconf.defaults({
       gradeCodesURL: process.env.STUDENT_API_URL + '/grade-codes',
       twinReasonCodesURL: process.env.STUDENT_API_URL + '/twin-reason-codes',
       historyActivityCodesURL: process.env.STUDENT_API_URL + '/history-activity-codes',
+      docTypeCodesURL: process.env.STUDENT_API_URL + '/document-type-codes',
     },
     penServices: {
       rootURL: process.env.PEN_SERVICES_API_URL,

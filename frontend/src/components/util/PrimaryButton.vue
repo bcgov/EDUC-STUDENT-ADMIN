@@ -1,6 +1,7 @@
 <template>
   <v-hover v-slot:default="{ hover }">
     <v-btn :id="id"
+           :title="title||text"
            :class="[(hover && !disabled) ? secondary ? 'button-hover white--text':'button-hover':'']"
            color="#003366"
            :outlined="secondary"
@@ -63,6 +64,9 @@ export default {
     largeIcon: {
       type: Boolean,
       default: false
+    },
+    title:{
+      type: String,
     }
   }
 };

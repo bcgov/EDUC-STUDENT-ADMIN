@@ -33,12 +33,37 @@
               </PrimaryButton>
             </v-col>
           </v-row>
-          <StudentDetailsComboBox label="Demog Code" colspan="1" :name="STUDENT_DETAILS_FIELDS.DEMOG_CODE"
+          <StudentDetailsComboBox label="Demog Code" colspan="1"
+                                  :name="STUDENT_DETAILS_FIELDS.DEMOG_CODE"
                                   @changeStudentObjectValue="changeStudentObjectValue"
                                   :model="studentCopy.demogCode?studentCopy.demogCode:''"
                                   :has-edits="hasEdits" tab-index="11" :revert-field="revertField"
                                   :items="getDemogCodeComboBox()" revert-id="revertDemogCode"
                                   :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.DEMOG_CODE)"></StudentDetailsComboBox>
+          <StudentDetailsComboBox label="Document Type Code" colspan="1"
+                                  :name="STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE"
+                                  @changeStudentObjectValue="changeStudentObjectValue"
+                                  :model="studentCopy.documentTypeCode?studentCopy.documentTypeCode:''"
+                                  :rules="validateDemogCode()"
+                                  :has-edits="hasEdits" tab-index="12" :revert-field="revertField"
+                                  :items="getDocumentTypes()" revert-id="revertDocumentTypeCode"
+                                  :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE)"></StudentDetailsComboBox>
+            <v-row no-gutters v-if="dateOfConfirmation" class="mb-2 pb-2">
+              <v-col>
+                <div><span class="ma-0">Date Of Confirmation:</span> <span class="bolder mb-0 customNoBorder py-0 my-0"> {{dateOfConfirmation}}</span>
+                  <PrimaryButton
+                    color="#38598A"
+                    text="Update"
+                    :short="true"
+                    class="mt-1 ml-3"
+                    :loading="saveStudentLoading"
+                    @click.native="updateDOC()"
+                    title="Set Date Of Confirmation to Current Date."
+                  >
+                  </PrimaryButton>
+                </div>
+              </v-col>
+            </v-row>
 
           <StudentDetailsTextFieldSideCardReadOnly :model="traxStatus" :name="STUDENT_DETAILS_FIELDS.TRAX_STATUS"
                                                    colspan="1" label="TRAX Status"
@@ -532,7 +557,7 @@ import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsCo
 import StudentDetailsTextFieldSideCardReadOnly
   from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
 import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
-import {formatDob, formatMincode, formatPen} from '@/utils/format';
+import {formatDateTime, formatDob, formatMincode, formatPen} from '@/utils/format';
 import {cloneDeep, pick, sortBy} from 'lodash';
 import alertMixin from '../../mixins/alertMixin';
 import schoolMixin from '../../mixins/schoolMixin';
@@ -647,6 +672,7 @@ export default {
         birthDateError: [],
       },
       saveStudentLoading: false,
+      dateOfConfirmation: '',
     };
   },
   created() {
@@ -657,7 +683,7 @@ export default {
   },
   computed: {
     ...mapState('penRequestBatch', ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
-    ...mapGetters('student', ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects']),
+    ...mapGetters('student', ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects', 'documentTypeCodes']),
     ...mapState('studentSearch', ['isAdvancedSearch']),
     ...mapGetters('notifications', ['notification']),
     ...mapGetters('auth', ['userInfo']),
@@ -724,6 +750,7 @@ export default {
     }
   },
   methods: {
+    formatDateTime,
     formatPen,
     formatMincode,
     formatDob,
@@ -761,6 +788,11 @@ export default {
       console.log(e);
     },
     changeStudentObjectValue(key, value) {
+      if (key === STUDENT_DETAILS_FIELDS.DEMOG_CODE && value === 'C' && this.origStudent[`${key}`] !== 'C') {
+        this.$nextTick(() => {
+          this.parentRefs.studentDetailForm.validate();
+        });
+      }
       this.studentCopy[`${key}`] = value?.toUpperCase();
       this.clearFieldError(key);
     },
@@ -769,6 +801,9 @@ export default {
     },
     frontEndDateTimeFormat(date) {
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY/MM/DD HH:mm:ss a');
+    },
+    frontEndDateFormat(date) {
+      return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY/MM/DD');
     },
     updateDOBLabel(initialLoad) {
       if (initialLoad) {
@@ -854,6 +889,7 @@ export default {
       this.studentCopy = this.deepCloneObject(this.origStudent);
       this.createdDateTime = this.frontEndDateTimeFormat(this.studentCopy.createDate);
       this.updatedDateTime = this.frontEndDateTimeFormat(this.studentCopy.updateDate);
+      this.dateOfConfirmation = this.studentCopy.dateOfConfirmation ? this.frontEndDateFormat(this.studentCopy.dateOfConfirmation) : '';
       this.updateDOBLabel(true);
       this.formatPostalCode();
       this.setGradeLabel();
@@ -897,16 +933,22 @@ export default {
     revertField(key) {
       this.studentCopy[key] = this.origStudent[key];
       this.clearFieldError(key);
+      if (key === STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE) {
+        this.dateOfConfirmation = this.origStudent[STUDENT_DETAILS_FIELDS.DATE_OF_CONFIRMATION] ? this.frontEndDateFormat(this.origStudent[STUDENT_DETAILS_FIELDS.DATE_OF_CONFIRMATION]) : '';
+      } else if (key === STUDENT_DETAILS_FIELDS.DEMOG_CODE && this.studentCopy[key] !== 'C') {
+        this.dateOfConfirmation = '';
+        this.studentCopy[STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE] = null;
+      }
     },
     revertDOBField(value) {
       this.revertField(value);
       this.updateDOBLabel(true);
       this.err.birthDateError = [];
     },
-    clearDOBRuleErrors(){
+    clearDOBRuleErrors() {
       this.err.birthDateError = [];
     },
-    clearFieldError(key){
+    clearFieldError(key) {
       Object.keys(this.err).forEach(errKey => {
         if (errKey === `${key}Error`) {
           this.err[errKey] = [];
@@ -998,9 +1040,9 @@ export default {
         if (isUpdateStudentAllowed) {
           try {
             this.saveStudentLoading = true;
-            const pickList = [STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME, STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME, STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES, STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME,STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME,STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES,STUDENT_DETAILS_FIELDS.DOB, STUDENT_DETAILS_FIELDS.GENDER_CODE];
-            const studentValidationPayload =  cloneDeep(pick(this.studentCopy, pickList));
-            studentValidationPayload.dob = studentValidationPayload.dob.replace(/\D/g,'');
+            const pickList = [STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME, STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME, STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES, STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME, STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME, STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES, STUDENT_DETAILS_FIELDS.DOB, STUDENT_DETAILS_FIELDS.GENDER_CODE];
+            const studentValidationPayload = cloneDeep(pick(this.studentCopy, pickList));
+            studentValidationPayload.dob = studentValidationPayload.dob.replace(/\D/g, '');
             const payload = {
               student: {
                 ...studentValidationPayload
@@ -1066,6 +1108,19 @@ export default {
         }
       }
       return demogCodeComboBox;
+    },
+    getDocumentTypes() {
+      const docTypes = [];
+      if (this.documentTypeCodes) {
+        for (const element of this.documentTypeCodes) {
+          const item = {
+            value: element.documentTypeCode,
+            text: element.label
+          };
+          docTypes.push(item);
+        }
+      }
+      return docTypes;
     },
     getStatusLevels() {
       const statusCodeComboBox = [];
@@ -1201,8 +1256,36 @@ export default {
       } else {
         this.setFailureAlert('Student data could not be updated, please try again.');
       }
+    },
+    validateDemogCode() {
+      if (this.studentCopy[STUDENT_DETAILS_FIELDS.DEMOG_CODE] === 'C' && !this.studentCopy[STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE]) {
+        return ['Required for Confirmed Demog Code.'];
+      }
+      return [];
+    },
+    async updateDOC(){
+      this.saveStudentLoading=true;
+      try {
+        const params = {
+          penNumbersInOps: this.origStudent.pen
+        };
+        this.isStudentUpdatedInDifferentTab = false; //make sure that notification for current tab is ignored.
+        const body = this.prepPut(this.studentCopy);
+        body.isDateOfConfirmationChanged=true;
+        const studentResponse = await ApiService.apiAxios.put(Routes['student'].ROOT_ENDPOINT + '/' + this.studentID, body , {params});
+        this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false)); // enable all the fields here, required fields to be disabled will be done in this.setStudent method.
+        this.setStudent(studentResponse.data);
+        this.$emit('update:student', studentResponse.data);
+        this.setSuccessAlert('Student data updated successfully.');
+      } catch (e) {
+        console.error(e);
+        this.processSaveStudentError(e);
+      } finally {
+        this.saveStudentLoading = false;
+      }
     }
-  }
+  },
+
 };
 </script>
 <style>
