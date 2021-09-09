@@ -20,6 +20,7 @@ const ExtractJwt = require('passport-jwt').ExtractJwt;
 const OidcStrategy = require('passport-openidconnect-kc-idp').Strategy;
 require('./schedulers/student-admin-scheduler');
 require('./schedulers/cache-service-scheduler');
+require('./schedulers/doc-type-migration-scheduler');
 const apiRouter = express.Router();
 const authRouter = require('./routes/auth');
 const penRequestRouter = require('./routes/penRequest');

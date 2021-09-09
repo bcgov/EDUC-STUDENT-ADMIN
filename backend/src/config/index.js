@@ -118,7 +118,8 @@ nconf.defaults({
   },
   scheduler: {
     schedulerCronStaleSagaRecordRedis: process.env.SCHEDULER_CRON_STALE_SAGA_RECORD_REDIS,
-    minTimeBeforeSagaIsStaleInSeconds: process.env.MIN_TIME_BEFORE_SAGA_IS_STALE_IN_SECONDS
+    minTimeBeforeSagaIsStaleInSeconds: process.env.MIN_TIME_BEFORE_SAGA_IS_STALE_IN_SECONDS,
+    schedulerCronDocTypeMigration: process.env.SCHEDULER_CRON_DOC_TYPE_MIGRATION
   }
 });
 module.exports = nconf;
