@@ -97,21 +97,12 @@
           <v-row class="py-4 px-8">
             <v-col class="py-0">
               <v-row>
-                <v-card-title class="pa-0"><h3>Reports</h3></v-card-title>
+                <v-card-title class="pa-0"><h3>Student and System Analytics</h3></v-card-title>
               </v-row>
-              <v-row class="pt-2">Report A</v-row>
-              <v-row class="pt-2">Report B</v-row>
-              <v-row class="pt-2">Report C</v-row>
-              <v-row class="pt-2">Report D</v-row>
-            </v-col>
-            <v-col class="py-0">
-              <v-row>
-                <v-card-title class="pa-0"><h3>Analytics</h3></v-card-title>
-              </v-row>
-              <v-row class="pt-2">View A</v-row>
-              <v-row class="pt-2">View B</v-row>
-              <v-row class="pt-2">View C</v-row>
-              <v-row class="pt-2">View D</v-row>
+              <v-row class="pt-2">Get My PEN</v-row>
+              <v-row class="pt-2">Update My PEN</v-row>
+              <v-row class="pt-2">New PENs</v-row>
+              <v-row class="pt-2">Merges</v-row>
             </v-col>
           </v-row>
         </v-card>
