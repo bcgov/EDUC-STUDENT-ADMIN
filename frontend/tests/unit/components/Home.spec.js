@@ -65,14 +65,21 @@ describe('Archived Request Search Button', () => {
             isValidUMPUser: false,
             isValidStudentSearchUser: true,
             isValidPenRequestBatchUser: true,
-            isValidStaffAdministrationUser: true
+            isValidStaffAdministrationUser: true,
+            isValidPenRequestBatchAdmin: true
+          },
+          getters: {
+            ADVANCED_SEARCH_ROLE: state => state.isValidStudentSearchUser,
+            VIEW_GMP_REQUESTS_ROLE: state => state.isValidGMPUser,
+            VIEW_UMP_REQUESTS_ROLE: state => state.isValidUMPUser,
+            VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE: state => state.isValidPenRequestBatchAdmin,
           },
           mutations: {
             setIsValidStudentSearchUser (state, isValid) {
               state.isValidStudentSearchUser = isValid;
             },
-            setIsValidPenRequestBatchUser (state, isValid) {
-              state.isValidPenRequestBatchUser = isValid;
+            setIsValidPenRequestBatchAdmin (state, isValid) {
+              state.isValidPenRequestBatchAdmin = isValid;
             },
             setIsValidStaffAdministrationUser (state, isValid) {
               state.isValidStaffAdministrationUser = isValid;
@@ -135,7 +142,7 @@ describe('Archived Request Search Button', () => {
   });
 
   it('should not exist when not ValidPenRequestBatchUser', async () => {
-    store.commit('auth/setIsValidPenRequestBatchUser', false);
+    store.commit('auth/setIsValidPenRequestBatchAdmin', false);
     await Vue.nextTick();
     expect(wrapper.find('#requestsSearchBtn').exists()).toBeFalsy();
   });

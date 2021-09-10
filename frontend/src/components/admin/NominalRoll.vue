@@ -7,7 +7,3 @@ export default {
   name: 'NominalRoll'
 };
 </script>
-
-<style scoped>
-
-</style>
