@@ -8,7 +8,7 @@
       </v-col>
       <v-col>
         <CompareDemographicModal
-          :disabled="selectedRecords.length<2 || selectedRecords.length>3"
+          :disabled="selectedRecords.length<2 || selectedRecords.length>3 || !EDIT_STUDENT_RECORDS_ROLE"
           :selectedRecords.sync="selectedRecords"></CompareDemographicModal>
       </v-col>
     </v-row>
@@ -208,6 +208,7 @@ export default {
     ...mapGetters('studentSearch', ['useNameVariants', 'isAuditHistorySearch', 'statusCode']),  // For advanced search criteria
     ...mapState('studentSearch', ['headerSortParams', 'studentSearchResponse']),
     ...mapState('notifications', ['notification']),
+    ...mapGetters('auth', ['EDIT_STUDENT_RECORDS_ROLE']),
     pageNumber: {
       get() {
         return this.$store.state['studentSearch'].pageNumber;

@@ -136,7 +136,7 @@
 
 <script>
 import {Routes} from '@/utils/constants';
-import {mapState} from 'vuex';
+import {mapState, mapGetters} from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
 import TertiaryButton from '../../util/TertiaryButton';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
@@ -193,7 +193,7 @@ export default {
   },
   computed: {
     ...mapState('app', ['mincodeSchoolNames']),
-    ...mapState('auth', ['isValidStaffAdministrationUser']),
+    ...mapGetters('auth', ['EDIT_PEN_COORDINATOR_INFO_ROLE']),
     schools() {
       return _.sortedUniq([...this.mincodeSchoolNames.values()].sort());
     },
@@ -273,7 +273,7 @@ export default {
         .finally(() => (this.dataLoading = false));
     },
     enableActions(item) {
-      if(!this.hasAnyEdits() && !this.dataLoading && this.isValidStaffAdministrationUser) {
+      if(!this.hasAnyEdits() && !this.dataLoading && this.EDIT_PEN_COORDINATOR_INFO_ROLE) {
         this.hoveredOveredRowID = item.mincode;
         this.hoveredOveredRow = item;
       }

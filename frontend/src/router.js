@@ -26,10 +26,10 @@ import store from './store/index';
 import RouterView from './components/RouterView';
 import BackendSessionExpired from '@/components/BackendSessionExpired';
 import UnAuthorizedPage from './components/UnAuthorizedPage';
-import PenMatch from './components/penreg/PenMatch';
 import CompareStudents from './components/CompareStudents';
 import PenCoordinatorsDisplay from './components/penreg/coordinator/PenCoordinatorsDisplay';
 import MacrosDisplay from './components/admin/MacrosDisplay';
+import NominalRoll from './components/admin/NominalRoll';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -54,7 +54,7 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.COMPARE_STUDENTS,
         requiresAuth: true,
-        role: 'isValidStudentSearchUser'
+        role: 'PROCESS_STUDENT_ROLE'
       }
     },
     {
@@ -72,7 +72,7 @@ const router = new VueRouter({
           meta: {
             pageTitle: PAGE_TITLES.GMP,
             requiresAuth: true,
-            role: 'isValidGMPUser'
+            role: 'VIEW_GMP_REQUESTS_ROLE'
           },
         },
         {
@@ -83,7 +83,7 @@ const router = new VueRouter({
           meta: {
             pageTitle: PAGE_TITLES.GMP_DETAILS,
             requiresAuth: true,
-            role: 'isValidGMPUser'
+            role: 'VIEW_GMP_REQUESTS_ROLE'
           }
         },
       ],
@@ -108,7 +108,7 @@ const router = new VueRouter({
           meta: {
             pageTitle: PAGE_TITLES.UMP,
             requiresAuth: true,
-            role: 'isValidUMPUser'
+            role: 'VIEW_UMP_REQUESTS_ROLE'
           },
         },
         {
@@ -119,7 +119,7 @@ const router = new VueRouter({
           meta: {
             pageTitle: PAGE_TITLES.UMP_DETAILS,
             requiresAuth: true,
-            role: 'isValidUMPUser'
+            role: 'VIEW_UMP_REQUESTS_ROLE'
           }
         }
       ],
@@ -136,7 +136,7 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.STUDENT_SEARCH,
         requiresAuth: true,
-        role: 'isValidStudentSearchUser',
+        role: 'ADVANCED_SEARCH_ROLE',
         saveSearch: true
       }
     },
@@ -148,7 +148,7 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.STUDENT_DETAILS,
         requiresAuth: true,
-        role: 'isValidStudentSearchUser',
+        role: 'ADVANCED_SEARCH_ROLE',
         saveSearch: true
       }
     },
@@ -160,7 +160,7 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.PEN_REQ_FILES,
         requiresAuth: true,
-        role: 'isValidPenRequestBatchUser'
+        role: 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE'
       },
       beforeEnter(to, from, next) {
         if(!from.path.includes('/prb')) {
@@ -177,7 +177,7 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.PEN_REQ_BATCH_STUDENT_LIST,
         requiresAuth: true,
-        role: 'isValidPenRequestBatchUser'
+        role: 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE'
       },
     },
     {
@@ -191,7 +191,7 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.PEN_REQ_BATCH_STUDENT_DETAILS,
         requiresAuth: true,
-        role: 'isValidPenRequestBatchUser'
+        role: 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE'
       },
     },
     {
@@ -202,7 +202,7 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.ARCHIVED_REQ_FILES,
         requiresAuth: true,
-        role: 'isValidPenRequestBatchUser'
+        role: 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE'
       },
       beforeEnter(to, from, next) {
         if(!from.path.includes('/archivedPrb')) {
@@ -212,17 +212,6 @@ const router = new VueRouter({
       }
     },
     {
-      path: '/administration',
-      name: 'administration',
-      component: ArchivedRequestBatchDisplay,
-      props: (route) => ({ mincode: route.query.mincode, loadDate: route.query.loadDate }),
-      meta: {
-        pageTitle: PAGE_TITLES.ADMINISTRATION,
-        requiresAuth: true,
-        role: 'isValidStaffAdministrationUser'
-      },
-    },
-    {
       path: '/archivedPrbStudentList',
       name: 'archivedPrbStudentList',
       component: PrbStudentListDisplay,
@@ -230,7 +219,7 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.ARCHIVED_REQ_BATCH_STUDENT_LIST,
         requiresAuth: true,
-        role: 'isValidPenRequestBatchUser'
+        role: 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE'
       },
     },
     {
@@ -240,7 +229,7 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.FAILED_REQ_FILES,
         requiresAuth: true,
-        role: 'isValidPenRequestBatchUser'
+        role: 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE'
       },
     },
     {
@@ -250,18 +239,8 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.HELD_REQ_FILES,
         requiresAuth: true,
-        role: 'isValidPenRequestBatchUser'
+        role: 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE'
       },
-    },
-    {
-      path: '/penMatch',
-      name: 'penMatch',
-      component: PenMatch,
-      meta: {
-        pageTitle: PAGE_TITLES.PEN_MATCH,
-        requiresAuth: true,
-        role: 'isValidStudentSearchUser'
-      }
     },
     {
       path: '/createNewPEN',
@@ -269,7 +248,8 @@ const router = new VueRouter({
       component: CreateNewPEN,
       meta: {
         pageTitle: PAGE_TITLES.CREATE_NEW_PEN,
-        requiresAuth: true
+        requiresAuth: true,
+        role: 'CREATE_NEW_PEN_ROLE'
       }
     },
     {
@@ -279,6 +259,7 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.PEN_COORDINATORS,
         requiresAuth: true,
+        role: 'VIEW_PEN_COORDINATOR_INFO_ROLE'
       },
     },
     {
@@ -288,7 +269,17 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.MACRO_MANAGEMENT,
         requiresAuth: true,
-        role: 'isValidStaffAdministrationUser'
+        role: 'EDIT_MACROS_ROLE'
+      },
+    },
+    {
+      path: '/nominalRoll',
+      name: 'nominalRoll',
+      component: NominalRoll,
+      meta: {
+        pageTitle: PAGE_TITLES.NOMINAL_ROLL,
+        requiresAuth: true,
+        role: 'NOMINAL_ROLL_ROLE'
       },
     },
     {
@@ -364,7 +355,7 @@ router.beforeEach((to, _from, next) => {
         store.dispatch('auth/getUserInfo').then(() => {
           if (!authStore.state.isAuthorizedUser) {
             next('unauthorized');
-          } else if (to.meta.role && !authStore.state[`${to.meta.role}`]) {
+          } else if (to.meta.role && !authStore.getters[`${to.meta.role}`]) {
             next('unauthorized-page');
           } else {
             next();

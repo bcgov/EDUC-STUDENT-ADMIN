@@ -35,10 +35,9 @@
 
 <script>
 import ApiService from '../common/apiService';
-import { Routes, Statuses } from '../utils/constants';
+import {REQUEST_TYPES, Routes, Statuses} from '../utils/constants';
 import { replaceMacro, insertMacro } from '../utils/macro';
 import {mapGetters, mapMutations} from 'vuex';
-import {AccessEnabledForUser} from '../common/role-based-access';
 import PrimaryButton from './util/PrimaryButton';
 import alertMixin from '../mixins/alertMixin';
 import {isValidLength} from '../utils/validation';
@@ -78,12 +77,11 @@ export default {
       validForm: false,
       requiredRules: isValidLength(4000),
       rejectComment: null,
-      isRejectEnabledForUser:false,
       rejectOperationOutcomeMessage : null,
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo']),
+    ...mapGetters('auth', ['userInfo', 'ACTION_GMP_REQUESTS_ROLE', 'ACTION_UMP_REQUESTS_ROLE']),
     ...mapGetters('app', ['selectedRequest', 'requestType', 'requestTypeLabel']),
     ...mapGetters('notifications', ['notification']),
     requestStatusCodeName() {
@@ -107,7 +105,13 @@ export default {
     isRejectDark() {
       return this.enableActions && this.request[this.requestStatusCodeName] !== 'ABANDONED';
     },
-
+    isRejectEnabledForUser() {
+      if(this.requestType === REQUEST_TYPES.penRequest.name) {
+        return this.ACTION_GMP_REQUESTS_ROLE;
+      } else {
+        return this.ACTION_UMP_REQUESTS_ROLE;
+      }
+    }
   },
   watch: {
     notification(val) {
@@ -122,7 +126,6 @@ export default {
     }
   },
   mounted() {
-    this.isRejectEnabledForUser = AccessEnabledForUser(this.requestType, 'REJECT_REQUEST', this.userInfo);
     this.rejectComment = this.request.failureReason;
   },
   methods: {

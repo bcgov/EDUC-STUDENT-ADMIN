@@ -10,22 +10,38 @@ export default {
     isAuthorizedUser: localStorage.getItem('isAuthorizedUser') !== null,
     userInfo: false,
     isValidGMPUser: localStorage.getItem('isValidGMPUser') !== null,
+    isValidGMPAdmin: localStorage.getItem('isValidGMPAdmin') !== null,
     isValidUMPUser: localStorage.getItem('isValidUMPUser') !== null,
+    isValidUMPAdmin: localStorage.getItem('isValidUMPAdmin') !== null,
     isValidStudentSearchUser: localStorage.getItem('isValidStudentSearchUser') !== null,
+    isValidStudentSearchAdmin: localStorage.getItem('isValidStudentSearchAdmin') !== null,
     isValidPenRequestBatchUser: localStorage.getItem('isValidPenRequestBatchUser') !== null,
-    isValidStaffAdministrationUser: localStorage.getItem('isValidStaffAdministrationUser') !== null
+    isValidPenRequestBatchAdmin: localStorage.getItem('isValidPenRequestBatchAdmin') !== null,
+    isValidStaffAdministrationUser: localStorage.getItem('isValidStaffAdministrationUser') !== null,
+    isValidStaffAdministrationAdmin: localStorage.getItem('isValidStaffAdministrationAdmin') !== null,
+    isValidNominalRollAdmin: localStorage.getItem('isValidNominalRollAdmin') !== null
   },
   getters: {
     acronyms: state => state.acronyms,
     isAuthenticated: state => state.isAuthenticated,
     jwtToken: () => localStorage.getItem('jwtToken'),
     userInfo: state => state.userInfo,
-    isAuthorizedUser: state => state.isAuthorizedUser,
-    isValidGMPUser: state => state.isValidGMPUser,
-    isValidUMPUser: state => state.isValidUMPUser,
-    isValidStudentSearchUser: state => state.isValidStudentSearchUser,
-    isValidPenRequestBatchUser: state => state.isValidPenRequestBatchUser,
-    isValidStaffAdministrationUser: state => state.isValidStaffAdministrationUser
+    ADVANCED_SEARCH_ROLE: state => state.isValidStudentSearchUser,
+    VIEW_SLD_HISTORY_ROLE: state => state.isValidStudentSearchUser,
+    VIEW_AUDIT_HISTORY_ROLE: state => state.isValidStudentSearchAdmin,
+    VIEW_TRANSCRIPT_ROLE: state => state.isValidStudentSearchAdmin,
+    EDIT_STUDENT_RECORDS_ROLE: state => state.isValidStudentSearchAdmin,
+    PROCESS_STUDENT_ROLE: state => state.isValidStudentSearchAdmin,
+    VIEW_PEN_COORDINATOR_INFO_ROLE: state => state.isValidPenRequestBatchAdmin || state.isValidGMPUser || state.isValidUMPUser || state.isValidStudentSearchAdmin || state.isValidStaffAdministrationAdmin,
+    EDIT_PEN_COORDINATOR_INFO_ROLE: state => state.isValidStaffAdministrationAdmin,
+    VIEW_GMP_REQUESTS_ROLE: state => state.isValidGMPUser,
+    ACTION_GMP_REQUESTS_ROLE: state => state.isValidGMPAdmin,
+    VIEW_UMP_REQUESTS_ROLE: state => state.isValidUMPUser,
+    ACTION_UMP_REQUESTS_ROLE: state => state.isValidUMPAdmin,
+    VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE: state => state.isValidPenRequestBatchAdmin,
+    EDIT_MACROS_ROLE: state => state.isValidStaffAdministrationAdmin,
+    CREATE_NEW_PEN_ROLE: state => state.isValidStaffAdministrationAdmin,
+    NOMINAL_ROLL_ROLE: state => state.isValidNominalRollAdmin,
   },
   mutations: {
     //sets Json web token and determines whether user is authenticated
@@ -56,6 +72,15 @@ export default {
         localStorage.removeItem(('isValidGMPUser'));
       }
     },
+    setGMPAdmin: (state, isValidGMPAdmin) => {
+      if (isValidGMPAdmin) {
+        state.isValidGMPAdmin = true;
+        localStorage.setItem('isValidGMPAdmin', 'true');
+      } else {
+        state.isValidGMPAdmin = false;
+        localStorage.removeItem(('isValidGMPAdmin'));
+      }
+    },
     setUMPUser: (state, isValidUMPUser) => {
       if (isValidUMPUser) {
         state.isValidUMPUser = true;
@@ -63,6 +88,15 @@ export default {
       } else {
         state.isValidUMPUser = false;
         localStorage.removeItem(('isValidUMPUser'));
+      }
+    },
+    setUMPAdmin: (state, isValidUMPAdmin) => {
+      if (isValidUMPAdmin) {
+        state.isValidUMPAdmin = true;
+        localStorage.setItem('isValidUMPAdmin', 'true');
+      } else {
+        state.isValidUMPAdmin = false;
+        localStorage.removeItem(('isValidUMPAdmin'));
       }
     },
     setStudentSearchUser: (state, isValidStudentSearchUser) => {
@@ -74,6 +108,15 @@ export default {
         localStorage.removeItem(('isValidStudentSearchUser'));
       }
     },
+    setStudentSearchAdmin: (state, isValidStudentSearchAdmin) => {
+      if (isValidStudentSearchAdmin) {
+        state.isValidStudentSearchAdmin = true;
+        localStorage.setItem('isValidStudentSearchAdmin', 'true');
+      } else {
+        state.isValidStudentSearchAdmin = false;
+        localStorage.removeItem(('isValidStudentSearchAdmin'));
+      }
+    },
     setStaffAdministrationUser: (state, isValidStaffAdministrationUser) => {
       if (isValidStaffAdministrationUser) {
         state.isValidStaffAdministrationUser = true;
@@ -83,6 +126,15 @@ export default {
         localStorage.removeItem(('isValidStaffAdministrationUser'));
       }
     },
+    setStaffAdministrationAdmin: (state, isValidStaffAdministrationAdmin) => {
+      if (isValidStaffAdministrationAdmin) {
+        state.isValidStaffAdministrationAdmin = true;
+        localStorage.setItem('isValidStaffAdministrationAdmin', 'true');
+      } else {
+        state.isValidStaffAdministrationAdmin = false;
+        localStorage.removeItem(('isValidStaffAdministrationAdmin'));
+      }
+    },
     penRequestBatchUser: (state, isValidPenRequestBatchUser) => {
       if (isValidPenRequestBatchUser) {
         state.isValidPenRequestBatchUser = true;
@@ -90,6 +142,24 @@ export default {
       } else {
         state.isValidPenRequestBatchUser = false;
         localStorage.removeItem(('isValidPenRequestBatchUser'));
+      }
+    },
+    penRequestBatchAdmin: (state, isValidPenRequestBatchAdmin) => {
+      if (isValidPenRequestBatchAdmin) {
+        state.isValidPenRequestBatchAdmin = true;
+        localStorage.setItem('isValidPenRequestBatchAdmin', 'true');
+      } else {
+        state.isValidPenRequestBatchAdmin = false;
+        localStorage.removeItem(('isValidPenRequestBatchAdmin'));
+      }
+    },
+    setValidNominalRollAdmin: (state, isValidNominalRollAdmin) => {
+      if (isValidNominalRollAdmin) {
+        state.isValidNominalRollAdmin = true;
+        localStorage.setItem('isValidNominalRollAdmin', 'true');
+      } else {
+        state.isValidNominalRollAdmin = false;
+        localStorage.removeItem(('isValidNominalRollAdmin'));
       }
     },
     setUserInfo: (state, userInf) => {
@@ -127,28 +197,10 @@ export default {
       try {
         if (context.getters.isAuthenticated && !!context.getters.jwtToken) {
           const response = await AuthService.refreshAuthToken(context.getters.jwtToken);
-          if (response.jwtFrontend) {
-            context.commit('setJwtToken', response.jwtFrontend);
-          }
-          context.commit('setAuthorizedUser', response.isAuthorizedUser);
-          context.commit('setGMPUser', response.isValidGMPUser);
-          context.commit('setUMPUser', response.isValidUMPUser);
-          context.commit('setStudentSearchUser', response.isValidStudentSearchUser);
-          context.commit('penRequestBatchUser', response.isValidPenRequestBatchUser);
-          context.commit('setStaffAdministrationUser', response.isValidStaffAdministrationUser);
-          ApiService.setAuthHeader(response.jwtFrontend);
+          setAuthorizations(context, response);
         } else {
           const response = await AuthService.getAuthToken();
-          if (response.jwtFrontend) {
-            context.commit('setJwtToken', response.jwtFrontend);
-          }
-          context.commit('setAuthorizedUser', response.isAuthorizedUser);
-          context.commit('setGMPUser', response.isValidGMPUser);
-          context.commit('setUMPUser', response.isValidUMPUser);
-          context.commit('setStudentSearchUser', response.isValidStudentSearchUser);
-          context.commit('penRequestBatchUser', response.isValidPenRequestBatchUser);
-          context.commit('setStaffAdministrationUser', response.isValidStaffAdministrationUser);
-          ApiService.setAuthHeader(response.jwtFrontend);
+          setAuthorizations(context, response);
         }
       } catch (e) {
         // Remove tokens from localStorage and update state
@@ -158,3 +210,22 @@ export default {
     },
   }
 };
+
+function setAuthorizations(context, response) {
+  if (response.jwtFrontend) {
+    context.commit('setJwtToken', response.jwtFrontend);
+  }
+  context.commit('setAuthorizedUser', response.isAuthorizedUser);
+  context.commit('setGMPUser', response.isValidGMPUser);
+  context.commit('setGMPAdmin', response.isValidGMPAdmin);
+  context.commit('setUMPUser', response.isValidUMPUser);
+  context.commit('setUMPAdmin', response.isValidUMPAdmin);
+  context.commit('setStudentSearchUser', response.isValidStudentSearchUser);
+  context.commit('setStudentSearchAdmin', response.isValidStudentSearchAdmin);
+  context.commit('penRequestBatchUser', response.isValidPenRequestBatchUser);
+  context.commit('penRequestBatchAdmin', response.isValidPenRequestBatchAdmin);
+  context.commit('setStaffAdministrationUser', response.isValidStaffAdministrationUser);
+  context.commit('setStaffAdministrationAdmin', response.isValidStaffAdministrationAdmin);
+  context.commit('setValidNominalRollAdmin', response.isValidNominalRollAdmin);
+  ApiService.setAuthHeader(response.jwtFrontend);
+}

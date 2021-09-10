@@ -43,10 +43,12 @@ nconf.defaults({
       roleAdmin: process.env.UMP_ROLE_ADMIN
     },
     studentSearch: {
-      roleAdmin: process.env.STUDENT_SEARCH_ADMIN
+      roleAdmin: process.env.STUDENT_SEARCH_ADMIN,
+      rolesAllowed: process.env.STUDENT_SEARCH_ROLES ? process.env.STUDENT_SEARCH_ROLES.split(',') : '', // please provide comma separated values.
     },
     administration: {
-      roleAdmin: process.env.STUDENT_ADMIN_ADMINISTRATOR
+      roleAdmin: process.env.STUDENT_ADMIN_ADMINISTRATOR,
+      rolesAllowed: process.env.STUDENT_ADMIN_ADMINISTRATOR ? process.env.STUDENT_ADMIN_ADMINISTRATOR.split(',') : '', // using STUDENT_ADMIN_ADMINISTRATOR because there is no read only role
     },
     penRequestBatch: {
       rootURL: process.env.PEN_REQUEST_BATCH_API_URL,
@@ -55,6 +57,7 @@ nconf.defaults({
       studentStatusCodesURL: process.env.PEN_REQUEST_BATCH_API_URL + '/pen-request-batch/student/pen-request-batch-student-status-codes',
       studentInfoMacrosURL: process.env.PEN_REQUEST_BATCH_API_URL + '/pen-request-batch-macro',
       roleAdmin: process.env.PEN_REQUEST_BATCH_ADMIN,
+      rolesAllowed: process.env.PEN_REQUEST_BATCH_ADMIN ? process.env.PEN_REQUEST_BATCH_ADMIN.split(',') : '', // using PEN_REQUEST_BATCH_ADMIN because there is no read only role
       maxPaginatedElements: 1000
     },
     penMatch: {
@@ -92,6 +95,10 @@ nconf.defaults({
       prbValidationTypeCodesURL: process.env.PEN_SERVICES_API_URL + '/validation/issue-type-code',
       mergeStudentsURL: process.env.PEN_SERVICES_API_URL + '/student-merge-complete-saga',
       demergeStudentsURL: process.env.PEN_SERVICES_API_URL + '/student-demerge-complete-saga'
+    },
+    nominalRoll: {
+      roleAdmin: process.env.NOMINAL_ROLL,
+      rolesAllowed: process.env.NOMINAL_ROLL ? process.env.NOMINAL_ROLL.split(',') : '', // using PEN_REQUEST_BATCH_ADMIN because there is no read only role
     }
   },
   oidc: {

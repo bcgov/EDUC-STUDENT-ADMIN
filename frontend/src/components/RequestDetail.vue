@@ -119,7 +119,7 @@
                 <span>{{ item.createDate.toString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
               </template>
               <template v-slot:item.fileName="{item: document}">
-                <a @click="showDocModal(requestId, document)" v-if="document.fileSize">
+                <a @click="showDocModal(requestId, document)" v-if="document.fileSize && actionsEnabled">
                   {{ document.fileName }}
                 </a>
                 <span v-else>{{ document.fileName }}</span>
@@ -127,7 +127,7 @@
               <template v-slot:item.fileSize="{ item }">
                 <span v-if="item.fileSize">{{ item.fileSize }}</span>
               </template>
-              <template v-if="isDocumentTypeChangeEnabledForUser" v-slot:item.documentTypeLabel="{item: document}">
+              <template v-if="actionsEnabled" v-slot:item.documentTypeLabel="{item: document}">
                 <v-edit-dialog
                   :return-value.sync="document.documentTypeCode"
                   large
@@ -179,7 +179,6 @@ import ApiService from '../common/apiService';
 import {REQUEST_TYPES, Routes, Statuses} from '../utils/constants';
 import {mapGetters, mapMutations} from 'vuex';
 import {humanFileSize} from '../utils/file';
-import {AccessEnabledForUser} from '../common/role-based-access';
 import router from '../router';
 import PrimaryButton from './util/PrimaryButton';
 import alertMixin from '../mixins/alertMixin';
@@ -246,9 +245,6 @@ export default {
       oldDocumentTypeCode: '',
       documentErrorMessage: '',
       claimErrorMessage: '',
-      isClaimActionEnabledForUser: false,
-      isDocumentTypeChangeEnabledForUser:false,
-      isReleaseActionEnabledForUser:false,
       sagaInProgress: false,
       pdfRenderDialog: false,
       imageRendererDialog: false,
@@ -257,7 +253,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo']),
+    ...mapGetters('auth', ['userInfo', 'ACTION_GMP_REQUESTS_ROLE', 'ACTION_UMP_REQUESTS_ROLE']),
     ...mapGetters('app', ['requestTypeLabel']),
     ...mapGetters('app', ['request']),
     ...mapGetters('notifications', ['notification']),
@@ -283,18 +279,24 @@ export default {
       return this.$store.getters[`${this.requestType}/completeMacros`];
     },
     isClaimDisabled() {
-      return !this.enableActions || !this.isClaimActionEnabledForUser || this.isRequestCompleted || this.request[this.requestStatusCodeName] === 'DRAFT' || this.request[this.requestStatusCodeName] === 'ABANDONED';
+      return !this.enableActions || !this.actionsEnabled || this.isRequestCompleted || this.request[this.requestStatusCodeName] === 'DRAFT' || this.request[this.requestStatusCodeName] === 'ABANDONED';
     },
     isDarkForClaim() {
-      return this.enableActions && this.isClaimActionEnabledForUser && this.request[this.requestStatusCodeName] !== 'DRAFT' && this.request[this.requestStatusCodeName] !== 'ABANDONED';
+      return this.enableActions && this.actionsEnabled && this.request[this.requestStatusCodeName] !== 'DRAFT' && this.request[this.requestStatusCodeName] !== 'ABANDONED';
     },
     isReleaseDisabled() {
-      return !this.enableActions || this.isRequestCompleted || !this.isReleaseActionEnabledForUser || this.request[this.requestStatusCodeName] === 'ABANDONED';
+      return !this.enableActions || this.isRequestCompleted || !this.actionsEnabled || this.request[this.requestStatusCodeName] === 'ABANDONED';
     },
     isDarkForRelease() {
-      return this.enableActions && !this.isRequestCompleted && this.isReleaseActionEnabledForUser;
+      return this.enableActions && !this.isRequestCompleted && this.actionsEnabled;
     },
-
+    actionsEnabled() {
+      if(this.requestType === REQUEST_TYPES.penRequest.name) {
+        return this.ACTION_GMP_REQUESTS_ROLE;
+      } else {
+        return this.ACTION_UMP_REQUESTS_ROLE;
+      }
+    }
   },
   beforeDestroy() {
     Mousetrap.reset();
@@ -309,9 +311,6 @@ export default {
     this.loadingComments = true;
     this.myself.name = this.userInfo.userName;
     this.myself.id = this.userInfo.userGuid;
-    this.isClaimActionEnabledForUser = AccessEnabledForUser(this.requestType, 'CLAIM_REQUEST', this.userInfo);
-    this.isDocumentTypeChangeEnabledForUser =AccessEnabledForUser(this.requestType, 'CHANGE_DOCUMENT_TYPE', this.userInfo);
-    this.isReleaseActionEnabledForUser = AccessEnabledForUser(this.requestType, 'RELEASE_REQUEST', this.userInfo);
     if(!this.returnMacros || ! this.rejectMacros) {
       this.$store.dispatch(`${this.requestType}/getMacros`, this.requestType);
     }

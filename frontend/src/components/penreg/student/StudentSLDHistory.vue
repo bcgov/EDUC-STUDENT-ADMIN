@@ -7,7 +7,7 @@
       </div>
       </v-col>
       <v-col cols="1">
-        <CompareDemographicModal :clearOnExit="false" :disabled="isStudentUpdated" :selectedRecords.sync="compareStudent"></CompareDemographicModal>
+        <CompareDemographicModal :clearOnExit="false" :disabled="isStudentUpdated || !PROCESS_STUDENT_ROLE" :selectedRecords.sync="compareStudent"></CompareDemographicModal>
       </v-col>
     </v-row>
     <v-row>
@@ -106,6 +106,7 @@ export default {
   },
   computed:{
     ...mapGetters('notifications', ['notification']),
+    ...mapGetters('auth', ['PROCESS_STUDENT_ROLE']),
   },
   watch: {
     notification(val) {

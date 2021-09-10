@@ -9,11 +9,12 @@ const roles = {
     //Help functions created in auth module: isValidUMPUserToken, isValidUMPUser
     UMP: config.get('server:studentRequest:rolesAllowed'),
     //Help functions created in auth module: isValidStudentSearchUserToken, isValidStudentSearchUser
-    StudentSearch: [config.get('server:studentSearch:roleAdmin')],
+    StudentSearch: config.get('server:studentSearch:rolesAllowed'),
     //Help functions created in auth module: isValidPenRequestBatchUserToken, isValidPenRequestBatchUser
-    PenRequestBatch: [config.get('server:penRequestBatch:roleAdmin')],
+    PenRequestBatch: config.get('server:penRequestBatch:rolesAllowed'),
     //Help functions created in auth module: isValidStaffAdministrationUser
-    StaffAdministration: [config.get('server:administration:roleAdmin')]
+    StaffAdministration: config.get('server:administration:rolesAllowed'),
+    NominalRoll: config.get('server:nominalRoll:rolesAllowed')
   },
   Admin: {
     //Help functions created in auth module: isValidGMPAdmin
@@ -25,7 +26,8 @@ const roles = {
     //Help functions created in auth module: isValidPenRequestBatchAdmin
     PenRequestBatch: config.get('server:penRequestBatch:roleAdmin'),
     //Help functions created in auth module: isValidStaffAdministrationAdmin
-    StaffAdministration: config.get('server:administration:roleAdmin')
+    StaffAdministration: config.get('server:administration:roleAdmin'),
+    NominalRoll: config.get('server:nominalRoll:roleAdmin')
   }
 };
 

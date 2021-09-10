@@ -8,9 +8,9 @@
           <v-row>
             <v-tabs active-class="active-display" class="pa-0 ma-0 " v-model="tab">
               <v-tab key="Demographics" class="student-details-tabs-style"><strong>Demographics</strong></v-tab>
-              <v-tab key="SLD" class="student-details-tabs-style"><strong>SLD History</strong></v-tab>
-              <v-tab key="Audit" class="student-details-tabs-style"><strong>Audit History</strong></v-tab>
-              <v-tab class="student-details-tabs-style" :disabled="true"><strong>Transcript</strong></v-tab>
+              <v-tab key="SLD" v-if="VIEW_SLD_HISTORY_ROLE" class="student-details-tabs-style"><strong>SLD History</strong></v-tab>
+              <v-tab key="Audit" v-if="VIEW_AUDIT_HISTORY_ROLE" class="student-details-tabs-style"><strong>Audit History</strong></v-tab>
+              <v-tab class="student-details-tabs-style" v-if="VIEW_TRANSCRIPT_ROLE" :disabled="true"><strong>Transcript</strong></v-tab>
             </v-tabs>
           </v-row>
           <v-tabs-items v-if="!isLoading">
@@ -19,7 +19,7 @@
                 :studentDetails="studentDetails"
                 :validForm="validForm"
                 :parentRefs="this.$refs"
-                :fullReadOnly="hasSagaInProgress"
+                :fullReadOnly="hasSagaInProgress || !EDIT_STUDENT_RECORDS_ROLE"
                 @update:student="v => studentDetails.student = v"
                 @isStudentUpdated="v=> isStudentDataUpdated = v"
                 @refresh="refreshStudent"
@@ -36,15 +36,15 @@
                       <PrimaryButton v-if="studentDetails.student.statusCode === 'M'"
                                      :disabled="disableDemerge()" text="Demerge"
                                      @click.native="demerge()"></PrimaryButton>
-                      <PrimaryButton :disabled="!hasAnyEdits() || !validForm " text="Save" :loading="saveStudentLoading"
+                      <PrimaryButton :disabled="!hasAnyEdits() || !validForm" text="Save" :loading="saveStudentLoading"
                                      @click.native="saveStudent()"></PrimaryButton>
                     </v-card-actions>
                   </v-col>
                 </v-row>
               </template>
             </StudentDetailCommon>
-            <StudentSLDHistory v-else-if="tab===1" :student="studentDetails.student" @refresh="refreshStudent"  @isStudentUpdated="v=> isStudentDataUpdated = v"/>
-            <StudentAuditHistory v-else-if="tab===2" :student="studentDetails.student" @refresh="refreshStudent"  @isStudentUpdated="v=> isStudentDataUpdated = v"/>
+            <StudentSLDHistory v-else-if="tab===1 && VIEW_SLD_HISTORY_ROLE" :student="studentDetails.student" @refresh="refreshStudent"  @isStudentUpdated="v=> isStudentDataUpdated = v"/>
+            <StudentAuditHistory v-else-if="tab===2 && VIEW_AUDIT_HISTORY_ROLE" :student="studentDetails.student" @refresh="refreshStudent"  @isStudentUpdated="v=> isStudentDataUpdated = v"/>
           </v-tabs-items>
           <v-row v-else>
           <v-row fluid class="full-height align-center justify-center" >
@@ -73,7 +73,7 @@ import {Routes} from '@/utils/constants';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
 import StudentSLDHistory from '@/components/penreg/student/StudentSLDHistory';
-import {mapState} from 'vuex';
+import {mapState, mapGetters} from 'vuex';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 
 export default {
@@ -103,6 +103,7 @@ export default {
   },
   computed: {
     ...mapState('student', ['studentsInProcess']),
+    ...mapGetters('auth', ['VIEW_AUDIT_HISTORY_ROLE', 'VIEW_SLD_HISTORY_ROLE', 'EDIT_STUDENT_RECORDS_ROLE', 'VIEW_TRANSCRIPT_ROLE']),
     hasSagaInProgress() {
       return this.studentDetails && (this.studentDetails.sagaInProgress || this.studentsInProcess.has(this.studentDetails.studentID));
     },

@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row class="pb-6">
-      <v-col cols="8" v-if="isValidPenRequestBatchUser">
+      <v-col cols="8" v-if="VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE">
         <DashboardTable v-if="!isLoadingBatch" requestType="School" colour="#CED6E2"
                         :tableData="penRequestData"></DashboardTable>
         <v-container v-else-if="isLoadingBatch" class="full-height" fluid>
@@ -17,9 +17,9 @@
           </article>
         </v-container>
       </v-col>
-      <v-col cols="4" v-if="isValidStudentSearchUser || isValidPenRequestBatchUser">
+      <v-col cols="4" v-if="ADVANCED_SEARCH_ROLE || VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE">
         <v-card flat color="#F2F2F2" class="mt-2" height="100%">
-          <template v-if="isValidPenRequestBatchUser">
+          <template v-if="VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE">
             <v-row class="pt-4 px-8" >
               <v-card-title class="pa-0"><h3>Archived Requests Search</h3></v-card-title>
             </v-row>
@@ -47,7 +47,7 @@
               </v-col>
             </v-row>
           </template>
-          <template v-if="isValidStudentSearchUser">
+          <template v-if="ADVANCED_SEARCH_ROLE">
             <v-row class="pt-4 px-8">
               <v-card-title class="pa-0"><h3>Student Search</h3></v-card-title>
             </v-row>
@@ -77,7 +77,7 @@
           </template>
         </v-card>
       </v-col>
-      <v-col cols="8" v-if="(isValidGMPUser || isValidUMPUser)">
+      <v-col cols="8" v-if="(VIEW_GMP_REQUESTS_ROLE || VIEW_UMP_REQUESTS_ROLE)">
         <DashboardTable v-if="!isLoadingGmpUmp" requestType="Student" colour="#F2F2F2" :tableData="studentData"></DashboardTable>
         <v-container fluid class="full-height" v-else-if="isLoadingGmpUmp">
           <article id="pen-display-container" class="top-banner full-height">
@@ -112,7 +112,7 @@
 </template>
 
 <script>
-import {mapState} from 'vuex';
+import {mapState, mapGetters} from 'vuex';
 import {REQUEST_TYPES, Routes} from '@/utils/constants';
 import DashboardTable from './DashboardTable';
 import ApiService from '../common/apiService';
@@ -153,7 +153,7 @@ export default {
     await this.$store.dispatch('app/getCodes');
   },
   mounted() {
-    if (this.isValidPenRequestBatchUser) {
+    if (this.VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE) {
       ApiService.apiAxios.get(Routes.penRequestBatch.STATS_URL).then(response => {
         this.penRequestData.push({
           title: 'K-12',
@@ -179,10 +179,10 @@ export default {
       });
     }
     let gumpiPromises = [];
-    if(this.isValidGMPUser) {
+    if(this.VIEW_GMP_REQUESTS_ROLE) {
       gumpiPromises.push(ApiService.apiAxios.get(Routes.penRequest.STATS_URL));
     }
-    if(this.isValidUMPUser) {
+    if(this.VIEW_UMP_REQUESTS_ROLE) {
       gumpiPromises.push(ApiService.apiAxios.get(Routes.studentRequest.STATS_URL));
     }
     Promise.allSettled(gumpiPromises).then(([gmp, ump])=>{
@@ -221,7 +221,7 @@ export default {
     });
   },
   computed: {
-    ...mapState('auth', ['isValidGMPUser','isValidUMPUser', 'isValidStudentSearchUser', 'isValidPenRequestBatchUser', 'isValidStaffAdministrationUser']),
+    ...mapGetters('auth', ['VIEW_GMP_REQUESTS_ROLE','VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE']),
     ...mapState('app', ['mincodeSchoolNames', 'districtCodes']),
     requestTypes() {
       return REQUEST_TYPES;

@@ -78,7 +78,6 @@ import StudentAdvancedSearch from './StudentAdvancedSearch';
 import PrimaryButton from '../../util/PrimaryButton';
 import {checkDigit, isValidMincode, isValidPEN, isValidPostalCode} from '@/utils/validation';
 import alertMixin from '@/mixins/alertMixin';
-import {AccessEnabledForUser} from '@/common/role-based-access';
 import CreateNewPenModal from '@/components/common/CreateNewPenModal';
 import {cloneDeep, pick} from 'lodash';
 
@@ -117,7 +116,6 @@ export default {
       studentSearchResultsKey: 0,
       REQUEST_TYPES: REQUEST_TYPES,
       initialSearch: false,
-      createNewPenButtonAvailableForUser: false,
       createNewPenDisabled: true,
       createNewPenDialog: false,
       createNewPenLoading: false,
@@ -125,7 +123,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo']),
+    ...mapGetters('auth', ['userInfo', 'CREATE_NEW_PEN_ROLE']),
     ...mapGetters('student', ['gradeCodeObjects']),
     ...mapState('student', ['genders']),
     ...mapState('studentSearch', ['pageNumber', 'headerSortParams', 'advancedSearchCriteria', 'studentSearchResponse']),
@@ -153,6 +151,9 @@ export default {
         v => !(/[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u1100-\u11FF\u3040-\u309F\u30A0-\u30FF\u3130-\u318F\u3400-\u4DBF\u4E00-\u9FFF\uAC00-\uD7AF]/.test(v)) || 'Enter English characters only'
       ];
     },
+    createNewPenButtonAvailableForUser() {
+      return this.CREATE_NEW_PEN_ROLE;
+    }
   },
   mounted() {
     this.$store.dispatch('student/getCodes');
@@ -162,7 +163,6 @@ export default {
       this.studentSearchParams.dob.startDate = this.searchParams.dob;
     }
     this.initialSearch = true;
-    this.createNewPenButtonAvailableForUser = AccessEnabledForUser('student', 'CREATE_NEW_PEN', this.userInfo);
     if (this.studentSearchParams) {
       this.searchHasValues();
     }

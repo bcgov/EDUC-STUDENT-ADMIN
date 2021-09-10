@@ -6,6 +6,6 @@ const { getSldStudentHistoryByPen } = require('../components/sld');
 const utils = require('../components/utils');
 const extendSession = utils.extendSession();
 
-router.get('/studentHistory', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchAdmin, extendSession,  getSldStudentHistoryByPen);
+router.get('/studentHistory', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchUserToken, extendSession,  getSldStudentHistoryByPen);
 
 module.exports = router;

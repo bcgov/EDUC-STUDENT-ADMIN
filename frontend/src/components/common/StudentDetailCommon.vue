@@ -436,7 +436,7 @@
         </v-card>
       </v-col>
       <v-col cols="1">
-        <CompareDemographicModal :clearOnExit="false" :disabled="hasSagaInProgress(this.origStudent)"
+        <CompareDemographicModal :clearOnExit="false" :disabled="hasSagaInProgress(this.origStudent) || !PROCESS_STUDENT_ROLE"
                                  :selectedRecords.sync="compareStudent"></CompareDemographicModal>
       </v-col>
       <v-col cols="1">
@@ -686,7 +686,7 @@ export default {
     ...mapGetters('student', ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects', 'documentTypeCodes']),
     ...mapState('studentSearch', ['isAdvancedSearch']),
     ...mapGetters('notifications', ['notification']),
-    ...mapGetters('auth', ['userInfo']),
+    ...mapGetters('auth', ['userInfo', 'PROCESS_STUDENT_ROLE']),
     mergedTo() {
       return this.merges.find(merge => merge.studentMergeDirectionCode === 'TO');
     },

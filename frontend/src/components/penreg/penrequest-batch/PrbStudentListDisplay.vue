@@ -499,8 +499,8 @@ export default {
         });
       }
       return [{
-          searchCriteriaList: [this.prbStudentBatchIdSearchCriteria, ...optionalCriteriaList],
-        }];
+        searchCriteriaList: [this.prbStudentBatchIdSearchCriteria, ...optionalCriteriaList],
+      }];
 
     },
     retrievePenRequests(searchCriteria, isFilterOperation) {
