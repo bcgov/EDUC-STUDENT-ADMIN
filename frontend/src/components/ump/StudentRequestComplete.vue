@@ -118,6 +118,7 @@ import { replaceMacro, insertMacro } from '@/utils/macro';
 import { mapGetters, mapMutations } from 'vuex';
 import PrimaryButton from '../util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
+import demographics from '@/mixins/demographics';
 import MacroMenu from '../common/MacroMenu';
 import {isValidLength} from '@/utils/validation';
 
@@ -127,7 +128,7 @@ export default {
     PrimaryButton,
     MacroMenu
   },
-  mixins: [alertMixin],
+  mixins: [alertMixin, demographics],
   props: {
     request: {
       type: Object,
@@ -149,10 +150,6 @@ export default {
       type: Function,
       required: true
     },
-    switchLoading: {
-      type: Function,
-      required: true
-    }
   },
   data () {
     return {
@@ -160,19 +157,7 @@ export default {
       requiredRules: [v => !!v || 'Required'],
       completedUpdateSuccess:null,
       notAPenErrorMessage: 'The provided PEN is not valid.',
-      penSearchId: null,
       autoPenResults: null,
-      demographics: {
-        legalFirst: null,
-        legalMiddle: null,
-        legalLast: null,
-        usualFirst: null,
-        usualMiddle: null,
-        usualLast: null,
-        dob: null,
-        gender: null
-      },
-      enableCompleteButton: false,
       numberOfDuplicatePenRequests:0,
       completeSagaInProgress: false,
       dialog: false,
@@ -287,26 +272,6 @@ export default {
             this.setFailureAlert(`${this.requestTypeLabel} failed to update. Please navigate to the list and select this ${this.requestTypeLabel} again.`);
           }
           this.submitted();
-        });
-    },
-    searchByPen() {
-      this.switchLoading(true);
-      ApiService.apiAxios
-        .get(Routes.SEARCH_BY_PEN + '/' + this.penSearchId)
-        .then(response => {
-          this.demographics = response.data;
-          this.enableCompleteButton = true;
-        })
-        .catch(error => {
-          console.log(error);
-          if (error?.response?.status === 404 && error?.response?.data?.message) {
-            this.setFailureAlert(`No demographic data was found for pen :: ${this.penSearchId}`);
-          } else {
-            this.setFailureAlert('An error occurred while loading the demographic data. Please try again later.');
-          }
-        })
-        .finally(() => {
-          this.switchLoading(false);
         });
     },
     refreshStudentInfo() {
