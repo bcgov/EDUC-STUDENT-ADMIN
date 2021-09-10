@@ -299,6 +299,11 @@ export default {
         })
         .catch(error => {
           console.log(error);
+          if (error?.response?.status === 404 && error?.response?.data?.message) {
+            this.setFailureAlert(`No demographic data was found for pen :: ${this.penSearchId}`);
+          } else {
+            this.setFailureAlert('An error occurred while loading the demographic data. Please try again later.');
+          }
         })
         .finally(() => {
           this.switchLoading(false);

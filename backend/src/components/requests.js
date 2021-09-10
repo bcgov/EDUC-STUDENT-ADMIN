@@ -1,5 +1,5 @@
 'use strict';
-const { getBackendToken, getData, postData, putData, logApiError, unauthorizedError } = require('./utils');
+const { getBackendToken, getData, putData, logApiError, errorResponse, unauthorizedError } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const config = require('../config/index');
@@ -8,63 +8,6 @@ const redisUtil = require('../util/redis/redis-utils');
 const {ApiError, ServiceError} = require('./error');
 const {LocalDateTime} = require('@js-joda/core');
 const {groupBy} = require('lodash');
-
-function completeRequest(requestType, createRequestApiServiceReq) {
-  return async function completeRequestHandler(req, res) {
-    try {
-      const token = getBackendToken(req, res);
-      if (!token) {
-        return unauthorizedError(res);
-      }
-      req.body.statusUpdateDate = LocalDateTime.now();
-      return Promise.all([
-        updateRequest(req, res, requestType, createRequestApiServiceReq),
-        sendRequestEmail(req, token, 'COMPLETE', requestType),
-        updateStudentAndDigitalId(req)
-      ])
-        .then(async (response) => {
-          return res.status(200).json(response[0]);
-        })
-        .catch(e => {
-          logApiError(e, 'completeRequest', `Error occurred while attempting to PUT a ${requestType}.`);
-          return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-            message: 'INTERNAL SERVER ERROR'
-          });
-        });
-    } catch (e) {
-      logApiError(e, 'completeRequest', `Error occurred while attempting to PUT a ${requestType}.`);
-      return errorResponse(res);
-    }
-  };
-}
-
-function completeStudentProfileRequest(requestType, createRequestApiServiceReq) {
-  return async function completeRequestHandler(req, res) {
-    try {
-      const token = getBackendToken(req, res);
-      if (!token) {
-        return unauthorizedError(res);
-      }
-      req.body.statusUpdateDate = LocalDateTime.now();
-      return Promise.all([
-        updateRequest(req, res, requestType, createRequestApiServiceReq),
-        sendRequestEmail(req, token, 'COMPLETE', requestType)
-      ])
-        .then(async (response) => {
-          return res.status(200).json(response[0]);
-        })
-        .catch(e => {
-          logApiError(e, 'completeRequest', `Error occurred while attempting to PUT a ${requestType}.`);
-          return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-            message: 'INTERNAL SERVER ERROR'
-          });
-        });
-    } catch (e) {
-      logApiError(e, 'completeRequest', `Error occurred while attempting to PUT a ${requestType}.`);
-      return errorResponse(res);
-    }
-  };
-}
 
 function getAllRequests(requestType) {
   return async function getAllRequestsHandler(req, res) {
@@ -330,88 +273,54 @@ async function getStudentDemographicsById(req, res) {
         message: 'No access token'
       });
     }
-    const response = await utils.getData(token, config.get('server:demographicsURL') + '/' + req.params.id);
-    const birthDate = utils.formatDate(response['studBirth']);
-    req['session'].studentDemographics = response;
-    req['session'].studentDemographics.dob = birthDate;
+    if(config.get('server:enablePrrStudentDemographics')) {
+      const response = await utils.getData(token, config.get('server:student:rootURL') + '/', {params: {pen: req.params.id}});
+      if(response.length === 0) {
+        const message = `No student record was found for pen :: ${req.params.id}`;
+        log.error(message);
+        return errorResponse(res, message, HttpStatus.NOT_FOUND);
+      }
+      req['session'].studentDemographics = {
+        pen: response[0]['pen'],
+        studGiven: response[0]['legalFirstName'],
+        studMiddle: response[0]['legalMiddleNames'],
+        studSurname: response[0]['legalLastName'],
+        dob: response[0]['dob'],
+        studSex: response[0]['sexCode'],
+        usualGiven: response[0]['usualFirstName'],
+        usualMiddle: response[0]['usualMiddleNames'],
+        usualSurname: response[0]['usualLastName'],
+        localID: response[0]['localID'],
+        postalCode: response[0]['postalCode'],
+        grade: response[0]['gradeCode'],
+        mincode: response[0]['mincode']
+      };
+    } else {
+      const response = await utils.getData(token, config.get('server:demographicsURL') + '/' + req.params.id);
+      const birthDate = utils.formatDate(response['studBirth']);
+      req['session'].studentDemographics = response;
+      req['session'].studentDemographics.dob = birthDate;
+    }
+    
     const formattedResponse = {
-      legalFirst: response['studGiven'],
-      legalMiddle: response['studMiddle'],
-      legalLast: response['studSurname'],
-      usualFirst: response['usualGiven'],
-      usualMiddle: response['usualMiddle'],
-      usualLast: response['usualSurname'],
-      dob: birthDate,
-      gender: response['studSex']
+      legalFirst: req['session'].studentDemographics['studGiven'],
+      legalMiddle: req['session'].studentDemographics['studMiddle'],
+      legalLast: req['session'].studentDemographics['studSurname'],
+      usualFirst: req['session'].studentDemographics['usualGiven'],
+      usualMiddle: req['session'].studentDemographics['usualMiddle'],
+      usualLast: req['session'].studentDemographics['usualSurname'],
+      dob: req['session'].studentDemographics['dob'],
+      gender: req['session'].studentDemographics['studSex']
     };
     return res.status(200).json(formattedResponse);
   } catch (e) {
+    if (e.status === HttpStatus.NOT_FOUND) {
+      const message = `No demographics data was found for pen :: ${req.params.id}`;
+      logApiError(e, 'getStudentDemographicsById', message);
+      return errorResponse(res, message, HttpStatus.NOT_FOUND);
+    }
     logApiError(e, 'getStudentDemographicsById', 'Error occurred while attempting to GET pen demographics.');
     return errorResponse(res);
-  }
-}
-
-async function sendRequestEmail(req, token, emailType, requestType) {
-  const lowerCaseEmail = emailType.toLowerCase();
-  const emailBody = {
-    emailAddress: req['session'].penRequest['email'],
-    identityType: req['session'].identityType
-  };
-  let params;
-  if (lowerCaseEmail === 'reject') {
-    if (!req.body.failureReason) {
-      throw new ServiceError('400', 'EMAIL Error: Failure reason is required.');
-    }
-    emailBody.rejectionReason = req.body.failureReason;
-  } else if (lowerCaseEmail === 'complete') {
-    if (!req['session'].studentDemographics || !req['session'].studentDemographics['studGiven']) {
-      throw new ServiceError('500', 'EMAIL Error: There are no student demographics in session.');
-    }
-    emailBody.firstName = req['session'].studentDemographics['studGiven'];
-    if (req.body.demogChanged === 'Y') {
-      params = {params: {demographicsChanged: true}};
-    } else {
-      params = {params: {demographicsChanged: false}};
-    }
-  }
-  try {
-    await postData(token, config.get(`server:${requestType}:emails`) + '/' + lowerCaseEmail, emailBody, params, utils.getUser(req).idir_username);
-  } catch (e) {
-    logApiError(e, 'sendRequestEmail', 'Error calling email service.');
-    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ApiError(status, {message: 'EMAIL error'}, e);
-  }
-}
-
-async function postRequestComment(req, requestType, createCommentApiServiceReq) {
-  const token = utils.getBackendToken(req);
-  if (!token) {
-    log.error('postRequestComment Error: No access token');
-    throw new ServiceError('postRequestComment', {message: 'No access token'});
-  }
-  const userToken = utils.getUser(req);
-  if (!userToken || !userToken['idir_username'] || !userToken['preferred_username']) {
-    log.error('postRequestComment Error: could not get user info');
-    throw new ServiceError('postRequestComment', {message: 'API Put error'});
-  }
-  try {
-    //mapping from what comment widget needs to what the comments api needs
-    const request = createCommentApiServiceReq(req, userToken);
-
-    const commentResponse = await postData(token, config.get(`server:${requestType}:rootURL`) + '/' + req.params.id + '/comments', request,null, userToken['idir_username']);
-    const readableTime = utils.formatCommentTimestamp(commentResponse.commentTimestamp);
-    return {
-      content: commentResponse.commentContent,
-      participantId: (commentResponse.staffMemberIDIRGUID ? commentResponse.staffMemberIDIRGUID : '1'),
-      name: (commentResponse.staffMemberName ? commentResponse.staffMemberName : 'Student'),
-      timestamp: readableTime,
-      color: (commentResponse.staffMemberIDIRGUID ? 'adminGreen' : 'studentBlue'),
-      icon: (commentResponse.staffMemberIDIRGUID ? '$question' : '$info')
-    };
-  } catch (e) {
-    logApiError(e, 'postRequestComment', `Error occurred while attempting to POST ${requestType} comment.`);
-    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ServiceError(status, {message: 'API Put error'}, e);
   }
 }
 
@@ -424,67 +333,6 @@ function putRequest(requestType, createRequestApiServiceReq) {
       logApiError(e, 'putRequest', `Error occurred while attempting a PUT to ${requestType}.`);
       return errorResponse(res);
     }
-  };
-}
-
-function rejectRequest(requestType, createRequestApiServiceReq) {
-  return async function rejectRequestHandler(req, res) {
-    try {
-      const token = getBackendToken(req, res);
-      if (!token) {
-        return res.status(HttpStatus.UNAUTHORIZED).json({
-          message: 'No access token'
-        });
-      }
-      req.body.statusUpdateDate = LocalDateTime.now();
-      const response = await updateRequest(req, res, requestType, createRequestApiServiceReq);
-      try {
-        await sendRequestEmail(req, token, 'REJECT', requestType);
-        return res.status(200).json(response);
-      } catch (e) {
-        logApiError(e, 'rejectRequest', 'Error occurred while attempting to call the email service.');
-        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-          message: 'INTERNAL SERVER ERROR calling email service'
-        });
-      }
-    } catch (e) {
-      logApiError(e, 'rejectRequest', `Error occurred while attempting to PUT a ${requestType}.`);
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'INTERNAL SERVER ERROR'
-      });
-    }
-  };
-}
-
-function returnRequest(requestType, createRequestApiServiceReq, createCommentApiServiceReq) {
-  return async function returnRequestHandler(req, res) {
-    const token = getBackendToken(req, res);
-    if (!token) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'No access token'
-      });
-    }
-    req.body.statusUpdateDate = LocalDateTime.now();
-
-    return Promise.all([
-      updateRequest(req, res, requestType, createRequestApiServiceReq),
-      postRequestComment(req, requestType, createCommentApiServiceReq),
-
-    ]).then(async ([penResponse, commentResponse]) => {
-      await sendRequestEmail(req, token, 'INFO', requestType);
-      const formattedResponse = {
-        penResponse: penResponse,
-        commentResponse: commentResponse
-      };
-      return res.status(200).json(formattedResponse);
-    }).catch(e => {
-      logApiError(e, 'returnRequest', `Error occurred while attempting to PUT a ${requestType} and POST comment.`);
-      let message = 'INTERNAL SERVER ERROR';
-      if (e.data.message.includes('EMAIL')) {
-        message = 'INTERNAL SERVER ERROR calling email service';
-      }
-      return errorResponse(res, message);
-    });
   };
 }
 
@@ -528,74 +376,6 @@ async function updateRequest(req, res, requestType, createApiServiceReq) {
       const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
       throw new ApiError(status, {message: 'API PUT error'}, e);
     });
-}
-
-async function updateStudentAndDigitalId(req) {
-  const token = utils.getBackendToken(req);
-  let studentResponse = null;
-  const url = config.get('server:student:rootURL');
-  const studentBody = {
-    pen: req['session'].studentDemographics.pen,
-    legalFirstName: req['session'].studentDemographics['studGiven'],
-    legalMiddleNames: req['session'].studentDemographics['studMiddle'],
-    legalLastName: req['session'].studentDemographics['studSurname'],
-    dob: req['session'].studentDemographics['dob'],
-    sexCode: req['session'].studentDemographics['studSex'],
-    genderCode: req['session'].studentDemographics['studSex'],
-    usualFirstName: req['session'].studentDemographics['usualGiven'],
-    usualMiddleNames: req['session'].studentDemographics['usualMiddle'],
-    usualLastName: req['session'].studentDemographics['usualSurname'],
-    localID: req['session'].studentDemographics['localID'],
-    postalCode: req['session'].studentDemographics['postalCode'],
-    gradeCode: req['session'].studentDemographics['grade'],
-    mincode: req['session'].studentDemographics['mincode'],
-    email: req['session'].penRequest.email,
-    emailVerified: req['session'].penRequest.emailVerified,
-  };
-  try {
-    const studentAndDigitalIdResponse = await utils.getData(token, url, {params: {pen: studentBody.pen}});
-
-    if (Array.isArray(studentAndDigitalIdResponse) && studentAndDigitalIdResponse.length === 1) {
-      studentBody.studentID = studentAndDigitalIdResponse[0].studentID;
-      studentResponse = await putData(token, config.get('server:student:rootURL'), studentBody, utils.getUser(req).idir_username);
-    } else if (Array.isArray(studentAndDigitalIdResponse) && !studentAndDigitalIdResponse.length) {
-      studentResponse = await postData(token, config.get('server:student:rootURL'), studentBody, null, utils.getUser(req).idir_username);
-    } else {
-      log.error('Failed to create student record. Invalid response data from student api, there should not be more than one student with the same pen. Complete pen transaction will be out of sync. Student record still needs to be created.');
-    }
-  } catch (e) {
-    logApiError(e, 'updateStudentAndDigitalId', 'Failed to update student. Complete pen transaction will be out of sync. Student record still needs to be created.');
-    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ApiError(status, {message: 'API error'}, e);
-  }
-  if (!studentResponse) {
-    log.error('Null response from student api. Complete pen transaction will be out of sync. StudentId in DigitalId record still needs to be updated.');
-    throw new ApiError(500, {message: 'API error'});
-  }
-  try {
-    const digitalIdResponse = await getData(token, config.get('server:digitalIdURL') + '/' + req['session'].penRequest.digitalID);
-    if (digitalIdResponse && digitalIdResponse.studentID !== studentResponse['studentID']) {
-      let digitalIdBody = digitalIdResponse;
-      digitalIdBody.studentID = studentResponse['studentID'];
-      delete digitalIdBody['updateUser'];
-      delete digitalIdBody['updateDate'];
-      delete digitalIdBody['createDate'];
-
-      return await putData(token, config.get('server:digitalIdURL'), digitalIdBody, utils.getUser(req).idir_username);
-    }
-  } catch (e) {
-    logApiError(e, 'updateStudentAndDigitalId', 'Failed to update digitalid. Complete pen transaction will be out of sync. StudentId in DigitalId record still needs to be updated.');
-    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ApiError(status, {message: 'API error'}, e);
-  }
-
-
-}
-
-function errorResponse(res, msg) {
-  return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-    message: msg || 'INTERNAL SERVER ERROR'
-  });
 }
 
 /**
@@ -644,20 +424,14 @@ function setDefaultsForCreateApiReq(request, req) {
 }
 
 module.exports = {
-  completeRequest,
-  completeStudentProfileRequest,
   getAllRequests,
   getMacros,
   getRequestCommentById,
   getRequestById,
   getStudentById,
   getStudentDemographicsById,
-  postRequestComment,
   putRequest,
-  rejectRequest,
-  returnRequest,
   updateRequest,
-  sendRequestEmail,
   setDefaultsInRequestForRejectAndReturn,
   setDefaultsInRequestForComplete,
   setDefaultsForCreateApiReq
