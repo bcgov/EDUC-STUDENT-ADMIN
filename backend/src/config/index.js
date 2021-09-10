@@ -84,6 +84,7 @@ nconf.defaults({
       gradeCodesURL: process.env.STUDENT_API_URL + '/grade-codes',
       twinReasonCodesURL: process.env.STUDENT_API_URL + '/twin-reason-codes',
       historyActivityCodesURL: process.env.STUDENT_API_URL + '/history-activity-codes',
+      docTypeCodesURL: process.env.STUDENT_API_URL + '/document-type-codes',
     },
     penServices: {
       rootURL: process.env.PEN_SERVICES_API_URL,
@@ -124,7 +125,8 @@ nconf.defaults({
   },
   scheduler: {
     schedulerCronStaleSagaRecordRedis: process.env.SCHEDULER_CRON_STALE_SAGA_RECORD_REDIS,
-    minTimeBeforeSagaIsStaleInSeconds: process.env.MIN_TIME_BEFORE_SAGA_IS_STALE_IN_SECONDS
+    minTimeBeforeSagaIsStaleInSeconds: process.env.MIN_TIME_BEFORE_SAGA_IS_STALE_IN_SECONDS,
+    schedulerCronDocTypeMigration: process.env.SCHEDULER_CRON_DOC_TYPE_MIGRATION
   }
 });
 module.exports = nconf;

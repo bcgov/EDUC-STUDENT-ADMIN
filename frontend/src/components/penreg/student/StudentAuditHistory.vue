@@ -240,6 +240,7 @@ export default {
       history.expanded = false;
       history.hideable = false;
       history.hidden = false;
+      history.createDate = history.createDate.length > 10 ? history.createDate.substr(0, 10) : history.createDate;
       return history;
     },
     markDifferences(currentPageContent, nextPageContent) {

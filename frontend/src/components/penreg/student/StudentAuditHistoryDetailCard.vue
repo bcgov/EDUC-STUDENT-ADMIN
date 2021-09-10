@@ -10,6 +10,16 @@
                                      :highlight="highlightDiff && !!studentHistoryDetail.demogCode_diff" colspan="4"
                                      label="Demog Code"
                                      labelSpan="4"></StudentDetailsTextFieldReadOnly>
+    <StudentDetailsTextFieldReadOnly v-if="studentHistoryDetail.documentTypeCode" :model="getDocumentTypeLabel()" :name="prefixFieldName(STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE)"
+                                     :disabled="false"
+                                     :highlight="highlightDiff && !!studentHistoryDetail.documentTypeCode_diff" colspan="4"
+                                     label="Document Type Code"
+                                     labelSpan="4"></StudentDetailsTextFieldReadOnly>
+    <StudentDetailsTextFieldReadOnly v-if="studentHistoryDetail.dateOfConfirmation" :model="getDateOfConfirmation()" :name="prefixFieldName(STUDENT_DETAILS_FIELDS.DATE_OF_CONFIRMATION)"
+                                     :disabled="false"
+                                     :highlight="highlightDiff && !!studentHistoryDetail.dateOfConfirmation_diff" colspan="4"
+                                     label="Date Of Confirmation"
+                                     labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
     <StudentDetailsTextFieldReadOnly :disabled="false"
                                      :highlight="highlightDiff && !!studentHistoryDetail.legalLastName_diff"
@@ -169,7 +179,8 @@
 import {mapGetters} from 'vuex';
 import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly';
-import {formatPen, formatPostalCode, formatDob} from '../../../utils/format';
+import {formatDob, formatPen, formatPostalCode} from '@/utils/format';
+import moment from 'moment';
 
 export default {
   name: 'StudentAuditHistoryDetailCard',
@@ -199,7 +210,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('student', ['demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects']),
+    ...mapGetters('student', ['demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects','documentTypeCodes']),
   },
   methods: {
     formatPen,
@@ -219,6 +230,15 @@ export default {
     },
     prefixFieldName(fieldName) {
       return this.idPrefix + fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+    },
+    getDateOfConfirmation(){
+      return this.studentHistoryDetail.dateOfConfirmation ? this.frontEndDateTimeFormat(this.studentHistoryDetail.dateOfConfirmation) : '';
+    },
+    getDocumentTypeLabel(){
+      return this.studentHistoryDetail.documentTypeCode ? this.documentTypeCodes.filter(it => (it.documentTypeCode === this.studentHistoryDetail.documentTypeCode))[0]?.label : '';
+    },
+    frontEndDateTimeFormat(date) {
+      return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY/MM/DD h:mm:ss A');
     }
   }
 };

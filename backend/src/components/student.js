@@ -5,10 +5,11 @@ const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const log = require('./logger');
 const utils = require('./utils');
-const {putData} = require('./utils');
+const {putData, getData} = require('./utils');
 const retry = require('async-retry');
 const redisUtil = require('../util/redis/redis-utils');
 const {v4: uuidv4} = require('uuid');
+const {LocalDateTime} = require('@js-joda/core');
 
 function addSagaStatus(students) {
   return addSagaStatusToRecords(students, 'studentID', redisUtil.getPenServicesSagaEvents);
@@ -23,7 +24,22 @@ async function updateStudent(req, res) {
         message: 'No Student ID for PUT operation.'
       });
     }
+    const currentStudent = await getData(token, `${config.get('server:student:rootURL')}/${req.params.studentID}`);
     const student = req.body.student;
+
+    if(req.body.isDateOfConfirmationChanged){
+      student.dateOfConfirmation = LocalDateTime.now().withNano(0).toJSON();
+    }else if(currentStudent.demogCode === 'C'){
+      if(student.demogCode !== 'C'){ // remove the doc type code and date of confirmation.
+        student.documentTypeCode = null;
+        student.dateOfConfirmation = null;
+      }else if(currentStudent.documentTypeCode !== student.documentTypeCode){ // only doc type was updated, so update the date time.
+        student.dateOfConfirmation = LocalDateTime.now().withNano(0).toJSON();
+      }
+    }else if(!currentStudent.documentTypeCode && student.documentTypeCode){
+      student.demogCode = 'C';
+      student.dateOfConfirmation = LocalDateTime.now().withNano(0).toJSON();
+    }
     student.createDate = null;
     student.updateDate = null;
     await retry(async () => {
