@@ -72,7 +72,7 @@
 
 <script>
 import {PAGE_TITLES, REQUEST_TYPES} from '../../utils/constants';
-import { mapState } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 import SetNavigation from './SetNavigation';
 export default {
   name: 'navBar',
@@ -100,61 +100,67 @@ export default {
       },
       {
         title: PAGE_TITLES.STUDENT_REQUESTS,
-        authorized: this.isAuthorizedUser,
+        authorized: this.VIEW_GMP_REQUESTS_ROLE,
         items: [
           {
             title: PAGE_TITLES.GMP,
             link: REQUEST_TYPES.penRequest.label,
-            authorized: this.isValidGMPUser
+            authorized: this.VIEW_GMP_REQUESTS_ROLE
           },
           {
             title: PAGE_TITLES.UMP,
             link: REQUEST_TYPES.studentRequest.label,
-            authorized: this.isValidUMPUser
+            authorized: this.VIEW_UMP_REQUESTS_ROLE
           }
         ],
       },
       {
         title: PAGE_TITLES.STUDENT_SEARCH,
         link: 'basicSearch',
-        authorized: this.isValidStudentSearchUser
+        authorized: this.ADVANCED_SEARCH_ROLE
       },
       {
         title: PAGE_TITLES.COMPARE_PENS,
         link: 'compare',
-        authorized: this.isValidStudentSearchUser
+        authorized: this.PROCESS_STUDENT_ROLE
       },
       {
         title: PAGE_TITLES.PEN_REQ_FILES,
         link: 'penRequestBatch',
-        authorized: this.isValidPenRequestBatchUser
+        authorized: this.VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE
       },
       {
         title: PAGE_TITLES.ARCHIVED_REQ_FILES,
         link: 'archivedRequestBatch',
-        authorized: this.isValidPenRequestBatchUser
+        authorized: this.VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE
       },
       {
         title: PAGE_TITLES.PEN_COORDINATORS,
         link: 'penCoordinators',
         newTab: true,
-        authorized: this.isAuthorizedUser
+        authorized: this.VIEW_PEN_COORDINATOR_INFO_ROLE
       },
       {
         title: PAGE_TITLES.ADMINISTRATION,
-        authorized: this.isValidStaffAdministrationUser,
+        authorized: this.EDIT_MACROS_ROLE,
         items: [
           {
             title: 'Macro Management',
             link: 'macros',
-            authorized: this.isValidStaffAdministrationUser
+            authorized: this.EDIT_MACROS_ROLE
+          },
+          {
+            title: 'Nominal Roll',
+            link: 'nominalRoll',
+            authorized: this.NOMINAL_ROLL_ROLE
           }
         ],
       }
     ];
   },
   computed: {
-    ...mapState('auth', ['isAuthorizedUser', 'isValidStudentSearchUser', 'isValidPenRequestBatchUser', 'isValidStaffAdministrationUser', 'isValidGMPUser', 'isValidUMPUser'])
+    ...mapState('auth', ['isAuthorizedUser']),
+    ...mapGetters('auth', ['ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE'])
   },
   methods: {
     setActive(item) {

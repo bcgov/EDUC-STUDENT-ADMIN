@@ -5,11 +5,15 @@ const auth = require('../components/auth');
 const utils = require('../components/utils');
 const {findPenRequestsByPen, createPenRequestApiServiceReq, returnPenRequest, unlinkRequest, rejectPenRequest, completePenRequest, getPENRequestStats} = require('../components/penRequests');
 const {getAllRequests, getMacros, getRequestById, getRequestCommentById, putRequest} = require('../components/requests');
+const roles = require('../components/roles');
 
 const {getDocuments, getDocumentById, updateDocumentTypeById} = require('../components/documents');
 const atomicStudentUpdate = require('../middlewares/atomic-student-update');
 const requestType = 'penRequest';
 const verifyPenRequestInSession = utils.verifyRequestInSession(requestType);
+
+const hasMacroRoles = auth.isValidUiTokenWithRoles('GMP & StaffAdministration', [...roles.User.GMP, ...roles.User.StaffAdministration]);
+
 /**
  * Gets all the comments for a pen request by pen request id
  */
@@ -30,7 +34,7 @@ router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.
  */
 router.get('/duplicatePenRequests', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, findPenRequestsByPen);
 
-router.get('/macros', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, getMacros(requestType));
+router.get('/macros', passport.authenticate('jwt', {session: false}, undefined), hasMacroRoles, getMacros(requestType));
 
 router.put('/macros/:macroId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStaffAdministrationAdmin, utils.updateMacroByMacroId(`server:${requestType}:macrosURL`));
 

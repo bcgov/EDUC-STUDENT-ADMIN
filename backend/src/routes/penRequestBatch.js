@@ -1,12 +1,15 @@
 const passport = require('passport');
 const express = require('express');
 const router = express.Router();
+const roles = require('../components/roles');
 const auth = require('../components/auth');
 const utils = require('../components/utils');
 const extendSession = utils.extendSession();
 const atomicStudentUpdate = require('../middlewares/atomic-student-update');
 const { getPENBatchRequestStats, getPenRequestFiles, getPenRequestBatchStudents, getPenRequestBatchStudentIDs, getPenRequestBatchStudentById, getPenRequestBatchStudentMatchOutcome, updatePrbStudentInfoRequested,
   issueNewPen, userMatchSaga, userUnmatchSaga, archiveFiles, archiveAndReturnFiles, unarchiveFiles, softDeleteFiles, releaseBatchFilesForFurtherProcessing, repostReports, findValidationIssuesByPrbStudentID } = require('../components/penRequestBatch');
+
+const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles('PenRequestBatch & StudentSearch', [...roles.User.PenRequestBatch, ...roles.User.StudentSearch]);
 
 /*
  * Get all pen request batch files
@@ -52,7 +55,7 @@ router.put('/:id/students/:studentId', passport.authenticate('jwt', {session: fa
 router.get('/:id/students/:studentId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, getPenRequestBatchStudentById);
 
 
-router.get('/studentStatusCodes', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, utils.cacheMiddleware(), utils.getCodes('server:penRequestBatch:studentStatusCodesURL', 'penRequestBatchStudentStatusCodes'));
+router.get('/studentStatusCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:penRequestBatch:studentStatusCodesURL', 'penRequestBatchStudentStatusCodes'));
 
 
 router.get('/studentInfoMacros', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, utils.forwardGet('getStudentInfoMacros', 'server:penRequestBatch:studentInfoMacrosURL'));
@@ -62,11 +65,11 @@ router.put('/studentInfoMacros/:macroId', passport.authenticate('jwt', {session:
 router.post('/studentInfoMacros', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStaffAdministrationAdmin, utils.createMacro('server:penRequestBatch:studentInfoMacrosURL'));
 
 
-router.get('/prbValidationFieldCodes', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, utils.cacheMiddleware(), utils.getCodes('server:penServices:prbValidationFieldCodesURL', 'prbValidationFieldCodes'));
+router.get('/prbValidationFieldCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:penServices:prbValidationFieldCodesURL', 'prbValidationFieldCodes'));
 
-router.get('/prbValidationSeverityCodes', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, utils.cacheMiddleware(), utils.getCodes('server:penServices:prbValidationSeverityCodesURL', 'prbValidationSeverityCodes'));
+router.get('/prbValidationSeverityCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:penServices:prbValidationSeverityCodesURL', 'prbValidationSeverityCodes'));
 
-router.get('/prbValidationTypeCodes', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, utils.cacheMiddleware(), utils.getCodes('server:penServices:prbValidationTypeCodesURL', 'prbValidationTypeCodes'));
+router.get('/prbValidationTypeCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:penServices:prbValidationTypeCodesURL', 'prbValidationTypeCodes'));
 
 /*
  * Issue new pen saga

@@ -6,11 +6,12 @@ const utils = require('../components/utils');
 const atomicStudentUpdate = require('../middlewares/atomic-student-update');
 const { createStudentRequestApiServiceReq, getUMPRequestStats, returnProfileRequest, rejectProfileRequest, completeProfileRequest } = require('../components/studentRequests');
 const { getAllRequests, getMacros, getRequestById, getRequestCommentById, putRequest } = require('../components/requests');
-
+const roles = require('../components/roles');
 const { getDocuments, getDocumentById, updateDocumentTypeById } = require('../components/documents');
 
 const requestType = 'studentRequest';
 const verifyStudentRequestInSession = utils.verifyRequestInSession(requestType);
+const hasMacroRoles = auth.isValidUiTokenWithRoles('UMP & StaffAdministration', [...roles.User.UMP, ...roles.User.StaffAdministration]);
 
 /**
  * Gets all the comments for a request by request id
@@ -32,7 +33,7 @@ router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.
  */
 //router.get('/duplicateRequests', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, findPenRequestsByPen);
 
-router.get('/macros', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPAdmin, getMacros(requestType));
+router.get('/macros', passport.authenticate('jwt', {session: false}, undefined), hasMacroRoles, getMacros(requestType));
 
 router.put('/macros/:macroId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStaffAdministrationAdmin, utils.updateMacroByMacroId(`server:${requestType}:macrosURL`));
 

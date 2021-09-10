@@ -63,8 +63,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['jwtToken', 'isAuthenticated', 'isValidGMPUser', 'isValidUMPUser', 'isValidPenRequestBatchUser']),
-    ...mapGetters('auth', ['userInfo']),
+    ...mapGetters('auth', ['jwtToken', 'isAuthenticated', 'userInfo']),
+    ...mapState('auth', ['isValidGMPUser', 'isValidUMPUser', 'isValidPenRequestBatchUser']),
     ...mapState('app', ['pageTitle']),
   },
   watch: {

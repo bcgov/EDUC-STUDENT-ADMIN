@@ -28,9 +28,13 @@ function createRoleHelpers(roles) {
   const adminHelpers = Object.entries(roles.Admin).map(([roleType, roleName]) => [
     `isValid${roleType}Admin`, isValidUiToken(isUserHasAdminRole, roleType, roleName)
   ]);
+  const adminHelpersFE = Object.entries(roles.Admin).map(([roleType, roleName]) => [
+    `isValid${roleType}Admin`, isValidUser(isUserHasAdminRole, roleType, roleName)
+  ]);
   // create object { isValidGMPUser: ture, isValidUMPUser: true, isValidStudentSearchUser: false, ...}
   const isValidUsers = (req) => fromPairs(userHelpers.map(([roleType, verifyRole]) => [roleType, verifyRole(req)]));
-  return ({...fromPairs([...userTokenHelpers, ...userHelpers, ...adminHelpers]), isValidUsers});
+  const isValidAdminUsers = (req) => fromPairs(adminHelpersFE.map(([roleType, verifyRole]) => [roleType, verifyRole(req)]));
+  return ({...fromPairs([...userTokenHelpers, ...userHelpers, ...adminHelpers]), isValidUsers, isValidAdminUsers});
 }
 
 function isUserHasAdminRole(roleType, roleName, roles) {

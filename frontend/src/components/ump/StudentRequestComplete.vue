@@ -116,7 +116,6 @@ import ApiService from '../../common/apiService';
 import { Routes, Statuses } from '@/utils/constants';
 import { replaceMacro, insertMacro } from '@/utils/macro';
 import { mapGetters, mapMutations } from 'vuex';
-import {AccessEnabledForUser} from '@/common/role-based-access';
 import PrimaryButton from '../util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
 import MacroMenu from '../common/MacroMenu';
@@ -175,13 +174,12 @@ export default {
       },
       enableCompleteButton: false,
       numberOfDuplicatePenRequests:0,
-      isProvidePenEnabledForUser:false,
       completeSagaInProgress: false,
       dialog: false,
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo']),
+    ...mapGetters('auth', ['userInfo', 'ACTION_UMP_REQUESTS_ROLE']),
     ...mapGetters('app', ['selectedRequest', 'requestType', 'requestTypeLabel']),
     ...mapGetters('notifications', ['notification']),
     actionName() {
@@ -217,9 +215,9 @@ export default {
     completedRules() {
       return isValidLength(4000, false);
     },
-  },
-  mounted() {
-    this.isProvidePenEnabledForUser = AccessEnabledForUser(this.requestType, this.actionName, this.userInfo);
+    isProvidePenEnabledForUser() {
+      return this.ACTION_UMP_REQUESTS_ROLE;
+    }
   },
   watch: {
     'request.completeComment': 'validateCompleteAction',

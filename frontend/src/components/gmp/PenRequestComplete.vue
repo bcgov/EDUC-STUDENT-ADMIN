@@ -118,7 +118,6 @@ import ApiService from '../../common/apiService';
 import {Routes, Statuses} from '@/utils/constants';
 import {insertMacro, replaceMacro} from '@/utils/macro';
 import {mapGetters, mapMutations} from 'vuex';
-import {AccessEnabledForUser} from '@/common/role-based-access';
 import PrimaryButton from '../util/PrimaryButton';
 import {checkDigit, isValidLength} from '@/utils/validation';
 import alertMixin from '@/mixins/alertMixin';
@@ -176,12 +175,11 @@ export default {
       },
       enableCompleteButton: false,
       numberOfDuplicatePenRequests:0,
-      isProvidePenEnabledForUser:false,
       completeSagaInProgress: false,
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo']),
+    ...mapGetters('auth', ['userInfo', 'ACTION_GMP_REQUESTS_ROLE']),
     ...mapGetters('app', ['selectedRequest', 'requestType', 'requestTypeLabel']),
     ...mapGetters('notifications', ['notification']),
     actionName() {
@@ -233,9 +231,9 @@ export default {
     isUnlinkDisabled() {
       return (!this.enableActions || !(this.request.penRequestStatusCode === 'MANUAL' || this.request.penRequestStatusCode === 'AUTO')) && !this.completeSagaInProgress;
     },
-  },
-  mounted() {
-    this.isProvidePenEnabledForUser = AccessEnabledForUser(this.requestType, this.actionName, this.userInfo);
+    isProvidePenEnabledForUser() {
+      return this.ACTION_GMP_REQUESTS_ROLE;
+    }
   },
   watch: {
     'request.completeComment': 'validateCompleteAction',
