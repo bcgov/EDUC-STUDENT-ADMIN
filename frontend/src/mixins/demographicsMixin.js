@@ -22,7 +22,7 @@ export default {
         gender: null
       },
       enableCompleteButton: false,
-    }
+    };
   },
   methods: {
     searchByPen() {

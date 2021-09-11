@@ -118,7 +118,7 @@ import { replaceMacro, insertMacro } from '@/utils/macro';
 import { mapGetters, mapMutations } from 'vuex';
 import PrimaryButton from '../util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
-import demographics from '@/mixins/demographics';
+import demographicsMixin from '@/mixins/demographicsMixin';
 import MacroMenu from '../common/MacroMenu';
 import {isValidLength} from '@/utils/validation';
 
@@ -128,7 +128,7 @@ export default {
     PrimaryButton,
     MacroMenu
   },
-  mixins: [alertMixin, demographics],
+  mixins: [alertMixin, demographicsMixin],
   props: {
     request: {
       type: Object,
