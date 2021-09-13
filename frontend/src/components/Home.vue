@@ -185,37 +185,28 @@ export default {
     if(this.VIEW_UMP_REQUESTS_ROLE) {
       gumpiPromises.push(ApiService.apiAxios.get(Routes.studentRequest.STATS_URL));
     }
-    Promise.allSettled(gumpiPromises).then(([gmp, ump])=>{
-      if(gmp) {
-        if(gmp.status=== 'fulfilled'){
+    Promise.allSettled(gumpiPromises).then((responses)=> {
+      responses.forEach((response)=>{
+        let title;
+        if(response.value.config.url === Routes.penRequest.STATS_URL) {
+          title = 'Get My PEN';
+        } else {
+          title = 'Update My PEN';
+        }
+        if(response.status === 'fulfilled') {
           this.studentData.push({
-            title: 'Get My PEN',
-            initial: gmp.value.data.numInitRev,
-            subsequent: gmp.value.data.numSubsRev
+            title: title,
+            initial: response.value.data.numInitRev,
+            subsequent: response.value.data.numSubsRev
           });
-        }else {
-          this.setFailureAlert('Error loading Get My PEN row data. Try refreshing the page.');
+        } else {
+          this.setFailureAlert(`Error loading ${title} row data. Try refreshing the page.`);
           this.studentData.push({
-            title: 'Get My PEN',
+            title: title,
             error: true
           });
         }
-      }
-      if(ump){
-        if(ump.status=== 'fulfilled'){
-          this.studentData.push({
-            title: 'Update My PEN',
-            initial: ump.value.data.numInitRev,
-            subsequent: ump.value.data.numSubsRev
-          });
-        }else {
-          this.setFailureAlert('Error loading Update My PEN row data. Try refreshing the page.');
-          this.studentData.push({
-            title: 'Update My PEN',
-            error: true
-          });
-        }
-      }
+      });
     }).finally(()=>{
       this.isLoadingGmpUmp = false;
     });
