@@ -120,6 +120,7 @@ import {insertMacro, replaceMacro} from '@/utils/macro';
 import {mapGetters, mapMutations} from 'vuex';
 import PrimaryButton from '../util/PrimaryButton';
 import {checkDigit, isValidLength} from '@/utils/validation';
+import demographicsMixin from '@/mixins/demographicsMixin';
 import alertMixin from '@/mixins/alertMixin';
 import MacroMenu from '../common/MacroMenu';
 
@@ -129,7 +130,7 @@ export default {
     PrimaryButton,
     MacroMenu
   },
-  mixins: [alertMixin],
+  mixins: [alertMixin, demographicsMixin],
   props: {
     request: {
       type: Object,
@@ -151,29 +152,12 @@ export default {
       type: Function,
       required: true
     },
-    switchLoading: {
-      type: Function,
-      required: true
-    }
-
   },
   data () {
     return {
       validForm: false,
       requiredRules: [v => !!v || 'Required'],
       notAPenErrorMessage: 'The provided PEN is not valid.',
-      penSearchId: null,
-      demographics: {
-        legalFirst: null,
-        legalMiddle: null,
-        legalLast: null,
-        usualFirst: null,
-        usualMiddle: null,
-        usualLast: null,
-        dob: null,
-        gender: null
-      },
-      enableCompleteButton: false,
       numberOfDuplicatePenRequests:0,
       completeSagaInProgress: false,
     };
@@ -337,21 +321,6 @@ export default {
           this.setFailureAlert(this.notAPenErrorMessage);
         }
       }
-    },
-    searchByPen() {
-      this.switchLoading(true);
-      ApiService.apiAxios
-        .get(Routes.SEARCH_BY_PEN + '/' + this.penSearchId)
-        .then(response => {
-          this.demographics = response.data;
-          this.enableCompleteButton = true;
-        })
-        .catch(error => {
-          console.log(error);
-        })
-        .finally(() => {
-          this.switchLoading(false);
-        });
     },
     searchDuplicatePenRequestsByPen() {
       this.switchLoading(true);

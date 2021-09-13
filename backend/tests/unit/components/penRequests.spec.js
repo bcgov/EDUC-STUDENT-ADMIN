@@ -1,13 +1,24 @@
-const {LocalDateTime} = require('@js-joda/core');
-
 const HttpStatus = require('http-status-codes');
 const penRequests = require('../../../src/components/penRequests');
 const requests = require('../../../src/components/requests');
-//const {  updatePenRequest, __RewireAPI__ as rewirePenRequests} =  require('../../../src/components/penRequests');
-jest.mock('../../../src/components/utils');
+jest.mock('../../../src/components/utils', () => {
+  const originalModule = jest.requireActual('../../../src/components/utils');
+  return {
+    __esModule: true, // Use it when dealing with esModules
+    ...originalModule,
+    getBackendToken: jest.fn(),
+    getData: jest.fn(),
+    putData: jest.fn(),
+    postData: jest.fn(),
+    getUser: jest.fn().mockReturnValue({idir_username: 'User'}),
+    formatCommentTimestamp: jest.fn(),
+  };
+});
 const { mockRequest, mockResponse } = require('../helpers');
 const utils = require('../../../src/components/utils');
 const { ApiError, ServiceError } = require('../../../src/components/error');
+jest.mock('../../../src/config/index');
+const config = require('../../../src/config/index');
 
 const penRequestStatusCodesData = [
   {
@@ -87,577 +98,6 @@ const genderCodesData = [
   }
 ];
 
-/*describe('getAllPenRequests', () => {
-  const penRequestsData = {
-    'content': [
-      {
-        'createUser': 'PEN-REQUEST-API',
-        'updateUser': 'PEN-REQUEST-API',
-        'createDate': null,
-        'updateDate': null,
-        'penRequestID': '1',
-        'digitalID': '1',
-        'penRequestStatusCode': 'DRAFT',
-        'legalFirstName': 'John',
-        'legalMiddleNames': null,
-        'legalLastName': 'Chwelo',
-        'dob': '2008-05-07',
-        'genderCode': 'X',
-        'usualFirstName': null,
-        'usualMiddleName': null,
-        'usualLastName': null,
-        'email': 'email@email.com',
-        'maidenName': null,
-        'pastNames': null,
-        'lastBCSchool': null,
-        'lastBCSchoolStudentNumber': null,
-        'currentSchool': null,
-        'reviewer': null,
-        'failureReason': null,
-        'initialSubmitDate': null,
-        'statusUpdateDate': '2020-03-05T14:45:17',
-        'emailVerified': 'N',
-        'bcscAutoMatchOutcome': null,
-        'bcscAutoMatchDetails': null,
-        'pen': null
-      },
-      {
-        'createUser': 'PEN-REQUEST-API',
-        'updateUser': 'PEN-REQUEST-API',
-        'createDate': null,
-        'updateDate': null,
-        'penRequestID': '2',
-        'digitalID': '2',
-        'penRequestStatusCode': 'MANUAL',
-        'legalFirstName': 'John',
-        'legalMiddleNames': null,
-        'legalLastName': 'Cox',
-        'dob': '1990-07-04',
-        'genderCode': 'M',
-        'usualFirstName': null,
-        'usualMiddleName': null,
-        'usualLastName': null,
-        'email': 'email@email.com',
-        'maidenName': null,
-        'pastNames': null,
-        'lastBCSchool': null,
-        'lastBCSchoolStudentNumber': null,
-        'currentSchool': null,
-        'reviewer': 'null',
-        'failureReason': 'dd',
-        'initialSubmitDate': '2020-03-13T11:11:46',
-        'statusUpdateDate': '2020-03-16T21:26:20',
-        'emailVerified': 'Y',
-        'bcscAutoMatchOutcome': null,
-        'bcscAutoMatchDetails': null,
-        'pen': '123456789'
-      },
-      {
-        'createUser': 'PEN-REQUEST-API',
-        'updateUser': 'PEN-REQUEST-API',
-        'createDate': null,
-        'updateDate': null,
-        'penRequestID': '3',
-        'digitalID': '3',
-        'penRequestStatusCode': 'SUBSREV',
-        'legalFirstName': 'Silent',
-        'legalMiddleNames': null,
-        'legalLastName': 'Sam',
-        'dob': '1960-01-16',
-        'genderCode': 'X',
-        'usualFirstName': null,
-        'usualMiddleName': null,
-        'usualLastName': null,
-        'email': 'email@email.com',
-        'maidenName': null,
-        'pastNames': null,
-        'lastBCSchool': null,
-        'lastBCSchoolStudentNumber': null,
-        'currentSchool': null,
-        'reviewer': null,
-        'failureReason': null,
-        'initialSubmitDate': '2020-03-16T18:32:09',
-        'statusUpdateDate': '2020-03-16T18:47:13',
-        'emailVerified': 'Y',
-        'bcscAutoMatchOutcome': null,
-        'bcscAutoMatchDetails': null,
-        'pen': null
-      },
-      {
-        'createUser': 'PEN-REQUEST-API',
-        'updateUser': 'PEN-REQUEST-API',
-        'createDate': null,
-        'updateDate': null,
-        'penRequestID': '4',
-        'digitalID': '4',
-        'penRequestStatusCode': 'INITREV',
-        'legalFirstName': 'RICHENDA',
-        'legalMiddleNames': null,
-        'legalLastName': 'GRAFTON',
-        'dob': '1974-03-24',
-        'genderCode': 'M',
-        'usualFirstName': null,
-        'usualMiddleName': null,
-        'usualLastName': null,
-        'email': 'email@email.com',
-        'maidenName': null,
-        'pastNames': null,
-        'lastBCSchool': null,
-        'lastBCSchoolStudentNumber': null,
-        'currentSchool': null,
-        'reviewer': null,
-        'failureReason': null,
-        'initialSubmitDate': '2020-03-17T09:29:12',
-        'statusUpdateDate': '2020-03-17T09:29:12',
-        'emailVerified': 'Y',
-        'bcscAutoMatchOutcome': 'ZEROMATCHES',
-        'bcscAutoMatchDetails': 'Zero PEN records found by BCSC auto-match',
-        'pen': null
-      },
-      {
-        'createUser': 'PEN-REQUEST-API',
-        'updateUser': 'PEN-REQUEST-API',
-        'createDate': null,
-        'updateDate': null,
-        'penRequestID': '5',
-        'digitalID': '5',
-        'penRequestStatusCode': 'REJECTED',
-        'legalFirstName': null,
-        'legalMiddleNames': null,
-        'legalLastName': 'Wayne',
-        'dob': '1997-01-01',
-        'genderCode': 'M',
-        'usualFirstName': null,
-        'usualMiddleName': null,
-        'usualLastName': null,
-        'email': 'email@email.com',
-        'maidenName': null,
-        'pastNames': null,
-        'lastBCSchool': null,
-        'lastBCSchoolStudentNumber': null,
-        'currentSchool': null,
-        'reviewer': 'null',
-        'failureReason': 'Can\'t find the record.',
-        'initialSubmitDate': '2020-03-10T11:39:01',
-        'statusUpdateDate': '2020-03-10T13:29:52',
-        'emailVerified': 'Y',
-        'bcscAutoMatchOutcome': null,
-        'bcscAutoMatchDetails': 'No auto-match performed for Basic BCeID',
-        'pen': null
-      },
-      {
-        'createUser': 'PEN-REQUEST-API',
-        'updateUser': 'PEN-REQUEST-API',
-        'createDate': null,
-        'updateDate': null,
-        'penRequestID': '6',
-        'digitalID': '6',
-        'penRequestStatusCode': 'RETURNED',
-        'legalFirstName': null,
-        'legalMiddleNames': null,
-        'legalLastName': 'Wayne',
-        'dob': '1994-02-03',
-        'genderCode': 'M',
-        'usualFirstName': null,
-        'usualMiddleName': null,
-        'usualLastName': null,
-        'email': 'email@email.com',
-        'maidenName': null,
-        'pastNames': null,
-        'lastBCSchool': null,
-        'lastBCSchoolStudentNumber': null,
-        'currentSchool': null,
-        'reviewer': 'null',
-        'failureReason': 'Reject',
-        'initialSubmitDate': '2020-03-02T14:22:41',
-        'statusUpdateDate': '2020-03-11T16:10:31',
-        'emailVerified': 'Y',
-        'bcscAutoMatchOutcome': 'RIGHTPEN',
-        'bcscAutoMatchDetails': 'CORRECT auto-match to: 123456789 Smith, John',
-        'pen': null
-      }
-    ],
-    'pageable': {
-      'sort': {
-        'sorted': true,
-        'unsorted': false,
-        'empty': false
-      },
-      'pageSize': 15,
-      'pageNumber': 0,
-      'offset': 0,
-      'paged': true,
-      'unpaged': false
-    },
-    'last': true,
-    'totalPages': 1,
-    'totalElements': 5,
-    'sort': {
-      'sorted': true,
-      'unsorted': false,
-      'empty': false
-    },
-    'first': true,
-    'numberOfElements': 5,
-    'size': 15,
-    'number': 0,
-    'empty': false
-  };
-  const penRetrievalResponse = {
-    'content': [
-      {
-        'createUser': 'PEN-REQUEST-API',
-        'updateUser': 'PEN-REQUEST-API',
-        'createDate': null,
-        'updateDate': null,
-        'penRequestID': '1',
-        'penRequestStatusCode': {
-          'penRequestStatusCode': 'DRAFT',
-          'label': 'Draft',
-          'description': 'Request created but not yet submitted.',
-          'displayOrder': 1,
-          'effectiveDate': '2020-01-01T00:00:00',
-          'expiryDate': '2099-12-31T00:00:00'
-        },
-        'legalFirstName': 'John',
-        'legalMiddleNames': null,
-        'legalLastName': 'Chwelo',
-        'dob': '2008-05-07',
-        'genderCode': 'X',
-        'usualFirstName': null,
-        'usualMiddleName': null,
-        'usualLastName': null,
-        'email': 'email@email.com',
-        'maidenName': null,
-        'pastNames': null,
-        'lastBCSchool': null,
-        'lastBCSchoolStudentNumber': null,
-        'currentSchool': null,
-        'reviewer': null,
-        'failureReason': null,
-        'initialSubmitDate': null,
-        'statusUpdateDate': '2020-03-05T14:45:17',
-        'emailVerified': 'N',
-        'bcscAutoMatchOutcome': null,
-        'bcscAutoMatchDetails': null,
-        'pen': null
-      },
-      {
-        'createUser': 'PEN-REQUEST-API',
-        'updateUser': 'PEN-REQUEST-API',
-        'createDate': null,
-        'updateDate': null,
-        'penRequestID': '2',
-        'penRequestStatusCode': {
-          'penRequestStatusCode': 'MANUAL',
-          'label': 'Completed by manual match',
-          'description': 'Request was completed by staff determining the matching PEN.',
-          'displayOrder': 6,
-          'effectiveDate': '2020-01-01T00:00:00',
-          'expiryDate': '2099-12-31T00:00:00'
-        },
-        'legalFirstName': 'John',
-        'legalMiddleNames': null,
-        'legalLastName': 'Cox',
-        'dob': '1990-07-04',
-        'genderCode': 'M',
-        'usualFirstName': null,
-        'usualMiddleName': null,
-        'usualLastName': null,
-        'email': 'email@email.com',
-        'maidenName': null,
-        'pastNames': null,
-        'lastBCSchool': null,
-        'lastBCSchoolStudentNumber': null,
-        'currentSchool': null,
-        'reviewer': 'null',
-        'failureReason': 'dd',
-        'initialSubmitDate': '2020-03-13T11:11:46',
-        'statusUpdateDate': '2020-03-16T21:26:20',
-        'emailVerified': 'Y',
-        'bcscAutoMatchOutcome': null,
-        'bcscAutoMatchDetails': null,
-        'pen': '123456789'
-      },
-      {
-        'createUser': 'PEN-REQUEST-API',
-        'updateUser': 'PEN-REQUEST-API',
-        'createDate': null,
-        'updateDate': null,
-        'penRequestID': '3',
-        'penRequestStatusCode': {
-          'penRequestStatusCode': 'SUBSREV',
-          'label': 'Subsequent Review',
-          'description': 'Request has been resubmitted with more info and is now in another review by staff.',
-          'displayOrder': 4,
-          'effectiveDate': '2020-01-01T00:00:00',
-          'expiryDate': '2099-12-31T00:00:00'
-        },
-        'legalFirstName': 'Silent',
-        'legalMiddleNames': null,
-        'legalLastName': 'Sam',
-        'dob': '1960-01-16',
-        'genderCode': 'X',
-        'usualFirstName': null,
-        'usualMiddleName': null,
-        'usualLastName': null,
-        'email': 'email@email.com',
-        'maidenName': null,
-        'pastNames': null,
-        'lastBCSchool': null,
-        'lastBCSchoolStudentNumber': null,
-        'currentSchool': null,
-        'reviewer': null,
-        'failureReason': null,
-        'initialSubmitDate': '2020-03-16T18:32:09',
-        'statusUpdateDate': '2020-03-16T18:47:13',
-        'emailVerified': 'Y',
-        'bcscAutoMatchOutcome': null,
-        'bcscAutoMatchDetails': null,
-        'pen': null
-      },
-      {
-        'createUser': 'PEN-REQUEST-API',
-        'updateUser': 'PEN-REQUEST-API',
-        'createDate': null,
-        'updateDate': null,
-        'penRequestID': '4',
-        'penRequestStatusCode': {
-          'penRequestStatusCode': 'INITREV',
-          'label': 'First Review',
-          'description': 'Request has been submitted and is now in it\'s first review by staff.',
-          'displayOrder': 2,
-          'effectiveDate': '2020-01-01T00:00:00',
-          'expiryDate': '2099-12-31T00:00:00'
-        },
-        'legalFirstName': 'RICHENDA',
-        'legalMiddleNames': null,
-        'legalLastName': 'GRAFTON',
-        'dob': '1974-03-24',
-        'genderCode': 'M',
-        'usualFirstName': null,
-        'usualMiddleName': null,
-        'usualLastName': null,
-        'email': 'email@email.com',
-        'maidenName': null,
-        'pastNames': null,
-        'lastBCSchool': null,
-        'lastBCSchoolStudentNumber': null,
-        'currentSchool': null,
-        'reviewer': null,
-        'failureReason': null,
-        'initialSubmitDate': '2020-03-17T09:29:12',
-        'statusUpdateDate': '2020-03-17T09:29:12',
-        'emailVerified': 'Y',
-        'bcscAutoMatchOutcome': 'ZEROMATCHES',
-        'bcscAutoMatchDetails': 'Zero PEN records found by BCSC auto-match',
-        'pen': null
-      },
-      {
-        'createUser': 'PEN-REQUEST-API',
-        'updateUser': 'PEN-REQUEST-API',
-        'createDate': null,
-        'updateDate': null,
-        'penRequestID': '5',
-        'penRequestStatusCode': {
-          'penRequestStatusCode': 'REJECTED',
-          'label': 'Could not be fulfilled',
-          'description': 'Request could not be fullfilled by staff for the reasons provided.',
-          'displayOrder': 7,
-          'effectiveDate': '2020-01-01T00:00:00',
-          'expiryDate': '2099-12-31T00:00:00'
-        },
-        'legalFirstName': null,
-        'legalMiddleNames': null,
-        'legalLastName': 'Wayne',
-        'dob': '1997-01-01',
-        'genderCode': 'M',
-        'usualFirstName': null,
-        'usualMiddleName': null,
-        'usualLastName': null,
-        'email': 'email@email.com',
-        'maidenName': null,
-        'pastNames': null,
-        'lastBCSchool': null,
-        'lastBCSchoolStudentNumber': null,
-        'currentSchool': null,
-        'reviewer': 'null',
-        'failureReason': 'Can\'t find the record.',
-        'initialSubmitDate': '2020-03-10T11:39:01',
-        'statusUpdateDate': '2020-03-10T13:29:52',
-        'emailVerified': 'Y',
-        'bcscAutoMatchOutcome': null,
-        'bcscAutoMatchDetails': 'No auto-match performed for Basic BCeID',
-        'pen': null
-      },
-      {
-        'createUser': 'PEN-REQUEST-API',
-        'updateUser': 'PEN-REQUEST-API',
-        'createDate': null,
-        'updateDate': null,
-        'penRequestID': '6',
-        'penRequestStatusCode': {
-          'penRequestStatusCode': 'RETURNED',
-          'label': 'Returned for more information',
-          'description': 'Request has been returned to the submitter for more information.',
-          'displayOrder': 3,
-          'effectiveDate': '2020-01-01T00:00:00',
-          'expiryDate': '2099-12-31T00:00:00'
-        },
-        'legalFirstName': null,
-        'legalMiddleNames': null,
-        'legalLastName': 'Wayne',
-        'dob': '1994-02-03',
-        'genderCode': 'M',
-        'usualFirstName': null,
-        'usualMiddleName': null,
-        'usualLastName': null,
-        'email': 'email@email.com',
-        'maidenName': null,
-        'pastNames': null,
-        'lastBCSchool': null,
-        'lastBCSchoolStudentNumber': null,
-        'currentSchool': null,
-        'reviewer': 'null',
-        'failureReason': 'Reject',
-        'initialSubmitDate': '2020-03-02T14:22:41',
-        'statusUpdateDate': '2020-03-11T16:10:31',
-        'emailVerified': 'Y',
-        'bcscAutoMatchOutcome': 'RIGHTPEN',
-        'bcscAutoMatchDetails': 'CORRECT auto-match to: 123456789 Smith, John',
-        'pen': null
-      }
-    ],
-    'pageable': {
-      'sort': {
-        'sorted': true,
-        'unsorted': false,
-        'empty': false
-      },
-      'pageSize': 15,
-      'pageNumber': 0,
-      'offset': 0,
-      'paged': true,
-      'unpaged': false
-    },
-    'last': true,
-    'totalPages': 1,
-    'totalElements': 5,
-    'sort': {
-      'sorted': true,
-      'unsorted': false,
-      'empty': false
-    },
-    'first': true,
-    'numberOfElements': 5,
-    'size': 15,
-    'number': 0,
-    'empty': false
-  };
-  let req;
-  let res;
-
-  jest.spyOn(utils, 'getBackendToken');
-  jest.spyOn(utils, 'getData');
-  jest.spyOn(utils, 'getCodeTable');
-
-  beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
-    utils.getCodeTable.mockResolvedValue(penRequestStatusCodesData);
-    utils.getData.mockResolvedValue(penRequestsData);
-    req = mockRequest();
-    res = mockResponse();
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-  it('should return penRequstsResponse', async () => {
-    req.query = {
-      'pageNumber': '0',
-      'pageSize': '15',
-      'sort': {'initialSubmitDate':'ASC'},
-      'statusFilters': [
-        'First Review',
-        'Subsequent Review'
-      ]
-    };
-    await penRequests.getAllPenRequests(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
-    expect(res.json).toHaveBeenCalledWith(penRetrievalResponse);
-  });
-  it('should return unauthorized error if no token', async () => {
-    utils.getBackendToken.mockReturnValue(null);
-    await penRequests.getAllPenRequests(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
-  });
-  it('should return INTERNAL_SERVER_ERROR if getCodeTable exceptions thrown', async () => {
-    utils.getCodeTable.mockRejectedValue(new Error('test error'));
-    await penRequests.getAllPenRequests(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
-  });
-  it('should return INTERNAL_SERVER_ERROR if getData exceptions thrown', async () => {
-    utils.getData.mockRejectedValue(new Error('test error'));
-    await penRequests.getAllPenRequests(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
-  });
-});*/
-
-describe('completeRequest', () => {
-
-  const updatePenRequestRes = {
-    penRequestID: 'penRequestID'
-  };
-  const dateTime = LocalDateTime.now();
-  let req;
-  let res;
-
-  const completeRequest = requests.__get__('completeRequest')('penRequest', penRequests.createPenRequestApiServiceReq);
-
-  jest.spyOn(LocalDateTime, 'now');
-
-  beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
-    req = mockRequest();
-    res = mockResponse();
-    req.body = {};
-    LocalDateTime.now.mockReturnValue(dateTime);
-    requests.__Rewire__('updateRequest', () => Promise.resolve(updatePenRequestRes));
-    requests.__Rewire__('sendRequestEmail', () => Promise.resolve());
-    requests.__Rewire__('updateStudentAndDigitalId', () => Promise.resolve());
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-    requests.__ResetDependency__('updateRequest');
-    requests.__ResetDependency__('sendRequestEmail');
-    requests.__ResetDependency__('updateStudentAndDigitalId');
-  });
-  it('should return penrequest data', async () => {
-    await completeRequest(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
-    expect(res.json).toHaveBeenCalledWith(updatePenRequestRes);
-  });
-  it('should return 500 error if updatePenRequest fails', async () => {
-    requests.__Rewire__('updateRequest', () => Promise.reject(new ServiceError('updatePenRequest',{ message: 'No access token'})));
-    await completeRequest(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
-    expect(res.json).toHaveBeenCalledWith({ message: 'INTERNAL SERVER ERROR'});
-  });
-  it('should return 500 error if sendPenRequestEmail fails', async () => {
-    requests.__Rewire__('sendRequestEmail', () => Promise.reject(new ServiceError('updatePenRequest',{ message: 'No access token'})));
-    await completeRequest(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
-    expect(res.json).toHaveBeenCalledWith({ message: 'INTERNAL SERVER ERROR'});
-  });
-  it('should return 500 error if updateStudentAndDigitalId fails', async () => {
-    requests.__Rewire__('updateStudentAndDigitalId', () => Promise.reject(new ApiError(500, {message: 'API error'})));
-    await completeRequest(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
-    expect(res.json).toHaveBeenCalledWith({ message: 'INTERNAL SERVER ERROR'});
-  });
-});
-
 describe('getMacroData', () => {
   let req;
   let res;
@@ -681,19 +121,18 @@ describe('getMacroData', () => {
   });
 
   it('should return all macros correctly', async () => {
-    utils.getData.mockResolvedValue([macroObject]);
-    utils.stripAuditColumns.mockReturnValue(formattedResponse.returnMacros[0]);
+    utils.getData.mockResolvedValue(macroObject);
 
     await getMacros(req,res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(formattedResponse);
   });
   it('should return 500 if getData fails', async () => {
-    utils.getData.mockResolvedValue(new ApiError());
+    utils.getData.mockRejectedValue(new ApiError());
 
     await getMacros(req,res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
-    expect(res.json).toHaveBeenCalledWith({message: 'INTERNAL SERVER ERROR'});
+    expect(res.json).toHaveBeenCalledWith({message: 'INTERNAL SERVER ERROR', code: HttpStatus.INTERNAL_SERVER_ERROR});
   });
 });
 
@@ -854,7 +293,7 @@ describe('getPenRequestById', () => {
   const statusCodeLabel = 'Subsequent Review';
   const penRequestStrippedResponse = {
     'penRequestID': '1',
-    'penRequestStatusCode': 'Subsequent Review',
+    'penRequestStatusCode': 'SUBSREV',
     'legalFirstName': 'Silent',
     'legalMiddleNames': null,
     'legalLastName': 'Sam',
@@ -894,7 +333,6 @@ describe('getPenRequestById', () => {
   beforeEach(() => {
     utils.getBackendToken.mockReturnValue('token');
     utils.saveSession.mockReturnValue(null);
-    utils.stripAuditColumns.mockReturnValue(penRequestStrippedResponse);
     req = mockRequest();
     res = mockResponse();
   });
@@ -1019,6 +457,21 @@ describe('getStudentDemographicsById', () => {
     'createDate': '2007-08-20',
     'createUserName': 'EDUC_PEN_MGR'
   };
+  const studentData = [{
+    'pen': '111111111',
+    'legalLastName': 'POWERS',
+    'legalFirstName': 'AUSTIN',
+    'legalMiddleNames': 'DANGER',
+    'usualLastName': 'POWERS',
+    'usualFirstName': 'AUSTIN',
+    'usualMiddleNames': 'DANGER',
+    'dob': '1953-12-17',
+    'sexCode': 'M',
+    'localID': '12345',
+    'postalCode': 'V8V1V2',
+    'gradeCode': '1',
+    'mincode': '101000001'
+  }];
   const formattedValue = '1953-12-17';
   const formattedResponse = {
     'legalFirst': 'AUSTIN',
@@ -1039,7 +492,6 @@ describe('getStudentDemographicsById', () => {
 
   beforeEach(() => {
     utils.getBackendToken.mockReturnValue('token');
-    utils.getData.mockResolvedValue(demographicsData);
     utils.formatDate.mockReturnValue(formattedValue);
     req = mockRequest();
     res = mockResponse();
@@ -1055,75 +507,36 @@ describe('getStudentDemographicsById', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-  it('should return demographicsData', async () => {
+  it('should return demographicsData from demographics api', async () => {
+    config.get.mockReturnValue(false);
+    utils.getData.mockResolvedValue(demographicsData);
     await requests.getStudentDemographicsById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(formattedResponse);
+  });
+  it('should return NOT_FOUND if getData return 404', async () => {
+    config.get.mockReturnValue(false);
+    utils.getData.mockRejectedValue(new ApiError(HttpStatus.NOT_FOUND, 'test error'));
+    await requests.getStudentDemographicsById(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
+  });
+  it('should return demographicsData from student api', async () => {
+    config.get.mockReturnValue(true);
+    utils.getData.mockResolvedValue(studentData);
+    await requests.getStudentDemographicsById(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+    expect(res.json).toHaveBeenCalledWith(formattedResponse);
+  });
+  it('should return NOT_FOUND if getData return empty array from student api', async () => {
+    config.get.mockReturnValue(true);
+    utils.getData.mockResolvedValue([]);
+    await requests.getStudentDemographicsById(req, res);
+    expect(res.status).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
   });
   it('should return INTERNAL_SERVER_ERROR if getData exceptions thrown', async () => {
     utils.getData.mockRejectedValue(new Error('test error'));
     await requests.getStudentDemographicsById(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
-  });
-});
-
-describe('postPenRequestComment', () => {
-  const userData = {
-    idir_username: 'IDIR',
-    preferred_username: '11'
-  };
-  const dateTime = LocalDateTime.now();
-  const postCommentResponse = {
-    'commentContent': 'This is email content',
-    'staffMemberIDIRGUID': '11',
-    'staffMemberName': 'IDIR',
-    'commentTimestamp': dateTime.toString()
-  };
-  const responser = {
-    content: 'This is email content',
-    participantId: '11',
-    name: 'IDIR',
-    timestamp: dateTime.toString(),
-    color: 'adminGreen',
-    icon: '$question'
-  };
-  let req;
-
-  jest.spyOn(utils, 'getBackendToken');
-  jest.spyOn(utils, 'getUser');
-  jest.spyOn(LocalDateTime, 'now');
-
-  beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
-    utils.getUser.mockReturnValue(userData);
-    utils.postData.mockReturnValue(postCommentResponse);
-    utils.formatCommentTimestamp.mockReturnValue(dateTime.toString());
-    LocalDateTime.now.mockReturnValue(dateTime);
-    req = mockRequest();
-    req.body = {
-      content: 'This is email content'
-    };
-    req.params = {
-      id: '111111111'
-    };
-  });
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-  it('should return demographicsData', async () => {
-    expect(await requests.postRequestComment(req, 'penRequest', penRequests.createPenRequestCommentApiServiceReq)).toEqual(responser);
-  });
-  it('should throw ServiceError error if no token', async () => {
-    utils.getBackendToken.mockReturnValue(null);
-    expect(requests.postRequestComment(req, 'penRequest', penRequests.createPenRequestCommentApiServiceReq)).rejects.toThrowError(ServiceError);
-  });
-  it('should throw ServiceError if no user info', async () => {
-    utils.getUser.mockReturnValue(false);
-    expect(requests.postRequestComment(req, 'penRequest', penRequests.createPenRequestCommentApiServiceReq)).rejects.toThrowError(ServiceError);
-  });
-  it('should throw ServiceError if postData exceptions thrown', async () => {
-    utils.postData.mockRejectedValue(new Error('test error'));
-    expect(requests.postRequestComment(req, 'penRequest', penRequests.createPenRequestCommentApiServiceReq)).rejects.toThrowError(ServiceError);
   });
 });
 
@@ -1134,7 +547,6 @@ describe('updatePenRequest', () => {
   jest.spyOn(utils, 'getBackendToken');
   jest.spyOn(utils, 'putData');
   jest.spyOn(utils, 'getCodeTable');
-  jest.spyOn(utils, 'stripAuditColumns');
   jest.spyOn(utils, 'getCodeLabel');
 
 
@@ -1145,7 +557,8 @@ describe('updatePenRequest', () => {
     req.session.penRequest = {
       'createUser': 'PEN-REQUEST-API',
       'penRequestID': '1',
-      'digitalID': 'a'
+      'digitalID': 'a',
+      'dataSourceCode': 'Basic BCeID'
     };
   });
 
@@ -1193,9 +606,9 @@ describe('updatePenRequest', () => {
 
     const stripedResponse = Object.keys(penPutResponse).filter(key => key!=='createUser').reduce( (re, key) => Object.assign(re, { [key]: penPutResponse[key] }), {} );
     const finalResponse = Object.keys(stripedResponse).filter(key => key!=='digitalID').reduce( (re, key) => Object.assign(re, { [key]: stripedResponse[key] }), {} );
+    finalResponse.penRequestStatusCodeLabel = 'Returned for more information';
     utils.putData.mockResolvedValue(penPutResponse);
     utils.getCodeTable.mockReturnValue(statusCodeResponse);
-    utils.stripAuditColumns.mockReturnValue(stripedResponse);
     utils.getCodeLabel.mockReturnValue('Returned for more information');
     expect(await requests.updateRequest(req, res, 'penRequest', penRequests.createPenRequestApiServiceReq)).toEqual(finalResponse);
   });
@@ -1210,7 +623,6 @@ describe('putPenRequest', () => {
 
   beforeEach(() => {
     utils.getBackendToken.mockReturnValue('token');
-    utils.stripAuditColumns.mockReturnValue(updatePenRequestRes);
     req = mockRequest();
     res = mockResponse();
     req.body = {};
@@ -1230,75 +642,9 @@ describe('putPenRequest', () => {
     requests.__Rewire__('updateRequest', () => Promise.reject(new ServiceError('updatePenRequest',{ message: 'No access token'})));
     await requests.__get__('putRequest')('penRequest', requests.createPenRequestApiServiceReq)(req, res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
-    expect(res.json).toHaveBeenCalledWith({ message: 'INTERNAL SERVER ERROR'});
+    expect(res.json).toHaveBeenCalledWith({ message: 'INTERNAL SERVER ERROR', code: HttpStatus.INTERNAL_SERVER_ERROR});
   });
 });
-/*describe('putPenRequest', () => {
-  const penRequestResponse = {
-    'createUser': 'PEN-REQUEST-API',
-    'updateUser': 'PEN-REQUEST-API',
-    'createDate': null,
-    'updateDate': null,
-    'penRequestID': 'ac336ce7-70b1-1e98-8170-c03406390011',
-    'penRequestStatusCode': 'SUBSREV',
-    'legalFirstName': 'Fake',
-    'legalMiddleNames': null,
-    'legalLastName': 'Name',
-    'dob': '1998-03-04',
-    'genderCode': 'M',
-    'usualFirstName': null,
-    'usualMiddleName': null,
-    'usualLastName': null,
-    'email': 'email@email.ca',
-    'maidenName': null,
-    'pastNames': null,
-    'lastBCSchool': null,
-    'lastBCSchoolStudentNumber': null,
-    'currentSchool': null,
-    'reviewer': 'JOCOX',
-    'failureReason': null,
-    'initialSubmitDate': '2020-03-09T09:33:07',
-    'statusUpdateDate': '2020-03-16T10:17:53',
-    'emailVerified': 'Y',
-    'bcscAutoMatchOutcome': null,
-    'bcscAutoMatchDetails': 'No auto-match performed for Basic BCeID',
-    'pen': null,
-    'dataSourceCode': 'Basic BCeID',
-    'penRequestStatusCodeLabel': 'Subsequent Review'
-  };
-  let req;
-  let res;
 
-  //jest.mock('../../../src/components/penRequests');
-  //jest.spyOn(penRequests, 'updatePenRequest');
-
-
-  let barSpy;
-
-  beforeEach(() => {
-    //penRequests.updatePenRequest.mockResolvedValue(penRequestResponse);
-    barSpy = jest.spyOn(
-      penRequests,
-      'updatePenRequest'
-    ).mockImplementation(jest.fn());
-    req = mockRequest();
-    res = mockResponse();
-  });
-  afterEach(() => {
-    //jest.clearAllMocks();
-    barSpy.mockRestore();
-  });
-  it('should return penRequestResponse', async () => {
-    penRequests.updatePenRequest.mockRejectedValue(new Error('test error'));
-    await penRequests.putPenRequest(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
-    expect(res.json).toHaveBeenCalledWith(penRequestResponse);
-  });
-  it('should return INTERNAL_SERVER_ERROR if putPenRequest throws exception', async () => {
-    penRequests.updatePenRequest.mockRejectedValue(new Error('test error'));
-    await penRequests.putPenRequest(req, res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
-  });
-});*/
 
 
