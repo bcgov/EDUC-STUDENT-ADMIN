@@ -142,7 +142,7 @@ export default {
       },
       {
         title: PAGE_TITLES.ADMINISTRATION,
-        authorized: this.EDIT_MACROS_ROLE,
+        authorized: this.STAFF_ADMINISTRATION_ADMIN,
         items: [
           {
             title: 'Macro Management',
@@ -160,7 +160,7 @@ export default {
   },
   computed: {
     ...mapState('auth', ['isAuthorizedUser']),
-    ...mapGetters('auth', ['ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE'])
+    ...mapGetters('auth', ['ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE', 'STAFF_ADMINISTRATION_ADMIN'])
   },
   methods: {
     setActive(item) {
