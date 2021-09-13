@@ -67,6 +67,7 @@ nconf.defaults({
       roleAdmin: process.env.STUDENT_SEARCH_ADMIN
     },
     demographicsURL: process.env.PEN_DEMOGRAPHICS_URL,
+    enablePrrStudentDemographics: (process.env.ENABLE_PRR_STUDENT_DEMOGRAPHICS?.toLowerCase() === 'true'),
     digitalIdURL: process.env.DIGITAL_ID_URL,
     digitalIdIdentityTypeCodesURL: process.env.DIGITAL_ID_URL + '/identityTypeCodes',
     profileSagaAPIURL: process.env.PROFILE_REQUEST_SAGA_API_URL,

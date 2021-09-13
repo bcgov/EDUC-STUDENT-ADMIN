@@ -118,6 +118,7 @@ import { replaceMacro, insertMacro } from '@/utils/macro';
 import { mapGetters, mapMutations } from 'vuex';
 import PrimaryButton from '../util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
+import demographicsMixin from '@/mixins/demographicsMixin';
 import MacroMenu from '../common/MacroMenu';
 import {isValidLength} from '@/utils/validation';
 
@@ -127,7 +128,7 @@ export default {
     PrimaryButton,
     MacroMenu
   },
-  mixins: [alertMixin],
+  mixins: [alertMixin, demographicsMixin],
   props: {
     request: {
       type: Object,
@@ -149,10 +150,6 @@ export default {
       type: Function,
       required: true
     },
-    switchLoading: {
-      type: Function,
-      required: true
-    }
   },
   data () {
     return {
@@ -160,19 +157,7 @@ export default {
       requiredRules: [v => !!v || 'Required'],
       completedUpdateSuccess:null,
       notAPenErrorMessage: 'The provided PEN is not valid.',
-      penSearchId: null,
       autoPenResults: null,
-      demographics: {
-        legalFirst: null,
-        legalMiddle: null,
-        legalLast: null,
-        usualFirst: null,
-        usualMiddle: null,
-        usualLast: null,
-        dob: null,
-        gender: null
-      },
-      enableCompleteButton: false,
       numberOfDuplicatePenRequests:0,
       completeSagaInProgress: false,
       dialog: false,
@@ -287,21 +272,6 @@ export default {
             this.setFailureAlert(`${this.requestTypeLabel} failed to update. Please navigate to the list and select this ${this.requestTypeLabel} again.`);
           }
           this.submitted();
-        });
-    },
-    searchByPen() {
-      this.switchLoading(true);
-      ApiService.apiAxios
-        .get(Routes.SEARCH_BY_PEN + '/' + this.penSearchId)
-        .then(response => {
-          this.demographics = response.data;
-          this.enableCompleteButton = true;
-        })
-        .catch(error => {
-          console.log(error);
-        })
-        .finally(() => {
-          this.switchLoading(false);
         });
     },
     refreshStudentInfo() {
