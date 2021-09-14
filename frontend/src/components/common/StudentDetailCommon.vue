@@ -59,6 +59,7 @@
                     :loading="saveStudentLoading"
                     @click.native="updateDOC()"
                     title="Set Date Of Confirmation to Current Date."
+                    :disabled="fullReadOnly"
                   >
                   </PrimaryButton>
                 </div>
