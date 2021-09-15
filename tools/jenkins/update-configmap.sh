@@ -192,12 +192,12 @@ elif [ "$envValue" = "dev" ]; then
   bannerEnvironment="TEST"
   bannerColor="#8d28d7"
   SCHEDULER_CRON_DOC_TYPE_MIGRATION="0 0 0 * * *"
+  ENABLE_PRR_STUDENT_DEMOGRAPHICS="true"
 elif [ "$envValue" = "test" ]; then
   BACKEND_ROOT=$APP_NAME-$PEN_NAMESPACE-uat.apps.silver.devops.gov.bc.ca
   bannerEnvironment="UAT"
   bannerColor="#58fe01"
   SCHEDULER_CRON_DOC_TYPE_MIGRATION="0 0 0 * * *"
-  ENABLE_PRR_STUDENT_DEMOGRAPHICS="true"
 else
   BACKEND_ROOT=$APP_NAME-$PEN_NAMESPACE-$envValue.apps.silver.devops.gov.bc.ca
   SCHEDULER_CRON_DOC_TYPE_MIGRATION="0 0 0 17 9 *"
