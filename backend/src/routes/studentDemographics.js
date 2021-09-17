@@ -7,7 +7,7 @@ const utils = require('../components/utils');
 const roles = require('../components/roles');
 const extendSession = utils.extendSession();
 
-const hasGMPUMPAdminRoles = auth.isValidUiTokenWithRoles('GMP & UMP', [...roles.Admin.GMP, ...roles.Admin.UMP]);
+const hasGMPUMPAdminRoles = auth.isValidUiTokenWithRoles('GMP & UMP', [roles.Admin.GMP, roles.Admin.UMP]);
 router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), hasGMPUMPAdminRoles, extendSession, getStudentDemographicsById);
 
 module.exports = router;
