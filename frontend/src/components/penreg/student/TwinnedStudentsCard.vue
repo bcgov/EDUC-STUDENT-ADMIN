@@ -29,7 +29,7 @@
         </v-col>
         <v-col class="mt-2">
           <v-row justify="end" class="mx-3">
-            <TertiaryButton :disabled="selectedTwins.length < 1" id="deleteButton" class="ma-0" text="Delete"
+            <TertiaryButton :disabled="selectedTwins.length < 1 || !ADVANCED_SEARCH_ROLE" id="deleteButton" class="ma-0" text="Delete"
                             icon="mdi-delete" @click.native="deleteTwinStudent"></TertiaryButton>
           </v-row>
         </v-col>
@@ -117,6 +117,7 @@ export default {
   },
   computed: {
     ...mapGetters('student', ['possibleMatchReasons']),
+    ...mapGetters('auth', ['ADVANCED_SEARCH_ROLE']),
     topTableHeaders() {
       return this.headers.filter(header => header.topTable);
     },

@@ -100,7 +100,7 @@ export default {
       },
       {
         title: PAGE_TITLES.STUDENT_REQUESTS,
-        authorized: this.VIEW_GMP_REQUESTS_ROLE,
+        authorized: (this.VIEW_GMP_REQUESTS_ROLE || this.VIEW_UMP_REQUESTS_ROLE),
         items: [
           {
             title: PAGE_TITLES.GMP,
