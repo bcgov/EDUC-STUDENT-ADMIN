@@ -8,7 +8,7 @@ const extendSession = utils.extendSession();
 const atomicStudentUpdate = require('../middlewares/atomic-student-update');
 const roles = require('../components/roles');
 
-const hasMacroRoles = auth.isValidUiTokenWithRoles('UMP & StaffAdministration', [...roles.User.UMP, ...roles.User.StaffAdministration]);
+const hasMacroRoles = auth.isValidUiTokenWithRoles('UMP & StudentSearch & StaffAdministration', [...roles.User.UMP, ...roles.User.StudentSearch, ...roles.User.StaffAdministration]);
 /*
  * Get results of student demographics validation
  */
