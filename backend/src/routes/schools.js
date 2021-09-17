@@ -7,7 +7,7 @@ const auth = require('../components/auth');
 const extendSession = utils.extendSession();
 const roles = require('../components/roles');
 
-const isValidUiTokenWithEditRoles = auth.isValidUiTokenWithRoles('StaffAdministration & NominalRoll', [...roles.Admin.StaffAdministration, ...roles.Admin.NominalRoll]);
+const isValidUiTokenWithEditRoles = auth.isValidUiTokenWithRoles('StaffAdministration & NominalRoll', [roles.Admin.StaffAdministration, roles.Admin.NominalRoll]);
 
 /*
  * Get a school entity by mincode
