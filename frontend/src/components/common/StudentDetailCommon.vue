@@ -39,7 +39,7 @@
                                   :model="studentCopy.demogCode?studentCopy.demogCode:''"
                                   :has-edits="hasEdits" tab-index="11" :revert-field="revertField"
                                   :items="getDemogCodeComboBox()" revert-id="revertDemogCode"
-                                  :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.DEMOG_CODE)"></StudentDetailsComboBox>
+                                  :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DEMOG_CODE)"></StudentDetailsComboBox>
           <StudentDetailsComboBox label="Document Type Code" colspan="1"
                                   :name="STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE"
                                   @changeStudentObjectValue="changeStudentObjectValue"
@@ -47,7 +47,7 @@
                                   :rules="validateDemogCode()"
                                   :has-edits="hasEdits" tab-index="12" :revert-field="revertField"
                                   :items="getDocumentTypes()" revert-id="revertDocumentTypeCode"
-                                  :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE)"></StudentDetailsComboBox>
+                                  :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE)"></StudentDetailsComboBox>
             <v-row no-gutters v-if="dateOfConfirmation" class="mb-2 pb-2">
               <v-col>
                 <div><span class="ma-0">Date Of Confirmation:</span> <span class="bolder mb-0 customNoBorder py-0 my-0"> {{dateOfConfirmation}}</span>
@@ -69,23 +69,23 @@
           <StudentDetailsTextFieldSideCardReadOnly :model="traxStatus" :name="STUDENT_DETAILS_FIELDS.TRAX_STATUS"
                                                    colspan="1" label="TRAX Status"
                                                    :loading="loadingTraxData"
-                                                   :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.TRAX_STATUS)"></StudentDetailsTextFieldSideCardReadOnly>
+                                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.TRAX_STATUS)"></StudentDetailsTextFieldSideCardReadOnly>
 
           <StudentDetailsTextFieldSideCardReadOnly :model="gradDateAndMincode" :name="STUDENT_DETAILS_FIELDS.GRAD_DATE"
                                                    colspan="1" label="Grad Date & Mincode"
                                                    multi-line
                                                    :loading="loadingTraxData"
-                                                   :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.GRAD_DATE)"></StudentDetailsTextFieldSideCardReadOnly>
+                                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GRAD_DATE)"></StudentDetailsTextFieldSideCardReadOnly>
 
           <StudentDetailsTextFieldSideCardReadOnly :model="getCreatedDateTime()"
                                                    :name="STUDENT_DETAILS_FIELDS.CREATED_DATE" colspan="1"
                                                    label="Created"
-                                                   :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.CREATED_DATE)"></StudentDetailsTextFieldSideCardReadOnly>
+                                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.CREATED_DATE)"></StudentDetailsTextFieldSideCardReadOnly>
 
           <StudentDetailsTextFieldSideCardReadOnly :model="getUpdatedDateTime()"
                                                    :name="STUDENT_DETAILS_FIELDS.UPDATED_DATE" colspan="1"
                                                    label="Updated"
-                                                   :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.UPDATED_DATE)"></StudentDetailsTextFieldSideCardReadOnly>
+                                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.UPDATED_DATE)"></StudentDetailsTextFieldSideCardReadOnly>
           <div v-if="studentCopy.statusCode === STUDENT_CODES.MERGED">
             <v-row cols="1" no-gutters>
               <v-col>
@@ -104,7 +104,7 @@
                                   :has-edits="hasEdits" tab-index="12" :revert-field="revertField"
                                   :items="getStatusLevels()" revert-id="revertStatusCode"
 
-                                  :disabled="isFieldDisabled('statusCode')"></StudentDetailsComboBox>
+                                  :disabled="isFieldDisabledWithReadOnly('statusCode')"></StudentDetailsComboBox>
         </v-card>
       </v-col>
       <v-col cols="7" class="py-0 pl-0">
@@ -117,7 +117,7 @@
                                    :fieldValidationRequired=true :validation-rules="validateLegalLastName"
                                    :revert-field="revertField" label="Legal Surname" colspan="5"
                                    :async-messages="err.legalLastNameError"
-                                   :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"></StudentDetailsTextField>
+                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"></StudentDetailsTextField>
 
           <StudentDetailsTextField max-length="25" :name="STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME" tab-index="2"
                                    @changeStudentObjectValue="changeStudentObjectValue"
@@ -125,7 +125,7 @@
                                    :has-edits="hasEdits" revert-id="revertLegalFirstName"
                                    :revert-field="revertField" label="Legal Given" colspan="5"
                                    :async-messages="err.legalFirstNameError"
-                                   :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"></StudentDetailsTextField>
+                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"></StudentDetailsTextField>
 
           <StudentDetailsTextField max-length="25" :name="STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES" tab-index="3"
                                    @changeStudentObjectValue="changeStudentObjectValue"
@@ -133,7 +133,7 @@
                                    :has-edits="hasEdits" revert-id="revertLegalMiddleNames"
                                    :revert-field="revertField" label="Legal Middle" colspan="5"
                                    :async-messages="err.legalMiddleNamesError"
-                                   :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"></StudentDetailsTextField>
+                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"></StudentDetailsTextField>
 
           <StudentDetailsTextField max-length="25" :name="STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME" tab-index="4"
                                    @changeStudentObjectValue="changeStudentObjectValue"
@@ -141,7 +141,7 @@
                                    :has-edits="hasEdits" revert-id="revertUsualLastName"
                                    :revert-field="revertField" label="Usual Surname" colspan="5"
                                    :async-messages="err.usualLastNameError"
-                                   :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"></StudentDetailsTextField>
+                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"></StudentDetailsTextField>
 
           <StudentDetailsTextField max-length="25" :name="STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME" tab-index="5"
                                    @changeStudentObjectValue="changeStudentObjectValue"
@@ -149,7 +149,7 @@
                                    :has-edits="hasEdits" revert-id="revertUsualFirstName"
                                    :revert-field="revertField" label="Usual Given" colspan="5"
                                    :async-messages="err.usualFirstNameError"
-                                   :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"></StudentDetailsTextField>
+                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"></StudentDetailsTextField>
 
           <StudentDetailsTextField max-length="25" :name="STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES" tab-index="6"
                                    @changeStudentObjectValue="changeStudentObjectValue"
@@ -157,7 +157,7 @@
                                    :has-edits="hasEdits" revert-id="revertUsualMiddleNames"
                                    :revert-field="revertField" label="Usual Middle" colspan="5"
                                    :async-messages="err.usualMiddleNamesError"
-                                   :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"></StudentDetailsTextField>
+                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"></StudentDetailsTextField>
 
 
           <!-- some fields cant be ported to child component, left as is-->
@@ -169,7 +169,7 @@
               <v-text-field
                 tabindex="7"
                 v-on:keyup.tab="[editingGender = true, hoveringGender = true]"
-                v-on:mouseover="isFieldDisabled('genderCode')?hoveringGender=false:hoveringGender = true"
+                v-on:mouseover="isFieldDisabledWithReadOnly('genderCode')?hoveringGender=false:hoveringGender = true"
                 v-on:mouseout="editingGender ? hoveringGender = true : hoveringGender=false"
                 v-on:blur="[editingGender = false, hoveringGender = false]"
                 v-on:click="[editingGender = true, hoveringGender = true]"
@@ -184,7 +184,7 @@
                 maxlength="1"
                 :readonly="!hoveringGender || !editingGender"
                 :outlined="hoveringGender || editingGender || hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
-                :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
+                :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
               ></v-text-field>
             </v-col>
             <v-col class="textFieldColumn" cols="2">
@@ -209,7 +209,7 @@
                 </div>
                 <div style="display: inline-block">
                   <img title="YYYYMMDD"
-                       :class="{'ml-3': true, 'dob-disabled': isFieldDisabled(STUDENT_DETAILS_FIELDS.DOB)}"
+                       :class="{'ml-3': true, 'dob-disabled': isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DOB)}"
                        src="@/assets/images/information.svg"
                        alt="YYYYMMDD"
                   >
@@ -220,7 +220,7 @@
               <FormattedTextField
                 tabindex="8"
                 @keyup.tab.native="[editingDOB = true, hoveringDOB = true]"
-                @mouseover.native="isFieldDisabled('dob')? hoveringDOB = false : hoveringDOB = true"
+                @mouseover.native="isFieldDisabledWithReadOnly('dob')? hoveringDOB = false : hoveringDOB = true"
                 @mouseout.native="editingDOB ? hoveringDOB = true : hoveringDOB = false"
                 @blur="[editingDOB = false, hoveringDOB = false]"
                 @focus="[editingDOB = true, hoveringDOB = true]"
@@ -236,7 +236,7 @@
                 maxlength="8"
                 :readonly="!hoveringDOB || !editingDOB"
                 :outlined="hoveringDOB || editingDOB || dobHasChanged()"
-                :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.DOB)"
+                :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DOB)"
               ></FormattedTextField>
             </v-col>
             <v-col cols="3" class="textFieldColumn">
@@ -268,7 +268,7 @@
           <StudentDetailsTextFieldReadOnly :model="studentCopy.gradeCode?studentCopy.gradeCode:''"
                                            :name="STUDENT_DETAILS_FIELDS.GRADE_CODE" colspan="1" label="Grade"
                                            :grade-level="gradeLabel"
-                                           :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.GRADE_CODE)">
+                                           :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GRADE_CODE)">
             <v-col cols="3" class="textFieldColumn gradeLabelColumn">
               <v-text-field
                 class="onhoverEdit customNoBorder onhoverPad"
@@ -286,12 +286,12 @@
           <StudentDetailsTextFieldReadOnly :model="studentCopy.gradeYear?studentCopy.gradeYear:''"
                                            :name="STUDENT_DETAILS_FIELDS.GRADE_YEAR" colspan="1"
                                            label="Grade School Year"
-                                           :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.GRADE_YEAR)"></StudentDetailsTextFieldReadOnly>
+                                           :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GRADE_YEAR)"></StudentDetailsTextFieldReadOnly>
 
           <StudentDetailsTextFieldReadOnly :model="studentCopy.postalCode?studentCopy.postalCode:''"
                                            :name="STUDENT_DETAILS_FIELDS.POSTAL_CODE"
                                            colspan="2" label="Postal Code"
-                                           :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"></StudentDetailsTextFieldReadOnly>
+                                           :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"></StudentDetailsTextFieldReadOnly>
 
           <v-row no-gutters class="py-1">
             <v-col cols="2">
@@ -301,7 +301,7 @@
               <FormattedTextField
                 tabindex="9"
                 @keyup.tab.native="[editingMincode = true, hoveringMincode = true]"
-                @mouseover.native="isFieldDisabled('mincode')? hoveringMincode = false : hoveringMincode = true"
+                @mouseover.native="isFieldDisabledWithReadOnly('mincode')? hoveringMincode = false : hoveringMincode = true"
                 @mouseout.native="editingMincode ? hoveringMincode = true : hoveringMincode = false"
                 @blur="[editingMincode = false, hoveringMincode = false]"
                 @focus="[editingMincode = true, hoveringMincode = true]"
@@ -316,7 +316,7 @@
                 maxlength="8"
                 :readonly="!hoveringMincode || !editingMincode"
                 :outlined="hoveringMincode || editingMincode || mincodeHasChanged() || false"
-                :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MINCODE)"
+                :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.MINCODE)"
               ></FormattedTextField>
             </v-col>
             <v-col cols="5" class="textFieldColumn">
@@ -354,7 +354,7 @@
           <StudentDetailsTextFieldReadOnly :model="studentCopy.localID?studentCopy.localID:''"
                                            :name="STUDENT_DETAILS_FIELDS.LOCAL_ID"
                                            colspan="2" label="Local ID"
-                                           :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.LOCAL_ID)"></StudentDetailsTextFieldReadOnly>
+                                           :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.LOCAL_ID)"></StudentDetailsTextFieldReadOnly>
 
           <StudentDetailsTemplateTextField v-if="possibleMatches.length > 0" colspan="2" label="Twin(s)?"
                                            :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.TWINS)">
@@ -364,7 +364,7 @@
           </StudentDetailsTemplateTextField>
 
           <StudentDetailsTemplateTextField v-if="mergedTo" colspan="8" label="Merged To"
-                                           :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MERGED_TO)">
+                                           :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.MERGED_TO)">
             <div>
               <router-link :to="{params: {studentID: mergedTo.mergeStudentID}}" class="pr-4">
                 {{ formatPen(mergedTo.mergeStudent.pen) }}
@@ -376,7 +376,7 @@
           </StudentDetailsTemplateTextField>
 
           <StudentDetailsTemplateTextField v-if="mergedFrom.length > 0" colspan="8" label="Merged From"
-                                           :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MERGED_FROM)">
+                                           :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.MERGED_FROM)">
             <div class="d-flex flex-wrap">
               <router-link
                 v-for="merge in mergedFrom"
@@ -397,7 +397,7 @@
               <v-textarea
                 tabindex="10"
                 v-on:keyup.tab="[editingMemo = true, hoveringMemo = true]"
-                v-on:mouseover="isFieldDisabled('memo')?hoveringMemo = false:hoveringMemo = true"
+                v-on:mouseover="isFieldDisabledWithReadOnly('memo')?hoveringMemo = false:hoveringMemo = true"
                 v-on:mouseout="editingMemo ? hoveringMemo = true : hoveringMemo = false"
                 v-on:blur="[editingMemo = false, hoveringMemo = false]"
                 v-on:click="[editingMemo = true, hoveringMemo = true]"
@@ -412,7 +412,7 @@
                 no-resize
                 :readonly="!hoveringMemo || !editingMemo"
                 :outlined="hoveringMemo || editingMemo || hasEdits(STUDENT_DETAILS_FIELDS.MEMO)"
-                :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.MEMO)"
+                :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.MEMO)"
               ></v-textarea>
             </v-col>
             <v-col class="textFieldColumn" cols="2">
@@ -1146,6 +1146,9 @@ export default {
       return this.updatedDateTime;
     },
     isFieldDisabled(fieldName) {
+      return (!!this.enableDisableFieldsMap.get(fieldName));
+    },
+    isFieldDisabledWithReadOnly(fieldName) {
       return (!!this.enableDisableFieldsMap.get(fieldName) || this.fullReadOnly);
     },
     formatUpdateTime(datetime) {
@@ -1190,7 +1193,7 @@ export default {
         });
     },
     disableDemerge() {
-      if (this.isProcessing || this.demergeSagaComplete || this.hasSagaInProgress(this.origStudent)) {
+      if (this.isProcessing || this.demergeSagaComplete || this.hasSagaInProgress(this.origStudent) || this.fullReadOnly) {
         return true;
       }
       return !(this.origStudent.statusCode === 'M' && !!this.origStudent.trueStudentID);
