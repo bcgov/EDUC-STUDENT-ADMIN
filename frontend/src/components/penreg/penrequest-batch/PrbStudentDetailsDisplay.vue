@@ -262,7 +262,7 @@ export default {
       return this.prbStudent?.repeatRequestOriginalID;
     },
     disableIssueNewPen() {
-      return this.loading || this.prbStudent?.sagaInProgress || this.isArchived || this.hasValidationIssues
+      return this.loading || this.prbStudent?.sagaInProgress || this.isArchived || this.hasValidationIssues || this.isNewPenDisabledForSchool()
           || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
           || (![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ]
             .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus)
@@ -645,6 +645,15 @@ export default {
     async getValidationIssuesByBatchStudentID(prbStudentID) {
       const result = await ApiService.apiAxios.get(Routes.penRequestBatch.ROOT_ENDPOINT + `/students/${prbStudentID}/validation-issues`);
       return result.data;
+    },
+    isNewPenDisabledForSchool(){
+      const mincode = this.batchFile?.mincode;
+      if (mincode?.length > 5) {
+        if (mincode.substring(3, 5) === '90') { // summer school
+          return true;
+        }
+      }
+      return false;
     }
   }
 };
