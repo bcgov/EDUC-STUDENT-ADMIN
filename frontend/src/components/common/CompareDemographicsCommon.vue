@@ -538,8 +538,18 @@ export default {
         this.setWarningAlert(warningMessage);
         return;
       }
+
+      let student1digit = selectedStudents[0].pen.substring(0,1);
+      let student2digit = selectedStudents[1].pen.substring(0,1);
+
       // Determine which is the oldest, which will be mergedToPen
-      [this.mergedToStudent, this.mergedFromStudent] = _.sortBy(selectedStudents, ['pen', 'createDate']);
+      //If two PENs are merged and neither start with "1", or both start with "1" use the lowest number as the survivor
+      //If two PENs are merged and one starts with "1" and other starts with something else, the other is the survivor
+      if((student1digit == '1' && student2digit == '1') || (student1digit != '1' && student2digit != '1')) {
+        [this.mergedToStudent, this.mergedFromStudent] = _.sortBy(selectedStudents, ['pen']);
+      } else {
+        [this.mergedFromStudent, this.mergedToStudent ] = _.sortBy(selectedStudents, ['pen']);
+      }
 
       // Same Pen validation
       if (this.validateStudentsHaveSamePen(this.mergedToStudent, this.mergedFromStudent,
