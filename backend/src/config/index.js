@@ -98,6 +98,7 @@ nconf.defaults({
       demergeStudentsURL: process.env.PEN_SERVICES_API_URL + '/student-demerge-complete-saga'
     },
     nominalRoll: {
+      rootURL: process.env.NOMINAL_ROLL_API_URL,
       roleAdmin: process.env.NOMINAL_ROLL,
       rolesAllowed: process.env.NOMINAL_ROLL ? process.env.NOMINAL_ROLL.split(',') : '', // using PEN_REQUEST_BATCH_ADMIN because there is no read only role
     }

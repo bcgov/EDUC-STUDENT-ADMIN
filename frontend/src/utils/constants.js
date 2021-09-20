@@ -10,6 +10,8 @@ const penServicesRoot = baseRoot + '/pen-services';
 const schoolRequestRoot = baseRoot + '/schools';
 const penTraxRoot = baseRoot + '/penTrax';
 const penMatchRoot = baseRoot + '/penMatches';
+const nominalRollRoot= baseRoot+'/nominal-roll';
+
 let object = {
   LOGIN: authRoot + '/login',
   LOGOUT: authRoot + '/logout',
@@ -90,6 +92,9 @@ let object = {
     ROOT_ENDPOINT: penMatchRoot,
     POSSIBLE_MATCHES: penMatchRoot + '/possible-match',
     POSSIBLE_MATCH_REASON_CODES: penMatchRoot + '/possible-match-reason-codes'
+  },
+  nominalRoll:{
+    ROOT_ENDPOINT: nominalRollRoot
   }
 };
 

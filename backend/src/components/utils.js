@@ -41,9 +41,13 @@ function errorResponse(res, msg, code) {
 
 function addTokenToHeader(params, token) {
   if (params) {
-    params.headers = {
-      Authorization: `Bearer ${token}`,
-    };
+    if (params.headers) {
+      params.headers.Authorization = `Bearer ${token}`;
+    } else {
+      params.headers = {
+        Authorization: `Bearer ${token}`,
+      };
+    }
   } else {
     params = {
       headers: {

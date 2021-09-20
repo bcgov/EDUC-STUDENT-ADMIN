@@ -8,7 +8,7 @@ const jsonwebtoken = require('jsonwebtoken');
 const roles = require('../components/roles');
 const log = require('../components/logger');
 const HttpStatus = require('http-status-codes');
-
+const {v4: uuidv4} = require('uuid');
 const {
   body,
   validationResult
@@ -134,6 +134,7 @@ router.get('/token', auth.refreshJWT, (req, res) => {
       ...isValidUsers,
       ...isValidAdminUsers
     };
+    req.session.correlationID = uuidv4();
     res.status(HttpStatus.OK).json(responseJson);
   } else {
     res.status(HttpStatus.UNAUTHORIZED).json({
