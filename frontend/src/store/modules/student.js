@@ -107,7 +107,7 @@ export default {
       ApiService.apiAxios
         .get(Routes.penServices.MACRO_URL)
         .then(response => {
-          commit('setMergeMacros', response.data.mergeMacros);
+          commit('setMergeMacros', response.data);
         })
         .catch(error => {
           console.log(error);

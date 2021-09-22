@@ -4,7 +4,7 @@
       dense
       outlined
       v-model="macro.macroText"
-      :disabled="loading"
+      :disabled="loading || disabled"
       :rules="validateMaxLength()"
       :rows="rows"
     ></v-textarea>
@@ -16,14 +16,14 @@
         :short="short"
         secondary
         text="Cancel"
-        :disabled="loading"
+        :disabled="loading || disabled"
         @click.native="$emit('cancel')"
       ></PrimaryButton>
       <PrimaryButton
         id="save-action"
         :short="short"
         text="Save"
-        :disabled="!isValidForm || loading"
+        :disabled="!isValidForm || loading || disabled"
         :loading="loading"
         @click.native="$emit('save', macro)"
       ></PrimaryButton>
@@ -53,6 +53,10 @@ export default {
       default: false
     },
     loading: {
+      type: Boolean,
+      default: false
+    },
+    disabled: {
       type: Boolean,
       default: false
     }

@@ -2,6 +2,7 @@
 const CronJob = require('cron').CronJob;
 const config = require('../config/index');
 const log = require('../components/logger');
+const SAGAS = require('../components/saga');
 const {getApiCredentials} = require('../components/auth');
 const safeStringify = require('fast-safe-stringify');
 const {getData} = require('../components/utils');
@@ -44,17 +45,7 @@ async function removeStaleSagas(staleSagas, sagaType) {
   try {
     const data = await getApiCredentials(); // get the tokens first to make api calls.
     for (const saga of staleSagas) {
-      switch(sagaType) {
-      case 'GMP_UMP':
-        sagaRecordFromAPIPromises.push(getData(data.accessToken, `${config.get('server:profileSagaAPIURL')}/${saga.sagaId}`));
-        break;
-      case 'PEN_REQUEST_BATCH':
-        sagaRecordFromAPIPromises.push(getData(data.accessToken, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/${saga.sagaId}`));
-        break;
-      case 'PEN_SERVICES':
-        sagaRecordFromAPIPromises.push(getData(data.accessToken, `${config.get('server:penServices:rootURL')}/saga/${saga.sagaId}`));
-        break;
-      }
+      sagaRecordFromAPIPromises.push(getData(data.accessToken, `${SAGAS[sagaType].sagaApiUrl}/${saga.sagaId}`));
     }
     const results = await Promise.allSettled(sagaRecordFromAPIPromises);
     for (const result of results) {
@@ -66,17 +57,8 @@ async function removeStaleSagas(staleSagas, sagaType) {
             sagaId: sagaFromAPI.sagaId,
             sagaStatus: sagaFromAPI.status
           };
-          switch(sagaType) {
-          case 'GMP_UMP':
-            recordFromRedis = await redisUtil.removeSagaRecordFromRedis(event);
-            break;
-          case 'PEN_REQUEST_BATCH':
-            recordFromRedis = await redisUtil.removePenRequestBatchSagaRecordFromRedis(event);
-            break;
-          case 'PEN_SERVICES':
-            recordFromRedis = await redisUtil.removePenServicesSagaRecordFromRedis(event);
-            break;
-          }
+          recordFromRedis = await redisUtil.removeEventRecordFromRedis(event, SAGAS[sagaType].sagaEventRedisKey);
+          
           if (recordFromRedis) {
             recordFromRedis.sagaStatus = sagaFromAPI.status;
             recordFromRedis.sagaName = sagaFromAPI.sagaName;
@@ -104,9 +86,9 @@ try {
     try {
       await redLock.lock('locks:remove-stale-saga-record', 1000); // no need to release the lock as it will auto expire after 1000 ms.
       const data = new Map();
-      data.set('GMP_UMP', findStaleSagaRecords(await redisUtil.getSagaEvents()));
-      data.set('PEN_REQUEST_BATCH', findStaleSagaRecords(await redisUtil.getPenRequestBatchSagaEvents()));
-      data.set('PEN_SERVICES', findStaleSagaRecords(await redisUtil.getPenServicesSagaEvents()));
+      for (const [sagaType, saga] of Object.entries(SAGAS)) {
+        data.set(sagaType, findStaleSagaRecords(await redisUtil.getSagaEventsByRedisKey(saga.sagaEventRedisKey)))
+      }
       data.forEach((value, key) => {
         if (value && value.length > 0) {
           log.info(`found ${value.length} stale ${key} saga records`);

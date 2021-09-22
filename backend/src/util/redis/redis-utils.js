@@ -1,14 +1,16 @@
 'use strict';
 const Redis = require('./redis-client');
 const log = require('../../components/logger');
-const SagaEventKey = 'SAGA_EVENTS';
-const PRBSagaEventKey = 'PRB_SAGA_EVENTS';
-const ServicesSagaEventKey = 'SERVICES_SAGA_EVENTS';
 const safeStringify = require('fast-safe-stringify');
 const RedLock = require('redlock');
 const {LocalDateTime} = require('@js-joda/core');
 let redLock;
 
+/**
+ *
+ * @param event the event object to be stored , this contains sagaId, penRequestId,digitalId, eventPayload etc..
+ * @returns {Promise<void>}
+ */
 async function createSagaRecord(event, redisKey) {
   try {
     const redisClient = Redis.getRedisClient();
@@ -74,50 +76,9 @@ function getSagaEventsByRedisKey(redisKey) {
 }
 
 const redisUtil = {
-  /**
-   *
-   * @param event the event object to be stored , this contains sagaId, penRequestId,digitalId, eventPayload etc..
-   * @returns {Promise<void>}
-   */
-  async createSagaRecordInRedis(event) {
-    await createSagaRecord.call(this, event, SagaEventKey);
-  },
-  async removeSagaRecordFromRedis(event) {
-    return await removeEventRecordFromRedis.call(this, event, SagaEventKey);
-  },
-  async getSagaEvents() {
-    return getSagaEventsByRedisKey(SagaEventKey);
-  },
-
-  /**
-   *
-   * @param event the event object to be stored , this contains sagaId, penRequestId,digitalId, eventPayload etc..
-   * @returns {Promise<void>}
-   */
-  async createPenRequestBatchSagaRecordInRedis(event) {
-    await createSagaRecord.call(this, event, PRBSagaEventKey);
-  },
-  async removePenRequestBatchSagaRecordFromRedis(event) {
-    return await removeEventRecordFromRedis.call(this, event, PRBSagaEventKey);
-  },
-  async getPenRequestBatchSagaEvents() {
-    return getSagaEventsByRedisKey(PRBSagaEventKey);
-  },
-
-  /**
-   *
-   * @param event the event object to be stored , this contains sagaId, penRequestId,digitalId, eventPayload etc..
-   * @returns {Promise<void>}
-   */
-  async createPenServicesSagaRecordInRedis(event) {
-    await createSagaRecord.call(this, event, ServicesSagaEventKey);
-  },
-  async removePenServicesSagaRecordFromRedis(event) {
-    return await removeEventRecordFromRedis.call(this, event, ServicesSagaEventKey);
-  },
-  async getPenServicesSagaEvents() {
-    return getSagaEventsByRedisKey(ServicesSagaEventKey);
-  },
+  createSagaRecord,
+  removeEventRecordFromRedis,
+  getSagaEventsByRedisKey,
 
   getRedLock() {
     if (redLock) {

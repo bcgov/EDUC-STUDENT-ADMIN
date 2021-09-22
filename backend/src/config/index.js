@@ -26,7 +26,6 @@ nconf.defaults({
       statusCodeURL: process.env.PEN_REQUEST_API_URL + '/statuses',
       documentTypeCodesURL: process.env.PEN_REQUEST_API_URL + '/document-types',
       rootURL: process.env.PEN_REQUEST_API_URL,
-      macrosURL: process.env.PEN_REQUEST_API_URL + '/pen-request-macro',
       emails: process.env.PEN_REQUEST_EMAIL_API_URL,
       paginated: process.env.PEN_REQUEST_API_URL + '/paginated',
       rolesAllowed: process.env.GMP_ROLES ? process.env.GMP_ROLES.split(',') : '', // please provide comma separated values.
@@ -36,7 +35,6 @@ nconf.defaults({
       statusCodeURL: process.env.STUDENT_PROFILE_API_URL + '/statuses',
       documentTypeCodesURL: process.env.STUDENT_PROFILE_API_URL + '/document-types',
       rootURL: process.env.STUDENT_PROFILE_API_URL,
-      macrosURL: process.env.STUDENT_PROFILE_API_URL + '/student-profile-macro',
       emails: process.env.STUDENT_PROFILE_EMAIL_API_URL,
       paginated: process.env.STUDENT_PROFILE_API_URL + '/paginated',
       rolesAllowed: process.env.UMP_ROLES ? process.env.UMP_ROLES.split(',') : '', // please provide comma separated values.
@@ -55,7 +53,6 @@ nconf.defaults({
       paginated: process.env.PEN_REQUEST_BATCH_API_URL + '/pen-request-batch/paginated',
       sourceURL:  process.env.PEN_REQUEST_BATCH_API_URL + '/pen-request-batch/source',
       studentStatusCodesURL: process.env.PEN_REQUEST_BATCH_API_URL + '/pen-request-batch/student/pen-request-batch-student-status-codes',
-      studentInfoMacrosURL: process.env.PEN_REQUEST_BATCH_API_URL + '/pen-request-batch-macro',
       roleAdmin: process.env.PEN_REQUEST_BATCH_ADMIN,
       rolesAllowed: process.env.PEN_REQUEST_BATCH_ADMIN ? process.env.PEN_REQUEST_BATCH_ADMIN.split(',') : '', // using PEN_REQUEST_BATCH_ADMIN because there is no read only role
       maxPaginatedElements: 1000
@@ -100,6 +97,10 @@ nconf.defaults({
     nominalRoll: {
       roleAdmin: process.env.NOMINAL_ROLL,
       rolesAllowed: process.env.NOMINAL_ROLL ? process.env.NOMINAL_ROLL.split(',') : '', // using PEN_REQUEST_BATCH_ADMIN because there is no read only role
+    },
+    macro: {
+      rootURL: process.env.MACRO_API_URL,
+      penMacroURL: process.env.MACRO_API_URL + '/pen'
     }
   },
   oidc: {

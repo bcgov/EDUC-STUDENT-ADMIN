@@ -7,6 +7,7 @@ const redisUtil = require('../util/redis/redis-utils');
 const {ApiError} = require('./error');
 const {LocalDateTime, ChronoUnit} = require('@js-joda/core');
 const log = require('./logger');
+const SAGAS = require('./saga');
 const commonRequest = require('./requests');
 
 function createPenRequestApiServiceReq(penRequest, req) {
@@ -65,7 +66,7 @@ async function executePenReqSaga(token, url, penRequest, res, sagaType, user) {
       sagaStatus: 'INITIATED'
     };
     log.info(`going to store event object in redis for ${sagaType} pen request :: `, event);
-    await redisUtil.createSagaRecordInRedis(event);
+    await redisUtil.createSagaRecord(event, SAGAS.GMP_UMP.sagaEventRedisKey);
     return res.status(200).json();
   } catch (e) {
     logApiError(e, `${sagaType}`, `Error occurred while attempting to ${sagaType} a pen request.`);

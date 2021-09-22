@@ -4,6 +4,7 @@ const {logApiError, errorResponse, addSagaStatusToRecords} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const log = require('./logger');
+const SAGAS = require('./saga');
 const utils = require('./utils');
 const {putData, getData} = require('./utils');
 const retry = require('async-retry');
@@ -11,8 +12,12 @@ const redisUtil = require('../util/redis/redis-utils');
 const {v4: uuidv4} = require('uuid');
 const {LocalDateTime} = require('@js-joda/core');
 
+function getPenServicesSagaEvents() {
+  return redisUtil.getSagaEventsByRedisKey(SAGAS.PEN_SERVICES.sagaEventRedisKey);
+}
+
 function addSagaStatus(students) {
-  return addSagaStatusToRecords(students, 'studentID', redisUtil.getPenServicesSagaEvents);
+  return addSagaStatusToRecords(students, 'studentID', getPenServicesSagaEvents);
 }
 
 async function updateStudent(req, res) {

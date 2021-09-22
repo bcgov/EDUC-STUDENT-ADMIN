@@ -7,6 +7,7 @@ const {
 const HttpStatus = require('http-status-codes');
 const redisUtil = require('../util/redis/redis-utils');
 const log = require('./logger');
+const SAGAS = require('./saga');
 const lodash = require('lodash');
 const { PEN_REQ_BATCH_STATUS_CODES } = require('../util/constants');
 
@@ -266,15 +267,19 @@ function createPenRequestBatchSagaRecordInRedis(sagaId, sagaName, operation, pen
     sagaName
   };
   log.info(`going to store event object in redis for ${operation} request :: `, event);
-  return redisUtil.createPenRequestBatchSagaRecordInRedis(event);
+  return redisUtil.createSagaRecord(event, SAGAS.PEN_REQUEST_BATCH.sagaEventRedisKey);
+}
+
+function getPenRequestBatchSagaEvents() {
+  return redisUtil.getSagaEventsByRedisKey(SAGAS.PEN_REQUEST_BATCH.sagaEventRedisKey);
 }
 
 function addPenRequestBatchStudentSagaStatus(prbStudents) {
-  return addSagaStatusToRecords(prbStudents, 'penRequestBatchStudentID', redisUtil.getPenRequestBatchSagaEvents);
+  return addSagaStatusToRecords(prbStudents, 'penRequestBatchStudentID', getPenRequestBatchSagaEvents);
 }
 
 function addPenRequestBatchSagaStatus(batchFiles) {
-  return addSagaStatusToRecords(batchFiles, 'penRequestBatchID', redisUtil.getPenRequestBatchSagaEvents);
+  return addSagaStatusToRecords(batchFiles, 'penRequestBatchID', getPenRequestBatchSagaEvents);
 }
 
 async function updateFilesByIDs(req, res, updateFile) {
