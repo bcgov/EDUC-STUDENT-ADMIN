@@ -64,14 +64,7 @@ export default {
   },
   data() {
     return {
-      currentPage: 0,
-      pageCount: 0,
-      src: undefined,
       arrayBuffer: undefined,
-      loadedRatio: 0,
-      page: 1,
-      numPages: 0,
-      rotate: 0,
       isLoading: true,
       PDFRenderDialog: false,
       documentID: '',
@@ -145,11 +138,10 @@ export default {
     documentId(newValue) {
       this.documentID = newValue;
       this.isLoading = true;
-      this.src = undefined;
+      this.arrayBuffer = undefined;
       if (this.documentID?.length > 0) {
         ApiService.apiAxios.get(`${Routes[this.requestType].ROOT_ENDPOINT}/${this.requestId}/documents/${this.documentId}`).then((response) => {
-          this.src = response.data;
-          this.base64ToArrayBuffer(this.src);
+          this.base64ToArrayBuffer(response.data);
         }).catch(e => {
           console.error(e);
           this.setFailureAlert('Could not load document. Please try again later.');
@@ -160,9 +152,6 @@ export default {
     }
   },
   methods: {
-    makeSourceNull() {
-      this.src = undefined;
-    },
     base64ToArrayBuffer(base64) {
       console.log('B64: ' + base64);
       let binary_string = window.atob(base64);
