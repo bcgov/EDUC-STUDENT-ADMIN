@@ -15,7 +15,7 @@
               </slot>
             </v-list-item-content>
             <v-list-item-icon>
-              <v-btn id="closePDFRendererModalBtn" text icon @click="[makeSourceNull, $emit('closeDialog')]">
+              <v-btn id="closePDFRendererModalBtn" text icon @click="[$emit('closeDialog')]">
                 <v-icon large color="#38598A">mdi-close</v-icon>
               </v-btn>
             </v-list-item-icon>
@@ -153,7 +153,6 @@ export default {
   },
   methods: {
     base64ToArrayBuffer(base64) {
-      console.log('B64: ' + base64);
       let binary_string = window.atob(base64);
       let len = binary_string.length;
       let bytes = new Uint8Array(len);
@@ -161,7 +160,6 @@ export default {
         bytes[i] = binary_string.charCodeAt(i);
       }
       this.arrayBuffer = bytes.buffer;
-      console.log('Buff: ' + this.arrayBuffer);
     }
   }
 };
