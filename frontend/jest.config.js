@@ -1,4 +1,4 @@
-const esModules = ['vue-pdf', 'vue-resize-sensor', 'vue-loading-spinner'].join('|');
+const esModules = ['vue-pdf-app', 'v-viewer', 'viewerjs', 'vue-resize-sensor', 'vue-loading-spinner'].join('|');
 
 module.exports = {
   reporters: [
