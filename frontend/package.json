@@ -45,6 +45,7 @@
     "sass": "^1.29.0",
     "sass-loader": "^7.1.0",
     "testcafe": "1.6.0",
+    "v-viewer": "^1.6.4",
     "vue": "^2.6.12",
     "vue-clipboard2": "^0.3.1",
     "vue-pdf": "^4.3.0",
