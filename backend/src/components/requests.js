@@ -187,6 +187,7 @@ function getRequestById(requestType) {
             }
           }
           utils.saveSession(req, res, dataResponse);
+          log.debug('stored request details in session is', req.session.penRequest);
           //dont send digital id or audit columns to vue
           dataResponse = utils.stripAuditColumns(dataResponse);
           delete dataResponse['digitalID'];

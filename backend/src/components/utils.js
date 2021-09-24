@@ -413,6 +413,8 @@ const utils = {
   verifyRequestInSession(requestType) {
     const requestIDName = `${requestType}ID`;
     return function verifyRequestInSessionHandler(req, res, next) {
+      log.debug('request body is', req.body);
+      log.debug('req[\'session\'].penRequest is', req['session'].penRequest);
       if (req && req.body && req['session'] && req['session'].penRequest && req.body[requestIDName] === req['session'].penRequest[requestIDName]) {
         return next();
       }
