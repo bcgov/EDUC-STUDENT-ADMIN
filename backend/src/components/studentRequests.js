@@ -1,6 +1,7 @@
 'use strict';
 const { LocalDateTime } = require('@js-joda/core');
 const log = require('./logger');
+const SAGAS = require('./saga');
 const config = require('../config/index');
 const utils = require('./utils');
 const redisUtil = require('../util/redis/redis-utils');
@@ -63,7 +64,7 @@ async function executeProfReqSaga(token, url, profileRequest, res, sagaType, use
       sagaStatus: 'INITIATED'
     };
     log.info(`going to store event object in redis for ${sagaType} profile request :: `, event);
-    await redisUtil.createSagaRecordInRedis(event);
+    await redisUtil.createSagaRecord(event, SAGAS.GMP_UMP.sagaEventRedisKey);
     return res.status(200).json();
   } catch (e) {
     utils.logApiError(e, `${sagaType}ProfileRequest`, `Error occurred while attempting to ${sagaType} a profile request.`);

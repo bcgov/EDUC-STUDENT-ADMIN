@@ -4,15 +4,12 @@ const router = express.Router();
 const auth = require('../components/auth');
 const utils = require('../components/utils');
 const {findPenRequestsByPen, createPenRequestApiServiceReq, returnPenRequest, unlinkRequest, rejectPenRequest, completePenRequest, getPENRequestStats} = require('../components/penRequests');
-const {getAllRequests, getMacros, getRequestById, getRequestCommentById, putRequest} = require('../components/requests');
-const roles = require('../components/roles');
+const {getAllRequests, getRequestById, getRequestCommentById, putRequest} = require('../components/requests');
 
 const {getDocuments, getDocumentById, updateDocumentTypeById} = require('../components/documents');
 const atomicStudentUpdate = require('../middlewares/atomic-student-update');
 const requestType = 'penRequest';
 const verifyPenRequestInSession = utils.verifyRequestInSession(requestType);
-
-const hasMacroRoles = auth.isValidUiTokenWithRoles('GMP & StaffAdministration', [...roles.User.GMP, ...roles.User.StaffAdministration]);
 
 /**
  * Gets all the comments for a pen request by pen request id
@@ -33,12 +30,6 @@ router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.
  * Get all pen retrieval requests for a given pen number in the query parameter.
  */
 router.get('/duplicatePenRequests', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPAdmin, findPenRequestsByPen);
-
-router.get('/macros', passport.authenticate('jwt', {session: false}, undefined), hasMacroRoles, getMacros(requestType));
-
-router.put('/macros/:macroId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStaffAdministrationAdmin, utils.updateMacroByMacroId(`server:${requestType}:macrosURL`));
-
-router.post('/macros', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStaffAdministrationAdmin, utils.createMacro(`server:${requestType}:macrosURL`));
 
 //Returns the number of pen requests in initial and subsequent review
 router.get('/stats', passport.authenticate('jwt', {session: false}, undefined), auth.isValidGMPUserToken, getPENRequestStats);

@@ -98,44 +98,6 @@ const genderCodesData = [
   }
 ];
 
-describe('getMacroData', () => {
-  let req;
-  let res;
-  const macroObject = [
-    {macroText: 'data', createUser: 'user', macroId: '1', macroTypeCode: 'MOREINFO'},
-  ];
-
-  const formattedResponse = {
-    returnMacros: [{macroText: 'data', macroId: '1', macroTypeCode: 'MOREINFO'}],
-  };
-
-  const getMacros = requests.getMacros('penRequest');
-
-  beforeEach(() => {
-    utils.getBackendToken.mockReturnValue('token');
-    req = mockRequest();
-    res = mockResponse();
-  });
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('should return all macros correctly', async () => {
-    utils.getData.mockResolvedValue(macroObject);
-
-    await getMacros(req,res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
-    expect(res.json).toHaveBeenCalledWith(formattedResponse);
-  });
-  it('should return 500 if getData fails', async () => {
-    utils.getData.mockRejectedValue(new ApiError());
-
-    await getMacros(req,res);
-    expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
-    expect(res.json).toHaveBeenCalledWith({message: 'INTERNAL SERVER ERROR', code: HttpStatus.INTERNAL_SERVER_ERROR});
-  });
-});
-
 describe('getPenRequestCommentById', () => {
   const userData = {
     idir_username: 'IDIR',
