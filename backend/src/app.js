@@ -36,6 +36,7 @@ const penServicesRouter = require('./routes/pen-services-router');
 const schoolsRouter = require('./routes/schools');
 const penTraxRouter = require('./routes/penTrax');
 const macroRouter = require('./routes/macro');
+const analyticsRouter = require('./routes/analytics-router');
 const promMid = require('express-prometheus-middleware');
 const Redis = require('./util/redis/redis-client');
 Redis.init(); // call the init to initialize appropriate client, and reuse it across the app.
@@ -165,6 +166,7 @@ apiRouter.use('/pen-services', penServicesRouter);
 apiRouter.use('/schools', schoolsRouter);
 apiRouter.use('/penTrax', penTraxRouter);
 apiRouter.use('/macros', macroRouter);
+apiRouter.use('/analytics', analyticsRouter);
 
 // Prevent unhandled errors from crashing application
 process.on('unhandledRejection', err => {
