@@ -424,6 +424,12 @@ const utils = {
       });
     };
   },
+  /**
+  * This function will modify the session by changing `tempSessionExtensionIdentifier`. 
+  * Please be CAREFUL when using this with parallel api calls from UI Side, when you want to store some data in session in one of the api calls.
+  * more documentation found here https://github.com/expressjs/session#readme, look at the resave section.
+  * even though our app uses `resave:false` modifying session in parallel api calls will have race condition, which will lead to undesired outcomes based on api call finish times.
+  */
   extendSession() {
     return function (req, res, next) {
       if (req && req.session) {
