@@ -3,8 +3,8 @@
     <v-form ref="studentSearchForm" id="searchStudentForm"
             v-model="validForm"
     >
-      <v-row no-gutters class="d-flex align-start justify-end">
-          <v-col class="justify-end mr-n10" cols="2">
+      <v-row no-gutters class="d-flex align-start justify-end mr-2">
+          <v-col class="justify-end mr-n16" cols="2">
             <v-select
                 id="k12PSIselector"
                 :items="schoolGroups"
@@ -12,19 +12,21 @@
                 outlined
                 dense
                 class="select"
+                style="width: 13em;"
                 placeholder="Filter by K-12/PSI"
                 color="#38598a"
                 append-icon="mdi-chevron-down"
                 clearable
             ></v-select>
           </v-col>
-          <v-col class="justify-end" cols="2">
+          <v-col class="justify-end mr-16 ml-n5" cols="1">
             <v-select
                 id="newPENTimeframe"
                 :items="timeframes"
                 v-model="timeframe"
                 dense
                 outlined
+                style="width: 13em;"
                 color="#38598a"
                 class="select"
                 append-icon="mdi-chevron-down"
@@ -32,12 +34,19 @@
             ></v-select>
           </v-col>
       </v-row>
-      <v-row class="justify-end" no-gutters>
+      <v-row class="justify-end mt-n3" no-gutters>
         <v-col cols="3" no-gutters>
           <v-expansion-panels focusable popout>
             <v-expansion-panel>
-              <v-expansion-panel-header>Refine Search</v-expansion-panel-header>
-              <v-expansion-panel-content >
+              <v-expansion-panel-header expand-icon="mdi-menu-down" style="border-bottom-left-radius: 4px;border-bottom-right-radius: 4px;color: #FFFFFF;background-color: rgb(0, 51, 102);border-color: rgb(0, 51, 102);">
+                <template v-slot:actions>
+                  <v-icon color="white">
+                    $expand
+                  </v-icon>
+                </template>
+                Refine Results
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
                 <v-row class="mt-4" no-gutters>
                   <v-col class="mr-n14 mt-2" cols="3">PEN:</v-col>
                   <v-col cols="4" >
@@ -58,7 +67,7 @@
                         dense
                         filled
                         outlined
-                        style="width: 7em;"
+                        style="width: 7em"
                         id='pen'
                         maxlength="9"
                         minlength="9"
@@ -67,8 +76,8 @@
                   </v-col>
                 </v-row>
                 <v-row no-gutters class="mt-n4">
-                  <v-col cols="4" class="mr-5 mt-2">Legal Surname:</v-col>
-                  <v-col cols="6" class="mr-15 ml-n8">
+                  <v-col cols="4" class="mt-2">Legal Surname:</v-col>
+                  <v-col cols="6" class="ml-1">
                     <v-text-field dense filled outlined
                                   id='legalLastName'
                                   maxlength="255"
@@ -77,8 +86,8 @@
                   </v-col>
                 </v-row>
                 <v-row no-gutters class="mt-n4">
-                  <v-col cols="4" class="mr-5 mt-2">Legal Given:</v-col>
-                  <v-col cols="6" class="mr-15 ml-n8">
+                  <v-col cols="4" class="mt-2">Legal Given:</v-col>
+                  <v-col cols="6" class="mr-15 ml-1">
                     <v-text-field dense filled outlined
                                   id='legalFirstName'
                                   maxlength="255"
@@ -87,13 +96,18 @@
                   </v-col>
                 </v-row>
                 <v-row no-gutters class="mt-n4">
-                  <v-col cols="4" class="mr-5 mt-2">Legal Middle:</v-col>
-                  <v-col cols="6" class="mr-15 ml-n8">
+                  <v-col cols="4" class="mt-2">Legal Middle:</v-col>
+                  <v-col cols="6" class="mr-15 ml-1">
                     <v-text-field dense filled outlined
                                   id='legalMiddleNames'
                                   maxlength="255"
                     >
                     </v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters class="justify-end mr-13">
+                  <v-col cols="1" class="mr-16">
+                    <PrimaryButton :loading="searchLoading" @click.native="getNewPENs(true)" text="Refine"></PrimaryButton>
                   </v-col>
                 </v-row>
               </v-expansion-panel-content>
@@ -145,10 +159,12 @@ import {Routes} from '@/utils/constants';
 import {mapGetters, mapMutations, mapState} from 'vuex';
 import StudentSearchResults from '@/components/penreg/student-search/StudentSearchResults';
 import alertMixin from '@/mixins/alertMixin';
+import PrimaryButton from '@/components/util/PrimaryButton';
 
 export default {
   name: 'newpens',
   components: {
+    PrimaryButton,
     StudentSearchResults
   },
   mixins: [alertMixin],
