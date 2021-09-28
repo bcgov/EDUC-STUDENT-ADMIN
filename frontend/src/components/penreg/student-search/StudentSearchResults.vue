@@ -1,6 +1,6 @@
 <template>
   <div id="searchResults" class="px-3" style="width: 100%" :overlay=false>
-    <v-row no-gutters>
+    <v-row no-gutters v-if="showCompare">
       <v-col>
         <span id="numberResults" class="px-4 pb-2">{{ studentSearchResponse.totalElements }} Results</span>
       </v-col>
@@ -95,6 +95,11 @@ export default {
       type: Function,
       required: true
     },
+    showCompare: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
     searchLoading: {
       type: Boolean,
       required: true
@@ -168,6 +173,9 @@ export default {
   },
   mounted() {
     this.clearStaleData();
+    if(!this.showCompare){
+      this.headers.splice(0,1);
+    }
   },
   watch: {
     pageNumber: {

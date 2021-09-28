@@ -49,6 +49,10 @@ const FILTER_OPERATION = Object.freeze(
      */
     STARTS_WITH: 'starts_with',
     /**
+     * Not starts with filter operation.
+     */
+    NOT_STARTS_WITH: 'not_starts_with',
+    /**
      * Starts with ignore case filter operation.
      */
     STARTS_WITH_IGNORE_CASE: 'starts_with_ignore_case',

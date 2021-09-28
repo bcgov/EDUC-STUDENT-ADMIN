@@ -30,6 +30,7 @@ import CompareStudents from './components/CompareStudents';
 import PenCoordinatorsDisplay from './components/penreg/coordinator/PenCoordinatorsDisplay';
 import MacrosDisplay from './components/admin/MacrosDisplay';
 import NominalRoll from './components/admin/NominalRoll';
+import NewPENs from './components/admin/NewPENs';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -278,6 +279,16 @@ const router = new VueRouter({
       component: NominalRoll,
       meta: {
         pageTitle: PAGE_TITLES.NOMINAL_ROLL,
+        requiresAuth: true,
+        role: 'NOMINAL_ROLL_ROLE'
+      },
+    },
+    {
+      path: '/NewPENs',
+      name: 'newpens',
+      component: NewPENs,
+      meta: {
+        pageTitle: PAGE_TITLES.NEWPENS,
         requiresAuth: true,
         role: 'NOMINAL_ROLL_ROLE'
       },
