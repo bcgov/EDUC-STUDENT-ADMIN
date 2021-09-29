@@ -55,9 +55,13 @@
                         filled
                         outlined
                         id='pen'
+                        v-model="penSearch"
+                        @keyup.enter="getNewPENs(true)"
                         style="width: 7em;"
                         maxlength="9"
                         minlength="9"
+                        @keypress="isNumber($event)"
+                        v-on:input="[refineHasValues()]"
                         autofocus>
                     </v-text-field>
                   </v-col>
@@ -68,9 +72,13 @@
                         filled
                         outlined
                         style="width: 7em"
-                        id='pen'
-                        maxlength="9"
-                        minlength="9"
+                        id='mincode'
+                        v-model="mincodeSearch"
+                        maxlength="8"
+                        minlength="8"
+                        @keypress="isNumber($event)"
+                        @keyup.enter="getNewPENs(true)"
+                        v-on:input="[refineHasValues()]"
                         autofocus>
                     </v-text-field>
                   </v-col>
@@ -80,7 +88,10 @@
                   <v-col cols="6" class="ml-1">
                     <v-text-field dense filled outlined
                                   id='legalLastName'
+                                  v-model="legalSurnameSearch"
                                   maxlength="255"
+                                  @keyup.enter="getNewPENs(true)"
+                                  v-on:input="[refineHasValues()]"
                     >
                     </v-text-field>
                   </v-col>
@@ -90,7 +101,10 @@
                   <v-col cols="6" class="mr-15 ml-1">
                     <v-text-field dense filled outlined
                                   id='legalFirstName'
+                                  v-model="legalGivenNameSearch"
                                   maxlength="255"
+                                  @keyup.enter="getNewPENs(true)"
+                                  v-on:input="[refineHasValues()]"
                     >
                     </v-text-field>
                   </v-col>
@@ -100,14 +114,20 @@
                   <v-col cols="6" class="mr-15 ml-1">
                     <v-text-field dense filled outlined
                                   id='legalMiddleNames'
+                                  v-model="legalMiddleNameSearch"
                                   maxlength="255"
+                                  @keyup.enter="getNewPENs(true)"
+                                  v-on:input="[refineHasValues()]"
                     >
                     </v-text-field>
                   </v-col>
                 </v-row>
                 <v-row no-gutters class="justify-end mr-13">
+                  <v-col cols="1" class="mr-14">
+                    <PrimaryButton id="search-clear" :secondary="true" class="mr-2" @click.native="clearSearch" text="Clear"></PrimaryButton>
+                  </v-col>
                   <v-col cols="1" class="mr-16">
-                    <PrimaryButton :loading="searchLoading" @click.native="getNewPENs(true)" text="Refine"></PrimaryButton>
+                    <PrimaryButton :disabled="!searchEnabled" :loading="searchLoading" @click.native="getNewPENs(true)" text="Refine"></PrimaryButton>
                   </v-col>
                 </v-row>
               </v-expansion-panel-content>
@@ -187,6 +207,11 @@ export default {
       selectedSchoolGroup: '',
       currentStudentSearchParams: {},
       studentSearchResultsKey: 0,
+      penSearch: null,
+      mincodeSearch: null,
+      legalSurnameSearch: null,
+      legalGivenNameSearch: null,
+      legalMiddleNameSearch: null,
       student: {},
     };
   },
@@ -237,16 +262,37 @@ export default {
   },
   methods: {
     ...mapMutations('studentSearch', ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse']),
+    clearSearch() {
+      this.penSearch = null;
+      this.mincodeSearch = null;
+      this.legalSurnameSearch = null;
+      this.legalGivenNameSearch = null;
+      this.legalMiddleNameSearch = null;
+      this.getNewPENs(true);
+    },
+    async refineHasValues() {
+      console.log('Ahll');
+      if (this.penSearch || this.mincodeSearch || this.legalSurnameSearch || this.legalGivenNameSearch || this.legalMiddleNameSearch) {
+        this.searchEnabled = true;
+        return true;
+      } else {
+        this.searchEnabled = false;
+      }
+    },
     setTimeframeCriteria(){
       let today = LocalDateTime.now();
+      console.log('Date today: ' + today);
+      let backMidnight = today.withHour(0).withMinute(0).withSecond(0).withNano(0);
+      console.log('backMidnight: ' + backMidnight);
       let yesterday;
       if(this.timeframe === '1WEEK'){
-        yesterday = today.minusWeeks(1);
+        yesterday = backMidnight.minusWeeks(1);
       }else if(this.timeframe === '2DAYS'){
-        yesterday = today.minusDays(2);
+        yesterday = backMidnight.minusDays(1);
       }else{
-        yesterday = today.minusDays(1);
+        yesterday = backMidnight;
       }
+      console.log('yesterday: ' + yesterday);
       this.studentSearchParams.createDate.startDate = yesterday;
       this.studentSearchParams.createDate.endDate = today;
     },
@@ -259,6 +305,37 @@ export default {
         this.studentSearchParams.mincode.notstartswith = '102';
       }
     },
+    setSearchCriteria(){
+      if(this.penSearch){
+        this.studentSearchParams.pen = null;
+        this.studentSearchParams.pen = this.penSearch;
+      }
+      if(this.mincodeSearch){
+        this.studentSearchParams.mincode = null;
+        this.studentSearchParams.mincode = this.mincodeSearch;
+      }
+      if(this.legalSurnameSearch){
+        this.studentSearchParams.legalLastName = null;
+        this.studentSearchParams.legalLastName = this.legalSurnameSearch;
+      }
+      if(this.legalGivenNameSearch){
+        this.studentSearchParams.legalFirstName = null;
+        this.studentSearchParams.legalFirstName = this.legalGivenNameSearch;
+      }
+      if(this.legalMiddleNameSearch){
+        this.studentSearchParams.legalMiddleNames = null;
+        this.studentSearchParams.legalMiddleNames = this.legalMiddleNameSearch;
+      }
+    },
+    isNumber: function(evt) {
+      evt = (evt) ? evt : window.event;
+      let charCode = (evt.which) ? evt.which : evt.keyCode;
+      if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
+        evt.preventDefault();
+      } else {
+        return true;
+      }
+    },
     getNewPENs(validationRequired = true) {
       this.searchLoading = true;
       this.studentSearchResultsKey += 1; //forces StudentSearchResults to rerender and update curPage
@@ -267,6 +344,7 @@ export default {
       this.headerSortParams['currentSortAsc'] = true;
       this.setTimeframeCriteria();
       this.setK12PSICriteria();
+      this.setSearchCriteria();
       if (validationRequired === false || (this.$refs.studentSearchForm.validate())) {
         const studentSearchKeys = Object.keys(this.studentSearchParams).filter(k => (this.studentSearchParams[k] && this.studentSearchParams[k].length !== 0));
 

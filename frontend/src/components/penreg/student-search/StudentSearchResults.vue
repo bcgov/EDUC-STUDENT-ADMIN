@@ -112,13 +112,13 @@ export default {
       loading: false,
       headers: [
         {id: 'table-checkbox', type: 'select', sortable: false},
-        {topText: 'PEN', align: 'start', sortable: false, topValue: 'pen', topTooltip: 'Personal Education Number'},
+        {topText: 'PEN', align: 'start', sortable: true, topValue: 'pen', topTooltip: 'Personal Education Number'},
         {
           topText: 'Legal Surname',
           bottomText: 'Usual Surname',
           topValue: 'legalLastName',
           bottomValue: 'usualLastName',
-          sortable: false,
+          sortable: true,
           topTooltip: 'Legal Surname',
           bottomTooltip: 'Usual Surname'
         },
@@ -127,7 +127,7 @@ export default {
           bottomText: 'Usual Given',
           topValue: 'legalFirstName',
           bottomValue: 'usualFirstName',
-          sortable: false,
+          sortable: true,
           topTooltip: 'Legal Given',
           bottomTooltip: 'Usual Given'
         },
@@ -136,7 +136,7 @@ export default {
           bottomText: 'Usual Middle',
           topValue: 'legalMiddleNames',
           bottomValue: 'usualMiddleNames',
-          sortable: false,
+          sortable: true,
           topTooltip: 'Legal Middle',
           bottomTooltip: 'Usual Middle'
         },
@@ -165,7 +165,7 @@ export default {
         {
           topText: 'Mincode',
           topValue: 'mincode',
-          sortable: false,
+          sortable: true,
           topTooltip: 'Mincode'
         },
       ],
