@@ -1,20 +1,22 @@
 <template>
-  <v-card v-if="chartData && labels" class="mx-auto px-4 pt-4">
-    <bar-chart ref='chart' :chartData="data" :options="options" :styles="styles"></bar-chart>
-    <v-card-text class="v-card-text--offset pt-0">
-      <div class="text-h6 font-weight-light mb-2">
-        {{ dataType }}
-      </div>
-      <v-divider class="my-2"></v-divider>
-      <v-icon
-        class="mr-2"
-        small
-      >
-        mdi-calculator
-      </v-icon>
-      <span class="text-caption grey--text font-weight-light">there are {{ average }} {{ dataType.toLowerCase() }} on average </span>
-    </v-card-text>
-  </v-card>
+  <div>
+    <v-card v-if="chartData && labels" class="mx-auto px-4 pt-4">
+      <bar-chart ref='chart' :chartData="data" :options="options" :styles="styles"></bar-chart>
+      <v-card-text class="v-card-text--offset pt-0">
+        <div class="text-h6 font-weight-light mb-2">
+          {{ dataType }}
+        </div>
+        <v-divider class="my-2"></v-divider>
+        <v-icon
+          class="mr-2"
+          small
+        >
+          mdi-calculator
+        </v-icon>
+        <span class="text-caption grey--text font-weight-light">there are {{ average }} {{ dataType.toLowerCase() }} on average </span>
+      </v-card-text>
+    </v-card>
+  </div>
 </template>
 
 <script>
