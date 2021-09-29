@@ -4,19 +4,13 @@ const config = require('../config/index');
 const HttpStatus = require('http-status-codes');
 
 
-function getGUMPStatsByStatsType(type) {
+function getStatsByStatsType(url) {
   return function(req, res) {
     const statsType = req.query.statsType;
     if (!statsType) {
       return res.status(HttpStatus.BAD_REQUEST).json({message: 'Missing required parameter statsType'});
     }
-    let url;
-    if (type === 'GMP') {
-      url = config.get('server:penRequest:rootURL') + '/stats?statsType=' + statsType;
-    } else {
-      url = config.get('server:studentRequest:rootURL') + '/stats?statsType=' + statsType;
-    }
-    getData(getBackendToken(req), url)
+    getData(getBackendToken(req), url + '/stats?statsType=' + statsType)
       .then(dataResponse => {
         return res.status(HttpStatus.OK).json(dataResponse);
       })
@@ -28,6 +22,6 @@ function getGUMPStatsByStatsType(type) {
 
 
 module.exports = {
-  getGMPStatsByStatsType: getGUMPStatsByStatsType('GMP'),
-  getUMPStatsByStatsType: getGUMPStatsByStatsType('UMP')
+  getGMPStatsByStatsType: getStatsByStatsType(config.get('server:penRequest:rootURL')),
+  getUMPStatsByStatsType: getStatsByStatsType(config.get('server:studentRequest:rootURL'))
 };
