@@ -3,32 +3,30 @@
     <v-form ref="studentSearchForm" id="searchStudentForm"
             v-model="validForm"
     >
-      <v-row no-gutters class="d-flex align-start justify-end mr-2">
-          <v-col class="justify-end mr-n16" cols="2">
+      <v-row no-gutters class="d-flex justify-end">
+          <v-col cols="2" style="text-align: -webkit-right">
             <v-select
                 id="k12PSIselector"
                 :items="schoolGroups"
                 v-model="selectedSchoolGroup"
                 outlined
                 dense
-                class="select"
-                style="width: 13em;"
+                class="mr-2"
+                style="width: 68%"
                 placeholder="Filter by K-12/PSI"
                 color="#38598a"
                 append-icon="mdi-chevron-down"
                 clearable
             ></v-select>
           </v-col>
-          <v-col class="justify-end mr-16 ml-n5" cols="1">
+          <v-col cols="2">
             <v-select
                 id="newPENTimeframe"
                 :items="timeframes"
                 v-model="timeframe"
                 dense
                 outlined
-                style="width: 13em;"
                 color="#38598a"
-                class="select"
                 append-icon="mdi-chevron-down"
                 :menu-props="{ offsetY: true }"
             ></v-select>
@@ -36,9 +34,9 @@
       </v-row>
       <v-row class="justify-end mt-n3" no-gutters>
         <v-col cols="3" no-gutters>
-          <v-expansion-panels focusable popout>
+          <v-expansion-panels focusable>
             <v-expansion-panel>
-              <v-expansion-panel-header expand-icon="mdi-menu-down" style="border-bottom-left-radius: 4px;border-bottom-right-radius: 4px;color: #FFFFFF;background-color: rgb(0, 51, 102);border-color: rgb(0, 51, 102);">
+              <v-expansion-panel-header style="border-bottom-left-radius: 4px;border-bottom-right-radius: 4px;color: #FFFFFF;background-color: rgb(0, 51, 102);border-color: rgb(0, 51, 102);">
                 <template v-slot:actions>
                   <v-icon color="white">
                     $expand
@@ -47,9 +45,9 @@
                 Refine Results
               </v-expansion-panel-header>
               <v-expansion-panel-content>
-                <v-row class="mt-4" no-gutters>
-                  <v-col class="mr-n14 mt-2" cols="3">PEN:</v-col>
-                  <v-col cols="4" >
+                <v-row no-gutters class="mt-4">
+                  <v-col class="mt-2" cols="2">PEN:</v-col>
+                  <v-col cols="4" class="mr-15">
                     <v-text-field
                         dense
                         filled
@@ -57,7 +55,6 @@
                         id='pen'
                         v-model="penSearch"
                         @keyup.enter="getNewPENs(true)"
-                        style="width: 7em;"
                         maxlength="9"
                         minlength="9"
                         @keypress="isNumber($event)"
@@ -65,27 +62,27 @@
                         autofocus>
                     </v-text-field>
                   </v-col>
-                  <v-col class="mr-n13 mt-2 ml-n4" cols="5">Mincode:</v-col>
-                  <v-col cols="3" class="mr-15 ml-n11">
+                </v-row>
+                <v-row no-gutters class="mt-n4">
+                  <v-col class="mt-2" cols="3">Mincode:</v-col>
+                  <v-col cols="3" class="mr-15">
                     <v-text-field
                         dense
                         filled
                         outlined
-                        style="width: 7em"
                         id='mincode'
                         v-model="mincodeSearch"
                         maxlength="8"
                         minlength="8"
                         @keypress="isNumber($event)"
                         @keyup.enter="getNewPENs(true)"
-                        v-on:input="[refineHasValues()]"
-                        autofocus>
+                        v-on:input="[refineHasValues()]">
                     </v-text-field>
                   </v-col>
                 </v-row>
                 <v-row no-gutters class="mt-n4">
-                  <v-col cols="4" class="mt-2">Legal Surname:</v-col>
-                  <v-col cols="6" class="ml-1">
+                  <v-col class="mt-2" cols="4">Legal Surname:</v-col>
+                  <v-col cols="6">
                     <v-text-field dense filled outlined
                                   id='legalLastName'
                                   v-model="legalSurnameSearch"
@@ -97,8 +94,8 @@
                   </v-col>
                 </v-row>
                 <v-row no-gutters class="mt-n4">
-                  <v-col cols="4" class="mt-2">Legal Given:</v-col>
-                  <v-col cols="6" class="mr-15 ml-1">
+                  <v-col class="mt-2" cols="4">Legal Given:</v-col>
+                  <v-col cols="6">
                     <v-text-field dense filled outlined
                                   id='legalFirstName'
                                   v-model="legalGivenNameSearch"
@@ -110,8 +107,8 @@
                   </v-col>
                 </v-row>
                 <v-row no-gutters class="mt-n4">
-                  <v-col cols="4" class="mt-2">Legal Middle:</v-col>
-                  <v-col cols="6" class="mr-15 ml-1">
+                  <v-col class="mt-2" cols="4">Legal Middle:</v-col>
+                  <v-col cols="6">
                     <v-text-field dense filled outlined
                                   id='legalMiddleNames'
                                   v-model="legalMiddleNameSearch"
@@ -122,11 +119,11 @@
                     </v-text-field>
                   </v-col>
                 </v-row>
-                <v-row no-gutters class="justify-end mr-13">
-                  <v-col cols="1" class="mr-14">
-                    <PrimaryButton id="search-clear" :secondary="true" class="mr-2" @click.native="clearSearch" text="Clear"></PrimaryButton>
+                <v-row no-gutters class="justify-end mt-n2">
+                  <v-col cols="4" style="text-align: -webkit-right">
+                    <PrimaryButton id="search-clear" :secondary="true" @click.native="clearSearch" text="Clear"></PrimaryButton>
                   </v-col>
-                  <v-col cols="1" class="mr-16">
+                  <v-col cols="4" class="ml-2">
                     <PrimaryButton :disabled="!searchEnabled" :loading="searchLoading" @click.native="getNewPENs(true)" text="Refine"></PrimaryButton>
                   </v-col>
                 </v-row>
@@ -154,7 +151,7 @@
       <v-container v-else fluid class="fill-height px-0">
         <v-row no-gutters>
           <v-card elevation="0" height="100%" width="100%" style="background-color:#d7d7d7;">
-            <v-row v-if="this.studentSearchResponse" no-gutters class="py-2" style="background-color:white;">
+            <v-row v-if="this.studentSearchResponse" no-gutters class="pt-3 mb-n1" style="background-color:white;">
               <v-divider class="mx-3"/>
             </v-row>
             <v-row v-if="this.studentSearchResponse" id="resultsRow" no-gutters class="py-2"
@@ -271,7 +268,6 @@ export default {
       this.getNewPENs(true);
     },
     async refineHasValues() {
-      console.log('Ahll');
       if (this.penSearch || this.mincodeSearch || this.legalSurnameSearch || this.legalGivenNameSearch || this.legalMiddleNameSearch) {
         this.searchEnabled = true;
         return true;
@@ -281,9 +277,7 @@ export default {
     },
     setTimeframeCriteria(){
       let today = LocalDateTime.now();
-      console.log('Date today: ' + today);
       let backMidnight = today.withHour(0).withMinute(0).withSecond(0).withNano(0);
-      console.log('backMidnight: ' + backMidnight);
       let yesterday;
       if(this.timeframe === '1WEEK'){
         yesterday = backMidnight.minusWeeks(1);
@@ -292,7 +286,6 @@ export default {
       }else{
         yesterday = backMidnight;
       }
-      console.log('yesterday: ' + yesterday);
       this.studentSearchParams.createDate.startDate = yesterday;
       this.studentSearchParams.createDate.endDate = today;
     },
@@ -391,8 +384,4 @@ export default {
   }
 };
 </script>
-<style>
-.select {
-  max-width: 245px;
-}
-</style>
+

@@ -62,6 +62,9 @@
       </template>
     </v-data-table>
     <v-row class="pt-2" justify="end">
+      <v-col cols="4" v-if="!showCompare">
+        <span id="numberResultsSecond">{{ studentSearchResponse.totalElements }} Results</span>
+      </v-col>
       <v-col cols="4">
         <v-pagination color="#38598A" v-model="pageNumber" :length="studentSearchResponse.totalPages"></v-pagination>
       </v-col>
