@@ -12,7 +12,7 @@
                 outlined
                 dense
                 class="mr-2"
-                style="width: 68%"
+                style="width: 75%"
                 placeholder="Filter by K-12/PSI"
                 color="#38598a"
                 append-icon="mdi-chevron-down"
