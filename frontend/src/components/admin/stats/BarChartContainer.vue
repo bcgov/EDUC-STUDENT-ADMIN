@@ -41,7 +41,8 @@ export default {
     },
     heightValue: {
       type: String,
-      required: false
+      required: false,
+      default: '15rem'
     },
     displayYAxis: {
       type: Boolean,
