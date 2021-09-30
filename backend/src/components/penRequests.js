@@ -44,7 +44,7 @@ async function findPenRequestsByPen(req, res) {
 function createPenRequestCommentApiServiceReq(req, userToken) {
   return {
     penRetrievalRequestID: req.params.id,
-    staffMemberIDIRGUID: userToken['preferred_username'].toUpperCase(),
+    staffMemberIDIRGUID: userToken['idir_guid'].toUpperCase(),
     staffMemberName: userToken['idir_username'],
     commentContent: req.body.content,
     commentTimestamp: LocalDateTime.now().toString()
