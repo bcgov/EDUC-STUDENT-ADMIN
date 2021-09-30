@@ -4,7 +4,7 @@
             v-model="validForm"
     >
       <v-row>
-        <v-col cols="9"><BarChartContainer :labels="labels" :chart-data="chartData" data-type="New PENs by Month"></BarChartContainer></v-col>
+        <v-col cols="9"><BarChartContainer :displayYAxis="displayYAxis" :heightValue="heightValue" :labels="labels" :chart-data="chartData" data-type="New PENs by Month"></BarChartContainer></v-col>
         <v-col cols="3">
           <v-row no-gutters class="d-flex justify-end">
               <v-col style="text-align: -webkit-right">
@@ -216,8 +216,10 @@ export default {
       legalSurnameSearch: null,
       legalGivenNameSearch: null,
       legalMiddleNameSearch: null,
-      labels: ['Jan', 'Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-      chartData: [20,50,60,30,34,10,60,80,40,23,21,38]
+      labels: ['January', 'February','March','April','May','June','July','August','September','October','November','December'],
+      chartData: [20,50,60,30,34,10,60,80,40,23,21,38],
+      heightValue: '10rem',
+      displayYAxis: false
     };
   },
   computed: {
