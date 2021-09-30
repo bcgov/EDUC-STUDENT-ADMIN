@@ -4,10 +4,10 @@
             v-model="validForm"
     >
       <v-row>
-        <v-col cols="6"><BarChartContainer :labels="labels" :chart-data="chartData" data-type="New PENs by Month"></BarChartContainer></v-col>
-        <v-col cols="6">
+        <v-col cols="9"><BarChartContainer :labels="labels" :chart-data="chartData" data-type="New PENs by Month"></BarChartContainer></v-col>
+        <v-col cols="3">
           <v-row no-gutters class="d-flex justify-end">
-              <v-col cols="4" style="text-align: -webkit-right">
+              <v-col style="text-align: -webkit-right">
                 <v-select
                     id="k12PSIselector"
                     :items="schoolGroups"
@@ -15,14 +15,13 @@
                     outlined
                     dense
                     class="mr-2"
-                    style="width: 73%"
                     placeholder="Filter by K-12/PSI"
                     color="#38598a"
                     append-icon="mdi-chevron-down"
                     clearable
                 ></v-select>
               </v-col>
-              <v-col cols="3">
+              <v-col>
                 <v-select
                     id="newPENTimeframe"
                     :items="timeframes"
@@ -36,7 +35,7 @@
               </v-col>
           </v-row>
           <v-row class="justify-end mt-n3" no-gutters>
-            <v-col cols="6" no-gutters>
+            <v-col cols="12" no-gutters>
               <v-expansion-panels focusable>
                 <v-expansion-panel>
                   <v-expansion-panel-header style="border-bottom-left-radius: 4px;border-bottom-right-radius: 4px;color: #FFFFFF;background-color: rgb(0, 51, 102);border-color: rgb(0, 51, 102);">
