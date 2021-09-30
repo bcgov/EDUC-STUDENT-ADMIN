@@ -48,6 +48,25 @@ export default {
     data: null,
     options: {
       maintainAspectRatio: false,
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true,
+            max: 300
+          },
+          gridLines: {
+            display: true
+          }
+        }],
+        xAxes: [{
+          ticks: {
+            beginAtZero: true
+          },
+          gridLines: {
+            display: false
+          }
+        }]
+      },
       legend: {
         display: false,
       },
@@ -63,9 +82,10 @@ export default {
     }
   },
   methods: {
-    setHeightValue() {
+    setHeightAndScale() {
       this.styles.height = this.heightValue;
       this.styles.position = 'relative';
+      this.options.scales.yAxes[0].ticks.max = Math.max(...this.chartData) + 20;
     }
   },
   mounted() {
@@ -83,13 +103,14 @@ export default {
           data: this.chartData,
           datalabels: {
             anchor: 'end',
-            align: 'start',
+            align: 'end',
+            offset: '-5',
             clip: true,
           }
         }
       ]
     };
-    this.setHeightValue();
+    this.setHeightAndScale();
   }
 };
 </script>
