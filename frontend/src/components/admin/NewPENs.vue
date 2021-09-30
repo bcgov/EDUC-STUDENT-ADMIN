@@ -4,7 +4,7 @@
             v-model="validForm"
     >
       <v-row>
-        <v-col cols="6"><BarChartContainer  :labels="labels" :chart-data="chartData" data-type="New PENs by Month"></BarChartContainer></v-col>
+        <v-col cols="6"><BarChartContainer :labels="labels" :chart-data="chartData" data-type="New PENs by Month"></BarChartContainer></v-col>
         <v-col cols="6">
           <v-row no-gutters class="d-flex justify-end">
               <v-col cols="4" style="text-align: -webkit-right">
@@ -163,7 +163,7 @@
                    style="background-color:white;">
               <StudentSearchResults
                   :searchCriteria="this.currentStudentSearchParams"
-                  :prepPut="prepPut"
+                  :prepPut="prepRefineFilter"
                   :showCompare="false"
                   :searchLoading="searchLoading"
               ></StudentSearchResults>
@@ -218,7 +218,7 @@ export default {
       legalGivenNameSearch: null,
       legalMiddleNameSearch: null,
       labels: ['Jan', 'Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-      chartData: ['20','50','60','30','34','10','60','80','40','23','21','38']
+      chartData: [20,50,60,30,34,10,60,80,40,23,21,38]
     };
   },
   computed: {
@@ -342,19 +342,19 @@ export default {
       if (validationRequired === false || (this.$refs.studentSearchForm.validate())) {
         const studentSearchKeys = Object.keys(this.studentSearchParams).filter(k => (this.studentSearchParams[k] && this.studentSearchParams[k].length !== 0));
 
-        let studentSearchFilters;
+        let refineFilters;
         if (studentSearchKeys?.length > 0) {
-          studentSearchFilters = {};
+          refineFilters = {};
           studentSearchKeys.forEach(element => {
-            studentSearchFilters[element] = this.studentSearchParams[element];
+            refineFilters[element] = this.studentSearchParams[element];
           });
         }
 
         ApiService.apiAxios
-          .get(Routes['student'].SEARCH_URL, this.prepPut(studentSearchFilters))
+          .get(Routes['student'].SEARCH_URL, this.prepRefineFilter(refineFilters))
           .then(response => {
             this.setStudentSearchResponse(response.data);
-            this.currentStudentSearchParams = JSON.parse(JSON.stringify(studentSearchFilters));
+            this.currentStudentSearchParams = JSON.parse(JSON.stringify(refineFilters));
           })
           .catch(error => {
             if (error?.response?.status === 400) {
@@ -371,14 +371,14 @@ export default {
         this.searchLoading = false;
       }
     },
-    prepPut(studentSearchFilters) {
+    prepRefineFilter(refineFilters) {
       let sort = {};
       sort[this.headerSortParams.currentSort] = this.headerSortParams.currentSortAsc ? 'ASC' : 'DESC';
       return {
         params: {
           pageNumber: this.pageNumber - 1,
           sort: sort,
-          searchQueries: studentSearchFilters
+          searchQueries: refineFilters
         }
       };
     },
