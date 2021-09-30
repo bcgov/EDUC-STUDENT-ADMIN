@@ -57,7 +57,7 @@
                         @keyup.enter="getNewPENs(true)"
                         maxlength="9"
                         minlength="9"
-                        @keypress="isNumber($event)"
+                        @keypress="isValidNumber($event)"
                         v-on:input="[refineHasValues()]"
                         autofocus>
                     </v-text-field>
@@ -74,7 +74,7 @@
                         v-model="mincodeSearch"
                         maxlength="8"
                         minlength="8"
-                        @keypress="isNumber($event)"
+                        @keypress="isValidNumber($event)"
                         @keyup.enter="getNewPENs(true)"
                         v-on:input="[refineHasValues()]">
                     </v-text-field>
@@ -177,6 +177,7 @@ import {mapGetters, mapMutations, mapState} from 'vuex';
 import StudentSearchResults from '@/components/penreg/student-search/StudentSearchResults';
 import alertMixin from '@/mixins/alertMixin';
 import PrimaryButton from '@/components/util/PrimaryButton';
+import {isValidNumber} from '@/utils/validation';
 
 export default {
   name: 'newpens',
@@ -209,7 +210,7 @@ export default {
       legalSurnameSearch: null,
       legalGivenNameSearch: null,
       legalMiddleNameSearch: null,
-      student: {},
+      student: {}
     };
   },
   computed: {
@@ -259,6 +260,7 @@ export default {
   },
   methods: {
     ...mapMutations('studentSearch', ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse']),
+    isValidNumber,
     clearSearch() {
       this.penSearch = null;
       this.mincodeSearch = null;
@@ -318,15 +320,6 @@ export default {
       if(this.legalMiddleNameSearch){
         this.studentSearchParams.legalMiddleNames = null;
         this.studentSearchParams.legalMiddleNames = this.legalMiddleNameSearch;
-      }
-    },
-    isNumber: function(evt) {
-      evt = (evt) ? evt : window.event;
-      let charCode = (evt.which) ? evt.which : evt.keyCode;
-      if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
-        evt.preventDefault();
-      } else {
-        return true;
       }
     },
     getNewPENs(validationRequired = true) {
