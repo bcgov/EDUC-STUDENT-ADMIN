@@ -42,6 +42,11 @@ export default {
     heightValue: {
       type: String,
       required: false
+    },
+    displayYAxis: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   data: () => ({
@@ -51,8 +56,7 @@ export default {
       scales: {
         yAxes: [{
           ticks: {
-            beginAtZero: true,
-            max: 300
+            beginAtZero: true
           },
           gridLines: {
             display: true
@@ -86,6 +90,7 @@ export default {
       this.styles.height = this.heightValue;
       this.styles.position = 'relative';
       this.options.scales.yAxes[0].ticks.max = Math.max(...this.chartData) + 20;
+      this.options.scales.yAxes[0].display = this.displayYAxis;
     }
   },
   mounted() {
