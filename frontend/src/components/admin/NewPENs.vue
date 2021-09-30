@@ -360,7 +360,7 @@ export default {
             if (error?.response?.status === 400) {
               this.setFailureAlert(error?.response?.data?.message);
             } else {
-              this.setFailureAlert('An error occurred while loading the search results. Please try again later.');
+              this.setFailureAlert('An error occurred while loading the new pens. Please try again later.');
             }
             console.error(error.response);
           })
