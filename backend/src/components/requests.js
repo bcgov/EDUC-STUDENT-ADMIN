@@ -360,7 +360,7 @@ async function updateRequest(req, res, requestType, createApiServiceReq) {
  */
 function setDefaultsInRequestForRejectAndReturn(request, req, userToken) {
   request.reviewer = req.body.reviewer;
-  request.staffMemberIDIRGUID = userToken['preferred_username'].toUpperCase();
+  request.staffMemberIDIRGUID = userToken['idir_guid'].toUpperCase();
   request.staffMemberName = userToken['idir_username'];
   request.email = req['session'].penRequest['email'];
   request.identityType = req['session'].identityType;

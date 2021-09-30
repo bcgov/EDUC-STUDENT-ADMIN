@@ -101,7 +101,7 @@ const genderCodesData = [
 describe('getPenRequestCommentById', () => {
   const userData = {
     idir_username: 'IDIR',
-    preferred_username: '11'
+    idir_guid: '11'
   };
   const penRequestsData = [
     {
