@@ -13,7 +13,7 @@
         >
           mdi-calculator
         </v-icon>
-        <span class="text-caption grey--text font-weight-light">there are {{ average }} {{ dataType.toLowerCase() }} on average </span>
+        <span class="text-caption grey--text font-weight-light">There are {{ average }} {{ dataType.toLowerCase() }} on average</span>
       </v-card-text>
     </v-card>
   </div>
@@ -38,6 +38,10 @@ export default {
     dataType: {
       type: String,
       required: true
+    },
+    heightValue: {
+      type: String,
+      required: false
     }
   },
   data: () => ({
@@ -51,11 +55,17 @@ export default {
     styles: {
       height: '15rem',
       position: 'relative'
-    }
+    },
   }),
   computed: {
     average() {
       return Math.round(this.chartData.reduce((partial_sum, a) => partial_sum + a,0) / this.chartData.length);
+    }
+  },
+  methods: {
+    setHeightValue() {
+      this.styles.height = this.heightValue;
+      this.styles.position = 'relative';
     }
   },
   mounted() {
@@ -79,6 +89,7 @@ export default {
         }
       ]
     };
+    this.setHeightValue();
   }
 };
 </script>
