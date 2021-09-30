@@ -1,0 +1,96 @@
+<template>
+  <div>
+    <v-card v-show="!loading && !loadFailed" class="mx-auto pa-4">
+      <doughnut-chart ref='chart' :chartData="data" :options="options" :style="styles"></doughnut-chart>
+      <v-card-text class="v-card-text--offset py-0">
+        <div class="text-h6 font-weight-light mb-2">
+          {{ dataType }}
+        </div>
+        <v-divider class="my-2"></v-divider>
+        <span class="text-caption grey&#45;&#45;text font-weight-light">{{ total }} total {{ dataType }} requests completed</span>
+      </v-card-text>
+    </v-card>
+    <v-card v-show="loading" class="mx-auto pa-4">
+      <v-row align="center" justify="center">
+        <v-progress-circular
+          :size="70"
+          :width="7"
+          color="primary"
+          indeterminate
+        ></v-progress-circular>
+      </v-row>
+    </v-card>
+  </div>
+</template>
+
+<script>
+import DoughnutChart from '../../util/charts/DoughnutChart';
+import ApiService from '../../../common/apiService';
+import {CHART_STAT_URLS, COMPLETION_STATES} from '../../../utils/constants/ChartConstants';
+import alertMixin from '../../../mixins/alertMixin';
+export default {
+  name: 'DoughnutChartContainer',
+  components: {
+    DoughnutChart
+  },
+  mixins: [alertMixin],
+  props: {
+    dataType: {
+      type: String,
+      required: true
+    }
+  },
+  data: () => ({
+    data: null,
+    dataResponse: null,
+    loading: true,
+    loadFailed: false,
+    options: {
+      maintainAspectRatio: false
+    },
+    styles: {
+      height: '15rem',
+      position: 'relative'
+    },
+    total: null
+  }),
+  mounted() {
+    this.loading = true;
+    ApiService.apiAxios.get(CHART_STAT_URLS[this.dataType])
+      .then(response => {
+        Object.keys(response.data.allStatsLastTwelveMonth).forEach((key) => COMPLETION_STATES[this.dataType].includes(key) || delete response.data.allStatsLastTwelveMonth[key]);
+        this.total = Object.values(response.data.allStatsLastTwelveMonth).reduce((partial_sum, a) => partial_sum + a,0);
+        this.data = {
+          labels: Object.keys(response.data.allStatsLastTwelveMonth),
+          datasets: [
+            {
+              backgroundColor: [
+                '#3485FF',
+                '#00A646',
+                '#ef5675',
+                '#f9ca54'
+              ],
+              data: Object.values(response.data.allStatsLastTwelveMonth),
+              datalabels: {
+                anchor: 'end',
+                align: 'start',
+                clip: true,
+                display: function(context) {
+                  return context.dataset.data[context.dataIndex] !== 0;
+                }
+              }
+            }
+          ]
+        };
+        this.loading = false;
+      })
+      .catch(e => {
+        this.loadFailed = true;
+        console.log(e);
+        this.setFailureAlert(`Failed to load ${this.dataType} data. Please try refreshing the page.`);
+      })
+      .finally(() => {this.loading = false;});
+    
+  }
+};
+</script>
