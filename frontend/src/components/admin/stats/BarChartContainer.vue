@@ -13,7 +13,7 @@
         >
           mdi-calculator
         </v-icon>
-        <span class="text-caption grey--text font-weight-light">there are {{ average }} {{ dataType.toLowerCase() }} on average </span>
+        <span class="text-caption grey--text font-weight-light">There are {{ average }} {{ dataType.toLowerCase() }} on average </span>
       </v-card-text>
     </v-card>
   </div>

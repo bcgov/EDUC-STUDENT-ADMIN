@@ -3,133 +3,138 @@
     <v-form ref="studentSearchForm" id="searchStudentForm"
             v-model="validForm"
     >
-      <v-row no-gutters class="d-flex justify-end">
-          <v-col cols="2" style="text-align: -webkit-right">
-            <v-select
-                id="k12PSIselector"
-                :items="schoolGroups"
-                v-model="selectedSchoolGroup"
-                outlined
-                dense
-                class="mr-2"
-                style="width: 75%"
-                placeholder="Filter by K-12/PSI"
-                color="#38598a"
-                append-icon="mdi-chevron-down"
-                clearable
-            ></v-select>
-          </v-col>
-          <v-col cols="2">
-            <v-select
-                id="newPENTimeframe"
-                :items="timeframes"
-                v-model="timeframe"
-                dense
-                outlined
-                color="#38598a"
-                append-icon="mdi-chevron-down"
-                :menu-props="{ offsetY: true }"
-            ></v-select>
-          </v-col>
-      </v-row>
-      <v-row class="justify-end mt-n3" no-gutters>
-        <v-col cols="3" no-gutters>
-          <v-expansion-panels focusable>
-            <v-expansion-panel>
-              <v-expansion-panel-header style="border-bottom-left-radius: 4px;border-bottom-right-radius: 4px;color: #FFFFFF;background-color: rgb(0, 51, 102);border-color: rgb(0, 51, 102);">
-                <template v-slot:actions>
-                  <v-icon color="white">
-                    $expand
-                  </v-icon>
-                </template>
-                Refine Results
-              </v-expansion-panel-header>
-              <v-expansion-panel-content>
-                <v-row no-gutters class="mt-4">
-                  <v-col class="mt-2" cols="2">PEN:</v-col>
-                  <v-col cols="4" class="mr-15">
-                    <v-text-field
-                        dense
-                        filled
-                        outlined
-                        id='pen'
-                        v-model="penSearch"
-                        @keyup.enter="getNewPENs(true)"
-                        maxlength="9"
-                        minlength="9"
-                        @keypress="isValidNumber($event)"
-                        v-on:input="[refineHasValues()]"
-                        autofocus>
-                    </v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row no-gutters class="mt-n4">
-                  <v-col class="mt-2" cols="3">Mincode:</v-col>
-                  <v-col cols="3" class="mr-15">
-                    <v-text-field
-                        dense
-                        filled
-                        outlined
-                        id='mincode'
-                        v-model="mincodeSearch"
-                        maxlength="8"
-                        minlength="8"
-                        @keypress="isValidNumber($event)"
-                        @keyup.enter="getNewPENs(true)"
-                        v-on:input="[refineHasValues()]">
-                    </v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row no-gutters class="mt-n4">
-                  <v-col class="mt-2" cols="4">Legal Surname:</v-col>
-                  <v-col cols="6">
-                    <v-text-field dense filled outlined
-                                  id='legalLastName'
-                                  v-model="legalSurnameSearch"
-                                  maxlength="255"
-                                  @keyup.enter="getNewPENs(true)"
-                                  v-on:input="[refineHasValues()]"
-                    >
-                    </v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row no-gutters class="mt-n4">
-                  <v-col class="mt-2" cols="4">Legal Given:</v-col>
-                  <v-col cols="6">
-                    <v-text-field dense filled outlined
-                                  id='legalFirstName'
-                                  v-model="legalGivenNameSearch"
-                                  maxlength="255"
-                                  @keyup.enter="getNewPENs(true)"
-                                  v-on:input="[refineHasValues()]"
-                    >
-                    </v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row no-gutters class="mt-n4">
-                  <v-col class="mt-2" cols="4">Legal Middle:</v-col>
-                  <v-col cols="6">
-                    <v-text-field dense filled outlined
-                                  id='legalMiddleNames'
-                                  v-model="legalMiddleNameSearch"
-                                  maxlength="255"
-                                  @keyup.enter="getNewPENs(true)"
-                                  v-on:input="[refineHasValues()]"
-                    >
-                    </v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row no-gutters class="justify-end mt-n2">
-                  <v-col cols="4" style="text-align: -webkit-right">
-                    <PrimaryButton id="search-clear" :secondary="true" @click.native="clearSearch" text="Clear"></PrimaryButton>
-                  </v-col>
-                  <v-col cols="4" class="ml-2">
-                    <PrimaryButton :disabled="!searchEnabled" :loading="searchLoading" @click.native="getNewPENs(true)" text="Refine"></PrimaryButton>
-                  </v-col>
-                </v-row>
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-          </v-expansion-panels>
+      <v-row>
+        <v-col cols="6"><BarChartContainer  :labels="labels" :chart-data="chartData" data-type="New PENs by Month"></BarChartContainer></v-col>
+        <v-col cols="6">
+          <v-row no-gutters class="d-flex justify-end">
+              <v-col cols="4" style="text-align: -webkit-right">
+                <v-select
+                    id="k12PSIselector"
+                    :items="schoolGroups"
+                    v-model="selectedSchoolGroup"
+                    outlined
+                    dense
+                    class="mr-2"
+                    style="width: 73%"
+                    placeholder="Filter by K-12/PSI"
+                    color="#38598a"
+                    append-icon="mdi-chevron-down"
+                    clearable
+                ></v-select>
+              </v-col>
+              <v-col cols="3">
+                <v-select
+                    id="newPENTimeframe"
+                    :items="timeframes"
+                    v-model="timeframe"
+                    dense
+                    outlined
+                    color="#38598a"
+                    append-icon="mdi-chevron-down"
+                    :menu-props="{ offsetY: true }"
+                ></v-select>
+              </v-col>
+          </v-row>
+          <v-row class="justify-end mt-n3" no-gutters>
+            <v-col cols="6" no-gutters>
+              <v-expansion-panels focusable>
+                <v-expansion-panel>
+                  <v-expansion-panel-header style="border-bottom-left-radius: 4px;border-bottom-right-radius: 4px;color: #FFFFFF;background-color: rgb(0, 51, 102);border-color: rgb(0, 51, 102);">
+                    <template v-slot:actions>
+                      <v-icon color="white">
+                        $expand
+                      </v-icon>
+                    </template>
+                    Refine Results
+                  </v-expansion-panel-header>
+                  <v-expansion-panel-content>
+                    <v-row no-gutters class="mt-4">
+                      <v-col class="mt-2" cols="2">PEN:</v-col>
+                      <v-col cols="4" class="mr-15">
+                        <v-text-field
+                            dense
+                            filled
+                            outlined
+                            id='pen'
+                            v-model="penSearch"
+                            @keyup.enter="getNewPENs(true)"
+                            maxlength="9"
+                            minlength="9"
+                            @keypress="isValidNumber($event)"
+                            v-on:input="[refineHasValues()]"
+                            autofocus>
+                        </v-text-field>
+                      </v-col>
+                    </v-row>
+                    <v-row no-gutters class="mt-n4">
+                      <v-col class="mt-2" cols="3">Mincode:</v-col>
+                      <v-col cols="3" class="mr-15">
+                        <v-text-field
+                            dense
+                            filled
+                            outlined
+                            id='mincode'
+                            v-model="mincodeSearch"
+                            maxlength="8"
+                            minlength="8"
+                            @keypress="isValidNumber($event)"
+                            @keyup.enter="getNewPENs(true)"
+                            v-on:input="[refineHasValues()]">
+                        </v-text-field>
+                      </v-col>
+                    </v-row>
+                    <v-row no-gutters class="mt-n4">
+                      <v-col class="mt-2" cols="4">Legal Surname:</v-col>
+                      <v-col cols="6">
+                        <v-text-field dense filled outlined
+                                      id='legalLastName'
+                                      v-model="legalSurnameSearch"
+                                      maxlength="255"
+                                      @keyup.enter="getNewPENs(true)"
+                                      v-on:input="[refineHasValues()]"
+                        >
+                        </v-text-field>
+                      </v-col>
+                    </v-row>
+                    <v-row no-gutters class="mt-n4">
+                      <v-col class="mt-2" cols="4">Legal Given:</v-col>
+                      <v-col cols="6">
+                        <v-text-field dense filled outlined
+                                      id='legalFirstName'
+                                      v-model="legalGivenNameSearch"
+                                      maxlength="255"
+                                      @keyup.enter="getNewPENs(true)"
+                                      v-on:input="[refineHasValues()]"
+                        >
+                        </v-text-field>
+                      </v-col>
+                    </v-row>
+                    <v-row no-gutters class="mt-n4">
+                      <v-col class="mt-2" cols="4">Legal Middle:</v-col>
+                      <v-col cols="6">
+                        <v-text-field dense filled outlined
+                                      id='legalMiddleNames'
+                                      v-model="legalMiddleNameSearch"
+                                      maxlength="255"
+                                      @keyup.enter="getNewPENs(true)"
+                                      v-on:input="[refineHasValues()]"
+                        >
+                        </v-text-field>
+                      </v-col>
+                    </v-row>
+                    <v-row no-gutters class="justify-end mt-n2">
+                      <v-col cols="4" style="text-align: -webkit-right">
+                        <PrimaryButton id="search-clear" :secondary="true" @click.native="clearSearch" text="Clear"></PrimaryButton>
+                      </v-col>
+                      <v-col cols="4" class="ml-2">
+                        <PrimaryButton :disabled="!searchEnabled" :loading="searchLoading" @click.native="getNewPENs(true)" text="Refine"></PrimaryButton>
+                      </v-col>
+                    </v-row>
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
+              </v-expansion-panels>
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
       <v-container v-if="searchLoading" fluid class="fill-height px-0">
@@ -178,11 +183,13 @@ import StudentSearchResults from '@/components/penreg/student-search/StudentSear
 import alertMixin from '@/mixins/alertMixin';
 import PrimaryButton from '@/components/util/PrimaryButton';
 import {isValidNumber} from '@/utils/validation';
+import BarChartContainer from '@/components/admin/stats/BarChartContainer';
 
 export default {
   name: 'newpens',
   components: {
     PrimaryButton,
+    BarChartContainer,
     StudentSearchResults
   },
   mixins: [alertMixin],
@@ -210,7 +217,8 @@ export default {
       legalSurnameSearch: null,
       legalGivenNameSearch: null,
       legalMiddleNameSearch: null,
-      student: {}
+      labels: ['Jan', 'Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      chartData: ['20','50','60','30','34','10','60','80','40','23','21','38']
     };
   },
   computed: {
