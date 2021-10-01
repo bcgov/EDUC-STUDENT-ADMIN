@@ -1,6 +1,6 @@
 <template>
   <div id="searchResults" class="px-3" style="width: 100%" :overlay=false>
-    <v-row no-gutters>
+    <v-row no-gutters v-if="showCompare">
       <v-col>
         <span id="numberResults" class="px-4 pb-2">{{ studentSearchResponse.totalElements }} Results</span>
       </v-col>
@@ -20,19 +20,21 @@
             :page.sync="pageNumber"
             :items-per-page="studentSearchResponse.pageable.pageSize"
             hide-default-footer
+            :header-props="{ sortIcon: null }"
             item-key="studentID"
             :loading="searchLoading || loading"
             @page-count="studentSearchResponse.pageable.pageNumber = $event">
       <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-        <span :key="h.id" class="top-column-item" :title="header.topTooltip">
+        <span @click="updateSortParams(header.topValue)" :key="h.id" class="top-column-item" :title="header.topTooltip">
           {{ header.topText }}
         </span>
-        <em :key="h.id" v-if="header.topValue === 'dob'" @click="updateSortParams(header.topValue)"
-            :class="['dob-sort pl-2 v-icon v-data-table-header__icon fas active', headerSortParams.currentSortAsc ? 'fa-sort-down' : 'fa-sort-up']"
-        ></em>
-        <span :key="h.id" class="double-column-item" :title="header.doubleTooltip">{{header.doubleText}}</span>
+        <span :key="h.id" @click="updateSortParams(header.topValue)">
+          <em :key="h.id"  v-if="header.sortable && headerSortParams.currentSort === header.topValue"
+              :class="['sort-header mt-1 pl-2 v-icon fas active', headerSortParams.currentSortAsc ? 'fa-sort-up' : 'fa-sort-down']"/>
+        </span>
+        <span @click="updateSortParams(header.topValue)" :key="h.id" class="double-column-item" :title="header.doubleTooltip">{{header.doubleText}}</span>
         <br :key="h.id" />
-        <span :key="h.id" class="bottom-column-item" :title="header.bottomTooltip">{{ header.bottomText }}</span>
+        <span @click="updateSortParams(header.topValue)" :key="h.id" class="bottom-column-item" :title="header.bottomTooltip">{{ header.bottomText }}</span>
       </template>
       <template v-slot:item="props">
         <tr>
@@ -62,6 +64,9 @@
       </template>
     </v-data-table>
     <v-row class="pt-2" justify="end">
+      <v-col cols="4" v-if="!showCompare">
+        <span id="numberResultsSecond">{{ studentSearchResponse.totalElements }} Results</span>
+      </v-col>
       <v-col cols="4">
         <v-pagination color="#38598A" v-model="pageNumber" :length="studentSearchResponse.totalPages"></v-pagination>
       </v-col>
@@ -95,6 +100,11 @@ export default {
       type: Function,
       required: true
     },
+    showCompare: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
     searchLoading: {
       type: Boolean,
       required: true
@@ -107,13 +117,13 @@ export default {
       loading: false,
       headers: [
         {id: 'table-checkbox', type: 'select', sortable: false},
-        {topText: 'PEN', align: 'start', sortable: false, topValue: 'pen', topTooltip: 'Personal Education Number'},
+        {topText: 'PEN', align: 'start', sortable: true, topValue: 'pen', topTooltip: 'Personal Education Number'},
         {
           topText: 'Legal Surname',
           bottomText: 'Usual Surname',
           topValue: 'legalLastName',
           bottomValue: 'usualLastName',
-          sortable: false,
+          sortable: true,
           topTooltip: 'Legal Surname',
           bottomTooltip: 'Usual Surname'
         },
@@ -122,7 +132,7 @@ export default {
           bottomText: 'Usual Given',
           topValue: 'legalFirstName',
           bottomValue: 'usualFirstName',
-          sortable: false,
+          sortable: true,
           topTooltip: 'Legal Given',
           bottomTooltip: 'Usual Given'
         },
@@ -131,7 +141,7 @@ export default {
           bottomText: 'Usual Middle',
           topValue: 'legalMiddleNames',
           bottomValue: 'usualMiddleNames',
-          sortable: false,
+          sortable: true,
           topTooltip: 'Legal Middle',
           bottomTooltip: 'Usual Middle'
         },
@@ -153,14 +163,14 @@ export default {
           bottomText: 'Grade',
           topValue: 'dob',
           bottomValue: 'gradeCode',
-          sortable: false,
+          sortable: true,
           topTooltip: 'Birth Date',
           bottomTooltip: 'Grade'
         },
         {
           topText: 'Mincode',
           topValue: 'mincode',
-          sortable: false,
+          sortable: true,
           topTooltip: 'Mincode'
         },
       ],
@@ -168,6 +178,9 @@ export default {
   },
   mounted() {
     this.clearStaleData();
+    if(!this.showCompare){
+      this.headers.splice(0,1);
+    }
   },
   watch: {
     pageNumber: {
@@ -278,8 +291,9 @@ export default {
     text-align: right;
     font-size: 0.875rem;
   }
-  .dob-sort {
+  .sort-header {
     opacity: 1;
+    position: absolute;
     cursor: pointer;
     color: #1A5A96;
   }
