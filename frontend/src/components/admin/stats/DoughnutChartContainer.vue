@@ -7,7 +7,9 @@
           {{ dataType }}
         </div>
         <v-divider class="my-2"></v-divider>
-        <span class="text-caption grey&#45;&#45;text font-weight-light">{{ total }} total {{ dataType }} requests completed</span>
+
+        <span v-if="spanContent" class="text-caption grey&#45;&#45;text font-weight-light">{{ spanContent }}</span>
+        <span v-else class="text-caption grey&#45;&#45;text font-weight-light">{{ total }} total {{ dataType }} requests completed</span>
       </v-card-text>
     </v-card>
     <v-card v-show="loading" class="mx-auto pa-4">
@@ -26,7 +28,7 @@
 <script>
 import DoughnutChart from '../../util/charts/DoughnutChart';
 import ApiService from '../../../common/apiService';
-import {CHART_STAT_URLS, COMPLETION_STATES} from '../../../utils/constants/ChartConstants';
+import {CHART_STAT_URLS, COMPLETION_STATES} from '@/utils/constants/ChartConstants';
 import alertMixin from '../../../mixins/alertMixin';
 export default {
   name: 'DoughnutChartContainer',
@@ -38,6 +40,14 @@ export default {
     dataType: {
       type: String,
       required: true
+    },
+    spanContent:{
+      type: String,
+      required: false
+    },
+    url:{
+      type: String,
+      required: false
     }
   },
   data: () => ({
@@ -54,9 +64,9 @@ export default {
     },
     total: null
   }),
-  mounted() {
+  created() {
     this.loading = true;
-    ApiService.apiAxios.get(CHART_STAT_URLS[this.dataType])
+    ApiService.apiAxios.get(this.url || CHART_STAT_URLS[this.dataType])
       .then(response => {
         Object.keys(response.data.allStatsLastTwelveMonth).forEach((key) => COMPLETION_STATES[this.dataType].includes(key) || delete response.data.allStatsLastTwelveMonth[key]);
         this.total = Object.values(response.data.allStatsLastTwelveMonth).reduce((partial_sum, a) => partial_sum + a,0);
@@ -90,7 +100,7 @@ export default {
         this.setFailureAlert(`Failed to load ${this.dataType} data. Please try refreshing the page.`);
       })
       .finally(() => {this.loading = false;});
-    
+
   }
 };
 </script>
