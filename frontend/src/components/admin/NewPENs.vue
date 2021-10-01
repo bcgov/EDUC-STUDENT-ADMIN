@@ -239,6 +239,7 @@ export default {
   mounted() {
     this.studentSearchParams = {...this.studentSearchParams};
     this.studentSearchParams.createDate = {};
+    this.headerSortParams.currentSort = 'pen';
     this.getNewPENs(true, true);
   },
   watch: {
