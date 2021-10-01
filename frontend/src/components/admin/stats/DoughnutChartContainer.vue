@@ -48,6 +48,10 @@ export default {
     url:{
       type: String,
       required: false
+    },
+    completionStates:{
+      type: Array,
+      required: true,
     }
   },
   data: () => ({
@@ -68,7 +72,7 @@ export default {
     this.loading = true;
     ApiService.apiAxios.get(this.url || CHART_STAT_URLS[this.dataType])
       .then(response => {
-        Object.keys(response.data.allStatsLastTwelveMonth).forEach((key) => COMPLETION_STATES[this.dataType].includes(key) || delete response.data.allStatsLastTwelveMonth[key]);
+        Object.keys(response.data.allStatsLastTwelveMonth).forEach((key) => this.completionStates.includes(key) || delete response.data.allStatsLastTwelveMonth[key]);
         this.total = Object.values(response.data.allStatsLastTwelveMonth).reduce((partial_sum, a) => partial_sum + a,0);
         this.data = {
           labels: Object.keys(response.data.allStatsLastTwelveMonth),

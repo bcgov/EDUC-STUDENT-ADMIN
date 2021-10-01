@@ -14,33 +14,33 @@
         key="percentileStatsGMPLastMonth"
         cols="6"
       >
-        <v-row dense>
+        <v-row dense style="min-height: 10rem;" class="mt-3">
           <v-col cols="6">
             <percentile-info-card v-if="gmpCompletionsCurrentMonth!==null && percentCompletedGmpToLastMonth !== null"
                                   :percentile="percentCompletedGmpToLastMonth" :title="gmpCompletionsCurrentMonth"
-                                  sub-title="GMP Completions" icon="mdi-checkbox-multiple-marked-circle"/>
+                                  sub-title="Completions" icon="mdi-checkbox-multiple-marked-circle"/>
             <Spinner v-else/>
           </v-col>
 
           <v-col cols="6">
             <percentile-info-card v-if="gmpRejectionsCurrentMonth!==null && percentRejectedGMPToLastMonth !== null"
                                   :percentile="percentRejectedGMPToLastMonth" :title="gmpRejectionsCurrentMonth"
-                                  sub-title="GMP Rejections" icon="mdi-checkbox-multiple-marked-circle"/>
+                                  sub-title="Rejections" icon="mdi-checkbox-multiple-marked-circle"/>
             <Spinner v-else/>
           </v-col>
         </v-row>
-        <v-row>
+        <v-row dense style="min-height: 10rem;" class="mt-4">
           <v-col cols="6">
             <percentile-info-card v-if="gmpAbandonedCurrentMonth!==null && percentAbandonedGMPToLastMonth !== null"
                                   :percentile="percentAbandonedGMPToLastMonth" :title="gmpAbandonedCurrentMonth"
-                                  sub-title="GMP Abandoned" icon="mdi-checkbox-multiple-marked-circle"/>
+                                  sub-title="Abandoned" icon="mdi-checkbox-multiple-marked-circle"/>
             <Spinner v-else/>
           </v-col>
           <v-col cols="6">
             <percentile-info-card
               v-if="gmpCompletionsWithDocCurrentMonth!==null && percentCompletedGmpWithDocToLastMonth !== null"
               :percentile="percentCompletedGmpWithDocToLastMonth" :title="gmpCompletionsWithDocCurrentMonth"
-              sub-title="GMP Completions With Document" icon="mdi-checkbox-multiple-marked-circle"/>
+              sub-title="Completions With Document" icon="mdi-checkbox-multiple-marked-circle"/>
             <Spinner v-else/>
           </v-col>
         </v-row>
@@ -60,6 +60,7 @@
       >
         <DoughnutChartContainer v-if="CHART_STAT_URLS.GMP_ALL_STATUS_LAST_12_MONTH"
                                 data-type="All Statuses Last 12 month" span-content="All statuses last 12 month"
+                                :completion-states="COMPLETION_STATES.GMP"
                                 url="/api/analytics/gmp/stats?statsType=ALL_STATUSES_LAST_12_MONTH"></DoughnutChartContainer>
       </v-col>
     </v-row>
@@ -71,7 +72,7 @@ import DoughnutChartContainer from './DoughnutChartContainer';
 import Spinner from '../../common/Spinner';
 import PercentileInfoCard from '../../common/PercentileInfoCard';
 import BarChartContainer from './BarChartContainer';
-import {CHART_STAT_URLS, CHART_TYPES} from '@/utils/constants/ChartConstants';
+import {CHART_STAT_URLS, CHART_TYPES, COMPLETION_STATES} from '@/utils/constants/ChartConstants';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 
@@ -81,6 +82,7 @@ export default {
   components: {DoughnutChartContainer, BarChartContainer, Spinner, PercentileInfoCard},
   data: () => ({
     CHART_STAT_URLS: CHART_STAT_URLS,
+    COMPLETION_STATES: COMPLETION_STATES,
     CHART_TYPES: CHART_TYPES,
     gmpCompletionsLast12Month: null,
     gmpCompletionsLast12MonthLabels: null,

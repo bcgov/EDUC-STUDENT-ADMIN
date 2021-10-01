@@ -1,13 +1,13 @@
 <template>
   <v-card
-    class="mx-auto"
+    class="mx-auto" min-height="100%"
   >
     <v-list-item class="ml-auto text-right" two-line>
       <v-list-item-avatar
         rounded
         size="80"
         color="cyan"
-        class="v-sheet--offset my-0"
+        class="v-sheet–offset my-0"
       >
         <v-icon color="white" large>{{ icon }}</v-icon>
       </v-list-item-avatar>
@@ -68,5 +68,8 @@ export default {
 </script>
 
 <style scoped>
-
+.v-sheet–offset {
+  top: -18px;
+  position: relative;
+}
 </style>
