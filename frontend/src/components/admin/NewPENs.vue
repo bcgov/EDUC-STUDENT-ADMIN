@@ -177,7 +177,7 @@
 import {LocalDate, LocalDateTime} from '@js-joda/core';
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
-import {mapGetters, mapMutations, mapState} from 'vuex';
+import {mapGetters, mapState} from 'vuex';
 import StudentSearchResults from '@/components/penreg/student-search/StudentSearchResults';
 import alertMixin from '@/mixins/alertMixin';
 import PrimaryButton from '@/components/util/PrimaryButton';
