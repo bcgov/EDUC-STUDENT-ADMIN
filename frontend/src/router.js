@@ -30,7 +30,7 @@ import CompareStudents from './components/CompareStudents';
 import PenCoordinatorsDisplay from './components/penreg/coordinator/PenCoordinatorsDisplay';
 import MacrosDisplay from './components/admin/MacrosDisplay';
 import NominalRoll from './components/admin/NominalRoll';
-import GMPStatsLanding from '@/components/admin/stats/GMPStatsLanding';
+import NewPENs from './components/admin/NewPENs';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -284,6 +284,16 @@ const router = new VueRouter({
       },
     },
     {
+      path: '/NewPENs',
+      name: 'newpens',
+      component: NewPENs,
+      meta: {
+        pageTitle: PAGE_TITLES.NEWPENS,
+        requiresAuth: true,
+        role: 'NOMINAL_ROLL_ROLE'
+      },
+    },
+    {
       path: '/login',
       name: 'login',
       component: Login,
@@ -343,15 +353,6 @@ const router = new VueRouter({
       path: '/token-expired',
       name: 'backend-session-expired',
       component: BackendSessionExpired
-    },
-    {
-      path: '/analytics/gmp-stats',
-      name: 'analytics-gmp-stats',
-      component: GMPStatsLanding,
-      meta: {
-        pageTitle: 'GMP Stats',
-        requiresAuth: true
-      },
     }
   ]
 });

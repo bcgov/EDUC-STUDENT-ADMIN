@@ -51,7 +51,7 @@
               <PrimaryButton id="perform-search" :disabled="!searchEnabled" :loading="searchLoading"
                              @click.native="searchStudent(true)" text="Search"></PrimaryButton>
             </v-row>
-            <v-row v-if="this.studentSearchResponse" no-gutters class="py-2" style="background-color:white;">
+            <v-row v-if="this.studentSearchResponse" no-gutters class="pt-3" style="background-color:white;">
               <v-divider class="mx-3"/>
             </v-row>
             <v-row v-if="this.studentSearchResponse" id="resultsRow" no-gutters class="py-2"

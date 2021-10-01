@@ -29,13 +29,12 @@ async function searchStudent(req, res) {
         usualNicknames = await getNicknames(token, searchQueries['usualFirstName']);
       }
     }
-
     Object.keys(searchQueries).forEach(element => {
       let operation = FILTER_OPERATION.STARTS_WITH;
       let valueType = VALUE_TYPE.STRING;
       if (element === 'useNameVariants' || element === 'isAuditHistorySearch') {
         return;
-      } else if (element === 'dob') {
+      } else if (element === 'dob' || element === 'createDate') {
         if (!searchQueries[element].endDate) {
           searchQueries[element].endDate = searchQueries[element].startDate;
         }
@@ -45,6 +44,10 @@ async function searchStudent(req, res) {
 
         operation = FILTER_OPERATION.BETWEEN;
         valueType = VALUE_TYPE.DATE;
+
+        if(element === 'createDate'){
+          valueType = VALUE_TYPE.DATE_TIME;
+        }
       } else if (element.includes('Name')) {
         operation = FILTER_OPERATION.EQUAL;
         if(searchQueries[element]) {
@@ -82,7 +85,14 @@ async function searchStudent(req, res) {
       } else if (element === 'statusCode') {
         operation = FILTER_OPERATION.IN;
         searchQueries[element] = searchQueries[element].join(',');
+      } else if (element === 'mincode') {
+        if(searchQueries[element].notstartswith){
+          operation = FILTER_OPERATION.NOT_STARTS_WITH;
+          searchQueries[element] = searchQueries[element].notstartswith;
+        }
       }
+
+
       searchListCriteria.push({key: element, condition: CONDITION.AND, operation: operation, value: searchQueries[element], valueType: valueType});
     });
   }

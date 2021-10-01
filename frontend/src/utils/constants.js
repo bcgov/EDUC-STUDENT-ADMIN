@@ -321,6 +321,7 @@ export const PAGE_TITLES = Object.freeze(
     CREATE_NEW_PEN: 'Create New PEN',
     ARCHIVED_REQ_FILES: 'Archived PEN Request Files',
     PEN_COORDINATORS: 'PEN Coordinators',
+    NEWPENS: 'New PENs',
     MACRO_MANAGEMENT: 'Macro Management',
     NOMINAL_ROLL: 'Nominal Roll',
     COMPARE_PENS: 'Compare Students',
