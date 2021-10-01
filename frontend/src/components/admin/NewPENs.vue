@@ -177,7 +177,7 @@
 import {LocalDate, LocalDateTime} from '@js-joda/core';
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
-import {mapGetters, mapState} from 'vuex';
+import {mapMutations, mapState} from 'vuex';
 import StudentSearchResults from '@/components/penreg/student-search/StudentSearchResults';
 import alertMixin from '@/mixins/alertMixin';
 import PrimaryButton from '@/components/util/PrimaryButton';
@@ -210,7 +210,6 @@ export default {
       searchEnabled: false,
       selectedSchoolGroup: '',
       currentStudentSearchParams: {},
-      studentSearchResultsKey: 0,
       penSearch: null,
       mincodeSearch: null,
       legalSurnameSearch: null,
@@ -223,10 +222,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo']),
-    ...mapGetters('student', ['gradeCodeObjects']),
-    ...mapState('student', ['genders']),
-    ...mapState('studentSearch', ['pageNumber', 'headerSortParams', 'advancedSearchCriteria', 'studentSearchResponse']),
+    ...mapState('studentSearch', ['pageNumber', 'headerSortParams', 'studentSearchResponse']),
     ...mapState('penRequestBatch', ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
     genderCodes() {
       return this.genders ? this.genders.map(a => a.genderCode) : [];
@@ -241,8 +237,6 @@ export default {
     }
   },
   mounted() {
-    this.$store.dispatch('student/getCodes');
-    this.$store.dispatch('penRequestBatch/getCodes');
     this.studentSearchParams = {...this.studentSearchParams};
     this.studentSearchParams.createDate = {};
     this.getNewPENs(true, true);
@@ -268,8 +262,10 @@ export default {
     }
   },
   methods: {
+    ...mapMutations('studentSearch', ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse']),
     isValidNumber,
     clearSearch() {
+      console.log('H');
       this.penSearch = null;
       this.mincodeSearch = null;
       this.legalSurnameSearch = null;
@@ -309,30 +305,33 @@ export default {
       }
     },
     setSearchCriteria(){
+      if(this.studentSearchParams.mincode === null){
+        delete this.studentSearchParams['mincode'];
+      }
+      delete this.studentSearchParams['pen'];
+      delete this.studentSearchParams['legalLastName'];
+      delete this.studentSearchParams['legalFirstName'];
+      delete this.studentSearchParams['legalMiddleNames'];
+
       if(this.penSearch){
-        this.studentSearchParams.pen = null;
         this.studentSearchParams.pen = this.penSearch;
       }
       if(this.mincodeSearch){
-        this.studentSearchParams.mincode = null;
         this.studentSearchParams.mincode = this.mincodeSearch;
       }
       if(this.legalSurnameSearch){
-        this.studentSearchParams.legalLastName = null;
         this.studentSearchParams.legalLastName = this.legalSurnameSearch;
       }
       if(this.legalGivenNameSearch){
-        this.studentSearchParams.legalFirstName = null;
         this.studentSearchParams.legalFirstName = this.legalGivenNameSearch;
       }
       if(this.legalMiddleNameSearch){
-        this.studentSearchParams.legalMiddleNames = null;
         this.studentSearchParams.legalMiddleNames = this.legalMiddleNameSearch;
       }
     },
     getNewPENs(validationRequired = true) {
+
       this.searchLoading = true;
-      this.studentSearchResultsKey += 1; //forces StudentSearchResults to rerender and update curPage
       this.setSelectedRecords();
       this.setPageNumber(1);
       this.headerSortParams['currentSortAsc'] = true;
@@ -341,7 +340,6 @@ export default {
       this.setSearchCriteria();
       if (validationRequired === false || (this.$refs.studentSearchForm.validate())) {
         const studentSearchKeys = Object.keys(this.studentSearchParams).filter(k => (this.studentSearchParams[k] && this.studentSearchParams[k].length !== 0));
-
         let refineFilters;
         if (studentSearchKeys?.length > 0) {
           refineFilters = {};

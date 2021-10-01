@@ -20,19 +20,21 @@
             :page.sync="pageNumber"
             :items-per-page="studentSearchResponse.pageable.pageSize"
             hide-default-footer
+            :header-props="{ sortIcon: null }"
             item-key="studentID"
             :loading="searchLoading || loading"
             @page-count="studentSearchResponse.pageable.pageNumber = $event">
       <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-        <span :key="h.id" class="top-column-item" :title="header.topTooltip">
+        <span @click="updateSortParams(header.topValue)" :key="h.id" class="top-column-item" :title="header.topTooltip">
           {{ header.topText }}
         </span>
-        <em :key="h.id" v-if="header.topValue === 'dob'" @click="updateSortParams(header.topValue)"
-            :class="['dob-sort pl-2 v-icon v-data-table-header__icon fas active', headerSortParams.currentSortAsc ? 'fa-sort-down' : 'fa-sort-up']"
-        ></em>
-        <span :key="h.id" class="double-column-item" :title="header.doubleTooltip">{{header.doubleText}}</span>
+        <span :key="h.id" @click="updateSortParams(header.topValue)">
+          <em :key="h.id"  v-if="header.sortable && headerSortParams.currentSort === header.topValue"
+              :class="['sort-header mt-1 pl-2 v-icon fas active', headerSortParams.currentSortAsc ? 'fa-sort-up' : 'fa-sort-down']"/>
+        </span>
+        <span @click="updateSortParams(header.topValue)" :key="h.id" class="double-column-item" :title="header.doubleTooltip">{{header.doubleText}}</span>
         <br :key="h.id" />
-        <span :key="h.id" class="bottom-column-item" :title="header.bottomTooltip">{{ header.bottomText }}</span>
+        <span @click="updateSortParams(header.topValue)" :key="h.id" class="bottom-column-item" :title="header.bottomTooltip">{{ header.bottomText }}</span>
       </template>
       <template v-slot:item="props">
         <tr>
@@ -161,7 +163,7 @@ export default {
           bottomText: 'Grade',
           topValue: 'dob',
           bottomValue: 'gradeCode',
-          sortable: false,
+          sortable: true,
           topTooltip: 'Birth Date',
           bottomTooltip: 'Grade'
         },
@@ -289,8 +291,9 @@ export default {
     text-align: right;
     font-size: 0.875rem;
   }
-  .dob-sort {
+  .sort-header {
     opacity: 1;
+    position: absolute;
     cursor: pointer;
     color: #1A5A96;
   }
