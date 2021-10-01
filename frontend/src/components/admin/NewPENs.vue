@@ -218,7 +218,7 @@ export default {
       legalMiddleNameSearch: null,
       labels: ['January', 'February','March','April','May','June','July','August','September','October','November','December'],
       chartData: [20,50,60,30,34,10,60,80,40,23,21,38],
-      heightValue: '10rem',
+      heightValue: '7rem',
       displayYAxis: false
     };
   },
@@ -268,7 +268,6 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('studentSearch', ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse']),
     isValidNumber,
     clearSearch() {
       this.penSearch = null;
