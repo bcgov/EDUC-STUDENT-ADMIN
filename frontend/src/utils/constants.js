@@ -332,6 +332,7 @@ export const PAGE_TITLES = Object.freeze(
     HELD_REQ_FILES: 'Held PEN Request Files',
     VIEW_DOC: 'View Document',
     GMP_STATS: 'GMP Stats',
+    UMP_STATS: 'UMP Stats',
   }
 );
 
