@@ -31,7 +31,7 @@ import PenCoordinatorsDisplay from './components/penreg/coordinator/PenCoordinat
 import MacrosDisplay from './components/admin/MacrosDisplay';
 import NominalRoll from './components/admin/NominalRoll';
 import NewPENs from './components/admin/NewPENs';
-import GMPStatsLanding from '@/components/admin/stats/GMPStatsLanding';
+import GUMPStatsLanding from '@/components/admin/stats/GUMPStatsLanding';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -353,9 +353,25 @@ const router = new VueRouter({
         {
           path: 'gmp-stats',
           name: 'analytics-gmp-stats',
-          component: GMPStatsLanding,
+          component: GUMPStatsLanding,
+          props: {
+            requestType: 'gmp',
+          },
           meta: {
             pageTitle: PAGE_TITLES.GMP_STATS,
+            requiresAuth: true,
+            role: 'STAFF_ADMINISTRATION_ADMIN'
+          }
+        },
+        {
+          path: 'ump-stats',
+          name: 'analytics-ump-stats',
+          component: GUMPStatsLanding,
+          props: {
+            requestType: 'ump',
+          },
+          meta: {
+            pageTitle: PAGE_TITLES.UMP_STATS,
             requiresAuth: true,
             role: 'STAFF_ADMINISTRATION_ADMIN'
           }

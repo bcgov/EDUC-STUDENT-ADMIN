@@ -218,3 +218,7 @@ export const getLocalDateFromString = (date, pattern = 'uuuuMMdd') => {
     console.error(`Error is ${e}`);
   }
 };
+
+export function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
