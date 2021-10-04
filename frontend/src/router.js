@@ -284,16 +284,7 @@ const router = new VueRouter({
         role: 'NOMINAL_ROLL_ROLE'
       },
     },
-    {
-      path: '/NewPENs',
-      name: 'newpens',
-      component: NewPENs,
-      meta: {
-        pageTitle: PAGE_TITLES.NEWPENS,
-        requiresAuth: true,
-        role: 'NOMINAL_ROLL_ROLE'
-      },
-    },
+
     {
       path: '/login',
       name: 'login',
@@ -356,14 +347,32 @@ const router = new VueRouter({
       component: BackendSessionExpired
     },
     {
-      path: '/analytics/gmp-stats',
-      name: 'analytics-gmp-stats',
-      component: GMPStatsLanding,
-      meta: {
-        pageTitle: 'GMP Stats',
-        requiresAuth: true
-      }
+      path: '/analytics',
+      component: RouterView,
+      children: [
+        {
+          path: 'gmp-stats',
+          name: 'analytics-gmp-stats',
+          component: GMPStatsLanding,
+          meta: {
+            pageTitle: PAGE_TITLES.GMP_STATS,
+            requiresAuth: true,
+            role: 'STAFF_ADMINISTRATION_ADMIN'
+          }
+        },
+        {
+          path: 'new-pens',
+          name: 'new-pens',
+          component: NewPENs,
+          meta: {
+            pageTitle: PAGE_TITLES.NEW_PENS,
+            requiresAuth: true,
+            role: 'STAFF_ADMINISTRATION_ADMIN'
+          },
+        },
+      ],
     }
+
   ]
 });
 
