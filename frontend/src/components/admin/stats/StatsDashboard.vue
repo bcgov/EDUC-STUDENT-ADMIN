@@ -95,10 +95,10 @@ export default {
           console.log(e);
         })
         .finally(() => {this.loadingNewPen = false;});
-      
+
     },
     fillMergeData() {
-      ApiService.apiAxios.get(CHART_STAT_URLS.MERGE)
+      ApiService.apiAxios.get(CHART_STAT_URLS.MERGE+'?statsType=MERGES_IN_LAST_12_MONTH')
         .then(response => {
           this.mergeLabels = response.data.labels;
           this.mergeChartdata = response.data.data;

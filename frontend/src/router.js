@@ -33,6 +33,7 @@ import NominalRoll from './components/admin/NominalRoll';
 import StatsDashboard from './components/admin/stats/StatsDashboard';
 import NewPENs from './components/admin/NewPENs';
 import GUMPStatsLanding from '@/components/admin/stats/GUMPStatsLanding';
+import Merges from '@/components/admin/stats/Merges';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -351,7 +352,7 @@ const router = new VueRouter({
       component: RouterView,
       children: [
         {
-          path: 'stats-dashboard',
+          path: '',
           name: 'stats-dashboard',
           component: StatsDashboard,
           meta: {
@@ -392,6 +393,16 @@ const router = new VueRouter({
           component: NewPENs,
           meta: {
             pageTitle: PAGE_TITLES.NEW_PENS,
+            requiresAuth: true,
+            role: 'STAFF_ADMINISTRATION_ADMIN'
+          },
+        },
+        {
+          path: 'merges',
+          name: 'merges',
+          component: Merges,
+          meta: {
+            pageTitle: PAGE_TITLES.VIEW_MERGES,
             requiresAuth: true,
             role: 'STAFF_ADMINISTRATION_ADMIN'
           },
