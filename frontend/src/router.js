@@ -32,6 +32,7 @@ import MacrosDisplay from './components/admin/MacrosDisplay';
 import NominalRoll from './components/admin/NominalRoll';
 import StatsDashboard from './components/admin/stats/StatsDashboard';
 import NewPENs from './components/admin/NewPENs';
+import GMPStatsLanding from '@/components/admin/stats/GMPStatsLanding';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -285,16 +286,6 @@ const router = new VueRouter({
       },
     },
     {
-      path: '/NewPENs',
-      name: 'newpens',
-      component: NewPENs,
-      meta: {
-        pageTitle: PAGE_TITLES.NEWPENS,
-        requiresAuth: true,
-        role: 'NOMINAL_ROLL_ROLE'
-      },
-    },
-    {
       path: '/login',
       name: 'login',
       component: Login,
@@ -354,7 +345,44 @@ const router = new VueRouter({
       path: '/token-expired',
       name: 'backend-session-expired',
       component: BackendSessionExpired
+    },
+    {
+      path: '/analytics',
+      component: RouterView,
+      children: [
+        {
+          path: 'stats-dashboard',
+          name: 'stats-dashboard',
+          component: StatsDashboard,
+          meta: {
+            pageTitle: PAGE_TITLES.STATS_DASHBOARD,
+            requiresAuth: true,
+            role: 'STAFF_ADMINISTRATION_ADMIN'
+          }
+        },
+        {
+          path: 'gmp-stats',
+          name: 'analytics-gmp-stats',
+          component: GMPStatsLanding,
+          meta: {
+            pageTitle: PAGE_TITLES.GMP_STATS,
+            requiresAuth: true,
+            role: 'STAFF_ADMINISTRATION_ADMIN'
+          }
+        },
+        {
+          path: 'new-pens',
+          name: 'new-pens',
+          component: NewPENs,
+          meta: {
+            pageTitle: PAGE_TITLES.NEW_PENS,
+            requiresAuth: true,
+            role: 'STAFF_ADMINISTRATION_ADMIN'
+          },
+        },
+      ],
     }
+
   ]
 });
 

@@ -15,12 +15,12 @@
         </v-card>
       </v-col>
       <v-col cols="6">
-        <doughnut-chart-container class="pt-4" :data-type="CHART_TYPES.GMP"></doughnut-chart-container>
+        <doughnut-chart-container class="pt-4" :completion-states="COMPLETION_STATES.GMP" :data-type="CHART_TYPES.GMP"></doughnut-chart-container>
       </v-col>
     </v-row>
     <v-row>
       <v-col cols="6">
-        <doughnut-chart-container class="pb-4" :data-type="CHART_TYPES.UMP"></doughnut-chart-container>
+        <doughnut-chart-container class="pb-4" :completion-states="COMPLETION_STATES.UMP" :data-type="CHART_TYPES.UMP"></doughnut-chart-container>
       </v-col>
       <v-col cols="6">
         <bar-chart-container v-if="newPenChartdata && newPenLabels" class="pb-4" :labels="newPenLabels" :chart-data="newPenChartdata" :data-type="CHART_TYPES.NEW_PENS"></bar-chart-container>
@@ -42,7 +42,7 @@
 <script>
 import BarChartContainer from './BarChartContainer';
 import DoughnutChartContainer from './DoughnutChartContainer';
-import {CHART_TYPES, CHART_STAT_URLS} from '../../../utils/constants/ChartConstants';
+import {CHART_TYPES, CHART_STAT_URLS, COMPLETION_STATES} from '../../../utils/constants/ChartConstants';
 import ApiService from '../../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 
@@ -61,6 +61,7 @@ export default {
       },
     },
     CHART_TYPES,
+    COMPLETION_STATES: COMPLETION_STATES,
     gmpChartdata: null,
     loadingMerge: true,
     loadingNewPen: true,
