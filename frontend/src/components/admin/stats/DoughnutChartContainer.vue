@@ -22,7 +22,6 @@
     </v-card>
   </div>
 </template>
-
 <script>
 import DoughnutChart from '../../util/charts/DoughnutChart';
 import ApiService from '../../../common/apiService';
@@ -46,7 +45,15 @@ export default {
     loading: true,
     loadFailed: false,
     options: {
-      maintainAspectRatio: false
+      maintainAspectRatio: false,
+      plugins: {
+        datalabels: {
+          color: 'white',
+          font: {
+            weight: 'bold'
+          }
+        }
+      },
     },
     styles: {
       height: '15rem',

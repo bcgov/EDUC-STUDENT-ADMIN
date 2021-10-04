@@ -331,6 +331,7 @@ export const PAGE_TITLES = Object.freeze(
     FAILED_REQ_FILES: 'Failed PEN Request Files',
     HELD_REQ_FILES: 'Held PEN Request Files',
     VIEW_DOC: 'View Document',
+    STATS_DASHBOARD: 'Student and System Analytics'
   }
 );
 
