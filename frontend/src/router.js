@@ -30,6 +30,7 @@ import CompareStudents from './components/CompareStudents';
 import PenCoordinatorsDisplay from './components/penreg/coordinator/PenCoordinatorsDisplay';
 import MacrosDisplay from './components/admin/MacrosDisplay';
 import NominalRoll from './components/admin/NominalRoll';
+import StatsDashboard from './components/admin/stats/StatsDashboard';
 import NewPENs from './components/admin/NewPENs';
 import GUMPStatsLanding from '@/components/admin/stats/GUMPStatsLanding';
 Vue.prototype.moment = moment;
@@ -284,7 +285,6 @@ const router = new VueRouter({
         role: 'NOMINAL_ROLL_ROLE'
       },
     },
-
     {
       path: '/login',
       name: 'login',
@@ -350,6 +350,16 @@ const router = new VueRouter({
       path: '/analytics',
       component: RouterView,
       children: [
+        {
+          path: 'stats-dashboard',
+          name: 'stats-dashboard',
+          component: StatsDashboard,
+          meta: {
+            pageTitle: PAGE_TITLES.STATS_DASHBOARD,
+            requiresAuth: true,
+            role: 'STAFF_ADMINISTRATION_ADMIN'
+          }
+        },
         {
           path: 'gmp-stats',
           name: 'analytics-gmp-stats',
