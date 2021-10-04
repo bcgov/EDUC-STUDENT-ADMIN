@@ -321,7 +321,7 @@ export const PAGE_TITLES = Object.freeze(
     CREATE_NEW_PEN: 'Create New PEN',
     ARCHIVED_REQ_FILES: 'Archived PEN Request Files',
     PEN_COORDINATORS: 'PEN Coordinators',
-    NEWPENS: 'New PENs',
+    NEW_PENS: 'New PENs',
     MACRO_MANAGEMENT: 'Macro Management',
     NOMINAL_ROLL: 'Nominal Roll',
     COMPARE_PENS: 'Compare Students',
@@ -331,6 +331,7 @@ export const PAGE_TITLES = Object.freeze(
     FAILED_REQ_FILES: 'Failed PEN Request Files',
     HELD_REQ_FILES: 'Held PEN Request Files',
     VIEW_DOC: 'View Document',
+    GMP_STATS: 'GMP Stats',
   }
 );
 
