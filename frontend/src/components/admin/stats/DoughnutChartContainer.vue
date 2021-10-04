@@ -28,7 +28,7 @@
 <script>
 import DoughnutChart from '../../util/charts/DoughnutChart';
 import ApiService from '../../../common/apiService';
-import {CHART_STAT_URLS, COMPLETION_STATES} from '@/utils/constants/ChartConstants';
+import {CHART_STAT_URLS} from '@/utils/constants/ChartConstants';
 import alertMixin from '../../../mixins/alertMixin';
 export default {
   name: 'DoughnutChartContainer',
