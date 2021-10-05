@@ -4,7 +4,7 @@
             v-model="validForm"
     >
       <v-row>
-        <v-col cols="9"><BarChartContainer :displayYAxis="displayYAxis" :heightValue="heightValue" :labels="labels" :chart-data="chartData" data-type="New PENs by Month"></BarChartContainer></v-col>
+        <v-col cols="9"><BarChartContainer v-if="labels && chartData" :displayYAxis="displayYAxis" :heightValue="heightValue" :labels="labels" :chart-data="chartData" data-type="New PENs by Month"></BarChartContainer><spinner v-else></spinner></v-col>
         <v-col cols="3">
           <v-row no-gutters class="d-flex justify-end">
               <v-col style="text-align: -webkit-right">
@@ -15,7 +15,7 @@
                     outlined
                     dense
                     class="mr-2"
-                    placeholder="Filter by K-12/PSI"
+                    placeholder="K-12/PSI Filter"
                     color="#38598a"
                     append-icon="mdi-chevron-down"
                     clearable
@@ -175,7 +175,7 @@
 </template>
 <script>
 import {LocalDate, LocalDateTime} from '@js-joda/core';
-import ApiService from '../../common/apiService';
+import ApiService from '../../../common/apiService';
 import {Routes} from '@/utils/constants';
 import {mapMutations, mapState} from 'vuex';
 import StudentSearchResults from '@/components/penreg/student-search/StudentSearchResults';
@@ -183,10 +183,13 @@ import alertMixin from '@/mixins/alertMixin';
 import PrimaryButton from '@/components/util/PrimaryButton';
 import {isValidNumber} from '@/utils/validation';
 import BarChartContainer from '@/components/admin/stats/BarChartContainer';
+import {CHART_STAT_URLS} from '@/utils/constants/ChartConstants';
+import Spinner from '@/components/common/Spinner';
 
 export default {
   name: 'newpens',
   components: {
+    Spinner,
     PrimaryButton,
     BarChartContainer,
     StudentSearchResults
@@ -206,7 +209,7 @@ export default {
       schoolGroups: [{value: 'K12', text: 'K-12'}, {value: 'PSI', text: 'PSI'}],
       timeframes: [{value: 'TODAY', text: 'Today'}, {value: '2DAYS', text: 'In the last 2 days'}, {value: '1WEEK', text: 'In the last week'}],
       timeframe: 'TODAY',
-      searchLoading: false,
+      searchLoading: true,
       searchEnabled: false,
       selectedSchoolGroup: '',
       currentStudentSearchParams: {},
@@ -215,8 +218,8 @@ export default {
       legalSurnameSearch: null,
       legalGivenNameSearch: null,
       legalMiddleNameSearch: null,
-      labels: ['January', 'February','March','April','May','June','July','August','September','October','November','December'],
-      chartData: [20,50,60,30,34,10,60,80,40,23,21,38],
+      labels: null,
+      chartData: null,
       heightValue: '7rem',
       displayYAxis: false
     };
@@ -241,6 +244,7 @@ export default {
     this.studentSearchParams.createDate = {};
     this.headerSortParams.currentSort = 'pen';
     this.getNewPENs(true, true);
+    this.fillNewPenData();
   },
   watch: {
     studentSearchResponse: {
@@ -330,8 +334,20 @@ export default {
         this.studentSearchParams.legalMiddleNames = this.legalMiddleNameSearch;
       }
     },
-    getNewPENs(validationRequired = true) {
+    fillNewPenData() {
+      ApiService.apiAxios.get(CHART_STAT_URLS.NEW_PEN)
+        .then(response => {
+          this.labels = response.data.labels;
+          this.chartData = response.data.data;
+        })
+        .catch(e => {
+          this.setFailureAlert('Failed to load new pen statistics. Please try again later.');
+          console.log(e);
+        })
+        .finally(() => {this.searchLoading = false;});
 
+    },
+    getNewPENs(validationRequired = true) {
       this.searchLoading = true;
       this.setSelectedRecords();
       this.setPageNumber(1);

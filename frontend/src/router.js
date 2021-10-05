@@ -31,7 +31,7 @@ import PenCoordinatorsDisplay from './components/penreg/coordinator/PenCoordinat
 import MacrosDisplay from './components/admin/MacrosDisplay';
 import NominalRoll from './components/admin/NominalRoll';
 import StatsDashboard from './components/admin/stats/StatsDashboard';
-import NewPENs from './components/admin/NewPENs';
+import NewPENs from './components/admin/stats/NewPENs';
 import GUMPStatsLanding from '@/components/admin/stats/GUMPStatsLanding';
 /*import Merges from '@/components/admin/stats/Merges';*/
 Vue.prototype.moment = moment;
