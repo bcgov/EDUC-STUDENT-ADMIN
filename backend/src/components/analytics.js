@@ -1,11 +1,13 @@
 'use strict';
 const {getBackendToken, getData, errorResponse} = require('./utils');
 const config = require('../config/index');
+const log = require('./logger');
 const HttpStatus = require('http-status-codes');
-const { LocalDateTime } = require('@js-joda/core');
-const { FILTER_OPERATION, VALUE_TYPE } = require('../util/constants');
-const { logApiError } = require('../components/utils');
+const {LocalDateTime} = require('@js-joda/core');
+const {FILTER_OPERATION, VALUE_TYPE} = require('../util/constants');
+const {logApiError} = require('../components/utils');
 const logger = require('../components/logger');
+const utils = require('./utils');
 
 function getLast12MonthsPaginatedStats(url) {
   return function (req, res) {
@@ -42,7 +44,7 @@ function getLast12MonthsPaginatedStats(url) {
           logApiError(e, 'getLast12MonthsPaginatedStats', 'Error occurred while attempting to search student.');
           return errorResponse(res);
         });
-    } catch(error) {
+    } catch (error) {
       logger.error('getLast12MonthsPaginatedStats:: Error occurred while attempting to search student.', error);
       return errorResponse(res);
     }
@@ -51,7 +53,7 @@ function getLast12MonthsPaginatedStats(url) {
 }
 
 function getStatsByStatsType(url) {
-  return function(req, res) {
+  return function (req, res) {
     const statsType = req.query.statsType;
     if (!statsType) {
       return res.status(HttpStatus.BAD_REQUEST).json({message: 'Missing required parameter statsType'});
@@ -66,6 +68,7 @@ function getStatsByStatsType(url) {
       });
   };
 }
+
 function getNumberOfMergesInLast12Month(req, res) {
   let today = LocalDateTime.now();
   let requestPromises = [];
@@ -89,31 +92,57 @@ function getNumberOfMergesInLast12Month(req, res) {
 
 function findMergesBetweenDates(req, createDateStart, createDateEnd) {
   const params = {params: {createDateStart, createDateEnd}};
-  return getData(getBackendToken(req), config.get('server:penServices:rootURL')+'/merges/between-dates-created', params);
+  return getData(getBackendToken(req), config.get('server:penServices:rootURL') + '/merges/between-dates-created', params);
+}
+
+async function findMergeDetailsBetween(req, res, createDateStart, createDateEnd) {
+  try {
+    const studentMerges = await findMergesBetweenDates(req, createDateStart, createDateEnd);
+    if (!studentMerges || studentMerges.length === 0) {
+      log.debug('no record found');
+      return res.status(HttpStatus.OK).json();
+    }
+    const studentIDs = [];
+    const studentsMap = []; // this Array  will contain the student records as key value pair.
+    for (const studentMerge of studentMerges) {
+      studentIDs.push(studentMerge.studentID);
+      studentIDs.push(studentMerge.mergeStudentID);
+    }
+    const studentsPage = await utils.getStudentsFromStudentAPIByTheirIds(utils.getBackendToken(req), studentIDs.join());
+    const students = studentsPage.content;
+    studentMerges.forEach((studentMerge) => {
+      const trueStudent = students.find((student) => student.studentID === studentMerge.mergeStudentID);
+      const mergedStudent = students.find((student) => student.studentID === studentMerge.studentID);
+      studentsMap.push({mergedStudent, trueStudent});
+    });
+    return res.status(HttpStatus.OK).json(studentsMap);
+  } catch (e) {
+    return errorResponse(res, e.data, e.status);
+  }
 }
 
 const getMergeStats = async (req, res) => {
   const statsType = req.query.statsType;
-  if (statsType && statsType === 'MERGES_IN_LAST_12_MONTH') {
-    return getNumberOfMergesInLast12Month(req, res);
-  } else {
-    // system will return map of students, each key value pair represents to two students in merge.
-    const studentMap = new Map(); // this map will contain the student record as key value pair.
-    const studentPromises = [];
-    const createDateStart = req.query.createDateStart;
-    const createDateEnd = req.query.createDateEnd;
-    if (!createDateStart || !createDateEnd) {
-      return res.status(HttpStatus.BAD_REQUEST).json({message: 'Missing required parameter createDate start or end'});
-    }
-    try {
-      const results =  await findMergesBetweenDates(req, createDateStart, createDateEnd);
-      results.map(el=> el.studentID);
-      results.map(el=> el.mergeStudentID);
-      return res.status(HttpStatus.OK).json(results);
-    } catch (e) {
-      return errorResponse(res, e.data, e.status);
-    }
+  if (!statsType) {
+    return res.status(HttpStatus.BAD_REQUEST).json({message: 'Missing required parameter statsType'});
   }
+  let today = LocalDateTime.now();
+  let backMidnight = today.withHour(0).withMinute(0).withSecond(0).withNano(0);
+  let yesterday;
+  switch (statsType) {
+  case 'MERGES_IN_LAST_12_MONTH':
+    return getNumberOfMergesInLast12Month(req, res);
+  case 'MERGE_DETAILS_TODAY':
+    yesterday = backMidnight;
+    return findMergeDetailsBetween(req, res, yesterday.toString(), today.toString());
+  case 'MERGE_DETAILS_LAST_2_DAYS':
+    yesterday = backMidnight.minusDays(1);
+    return findMergeDetailsBetween(req, res, yesterday.toString(), today.toString());
+  case 'MERGE_DETAILS_LAST_WEEK':
+    yesterday = backMidnight.minusWeeks(20);
+    return findMergeDetailsBetween(req, res, yesterday.toString(), today.toString());
+  }
+
 
 };
 
