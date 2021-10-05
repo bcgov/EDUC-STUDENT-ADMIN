@@ -141,12 +141,6 @@ export default {
         authorized: this.VIEW_PEN_COORDINATOR_INFO_ROLE
       },
       {
-        title: PAGE_TITLES.NEWPENS,
-        link: 'newpens',
-        newTab: false,
-        authorized: this.STAFF_ADMINISTRATION_ADMIN
-      },
-      {
         title: PAGE_TITLES.ADMINISTRATION,
         authorized: this.STAFF_ADMINISTRATION_ADMIN,
         items: [

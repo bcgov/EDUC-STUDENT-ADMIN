@@ -97,12 +97,22 @@
           <v-row class="py-4 px-8">
             <v-col class="py-0">
               <v-row>
-                <v-card-title class="pa-0"><h3>Student and System Analytics</h3></v-card-title>
+                <router-link :to="{name: 'stats-dashboard'}">
+                  <v-card-title class="pa-0"><h3>Student and System Analytics</h3></v-card-title>
+                </router-link>
               </v-row>
-              <v-row class="pt-2">Get My PEN</v-row>
-              <v-row class="pt-2">Update My PEN</v-row>
-              <v-row class="pt-2">New PENs</v-row>
-              <v-row class="pt-2">Merges</v-row>
+              <router-link :to="{name: 'analytics-gmp-stats'}">
+                <v-row class="pt-2">Get My PEN</v-row>
+              </router-link>
+              <router-link :to="{name: 'analytics-ump-stats'}">
+                <v-row class="pt-2">Update My PEN</v-row>
+              </router-link>
+              <router-link :to="{name: 'new-pens'}">
+                <v-row class="pt-2">New PENs</v-row>
+              </router-link>
+              <router-link :to="{name: 'merges'}">
+                <v-row class="pt-2">Merges</v-row>
+              </router-link>
             </v-col>
           </v-row>
         </v-card>
