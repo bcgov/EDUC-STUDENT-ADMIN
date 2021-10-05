@@ -5,7 +5,7 @@
         key="completionsLast12months"
         cols="6"
       >
-        <bar-chart-container v-if="completionsLast12Month && completionsLast12MonthLabels"
+        <bar-chart-container v-if="completionsLast12Month && completionsLast12MonthLabels" :displayYAxis="false"
                              :labels="completionsLast12MonthLabels" :chart-data="completionsLast12Month"
                              data-type="Completions Last 12 month"></bar-chart-container>
         <Spinner v-else/>
@@ -49,7 +49,7 @@
         key="completionsLastWeek"
         cols="6"
       >
-        <bar-chart-container v-if="completionsLastWeek && completionsLastWeekLabels"
+        <bar-chart-container v-if="completionsLastWeek && completionsLastWeekLabels" :displayYAxis="false"
                              :labels="completionsLastWeekLabels" :chart-data="completionsLastWeek"
                              data-type="Completions Last week"></bar-chart-container>
         <Spinner v-else/>
@@ -117,7 +117,7 @@ export default {
     percentAbandonedRequestToLastMonth: null,
     completionsWithDocCurrentMonth: null,
     percentCompletedRequestWithDocToLastMonth: null,
-    averageTimeToCompleteRequest: null,
+    averageTimeToCompleteRequest: null
   }),
   computed: {
     requestTypeWithAllUpperCase() {
