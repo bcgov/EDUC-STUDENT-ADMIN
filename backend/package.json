@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "npm run setlocal && npm run servecmd",
     "setlocal": "set NODE_ENV=local",
-    "servecmd": "nodemon --max-old-space-size=150 ./src/server.js",
+    "servecmd": "nodemon --max-old-space-size=250 ./src/server.js",
     "serve-linux": "export NODE_ENV=local && nodemon ./src/server.js",
     "start": "node --max-old-space-size=150 ./src/server.js",
     "lint": "node_modules/.bin/eslint . --no-fix --ignore-pattern 'node_modules' --ext .js",
