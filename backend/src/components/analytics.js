@@ -103,7 +103,7 @@ async function findMergeDetailsBetween(req, res, createDateStart, createDateEnd)
       return res.status(HttpStatus.OK).json();
     }
     const studentIDs = [];
-    const studentsMap = []; // this Array  will contain the student records as key value pair.
+    const studentsMapList = []; // this Array  will contain the student records as pair {mergedStudent, trueStudent}.
     for (const studentMerge of studentMerges) {
       studentIDs.push(studentMerge.studentID);
       studentIDs.push(studentMerge.mergeStudentID);
@@ -113,9 +113,9 @@ async function findMergeDetailsBetween(req, res, createDateStart, createDateEnd)
     studentMerges.forEach((studentMerge) => {
       const trueStudent = students.find((student) => student.studentID === studentMerge.mergeStudentID);
       const mergedStudent = students.find((student) => student.studentID === studentMerge.studentID);
-      studentsMap.push({mergedStudent, trueStudent});
+      studentsMapList.push({mergedStudent, trueStudent});
     });
-    return res.status(HttpStatus.OK).json(studentsMap);
+    return res.status(HttpStatus.OK).json(studentsMapList);
   } catch (e) {
     return errorResponse(res, e.data, e.status);
   }
