@@ -100,7 +100,7 @@ async function findMergeDetailsBetween(req, res, createDateStart, createDateEnd)
     const studentMerges = await findMergesBetweenDates(req, createDateStart, createDateEnd);
     if (!studentMerges || studentMerges.length === 0) {
       log.debug('no record found');
-      return res.status(HttpStatus.OK).json();
+      return res.status(HttpStatus.OK).json([]);
     }
     const studentIDs = [];
     const studentsMapList = []; // this Array  will contain the student records as pair {mergedStudent, trueStudent}.
@@ -110,10 +110,17 @@ async function findMergeDetailsBetween(req, res, createDateStart, createDateEnd)
     }
     const studentsPage = await utils.getStudentsFromStudentAPIByTheirIds(utils.getBackendToken(req), studentIDs.join());
     const students = studentsPage.content;
+    let groupIndex = 0;
     studentMerges.forEach((studentMerge) => {
       const trueStudent = students.find((student) => student.studentID === studentMerge.mergeStudentID);
       const mergedStudent = students.find((student) => student.studentID === studentMerge.studentID);
-      studentsMapList.push({mergedStudent, trueStudent});
+      if (trueStudent && mergedStudent) {
+        studentsMapList.push({...trueStudent, groupIndex});
+        studentsMapList.push({...mergedStudent, groupIndex});
+        groupIndex++;
+      } else {
+        log.warn('student records could not be found for this merge data', studentMerge);
+      }
     });
     return res.status(HttpStatus.OK).json(studentsMapList);
   } catch (e) {
@@ -139,7 +146,7 @@ const getMergeStats = async (req, res) => {
     yesterday = backMidnight.minusDays(1);
     return findMergeDetailsBetween(req, res, yesterday.toString(), today.toString());
   case 'MERGE_DETAILS_LAST_WEEK':
-    yesterday = backMidnight.minusWeeks(20);
+    yesterday = backMidnight.minusWeeks(1);
     return findMergeDetailsBetween(req, res, yesterday.toString(), today.toString());
   }
 

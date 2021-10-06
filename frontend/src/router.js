@@ -33,7 +33,7 @@ import NominalRoll from './components/admin/NominalRoll';
 import StatsDashboard from './components/admin/stats/StatsDashboard';
 import NewPENs from './components/admin/stats/NewPENs';
 import GUMPStatsLanding from '@/components/admin/stats/GUMPStatsLanding';
-/*import Merges from '@/components/admin/stats/Merges';*/
+import Merges from '@/components/admin/stats/Merges';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -397,7 +397,7 @@ const router = new VueRouter({
             role: 'STAFF_ADMINISTRATION_ADMIN'
           },
         },
-        /*{
+        {
           path: 'merges',
           name: 'merges',
           component: Merges,
@@ -406,7 +406,7 @@ const router = new VueRouter({
             requiresAuth: true,
             role: 'STAFF_ADMINISTRATION_ADMIN'
           },
-        },*/
+        },
       ],
     }
 
