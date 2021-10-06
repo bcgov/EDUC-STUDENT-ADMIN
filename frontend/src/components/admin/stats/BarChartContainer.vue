@@ -90,7 +90,8 @@ export default {
     setHeightAndScale() {
       this.styles.height = this.heightValue;
       this.styles.position = 'relative';
-      this.options.scales.yAxes[0].ticks.max = Math.max(...this.chartData) + 20;
+      let max = Math.max(...this.chartData);
+      this.options.scales.yAxes[0].ticks.max = max + (max * 0.2);
       this.options.scales.yAxes[0].display = this.displayYAxis;
     }
   },
