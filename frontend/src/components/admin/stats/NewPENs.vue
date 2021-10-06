@@ -270,7 +270,6 @@ export default {
     ...mapMutations('studentSearch', ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse']),
     isValidNumber,
     clearSearch() {
-      console.log('H');
       this.penSearch = null;
       this.mincodeSearch = null;
       this.legalSurnameSearch = null;
