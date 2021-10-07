@@ -92,7 +92,7 @@
           </article>
         </v-container>
       </v-col>
-      <v-col cols="4">
+      <v-col cols="4" v-if="STAFF_ADMINISTRATION_ADMIN">
         <v-card flat color="#F2F2F2" class="mt-2" height="100%">
           <v-row class="py-4 px-8">
             <v-col class="py-0">
@@ -222,7 +222,7 @@ export default {
     });
   },
   computed: {
-    ...mapGetters('auth', ['VIEW_GMP_REQUESTS_ROLE','VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE']),
+    ...mapGetters('auth', ['VIEW_GMP_REQUESTS_ROLE','VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'STAFF_ADMINISTRATION_ADMIN']),
     ...mapState('app', ['mincodeSchoolNames', 'districtCodes']),
     requestTypes() {
       return REQUEST_TYPES;
