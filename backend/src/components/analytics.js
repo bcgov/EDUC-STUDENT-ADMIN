@@ -70,24 +70,15 @@ function getStatsByStatsType(url) {
 }
 
 function getNumberOfMergesInLast12Month(req, res) {
-  let today = LocalDateTime.now();
-  let requestPromises = [];
-  let labels = [];
-  for (let i = 11; i >= 0; i--) {
-    let startDate = today.minusMonths(i).withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
-    let endDate = today.minusMonths(i).withDayOfMonth(today.minusMonths(i).toLocalDate().lengthOfMonth()).withHour(23).withMinute(59).withSecond(59);
-    labels.push(startDate.month());
-    requestPromises.push(findMergesBetweenDates(req, startDate.toString(), endDate.toString()));
-  }
-  Promise.all(requestPromises)
-    .then(responses => {
-      let data = responses.map(x => x.length);
-      return res.status(HttpStatus.OK).json({labels: labels, data: data});
-    })
-    .catch(e => {
+  getData(getBackendToken(req), config.get('server:penServices:rootURL') + '/merges/stats?statsType=NUMBER_OF_MERGES_IN_LAST_12_MONTH')
+    .then(response => {
+      return res.status(HttpStatus.OK).json({
+        labels: Object.keys(response.numberOfMergesInLastTwelveMonth),
+        data: Object.values(response.numberOfMergesInLastTwelveMonth)
+      });
+    }).catch(e => {
       return errorResponse(res, e.data, e.status);
     });
-
 }
 
 function findMergesBetweenDates(req, createDateStart, createDateEnd) {
