@@ -422,7 +422,7 @@ router.beforeEach((to, _from, next) => {
         store.dispatch('auth/getUserInfo').then(() => {
           if (!authStore.state.isAuthorizedUser) {
             next('unauthorized');
-          } else if (to.meta.role && !authStore.getters[`auth/${to.meta.role}`]) {
+          } else if (to.meta.role && !store.getters[`auth/${to.meta.role}`]) {
             next('unauthorized-page');
           } else {
             next();
