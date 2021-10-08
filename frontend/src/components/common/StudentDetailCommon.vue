@@ -775,9 +775,6 @@ export default {
           this.showWarningAndDisableActionIfUpdatedStudentMatched(notificationData);
         }
       }
-    },
-    gradeCode(){
-      this.setGradeLabel();
     }
   },
   beforeRouteLeave(to, from, next) {
