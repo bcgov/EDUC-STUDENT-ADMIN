@@ -37,7 +37,7 @@
                                   :name="STUDENT_DETAILS_FIELDS.DEMOG_CODE"
                                   @changeStudentObjectValue="changeStudentObjectValue"
                                   :model="studentCopy.demogCode?studentCopy.demogCode:''"
-                                  :has-edits="hasEdits" tab-index="11" :revert-field="revertField"
+                                  :has-edits="hasEdits" tab-index="14" :revert-field="revertField"
                                   :items="getDemogCodeComboBox()" revert-id="revertDemogCode"
                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DEMOG_CODE)"></StudentDetailsComboBox>
           <StudentDetailsComboBox label="Document Type Code" colspan="1"
@@ -45,7 +45,7 @@
                                   @changeStudentObjectValue="changeStudentObjectValue"
                                   :model="studentCopy.documentTypeCode?studentCopy.documentTypeCode:''"
                                   :rules="validateDemogCode()"
-                                  :has-edits="hasEdits" tab-index="12" :revert-field="revertField"
+                                  :has-edits="hasEdits" tab-index="15" :revert-field="revertField"
                                   :items="getDocumentTypes()" revert-id="revertDocumentTypeCode"
                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE)"></StudentDetailsComboBox>
             <v-row no-gutters v-if="dateOfConfirmation" class="mb-2 pb-2">
@@ -101,7 +101,7 @@
           <StudentDetailsComboBox v-else label="Status" colspan="1" name="statusCode"
                                   @changeStudentObjectValue="changeStudentObjectValue"
                                   :model="studentCopy.statusCode?studentCopy.statusCode:''"
-                                  :has-edits="hasEdits" tab-index="12" :revert-field="revertField"
+                                  :has-edits="hasEdits" tab-index="16" :revert-field="revertField"
                                   :items="getStatusLevels()" revert-id="revertStatusCode"
 
                                   :disabled="isFieldDisabledWithReadOnly('statusCode')"></StudentDetailsComboBox>
@@ -161,30 +161,35 @@
 
 
           <!-- some fields cant be ported to child component, left as is-->
-          <v-row no-gutters class="py-1">
+          <v-row no-gutters dense class="py-1" style="max-height: 3em;">
             <v-col cols="2">
               <p class="labelField">Gender</p>
             </v-col>
-            <v-col cols="1" :class="{textFieldColumn: !genderError}">
-              <v-text-field
+            <v-col cols="1" v-on:mouseover="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)?hoveringGender=false:hoveringGender = true"
+                   v-on:mouseout="editingGender ? hoveringGender = true : hoveringGender = false">
+              <v-select
+                id="Gender"
                 tabindex="7"
-                v-on:keyup.tab="[editingGender = true, hoveringGender = true]"
-                v-on:mouseover="isFieldDisabledWithReadOnly('genderCode')?hoveringGender=false:hoveringGender = true"
-                v-on:mouseout="editingGender ? hoveringGender = true : hoveringGender=false"
-                v-on:blur="[editingGender = false, hoveringGender = false]"
-                v-on:click="[editingGender = true, hoveringGender = true]"
-                v-on:input="uppercaseGender()"
+                v-on:keyup.tab="[hoveringGender = true, hoveringGender = true]"
+                v-on:change="[editingGender = false, editingGender = false, setGenderLabel()]"
+                class="onhoverEdit bolder mb-0 customNoBorder py-0 "
+                :class="{darkBackgound: hoveringGender || hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE), 'gender-drop-down-fixed': !hoveringGender&&!editingGender}"
                 v-model="studentCopy.genderCode"
-                class="onhoverEdit bolder customNoBorder"
-                :class="{onhoverPad: !hoveringGender && !hasEdits('genderCode'), darkBackgound: hoveringGender || hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE)}"
-                :id='STUDENT_DETAILS_FIELDS.GENDER_CODE'
-                color="#000000"
-                :rules="validateGender()"
+                :items="genderCodes"
+                :outlined="hoveringGender || hoveringGender || hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
                 dense
-                maxlength="1"
-                :readonly="!hoveringGender || !editingGender"
-                :outlined="hoveringGender || editingGender || hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
-                :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
+                :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)"/>
+            </v-col>
+            <v-col cols="3" class="textFieldColumn gradeLabelColumn">
+              <v-text-field
+                class="onhoverEdit customNoBorder onhoverPad"
+                :value="genderLabel"
+                id='gradeLabel'
+                color="#000000"
+                dense
+                readonly
+                tabindex="-1"
+                :disabled="true"
               ></v-text-field>
             </v-col>
             <v-col class="textFieldColumn" cols="2">
@@ -201,7 +206,7 @@
             </v-col>
           </v-row>
 
-          <v-row no-gutters class="py-1">
+          <v-row no-gutters dense class="py-1 mb-1">
             <v-col cols="2">
               <div class="labelField">
                 <div style="display: inline-block;">
@@ -265,10 +270,25 @@
               ></v-text-field>
             </v-col>
           </v-row>
-          <StudentDetailsTextFieldReadOnly :model="studentCopy.gradeCode?studentCopy.gradeCode:''"
-                                           :name="STUDENT_DETAILS_FIELDS.GRADE_CODE" colspan="1" label="Grade"
-                                           :grade-level="gradeLabel"
-                                           :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GRADE_CODE)">
+          <v-row no-gutters dense class="py-1" style="max-height: 3em;">
+            <v-col cols="2">
+              <p class="labelField">Grade</p>
+            </v-col>
+            <v-col cols="1" v-on:mouseover="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GRADE_CODE)?hovering=false:hovering = true"
+                   v-on:mouseout="editing ? hovering = true : hovering = false">
+              <v-select
+                id="GradeCombo"
+                tabindex="9"
+                v-on:keyup.tab="[editing = true, hovering = true]"
+                v-on:change="[editing = false, hovering = false, setGradeLabel()]"
+                class="onhoverEdit bolder mb-0 customNoBorder py-0 "
+                :class="{darkBackgound: hovering || hasEdits(STUDENT_DETAILS_FIELDS.GRADE_CODE), 'grade-drop-down-fixed': !hovering&&!editing}"
+                v-model="studentCopy.gradeCode"
+                :items="gradeCodes"
+                :outlined="hovering || editing || hasEdits(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
+                dense
+                :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GRADE_CODE)"/>
+            </v-col>
             <v-col cols="3" class="textFieldColumn gradeLabelColumn">
               <v-text-field
                 class="onhoverEdit customNoBorder onhoverPad"
@@ -281,17 +301,31 @@
                 :disabled="true"
               ></v-text-field>
             </v-col>
-          </StudentDetailsTextFieldReadOnly>
+            <v-col >
+              <v-text-field
+                id="revertGradeCode"
+                v-on:click="revertField(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
+                class="onhoverEdit revert customNoBorder ml-3"
+                readonly
+                v-if="hasEdits(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
+                value="Revert"
+                dense
+                tabindex="-1"
+              ></v-text-field>
+            </v-col>
+          </v-row>
 
           <StudentDetailsTextFieldReadOnly :model="studentCopy.gradeYear?studentCopy.gradeYear:''"
                                            :name="STUDENT_DETAILS_FIELDS.GRADE_YEAR" colspan="1"
                                            label="Grade School Year"
                                            :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GRADE_YEAR)"></StudentDetailsTextFieldReadOnly>
 
-          <StudentDetailsTextFieldReadOnly :model="studentCopy.postalCode?studentCopy.postalCode:''"
-                                           :name="STUDENT_DETAILS_FIELDS.POSTAL_CODE"
-                                           colspan="2" label="Postal Code"
-                                           :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"></StudentDetailsTextFieldReadOnly>
+          <StudentDetailsTextField :model="studentCopy.postalCode?studentCopy.postalCode:''" @changeStudentObjectValue="changeStudentObjectValue"
+                                   :name="STUDENT_DETAILS_FIELDS.POSTAL_CODE"
+                                    colspan="2" label="Postal Code"
+                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
+                                   :has-edits="hasEdits" max-length="7" :revert-field="revertField" :async-messages="[]"
+                                   revert-id="revertPostalCode" tab-index="10"></StudentDetailsTextField>
 
           <v-row no-gutters class="py-1">
             <v-col cols="2">
@@ -299,7 +333,7 @@
             </v-col>
             <v-col cols="2" :class="{textFieldColumn: !mincodeError}">
               <FormattedTextField
-                tabindex="9"
+                tabindex="11"
                 @keyup.tab.native="[editingMincode = true, hoveringMincode = true]"
                 @mouseover.native="isFieldDisabledWithReadOnly('mincode')? hoveringMincode = false : hoveringMincode = true"
                 @mouseout.native="editingMincode ? hoveringMincode = true : hoveringMincode = false"
@@ -351,10 +385,13 @@
               ></v-text-field>
             </v-col>
           </v-row>
-          <StudentDetailsTextFieldReadOnly :model="studentCopy.localID?studentCopy.localID:''"
-                                           :name="STUDENT_DETAILS_FIELDS.LOCAL_ID"
-                                           colspan="2" label="Local ID"
-                                           :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.LOCAL_ID)"></StudentDetailsTextFieldReadOnly>
+          <StudentDetailsTextField :model="studentCopy.localID?studentCopy.localID:''" @changeStudentObjectValue="changeStudentObjectValue"
+                                   :name="STUDENT_DETAILS_FIELDS.LOCAL_ID"
+                                   colspan="2" label="Local ID"
+                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.LOCAL_ID)"
+                                   :has-edits="hasEdits" max-length="12" :revert-field="revertField" :async-messages="[]"
+                                   revert-id="revertLocalID" tab-index="12"> </StudentDetailsTextField>
+
 
           <StudentDetailsTemplateTextField v-if="possibleMatches.length > 0" colspan="2" label="Twin(s)?"
                                            :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.TWINS)">
@@ -395,7 +432,7 @@
             </v-col>
             <v-col class="textAreaColumn memo-style">
               <v-textarea
-                tabindex="10"
+                tabindex="13"
                 v-on:keyup.tab="[editingMemo = true, hoveringMemo = true]"
                 v-on:mouseover="isFieldDisabledWithReadOnly('memo')?hoveringMemo = false:hoveringMemo = true"
                 v-on:mouseout="editingMemo ? hoveringMemo = true : hoveringMemo = false"
@@ -437,7 +474,8 @@
         </v-card>
       </v-col>
       <v-col cols="1">
-        <CompareDemographicModal :clearOnExit="false" :disabled="hasSagaInProgress(this.origStudent) || !PROCESS_STUDENT_ROLE"
+        <CompareDemographicModal :clearOnExit="false"
+                                 :disabled="hasSagaInProgress(this.origStudent) || !PROCESS_STUDENT_ROLE"
                                  :selectedRecords.sync="compareStudent"></CompareDemographicModal>
       </v-col>
       <v-col cols="1">
@@ -674,6 +712,9 @@ export default {
       },
       saveStudentLoading: false,
       dateOfConfirmation: '',
+      gradeCodes: [],
+      genderLabels:[],
+      genderLabel:null,
     };
   },
   created() {
@@ -681,6 +722,8 @@ export default {
     this.demogLabels = this.demogCodeObjects ? this.demogCodeObjects.map(a => a.label) : [];
     this.statusLabels = this.statusCodeObjects ? this.statusCodeObjects.map(a => a.label) : [];
     this.gradeLabels = this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.label) : [];
+    this.gradeCodes = this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.gradeCode) : [];
+    this.genderLabels = this.genders ? this.genders.map(a => a.label) : [];
   },
   computed: {
     ...mapState('penRequestBatch', ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
@@ -733,6 +776,9 @@ export default {
         }
       }
     },
+    gradeCode(){
+      this.setGradeLabel();
+    }
   },
   beforeRouteLeave(to, from, next) {
     if (this.hasAnyEdits()) {
@@ -894,6 +940,7 @@ export default {
       this.updateDOBLabel(true);
       this.formatPostalCode();
       this.setGradeLabel();
+      this.setGenderLabel();
       this.getSchoolName(this.studentCopy.mincode);
       if (this.studentCopy.statusCode === STUDENT_CODES.MERGED) {
         this.setEnableDisableForFields(true, STUDENT_DETAILS_FIELDS.MERGED_TO, STUDENT_DETAILS_FIELDS.PEN);
@@ -940,6 +987,8 @@ export default {
         this.dateOfConfirmation = '';
         this.studentCopy[STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE] = null;
       }
+      this.setGradeLabel();
+      this.setGenderLabel();
     },
     revertDOBField(value) {
       this.revertField(value);
@@ -963,6 +1012,15 @@ export default {
     setGradeLabel() {
       if (this.studentCopy && this.studentCopy.gradeCode && this.gradeCodeObjects) {
         this.gradeLabel = this.gradeCodeObjects.filter(it => (it.gradeCode === this.studentCopy.gradeCode))[0].label;
+      }else {
+        this.gradeLabel='';
+      }
+    },
+    setGenderLabel(){
+      if (this.studentCopy && this.studentCopy.genderCode && this.genders) {
+        this.genderLabel = this.genders.filter(it => (it.genderCode === this.studentCopy.genderCode))[0]?.label;
+      }else {
+        this.genderLabel='';
       }
     },
     frontEndDOBFormat(date) {
@@ -1267,16 +1325,16 @@ export default {
       }
       return [];
     },
-    async updateDOC(){
-      this.saveStudentLoading=true;
+    async updateDOC() {
+      this.saveStudentLoading = true;
       try {
         const params = {
           penNumbersInOps: this.origStudent.pen
         };
         this.isStudentUpdatedInDifferentTab = false; //make sure that notification for current tab is ignored.
         const body = this.prepPut(this.studentCopy);
-        body.isDateOfConfirmationChanged=true;
-        const studentResponse = await ApiService.apiAxios.put(Routes['student'].ROOT_ENDPOINT + '/' + this.studentID, body , {params});
+        body.isDateOfConfirmationChanged = true;
+        const studentResponse = await ApiService.apiAxios.put(Routes['student'].ROOT_ENDPOINT + '/' + this.studentID, body, {params});
         this.fieldNames.forEach(value => this.enableDisableFieldsMap.set(value, false)); // enable all the fields here, required fields to be disabled will be done in this.setStudent method.
         this.setStudent(studentResponse.data);
         this.$emit('update:student', studentResponse.data);
@@ -1389,5 +1447,11 @@ export default {
 
 .student-details-tabs-style {
   text-transform: none;
+}
+.gender-drop-down-fixed{
+  margin-left: 0.8em;
+}
+.grade-drop-down-fixed{
+  margin-left: 0.8em;
 }
 </style>

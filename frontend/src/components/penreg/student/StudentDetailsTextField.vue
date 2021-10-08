@@ -1,5 +1,5 @@
 <template>
-  <v-row no-gutters class="py-1">
+  <v-row no-gutters dense class="py-1 mb-1">
     <v-col :cols="labelSpan">
       <p class="labelField">{{ this.fieldLabel }}</p>
     </v-col>
