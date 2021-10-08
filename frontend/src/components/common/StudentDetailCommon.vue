@@ -176,7 +176,7 @@
                 :class="{darkBackgound: hoveringGender || hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE), 'gender-drop-down-fixed': !hoveringGender&&!editingGender}"
                 v-model="studentCopy.genderCode"
                 :items="genderCodes"
-                :outlined="hoveringGender || hoveringGender || hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
+                :outlined="hoveringGender || editingGender || hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
                 dense
                 :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)"/>
             </v-col>
