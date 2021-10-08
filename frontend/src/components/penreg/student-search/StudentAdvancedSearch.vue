@@ -560,8 +560,3 @@ export default {
     margin-bottom: 0 !important;
   }
 </style>
-<style>
-.v-select__selections {
-  min-height: 30px
-}
-</style>
