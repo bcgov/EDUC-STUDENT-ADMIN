@@ -170,8 +170,8 @@
               <v-select
                 id="Gender"
                 tabindex="7"
-                v-on:keyup.tab="[hoveringGender = true, hoveringGender = true]"
-                v-on:change="[editingGender = false, editingGender = false, setGenderLabel()]"
+                v-on:keyup.tab="[hoveringGender = true, editingGender = true]"
+                v-on:change="[editingGender = false, hoveringGender = false, setGenderLabel()]"
                 class="onhoverEdit bolder mb-0 customNoBorder py-0 "
                 :class="{darkBackgound: hoveringGender || hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE), 'gender-drop-down-fixed': !hoveringGender&&!editingGender}"
                 v-model="studentCopy.genderCode"
