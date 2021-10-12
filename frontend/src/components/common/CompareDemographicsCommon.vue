@@ -297,9 +297,6 @@ export default {
   },
   methods: {
     equalsIgnoreCase,
-    sortStudent(){
-      this.selectedRecords = this.selectedRecords.sort(this.sortStudentRecordsForCompare);
-    },
     sortStudents(array){
       return array.sort(this.sortStudentRecordsForCompare);
     },
