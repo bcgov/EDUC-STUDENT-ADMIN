@@ -186,6 +186,7 @@ import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import {mapGetters} from 'vuex';
 import MergeStudentsModal from '@/components/common/MergeStudentsModal';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
+import sortWith from 'lodash';
 
 export default {
   name: 'CompareDemographicsCommon',
@@ -276,7 +277,6 @@ export default {
     };
   },
   mounted() {
-    _.sortBy(this.selectedRecords, o => o.pen);
     this.studentRecords.forEach(student => {
       this.getSldData(student.pen);
       if(student.trueStudentID) {
@@ -289,7 +289,7 @@ export default {
     ...mapGetters('notifications', ['notification']),
     studentRecords: {
       get: function() {
-        return _.sortBy(this.selectedRecords, o => o.pen);
+        return this.sortStudents(this.selectedRecords);
       },
       set: async function(value) {
         this.$emit('update:selectedRecords', value);
@@ -298,6 +298,24 @@ export default {
   },
   methods: {
     equalsIgnoreCase,
+    sortStudent(){
+      this.selectedRecords = this.selectedRecords.sort(this.sortStudentRecordsForCompare);
+    },
+    sortStudents(array){
+      return array.sort(this.sortStudentRecordsForCompare);
+    },
+    sortStudentRecordsForCompare(student1, student2){
+      let student1digit = student1.pen.substring(0,1);
+      let student2digit = student2.pen.substring(0,1);
+      //Determine which is the oldest, which will be mergedToPen
+      //If two PENs are merged and neither start with "1", or both start with "1" use the lowest number as the survivor
+      //If two PENs are merged and one starts with "1" and other starts with something else, the other is the survivor
+      if((student1digit == '1' && student2digit == '1') || (student1digit != '1' && student2digit != '1')) {
+        return (student1.pen > student2.pen) ? 1 : -1;
+      } else {
+        return (student1.pen < student2.pen) ? 1 : -1;
+      }
+    },
     addPEN() {
       const isRecordAlreadyAdded = this.studentRecords.find(el => el.pen === this.penToAdd);
       if (isRecordAlreadyAdded) {
@@ -308,6 +326,7 @@ export default {
       const student = this.studentDataMap.get(this.penToAdd);
       if (student) {
         this.studentRecords.push(student);
+        console.log('Students: ' + this.studentRecords);
         this.studentRecords = _.sortBy(this.studentRecords, o => o.pen);
         this.penToAdd = null;
         this.truePenMessage = null;
