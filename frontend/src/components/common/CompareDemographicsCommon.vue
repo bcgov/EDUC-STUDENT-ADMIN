@@ -186,7 +186,6 @@ import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import {mapGetters} from 'vuex';
 import MergeStudentsModal from '@/components/common/MergeStudentsModal';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
-import sortWith from 'lodash';
 
 export default {
   name: 'CompareDemographicsCommon',
