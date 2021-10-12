@@ -322,7 +322,6 @@ export default {
       const student = this.studentDataMap.get(this.penToAdd);
       if (student) {
         this.studentRecords.push(student);
-        console.log('Students: ' + this.studentRecords);
         this.studentRecords = _.sortBy(this.studentRecords, o => o.pen);
         this.penToAdd = null;
         this.truePenMessage = null;
