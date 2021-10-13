@@ -3,13 +3,13 @@
     <v-toolbar flat dense>
       <v-toolbar-title><strong>{{title}}</strong></v-toolbar-title>
       <v-spacer/>
-      <PrimaryButton id="add-macro" text="Add Macro" short :disabled="!this.selected || loading" @click.native="clickAddBtn"></PrimaryButton>
+      <PrimaryButton id="add-macro" text="Add Macro" short :disabled="!this.selected || loading || processing" @click.native="clickAddBtn"></PrimaryButton>
     </v-toolbar>
     <v-divider></v-divider>
     <v-progress-linear
       indeterminate
       color="blue"
-      :active="loading"
+      :active="loading || processing"
     ></v-progress-linear>
     <v-row>
       <v-col>
@@ -44,7 +44,8 @@
                     <MacroEditor
                       :macro="macro"
                       short
-                      :loading="loading"
+                      :loading="macro.sagaInProgress"
+                      :disabled="loading || processing"
                       @cancel="clickCancel"
                       @save="updateMacro"
                     />
@@ -76,7 +77,7 @@
           class="pb-4 px-4"
           :macro="newMacro"
           rows="10"
-          :loading="loading"
+          :loading="processing"
           @cancel="macroDialogOpen=false"
           @save="createMacro"
         />
@@ -95,6 +96,7 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex';
 import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton';
 import ApiService from '../../common/apiService';
@@ -114,80 +116,75 @@ export default {
   data() {
     return {
       active: [],
-      gmpMacroTypes:[],
-      umpMacroTypes:[],
-      penRegMacroTypes:[
-        {
-          id: 'penReg-merge',
-          name: 'Merge',
-          url: Routes.penServices.MACRO_URL,
-          key: 'mergeMacros', 
-          macros: [],
-          storeMutation: 'student/setMergeMacros'
-        },
-        {
-          id: 'penReg-postInfo',
-          name: 'Post Info',
-          url: Routes.penRequestBatch.STUDENT_INFO_MACROS_URL,
-          macros: [],
-          storeMutation: 'penRequestBatch/setStudentInfoMacros'
-        }
-      ],
+      gmpMacros:[],
+      umpMacros:[],
+      penRegMacros:[],
       loading: false,
+      processing: false,
       macroDialogOpen: false,
       newMacro: {},
       currentActive: [],
       currentMacro: null,
       originalMacro: null,
+      itemInProcess: null,
     };
   },
   computed: {
+    ...mapGetters('notifications', ['notification']),
     items () {
       return [
         {
           id: 'gmp',
           name: 'Get My PEN',
-          url: Routes.penRequest.MACRO_URL,
-          keys: {
-            returnMacros: {
+          macroTypes: {
+            MOREINFO: {
               name: 'Request Info',
               storeMutation: 'penRequest/setReturnMacros'
             },
-            rejectMacros: {
+            REJECT: {
               name: 'Reject',
               storeMutation: 'penRequest/setRejectMacros'
             },
-            completeMacros: {
+            COMPLETE: {
               name: 'Provide PEN',
               storeMutation: 'penRequest/setCompleteMacros'
             },
           },
-          children: this.gmpMacroTypes,
+          children: this.gmpMacros,
         },
         {
           id: 'ump',
           name: 'Update My PEN',
-          url: Routes.studentRequest.MACRO_URL,
-          keys: {
-            returnMacros: {
+          macroTypes: {
+            MOREINFO: {
               name: 'Request Info',
               storeMutation: 'studentRequest/setReturnMacros'
             },
-            rejectMacros: {
+            REJECT: {
               name: 'Reject',
               storeMutation: 'studentRequest/setRejectMacros'
             },
-            completeMacros: {
+            COMPLETE: {
               name: 'Send Updates',
               storeMutation: 'studentRequest/setCompleteMacros'
             },
           },
-          children: this.umpMacroTypes,
+          children: this.umpMacros,
         },
         {
           id: 'penReg',
           name: 'PEN Registry',
-          children: this.penRegMacroTypes,
+          macroTypes: {
+            MERGE: {
+              name: 'Merge',
+              storeMutation: 'student/setMergeMacros'
+            },
+            INFOREQ: {
+              name: 'Post Info',
+              storeMutation: 'penRequestBatch/setStudentInfoMacros'
+            },
+          },
+          children: this.penRegMacros,
         },
       ];
     },
@@ -212,9 +209,18 @@ export default {
     }
   },
   watch: {
-    selected(v) {
-      if(v && v.macros.length === 0) {  //fetch penReg macros when intiallly selecting penReg macros
-        this.loadMacros(v);
+    notification(val) {
+      if (val) {
+        const notificationData = val;
+        if (this.itemInProcess && notificationData && this.itemInProcess.sagaId === notificationData.sagaId  && notificationData.sagaStatus === 'COMPLETED') {
+          if (notificationData.sagaName === 'MACRO_UPDATE_SAGA') {
+            this.setSuccessAlert('Success! Your request to update macro data is completed.');
+          } else if (notificationData.sagaName === 'MACRO_CREATE_SAGA') {
+            this.setSuccessAlert('Success! Your request to add new macro is completed.');
+          }
+          this.processing = false;
+          this.loadMacrosByMacroType(this.itemInProcess.item);
+        }
       }
     },
   },
@@ -224,33 +230,56 @@ export default {
   methods: {
     async loadMacros(item) {
       this.loading = true;
+      const params = {
+        params: {
+          businessUseTypeCode: item.id.toUpperCase()
+        }
+      };
       return ApiService.apiAxios
-        .get(item.url)
+        .get(Routes.MACRO_URL, params)
         .then(response => {
           if (response.data) {
-            if(item.children) {  //fetch gump macros
-              const children = []; 
-              Object.entries(item.keys).forEach(([key, value]) => {
-                this.$store.commit(value.storeMutation, deepCloneObject(response.data[key]));
+            const children = []; 
+            const macros = _.groupBy(response.data, 'macroTypeCode');
+            Object.entries(item.macroTypes).forEach(([macroTypeCode, value]) => {
+              this.$store.commit(value.storeMutation, deepCloneObject(macros[macroTypeCode]));
 
-                response.data[key].forEach(macro => macro.editable = false);
-                children.push({
-                  id: `${item.id}-${key}`, 
-                  name: value.name, 
-                  macros: _.sortBy(response.data[key], ['macroCode']), 
-                  url: item.url, 
-                  key, 
-                  storeMutation: value.storeMutation
-                });
+              macros[macroTypeCode].forEach(macro => macro.editable = false);
+              children.push({
+                id: `${item.id}-${macroTypeCode}`, 
+                name: value.name, 
+                macros: _.sortBy(macros[macroTypeCode], ['macroCode']), 
+                businessUseTypeCode: item.id.toUpperCase(),
+                macroTypeCode, 
+                storeMutation: value.storeMutation
               });
-              item.children.push(...children);
-            } else {  //fetch penReg macros or one type of gump macros
-              const macros = item.key ? response.data[item.key] : response.data;
-              this.$store.commit(item.storeMutation, deepCloneObject(macros));
+            });
+            item.children.push(...children);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          this.setFailureAlert('An error occurred while loading the macro data. Please try again later.');
+        })
+        .finally(() => (this.loading = false));      
+    },
+    async loadMacrosByMacroType(item) {
+      this.loading = true;
+      const params = {
+        params: {
+          businessUseTypeCode: item.businessUseTypeCode,
+          macroTypeCode: item.macroTypeCode
+        }
+      };
+      return ApiService.apiAxios
+        .get(Routes.MACRO_URL, params)
+        .then(response => {
+          if (response.data) {
+            const macros = response.data;
+            this.$store.commit(item.storeMutation, deepCloneObject(macros));
 
-              macros.forEach(macro => macro.editable = false);
-              item.macros = _.sortBy(macros, ['macroCode']);
-            }
+            macros.forEach(macro => macro.editable = false);
+            item.macros = _.sortBy(macros, ['macroCode']);
           }
         })
         .catch(error => {
@@ -325,42 +354,55 @@ export default {
       });
     },
     updateMacro(macro) {
-      this.loading = true;
+      this.processing = true;
+      macro.sagaInProgress = true;
       const activeItem = this.activeItem;
-      return ApiService.apiAxios.put(`${this.activeItem.url}/${macro.macroId}`, macro)
-        .then(() => {
+      return ApiService.apiAxios.post(`${Routes.MACRO_URL}/${macro.macroId}/updateMacro`, macro)
+        .then((response) => {
           this.resetCurrentMacro();
-          this.loadMacros(activeItem);
-          this.setSuccessAlert('Macro data updated successfully.');
+          this.setSuccessAlert('Your request to update macro data is accepted.');
+          this.itemInProcess = {
+            sagaId: response.data,
+            item: activeItem
+          };
         })
         .catch(error => {
-          this.setFailureAlert('An error occurred while updating the Macro data. Please try again later.');
           console.log(error);
-        })
-        .finally(() => {
-          this.loading = false;
+          this.processing = false;
+          macro.sagaInProgress = false;
+          if (error?.response?.status === 409 && error?.response?.data?.message) {
+            this.setFailureAlert(error?.response?.data?.message);
+          } else {
+            this.setFailureAlert('An error occurred while updating the macro data. Please try again later.');
+          }
         });
     },
     createMacro(macro) {
-      this.loading = true;
+      this.processing = true;
 
       if(this.activeItem.macros.length > 0 && this.activeItem.macros[0].macroTypeCode) {
         macro.macroTypeCode = this.activeItem.macros[0].macroTypeCode;
+        macro.businessUseTypeCode = this.activeItem.macros[0].businessUseTypeCode;
       }
       const activeItem = this.activeItem;
 
-      return ApiService.apiAxios.post(this.activeItem.url, macro)
+      return ApiService.apiAxios.post(`${Routes.MACRO_URL}/createMacro`, macro)
         .then((response) => {
           this.macroDialogOpen = false;
-          this.loadMacros(activeItem);
-          this.setSuccessAlert(`New Macro ${response.data.macroCode} added successfully.`);
+          this.setSuccessAlert('Your request to add new macro is accepted.');
+          this.itemInProcess = {
+            sagaId: response.data,
+            item: activeItem
+          };
         })
         .catch(error => {
-          this.setFailureAlert('An error occurred while adding the Macro data. Please try again later.');
           console.log(error);
-        })
-        .finally(() => {
-          this.loading = false;
+          this.processing = false;
+          if (error?.response?.status === 409 && error?.response?.data?.message) {
+            this.setFailureAlert(error?.response?.data?.message);
+          } else {
+            this.setFailureAlert('An error occurred while adding the macro data. Please try again later.');
+          }
         });
     },
   }

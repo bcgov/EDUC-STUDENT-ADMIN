@@ -157,7 +157,7 @@ router.get('/user', passport.authenticate('jwt', {session: false}), (req, res) =
   }
   const userName = {
     userName: userToken['idir_username'],
-    userGuid: userToken.preferred_username.toUpperCase(),
+    userGuid: userToken['idir_guid'].toUpperCase(),
     userRoles: userToken.realm_access.roles
   };
 

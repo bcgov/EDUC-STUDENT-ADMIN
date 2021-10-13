@@ -77,29 +77,36 @@
           </v-row>
         </v-col>
       </v-row>
-      <v-row no-gutters class="textFieldRow">
+      <v-row dense no-gutters class="textFieldRow">
         <v-col class="mr-n8 mt-2" cols="3">Gender</v-col>
-        <v-col cols="1" id="genderCol">
-          <v-text-field id="gender" dense filled outlined
+        <v-col cols="2" id="genderCol">
+          <v-select
             v-model="studentSearchParams.genderCode"
-            @keyup.enter="enterPushed()"
-            v-on:input="[searchHasValues(),uppercaseGender(), $emit('valueChange')]"
-            maxlength="1"
-            :rules="validateGender()">
-          </v-text-field>
+            :items="genders"
+            item-text="genderCode"
+            item-value="genderCode"
+            style="max-width: 5em"
+            outlined
+            filled
+            dense
+            v-on:change="[searchHasValues(),$emit('valueChange')]">
+          </v-select>
         </v-col>
       </v-row>
       <v-row no-gutters class="textFieldRow">
         <v-col class="mr-n8 mt-2" cols="3">Grade</v-col>
-        <v-col cols="1">
-          <v-text-field dense filled outlined
-            id="gradeCode"
-            v-model="studentSearchParams.gradeCode"
-            maxlength="2"
-            @keyup.enter="enterPushed()"
-            v-on:input="[searchHasValues(), uppercaseGrade(), $emit('valueChange')]"
-            :rules="validateGradeCode()">
-          </v-text-field>
+        <v-col cols="2">
+          <v-select
+              v-model="studentSearchParams.gradeCode"
+              :items="gradeCodes"
+              item-text="gradeCode"
+              item-value="gradeCode"
+              style="max-width: 5em"
+              outlined
+              filled
+              dense
+              v-on:change="[searchHasValues(),$emit('valueChange')]">
+          </v-select>
         </v-col>
       </v-row>
       <v-row no-gutters class="textFieldRow">
@@ -289,8 +296,12 @@ export default {
       type: Function,
       required: true
     },
-    validateGender: {
-      type: Function,
+    genders: {
+      type: Array,
+      required: true
+    },
+    gradeCodes: {
+      type: Array,
       required: true
     },
     validateMincode: {
@@ -306,10 +317,6 @@ export default {
       required: true
     },
     validatePostal: {
-      type: Function,
-      required: true
-    },
-    validateGradeCode: {
       type: Function,
       required: true
     },

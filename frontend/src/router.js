@@ -30,6 +30,10 @@ import CompareStudents from './components/CompareStudents';
 import PenCoordinatorsDisplay from './components/penreg/coordinator/PenCoordinatorsDisplay';
 import MacrosDisplay from './components/admin/MacrosDisplay';
 import NominalRoll from './components/admin/NominalRoll';
+import StatsDashboard from './components/admin/stats/StatsDashboard';
+import NewPENs from './components/admin/stats/NewPENs';
+import GUMPStatsLanding from '@/components/admin/stats/GUMPStatsLanding';
+import Merges from '@/components/admin/stats/Merges';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -342,7 +346,70 @@ const router = new VueRouter({
       path: '/token-expired',
       name: 'backend-session-expired',
       component: BackendSessionExpired
+    },
+    {
+      path: '/analytics',
+      component: RouterView,
+      children: [
+        {
+          path: '',
+          name: 'stats-dashboard',
+          component: StatsDashboard,
+          meta: {
+            pageTitle: PAGE_TITLES.STATS_DASHBOARD,
+            requiresAuth: true,
+            role: 'STAFF_ADMINISTRATION_ADMIN'
+          }
+        },
+        {
+          path: 'gmp-stats',
+          name: 'analytics-gmp-stats',
+          component: GUMPStatsLanding,
+          props: {
+            requestType: 'gmp',
+          },
+          meta: {
+            pageTitle: PAGE_TITLES.GMP_STATS,
+            requiresAuth: true,
+            role: 'STAFF_ADMINISTRATION_ADMIN'
+          }
+        },
+        {
+          path: 'ump-stats',
+          name: 'analytics-ump-stats',
+          component: GUMPStatsLanding,
+          props: {
+            requestType: 'ump',
+          },
+          meta: {
+            pageTitle: PAGE_TITLES.UMP_STATS,
+            requiresAuth: true,
+            role: 'STAFF_ADMINISTRATION_ADMIN'
+          }
+        },
+        {
+          path: 'new-pens',
+          name: 'new-pens',
+          component: NewPENs,
+          meta: {
+            pageTitle: PAGE_TITLES.NEW_PENS,
+            requiresAuth: true,
+            role: 'STAFF_ADMINISTRATION_ADMIN'
+          },
+        },
+        {
+          path: 'merges',
+          name: 'merges',
+          component: Merges,
+          meta: {
+            pageTitle: PAGE_TITLES.VIEW_MERGES,
+            requiresAuth: true,
+            role: 'STAFF_ADMINISTRATION_ADMIN'
+          },
+        },
+      ],
     }
+
   ]
 });
 
@@ -355,7 +422,7 @@ router.beforeEach((to, _from, next) => {
         store.dispatch('auth/getUserInfo').then(() => {
           if (!authStore.state.isAuthorizedUser) {
             next('unauthorized');
-          } else if (to.meta.role && !authStore.getters[`${to.meta.role}`]) {
+          } else if (to.meta.role && !store.getters[`auth/${to.meta.role}`]) {
             next('unauthorized-page');
           } else {
             next();

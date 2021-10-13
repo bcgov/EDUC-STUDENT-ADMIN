@@ -5,13 +5,12 @@ const auth = require('../components/auth');
 const utils = require('../components/utils');
 const atomicStudentUpdate = require('../middlewares/atomic-student-update');
 const { createStudentRequestApiServiceReq, getUMPRequestStats, returnProfileRequest, rejectProfileRequest, completeProfileRequest } = require('../components/studentRequests');
-const { getAllRequests, getMacros, getRequestById, getRequestCommentById, putRequest } = require('../components/requests');
-const roles = require('../components/roles');
+const { getAllRequests, getRequestById, getRequestCommentById, putRequest } = require('../components/requests');
+
 const { getDocuments, getDocumentById, updateDocumentTypeById } = require('../components/documents');
 
 const requestType = 'studentRequest';
 const verifyStudentRequestInSession = utils.verifyRequestInSession(requestType);
-const hasMacroRoles = auth.isValidUiTokenWithRoles('UMP & StaffAdministration', [...roles.User.UMP, ...roles.User.StaffAdministration]);
 
 /**
  * Gets all the comments for a request by request id
@@ -27,17 +26,6 @@ router.put('/', passport.authenticate('jwt', {session: false}, undefined), auth.
  * Get all requests
  */
 router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPUserToken, getAllRequests(requestType));
-
-/*
- * Get all requests for a given pen number in the query parameter.
- */
-//router.get('/duplicateRequests', passport.authenticate('jwt', {session: false}, undefined), auth.isValidAdminToken, findPenRequestsByPen);
-
-router.get('/macros', passport.authenticate('jwt', {session: false}, undefined), hasMacroRoles, getMacros(requestType));
-
-router.put('/macros/:macroId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStaffAdministrationAdmin, utils.updateMacroByMacroId(`server:${requestType}:macrosURL`));
-
-router.post('/macros', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStaffAdministrationAdmin, utils.createMacro(`server:${requestType}:macrosURL`));
 
 //Returns the number of pen requests in initial and subsequent review
 router.get('/stats', passport.authenticate('jwt', {session: false}, undefined), auth.isValidUMPUserToken, getUMPRequestStats);

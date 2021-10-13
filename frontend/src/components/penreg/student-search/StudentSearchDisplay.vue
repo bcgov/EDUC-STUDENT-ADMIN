@@ -30,13 +30,13 @@
               :searchHasValues="searchHasValues"
               :validatePen="validatePen"
               :uppercaseGender="uppercaseGender"
-              :validateGender="validateGender"
+              :genders="genderMap"
+              :gradeCodes="gradesMap"
               :validateMincode="validateMincode"
               :uppercasePostal="uppercasePostal"
               :uppercaseGrade="uppercaseGrade"
               :useDOB.sync="useDOB"
               :validatePostal="validatePostal"
-              :validateGradeCode="validateGradeCode"
               :initialSearch="initialSearch"
               @valueChange="handleValueChange"
             >
@@ -51,7 +51,7 @@
               <PrimaryButton id="perform-search" :disabled="!searchEnabled" :loading="searchLoading"
                              @click.native="searchStudent(true)" text="Search"></PrimaryButton>
             </v-row>
-            <v-row v-if="this.studentSearchResponse" no-gutters class="py-2" style="background-color:white;">
+            <v-row v-if="this.studentSearchResponse" no-gutters class="pt-3" style="background-color:white;">
               <v-divider class="mx-3"/>
             </v-row>
             <v-row v-if="this.studentSearchResponse" id="resultsRow" no-gutters class="py-2"
@@ -143,8 +143,14 @@ export default {
     genderCodes() {
       return this.genders ? this.genders.map(a => a.genderCode) : [];
     },
+    genderMap() {
+      return this.genders ? this.genders : [];
+    },
     gradeCodes() {
       return this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.gradeCode) : [];
+    },
+    gradesMap() {
+      return this.gradeCodeObjects ? this.gradeCodeObjects : [];
     },
     charRules() {
       return [

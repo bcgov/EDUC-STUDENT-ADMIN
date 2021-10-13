@@ -281,7 +281,7 @@ async function addSagaStatusToRecords(records, recordIdName, getSagaEvents) {
   });
 }
 
-function forwardGet(apiName, urlKey, extraPath) {
+function forwardGet(apiName, urlKey, extraPath, handleResponse) {
   return async function forwardGetHandler(req, res) {
     const token = getBackendToken(req);
     try {
@@ -291,64 +291,13 @@ function forwardGet(apiName, urlKey, extraPath) {
 
       const url = config.get(urlKey);
       const data = await getData(token, extraPath ? `${url}${extraPath}` : url, params);
+      if(handleResponse && data) {
+        await handleResponse(data);
+      }
+
       return res.status(200).json(data);
     } catch (e) {
       logApiError(e, 'forwardGet', `Error getting ${apiName}.`);
-      return errorResponse(res);
-    }
-  };
-}
-
-function updateMacroByMacroId(urlKey, extraPath='') {
-  return async function updateMacroHandler(req, res) {
-    try {
-      const token = utils.getBackendToken(req);
-      utils.stripAuditColumns(req.body);
-
-      const url = `${config.get(urlKey)}${extraPath}/${req.params.macroId}`;
-      const macroRes = await putData(token, url, req.body, utils.getUser(req).idir_username);
-      return res.status(200).json(macroRes);
-    } catch (e) {
-      logApiError(e, 'updateMacroByMacroId', 'Error updating a Macro.');
-      return errorResponse(res);
-    }
-  };
-}
-
-function genRandomMacroCode(length = 3) {
-  let result = '';
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const charsLength = chars.length;
-  for ( let i = 0; i < length; i++ ) {
-    result += chars.charAt(Math.floor(Math.random() * charsLength));
-  }
-  return result;
-}
-
-function createMacroCode(macros, macroTypeCode) {
-  let macroCode;
-  do {
-    macroCode = genRandomMacroCode();
-  } while(macros.some(macro => macro.macroCode === macroCode && macro.macroTypeCode === macroTypeCode));
-  return macroCode;
-}
-
-function createMacro(urlKey, extraPath='') {
-  return async function createMacroHandler(req, res) {
-    try {
-      const token = utils.getBackendToken(req);
-      const newMacro = req.body;
-      utils.stripAuditColumns(newMacro);
-
-      const url = `${config.get(urlKey)}${extraPath}`;
-
-      const currentMacros = await getData(token, url);
-      newMacro.macroCode = createMacroCode(currentMacros, newMacro.macroTypeCode);
-
-      const macroRes = await postData(token, url, newMacro, null, utils.getUser(req).idir_username);
-      return res.status(200).json(macroRes);
-    } catch (e) {
-      logApiError(e, 'createMacro', 'Error creating a Macro.');
       return errorResponse(res);
     }
   };
@@ -468,6 +417,8 @@ const utils = {
   verifyRequestInSession(requestType) {
     const requestIDName = `${requestType}ID`;
     return function verifyRequestInSessionHandler(req, res, next) {
+      log.debug('request body is', req.body);
+      log.debug('req[\'session\'].penRequest is', req['session'].penRequest);
       if (req && req.body && req['session'] && req['session'].penRequest && req.body[requestIDName] === req['session'].penRequest[requestIDName]) {
         return next();
       }
@@ -477,6 +428,12 @@ const utils = {
       });
     };
   },
+  /**
+  * This function will modify the session by changing `tempSessionExtensionIdentifier`. 
+  * Please be CAREFUL when using this with parallel api calls from UI Side, when you want to store some data in session in one of the api calls.
+  * more documentation found here https://github.com/expressjs/session#readme, look at the resave section.
+  * even though our app uses `resave:false` modifying session in parallel api calls will have race condition, which will lead to undesired outcomes based on api call finish times.
+  */
   extendSession() {
     return function (req, res, next) {
       if (req && req.session) {
@@ -548,8 +505,6 @@ const utils = {
   deleteDataWithBody,
   addSagaStatusToRecords,
   forwardGet,
-  updateMacroByMacroId,
-  createMacro
 };
 
 module.exports = utils;
