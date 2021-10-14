@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "The backend portion of the Student Administration ruest web app",
   "scripts": {
-    "serve": "npm run setlocal && npm run servecmd",
+    "serve": "npm run setlocal && npm run servecmd --port 8061",
     "setlocal": "set NODE_ENV=local",
     "servecmd": "nodemon --max-old-space-size=250 ./src/server.js",
     "serve-linux": "export NODE_ENV=local && nodemon ./src/server.js",
