@@ -651,6 +651,8 @@ export default {
       if (mincode?.length > 5) {
         if (mincode.substring(3, 5) === '90') { // summer school
           return true;
+        } else if(mincode === '10200030') { // SFAS
+          return true;
         }
       }
       return false;
