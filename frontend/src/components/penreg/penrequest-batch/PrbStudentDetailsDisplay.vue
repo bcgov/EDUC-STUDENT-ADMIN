@@ -649,9 +649,7 @@ export default {
     isNewPenDisabledForSchool(){
       const mincode = this.batchFile?.mincode;
       if (mincode?.length > 5) {
-        if (mincode.substring(3, 5) === '90') { // summer school
-          return true;
-        } else if(mincode === '10200030') { // SFAS
+        if (mincode.substring(3, 5) === '90' || mincode === '10200030') { // summer school and sfas
           return true;
         }
       }
