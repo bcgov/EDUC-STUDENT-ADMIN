@@ -116,8 +116,6 @@ export default {
         this.dialog = false;
         this.loading = false;
       }
-    },
-    clearSearch() {
     }
   }
 };

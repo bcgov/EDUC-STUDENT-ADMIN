@@ -2,7 +2,6 @@
   <v-card class="document-upload">
 
     <v-card-title><h3>Document Upload</h3></v-card-title>
-    <!-- <v-card-text> -->
     <v-form
       ref="form"
       v-model="validForm"
@@ -92,9 +91,6 @@ export default {
     },
   },
   methods: {
-    setUploadedDocument(document) {
-      this.$store.commit(`${this.requestType}/setUploadedDocument`, document);
-    },
     closeForm() {
       this.resetForm();
       this.$emit('close:form');
@@ -162,17 +158,6 @@ export default {
       this.resetForm();
       this.$emit('close:form');
     },
-    makefileFormatList(extensions) {
-      extensions = extensions.map(v => v.split(new RegExp('/'))[1]).filter(v => v).map(v => v.toUpperCase());
-      if(extensions.length <= 2) {
-        return extensions.join(' and ');
-      } else {
-        const lastTwo = extensions.splice(-2, 2).join(', and ');
-        extensions.push(lastTwo);
-        return extensions.join(', ');
-      }
-    },
-
   },
 };
 </script>
@@ -189,10 +174,10 @@ export default {
 }
 
 p{
-  padding-top: 10px
+  padding-top: 10px;
 }
 ul{
-  width: 100%
+  width: 100%;
 }
 
 .v-input{
@@ -203,7 +188,7 @@ ul{
   padding-top: 0;
   color: #666666;
   margin-left: 1.7rem;
-  font-size: 0.8rem
+  font-size: 0.8rem;
 }
 
 .v-text-field__details{
