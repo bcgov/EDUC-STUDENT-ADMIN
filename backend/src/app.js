@@ -12,7 +12,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const utils = require('./components/utils');
 const auth = require('./components/auth');
-
+const bodyParser = require('body-parser');
 dotenv.config();
 
 const JWTStrategy = require('passport-jwt').Strategy;
@@ -37,6 +37,7 @@ const schoolsRouter = require('./routes/schools');
 const penTraxRouter = require('./routes/penTrax');
 const macroRouter = require('./routes/macro');
 const analyticsRouter = require('./routes/analytics-router');
+const nominalRollRouter = require('./routes/nominal-roll');
 const promMid = require('express-prometheus-middleware');
 const Redis = require('./util/redis/redis-client');
 Redis.init(); // call the init to initialize appropriate client, and reuse it across the app.
@@ -61,9 +62,10 @@ app.use(promMid({
 }));
 
 //tells the app to use json as means of transporting data
-app.use(express.json());
-app.use(express.urlencoded({
-  extended: false
+app.use(bodyParser.json({ limit: '50mb', extended: true }));
+app.use(bodyParser.urlencoded({
+  extended: true,
+  limit: '50mb'
 }));
 const logStream = {
   write: (message) => {
@@ -167,6 +169,7 @@ apiRouter.use('/schools', schoolsRouter);
 apiRouter.use('/penTrax', penTraxRouter);
 apiRouter.use('/macros', macroRouter);
 apiRouter.use('/analytics', analyticsRouter);
+apiRouter.use('/nominal-roll', nominalRollRouter);
 
 // Prevent unhandled errors from crashing application
 process.on('unhandledRejection', err => {

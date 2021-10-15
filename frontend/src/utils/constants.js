@@ -11,6 +11,8 @@ const schoolRequestRoot = baseRoot + '/schools';
 const penTraxRoot = baseRoot + '/penTrax';
 const penMatchRoot = baseRoot + '/penMatches';
 const macroRoot = baseRoot + '/macros';
+const nominalRollRoot= baseRoot+'/nominal-roll';
+
 let object = {
   LOGIN: authRoot + '/login',
   LOGOUT: authRoot + '/logout',
@@ -93,6 +95,9 @@ let object = {
     POSSIBLE_MATCH_REASON_CODES: penMatchRoot + '/possible-match-reason-codes'
   },
   MACRO_URL: macroRoot,
+  nominalRoll:{
+    ROOT_ENDPOINT: nominalRollRoot
+  },
 };
 
 //endpoints
@@ -334,7 +339,7 @@ export const PAGE_TITLES = Object.freeze(
     GMP_STATS: 'GMP Stats',
     UMP_STATS: 'UMP Stats',
     STATS_DASHBOARD: 'Student and System Analytics',
-    VIEW_MERGES:'View Merges',
+    VIEW_MERGES: 'View Merges',
   }
 );
 
