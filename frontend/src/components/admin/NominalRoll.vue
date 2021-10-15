@@ -87,8 +87,7 @@ export default {
   },
   async mounted() {
     try {
-      const res = await ApiService.apiAxios.get(Routes.nominalRoll.ROOT_ENDPOINT);
-
+      await ApiService.apiAxios.get(Routes.nominalRoll.ROOT_ENDPOINT);
     } catch (e) {
       if (e.response?.status === 404) {
         this.dialog = true; // there is no file in process show the dialog to upload a new file.
@@ -101,7 +100,7 @@ export default {
   },
   methods: {
     async processNominalRollStudents() {
-
+      console.info('to be implemented');
     },
     async upload(document) {
       try {
