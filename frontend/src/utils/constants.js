@@ -95,7 +95,6 @@ let object = {
     POSSIBLE_MATCH_REASON_CODES: penMatchRoot + '/possible-match-reason-codes'
   },
   MACRO_URL: macroRoot,
-  },
   nominalRoll:{
     ROOT_ENDPOINT: nominalRollRoot
   },
@@ -340,7 +339,7 @@ export const PAGE_TITLES = Object.freeze(
     GMP_STATS: 'GMP Stats',
     UMP_STATS: 'UMP Stats',
     STATS_DASHBOARD: 'Student and System Analytics',
-    VIEW_MERGES:'View Merges',
+    VIEW_MERGES: 'View Merges',
   }
 );
 

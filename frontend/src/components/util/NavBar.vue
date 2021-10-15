@@ -151,7 +151,7 @@ export default {
           },
           {
             title: 'Nominal Roll',
-            link: 'nominalRoll',
+            link: 'nominal-roll',
             authorized: this.NOMINAL_ROLL_ROLE
           }
         ],

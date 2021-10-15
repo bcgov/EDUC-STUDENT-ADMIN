@@ -277,8 +277,8 @@ const router = new VueRouter({
       },
     },
     {
-      path: '/nominalRoll',
-      name: 'nominalRoll',
+      path: '/nominal-roll',
+      name: 'nominal-roll',
       component: NominalRoll,
       meta: {
         pageTitle: PAGE_TITLES.NOMINAL_ROLL,
