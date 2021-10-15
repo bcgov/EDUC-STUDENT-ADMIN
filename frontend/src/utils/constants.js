@@ -70,7 +70,7 @@ let object = {
   student: {
     ROOT_ENDPOINT: studentRoot,
     SEARCH_URL: studentRoot + '/search',
-    GENDER_CODE_URL: studentRoot + '/genderCodes',
+    GENDER_CODE_URL: studentRoot + '/activeGenderCodes',
     DEMOG_CODE_URL: studentRoot + '/demogCodes',
     STATUS_CODE_URL: studentRoot + '/statusCodes',
     GRADE_CODE_URL: studentRoot + '/gradeCodes',

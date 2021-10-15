@@ -312,7 +312,6 @@ const utils = {
     }
     return discovery;
   },
-
   getUser(req) {
     const thisSession = req.session;
     if (thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt) {
@@ -354,6 +353,25 @@ const utils = {
     return data;
   },
   //keys = ['identityTypeCodes', 'penStatusCodes', 'studentRequestStatusCodes']
+  getActiveCodes(urlKey, cacheKey) {
+    return async function getActiveCodesHandler(req, res) {
+      try {
+        const token = getBackendToken(req);
+        if (!token) {
+          return unauthorizedError(res);
+        }
+        const url = config.get(urlKey);
+        const codes = await getCodeTable(token, cacheKey, url);
+
+        let filtered = codes.filter(d => d.effectiveDate < LocalDateTime.now() && d.expiryDate > LocalDateTime.now());
+
+        return res.status(HttpStatus.OK).json(filtered);
+      } catch (e) {
+        logApiError(e, 'getActiveCodes', `Error occurred while attempting to GET ${cacheKey}.`);
+        return errorResponse(res);
+      }
+    };
+  },
   getCodes(urlKey, cacheKey) {
     return async function getCodesHandler(req, res) {
       try {
@@ -500,7 +518,7 @@ const utils = {
   deleteData,
   deleteDataWithBody,
   addSagaStatusToRecords,
-  forwardGet,
+  forwardGet
 };
 
 module.exports = utils;
