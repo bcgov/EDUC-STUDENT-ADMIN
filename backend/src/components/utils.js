@@ -363,7 +363,8 @@ const utils = {
         const url = config.get(urlKey);
         const codes = await getCodeTable(token, cacheKey, url);
 
-        let filtered = codes.filter(d => d.effectiveDate < LocalDateTime.now() && d.expiryDate > LocalDateTime.now());
+        let curDate = LocalDateTime.now();
+        let filtered = codes.filter(d => curDate.isAfter(LocalDateTime.parse(d.effectiveDate)) && curDate.isBefore(LocalDateTime.parse(d.expiryDate)));
 
         return res.status(HttpStatus.OK).json(filtered);
       } catch (e) {
