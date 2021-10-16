@@ -236,14 +236,7 @@ export default {
             this.openStudentDetails(this.mergedFromStudent.studentID);
           }, 500);
         } else if (notificationData.sagaName === 'PEN_SERVICES_MOVE_SLD_SAGA' && notificationData.sagaStatus === 'COMPLETED') {
-          if(this.sagaIds?.includes(notificationData.sagaId) && notificationData.studentID === this.movedFromStudent?.studentID) {
-            if(!this.studentsInProcess.has(notificationData.studentID)) { // all move sld sagas are finished
-              this.notifyMoveSldSagaCompleteMessage();
-            }
-          } else {
-            this.showWarningAndDisableActionIfMovedSldStudentMatched(notificationData.studentID);
-          }
-
+          this.handleMoveSldSagaCompleteMessage(notificationData);
         } else if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
           this.showWarningAndDisableActionIfUpdatedStudentMatched(notificationData);
         }
@@ -671,9 +664,9 @@ export default {
       };
       ApiService.apiAxios
         .post(Routes['penServices'].ROOT_ENDPOINT + '/' + this.movedFromStudent.studentID + '/move-sld', moveSldRequest)
-        .then((result) => {
+        .then(response => {
           this.setSuccessAlert('Your request to move sld records is accepted.');
-          this.sagaIds = result.data;
+          this.sagaIds = response.data;
         })
         .catch(error => {
           console.log(error);
@@ -719,6 +712,15 @@ export default {
     },
     resetSldSelection(){
       this.checkedSldStudents.forEach(record => record.selected = false);
+    },
+    handleMoveSldSagaCompleteMessage(notificationData) {
+      if(this.sagaIds?.includes(notificationData.sagaId) && notificationData.studentID === this.movedFromStudent?.studentID) {
+        if(!this.studentsInProcess.has(notificationData.studentID)) { // all move sld sagas are finished
+          this.notifyMoveSldSagaCompleteMessage();
+        }
+      } else {
+        this.showWarningAndDisableActionIfMovedSldStudentMatched(notificationData.studentID);
+      }
     },
     notifyMoveSldSagaCompleteMessage() {
       this.setSuccessAlert('Success! Your request to move sld records is completed.');
