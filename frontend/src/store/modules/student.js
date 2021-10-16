@@ -10,7 +10,7 @@ export default {
     gradeCodeObjects: null,
     possibleMatchReasons: null,
     historyActivityCodes: null,
-    studentsInProcess: new Set(),
+    studentsInProcess: new Map(),
     staleStudentRecordsMap: new Map(),// this stores the studentID as key and the message as value
     mergeMacros: [],
     documentTypeCodes: []
@@ -47,11 +47,26 @@ export default {
       state.historyActivityCodes = historyActivityCodes;
     },
     setStudentInProcessStatus: (state, studentID) => {
-      state.studentsInProcess = new Set(state.studentsInProcess.add(studentID)); //reassign a new Set because Vue2 does not support reactivity on Set data types
+      state.studentsInProcess = new Map(state.studentsInProcess.set(studentID, 1)); //reassign a new Map because Vue2 does not support reactivity on Map data types
+    },
+    setStudentInProcessStatusWithCount: (state, {studentID, sagaCount}) => {
+      state.studentsInProcess = new Map(state.studentsInProcess.set(studentID, sagaCount));
     },
     resetStudentInProcessStatus: (state, studentID) => {
-      state.studentsInProcess.delete(studentID);
-      state.studentsInProcess = new Set(state.studentsInProcess);
+      const sagaCount = state.studentsInProcess.get(studentID);
+      if(sagaCount) {
+        if(sagaCount > 1) {
+          state.studentsInProcess.set(studentID, sagaCount - 1);
+        } else {
+          state.studentsInProcess.delete(studentID);
+        }
+        state.studentsInProcess = new Map(state.studentsInProcess);
+      }
+    },
+    clearStudentInProcessStatus: (state, studentID) => {
+      if(state.studentsInProcess.delete(studentID)) {
+        state.studentsInProcess = new Map(state.studentsInProcess);
+      }
     },
     clearStaleData: (state) => {
       state.staleStudentRecordsMap = new Map();
