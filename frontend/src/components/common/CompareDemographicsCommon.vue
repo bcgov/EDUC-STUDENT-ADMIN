@@ -67,7 +67,7 @@
           <a @click="updateSldRowDisplay(students.pen, !sldDataTablesToDisplay[students.pen])" class="ml-2">
             <v-icon small color="#1A5A96">{{sldDataTablesToDisplay[students.pen]?'fa-angle-down':'fa-angle-up'}}</v-icon>
           </a>
-        <a @click="openStudentDetails(students.studentID)" class="ml-1 pr-1">
+          <a @click="openStudentDetails(students.studentID)" class="ml-1 pr-1">
             {{ formatPen(students.pen) }}
           </a>
           <v-tooltip bottom v-if="students['statusCode']==='M'">
@@ -113,7 +113,11 @@
         <template v-slot:item="props">
           <tr>
             <td v-for="header in props.headers" :key="header.id" :class="[header.id, existSldUsualName(props.item)? 'two-rows-column' : 'one-row-column']">
-              <div v-if="header.value === 'mincode'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+              <v-checkbox v-if="header.type === 'select'" dense class="studentCheckbox pa-0 ma-0" color="#606060"
+                v-model="props.item.selected"
+                :disabled="sldSelectDisabled(students.pen)"
+              ></v-checkbox>
+              <div v-else-if="header.value === 'mincode'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
                 <span class="top-field-item">{{ props.item.distNo + props.item.schlNo }}</span>
                 <span v-if="existSldUsualName(props.item)" class="bottom-field-item"></span>
               </div>
@@ -156,7 +160,7 @@
       <v-divider></v-divider>
       <v-card-actions class="px-0">
         <v-spacer></v-spacer>
-        <slot name="actions" :clearError="clearError" :validateAction="validateAction" :disableMerge="disableMerge" :disableDemerge="disableDemerge" :merge="merge"  :demerge="demerge" :twin="twin"></slot>
+        <slot name="actions" :clearError="clearError" :validateAction="validateAction" :disableMerge="disableMerge" :disableDemerge="disableDemerge" :disableMoveSld="disableMoveSld" :merge="merge"  :demerge="demerge" :twin="twin" :moveSldRecords="moveSldRecords"></slot>
       </v-card-actions>
     </div>
     <ConfirmationDialog ref="confirmationDialog">
@@ -164,6 +168,15 @@
         <v-col class="mt-n6">
           <v-row class="mb-3">
             Are you sure you want to demerge PENs&nbsp;<strong>{{getMergedFromPen()}}</strong>&nbsp;and&nbsp;<strong>{{getMergedToPen()}}</strong>?
+          </v-row>
+        </v-col>
+      </template>
+    </ConfirmationDialog>
+    <ConfirmationDialog ref="moveSldConfirmationDialog">
+      <template v-slot:message>
+        <v-col class="mt-n6">
+          <v-row>
+            Are you sure you want to move the selected SLD records from &nbsp;<strong>{{movedFromStudent.pen}}</strong>&nbsp;to&nbsp;<strong>{{movedToStudent.pen}}</strong>?
           </v-row>
         </v-col>
       </template>
@@ -183,7 +196,7 @@ import router from '../../router';
 import TertiaryButton from '../util/TertiaryButton';
 import {equalsIgnoreCase, getMatchedRecordsByStudent, sortArrayByDate} from '@/utils/common';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
-import {mapGetters} from 'vuex';
+import {mapMutations, mapGetters} from 'vuex';
 import MergeStudentsModal from '@/components/common/MergeStudentsModal';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 
@@ -213,18 +226,18 @@ export default {
     notification(val) {
       if (val) {
         const notificationData = val;
-        if (this.sagaId && this.sagaId === notificationData.sagaId && notificationData && notificationData.studentID && notificationData.studentID === this.mergedFromStudent.studentID && notificationData.sagaStatus === 'COMPLETED') {
-          if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_DEMERGE_COMPLETE_SAGA') {
-            this.notifyDemergeSagaCompleteMessage();
-            // Open students in new tabs
-            setTimeout(() => {
-              this.openStudentDetails(this.mergedToStudent.studentID);
-            }, 1000);
-            setTimeout(() => {
-              this.openStudentDetails(this.mergedFromStudent.studentID);
-            }, 500);
-          }
-        }else if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
+        if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_DEMERGE_COMPLETE_SAGA' && this.sagaId === notificationData.sagaId && notificationData.studentID === this.mergedFromStudent?.studentID && notificationData.sagaStatus === 'COMPLETED') {
+          this.notifyDemergeSagaCompleteMessage();
+          // Open students in new tabs
+          setTimeout(() => {
+            this.openStudentDetails(this.mergedToStudent.studentID);
+          }, 1000);
+          setTimeout(() => {
+            this.openStudentDetails(this.mergedFromStudent.studentID);
+          }, 500);
+        } else if (notificationData.sagaName === 'PEN_SERVICES_MOVE_SLD_SAGA' && notificationData.sagaStatus === 'COMPLETED') {
+          this.handleMoveSldSagaCompleteMessage(notificationData);
+        } else if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
           this.showWarningAndDisableActionIfUpdatedStudentMatched(notificationData);
         }
       }
@@ -272,7 +285,10 @@ export default {
       studentDataMap: new Map(),
       mergeStudentsModalOpen: false,
       mergedToStudentID: '',
-      mergedFromStudentID: ''
+      mergedFromStudentID: '',
+      movedFromStudent: {},
+      movedToStudent: {},
+      sagaIds: [],
     };
   },
   mounted() {
@@ -293,9 +309,13 @@ export default {
       set: async function(value) {
         this.$emit('update:selectedRecords', value);
       }
-    }
+    },
+    checkedSldStudents() {
+      return Object.values(this.sldData).flatMap(records => records.filter(record => record.selected));
+    },
   },
   methods: {
+    ...mapMutations('student', ['setStudentInProcessStatusWithCount', 'clearStudentInProcessStatus']),
     equalsIgnoreCase,
     sortStudents(array){
       return array.sort(this.sortStudentRecordsForCompare);
@@ -405,6 +425,7 @@ export default {
         .then(response => {
           if (response?.data?.length > 0) {
             response.data = this.sortArrayByDate(response.data, 'reportDate', false);
+            response.data.forEach(sld => sld.selected = false);
           }
           this.$set(this.sldData, pen, response.data);
           this.updateSldRowDisplay(pen, true);
@@ -429,9 +450,12 @@ export default {
       window.open(route.href, '_blank');
     },
     removeRecord(studentID, index) {
+      const student = this.studentRecords.find(item => item.studentID === studentID);
       this.studentRecords = this.studentRecords.filter(item => item.studentID !== studentID);
       this.checkedStudents = this.checkedStudents.filter((item, idx) => idx !== index);
       this.validateAction();
+      this.updateSldRowDisplay(student.pen, false);
+      this.resetSldSelection();
     },
     updateSldRowDisplay(id, value) {
       this.$set(this.sldDataTablesToDisplay, id, value);
@@ -472,6 +496,9 @@ export default {
         return !this.validateStudentsAreMerged(selectedStudents[0], selectedStudents[1]);
       }
       return true;
+    },
+    disableMoveSld() {
+      return this.isProcessing || this.checkedSldStudents.length <= 0;
     },
     validateTwinRecordsExist(studentID, twinStudentID) {
       return getMatchedRecordsByStudent(studentID)
@@ -608,6 +635,50 @@ export default {
       }
       await this.executeDemerge();
     },
+    async moveSldRecords() {
+      let warningMessage = this.getWarningMessage();
+      if (warningMessage) {
+        this.setWarningAlert(warningMessage);
+        return;
+      }
+
+      this.movedFromStudent = this.studentRecords.find(student => this.checkedSldStudents.some(record => record.pen.startsWith(student.pen)));
+      this.movedToStudent = this.studentRecords.find(student => student.pen !== this.movedFromStudent.pen);
+
+      let result = await this.$refs.moveSldConfirmationDialog.open(null, null,
+        {color: '#fff', width: 580, closeIcon: true, dark: false, resolveText: 'Move'});
+      if (!result) {
+        return;
+      }
+      
+      this.setStudentInProcessStatusWithCount({studentID: this.movedFromStudent.studentID, sagaCount: this.checkedSldStudents.length});
+      this.isProcessing = true;
+      const moveSldSagaData = this.checkedSldStudents.map(record => {
+        const selectedSldRecord = _.pick(record, ['pen', 'distNo', 'schlNo', 'reportDate', 'studentId']);
+        selectedSldRecord.movedToPen = this.movedToStudent.pen;
+        return selectedSldRecord;
+      });
+      const moveSldRequest = {
+        moveSldSagaData, 
+        studentID: this.movedFromStudent.studentID
+      };
+      ApiService.apiAxios
+        .post(Routes['penServices'].ROOT_ENDPOINT + '/' + this.movedFromStudent.studentID + '/move-sld', moveSldRequest)
+        .then(response => {
+          this.setSuccessAlert('Your request to move sld records is accepted.');
+          this.sagaIds = response.data;
+        })
+        .catch(error => {
+          console.log(error);
+          this.isProcessing = false;
+          this.clearStudentInProcessStatus(this.movedFromStudent.studentID);
+          if (error?.response?.status === 409 && error?.response?.data?.message) {
+            this.setFailureAlert(error?.response?.data?.message);
+          } else {
+            this.setFailureAlert('Your request to move sld records could not be accepted, please try again later.');
+          }
+        });
+    },
     showWarningAndDisableActionIfUpdatedStudentMatched(notificationData){
       try {
         const student = JSON.parse(notificationData.eventPayload);
@@ -634,7 +705,39 @@ export default {
         }
       }
       return warningMessage;
-    }
+    },
+    sldSelectDisabled(pen) {
+      const isMergedOrDeceased = this.studentRecords.some(student => student.statusCode === STUDENT_CODES.MERGED || student.statusCode === STUDENT_CODES.DECEASED);
+      return this.isProcessing || this.studentRecords.length !== 2 || isMergedOrDeceased || this.checkedSldStudents.some(record => !record.pen.startsWith(pen));
+    },
+    resetSldSelection(){
+      this.checkedSldStudents.forEach(record => record.selected = false);
+    },
+    handleMoveSldSagaCompleteMessage(notificationData) {
+      if(this.sagaIds?.includes(notificationData.sagaId) && notificationData.studentID === this.movedFromStudent?.studentID) {
+        if(!this.studentsInProcess.has(notificationData.studentID)) { // all move sld sagas are finished
+          this.notifyMoveSldSagaCompleteMessage();
+        }
+      } else {
+        this.showWarningAndDisableActionIfMovedSldStudentMatched(notificationData.studentID);
+      }
+    },
+    notifyMoveSldSagaCompleteMessage() {
+      this.setSuccessAlert('Success! Your request to move sld records is completed.');
+      this.isProcessing = false;
+      this.studentRecords.forEach(student => {
+        this.getSldData(student.pen);
+      });
+      this.resetSldSelection();
+    },
+    showWarningAndDisableActionIfMovedSldStudentMatched(studentID){
+      const student = this.studentRecords?.find(el => el?.studentID === studentID);
+      if (!this.isProcessing && student) {
+        const warningMessage = `SLD records for ${student.pen} is updated by other users, Please refresh the page.`;
+        this.setWarningAlert(warningMessage);
+        this.addStaleDataToMap({studentID, warningMessage});
+      }
+    },
   },
 };
 </script>
