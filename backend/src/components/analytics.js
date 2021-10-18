@@ -92,6 +92,9 @@ async function findMergeDetailsBetween(req, res, createDateStart, createDateEnd)
     if (!studentMerges || studentMerges.length === 0) {
       log.debug('no record found');
       return res.status(HttpStatus.OK).json([]);
+    }else if(studentMerges.length > 1000){
+      log.warn('more than 1000 merges found for the time period');
+      return res.status(HttpStatus.BAD_REQUEST).json();
     }
     const studentIDs = [];
     const studentsMapList = []; // this Array  will contain the student records as pair {mergedStudent, trueStudent}.
@@ -133,11 +136,11 @@ const getMergeStats = async (req, res) => {
   case 'MERGE_DETAILS_TODAY':
     yesterday = backMidnight;
     return findMergeDetailsBetween(req, res, yesterday.toString(), today.toString());
-  case 'MERGE_DETAILS_LAST_2_DAYS':
-    yesterday = backMidnight.minusDays(1);
+  case 'MERGE_DETAILS_LAST_2_WEEKS':
+    yesterday = backMidnight.minusWeeks(2);
     return findMergeDetailsBetween(req, res, yesterday.toString(), today.toString());
-  case 'MERGE_DETAILS_LAST_WEEK':
-    yesterday = backMidnight.minusWeeks(1);
+  case 'MERGE_DETAILS_LAST_MONTH':
+    yesterday = backMidnight.minusMonths(1);
     return findMergeDetailsBetween(req, res, yesterday.toString(), today.toString());
   }
 
