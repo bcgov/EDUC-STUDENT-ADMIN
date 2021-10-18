@@ -44,15 +44,9 @@ function getDocuments(requestType) {
 function getDocumentById(requestType) {
   return async function getDocumentByIdHandler(req, res) {
     const token = getBackendToken(req);
-    if(!token){
-      return res.status(401).json({
-        status: 401,
-        message: 'You are not authorised to access this page.'
-      });
-    }
     const url = `${config.get(`server:${requestType}:rootURL`)}/${req.params.id}/documents/${req.params.documentId}`;
     getData(token, url).then(resData =>{
-      res.setHeader('Content-disposition', 'attachment; filename=' + resData.fileName);
+      res.setHeader('Content-disposition', 'attachment; filename=' + resData.fileName?.replace(/ /g, '_').replace(/,/g, '_').trim());
       res.setHeader('Content-type', resData.fileExtension);
       return res.status(200).send(resData.documentData);
     }).catch(error=>{
