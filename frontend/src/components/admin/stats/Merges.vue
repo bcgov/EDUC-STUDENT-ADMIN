@@ -160,9 +160,9 @@ export default {
     menu: false,
     localDate: LocalDate,
     schoolGroups: [{value: 'K12', text: 'K-12'}, {value: 'PSI', text: 'PSI'}],
-    timeframes: [{value: 'MERGE_DETAILS_TODAY', text: 'Today'}, {value: 'MERGE_DETAILS_LAST_2_DAYS', text: 'In the last 2 days'}, {
-      value: 'MERGE_DETAILS_LAST_WEEK',
-      text: 'In the last week'
+    timeframes: [{value: 'MERGE_DETAILS_TODAY', text: 'Today'}, {value: 'MERGE_DETAILS_LAST_2_WEEKS', text: 'In Last 2 Weeks'}, {
+      value: 'MERGE_DETAILS_LAST_MONTH',
+      text: 'In Last Month'
     }],
     timeframe: 'MERGE_DETAILS_TODAY',
     searchLoading: false,
