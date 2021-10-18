@@ -46,7 +46,7 @@ function getDocumentById(requestType) {
     const token = getBackendToken(req);
     const url = `${config.get(`server:${requestType}:rootURL`)}/${req.params.id}/documents/${req.params.documentId}`;
     getData(token, url).then(resData =>{
-      res.setHeader('Content-disposition', 'attachment; filename=' + resData.fileName?.replace(/^[, ]+|[, ]+$|[, ]+/g, '_').trim());
+      res.setHeader('Content-disposition', 'attachment; filename=' + resData.fileName?.replace(/ /g, '_').replace(/,/g, '_').trim());
       res.setHeader('Content-type', resData.fileExtension);
       return res.status(200).send(resData.documentData);
     }).catch(error=>{
