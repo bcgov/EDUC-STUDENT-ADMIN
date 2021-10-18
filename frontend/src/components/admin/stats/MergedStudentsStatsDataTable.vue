@@ -25,7 +25,7 @@
     <template v-slot:item="props">
       <tr :class="itemRowBackground(props.item)">
         <td :class="isAPair(props.item)?'even-row':'odd-row'" v-for="header in props.headers" :key="header.id">
-          <div class="tableCell">
+          <div @click="viewStudentDetails(props.item.studentID)" class="tableCell">
               <span v-if="header.topValue === 'dob'" class="top-column-item">{{
                   formatDob(props.item[header.topValue], 'uuuu-MM-dd', 'uuuu/MM/dd')
                 }}</span>
@@ -57,6 +57,8 @@
 
 <script>
 import {formatDob} from '@/utils/format';
+import router from '@/router';
+import {REQUEST_TYPES} from '@/utils/constants';
 
 export default {
   name: 'MergedStudentsDataTable',
@@ -210,7 +212,11 @@ export default {
     },
     itemRowBackground(item) {
       return item?.groupIndex % 2 === 0 ? 'grouped-row-even' : 'grouped-row-odd';
-    }
+    },
+    viewStudentDetails(studentID) {
+      const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
+      window.open(route.href, '_blank');
+    },
   }
 };
 </script>
