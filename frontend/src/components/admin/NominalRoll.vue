@@ -17,7 +17,7 @@
           <v-card-title>
             Nominal Roll - {{ currentYear }} - Sanity Check
             <v-spacer></v-spacer>
-            <PrimaryButton title="process nominal roll file" text="Process"
+            <PrimaryButton title="process nominal roll file" text="Process" :loading="processStudentsLoading" :disabled="processStudentsDisabled"
                            @click.native="processNominalRollStudents()"></PrimaryButton>
           </v-card-title>
           <v-data-table dense v-if="items"
@@ -69,10 +69,8 @@ export default {
         {text: 'LEA/Provincial', value: 'leaProvincial',},
         {text: 'Recipient Number', value: 'recipientNumber'},
         {text: 'Recipient Name', value: 'recipientName'},
-        {text: 'Identity', value: 'identity'},
         {text: 'Surname', value: 'surname'},
         {text: 'Given Name(s)', value: 'givenNames'},
-        {text: 'Initial', value: 'initial'},
         {text: 'Gender', value: 'gender'},
         {text: 'Birth Date', value: 'birthDate'},
         {text: 'Grade', value: 'grade'},
@@ -82,12 +80,15 @@ export default {
       items: undefined,
       filters: {},
       loading: false,
-      schoolDistrictNumberSearch:'',
+      schoolDistrictNumberSearch: '',
+      processStudentsLoading: false,
+      processStudentsDisabled: false,
     };
   },
   async mounted() {
     try {
       await ApiService.apiAxios.get(Routes.nominalRoll.ROOT_ENDPOINT);
+      //TODO  if it here move to next page which is list page. @johnc
     } catch (e) {
       if (e.response?.status === 404) {
         this.dialog = true; // there is no file in process show the dialog to upload a new file.
@@ -100,7 +101,17 @@ export default {
   },
   methods: {
     async processNominalRollStudents() {
-      console.info('to be implemented');
+      this.processStudentsLoading = true;
+      try {
+        await ApiService.apiAxios.post(Routes.nominalRoll.ROOT_ENDPOINT + '/process', {nominalRollStudents: this.items});
+        this.setSuccessAlert('Your request to start processing nominal roll is accepted.');
+        this.processStudentsDisabled= true;
+      } catch (e) {
+        console.error(e);
+        this.setFailureAlert(e.response?.data?.message || e.message);
+      } finally {
+        this.processStudentsLoading = false;
+      }
     },
     async upload(document) {
       try {
@@ -110,7 +121,6 @@ export default {
         this.items = res.data.nominalRollStudents;
       } catch (e) {
         console.error(e);
-        console.error(e.response);
         this.setFailureAlert(e.response?.data?.message || e.message);
       } finally {
         this.dialog = false;
