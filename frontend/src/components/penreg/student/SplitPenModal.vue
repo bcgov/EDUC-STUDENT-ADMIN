@@ -53,6 +53,7 @@
             :studentHistoryDetail="newStudentDetail"
             :highlightDiff="false"
             idPrefix="new"
+            :showPEN=false
           ></StudentAuditHistoryDetailCard>
         </v-col>
       </v-row>

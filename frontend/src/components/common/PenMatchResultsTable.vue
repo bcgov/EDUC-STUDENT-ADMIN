@@ -240,7 +240,7 @@ export default {
           topText: 'DC',
           doubleText: 'Gen',
           bottomText: 'Postal Code',
-          topValue: 'dc',
+          topValue: 'demogCode',
           doubleValue: 'genderCode',
           bottomValue: 'postalCode',
           sortable: false,
