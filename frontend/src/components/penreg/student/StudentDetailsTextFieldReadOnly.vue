@@ -8,6 +8,7 @@
           :value="fieldModel"
           :class="['onhoverEdit', 'customNoBorder', 'onhoverPad', highlighted? 'diff-value' : 'plain-value']"
           :id="name"
+          v-if="displayValue"
           dense
           readonly
           :disabled="fieldDisabled"
@@ -52,6 +53,10 @@ export default {
     disabled: {
       type: Boolean,
       required: true
+    },
+    displayValue: {
+      type: Boolean,
+      default: true
     }
   },
   data() {

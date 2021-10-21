@@ -180,7 +180,6 @@ export default {
               this.$emit('refresh'); // the refresh call refreshes the students, so wait 500 ms for the user to see success banner.
             }, 500);
             // Open students in new tabs
-            this.openStudentDetails(this.student.studentID);
             setTimeout(() => {
               this.openStudentDetails(notificationData.eventPayload);
             }, 500);

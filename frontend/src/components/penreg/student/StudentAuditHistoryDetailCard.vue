@@ -2,6 +2,7 @@
   <v-card class="pl-4 auditHistoryDetail" height="auto" width="100%" elevation=0>
     <StudentDetailsTextFieldReadOnly :disabled="false"
                                      :model="formatPen(studentHistoryDetail.pen)"
+                                     :displayValue="showPEN"
                                      :name="prefixFieldName(STUDENT_DETAILS_FIELDS.PEN)" colspan="4" label="PEN"
                                      labelSpan="4"></StudentDetailsTextFieldReadOnly>
 
@@ -196,6 +197,10 @@ export default {
     idPrefix: {
       type: String,
       default: ''
+    },
+    showPEN: {
+      type: Boolean,
+      default: true
     }
   },
   async beforeMount() {
