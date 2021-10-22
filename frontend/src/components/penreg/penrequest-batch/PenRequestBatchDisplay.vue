@@ -93,6 +93,7 @@ import alertMixin from '../../../mixins/alertMixin';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
 import pluralize from 'pluralize';
 import ApiService from '@/common/apiService';
+import Mousetrap from 'mousetrap';
 
 export default {
   name: 'PenRequestBatchDisplay',
@@ -152,6 +153,9 @@ export default {
   },
   created() {
     this.selectedSchoolGroup = this.schoolGroup;
+  },
+  mounted() {
+    Mousetrap.reset();
   },
   methods: {
     ...mapMutations('prbStudentSearch', ['clearPrbStudentSearchState']),
