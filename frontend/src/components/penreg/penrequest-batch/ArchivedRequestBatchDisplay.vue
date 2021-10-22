@@ -212,7 +212,7 @@
 </template>
 
 <script>
-import {Routes} from '@/utils/constants';
+import {Routes,PEN_REQ_BATCH_STUDENT_REQUEST_CODES} from '@/utils/constants';
 import {mapMutations, mapState} from 'vuex';
 import ArchivedRequestBatchList from './ArchivedRequestBatchList';
 import PrimaryButton from '../../util/PrimaryButton';
@@ -232,7 +232,7 @@ import pluralize from 'pluralize';
 import ApiService from '@/common/apiService';
 import {formatDob} from '@/utils/format';
 import FormattedTextField from '@/components/util/FormattedTextField';
-import {PEN_REQ_BATCH_STUDENT_REQUEST_CODES} from '@/utils/constants';
+import Mousetrap from 'mousetrap';
 
 export default {
   name: 'ArchivedRequestBatchDisplay',
@@ -293,6 +293,7 @@ export default {
     if (this.batchFileSearchParams.mincode || this.batchFileSearchParams.load.startDate) {
       this.enterPushed();
     }
+    Mousetrap.reset();
   },
   methods: {
     ...mapMutations('prbStudentSearch', ['clearPrbStudentSearchState']),

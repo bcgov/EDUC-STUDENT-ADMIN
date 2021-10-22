@@ -338,8 +338,12 @@ export default {
     },
   },
   mounted() {
-    Mousetrap.bindGlobal('ctrl+b', () => {
-      router.push({name: 'penRequestBatch'});
+    Mousetrap.bind('ctrl+b', () => {
+      if(this.archived){
+        router.push({name: 'archivedRequestBatch'});
+      }else{
+        router.push({name: 'penRequestBatch'});
+      }
       return false;
     });
     this.$store.dispatch('penRequestBatch/getCodes');

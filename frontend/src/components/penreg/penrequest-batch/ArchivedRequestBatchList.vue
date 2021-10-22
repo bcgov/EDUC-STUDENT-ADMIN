@@ -23,6 +23,8 @@ import {
 import {formatDateTime} from '@/utils/format';
 import {compact, partialRight} from 'lodash';
 import {deepCloneObject} from '@/utils/common';
+import Mousetrap from 'mousetrap';
+import router from '@/router';
 
 export default {
   name: 'ArchivedRequestBatchList',
@@ -67,6 +69,12 @@ export default {
       loadingTable: false,
       isFilterOperation: false,
     };
+  },
+  mounted() {
+    Mousetrap.bind('ctrl+b', () => {
+      router.push({name: 'archivedRequestBatch'});
+      return false;
+    });
   },
   watch: {
     pageNumber: {
