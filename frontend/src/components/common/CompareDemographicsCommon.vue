@@ -288,7 +288,6 @@ export default {
       mergedFromStudentID: '',
       movedFromStudent: {},
       movedToStudent: {},
-      sagaIds: [],
     };
   },
   mounted() {
@@ -315,7 +314,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('student', ['setStudentInProcessStatusWithCount', 'clearStudentInProcessStatus']),
+    ...mapMutations('student', ['setStudentInProcessStatus', 'clearStudentInProcessStatus']),
     equalsIgnoreCase,
     sortStudents(array){
       return array.sort(this.sortStudentRecordsForCompare);
@@ -651,22 +650,22 @@ export default {
         return;
       }
       
-      this.setStudentInProcessStatusWithCount({studentID: this.movedFromStudent.studentID, sagaCount: this.checkedSldStudents.length});
+      this.setStudentInProcessStatus(this.movedFromStudent.studentID);
       this.isProcessing = true;
       const moveSldSagaData = this.checkedSldStudents.map(record => {
         const selectedSldRecord = _.pick(record, ['pen', 'distNo', 'schlNo', 'reportDate', 'studentId']);
-        selectedSldRecord.movedToPen = this.movedToStudent.pen;
         return selectedSldRecord;
       });
       const moveSldRequest = {
         moveSldSagaData, 
+        movedToPen: this.movedToStudent.pen,
         studentID: this.movedFromStudent.studentID
       };
       ApiService.apiAxios
         .post(Routes['penServices'].ROOT_ENDPOINT + '/' + this.movedFromStudent.studentID + '/move-sld', moveSldRequest)
         .then(response => {
           this.setSuccessAlert('Your request to move sld records is accepted.');
-          this.sagaIds = response.data;
+          this.sagaId = response.data;
         })
         .catch(error => {
           console.log(error);
@@ -714,10 +713,8 @@ export default {
       this.checkedSldStudents.forEach(record => record.selected = false);
     },
     handleMoveSldSagaCompleteMessage(notificationData) {
-      if(this.sagaIds?.includes(notificationData.sagaId) && notificationData.studentID === this.movedFromStudent?.studentID) {
-        if(!this.studentsInProcess.has(notificationData.studentID)) { // all move sld sagas are finished
-          this.notifyMoveSldSagaCompleteMessage();
-        }
+      if(this.sagaId === notificationData.sagaId && notificationData.studentID === this.movedFromStudent?.studentID) {
+        this.notifyMoveSldSagaCompleteMessage();
       } else {
         this.showWarningAndDisableActionIfMovedSldStudentMatched(notificationData.studentID);
       }
