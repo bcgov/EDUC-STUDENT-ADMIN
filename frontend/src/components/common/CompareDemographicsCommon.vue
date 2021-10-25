@@ -653,8 +653,7 @@ export default {
       this.setStudentInProcessStatus(this.movedFromStudent.studentID);
       this.isProcessing = true;
       const moveSldSagaData = this.checkedSldStudents.map(record => {
-        const selectedSldRecord = _.pick(record, ['pen', 'distNo', 'schlNo', 'reportDate', 'studentId']);
-        return selectedSldRecord;
+        return _.pick(record, ['pen', 'distNo', 'schlNo', 'reportDate', 'studentId']);
       });
       const moveSldRequest = {
         moveSldSagaData, 
