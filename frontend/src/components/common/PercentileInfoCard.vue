@@ -35,8 +35,8 @@
         mdi-arrow-down
       </v-icon>
       <span class="text-caption grey--text font-weight-light">
-        <span v-if="percentile>0" class="green--text">{{ percentile.toString().replace('-', '') }}% increase in last 30 days.</span>
-        <span v-else-if="percentile<0" class="red--text">{{ percentile.toString().replace('-', '') }}% decrease in last 30 days.</span>
+        <span v-if="percentile>0" class="green--text">{{ Math.round(percentile.toString().replace('-', '')) }}% increase in last 30 days.</span>
+        <span v-else-if="percentile<0" class="red--text">{{ Math.round(percentile.toString().replace('-', '')) }}% decrease in last 30 days.</span>
         <span v-else-if="percentile === 0" class="blue--text">same in last 30 days.</span>
       </span>
     </v-card-text>
@@ -66,6 +66,8 @@ export default {
   }
 };
 </script>
+
+
 
 <style scoped>
 .v-sheet–offset {
