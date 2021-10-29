@@ -302,7 +302,7 @@ export default {
     Mousetrap.reset();
   },
   mounted() {
-    Mousetrap.bindGlobal('ctrl+b', () => {
+    Mousetrap.bind('ctrl+b', () => {
       this.backToList();
       return false;
     });

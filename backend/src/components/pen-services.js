@@ -133,13 +133,10 @@ async function moveSldRecords(req, res) {
       ...stripAuditColumns(reqData),
     };
 
-    const sagaIds = await postData(token, `${config.get('server:penServices:rootURL')}/move-sld-saga`, sagaReq, null, getUser(req).idir_username);
-    sagaIds.forEach(async (sagaId) => {
-      await createPenServicesCompleteSagaRecordInRedis(sagaId, 'PEN_SERVICES_MOVE_SLD_SAGA', 'move SLD records', reqData.studentID);
-    });
+    const sagaId = await postData(token, `${config.get('server:penServices:rootURL')}/move-sld-saga`, sagaReq, null, getUser(req).idir_username);
+    await createPenServicesCompleteSagaRecordInRedis(sagaId, 'PEN_SERVICES_MOVE_SLD_SAGA', 'move SLD records', reqData.studentID);
     
-
-    return res.status(200).json(sagaIds);
+    return res.status(200).json(sagaId);
   } catch (e) {
     logApiError(e, 'moveSldRecords', 'Error occurred while attempting to merge SLD records.');
     if (e.status === HttpStatus.CONFLICT) {

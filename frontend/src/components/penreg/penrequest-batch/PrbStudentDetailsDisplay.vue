@@ -152,6 +152,7 @@ import {
   PEN_REQ_BATCH_STUDENT_REQUEST_CODES,
   PRB_SAGA_NAMES,
   Routes,
+  SEARCH_CONDITION,
   SEARCH_FILTER_OPERATION,
   SEARCH_VALUE_TYPE
 } from '@/utils/constants';
@@ -250,7 +251,7 @@ export default {
           || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE !== this.prbStudent?.penRequestBatchStudentStatusCode;
     },
     disableMatchUnmatch() {
-      return this.isStudentDataUpdated || this.prbStudent?.sagaInProgress || this.isArchived;
+      return this.isStudentDataUpdated || this.prbStudent?.sagaInProgress || this.isMatchingToStudentRecord || this.isArchived;
     },
     disableInfoReqBtn() {
       return this.loading || this.prbStudent?.sagaInProgress || this.isArchived
@@ -310,8 +311,12 @@ export default {
     this.clearNavigation();
   },
   mounted() {
-    Mousetrap.bindGlobal('ctrl+b', () => {
-      router.push({name: 'penRequestBatch'});
+    Mousetrap.bind('ctrl+b', () => {
+      if(this.archived){
+        router.push({name: 'archivedRequestBatch'});
+      }else{
+        router.push({name: 'penRequestBatch'});
+      }
       return false;
     });
   },
@@ -507,6 +512,30 @@ export default {
           this.isIssuingNewPen = false;
         });
     },
+    retrievePenRequestsWithSameAssignedPen(pen) {
+      const params = {
+        params: {
+          pageNumber: 0,
+          searchQueries: [{
+            searchCriteriaList: [
+              {key: 'penRequestBatchEntity.penRequestBatchID', operation: SEARCH_FILTER_OPERATION.EQUAL, value: this.prbStudent.penRequestBatchID, valueType: SEARCH_VALUE_TYPE.UUID, condition: SEARCH_CONDITION.AND},
+              {key: 'assignedPEN', operation: SEARCH_FILTER_OPERATION.EQUAL, value: pen, valueType: SEARCH_VALUE_TYPE.STRING, condition: SEARCH_CONDITION.AND}
+            ],
+          }],
+        }
+      };
+
+      return ApiService.apiAxios
+        .get(Routes['penRequestBatch'].STUDENTS_SEARCH_URL, params)
+        .then(response => {
+          return response.data?.content;
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while loading the PEN requests. Please try again later.');
+          console.log(error);
+          throw error;
+        });
+    },
     /**
      * This method is responsible to do match/unmatch of student to Pen Request.
      * filter the matched row from possible matches to mark them twin.
@@ -522,6 +551,15 @@ export default {
         if (!result) {
           return;
         }
+
+        this.isMatchingToStudentRecord = true;
+        const penRequests = await this.retrievePenRequestsWithSameAssignedPen(student.pen);
+        if(penRequests?.length > 0) {
+          this.setFailureAlert('This PEN already used.');
+          this.isMatchingToStudentRecord = false;
+          return;
+        }
+
         this.prbStudent.assignedPEN = student.pen;
         this.prbStudent.studentID = student.studentID;
         operation = 'match';

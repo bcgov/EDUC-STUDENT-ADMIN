@@ -204,9 +204,8 @@
                   :rules="validatePen(prbStudentSearchParams.assignedPEN)"
                 ></v-text-field>
                 <div class="d-flex justify-end pt-2">
-                  <PrimaryButton id="clear-search" :disabled="!searchEnabled" class="mr-2" :secondary="true" @click.native="clearSearch" text="Clear"></PrimaryButton>
+                  <PrimaryButton id="clear-search" class="mr-2" :secondary="true" @click.native="clearSearch" text="Clear"></PrimaryButton>
                   <PrimaryButton id="perform-search" :disabled="!searchEnabled" :loading="searchLoading && searchEnabled" @click.native="searchPenRequests" text="Search"></PrimaryButton>
-
                 </div>
               </v-col>
             </v-row>
@@ -339,8 +338,12 @@ export default {
     },
   },
   mounted() {
-    Mousetrap.bindGlobal('ctrl+b', () => {
-      router.push({name: 'penRequestBatch'});
+    Mousetrap.bind('ctrl+b', () => {
+      if(this.archived){
+        router.push({name: 'archivedRequestBatch'});
+      }else{
+        router.push({name: 'penRequestBatch'});
+      }
       return false;
     });
     this.$store.dispatch('penRequestBatch/getCodes');
