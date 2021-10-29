@@ -65,17 +65,17 @@
       </v-col>
     </v-row>
     <v-row dense>
-       <v-col
+      <v-col
         key="completionsLast12months"
         cols="12"
       >
         <v-card v-if="averageTimeToCompleteRequest">
           <v-card-text class="pt-4">
-            Average time to complete request: {{averageTimeToCompleteRequest.toFixed(1)}} days
+            Average time to complete request: {{ averageTimeToCompleteRequest.toFixed(1) }} days
           </v-card-text>
         </v-card>
         <Spinner v-else/>
-       </v-col>
+      </v-col>
     </v-row>
 
   </v-container>
@@ -147,14 +147,13 @@ export default {
       });
     ApiService.apiAxios.get(baseUrl + `?statsType=PERCENT_${this.requestTypeWithAllUpperCase}_COMPLETION_TO_LAST_MONTH`)
       .then(response => {
-        this.completionsCurrentMonth = response.data[`${this.requestType}CompletedInCurrentMonth`]?.toString();
-        this.percentCompletedRequestToLastMonth = response.data[`percentCompleted${requestTypeWithFirstUpperCase}ToLastMonth`];
+        this.completionsCurrentMonth = response.data[this.requestType + 'CompletedInCurrentMonth']?.toString();
+        this.percentCompletedRequestToLastMonth = response.data['percentCompleted' + requestTypeWithFirstUpperCase + 'ToLastMonth'];
       })
       .catch(e => {
         console.error(e);
         this.setFailureAlert(`Failed to load ${this.requestType} completions in last month data. Please try refreshing the page.`);
       });
-
     ApiService.apiAxios.get(baseUrl + `?statsType=PERCENT_${this.requestTypeWithAllUpperCase}_REJECTED_TO_LAST_MONTH`)
       .then(response => {
         this.rejectionsCurrentMonth = response.data[`${this.requestType}RejectedInCurrentMonth`].toString();
