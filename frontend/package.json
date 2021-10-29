@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "Simple Student Admin UI.",
-  "author": "Marco Villeneuve",
+  "author": "PEN Team",
   "scripts": {
     "serve": "node_modules/.bin/vue-cli-service serve",
     "build": "node_modules/.bin/vue-cli-service build",
