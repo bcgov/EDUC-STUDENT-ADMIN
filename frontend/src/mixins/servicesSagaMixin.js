@@ -23,7 +23,7 @@ export default {
       this.setSuccessAlert('Success! Your request to merge is completed.');
       this.isProcessing = false;
       this.mergeSagaComplete = true;
-      this.openStudentDetailsCurrentTab(this.mergedToStudent.studentID);
+      this.openStudentDetails(this.mergedToStudent.studentID);
     },
     notifyDemergeSagaCompleteMessage() {
       this.setSuccessAlert('Success! Your request to demerge is completed.');

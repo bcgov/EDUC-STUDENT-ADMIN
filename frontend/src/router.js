@@ -358,7 +358,7 @@ const router = new VueRouter({
           meta: {
             pageTitle: PAGE_TITLES.STATS_DASHBOARD,
             requiresAuth: true,
-            role: 'STAFF_ADMINISTRATION_ADMIN'
+            role: 'HAS_STATS_ROLE'
           }
         },
         {
@@ -371,7 +371,7 @@ const router = new VueRouter({
           meta: {
             pageTitle: PAGE_TITLES.GMP_STATS,
             requiresAuth: true,
-            role: 'STAFF_ADMINISTRATION_ADMIN'
+            role: 'GMP_UMP_STATS_ROLE'
           }
         },
         {
@@ -384,7 +384,7 @@ const router = new VueRouter({
           meta: {
             pageTitle: PAGE_TITLES.UMP_STATS,
             requiresAuth: true,
-            role: 'STAFF_ADMINISTRATION_ADMIN'
+            role: 'GMP_UMP_STATS_ROLE'
           }
         },
         {
@@ -394,7 +394,7 @@ const router = new VueRouter({
           meta: {
             pageTitle: PAGE_TITLES.NEW_PENS,
             requiresAuth: true,
-            role: 'STAFF_ADMINISTRATION_ADMIN'
+            role: 'NEW_PEN_AND_MERGES_STATS_ROLE'
           },
         },
         {
@@ -404,7 +404,7 @@ const router = new VueRouter({
           meta: {
             pageTitle: PAGE_TITLES.VIEW_MERGES,
             requiresAuth: true,
-            role: 'STAFF_ADMINISTRATION_ADMIN'
+            role: 'NEW_PEN_AND_MERGES_STATS_ROLE'
           },
         },
       ],
