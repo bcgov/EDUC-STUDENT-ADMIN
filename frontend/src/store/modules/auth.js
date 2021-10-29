@@ -42,7 +42,10 @@ export default {
     EDIT_MACROS_ROLE: state => state.isValidStaffAdministrationAdmin,
     CREATE_NEW_PEN_ROLE: state => state.isValidStaffAdministrationAdmin,
     NOMINAL_ROLL_ROLE: state => state.isValidNominalRollAdmin,
-    STAFF_ADMINISTRATION_ADMIN: state => state.isValidNominalRollAdmin || state.isValidStaffAdministrationAdmin //gives access to admin section of navigation menu
+    STAFF_ADMINISTRATION_ADMIN: state => state.isValidNominalRollAdmin || state.isValidStaffAdministrationAdmin, //gives access to admin section of navigation menu
+    GMP_UMP_STATS_ROLE: state => (state.isValidGMPUser || state.isValidUMPUser) && state.isValidStudentSearchAdmin,
+    NEW_PEN_AND_MERGES_STATS_ROLE: state => (state.isValidPenRequestBatchAdmin || state.isValidGMPAdmin || state.isValidUMPAdmin) && state.isValidStudentSearchAdmin || state.isValidStudentSearchAdmin, //studentSearchAdmin is always needed or api calls fail
+    HAS_STATS_ROLE: state => state.isValidGMPUser || state.isValidUMPUser || state.isValidPenRequestBatchAdmin || state.isValidStudentSearchAdmin
   },
   mutations: {
     //sets Json web token and determines whether user is authenticated
