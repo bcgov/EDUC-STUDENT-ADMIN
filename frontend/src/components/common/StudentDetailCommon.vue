@@ -593,8 +593,7 @@ import {REQUEST_TYPES, Routes, STUDENT_CODES, STUDENT_DEMOG_CODES, STUDENT_DETAI
 import StudentDetailsTextField from '@/components/penreg/student/StudentDetailsTextField';
 import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly';
 import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsComboBox';
-import StudentDetailsTextFieldSideCardReadOnly
-  from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
+import StudentDetailsTextFieldSideCardReadOnly from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
 import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
 import {formatDateTime, formatDob, formatMincode, formatPen} from '@/utils/format';
 import {cloneDeep, pick, sortBy} from 'lodash';
