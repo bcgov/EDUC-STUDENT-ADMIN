@@ -17,6 +17,7 @@ nconf.defaults({
     frontend: process.env.SERVER_FRONTEND,
     backend: process.env.SERVER_FRONTEND + '/api',
     logLevel: process.env.LOG_LEVEL,
+    idirIDPHint: process.env.IDIR_IDP_HINT,
     morganFormat: 'dev',
     port: '8080',
     session: {
