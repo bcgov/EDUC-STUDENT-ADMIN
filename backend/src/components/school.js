@@ -70,8 +70,14 @@ async function getPenCoordinators(req, res) {
       const school = cacheService.getSchoolNameJSONByMincode(coord.mincode);
       const openedDate = school?.effectiveDate;
       const closedDate = school?.expiryDate;
-      return !(school && school.schoolName && openedDate == null || LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME).isAfter(LocalDate.now()) || (closedDate != null && LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME).isBefore(LocalDate.now())));
-    }).map(coord=> coord.schoolName = cacheService.getSchoolNameJSONByMincode(coord.mincode)?.schoolName);
+      if(!school || !school.schoolName || !openedDate || LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME).isAfter(LocalDate.now())  || (closedDate && LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME).isBefore(LocalDate.now()))){
+        return false;
+      }
+      return true;
+    }).map(coord=> {
+      coord.schoolName = cacheService.getSchoolNameJSONByMincode(coord.mincode)?.schoolName;
+      return coord;
+    });
     return res.status(200).json(filteredCords);
   } catch (e) {
     logApiError(e, 'getPenCoordinators', 'Error occurred while attempting to GET pen coordinator entities.');
