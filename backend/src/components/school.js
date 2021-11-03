@@ -5,6 +5,7 @@ const HttpStatus = require('http-status-codes');
 const cacheService = require('./cache-service');
 const lodash = require('lodash');
 const retry = require('async-retry');
+const {LocalDate, DateTimeFormatter} = require('@js-joda/core');
 
 async function getSchoolByMincode(req, res) {
   try {
@@ -65,8 +66,13 @@ async function getPenCoordinators(req, res) {
     const url = `${config.get('server:schoolAPIURL')}/schools/pen-coordinator`;
     const data = await getData(token, url);
     const coords = lodash.sortBy(data, ['mincode', 'penCoordinatorName']);
-    coords.forEach(coord => coord.schoolName = cacheService.getSchoolNameJSONByMincode(coord.mincode)?.schoolName || '');
-    return res.status(200).json(coords);
+    const filteredCords = coords.filter(coord=> {
+      const school = cacheService.getSchoolNameJSONByMincode(coord.mincode);
+      const openedDate = school?.effectiveDate;
+      const closedDate = school?.expiryDate;
+      return !(school && school.schoolName && openedDate == null || LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME).isAfter(LocalDate.now()) || (closedDate != null && LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME).isBefore(LocalDate.now())));
+    }).map(coord=> coord.schoolName = cacheService.getSchoolNameJSONByMincode(coord.mincode)?.schoolName);
+    return res.status(200).json(filteredCords);
   } catch (e) {
     logApiError(e, 'getPenCoordinators', 'Error occurred while attempting to GET pen coordinator entities.');
     return errorResponse(res);
