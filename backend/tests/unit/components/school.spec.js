@@ -17,6 +17,7 @@ const { mockRequest, mockResponse } = require('../helpers');
 const utils = require('../../../src/components/utils');
 const { ApiError } = require('../../../src/components/error');
 const school = require('../../../src/components/school');
+const {LocalDateTime} = require('@js-joda/core');
 
 
 describe('getPenCoordinators', () => {
@@ -44,7 +45,7 @@ describe('getPenCoordinators', () => {
 
   it('should return all coords correctly', async () => {
     utils.getData.mockResolvedValue(coords);
-    cacheService.getSchoolNameJSONByMincode.mockReturnValue({schoolName: 'School A'});
+    cacheService.getSchoolNameJSONByMincode.mockReturnValue({schoolName: 'School A', effectiveDate: LocalDateTime.now().minusMinutes(2).toJSON()});
     await school.getPenCoordinators(req,res);
     expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     expect(res.json).toHaveBeenCalledWith(formattedResponse);
