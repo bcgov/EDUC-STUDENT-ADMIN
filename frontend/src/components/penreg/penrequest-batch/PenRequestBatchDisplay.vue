@@ -268,7 +268,7 @@ export default {
     async archiveAndReturnAll() {
       const fileNumber = this.selectedFiles.length;
       this.archiveAndReturnMessage = `Please confirm that you would like to return the response files to ${fileNumber} PEN request ${pluralize('file', fileNumber)}.`;
-      this.archiveAndReturnSubtext = 'Note this action will not return all files to the submitting school.';
+      this.archiveAndReturnSubtext = 'Note this action will return all files to the submitting school.';
       const result = await this.$refs.fixableConfirmationDialog.open(null,null,
         { width: '520px', messagePadding: 'px-4 pt-4', color: '', dark: false, closeIcon: true, divider: true, subtitle: true, resolveText: 'Confirm' }
       );
