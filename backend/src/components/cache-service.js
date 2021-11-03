@@ -22,7 +22,9 @@ const cacheService = {
         for (const school of schools) {
           const mincodeSchool = {
             mincode: `${school.distNo}${school.schlNo}`,
-            schoolName: school.schoolName
+            schoolName: school.schoolName,
+            effectiveDate: school.dateOpened,
+            expiryDate: school.dateClosed,
           };
           mincodeSchoolMap.set(`${school.distNo}${school.schlNo}`, mincodeSchool);
           mincodeSchools.push(mincodeSchool);
