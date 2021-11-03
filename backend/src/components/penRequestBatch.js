@@ -137,7 +137,7 @@ async function issueNewPen(req, res) {
     const sagaReq = {
       ...stripAuditColumns(studentData),
       mincode: studentData.mincode,
-      matchedStudentIDList: req.body.matchedStudentIDList
+      matchedStudentIDList: req.body.twinStudentIDs
     };
 
     const sagaId = await postData(token, `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch-saga/new-pen`, sagaReq, null, getUser(req).idir_username);
