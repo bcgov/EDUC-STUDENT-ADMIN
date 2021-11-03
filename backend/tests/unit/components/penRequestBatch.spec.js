@@ -155,7 +155,7 @@ describe('getPenRequestBatchStudentMatchOutcome', () => {
 describe('issueNewPen', () => {
   let req;
   let res;
-  const matchedStudentIDList = ['201', '202'];
+  const twinStudentIDs = ['201', '202'];
 
   beforeEach(() => {
     utils.getBackendToken.mockReturnValue('token');
@@ -166,7 +166,7 @@ describe('issueNewPen', () => {
       studentId: 'c0a8014d-74e1-1d99-8174-e10db8410001'
     };
     req.body = {
-      matchedStudentIDList,
+      twinStudentIDs,
       prbStudent: prbStudentData
     };
   });
@@ -180,7 +180,7 @@ describe('issueNewPen', () => {
     utils.getData.mockResolvedValue(prbStudentData);
     utils.postData.mockResolvedValue(resp);
     await penRequestBatch.issueNewPen(req, res);
-    expectationsForUserActionsInPRBSaga(matchedStudentIDList);
+    expectationsForUserActionsInPRBSaga(twinStudentIDs);
     expect(redisUtil.createSagaRecord).toHaveBeenCalledWith({
       sagaId: resp,
       penRequestBatchID: req.body.prbStudent.penRequestBatchID,
