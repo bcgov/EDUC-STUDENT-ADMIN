@@ -150,7 +150,9 @@ export default {
         .get(Routes['sld'].STUDENT_HISTORY_URL + '/', {params: {pen: this.student.pen}})
         .then(response => {
           if (response?.data?.length > 0) {
-            this.sldData = this.sortArrayByDate(response.data, 'reportDate', false);
+            this.sldData = _.orderBy(response.data, 
+              ['reportDate', 'mincode', 'legalSurname', 'legalGivenName', 'legalMiddleName', 'gender', 'birthDate', 'localStudentId', 'enrolledGradeCode', 'postal'],
+              ['desc', 'desc', 'desc', 'desc', 'desc', 'desc', 'desc', 'desc', 'desc', 'desc']);
           }
         }).catch(error => {
           this.setFailureAlert('Could not retrieve data from API, Please try again later.');
