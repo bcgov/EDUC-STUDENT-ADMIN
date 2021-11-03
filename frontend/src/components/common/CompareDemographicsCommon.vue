@@ -423,7 +423,9 @@ export default {
         .get(Routes['sld'].STUDENT_HISTORY_URL + '/', {params: {pen: pen}})
         .then(response => {
           if (response?.data?.length > 0) {
-            response.data = this.sortArrayByDate(response.data, 'reportDate', false);
+            response.data = _.orderBy(response.data, 
+              ['reportDate', 'mincode', 'legalSurname', 'legalGivenName', 'legalMiddleName', 'gender', 'birthDate', 'localStudentId', 'enrolledGradeCode', 'postal'],
+              ['desc', 'desc', 'desc', 'desc', 'desc', 'desc', 'desc', 'desc', 'desc', 'desc']);
             response.data.forEach(sld => sld.selected = false);
           }
           this.$set(this.sldData, pen, response.data);
