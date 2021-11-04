@@ -19,7 +19,8 @@ export default {
     isValidPenRequestBatchAdmin: localStorage.getItem('isValidPenRequestBatchAdmin') !== null,
     isValidStaffAdministrationUser: localStorage.getItem('isValidStaffAdministrationUser') !== null,
     isValidStaffAdministrationAdmin: localStorage.getItem('isValidStaffAdministrationAdmin') !== null,
-    isValidNominalRollAdmin: localStorage.getItem('isValidNominalRollAdmin') !== null
+    isValidNominalRollAdmin: localStorage.getItem('isValidNominalRollAdmin') !== null,
+    isValidAnalyticsAdmin: localStorage.getItem('isValidAnalyticsAdmin') !== null
   },
   getters: {
     acronyms: state => state.acronyms,
@@ -43,9 +44,9 @@ export default {
     CREATE_NEW_PEN_ROLE: state => state.isValidStaffAdministrationAdmin,
     NOMINAL_ROLL_ROLE: state => state.isValidNominalRollAdmin,
     STAFF_ADMINISTRATION_ADMIN: state => state.isValidNominalRollAdmin || state.isValidStaffAdministrationAdmin, //gives access to admin section of navigation menu
-    GMP_UMP_STATS_ROLE: state => state.isValidGMPUser || state.isValidUMPUser,
-    NEW_PEN_AND_MERGES_STATS_ROLE: state => (state.isValidPenRequestBatchAdmin || state.isValidGMPAdmin || state.isValidUMPAdmin) && state.isValidStudentSearchAdmin,
-    HAS_STATS_ROLE: state => (state.isValidPenRequestBatchAdmin || state.isValidGMPAdmin || state.isValidUMPAdmin) && state.isValidStudentSearchAdmin || state.isValidGMPUser || state.isValidUMPUser
+    GMP_UMP_STATS_ROLE: state => (state.isValidGMPUser || state.isValidUMPUser) && state.isValidAnalyticsAdmin,
+    NEW_PEN_AND_MERGES_STATS_ROLE: state => ((state.isValidPenRequestBatchAdmin || state.isValidGMPAdmin || state.isValidUMPAdmin) && state.isValidStudentSearchAdmin) && state.isValidAnalyticsAdmin,
+    HAS_STATS_ROLE: state => ((state.isValidPenRequestBatchAdmin || state.isValidGMPAdmin || state.isValidUMPAdmin) && state.isValidStudentSearchAdmin || state.isValidGMPUser || state.isValidUMPUser) && state.isValidAnalyticsAdmin
   },
   mutations: {
     //sets Json web token and determines whether user is authenticated
@@ -166,6 +167,15 @@ export default {
         localStorage.removeItem(('isValidNominalRollAdmin'));
       }
     },
+    setAnalyticsAdmin: (state, isValidAnalyticsAdmin) => {
+      if (isValidAnalyticsAdmin) {
+        state.isValidAnalyticsAdmin = true;
+        localStorage.setItem('isValidAnalyticsAdmin', 'true');
+      } else {
+        state.isValidAnalyticsAdmin = false;
+        localStorage.removeItem(('isValidAnalyticsAdmin'));
+      }
+    },
     setUserInfo: (state, userInf) => {
       if (userInf) {
         state.userInfo = userInf;
@@ -231,5 +241,6 @@ function setAuthorizations(context, response) {
   context.commit('setStaffAdministrationUser', response.isValidStaffAdministrationUser);
   context.commit('setStaffAdministrationAdmin', response.isValidStaffAdministrationAdmin);
   context.commit('setValidNominalRollAdmin', response.isValidNominalRollAdmin);
+  context.commit('setAnalyticsAdmin', response.isValidAnalyticsAdmin);
   ApiService.setAuthHeader(response.jwtFrontend);
 }

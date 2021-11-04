@@ -14,7 +14,8 @@ const roles = {
     PenRequestBatch: config.get('server:penRequestBatch:rolesAllowed'),
     //Help functions created in auth module: isValidStaffAdministrationUser
     StaffAdministration: config.get('server:administration:rolesAllowed'),
-    NominalRoll: config.get('server:nominalRoll:rolesAllowed')
+    NominalRoll: config.get('server:nominalRoll:rolesAllowed'),
+    Analytics: config.get('server:analytics:rolesAllowed')
   },
   Admin: {
     //Help functions created in auth module: isValidGMPAdmin
@@ -27,7 +28,8 @@ const roles = {
     PenRequestBatch: config.get('server:penRequestBatch:roleAdmin'),
     //Help functions created in auth module: isValidStaffAdministrationAdmin
     StaffAdministration: config.get('server:administration:roleAdmin'),
-    NominalRoll: config.get('server:nominalRoll:roleAdmin')
+    NominalRoll: config.get('server:nominalRoll:roleAdmin'),
+    Analytics: config.get('server:analytics:roleAdmin')
   }
 };
 
