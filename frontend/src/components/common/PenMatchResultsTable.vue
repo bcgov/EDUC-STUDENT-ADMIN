@@ -325,6 +325,7 @@ export default {
     enableMatchOrUnMatch(matchedStudent) {
       if (this.student && matchedStudent) {
         if (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE === this.student.penRequestBatchStudentStatusCode
+          || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.DUPLICATE === this.student.penRequestBatchStudentStatusCode
           || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ === this.student.penRequestBatchStudentStatusCode
           || (!this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR')
             && PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.student.penRequestBatchStudentStatusCode)) {
