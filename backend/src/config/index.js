@@ -103,6 +103,10 @@ nconf.defaults({
     macro: {
       rootURL: process.env.MACRO_API_URL,
       penMacroURL: process.env.MACRO_API_URL + '/pen'
+    },
+    analytics: {
+      roleAdmin: process.env.STUDENT_ADMIN_ANALYTICS,
+      rolesAllowed: process.env.STUDENT_ADMIN_ANALYTICS ? process.env.STUDENT_ADMIN_ANALYTICS.split(',') : '', // please provide comma separated values.
     }
   },
   oidc: {
