@@ -149,7 +149,6 @@
 </template>
 
 <script>
-import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import {mapGetters, mapMutations, mapState} from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
 import PrbStudentStatusChip from './PrbStudentStatusChip';
@@ -163,6 +162,7 @@ import {
   SEARCH_CONDITION,
   SEARCH_FILTER_OPERATION,
   SEARCH_VALUE_TYPE,
+  STUDENT_DETAILS_FIELDS,
   PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER
 } from '@/utils/constants';
 import alertMixin from '../../../mixins/alertMixin';
@@ -644,22 +644,7 @@ export default {
       this.showPossibleMatch = false;
       this.possibleMatches = [];
       try {
-        const result = await getMatchedRecordssWithDemographicsByStudent(this.prbStudent?.studentID, true);
-        let matchedIndex = -1;
-
-        result.forEach((item, index) => {
-          if (item.studentID === this.prbStudent?.studentID) {
-            item.matchedToStudent = true;
-            item.iconValue = 'mdi-file-check';
-            matchedIndex = index;
-          } else {
-            item.possibleMatchedToStudent = true;
-            item.iconValue = 'mdi-account-multiple';
-          }
-        });
-
-        this.possibleMatches = matchedIndex > 0 ? [result[matchedIndex], ...result.slice(0, matchedIndex), ...result.slice(matchedIndex + 1)] : result;
-
+        this.possibleMatches = await getMatchedRecordssWithDemographicsByStudent(this.prbStudent?.studentID, true);
         this.showPossibleMatch = true;
       } catch (error) {
         console.log(error);

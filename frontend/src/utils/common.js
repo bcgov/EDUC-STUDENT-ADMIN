@@ -125,8 +125,23 @@ export async function getMatchedRecordssWithDemographicsByStudent(studentID, inc
         studentIDs
       }
     };
-    const students = await ApiService.apiAxios.get(Routes.student.GET_ALL_STUDENTS_BY_IDS, params);
-    return students.data;
+    const { data: result } = await ApiService.apiAxios.get(Routes.student.GET_ALL_STUDENTS_BY_IDS, params);
+    let matchedIndex = -1;
+
+    result.forEach((item, index) => {
+      if (item.studentID === studentID) {
+        item.matchedToStudent = true;
+        item.iconValue = 'mdi-file-check';
+        matchedIndex = index;
+      } else {
+        item.possibleMatchedToStudent = true;
+        item.iconValue = 'mdi-account-multiple';
+      }
+    });
+
+    const matchedStudents = matchedIndex > 0 ? [result[matchedIndex], ...result.slice(0, matchedIndex), ...result.slice(matchedIndex + 1)] : result;
+
+    return matchedStudents;
   } else {
     return []; // resolve blank array if student id is not present.
   }

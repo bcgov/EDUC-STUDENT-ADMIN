@@ -81,7 +81,7 @@ async function getNominalRollStudentById(req, res) {
     logApiError(e, 'getNominalRollStudentById', 'Error getting a NominalRollStudent.');
     return errorResponse(res);
   }
-};
+}
 
 async function validateNominalRollStudentDemogData(req, res) {
   try {

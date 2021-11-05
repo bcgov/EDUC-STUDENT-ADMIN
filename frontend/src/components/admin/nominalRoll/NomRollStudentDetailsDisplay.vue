@@ -464,22 +464,7 @@ export default {
           this.studentID = studentResult.data.studentID;
         }
 
-        const result = await getMatchedRecordssWithDemographicsByStudent(this.studentID, true);
-        let matchedIndex = -1;
-
-        result.forEach((item, index) => {
-          if (item.studentID === this.studentID) {
-            item.matchedToStudent = true;
-            item.iconValue = 'mdi-file-check';
-            matchedIndex = index;
-          } else {
-            item.possibleMatchedToStudent = true;
-            item.iconValue = 'mdi-account-multiple';
-          }
-        });
-
-        this.possibleMatches = matchedIndex > 0 ? [result[matchedIndex], ...result.slice(0, matchedIndex), ...result.slice(matchedIndex + 1)] : result;
-
+        this.possibleMatches = await getMatchedRecordssWithDemographicsByStudent(this.studentID, true);
         this.showPossibleMatch = true;
       } catch (error) {
         console.log(error);
