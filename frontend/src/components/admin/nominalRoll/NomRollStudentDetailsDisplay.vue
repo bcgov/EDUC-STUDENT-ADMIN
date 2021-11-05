@@ -266,14 +266,8 @@ export default {
     },
   },
   created() {
-    //Go back to Files page if refresh button is pressed
-    // if(Object.keys(this.selectedIDs).length > 0) {
-      this.$store.dispatch('student/getCodes');
-      this.initializeDetails();
-    // } else {
-    //   router.push({name: 'nominal-roll'});
-    // }
-
+    this.$store.dispatch('student/getCodes');
+    this.initializeDetails();
   },
   beforeDestroy() {
     this.clearNavigation();
