@@ -139,9 +139,7 @@ export async function getMatchedRecordssWithDemographicsByStudent(studentID, inc
       }
     });
 
-    const matchedStudents = matchedIndex > 0 ? [result[matchedIndex], ...result.slice(0, matchedIndex), ...result.slice(matchedIndex + 1)] : result;
-
-    return matchedStudents;
+    return matchedIndex > 0 ? [result[matchedIndex], ...result.slice(0, matchedIndex), ...result.slice(matchedIndex + 1)] : result;
   } else {
     return []; // resolve blank array if student id is not present.
   }
