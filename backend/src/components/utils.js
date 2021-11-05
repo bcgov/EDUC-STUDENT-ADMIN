@@ -377,7 +377,7 @@ const utils = {
       }
     };
   },
-  getCodes(urlKey, cacheKey) {
+  getCodes(urlKey, cacheKey, extraPath) {
     return async function getCodesHandler(req, res) {
       try {
         const token = getBackendToken(req);
@@ -385,7 +385,7 @@ const utils = {
           return unauthorizedError(res);
         }
         const url = config.get(urlKey);
-        const codes = await getCodeTable(token, cacheKey, url);
+        const codes = await getCodeTable(token, cacheKey, extraPath ? `${url}${extraPath}` : url);
 
         return res.status(HttpStatus.OK).json(codes);
 

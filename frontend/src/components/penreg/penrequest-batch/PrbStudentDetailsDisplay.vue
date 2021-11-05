@@ -19,8 +19,12 @@
                   key="info-panel"
                   :runPenMatch="runPenMatch"
                   :studentDetailsCopy="prbStudentCopy"
-                  :demogValidationResult="demogValidationResult"
-                  @validationRun="checkValidationResults">
+                  :validationWarningFields="validationWarningFields"
+                  :validationErrorFields="validationErrorFields"
+                  :hiddenSearchFields="hiddenSearchFields"
+                  :isFixableOrErrorStatus="isFixableOrErrorStatus"
+                  :runDemogValidation="runDemogValidation"
+              >
                 <template v-slot:headerPanel="{ openSearchDemographicsModal }">
                   <v-row no-gutters
                          class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center"
@@ -108,8 +112,11 @@
                                       :is-match-un-match="true"
                                       :disableMatchUnmatch="disableMatchUnmatch"
                                       :disableRefresh="disableRefresh"
-                                      :demogValidationResult="demogValidationResult"
-                                      @match-unmatch-student-prb-student="matchUnmatchStudentToPRBStudent"
+                                      :title="penMatchResultTitle"
+                                      :showMatchButton="showMatchButton"
+                                      :showUnmatchButton="showUnmatchButton"
+                                      :grayoutPossibleMatches="grayoutPossibleMatches"
+                                      @match-unmatch-student="matchUnmatchStudentToPRBStudent"
                                       @refresh-match-results="refreshMatchResults"
                                       :possible-match="possibleMatches"></PenMatchResultsTable>
               </v-row>
@@ -123,7 +130,7 @@
             <v-row class="mb-3">There is <strong>&nbsp;{{ demogValidationResult.length }}&nbsp;</strong> questionable
               {{ `error${demogValidationResult.length > 1 ? 's' : ''}` }} with this PEN request:
             </v-row>
-            <v-row v-for="warning in demogValidationResult" :key="warning.penRequestBatchValidationIssueTypeCode">
+            <v-row v-for="warning in demogValidationResult" :key="warning.description">
               <v-col class="pb-0">
                 <v-row>
                   <strong>{{ warning.uiFieldName }}</strong>
@@ -131,7 +138,7 @@
                     fa-exclamation-circle
                   </v-icon>
                 </v-row>
-                <v-row>{{ warning.penRequestBatchValidationIssueTypeCode }}</v-row>
+                <v-row>{{ warning.description }}</v-row>
               </v-col>
             </v-row>
           </v-col>
@@ -142,6 +149,7 @@
 </template>
 
 <script>
+import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import {mapGetters, mapMutations, mapState} from 'vuex';
 import PrimaryButton from '../../util/PrimaryButton';
 import PrbStudentStatusChip from './PrbStudentStatusChip';
@@ -154,7 +162,8 @@ import {
   Routes,
   SEARCH_CONDITION,
   SEARCH_FILTER_OPERATION,
-  SEARCH_VALUE_TYPE
+  SEARCH_VALUE_TYPE,
+  PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER
 } from '@/utils/constants';
 import alertMixin from '../../../mixins/alertMixin';
 import PenMatchResultsTable from '@/components/common/PenMatchResultsTable';
@@ -163,6 +172,7 @@ import {
   deepCloneObject,
   getMatchedRecordssWithDemographicsByStudent,
   getPossibleMatches,
+  getDemogValidationResults
 } from '@/utils/common';
 import {formatPen} from '@/utils/format';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
@@ -216,6 +226,9 @@ export default {
       isStudentDataUpdated: false, // make it true, if any of the student gets updated from possible match list
       sagaId: undefined,
       deactivateMultipleDraggableDialog: null,
+      hiddenSearchFields: [STUDENT_DETAILS_FIELDS.MINCODE],
+      validationWarningFields: [],
+      validationErrorFields: []
     };
   },
   watch: {
@@ -248,6 +261,7 @@ export default {
     ...mapState('setNavigation', ['selectedIDs', 'currentRequest']),
     ...mapGetters('setNavigation', ['title']),
     ...mapState('notifications', ['notification']),
+    ...mapState('penRequestBatch', ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
     disableRefresh() {
       return this.prbStudent?.sagaInProgress || this.isArchived
           || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE !== this.prbStudent?.penRequestBatchStudentStatusCode;
@@ -295,7 +309,27 @@ export default {
     },
     batchIDs() {
       return [...new Set(this.selectedIDs.map(item => item.penRequestBatchID))].join(',');
-    }
+    },
+    isFixableOrErrorStatus() {
+      return PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE === this.prbStudent.penRequestBatchStudentStatusCode
+      || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.prbStudent.penRequestBatchStudentStatusCode;
+    },
+    penMatchResultTitle() {
+      if (this.prbStudent.penRequestBatchStudentStatusCode) {
+        switch (this.prbStudent.penRequestBatchStudentStatusCode) {
+        case PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS:
+        case PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR:
+          return 'New PEN Created';
+        case PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS:
+        case PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR:
+          return 'Matched To';
+        default:
+          return `${this.possibleMatches.length || 0} Matches`;
+        }
+      } else {
+        return `${this.possibleMatches.length || 0} Matches`;
+      }
+    },
   },
   created() {
     //Go back to Files page if refresh button is pressed
@@ -338,7 +372,7 @@ export default {
         if ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.DUPLICATE]
           .some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)) {
           this.demogValidationResult = await this.getValidationIssuesByBatchStudentID(this.prbStudent.penRequestBatchStudentID);
-          const hasValidationFailure = this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR');
+          const hasValidationFailure = this.handleDemogValidationResult(this.demogValidationResult);
           if (!hasValidationFailure) {
             await this.runPenMatch();
           }
@@ -456,10 +490,6 @@ export default {
         this.isLoadingMatches = false;
       }
     },
-    checkValidationResults(value) {
-      this.hasValidationIssues = value.hasValidationError;
-      this.demogValidationResult = value.validationIssues;
-    },
     setModalStudentFromPrbStudent(prbStudent) {
       this.modalStudent = deepCloneObject(prbStudent);
     },
@@ -557,9 +587,14 @@ export default {
         }
 
         this.isMatchingToStudentRecord = true;
-        const penRequests = await this.retrievePenRequestsWithSameAssignedPen(student.pen);
-        if(penRequests?.length > 0) {
-          this.setFailureAlert('This PEN already used.');
+        try {
+          const penRequests = await this.retrievePenRequestsWithSameAssignedPen(student.pen);
+          if(penRequests?.length > 0) {
+            this.setFailureAlert('This PEN already used.');
+            this.isMatchingToStudentRecord = false;
+            return;
+          }
+        } catch (error) {
           this.isMatchingToStudentRecord = false;
           return;
         }
@@ -696,7 +731,58 @@ export default {
         }
       }
       return false;
-    }
+    },
+    async runDemogValidation(modalStudent) {
+      try {
+        const payload = {
+          student: {
+            ...modalStudent
+          }
+        };
+        const result = await getDemogValidationResults(payload);
+        return this.handleDemogValidationResult(result);
+      } catch (error) {
+        console.log(error);
+        this.setFailureAlert('Demographics validation call failed, please try again.');
+      }
+    },
+    handleDemogValidationResult(result) {
+      this.demogValidationResult = result.map(y => {
+        y.dataFieldName = PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER[y.penRequestBatchValidationFieldCode];
+        y.uiFieldName = this.prbValidationFieldCodes.find(obj => obj.code === y.penRequestBatchValidationFieldCode)?.label;
+        y.description = this.prbValidationIssueTypeCodes.find(obj => obj.code === y.penRequestBatchValidationIssueTypeCode)?.description || y.penRequestBatchValidationIssueTypeCode;
+        return y;
+      });
+      this.validationErrorFields = this.demogValidationResult.filter(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR');
+      this.validationWarningFields = this.demogValidationResult.filter(x => x.penRequestBatchValidationIssueSeverityCode === 'WARNING');
+
+      if (!(this.prbStudent.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS
+        || this.prbStudent.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR)) {
+        this.hasValidationIssues = this.validationErrorFields?.length > 0;
+        return this.hasValidationIssues;
+      }else{
+        this.demogValidationResult = [];
+        this.hasValidationIssues = false;
+        this.validationErrorFields = [];
+        this.validationWarningFields = [];
+        return false;
+      }
+    },
+    showMatchButton() {
+      return (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE === this.prbStudent.penRequestBatchStudentStatusCode
+        || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.DUPLICATE === this.prbStudent.penRequestBatchStudentStatusCode
+        || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ === this.prbStudent.penRequestBatchStudentStatusCode
+        || (!this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR')
+          && PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.prbStudent.penRequestBatchStudentStatusCode));
+    },
+    showUnmatchButton(matchedStudent) {
+      return ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR]
+        .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode) && matchedStudent.studentID === this.prbStudent.studentID);
+    },
+    grayoutPossibleMatches(matchedStudent) {
+      return (this.prbStudent.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR && this.prbStudent.assignedPEN != matchedStudent.pen) 
+        || !!matchedStudent.possibleMatchedToStudent;
+    },
   }
 };
 </script>

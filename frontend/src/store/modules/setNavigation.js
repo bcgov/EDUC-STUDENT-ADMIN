@@ -1,6 +1,6 @@
 const getDefaultState = () => {
   return {
-    selectedIDs: {},
+    selectedIDs: [],
     currentRequest: 0,
     archived: false
   };

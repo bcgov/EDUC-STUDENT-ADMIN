@@ -5,8 +5,8 @@
         fa-exclamation-circle
       </v-icon>
     </template>
-    <span v-for="warning in validationWarnings" :key="warning.penRequestBatchValidationIssueTypeCode">
-      {{warning.penRequestBatchValidationIssueTypeCode}} <br/>
+    <span v-for="warning in validationWarnings" :key="warning.description">
+      {{warning.description}} <br/>
     </span>
   </v-tooltip>
 </template>

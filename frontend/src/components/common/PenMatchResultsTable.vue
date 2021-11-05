@@ -43,7 +43,7 @@
                     hoveredOveredRowStudentID === props.item.studentID?'hovered-record-match-unmatch':'' ,
                     props.isSelected?'selected-record':'',
                     isMatchedToStudent(props.item)?'matchedStudentRow':'',
-                    (student.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR && student.assignedPEN != props.item.pen) || !!props.item.possibleMatchedToStudent ? 'grayout':'']">
+                    grayoutPossibleMatches(props.item) ? 'grayout':'']">
                 <td v-for="header in props.headers" :key="header.id" :class="header.id">
                   <div :class="[props.item[header.doubleValue] ? 'value-half-width':'','tableCell']">
                     <span v-if="header.type">
@@ -104,7 +104,7 @@
                         <PrimaryButton :short="true" id="matchUnMatchButton" :text="matchUnMatchButtonText"
                                        :width="'6.5em'"
                                        :disabled="disableMatchUnmatch"
-                                       @click.native="$emit('match-unmatch-student-prb-student', props.item, matchUnMatchButtonText)"></PrimaryButton>
+                                       @click.native="$emit('match-unmatch-student', props.item, matchUnMatchButtonText)"></PrimaryButton>
                       </span>
                       <span v-else-if="header.bottomValue==='postalCode'"
                             :class="['bottom-column-item', props.item[header.bottomValue] && demogValuesMatch(header.bottomValue, props.item[header.bottomValue])? 'font-weight-bold':'']">
@@ -136,7 +136,6 @@
 import CompareDemographicModal from './CompareDemographicModal';
 import TertiaryButton from '../util/TertiaryButton';
 import StudentDetailModal from '../penreg/student/StudentDetailModal';
-import {PEN_REQ_BATCH_STUDENT_REQUEST_CODES} from '@/utils/constants';
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
 import {mapState} from 'vuex';
 import PrimaryButton from '@/components/util/PrimaryButton';
@@ -152,10 +151,6 @@ export default {
   props: {
     student: {
       type: Object,
-      required: true
-    },
-    demogValidationResult: {
-      type: Array,
       required: true
     },
     possibleMatch: {
@@ -185,7 +180,23 @@ export default {
     disableRefresh: {
       type: Boolean,
       default: false
-    }
+    },
+    title: {
+      type: String,
+      required: true
+    },
+    showMatchButton: {
+      type: Function,
+      required: true
+    },
+    showUnmatchButton: {
+      type: Function,
+      required: true
+    },
+    grayoutPossibleMatches: {
+      type: Function,
+      required: true
+    },
   },
   data() {
     return {
@@ -259,7 +270,6 @@ export default {
       selectedRecords: [],
       hoveredOveredRowStudentID: null,
       matchUnMatchButtonText: null,
-      PEN_REQ_BATCH_STUDENT_REQUEST_CODES: PEN_REQ_BATCH_STUDENT_REQUEST_CODES,
     };
   },
   mounted() {
@@ -272,22 +282,6 @@ export default {
   },
   computed: {
     ...mapState('app', ['stickyInfoPanelHeight']),
-    title() {
-      if (this.student.penRequestBatchStudentStatusCode) {
-        switch (this.student.penRequestBatchStudentStatusCode) {
-        case PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS:
-        case PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR:
-          return 'New PEN Created';
-        case PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS:
-        case PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR:
-          return 'Matched To';
-        default:
-          return `${this.studentPossibleMatches.length || 0} Matches`;
-        }
-      } else {
-        return `${this.studentPossibleMatches.length || 0} Matches`;
-      }
-    },
     isMatchedToStudent(){
       return item => !!item?.matchedToStudent;
     },
@@ -324,15 +318,10 @@ export default {
     formatDob,
     enableMatchOrUnMatch(matchedStudent) {
       if (this.student && matchedStudent) {
-        if (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE === this.student.penRequestBatchStudentStatusCode
-          || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.DUPLICATE === this.student.penRequestBatchStudentStatusCode
-          || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ === this.student.penRequestBatchStudentStatusCode
-          || (!this.demogValidationResult.some(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR')
-            && PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.student.penRequestBatchStudentStatusCode)) {
+        if (this.showMatchButton(matchedStudent)) {
           this.hoveredOveredRowStudentID = matchedStudent.studentID;
           this.matchUnMatchButtonText = 'Match';
-        } else if ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR]
-          .some(element => element === this.student.penRequestBatchStudentStatusCode) && matchedStudent.studentID === this.student.studentID) {
+        } else if (this.showUnmatchButton(matchedStudent)) {
           this.hoveredOveredRowStudentID = matchedStudent.studentID;
           this.matchUnMatchButtonText = 'Unmatch';
         }
