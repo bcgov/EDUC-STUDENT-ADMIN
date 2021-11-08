@@ -155,12 +155,43 @@ export default {
             authorized: this.NOMINAL_ROLL_ROLE
           }
         ],
+      },
+      {
+        title: PAGE_TITLES.ANALYTICS,
+        authorized: this.HAS_STATS_ROLE,
+        items: [
+          {
+            title: 'Dashboard',
+            link: 'stats-dashboard',
+            authorized: this.HAS_STATS_ROLE
+          },
+          {
+            title: 'Get My PEN',
+            link: 'analytics-gmp-stats',
+            authorized: this.GMP_UMP_STATS_ROLE
+          },
+          {
+            title: 'Update My PEN',
+            link: 'analytics-ump-stats',
+            authorized: this.GMP_UMP_STATS_ROLE
+          },
+          {
+            title: 'New PENs',
+            link: 'new-pens',
+            authorized: this.NEW_PEN_AND_MERGES_STATS_ROLE
+          },
+          {
+            title: 'Merges',
+            link: 'merges',
+            authorized: this.NEW_PEN_AND_MERGES_STATS_ROLE
+          }
+        ],
       }
     ];
   },
   computed: {
     ...mapState('auth', ['isAuthorizedUser']),
-    ...mapGetters('auth', ['ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE', 'STAFF_ADMINISTRATION_ADMIN'])
+    ...mapGetters('auth', ['ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE', 'STAFF_ADMINISTRATION_ADMIN', 'HAS_STATS_ROLE', 'NEW_PEN_AND_MERGES_STATS_ROLE', 'GMP_UMP_STATS_ROLE'])
   },
   methods: {
     setActive(item) {
