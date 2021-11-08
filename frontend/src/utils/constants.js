@@ -340,6 +340,7 @@ export const PAGE_TITLES = Object.freeze(
     UMP_STATS: 'UMP Stats',
     STATS_DASHBOARD: 'Student and System Analytics',
     VIEW_MERGES: 'View Merges',
+    ANALYTICS: 'Analytics'
   }
 );
 

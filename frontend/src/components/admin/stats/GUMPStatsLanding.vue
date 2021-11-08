@@ -59,6 +59,7 @@
         cols="6"
       >
         <DoughnutChartContainer v-if="CHART_STAT_URLS[`${requestTypeWithAllUpperCase}_ALL_STATUS_LAST_12_MONTH`]"
+                                :key="refreshIdx"
                                 data-type="All Statuses Last 12 month" span-content="All statuses last 12 month"
                                 :completion-states="COMPLETION_STATES[requestTypeWithAllUpperCase]"
                                 :url="CHART_STAT_URLS[`${requestTypeWithAllUpperCase}_ALL_STATUS_LAST_12_MONTH`]"></DoughnutChartContainer>
@@ -117,78 +118,103 @@ export default {
     percentAbandonedRequestToLastMonth: null,
     completionsWithDocCurrentMonth: null,
     percentCompletedRequestWithDocToLastMonth: null,
-    averageTimeToCompleteRequest: null
+    averageTimeToCompleteRequest: null,
+    refreshIdx: 0
   }),
   computed: {
     requestTypeWithAllUpperCase() {
       return this.requestType.toUpperCase();
     }
   },
+  watch: {
+    requestType() {
+      this.completionsLast12Month = null;
+      this.completionsLast12MonthLabels = null;
+      this.completionsLastWeekLabels = null;
+      this.completionsLastWeek = null;
+      this.completionsCurrentMonth = null;
+      this.percentCompletedRequestToLastMonth = null;
+      this.rejectionsCurrentMonth = null;
+      this.percentRejectedRequestToLastMonth = null;
+      this.abandonedCurrentMonth = null;
+      this.percentAbandonedRequestToLastMonth = null;
+      this.completionsWithDocCurrentMonth = null;
+      this.percentCompletedRequestWithDocToLastMonth = null;
+      this.averageTimeToCompleteRequest = null;
+      this.refreshIdx++;
+      this.loadData();
+    }
+  },
   mounted() {
-    const requestTypeWithFirstUpperCase = capitalizeFirstLetter(this.requestType);
-    const baseUrl = CHART_STAT_URLS[`${this.requestTypeWithAllUpperCase}_STATS`];
-    ApiService.apiAxios.get(baseUrl + '?statsType=COMPLETIONS_LAST_12_MONTH')
-      .then(response => {
-        this.completionsLast12Month = Object.values(response.data.completionsInLastTwelveMonth);
-        this.completionsLast12MonthLabels = Object.keys(response.data.completionsInLastTwelveMonth);
-      })
-      .catch(e => {
-        console.error(e);
-        this.setFailureAlert(`Failed to load ${this.requestType} completions in last 12 month data. Please try refreshing the page.`);
-      });
-    ApiService.apiAxios.get(baseUrl + '?statsType=COMPLETIONS_LAST_WEEK')
-      .then(response => {
-        this.completionsLastWeek = Object.values(response.data.completionsInLastWeek);
-        this.completionsLastWeekLabels = Object.keys(response.data.completionsInLastWeek);
-      })
-      .catch(e => {
-        console.error(e);
-        this.setFailureAlert(`Failed to load ${this.requestType} completions in last week data. Please try refreshing the page.`);
-      });
-    ApiService.apiAxios.get(baseUrl + `?statsType=PERCENT_${this.requestTypeWithAllUpperCase}_COMPLETION_TO_LAST_MONTH`)
-      .then(response => {
-        this.completionsCurrentMonth = response.data[this.requestType + 'CompletedInCurrentMonth']?.toString();
-        this.percentCompletedRequestToLastMonth = response.data['percentCompleted' + requestTypeWithFirstUpperCase + 'ToLastMonth'];
-      })
-      .catch(e => {
-        console.error(e);
-        this.setFailureAlert(`Failed to load ${this.requestType} completions in last month data. Please try refreshing the page.`);
-      });
-    ApiService.apiAxios.get(baseUrl + `?statsType=PERCENT_${this.requestTypeWithAllUpperCase}_REJECTED_TO_LAST_MONTH`)
-      .then(response => {
-        this.rejectionsCurrentMonth = response.data[`${this.requestType}RejectedInCurrentMonth`].toString();
-        this.percentRejectedRequestToLastMonth = response.data[`percentRejected${requestTypeWithFirstUpperCase}ToLastMonth`];
-      })
-      .catch(e => {
-        console.error(e);
-        this.setFailureAlert(`Failed to load ${this.requestType} rejected in last month data. Please try refreshing the page.`);
-      });
-    ApiService.apiAxios.get(baseUrl + `?statsType=PERCENT_${this.requestTypeWithAllUpperCase}_ABANDONED_TO_LAST_MONTH`)
-      .then(response => {
-        this.abandonedCurrentMonth = response.data[`${this.requestType}AbandonedInCurrentMonth`].toString();
-        this.percentAbandonedRequestToLastMonth = response.data[`percentAbandoned${requestTypeWithFirstUpperCase}ToLastMonth`];
-      })
-      .catch(e => {
-        console.error(e);
-        this.setFailureAlert(`Failed to load ${this.requestType} abandoned in last month data. Please try refreshing the page.`);
-      });
-    ApiService.apiAxios.get(baseUrl + `?statsType=PERCENT_${this.requestTypeWithAllUpperCase}_COMPLETED_WITH_DOCUMENTS_TO_LAST_MONTH`)
-      .then(response => {
-        this.completionsWithDocCurrentMonth = response.data[`${this.requestType}CompletedWithDocsInCurrentMonth`].toString();
-        this.percentCompletedRequestWithDocToLastMonth = response.data[`percent${requestTypeWithFirstUpperCase}CompletedWithDocumentsToLastMonth`];
-      })
-      .catch(e => {
-        console.error(e);
-        this.setFailureAlert(`Failed to load ${this.requestType} completions with docs in last month data. Please try refreshing the page.`);
-      });
-    ApiService.apiAxios.get(baseUrl + '?statsType=AVERAGE_COMPLETION_TIME')
-      .then(response => {
-        this.averageTimeToCompleteRequest = response.data.averageTimeToCompleteRequest;
-      })
-      .catch(e => {
-        console.error(e);
-        this.setFailureAlert(`Failed to load ${this.requestType} average time to complete data. Please try refreshing the page.`);
-      });
+    this.loadData();
+  },
+  methods: {
+    loadData() {
+      const requestTypeWithFirstUpperCase = capitalizeFirstLetter(this.requestType);
+      const baseUrl = CHART_STAT_URLS[`${this.requestTypeWithAllUpperCase}_STATS`];
+      ApiService.apiAxios.get(baseUrl + '?statsType=COMPLETIONS_LAST_12_MONTH')
+        .then(response => {
+          this.completionsLast12Month = Object.values(response.data.completionsInLastTwelveMonth);
+          this.completionsLast12MonthLabels = Object.keys(response.data.completionsInLastTwelveMonth);
+        })
+        .catch(e => {
+          console.error(e);
+          this.setFailureAlert(`Failed to load ${this.requestType} completions in last 12 month data. Please try refreshing the page.`);
+        });
+      ApiService.apiAxios.get(baseUrl + '?statsType=COMPLETIONS_LAST_WEEK')
+        .then(response => {
+          this.completionsLastWeek = Object.values(response.data.completionsInLastWeek);
+          this.completionsLastWeekLabels = Object.keys(response.data.completionsInLastWeek);
+        })
+        .catch(e => {
+          console.error(e);
+          this.setFailureAlert(`Failed to load ${this.requestType} completions in last week data. Please try refreshing the page.`);
+        });
+      ApiService.apiAxios.get(baseUrl + `?statsType=PERCENT_${this.requestTypeWithAllUpperCase}_COMPLETION_TO_LAST_MONTH`)
+        .then(response => {
+          this.completionsCurrentMonth = response.data[this.requestType + 'CompletedInCurrentMonth']?.toString();
+          this.percentCompletedRequestToLastMonth = response.data['percentCompleted' + requestTypeWithFirstUpperCase + 'ToLastMonth'];
+        })
+        .catch(e => {
+          console.error(e);
+          this.setFailureAlert(`Failed to load ${this.requestType} completions in last month data. Please try refreshing the page.`);
+        });
+      ApiService.apiAxios.get(baseUrl + `?statsType=PERCENT_${this.requestTypeWithAllUpperCase}_REJECTED_TO_LAST_MONTH`)
+        .then(response => {
+          this.rejectionsCurrentMonth = response.data[`${this.requestType}RejectedInCurrentMonth`].toString();
+          this.percentRejectedRequestToLastMonth = response.data[`percentRejected${requestTypeWithFirstUpperCase}ToLastMonth`];
+        })
+        .catch(e => {
+          console.error(e);
+          this.setFailureAlert(`Failed to load ${this.requestType} rejected in last month data. Please try refreshing the page.`);
+        });
+      ApiService.apiAxios.get(baseUrl + `?statsType=PERCENT_${this.requestTypeWithAllUpperCase}_ABANDONED_TO_LAST_MONTH`)
+        .then(response => {
+          this.abandonedCurrentMonth = response.data[`${this.requestType}AbandonedInCurrentMonth`].toString();
+          this.percentAbandonedRequestToLastMonth = response.data[`percentAbandoned${requestTypeWithFirstUpperCase}ToLastMonth`];
+        })
+        .catch(e => {
+          console.error(e);
+          this.setFailureAlert(`Failed to load ${this.requestType} abandoned in last month data. Please try refreshing the page.`);
+        });
+      ApiService.apiAxios.get(baseUrl + `?statsType=PERCENT_${this.requestTypeWithAllUpperCase}_COMPLETED_WITH_DOCUMENTS_TO_LAST_MONTH`)
+        .then(response => {
+          this.completionsWithDocCurrentMonth = response.data[`${this.requestType}CompletedWithDocsInCurrentMonth`].toString();
+          this.percentCompletedRequestWithDocToLastMonth = response.data[`percent${requestTypeWithFirstUpperCase}CompletedWithDocumentsToLastMonth`];
+        })
+        .catch(e => {
+          console.error(e);
+          this.setFailureAlert(`Failed to load ${this.requestType} completions with docs in last month data. Please try refreshing the page.`);
+        });
+      ApiService.apiAxios.get(baseUrl + '?statsType=AVERAGE_COMPLETION_TIME')
+        .then(response => {
+          this.averageTimeToCompleteRequest = response.data.averageTimeToCompleteRequest;
+        })
+        .catch(e => {
+          console.error(e);
+          this.setFailureAlert(`Failed to load ${this.requestType} average time to complete data. Please try refreshing the page.`);
+        });
+    }
   }
 };
 </script>
