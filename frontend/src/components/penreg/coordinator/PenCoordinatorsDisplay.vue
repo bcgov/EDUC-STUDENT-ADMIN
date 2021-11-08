@@ -177,7 +177,7 @@ export default {
       headers: [
         { text: 'Mincode', value: 'mincode', sortable: false, align: 'start', tooltip: 'Mincode' },
         { text: 'School', value: 'schoolName', sortable: false, tooltip: 'School Name' },
-        { text: 'PEN Coordinator Name', value: 'penCoordinatorName', sortable: false, tooltip: 'PEN Coordinator Name', editable: true, maxLength: '40', rules: [v => v?.trim().length >= 1 || 'Required']},
+        { text: 'PEN Contact Name', value: 'penCoordinatorName', sortable: false, tooltip: 'PEN Contact Name', editable: true, maxLength: '40', rules: [v => v?.trim().length >= 1 || 'Required']},
         { text: 'Email', value: 'penCoordinatorEmail', sortable: false, tooltip: 'Eamil', editable: true, maxLength: '100', rules: [v => isValidEmail(v) || 'Valid Email Required']},
         { value: 'actions', sortable: false },
       ],
@@ -268,7 +268,7 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          this.setFailureAlert('An error occurred while loading the PEN coordinator data. Please try again later.');
+          this.setFailureAlert('An error occurred while loading the PEN contact data. Please try again later.');
         })
         .finally(() => (this.dataLoading = false));
     },
@@ -336,10 +336,10 @@ export default {
         .then(() => {
           this.resetHoveredOveredRow();
           this.loadPenCoords();
-          this.setSuccessAlert('Success! The PEN coordinator data has been updated.');
+          this.setSuccessAlert('Success! The PEN contact data has been updated.');
         })
         .catch(error => {
-          this.setFailureAlert('An error occurred while updating the PEN coordinator data. Please try again later.');
+          this.setFailureAlert('An error occurred while updating the PEN contact data. Please try again later.');
           console.error(error);
           this.dataLoading = false;
         });
