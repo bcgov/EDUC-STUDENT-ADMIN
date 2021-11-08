@@ -15,8 +15,11 @@ async function getSchoolByMincode(req, res) {
         return res.status(200).json(data);
       }
     }else {
-      const data = cacheService.getAllSchoolsJSON();
+      let data = cacheService.getAllSchoolsJSON();
       if(data){
+        data = data.filter(school => {
+          return isSchoolExpired(school);
+        });
         return res.status(200).json(data);
       }else {
         return res.status(200).json([]);
@@ -68,12 +71,7 @@ async function getPenCoordinators(req, res) {
     const coords = lodash.sortBy(data, ['mincode', 'penCoordinatorName']);
     const filteredCords = coords.filter(coord=> {
       const school = cacheService.getSchoolNameJSONByMincode(coord.mincode);
-      const openedDate = school?.effectiveDate;
-      const closedDate = school?.expiryDate;
-      if(!school || !school.schoolName || !openedDate || LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME).isAfter(LocalDate.now())  || (closedDate && LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME).isBefore(LocalDate.now()))){
-        return false;
-      }
-      return true;
+      return isSchoolExpired(school);
     }).map(coord=> {
       coord.schoolName = cacheService.getSchoolNameJSONByMincode(coord.mincode)?.schoolName;
       return coord;
@@ -83,6 +81,13 @@ async function getPenCoordinators(req, res) {
     logApiError(e, 'getPenCoordinators', 'Error occurred while attempting to GET pen coordinator entities.');
     return errorResponse(res);
   }
+}
+
+function isSchoolExpired(school) {
+  const openedDate = school?.effectiveDate;
+  const closedDate = school?.expiryDate;
+  return !(!school || !school.schoolName || !openedDate || LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME).isAfter(LocalDate.now()) || (closedDate && LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME).isBefore(LocalDate.now())));
+
 }
 
 module.exports = {
