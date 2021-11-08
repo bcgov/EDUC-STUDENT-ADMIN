@@ -88,15 +88,15 @@ export default {
     return {
       headers: [
         {text: 'Date', value: 'reportDate', key: 'date', sortable: false, tooltip: 'Activity Date'},
-        {text: 'Gr', value: 'enrolledGradeCode', key: 'grade', sortable: false, tooltip: 'Grade Code'},
         {text: 'Mincode', value: 'mincode', key: 'mincode', sortable: false, tooltip: 'Mincode'},
-        {text: 'Local ID', value: 'localStudentId', key: 'localId', sortable: false, tooltip: 'Local ID'},
         {text: 'Surname', value: 'legalSurname', key: 'surname', sortable: false, tooltip: 'Legal Surname'},
         {text: 'Given', value: 'legalGivenName', key: 'givenName', sortable: false, tooltip: 'Legal Given Name'},
         {text: 'Middle', value: 'legalMiddleName', key: 'middleName', sortable: false, tooltip: 'Legal Middle Name'},
         {text: 'Gen', value: 'sex', key: 'gender', sortable: false, tooltip: 'Gender'},
+        {text: 'Birth Date', value: 'birthDate', key: 'dob', sortable: false, tooltip: 'Birth Date'},
+        {text: 'Local ID', value: 'localStudentId', key: 'localId', sortable: false, tooltip: 'Local ID'},
+        {text: 'Gr', value: 'enrolledGradeCode', key: 'grade', sortable: false, tooltip: 'Grade Code'},
         {text: 'Postal Code', value: 'postal', key: 'postalCode', sortable: false, tooltip: 'Postal Code'},
-        {text: 'Birth Date', value: 'birthDate', key: 'dob', sortable: false, tooltip: 'Birth Date'}
       ],
       loading: true,
       sldData: [],
@@ -150,9 +150,7 @@ export default {
         .get(Routes['sld'].STUDENT_HISTORY_URL + '/', {params: {pen: this.student.pen}})
         .then(response => {
           if (response?.data?.length > 0) {
-            this.sldData = _.orderBy(response.data, 
-              ['reportDate', 'mincode', 'legalSurname', 'legalGivenName', 'legalMiddleName', 'gender', 'birthDate', 'localStudentId', 'enrolledGradeCode', 'postal'],
-              ['desc', 'desc', 'desc', 'desc', 'desc', 'desc', 'desc', 'desc', 'desc', 'desc']);
+            this.sldData = this.sortArrayByDate(response.data, 'reportDate', false);
           }
         }).catch(error => {
           this.setFailureAlert('Could not retrieve data from API, Please try again later.');
