@@ -18,6 +18,7 @@ import ArchivedRequestBatchDisplay from './components/penreg/penrequest-batch/Ar
 import LoadFailedBatchList from './components/penreg/penrequest-batch/LoadFailedBatchList';
 import HeldRequestBatchDisplay from './components/penreg/penrequest-batch/HeldRequestBatchDisplay';
 import UnAuthorized from './components/UnAuthorized';
+import CreateNewPEN from './components/CreateNewPEN';
 import { REQUEST_TYPES, PAGE_TITLES } from './utils/constants';
 import authStore from './store/modules/auth';
 import ErrorPage from './components/ErrorPage';
