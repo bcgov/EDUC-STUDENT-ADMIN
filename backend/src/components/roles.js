@@ -15,7 +15,10 @@ const roles = {
     //Help functions created in auth module: isValidStaffAdministrationUser
     StaffAdministration: config.get('server:administration:rolesAllowed'),
     NominalRoll: config.get('server:nominalRoll:rolesAllowed'),
-    Analytics: config.get('server:analytics:rolesAllowed')
+    //Help functions created in auth module: isValidGUMPAnalyticsUser
+    GUMPAnalytics: config.get('server:studentRequest:roleAnalytics'),
+    //Help functions created in auth module: isValidPenRequestBatchAnalyticsUser
+    PenRequestBatchAnalytics: config.get('server:penRequestBatch:roleAnalytics')
   },
   Admin: {
     //Help functions created in auth module: isValidGMPAdmin
@@ -28,8 +31,7 @@ const roles = {
     PenRequestBatch: config.get('server:penRequestBatch:roleAdmin'),
     //Help functions created in auth module: isValidStaffAdministrationAdmin
     StaffAdministration: config.get('server:administration:roleAdmin'),
-    NominalRoll: config.get('server:nominalRoll:roleAdmin'),
-    Analytics: config.get('server:analytics:roleAdmin')
+    NominalRoll: config.get('server:nominalRoll:roleAdmin')
   }
 };
 

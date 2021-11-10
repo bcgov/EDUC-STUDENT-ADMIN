@@ -168,22 +168,22 @@ export default {
           {
             title: 'Get My PEN',
             link: 'analytics-gmp-stats',
-            authorized: this.GMP_UMP_STATS_ROLE
+            authorized: this.STUDENT_ANALYTICS_STUDENT_PROFILE
           },
           {
             title: 'Update My PEN',
             link: 'analytics-ump-stats',
-            authorized: this.GMP_UMP_STATS_ROLE
+            authorized: this.STUDENT_ANALYTICS_STUDENT_PROFILE
           },
           {
             title: 'New PENs',
             link: 'new-pens',
-            authorized: this.NEW_PEN_AND_MERGES_STATS_ROLE
+            authorized: this.STUDENT_ANALYTICS_BATCH
           },
           {
             title: 'Merges',
             link: 'merges',
-            authorized: this.NEW_PEN_AND_MERGES_STATS_ROLE
+            authorized: this.STUDENT_ANALYTICS_BATCH
           }
         ],
       }
@@ -191,7 +191,7 @@ export default {
   },
   computed: {
     ...mapState('auth', ['isAuthorizedUser']),
-    ...mapGetters('auth', ['ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE', 'STAFF_ADMINISTRATION_ADMIN', 'HAS_STATS_ROLE', 'NEW_PEN_AND_MERGES_STATS_ROLE', 'GMP_UMP_STATS_ROLE'])
+    ...mapGetters('auth', ['ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE', 'STAFF_ADMINISTRATION_ADMIN', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH'])
   },
   methods: {
     setActive(item) {

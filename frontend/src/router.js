@@ -17,8 +17,8 @@ import PrbStudentDetailsDisplay from './components/penreg/penrequest-batch/PrbSt
 import ArchivedRequestBatchDisplay from './components/penreg/penrequest-batch/ArchivedRequestBatchDisplay';
 import LoadFailedBatchList from './components/penreg/penrequest-batch/LoadFailedBatchList';
 import HeldRequestBatchDisplay from './components/penreg/penrequest-batch/HeldRequestBatchDisplay';
-import CreateNewPEN from './components/CreateNewPEN';
 import UnAuthorized from './components/UnAuthorized';
+import CreateNewPEN from './components/CreateNewPEN';
 import { REQUEST_TYPES, PAGE_TITLES } from './utils/constants';
 import authStore from './store/modules/auth';
 import ErrorPage from './components/ErrorPage';
@@ -371,7 +371,7 @@ const router = new VueRouter({
           meta: {
             pageTitle: PAGE_TITLES.GMP_STATS,
             requiresAuth: true,
-            role: 'GMP_UMP_STATS_ROLE'
+            role: 'STUDENT_ANALYTICS_STUDENT_PROFILE'
           }
         },
         {
@@ -384,7 +384,7 @@ const router = new VueRouter({
           meta: {
             pageTitle: PAGE_TITLES.UMP_STATS,
             requiresAuth: true,
-            role: 'GMP_UMP_STATS_ROLE'
+            role: 'STUDENT_ANALYTICS_STUDENT_PROFILE'
           }
         },
         {
@@ -394,7 +394,7 @@ const router = new VueRouter({
           meta: {
             pageTitle: PAGE_TITLES.NEW_PENS,
             requiresAuth: true,
-            role: 'NEW_PEN_AND_MERGES_STATS_ROLE'
+            role: 'STUDENT_ANALYTICS_BATCH'
           },
         },
         {
@@ -404,7 +404,7 @@ const router = new VueRouter({
           meta: {
             pageTitle: PAGE_TITLES.VIEW_MERGES,
             requiresAuth: true,
-            role: 'NEW_PEN_AND_MERGES_STATS_ROLE'
+            role: 'STUDENT_ANALYTICS_BATCH'
           },
         },
       ],
