@@ -40,7 +40,7 @@ nconf.defaults({
       paginated: process.env.STUDENT_PROFILE_API_URL + '/paginated',
       rolesAllowed: process.env.UMP_ROLES ? process.env.UMP_ROLES.split(',') : '', // please provide comma separated values.
       roleAdmin: process.env.UMP_ROLE_ADMIN,
-      roleAnalytics: process.env.STUDENT_ANALYTICS_STUDENT_PROFILE
+      roleAnalytics: process.env.STUDENT_ANALYTICS_STUDENT_PROFILE ? process.env.UMP_ROLES.split(',') : ''
     },
     studentSearch: {
       roleAdmin: process.env.STUDENT_SEARCH_ADMIN,
@@ -58,7 +58,7 @@ nconf.defaults({
       roleAdmin: process.env.PEN_REQUEST_BATCH_ADMIN,
       rolesAllowed: process.env.PEN_REQUEST_BATCH_ADMIN ? process.env.PEN_REQUEST_BATCH_ADMIN.split(',') : '', // using PEN_REQUEST_BATCH_ADMIN because there is no read only role
       maxPaginatedElements: 1000,
-      roleAnalytics: process.env.STUDENT_ANALYTICS_BATCH
+      roleAnalytics: process.env.STUDENT_ANALYTICS_BATCH ? process.env.UMP_ROLES.split(',') : ''
     },
     penMatch: {
       rootURL: process.env.PEN_MATCH_API_URL,
