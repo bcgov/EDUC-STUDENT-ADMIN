@@ -18,6 +18,8 @@ const extendSession = utils.extendSession();
 const atomicStudentUpdate = require('../middlewares/atomic-student-update');
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles('GMP & UMP & PenRequestBatch & StudentSearch', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.StudentSearch, ...roles.User.StaffAdministration]);
 
+const isValidUITokenWithSearchRoles = auth.isValidUiTokenWithRoles('StudentSearch & PenRequestBatchAnalytics', [...roles.User.StudentSearch, ...roles.User.PenRequestBatchAnalytics]);
+
 router.get('/allStudents', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getAllStudentByStudentIds);
 router.get('/genderCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:student:genderCodesURL', 'studentGenderCodes'));
 router.get('/activeGenderCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getActiveCodes('server:student:genderCodesURL', 'studentGenderCodes'));
@@ -26,7 +28,7 @@ router.get('/statusCodes', passport.authenticate('jwt', {session: false}, undefi
 router.get('/gradeCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:student:gradeCodesURL', 'studentGradeCodes'));
 router.get('/document-type-codes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:student:docTypeCodesURL', 'studentDocTypeCodes'));
 router.get('/historyActivityCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:student:historyActivityCodesURL', 'studentHistoryActivityCodes'));
-router.get('/search', passport.authenticate('jwt', {session: false}, undefined), auth.isValidStudentSearchUserToken, extendSession, searchStudent);
+router.get('/search', passport.authenticate('jwt', {session: false}, undefined), isValidUITokenWithSearchRoles, extendSession, searchStudent);
 router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentById);
 router.get('/', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentByPen);
 router.get('/detail/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentByStudentId);

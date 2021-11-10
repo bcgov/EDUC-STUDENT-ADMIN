@@ -39,7 +39,8 @@ nconf.defaults({
       emails: process.env.STUDENT_PROFILE_EMAIL_API_URL,
       paginated: process.env.STUDENT_PROFILE_API_URL + '/paginated',
       rolesAllowed: process.env.UMP_ROLES ? process.env.UMP_ROLES.split(',') : '', // please provide comma separated values.
-      roleAdmin: process.env.UMP_ROLE_ADMIN
+      roleAdmin: process.env.UMP_ROLE_ADMIN,
+      roleAnalytics: process.env.STUDENT_ANALYTICS_STUDENT_PROFILE
     },
     studentSearch: {
       roleAdmin: process.env.STUDENT_SEARCH_ADMIN,
@@ -56,7 +57,8 @@ nconf.defaults({
       studentStatusCodesURL: process.env.PEN_REQUEST_BATCH_API_URL + '/pen-request-batch/student/pen-request-batch-student-status-codes',
       roleAdmin: process.env.PEN_REQUEST_BATCH_ADMIN,
       rolesAllowed: process.env.PEN_REQUEST_BATCH_ADMIN ? process.env.PEN_REQUEST_BATCH_ADMIN.split(',') : '', // using PEN_REQUEST_BATCH_ADMIN because there is no read only role
-      maxPaginatedElements: 1000
+      maxPaginatedElements: 1000,
+      roleAnalytics: process.env.STUDENT_ANALYTICS_BATCH
     },
     penMatch: {
       rootURL: process.env.PEN_MATCH_API_URL,
@@ -104,10 +106,6 @@ nconf.defaults({
       rootURL: process.env.MACRO_API_URL,
       penMacroURL: process.env.MACRO_API_URL + '/pen'
     },
-    analytics: {
-      roleAdmin: process.env.STUDENT_ADMIN_ANALYTICS,
-      rolesAllowed: process.env.STUDENT_ADMIN_ANALYTICS ? process.env.STUDENT_ADMIN_ANALYTICS.split(',') : '', // please provide comma separated values.
-    }
   },
   oidc: {
     publicKey: process.env.SOAM_PUBLIC_KEY,

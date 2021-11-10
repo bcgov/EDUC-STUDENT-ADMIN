@@ -101,16 +101,16 @@
                   <v-card-title class="pa-0"><h3>Student and System Analytics</h3></v-card-title>
                 </router-link>
               </v-row>
-              <router-link v-if="GMP_UMP_STATS_ROLE" :to="{name: 'analytics-gmp-stats'}">
+              <router-link v-if="STUDENT_ANALYTICS_STUDENT_PROFILE" :to="{name: 'analytics-gmp-stats'}">
                 <v-row class="pt-2">Get My PEN</v-row>
               </router-link>
-              <router-link v-if="GMP_UMP_STATS_ROLE" :to="{name: 'analytics-ump-stats'}">
+              <router-link v-if="STUDENT_ANALYTICS_STUDENT_PROFILE" :to="{name: 'analytics-ump-stats'}">
                 <v-row class="pt-2">Update My PEN</v-row>
               </router-link>
-              <router-link v-if="NEW_PEN_AND_MERGES_STATS_ROLE" :to="{name: 'new-pens'}">
+              <router-link v-if="STUDENT_ANALYTICS_BATCH" :to="{name: 'new-pens'}">
                 <v-row class="pt-2">New PENs</v-row>
               </router-link>
-              <router-link v-if="NEW_PEN_AND_MERGES_STATS_ROLE" :to="{name: 'merges'}">
+              <router-link v-if="STUDENT_ANALYTICS_BATCH" :to="{name: 'merges'}">
                 <v-row class="pt-2">Merges</v-row>
               </router-link>
             </v-col>
@@ -222,7 +222,7 @@ export default {
     });
   },
   computed: {
-    ...mapGetters('auth', ['VIEW_GMP_REQUESTS_ROLE','VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'HAS_STATS_ROLE', 'GMP_UMP_STATS_ROLE', 'NEW_PEN_AND_MERGES_STATS_ROLE']),
+    ...mapGetters('auth', ['VIEW_GMP_REQUESTS_ROLE','VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH']),
     ...mapState('app', ['mincodeSchoolNames', 'districtCodes']),
     requestTypes() {
       return REQUEST_TYPES;
