@@ -92,11 +92,11 @@
           Demog Code: {{ students.demogCode }}
         </span>
         <span class="pl-4 pr-3"></span>
-        <span class="pl-4 pr-3"></span>
-        <span class="pl-4 pr-3"></span>
         <span class="pl-4 pr-3 bottom-field-item">{{equalsIgnoreCase(students.legalLastName,students.usualLastName)? '' : students.usualLastName}}</span>
         <span class="pl-4 pr-3 bottom-field-item">{{equalsIgnoreCase(students.legalFirstName, students.usualFirstName)? '' : students.usualFirstName}}</span>
         <span class="pl-4 pr-3 bottom-field-item">{{equalsIgnoreCase(students.legalMiddleNames, students.usualMiddleNames)? '' : students.usualMiddleNames}}</span>
+        <span class="pl-4 pr-3"></span>
+        <span class="pl-4 pr-3"></span>
         <v-spacer></v-spacer>
         <a class="removePenLink pr-3" @click="removeRecord(students.studentID, index)">
             <v-icon small color="#38598A">mdi-close</v-icon>
