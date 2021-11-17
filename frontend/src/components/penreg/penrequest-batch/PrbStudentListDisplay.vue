@@ -42,7 +42,7 @@
                   color="#003366"
                   label="Legal Surname"
                   @keyup.enter="enterPushed()"
-                  v-on:input="searchHasValues"
+                  v-on:input="[searchHasValues(),upperCaseInput('legalLastName')]"
                   maxlength="255"
                   tabindex="2"
                   dense
@@ -53,7 +53,7 @@
                   color="#003366"
                   label="Usual Surname"
                   @keyup.enter="enterPushed()"
-                  v-on:input="searchHasValues"
+                  v-on:input="[searchHasValues(),upperCaseInput('usualLastName')]"
                   tabindex="10"
                   maxlength="255"
                   dense
@@ -67,7 +67,7 @@
                   color="#003366"
                   label="Legal Given"
                   @keyup.enter="enterPushed()"
-                  v-on:input="searchHasValues"
+                  v-on:input="[searchHasValues(),upperCaseInput('legalFirstName')]"
                   maxlength="255"
                   dense
                 ></v-text-field>
@@ -77,7 +77,7 @@
                   color="#003366"
                   label="Usual Given"
                   @keyup.enter="enterPushed()"
-                  v-on:input="searchHasValues"
+                  v-on:input="[searchHasValues(),upperCaseInput('usualFirstName')]"
                   tabindex="11"
                   maxlength="255"
                   dense
@@ -89,7 +89,7 @@
                   v-model="prbStudentSearchParams.legalMiddleNames"
                   color="#003366"
                   label="Legal Middle"
-                  v-on:input="searchHasValues"
+                  v-on:input="[searchHasValues(),upperCaseInput('legalMiddleNames')]"
                   @keyup.enter="enterPushed()"
                   tabindex="4"
                   maxlength="255"
@@ -101,7 +101,7 @@
                   color="#003366"
                   label="Usual Middle"
                   @keyup.enter="enterPushed()"
-                  v-on:input="searchHasValues"
+                  v-on:input="[searchHasValues(),upperCaseInput('usualMiddleNames')]"
                   tabindex="12"
                   maxlength="255"
                   dense
@@ -116,7 +116,7 @@
                   label="Gender"
                   maxlength="1"
                   @keyup.enter="enterPushed()"
-                  v-on:input="[searchHasValues(),uppercaseGender()]"
+                  v-on:input="[searchHasValues(),upperCaseInput('genderCode')]"
                   :rules="validateField(prbStudentSearchParams.genderCode, isValidGender, genderHint)"
                   dense
                 ></v-text-field>
@@ -126,7 +126,7 @@
                   tabindex="13"
                   color="#003366"
                   label="Postal Code"
-                  v-on:input="[searchHasValues(),uppercasePostal()]"
+                  v-on:input="[searchHasValues(),upperCaseInput('postalCode')]"
                   maxlength="7"
                   @keyup.enter="enterPushed()"
                   :rules="validateField(prbStudentSearchParams.postalCode, isValidPostalCode, postalCodeHint)"
@@ -155,7 +155,7 @@
                   tabindex="14"
                   maxlength="2"
                   @keyup.enter="enterPushed()"
-                  v-on:input="[searchHasValues(), uppercaseGrade()]"
+                  v-on:input="[searchHasValues(), upperCaseInput('gradeCode')]"
                   :rules="validateField(prbStudentSearchParams.gradeCode, isValidGradeCode, gradeHint)"
                   minLength="1"
                   dense
@@ -352,19 +352,9 @@ export default {
   },
   methods: {
     ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse', 'clearPrbStudentSearchParams', 'setCurrentPrbStudentSearchParams', 'setPrbStudentSearchCriteria']),
-    uppercasePostal(){
-      if(this.prbStudentSearchParams.postalCode){
-        this.prbStudentSearchParams.postalCode = this.prbStudentSearchParams.postalCode.toUpperCase();
-      }
-    },
-    uppercaseGender(){
-      if(this.prbStudentSearchParams.genderCode){
-        this.prbStudentSearchParams.genderCode = this.prbStudentSearchParams.genderCode.toUpperCase();
-      }
-    },
-    uppercaseGrade() {
-      if(this.prbStudentSearchParams.gradeCode) {
-        this.prbStudentSearchParams.gradeCode = this.prbStudentSearchParams.gradeCode.toUpperCase();
+    upperCaseInput(fieldName) {
+      if (this.prbStudentSearchParams[fieldName]) {
+        this.prbStudentSearchParams[fieldName] = this.prbStudentSearchParams[fieldName].toUpperCase();
       }
     },
     enterPushed() {
@@ -488,7 +478,7 @@ export default {
             valueType = SEARCH_VALUE_TYPE.STRING;
             operation = SEARCH_FILTER_OPERATION.EQUAL;
           } else if (element.includes('Name')) {
-            operation = SEARCH_FILTER_OPERATION.STARTS_WITH_IGNORE_CASE;
+            operation = SEARCH_FILTER_OPERATION.STARTS_WITH;
           } else if (element === 'postalCode') {
             value = value.replace(/ +/g, '');
             operation = SEARCH_FILTER_OPERATION.EQUAL;

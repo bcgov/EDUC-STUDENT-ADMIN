@@ -97,7 +97,7 @@
                         label="Legal Surname"
                         maxlength="255"
                         @keyup.enter="enterPushed()"
-                        v-on:input="searchHasValues"
+                        v-on:input="[searchHasValues(), upperCaseInput(batchFileSearchParams.prbStudent, 'legalLastName')]"
                         dense
                     ></v-text-field>
                   </v-col>
@@ -110,7 +110,7 @@
                         label="Legal Given"
                         maxlength="255"
                         @keyup.enter="enterPushed()"
-                        v-on:input="searchHasValues"
+                        v-on:input="[searchHasValues(), upperCaseInput(batchFileSearchParams.prbStudent, 'legalFirstName')]"
                         dense
                     ></v-text-field>
                   </v-col>
@@ -123,7 +123,7 @@
                         label="Legal Middle"
                         maxlength="255"
                         @keyup.enter="enterPushed()"
-                        v-on:input="searchHasValues"
+                        v-on:input="[searchHasValues(), upperCaseInput(batchFileSearchParams.prbStudent, 'legalMiddleNames')]"
                         dense
                     ></v-text-field>
                   </v-col>
