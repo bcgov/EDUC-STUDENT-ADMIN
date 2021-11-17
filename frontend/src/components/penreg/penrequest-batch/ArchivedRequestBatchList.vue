@@ -206,8 +206,10 @@ export default {
       }
       if (paramName === 'dob') {
         paramValue = paramValue.replace(/\//g, '');
-      } else if (paramName.includes('Name')) {
+      } else if (paramName === 'schoolName') {
         operation = SEARCH_FILTER_OPERATION.STARTS_WITH_IGNORE_CASE;
+      } else if (paramName.includes('Name')) {
+        operation = SEARCH_FILTER_OPERATION.STARTS_WITH;
       } else if (paramName === 'postalCode') {
         paramValue = paramValue.replace(/ +/g, '');
       } else if (paramName === 'load') {
