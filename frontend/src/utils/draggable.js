@@ -133,7 +133,7 @@ function moveDialog(event) {
  * Return the initial transition
  * @param event
  */
-function setTransitionBack(event) {
+function setTransitionBack() {
     if (container.el) {
         container.el.style.transition = container.oldTransition;
         container.el = undefined;
@@ -152,8 +152,8 @@ export function activateMultipleDraggableDialog(dialogClassName) {
   };
   document.addEventListener('mousemove', handleMousemove);
 
-  const handleMouseup = (event) => {
-    setTransitionBack(event);
+  const handleMouseup = () => {
+    setTransitionBack();
   };
   document.addEventListener('mouseup', handleMouseup);
 
