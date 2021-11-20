@@ -215,7 +215,7 @@ export default {
       demogValidationResult: [],
       isStudentDataUpdated: false, // make it true, if any of the student gets updated from possible match list
       sagaId: undefined,
-      deactivateMultipleDraggableDialog: function() {},
+      deactivateMultipleDraggableDialog: null,
     };
   },
   watch: {
@@ -310,7 +310,7 @@ export default {
 
   },
   beforeDestroy() {
-    this.deactivateMultipleDraggableDialog();
+    this.deactivateMultipleDraggableDialog && this.deactivateMultipleDraggableDialog();
     this.clearNavigation();
   },
   mounted() {
