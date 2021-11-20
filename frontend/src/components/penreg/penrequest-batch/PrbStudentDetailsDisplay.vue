@@ -117,7 +117,7 @@
           </v-col>
         </v-row>
       </div>
-      <ConfirmationDialog ref="confirmationDialog">
+      <ConfirmationDialog ref="confirmationDialog" contentClass="match-confirmation-dialog">
         <template v-slot:message>
           <v-col class="pt-0">
             <v-row class="mb-3">There is <strong>&nbsp;{{ demogValidationResult.length }}&nbsp;</strong> questionable
@@ -168,6 +168,7 @@ import {formatPen} from '@/utils/format';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
 import router from '../../../router';
 import Mousetrap from 'mousetrap';
+import {activateMultipleDraggableDialog} from '@/utils/draggable';
 
 export default {
   name: 'PrbStudentDetailsDisplay',
@@ -214,6 +215,7 @@ export default {
       demogValidationResult: [],
       isStudentDataUpdated: false, // make it true, if any of the student gets updated from possible match list
       sagaId: undefined,
+      deactivateMultipleDraggableDialog: () => {},
     };
   },
   watch: {
@@ -308,6 +310,7 @@ export default {
 
   },
   beforeDestroy() {
+    this.deactivateMultipleDraggableDialog();
     this.clearNavigation();
   },
   mounted() {
@@ -319,6 +322,7 @@ export default {
       }
       return false;
     });
+    this.deactivateMultipleDraggableDialog = activateMultipleDraggableDialog('match-confirmation-dialog');
   },
   methods: {
     ...mapMutations('setNavigation', ['clearNavigation']),

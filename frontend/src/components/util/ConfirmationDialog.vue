@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" :max-width="options.width" :style="{ zIndex: options.zIndex }" @keydown.esc="cancel">
+  <v-dialog v-model="dialog" :content-class="contentClass" :max-width="options.width" :style="{ zIndex: options.zIndex }" @keydown.esc="cancel">
     <v-card>
       <slot name="title" :cancel="cancel">
         <v-toolbar :dark="options.dark" :color="options.color" :dense="options.dense" flat>
@@ -31,6 +31,12 @@ import PrimaryButton from './PrimaryButton';
 export default {
   name: 'ConfirmationDialog',
   components: {PrimaryButton},
+  props: {
+    contentClass: {
+      type: String,
+      default: '',
+    },
+  },
   data: () => ({
     dialog: false,
     resolve: null,
