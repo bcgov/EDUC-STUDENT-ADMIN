@@ -14,7 +14,7 @@ export default {
   getters: {
     title: state => {
       let files = '';
-      if(!state.multiFiles) {
+      if(state.multiFiles) {
         let numberOfSelectedFiles = [...new Set(state.selectedIDs?.map(item => item[`${state.requestType}ID`]))]?.length;
         files = `(${numberOfSelectedFiles} ${numberOfSelectedFiles > 1 ? 'files' : 'file'} selected)`;
       }
