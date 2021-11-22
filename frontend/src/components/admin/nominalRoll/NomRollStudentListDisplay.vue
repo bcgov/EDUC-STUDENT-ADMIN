@@ -112,7 +112,7 @@ export default {
         return this.$store.state['nomRollStudentSearch'].nomRollStudentSearchParams;
       },
       set(newPage){
-        return this.$store.state['nomRollStudentSearch'].nomRollStudentSearchParams = newPage;
+        this.$store.state['nomRollStudentSearch'].nomRollStudentSearchParams = newPage;
       }
     },
     nomRollStudentStatusSearchCriteria() {

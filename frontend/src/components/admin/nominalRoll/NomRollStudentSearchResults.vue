@@ -122,7 +122,7 @@ export default {
         return this.$store.state['nomRollStudentSearch'].pageNumber;
       },
       set(newPage){
-        return this.$store.state['nomRollStudentSearch'].pageNumber = newPage;
+        this.$store.state['nomRollStudentSearch'].pageNumber = newPage;
       }
     },
     selectedRecords: {
@@ -130,7 +130,7 @@ export default {
         return this.$store.state['nomRollStudentSearch'].selectedRecords;
       },
       set(newRecords){
-        return this.$store.state['nomRollStudentSearch'].selectedRecords = newRecords;
+        this.$store.state['nomRollStudentSearch'].selectedRecords = newRecords;
       }
     },
     showingFirstNumber() {
@@ -147,7 +147,7 @@ export default {
         return this.$store.state['nomRollStudentSearch'].selectedStudentStatus;
       },
       set(status){
-        return this.$store.state['nomRollStudentSearch'].selectedStudentStatus = status;
+        this.$store.state['nomRollStudentSearch'].selectedStudentStatus = status;
       }
     },
     selected() {
