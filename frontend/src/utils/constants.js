@@ -268,7 +268,7 @@ export const PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELD
   }
 );
 
-export const NOMINAL_ROLL_STUDENT_FIELDSS_TO_STUDENT_DETAILS_FIELDS_MAPPER = Object.freeze(
+export const NOMINAL_ROLL_STUDENT_FIELDS_TO_STUDENT_DETAILS_FIELDS_MAPPER = Object.freeze(
   {
     givenNames: { name: STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME, label: 'Legal Given'},
     surname: { name: STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME, label: 'Legal Surname'},
@@ -277,6 +277,10 @@ export const NOMINAL_ROLL_STUDENT_FIELDSS_TO_STUDENT_DETAILS_FIELDS_MAPPER = Obj
     gender: { name: STUDENT_DETAILS_FIELDS.GENDER_CODE, label: 'Gen'},
     schoolNumber: { name: STUDENT_DETAILS_FIELDS.MINCODE, label: 'Mincode'},
   }
+);
+
+export const STUDENT_DETAILS_FIELDS_TO_NOMINAL_ROLL_STUDENT_FIELDS_MAPPER = Object.freeze(
+  Object.fromEntries(Object.entries(NOMINAL_ROLL_STUDENT_FIELDS_TO_STUDENT_DETAILS_FIELDS_MAPPER).map(([key, value]) => [value.name, key]))
 );
 
 export const STUDENT_CODES = Object.freeze(
@@ -340,6 +344,7 @@ export const PAGE_TITLES = Object.freeze(
     NEW_PENS: 'New PENs',
     MACRO_MANAGEMENT: 'Macro Management',
     NOMINAL_ROLL: 'Nominal Roll',
+    NOMINAL_ROLL_STUDENT_LIST: 'Nominal Roll PEN Request List',
     NOMINAL_ROLL_STUDENT_DETAILS: 'Nominal Roll PEN Request Details',
     COMPARE_PENS: 'Compare Students',
     ADMINISTRATION: 'Administration',
@@ -463,12 +468,31 @@ export const PRB_SAGA_NAMES = Object.freeze(
   }
 );
 
+export const NOMINAL_ROLL_STUDENT_STATUSES = Object.freeze(
+  [
+    {
+      value: 'MATCHEDSYS',
+      text: 'Matched by system'
+    },
+    {
+      value: 'MATCHEDUSR',
+      text: 'Matched by user'
+    },
+    {
+      value: 'FIXABLE',
+      text: 'Fixable Request'
+    },
+    {
+      value: 'ERROR',
+      text: 'Error'
+    },
+    {
+      value: 'LOADED',
+      text: 'Loaded'
+    }
+  ]
+);
+
 export const NOMINAL_ROLL_STUDENT_STATUS_CODES = Object.freeze(
-  {
-    FIXABLE: 'FIXABLE',
-    MATCHEDSYS: 'MATCHEDSYS',
-    MATCHEDUSR: 'MATCHEDUSR',
-    ERROR: 'ERROR',
-    LOADED: 'LOADED',
-  }
+  Object.fromEntries(NOMINAL_ROLL_STUDENT_STATUSES.map(status => [status.value, status.value]))
 );

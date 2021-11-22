@@ -6,209 +6,13 @@
       <v-container fluid class="fill-height px-0">
         <v-row no-gutters>
           <v-card elevation="0" height="100%" width="100%" style="background-color:white;">
-            <v-row no-gutters class="py-2" style="background-color:white;">
-              <v-col cols="1" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
-                <v-text-field
-                  id='mincode'
-                  v-model="prbStudentSearchParams.mincode"
-                  tabindex="1"
-                  color="#003366"
-                  label="Mincode"
-                  maxlength="8"
-                  minLength="8"
-                  @keyup.enter="enterPushed()"
-                  v-on:input="searchHasValues"
-                  :rules="validateField(prbStudentSearchParams.mincode, isValidMincode, mincodeHint)"
-                  dense
-                  autofocus
-                ></v-text-field>
-                <v-text-field
-                  id='localID'
-                  v-model="prbStudentSearchParams.localID"
-                  color="#003366"
-                  tabindex="9"
-                  label="Local ID"
-                  maxlength="12"
-                  @keyup.enter="enterPushed()"
-                  v-on:input="searchHasValues"
-                  :rules="validateField(prbStudentSearchParams.localID)"
-                  dense
-                ></v-text-field>
-              </v-col>
-              <v-col class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
-                <v-text-field
-                  id='legalLastName'
-                  v-model="prbStudentSearchParams.legalLastName"
-                  color="#003366"
-                  label="Legal Surname"
-                  @keyup.enter="enterPushed()"
-                  v-on:input="[searchHasValues(),upperCaseInput('legalLastName')]"
-                  maxlength="255"
-                  tabindex="2"
-                  dense
-                ></v-text-field>
-                <v-text-field
-                  id='usualLastName'
-                  v-model="prbStudentSearchParams.usualLastName"
-                  color="#003366"
-                  label="Usual Surname"
-                  @keyup.enter="enterPushed()"
-                  v-on:input="[searchHasValues(),upperCaseInput('usualLastName')]"
-                  tabindex="10"
-                  maxlength="255"
-                  dense
-                ></v-text-field>
-              </v-col>
-              <v-col class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
-                <v-text-field
-                  id='legalFirstName'
-                  v-model="prbStudentSearchParams.legalFirstName"
-                  tabindex="3"
-                  color="#003366"
-                  label="Legal Given"
-                  @keyup.enter="enterPushed()"
-                  v-on:input="[searchHasValues(),upperCaseInput('legalFirstName')]"
-                  maxlength="255"
-                  dense
-                ></v-text-field>
-                <v-text-field
-                  id='usualFirstName'
-                  v-model="prbStudentSearchParams.usualFirstName"
-                  color="#003366"
-                  label="Usual Given"
-                  @keyup.enter="enterPushed()"
-                  v-on:input="[searchHasValues(),upperCaseInput('usualFirstName')]"
-                  tabindex="11"
-                  maxlength="255"
-                  dense
-                  ></v-text-field>
-              </v-col>
-              <v-col class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
-                <v-text-field
-                  id='legalMiddleNames'
-                  v-model="prbStudentSearchParams.legalMiddleNames"
-                  color="#003366"
-                  label="Legal Middle"
-                  v-on:input="[searchHasValues(),upperCaseInput('legalMiddleNames')]"
-                  @keyup.enter="enterPushed()"
-                  tabindex="4"
-                  maxlength="255"
-                  dense
-                ></v-text-field>
-                <v-text-field
-                  id='usualMiddleNames'
-                  v-model="prbStudentSearchParams.usualMiddleNames"
-                  color="#003366"
-                  label="Usual Middle"
-                  @keyup.enter="enterPushed()"
-                  v-on:input="[searchHasValues(),upperCaseInput('usualMiddleNames')]"
-                  tabindex="12"
-                  maxlength="255"
-                  dense
-                ></v-text-field>
-              </v-col>
-              <v-col class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
-                <v-text-field
-                  id='genderCode'
-                  v-model="prbStudentSearchParams.genderCode"
-                  tabindex="5"
-                  color="#003366"
-                  label="Gender"
-                  maxlength="1"
-                  @keyup.enter="enterPushed()"
-                  v-on:input="[searchHasValues(),upperCaseInput('genderCode')]"
-                  :rules="validateField(prbStudentSearchParams.genderCode, isValidGender, genderHint)"
-                  dense
-                ></v-text-field>
-                <v-text-field
-                  id='postalCode'
-                  v-model="prbStudentSearchParams.postalCode"
-                  tabindex="13"
-                  color="#003366"
-                  label="Postal Code"
-                  v-on:input="[searchHasValues(),upperCaseInput('postalCode')]"
-                  maxlength="7"
-                  @keyup.enter="enterPushed()"
-                  :rules="validateField(prbStudentSearchParams.postalCode, isValidPostalCode, postalCodeHint)"
-                  dense
-                ></v-text-field>
-              </v-col>
-              <v-col class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
-                <v-text-field
-                  id='dob'
-                  v-model="prbStudentSearchParams.dob"
-                  tabindex="6"
-                  color="#003366"
-                  label="Birth Date"
-                  :rules="validateField(prbStudentSearchParams.dob, isValidDob, dobHint)"
-                  maxlength="10"
-                  minLength="10"
-                  @keyup.enter="enterPushed()"
-                  v-on:input="searchHasValues"
-                  dense
-                ></v-text-field>
-                <v-text-field
-                  id="gradeCode"
-                  v-model="prbStudentSearchParams.gradeCode"
-                  color="#003366"
-                  label="Grade"
-                  tabindex="14"
-                  maxlength="2"
-                  @keyup.enter="enterPushed()"
-                  v-on:input="[searchHasValues(), upperCaseInput('gradeCode')]"
-                  :rules="validateField(prbStudentSearchParams.gradeCode, isValidGradeCode, gradeHint)"
-                  minLength="1"
-                  dense
-                ></v-text-field>
-              </v-col>
-              <v-col class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
-                <v-text-field
-                  id='bestMatchPEN'
-                  v-model="prbStudentSearchParams.bestMatchPEN"
-                  color="#003366"
-                  label="Suggested PEN"
-                  maxlength="9"
-                  minlength="9"
-                  @keyup.enter="enterPushed()"
-                  v-on:input="[searchHasValues(),runPENSearchIfPossible('bestMatchPEN')]"
-                  tabindex="7"
-                  dense
-                  :rules="validatePen(prbStudentSearchParams.bestMatchPEN)"
-                ></v-text-field>
-                <v-text-field
-                  id='submittedPen'
-                  v-model="prbStudentSearchParams.submittedPen"
-                  color="#003366"
-                  label="Submitted PEN"
-                  maxlength="9"
-                  minlength="9"
-                  @keyup.enter="enterPushed()"
-                  v-on:input="[searchHasValues(),runPENSearchIfPossible('submittedPen')]"
-                  tabindex="15"
-                  dense
-                  :rules="validatePen(prbStudentSearchParams.submittedPen)"
-                ></v-text-field>
-              </v-col>
-              <v-col class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
-                <v-text-field
-                  id='assignedPEN'
-                  v-model="prbStudentSearchParams.assignedPEN"
-                  color="#003366"
-                  label="Assigned PEN"
-                  maxlength="9"
-                  minlength="9"
-                  @keyup.enter="enterPushed()"
-                  v-on:input="searchHasValues"
-                  tabindex="8"
-                  dense
-                  :rules="validatePen(prbStudentSearchParams.assignedPEN)"
-                ></v-text-field>
-                <div class="d-flex justify-end pt-2">
-                  <PrimaryButton id="clear-search" class="mr-2" :secondary="true" @click.native="clearSearch" text="Clear"></PrimaryButton>
-                  <PrimaryButton id="perform-search" :disabled="!searchEnabled" :loading="searchLoading && searchEnabled" @click.native="searchPenRequests" text="Search"></PrimaryButton>
-                </div>
-              </v-col>
-            </v-row>
+            <PenRequestSearchPanel
+              :searchParams="prbStudentSearchParams"
+              :loading="searchLoading"
+              :disabled="!searchEnabled"
+              @searchByPen="searchPenRequestsByPen"
+              @search="searchPenRequests"
+            ></PenRequestSearchPanel>
             <v-progress-linear
               indeterminate
               color="blue"
@@ -238,20 +42,19 @@ import {
   SEARCH_FILTER_OPERATION,
   SEARCH_VALUE_TYPE
 } from '@/utils/constants';
-import {mapGetters, mapMutations, mapState} from 'vuex';
-import PrimaryButton from '../../util/PrimaryButton';
-import {isValidAlphanumericValue, isValidDob, isValidMincode, isValidPEN, isValidPostalCode} from '@/utils/validation';
+import {mapMutations, mapState} from 'vuex';
 import PrbStudentSearchResults from './PrbStudentSearchResults';
 import {formatPrbStudents} from '@/utils/penrequest-batch/format';
 import alertMixin from '../../../mixins/alertMixin';
 import {difference} from 'lodash';
 import Mousetrap from 'mousetrap';
 import router from '@/router';
+import PenRequestSearchPanel from '@/components/common/PenRequestSearchPanel';
 
 export default {
   components: {
-    PrimaryButton,
     PrbStudentSearchResults,
+    PenRequestSearchPanel,
   },
   mixins: [alertMixin],
   props: {
@@ -270,13 +73,6 @@ export default {
   },
   data() {
     return {
-      penHint: 'Fails check-digit test',
-      postalCodeHint: 'Invalid Postal Code',
-      mincodeHint: 'Digits only',
-      genderHint: 'Invalid gender',
-      gradeHint: 'Invalid grade',
-      dobHint: 'Invalid Birth Date',
-      alphanumericHint: 'Alphanumeric only',
       validForm: false,
       searchLoading: false,
       searchEnabled: false,
@@ -285,8 +81,6 @@ export default {
     };
   },
   computed:{
-    ...mapGetters('student', ['gradeCodeObjects']),
-    ...mapState('student', ['genders']),
     ...mapState('prbStudentSearch', ['pageNumber', 'selectedRecords', 'prbStudentSearchResponse', 'selectedStudentStatus', 'currentPrbStudentSearchParams', 'prbStudentSearchCriteria']),
     prbStudentSearchParams: {
       get(){
@@ -295,12 +89,6 @@ export default {
       set(newPage){
         return this.$store.state['prbStudentSearch'].prbStudentSearchParams = newPage;
       }
-    },
-    genderCodes() {
-      return this.genders ? this.genders.map(a => a.genderCode):[];
-    },
-    gradeCodes() {
-      return this.gradeCodeObjects ? this.gradeCodeObjects.map(a => a.gradeCode):[];
     },
     prbStudentStatusSearchCriteria() {
       const statuses = this.selectedStudentStatus || this.statusFilters;
@@ -352,52 +140,10 @@ export default {
   },
   methods: {
     ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse', 'clearPrbStudentSearchParams', 'setCurrentPrbStudentSearchParams', 'setPrbStudentSearchCriteria']),
-    upperCaseInput(fieldName) {
-      if (this.prbStudentSearchParams[fieldName]) {
-        this.prbStudentSearchParams[fieldName] = this.prbStudentSearchParams[fieldName].toUpperCase();
-      }
-    },
-    enterPushed() {
-      if(this.searchHasValues()){
-        this.searchPenRequests();
-      }
-    },
-    runPENSearchIfPossible(field){
-      const pen = this.prbStudentSearchParams[field];
-      if(isValidPEN(pen)){
-        this.clearPrbStudentSearchParams();
-        this.prbStudentSearchParams[field] = pen;
-        this.searchPenRequests();
-      }
-    },
-    isValidGender(code) {
-      return !!(code && this.genderCodes.includes(code.toUpperCase()));
-    },
-    isValidGradeCode(code) {
-      return !!(code && this.gradeCodes.includes(code.toUpperCase()));
-    },
-    isValidMincode,
-    isValidPostalCode,
-    isValidDob,
-    validateField(value, validator=isValidAlphanumericValue, hint=this.alphanumericHint, length=0) {
-      if(!value || validator(value)) {
-        return [];
-      }
-      this.searchEnabled = false;
-      if(value.length < length) {
-        return [];
-      } else {
-        return [
-          hint
-        ];
-      }
-    },
-    validatePen(pen) {
-      if (pen && pen.length < 9) {
-        this.searchEnabled = false;
-        return ['Pen must be nine digits.'];
-      }
-      return this.validateField(pen, isValidPEN, this.penHint, 9);
+    searchPenRequestsByPen([field, pen]){
+      this.clearPrbStudentSearchParams();
+      this.prbStudentSearchParams[field] = pen;
+      this.searchPenRequests();
     },
     searchHasValues(){
       this.searchEnabled = Object.values(this.prbStudentSearchParams).some(v => !!v);
@@ -415,7 +161,6 @@ export default {
     searchPenRequests(initial = false) {
       this.searchLoading = true;
       this.prbStudentSearchResultsKey += 1; //forces prbStudentSearchResults to rerender and update curPage
-      //this.setSelectedRecords();
       this.disablePageHandler=true;
       this.setPageNumber(1);
 
@@ -438,13 +183,6 @@ export default {
       }else{
         this.searchLoading = false;
       }
-    },
-    clearSearch(){
-      Object.keys(this.prbStudentSearchParams).forEach(key => {
-        this.prbStudentSearchParams[key] = undefined;
-      });
-      this.searchPenRequests(true);
-      this.searchEnabled = false;
     },
     initializePrbStudents(students, isFilterOperation) {
       if (isFilterOperation) {

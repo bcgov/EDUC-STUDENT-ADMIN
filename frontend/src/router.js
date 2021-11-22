@@ -30,6 +30,7 @@ import CompareStudents from './components/CompareStudents';
 import PenCoordinatorsDisplay from './components/penreg/coordinator/PenCoordinatorsDisplay';
 import MacrosDisplay from './components/admin/MacrosDisplay';
 import NominalRoll from './components/admin/NominalRoll';
+import NomRollStudentListDisplay from './components/admin/nominalRoll/NomRollStudentListDisplay';
 import NomRollStudentDetailsDisplay from './components/admin/nominalRoll/NomRollStudentDetailsDisplay';
 import StatsDashboard from './components/admin/stats/StatsDashboard';
 import NewPENs from './components/admin/stats/NewPENs';
@@ -278,11 +279,22 @@ const router = new VueRouter({
       },
     },
     {
-      path: '/nominal-roll/:nomRollStudentID',
-      name: 'nomRollStudentDetails',
+      path: '/nominal-roll-list',
+      name: 'nrStudentList',
+      component: NomRollStudentListDisplay,
+      props: (route) => ({ statusFilters: route.query.statusFilters }),
+      meta: {
+        pageTitle: PAGE_TITLES.NOMINAL_ROLL_STUDENT_LIST,
+        requiresAuth: true,
+        role: 'NOMINAL_ROLL_ROLE'
+      },
+    },
+    {
+      path: '/nominal-roll/:nrStudentID',
+      name: 'nrStudentDetails',
       component: NomRollStudentDetailsDisplay,
       props: (route) => ({
-        nomRollStudentID: route.params.nomRollStudentID,
+        nomRollStudentID: route.params.nrStudentID,
       }),
       meta: {
         pageTitle: PAGE_TITLES.NOMINAL_ROLL_STUDENT_DETAILS,

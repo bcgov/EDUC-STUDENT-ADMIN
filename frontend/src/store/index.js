@@ -11,6 +11,7 @@ import penRequestBatch from './modules/penRequestBatch';
 import setNavigation from './modules/setNavigation';
 import archivedRequestBatch from './modules/archivedRequestBatch';
 import nominalRoll from './modules/nominalRoll';
+import nomRollStudentSearch from './modules/nomRollStudentSearch';
 
 Vue.use(Vuex);
 
@@ -27,7 +28,8 @@ const store = new Vuex.Store({
     penRequestBatch,
     setNavigation,
     archivedRequestBatch,
-    nominalRoll
+    nominalRoll,
+    nomRollStudentSearch
   }
 });
 

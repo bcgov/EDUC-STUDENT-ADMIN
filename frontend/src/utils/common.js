@@ -235,3 +235,11 @@ export const getLocalDateFromString = (date, pattern = 'uuuuMMdd') => {
 export function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+/**
+ * This function will return the first letter of each word in the camel case string, like "penRequestBatch" will return "prb"
+ */
+export function abbreviateCamelCase(string) {
+  return string.replace(/([A-Z])/g,' $1').match(/\b(\w)/g).join('').toLowerCase();
+}
+

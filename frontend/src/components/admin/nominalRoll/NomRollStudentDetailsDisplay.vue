@@ -126,7 +126,7 @@ import {
   SEARCH_CONDITION,
   SEARCH_FILTER_OPERATION,
   SEARCH_VALUE_TYPE,
-  NOMINAL_ROLL_STUDENT_FIELDSS_TO_STUDENT_DETAILS_FIELDS_MAPPER,
+  NOMINAL_ROLL_STUDENT_FIELDS_TO_STUDENT_DETAILS_FIELDS_MAPPER,
   STUDENT_DETAILS_FIELDS
 } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
@@ -137,7 +137,7 @@ import {
   getMatchedRecordssWithDemographicsByStudent,
   getPossibleMatches,
 } from '@/utils/common';
-import {formatPen, formatDob} from '@/utils/format';
+import {formatPen, formatDob, formatGrade} from '@/utils/format';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
 import router from '../../../router';
 import Mousetrap from 'mousetrap';
@@ -266,15 +266,20 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('student/getCodes');
-    this.initializeDetails();
+    //Go back to Files page if refresh button is pressed
+    if(Object.keys(this.selectedIDs).length > 0) {
+      this.$store.dispatch('student/getCodes');
+      this.initializeDetails();
+    } else {
+      router.push({name: 'nominal-roll-list'});
+    }
   },
   beforeDestroy() {
     this.clearNavigation();
   },
   mounted() {
     Mousetrap.bind('ctrl+b', () => {
-      router.push({name: 'nominal-roll'});
+      router.push({name: 'nominal-roll-list'});
       return false;
     });
   },
@@ -340,7 +345,7 @@ export default {
       this.modalStudent.legalFirstName = nomRollStudent.givenNames;
       this.modalStudent.genderCode = nomRollStudent.gender;
       this.modalStudent.dob = formatDob(nomRollStudent.birthDate, 'uuuu-MM-dd', 'uuuuMMdd');
-      this.modalStudent.gradeCode = nomRollStudent.grade.padStart(2, '0');
+      this.modalStudent.gradeCode = formatGrade(nomRollStudent.grade);
     },
     async confirmToProceed() {
       let result = true;
@@ -496,8 +501,8 @@ export default {
     },
     handleDemogValidationResult(result) {
       this.demogValidationResult = Object.entries(result).map(([key, value]) => ({
-        dataFieldName: NOMINAL_ROLL_STUDENT_FIELDSS_TO_STUDENT_DETAILS_FIELDS_MAPPER[key]?.name || key,
-        uiFieldName: NOMINAL_ROLL_STUDENT_FIELDSS_TO_STUDENT_DETAILS_FIELDS_MAPPER[key]?.label || key,
+        dataFieldName: NOMINAL_ROLL_STUDENT_FIELDS_TO_STUDENT_DETAILS_FIELDS_MAPPER[key]?.name || key,
+        uiFieldName: NOMINAL_ROLL_STUDENT_FIELDS_TO_STUDENT_DETAILS_FIELDS_MAPPER[key]?.label || key,
         description: value
       }));
       this.validationErrorFields = this.demogValidationResult;

@@ -9,6 +9,8 @@
 </template>
 
 <script>
+import {NOMINAL_ROLL_STUDENT_STATUSES} from '@/utils/constants';
+
 export default {
   name: 'NomRollStudentStatusChip',
   props: {
@@ -25,17 +27,11 @@ export default {
         'FIXABLE' : ['#2E8540', 'white'],
         'ERROR' : ['#D8292F', 'white'],
       },
-      statusLabels: {
-        'MATCHEDSYS': 'Matched by system',
-        'MATCHEDUSR': 'Matched by user',
-        'FIXABLE' : 'Fixable Request',
-        'ERROR' : 'Error',
-      }
     };
   },
   computed: {
     statusLabel() {
-      return this.statusLabels[this.statusCode];
+      return NOMINAL_ROLL_STUDENT_STATUSES.find(status => status.value === this.statusCode)?.text || this.statusCode;
     },
   },
 };

@@ -13,7 +13,7 @@ export default {
   actions: {
     async getCodes({ commit, state}) {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        if(state.mincodeSchoolNames.size === 0) {
+        if(state.fedProvSchoolCodes.size === 0) {
           const response = await ApiService.getFedProvSchoolCodes();
           commit('setFedProvSchoolCodes', response.data);
         }
