@@ -45,3 +45,7 @@ export function formatDob(dob, from='uuuuMMdd', to='uuuu/MM/dd') {
 export function formatPostalCode(postalCode) {
   return postalCode;
 }
+
+export function formatGrade(grade) {
+  return grade.padStart(2, '0');
+}

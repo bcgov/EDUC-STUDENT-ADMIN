@@ -29,5 +29,7 @@ router.put('/:mincode/penCoordinator', passport.authenticate('jwt', {session: fa
  */
 router.get('/penCoordinators', passport.authenticate('jwt', {session: false}, undefined), extendSession, getPenCoordinators);
 
+router.get('/fedProvSchoolCodes', passport.authenticate('jwt', {session: false}, undefined), extendSession, utils.cacheMiddleware(), utils.getCodes('server:schoolAPIURL', 'fedProvSchoolCodes', '/schools/federal-province-codes'));
+
 module.exports = router;
 

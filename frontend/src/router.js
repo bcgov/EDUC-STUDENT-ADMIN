@@ -18,7 +18,6 @@ import ArchivedRequestBatchDisplay from './components/penreg/penrequest-batch/Ar
 import LoadFailedBatchList from './components/penreg/penrequest-batch/LoadFailedBatchList';
 import HeldRequestBatchDisplay from './components/penreg/penrequest-batch/HeldRequestBatchDisplay';
 import UnAuthorized from './components/UnAuthorized';
-import CreateNewPEN from './components/CreateNewPEN';
 import { REQUEST_TYPES, PAGE_TITLES } from './utils/constants';
 import authStore from './store/modules/auth';
 import ErrorPage from './components/ErrorPage';
@@ -30,6 +29,8 @@ import CompareStudents from './components/CompareStudents';
 import PenCoordinatorsDisplay from './components/penreg/coordinator/PenCoordinatorsDisplay';
 import MacrosDisplay from './components/admin/MacrosDisplay';
 import NominalRoll from './components/admin/NominalRoll';
+import NomRollStudentListDisplay from './components/admin/nominalRoll/NomRollStudentListDisplay';
+import NomRollStudentDetailsDisplay from './components/admin/nominalRoll/NomRollStudentDetailsDisplay';
 import StatsDashboard from './components/admin/stats/StatsDashboard';
 import NewPENs from './components/admin/stats/NewPENs';
 import GUMPStatsLanding from '@/components/admin/stats/GUMPStatsLanding';
@@ -247,16 +248,6 @@ const router = new VueRouter({
       },
     },
     {
-      path: '/createNewPEN',
-      name: 'createNewPEN',
-      component: CreateNewPEN,
-      meta: {
-        pageTitle: PAGE_TITLES.CREATE_NEW_PEN,
-        requiresAuth: true,
-        role: 'CREATE_NEW_PEN_ROLE'
-      }
-    },
-    {
       path: '/penCoordinators',
       name: 'penCoordinators',
       component: PenCoordinatorsDisplay,
@@ -282,6 +273,30 @@ const router = new VueRouter({
       component: NominalRoll,
       meta: {
         pageTitle: PAGE_TITLES.NOMINAL_ROLL,
+        requiresAuth: true,
+        role: 'NOMINAL_ROLL_ROLE'
+      },
+    },
+    {
+      path: '/nominal-roll-list',
+      name: 'nrStudentList',
+      component: NomRollStudentListDisplay,
+      props: (route) => ({ statusFilters: route.query.statusFilters }),
+      meta: {
+        pageTitle: PAGE_TITLES.NOMINAL_ROLL_STUDENT_LIST,
+        requiresAuth: true,
+        role: 'NOMINAL_ROLL_ROLE'
+      },
+    },
+    {
+      path: '/nominal-roll/:nrStudentID',
+      name: 'nrStudentDetails',
+      component: NomRollStudentDetailsDisplay,
+      props: (route) => ({
+        nomRollStudentID: route.params.nrStudentID,
+      }),
+      meta: {
+        pageTitle: PAGE_TITLES.NOMINAL_ROLL_STUDENT_DETAILS,
         requiresAuth: true,
         role: 'NOMINAL_ROLL_ROLE'
       },

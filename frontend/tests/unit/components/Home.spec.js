@@ -44,7 +44,7 @@ describe('Archived Request Search Button', () => {
     mincodeInput.setValue(mincode);
     await Vue.nextTick();
     wrapper.find('#requestsSearchBtn').trigger('click');
-  }
+  };
 
   const mincodeSchoolNames = new Map();
   mincodeSchoolNames.set('10212345', 'School name');
@@ -117,20 +117,20 @@ describe('Archived Request Search Button', () => {
   it('should be clickable when valid mincode input', async () => {
     expect(wrapper.vm.isValidRequestsSearchInput).toBeFalsy();
     const mincodeInput = wrapper.find('#requestsMincodeField');
-    mincodeInput.setValue("102");
+    mincodeInput.setValue('102');
     await Vue.nextTick();
     wrapper.find('#requestsSearchBtn').trigger('click');
     expect(routerSpy).toHaveBeenCalled();
   });
 
   it('should be clickable when valid mincode input and valid load date input', async () => {
-    await testLoadDateAndMincodeInputs( "102");
+    await testLoadDateAndMincodeInputs( '102');
     expect(routerSpy).toHaveBeenCalled();
   });
 
   it('should be not clickable when invalid mincode input', async () => {
     const mincodeInput = wrapper.find('#requestsMincodeField');
-    mincodeInput.setValue("102123");
+    mincodeInput.setValue('102123');
     await Vue.nextTick();
     wrapper.find('#requestsSearchBtn').trigger('click');
     expect(routerSpy).not.toHaveBeenCalled();

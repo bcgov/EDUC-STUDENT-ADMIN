@@ -2,14 +2,9 @@
   <v-container ref="stickyInfoPanel" class="sticky default-container pt-5 px-8">
     <slot name="headerPanel" :openSearchDemographicsModal="openSearchDemographicsModal"></slot>
     <SearchDemographicModal @closeDialog="closeDialog" @updateStudent="updateStudentAndRunPenMatch" :dialog="dialog"
-                            :is-field-read-only="() => {return false}"
-                            :is-mincode-hidden="!isCreatePen"
-                            :student-data="modalStudent">
-      <template v-if="isCreatePen" v-slot:headLine>
-        <v-list-item-title class="headline">
-          Enter and Search Demographic Data for New PEN
-        </v-list-item-title>
-      </template>
+                  :is-field-read-only="() => {return false}"
+                  :hidden-fields="hiddenSearchFields"
+                  :student-data="modalStudent">
       <template v-slot:actions="{ isFormValid }">
         <PrimaryButton id="cancel" :secondary="true" text="Cancel"
                        @click.native="closeDialog"
@@ -17,7 +12,7 @@
         </PrimaryButton>
 
         <PrimaryButton width="15%"
-                       :text="isCreatePen?'Search':'Modify Search'"
+                       text="Modify Search"
                        id="searchDemogModalSearchBtn"
                        @click.native="isFormValid()"
         >
@@ -113,14 +108,10 @@
 </template>
 
 <script>
-import {
-  PEN_REQ_BATCH_STUDENT_REQUEST_CODES,
-  PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER
-} from '@/utils/constants';
 import SearchDemographicModal from './SearchDemographicModal';
-import {deepCloneObject, getDemogValidationResults} from '@/utils/common';
+import {deepCloneObject} from '@/utils/common';
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
-import {mapMutations, mapState} from 'vuex';
+import {mapMutations} from 'vuex';
 import StudentValidationWarningHint from './StudentValidationWarningHint';
 import PrimaryButton from '../util/PrimaryButton';
 import {partialRight} from 'lodash';
@@ -145,13 +136,25 @@ export default {
       type: Function,
       required: true
     },
-    demogValidationResult: {
+    validationWarningFields: {
       type: Array,
       default: () => []
     },
-    isCreatePen: {
+    validationErrorFields: {
+      type: Array,
+      default: () => []
+    },
+    hiddenSearchFields: {
+      type: Array,
+      required: true
+    },
+    isFixableOrErrorStatus: {
       type: Boolean,
-      default: false
+      required: true
+    },
+    runDemogValidation: {
+      type: Function,
+      required: true
     }
   },
   data() {
@@ -176,13 +179,10 @@ export default {
         { text: 'Grade', value: 'gradeCode', sortable: false, tooltip: 'Grade Code' },
         { text: '', value: '', sortable: false }
       ],
-      validationWarningFields: null,
-      validationErrorFields: null,
       validationErrorFieldHeaders: [
         { text: 'Field Name', value: 'uiFieldName', sortable: false },
-        { text: 'Error Description', value: 'penRequestBatchValidationIssueTypeCode', sortable: false }
+        { text: 'Error Description', value: 'description', sortable: false }
       ],
-      originalStatusCode: null,
       modalStudent: {},
       currentStudentSearch: this.studentDetailsCopy,
       dialog: false,
@@ -190,14 +190,11 @@ export default {
   },
   mounted() {
     this.setStickyInfoPanelHeight(this.$refs.stickyInfoPanel.clientHeight);
-    this.originalStatusCode = this.studentDetails.penRequestBatchStudentStatusCode;//storing original status to revert to in the event a modified search returned validation error is corrected
     if(!_.isEmpty(this.studentDetails)) { //don't run validation on page load if create new pen screen
-      this.setModalStudentFromPrbStudent();
-      this.handleDemogValidationResult(this.demogValidationResult);
+      this.setModalStudentFromRequestStudent();
     }
   },
   computed: {
-    ...mapState('penRequestBatch', ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
     studentDetails: {
       get: function() {
         return this.student;
@@ -205,9 +202,6 @@ export default {
       set: function(value) {
         this.$emit('update:student', value);
       }
-    },
-    topTableHeaders() {
-      return this.headers.map(({topText, doubleText, topValue, doubleValue, sortable})=> ({text: topText, doubleText, value: topValue, doubleValue, sortable}));
     },
     stickyInfoPanelHeight() {
       return this.$refs.stickyInfoPanel?.clientHeight;
@@ -224,7 +218,7 @@ export default {
       return (format && column) ? format(column) : (column || ' ');
     },
     getValidationIssues(fieldName, validationIssueFields) {
-      return validationIssueFields?.filter(x => PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER[x.penRequestBatchValidationFieldCode] === fieldName);
+      return validationIssueFields?.filter(x => x.dataFieldName === fieldName);
     },
     getValidationWarnings(fieldName) {
       return this.getValidationIssues(fieldName, this.validationWarningFields);
@@ -236,8 +230,7 @@ export default {
       return this.isFieldValueWithIssues(fieldName, this.validationErrorFields);
     },
     isFieldValueWarned(fieldName) {
-      return (PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE === this.studentDetails.penRequestBatchStudentStatusCode
-        || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.studentDetails.penRequestBatchStudentStatusCode)
+      return this.isFixableOrErrorStatus
         && this.isFieldValueWithIssues(fieldName, this.validationWarningFields);
     },
     isFieldValueUpdated(fieldName) {
@@ -247,10 +240,10 @@ export default {
       return false;
     },
     openSearchDemographicsModal() {
-      this.setModalStudentFromPrbStudent();
+      this.setModalStudentFromRequestStudent();
       this.dialog = true;
     },
-    setModalStudentFromPrbStudent(){
+    setModalStudentFromRequestStudent(){
       this.modalStudent = deepCloneObject(this.studentDetails);
     },
     async closeDialog() {
@@ -258,57 +251,22 @@ export default {
       this.studentDetails = deepCloneObject(this.currentStudentSearch);
       await this.$nextTick(); //need to wait so update can me made in parent and propagated back down to child component
       if(!_.isEmpty(this.studentDetails)) {
-        this.setModalStudentFromPrbStudent();
-        await this.runDemogValidation();
+        this.setModalStudentFromRequestStudent();
+        await this.runDemogValidation(this.modalStudent);
       }
     },
     async updateStudentAndRunPenMatch(studentModified) {
       this.dialog = false;
       this.studentDetails = deepCloneObject(studentModified);
       await this.$nextTick(); //need to wait so update can me made in parent and propagated back down to child component
-      this.setModalStudentFromPrbStudent();
+      this.setModalStudentFromRequestStudent();
       this.currentStudentSearch = deepCloneObject(this.studentDetails);
 
-      const hasValidationFailure = await this.runDemogValidation();
+      const hasValidationFailure = await this.runDemogValidation(this.modalStudent);
       if(!hasValidationFailure) {
         await this.runPenMatch();
       }
     },
-    async runDemogValidation() {
-      try {
-        const payload = {
-          student: {
-            ...this.modalStudent
-          }
-        };
-        const result = await getDemogValidationResults(payload);
-        return this.handleDemogValidationResult(result);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    async handleDemogValidationResult(result) {
-      let validationIssues = result.map(y => {
-        y.uiFieldName = this.prbValidationFieldCodes.find(obj => obj.code === y.penRequestBatchValidationFieldCode)?.label;
-        y.penRequestBatchValidationIssueTypeCode = this.prbValidationIssueTypeCodes.find(obj => obj.code === y.penRequestBatchValidationIssueTypeCode)?.description || y.penRequestBatchValidationIssueTypeCode;
-        return y;
-      });
-      this.validationErrorFields = validationIssues.filter(x => x.penRequestBatchValidationIssueSeverityCode === 'ERROR');
-      this.validationWarningFields = validationIssues.filter(x => x.penRequestBatchValidationIssueSeverityCode === 'WARNING');
-
-      if (!(this.student.penRequestBatchStudentStatusCode === 'MATCHEDSYS' || this.student.penRequestBatchStudentStatusCode === 'MATCHEDUSR')) {
-        const hasValidationError = this.validationErrorFields?.length > 0;
-        this.$emit('validationRun', {validationIssues, hasValidationError});
-        return hasValidationError;
-      }else{
-        validationIssues = [];
-        const hasValidationError = false;
-        this.$emit('validationRun', {validationIssues, hasValidationError});
-        this.validationErrorFields = null;
-        this.validationWarningFields = null;
-        return false;
-      }
-    }
   }
 };
 </script>

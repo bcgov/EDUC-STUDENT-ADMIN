@@ -1,9 +1,9 @@
 'use strict';
 
-const {errorResponse} = require('./utils');
+const {errorResponse, logApiError} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
-const {postData, getData} = require('./utils');
+const {postData, getData, putData} = require('./utils');
 const utils = require('./utils');
 const {LocalDate, LocalDateTime} = require('@js-joda/core');
 
@@ -65,8 +65,65 @@ const startProcessing = async (req, res) => {
     return errorResponse(res, e.data?.message, e.status);
   }
 };
+
+async function getNominalRollStudentById(req, res) {
+  try {
+    const token = utils.getBackendToken(req);
+    const params = {
+      headers: {
+        correlationID: req.session.correlationID,
+      },
+    };
+    const url = `${config.get('server:nominalRoll:rootURL')}/${req.params.id}`;
+    const result = await getData(token, url, params);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'getNominalRollStudentById', 'Error getting a NominalRollStudent.');
+    return errorResponse(res);
+  }
+}
+
+async function validateNominalRollStudentDemogData(req, res) {
+  try {
+    const token = utils.getBackendToken(req);
+    const params = {
+      headers: {
+        correlationID: req.session.correlationID,
+      }
+    };
+    const url = `${config.get('server:nominalRoll:rootURL')}/validate`;
+    const result = await postData(token, url, req.body, params, utils.getUser(req).idir_username);
+    return res.status(200).json(result);
+  } catch (e) {
+    logApiError(e, 'validateNominalRollStudentDemogData', 'Error occurred while attempting to call nominal roll api.');
+    return errorResponse(res);
+  }
+}
+
+async function updateNominalRollStudent(req, res) {
+  try {
+    const token = utils.getBackendToken(req, res);
+    const url = `${config.get('server:nominalRoll:rootURL')}/${req.params.id}`;
+    const studentData = await getData(token, url);
+    const studentReq = {
+      ...studentData,
+      ...req.body
+    };
+
+    const studentRes = await putData(token, url, studentReq, utils.getUser(req).idir_username);
+    return res.status(200).json(studentRes);
+  } catch (e) {
+    logApiError(e, 'updateNominalRollStudent', 'Error occurred while updating a NominalRollStudent.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   postNominalRollFile,
   isBeingProcessed,
-  startProcessing
+  startProcessing,
+  getNominalRollStudentById,
+  getNominalRollStudents: utils.getPaginatedListForSCGroups('getNominalRollStudents', `${config.get('server:nominalRoll:rootURL')}/paginated`),
+  validateNominalRollStudentDemogData,
+  updateNominalRollStudent
 };

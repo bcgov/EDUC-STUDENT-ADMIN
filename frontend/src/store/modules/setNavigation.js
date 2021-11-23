@@ -1,8 +1,10 @@
 const getDefaultState = () => {
   return {
-    selectedIDs: {},
+    selectedIDs: [],
     currentRequest: 0,
-    archived: false
+    archived: false,
+    requestType: 'penRequestBatch',
+    multiFiles: true,
   };
 };
 
@@ -11,9 +13,13 @@ export default {
   state: getDefaultState,
   getters: {
     title: state => {
-      let numberOfSelectedFiles = [...new Set(state.selectedIDs?.map(item => item.penRequestBatchID))]?.length;
-      return `Record ${state.currentRequest + 1} of ${Object.keys(state.selectedIDs)?.length} (${numberOfSelectedFiles} ${numberOfSelectedFiles > 1 ? 'files' : 'file'} selected)`;
-    }
+      let files = '';
+      if(state.multiFiles) {
+        let numberOfSelectedFiles = [...new Set(state.selectedIDs?.map(item => item[`${state.requestType}ID`]))]?.length;
+        files = `(${numberOfSelectedFiles} ${numberOfSelectedFiles > 1 ? 'files' : 'file'} selected)`;
+      }
+      return `Record ${state.currentRequest + 1} of ${Object.keys(state.selectedIDs)?.length} ${files}`;
+    },
   },
   mutations: {
     /**
@@ -30,6 +36,12 @@ export default {
     },
     setArchived: (state, archived) => {
       state.archived = archived;
+    },
+    setRequestType: (state, requestType) => {
+      state.requestType = requestType;
+    },
+    setMultiFiles: (state, multiFiles) => {
+      state.multiFiles = multiFiles;
     }
   },
 };
