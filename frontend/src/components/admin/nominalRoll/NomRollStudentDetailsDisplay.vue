@@ -420,7 +420,7 @@ export default {
 
         operation = 'match';
         payload = {
-          ...this.nomRollStudent,
+          ...this.nomRollStudentCopy,
           assignedPEN: student.pen,
           status: NOMINAL_ROLL_STUDENT_STATUS_CODES.MATCHEDUSR,
         };
