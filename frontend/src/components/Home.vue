@@ -117,6 +117,23 @@
           </v-row>
         </v-card>
       </v-col>
+      <!-- TODO fix role for secure messaging -->
+      <v-col cols="8" v-if="VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE"> 
+        <DashboardTable v-if="!isLoadingSecMessage" title="Secure Messaging" colour="#CED6E2"
+                        :tableData="secMessageData"></DashboardTable>
+        <v-container v-else-if="isLoadingSecMessage" class="full-height" fluid>
+          <article id="pen-display-container" class="top-banner full-height">
+            <v-row align="center" justify="center">
+              <v-progress-circular
+                  :size="70"
+                  :width="7"
+                  color="primary"
+                  indeterminate
+              ></v-progress-circular>
+            </v-row>
+          </article>
+        </v-container>
+      </v-col>
     </v-row>
   </div>
 </template>
@@ -143,11 +160,13 @@ export default {
       REQUEST_TYPES: REQUEST_TYPES,
       penRequestData: [],
       studentData: [],
+      secMessageData: [],
       pen: null,
       mincode: null,
       loadDate: null,
       isLoadingBatch: true,
       isLoadingGmpUmp: true,
+      isLoadingSecMessage: true,
       searchDropDownItems: [
         { title: 'Archived' },
         { title: 'Active' }
@@ -167,22 +186,25 @@ export default {
       ApiService.apiAxios.get(Routes.penRequestBatch.STATS_URL).then(response => {
         this.penRequestData.push({
           title: 'K-12',
-          pending: response.data.K12.pending,
-          fixable: response.data.K12.fixable,
-          repeats: response.data.K12.repeats,
-          unarchived: response.data.K12.unarchived
+          buttonRoute: REQUEST_TYPES.penRequestBatch.path + '?schoolGroup=' + 'K12',
+          pending: {data: response.data.K12.pending, name: 'submission pending'},
+          fixable: {data: response.data.K12.fixable, name: 'fixable records'},
+          repeats: {data: response.data.K12.repeats, name: 'repeated records'},
+          unarchived: {data: response.data.K12.unarchived, name: 'unarchived submissions'}
         });
         this.penRequestData.push({
           title: 'PSI',
-          pending: response.data.PSI.pending,
-          fixable: response.data.PSI.fixable,
-          repeats: response.data.PSI.repeats,
-          unarchived: response.data.PSI.unarchived,
-          heldReview: response.data.PSI.heldForReviewCount
+          buttonRoute: REQUEST_TYPES.penRequestBatch.path + '?schoolGroup=' + 'PSI',
+          pending: {data: response.data.PSI.pending, name: 'submissions pending'},
+          fixable: {data: response.data.PSI.fixable, name: 'fixable records'},
+          repeats: {data: response.data.PSI.repeats, name: 'repeated records'},
+          unarchived: {data: response.data.PSI.unarchived, name: 'unarchived submissions'},
+          heldReview: {data: response.data.PSI.heldForReviewCount, name: 'submission held for review'}
         });
         this.penRequestData.push({
           title: 'Errors',
-          loadFailed: response.data.ERROR.loadFailed,
+          buttonRoute: REQUEST_TYPES.failedRequestBatch.path,
+          loadFailed: {data: response.data.ERROR.loadFailed, name: 'submissions failed'},
         });
       }).finally(() => {
         this.isLoadingBatch = false;
@@ -197,22 +219,22 @@ export default {
     }
     Promise.allSettled(gumpiPromises).then((responses)=> {
       responses.forEach((response)=>{
-        let title;
+        let titleAndButtonRoute;
         if(response.value.config.url === Routes.penRequest.STATS_URL) {
-          title = 'Get My PEN';
+          titleAndButtonRoute = {title: 'Get My PEN', buttonRoute: REQUEST_TYPES.penRequest.path};
         } else {
-          title = 'Update My PEN';
+          titleAndButtonRoute = {title: 'Update My PEN', buttonRoute: REQUEST_TYPES.studentRequest.path};
         }
         if(response.status === 'fulfilled') {
           this.studentData.push({
-            title: title,
-            initial: response.value.data.numInitRev,
-            subsequent: response.value.data.numSubsRev
+            ...titleAndButtonRoute,
+            initial: {data: response.value.data.numInitRev, name: 'initial review'},
+            subsequent: {data: response.value.data.numSubsRev, name: 'subsequent review'}
           });
         } else {
-          this.setFailureAlert(`Error loading ${title} row data. Try refreshing the page.`);
+          this.setFailureAlert(`Error loading ${titleAndButtonRoute.title} row data. Try refreshing the page.`);
           this.studentData.push({
-            title: title,
+            title: titleAndButtonRoute.title,
             error: true
           });
         }
@@ -220,6 +242,14 @@ export default {
     }).finally(()=>{
       this.isLoadingGmpUmp = false;
     });
+
+    //TODO: replace this with API call for secure messaging
+    this.secMessageData.push({
+      title: 'PEN Team Inbox',
+      buttonRoute: 'insert some route here',
+    });
+
+    setTimeout(() => this.isLoadingSecMessage = false, 1000);
   },
   computed: {
     ...mapGetters('auth', ['VIEW_GMP_REQUESTS_ROLE','VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH']),
