@@ -4,8 +4,7 @@
       <v-col class="pa-0" cols="2">
         <v-card-title class="pa-0">
           <h3>
-            <v-row no-gutters>{{ requestType }}</v-row>
-            <v-row no-gutters>Requests</v-row>
+            <v-row no-gutters class="dashboard-title mr-4">{{ title }}</v-row>
           </h3>
         </v-card-title>
       </v-col>
@@ -46,7 +45,7 @@ export default {
       type: Array,
       required: true
     },
-    requestType: {
+    title: {
       type: String,
       required: false
     },
@@ -120,5 +119,8 @@ export default {
 <style scoped>
   .listCol {
     align-self: center;
+  }
+  .dashboard-title {
+    word-break: break-word;
   }
 </style>

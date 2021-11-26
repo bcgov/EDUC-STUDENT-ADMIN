@@ -2,7 +2,7 @@
   <div>
     <v-row class="pb-6">
       <v-col cols="8" v-if="VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE">
-        <DashboardTable v-if="!isLoadingBatch" requestType="School" colour="#CED6E2"
+        <DashboardTable v-if="!isLoadingBatch" title="School Requests" colour="#CED6E2"
                         :tableData="penRequestData"></DashboardTable>
         <v-container v-else-if="isLoadingBatch" class="full-height" fluid>
           <article id="pen-display-container" class="top-banner full-height">
@@ -78,7 +78,7 @@
         </v-card>
       </v-col>
       <v-col cols="8" v-if="(VIEW_GMP_REQUESTS_ROLE || VIEW_UMP_REQUESTS_ROLE)">
-        <DashboardTable v-if="!isLoadingGmpUmp" requestType="Student" colour="#F2F2F2" :tableData="studentData"></DashboardTable>
+        <DashboardTable v-if="!isLoadingGmpUmp" title="Student Requests" colour="#F2F2F2" :tableData="studentData"></DashboardTable>
         <v-container fluid class="full-height" v-else-if="isLoadingGmpUmp">
           <article id="pen-display-container" class="top-banner full-height">
             <v-row align="center" justify="center">
