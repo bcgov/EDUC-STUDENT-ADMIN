@@ -1,7 +1,7 @@
 <template>
   <div id="statsContainer">
     <v-row>
-      <v-col cols="6" v-if="NEW_PEN_AND_MERGES_STATS_ROLE">
+      <v-col cols="6" v-if="STUDENT_ANALYTICS_BATCH">
         <router-link v-if="mergeChartdata && mergeLabels" :to="{ name: 'merges'}">
           <bar-chart-container v-if="mergeChartdata && mergeLabels" class="pt-4" :displayYAxis="false" :labels="mergeLabels" :chart-data="mergeChartdata" :data-type="CHART_TYPES.MERGES"></bar-chart-container>
         </router-link>
@@ -16,19 +16,19 @@
           </v-row>
         </v-card>
       </v-col>
-      <v-col cols="6" v-if="GMP_UMP_STATS_ROLE">
+      <v-col cols="6" v-if="STUDENT_ANALYTICS_STUDENT_PROFILE">
         <router-link :to="{ name: 'analytics-gmp-stats'}">
           <doughnut-chart-container class="pt-4" :completion-states="COMPLETION_STATES.GMP" :data-type="CHART_TYPES.GMP"></doughnut-chart-container>
         </router-link>
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="6" v-if="GMP_UMP_STATS_ROLE">
+      <v-col cols="6" v-if="STUDENT_ANALYTICS_STUDENT_PROFILE">
         <router-link :to="{ name: 'analytics-ump-stats'}">
           <doughnut-chart-container class="pb-4" :completion-states="COMPLETION_STATES.UMP" :data-type="CHART_TYPES.UMP"></doughnut-chart-container>
         </router-link>
       </v-col>
-      <v-col cols="6" v-if="NEW_PEN_AND_MERGES_STATS_ROLE">
+      <v-col cols="6" v-if="STUDENT_ANALYTICS_BATCH">
         <router-link v-if="newPenChartdata && newPenLabels" :to="{ name: 'new-pens'}">
           <bar-chart-container class="pb-4" :displayYAxis="false" :labels="newPenLabels" :chart-data="newPenChartdata" :data-type="CHART_TYPES.NEW_PENS"></bar-chart-container>
         </router-link>
@@ -89,11 +89,13 @@ export default {
     }
   }),
   mounted() {
-    this.fillNewPenData();
-    this.fillMergeData();
+    if(this.STUDENT_ANALYTICS_BATCH) {
+      this.fillNewPenData();
+      this.fillMergeData();
+    }
   },
   computed: {
-    ...mapGetters('auth', ['GMP_UMP_STATS_ROLE', 'NEW_PEN_AND_MERGES_STATS_ROLE']),
+    ...mapGetters('auth', ['STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH']),
   },
   methods: {
     fillNewPenData() {
