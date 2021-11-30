@@ -217,6 +217,7 @@ elif [ "$envValue" = "test" ]; then
 else
   BACKEND_ROOT=$APP_NAME-$PEN_NAMESPACE-$envValue.apps.silver.devops.gov.bc.ca
   SCHEDULER_CRON_DOC_TYPE_MIGRATION="0 0 0 17 9 *"
+  ENABLE_PRR_STUDENT_DEMOGRAPHICS="true"
 fi
 
 echo Creating config map $APP_NAME-backend-config-map
