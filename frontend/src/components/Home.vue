@@ -186,7 +186,7 @@ export default {
       ApiService.apiAxios.get(Routes.penRequestBatch.STATS_URL).then(response => {
         this.penRequestData.push({
           title: 'K-12',
-          buttonRoute: REQUEST_TYPES.penRequestBatch.path + '?schoolGroup=' + 'K12',
+          button: {route: REQUEST_TYPES.penRequestBatch.path + '?schoolGroup=' + 'K12', text: 'View K-12'},
           pending: {data: response.data.K12.pending, name: 'submission pending'},
           fixable: {data: response.data.K12.fixable, name: 'fixable records'},
           repeats: {data: response.data.K12.repeats, name: 'repeated records'},
@@ -194,7 +194,7 @@ export default {
         });
         this.penRequestData.push({
           title: 'PSI',
-          buttonRoute: REQUEST_TYPES.penRequestBatch.path + '?schoolGroup=' + 'PSI',
+          button: {route: REQUEST_TYPES.penRequestBatch.path + '?schoolGroup=' + 'PSI', text: 'View PSI'},
           pending: {data: response.data.PSI.pending, name: 'submissions pending'},
           fixable: {data: response.data.PSI.fixable, name: 'fixable records'},
           repeats: {data: response.data.PSI.repeats, name: 'repeated records'},
@@ -203,7 +203,7 @@ export default {
         });
         this.penRequestData.push({
           title: 'Errors',
-          buttonRoute: REQUEST_TYPES.failedRequestBatch.path,
+          button: {route: REQUEST_TYPES.failedRequestBatch.path, text: 'View Errors'},
           loadFailed: {data: response.data.ERROR.loadFailed, name: 'submissions failed'},
         });
       }).finally(() => {
@@ -221,9 +221,9 @@ export default {
       responses.forEach((response)=>{
         let titleAndButtonRoute;
         if(response.value.config.url === Routes.penRequest.STATS_URL) {
-          titleAndButtonRoute = {title: 'Get My PEN', buttonRoute: REQUEST_TYPES.penRequest.path};
+          titleAndButtonRoute = {title: 'Get My PEN', button: {route: REQUEST_TYPES.penRequest.path, text: 'View GMP'}};
         } else {
-          titleAndButtonRoute = {title: 'Update My PEN', buttonRoute: REQUEST_TYPES.studentRequest.path};
+          titleAndButtonRoute = {title: 'Update My PEN', button: {route: REQUEST_TYPES.studentRequest.path, text: 'View UMP'}};
         }
         if(response.status === 'fulfilled') {
           this.studentData.push({
@@ -246,7 +246,7 @@ export default {
     //TODO: replace this with API call for secure messaging
     this.secMessageData.push({
       title: 'PEN Team Inbox',
-      buttonRoute: 'insert some route here',
+      button: {route: 'insert some route here', text: 'View Inbox'},
     });
 
     setTimeout(() => this.isLoadingSecMessage = false, 1000);

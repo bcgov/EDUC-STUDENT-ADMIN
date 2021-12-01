@@ -9,9 +9,11 @@
         </v-card-title>
       </v-col>
       <v-col v-for="(row, index) in tableData" :key="index" class="py-0" cols="3">
-        <v-row class="pa-0"><h3>{{ row.title }}</h3></v-row>
+        <v-row class="pa-0">
+          <h3>{{ row.title }}</h3>
+        </v-row>
         <v-row v-for="(col, idx) in omit(row, 'title')" :key="idx" class="pt-2 listCol">
-           <div v-if="idx==='heldReview' && col > 0">
+          <div v-if="idx === 'heldReview' && col > 0">
             <router-link to="heldRequestBatch">
               <strong>{{ col.data }} {{ col.name }}</strong>
             </router-link>
@@ -22,10 +24,11 @@
     </v-row>
     <v-row class="pt-4 px-8">
       <v-col cols="2"></v-col>
-      <v-col v-for="(row, index) in tableData" :key="index" class="pt-4 py-0 px-0" cols="3">
-        <router-link :to="row.buttonRoute">
+      <v-col
+        v-for="(row, index) in tableData" :key="index" class="pt-4 py-0 px-0" cols="3">
+        <router-link :to="row.button.route">
           <PrimaryButton :id="row.title.replace(/ /g,'')+'Btn'"
-                         :text="'View ' + buttonWording(row.title)"></PrimaryButton>
+                         :text="row.button.text"></PrimaryButton>
         </router-link>
       </v-col>
     </v-row>
@@ -56,14 +59,6 @@ export default {
     PrimaryButton
   },
   methods: {
-    buttonWording(title){
-      if(title.toUpperCase().includes('GET')) {
-        return 'GMP';
-      } else if (title.toUpperCase().includes('UPDATE')) {
-        return 'UMP';
-      }
-      return title;
-    },
     omit(object, key) {
       return omit(object, key);
     },
@@ -72,10 +67,10 @@ export default {
 </script>
 
 <style scoped>
-  .listCol {
-    align-self: center;
-  }
-  .dashboard-title {
-    word-break: break-word;
-  }
+.listCol {
+  align-self: center;
+}
+.dashboard-title {
+  word-break: break-word;
+}
 </style>
