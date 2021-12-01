@@ -108,10 +108,10 @@ objects:
               name: metrics
           resources:
             requests:
-              cpu: "50m"
+              cpu: "500m"
               memory: "250Mi"
             limits:
-              cpu: "100m"
+              cpu: "250m"
               memory: "500Mi"
         volumes:
         - name: log-storage
