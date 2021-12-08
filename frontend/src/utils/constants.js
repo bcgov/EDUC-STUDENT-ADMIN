@@ -96,7 +96,8 @@ let object = {
   },
   MACRO_URL: macroRoot,
   nominalRoll:{
-    ROOT_ENDPOINT: nominalRollRoot
+    ROOT_ENDPOINT: nominalRollRoot,
+    PAGINATED_ENDPOINT: nominalRollRoot + '/search'
   },
 };
 
@@ -306,6 +307,15 @@ export const PEN_REQ_BATCH_STATUS_CODES = Object.freeze(
     UNARCHIVED: 'UNARCHIVED',
     UNARCH_CHG: 'UNARCH_CHG',
     LOAD_FAIL: 'LOADFAIL',
+  }
+);
+export const NOMINAL_ROLL_STUDENT_STATUS_CODES = Object.freeze(
+  {
+    LOADED: 'LOADED',
+    ERROR: 'ERROR',
+    MATCHEDSYS: 'MATCHEDSYS',
+    FIXABLE: 'FIXABLE',
+    MATCHEDUSR: 'MATCHEDUSR'
   }
 );
 export const PAGE_TITLES = Object.freeze(

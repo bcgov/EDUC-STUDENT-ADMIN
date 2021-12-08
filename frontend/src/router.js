@@ -29,6 +29,7 @@ import CompareStudents from './components/CompareStudents';
 import PenCoordinatorsDisplay from './components/penreg/coordinator/PenCoordinatorsDisplay';
 import MacrosDisplay from './components/admin/MacrosDisplay';
 import NominalRoll from './components/admin/NominalRoll';
+import EditNominalRoll from './components/nominal-roll/EditNominalRoll';
 import StatsDashboard from './components/admin/stats/StatsDashboard';
 import NewPENs from './components/admin/stats/NewPENs';
 import GUMPStatsLanding from '@/components/admin/stats/GUMPStatsLanding';
@@ -246,16 +247,6 @@ const router = new VueRouter({
       },
     },
     {
-      path: '/createNewPEN',
-      name: 'createNewPEN',
-      component: CreateNewPEN,
-      meta: {
-        pageTitle: PAGE_TITLES.CREATE_NEW_PEN,
-        requiresAuth: true,
-        role: 'CREATE_NEW_PEN_ROLE'
-      }
-    },
-    {
       path: '/penCoordinators',
       name: 'penCoordinators',
       component: PenCoordinatorsDisplay,
@@ -273,6 +264,16 @@ const router = new VueRouter({
         pageTitle: PAGE_TITLES.MACRO_MANAGEMENT,
         requiresAuth: true,
         role: 'EDIT_MACROS_ROLE'
+      },
+    },
+    {
+      path: 'edit',
+      name: 'EditNominalRoll',
+      component: EditNominalRoll,
+      meta: {
+        pageTitle: PAGE_TITLES.UMP,
+        requiresAuth: true,
+        role: 'NOMINAL_ROLL_ROLE'
       },
     },
     {

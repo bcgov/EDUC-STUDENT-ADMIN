@@ -48,6 +48,7 @@ import alertMixin from '@/mixins/alertMixin';
 import Spinner from '@/components/common/Spinner';
 import {LocalDate} from '@js-joda/core';
 import PrimaryButton from '@/components/util/PrimaryButton';
+import router from '../../router';
 
 export default {
   name: 'NominalRoll',
@@ -88,7 +89,7 @@ export default {
   async mounted() {
     try {
       await ApiService.apiAxios.get(Routes.nominalRoll.ROOT_ENDPOINT);
-      //TODO  if it here move to next page which is list page. @johnc
+      router.push({name:'EditNominalRoll'});
     } catch (e) {
       if (e.response?.status === 404) {
         this.dialog = true; // there is no file in process show the dialog to upload a new file.

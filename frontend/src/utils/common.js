@@ -26,6 +26,17 @@ export function constructPenMatchObjectFromStudent(student) {
   };
 }
 
+export function constructPenMatchObjectFromNominalRollStudent(nominalRollStudent) {
+  return {
+    surname: nominalRollStudent?.surname,
+    givenName: nominalRollStudent?.givenNames,
+    dob: nominalRollStudent?.birthDate?.replace(/-/g, ''),
+    sex: nominalRollStudent?.gender,
+    enrolledGradeCode: nominalRollStudent?.grade,
+    mincode: nominalRollStudent?.schoolDistrictNumber + nominalRollStudent?.schoolNumber
+  };
+}
+
 export function getPossibleMatches(penMatch) {
   return new Promise((resolve, reject) => {
     ApiService.apiAxios.post('/api/penMatches/', penMatch)
