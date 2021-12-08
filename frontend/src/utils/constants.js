@@ -324,15 +324,6 @@ export const PEN_REQ_BATCH_STATUS_CODES = Object.freeze(
     LOAD_FAIL: 'LOADFAIL',
   }
 );
-export const NOMINAL_ROLL_STUDENT_STATUS_CODES = Object.freeze(
-  {
-    LOADED: 'LOADED',
-    ERROR: 'ERROR',
-    MATCHEDSYS: 'MATCHEDSYS',
-    FIXABLE: 'FIXABLE',
-    MATCHEDUSR: 'MATCHEDUSR'
-  }
-);
 export const PAGE_TITLES = Object.freeze(
   {
     COMPARE_STUDENTS: 'Compare/View',
