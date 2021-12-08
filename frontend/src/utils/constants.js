@@ -96,7 +96,8 @@ let object = {
   },
   MACRO_URL: macroRoot,
   nominalRoll:{
-    ROOT_ENDPOINT: nominalRollRoot
+    ROOT_ENDPOINT: nominalRollRoot,
+    PAGINATED_ENDPOINT: nominalRollRoot + '/search'
   },
 };
 

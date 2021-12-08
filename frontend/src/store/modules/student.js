@@ -17,10 +17,10 @@ export default {
   },
   getters: {
     selectedStudent: state => state.selectedStudent,
-    genders: state => state.genders,
+    genders: state => state.genders?.sort((a,b) => a.displayOrder > b.displayOrder ? 1 : -1),
     demogCodeObjects: state => state.demogCodeObjects,
     statusCodeObjects: state => state.statusCodeObjects,
-    gradeCodeObjects: state => state.gradeCodeObjects,
+    gradeCodeObjects: state => state.gradeCodeObjects?.sort((a,b) => a.displayOrder > b.displayOrder ? 1 : -1),
     possibleMatchReasons: state => state.possibleMatchReasons,
     historyActivityCodes: state => state.historyActivityCodes,
     studentsInProcess: state => state.studentsInProcess,
