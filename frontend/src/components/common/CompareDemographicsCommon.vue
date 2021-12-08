@@ -92,11 +92,11 @@
           Demog Code: {{ students.demogCode }}
         </span>
         <span class="pl-4 pr-3"></span>
-        <span class="pl-4 pr-3"></span>
-        <span class="pl-4 pr-3"></span>
         <span class="pl-4 pr-3 bottom-field-item">{{equalsIgnoreCase(students.legalLastName,students.usualLastName)? '' : students.usualLastName}}</span>
         <span class="pl-4 pr-3 bottom-field-item">{{equalsIgnoreCase(students.legalFirstName, students.usualFirstName)? '' : students.usualFirstName}}</span>
         <span class="pl-4 pr-3 bottom-field-item">{{equalsIgnoreCase(students.legalMiddleNames, students.usualMiddleNames)? '' : students.usualMiddleNames}}</span>
+        <span class="pl-4 pr-3"></span>
+        <span class="pl-4 pr-3"></span>
         <v-spacer></v-spacer>
         <a class="removePenLink pr-3" @click="removeRecord(students.studentID, index)">
             <v-icon small color="#38598A">mdi-close</v-icon>
@@ -246,28 +246,28 @@ export default {
   data() {
     return {
       studentDataHeaders: [
-        'gradeCode',
         'mincode',
-        'localID',
         'legalLastName',
         'legalFirstName',
         'legalMiddleNames',
         'genderCode',
+        'dob',
+        'localID',
+        'gradeCode',
         'postalCode',
-        'dob'
       ],
       headers: [
         { id: 'table-checkbox', type: 'select', sortable: false },
         {text: 'Date', value: 'reportDate', key: 'date', sortable: false, tooltip: 'Activity Date'},
-        {text: 'Gr', value: 'enrolledGradeCode', key: 'grade', sortable: false, tooltip: 'Student Grade'},
         {text: 'Mincode', value: 'mincode', key: 'mincode', sortable: false, tooltip: 'Mincode'},
-        {text: 'Local ID', value: 'localStudentId', key: 'localId', sortable: false, tooltip: 'Local ID'},
         {text: 'Surname', value: 'legalSurname', key: 'surname', sortable: false, tooltip: 'Legal Surname'},
         {text: 'Given', value: 'legalGivenName', key: 'givenName', sortable: false, tooltip: 'Legal Given Name'},
         {text: 'Middle', value: 'legalMiddleName', key: 'middleName', sortable: false, tooltip: 'Legal Middle Name'},
         {text: 'Gen', value: 'sex', key: 'gender', sortable: false, tooltip: 'Gender'},
+        {text: 'Birth Date', value: 'birthDate', key: 'dob', sortable: false, tooltip: 'Birth Date'},
+        {text: 'Local ID', value: 'localStudentId', key: 'localId', sortable: false, tooltip: 'Local ID'},
+        {text: 'Gr', value: 'enrolledGradeCode', key: 'grade', sortable: false, tooltip: 'Student Grade'},
         {text: 'Postal Code', value: 'postal', key: 'postalCode', sortable: false, tooltip: 'Postal Code'},
-        {text: 'Birth Date', value: 'birthDate', key: 'dob', sortable: false, tooltip: 'Birth Date'}
       ],
       penToAdd: null,
       penRules: [v => (!v || isValidPEN(v)) || this.penHint],
@@ -423,9 +423,7 @@ export default {
         .get(Routes['sld'].STUDENT_HISTORY_URL + '/', {params: {pen: pen}})
         .then(response => {
           if (response?.data?.length > 0) {
-            response.data = _.orderBy(response.data, 
-              ['reportDate', 'mincode', 'legalSurname', 'legalGivenName', 'legalMiddleName', 'gender', 'birthDate', 'localStudentId', 'enrolledGradeCode', 'postal'],
-              ['desc', 'desc', 'desc', 'desc', 'desc', 'desc', 'desc', 'desc', 'desc', 'desc']);
+            response.data = this.sortArrayByDate(response.data, 'reportDate', false);
             response.data.forEach(sld => sld.selected = false);
           }
           this.$set(this.sldData, pen, response.data);
@@ -784,32 +782,32 @@ export default {
     width: 15%;
   }
 
-  #studentDemographicsTableTopRow > span:nth-child(2),
-  #studentDemographicsTableTopRow > span:nth-child(8) {
+  #studentDemographicsTableTopRow > span:nth-child(9),
+  #studentDemographicsTableTopRow > span:nth-child(6) {
     vertical-align: top;
     padding-top: 6px;
     width: 5%;
   }
-  #studentDemographicsTableTopRow > span:nth-child(3),
-  #studentDemographicsTableTopRow > span:nth-child(4) {
+  #studentDemographicsTableTopRow > span:nth-child(2),
+  #studentDemographicsTableTopRow > span:nth-child(8) {
     vertical-align: top;
     padding-top: 6px;
     width: 10%;
-  }
-  #studentDemographicsTableTopRow > span:nth-child(9) {
-    vertical-align: top;
-    padding-top: 6px;
-    width: 9%;
   }
   #studentDemographicsTableTopRow > span:nth-child(10) {
     vertical-align: top;
     padding-top: 6px;
     text-align: right;
+    width: 9%;
+  }
+  #studentDemographicsTableTopRow > span:nth-child(7) {
+    vertical-align: top;
+    padding-top: 6px;
     width: 10%;
   }
-  #studentDemographicsTableTopRow > span:nth-child(5),
-  #studentDemographicsTableTopRow > span:nth-child(6),
-  #studentDemographicsTableTopRow > span:nth-child(7) {
+  #studentDemographicsTableTopRow > span:nth-child(3),
+  #studentDemographicsTableTopRow > span:nth-child(4),
+  #studentDemographicsTableTopRow > span:nth-child(5) {
     vertical-align: top;
     padding-top: 6px;
     width: 12%;
@@ -821,16 +819,19 @@ export default {
   }
   #studentDemographicsTableBottomRow /deep/ span:nth-child(2) {
     vertical-align: top;
+    width: 10%;
+  }
+  #studentDemographicsTableBottomRow /deep/ span:nth-child(6) {
+    vertical-align: top;
     width: 5%;
   }
-  #studentDemographicsTableBottomRow /deep/ span:nth-child(3),
-  #studentDemographicsTableBottomRow /deep/ span:nth-child(4) {
+  #studentDemographicsTableBottomRow /deep/ span:nth-child(7) {
     vertical-align: top;
     width: 10%;
   }
-  #studentDemographicsTableBottomRow /deep/ span:nth-child(5),
-  #studentDemographicsTableBottomRow /deep/ span:nth-child(6),
-  #studentDemographicsTableBottomRow /deep/ span:nth-child(7) {
+  #studentDemographicsTableBottomRow /deep/ span:nth-child(3),
+  #studentDemographicsTableBottomRow /deep/ span:nth-child(4),
+  #studentDemographicsTableBottomRow /deep/ span:nth-child(5) {
     vertical-align: top;
     width: 12%;
   }
@@ -861,26 +862,26 @@ export default {
   }
 
   .sldTable /deep/ tr th:nth-child(1),
-  .sldTable /deep/ tr th:nth-child(3),
-  .sldTable /deep/ tr th:nth-child(9),
+  .sldTable /deep/ tr th:nth-child(7),
+  .sldTable /deep/ tr th:nth-child(10),
   .sldTable /deep/ tr td:nth-child(1),
-  .sldTable /deep/ tr td:nth-child(3),
-  .sldTable /deep/ tr td:nth-child(9) {
+  .sldTable /deep/ tr td:nth-child(7),
+  .sldTable /deep/ tr td:nth-child(10) {
     width: 5%;
   }
+  .sldTable /deep/ tr th:nth-child(9),
+  .sldTable /deep/ tr th:nth-child(8),
+  .sldTable /deep/ tr th:nth-child(3),
   .sldTable /deep/ tr th:nth-child(2),
-  .sldTable /deep/ tr th:nth-child(4),
-  .sldTable /deep/ tr th:nth-child(5),
-  .sldTable /deep/ tr th:nth-child(10),
-  .sldTable /deep/ tr td:nth-child(2),
-  .sldTable /deep/ tr td:nth-child(4),
-  .sldTable /deep/ tr td:nth-child(5)
+  .sldTable /deep/ tr td:nth-child(9),
+  .sldTable /deep/ tr td:nth-child(8),
+  .sldTable /deep/ tr td:nth-child(3)
    {
     width: 10%;
   }
-  .sldTable /deep/ tr td:nth-child(10)
+  .sldTable /deep/ tr td:nth-child(2)
   {
-    width: 9%;
+    width: 10%;
   }
   .sldTable /deep/ tr th:nth-child(11),
   .sldTable /deep/ tr td:nth-child(11){
@@ -888,12 +889,12 @@ export default {
     text-align: right !important;
     padding-right: 12px;
   }
+  .sldTable /deep/ tr th:nth-child(4),
+  .sldTable /deep/ tr th:nth-child(5),
   .sldTable /deep/ tr th:nth-child(6),
-  .sldTable /deep/ tr th:nth-child(7),
-  .sldTable /deep/ tr th:nth-child(8),
-  .sldTable /deep/ tr td:nth-child(6),
-  .sldTable /deep/ tr td:nth-child(7),
-  .sldTable /deep/ tr td:nth-child(8) {
+  .sldTable /deep/ tr td:nth-child(4),
+  .sldTable /deep/ tr td:nth-child(5),
+  .sldTable /deep/ tr td:nth-child(6) {
     width: 12%;
   }
 

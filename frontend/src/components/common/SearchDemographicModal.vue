@@ -24,18 +24,13 @@
         <v-spacer/>
         <v-card-text>
           <v-form ref="searchDemographicModalForm" v-model="isValidForm">
-            <v-row>
-              <v-col cols="12">
+            <v-row dense no-gutters class="py-3">
+              <v-col cols="4" class="pt-2">
                 <v-row dense no-gutters>
-                  <v-col cols="3"><Strong>Legal Surname</Strong></v-col>
-                  <v-spacer/>
-                  <v-col cols="3"><strong>Legal Given</strong></v-col>
-                  <v-spacer/>
-                  <v-col cols="3"><strong>Legal Middle</strong></v-col>
-                  <v-spacer/>
+                  <strong>Legal Surname</strong>
                 </v-row>
-                <v-row dense>
-                  <v-col cols="3">
+                <v-row dense no-gutters>
+                  <v-col cols="9">
                     <v-text-field id="searchDemogModalLegalLastNameTxtField" outlined dense filled
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
                                   :rules="validateLegalLastName()"
@@ -44,8 +39,14 @@
                                   clearable
                                   v-model="student.legalLastName"></v-text-field>
                   </v-col>
-                  <v-spacer/>
-                  <v-col cols="3">
+                </v-row>
+              </v-col>
+              <v-col cols="4" class="pt-2">
+                <v-row dense no-gutters>
+                  <strong>Legal Given</strong>
+                </v-row>
+                <v-row dense no-gutters>
+                  <v-col cols="9">
                     <v-text-field outlined dense filled
                                   id="searchDemogModalLegalFirstNameTxtField"
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
@@ -54,8 +55,14 @@
                                   clearable
                                   v-model="student.legalFirstName"></v-text-field>
                   </v-col>
-                  <v-spacer/>
-                  <v-col cols="3">
+                </v-row>
+              </v-col>
+              <v-col v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)" cols="4" class="pt-2">
+                <v-row dense no-gutters>
+                  <strong>Legal Middle</strong>
+                </v-row>
+                <v-row dense no-gutters>
+                  <v-col cols="9">
                     <v-text-field outlined dense filled
                                   id="searchDemogModalLegalMiddleNameTxtField"
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
@@ -63,18 +70,14 @@
                                   clearable
                                   v-model="student.legalMiddleNames"></v-text-field>
                   </v-col>
-                  <v-spacer/>
+                </v-row>
+              </v-col>
+              <v-col v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)" cols="4" class="pt-2">
+                <v-row dense no-gutters>
+                  <strong>Usual Surname</strong>
                 </v-row>
                 <v-row dense no-gutters>
-                  <v-col cols="3"><Strong>Usual Surname </Strong></v-col>
-                  <v-spacer/>
-                  <v-col cols="3"><strong>Usual Given</strong></v-col>
-                  <v-spacer/>
-                  <v-col cols="3"><strong>Usual Middle</strong></v-col>
-                  <v-spacer/>
-                </v-row>
-                <v-row dense>
-                  <v-col cols="3">
+                  <v-col cols="9">
                     <v-text-field outlined dense filled
                                   id="searchDemogModalUsualLastNameTxtField"
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
@@ -82,8 +85,14 @@
                                   clearable
                                   v-model="student.usualLastName"></v-text-field>
                   </v-col>
-                  <v-spacer/>
-                  <v-col cols="3">
+                </v-row>
+              </v-col>
+              <v-col v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)" cols="4" class="pt-2">
+                <v-row dense no-gutters>
+                  <strong>Usual Given</strong>
+                </v-row>
+                <v-row dense no-gutters>
+                  <v-col cols="9">
                     <v-text-field outlined dense filled
                                   id="searchDemogModalUsualFirstNameTxtField"
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
@@ -91,8 +100,14 @@
                                   clearable
                                   v-model="student.usualFirstName"></v-text-field>
                   </v-col>
-                  <v-spacer/>
-                  <v-col cols="3">
+                </v-row>
+              </v-col>
+              <v-col v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)" cols="4" class="pt-2">
+                <v-row dense no-gutters>
+                  <strong>Usual Middle</strong>
+                </v-row>
+                <v-row dense no-gutters>
+                  <v-col cols="9">
                     <v-text-field outlined dense filled
                                   id="searchDemogModalUsualMiddleNameTxtField"
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
@@ -100,24 +115,14 @@
                                   clearable
                                   v-model="student.usualMiddleNames"></v-text-field>
                   </v-col>
-                  <v-spacer/>
+                </v-row>
+              </v-col>
+              <v-col cols="4" class="pt-2">
+                <v-row dense no-gutters>
+                  <strong>Gender</strong>
                 </v-row>
                 <v-row dense no-gutters>
-                  <v-col cols="3"><Strong>Gender</Strong></v-col>
-                  <v-spacer/>
-                  <v-col cols="3"><strong>Birth Date
-                    <v-btn icon x-small title="YYYYMMDD">
-                      <v-icon color="#2196f3">
-                        info
-                      </v-icon>
-                    </v-btn>
-                  </strong></v-col>
-                  <v-spacer/>
-                  <v-col cols="3"><strong>Grade</strong></v-col>
-                  <v-spacer/>
-                </v-row>
-                <v-row dense>
-                  <v-col cols="3">
+                  <v-col cols="9">
                     <v-text-field outlined dense filled
                                   id="searchDemogModalGenderTxtField"
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
@@ -126,8 +131,19 @@
                                   clearable
                                   v-model="student.genderCode"></v-text-field>
                   </v-col>
-                  <v-spacer/>
-                  <v-col cols="3">
+                </v-row>
+              </v-col>
+              <v-col cols="4" class="pt-2">
+                <v-row dense no-gutters>
+                  <strong>Birth Date</strong>
+                  <v-btn icon x-small title="YYYYMMDD">
+                    <v-icon color="#2196f3">
+                      info
+                    </v-icon>
+                  </v-btn>
+                </v-row>
+                <v-row dense no-gutters>
+                  <v-col cols="9">
                     <FormattedTextField
                             id="searchDemogModalDobTxtField"
                             :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.DOB)"
@@ -136,8 +152,14 @@
                             :format="formatDob"
                             v-model="student.dob"></FormattedTextField>
                   </v-col>
-                  <v-spacer/>
-                  <v-col cols="3">
+                </v-row>
+              </v-col>
+              <v-col cols="4" class="pt-2">
+                <v-row dense no-gutters>
+                  <strong>Grade</strong>
+                </v-row>
+                <v-row dense no-gutters>
+                  <v-col cols="9">
                     <v-text-field outlined dense filled
                                   id="searchDemogModalGradeTxtField"
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
@@ -146,18 +168,14 @@
                                   clearable
                                   v-model="student.gradeCode"></v-text-field>
                   </v-col>
-                  <v-spacer/>
+                </v-row>
+              </v-col>
+              <v-col v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.POSTAL_CODE)" cols="4" class="pt-2">
+                <v-row dense no-gutters>
+                  <strong>Postal Code</strong>
                 </v-row>
                 <v-row dense no-gutters>
-                  <v-col cols="3"><Strong>Postal Code</Strong></v-col>
-                  <v-spacer/>
-                  <v-col  v-if="!isMincodeHidden" cols="3"><strong>Mincode</strong></v-col>
-                  <v-spacer/>
-                  <v-col cols="3"></v-col>
-                  <v-spacer/>
-                </v-row>
-                <v-row dense>
-                  <v-col cols="3">
+                  <v-col cols="9">
                     <FormattedTextField
                             id="searchDemogModalPostalCodeTxtField"
                             :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
@@ -167,19 +185,23 @@
                             v-model="student.postalCode">
                     </FormattedTextField>
                   </v-col>
-                  <v-spacer/>
-                  <v-col v-if="!isMincodeHidden" cols="3">
+                </v-row>
+              </v-col>
+              <v-col v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.MINCODE)" cols="4" class="pt-2">
+                <v-row dense no-gutters>
+                  <strong>Mincode</strong>
+                </v-row>
+                <v-row dense no-gutters>
+                  <v-col cols="9">
                     <FormattedTextField
                             id="searchDemogModalMincodeTxtField"
                             :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.MINCODE)"
                             :rules="validateMincode()" maxlength="8"
                             :async-messages="mincodeErrors"
                             tabindex="11"
+                            :format="formatMincode"
                             v-model="student.mincode"></FormattedTextField>
                   </v-col>
-                  <v-spacer/>
-                  <v-col cols="3"></v-col>
-                  <v-spacer/>
                 </v-row>
               </v-col>
             </v-row>
@@ -202,11 +224,11 @@ import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import {isValidMincode, isValidPostalCode, isValidDOBAndAfter1900} from '@/utils/validation';
 import {mapGetters} from 'vuex';
 import FormattedTextField from '../util/FormattedTextField';
-import {formatPostalCode, formatDob} from '@/utils/format';
+import {formatPostalCode, formatDob, formatMincode} from '@/utils/format';
 import schoolMixin from '../../mixins/schoolMixin';
 
 export default {
-  name: 'SearchDemographicModal.vue',
+  name: 'SearchDemographicModal',
   mixins: [schoolMixin],
   components: {FormattedTextField},
   props: {
@@ -222,8 +244,8 @@ export default {
       type: Function,
       required: true,
     },
-    isMincodeHidden:{
-      type: Boolean,
+    hiddenFields:{
+      type: Array,
       required: true
     }
   },
@@ -252,6 +274,7 @@ export default {
   methods: {
     formatPostalCode,
     formatDob,
+    formatMincode,
     upperCaseInput(fieldName) {
       if (this.student[fieldName]) {
         this.student[fieldName] = this.student[fieldName].toUpperCase();

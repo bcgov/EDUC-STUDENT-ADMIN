@@ -30,6 +30,8 @@ import PenCoordinatorsDisplay from './components/penreg/coordinator/PenCoordinat
 import MacrosDisplay from './components/admin/MacrosDisplay';
 import NominalRoll from './components/admin/NominalRoll';
 import EditNominalRoll from './components/nominal-roll/EditNominalRoll';
+import NomRollStudentListDisplay from './components/admin/nominalRoll/NomRollStudentListDisplay';
+import NomRollStudentDetailsDisplay from './components/admin/nominalRoll/NomRollStudentDetailsDisplay';
 import StatsDashboard from './components/admin/stats/StatsDashboard';
 import NewPENs from './components/admin/stats/NewPENs';
 import GUMPStatsLanding from '@/components/admin/stats/GUMPStatsLanding';
@@ -282,6 +284,30 @@ const router = new VueRouter({
       component: NominalRoll,
       meta: {
         pageTitle: PAGE_TITLES.NOMINAL_ROLL,
+        requiresAuth: true,
+        role: 'NOMINAL_ROLL_ROLE'
+      },
+    },
+    {
+      path: '/nominal-roll-list',
+      name: 'nrStudentList',
+      component: NomRollStudentListDisplay,
+      props: (route) => ({ statusFilters: route.query.statusFilters }),
+      meta: {
+        pageTitle: PAGE_TITLES.NOMINAL_ROLL_STUDENT_LIST,
+        requiresAuth: true,
+        role: 'NOMINAL_ROLL_ROLE'
+      },
+    },
+    {
+      path: '/nominal-roll/:nrStudentID',
+      name: 'nrStudentDetails',
+      component: NomRollStudentDetailsDisplay,
+      props: (route) => ({
+        nomRollStudentID: route.params.nrStudentID,
+      }),
+      meta: {
+        pageTitle: PAGE_TITLES.NOMINAL_ROLL_STUDENT_DETAILS,
         requiresAuth: true,
         role: 'NOMINAL_ROLL_ROLE'
       },

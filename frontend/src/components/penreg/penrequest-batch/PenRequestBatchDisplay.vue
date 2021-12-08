@@ -152,7 +152,7 @@ export default {
     }
   },
   created() {
-    this.selectedSchoolGroup = this.schoolGroup;
+    this.selectedSchoolGroup || (this.selectedSchoolGroup = this.schoolGroup);
   },
   mounted() {
     Mousetrap.reset();

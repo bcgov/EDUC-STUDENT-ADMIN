@@ -99,7 +99,6 @@ nconf.defaults({
     },
     nominalRoll: {
       rootURL: process.env.NOMINAL_ROLL_API_URL,
-      paginatedURL: process.env.NOMINAL_ROLL_API_URL + '/paginated',
       roleAdmin: process.env.NOMINAL_ROLL,
       rolesAllowed: process.env.NOMINAL_ROLL ? process.env.NOMINAL_ROLL.split(',') : '', // using NOMINAL_ROLL because there is no read only role
     },

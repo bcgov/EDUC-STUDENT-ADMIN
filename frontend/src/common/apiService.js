@@ -55,16 +55,6 @@ function getCodes(url) {
     }
   };
 }
-function getAllMincodeSchoolNames(){
-  return async function getCodesHandler() {
-    try {
-      return await apiAxios.get(Routes.SCHOOL_DATA_URL);
-    } catch (e) {
-      console.log(`Failed to get from Nodejs API - ${e}`);
-      throw e;
-    }
-  };
-}
 
 export default {
   apiAxios: apiAxios,
@@ -92,5 +82,6 @@ export default {
   getPrbValidationFieldCodes: getCodes(Routes.penRequestBatch.PRB_VALIDATION_FIELD_CODE_URL),
   getPrbValidationIssueSeverityCodes: getCodes(Routes.penRequestBatch.PRB_VALIDATION_ISSUE_SEVERITY_CODE_URL),
   getPrbValidationIssueTypeCodes: getCodes(Routes.penRequestBatch.PRB_VALIDATION_ISSUE_TYPE_CODE_URL),
-  getMincodeSchoolNames: getAllMincodeSchoolNames()
+  getMincodeSchoolNames: getCodes(Routes.SCHOOL_DATA_URL),
+  getFedProvSchoolCodes: getCodes(`${Routes.SCHOOL_DATA_URL}/fedProvSchoolCodes`),
 };

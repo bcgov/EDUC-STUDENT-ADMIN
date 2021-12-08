@@ -25,11 +25,12 @@
 <script>
 import { mapState, mapMutations, mapGetters } from 'vuex';
 import router from '../../router';
+import { abbreviateCamelCase } from '@/utils/common';
 
 export default {
   name: 'SetNavigation',
   computed:{
-    ...mapState('setNavigation', ['selectedIDs', 'currentRequest', 'archived']),
+    ...mapState('setNavigation', ['selectedIDs', 'currentRequest', 'archived', 'requestType']),
     ...mapGetters('setNavigation', ['title']),
     preDisabled() {
       return this.currentRequest <= 0;
@@ -51,7 +52,8 @@ export default {
     ...mapMutations('setNavigation', ['setCurrentRequest']),
     clickBtn(route) {
       this.setCurrentRequest(route);
-      router.push({name: 'prbStudentDetails', params: {prbStudentID: this.selectedIDs[route].penRequestBatchStudentID}, query: {archived: this.archived}});
+      const requestTypeAbbrev = abbreviateCamelCase(this.requestType);
+      router.push({name: `${requestTypeAbbrev}StudentDetails`, params: {[`${requestTypeAbbrev}StudentID`]: this.selectedIDs[route][`${this.requestType}StudentID`]}, query: {archived: this.archived}});
     }
   }
 };
