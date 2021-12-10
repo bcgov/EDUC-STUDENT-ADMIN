@@ -420,26 +420,16 @@ export default {
       return Object.keys(obj).length === 0;
     },
     async toggleRow(item) {
-      const payload = {
-        ...item
-      };
       const index = this.expanded.indexOf(item);
       if (index === -1) {
-        ApiService.apiAxios.post(`${Routes['nominalRoll'].ROOT_ENDPOINT}/validate`, payload)
-          .then(async response => {
-            this.validationErrors = response?.data?.validationErrors || {};
-            this.editedRecord = deepCloneObject(item);
-            if (this.expanded.length > 0) {
-              this.expanded = [];
-            }
-            this.expanded.push(item);
-            await this.$nextTick();
-            this.$refs.form.validate();
-          })
-          .catch(e => {
-            console.log(e);
-            this.setFailureAlert('Failed validation call. Please try again later.');
-          });
+        this.validationErrors = item?.validationErrors || {};
+        this.editedRecord = deepCloneObject(item);
+        if (this.expanded.length > 0) {
+          this.expanded = [];
+        }
+        this.expanded.push(item);
+        await this.$nextTick();
+        this.$refs.form.validate();
       } else {
         this.expanded.splice(index, 1);
       }
