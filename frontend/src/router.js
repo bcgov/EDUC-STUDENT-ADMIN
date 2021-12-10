@@ -29,7 +29,6 @@ import CompareStudents from './components/CompareStudents';
 import PenCoordinatorsDisplay from './components/penreg/coordinator/PenCoordinatorsDisplay';
 import MacrosDisplay from './components/admin/MacrosDisplay';
 import NominalRoll from './components/nominal-roll/NominalRoll';
-import EditNominalRoll from './components/nominal-roll/EditNominalRoll';
 import NomRollStudentListDisplay from './components/nominal-roll/NomRollStudentListDisplay';
 import NomRollStudentDetailsDisplay from './components/nominal-roll/NomRollStudentDetailsDisplay';
 import StatsDashboard from './components/admin/stats/StatsDashboard';
@@ -278,16 +277,6 @@ const router = new VueRouter({
           component: NominalRoll,
           meta: {
             pageTitle: PAGE_TITLES.NOMINAL_ROLL,
-            requiresAuth: true,
-            role: 'NOMINAL_ROLL_ROLE'
-          },
-        },
-        {
-          path: 'edit',
-          name: 'EditNominalRoll',
-          component: EditNominalRoll,
-          meta: {
-            pageTitle: PAGE_TITLES.UMP,
             requiresAuth: true,
             role: 'NOMINAL_ROLL_ROLE'
           },
