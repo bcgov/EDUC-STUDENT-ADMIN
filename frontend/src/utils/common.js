@@ -33,7 +33,7 @@ export function constructPenMatchObjectFromNominalRollStudent(nominalRollStudent
     dob: nominalRollStudent?.birthDate?.replace(/-/g, ''),
     sex: nominalRollStudent?.gender,
     enrolledGradeCode: nominalRollStudent?.grade,
-    mincode: nominalRollStudent?.schoolDistrictNumber + nominalRollStudent?.schoolNumber
+    mincode: nominalRollStudent?.mincode
   };
 }
 
