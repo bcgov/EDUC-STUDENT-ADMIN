@@ -25,6 +25,7 @@
             <v-row v-if="nomRollStudentSearchResponse" id="resultsRow" no-gutters class="py-2" style="background-color:white;">
               <NomRollStudentSearchResults
                 :loading="searchLoading"
+                @search="searchPenRequests"
               ></NomRollStudentSearchResults>
             </v-row>
           </v-card>
@@ -34,7 +35,7 @@
   </v-container>
 </template>
 <script>
-import ApiService from '../../../common/apiService';
+import ApiService from '../../common/apiService';
 import {
   NOMINAL_ROLL_STUDENT_STATUS_CODES,
   STUDENT_DETAILS_FIELDS_TO_NOMINAL_ROLL_STUDENT_FIELDS_MAPPER,
@@ -45,7 +46,7 @@ import {
 } from '@/utils/constants';
 import {mapMutations, mapState} from 'vuex';
 import NomRollStudentSearchResults from './NomRollStudentSearchResults';
-import alertMixin from '../../../mixins/alertMixin';
+import alertMixin from '../../mixins/alertMixin';
 import Mousetrap from 'mousetrap';
 import router from '@/router';
 import PenRequestSearchPanel from '@/components/common/PenRequestSearchPanel';
@@ -264,6 +265,7 @@ export default {
         params: {
           pageNumber: this.pageNumber-1,
           sort: {
+            status: 'ASC',
             schoolNumber: 'ASC',
             surname: 'ASC',
             givenNames: 'ASC',

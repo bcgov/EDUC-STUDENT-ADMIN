@@ -89,7 +89,7 @@ export default {
   async mounted() {
     try {
       await ApiService.apiAxios.get(Routes.nominalRoll.ROOT_ENDPOINT);
-      router.push({name:'EditNominalRoll'});
+      router.push({name:'nrStudentList'});
     } catch (e) {
       if (e.response?.status === 404) {
         this.dialog = true; // there is no file in process show the dialog to upload a new file.

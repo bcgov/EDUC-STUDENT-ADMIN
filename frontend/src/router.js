@@ -28,10 +28,9 @@ import UnAuthorizedPage from './components/UnAuthorizedPage';
 import CompareStudents from './components/CompareStudents';
 import PenCoordinatorsDisplay from './components/penreg/coordinator/PenCoordinatorsDisplay';
 import MacrosDisplay from './components/admin/MacrosDisplay';
-import NominalRoll from './components/admin/NominalRoll';
-import EditNominalRoll from './components/nominal-roll/EditNominalRoll';
-import NomRollStudentListDisplay from './components/admin/nominalRoll/NomRollStudentListDisplay';
-import NomRollStudentDetailsDisplay from './components/admin/nominalRoll/NomRollStudentDetailsDisplay';
+import NominalRoll from './components/nominal-roll/NominalRoll';
+import NomRollStudentListDisplay from './components/nominal-roll/NomRollStudentListDisplay';
+import NomRollStudentDetailsDisplay from './components/nominal-roll/NomRollStudentDetailsDisplay';
 import StatsDashboard from './components/admin/stats/StatsDashboard';
 import NewPENs from './components/admin/stats/NewPENs';
 import GUMPStatsLanding from '@/components/admin/stats/GUMPStatsLanding';
@@ -269,48 +268,44 @@ const router = new VueRouter({
       },
     },
     {
-      path: 'edit',
-      name: 'EditNominalRoll',
-      component: EditNominalRoll,
-      meta: {
-        pageTitle: PAGE_TITLES.UMP,
-        requiresAuth: true,
-        role: 'NOMINAL_ROLL_ROLE'
-      },
-    },
-    {
       path: '/nominal-roll',
-      name: 'nominal-roll',
-      component: NominalRoll,
-      meta: {
-        pageTitle: PAGE_TITLES.NOMINAL_ROLL,
-        requiresAuth: true,
-        role: 'NOMINAL_ROLL_ROLE'
-      },
-    },
-    {
-      path: '/nominal-roll-list',
-      name: 'nrStudentList',
-      component: NomRollStudentListDisplay,
-      props: (route) => ({ statusFilters: route.query.statusFilters }),
-      meta: {
-        pageTitle: PAGE_TITLES.NOMINAL_ROLL_STUDENT_LIST,
-        requiresAuth: true,
-        role: 'NOMINAL_ROLL_ROLE'
-      },
-    },
-    {
-      path: '/nominal-roll/:nrStudentID',
-      name: 'nrStudentDetails',
-      component: NomRollStudentDetailsDisplay,
-      props: (route) => ({
-        nomRollStudentID: route.params.nrStudentID,
-      }),
-      meta: {
-        pageTitle: PAGE_TITLES.NOMINAL_ROLL_STUDENT_DETAILS,
-        requiresAuth: true,
-        role: 'NOMINAL_ROLL_ROLE'
-      },
+      component: RouterView,
+      children: [
+        {
+          path: '',
+          name: 'nominal-roll',
+          component: NominalRoll,
+          meta: {
+            pageTitle: PAGE_TITLES.NOMINAL_ROLL,
+            requiresAuth: true,
+            role: 'NOMINAL_ROLL_ROLE'
+          },
+        },
+        {
+          path: 'list',
+          name: 'nrStudentList',
+          component: NomRollStudentListDisplay,
+          props: (route) => ({ statusFilters: route.query.statusFilters }),
+          meta: {
+            pageTitle: PAGE_TITLES.NOMINAL_ROLL_STUDENT_LIST,
+            requiresAuth: true,
+            role: 'NOMINAL_ROLL_ROLE'
+          },
+        },
+        {
+          path: ':nrStudentID',
+          name: 'nrStudentDetails',
+          component: NomRollStudentDetailsDisplay,
+          props: (route) => ({
+            nomRollStudentID: route.params.nrStudentID,
+          }),
+          meta: {
+            pageTitle: PAGE_TITLES.NOMINAL_ROLL_STUDENT_DETAILS,
+            requiresAuth: true,
+            role: 'NOMINAL_ROLL_ROLE'
+          },
+        }
+      ]
     },
     {
       path: '/login',

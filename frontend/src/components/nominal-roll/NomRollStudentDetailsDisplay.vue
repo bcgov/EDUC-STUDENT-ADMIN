@@ -116,10 +116,10 @@
 
 <script>
 import {mapMutations, mapState} from 'vuex';
-import PrimaryButton from '../../util/PrimaryButton';
+import PrimaryButton from '../util/PrimaryButton';
 import NomRollStudentStatusChip from './NomRollStudentStatusChip';
-import ApiService from '../../../common/apiService';
-import StudentDetailsInfoPanel from '../../common/StudentDetailsInfoPanel';
+import ApiService from '../../common/apiService';
+import StudentDetailsInfoPanel from '../common/StudentDetailsInfoPanel';
 import {
   NOMINAL_ROLL_STUDENT_STATUS_CODES,
   Routes,
@@ -138,8 +138,8 @@ import {
   getPossibleMatches,
 } from '@/utils/common';
 import {formatPen, formatDob, formatGrade} from '@/utils/format';
-import ConfirmationDialog from '../../util/ConfirmationDialog';
-import router from '../../../router';
+import ConfirmationDialog from '../util/ConfirmationDialog';
+import router from '../../router';
 import Mousetrap from 'mousetrap';
 
 export default {
