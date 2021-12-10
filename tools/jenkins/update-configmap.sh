@@ -96,7 +96,7 @@ echo Creating NOMINAL_ROLL_EDIT role
 curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TKN" \
-  -d "{\"name\" : \"NOMINAL_RNOMINAL_ROLL_EDITOLL\",\"description\" : \"Allows access to edit Nominal Roll errors\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+  -d "{\"name\" : \"NOMINAL_ROLL_EDIT\",\"description\" : \"Allows access to edit Nominal Roll errors\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 
 echo
