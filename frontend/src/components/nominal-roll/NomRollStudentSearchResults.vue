@@ -57,7 +57,7 @@
                     :statusCode="props.item[header.value]"
                   ></NomRollStudentStatusChip>
                   <v-icon
-                    v-if="!isEmpty(props.item.validationErrors)"
+                    v-if="!isEmpty(props.item.validationErrors) && EDIT_NOMINAL_ROLL_ROLE"
                     @click.native="toggleRow(props.item)"
                   >{{ rowExpandedIcon }}</v-icon>
                   </span>
@@ -285,6 +285,7 @@ export default {
     ...mapGetters('student', ['genders','gradeCodeObjects']),
     ...mapState('app', ['mincodeSchoolNames', 'districtCodes']),
     ...mapGetters('app', ['mincodeSchoolNamesObjectSorted', 'districtCodesObjectSorted']),
+    ...mapGetters('auth', ['EDIT_NOMINAL_ROLL_ROLE']),
     pageNumber: {
       get(){
         return this.$store.state['nomRollStudentSearch'].pageNumber;

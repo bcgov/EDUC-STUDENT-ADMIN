@@ -20,6 +20,7 @@ export default {
     isValidStaffAdministrationUser: localStorage.getItem('isValidStaffAdministrationUser') !== null,
     isValidStaffAdministrationAdmin: localStorage.getItem('isValidStaffAdministrationAdmin') !== null,
     isValidNominalRollAdmin: localStorage.getItem('isValidNominalRollAdmin') !== null,
+    isValidNominalRollUser: localStorage.getItem('isValidNominalRollUser') !== null,
     isValidGUMPAnalyticsUser: localStorage.getItem('isValidGUMPAnalyticsUser') !== null,
     isValidPenRequestBatchAnalyticsUser: localStorage.getItem('isValidPenRequestBatchAnalyticsUser') !== null
   },
@@ -43,7 +44,8 @@ export default {
     VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE: state => state.isValidPenRequestBatchAdmin,
     EDIT_MACROS_ROLE: state => state.isValidStaffAdministrationAdmin,
     CREATE_NEW_PEN_ROLE: state => state.isValidStaffAdministrationAdmin,
-    NOMINAL_ROLL_ROLE: state => state.isValidNominalRollAdmin,
+    NOMINAL_ROLL_ROLE: state => state.isValidNominalRollUser,
+    EDIT_NOMINAL_ROLL_ROLE: state => state.isValidNominalRollAdmin,
     STAFF_ADMINISTRATION_ADMIN: state => state.isValidNominalRollAdmin || state.isValidStaffAdministrationAdmin, //gives access to admin section of navigation menu
     STUDENT_ANALYTICS_STUDENT_PROFILE: state => state.isValidGUMPAnalyticsUser,
     STUDENT_ANALYTICS_BATCH: state => state.isValidPenRequestBatchAnalyticsUser,
@@ -168,6 +170,15 @@ export default {
         localStorage.removeItem(('isValidNominalRollAdmin'));
       }
     },
+    setValidNominalRollUser: (state, isValidNominalRollUser) => {
+      if (isValidNominalRollUser) {
+        state.isValidNominalRollUser = true;
+        localStorage.setItem('isValidNominalRollUser', 'true');
+      } else {
+        state.isValidNominalRollUser = false;
+        localStorage.removeItem(('isValidNominalRollUser'));
+      }
+    },
     setGUMPAnalytics: (state, isValidGUMPAnalyticsUser) => {
       if (isValidGUMPAnalyticsUser) {
         state.isValidGUMPAnalyticsUser = true;
@@ -250,6 +261,7 @@ function setAuthorizations(context, response) {
   context.commit('penRequestBatchAdmin', response.isValidPenRequestBatchAdmin);
   context.commit('setStaffAdministrationUser', response.isValidStaffAdministrationUser);
   context.commit('setStaffAdministrationAdmin', response.isValidStaffAdministrationAdmin);
+  context.commit('setValidNominalRollUser', response.isValidNominalRollUser);
   context.commit('setValidNominalRollAdmin', response.isValidNominalRollAdmin);
   context.commit('setGUMPAnalytics', response.isValidGUMPAnalyticsUser);
   context.commit('setPenRequestBatchAnalytics', response.isValidPenRequestBatchAnalyticsUser);
