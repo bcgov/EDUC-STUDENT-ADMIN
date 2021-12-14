@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mx-auto pa-4">
+  <v-card :flat="flat" class="mx-auto pa-4">
     <v-row align="center" justify="center" style="min-height: 12em;">
       <v-progress-circular
         :size="70"
@@ -13,7 +13,13 @@
 
 <script>
 export default {
-  name: 'Spinner'
+  name: 'Spinner',
+  props: {
+    flat: {
+      type: Boolean,
+      default: false
+    },
+  }
 };
 </script>
 
