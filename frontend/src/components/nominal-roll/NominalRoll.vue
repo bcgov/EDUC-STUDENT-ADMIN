@@ -51,15 +51,15 @@
 <script>
 import DocumentUpload from '../common/DocumentUpload';
 import ApiService from '@/common/apiService';
-import {Routes} from '@/utils/constants';
+import {
+  Routes,
+  NOMINAL_ROLL_STUDENT_STATUS_CODES
+} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import Spinner from '@/components/common/Spinner';
 import {LocalDate} from '@js-joda/core';
 import PrimaryButton from '@/components/util/PrimaryButton';
 import router from '../../router';
-import {
-  NOMINAL_ROLL_STUDENT_STATUS_CODES,
-} from '@/utils/constants';
 
 export default {
   name: 'NominalRoll',
@@ -157,7 +157,7 @@ export default {
         if(res.data.length === 0) {
           this.dialog = true; // there is no file in process show the dialog to upload a new file.
         } else {
-          const loadedCount = res.data.find(item => item.status === NOMINAL_ROLL_STUDENT_STATUS_CODES.ERROR)?.count || 0;
+          const loadedCount = res.data.find(item => item.status === NOMINAL_ROLL_STUDENT_STATUS_CODES.LOADED)?.count || 0;
           if(loadedCount === 0) {
             if(this.interval) {
               this.progress = 100;
