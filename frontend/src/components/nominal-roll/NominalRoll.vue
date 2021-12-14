@@ -97,7 +97,6 @@ export default {
       processing: false,
       progress: 0,
       interval: null,
-      query: false,
     };
   },
   async mounted() {
@@ -106,7 +105,7 @@ export default {
       await this.getProcessStatus();
       if(this.processing) {
         this.setWarningAlert('Nominal roll is currently being processed. Please wait for the process to complete.');
-        this.startStatusQuery();
+        this.startPollingStatus();
       }
     } catch (e) {
       console.error(e);
@@ -127,7 +126,7 @@ export default {
         await ApiService.apiAxios.post(Routes.nominalRoll.ROOT_ENDPOINT + '/process', {nominalRollStudents: this.items});
         this.setSuccessAlert('Your request to start processing nominal roll is accepted.');
         this.processing = true;
-        this.startStatusQuery();
+        this.startPollingStatus();
       } catch (e) {
         console.error(e);
         this.setFailureAlert(e.response?.data?.message || e.message);
@@ -149,7 +148,7 @@ export default {
         this.loading = false;
       }
     },
-    async startStatusQuery() {
+    async startPollingStatus() {
       this.interval = setInterval(this.getProcessStatus, 20000);  // polling the api every 20 seconds
     },
     async getProcessStatus() {
@@ -158,7 +157,7 @@ export default {
         if(res.data.length === 0) {
           this.dialog = true; // there is no file in process show the dialog to upload a new file.
         } else {
-          const loadedCount = res.data.find(item => item.status === NOMINAL_ROLL_STUDENT_STATUS_CODES.LOADED)?.count || 0;
+          const loadedCount = res.data.find(item => item.status === NOMINAL_ROLL_STUDENT_STATUS_CODES.ERROR)?.count || 0;
           if(loadedCount === 0) {
             if(this.interval) {
               this.progress = 100;
