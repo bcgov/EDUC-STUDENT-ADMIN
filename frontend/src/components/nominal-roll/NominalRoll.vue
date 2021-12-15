@@ -13,13 +13,21 @@
     </v-dialog>
     <v-row dense no-gutters>
       <v-col cols="12">
-        <v-card v-if="items" class="ma-2">
+        <v-card flat v-if="items || processing" class="ma-2">
           <v-card-title>
             Nominal Roll - {{ currentYear }} - Sanity Check
             <v-spacer></v-spacer>
-            <PrimaryButton title="process nominal roll file" text="Process" :loading="processStudentsLoading" :disabled="processStudentsDisabled"
+            <PrimaryButton v-if="items" title="process nominal roll file" text="Process" :loading="processStudentsLoading" :disabled="processing"
                            @click.native="processNominalRollStudents()"></PrimaryButton>
           </v-card-title>
+          <v-progress-linear
+            v-model="progress"
+            :active="processing"
+            buffer-value="0"
+            query
+            stream
+          >
+          </v-progress-linear>
           <v-data-table dense v-if="items"
                         :headers="headers"
                         :items="items"
@@ -34,7 +42,7 @@
 
           </v-data-table>
         </v-card>
-        <spinner class="ma-2" v-if="loading"/>
+        <spinner flat class="ma-2" v-if="loading"/>
       </v-col>
     </v-row>
   </v-container>
@@ -43,7 +51,10 @@
 <script>
 import DocumentUpload from '../common/DocumentUpload';
 import ApiService from '@/common/apiService';
-import {Routes} from '@/utils/constants';
+import {
+  Routes,
+  NOMINAL_ROLL_STUDENT_STATUS_CODES
+} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import Spinner from '@/components/common/Spinner';
 import {LocalDate} from '@js-joda/core';
@@ -83,22 +94,30 @@ export default {
       loading: false,
       schoolDistrictNumberSearch: '',
       processStudentsLoading: false,
-      processStudentsDisabled: false,
+      processing: false,
+      progress: 0,
+      interval: null,
     };
   },
   async mounted() {
     try {
-      await ApiService.apiAxios.get(Routes.nominalRoll.ROOT_ENDPOINT);
-      router.push({name:'nrStudentList'});
-    } catch (e) {
-      if (e.response?.status === 404) {
-        this.dialog = true; // there is no file in process show the dialog to upload a new file.
-      } else {
-        console.error(e);
-        this.setFailureAlert('Could not load page please try again later.');
+      this.loading = true;
+      await this.getProcessStatus();
+      if(this.processing) {
+        this.setWarningAlert('Nominal roll is currently being processed. Please wait for the process to complete.');
+        this.startPollingStatus();
       }
+    } catch (e) {
+      console.error(e);
+      this.setFailureAlert('Could not load page please try again later.');
+    } finally {
+      this.loading = false;
     }
-
+  },
+  beforeDestroy () {
+    if(this.interval) {
+      clearInterval(this.interval);
+    }
   },
   methods: {
     async processNominalRollStudents() {
@@ -106,7 +125,8 @@ export default {
       try {
         await ApiService.apiAxios.post(Routes.nominalRoll.ROOT_ENDPOINT + '/process', {nominalRollStudents: this.items});
         this.setSuccessAlert('Your request to start processing nominal roll is accepted.');
-        this.processStudentsDisabled= true;
+        this.processing = true;
+        this.startPollingStatus();
       } catch (e) {
         console.error(e);
         this.setFailureAlert(e.response?.data?.message || e.message);
@@ -127,7 +147,36 @@ export default {
         this.dialog = false;
         this.loading = false;
       }
-    }
+    },
+    async startPollingStatus() {
+      this.interval = setInterval(this.getProcessStatus, 20000);  // polling the api every 20 seconds
+    },
+    async getProcessStatus() {
+      try {
+        const res = await ApiService.apiAxios.get(Routes.nominalRoll.ROOT_ENDPOINT);
+        if(res.data.length === 0) {
+          this.dialog = true; // there is no file in process show the dialog to upload a new file.
+        } else {
+          const loadedCount = res.data.find(item => item.status === NOMINAL_ROLL_STUDENT_STATUS_CODES.LOADED)?.count || 0;
+          if(loadedCount === 0) {
+            if(this.interval) {
+              this.progress = 100;
+              clearInterval(this.interval);
+            }
+            router.push({name:'nrStudentList'});
+          } else {
+            this.processing = true;
+            const allCount = res.data.reduce((acc, item) => {
+              return acc + item.count;
+            }, 0);
+            this.progress = Math.floor((allCount - loadedCount)/allCount * 100);
+          }
+        }
+      } catch (e) {
+        console.error(e);
+        this.setFailureAlert('Could not load nominal roll data please try again later.');
+      }
+    },
   }
 };
 </script>
