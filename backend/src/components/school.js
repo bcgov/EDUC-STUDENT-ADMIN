@@ -99,7 +99,7 @@ async function createFedProvSchoolCode(req, res) {
         correlationID: req.session.correlationID,
       }
     };
-    const result = await postData(token, url, req.body, params);  //, getUser(req).idir_username
+    const result = await postData(token, url, req.body, params, getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'createFedProvSchoolCode', 'Error occurred while attempting to create a fedProvSchoolCode.');
