@@ -60,21 +60,22 @@
                     v-if="!isEmpty(props.item.validationErrors) && EDIT_NOMINAL_ROLL_ROLE"
                     @click.native="toggleRow(props.item)"
                   >{{ rowExpandedIcon }}</v-icon>
-                  </span>
-                <span v-else-if="props.item.validationErrors[header.text]" style="color: red">{{ formatTableColumn(header.format, props.item[header.value]) }}
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-icon
-                            color="red"
-                            small
-                            v-bind="attrs"
-                            v-on="on"
-                          >mdi-alert</v-icon>
-                        </template>
-                        {{props.item.validationErrors[header.text]}}
-                      </v-tooltip>
-                    </span>
-                    <span v-else>{{ formatTableColumn(header.format, props.item[header.value]) || '' }}</span>
+                </span>
+                <span v-else-if="props.item.validationErrors[header.text]" style="color: red">
+                  {{ formatTableColumn(header.format, props.item[header.value]) }}
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-icon
+                        color="red"
+                        small
+                        v-bind="attrs"
+                        v-on="on"
+                      >mdi-alert</v-icon>
+                    </template>
+                    {{props.item.validationErrors[header.text]}}
+                  </v-tooltip>
+                </span>
+                <span v-else>{{ formatTableColumn(header.format, props.item[header.value]) || '' }}</span>
               </span>
             </div>
           </td>
@@ -93,11 +94,18 @@
                 ></v-autocomplete>
               </v-col>
               <v-col class="pb-0 pt-7">
-                <v-text-field v-model="editedRecord.schoolNumber"
-                              :disabled="!item.validationErrors['School Number'] && !validationErrors['School Number']"
-                              outlined dense name="2" label="School Number"
-                              :rules="[!validationErrors['School Number'] || validationErrors['School Number']]"
-                ></v-text-field>
+                <v-row>
+                  <v-col class="pa-0" :cols="item.validationErrors['School Number'] || validationErrors['School Number'] ? 10 : 12">
+                    <v-text-field v-model="editedRecord.schoolNumber"
+                                  :disabled="!item.validationErrors['School Number'] && !validationErrors['School Number']"
+                                  outlined dense name="2" label="School Number"
+                                  :rules="[!validationErrors['School Number'] || validationErrors['School Number']]"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col v-if="item.validationErrors['School Number'] || validationErrors['School Number']" class="pa-0">
+                    <MapSchoolCodeModal :fedCode="editedRecord.schoolNumber" @change='updateMincode(editedRecord)'/>
+                  </v-col>
+                </v-row>
               </v-col>
               <v-col class="pb-0 pt-7">
                 <v-autocomplete v-model="editedRecord.schoolName"
@@ -213,6 +221,7 @@ import ApiService from '@/common/apiService';
 import {formatDob, formatPen, formatGrade} from '@/utils/format';
 import {constructPenMatchObjectFromNominalRollStudent, deepCloneObject, getPossibleMatches} from '../../utils/common';
 import alertMixin from '@/mixins/alertMixin';
+import MapSchoolCodeModal from './MapSchoolCodeModal';
 
 export default {
   name: 'NomRollStudentSearchResults',
@@ -220,6 +229,7 @@ export default {
   components: {
     PrimaryButton,
     NomRollStudentStatusChip,
+    MapSchoolCodeModal,
   },
   props: {
     loading: {
@@ -286,6 +296,7 @@ export default {
     ...mapState('app', ['mincodeSchoolNames', 'districtCodes']),
     ...mapGetters('app', ['mincodeSchoolNamesObjectSorted', 'districtCodesObjectSorted']),
     ...mapGetters('auth', ['EDIT_NOMINAL_ROLL_ROLE']),
+    ...mapState('nominalRoll', ['fedProvSchoolCodes']),
     pageNumber: {
       get(){
         return this.$store.state['nomRollStudentSearch'].pageNumber;
@@ -475,6 +486,9 @@ export default {
     },
     clickGoBack() {
       router.push({name: 'nominal-roll'});
+    },
+    updateMincode(rec) {
+      rec.mincode = this.fedProvSchoolCodes.find(obj => obj.federalCode === rec.schoolNumber)?.provincialCode || rec.schoolNumber;
     }
   }
 };
