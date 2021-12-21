@@ -17,6 +17,7 @@ import PrbStudentDetailsDisplay from './components/penreg/penrequest-batch/PrbSt
 import ArchivedRequestBatchDisplay from './components/penreg/penrequest-batch/ArchivedRequestBatchDisplay';
 import LoadFailedBatchList from './components/penreg/penrequest-batch/LoadFailedBatchList';
 import HeldRequestBatchDisplay from './components/penreg/penrequest-batch/HeldRequestBatchDisplay';
+import MessagesPage from './components/MessagesPage';
 import UnAuthorized from './components/UnAuthorized';
 import { REQUEST_TYPES, PAGE_TITLES } from './utils/constants';
 import authStore from './store/modules/auth';
@@ -308,6 +309,16 @@ const router = new VueRouter({
       ]
     },
     {
+      path: '/messages',
+      name: 'messages',
+      component: MessagesPage,
+      meta: {
+        pageTitle: PAGE_TITLES.MESSAGES,
+        requiresAuth: true,
+        role: 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE'
+      }
+    },
+    {
       path: '/login',
       name: 'login',
       component: Login,
@@ -430,7 +441,6 @@ const router = new VueRouter({
         },
       ],
     }
-
   ]
 });
 
