@@ -246,7 +246,7 @@ export default {
     //TODO: replace this with API call for secure messaging
     this.secMessageData.push({
       title: 'PEN Team Inbox',
-      button: {route: 'insert some route here', text: 'View Inbox'},
+      button: {route: REQUEST_TYPES.messages.path, text: 'View Inbox'},
     });
 
     setTimeout(() => this.isLoadingSecMessage = false, 1000);

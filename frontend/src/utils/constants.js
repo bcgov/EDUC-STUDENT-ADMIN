@@ -189,6 +189,11 @@ export const REQUEST_TYPES = Object.freeze(
       name: 'failedRequestBatch',
       label: 'Failed PEN Request Files',
       path: '/failedRequestBatch',
+    },
+    messages: {
+      name: 'messages',
+      label: 'View Secure Messages',
+      path: '/messages',
     }
   }
 );
@@ -358,7 +363,8 @@ export const PAGE_TITLES = Object.freeze(
     UMP_STATS: 'UMP Stats',
     STATS_DASHBOARD: 'Student and System Analytics',
     VIEW_MERGES: 'View Merges',
-    ANALYTICS: 'Analytics'
+    ANALYTICS: 'Analytics',
+    MESSAGES: 'Messages'
   }
 );
 
