@@ -147,7 +147,7 @@
         </template>
         <template v-slot:no-data>There are no messages.</template>
         <template v-slot:item="{ item }">
-          <tr>
+          <tr v-on:click="viewMessageDetails(item)" :class="{'unread': !item.read}">
             <td>{{ item.contact }}</td>
             <td>{{ item.subject }}</td>
             <td>{{
@@ -158,7 +158,7 @@
 
             <td v-if="item.reviewer !== 'unclaimed'">{{ item.reviewer }}</td>
             <td v-else>
-              <primary-button v-on:click.native="claim">Claim</primary-button>
+              <primary-button v-on:click.native.stop="claim">Claim</primary-button>
             </td>
           </tr>
         </template>
@@ -198,25 +198,31 @@ export default {
       },
       requests: [
         {
+          id: 142,
           contact: 'SFU (06718294)',
           subject: 'Test University',
           initialSubmitDate: moment('2021/12/27', 'YYYY/MM/DD'),
           status: 'NEW',
-          reviewer: 'unclaimed'
+          reviewer: 'unclaimed',
+          read: true
         },
         {
+          id: 143,
           contact: 'Bear Valley School (08288028)',
           subject: 'Question about PEN assignment',
           initialSubmitDate: moment('2021/01/01', 'YYYY/MM/DD'),
           status: 'IN PROGRESS',
-          reviewer: 'JONES, TIM EDUC:EX'
+          reviewer: 'JONES, TIM EDUC:EX',
+          read: true
         },
         {
+          id: 144,
           contact: 'Nootka Elem Summer School (03990089)',
           subject: 'Student name change',
           initialSubmitDate: moment('2021/07/07', 'YYYY/MM/DD'),
           status: 'NEW',
-          reviewer: 'unclaimed'
+          reviewer: 'unclaimed',
+          read: false
         }
       ],
       statuses: [
@@ -231,7 +237,11 @@ export default {
         {
           statusCode: 'completed',
           statusText: 'Completed'
-        }
+        },
+        {
+          statusCode: 'done',
+          statusText: 'Done'
+        },
       ],
       reviewers: [
         {
@@ -287,6 +297,9 @@ export default {
     claim() {
       console.log(this.userName + ' would like to claim');
       alert(`claim as ${this.userName}?`);
+    },
+    viewMessageDetails(message) {
+      console.log(`message id ${message?.id} was clicked` );
     }
   }
 };
@@ -301,6 +314,10 @@ export default {
 
 .v-icon {
   font-size: 18px;
+}
+
+.unread {
+  font-weight: bold;
 }
 
 </style>
