@@ -14,6 +14,12 @@
                 <v-list-item>
                   <v-list-item-content>Unclaimed Messages</v-list-item-content>
                 </v-list-item>
+                <v-list-item>
+                  <v-list-item-content>My Messages</v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-content>Completed Messages</v-list-item-content>
+                </v-list-item>
               </v-list-item-group>
             </v-list>
           </v-expansion-panel-content>
@@ -147,7 +153,7 @@
         </template>
         <template v-slot:no-data>There are no messages.</template>
         <template v-slot:item="{ item }">
-          <tr v-on:click="viewMessageDetails(item)" :class="{'unread': !item.read}">
+          <tr v-on:click="viewMessageDetails(item)" :class="[{'unread': !item.read}, 'tableRow']">
             <td>{{ item.contact }}</td>
             <td>{{ item.subject }}</td>
             <td>{{
@@ -310,6 +316,10 @@ export default {
 .table-header {
   cursor: pointer;
   margin-bottom: 0;
+}
+
+.tableRow {
+  cursor: pointer;
 }
 
 .v-icon {
