@@ -7,12 +7,18 @@
           <v-expansion-panel-content>
             <v-list dense>
               <v-list-item-group v-model="selectedItem" color="primary">
-                <v-list-item>
+                <v-list-item v-on:click="clickShowMessageType('messages')">
                   <v-list-item-content>Messages</v-list-item-content>
                   <v-list-item-avatar>1</v-list-item-avatar>
                 </v-list-item>
-                <v-list-item>
+                <v-list-item v-on:click="clickShowMessageType('unclaimed')">
                   <v-list-item-content>Unclaimed Messages</v-list-item-content>
+                </v-list-item>
+                <v-list-item v-on:click="clickShowMessageType('mine')">
+                  <v-list-item-content>My Messages</v-list-item-content>
+                </v-list-item>
+                <v-list-item v-on:click="clickShowMessageType('completed')">
+                  <v-list-item-content>Completed Messages</v-list-item-content>
                 </v-list-item>
               </v-list-item-group>
             </v-list>
@@ -32,6 +38,7 @@
               'items-per-page-options': itemsPerPageOptions
             }"
           :items="requests"
+          :loading="loadingTable"
       >
         <template v-slot:header.contact="{ header }">
           <th
@@ -147,7 +154,8 @@
         </template>
         <template v-slot:no-data>There are no messages.</template>
         <template v-slot:item="{ item }">
-          <tr v-on:click="viewMessageDetails(item)" :class="{'unread': !item.read}">
+          <tr v-on:click="clickViewMessageDetails(item)"
+              :class="[{'unread': !item.read}, 'tableRow']">
             <td>{{ item.contact }}</td>
             <td>{{ item.subject }}</td>
             <td>{{
@@ -184,6 +192,7 @@ export default {
       pageNumber: 1,
       pageSize: 25,
       itemsPerPageOptions: [10, 15, 25, 50, 100],
+      loadingTable: false,
       dateMenu: false,
       headerSearchParams: {
         contact: '',
@@ -298,8 +307,49 @@ export default {
       console.log(this.userName + ' would like to claim');
       alert(`claim as ${this.userName}?`);
     },
-    viewMessageDetails(message) {
-      console.log(`message id ${message?.id} was clicked` );
+    clickViewMessageDetails(message) {
+      //mocked function that will show the full message details when clicked
+      console.log(`message id ${message?.id} was clicked`);
+    },
+    clickShowMessageType(messageType) {
+      //mocked function that will send a get request for the message inbox items
+      this.getRequests(messageType);
+    },
+    getRequests(requestRoute) {
+      //mocked data being requested and sent back depending on the inbox
+      this.loadingTable = true;
+      setTimeout(() => {
+        this.requests = [
+          {
+            id: 142,
+            contact: requestRoute,
+            subject: requestRoute,
+            initialSubmitDate: moment('2021/01/01', 'YYYY/MM/DD'),
+            status: 'NEW',
+            reviewer: 'unclaimed',
+            read: true
+          },
+          {
+            id: 143,
+            contact: requestRoute,
+            subject: requestRoute,
+            initialSubmitDate: moment('2021/02/02', 'YYYY/MM/DD'),
+            status: 'IN PROGRESS',
+            reviewer: 'JONES, TIM EDUC:EX',
+            read: true
+          },
+          {
+            id: 144,
+            contact: requestRoute,
+            subject: requestRoute,
+            initialSubmitDate: moment('2021/07/07', 'YYYY/MM/DD'),
+            status: 'NEW',
+            reviewer: 'unclaimed',
+            read: false
+          }
+        ];
+        this.loadingTable = false;
+      }, 1000);
     }
   }
 };
@@ -310,6 +360,10 @@ export default {
 .table-header {
   cursor: pointer;
   margin-bottom: 0;
+}
+
+.tableRow {
+  cursor: pointer;
 }
 
 .v-icon {
