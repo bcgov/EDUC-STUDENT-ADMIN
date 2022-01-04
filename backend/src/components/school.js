@@ -1,6 +1,6 @@
 'use strict';
 const config = require('../config/index');
-const {getBackendToken, getData, putData, getUser, logApiError, errorResponse} = require('./utils');
+const {getBackendToken, getData, putData, getUser, logApiError, errorResponse, postData} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const cacheService = require('./cache-service');
 const lodash = require('lodash');
@@ -90,9 +90,27 @@ function isSchoolExpired(school) {
 
 }
 
+async function createFedProvSchoolCode(req, res) {
+  try {
+    const token = getBackendToken(req);
+    const url = `${config.get('server:schoolAPIURL')}/schools/federal-province-codes`;
+    const params = {
+      headers: {
+        correlationID: req.session.correlationID,
+      }
+    };
+    const result = await postData(token, url, req.body, params, getUser(req).idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'createFedProvSchoolCode', 'Error occurred while attempting to create a fedProvSchoolCode.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getSchoolByMincode,
   getPenCoordinatorByMincode,
   updatePenCoordinatorByMincode,
   getPenCoordinators,
+  createFedProvSchoolCode,
 };

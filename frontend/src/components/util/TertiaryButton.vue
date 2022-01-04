@@ -9,7 +9,9 @@
            :to="to"
            :width="width"
            :text="true"
-
+           :min-width="minWidth"
+           v-bind="bind"
+           v-on="on"
     >
       <v-icon v-if="icon" :class="[iconStyle, 'mr-1']" left>{{ icon }}</v-icon>
       <strong>{{ text }}</strong>
@@ -46,7 +48,16 @@ export default {
     },
     iconStyle: {
       type: String
-    }
+    },
+    minWidth: {
+      type: String
+    },
+    bind: {
+      type: Object
+    },
+    on: {
+      type: Object
+    },
   }
 };
 </script>

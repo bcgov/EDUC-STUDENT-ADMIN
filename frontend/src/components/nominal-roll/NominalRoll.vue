@@ -32,7 +32,7 @@
                         :headers="headers"
                         :items="items"
 
-                        class="fill-height"
+                        class="fill-height mt-4"
                         :items-per-page="10"
                         :footer-props="{
                       'items-per-page-options': [10]

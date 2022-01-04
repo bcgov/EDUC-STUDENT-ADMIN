@@ -1,7 +1,7 @@
 const passport = require('passport');
 const express = require('express');
 const router = express.Router();
-const { getSchoolByMincode, getPenCoordinatorByMincode, getPenCoordinators, updatePenCoordinatorByMincode } = require('../components/school');
+const { getSchoolByMincode, getPenCoordinatorByMincode, getPenCoordinators, updatePenCoordinatorByMincode, createFedProvSchoolCode } = require('../components/school');
 const utils = require('../components/utils');
 const auth = require('../components/auth');
 const extendSession = utils.extendSession();
@@ -29,7 +29,9 @@ router.put('/:mincode/penCoordinator', passport.authenticate('jwt', {session: fa
  */
 router.get('/penCoordinators', passport.authenticate('jwt', {session: false}, undefined), extendSession, getPenCoordinators);
 
-router.get('/fedProvSchoolCodes', passport.authenticate('jwt', {session: false}, undefined), extendSession, utils.cacheMiddleware(), utils.getCodes('server:schoolAPIURL', 'fedProvSchoolCodes', '/schools/federal-province-codes'));
+router.get('/fedProvSchoolCodes', passport.authenticate('jwt', {session: false}, undefined), extendSession, utils.getCodes('server:schoolAPIURL', 'fedProvSchoolCodes', '/schools/federal-province-codes'));
+
+router.post('/fedProvSchoolCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithEditRoles, extendSession, createFedProvSchoolCode);
 
 module.exports = router;
 
