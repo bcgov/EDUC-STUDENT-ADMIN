@@ -260,7 +260,7 @@ async function getStudentDemographicsById(req, res) {
         studMiddle: response[0]['legalMiddleNames'],
         studSurname: response[0]['legalLastName'],
         dob: response[0]['dob'],
-        studSex: response[0]['sexCode'],
+        studGender: response[0]['genderCode'],
         usualGiven: response[0]['usualFirstName'],
         usualMiddle: response[0]['usualMiddleNames'],
         usualSurname: response[0]['usualLastName'],
@@ -284,7 +284,7 @@ async function getStudentDemographicsById(req, res) {
       usualMiddle: req['session'].studentDemographics['usualMiddle'],
       usualLast: req['session'].studentDemographics['usualSurname'],
       dob: req['session'].studentDemographics['dob'],
-      gender: req['session'].studentDemographics['studSex']
+      gender: req['session'].studentDemographics['studGender']
     };
     return res.status(200).json(formattedResponse);
   } catch (e) {
@@ -372,8 +372,7 @@ function setDefaultsInRequestForComplete(request, thisSession, req) {
   request.legalMiddleNames = thisSession.studentDemographics['studMiddle'];
   request.legalLastName = thisSession.studentDemographics['studSurname'];
   request.dob = thisSession.studentDemographics['dob'];
-  request.sexCode = thisSession.studentDemographics['studSex'];
-  request.genderCode = thisSession.studentDemographics['studSex'];
+  request.genderCode = thisSession.studentDemographics['studGender'];
   request.usualFirstName = thisSession.studentDemographics['usualGiven'];
   request.usualMiddleNames = thisSession.studentDemographics['usualMiddle'];
   request.usualLastName = thisSession.studentDemographics['usualSurname'];

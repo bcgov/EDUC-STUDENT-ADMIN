@@ -414,7 +414,7 @@ describe('getStudentDemographicsById', () => {
     'usualGiven': 'AUSTIN',
     'usualMiddle': 'DANGER',
     'studBirth': '19531217',
-    'studSex': 'M',
+    'studGender': 'M',
     'studStatus': 'A',
     'createDate': '2007-08-20',
     'createUserName': 'EDUC_PEN_MGR'
@@ -428,7 +428,7 @@ describe('getStudentDemographicsById', () => {
     'usualFirstName': 'AUSTIN',
     'usualMiddleNames': 'DANGER',
     'dob': '1953-12-17',
-    'sexCode': 'M',
+    'genderCode': 'M',
     'localID': '12345',
     'postalCode': 'V8V1V2',
     'gradeCode': '1',

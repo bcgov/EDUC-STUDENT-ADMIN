@@ -45,6 +45,7 @@ async function updateStudent(req, res) {
       student.demogCode = 'C';
       student.dateOfConfirmation = LocalDateTime.now().withNano(0).toJSON();
     }
+    student.sexCode = student.genderCode;
     student.createDate = null;
     student.updateDate = null;
     await retry(async () => {
@@ -177,7 +178,7 @@ async function createNewStudent(req, res) {
     const student = req.body.student;
     student.dob = utils.formatDate(student.dob?.replace(/\D/g, ''));
     student.pen = penNumber;
-    student.sexCode = student.sexCode || student.genderCode; // sex code is mandatory in API.
+    student.sexCode = student.genderCode; // sex code is mandatory in API.
     student.historyActivityCode = student.historyActivityCode || 'REQNEW';
     student.emailVerified = student.emailVerified || 'N';
     student.demogCode = student.demogCode || 'A';
