@@ -373,6 +373,7 @@ function setDefaultsInRequestForComplete(request, thisSession, req) {
   request.legalLastName = thisSession.studentDemographics['studSurname'];
   request.dob = thisSession.studentDemographics['dob'];
   request.genderCode = thisSession.studentDemographics['studGender'];
+  request.sexCode = thisSession.studentDemographics['studGender'];
   request.usualFirstName = thisSession.studentDemographics['usualGiven'];
   request.usualMiddleNames = thisSession.studentDemographics['usualMiddle'];
   request.usualLastName = thisSession.studentDemographics['usualSurname'];
