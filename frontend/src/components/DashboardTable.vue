@@ -13,7 +13,7 @@
           <h3>{{ row.title }}</h3>
         </v-row>
         <v-row v-for="(col, idx) in omit(row, 'title')" :key="idx" class="pt-2 listCol">
-          <div v-if="idx === 'heldReview' && col > 0">
+          <div v-if="idx === 'heldReview' && col.data > 0">
             <router-link to="heldRequestBatch">
               <strong>{{ col.data }} {{ col.name }}</strong>
             </router-link>
