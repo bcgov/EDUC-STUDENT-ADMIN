@@ -496,6 +496,10 @@ export const NOMINAL_ROLL_STUDENT_STATUSES = Object.freeze(
     {
       value: 'LOADED',
       text: 'Loaded'
+    },
+    {
+      value: 'IGNORED',
+      text: 'Ignored'
     }
   ]
 );

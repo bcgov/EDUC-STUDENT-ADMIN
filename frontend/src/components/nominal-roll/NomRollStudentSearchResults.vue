@@ -20,6 +20,7 @@
       </v-flex>
       <PrimaryButton id="viewSelected" v-if="selected" :disabled="!viewEnabled" @click.native="clickViewSelected" text="View Selected"></PrimaryButton>
       <PrimaryButton id="viewDetails" v-else :loading="loadingRequestIDs" :disabled="!viewEnabled" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
+      <PrimaryButton id="postRecords" class="ml-1" :loading="processing" :disabled="isPosted" @click.native="clickPostRecords" text="Post"></PrimaryButton>
     </v-row>
     <v-divider class="mb-1 subheader-divider"/>
     <v-data-table
@@ -218,7 +219,7 @@ import {uniqBy, values, partialRight} from 'lodash';
 import router from '../../router';
 import {NOMINAL_ROLL_STUDENT_STATUS_CODES, NOMINAL_ROLL_STUDENT_STATUSES, Routes} from '../../utils/constants';
 import ApiService from '@/common/apiService';
-import {formatDob, formatPen, formatGrade} from '@/utils/format';
+import {formatDob, formatPen, formatGrade, formatDistrictNumber} from '@/utils/format';
 import {constructPenMatchObjectFromNominalRollStudent, deepCloneObject, getPossibleMatches} from '../../utils/common';
 import alertMixin from '@/mixins/alertMixin';
 import MapSchoolCodeModal from './MapSchoolCodeModal';
@@ -235,7 +236,11 @@ export default {
     loading: {
       type: Boolean,
       required: true
-    }
+    },
+    isPosted: {
+      type: Boolean,
+      required: true
+    },
   },
   watch: {
     dateMenu (val) {
@@ -246,7 +251,19 @@ export default {
         this.validateRecord();
       },
       deep: true
-    }
+    },
+    notification(val) {
+      if (val) {
+        const notificationData = val;
+        if (this.sagaId && notificationData && this.sagaId === notificationData.sagaId  && notificationData.sagaStatus === 'COMPLETED') {
+          if (notificationData.sagaName === 'NOMINAL_ROLL_POST_DATA_SAGA') {
+            this.setSuccessAlert('Success! Your request to post nominal roll data is completed.');
+            this.$emit('update:isPosted', true);
+          }
+          this.processing = false;
+        }
+      }
+    },
   },
   data () {
     return {
@@ -257,7 +274,7 @@ export default {
       headers: [
         { id: 'table-checkbox', type: 'select', sortable: false },
         { text: 'Mincode', align: 'start', sortable: false, value: 'mincode', tooltip: 'Mincode' },
-        {text: 'School District', value: 'schoolDistrictNumber', sortable: false, tooltip: 'School District'},
+        {text: 'School District', value: 'schoolDistrictNumber', sortable: false, tooltip: 'School District', format: formatDistrictNumber},
         {text: 'School Number', value: 'schoolNumber', sortable: false, tooltip: 'School Number'},
         {text: 'School Name', value: 'schoolName', sortable: false, tooltip: 'School Name'},
         {text: 'LEA/Provincial', value: 'leaProvincial', sortable: false, tooltip: 'LEA/Provincial'},
@@ -279,7 +296,9 @@ export default {
       sysMatchedStatuses: ['AA','B1','C1','D1'],
       updating: false,
       validationErrors: {},
-      validForm: true
+      validForm: true,
+      processing: false,
+      sagaId: null,
     };
   },
   async beforeMount() {
@@ -297,6 +316,7 @@ export default {
     ...mapGetters('app', ['mincodeSchoolNamesObjectSorted', 'districtCodesObjectSorted']),
     ...mapGetters('auth', ['EDIT_NOMINAL_ROLL_ROLE']),
     ...mapState('nominalRoll', ['fedProvSchoolCodes']),
+    ...mapGetters('notifications', ['notification']),
     pageNumber: {
       get(){
         return this.$store.state['nomRollStudentSearch'].pageNumber;
@@ -435,6 +455,8 @@ export default {
       if (index === -1) {
         this.validationErrors = item?.validationErrors || {};
         this.editedRecord = deepCloneObject(item);
+        this.editedRecord.schoolDistrictNumber = formatDistrictNumber(this.editedRecord.schoolDistrictNumber);
+        this.editedRecord.grade = formatGrade(this.editedRecord.grade);
         if (this.expanded.length > 0) {
           this.expanded = [];
         }
@@ -451,19 +473,24 @@ export default {
         if(!this.isEmpty(this.validationErrors)) {
           this.setWarningAlert('Cannot update record due to validation errors. Please fix and try again.');
         } else {
-          const matchResult = await getPossibleMatches(constructPenMatchObjectFromNominalRollStudent(item));
-          if (this.sysMatchedStatuses?.includes(matchResult?.penStatus) && this.isEmpty(item?.validationErrors)) {
-            this.editedRecord.assignedPEN = matchResult.data[0];
-            this.editedRecord.status = NOMINAL_ROLL_STUDENT_STATUS_CODES.MATCHEDSYS;
+          const matchResult = await getPossibleMatches(constructPenMatchObjectFromNominalRollStudent(this.editedRecord));
+          const updateRequest = deepCloneObject(this.editedRecord);
+          updateRequest.schoolDistrictNumber = updateRequest.schoolDistrictNumber.replace(/^0+/, '');
+          updateRequest.grade = updateRequest.grade.replace(/^0/, '');
+          if (this.sysMatchedStatuses?.includes(matchResult?.penStatus) && matchResult.data[0]) {
+            updateRequest.assignedPEN = matchResult.data[0].pen;
+            updateRequest.status = NOMINAL_ROLL_STUDENT_STATUS_CODES.MATCHEDSYS;
             this.setSuccessAlert('System has automatically found a match! Record will be updated.');
           } else {
-            this.editedRecord.status = NOMINAL_ROLL_STUDENT_STATUS_CODES.FIXABLE;
+            updateRequest.status = NOMINAL_ROLL_STUDENT_STATUS_CODES.FIXABLE;
             this.setWarningAlert('System was unable to find a direct match. The record will be set as fixable.');
           }
-          ApiService.apiAxios.put(`${Routes['nominalRoll'].ROOT_ENDPOINT}/${this.editedRecord.nominalRollStudentID}`, {...this.editedRecord})
-            .then(() => {
+          ApiService.apiAxios.put(`${Routes['nominalRoll'].ROOT_ENDPOINT}/${this.editedRecord.nominalRollStudentID}`, updateRequest)
+            .then(response => {
               this.toggleRow(item);
-              this.$emit('search');
+              // this.$emit('search');
+              this.updateMincode(response.data);
+              Object.assign(item, response.data);
               this.setSuccessAlert('Record has been successfully updated.');
             })
             .catch(e => {
@@ -489,6 +516,24 @@ export default {
     },
     updateMincode(rec) {
       rec.mincode = this.fedProvSchoolCodes.find(obj => obj.federalCode === rec.schoolNumber)?.provincialCode || rec.schoolNumber;
+    },
+    clickPostRecords() {
+      this.processing = true;
+      const payload = {};
+      ApiService.apiAxios.post(`${Routes['nominalRoll'].ROOT_ENDPOINT}/postData`, payload)
+        .then((response) => {
+          this.sagaId = response.data;
+          this.setSuccessAlert('Your request to post nominal roll data is accepted.');
+        })
+        .catch(error => {
+          console.log(error);
+          this.processing = false;
+          if (error?.response?.status === 409) {
+            this.setFailureAlert(error?.response?.data?.message || 'Another saga is in progress for this file, please try again later.');
+          } else {
+            this.setFailureAlert('An error occurred while posting nominal roll data. Please try again later.');
+          }
+        });
     }
   }
 };

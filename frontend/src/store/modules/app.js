@@ -22,7 +22,7 @@ export default {
     request: state => state.request,
     selectedRequest: state => state.selectedRequest,
     districtCodesObjectSorted: state => Array.from(state.districtCodes).sort(),
-    mincodeSchoolNamesObjectSorted: state => Object.values(Object.fromEntries(state.mincodeSchoolNames)).sort(),
+    mincodeSchoolNamesObjectSorted: state => Object.values(Object.fromEntries(state.mincodeSchoolNames)).map(v => v.toUpperCase()).sort(),
     messages: state => state.messages,
     participants: state => state.participants,
     requestType: state => state.requestType,

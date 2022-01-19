@@ -25,7 +25,7 @@
             <v-row v-if="nomRollStudentSearchResponse" id="resultsRow" no-gutters class="py-2" style="background-color:white;">
               <NomRollStudentSearchResults
                 :loading="searchLoading"
-                @search="searchPenRequests"
+                :isPosted.sync="isPosted"
               ></NomRollStudentSearchResults>
             </v-row>
           </v-card>
@@ -102,7 +102,8 @@ export default {
         submittedPen: {
           hidden: true,
         },
-      }
+      },
+      isPosted: false,
     };
   },
   computed:{
@@ -147,6 +148,13 @@ export default {
         this.initialSearch();
       }
     },
+    isPosted: {
+      handler() {
+        if(!this.searchLoading) {
+          this.initialSearch();
+        }
+      }
+    }
   },
   mounted() {
     Mousetrap.bind('ctrl+b', () => {
@@ -194,6 +202,10 @@ export default {
               console.log(e);
               throw e;
             }
+          }
+
+          if(initial) {
+            await this.checkPostedNomRollStudents();
           }
 
           const searchCriteria = this.nomRollStudentSearchCriteriaList(this.nomRollStudentSearchParams);
@@ -279,6 +291,18 @@ export default {
         .then(response => {
           response.data && response.data.content && this.initializeNomRollStudents(response.data.content, isFilterOperation);
           this.setNomRollStudentSearchResponse(response.data);
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while loading the PEN requests. Please try again later.');
+          console.log(error);
+          throw error;
+        });
+    },
+    checkPostedNomRollStudents() {
+      return ApiService.apiAxios
+        .get(`${Routes['nominalRoll'].ROOT_ENDPOINT}/posted`)
+        .then(response => {
+          this.isPosted = response.data;
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while loading the PEN requests. Please try again later.');
