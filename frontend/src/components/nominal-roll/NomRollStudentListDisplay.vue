@@ -293,7 +293,7 @@ export default {
           this.setNomRollStudentSearchResponse(response.data);
         })
         .catch(error => {
-          this.setFailureAlert('An error occurred while loading the PEN requests. Please try again later.');
+          this.setFailureAlert('An error occurred while loading nominal roll data. Please try again later.');
           console.log(error);
           throw error;
         });
@@ -304,10 +304,10 @@ export default {
         .then(response => {
           this.isPosted = response.data;
         })
-        .catch(error => {
-          this.setFailureAlert('An error occurred while loading the PEN requests. Please try again later.');
-          console.log(error);
-          throw error;
+        .catch(err => {
+          this.setFailureAlert('An error occurred while loading nominal roll data. Please try again later.');
+          console.log(err);
+          throw err;
         });
     },
   }

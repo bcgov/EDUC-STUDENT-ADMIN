@@ -488,7 +488,6 @@ export default {
           ApiService.apiAxios.put(`${Routes['nominalRoll'].ROOT_ENDPOINT}/${this.editedRecord.nominalRollStudentID}`, updateRequest)
             .then(response => {
               this.toggleRow(item);
-              // this.$emit('search');
               this.updateMincode(response.data);
               Object.assign(item, response.data);
               this.setSuccessAlert('Record has been successfully updated.');
