@@ -46,6 +46,18 @@ export function formatPostalCode(postalCode) {
   return postalCode;
 }
 
+const GRADE_CODE_MAP = Object.freeze(
+  {
+    K: 'KF',
+    UE: 'EU',
+    US: 'SU',
+  }
+);
+
 export function formatGrade(grade) {
-  return grade.padStart(2, '0');
+  return GRADE_CODE_MAP[grade] || grade.padStart(2, '0');
+}
+
+export function formatDistrictNumber(districtNumber) {
+  return districtNumber.padStart(3, '0');
 }

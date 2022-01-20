@@ -6,6 +6,9 @@ const config = require('../config/index');
 const {postData, getData, putData} = require('./utils');
 const utils = require('./utils');
 const {LocalDate, LocalDateTime} = require('@js-joda/core');
+const redisUtil = require('../util/redis/redis-utils');
+const SAGAS = require('./saga');
+const log = require('./logger');
 
 const postNominalRollFile = async (req, res) => {
   try {
@@ -118,6 +121,58 @@ async function updateNominalRollStudent(req, res) {
   }
 }
 
+const postNominalRollData = async (req, res) => {
+  try {
+    const token = utils.getBackendToken(req);
+    const params = {
+      headers: {
+        correlationID: req.session.correlationID,
+      }
+    };
+    const processingYear = LocalDate.now().year();
+    const sagaReq = {
+      processingYear
+    };
+    const sagaId = await postData(token, config.get('server:nominalRoll:rootURL') + '/saga/post-data', sagaReq, params, utils.getUser(req).idir_username);
+
+    await createNominalRollSagaRecordInRedis(sagaId, 'NOMINAL_ROLL_POST_DATA_SAGA', 'post nominalRoll data', processingYear);
+
+    return res.status(200).json(sagaId);
+  } catch (e) {
+    logApiError(e, 'postNominalRollData', 'Error occurred while posting nominal roll data.');
+    return errorResponse(res, e.data?.message, e.status);
+  }
+};
+
+function createNominalRollSagaRecordInRedis(sagaId, sagaName, operation, processingYear) {
+  const event = {
+    sagaId,
+    processingYear,
+    sagaStatus: 'INITIATED',
+    sagaName
+  };
+  log.info(`going to store event object in redis for ${operation} request :: `, event);
+  return redisUtil.createSagaRecord(event, SAGAS.NOMINAL_ROLL.sagaEventRedisKey);
+}
+
+const isDataPosted = async (req, res) => {
+  try {
+    const token = utils.getBackendToken(req);
+    const params = {
+      headers: {
+        correlationID: req.session.correlationID,
+      },
+      params: {
+        processingYear: LocalDate.now().year()
+      }
+    };
+    const result = await getData(token, config.get('server:nominalRoll:rootURL')  + '/nominal-roll-posted-students/exist', params);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    return errorResponse(res, e.data?.message, e.status);
+  }
+};
+
 module.exports = {
   postNominalRollFile,
   isBeingProcessed,
@@ -125,5 +180,7 @@ module.exports = {
   getNominalRollStudentById,
   getNominalRollStudents: utils.getPaginatedListForSCGroups('getNominalRollStudents', `${config.get('server:nominalRoll:rootURL')}/paginated`),
   validateNominalRollStudentDemogData,
-  updateNominalRollStudent
+  updateNominalRollStudent,
+  postNominalRollData,
+  isDataPosted
 };

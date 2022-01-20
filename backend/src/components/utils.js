@@ -198,9 +198,9 @@ async function putData(token, url, data, user) {
 }
 
 //keys = ['identityTypeCodes', 'penStatusCodes', 'genderCodes']
-function getCodeTable(token, key, url) {
+function getCodeTable(token, key, url, useCache = true) {
   try {
-    let cacheContent = memCache.get(key);
+    let cacheContent = useCache && memCache.get(key);
     if (cacheContent) {
       return cacheContent;
     } else {
@@ -211,7 +211,7 @@ function getCodeTable(token, key, url) {
       };
       return axios.get(url, getDataConfig)
         .then(response => {
-          memCache.put(key, response.data);
+          useCache && memCache.put(key, response.data);
           return response.data;
         })
         .catch(e => {
@@ -377,7 +377,7 @@ const utils = {
       }
     };
   },
-  getCodes(urlKey, cacheKey, extraPath) {
+  getCodes(urlKey, cacheKey, extraPath, useCache = true) {
     return async function getCodesHandler(req, res) {
       try {
         const token = getBackendToken(req);
@@ -385,7 +385,7 @@ const utils = {
           return unauthorizedError(res);
         }
         const url = config.get(urlKey);
-        const codes = await getCodeTable(token, cacheKey, extraPath ? `${url}${extraPath}` : url);
+        const codes = await getCodeTable(token, cacheKey, extraPath ? `${url}${extraPath}` : url, useCache);
 
         return res.status(HttpStatus.OK).json(codes);
 

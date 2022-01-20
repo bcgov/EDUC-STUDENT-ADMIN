@@ -44,6 +44,13 @@ const sagas = {
       'MACRO_UPDATE_SAGA_TOPIC',
     ],
   },
+  NOMINAL_ROLL: {
+    sagaApiUrl: `${config.get('server:nominalRoll:rootURL')}/saga`,
+    sagaEventRedisKey: 'NOMINAL_ROLL_SAGA_EVENTS',
+    sagaTopics: [
+      'NOMINAL_ROLL_POST_SAGA_TOPIC',
+    ],
+  },
 }
 
 module.exports = sagas;

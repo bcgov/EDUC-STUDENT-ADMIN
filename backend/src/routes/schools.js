@@ -29,7 +29,7 @@ router.put('/:mincode/penCoordinator', passport.authenticate('jwt', {session: fa
  */
 router.get('/penCoordinators', passport.authenticate('jwt', {session: false}, undefined), extendSession, getPenCoordinators);
 
-router.get('/fedProvSchoolCodes', passport.authenticate('jwt', {session: false}, undefined), extendSession, utils.getCodes('server:schoolAPIURL', 'fedProvSchoolCodes', '/schools/federal-province-codes'));
+router.get('/fedProvSchoolCodes', passport.authenticate('jwt', {session: false}, undefined), extendSession, utils.getCodes('server:schoolAPIURL', 'fedProvSchoolCodes', '/schools/federal-province-codes', false));
 
 router.post('/fedProvSchoolCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithEditRoles, extendSession, createFedProvSchoolCode);
 

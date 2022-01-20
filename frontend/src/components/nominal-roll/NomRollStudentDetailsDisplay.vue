@@ -187,7 +187,8 @@ export default {
       hasValidationIssues: false,
       disabledButtonActionsForStudentStatuses: [
         NOMINAL_ROLL_STUDENT_STATUS_CODES.MATCHEDUSR,
-        NOMINAL_ROLL_STUDENT_STATUS_CODES.MATCHEDSYS
+        NOMINAL_ROLL_STUDENT_STATUS_CODES.MATCHEDSYS,
+        NOMINAL_ROLL_STUDENT_STATUS_CODES.IGNORED
       ],
       demogValidationResult: [],
       isStudentDataUpdated: false, // make it true, if any of the student gets updated from possible match list
@@ -293,7 +294,7 @@ export default {
       try {
         await this.retrieveNomRollStudentByID();
         this.possibleMatches = [];
-        if ([NOMINAL_ROLL_STUDENT_STATUS_CODES.FIXABLE, NOMINAL_ROLL_STUDENT_STATUS_CODES.ERROR]
+        if ([NOMINAL_ROLL_STUDENT_STATUS_CODES.FIXABLE, NOMINAL_ROLL_STUDENT_STATUS_CODES.ERROR, NOMINAL_ROLL_STUDENT_STATUS_CODES.IGNORED]
           .some(status => status === this.nomRollStudent?.status)) {
           const hasValidationFailure = this.handleDemogValidationResult(this.nomRollStudent?.validationErrors);
           if (!hasValidationFailure) {
