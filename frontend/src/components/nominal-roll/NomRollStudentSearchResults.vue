@@ -18,8 +18,8 @@
           clearable
         ></v-select>
       </v-flex>
-      <PrimaryButton id="viewSelected" v-if="selected" :disabled="!viewEnabled" @click.native="clickViewSelected" text="View Selected"></PrimaryButton>
-      <PrimaryButton id="viewDetails" v-else :loading="loadingRequestIDs" :disabled="!viewEnabled" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
+      <PrimaryButton id="viewSelected" v-if="selected" :disabled="!viewSelectionEnabled" @click.native="clickViewSelected" text="View Selected"></PrimaryButton>
+      <PrimaryButton id="viewDetails" v-else :loading="loadingRequestIDs" :disabled="!viewDetailsEnabled" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
       <PrimaryButton id="postRecords" class="ml-1" :loading="processing" :disabled="isPosted" @click.native="clickPostRecords" text="Post"></PrimaryButton>
     </v-row>
     <v-divider class="mb-1 subheader-divider"/>
@@ -351,8 +351,11 @@ export default {
     selected() {
       return this.selectedRecords.length > 0 || this.selectedStudentStatus || (this.currentNomRollStudentSearchParams && values(this.currentNomRollStudentSearchParams).some(v => !!v));
     },
-    viewEnabled() {
-      return this.nomRollStudentSearchResponse.totalElements > 0 && !this.loading;
+    viewSelectionEnabled() {
+      return this.nomRollStudentSearchResponse.totalElements > 0 && !this.loading && !this.hasOnlyErrorRecordsInList() && !this.hasErrorRecordsSelected();
+    },
+    viewDetailsEnabled() {
+      return this.nomRollStudentSearchResponse.totalElements > 0 && !this.loading && !this.hasErrorRecordsSelected();
     },
     rowExpandedIcon() {
       return !this.isEmpty(this.expanded)?'mdi-chevron-up':'mdi-chevron-down';
@@ -366,6 +369,20 @@ export default {
     },
     getSchoolName(request) {
       return this.$store.state['app'].mincodeSchoolNames.get(request?.mincode?.replace(' ',''));
+    },
+    hasErrorRecordsSelected(){
+      let filteredError = this.selectedRecords.filter(record =>  record.status === 'ERROR');
+      if(filteredError.length > 0) {
+        return true;
+      }
+      return false;
+    },
+    hasOnlyErrorRecordsInList(){
+      let filteredError = this.nomRollStudentSearchResponse.content.filter(record =>  record.status === 'ERROR');
+      if(filteredError.length === this.nomRollStudentSearchResponse.content.length) {
+        return true;
+      }
+      return false;
     },
     clickViewSelected() {
       if(this.selectedRecords?.length > 0) {
@@ -386,7 +403,7 @@ export default {
         switch (obj.key) {
         case ('status'):
           if(obj.operation === 'neq') { //default search criteria for archived files is a not equals, so we have to account for that
-            statusCodes = Object.values(NOMINAL_ROLL_STUDENT_STATUS_CODES).filter(code => code !== obj.value).join(',');
+            statusCodes = Object.values(NOMINAL_ROLL_STUDENT_STATUS_CODES).filter(code => code !== obj.value && code !== 'ERROR').join(',');
           } else {
             statusCodes = obj.value;
           }
@@ -423,7 +440,7 @@ export default {
           this.loadingRequestIDs = false;
         })
         .catch(error => {
-          this.setFailureAlert('An error occurred while fetching PEN Requests! Please try again later.');
+          this.setFailureAlert('An error occurred while fetching nominal roll students! Please try again later.');
           console.log(error);
         });
     },
