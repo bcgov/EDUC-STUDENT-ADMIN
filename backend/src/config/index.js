@@ -102,6 +102,11 @@ nconf.defaults({
       roleAdmin: process.env.NOMINAL_ROLL,
       rolesAllowed: process.env.NOMINAL_ROLL_ROLES ? process.env.NOMINAL_ROLL_ROLES.split(',') : '', // comma separated list
     },
+    secureMessage: {
+      rootURL: process.env.SECURE_MESSAGE_API_URL,
+      roleAdmin: process.env.STUDENT_SECURE_MESSAGE_EDIT,
+      rolesAllowed: process.env.SECURE_MESSAGE_ROLES ? process.env.SECURE_MESSAGE_ROLES.split(',') : '', // comma separated list
+    },
     macro: {
       rootURL: process.env.MACRO_API_URL,
       penMacroURL: process.env.MACRO_API_URL + '/pen'

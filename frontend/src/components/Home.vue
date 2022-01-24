@@ -117,12 +117,11 @@
           </v-row>
         </v-card>
       </v-col>
-      <!-- TODO fix role for secure messaging -->
-      <v-col cols="8" v-if="VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE"> 
+      <v-col cols="8" v-if="VIEW_SECURE_MESSAGE_ROLE">
         <DashboardTable v-if="!isLoadingSecMessage" title="Secure Messaging" colour="#CED6E2"
                         :tableData="secMessageData"></DashboardTable>
         <v-container v-else-if="isLoadingSecMessage" class="full-height" fluid>
-          <article id="pen-display-container" class="top-banner full-height">
+          <article class="top-banner full-height">
             <v-row align="center" justify="center">
               <v-progress-circular
                   :size="70"
@@ -244,15 +243,17 @@ export default {
     });
 
     //TODO: replace this with API call for secure messaging
-    this.secMessageData.push({
-      title: 'PEN Team Inbox',
-      button: {route: REQUEST_TYPES.messages.path, text: 'View Inbox'},
-    });
+    if (this.VIEW_SECURE_MESSAGE_ROLE) {
+      this.secMessageData.push({
+        title: 'PEN Team Inbox',
+        button: {route: REQUEST_TYPES.messages.path, text: 'View Inbox'},
+      });
 
-    setTimeout(() => this.isLoadingSecMessage = false, 1000);
+      setTimeout(() => this.isLoadingSecMessage = false, 1000);
+    }
   },
   computed: {
-    ...mapGetters('auth', ['VIEW_GMP_REQUESTS_ROLE','VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH']),
+    ...mapGetters('auth', ['VIEW_GMP_REQUESTS_ROLE','VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'VIEW_SECURE_MESSAGE_ROLE']),
     ...mapState('app', ['mincodeSchoolNames', 'districtCodes']),
     requestTypes() {
       return REQUEST_TYPES;

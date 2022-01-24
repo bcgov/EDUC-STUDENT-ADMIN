@@ -28,7 +28,7 @@
     </v-col>
     <v-col>
       <v-row class='d-flex justify-end pb-2'>
-        <PrimaryButton text='Add Message'/>
+        <PrimaryButton v-if="EDIT_SECURE_MESSAGE_ROLE" text='Add Message'/>
       </v-row>
       <v-data-table
           :headers="headers"
@@ -176,7 +176,7 @@
 </template>
 
 <script>
-import {mapState} from 'vuex';
+import {mapState, mapGetters} from 'vuex';
 import moment from 'moment';
 
 import PrimaryButton from './util/PrimaryButton';
@@ -269,6 +269,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('auth', ['EDIT_SECURE_MESSAGE_ROLE']),
     ...mapState({
       userName: state => state.auth.userInfo.userName
     }),
