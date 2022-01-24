@@ -439,7 +439,7 @@ export default {
         .catch(error => {
           this.setFailureAlert('An error occurred while ignoring the student record. Please try again later.');
           console.log(error);
-        })
+        });
     },
     /**
      * This method is responsible to do match/unmatch of student to Pen Request.
