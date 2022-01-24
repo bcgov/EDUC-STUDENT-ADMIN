@@ -440,9 +440,6 @@ export default {
           this.setFailureAlert('An error occurred while ignoring the student record. Please try again later.');
           console.log(error);
         })
-        .finally(() => {
-          this.isMatchingToStudentRecord = false;
-        });
     },
     /**
      * This method is responsible to do match/unmatch of student to Pen Request.
