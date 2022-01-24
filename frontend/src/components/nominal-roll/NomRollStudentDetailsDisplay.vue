@@ -37,8 +37,12 @@
                         :statusCode="nomRollStudent.status"
                     ></NomRollStudentStatusChip>
                     <v-spacer></v-spacer>
+                    <PrimaryButton id="ignore-item-action" class="mx-2"
+                                   :disabled="disableActionButtons"
+                                   text="Ignore Record"
+                                   @click.native="ignoreStudent"></PrimaryButton>
                     <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2"
-                                   :disabled="disableModifySearch" text="Modify search"
+                                   :disabled="disableActionButtons" text="Modify search"
                                    @click.native="openSearchDemographicsModal"></PrimaryButton>
                   </v-row>
                   <v-row no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
@@ -108,6 +112,10 @@
               </v-col>
             </v-row>
           </v-col>
+        </template>
+      </ConfirmationDialog>
+      <ConfirmationDialog ref="confirmationDialogIgnore">
+        <template v-slot:message>
         </template>
       </ConfirmationDialog>
     </div>
@@ -238,7 +246,7 @@ export default {
     disableMatchUnmatch() {
       return this.isStudentDataUpdated || this.isMatchingToStudentRecord;
     },
-    disableModifySearch() {
+    disableActionButtons() {
       return this.loading || this.isMatchingToStudentRecord
           || this.disabledButtonActionsForStudentStatuses.some(status => status === this.nomRollStudent?.status);
     },
@@ -280,7 +288,7 @@ export default {
   },
   mounted() {
     Mousetrap.bind('ctrl+b', () => {
-      router.push({name: 'nominal-roll-list'});
+      router.push({name: 'nominal-roll'});
       return false;
     });
   },
@@ -365,6 +373,21 @@ export default {
       }
       return result;
     },
+    async confirmToProceedIgnore() {
+      let result = true;
+      result = await this.$refs.confirmationDialogIgnore.open('Are you sure you want to ignore this student record?', 'This cannot be reversed.',
+        {
+          width: '680px',
+          messagePadding: 'px-4 pt-1',
+          color: '',
+          dark: false,
+          titleBold: true,
+          closeIcon: true,
+          divider: true,
+          resolveText: 'Confirm'
+        });
+      return result;
+    },
     retrievePenRequestsWithSameAssignedPen(pen) {
       const params = {
         params: {
@@ -387,6 +410,38 @@ export default {
           this.setFailureAlert('An error occurred while loading Nominal Roll PEN Requests. Please try again later.');
           console.log(error);
           throw error;
+        });
+    },
+    /**
+     * This method is ignore a student record.
+     *
+     * @returns {Promise<void>}
+     */
+    async ignoreStudent() {
+      let payload;
+      const result = await this.confirmToProceedIgnore();
+      if (!result) {
+        return;
+      }
+
+      payload = {
+        ...this.nomRollStudentCopy,
+        status: NOMINAL_ROLL_STUDENT_STATUS_CODES.IGNORED,
+      };
+
+      ApiService.apiAxios.put(`${Routes['nominalRoll'].ROOT_ENDPOINT}/${this.nomRollStudentID}`, payload)
+        .then(response => {
+          if (response.data) {
+            this.setSuccessAlert('Success! The student record has been set to ignored.');
+            this.initializeDetails();
+          }
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while ignoring the student record. Please try again later.');
+          console.log(error);
+        })
+        .finally(() => {
+          this.isMatchingToStudentRecord = false;
         });
     },
     /**

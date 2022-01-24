@@ -25,7 +25,7 @@ export default {
         'MATCHEDSYS': ['#027CB1', 'white'],
         'MATCHEDUSR': ['#027CB1', 'white'],
         'FIXABLE' : ['#2E8540', 'white'],
-        'IGNORED' : ['#2E8540', 'white'],
+        'IGNORED' : ['#f3e21c', 'black'],
         'ERROR' : ['#D8292F', 'white'],
       },
     };
