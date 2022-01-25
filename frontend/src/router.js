@@ -315,7 +315,7 @@ const router = new VueRouter({
       meta: {
         pageTitle: PAGE_TITLES.MESSAGES,
         requiresAuth: true,
-        role: 'VIEW_SECURE_MESSAGE_ROLE'
+        role: 'SECURE_MESSAGE_ROLE'
       }
     },
     {

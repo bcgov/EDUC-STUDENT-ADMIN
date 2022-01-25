@@ -24,7 +24,6 @@ export default {
     isValidGUMPAnalyticsUser: localStorage.getItem('isValidGUMPAnalyticsUser') !== null,
     isValidPenRequestBatchAnalyticsUser: localStorage.getItem('isValidPenRequestBatchAnalyticsUser') !== null,
     isValidSecureMessageUser: localStorage.getItem('isValidSecureMessageUser') !== null,
-    isValidSecureMessageAdmin: localStorage.getItem('isValidSecureMessageAdmin') !== null,
   },
   getters: {
     acronyms: state => state.acronyms,
@@ -52,8 +51,7 @@ export default {
     STUDENT_ANALYTICS_STUDENT_PROFILE: state => state.isValidGUMPAnalyticsUser,
     STUDENT_ANALYTICS_BATCH: state => state.isValidPenRequestBatchAnalyticsUser,
     HAS_STATS_ROLE: state => state.isValidGUMPAnalyticsUser || state.isValidPenRequestBatchAnalyticsUser,
-    VIEW_SECURE_MESSAGE_ROLE: state => state.isValidSecureMessageUser,
-    EDIT_SECURE_MESSAGE_ROLE: state => state.isValidSecureMessageUser,
+    SECURE_MESSAGE_ROLE: state => state.isValidSecureMessageUser,
   },
   mutations: {
     //sets Json web token and determines whether user is authenticated
@@ -201,15 +199,6 @@ export default {
         localStorage.removeItem(('isValidPenRequestBatchAnalyticsUser'));
       }
     },
-    setSecureMessageAdmin: (state, isValidSecureMessageAdmin) => {
-      if (isValidSecureMessageAdmin) {
-        state.isValidSecureMessageAdmin = true;
-        localStorage.setItem('isValidSecureMessageAdmin', 'true');
-      } else {
-        state.isValidSecureMessageAdmin = false;
-        localStorage.removeItem(('isValidSecureMessageAdmin'));
-      }
-    },
     setSecureMessageUser: (state, isValidSecureMessageUser) => {
       if (isValidSecureMessageUser) {
         state.isValidSecureMessageUser = true;
@@ -288,6 +277,5 @@ function setAuthorizations(context, response) {
   context.commit('setGUMPAnalytics', response.isValidGUMPAnalyticsUser);
   context.commit('setPenRequestBatchAnalytics', response.isValidPenRequestBatchAnalyticsUser);
   context.commit('setSecureMessageUser', response.isValidSecureMessageUser);
-  context.commit('setSecureMessageAdmin', response.isValidSecureMessageAdmin);
   ApiService.setAuthHeader(response.jwtFrontend);
 }

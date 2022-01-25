@@ -117,7 +117,7 @@
           </v-row>
         </v-card>
       </v-col>
-      <v-col cols="8" v-if="VIEW_SECURE_MESSAGE_ROLE">
+      <v-col cols="8" v-if="SECURE_MESSAGE_ROLE">
         <DashboardTable v-if="!isLoadingSecMessage" title="Secure Messaging" colour="#CED6E2"
                         :tableData="secMessageData"></DashboardTable>
         <v-container v-else-if="isLoadingSecMessage" class="full-height" fluid>
@@ -243,7 +243,7 @@ export default {
     });
 
     //TODO: replace this with API call for secure messaging
-    if (this.VIEW_SECURE_MESSAGE_ROLE) {
+    if (this.SECURE_MESSAGE_ROLE) {
       this.secMessageData.push({
         title: 'PEN Team Inbox',
         button: {route: REQUEST_TYPES.messages.path, text: 'View Inbox'},
@@ -253,7 +253,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('auth', ['VIEW_GMP_REQUESTS_ROLE','VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'VIEW_SECURE_MESSAGE_ROLE']),
+    ...mapGetters('auth', ['VIEW_GMP_REQUESTS_ROLE','VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'SECURE_MESSAGE_ROLE']),
     ...mapState('app', ['mincodeSchoolNames', 'districtCodes']),
     requestTypes() {
       return REQUEST_TYPES;
