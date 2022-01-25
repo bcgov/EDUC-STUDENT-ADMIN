@@ -3,7 +3,6 @@
     <v-row no-gutters class="d-flex align-start">
       <h3 id="numberResults" class="px-2 pb-2"><strong>{{ nomRollStudentSearchResponse.totalElements }} Records</strong></h3>
       <v-spacer/>
-      <PrimaryButton id="goBack" @click.native="clickGoBack" text="Back"></PrimaryButton>
       <v-flex class="select ml-3 mr-1">
         <v-select
           id="selectStatus"
@@ -18,8 +17,9 @@
           clearable
         ></v-select>
       </v-flex>
-      <PrimaryButton id="viewSelected" v-if="selected" :disabled="!viewSelectionEnabled" @click.native="clickViewSelected" text="View Selected"></PrimaryButton>
-      <PrimaryButton id="viewDetails" v-else :loading="loadingRequestIDs" :disabled="!viewDetailsEnabled" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
+      <PrimaryButton id="ignoreRecord" :disabled="!canIgnore" @click.native="clickIgnore" text="Ignore Record"></PrimaryButton>
+      <PrimaryButton id="viewSelected" class="ml-1" v-if="selected" :disabled="!viewSelectionEnabled" @click.native="clickViewSelected" text="View Selected"></PrimaryButton>
+      <PrimaryButton id="viewDetails" class="ml-1" v-else :loading="loadingRequestIDs" :disabled="!viewDetailsEnabled" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
       <PrimaryButton id="postRecords" class="ml-1" :loading="processing" :disabled="isPosted" @click.native="clickPostRecords" text="Post"></PrimaryButton>
     </v-row>
     <v-divider class="mb-1 subheader-divider"/>
@@ -62,7 +62,7 @@
                     @click.native="toggleRow(props.item)"
                   >{{ rowExpandedIcon }}</v-icon>
                 </span>
-                <span v-else-if="props.item.validationErrors[header.text]" style="color: red">
+                <span v-else-if="props.item.validationErrors[header.text] && props.item.status !== 'IGNORED'" style="color: red">
                   {{ formatTableColumn(header.format, props.item[header.value]) }}
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
@@ -208,6 +208,10 @@
         Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ nomRollStudentSearchResponse.totalElements || 0 }}
       </v-col>
     </v-row>
+    <ConfirmationDialog ref="confirmationDialogIgnore">
+      <template v-slot:message>
+      </template>
+    </ConfirmationDialog>
   </div>
 </template>
 
@@ -223,6 +227,7 @@ import {formatDob, formatPen, formatGrade, formatDistrictNumber} from '@/utils/f
 import {constructPenMatchObjectFromNominalRollStudent, deepCloneObject, getPossibleMatches} from '../../utils/common';
 import alertMixin from '@/mixins/alertMixin';
 import MapSchoolCodeModal from './MapSchoolCodeModal';
+import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 
 export default {
   name: 'NomRollStudentSearchResults',
@@ -231,6 +236,7 @@ export default {
     PrimaryButton,
     NomRollStudentStatusChip,
     MapSchoolCodeModal,
+    ConfirmationDialog
   },
   props: {
     loading: {
@@ -351,6 +357,9 @@ export default {
     selected() {
       return this.selectedRecords.length > 0 || this.selectedStudentStatus || (this.currentNomRollStudentSearchParams && values(this.currentNomRollStudentSearchParams).some(v => !!v));
     },
+    canIgnore() {
+      return this.selectedRecords.length > 0 && !this.hasIgnoreRecordsSelected();
+    },
     viewSelectionEnabled() {
       return this.nomRollStudentSearchResponse.totalElements > 0 && !this.loading && !this.hasOnlyErrorRecordsInList() && !this.hasErrorRecordsSelected();
     },
@@ -377,12 +386,70 @@ export default {
       }
       return false;
     },
+    hasIgnoreRecordsSelected(){
+      let filteredError = this.selectedRecords.filter(record =>  record.status === 'IGNORED');
+      if(filteredError.length > 0) {
+        return true;
+      }
+      return false;
+    },
     hasOnlyErrorRecordsInList(){
       let filteredError = this.nomRollStudentSearchResponse.content.filter(record =>  record.status === 'ERROR');
       if(filteredError.length === this.nomRollStudentSearchResponse.content.length) {
         return true;
       }
       return false;
+    },
+    async clickIgnore() {
+      if(this.selectedRecords?.length > 0) {
+        const result = await this.confirmToProceedIgnore();
+        if (!result) {
+          return;
+        }
+        this.selectedRecords.forEach(obj => {
+          this.ignoreStudent(obj);
+        });
+      }
+    },
+    /**
+     * This method is ignore a student record.
+     *
+     * @returns {Promise<void>}
+     */
+    async ignoreStudent(student) {
+      let payload;
+
+      payload = {
+        ...student,
+        status: NOMINAL_ROLL_STUDENT_STATUS_CODES.IGNORED,
+      };
+
+      ApiService.apiAxios.put(`${Routes['nominalRoll'].ROOT_ENDPOINT}/${student.nominalRollStudentID}`, payload)
+        .then(response => {
+          if (response.data) {
+            student.status = NOMINAL_ROLL_STUDENT_STATUS_CODES.IGNORED;
+            this.setSuccessAlert('Success! The student record has been set to ignored.');
+          }
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while ignoring the student record. Please try again later.');
+          console.log(error);
+        });
+    },
+    async confirmToProceedIgnore() {
+      let result = true;
+      result = await this.$refs.confirmationDialogIgnore.open('Are you sure you want to ignore these student record(s)?', 'All selected records will be ignored - this cannot be reversed.',
+        {
+          width: '680px',
+          messagePadding: 'px-4 pt-1',
+          color: '',
+          dark: false,
+          titleBold: true,
+          closeIcon: true,
+          divider: true,
+          resolveText: 'Confirm'
+        });
+      return result;
     },
     clickViewSelected() {
       if(this.selectedRecords?.length > 0) {
@@ -524,9 +591,6 @@ export default {
       };
       const response = await ApiService.apiAxios.post(`${Routes['nominalRoll'].ROOT_ENDPOINT}/validate`, payload);
       this.validationErrors = response?.data?.validationErrors || {};
-    },
-    clickGoBack() {
-      router.push({name: 'nominal-roll'});
     },
     updateMincode(rec) {
       rec.mincode = this.fedProvSchoolCodes.find(obj => obj.federalCode === rec.schoolNumber)?.provincialCode || rec.schoolNumber;
