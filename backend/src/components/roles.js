@@ -20,7 +20,7 @@ const roles = {
     //Help functions created in auth module: isValidPenRequestBatchAnalyticsUser
     PenRequestBatchAnalytics: config.get('server:penRequestBatch:roleAnalytics'),
     //Help functions created in auth module: isValidSecureMessageUser
-    SecureMessage: config.get('server:secureMessage:rolesAllowed')
+    SecureMessage: ['SECURE_MESSAGE']
   },
   Admin: {
     //Help functions created in auth module: isValidGMPAdmin
@@ -33,9 +33,7 @@ const roles = {
     PenRequestBatch: config.get('server:penRequestBatch:roleAdmin'),
     //Help functions created in auth module: isValidStaffAdministrationAdmin
     StaffAdministration: config.get('server:administration:roleAdmin'),
-    NominalRoll: config.get('server:nominalRoll:roleAdmin'),
-    //Help functions created in auth module: isValidSecureMessageUser
-    SecureMessage: config.get('server:secureMessage:roleAdmin')
+    NominalRoll: config.get('server:nominalRoll:roleAdmin')
   }
 };
 

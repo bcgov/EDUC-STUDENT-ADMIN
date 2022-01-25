@@ -135,13 +135,12 @@ const roles = {
     GMP: ['STUDENT_ADMIN', 'STUDENT_ADMIN_READ_ONLY'],
     UMP: ['STUDENT_PROFILE_ADMIN', 'STUDENT_PROFILE_READ_ONLY'],
     StudentSearch: ['STUDENT_SEARCH_ADMIN'],
-    SecureMessage: ['STUDENT_SECURE_MESSAGE_EDIT','STUDENT_SECURE_MESSAGE_READ'],
+    SecureMessage: ['SECURE_MESSAGE']
   },
   Admin: {
     GMP: 'STUDENT_ADMIN',
     UMP: 'STUDENT_PROFILE_ADMIN',
     StudentSearch: 'STUDENT_SEARCH_ADMIN',
-    SecureMessage: 'STUDENT_SECURE_MESSAGE_EDIT',
   }
 };
 
@@ -186,7 +185,6 @@ describe('createRoleHelpers', () => {
     expect(helpers.isValidGMPAdmin).toBeInstanceOf(Function);
     expect(helpers.isValidUMPAdmin).toBeInstanceOf(Function);
     expect(helpers.isValidStudentSearchAdmin).toBeInstanceOf(Function);
-    expect(helpers.isValidSecureMessageAdmin).toBeInstanceOf(Function);
 
     expect(helpers.isValidUsers).toBeInstanceOf(Function);
   });
