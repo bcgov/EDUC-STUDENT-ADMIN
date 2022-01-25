@@ -58,7 +58,7 @@
                     :statusCode="props.item[header.value]"
                   ></NomRollStudentStatusChip>
                   <v-icon
-                    v-if="!isEmpty(props.item.validationErrors) && EDIT_NOMINAL_ROLL_ROLE"
+                    v-if="!isEmpty(props.item.validationErrors)"
                     @click.native="toggleRow(props.item)"
                   >{{ rowExpandedIcon }}</v-icon>
                 </span>
@@ -110,7 +110,7 @@
               </v-col>
               <v-col class="pb-0 pt-7">
                 <v-autocomplete v-model="editedRecord.schoolName"
-                                :disabled="!item.validationErrors['School Name'] && !validationErrors['School Name']"
+                                :disabled="!item.validationErrors['School Name'] && !validationErrors['School Name']  || hasNoEditRoleAccess()"
                                 outlined dense name="3" label="School Name"
                                 :items="mincodeSchoolNamesObjectSorted"
                                 :rules="[!validationErrors['School Name'] || validationErrors['School Name']]"
@@ -118,7 +118,7 @@
               </v-col>
               <v-col class="pb-0 pt-7">
                 <v-autocomplete v-model="editedRecord.leaProvincial"
-                                :disabled="!item.validationErrors['LEA/Provincial'] && !validationErrors['LEA/Provincial']"
+                                :disabled="!item.validationErrors['LEA/Provincial'] && !validationErrors['LEA/Provincial']  || hasNoEditRoleAccess()"
                                 outlined dense name="4" label="LEA/Provincial"
                                 :items="leaProvincialItems"
                                 :rules="[!validationErrors['LEA/Provincial'] || validationErrors['LEA/Provincial']]"
@@ -126,26 +126,26 @@
               </v-col>
               <v-col class="pb-0 pt-7">
                 <v-text-field v-model="editedRecord.recipientNumber"
-                              :disabled="!item.validationErrors['Recipient Number'] && !validationErrors['Recipient Number']"
+                              :disabled="!item.validationErrors['Recipient Number'] && !validationErrors['Recipient Number'] || hasNoEditRoleAccess()"
                               outlined dense name="5" label="Recipient Number"
                               :rules="[!validationErrors['Recipient Number'] || validationErrors['Recipient Number']]"
                 ></v-text-field>
               </v-col>
               <v-col class="pb-0 pt-7">
                 <v-text-field v-model="editedRecord.fte"
-                              :disabled="!item.validationErrors['FTE'] && !validationErrors['FTE']"
+                              :disabled="!item.validationErrors['FTE'] && !validationErrors['FTE'] || hasNoEditRoleAccess()"
                               outlined dense name="51" label="FTE"
                               :rules="[!validationErrors['FTE'] || validationErrors['FTE']]"
                 ></v-text-field></v-col>
               <v-col class="pb-0 pt-7">
                 <v-text-field v-model="editedRecord.surname"
-                              :disabled="!item.validationErrors['Surname'] && !validationErrors['Surname']"
+                              :disabled="!item.validationErrors['Surname'] && !validationErrors['Surname'] || hasNoEditRoleAccess()"
                               outlined dense name="52" label="Surname"
                               :rules="[!validationErrors['Surname'] || validationErrors['Surname']]"
                 ></v-text-field></v-col>
               <v-col class="pb-0 pt-7">
                 <v-autocomplete v-model="editedRecord.gender"
-                                :disabled="!item.validationErrors['Gender'] && !validationErrors['Gender']"
+                                :disabled="!item.validationErrors['Gender'] && !validationErrors['Gender'] || hasNoEditRoleAccess()"
                                 outlined dense name="4" label="Gender"
                                 :items="genders"
                                 item-text="label"
@@ -168,7 +168,7 @@
                       dense
                       readonly
                       v-on="on"
-                      :disabled="!item.validationErrors['Birth Date'] && !validationErrors['Birth Date']"
+                      :disabled="!item.validationErrors['Birth Date'] && !validationErrors['Birth Date'] || hasNoEditRoleAccess()"
                       :rules="[!validationErrors['Birth Date'] || validationErrors['Birth Date']]"
                     ></v-text-field>
                   </template>
@@ -184,7 +184,7 @@
               </v-col>
               <v-col class="pb-0 pt-7">
                 <v-autocomplete v-model="editedRecord.grade"
-                                :disabled="!item.validationErrors['Grade'] && !validationErrors['Grade']"
+                                :disabled="!item.validationErrors['Grade'] && !validationErrors['Grade'] || hasNoEditRoleAccess()"
                                 outlined dense name="4" label="Grade"
                                 :items="gradeCodeObjects"
                                 item-text="label"
@@ -378,6 +378,9 @@ export default {
     },
     getSchoolName(request) {
       return this.$store.state['app'].mincodeSchoolNames.get(request?.mincode?.replace(' ',''));
+    },
+    hasNoEditRoleAccess() {
+      return this.EDIT_NOMINAL_ROLL_ROLE === false;
     },
     hasErrorRecordsSelected(){
       let filteredError = this.selectedRecords.filter(record =>  record.status === 'ERROR');
