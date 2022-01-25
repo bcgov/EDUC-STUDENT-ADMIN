@@ -227,7 +227,7 @@ export default {
 
       students.forEach(rec => {
         rec.isSelected = this.isSelected(rec);
-        rec.mincode = this.fedProvSchoolCodes.find(obj => obj.federalCode === rec.schoolNumber)?.provincialCode || rec.schoolNumber;
+        rec.mincode = this.fedProvSchoolCodes.find(obj => obj.federalCode === rec.schoolNumber)?.provincialCode;
       });
 
       return students;

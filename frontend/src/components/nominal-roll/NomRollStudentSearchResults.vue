@@ -272,8 +272,8 @@ export default {
       editedRecord: {},
       itemsPerPage: 10,
       headers: [
-        { id: 'table-checkbox', type: 'select', sortable: false },
-        { text: 'Mincode', align: 'start', sortable: false, value: 'mincode', tooltip: 'Mincode' },
+        {id: 'table-checkbox', type: 'select', sortable: false },
+        {text: 'Mincode', align: 'start', sortable: false, value: 'mincode', tooltip: 'Mincode' },
         {text: 'School District', value: 'schoolDistrictNumber', sortable: false, tooltip: 'School District', format: formatDistrictNumber},
         {text: 'School Number', value: 'schoolNumber', sortable: false, tooltip: 'School Number'},
         {text: 'School Name', value: 'schoolName', sortable: false, tooltip: 'School Name'},
