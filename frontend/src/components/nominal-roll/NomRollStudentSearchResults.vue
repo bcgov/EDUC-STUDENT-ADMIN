@@ -46,7 +46,7 @@
           <td v-for="header in props.headers" :key="header.id" :class="header.id">
             <v-checkbox v-if="header.type" class="record-checkbox header-checkbox" color="#606060" v-model="props.item.isSelected" @click.stop="handleRecordCheckBoxClicked(props.item)"></v-checkbox>
             <div v-else class="table-cell">
-              <span class="column-item">
+              <span class="column-item" style="text-align: left;">
                 <v-tooltip v-if="header.value === 'mincode'" right>
                   <template v-slot:activator="{ on }">
                     <span v-on="on">{{ props.item[header.value] }}</span>
