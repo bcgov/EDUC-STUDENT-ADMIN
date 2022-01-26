@@ -18,7 +18,9 @@ const roles = {
     //Help functions created in auth module: isValidGUMPAnalyticsUser
     GUMPAnalytics: config.get('server:studentRequest:roleAnalytics'),
     //Help functions created in auth module: isValidPenRequestBatchAnalyticsUser
-    PenRequestBatchAnalytics: config.get('server:penRequestBatch:roleAnalytics')
+    PenRequestBatchAnalytics: config.get('server:penRequestBatch:roleAnalytics'),
+    //Help functions created in auth module: isValidSecureMessageUser
+    SecureMessage: ['SECURE_MESSAGE']
   },
   Admin: {
     //Help functions created in auth module: isValidGMPAdmin

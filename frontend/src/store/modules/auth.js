@@ -22,7 +22,8 @@ export default {
     isValidNominalRollAdmin: localStorage.getItem('isValidNominalRollAdmin') !== null,
     isValidNominalRollUser: localStorage.getItem('isValidNominalRollUser') !== null,
     isValidGUMPAnalyticsUser: localStorage.getItem('isValidGUMPAnalyticsUser') !== null,
-    isValidPenRequestBatchAnalyticsUser: localStorage.getItem('isValidPenRequestBatchAnalyticsUser') !== null
+    isValidPenRequestBatchAnalyticsUser: localStorage.getItem('isValidPenRequestBatchAnalyticsUser') !== null,
+    isValidSecureMessageUser: localStorage.getItem('isValidSecureMessageUser') !== null,
   },
   getters: {
     acronyms: state => state.acronyms,
@@ -49,7 +50,8 @@ export default {
     STAFF_ADMINISTRATION_ADMIN: state => state.isValidNominalRollAdmin || state.isValidStaffAdministrationAdmin, //gives access to admin section of navigation menu
     STUDENT_ANALYTICS_STUDENT_PROFILE: state => state.isValidGUMPAnalyticsUser,
     STUDENT_ANALYTICS_BATCH: state => state.isValidPenRequestBatchAnalyticsUser,
-    HAS_STATS_ROLE: state => state.isValidGUMPAnalyticsUser || state.isValidPenRequestBatchAnalyticsUser
+    HAS_STATS_ROLE: state => state.isValidGUMPAnalyticsUser || state.isValidPenRequestBatchAnalyticsUser,
+    SECURE_MESSAGE_ROLE: state => state.isValidSecureMessageUser,
   },
   mutations: {
     //sets Json web token and determines whether user is authenticated
@@ -197,6 +199,15 @@ export default {
         localStorage.removeItem(('isValidPenRequestBatchAnalyticsUser'));
       }
     },
+    setSecureMessageUser: (state, isValidSecureMessageUser) => {
+      if (isValidSecureMessageUser) {
+        state.isValidSecureMessageUser = true;
+        localStorage.setItem('isValidSecureMessageUser', 'true');
+      } else {
+        state.isValidSecureMessageUser = false;
+        localStorage.removeItem(('isValidSecureMessageUser'));
+      }
+    },
     setUserInfo: (state, userInf) => {
       if (userInf) {
         state.userInfo = userInf;
@@ -265,5 +276,6 @@ function setAuthorizations(context, response) {
   context.commit('setValidNominalRollAdmin', response.isValidNominalRollAdmin);
   context.commit('setGUMPAnalytics', response.isValidGUMPAnalyticsUser);
   context.commit('setPenRequestBatchAnalytics', response.isValidPenRequestBatchAnalyticsUser);
+  context.commit('setSecureMessageUser', response.isValidSecureMessageUser);
   ApiService.setAuthHeader(response.jwtFrontend);
 }
