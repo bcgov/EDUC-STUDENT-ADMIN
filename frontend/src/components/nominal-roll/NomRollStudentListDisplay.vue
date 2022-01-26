@@ -107,7 +107,7 @@ export default {
     };
   },
   computed:{
-    ...mapState('nomRollStudentSearch', ['pageNumber', 'selectedRecords', 'nomRollStudentSearchResponse', 'selectedStudentStatus', 'currentNomRollStudentSearchParams', 'nomRollStudentSearchCriteria']),
+    ...mapState('nomRollStudentSearch', ['pageNumber', 'selectedRecords', 'nomRollStudentSearchResponse', 'selectedStudentStatus', 'currentNomRollStudentSearchParams', 'nomRollStudentSearchCriteria','headerSortParams']),
     ...mapState('nominalRoll', ['fedProvSchoolCodes']),
     nomRollStudentSearchParams: {
       get(){
@@ -273,15 +273,12 @@ export default {
 
     },
     retrievePenRequests(searchCriteria, isFilterOperation) {
+      let sort = {};
+      sort[this.headerSortParams.currentSort] = this.headerSortParams.currentSortAsc ? 'ASC' : 'DESC';
       const params = {
         params: {
           pageNumber: this.pageNumber-1,
-          sort: {
-            status: 'ASC',
-            schoolNumber: 'ASC',
-            surname: 'ASC',
-            givenNames: 'ASC',
-          },
+          sort: sort,
           searchQueries: searchCriteria || this.nomRollStudentSearchCriteriaList(this.nomRollStudentSearchParams),
         }
       };

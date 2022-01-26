@@ -33,12 +33,17 @@
       hide-default-footer
       item-key="nominalRollStudentID"
       :loading="loading"
+      :header-props="{ sortIcon: null }"
       @page-count="nomRollStudentSearchResponse.pageable.pageNumber = $event"
       :expanded="expanded"
     >
       <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-        <span :title="header.tooltip" :key="h.id" class="column-item">
+        <span @click="updateSortParams(header.value)" :key="h.id" class="top-column-item" :title="header.tooltip">
           {{ header.text }}
+        </span>
+        <span :key="h.id" @click="updateSortParams(header.value)">
+          <em :key="h.id"  v-if="header.sortable && headerSortParams.currentSort === header.value"
+              :class="['sort-header mt-1 pl-2 v-icon fas active', headerSortParams.currentSortAsc ? 'fa-sort-up' : 'fa-sort-down']"/>
         </span>
       </template>
       <template v-slot:item="props">
@@ -252,6 +257,12 @@ export default {
     dateMenu (val) {
       val && setTimeout(() => (this.activePicker = 'YEAR'));
     },
+    headerSortParams: {
+      handler() {
+        this.pagination();
+      },
+      deep: true
+    },
     editedRecord: {
       handler() {
         this.validateRecord();
@@ -279,21 +290,21 @@ export default {
       itemsPerPage: 10,
       headers: [
         {id: 'table-checkbox', type: 'select', sortable: false },
-        {text: 'Mincode', align: 'start', sortable: false, value: 'mincode', tooltip: 'Mincode' },
-        {text: 'School District', value: 'schoolDistrictNumber', sortable: false, tooltip: 'School District', format: formatDistrictNumber},
-        {text: 'School Number', value: 'schoolNumber', sortable: false, tooltip: 'School Number'},
-        {text: 'School Name', value: 'schoolName', sortable: false, tooltip: 'School Name'},
-        {text: 'LEA/Provincial', value: 'leaProvincial', sortable: false, tooltip: 'LEA/Provincial'},
-        {text: 'Recipient Number', value: 'recipientNumber', sortable: false, tooltip: 'Recipient Number'},
-        {text: 'Recipient Name', value: 'recipientName', sortable: false, tooltip: 'Recipient Name'},
-        {text: 'FTE', value: 'fte', sortable: false, tooltip: 'FTE'},
-        {text: 'Surname', value: 'surname', sortable: false, tooltip: 'Legal Surname'},
-        {text: 'Given Name(s)', value: 'givenNames', sortable: false, tooltip: 'Legal Given Name'},
-        {text: 'Gender', value: 'gender', sortable: false, tooltip: 'Gender'},
-        {text: 'Birth Date', value: 'birthDate', sortable: false, tooltip: 'Birth Date', format: partialRight(formatDob,'uuuu-MM-dd','uuuu/MM/dd')},
-        {text: 'Grade', value: 'grade', sortable: false, tooltip: 'Grade Code', format: formatGrade},
-        { text: 'Assigned PEN', value: 'assignedPEN', sortable: false, tooltip: 'Suggested PEN', format: formatPen },
-        { text: 'Status', value: 'status', sortable: false, tooltip: 'Status' }
+        {text: 'Mincode', align: 'start', sortable: true, value: 'mincode', tooltip: 'Mincode' },
+        {text: 'School District', value: 'schoolDistrictNumber', sortable: true, tooltip: 'School District', format: formatDistrictNumber},
+        {text: 'School Number', value: 'schoolNumber', sortable: true, tooltip: 'School Number'},
+        {text: 'School Name', value: 'schoolName', sortable: true, tooltip: 'School Name'},
+        {text: 'LEA/Provincial', value: 'leaProvincial', sortable: true, tooltip: 'LEA/Provincial'},
+        {text: 'Recipient Number', value: 'recipientNumber', sortable: true, tooltip: 'Recipient Number'},
+        {text: 'Recipient Name', value: 'recipientName', sortable: true, tooltip: 'Recipient Name'},
+        {text: 'FTE', value: 'fte', sortable: true, tooltip: 'FTE'},
+        {text: 'Surname', value: 'surname', sortable: true, tooltip: 'Legal Surname'},
+        {text: 'Given Name(s)', value: 'givenNames', sortable: true, tooltip: 'Legal Given Name'},
+        {text: 'Gender', value: 'gender', sortable: true, tooltip: 'Gender'},
+        {text: 'Birth Date', value: 'birthDate', sortable: true, tooltip: 'Birth Date', format: partialRight(formatDob,'uuuu-MM-dd','uuuu/MM/dd')},
+        {text: 'Grade', value: 'grade', sortable: true, tooltip: 'Grade Code', format: formatGrade},
+        { text: 'Assigned PEN', value: 'assignedPEN', sortable: true, tooltip: 'Suggested PEN', format: formatPen },
+        { text: 'Status', value: 'status', sortable: true, tooltip: 'Status' }
       ],
       leaProvincialItems: ['LEA', 'PROVINCIAL'],
       loadingRequestIDs: false,
@@ -314,7 +325,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('nomRollStudentSearch', ['nomRollStudentSearchResponse', 'nomRollStudentSearchCriteria', 'currentNomRollStudentSearchParams']),
+    ...mapState('nomRollStudentSearch', ['headerSortParams','nomRollStudentSearchResponse', 'nomRollStudentSearchCriteria', 'currentNomRollStudentSearchParams']),
     ...mapGetters('student', ['genders','gradeCodeObjects']),
     ...mapState('app', ['mincodeSchoolNames', 'districtCodes']),
     ...mapGetters('app', ['mincodeSchoolNamesObjectSorted', 'districtCodesObjectSorted']),
@@ -371,10 +382,24 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('nomRollStudentSearch', ['setSelectedRecords']),
+    ...mapMutations('nomRollStudentSearch', ['setSelectedRecords','updateSortParams']),
     ...mapMutations('setNavigation', ['setSelectedIDs', 'setRequestType', 'setMultiFiles']),
     formatTableColumn(format, column) {
       return (format && column) ? format(column) : (column || ' ');
+    },
+    async searchPenRequests() {
+      this.searchLoading = true;
+      this.disablePageHandler=true;
+      try {
+        const searchCriteria = this.nomRollStudentSearchCriteriaList(this.nomRollStudentSearchParams);
+        await this.retrievePenRequests(searchCriteria, true);
+
+        this.setCurrentNomRollStudentSearchParams(JSON.parse(JSON.stringify(this.nomRollStudentSearchParams)));
+        this.setNomRollStudentSearchCriteria(searchCriteria);
+      } finally {
+        this.searchLoading = false;
+        this.disablePageHandler = false;
+      }
     },
     getSchoolName(request) {
       return this.$store.state['app'].mincodeSchoolNames.get(request?.mincode?.replace(' ',''));

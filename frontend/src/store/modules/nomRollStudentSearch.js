@@ -17,6 +17,10 @@ const getDefaultState = () => {
     selectedStudentStatus: null,
     currentNomRollStudentSearchParams: null,
     nomRollStudentSearchCriteria: null,
+    headerSortParams: {
+      currentSort: 'schoolNumber',
+      currentSortAsc: true
+    },
   };
 };
 
@@ -50,6 +54,17 @@ export default {
     },
     setNomRollStudentSearchCriteria: (state, nomRollStudentSearchCriteria) => {
       state.nomRollStudentSearchCriteria = nomRollStudentSearchCriteria;
+    },
+    setHeaderSortParams: (state, headerSortParams) => {
+      state.headerSortParams = headerSortParams;
+    },
+    updateSortParams: (state, sortHeader) => {
+      if (sortHeader === state.headerSortParams.currentSort) {
+        state.headerSortParams.currentSortAsc = !state.headerSortParams.currentSortAsc;
+        state.pageNumber = 1;
+      } else {
+        state.headerSortParams.currentSort = sortHeader;
+      }
     },
   },
 };
