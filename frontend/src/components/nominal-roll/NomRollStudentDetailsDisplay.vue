@@ -37,7 +37,11 @@
                         :statusCode="nomRollStudent.status"
                     ></NomRollStudentStatusChip>
                     <v-spacer></v-spacer>
-                    <PrimaryButton id="ignore-item-action" class="mx-2"
+                    <PrimaryButton v-if="isIgnoredStatus" id="recover-item-action" class="mx-2"
+                                   :disabled="!isIgnoredStatus"
+                                   text="Recover Record"
+                                   @click.native="recoverStudent"></PrimaryButton>
+                    <PrimaryButton v-else id="ignore-item-action" class="mx-2"
                                    :disabled="disableActionButtons"
                                    text="Ignore Record"
                                    @click.native="ignoreStudent"></PrimaryButton>
@@ -243,6 +247,9 @@ export default {
       return this.isMatchingToStudentRecord
           || NOMINAL_ROLL_STUDENT_STATUS_CODES.FIXABLE !== this.nomRollStudent?.status;
     },
+    isIgnoredStatus() {
+      return NOMINAL_ROLL_STUDENT_STATUS_CODES.IGNORED === this.nomRollStudent.status;
+    },
     disableMatchUnmatch() {
       return this.isStudentDataUpdated || this.isMatchingToStudentRecord;
     },
@@ -375,7 +382,7 @@ export default {
     },
     async confirmToProceedIgnore() {
       let result = true;
-      result = await this.$refs.confirmationDialogIgnore.open('Are you sure you want to ignore this student record?', 'This cannot be reversed.',
+      result = await this.$refs.confirmationDialogIgnore.open('Are you sure you want to ignore this student record?', '',
         {
           width: '680px',
           messagePadding: 'px-4 pt-1',
@@ -438,6 +445,38 @@ export default {
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while ignoring the student record. Please try again later.');
+          console.log(error);
+        });
+    },
+    /**
+     * This method is recover a student record.
+     *
+     * @returns {Promise<void>}
+     */
+    async recoverStudent() {
+      let payload;
+
+      if(!this.isEmpty(this.nomRollStudentCopy.validationErrors)) {
+        payload = {
+          ...this.nomRollStudentCopy,
+          status: NOMINAL_ROLL_STUDENT_STATUS_CODES.ERROR,
+        };
+      } else {
+        payload = {
+          ...this.nomRollStudentCopy,
+          status: NOMINAL_ROLL_STUDENT_STATUS_CODES.FIXABLE,
+        };
+      }
+
+      ApiService.apiAxios.put(`${Routes['nominalRoll'].ROOT_ENDPOINT}/${this.nomRollStudentID}`, payload)
+        .then(response => {
+          if (response.data) {
+            this.setSuccessAlert('Success! The student record has been recovered.');
+            this.initializeDetails();
+          }
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while recovering the student record. Please try again later.');
           console.log(error);
         });
     },

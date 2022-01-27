@@ -17,7 +17,8 @@
           clearable
         ></v-select>
       </v-flex>
-      <PrimaryButton id="ignoreRecord" :disabled="!canIgnore" @click.native="clickIgnore" text="Ignore Record"></PrimaryButton>
+      <PrimaryButton id="unignoreRecord" v-if="!canIgnore" :disabled="!canRecover" @click.native="clickRecover" text="Recover Record"></PrimaryButton>
+      <PrimaryButton id="ignoreRecord" v-else :disabled="!canIgnore" @click.native="clickIgnore" text="Ignore Record"></PrimaryButton>
       <PrimaryButton id="viewSelected" class="ml-1" v-if="selected" :disabled="!viewSelectionEnabled" @click.native="clickViewSelected" text="View Selected"></PrimaryButton>
       <PrimaryButton id="viewDetails" class="ml-1" v-else :loading="loadingRequestIDs" :disabled="!viewDetailsEnabled" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
       <PrimaryButton id="postRecords" class="ml-1" :loading="processing" :disabled="isPosted" @click.native="clickPostRecords" text="Post"></PrimaryButton>
@@ -360,6 +361,9 @@ export default {
     canIgnore() {
       return this.selectedRecords.length > 0 && !this.hasIgnoreRecordsSelected();
     },
+    canRecover() {
+      return this.selectedRecords.length > 0 && this.hasRecoverOnlyRecordsSelected();
+    },
     viewSelectionEnabled() {
       return this.nomRollStudentSearchResponse.totalElements > 0 && !this.loading && !this.hasOnlyErrorRecordsInList() && !this.hasErrorRecordsSelected();
     },
@@ -396,6 +400,13 @@ export default {
       }
       return false;
     },
+    hasRecoverOnlyRecordsSelected(){
+      let filteredError = this.selectedRecords.filter(record =>  record.status === 'IGNORED');
+      if(filteredError.length > 0 && filteredError.length === this.selectedRecords.length) {
+        return true;
+      }
+      return false;
+    },
     hasOnlyErrorRecordsInList(){
       let filteredError = this.nomRollStudentSearchResponse.content.filter(record =>  record.status === 'ERROR');
       if(filteredError.length === this.nomRollStudentSearchResponse.content.length) {
@@ -411,6 +422,13 @@ export default {
         }
         this.selectedRecords.forEach(obj => {
           this.ignoreStudent(obj);
+        });
+      }
+    },
+    async clickRecover() {
+      if(this.selectedRecords?.length > 0) {
+        this.selectedRecords.forEach(obj => {
+          this.recoverStudent(obj);
         });
       }
     },
@@ -439,9 +457,41 @@ export default {
           console.log(error);
         });
     },
+    /**
+     * This method is recover a student record.
+     *
+     * @returns {Promise<void>}
+     */
+    async recoverStudent(student) {
+      let payload;
+
+      if(!this.isEmpty(student.validationErrors)) {
+        payload = {
+          ...student,
+          status: NOMINAL_ROLL_STUDENT_STATUS_CODES.ERROR,
+        };
+      } else {
+        payload = {
+          ...student,
+          status: NOMINAL_ROLL_STUDENT_STATUS_CODES.FIXABLE,
+        };
+      }
+
+      ApiService.apiAxios.put(`${Routes['nominalRoll'].ROOT_ENDPOINT}/${student.nominalRollStudentID}`, payload)
+        .then(response => {
+          if (response.data) {
+            student.status = payload.status;
+            this.setSuccessAlert('Success! The student record has been recovered.');
+          }
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while ignoring the student record. Please try again later.');
+          console.log(error);
+        });
+    },
     async confirmToProceedIgnore() {
       let result = true;
-      result = await this.$refs.confirmationDialogIgnore.open('Are you sure you want to ignore these student record(s)?', 'All selected records will be ignored - this cannot be reversed.',
+      result = await this.$refs.confirmationDialogIgnore.open('Are you sure you want to ignore these student record(s)?', 'All selected records will be ignored.',
         {
           width: '680px',
           messagePadding: 'px-4 pt-1',
