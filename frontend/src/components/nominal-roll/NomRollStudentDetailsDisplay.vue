@@ -456,10 +456,17 @@ export default {
     async recoverStudent() {
       let payload;
 
-      payload = {
-        ...this.nomRollStudentCopy,
-        status: NOMINAL_ROLL_STUDENT_STATUS_CODES.FIXABLE,
-      };
+      if(!this.isEmpty(this.nomRollStudentCopy.validationErrors)) {
+        payload = {
+          ...this.nomRollStudentCopy,
+          status: NOMINAL_ROLL_STUDENT_STATUS_CODES.ERROR,
+        };
+      } else {
+        payload = {
+          ...this.nomRollStudentCopy,
+          status: NOMINAL_ROLL_STUDENT_STATUS_CODES.FIXABLE,
+        };
+      }
 
       ApiService.apiAxios.put(`${Routes['nominalRoll'].ROOT_ENDPOINT}/${this.nomRollStudentID}`, payload)
         .then(response => {
