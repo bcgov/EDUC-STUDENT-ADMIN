@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../components/auth');
 const utils = require('../components/utils');
-const {postNominalRollFile, isBeingProcessed, startProcessing, getNominalRollStudentById, getNominalRollStudents, validateNominalRollStudentDemogData, updateNominalRollStudent, postNominalRollData, isDataPosted} = require('../components/nominal-roll');
+const {createFedProvSchoolCode, postNominalRollFile, isBeingProcessed, startProcessing, getNominalRollStudentById, getNominalRollStudents, validateNominalRollStudentDemogData, updateNominalRollStudent, postNominalRollData, isDataPosted} = require('../components/nominal-roll');
 
 const extendSession = utils.extendSession();
 router.post('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidNominalRollUserToken, extendSession, postNominalRollFile);
@@ -17,5 +17,6 @@ router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), au
 router.post('/validate', passport.authenticate('jwt', {session: false}, undefined), auth.isValidNominalRollUserToken, extendSession, validateNominalRollStudentDemogData);
 router.put('/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidNominalRollUserToken, extendSession, updateNominalRollStudent);
 router.post('/postData', passport.authenticate('jwt', {session: false}, undefined), auth.isValidNominalRollUserToken, extendSession, postNominalRollData);
+router.post('/fedProvSchoolCode', passport.authenticate('jwt', {session: false}, undefined), auth.isValidNominalRollUserToken, extendSession, createFedProvSchoolCode);
 
 module.exports = router;

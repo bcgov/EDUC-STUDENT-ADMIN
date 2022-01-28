@@ -1,6 +1,6 @@
 'use strict';
 
-const {errorResponse, logApiError} = require('./utils');
+const {errorResponse, logApiError, getBackendToken, getUser} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const {postData, getData, putData} = require('./utils');
@@ -155,6 +155,23 @@ function createNominalRollSagaRecordInRedis(sagaId, sagaName, operation, process
   return redisUtil.createSagaRecord(event, SAGAS.NOMINAL_ROLL.sagaEventRedisKey);
 }
 
+async function createFedProvSchoolCode(req, res) {
+  try {
+    const token = getBackendToken(req);
+    const url = `${config.get('server:nominalRoll:rootURL')}/federal-province-code`;
+    const params = {
+      headers: {
+        correlationID: req.session.correlationID,
+      }
+    };
+    const result = await postData(token, url, req.body, params, getUser(req).idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'createFedProvSchoolCode', 'Error occurred while attempting to create a fedProvSchoolCode.');
+    return errorResponse(res);
+  }
+}
+
 const isDataPosted = async (req, res) => {
   try {
     const token = utils.getBackendToken(req);
@@ -173,6 +190,8 @@ const isDataPosted = async (req, res) => {
   }
 };
 
+
+
 module.exports = {
   postNominalRollFile,
   isBeingProcessed,
@@ -182,5 +201,6 @@ module.exports = {
   validateNominalRollStudentDemogData,
   updateNominalRollStudent,
   postNominalRollData,
-  isDataPosted
+  isDataPosted,
+  createFedProvSchoolCode
 };
