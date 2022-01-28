@@ -105,7 +105,7 @@
                     ></v-text-field>
                   </v-col>
                   <v-col v-if="item.validationErrors['School Number'] || validationErrors['School Number']" class="pa-0">
-                    <MapSchoolCodeModal :fedCode="editedRecord.schoolNumber" @change='updateMincode(editedRecord)'/>
+                    <MapSchoolCodeModal :fedCode="editedRecord.schoolNumber" @addFedProvCode='addFedProvCode(editedRecord)'/>
                   </v-col>
                 </v-row>
               </v-col>
@@ -359,7 +359,7 @@ export default {
       return this.selectedRecords.length > 0 || this.selectedStudentStatus || (this.currentNomRollStudentSearchParams && values(this.currentNomRollStudentSearchParams).some(v => !!v));
     },
     canIgnore() {
-      return this.selectedRecords.length > 0 && !this.hasIgnoreRecordsSelected();
+      return this.selectedRecords.length > 0 && this.hasCanIgnoreRecordsSelectedOnly();
     },
     canRecover() {
       return this.selectedRecords.length > 0 && this.hasRecoverOnlyRecordsSelected();
@@ -393,9 +393,9 @@ export default {
       }
       return false;
     },
-    hasIgnoreRecordsSelected(){
-      let filteredError = this.selectedRecords.filter(record =>  record.status === 'IGNORED');
-      if(filteredError.length > 0) {
+    hasCanIgnoreRecordsSelectedOnly(){
+      let filteredError = this.selectedRecords.filter(record =>  record.status === 'FIXABLE' || record.status === 'ERROR');
+      if(filteredError.length > 0 && filteredError.length === this.selectedRecords.length) {
         return true;
       }
       return false;
@@ -647,6 +647,10 @@ export default {
     },
     updateMincode(rec) {
       rec.mincode = this.fedProvSchoolCodes.find(obj => obj.federalCode === rec.schoolNumber)?.provincialCode || rec.schoolNumber;
+    },
+    addFedProvCode(rec) {
+      this.updateMincode(rec);
+      this.$emit('addFedProvCode');
     },
     clickPostRecords() {
       this.processing = true;

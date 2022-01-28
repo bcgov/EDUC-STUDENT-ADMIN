@@ -139,12 +139,12 @@ export default {
           provincialCode: this.mincode
         };
 
-        return ApiService.apiAxios.post(`${Routes.SCHOOL_DATA_URL}/fedProvSchoolCodes`, payload)
+        return ApiService.apiAxios.post(`${Routes.nominalRoll.ROOT_ENDPOINT}/fedProvSchoolCode`, payload)
           .then((response) => {
             this.mapSchoolCodeDialog = false;
             this.setSuccessAlert('Success! Your request to map school code is completed.');
-            this.fedProvSchoolCodes.push(response.data);
-            this.$emit('change', response.data);
+            this.fedProvSchoolCodes.push(payload);
+            this.$emit('addFedProvCode', response.data);
           })
           .catch(error => {
             console.log(error);

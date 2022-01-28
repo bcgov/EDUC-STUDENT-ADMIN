@@ -24,6 +24,7 @@
             </v-row>
             <v-row v-if="nomRollStudentSearchResponse" id="resultsRow" no-gutters class="py-2" style="background-color:white;">
               <NomRollStudentSearchResults
+                @addFedProvCode="searchPenRequests(true)"
                 :loading="searchLoading"
                 :isPosted.sync="isPosted"
               ></NomRollStudentSearchResults>
