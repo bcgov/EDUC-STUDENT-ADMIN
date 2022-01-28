@@ -17,12 +17,11 @@
               <StudentDetailsInfoPanel
                   :student.sync="modalStudent"
                   key="info-panel"
-                  :runPenMatch="runPenMatch"
                   :studentDetailsCopy="nomRollStudentCopy"
                   :validationErrorFields="validationErrorFields"
                   :hiddenSearchFields="hiddenSearchFields"
                   :isFixableOrErrorStatus="isFixableOrErrorStatus"
-                  :runDemogValidation="runDemogValidation"
+                  @modifySearchParams="modifySearchParams"
               >                  
                 <template v-slot:headerPanel="{ openSearchDemographicsModal }">
                   <v-row no-gutters
@@ -620,6 +619,19 @@ export default {
     },
     grayoutPossibleMatches(matchedStudent) {
       return !!matchedStudent.possibleMatchedToStudent;
+    },
+    async modifySearchParams(updatedStudent) {
+      if(updatedStudent) {
+        if(!_.isEqual(this.modalStudent, updatedStudent)) {
+          this.setFailureAlert('Modify search failed, please try again.');
+          return;
+        } 
+
+        const hasValidationFailure = await this.runDemogValidation();
+        if(!hasValidationFailure) {
+          await this.runPenMatch();
+        }
+      }
     },
   }
 };

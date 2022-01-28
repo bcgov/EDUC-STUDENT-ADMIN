@@ -17,13 +17,12 @@
               <StudentDetailsInfoPanel
                   :student.sync="prbStudent"
                   key="info-panel"
-                  :runPenMatch="runPenMatch"
                   :studentDetailsCopy="prbStudentCopy"
                   :validationWarningFields="validationWarningFields"
                   :validationErrorFields="validationErrorFields"
                   :hiddenSearchFields="hiddenSearchFields"
                   :isFixableOrErrorStatus="isFixableOrErrorStatus"
-                  :runDemogValidation="runDemogValidation"
+                  @modifySearchParams="modifySearchParams"
               >
                 <template v-slot:headerPanel="{ openSearchDemographicsModal }">
                   <v-row no-gutters
@@ -43,7 +42,7 @@
                     <v-spacer></v-spacer>
                     <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2"
                                    :disabled="disableModifySearch" text="Modify search"
-                                   @click.native="openSearchDemographicsModal"></PrimaryButton>
+                                   @click.native="modifySearchDialog = true; openSearchDemographicsModal()"></PrimaryButton>
                     <PrimaryButton id="issue-pen-action" class="mr-2" :disabled="disableIssueNewPen"
                                    :loading="isIssuingNewPen" text="Issue new PEN"
                                    @click.native="issueNewPen"></PrimaryButton>
@@ -205,7 +204,6 @@ export default {
     return {
       batchFile: null,
       prbStudent: null,
-      modalStudent: null,
       loading: true,
       repeatRequestOriginalStatus: null,
       possibleMatches: [],
@@ -228,7 +226,8 @@ export default {
       deactivateMultipleDraggableDialog: null,
       hiddenSearchFields: [STUDENT_DETAILS_FIELDS.MINCODE],
       validationWarningFields: [],
-      validationErrorFields: []
+      validationErrorFields: [],
+      modifySearchDialog: false,
     };
   },
   watch: {
@@ -279,7 +278,7 @@ export default {
       return this.prbStudent?.repeatRequestOriginalID;
     },
     disableIssueNewPen() {
-      return this.loading || this.prbStudent?.sagaInProgress || this.isArchived || this.hasValidationIssues || this.isNewPenDisabledForSchool()
+      return this.loading || this.prbStudent?.sagaInProgress || this.isArchived || this.hasValidationIssues || this.modifySearchDialog || this.isNewPenDisabledForSchool()
           || this.disabledButtonActionsForStudentStatuses.some(status => status === this.prbStudent?.penRequestBatchStudentStatusCode)
           || (![PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.INFOREQ]
             .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode || element === this.repeatRequestOriginalStatus)
@@ -403,7 +402,6 @@ export default {
       const response = await ApiService.apiAxios.get(`${Routes['penRequestBatch'].FILES_URL}/${this.selectedIDs[this.currentRequest].penRequestBatchID}/students/${this.prbStudentID}`);
       if (response.data) {
         this.prbStudent = response.data;
-        this.setModalStudentFromPrbStudent(this.prbStudent);
         this.prbStudentCopy = deepCloneObject(this.prbStudent);
       } else {
         throw new Error('No PrbStudent data for penRequestBatchStudentID:' + this.prbStudentID);
@@ -489,9 +487,6 @@ export default {
       } finally {
         this.isLoadingMatches = false;
       }
-    },
-    setModalStudentFromPrbStudent(prbStudent) {
-      this.modalStudent = deepCloneObject(prbStudent);
     },
     //TODO need to find out when we implement validation in next story, which other status maps to what and may be update it to get from a MAP.
     getPrbStatusCodeFromPenMatchStatus(penStatus) {
@@ -767,6 +762,20 @@ export default {
     grayoutPossibleMatches(matchedStudent) {
       return (this.prbStudent.penRequestBatchStudentStatusCode === PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR && this.prbStudent.assignedPEN != matchedStudent.pen) 
         || !!matchedStudent.possibleMatchedToStudent;
+    },
+    async modifySearchParams(updatedPrbStudent) {
+      if(updatedPrbStudent) {
+        if(!_.isEqual(this.prbStudent, updatedPrbStudent)) {
+          this.setFailureAlert('Modify search failed, please try again.');
+          return;
+        } 
+
+        const hasValidationFailure = await this.runDemogValidation(this.prbStudent);
+        if(!hasValidationFailure) {
+          await this.runPenMatch();
+        }
+      }
+      this.modifySearchDialog = false;
     },
   }
 };

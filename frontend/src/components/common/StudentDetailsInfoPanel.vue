@@ -1,7 +1,7 @@
 <template>
   <v-container ref="stickyInfoPanel" class="sticky default-container pt-5 px-8">
     <slot name="headerPanel" :openSearchDemographicsModal="openSearchDemographicsModal"></slot>
-    <SearchDemographicModal @closeDialog="closeDialog" @updateStudent="updateStudentAndRunPenMatch" :dialog="dialog"
+    <SearchDemographicModal @closeDialog="closeDialog" @updateStudent="updateStudent" :dialog="dialog"
                   :is-field-read-only="() => {return false}"
                   :hidden-fields="hiddenSearchFields"
                   :student-data="modalStudent">
@@ -132,10 +132,6 @@ export default {
       type: Object,
       default: () => ({})
     },
-    runPenMatch: {
-      type: Function,
-      required: true
-    },
     validationWarningFields: {
       type: Array,
       default: () => []
@@ -152,10 +148,6 @@ export default {
       type: Boolean,
       required: true
     },
-    runDemogValidation: {
-      type: Function,
-      required: true
-    }
   },
   data() {
     return {
@@ -184,7 +176,6 @@ export default {
         { text: 'Error Description', value: 'description', sortable: false }
       ],
       modalStudent: {},
-      currentStudentSearch: this.studentDetailsCopy,
       dialog: false,
     };
   },
@@ -248,24 +239,13 @@ export default {
     },
     async closeDialog() {
       this.dialog = false;
-      this.studentDetails = deepCloneObject(this.currentStudentSearch);
-      await this.$nextTick(); //need to wait so update can me made in parent and propagated back down to child component
-      if(!_.isEmpty(this.studentDetails)) {
-        this.setModalStudentFromRequestStudent();
-        await this.runDemogValidation(this.modalStudent);
-      }
+      this.$emit('modifySearchParams');
     },
-    async updateStudentAndRunPenMatch(studentModified) {
+    async updateStudent(studentModified) {
       this.dialog = false;
       this.studentDetails = deepCloneObject(studentModified);
       await this.$nextTick(); //need to wait so update can me made in parent and propagated back down to child component
-      this.setModalStudentFromRequestStudent();
-      this.currentStudentSearch = deepCloneObject(this.studentDetails);
-
-      const hasValidationFailure = await this.runDemogValidation(this.modalStudent);
-      if(!hasValidationFailure) {
-        await this.runPenMatch();
-      }
+      this.$emit('modifySearchParams', this.studentDetails);
     },
   }
 };
