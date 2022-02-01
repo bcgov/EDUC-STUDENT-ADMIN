@@ -6,9 +6,9 @@
   "author": "Marco Villeneuve",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --fix",
     "test:unit": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint --fix",
+    "lint": "vue-cli-service lint --no-fix",
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "lint:fix": "vue-cli-service lint --fix",
     "purge": "rm -rf node_modules",
