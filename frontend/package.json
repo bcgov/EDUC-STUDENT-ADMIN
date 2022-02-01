@@ -8,14 +8,12 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
-    "local:e2e": "testcafe chrome:headless,firefox:headless ./tests/e2e/test.ts",
-    "test:e2e": "node_modules/testcafe/bin/testcafe.js chrome:headless ./tests/e2e/test.ts",
-    "lint:fix": "vue-cli-service lint --fix",
     "lint": "vue-cli-service lint --no-fix",
+    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "lint:fix": "vue-cli-service lint --fix",
     "purge": "rm -rf node_modules",
     "rebuild": "npm run clean && npm run build",
     "reinstall": "npm run purge && npm install",
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev"
   },
   "dependencies": {
@@ -28,8 +26,7 @@
     "axios-mock-adapter": "1.17.0",
     "chart.js": "2.9.4",
     "chartjs-plugin-datalabels": "1.0.0",
-    "chromedriver": "^76.0.0",
-    "core-js": "^2.6.12",
+    "core-js": "^3.6.5",
     "cryptico-js": "^1.1.0",
     "dotenv": "^8.2.0",
     "glob-all": "^3.2.1",
@@ -44,7 +41,6 @@
     "rfdc": "^1.1.4",
     "sass": "^1.29.0",
     "sass-loader": "^7.1.0",
-    "testcafe": "^1.16.1",
     "v-viewer": "^1.6.4",
     "vue": "^2.6.12",
     "vue-chartjs": "3.5.1",
@@ -58,11 +54,12 @@
   },
   "devDependencies": {
     "@babel/core": "^7.15.8",
-    "@vue/cli": "^3.12.1",
-    "@vue/cli-plugin-babel": "^3.12.1",
-    "@vue/cli-plugin-eslint": "^3.12.1",
+    "@babel/runtime-corejs2": "^7.16.7",
+    "@vue/cli": "^4.5.0",
+    "@vue/cli-plugin-babel": "^4.5.15",
+    "@vue/cli-plugin-eslint": "~4.5.15",
     "@vue/cli-plugin-unit-jest": "^4.5.15",
-    "@vue/cli-service": "^3.12.1",
+    "@vue/cli-service": "^4.5.15",
     "@vue/test-utils": "1.0.0-beta.29",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^26.6.3",
@@ -78,11 +75,6 @@
     "vue-template-compiler": "^2.6.12",
     "vuetify-loader": "^1.6.0"
   },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
-  ],
   "eslintConfig": {
     "root": true,
     "env": {
@@ -133,6 +125,11 @@
       ]
     }
   },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ],
   "engines": {
     "node": ">= 6.0.0",
     "npm": ">= 3.0.0"
