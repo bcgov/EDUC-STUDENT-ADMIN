@@ -397,7 +397,9 @@ export default {
       ApiService.apiAxios
         .get(Routes[this.requestType].STATUSES_URL)
         .then(response => {
-          this.codeTable = response.data;
+          this.codeTable = response.data.filter(
+            status => status[`${this.requestType}StatusCode`] !== 'AUTO'
+          );
           this.statusCodes = this.getStatusCodes();
           this.selectedStatuses = this.$store.state[
             this.requestType
