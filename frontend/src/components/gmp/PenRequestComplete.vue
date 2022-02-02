@@ -21,21 +21,6 @@
                         class="red--text font-weight-bold">{{this.numberOfDuplicatePenRequests}}</span><span
                         class="red--text"> prior PEN Requests</span></span>
             </v-col>
-            <v-col cols="12" xl="7" lg="7" md="7" class="py-0">
-              <v-row>
-                <v-col v-if="this.request.bcscAutoMatchOutcome === this.autoMatchCodes.ONE_MATCH" cols="2">
-                  <v-btn color="success" dark class="mr-4" @click="populateAutoMatchedPen">
-                    <v-icon class="pa-0" large>mdi-arrow-left-bold</v-icon>
-                  </v-btn>
-                </v-col>
-                <v-col align-self="center">
-                  <p v-if="this.request.pen || this.request.penRequestStatusCode === this.statusCodes.AUTO_MATCH || this.request.penRequestStatusCode === this.statusCodes.MANUAL_MATCH"></p>
-                  <p v-else-if="!this.request.bcscAutoMatchOutcome" class="text--darken-1 grey--text pa-0 ma-0">No auto-match performed for Basic BCeID</p>
-                  <p v-else-if="this.request.bcscAutoMatchOutcome === this.autoMatchCodes.ONE_MATCH" class="green--text pa-0 ma-0"><strong>{{ this.autoPenResults }}</strong> {{ this.request.bcscAutoMatchDetails.split(' ').slice(1).join(' ') }}</p>
-                  <p v-else class="orange--text pa-0 ma-0"><strong>{{ this.autoPenResults }}</strong> {{ this.request.bcscAutoMatchDetails.split(' ').slice(1).join(' ') }}</p>
-                </v-col>
-              </v-row>
-            </v-col>
           </v-row>
 
           <v-card class="ml-3">
