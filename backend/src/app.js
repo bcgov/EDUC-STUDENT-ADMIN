@@ -38,6 +38,7 @@ const penTraxRouter = require('./routes/penTrax');
 const macroRouter = require('./routes/macro');
 const analyticsRouter = require('./routes/analytics-router');
 const nominalRollRouter = require('./routes/nominal-roll');
+const secureMessagesRouter = require('./routes/secureMessagesRouter');
 const promMid = require('express-prometheus-middleware');
 const Redis = require('./util/redis/redis-client');
 Redis.init(); // call the init to initialize appropriate client, and reuse it across the app.
@@ -170,6 +171,7 @@ apiRouter.use('/penTrax', penTraxRouter);
 apiRouter.use('/macros', macroRouter);
 apiRouter.use('/analytics', analyticsRouter);
 apiRouter.use('/nominal-roll', nominalRollRouter);
+apiRouter.use('/secureMessages', secureMessagesRouter);
 
 // Prevent unhandled errors from crashing application
 process.on('unhandledRejection', err => {
