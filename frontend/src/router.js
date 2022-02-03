@@ -310,13 +310,19 @@ const router = new VueRouter({
     },
     {
       path: '/messages',
-      name: 'messages',
-      component: MessagesPage,
-      meta: {
-        pageTitle: PAGE_TITLES.MESSAGES,
-        requiresAuth: true,
-        role: 'SECURE_MESSAGE_ROLE'
-      }
+      component: RouterView,
+      children: [
+        {
+          path: '',
+          name: 'Messages',
+          component: MessagesPage,
+          meta: {
+            pageTitle: PAGE_TITLES.MESSAGES,
+            requiresAuth: true,
+            role: 'SECURE_MESSAGE_ROLE'
+          }
+        }
+      ]
     },
     {
       path: '/login',
