@@ -303,7 +303,7 @@ export default {
     ...mapMutations('nominalRoll', ['setFedProvSchoolCodes']),
     formatPen,
     async initializeDetails() {
-      this.demogValidationResult = []; // reset the validation results, on clicking next or previous
+      this.resetValidationResult(); // reset the validation results, on clicking next or previous
       this.loading = true;
       try {
         await this.retrieveNomRollStudentByID();
@@ -603,9 +603,7 @@ export default {
         this.hasValidationIssues = this.validationErrorFields?.length > 0;
         return this.hasValidationIssues;
       }else{
-        this.demogValidationResult = [];
-        this.hasValidationIssues = false;
-        this.validationErrorFields = [];
+        this.resetValidationResult();
         return false;
       }
     },
@@ -632,6 +630,11 @@ export default {
           await this.runPenMatch();
         }
       }
+    },
+    resetValidationResult() {
+      this.demogValidationResult = [];
+      this.hasValidationIssues = false;
+      this.validationErrorFields = [];
     },
   }
 };
