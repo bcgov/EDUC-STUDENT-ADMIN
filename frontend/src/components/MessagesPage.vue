@@ -115,7 +115,7 @@
             </v-date-picker>
           </v-menu>
         </template>
-        <template v-slot:header.status="{ header }">
+        <template v-slot:header.secureExchangeStatusCode="{ header }">
           <th
               id="status-header"
           >
@@ -154,16 +154,17 @@
           </v-select>
         </template>
         <template v-slot:no-data>There are no messages.</template>
-        <template v-slot:item="{ item }">
+        <template v-slot:item="{ item, index }">
           <tr v-on:click="clickViewMessageDetails(item)"
-              :class="[{'unread': !item.read}, 'tableRow']">
+              :key="index"
+              :class="[{'unread': item.isReadByMinistry === 'N'}, 'tableRow']">
             <td>{{ item.contact }}</td>
             <td>{{ item.subject }}</td>
             <td>{{
                 item.initialSubmitDate ? moment(item.initialSubmitDate).format('YYYY/MM/DD') : ''
               }}
             </td>
-            <td>{{ item.status }}</td>
+            <td>{{ item.secureExchangeStatusCode }}</td>
 
             <td v-if="item.reviewer !== 'unclaimed'">{{ item.reviewer }}</td>
             <td v-else>
@@ -266,7 +267,7 @@ export default {
         },
         {
           text: 'Status',
-          value: 'status',
+          value: 'secureExchangeStatusCode',
           sortable: false
         },
         {
