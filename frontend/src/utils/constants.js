@@ -12,6 +12,7 @@ const penTraxRoot = baseRoot + '/penTrax';
 const penMatchRoot = baseRoot + '/penMatches';
 const macroRoot = baseRoot + '/macros';
 const nominalRollRoot= baseRoot+'/nominal-roll';
+const secureMessageRoot = baseRoot+'/secureMessages';
 
 let object = {
   LOGIN: authRoot + '/login',
@@ -99,6 +100,9 @@ let object = {
     ROOT_ENDPOINT: nominalRollRoot,
     PAGINATED_ENDPOINT: nominalRollRoot + '/search'
   },
+  secureMessage: {
+    ROOT_ENDPOINT: secureMessageRoot
+  }
 };
 
 //endpoints

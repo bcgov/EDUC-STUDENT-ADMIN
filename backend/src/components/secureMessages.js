@@ -23,7 +23,19 @@ async function getSecureMessageById(req, res) {
   }
 }
 
+async function getSecureMessages(req, res) {
+  try {
+    const token = utils.getBackendToken(req);
+
+    const response = await utils.getData(token, config.get('server:secureMessage:rootURL')+'/paginated', {params: req.query});
+    return res.status(HttpStatus.OK).json(response);
+  } catch (e) {
+    logApiError(e, 'getSecureMessages', 'Error getting a paginated secure messages.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getSecureMessageById,
-  getSecureMessages: utils.getPaginatedListForSCGroups('getSecureMessages', `${config.get('server:secureMessage:rootURL')}/paginated`),
+  getSecureMessages,
 };

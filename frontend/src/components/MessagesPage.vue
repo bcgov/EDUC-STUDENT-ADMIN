@@ -39,6 +39,7 @@
             }"
           :items="requests"
           :loading="loadingTable"
+          :server-items-length="totalRequests"
       >
         <template v-slot:header.contact="{ header }">
           <th
@@ -177,7 +178,8 @@
 
 <script>
 import {mapState} from 'vuex';
-import moment from 'moment';
+import ApiService from '../common/apiService';
+import {Routes} from '@/utils/constants';
 
 import PrimaryButton from './util/PrimaryButton';
 
@@ -191,7 +193,8 @@ export default {
       selectedItem: 0,
       pageNumber: 1,
       pageSize: 25,
-      itemsPerPageOptions: [10, 15, 25, 50, 100],
+      totalRequests: 0,
+      itemsPerPageOptions: [1, 2, 10, 15, 25, 50, 100],
       loadingTable: false,
       dateMenu: false,
       headerSearchParams: {
@@ -205,35 +208,7 @@ export default {
         currentSort: 'initialSubmitDate',
         currentSortDir: true
       },
-      requests: [
-        {
-          id: 142,
-          contact: 'SFU (06718294)',
-          subject: 'Test University',
-          initialSubmitDate: moment('2021/12/27', 'YYYY/MM/DD'),
-          status: 'NEW',
-          reviewer: 'unclaimed',
-          read: true
-        },
-        {
-          id: 143,
-          contact: 'Bear Valley School (08288028)',
-          subject: 'Question about PEN assignment',
-          initialSubmitDate: moment('2021/01/01', 'YYYY/MM/DD'),
-          status: 'IN PROGRESS',
-          reviewer: 'JONES, TIM EDUC:EX',
-          read: true
-        },
-        {
-          id: 144,
-          contact: 'Nootka Elem Summer School (03990089)',
-          subject: 'Student name change',
-          initialSubmitDate: moment('2021/07/07', 'YYYY/MM/DD'),
-          status: 'NEW',
-          reviewer: 'unclaimed',
-          read: false
-        }
-      ],
+      requests: [],
       statuses: [
         {
           statusCode: 'inProgress',
@@ -302,6 +277,9 @@ export default {
       ];
     }
   },
+  mounted() {
+    this.getRequests();
+  },
   methods: {
     claim() {
       console.log(this.userName + ' would like to claim');
@@ -313,43 +291,31 @@ export default {
     },
     clickShowMessageType(messageType) {
       //mocked function that will send a get request for the message inbox items
-      this.getRequests(messageType);
+      console.log('showing ' + messageType);
+      this.getRequests();
     },
-    getRequests(requestRoute) {
-      //mocked data being requested and sent back depending on the inbox
+    getRequests() {
       this.loadingTable = true;
-      setTimeout(() => {
-        this.requests = [
-          {
-            id: 142,
-            contact: requestRoute,
-            subject: requestRoute,
-            initialSubmitDate: moment('2021/01/01', 'YYYY/MM/DD'),
-            status: 'NEW',
-            reviewer: 'unclaimed',
-            read: true
-          },
-          {
-            id: 143,
-            contact: requestRoute,
-            subject: requestRoute,
-            initialSubmitDate: moment('2021/02/02', 'YYYY/MM/DD'),
-            status: 'IN PROGRESS',
-            reviewer: 'JONES, TIM EDUC:EX',
-            read: true
-          },
-          {
-            id: 144,
-            contact: requestRoute,
-            subject: requestRoute,
-            initialSubmitDate: moment('2021/07/07', 'YYYY/MM/DD'),
-            status: 'NEW',
-            reviewer: 'unclaimed',
-            read: false
-          }
-        ];
-        this.loadingTable = false;
-      }, 1000);
+      this.requests = [];
+      ApiService.apiAxios.get(Routes.secureMessage.ROOT_ENDPOINT, {params: {pageNumber: this.pageNumber - 1, pageSize: this.pageSize}})
+        .then(response => {
+          this.requests = response.data.content;
+          this.totalRequests = response.data.totalElements;
+        })
+        .catch(error => {
+          console.log(error);
+        })
+        .finally(() => {
+          this.loadingTable = false;
+        });
+    }
+  },
+  watch: {
+    pageSize() {
+      this.getRequests();
+    },
+    pageNumber() {
+      this.getRequests();
     }
   }
 };
