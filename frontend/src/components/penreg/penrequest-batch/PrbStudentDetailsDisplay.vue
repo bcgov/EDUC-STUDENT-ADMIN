@@ -362,7 +362,7 @@ export default {
     ...mapMutations('prbStudentSearch', ['setSelectedRecords']),
     formatPen,
     async initializeDetails() {
-      this.demogValidationResult = []; // reset the validation results, on clicking next or previous
+      this.resetValidationResult(); // reset the validation results, on clicking next or previous
       this.loading = true;
       try {
         await this.retrievePenRequestByID();
@@ -741,10 +741,7 @@ export default {
         this.hasValidationIssues = this.validationErrorFields?.length > 0;
         return this.hasValidationIssues;
       }else{
-        this.demogValidationResult = [];
-        this.hasValidationIssues = false;
-        this.validationErrorFields = [];
-        this.validationWarningFields = [];
+        this.resetValidationResult();
         return false;
       }
     },
@@ -776,6 +773,12 @@ export default {
         }
       }
       this.modifySearchDialog = false;
+    },
+    resetValidationResult() {
+      this.demogValidationResult = [];
+      this.hasValidationIssues = false;
+      this.validationErrorFields = [];
+      this.validationWarningFields = [];
     },
   }
 };

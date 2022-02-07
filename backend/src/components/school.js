@@ -71,9 +71,15 @@ async function getPenCoordinators(req, res) {
     const coords = lodash.sortBy(data, ['mincode', 'penCoordinatorName']);
     const filteredCords = coords.filter(coord=> {
       const school = cacheService.getSchoolNameJSONByMincode(coord.mincode);
+      if(!school){
+        return true;
+      }
       return isSchoolExpired(school);
     }).map(coord=> {
       coord.schoolName = cacheService.getSchoolNameJSONByMincode(coord.mincode)?.schoolName;
+      if(!coord.schoolName){
+        coord.schoolName = 'District';
+      }
       return coord;
     });
     return res.status(200).json(filteredCords);
@@ -84,10 +90,13 @@ async function getPenCoordinators(req, res) {
 }
 
 function isSchoolExpired(school) {
+  if(school === null){
+    return false;
+  }
+
   const openedDate = school?.effectiveDate;
   const closedDate = school?.expiryDate;
   return !(!school || !school.schoolName || !openedDate || LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME).isAfter(LocalDate.now()) || (closedDate && LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME).isBefore(LocalDate.now())));
-
 }
 
 module.exports = {
