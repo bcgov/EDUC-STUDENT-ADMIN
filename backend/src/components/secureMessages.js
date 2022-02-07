@@ -18,7 +18,7 @@ async function getSecureMessageById(req, res) {
     const result = await getData(token, url, params);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
-    logApiError(e, 'getSecureMessageById', 'Error getting a secure message.');
+    logApiError(e, 'getSecureMessageById', 'Error getting a secure message by ID.');
     return errorResponse(res);
   }
 }
@@ -30,7 +30,7 @@ async function getSecureMessages(req, res) {
     const response = await utils.getData(token, config.get('server:secureMessage:rootURL')+'/paginated', {params: req.query});
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
-    logApiError(e, 'getSecureMessages', 'Error getting a paginated secure messages.');
+    logApiError(e, 'getSecureMessages', 'Error getting paginated list of secure messages.');
     return errorResponse(res);
   }
 }
