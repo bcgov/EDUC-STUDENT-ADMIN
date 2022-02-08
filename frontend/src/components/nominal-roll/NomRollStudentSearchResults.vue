@@ -59,7 +59,7 @@
                     :statusCode="props.item[header.value]"
                   ></NomRollStudentStatusChip>
                   <v-icon
-                    v-if="!isEmpty(props.item.validationErrors)"
+                    v-if="!isEmpty(props.item.validationErrors) && props.item.status !== 'IGNORED'"
                     @click.native="toggleRow(props.item)"
                   >{{ rowExpandedIcon }}</v-icon>
                 </span>
@@ -450,6 +450,7 @@ export default {
           if (response.data) {
             student.status = NOMINAL_ROLL_STUDENT_STATUS_CODES.IGNORED;
             this.setSuccessAlert('Success! The student record has been set to ignored.');
+            this.collapseAll();
           }
         })
         .catch(error => {
@@ -584,6 +585,9 @@ export default {
     },
     isEmpty(obj) {
       return Object.keys(obj).length === 0;
+    },
+    collapseAll() {
+      this.expanded = [];
     },
     async toggleRow(item) {
       const index = this.expanded.indexOf(item);

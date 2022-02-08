@@ -37,7 +37,7 @@
                     <v-text-field id="federalCodeTxtField" outlined dense filled
                                   :rules="requiredRules"
                                   required tabindex="1"
-                                  clearable
+                                  disabled
                                   v-model="federalCode"
                     ></v-text-field>
                   </v-col>
