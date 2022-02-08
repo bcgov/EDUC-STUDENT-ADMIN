@@ -12,7 +12,7 @@ const penTraxRoot = baseRoot + '/penTrax';
 const penMatchRoot = baseRoot + '/penMatches';
 const macroRoot = baseRoot + '/macros';
 const nominalRollRoot= baseRoot+'/nominal-roll';
-const secureMessageRoot = baseRoot+'/secureMessages';
+const exchangeRoot = baseRoot+'/edx/exchange';
 
 let object = {
   LOGIN: authRoot + '/login',
@@ -100,8 +100,8 @@ let object = {
     ROOT_ENDPOINT: nominalRollRoot,
     PAGINATED_ENDPOINT: nominalRollRoot + '/search'
   },
-  secureMessage: {
-    ROOT_ENDPOINT: secureMessageRoot
+  exchange: {
+    ROOT_ENDPOINT: exchangeRoot
   }
 };
 
@@ -194,10 +194,10 @@ export const REQUEST_TYPES = Object.freeze(
       label: 'Failed PEN Request Files',
       path: '/failedRequestBatch',
     },
-    messages: {
-      name: 'messages',
+    exchange: {
+      name: 'exchange',
       label: 'View Secure Messages',
-      path: '/messages',
+      path: '/edx/exchange',
     }
   }
 );
@@ -368,7 +368,7 @@ export const PAGE_TITLES = Object.freeze(
     STATS_DASHBOARD: 'Student and System Analytics',
     VIEW_MERGES: 'View Merges',
     ANALYTICS: 'Analytics',
-    MESSAGES: 'Messages'
+    EXCHANGE: 'Secure Exchange Messaging'
   }
 );
 

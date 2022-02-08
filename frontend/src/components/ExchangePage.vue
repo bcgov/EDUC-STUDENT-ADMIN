@@ -71,9 +71,9 @@
               clearable
           ></v-text-field>
         </template>
-        <template v-slot:header.initialSubmitDate="{ header }">
+        <template v-slot:header.createDate="{ header }">
           <th
-              id="submit-date-header"
+              id="create-date-header"
               :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
           >
             {{ header.text }}
@@ -93,19 +93,19 @@
             <template v-slot:activator="{ on }">
               <v-text-field
                   id="date-picker-text-field"
-                  :value="headerSearchParams.initialSubmitDate? headerSearchParams.initialSubmitDate.join(): ''"
+                  :value="headerSearchParams.createDate? headerSearchParams.createDate.join(): ''"
                   outlined
                   dense
                   readonly
                   v-on="on"
-                  @click:clear="headerSearchParams.initialSubmitDate = []"
+                  @click:clear="headerSearchParams.createDate = []"
                   clearable
                   class="header-text"
               ></v-text-field>
             </template>
             <v-date-picker
                 id="date-picker"
-                v-model="headerSearchParams.initialSubmitDate"
+                v-model="headerSearchParams.createDate"
                 no-title
                 range
             >
@@ -161,7 +161,7 @@
             <td>{{ item.contact }}</td>
             <td>{{ item.subject }}</td>
             <td>{{
-                item.initialSubmitDate ? moment(item.initialSubmitDate).format('YYYY/MM/DD') : ''
+                item.createDate ? moment(item.createDate).format('YYYY/MM/DD') : ''
               }}
             </td>
             <td>{{ item.secureExchangeStatusCode }}</td>
@@ -185,7 +185,7 @@ import {Routes} from '@/utils/constants';
 import PrimaryButton from './util/PrimaryButton';
 
 export default {
-  name: 'MessagesPage',
+  name: 'ExchangePage',
   components: {
     PrimaryButton,
   },
@@ -201,12 +201,12 @@ export default {
       headerSearchParams: {
         contact: '',
         subject: '',
-        initialSubmitDate: [],
+        createDate: [],
         status: '',
         reviewer: ''
       },
       headerSortParams: {
-        currentSort: 'initialSubmitDate',
+        currentSort: 'createDate',
         currentSortDir: true
       },
       requests: [],
@@ -262,7 +262,7 @@ export default {
         },
         {
           text: 'Date',
-          value: 'initialSubmitDate',
+          value: 'createDate',
           sortable: false
         },
         {
@@ -298,7 +298,7 @@ export default {
     getRequests() {
       this.loadingTable = true;
       this.requests = [];
-      ApiService.apiAxios.get(Routes.secureMessage.ROOT_ENDPOINT, {params: {pageNumber: this.pageNumber - 1, pageSize: this.pageSize}})
+      ApiService.apiAxios.get(Routes.exchange.ROOT_ENDPOINT, {params: {pageNumber: this.pageNumber - 1, pageSize: this.pageSize}})
         .then(response => {
           this.requests = response.data.content;
           this.totalRequests = response.data.totalElements;

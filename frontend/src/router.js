@@ -17,7 +17,7 @@ import PrbStudentDetailsDisplay from './components/penreg/penrequest-batch/PrbSt
 import ArchivedRequestBatchDisplay from './components/penreg/penrequest-batch/ArchivedRequestBatchDisplay';
 import LoadFailedBatchList from './components/penreg/penrequest-batch/LoadFailedBatchList';
 import HeldRequestBatchDisplay from './components/penreg/penrequest-batch/HeldRequestBatchDisplay';
-import MessagesPage from './components/MessagesPage';
+import ExchangePage from './components/ExchangePage';
 import UnAuthorized from './components/UnAuthorized';
 import { REQUEST_TYPES, PAGE_TITLES } from './utils/constants';
 import authStore from './store/modules/auth';
@@ -309,17 +309,17 @@ const router = new VueRouter({
       ]
     },
     {
-      path: '/messages',
+      path: '/edx',
       component: RouterView,
       children: [
         {
-          path: '',
-          name: 'Messages',
-          component: MessagesPage,
+          path: '/exchange',
+          name: 'Secure Exchange',
+          component: ExchangePage,
           meta: {
-            pageTitle: PAGE_TITLES.MESSAGES,
+            pageTitle: PAGE_TITLES.EXCHANGE,
             requiresAuth: true,
-            role: 'SECURE_MESSAGE_ROLE'
+            role: 'EXCHANGE_ROLE'
           }
         }
       ]
