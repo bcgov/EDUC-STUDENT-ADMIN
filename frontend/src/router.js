@@ -313,7 +313,7 @@ const router = new VueRouter({
       component: RouterView,
       children: [
         {
-          path: '/exchange',
+          path: 'exchange',
           name: 'Secure Exchange',
           component: ExchangePage,
           meta: {

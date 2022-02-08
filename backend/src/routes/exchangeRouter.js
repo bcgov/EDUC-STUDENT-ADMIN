@@ -4,10 +4,10 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../components/auth');
 const utils = require('../components/utils');
-const { getSecureMessages } = require('../components/secureMessages');
+const { getExchanges } = require('../components/exchange');
 
 const extendSession = utils.extendSession();
 
-router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidSecureMessageUserToken, extendSession, getSecureMessages);
+router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, getExchanges);
 
 module.exports = router;
