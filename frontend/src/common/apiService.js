@@ -84,4 +84,5 @@ export default {
   getPrbValidationIssueTypeCodes: getCodes(Routes.penRequestBatch.PRB_VALIDATION_ISSUE_TYPE_CODE_URL),
   getMincodeSchoolNames: getCodes(Routes.SCHOOL_DATA_URL),
   getFedProvSchoolCodes: getCodes(`${Routes.SCHOOL_DATA_URL}/fedProvSchoolCodes`),
+  getMinistryTeams: getCodes(`${Routes.edx.USERS_URL}/ministryTeams`),
 };

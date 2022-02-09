@@ -13,6 +13,7 @@ const penMatchRoot = baseRoot + '/penMatches';
 const macroRoot = baseRoot + '/macros';
 const nominalRollRoot= baseRoot+'/nominal-roll';
 const exchangeRoot = baseRoot+'/edx/exchange';
+const edxRoot= baseRoot+'/edx';
 
 let object = {
   LOGIN: authRoot + '/login',
@@ -102,6 +103,11 @@ let object = {
   },
   exchange: {
     ROOT_ENDPOINT: exchangeRoot
+  },
+  edx: {
+    ROOT_ENDPOINT: edxRoot,
+    EXCHANGE_URL: edxRoot + '/exchange',
+    USERS_URL: edxRoot + '/users',
   }
 };
 

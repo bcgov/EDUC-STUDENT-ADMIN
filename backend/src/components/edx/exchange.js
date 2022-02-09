@@ -35,7 +35,36 @@ async function getExchanges(req, res) {
   }
 }
 
+async function createExchange(req, res) {
+  try {
+    const token = utils.getBackendToken(req);
+    const userInfo = utils.getUser(req);
+    const message = req.body;
+    const payload = {
+      contactIdentifier: message.contactIdentifier,
+      secureExchangeContactTypeCode: message.secureExchangeContactTypeCode,
+      ministryOwnershipTeamID: message.ministryOwnershipTeamID,
+      subject: message.subject,
+      reviewer: userInfo.idir_username,
+      commentsList: [
+        {
+          staffUserIdentifier: userInfo.idir_guid?.toUpperCase(),
+          commentUserName: userInfo.idir_username,
+          content: message.content
+        }
+      ]
+    };
+
+    const result = await utils.postData(token, config.get('server:secureMessage:rootURL') + '/exchange', payload, null, userInfo.idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'createSecureMessage', 'Error occurred while attempting to create a new secure message.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getExchangeById,
   getExchanges,
+  createExchange,
 };
