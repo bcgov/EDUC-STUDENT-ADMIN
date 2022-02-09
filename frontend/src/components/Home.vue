@@ -117,10 +117,10 @@
           </v-row>
         </v-card>
       </v-col>
-      <v-col cols="8" v-if="SECURE_MESSAGE_ROLE">
-        <DashboardTable v-if="!isLoadingSecMessage" title="Secure Messaging" colour="#CED6E2"
-                        :tableData="secMessageData"></DashboardTable>
-        <v-container v-else-if="isLoadingSecMessage" class="full-height" fluid>
+      <v-col cols="8" v-if="EXCHANGE_ROLE">
+        <DashboardTable v-if="!isLoadingExchange" title="Secure Exchange Messaging" colour="#CED6E2"
+                        :tableData="exchangeData"></DashboardTable>
+        <v-container v-else-if="isLoadingExchange" class="full-height" fluid>
           <article class="top-banner full-height">
             <v-row align="center" justify="center">
               <v-progress-circular
@@ -159,13 +159,13 @@ export default {
       REQUEST_TYPES: REQUEST_TYPES,
       penRequestData: [],
       studentData: [],
-      secMessageData: [],
+      exchangeData: [],
       pen: null,
       mincode: null,
       loadDate: null,
       isLoadingBatch: true,
       isLoadingGmpUmp: true,
-      isLoadingSecMessage: true,
+      isLoadingExchange: true,
       searchDropDownItems: [
         { title: 'Archived' },
         { title: 'Active' }
@@ -242,18 +242,18 @@ export default {
       this.isLoadingGmpUmp = false;
     });
 
-    //TODO: replace this with API call for secure messaging
-    if (this.SECURE_MESSAGE_ROLE) {
-      this.secMessageData.push({
+    //TODO: replace this with API call for secure exchange messaging
+    if (this.EXCHANGE_ROLE) {
+      this.exchangeData.push({
         title: 'PEN Team Inbox',
-        button: {route: REQUEST_TYPES.messages.path, text: 'View Inbox'},
+        button: {route: REQUEST_TYPES.exchange.path, text: 'View Inbox'},
       });
 
-      setTimeout(() => this.isLoadingSecMessage = false, 1000);
+      setTimeout(() => this.isLoadingExchange = false, 1000);
     }
   },
   computed: {
-    ...mapGetters('auth', ['VIEW_GMP_REQUESTS_ROLE','VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'SECURE_MESSAGE_ROLE']),
+    ...mapGetters('auth', ['VIEW_GMP_REQUESTS_ROLE','VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ROLE']),
     ...mapState('app', ['mincodeSchoolNames', 'districtCodes']),
     requestTypes() {
       return REQUEST_TYPES;

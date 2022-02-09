@@ -20,7 +20,7 @@ const roles = {
     //Help functions created in auth module: isValidPenRequestBatchAnalyticsUser
     PenRequestBatchAnalytics: config.get('server:penRequestBatch:roleAnalytics'),
     //Help functions created in auth module: isValidSecureMessageUser
-    SecureMessage: ['SECURE_MESSAGE']
+    Exchange: ['SECURE_EXCHANGE']
   },
   Admin: {
     //Help functions created in auth module: isValidGMPAdmin
