@@ -4,10 +4,11 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../components/auth');
 const utils = require('../components/utils');
-const { getExchanges } = require('../components/exchange');
+const { getExchanges } = require('../components/edx/exchange');
 
 const extendSession = utils.extendSession();
 
-router.get('/', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, getExchanges);
+//edx exchange routes
+router.get('/exchange', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, getExchanges);
 
 module.exports = router;
