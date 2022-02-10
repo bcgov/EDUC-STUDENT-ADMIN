@@ -121,6 +121,13 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -d "{\"name\" : \"SECURE_EXCHANGE\",\"description\" : \"Allows access to Pen Secure Exchange Messaging\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
 echo
+echo Creating PEN_TEAM_ROLE role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"PEN_TEAM_ROLE\",\"description\" : \"PEN team role for Secure Messaging\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
+echo
 echo Retrieving client ID for student-admin-soam
 studentAdminClientID=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients" \
   -H "Content-Type: application/json" \

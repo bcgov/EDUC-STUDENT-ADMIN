@@ -28,7 +28,7 @@
     </v-col>
     <v-col>
       <v-row class='d-flex justify-end pb-2'>
-        <PrimaryButton text='Add Message'/>
+        <NewMessageDialog :myTeam="myTeam"/>
       </v-row>
       <v-data-table
           :headers="headers"
@@ -183,11 +183,13 @@ import ApiService from '../common/apiService';
 import {Routes} from '@/utils/constants';
 
 import PrimaryButton from './util/PrimaryButton';
+import NewMessageDialog from './secure-message/NewMessageDialog';
 
 export default {
   name: 'ExchangePage',
   components: {
     PrimaryButton,
+    NewMessageDialog,
   },
   data() {
     return {
@@ -249,6 +251,11 @@ export default {
       userName: state => state.auth.userInfo.userName
     }),
     ...mapGetters('exchange', ['statusCodes']),
+    ...mapState('auth', ['userInfo']),
+    ...mapState('edx', ['ministryTeams']),
+    myTeam() {
+      return this.ministryTeams.find(team => this.userInfo.userRoles.some(role => team.groupRoleIdentifier === role)) || {};
+    },
     headers() {
       return [
         {
@@ -282,7 +289,9 @@ export default {
   async beforeMount() {
     await this.$store.dispatch('exchange/getCodes');
   },
-  mounted() {
+  created() {
+    this.$store.dispatch('app/getCodes');
+    this.$store.dispatch('edx/getMinistryTeams');
     this.getRequests();
   },
   methods: {
