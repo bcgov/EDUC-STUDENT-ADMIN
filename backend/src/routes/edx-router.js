@@ -10,5 +10,6 @@ const extendSession = utils.extendSession();
 
 //edx exchange routes
 router.get('/exchange', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, getExchanges);
+router.get('/exchange/statuses', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, utils.cacheMiddleware(), utils.getCodes('server:edx:exchangeStatuses', 'exchangeStatusCodes'));
 
 module.exports = router;
