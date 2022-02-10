@@ -124,9 +124,9 @@
           <v-select
               id="status-text-field"
               v-model="headerSearchParams.status"
-              :items="statuses"
-              item-text="statusText"
-              item-value="statusCode"
+              :items="statusCodes"
+              item-text='secureExchangeStatusCode'
+              item-value='secureExchangeStatusCode'
               class="header-text"
               outlined
               dense
@@ -178,7 +178,7 @@
 </template>
 
 <script>
-import {mapState} from 'vuex';
+import {mapState, mapGetters} from 'vuex';
 import ApiService from '../common/apiService';
 import {Routes} from '@/utils/constants';
 
@@ -248,6 +248,7 @@ export default {
     ...mapState({
       userName: state => state.auth.userInfo.userName
     }),
+    ...mapGetters('exchange', ['statusCodes']),
     headers() {
       return [
         {
@@ -277,6 +278,9 @@ export default {
         }
       ];
     }
+  },
+  async beforeMount() {
+    await this.$store.dispatch('exchange/getCodes');
   },
   mounted() {
     this.getRequests();

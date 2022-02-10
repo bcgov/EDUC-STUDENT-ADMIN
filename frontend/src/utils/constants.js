@@ -101,7 +101,8 @@ let object = {
     PAGINATED_ENDPOINT: nominalRollRoot + '/search'
   },
   exchange: {
-    ROOT_ENDPOINT: exchangeRoot
+    ROOT_ENDPOINT: exchangeRoot,
+    STATUSES_URL: exchangeRoot + '/statuses'
   }
 };
 
