@@ -8,7 +8,7 @@ const { getExchanges, createExchange } = require('../components/edx/exchange');
 
 const extendSession = utils.extendSession();
 
-router.get('/users/ministryTeams', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, utils.forwardGet('getMinistryTeams', 'server:secureMessage:rootURL', '/users/ministry-teams'));
+router.get('/users/ministryTeams', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, utils.forwardGet('getMinistryTeams', 'server:edx:rootURL', '/users/ministry-teams'));
 
 //edx exchange routes
 router.get('/exchange', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, getExchanges);

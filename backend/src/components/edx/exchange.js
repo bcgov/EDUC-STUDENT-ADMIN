@@ -46,6 +46,9 @@ async function createExchange(req, res) {
       ministryOwnershipTeamID: message.ministryOwnershipTeamID,
       subject: message.subject,
       reviewer: userInfo.idir_username,
+      secureExchangeStatusCode: 'INPROGRESS',
+      isReadByMinistry: 'Y',
+      isReadByExchangeContact: 'N',
       commentsList: [
         {
           staffUserIdentifier: userInfo.idir_guid?.toUpperCase(),
@@ -55,10 +58,10 @@ async function createExchange(req, res) {
       ]
     };
 
-    const result = await utils.postData(token, config.get('server:secureMessage:rootURL') + '/exchange', payload, null, userInfo.idir_username);
+    const result = await utils.postData(token, config.get('server:edx:exchangeURL'), payload, null, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
-    logApiError(e, 'createSecureMessage', 'Error occurred while attempting to create a new secure message.');
+    logApiError(e, 'createExchange', 'Error occurred while attempting to create a new exchange.');
     return errorResponse(res);
   }
 }
