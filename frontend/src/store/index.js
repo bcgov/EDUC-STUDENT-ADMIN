@@ -12,7 +12,6 @@ import setNavigation from './modules/setNavigation';
 import archivedRequestBatch from './modules/archivedRequestBatch';
 import nominalRoll from './modules/nominalRoll';
 import nomRollStudentSearch from './modules/nomRollStudentSearch';
-import exchange from './modules/exchange';
 import edx from './modules/edx';
 
 Vue.use(Vuex);
@@ -32,7 +31,6 @@ const store = new Vuex.Store({
     archivedRequestBatch,
     nominalRoll,
     nomRollStudentSearch,
-    exchange,
     edx
   }
 });

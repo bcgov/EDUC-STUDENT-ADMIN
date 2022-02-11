@@ -124,7 +124,7 @@
           <v-select
               id="status-text-field"
               v-model="headerSearchParams.status"
-              :items="statusCodes"
+              :items="statuses"
               item-text='secureExchangeStatusCode'
               item-value='secureExchangeStatusCode'
               class="header-text"
@@ -178,7 +178,7 @@
 </template>
 
 <script>
-import {mapState, mapGetters} from 'vuex';
+import {mapState} from 'vuex';
 import ApiService from '../common/apiService';
 import {Routes} from '@/utils/constants';
 
@@ -212,24 +212,6 @@ export default {
         currentSortDir: true
       },
       requests: [],
-      statuses: [
-        {
-          statusCode: 'inProgress',
-          statusText: 'In Progress'
-        },
-        {
-          statusCode: 'new',
-          statusText: 'New'
-        },
-        {
-          statusCode: 'completed',
-          statusText: 'Completed'
-        },
-        {
-          statusCode: 'done',
-          statusText: 'Done'
-        },
-      ],
       reviewers: [
         {
           reviewerCode: '404',
@@ -250,9 +232,8 @@ export default {
     ...mapState({
       userName: state => state.auth.userInfo.userName
     }),
-    ...mapGetters('exchange', ['statusCodes']),
     ...mapState('auth', ['userInfo']),
-    ...mapState('edx', ['ministryTeams']),
+    ...mapState('edx', ['ministryTeams', 'statuses']),
     myTeam() {
       return this.ministryTeams.find(team => this.userInfo.userRoles.some(role => team.groupRoleIdentifier === role)) || {};
     },
@@ -286,12 +267,9 @@ export default {
       ];
     }
   },
-  async beforeMount() {
-    await this.$store.dispatch('exchange/getCodes');
-  },
   created() {
     this.$store.dispatch('app/getCodes');
-    this.$store.dispatch('edx/getMinistryTeams');
+    this.$store.dispatch('edx/getCodes');
     this.getRequests();
   },
   methods: {
