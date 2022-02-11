@@ -289,7 +289,7 @@ export default {
     getRequests() {
       this.loadingTable = true;
       this.requests = [];
-      ApiService.apiAxios.get(Routes.exchange.ROOT_ENDPOINT, {params: {pageNumber: this.pageNumber - 1, pageSize: this.pageSize}})
+      ApiService.apiAxios.get(Routes.edx.EXCHANGE_URL, {params: {pageNumber: this.pageNumber - 1, pageSize: this.pageSize}})
         .then(response => {
           this.requests = response.data.content;
           this.totalRequests = response.data.totalElements;

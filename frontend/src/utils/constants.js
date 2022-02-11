@@ -12,7 +12,6 @@ const penTraxRoot = baseRoot + '/penTrax';
 const penMatchRoot = baseRoot + '/penMatches';
 const macroRoot = baseRoot + '/macros';
 const nominalRollRoot= baseRoot+'/nominal-roll';
-const exchangeRoot = baseRoot+'/edx/exchange';
 const edxRoot= baseRoot+'/edx';
 
 let object = {
@@ -101,13 +100,10 @@ let object = {
     ROOT_ENDPOINT: nominalRollRoot,
     PAGINATED_ENDPOINT: nominalRollRoot + '/search'
   },
-  exchange: {
-    ROOT_ENDPOINT: exchangeRoot,
-    STATUSES_URL: exchangeRoot + '/statuses'
-  },
   edx: {
     ROOT_ENDPOINT: edxRoot,
     EXCHANGE_URL: edxRoot + '/exchange',
+    STATUSES_URL: edxRoot + '/exchange/statuses',
     USERS_URL: edxRoot + '/users',
   }
 };
