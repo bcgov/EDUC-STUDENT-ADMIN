@@ -594,7 +594,9 @@ export default {
       if (index === -1) {
         this.validationErrors = item?.validationErrors || {};
         this.editedRecord = deepCloneObject(item);
-        this.editedRecord.schoolDistrictNumber = formatDistrictNumber(this.editedRecord.schoolDistrictNumber);
+        if(this.editedRecord.schoolDistrictNumber) {
+          this.editedRecord.schoolDistrictNumber = formatDistrictNumber(this.editedRecord.schoolDistrictNumber);
+        }
         this.editedRecord.grade = formatGrade(this.editedRecord.grade);
         if (this.expanded.length > 0) {
           this.expanded = [];
