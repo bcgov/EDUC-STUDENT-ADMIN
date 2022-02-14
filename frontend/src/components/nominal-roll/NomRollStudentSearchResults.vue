@@ -17,11 +17,13 @@
           clearable
         ></v-select>
       </v-flex>
-      <PrimaryButton id="unignoreRecord" v-if="!canIgnore" :disabled="!canRecover" @click.native="clickRecover" text="Recover Record"></PrimaryButton>
-      <PrimaryButton id="ignoreRecord" v-else :disabled="!canIgnore" @click.native="clickIgnore" text="Ignore Record"></PrimaryButton>
-      <PrimaryButton id="viewSelected" class="ml-1" v-if="selected" :disabled="!viewSelectionEnabled" @click.native="clickViewSelected" text="View Selected"></PrimaryButton>
-      <PrimaryButton id="viewDetails" class="ml-1" v-else :loading="loadingRequestIDs" :disabled="!viewDetailsEnabled" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
-      <PrimaryButton id="postRecords" class="ml-1" :loading="processing" :disabled="isPosted" @click.native="clickPostRecords" text="Post"></PrimaryButton>
+      <div v-if="!hasReadOnlyRoleAccess()">
+        <PrimaryButton id="unignoreRecord" v-if="!canIgnore" :disabled="!canRecover" @click.native="clickRecover" text="Recover Record"></PrimaryButton>
+        <PrimaryButton id="ignoreRecord" v-else :disabled="!canIgnore" @click.native="clickIgnore" text="Ignore Record"></PrimaryButton>
+        <PrimaryButton id="viewSelected" class="ml-1" v-if="selected" :disabled="!viewSelectionEnabled" @click.native="clickViewSelected" text="View Selected"></PrimaryButton>
+        <PrimaryButton id="viewDetails" class="ml-1" v-else :loading="loadingRequestIDs" :disabled="!viewDetailsEnabled || hasReadOnlyRoleAccess()" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
+        <PrimaryButton id="postRecords" class="ml-1" :loading="processing" :disabled="isPosted || hasReadOnlyRoleAccess()" @click.native="clickPostRecords" text="Post"></PrimaryButton>
+      </div>
     </v-row>
     <v-divider class="mb-1 subheader-divider"/>
     <v-data-table
@@ -45,7 +47,7 @@
       <template v-slot:item="props">
         <tr :class="{'selected-record' : props.item.isSelected}" @click="selectItem(props.item)">
           <td v-for="header in props.headers" :key="header.id" :class="header.id">
-            <v-checkbox v-if="header.type" class="record-checkbox header-checkbox" color="#606060" v-model="props.item.isSelected" @click.stop="handleRecordCheckBoxClicked(props.item)"></v-checkbox>
+            <v-checkbox v-if="header.type && !hasReadOnlyRoleAccess()" class="record-checkbox header-checkbox" color="#606060" v-model="props.item.isSelected" @click.stop="handleRecordCheckBoxClicked(props.item)"></v-checkbox>
             <div v-else class="table-cell">
               <span class="column-item" style="text-align: left;">
                 <v-tooltip v-if="header.value === 'mincode'" right>
@@ -59,7 +61,7 @@
                     :statusCode="props.item[header.value]"
                   ></NomRollStudentStatusChip>
                   <v-icon
-                    v-if="!isEmpty(props.item.validationErrors) && props.item.status !== 'IGNORED'"
+                    v-if="!isEmpty(props.item.validationErrors) && props.item.status !== 'IGNORED' && !hasReadOnlyRoleAccess()"
                     @click.native="toggleRow(props.item)"
                   >{{ rowExpandedIcon }}</v-icon>
                 </span>
@@ -89,7 +91,7 @@
             <v-row class="px-4">
               <v-col class="pb-0 pt-7">
                 <v-autocomplete v-model="editedRecord.schoolDistrictNumber"
-                                :disabled="!item.validationErrors['School District'] && !validationErrors['School District']"
+                                :disabled="!item.validationErrors['School District'] && !validationErrors['School District'] || hasReadOnlyRoleAccess()"
                                 outlined dense name="1" label="School District"
                                 :items="districtCodesObjectSorted"
                                 :rules="[!validationErrors['School District'] || validationErrors['School District']]"
@@ -99,7 +101,7 @@
                 <v-row>
                   <v-col class="pa-0" :cols="item.validationErrors['School Number'] || validationErrors['School Number'] ? 10 : 12">
                     <v-text-field v-model="editedRecord.schoolNumber"
-                                  :disabled="!item.validationErrors['School Number'] && !validationErrors['School Number']"
+                                  :disabled="!item.validationErrors['School Number'] && !validationErrors['School Number'] || hasReadOnlyRoleAccess()"
                                   outlined dense name="2" label="School Number"
                                   :rules="[!validationErrors['School Number'] || validationErrors['School Number']]"
                     ></v-text-field>
@@ -319,7 +321,7 @@ export default {
     ...mapGetters('student', ['genders','gradeCodeObjects']),
     ...mapState('app', ['mincodeSchoolNames', 'districtCodes']),
     ...mapGetters('app', ['mincodeSchoolNamesObjectSorted', 'districtCodesObjectSorted']),
-    ...mapGetters('auth', ['EDIT_NOMINAL_ROLL_ROLE']),
+    ...mapGetters('auth', ['EDIT_NOMINAL_ROLL_ROLE','NOMINAL_ROLL_READ_ONLY_ROLE']),
     ...mapState('nominalRoll', ['fedProvSchoolCodes']),
     ...mapGetters('notifications', ['notification']),
     pageNumber: {
@@ -359,10 +361,10 @@ export default {
       return this.selectedRecords.length > 0 || this.selectedStudentStatus || (this.currentNomRollStudentSearchParams && values(this.currentNomRollStudentSearchParams).some(v => !!v));
     },
     canIgnore() {
-      return this.selectedRecords.length > 0 && this.hasCanIgnoreRecordsSelectedOnly();
+      return this.selectedRecords.length > 0 && this.hasCanIgnoreRecordsSelectedOnly() && !this.hasReadOnlyRoleAccess();
     },
     canRecover() {
-      return this.selectedRecords.length > 0 && this.hasRecoverOnlyRecordsSelected();
+      return this.selectedRecords.length > 0 && this.hasRecoverOnlyRecordsSelected() && !this.hasReadOnlyRoleAccess();
     },
     viewSelectionEnabled() {
       return this.nomRollStudentSearchResponse.totalElements > 0 && !this.loading && !this.hasOnlyErrorRecordsInList() && !this.hasErrorRecordsSelected();
@@ -384,7 +386,10 @@ export default {
       return this.$store.state['app'].mincodeSchoolNames.get(request?.mincode?.replace(' ',''));
     },
     hasNoEditRoleAccess() {
-      return this.EDIT_NOMINAL_ROLL_ROLE === false;
+      return this.EDIT_NOMINAL_ROLL_ROLE === false || this.hasReadOnlyRoleAccess();
+    },
+    hasReadOnlyRoleAccess() {
+      return this.NOMINAL_ROLL_READ_ONLY_ROLE === true;
     },
     hasErrorRecordsSelected(){
       let filteredError = this.selectedRecords.filter(record =>  record.status === 'ERROR');

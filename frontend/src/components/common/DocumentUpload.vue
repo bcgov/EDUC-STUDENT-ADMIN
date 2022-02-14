@@ -9,6 +9,7 @@
       <v-file-input
         color="#003366"
         :accept="fileAccept"
+        :disabled="hasReadOnlyRoleAccess()"
         placeholder="Select your file"
         :error-messages="fileInputError"
         @change="selectFile"
@@ -54,6 +55,7 @@
 
 <script>
 import {getFileExtensionWithDot, getFileNameWithMaxNameLength} from '@/utils/file';
+import {mapGetters} from 'vuex';
 
 export default {
   props: {
@@ -86,11 +88,15 @@ export default {
     },
   },
   computed: {
+    ...mapGetters('auth', ['NOMINAL_ROLL_READ_ONLY_ROLE']),
     dataReady () {
       return this.validForm && this.file;
     },
   },
   methods: {
+    hasReadOnlyRoleAccess() {
+      return this.NOMINAL_ROLL_READ_ONLY_ROLE === true;
+    },
     closeForm() {
       this.resetForm();
       this.$emit('close:form');
