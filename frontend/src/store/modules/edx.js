@@ -29,13 +29,15 @@ export default {
     async getCodes({commit, state}) {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
         if(state.ministryTeams.length === 0) {
-          const response = await ApiService.getMinistryTeams();
-          commit('setMinistryTeams', response.data);
+          ApiService.getMinistryTeams().then(response => {
+            commit('setMinistryTeams', response.data);
+          });
         }
 
         if (state.statuses.length === 0) {
-          const responseStatuses = await ApiService.getExchangeStatuses();
-          commit('setStatuses', responseStatuses.data);
+          ApiService.getExchangeStatuses().then(response => {
+            commit('setStatuses', response.data);
+          });
         }
       }
     }
