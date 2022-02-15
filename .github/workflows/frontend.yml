@@ -36,6 +36,6 @@ jobs:
         node-version: '12.x'
     - run: npm ci
     - run: npm run lint:fix
-    - run: npm run test:unit
+    - run: npm run test:unit --unhandled-rejections=strict
       env:
         NODE_ENV: 'test'
