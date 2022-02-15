@@ -98,6 +98,13 @@ curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
   -H "Authorization: Bearer $TKN" \
   -d "{\"name\" : \"NOMINAL_ROLL_EDIT\",\"description\" : \"Allows access to edit Nominal Roll errors\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
 
+echo
+echo Creating NOMINAL_ROLL_READ_ONLY role
+curl -sX POST "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/roles" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TKN" \
+  -d "{\"name\" : \"NOMINAL_ROLL_READ_ONLY\",\"description\" : \"Allows access to view Nominal Roll\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
 
 echo
 echo Creating STUDENT_ANALYTICS_STUDENT_PROFILE role

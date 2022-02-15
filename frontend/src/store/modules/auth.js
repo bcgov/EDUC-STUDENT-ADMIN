@@ -19,6 +19,7 @@ export default {
     isValidPenRequestBatchAdmin: localStorage.getItem('isValidPenRequestBatchAdmin') !== null,
     isValidStaffAdministrationUser: localStorage.getItem('isValidStaffAdministrationUser') !== null,
     isValidStaffAdministrationAdmin: localStorage.getItem('isValidStaffAdministrationAdmin') !== null,
+    isValidNominalRollReadOnly: localStorage.getItem('isValidNominalRollReadOnly') !== null,
     isValidNominalRollAdmin: localStorage.getItem('isValidNominalRollAdmin') !== null,
     isValidNominalRollUser: localStorage.getItem('isValidNominalRollUser') !== null,
     isValidGUMPAnalyticsUser: localStorage.getItem('isValidGUMPAnalyticsUser') !== null,
@@ -45,6 +46,7 @@ export default {
     VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE: state => state.isValidPenRequestBatchAdmin,
     EDIT_MACROS_ROLE: state => state.isValidStaffAdministrationAdmin,
     CREATE_NEW_PEN_ROLE: state => state.isValidStaffAdministrationAdmin,
+    NOMINAL_ROLL_READ_ONLY_ROLE: state => state.isValidNominalRollReadOnly,
     NOMINAL_ROLL_ROLE: state => state.isValidNominalRollUser,
     EDIT_NOMINAL_ROLL_ROLE: state => state.isValidNominalRollAdmin,
     STAFF_ADMINISTRATION_ADMIN: state => state.isValidNominalRollAdmin || state.isValidStaffAdministrationAdmin, //gives access to admin section of navigation menu
@@ -163,6 +165,15 @@ export default {
         localStorage.removeItem(('isValidPenRequestBatchAdmin'));
       }
     },
+    setValidNominalRollReadOnly: (state, isValidNominalRollReadOnly) => {
+      if (isValidNominalRollReadOnly) {
+        state.isValidNominalRollReadOnly = true;
+        localStorage.setItem('isValidNominalRollReadOnly', 'true');
+      } else {
+        state.isValidNominalRollReadOnly = false;
+        localStorage.removeItem(('isValidNominalRollReadOnly'));
+      }
+    },
     setValidNominalRollAdmin: (state, isValidNominalRollAdmin) => {
       if (isValidNominalRollAdmin) {
         state.isValidNominalRollAdmin = true;
@@ -272,6 +283,7 @@ function setAuthorizations(context, response) {
   context.commit('penRequestBatchAdmin', response.isValidPenRequestBatchAdmin);
   context.commit('setStaffAdministrationUser', response.isValidStaffAdministrationUser);
   context.commit('setStaffAdministrationAdmin', response.isValidStaffAdministrationAdmin);
+  context.commit('setValidNominalRollReadOnly', response.isValidNominalRollReadOnlyUser);
   context.commit('setValidNominalRollUser', response.isValidNominalRollUser);
   context.commit('setValidNominalRollAdmin', response.isValidNominalRollAdmin);
   context.commit('setGUMPAnalytics', response.isValidGUMPAnalyticsUser);

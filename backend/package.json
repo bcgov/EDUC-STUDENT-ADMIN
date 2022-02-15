@@ -1,7 +1,7 @@
 {
   "name": "student-admin-backend",
   "version": "0.0.1",
-  "description": "The backend portion of the Student Administration ruest web app",
+  "description": "The backend portion of the Student Administration web app",
   "scripts": {
     "serve": "npm run setlocal && npm run servecmd",
     "setlocal": "set NODE_ENV=local",
