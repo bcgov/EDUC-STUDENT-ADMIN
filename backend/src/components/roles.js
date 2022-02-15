@@ -15,6 +15,7 @@ const roles = {
     //Help functions created in auth module: isValidStaffAdministrationUser
     StaffAdministration: config.get('server:administration:rolesAllowed'),
     NominalRoll: config.get('server:nominalRoll:rolesAllowed'),
+    NominalRollReadOnly: ['NOMINAL_ROLL_READ_ONLY'],
     //Help functions created in auth module: isValidGUMPAnalyticsUser
     GUMPAnalytics: config.get('server:studentRequest:roleAnalytics'),
     //Help functions created in auth module: isValidPenRequestBatchAnalyticsUser
