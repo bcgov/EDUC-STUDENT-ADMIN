@@ -63,6 +63,7 @@ describe('Archived Request Search Button', () => {
           state: {
             isValidGMPUser: false,
             isValidUMPUser: false,
+            isValidNominalRollReadOnly: true,
             isValidStudentSearchUser: true,
             isValidPenRequestBatchUser: true,
             isValidStaffAdministrationUser: true,
