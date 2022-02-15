@@ -166,7 +166,6 @@ export default {
       }
     },
     setValidNominalRollReadOnly: (state, isValidNominalRollReadOnly) => {
-      console.log('isValidNominalRollReadOnly', isValidNominalRollReadOnly);
       if (isValidNominalRollReadOnly) {
         state.isValidNominalRollReadOnly = true;
         localStorage.setItem('isValidNominalRollReadOnly', 'true');

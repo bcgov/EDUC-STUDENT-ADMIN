@@ -7,7 +7,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test:unit": "vue-cli-service test:unit",
+    "test:unit": "vue-cli-service test:unit --unhandled-rejections=strict",
     "lint": "vue-cli-service lint --no-fix",
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "lint:fix": "vue-cli-service lint --fix",
@@ -45,7 +45,7 @@
     "vue": "^2.6.12",
     "vue-chartjs": "3.5.1",
     "vue-clipboard2": "^0.3.1",
-    "vue-jest": "^4.0.1",
+    "vue-jest": "^3.0.7",
     "vue-pdf-app": "^2.1.0",
     "vue-quick-chat": "^1.2.2",
     "vue-router": "^3.4.9",
