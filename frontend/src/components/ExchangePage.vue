@@ -125,8 +125,8 @@
               id="status-text-field"
               v-model="headerSearchParams.status"
               :items="statuses"
-              item-text="statusText"
-              item-value="statusCode"
+              item-text='secureExchangeStatusCode'
+              item-value='secureExchangeStatusCode'
               class="header-text"
               outlined
               dense
@@ -212,24 +212,6 @@ export default {
         currentSortDir: true
       },
       requests: [],
-      statuses: [
-        {
-          statusCode: 'inProgress',
-          statusText: 'In Progress'
-        },
-        {
-          statusCode: 'new',
-          statusText: 'New'
-        },
-        {
-          statusCode: 'completed',
-          statusText: 'Completed'
-        },
-        {
-          statusCode: 'done',
-          statusText: 'Done'
-        },
-      ],
       reviewers: [
         {
           reviewerCode: '404',
@@ -251,7 +233,7 @@ export default {
       userName: state => state.auth.userInfo.userName
     }),
     ...mapState('auth', ['userInfo']),
-    ...mapState('edx', ['ministryTeams']),
+    ...mapState('edx', ['ministryTeams', 'statuses']),
     myTeam() {
       return this.ministryTeams.find(team => this.userInfo.userRoles.some(role => team.groupRoleIdentifier === role)) || {};
     },
@@ -287,7 +269,7 @@ export default {
   },
   created() {
     this.$store.dispatch('app/getCodes');
-    this.$store.dispatch('edx/getMinistryTeams');
+    this.$store.dispatch('edx/getCodes');
     this.getRequests();
   },
   methods: {
@@ -307,7 +289,7 @@ export default {
     getRequests() {
       this.loadingTable = true;
       this.requests = [];
-      ApiService.apiAxios.get(Routes.exchange.ROOT_ENDPOINT, {params: {pageNumber: this.pageNumber - 1, pageSize: this.pageSize}})
+      ApiService.apiAxios.get(Routes.edx.EXCHANGE_URL, {params: {pageNumber: this.pageNumber - 1, pageSize: this.pageSize}})
         .then(response => {
           this.requests = response.data.content;
           this.totalRequests = response.data.totalElements;
