@@ -166,7 +166,7 @@
             </td>
             <td>{{ item.secureExchangeStatusCode }}</td>
 
-            <td v-if="item.reviewer !== 'unclaimed'">{{ item.reviewer }}</td>
+            <td v-if="item.reviewer">{{ item.reviewer }}</td>
             <td v-else>
               <primary-button v-on:click.native.stop="claim">Claim</primary-button>
             </td>
