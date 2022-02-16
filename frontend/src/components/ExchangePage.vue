@@ -41,6 +41,21 @@
           :loading="loadingTable"
           :server-items-length="totalRequests"
       >
+        <template v-slot:header.sequenceNumber="{ header }">
+          <th
+              id="sequence-number-header"
+          >
+            {{ header.text }}
+          </th>
+          <v-text-field
+              id="sequence-number-text-field"
+              v-model="headerSearchParams.sequenceNumber"
+              class="header-text"
+              outlined
+              dense
+              clearable
+          ></v-text-field>
+        </template>
         <template v-slot:header.contact="{ header }">
           <th
               id="contact-header"
@@ -158,6 +173,7 @@
           <tr v-on:click="clickViewMessageDetails(item)"
               :key="index"
               :class="[{'unread': item.isReadByMinistry === 'N'}, 'tableRow']">
+            <td>{{ item.sequenceNumber }}</td>
             <td>{{ item.contact }}</td>
             <td>{{ item.subject }}</td>
             <td>{{
@@ -201,6 +217,7 @@ export default {
       loadingTable: false,
       dateMenu: false,
       headerSearchParams: {
+        sequenceNumber: '',
         contact: '',
         subject: '',
         createDate: [],
@@ -239,6 +256,11 @@ export default {
     },
     headers() {
       return [
+        {
+          text: 'Id',
+          value: 'sequenceNumber',
+          sortable: false
+        },
         {
           text: 'Contact',
           value: 'contact',
