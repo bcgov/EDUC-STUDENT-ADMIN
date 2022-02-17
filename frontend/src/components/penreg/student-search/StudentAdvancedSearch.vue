@@ -85,10 +85,11 @@
             :items="genders"
             item-text="genderCode"
             item-value="genderCode"
-            style="max-width: 5em"
+            style="max-width: 7em"
             outlined
             filled
             dense
+            clearable
             v-on:change="[searchHasValues(),$emit('valueChange')]">
           </v-select>
         </v-col>
@@ -101,10 +102,11 @@
               :items="gradeCodes"
               item-text="gradeCode"
               item-value="gradeCode"
-              style="max-width: 5em"
+              style="max-width: 7em"
               outlined
               filled
               dense
+              clearable
               v-on:change="[searchHasValues(),$emit('valueChange')]">
           </v-select>
         </v-col>
