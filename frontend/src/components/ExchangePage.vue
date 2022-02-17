@@ -28,7 +28,7 @@
     </v-col>
     <v-col>
       <v-row class='d-flex justify-end pb-2'>
-        <NewMessageDialog :myTeam="myTeam"/>
+        <NewMessageDialog :myTeam="myTeam" @send="getRequests"/>
       </v-row>
       <v-data-table
           :headers="headers"
@@ -289,7 +289,10 @@ export default {
     getRequests() {
       this.loadingTable = true;
       this.requests = [];
-      ApiService.apiAxios.get(Routes.edx.EXCHANGE_URL, {params: {pageNumber: this.pageNumber - 1, pageSize: this.pageSize}})
+      const sort = {
+        sequenceNumber: 'DESC',
+      };
+      ApiService.apiAxios.get(Routes.edx.EXCHANGE_URL, {params: {pageNumber: this.pageNumber - 1, pageSize: this.pageSize, sort}})
         .then(response => {
           this.requests = response.data.content;
           this.totalRequests = response.data.totalElements;
