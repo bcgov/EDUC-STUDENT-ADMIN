@@ -46,14 +46,16 @@ async function createExchange(req, res) {
       ministryOwnershipTeamID: message.ministryOwnershipTeamID,
       subject: message.subject,
       reviewer: userInfo.idir_username,
-      secureExchangeStatusCode: 'INPROGRESS',
+      secureExchangeStatusCode: 'INPROG',
       isReadByMinistry: 'Y',
       isReadByExchangeContact: 'N',
       commentsList: [
         {
           staffUserIdentifier: userInfo.idir_guid?.toUpperCase(),
           commentUserName: userInfo.idir_username,
-          content: message.content
+          content: message.content,
+          createUser: userInfo.idir_username,
+          updateUser: userInfo.idir_username
         }
       ]
     };
