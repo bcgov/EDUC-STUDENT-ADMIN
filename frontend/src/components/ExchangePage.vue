@@ -174,7 +174,7 @@
               :key="index"
               :class="[{'unread': item.isReadByMinistry === 'N'}, 'tableRow']">
             <td>{{ item.sequenceNumber }}</td>
-            <td>{{ item.contact }}</td>
+            <td>{{ getContactName(item)}}</td>
             <td>{{ item.subject }}</td>
             <td>{{
                 item.createDate ? moment(item.createDate).format('YYYY/MM/DD') : ''
@@ -301,7 +301,7 @@ export default {
     },
     clickViewMessageDetails(message) {
       //mocked function that will show the full message details when clicked
-      console.log(`message id ${message?.id} was clicked`);
+      console.log(`message id ${message.secureExchangeID} was clicked`);
     },
     clickShowMessageType(messageType) {
       //mocked function that will send a get request for the message inbox items
@@ -322,6 +322,31 @@ export default {
         .finally(() => {
           this.loadingTable = false;
         });
+    },
+    getContactName(secureExchange) {
+      let contactName = '';
+
+      switch (secureExchange.secureExchangeContactTypeCode) {
+        case 'MINTEAM' :
+          if (this.ministryTeams.length > 0) {
+            let ministryTeam = this.ministryTeams.find((ministryTeam) => ministryTeam.ministryOwnershipTeamId === secureExchange.ministryOwnershipTeamID);
+            contactName = ministryTeam?.teamName || 'minteam not found';
+          }
+          break;
+        case 'SCHOOL' :
+          contactName = 'School';
+          break;
+        case 'EDXUSER' :
+          contactName = 'EDX User';
+          break;
+        case 'DISTRICT' :
+          contactName = 'District';
+          break;
+        default:
+          contactName = 'Contact Type Not Found';
+      }
+
+      return contactName;
     }
   },
   watch: {
