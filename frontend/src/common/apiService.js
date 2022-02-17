@@ -46,9 +46,9 @@ const intercept = apiAxios.interceptors.response.use(config => config, error => 
 });
 
 function getCodes(url) {
-  return async function getCodesHandler() {
+  return async function getCodesHandler(query) {
     try {
-      return await apiAxios.get(url);
+      return await apiAxios.get(url, query);
     } catch (e) {
       console.log(`Failed to get from Nodejs API - ${e}`);
       throw e;
@@ -86,4 +86,5 @@ export default {
   getFedProvSchoolCodes: getCodes(`${Routes.SCHOOL_DATA_URL}/fedProvSchoolCodes`),
   getExchangeStatuses: getCodes(`${Routes.edx.STATUSES_URL}`),
   getMinistryTeams: getCodes(`${Routes.edx.USERS_URL}/ministryTeams`),
+  getEdxMincodes: getCodes(`${Routes.edx.USERS_URL}/user-schools/mincodes`),
 };
