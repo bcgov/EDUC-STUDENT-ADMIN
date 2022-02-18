@@ -113,8 +113,10 @@ export default {
   computed: {
     ...mapState('app', ['mincodeSchoolNames']),
     ...mapState('auth', ['userInfo']),
+    ...mapState('edx', ['exchangeMincodes']),
     schools() {
-      return _.sortBy(Array.from(this.mincodeSchoolNames.entries()).map(school => ({ text: `${school[1]} (${school[0]})`, value: school[0]})), ['text']);
+      const schoolNames = Array.from(this.mincodeSchoolNames.entries()).filter(entry => this.exchangeMincodes.some(mincode => entry[0] === mincode));
+      return _.sortBy(schoolNames.map(school => ({ text: `${school[1]} (${school[0]})`, value: school[0]})), ['text']);
     },
   },
   watch: {
@@ -126,6 +128,9 @@ export default {
         this.mincode = null;
       }
     }
+  },
+  created() {
+    this.$store.dispatch('edx/getExchangeMincodes');
   },
   methods: {
     async closeNewMessageDialog() {
@@ -143,7 +148,7 @@ export default {
     sendNewMessage() {
       this.processing = true;
       const payload = {
-        secureExchangeContactTypeCode: 'school',
+        secureExchangeContactTypeCode: 'SCHOOL',
         contactIdentifier: this.mincode,
         ministryOwnershipTeamID: this.myTeam.ministryOwnershipTeamId,
         subject: this.subject,
@@ -151,6 +156,7 @@ export default {
       };
       ApiService.apiAxios.post(`${Routes['edx'].EXCHANGE_URL}`, payload)
         .then((result) => {
+          this.setSuccessAlert('Success! The message has been sent.');
           this.$emit('send', result.data);
           this.newMessageDialogOpen = false;
         })
