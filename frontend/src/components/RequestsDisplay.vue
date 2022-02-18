@@ -175,7 +175,10 @@
             <tr :class="item.sagaInProgress? 'blue-grey lighten-3 tableRow' :'tableRow'" @click="viewRequestDetails(item)">
               <td>{{item[`${requestType}StatusCode`].label}}</td>
               <td>{{item.initialSubmitDate?moment(item.initialSubmitDate).format('YYYY/MM/DD LT'):'' }}</td>
-              <td>{{item[`${penName}`]}}</td>
+              <td>
+                {{item[`${penName}`]}}
+                <ClipboardButton v-if="item[`${penName}`]" :copyText="item[`${penName}`]" icon='$copy'/>
+              </td>
               <td>{{item.legalLastName}}</td>
               <td>{{item.legalFirstName}}</td>
               <td>{{item.reviewer}}</td>
@@ -193,10 +196,12 @@ import ApiService from '../common/apiService';
 import {REQUEST_TYPES, Routes} from '@/utils/constants';
 import router from '../router';
 import PrimaryButton from './util/PrimaryButton';
+import ClipboardButton from './util/ClipboardButton';
 import FilterTag from './util/FilterTag';
+
 export default {
   name: 'requestsDisplay',
-  components: {FilterTag, PrimaryButton},
+  components: {FilterTag, PrimaryButton, ClipboardButton},
   props: {
     requestType: {
       type: String,
@@ -227,7 +232,7 @@ export default {
       loadingTable: true,
       loadingSelect: true,
       errored: false,
-      comboboxKey: 0
+      comboboxKey: 0,
     };
   },
   mounted() {
