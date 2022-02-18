@@ -44,6 +44,10 @@
               <span v-if="header.topValue === 'dob'" class="top-column-item">{{
                   formatDob(props.item[header.topValue], 'uuuu-MM-dd', 'uuuu/MM/dd')
                 }}</span>
+              <span v-else-if="header.topValue === 'pen'" class="top-column-item">
+                {{ props.item[header.topValue] }}
+                <ClipboardButton v-if="props.item[header.topValue]" :copyText="props.item[header.topValue]" icon='$copy'/>
+              </span>
               <span v-else class="top-column-item">{{ props.item[header.topValue] }}</span>
               <span class="double-column-item">{{props.item[header.doubleValue]}}</span>
               <br>
@@ -84,12 +88,13 @@ import ApiService from '@/common/apiService';
 import {REQUEST_TYPES, Routes, STUDENT_CODES} from '@/utils/constants';
 import router from '@/router';
 import CompareDemographicModal from '../../common/CompareDemographicModal';
+import ClipboardButton from '../../util/ClipboardButton';
 import alertMixin from '@/mixins/alertMixin';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 
 export default {
   name: 'SearchResults',
-  components: {CompareDemographicModal},
+  components: {CompareDemographicModal, ClipboardButton},
   mixins: [alertMixin, staleStudentRecordMixin],
   props: {
     searchCriteria: {

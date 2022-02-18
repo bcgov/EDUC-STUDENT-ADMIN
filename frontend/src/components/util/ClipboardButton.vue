@@ -16,7 +16,7 @@
         </v-icon>
       </v-btn>
     </template>
-    <span>{{ copyText + ' copied to clipboard' }}</span>
+    <span>{{ 'copied ' + copyText}}</span>
   </v-tooltip>
 </template>
 
