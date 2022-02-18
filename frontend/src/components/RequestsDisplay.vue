@@ -233,7 +233,6 @@ export default {
       loadingSelect: true,
       errored: false,
       comboboxKey: 0,
-      showClipboardTooltip: false
     };
   },
   mounted() {
@@ -492,12 +491,6 @@ export default {
         .catch(error => {
           console.log(error);
         });
-    },
-    copyPen(penNumber) {
-      navigator.clipboard.writeText(penNumber).then(() => {
-        this.showClipboardTooltip = true;
-        setTimeout(() => this.showClipboardTooltip = false, 3000);
-      });
     },
   }
 };
