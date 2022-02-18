@@ -1,6 +1,6 @@
 <template>
   <v-tooltip v-model="showTooltip" right>
-    <template v-slot:activator="{ attrs }">
+    <template v-slot:activator="{ on, attrs }">
       <v-btn
           :id="id"
           color="#38598A"
@@ -22,7 +22,7 @@
 
 <script>
 export default {
-  name: 'clipboard',
+  name: 'ClipboardButton',
   props: {
     id: {
       type: String
