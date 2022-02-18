@@ -1,6 +1,5 @@
 <template>
-  <div class="flex">
-    <v-main v-if="this.request.pen">
+  <div class="flex" v-if="this.request.pen">
     <v-progress-linear
             indeterminate
             color="blue"
@@ -65,7 +64,6 @@
       </v-row>
 
     </v-alert>
-    </v-main>
   </div>
 
 </template>
