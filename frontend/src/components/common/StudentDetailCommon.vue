@@ -33,6 +33,27 @@
               </PrimaryButton>
             </v-col>
           </v-row>
+
+          <div v-if="studentCopy.statusCode === STUDENT_CODES.MERGED">
+            <v-row cols="1" no-gutters>
+              <v-col>
+                <p class="mb-0">Status</p>
+              </v-col>
+            </v-row>
+            <v-chip color="#003366"
+                    small
+                    dark>
+              <Strong>{{ statusCodeObjects.filter(obj => obj.statusCode === studentCopy.statusCode)[0].label }}</Strong>
+            </v-chip>
+          </div>
+          <StudentDetailsComboBox v-else label="Status" colspan="1" name="statusCode"
+                                  @changeStudentObjectValue="changeStudentObjectValue"
+                                  :model="studentCopy.statusCode?studentCopy.statusCode:''"
+                                  :has-edits="hasEdits" tab-index="16" :revert-field="revertField"
+                                  :items="getStatusLevels()" revert-id="revertStatusCode"
+
+                                  :disabled="isFieldDisabledWithReadOnly('statusCode')"></StudentDetailsComboBox>
+
           <StudentDetailsComboBox label="Demog Code" colspan="1"
                                   :name="STUDENT_DETAILS_FIELDS.DEMOG_CODE"
                                   @changeStudentObjectValue="changeStudentObjectValue"
@@ -86,25 +107,6 @@
                                                    :name="STUDENT_DETAILS_FIELDS.UPDATED_DATE" colspan="1"
                                                    label="Updated"
                                                    :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.UPDATED_DATE)"></StudentDetailsTextFieldSideCardReadOnly>
-          <div v-if="studentCopy.statusCode === STUDENT_CODES.MERGED">
-            <v-row cols="1" no-gutters>
-              <v-col>
-                <p class="mb-0">Status</p>
-              </v-col>
-            </v-row>
-            <v-chip color="#003366"
-                    small
-                    dark>
-              <Strong>{{ statusCodeObjects.filter(obj => obj.statusCode === studentCopy.statusCode)[0].label }}</Strong>
-            </v-chip>
-          </div>
-          <StudentDetailsComboBox v-else label="Status" colspan="1" name="statusCode"
-                                  @changeStudentObjectValue="changeStudentObjectValue"
-                                  :model="studentCopy.statusCode?studentCopy.statusCode:''"
-                                  :has-edits="hasEdits" tab-index="16" :revert-field="revertField"
-                                  :items="getStatusLevels()" revert-id="revertStatusCode"
-
-                                  :disabled="isFieldDisabledWithReadOnly('statusCode')"></StudentDetailsComboBox>
         </v-card>
       </v-col>
       <v-col cols="7" class="py-0 pl-0">
