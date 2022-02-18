@@ -290,7 +290,7 @@ export default {
       this.loadingTable = true;
       this.requests = [];
       const sort = {
-        createDate: 'DESC',
+        createDate: 'ASC',
       };
       ApiService.apiAxios.get(Routes.edx.EXCHANGE_URL, {params: {pageNumber: this.pageNumber - 1, pageSize: this.pageSize, sort}})
         .then(response => {
