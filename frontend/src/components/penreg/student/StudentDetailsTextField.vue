@@ -12,7 +12,7 @@
           v-on:blur="[edited=false,hovered= false]"
           v-on:click="[edited=true, hovered=true]"
           v-model="fieldModel"
-          @keyup="[$emit('changeStudentObjectValue', name, fieldModel),handleOnInput?handleOnInput(name):'']"
+          @keyup="[$emit('changeStudentObjectValue', name, fieldModel, $event),handleOnInput?handleOnInput(name):'']"
           class="onhoverEdit bolder customNoBorder"
           :class="{onhoverPad: !hovered && !hasEdits(name), darkBackgound:  (hovered || hasEdits(name))}"
           :id="name"
