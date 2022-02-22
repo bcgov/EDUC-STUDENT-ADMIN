@@ -171,7 +171,7 @@ import {
   deepCloneObject,
   getMatchedRecordssWithDemographicsByStudent,
   getPossibleMatches,
-  getDemogValidationResults
+  getDemogValidationResults, abbreviateCamelCase
 } from '@/utils/common';
 import {formatPen} from '@/utils/format';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
@@ -257,10 +257,16 @@ export default {
     }
   },
   computed: {
-    ...mapState('setNavigation', ['selectedIDs', 'currentRequest']),
+    ...mapState('setNavigation', ['selectedIDs', 'currentRequest', 'requestType']),
     ...mapGetters('setNavigation', ['title']),
     ...mapState('notifications', ['notification']),
     ...mapState('penRequestBatch', ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
+    nextRoute() {
+      return this.currentRequest >= this.total - 1 ? this.currentRequest : this.currentRequest + 1;
+    },
+    total() {
+      return Object.keys(this.selectedIDs).length;
+    },
     disableRefresh() {
       return this.prbStudent?.sagaInProgress || this.isArchived
           || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE !== this.prbStudent?.penRequestBatchStudentStatusCode;
@@ -360,6 +366,13 @@ export default {
   methods: {
     ...mapMutations('setNavigation', ['clearNavigation']),
     ...mapMutations('prbStudentSearch', ['setSelectedRecords']),
+    ...mapMutations('setNavigation', ['setCurrentRequest']),
+    clickNextBtn() {
+      let route = this.nextRoute;
+      this.setCurrentRequest(route);
+      const requestTypeAbbrev = abbreviateCamelCase(this.requestType);
+      router.push({name: `${requestTypeAbbrev}StudentDetails`, params: {[`${requestTypeAbbrev}StudentID`]: this.selectedIDs[route][`${this.requestType}StudentID`]}, query: {archived: this.archived}});
+    },
     formatPen,
     async initializeDetails() {
       this.resetValidationResult(); // reset the validation results, on clicking next or previous
@@ -656,6 +669,7 @@ export default {
       const updatedPrbStudent = JSON.parse(notificationData.eventPayload);
       if (updatedPrbStudent?.penRequestBatchStudentID === this.prbStudent.penRequestBatchStudentID) {
         if (notificationData.sagaStatus === 'COMPLETED') {
+          let shouldMove = false;
           switch (notificationData?.sagaName) {
           case PRB_SAGA_NAMES.PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA:
             if (this.sagaId) {
@@ -663,6 +677,7 @@ export default {
             } else {
               this.setSuccessAlert(`${updatedPrbStudent.updateUser} issued a new PEN to this pen request.`);
             }
+            shouldMove = true;
             break;
           case PRB_SAGA_NAMES.PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_SAGA:
             if (this.sagaId) {
@@ -670,6 +685,7 @@ export default {
             } else {
               this.setSuccessAlert(`${updatedPrbStudent.updateUser} matched a student to this Pen Request.`);
             }
+            shouldMove = true;
             break;
           case PRB_SAGA_NAMES.PEN_REQUEST_BATCH_USER_UNMATCH_PROCESSING_SAGA:
             if (this.sagaId) {
@@ -683,6 +699,9 @@ export default {
           this.initializeDetails();
           this.prbStudent.sagaInProgress = false;
           this.sagaId = undefined; // change it after the saga is completed.
+          if(shouldMove) {
+            this.clickNextBtn();
+          }
         } else if (notificationData.sagaStatus === 'INITIATED') {
           this.prbStudent.sagaInProgress = true;
         }
