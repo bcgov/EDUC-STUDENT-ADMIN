@@ -28,7 +28,6 @@ export const COMPLETION_STATES = Object.freeze(
       'ABANDONED'
     ],
     GMP: [
-      'AUTO',
       'MANUAL',
       'REJECTED',
       'ABANDONED'
