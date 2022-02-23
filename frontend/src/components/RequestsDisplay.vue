@@ -103,7 +103,7 @@
             </th>
             <v-text-field
               id="pen-text-field"
-              v-model="headerSearchParams[penName]"
+              v-model.trim="headerSearchParams[penName]"
               class="header-text"
               outlined
               dense
@@ -123,7 +123,7 @@
             </th>
             <v-text-field
               id="last-name-text-field"
-              v-model="headerSearchParams.legalLastName"
+              v-model.trim="headerSearchParams.legalLastName"
               class="header-text"
               outlined
               dense
@@ -143,7 +143,7 @@
             </th>
             <v-text-field
               id="first-name-text-field"
-              v-model="headerSearchParams.legalFirstName"
+              v-model.trim="headerSearchParams.legalFirstName"
               class="header-text"
               outlined
               dense

@@ -51,7 +51,6 @@
                                   :model="studentCopy.statusCode?studentCopy.statusCode:''"
                                   :has-edits="hasEdits" tab-index="16" :revert-field="revertField"
                                   :items="getStatusLevels()" revert-id="revertStatusCode"
-
                                   :disabled="isFieldDisabledWithReadOnly('statusCode')"></StudentDetailsComboBox>
 
           <StudentDetailsComboBox label="Demog Code" colspan="1"
@@ -598,7 +597,7 @@ import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsCo
 import StudentDetailsTextFieldSideCardReadOnly from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
 import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
 import {formatDateTime, formatDob, formatMincode, formatPen} from '@/utils/format';
-import {cloneDeep, pick, sortBy} from 'lodash';
+import {cloneDeep, pick, sortBy, debounce} from 'lodash';
 import alertMixin from '../../mixins/alertMixin';
 import schoolMixin from '../../mixins/schoolMixin';
 import servicesSagaMixin from '../../mixins/servicesSagaMixin';
@@ -832,15 +831,19 @@ export default {
     onError(e) {
       console.log(e);
     },
-    changeStudentObjectValue(key, value) {
+    changeStudentObjectValue: debounce(function (key, value, event) {
       if (key === STUDENT_DETAILS_FIELDS.DEMOG_CODE && value === 'C' && this.origStudent[`${key}`] !== 'C') {
         this.$nextTick(() => {
           this.parentRefs.studentDetailForm.validate();
         });
       }
-      this.studentCopy[`${key}`] = value?.toUpperCase();
+      let cursorPositionStart = event.target.selectionStart;
+      let cursorPositionEnd = event.target.selectionEnd;
+      this.studentCopy[`${key}`] = value?.toUpperCase().trim();
+      //PEN-1018 and PEN-1891. Calling Trim() or toUpperCase() on a string resets the cursor. SetTimeout needed to reset the cursor position after value has changed.
+      setTimeout(() => event.target.setSelectionRange(cursorPositionStart, cursorPositionEnd), 0);
       this.clearFieldError(key);
-    },
+    }, 500),
     setEnableDisableForFields(value, ...excludedFields) {
       this.enableDisableFieldsMap.forEach((fieldValue, fieldKey) => excludedFields.includes(fieldKey) ? this.enableDisableFieldsMap.set(fieldKey, fieldValue) : this.enableDisableFieldsMap.set(fieldKey, value));
     },

@@ -9,7 +9,7 @@
             filled
             outlined
             id='pen'
-            v-model="studentSearchParams.pen"
+            v-model.trim="studentSearchParams.pen"
             maxlength="9"
             minlength="9"
             @keyup.enter="enterPushed()"
@@ -116,7 +116,7 @@
         <v-col cols="2">
           <v-text-field dense filled outlined
             id='mincode'
-            v-model="studentSearchParams.mincode"
+            v-model.trim="studentSearchParams.mincode"
             @keyup.enter="enterPushed()"
             v-on:input="[searchHasValues(), $emit('valueChange')]"
             maxlength="8"
@@ -130,7 +130,7 @@
         <v-col cols="2">
           <v-text-field dense filled outlined
             id='localID'
-            v-model="studentSearchParams.localID"
+            v-model.trim="studentSearchParams.localID"
             @keyup.enter="enterPushed()"
             v-on:input="[searchHasValues(), $emit('valueChange')]"
             maxlength="12">
@@ -142,7 +142,7 @@
         <v-col cols="2">
           <v-text-field dense filled outlined
             id='postalCode'
-            v-model="studentSearchParams.postalCode"
+            v-model.trim="studentSearchParams.postalCode"
             v-on:input="[searchHasValues(),uppercasePostal(), $emit('valueChange')]"
             @keyup.enter="enterPushed()"
             maxlength="7"
@@ -200,7 +200,7 @@
           <v-col cols="3" class="mt-2">Legal Given</v-col>
           <v-text-field dense filled outlined
             id='legalFirstName'
-            v-model="studentSearchParams.legalFirstName"
+            v-model.trim="studentSearchParams.legalFirstName"
             @keyup.enter="enterPushed()"
             v-on:input="[searchHasValues(), $emit('valueChange')]"
             maxlength="255"
@@ -211,7 +211,7 @@
           <v-col cols="3" class="mt-2">Legal Middle</v-col>
           <v-text-field dense filled outlined
             id='legalMiddleNames'
-            v-model="studentSearchParams.legalMiddleNames"
+            v-model.trim="studentSearchParams.legalMiddleNames"
             v-on:input="[searchHasValues(), $emit('valueChange')]"
             @keyup.enter="enterPushed()"
             maxlength="255"
@@ -222,7 +222,7 @@
           <v-col cols="3" class="mt-2">Usual Surname</v-col>
           <v-text-field dense filled outlined
             id='usualLastName'
-            v-model="studentSearchParams.usualLastName"
+            v-model.trim="studentSearchParams.usualLastName"
             @keyup.enter="enterPushed()"
             v-on:input="[searchHasValues(), $emit('valueChange')]"
             maxlength="255"
@@ -233,7 +233,7 @@
           <v-col cols="3" class="mt-2">Usual Given</v-col>
           <v-text-field dense filled outlined
             id='usualFirstName'
-            v-model="studentSearchParams.usualFirstName"
+            v-model.trim="studentSearchParams.usualFirstName"
             @keyup.enter="enterPushed()"
             v-on:input="[searchHasValues(), $emit('valueChange')]"
             maxlength="255"
@@ -243,7 +243,7 @@
           <v-col cols="3" class="mt-2">Usual Middle</v-col>
           <v-text-field dense filled outlined
             id='usualMiddleNames'
-            v-model="studentSearchParams.usualMiddleNames"
+            v-model.trim="studentSearchParams.usualMiddleNames"
             @keyup.enter="enterPushed()"
             v-on:input="[searchHasValues(), $emit('valueChange')]"
             maxlength="255"
