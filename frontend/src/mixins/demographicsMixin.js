@@ -27,7 +27,7 @@ export default {
   methods: {
     searchByPen() {
       this.switchLoading(true);
-      ApiService.apiAxios
+      return ApiService.apiAxios
         .get(Routes.SEARCH_BY_PEN + '/' + this.penSearchId)
         .then(response => {
           this.demographics = response.data;

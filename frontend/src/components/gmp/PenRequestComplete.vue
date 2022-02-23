@@ -100,7 +100,7 @@
 <script>
 import {formatDob} from '@/utils/format';
 import ApiService from '../../common/apiService';
-import {Routes, Statuses} from '@/utils/constants';
+import {Routes, Statuses, STUDENT_CODES} from '@/utils/constants';
 import {insertMacro, replaceMacro} from '@/utils/macro';
 import {mapGetters, mapMutations} from 'vuex';
 import PrimaryButton from '../util/PrimaryButton';
@@ -287,7 +287,7 @@ export default {
           this.submitted();
         });
     },
-    validatePen() {
+    async validatePen() {
       this.demographics.legalFirst = null;
       this.demographics.legalMiddle = null;
       this.demographics.legalLast = null;
@@ -300,8 +300,13 @@ export default {
       this.numberOfDuplicatePenRequests=0;
       if (this.penSearchId?.length === 9) {
         if (checkDigit(this.penSearchId)) {
-          this.searchByPen();
-          this.searchDuplicatePenRequestsByPen();
+          await this.searchByPen();
+          if(this.demographics.statusCode != STUDENT_CODES.ACTIVE){
+            this.enableCompleteButton = false;
+            this.setFailureAlert('The provided PEN is not active.');
+          } else {
+            this.searchDuplicatePenRequestsByPen();
+          }
         } else {
           this.setFailureAlert(this.notAPenErrorMessage);
         }
