@@ -361,6 +361,12 @@ export default {
 </script>
 
 <style scoped>
+  .v-select-list/deep/.v-list-item__mask {
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    background: rgba(238, 238, 238, 0.02);
+  }
+
   #dataTable.pen-coordinator-table /deep/ table th{
     font-size: 0.875rem;
   }
