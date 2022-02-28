@@ -173,8 +173,8 @@ export default {
           pageNumber: this.pageNumber-1,
           pageSize: this.itemsPerPage,
           sort: {
-            mincode: 'ASC',
-            submissionNumber: 'ASC'
+            extractDate: 'DESC',
+            mincode: 'ASC'
           },
           searchQueries: this.searchCriteria
         }
