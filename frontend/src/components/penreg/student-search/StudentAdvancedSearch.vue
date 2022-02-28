@@ -189,7 +189,7 @@
           <v-col cols="3" class="mt-2">Legal Surname</v-col>
           <v-text-field dense filled outlined
             id='legalLastName'
-            v-model="studentSearchParams.legalLastName"
+            v-model.trim="studentSearchParams.legalLastName"
             @keyup.enter="enterPushed()"
             v-on:input="[searchHasValues(), $emit('valueChange')]"
             maxlength="255"
