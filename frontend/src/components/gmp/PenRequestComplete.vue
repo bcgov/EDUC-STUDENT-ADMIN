@@ -50,14 +50,6 @@
                 <p class="mb-2"><strong>{{ formatDob(this.demographics.dob,'uuuu-MM-dd', 'uuuu/MM/dd') }}</strong></p>
               </v-col>
             </v-row>
-            <v-row no-gutters class="pt-2 px-2">
-              <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                <p class="mb-2">Gender:</p>
-              </v-col>
-              <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                <p class="mb-2"><strong>{{ this.demographics.gender }}</strong></p>
-              </v-col>
-            </v-row>
           </v-card>
         </v-col>
         <v-col class="pa-0 pr-6" cols="6">

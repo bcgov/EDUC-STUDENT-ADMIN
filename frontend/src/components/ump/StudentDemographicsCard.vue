@@ -52,14 +52,6 @@
           <p id="studentDOB" class="mb-0"><strong>{{ formatDob(this.student.dob,'uuuu-MM-dd', 'uuuu/MM/dd') }}</strong></p>
         </v-col>
       </v-row>
-      <v-row no-gutters class="px-2">
-        <v-col cols="12" xl="1" lg="1" md="1" sm="1">
-          <p class="mb-0">Gender:</p>
-        </v-col>
-        <v-col cols="12" xl="11" lg="11" md="11" sm="11">
-          <p id="studentGender" class="mb-0"><strong>{{ this.student.genderCode }}</strong></p>
-        </v-col>
-      </v-row>
     </v-alert>
   </div>
 </template>

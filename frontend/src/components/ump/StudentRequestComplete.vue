@@ -54,14 +54,6 @@
                 <p class="mb-2"><strong>{{ formatDob(this.demographics.dob,'uuuu-MM-dd', 'uuuu/MM/dd') }}</strong></p>
               </v-col>
             </v-row>
-            <v-row no-gutters class="pt-2 px-2">
-              <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                <p class="mb-2">Gender:</p>
-              </v-col>
-              <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                <p class="mb-2"><strong>{{ this.demographics.gender }}</strong></p>
-              </v-col>
-            </v-row>
           </v-card>
           </v-row>
         </v-col>
@@ -285,8 +277,7 @@ export default {
       return request.legalFirstName !== demographics.legalFirst ||
         (request.legalMiddleNames && demographics.legalMiddle && request.legalMiddleNames !== demographics.legalMiddle) ||
         request.legalLastName !== demographics.legalLast ||
-        request.dob !== demographics.dob ||
-        request.genderCode !== demographics.gender;
+        request.dob !== demographics.dob;
     },
     insertMacroText(macroText) {
       this.request.completeComment = insertMacro(macroText, this.request.completeComment, this.$refs.completeCommentTextarea.$refs.input);

@@ -51,14 +51,6 @@
             <p class="mb-2">{{ this.request.recordedDob ? moment(this.request.recordedDob).format('YYYY/MM/DD'):'' }}</p>
           </v-col>
         </v-row>
-        <v-row no-gutters>
-          <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-            <p>Gender:</p>
-          </v-col>
-          <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-            <p>{{ this.request.recordedGenderCode }}</p>
-          </v-col>
-        </v-row>
       </v-col>
       <v-col cols="12" xl="6" lg="6" md="6" sm="6" class="requested-updates pl-4">
         <v-row no-gutters class="request-title justify-center pb-4">
@@ -75,9 +67,6 @@
         </v-row>
         <v-row no-gutters>
           <p class="update-data mb-2">{{ this.request.dob ? moment(this.request.dob).format('YYYY/MM/DD'):'' }}</p>
-        </v-row>
-        <v-row no-gutters>
-          <p>{{ this.request.genderCode }}</p>
         </v-row>
       </v-col>
     </v-row>
