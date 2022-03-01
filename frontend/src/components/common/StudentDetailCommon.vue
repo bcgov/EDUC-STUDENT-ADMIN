@@ -113,12 +113,12 @@
                                                        colspan="1" label="Credential Type"
                                                        :loading="loadingDigitalIDData"
                                                        :disabled="fullReadOnly"></StudentDetailsTextFieldSideCardReadOnly>
-              <div v-if="this.digitalIdentity !== null && this.digitalIdentity.autoMatchedDate !== null" style="font-size: small" class="mt-n5">
+              <div v-if="this.getAutoMatchedDate !== null" style="font-size: small" class="mt-n5">
                 (Auto-matched {{ this.getAutoMatchedDate }})
               </div>
             </v-col>
             <v-col v-if="!fullReadOnly && this.digitalIDType !== 'None'">
-                <a style="float: right;font-weight: bold" class="mr-4" @click="unlinkStudent">
+                <a style="float: right;font-weight: bold" class="mr-4 mt-6" @click="unlinkStudent">
                   Unlink Credential
                 </a>
             </v-col>
@@ -764,7 +764,10 @@ export default {
       return this.merges.find(merge => merge.studentMergeDirectionCode === 'TO');
     },
     getAutoMatchedDate(){
-      return this.frontEndDateFormat(this.digitalIdentity.autoMatchedDate);
+      if(this.digitalIdentity && this.digitalIdentity.autoMatchedDate){
+        return this.frontEndDateFormat(this.digitalIdentity.autoMatchedDate);
+      }
+      return null;
     },
     mergedFrom() {
       return sortBy(this.merges.filter(merge => merge.studentMergeDirectionCode === 'FROM'), ['mergeStudent.pen']);
