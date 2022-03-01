@@ -2,6 +2,7 @@ let baseRoot = '/api';
 const authRoot = baseRoot + '/auth';
 const penRequestBatchRoot = baseRoot + '/penRequestBatch';
 const penRequestRoot = baseRoot + '/penRequest';
+const digitalIDRoot = baseRoot + '/digitalID';
 const sldRequestRoot = baseRoot + '/sld';
 const studentRequestRoot = baseRoot + '/studentRequest';
 const demographicRoot = baseRoot + '/studentDemographics';
@@ -22,6 +23,11 @@ let object = {
   TOKEN: authRoot + '/token',
   USER: authRoot + '/user',
   SESSION_REMAINING_TIME: authRoot + '/user-session-remaining-time',
+
+  digitalIdentity: {
+    ROOT_ENDPOINT: digitalIDRoot,
+    DIGITAL_ID_LIST_URL: digitalIDRoot + '/list'
+  },
 
   penRequestBatch: {
     ROOT_ENDPOINT: penRequestBatchRoot,
