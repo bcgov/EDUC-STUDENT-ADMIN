@@ -6,12 +6,12 @@
                         :mergedFromStudentID=mergedFromStudentID
                         @mergeStudentsModalOpenEmit=mergeStudentsModalOpenEmit
     />
-    <v-card-title class="px-0 pb-0">
+    <v-card-title class="px-0 pb-0 pt-5">
       <v-row>
-        <v-col v-if="title" cols="2" class="pr-0">
+        <v-col v-if="title" cols="2" class="pr-0 pt-0">
           {{ title }}
         </v-col>
-        <v-col cols="2" class="pb-0 pr-0">
+        <v-col cols="2" class="py-0 pr-0">
           <v-text-field
               id="enterAPenTxtField"
               v-model="penToAdd"
@@ -25,7 +25,7 @@
               :rules="penRules"
           ></v-text-field>
         </v-col>
-        <v-col class="pb-0" cols="5">
+        <v-col class="py-0" cols="5">
           <PrimaryButton id="addPenBtn"
                          :disabled=" isLoadingStudent || !isValidPEN(penToAdd) || studentRecords.length >= 3"
                          :loading="isLoadingStudent" text="Add PEN" @click.native="addPEN"></PrimaryButton>

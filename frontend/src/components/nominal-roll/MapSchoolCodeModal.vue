@@ -2,7 +2,6 @@
   <v-row justify="center">
     <v-dialog v-model="mapSchoolCodeDialog"
               max-width="60%"
-              persistent
     >
       <template v-slot:activator="{ on, attrs }">
         <TertiaryButton id="add-school-code"

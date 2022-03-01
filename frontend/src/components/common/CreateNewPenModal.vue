@@ -2,23 +2,24 @@
   <v-row justify="center">
     <v-dialog v-model="createNewPenDialog"
               max-width="75%"
-              persistent
     >
       <v-card>
-        <v-list-item>
-          <v-list-item-content class="pt-4 pl-2">
-            <slot name="headLine">
-              <v-list-item-title class="headline">
-                Create New PEN
-              </v-list-item-title>
-            </slot>
-          </v-list-item-content>
-          <v-list-item-icon>
-            <v-btn id="closeCreateNewPenModalBtn" text icon @click="$emit('closeDialog')">
-              <v-icon large color="#38598A">mdi-close</v-icon>
-            </v-btn>
-          </v-list-item-icon>
-        </v-list-item>
+        <v-card-title class="px-0 pb-0 pt-5">
+          <v-list-item>
+            <v-list-item-content class="pt-0 pl-2">
+              <slot name="headLine">
+                <v-list-item-title class="headline">
+                  Create New PEN
+                </v-list-item-title>
+              </slot>
+            </v-list-item-content>
+            <v-list-item-icon class="my-0">
+              <v-btn id="closeCreateNewPenModalBtn" text icon @click="createNewPenDialog=false">
+                <v-icon large color="#38598A">mdi-close</v-icon>
+              </v-btn>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-card-title>
         <v-spacer/>
         <v-card-text>
           <v-form ref="createNewPenForm" v-model="isValidForm">
@@ -183,6 +184,11 @@ export default {
   watch: {
     dialog(newValue) {
       this.createNewPenDialog = newValue;
+    },
+    createNewPenDialog(newValue) {
+      if(!newValue && this.dialog) {
+        this.$emit('closeDialog');
+      }
     },
     studentData(newValue) {
       this.student = newValue;

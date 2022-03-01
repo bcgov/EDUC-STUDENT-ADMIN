@@ -837,11 +837,13 @@ export default {
           this.parentRefs.studentDetailForm.validate();
         });
       }
-      let cursorPositionStart = event.target.selectionStart;
-      let cursorPositionEnd = event.target.selectionEnd;
       this.studentCopy[`${key}`] = value?.toUpperCase().trim();
       //PEN-1018 and PEN-1891. Calling Trim() or toUpperCase() on a string resets the cursor. SetTimeout needed to reset the cursor position after value has changed.
-      setTimeout(() => event.target.setSelectionRange(cursorPositionStart, cursorPositionEnd), 0);
+      if(event) {
+        let cursorPositionStart = event.target.selectionStart;
+        let cursorPositionEnd = event.target.selectionEnd;
+        setTimeout(() => event.target.setSelectionRange(cursorPositionStart, cursorPositionEnd), 0);
+      }
       this.clearFieldError(key);
     }, 500),
     setEnableDisableForFields(value, ...excludedFields) {

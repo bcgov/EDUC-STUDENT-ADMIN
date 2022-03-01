@@ -1,15 +1,17 @@
 <template>
   <v-card height="100%">
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title class="headline">Twinned Students</v-list-item-title>
-      </v-list-item-content>
-      <v-list-item-icon>
-        <v-btn text icon @click="$emit('close')">
-          <v-icon color="#38598A" class="px-0">mdi-close</v-icon>
-        </v-btn>
-      </v-list-item-icon>
-    </v-list-item>
+    <v-card-title class="px-0 pb-0 pt-5">
+      <v-list-item>
+        <v-list-item-content class="pt-0">
+          <v-list-item-title class="headline">Twinned Students</v-list-item-title>
+        </v-list-item-content>
+        <v-list-item-icon class="my-0">
+          <v-btn text icon @click="$emit('close')">
+            <v-icon color="#38598A" class="px-0">mdi-close</v-icon>
+          </v-btn>
+        </v-list-item-icon>
+      </v-list-item>
+    </v-card-title>
     <v-card-text class="px-3 py-2 text--primary">
       <v-row no-gutters>
         <v-col no-gutters cols="9">

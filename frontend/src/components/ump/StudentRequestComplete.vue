@@ -88,7 +88,9 @@
       max-width="400"
     >
       <v-card>
-        <div class="px-4 pt-4">
+        <v-card-title class="px-0 pb-0 pt-5">
+        </v-card-title>
+        <div class="px-4">
           <p>Changes to student demographics do not match request.</p>
         </div>
 

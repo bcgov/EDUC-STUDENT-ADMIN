@@ -2,25 +2,26 @@
   <v-row justify="center">
     <v-dialog v-model="searchDemographicDialog"
               max-width="75%"
-              persistent
     >
 
       <v-card>
-        <v-list-item>
-          <v-list-item-content class="pt-4 pl-2">
-            <slot name="headLine">
-              <v-list-item-title class="headline">
-                Modify search
-              </v-list-item-title>
-              <v-list-item-subtitle><em>Modifying the search parameters will not change the request.</em></v-list-item-subtitle>
-            </slot>
-          </v-list-item-content>
-          <v-list-item-icon>
-            <v-btn id="closeSearchDemographicModalBtn" text icon @click="$emit('closeDialog')">
-              <v-icon large color="#38598A">mdi-close</v-icon>
-            </v-btn>
-          </v-list-item-icon>
-        </v-list-item>
+        <v-card-title class="px-0 pb-0 pt-5">
+          <v-list-item>
+            <v-list-item-content class="pt-0 pl-2">
+              <slot name="headLine">
+                <v-list-item-title class="headline">
+                  Modify search
+                </v-list-item-title>
+                <v-list-item-subtitle><em>Modifying the search parameters will not change the request.</em></v-list-item-subtitle>
+              </slot>
+            </v-list-item-content>
+            <v-list-item-icon class="my-0">
+              <v-btn id="closeSearchDemographicModalBtn" text icon @click="searchDemographicDialog=false">
+                <v-icon large color="#38598A">mdi-close</v-icon>
+              </v-btn>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-card-title>
         <v-spacer/>
         <v-card-text>
           <v-form ref="searchDemographicModalForm" v-model="isValidForm">
@@ -266,6 +267,11 @@ export default {
   watch: {
     dialog(newValue) {
       this.searchDemographicDialog = newValue;
+    },
+    searchDemographicDialog(newValue) {
+      if(!newValue && this.dialog) {
+        this.$emit('closeDialog');
+      }
     },
     studentData(newValue) {
       this.student = newValue;

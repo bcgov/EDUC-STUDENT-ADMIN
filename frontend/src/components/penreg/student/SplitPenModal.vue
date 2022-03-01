@@ -2,7 +2,6 @@
   <v-dialog
     id="splitPenModal"
     v-model="modalOpen"
-    persistent
     max-width="80%"
     :disabled="disabled"
   >
@@ -18,15 +17,18 @@
       ></PrimaryButton>
     </template>
     <v-card fluid class="px-4">
+      <v-card-title class="px-0 pb-0 pt-5">
+      </v-card-title>
       <v-row>
-        <v-col cols="6">
+        <v-col cols="6" class="pt-0">
           <v-row no-gutters>
-            <v-col cols="4" class="title">
+            <v-col cols="4" class="title pt-0">
               <h4>Current PEN</h4>
             </v-col>
-            <v-col>
+            <v-col class="pt-0">
               <v-checkbox
-                class="ma-0 pa-0 ml-4 mt-1"
+                id="revertCheckbox"
+                class="split-checkbox ma-0 pa-0 ml-4 mt-1"
                 height="100%"
                 label="Revert"
                 color="#606060"
@@ -42,8 +44,8 @@
             idPrefix="current"
           ></StudentAuditHistoryDetailCard>
         </v-col>
-        <v-col cols="6">
-          <div class="title d-flex justify-space-between">
+        <v-col cols="6" class="pt-0">
+          <div class="title d-flex justify-space-between pt-0">
             <h4>New PEN</h4>
             <v-btn id="closeModalBtn" text icon @click="closeModal">
               <v-icon large color="#38598A">mdi-close</v-icon>
@@ -234,5 +236,8 @@ export default {
   .title{
     padding-top: 9px;
     padding-bottom: 11px;
+  }
+  .split-checkbox /deep/ .v-input__slot {
+    padding-top: 0;
   }
 </style>

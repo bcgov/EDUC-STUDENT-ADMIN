@@ -4,12 +4,14 @@
 const container = {};
 const wrappersSelector = '.v-dialog__content.v-dialog__content--active';
 const dialogSelector = '.v-dialog.v-dialog--active';
+const border = 50;
+const offWindow = true;
 
 /**
  * Find the closest dialog
  * @param event
  */
-function closestDialog(event, dialogClassName) {
+function closestDialog(event) {
   // check for left click
   if (event.button !== 0) {
     return;
@@ -19,7 +21,7 @@ function closestDialog(event, dialogClassName) {
   // target must contain one of provided classes
   ['v-card__title', 'v-toolbar__content', 'v-toolbar__title'].forEach((className) => {
     if (event.target.classList.contains(className)) {
-      dialog = event.target.closest(`.${dialogClassName}${dialogSelector}`);
+      dialog = event.target.closest(`${dialogSelector}`);
     }
   });
 
@@ -63,8 +65,8 @@ function makeDialogAbove(event) {
  * Assign main styles
  * @param event
  */
-function setStyles(event, dialogClassName) {
-  const dialog = closestDialog(event, dialogClassName);
+function setStyles(event) {
+  const dialog = closestDialog(event);
 
   if (dialog) {
     container.el = dialog;
@@ -82,8 +84,8 @@ function setStyles(event, dialogClassName) {
 /**
  * Prevent out of bounds
  */
-function alignDialog(dialogClassName) {
-  const dialog = document.querySelector(`.${dialogClassName}${dialogSelector}`);
+function alignDialog() {
+  const dialog = document.querySelector(`${dialogSelector}`);
   if (dialog === null) return;
 
   const styleLeft = parseInt(dialog.style.left);
@@ -91,19 +93,25 @@ function alignDialog(dialogClassName) {
   const boundingWidth = dialog.getBoundingClientRect().width;
   const boundingHeight = dialog.getBoundingClientRect().height;
 
-  const left = Math.min(styleLeft, window.innerWidth - boundingWidth);
-  const top = Math.min(styleTop, window.innerHeight - boundingHeight);
+  const left = Math.min(styleLeft, window.innerWidth - (offWindow ? border : boundingWidth));
+  const top = Math.min(styleTop, window.innerHeight - (offWindow ? border : boundingHeight));
 
   let borderLeft = 0;
   let borderTop = 0;
 
   // we need to add some borders to center the dialog once the window has resized
-  if (styleLeft > window.innerWidth) {
-    borderLeft = left / 2;
-  }
+  if (offWindow) {
+    if (styleLeft < (border - boundingWidth)) {
+      borderLeft = styleLeft - (border - boundingWidth);
+    }
+  } else {
+    if (styleLeft > window.innerWidth) {
+      borderLeft = left / 2;
+    }
 
-  if (styleTop + boundingHeight > window.innerHeight) {
-    borderTop = (window.innerHeight - boundingHeight) / 2;
+    if (styleTop + boundingHeight > window.innerHeight) {
+      borderTop = (window.innerHeight - boundingHeight) / 2;
+    }
   }
 
   dialog.style.left = (left - borderLeft) + 'px';
@@ -118,13 +126,13 @@ function alignDialog(dialogClassName) {
 function moveDialog(event) {
   if (container.el) {
     container.el.style.left = Math.min(
-      Math.max(container.elStartX + event.clientX - container.mouseStartX, 0),
-      window.innerWidth - container.el.getBoundingClientRect().width
+      Math.max(container.elStartX + event.clientX - container.mouseStartX, offWindow ? (border - container.el.getBoundingClientRect().width) : 0),
+      window.innerWidth - (offWindow ? border : container.el.getBoundingClientRect().width)
     ) + 'px';
     
     container.el.style.top = Math.min(
       Math.max(container.elStartY + event.clientY - container.mouseStartY, 0),
-      window.innerHeight - container.el.getBoundingClientRect().height
+      window.innerHeight - (offWindow ? border : container.el.getBoundingClientRect().height)
     ) + 'px';
   }
 }
@@ -140,10 +148,10 @@ function setTransitionBack() {
   }
 }
 
-export function activateMultipleDraggableDialog(dialogClassName) {
+export function activateMultipleDraggableDialog() {
   const handleMousedown = (event) => {
     makeDialogAbove(event);
-    setStyles(event, dialogClassName);
+    setStyles(event);
   };
   document.addEventListener('mousedown', handleMousedown);
 
@@ -158,7 +166,7 @@ export function activateMultipleDraggableDialog(dialogClassName) {
   document.addEventListener('mouseup', handleMouseup);
 
   const intervalID = setInterval(() => {
-    alignDialog(dialogClassName);
+    alignDialog();
   }, 500);
 
   return () => {
