@@ -163,7 +163,7 @@
             </th>
             <v-text-field
               id="review-text-field"
-              v-model="headerSearchParams.reviewer"
+              v-model.trim="headerSearchParams.reviewer"
               class="header-text"
               outlined
               dense
