@@ -14,10 +14,7 @@ async function getDigitalIdentityByStudentID(req, res) {
   ).then(([digitalIDResult]) => {
     return res.status(200).json({digitalIDResult});
   }).catch(e => {
-    if (e.status === HttpStatus.NOT_FOUND) {
-      return res.status(200).json({traxStatus: 'Student not found'});
-    }
-    logApiError(e, 'getTraxDataByPen', 'Error occurred while attempting to GET TRAX data.');
+    logApiError(e, 'getTraxDataByPen', 'Error occurred while attempting to get a digital identity.');
     return errorResponse(res);
   });
 }
