@@ -123,6 +123,15 @@
           </v-col>
         </v-row>
       </div>
+      <ConfirmationDialog ref="confirmedStudentUnlinkConfirmationDialog">
+        <template v-slot:message>
+          <v-col class="mt-n6">
+            <v-row class="mb-3">
+              This PEN must be merged to another PEN. Are you sure you want to unmatch this student?
+            </v-row>
+          </v-col>
+        </template>
+      </ConfirmationDialog>
       <ConfirmationDialog ref="confirmationDialog" contentClass="match-confirmation-dialog">
         <template v-slot:message>
           <v-col class="pt-0">
@@ -588,6 +597,7 @@ export default {
      */
     async matchUnmatchStudentToPRBStudent(student, buttonText) {
       let operation;
+      let confirmation;
       if ('Match' === buttonText) {
         const result = await this.confirmToProceed();
         if (!result) {
@@ -610,37 +620,42 @@ export default {
         this.prbStudent.assignedPEN = student.pen;
         this.prbStudent.studentID = student.studentID;
         operation = 'match';
+        confirmation = true;
       } else {
         operation = 'unmatch';
+        confirmation = await this.$refs.confirmedStudentUnlinkConfirmationDialog.open(null, null,
+          {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, resolveText: 'Yes'});
       }
-      this.isMatchingToStudentRecord = true;
-      const payload = {
-        prbStudent: this.prbStudent,
-        studentID: student.studentID,
-        matchedPEN: student.pen,
-        matchedStudentIDList: this.possibleMatches.filter(el => el.studentID !== student.studentID).map(el => el.studentID)
-      };
-      const params = {
-        penNumbersInOps: student.pen
-      };
-      ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}/user-${operation}`, payload, {params})
-        .then(response => {
-          if (response.data) {
-            this.sagaId = response.data;
-            this.prbStudent.sagaInProgress = true;
-            this.setSuccessAlert(`Your request to ${operation} student to Pen Request is accepted.`);
-          }
-        })
-        .catch(error => {
-          if (error?.response?.data?.code === 409) {
-            this.setFailureAlert(error?.response?.data?.message);
-          }
-          this.setFailureAlert(`Your request to ${operation} student to Pen Request could not be accepted,  Please try again later.`);
-          console.log(error);
-        })
-        .finally(() => {
-          this.isMatchingToStudentRecord = false;
-        });
+      if(confirmation){
+        this.isMatchingToStudentRecord = true;
+        const payload = {
+          prbStudent: this.prbStudent,
+          studentID: student.studentID,
+          matchedPEN: student.pen,
+          matchedStudentIDList: this.possibleMatches.filter(el => el.studentID !== student.studentID).map(el => el.studentID)
+        };
+        const params = {
+          penNumbersInOps: student.pen
+        };
+        ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}/user-${operation}`, payload, {params})
+          .then(response => {
+            if (response.data) {
+              this.sagaId = response.data;
+              this.prbStudent.sagaInProgress = true;
+              this.setSuccessAlert(`Your request to ${operation} student to Pen Request is accepted.`);
+            }
+          })
+          .catch(error => {
+            if (error?.response?.data?.code === 409) {
+              this.setFailureAlert(error?.response?.data?.message);
+            }
+            this.setFailureAlert(`Your request to ${operation} student to Pen Request could not be accepted,  Please try again later.`);
+            console.log(error);
+          })
+          .finally(() => {
+            this.isMatchingToStudentRecord = false;
+          });
+      }
     },
     /**
      * this function returns stored possible matches from DB for a particular student, backed by PEN_MATCH_API,
@@ -772,7 +787,7 @@ export default {
           && PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.prbStudent.penRequestBatchStudentStatusCode));
     },
     showUnmatchButton(matchedStudent) {
-      return ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR]
+      return ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS]
         .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode) && matchedStudent.studentID === this.prbStudent.studentID);
     },
     grayoutPossibleMatches(matchedStudent) {
