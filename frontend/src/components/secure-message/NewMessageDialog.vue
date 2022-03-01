@@ -3,7 +3,6 @@
           id="newMessageDialog"
           v-model="newMessageDialogOpen"
           max-width="50%"
-          persistent
           :disabled="disabled"
   >
     <template v-slot:activator="{ on, attrs }">

@@ -2,7 +2,6 @@
   <v-dialog
           id="compareModal"
           v-model="compareModalOpen"
-          persistent
           max-width="80%"
           :disabled="disabled"
   >

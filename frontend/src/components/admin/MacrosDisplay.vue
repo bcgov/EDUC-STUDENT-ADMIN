@@ -64,7 +64,6 @@
       id="macroDialog"
       v-model="macroDialogOpen"
       max-width="50%"
-      persistent
     >
       <v-card>
         <v-toolbar dense flat>

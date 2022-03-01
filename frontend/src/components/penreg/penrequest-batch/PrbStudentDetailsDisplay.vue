@@ -126,7 +126,7 @@
       <ConfirmationDialog ref="confirmationDialog" contentClass="match-confirmation-dialog">
         <template v-slot:message>
           <v-col class="pt-0">
-            <v-row class="mb-3">There is <strong>&nbsp;{{ demogValidationResult.length }}&nbsp;</strong> questionable
+            <v-row class="mb-3">There is <strong class="mx-1">{{ demogValidationResult.length }}</strong> questionable
               {{ `error${demogValidationResult.length > 1 ? 's' : ''}` }} with this PEN request:
             </v-row>
             <v-row v-for="warning in demogValidationResult" :key="warning.description">
@@ -177,7 +177,6 @@ import {formatPen} from '@/utils/format';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
 import router from '../../../router';
 import Mousetrap from 'mousetrap';
-import {activateMultipleDraggableDialog} from '@/utils/draggable';
 
 export default {
   name: 'PrbStudentDetailsDisplay',
@@ -223,7 +222,6 @@ export default {
       demogValidationResult: [],
       isStudentDataUpdated: false, // make it true, if any of the student gets updated from possible match list
       sagaId: undefined,
-      deactivateMultipleDraggableDialog: null,
       hiddenSearchFields: [STUDENT_DETAILS_FIELDS.MINCODE],
       validationWarningFields: [],
       validationErrorFields: [],
@@ -349,7 +347,6 @@ export default {
 
   },
   beforeDestroy() {
-    this.deactivateMultipleDraggableDialog && this.deactivateMultipleDraggableDialog();
     this.clearNavigation();
   },
   mounted() {
@@ -361,7 +358,6 @@ export default {
       }
       return false;
     });
-    this.deactivateMultipleDraggableDialog = activateMultipleDraggableDialog('match-confirmation-dialog');
   },
   methods: {
     ...mapMutations('setNavigation', ['clearNavigation']),
