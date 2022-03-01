@@ -34,7 +34,7 @@
             </v-col>
           </v-row>
 
-          <div v-if="studentCopy.statusCode === STUDENT_CODES.MERGED">
+          <div class="mb-5" v-if="studentCopy.statusCode === STUDENT_CODES.MERGED">
             <v-row cols="1" no-gutters>
               <v-col>
                 <p class="mb-0">Status</p>
@@ -106,6 +106,23 @@
                                                    :name="STUDENT_DETAILS_FIELDS.UPDATED_DATE" colspan="1"
                                                    label="Updated"
                                                    :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.UPDATED_DATE)"></StudentDetailsTextFieldSideCardReadOnly>
+
+          <v-row no-gutters class="mb-2 pb-2">
+            <v-col>
+              <StudentDetailsTextFieldSideCardReadOnly :model="digitalIDType" name="CREDENTIAL_TYPE"
+                                                       colspan="1" label="Credential Type"
+                                                       :loading="loadingDigitalIDData"
+                                                       :disabled="fullReadOnly"></StudentDetailsTextFieldSideCardReadOnly>
+              <div v-if="this.digitalIdentity !== null && this.digitalIdentity.autoMatchedDate !== null" style="font-size: small" class="mt-n5">
+                (Auto-matched {{ this.getAutoMatchedDate }})
+              </div>
+            </v-col>
+            <v-col v-if="!fullReadOnly && this.digitalIDType !== 'None'">
+                <a style="float: right;font-weight: bold" class="mr-4" @click="unlinkStudent">
+                  Unlink Credential
+                </a>
+            </v-col>
+          </v-row>
         </v-card>
       </v-col>
       <v-col cols="7" class="py-0 pl-0">
@@ -560,6 +577,15 @@
       ></TwinnedStudentsCard>
     </v-dialog>
     <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>
+    <ConfirmationDialog ref="confirmedStudentUnlinkConfirmationDialog">
+      <template v-slot:message>
+        <v-col class="mt-n6">
+          <v-row class="mb-3">
+            Are you sure you want to unlink this student?
+          </v-row>
+        </v-col>
+      </template>
+    </ConfirmationDialog>
     <ConfirmationDialog ref="confirmedStudentUpdateConfirmationDialog">
       <template v-slot:message>
         <v-col class="mt-n6">
@@ -694,6 +720,8 @@ export default {
       unsavedChanges: false,
       gradDateAndMincode: [],
       traxStatus: '',
+      digitalIDType: '',
+      loadingDigitalIDData: false,
       loadingTraxData: false,
       loadingSchoolData: false,
       compareStudent: [],
@@ -715,6 +743,7 @@ export default {
       gradeCodes: [],
       genderLabels:[],
       genderLabel:null,
+      digitalIdentity: {},
     };
   },
   created() {
@@ -733,6 +762,9 @@ export default {
     ...mapGetters('auth', ['userInfo', 'PROCESS_STUDENT_ROLE']),
     mergedTo() {
       return this.merges.find(merge => merge.studentMergeDirectionCode === 'TO');
+    },
+    getAutoMatchedDate(){
+      return this.frontEndDateFormat(this.digitalIdentity.autoMatchedDate);
     },
     mergedFrom() {
       return sortBy(this.merges.filter(merge => merge.studentMergeDirectionCode === 'FROM'), ['mergeStudent.pen']);
@@ -1149,6 +1181,11 @@ export default {
         student: student
       };
     },
+    prepPutDigitalID(digitalID) {
+      return {
+        digitalIdentity: digitalID
+      };
+    },
     getGenderCodes() {
       if (this.genders && this.genderCodes.length === 0) {
         this.genderCodes = this.genders.map(a => a.genderCode);
@@ -1227,6 +1264,7 @@ export default {
       this.merges = merges;
       this.possibleMatches = possibleMatches;
       this.getTraxData(student.pen);
+      this.getDigitalIDData(student.studentID);
     },
     formatGradDate(date) {
       return date > 0 ? moment(date + '', 'YYYYMM').format('YYYY/MM') : '';
@@ -1251,12 +1289,62 @@ export default {
           this.loadingTraxData = false;
         });
     },
+    getDigitalIDData(studentID) {
+      this.loadingDigitalIDData = true;
+      ApiService.apiAxios
+        .get(Routes.digitalIdentity.DIGITAL_ID_LIST_URL, {params: {studentID}})
+        .then(response => {
+          let digitalIDResults = response.data.digitalIDResult;
+          let digitalParsed = JSON.parse(JSON.stringify(digitalIDResults));
+          if(digitalParsed.length > 0){
+            this.digitalIdentity = digitalParsed[0];
+            this.setCredentialType(digitalParsed[0].identityTypeCode);
+          }else{
+            this.setCredentialType('None');
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          this.setFailureAlert('An error occurred while loading the digital identity for this user. Please try again later.');
+        })
+        .finally(() => {
+          this.loadingDigitalIDData = false;
+        });
+    },
+    async unlinkStudent() {
+      const confirmation = await this.$refs.confirmedStudentUnlinkConfirmationDialog.open(null, null,
+        {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, resolveText: 'Yes'});
+      if (confirmation) {
+        const body = this.prepPutDigitalID(this.digitalIdentity);
+        ApiService.apiAxios
+          .put(Routes.digitalIdentity.ROOT_ENDPOINT + '/' + this.digitalIdentity.digitalID, body)
+          .then(() => {
+            this.digitalIDType = '';
+            this.setCredentialType('None');
+            this.setSuccessAlert('Student has been successfully unlinked.');
+          })
+          .catch(error => {
+            console.log(error);
+            this.setFailureAlert('An error occurred while unlinking the digital identity for this user. Please try again later.');
+          })
+          .finally(() => {
+          });
+      }
+    },
     disableDemerge() {
       if (this.isProcessing || this.demergeSagaComplete || this.hasSagaInProgress(this.origStudent) || this.fullReadOnly) {
         return true;
       }
       return !(this.origStudent.statusCode === 'M' && !!this.origStudent.trueStudentID);
-
+    },
+    setCredentialType(value) {
+      if(value === 'BASIC'){
+        this.digitalIDType = 'Basic BCeID';
+      } else if(value === 'BCSC'){
+        this.digitalIDType = 'BC Services Card';
+      } else {
+        this.digitalIDType = 'None';
+      }
     },
     async demerge() {
       if (this.isStudentUpdated) {
