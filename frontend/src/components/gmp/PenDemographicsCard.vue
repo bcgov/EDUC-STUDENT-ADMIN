@@ -46,14 +46,6 @@
           <p id="studentDOB" class="mb-0"><strong>{{ formatDob(this.student.dob,'uuuu-MM-dd', 'uuuu/MM/dd') }}</strong></p>
         </v-col>
       </v-row>
-      <v-row v-if="this.request.dataSourceCode === 'BC Services Card' || this.request.dataSourceCode === 'BCSC'" no-gutters class="px-2">
-        <v-col cols="12" xl="1" lg="1" md="1" sm="1">
-          <p class="mb-0">BCSC:</p>
-        </v-col>
-        <v-col cols="12" xl="11" lg="11" md="11" sm="11">
-          <p id="studentBCSCAuto" class="mb-0"><strong>{{ this.request.bcscAutoMatchDetails }}</strong></p>
-        </v-col>
-      </v-row>
     </v-alert>
   </div>
 
