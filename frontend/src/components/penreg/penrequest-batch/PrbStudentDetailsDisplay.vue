@@ -619,8 +619,12 @@ export default {
         confirmation = true;
       } else {
         operation = 'unmatch';
-        confirmation = await this.$refs.confirmedStudentUnlinkConfirmationDialog.open(null, null,
-          {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, resolveText: 'Yes'});
+        if(PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS === this.prbStudent.penRequestBatchStudentStatusCode || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR === this.prbStudent.penRequestBatchStudentStatusCode) {
+          confirmation = await this.$refs.confirmedStudentUnlinkConfirmationDialog.open(null, null,
+            {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, resolveText: 'Yes'});
+        } else {
+          confirmation = true;
+        }
       }
       if(confirmation){
         this.isMatchingToStudentRecord = true;
@@ -783,7 +787,7 @@ export default {
           && PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.prbStudent.penRequestBatchStudentStatusCode));
     },
     showUnmatchButton(matchedStudent) {
-      return ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS]
+      return ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR]
         .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode) && matchedStudent.studentID === this.prbStudent.studentID);
     },
     grayoutPossibleMatches(matchedStudent) {
