@@ -211,7 +211,7 @@ const router = new VueRouter({
         role: 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE'
       },
       beforeEnter(to, from, next) {
-        if(!from.path.includes('/archivedPrb')) {
+        if(!from.path.includes('/archivedPrb') && !from.path.includes('/prb')) {
           store.commit('archivedRequestBatch/clearPenRequestBatchState');
         }
         next();
