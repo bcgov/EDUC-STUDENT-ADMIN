@@ -34,6 +34,24 @@ function getLoadDateSearchParam(paramValue, namePrefix) {
   let operation;
   const paramName = 'extractDate';
   const valueType = SEARCH_VALUE_TYPE.DATE_TIME;
+
+  let {startDate, endDate} = formatDate(paramValue);
+  
+  if (startDate && !endDate) {
+    operation = SEARCH_FILTER_OPERATION.GREATER_THAN_OR_EQUAL_TO;
+    paramValue = startDate;
+  } else if (!startDate && endDate) {
+    operation = SEARCH_FILTER_OPERATION.LESS_THAN_OR_EQUAL_TO;
+    paramValue = endDate;
+  } else {
+    operation = SEARCH_FILTER_OPERATION.BETWEEN;
+    paramValue = `${startDate},${endDate}`;
+  }
+
+  return ({key: namePrefix ? `${namePrefix}.${paramName}` : paramName, operation, value: paramValue, valueType, condition: SEARCH_CONDITION.AND});
+}
+
+function formatDate(paramValue) {
   let startDate;
   let endDate;
   if (paramValue.startDate && paramValue.startDate.length === 8) { // it has reached here means it is a valid date
@@ -47,17 +65,6 @@ function getLoadDateSearchParam(paramValue, namePrefix) {
     endDate = paramValue.endDate && `${paramValue.endDate.replace(/\//g, '-')}T23:59:59`;
   }
 
-  if (startDate && !endDate) {
-    operation = SEARCH_FILTER_OPERATION.GREATER_THAN_OR_EQUAL_TO;
-    paramValue = startDate;
-  } else if (!startDate && endDate) {
-    operation = SEARCH_FILTER_OPERATION.LESS_THAN_OR_EQUAL_TO;
-    paramValue = endDate;
-  } else {
-    operation = SEARCH_FILTER_OPERATION.BETWEEN;
-    paramValue = `${startDate},${endDate}`;
-  }
-
-  return ({key: namePrefix ? `${namePrefix}.${paramName}` : paramName, operation, value: paramValue, valueType, condition: SEARCH_CONDITION.AND});
+  return {startDate, endDate};
 }
 
