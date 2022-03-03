@@ -14,7 +14,12 @@ const getDefaultState = () => {
     studentInfoMacros: [],
     prbValidationFieldCodes: [],
     prbValidationIssueSeverityCodes: [],
-    prbValidationIssueTypeCodes: []
+    prbValidationIssueTypeCodes: [],
+    currentBatchFileSearchParams: {
+      submissionNumber: null,
+      mincode: null,
+      schoolName: null,
+    },
   };
 };
 
@@ -54,6 +59,9 @@ export default {
     },
     setPrbValidationIssueTypeCodes: (state, prbValidationIssueTypeCodes) => {
       state.prbValidationIssueTypeCodes = prbValidationIssueTypeCodes;
+    },
+    setCurrentBatchFileSearchParams: (state, batchFileSearchParams) => {
+      state.currentBatchFileSearchParams = batchFileSearchParams;
     }
   },
   actions: {
