@@ -19,20 +19,20 @@ export function getSearchParam(paramName, paramValue, namePrefix) {
   } else if (paramName === 'postalCode') {
     paramValue = paramValue.replace(/ +/g, '');
   } else if (paramName === 'load') {
-    return getLoadDateSearchParam(paramName, paramValue, namePrefix);
+    return getLoadDateSearchParam(paramValue, namePrefix);
   } else if(paramName === 'mincode' || paramName === 'submissionNumber') {
     operation = SEARCH_FILTER_OPERATION.STARTS_WITH_IGNORE_CASE;
   }
   return ({key: namePrefix ? `${namePrefix}.${paramName}` : paramName, operation, value: paramValue, valueType, condition: SEARCH_CONDITION.AND});
 }
 
-function getLoadDateSearchParam(paramName, paramValue, namePrefix) {
+function getLoadDateSearchParam(paramValue, namePrefix) {
   if (!paramValue.startDate && !paramValue.endDate) {
     return null;
   }
 
-  paramName = 'extractDate';
   let operation;
+  const paramName = 'extractDate';
   const valueType = SEARCH_VALUE_TYPE.DATE_TIME;
   let startDate;
   let endDate;
