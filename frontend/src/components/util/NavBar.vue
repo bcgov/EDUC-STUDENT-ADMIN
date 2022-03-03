@@ -148,13 +148,13 @@ export default {
             title: 'Macro Management',
             link: 'macros',
             authorized: this.EDIT_MACROS_ROLE
-          },
-          {
-            title: 'Nominal Roll',
-            link: 'nominal-roll',
-            authorized: this.NOMINAL_ROLL_ROLE
           }
         ],
+      },
+      {
+        title: 'Nominal Roll',
+        link: 'nominal-roll',
+        authorized: this.NOMINAL_ROLL_ROLE
       },
       {
         title: PAGE_TITLES.ANALYTICS,
