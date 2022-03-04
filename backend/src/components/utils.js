@@ -236,10 +236,8 @@ function getPaginatedListForSCGroups(apiName, url, handleResponse) {
       }
 
       let pageSize = req.query.pageSize;
-      if(!req.query.pageSizeOverride){
-        if (pageSize > 20) {
-          pageSize = 20;
-        }
+      if(!req.query.pageSizeOverride && pageSize > 20) {
+        pageSize = 20;
       }
 
       const params = {
