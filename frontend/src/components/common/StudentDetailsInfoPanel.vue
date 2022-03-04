@@ -111,7 +111,7 @@
 import SearchDemographicModal from './SearchDemographicModal';
 import {deepCloneObject} from '@/utils/common';
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
-import {mapMutations} from 'vuex';
+import {mapMutations, mapState} from 'vuex';
 import StudentValidationWarningHint from './StudentValidationWarningHint';
 import PrimaryButton from '../util/PrimaryButton';
 import {partialRight} from 'lodash';
@@ -180,12 +180,17 @@ export default {
     };
   },
   mounted() {
-    this.setStickyInfoPanelHeight(this.$refs.stickyInfoPanel.clientHeight);
     if(!_.isEmpty(this.studentDetails)) { //don't run validation on page load if create new pen screen
       this.setModalStudentFromRequestStudent();
     }
   },
+  updated() {
+    if(this.$refs.stickyInfoPanel.clientHeight !== this.stickyInfoPanelHeight) {
+      this.setStickyInfoPanelHeight(this.$refs.stickyInfoPanel.clientHeight);
+    }
+  },
   computed: {
+    ...mapState('app', ['stickyInfoPanelHeight']),
     studentDetails: {
       get: function() {
         return this.student;
@@ -194,14 +199,6 @@ export default {
         this.$emit('update:student', value);
       }
     },
-    stickyInfoPanelHeight() {
-      return this.$refs.stickyInfoPanel?.clientHeight;
-    }
-  },
-  watch: {
-    stickyInfoPanelHeight(newValue) {
-      this.setStickyInfoPanelHeight(newValue);
-    }
   },
   methods: {
     ...mapMutations('app', ['setStickyInfoPanelHeight']),
