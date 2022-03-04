@@ -718,7 +718,7 @@ export default {
           response.data.content.forEach((s) => {
             csv += s.schoolDistrictNumber + ',' + s.schoolNumber + ','
               + s.schoolName+ ',' + s.leaProvincial + ',' + s.recipientNumber + ','
-              + s.recipientName + ',' + s.fte+ ',' + s.surname+ ',' + s.givenNames
+              + s.recipientName + ',' + s.fte + ',' + s.surname+ ',' + s.givenNames
               + ',' + s.gender + ',' + s.birthDate + ',' + s.grade + ',' + s.bandOfResidence + ',' + s.status;
             csv += '\n';
           });
