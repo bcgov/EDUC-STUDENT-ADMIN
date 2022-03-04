@@ -709,7 +709,6 @@ export default {
           searchQueries:  [{searchCriteriaList: [...optionalCriteriaList]}],
         }
       };
-      console.log('Search Queries: ', params.params.searchQueries);
       return ApiService.apiAxios
         .get(`${Routes['nominalRoll'].ROOT_ENDPOINT}/search`, params)
         .then(response => {
