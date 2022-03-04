@@ -714,18 +714,18 @@ export default {
         .get(`${Routes['nominalRoll'].ROOT_ENDPOINT}/search`, params)
         .then(response => {
           let csv = 'School District,School Number,School Name,LEA/Provincial,Recipient Number,' +
-            'Recipient Name,FTE,Surname,Given Name(s),Gender,Birth Date,Grade,Band of Residence,Status\n';
+            'Recipient Name,FTE,Surname,Given Name(s),Gender,Birth Date,Grade,Band of Residence\n';
           response.data.content.forEach((s) => {
             csv += s.schoolDistrictNumber + ',' + s.schoolNumber + ','
               + s.schoolName+ ',' + s.leaProvincial + ',' + s.recipientNumber + ','
               + s.recipientName + ',' + s.fte + ',' + s.surname+ ',' + s.givenNames
-              + ',' + s.gender + ',' + s.birthDate + ',' + s.grade + ',' + s.bandOfResidence + ',' + s.status;
+              + ',' + s.gender + ',' + s.birthDate + ',' + s.grade + ',' + s.bandOfResidence;
             csv += '\n';
           });
           const anchor = document.createElement('a');
           anchor.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
           anchor.target = '_blank';
-          anchor.download = 'nameYourFileHere.csv';
+          anchor.download = LocalDate.now().year() + '-NomRoll-Ignored.csv';
           anchor.click();
         })
         .catch(error => {
