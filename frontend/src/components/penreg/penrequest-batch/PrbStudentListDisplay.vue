@@ -160,13 +160,13 @@ export default {
           batchIDs: this.batchIDs,
         }
       };
-      return await ApiService.apiAxios
+      return ApiService.apiAxios
         .get(Routes['penRequestBatch'].SAME_PEN_SEARCH_URL, params)
         .then(response => {
           return response.data;
         })
         .catch(error => {
-          this.setFailureAlert('An error occurred while loading the PEN requests. Please try again later.');
+          this.setFailureAlert('An error occurred while loading getSamePENStudents. Please try again later.');
           console.log(error);
           throw error;
         });
