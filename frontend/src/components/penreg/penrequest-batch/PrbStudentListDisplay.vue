@@ -163,7 +163,6 @@ export default {
       return await ApiService.apiAxios
         .get(Routes['penRequestBatch'].SAME_PEN_SEARCH_URL, params)
         .then(response => {
-          console.log(response);
           return response.data;
         })
         .catch(error => {
