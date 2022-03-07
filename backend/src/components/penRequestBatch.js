@@ -76,7 +76,19 @@ async function getPenRequestBatchStudentIDs(req, res) {
     return res.status(200).json(dataResponse);
 
   } catch (e) {
-    logApiError(e, 'getPaginatedListForSCGroups', 'Error occurred while attempting to get prb student IDs.');
+    logApiError(e, 'getPenRequestBatchStudentIDs', 'Error occurred while attempting to get prb student IDs.');
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'INTERNAL SERVER ERROR'
+    });
+  }
+}
+
+async function getPenRequestBatchSamePENStudentIDs(req, res) {
+  try {
+    const dataResponse = await getData(getBackendToken(req), `${config.get('server:penRequestBatch:rootURL')}/pen-request-batch/same-pen?penRequestBatchID=` + req.query.batchIDs);
+    return res.status(200).json(dataResponse);
+  } catch (e) {
+    logApiError(e, 'getPenRequestBatchSamePENStudentIDs', 'Error occurred while attempting to get prb same pen student IDs.');
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       message: 'INTERNAL SERVER ERROR'
     });
@@ -430,6 +442,7 @@ module.exports = {
   getPenRequestBatchStudentIDs,
   getPenRequestBatchStudentById,
   getPenRequestBatchStudentMatchOutcome,
+  getPenRequestBatchSamePENStudentIDs,
   issueNewPen,
   userMatchSaga,
   userUnmatchSaga,

@@ -36,6 +36,7 @@ let object = {
     SOURCE_URL: penRequestBatchRoot + '/source',
     SOURCE_METADATA_URL: penRequestBatchRoot + '/sourceMetadata',
     STUDENTS_SEARCH_URL: penRequestBatchRoot + '/students',
+    SAME_PEN_SEARCH_URL: penRequestBatchRoot + '/same-pen',
     STUDENT_STATUS_CODE_URL: penRequestBatchRoot + '/studentStatusCodes',
     MATCH_OUTCOME_URL: penRequestBatchRoot + '/matchOutcome',
     STUDENT_INFO_MACROS_URL: macroRoot + '/?businessUseTypeCode=PENREG&macroTypeCode=INFOREQ',
