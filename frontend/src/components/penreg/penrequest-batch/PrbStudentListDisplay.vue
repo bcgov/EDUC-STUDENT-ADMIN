@@ -73,7 +73,6 @@ export default {
   },
   data() {
     return {
-      students: [],
       validForm: false,
       searchLoading: false,
       searchEnabled: false,
@@ -229,12 +228,12 @@ export default {
       let optionalCriteriaList = [this.prbStudentStatusSearchCriteria];
 
       if(this.showSamePENAssigned){
-        this.students = await this.getSamePENStudents();
-        if(this.students.length > 0){
+        let students = await this.getSamePENStudents();
+        if(students.length > 0){
           optionalCriteriaList.push({
             key: 'penRequestBatchStudentID',
             operation: SEARCH_FILTER_OPERATION.IN,
-            value: this.students.join(','),
+            value: students.join(','),
             valueType: SEARCH_VALUE_TYPE.UUID,
             condition: SEARCH_CONDITION.AND
           });
@@ -271,8 +270,15 @@ export default {
       }];
 
     },
+    isEmpty(obj) {
+      return Object.keys(obj).length === 0;
+    },
     async retrievePenRequests(searchCriteria, isFilterOperation) {
-      var crit = await this.prbStudentSearchCriteriaList(this.prbStudentSearchParams);
+      let crit = searchCriteria;
+      if(searchCriteria === null || this.isEmpty(searchCriteria)) {
+        crit = await this.prbStudentSearchCriteriaList(this.prbStudentSearchParams);
+      }
+
       const params = {
         params: {
           pageNumber: this.pageNumber-1,
