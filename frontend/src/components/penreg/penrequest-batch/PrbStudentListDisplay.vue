@@ -46,7 +46,7 @@ import {mapMutations, mapState} from 'vuex';
 import PrbStudentSearchResults from './PrbStudentSearchResults';
 import {formatPrbStudents} from '@/utils/penrequest-batch/format';
 import alertMixin from '../../../mixins/alertMixin';
-import {difference} from 'lodash';
+import _, {difference} from 'lodash';
 import Mousetrap from 'mousetrap';
 import router from '@/router';
 import PenRequestSearchPanel from '@/components/common/PenRequestSearchPanel';
@@ -269,12 +269,9 @@ export default {
       }];
 
     },
-    isEmpty(obj) {
-      return Object.keys(obj).length === 0;
-    },
     async retrievePenRequests(searchCriteria, isFilterOperation) {
       let crit = searchCriteria;
-      if(searchCriteria === null || this.isEmpty(searchCriteria)) {
+      if(_.isEmpty(searchCriteria)) {
         crit = await this.prbStudentSearchCriteriaList(this.prbStudentSearchParams);
       }
 
