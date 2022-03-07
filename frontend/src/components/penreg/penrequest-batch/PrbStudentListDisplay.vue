@@ -46,7 +46,7 @@ import {mapMutations, mapState} from 'vuex';
 import PrbStudentSearchResults from './PrbStudentSearchResults';
 import {formatPrbStudents} from '@/utils/penrequest-batch/format';
 import alertMixin from '../../../mixins/alertMixin';
-import {difference} from 'lodash';
+import _, {difference} from 'lodash';
 import Mousetrap from 'mousetrap';
 import router from '@/router';
 import PenRequestSearchPanel from '@/components/common/PenRequestSearchPanel';
@@ -81,7 +81,7 @@ export default {
     };
   },
   computed:{
-    ...mapState('prbStudentSearch', ['pageNumber', 'selectedRecords', 'prbStudentSearchResponse', 'selectedStudentStatus', 'currentPrbStudentSearchParams', 'prbStudentSearchCriteria']),
+    ...mapState('prbStudentSearch', ['pageNumber', 'selectedRecords', 'prbStudentSearchResponse', 'selectedStudentStatus', 'currentPrbStudentSearchParams', 'prbStudentSearchCriteria', 'showSamePENAssigned']),
     prbStudentSearchParams: {
       get(){
         return this.$store.state['prbStudentSearch'].prbStudentSearchParams;
@@ -124,6 +124,11 @@ export default {
         this.initialSearch();
       }
     },
+    showSamePENAssigned: {
+      handler() {
+        this.initialSearch();
+      }
+    },
   },
   mounted() {
     Mousetrap.bind('ctrl+b', () => {
@@ -148,6 +153,23 @@ export default {
     searchHasValues(){
       this.searchEnabled = Object.values(this.prbStudentSearchParams).some(v => !!v);
       return this.searchEnabled;
+    },
+    async getSamePENStudents(){
+      const params = {
+        params: {
+          batchIDs: this.batchIDs,
+        }
+      };
+      return ApiService.apiAxios
+        .get(Routes['penRequestBatch'].SAME_PEN_SEARCH_URL, params)
+        .then(response => {
+          return response.data;
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while loading getSamePENStudents. Please try again later.');
+          console.log(error);
+          throw error;
+        });
     },
     initialSearch() {
       if(this.currentPrbStudentSearchParams) {
@@ -201,8 +223,21 @@ export default {
       const foundItem = this.selectedRecords?.find(item => item?.penRequestBatchStudentID === rec.penRequestBatchStudentID);
       return !!foundItem;
     },
-    prbStudentSearchCriteriaList(searchParams) {
+    async prbStudentSearchCriteriaList(searchParams) {
       let optionalCriteriaList = [this.prbStudentStatusSearchCriteria];
+
+      if(this.showSamePENAssigned){
+        let students = await this.getSamePENStudents();
+        if(students.length > 0){
+          optionalCriteriaList.push({
+            key: 'penRequestBatchStudentID',
+            operation: SEARCH_FILTER_OPERATION.IN,
+            value: students.join(','),
+            valueType: SEARCH_VALUE_TYPE.UUID,
+            condition: SEARCH_CONDITION.AND
+          });
+        }
+      }
 
       const prbStudentSearchKeys = Object.keys(searchParams).filter(k => (searchParams[k] && searchParams[k].length !== 0));
       if (prbStudentSearchKeys && prbStudentSearchKeys.length > 0) {
@@ -234,7 +269,12 @@ export default {
       }];
 
     },
-    retrievePenRequests(searchCriteria, isFilterOperation) {
+    async retrievePenRequests(searchCriteria, isFilterOperation) {
+      let crit = searchCriteria;
+      if(_.isEmpty(searchCriteria)) {
+        crit = await this.prbStudentSearchCriteriaList(this.prbStudentSearchParams);
+      }
+
       const params = {
         params: {
           pageNumber: this.pageNumber-1,
@@ -244,7 +284,7 @@ export default {
             legalFirstName: 'ASC',
             legalMiddleNames: 'ASC'
           },
-          searchQueries: searchCriteria || this.prbStudentSearchCriteriaList(this.prbStudentSearchParams),
+          searchQueries: crit,
         }
       };
 
