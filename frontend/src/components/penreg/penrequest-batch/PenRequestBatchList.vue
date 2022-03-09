@@ -19,6 +19,7 @@ import filtersMixin from '@/mixins/filtersMixin';
 import alertMixin from '../../../mixins/alertMixin';
 import {getSearchParam} from '@/utils/penrequest-batch/search';
 import {deepCloneObject} from '@/utils/common';
+import {formatDateTime} from '@/utils/format';
 
 export default {
   name: 'PenRequestBatchList',
@@ -63,6 +64,13 @@ export default {
         { text: 'FIX', value: 'fixableCount', sortable: false, filterName: 'Fixable', countable: true, isFiltered: false, tooltip: 'Fixable Requests' },
         { text: 'DUP', value: 'duplicateCount', sortable: false, filterName: 'Duplicates', countable: true, isFiltered: false, tooltip: 'Duplicate Requests' },
         { text: 'FLT', value: 'filteredCount', sortable: false, countable: true, tooltip: 'Filtered Item Count' },
+        {
+          text: 'Load Date',
+          value: 'extractDate',
+          sortable: false,
+          tooltip: 'Loaded Date',
+          format: _.partialRight(formatDateTime, 'uuuu-MM-dd\'T\'HH:mm:ss', 'uuuu/MM/dd')
+        },
         { text: 'Submission', value: 'submissionNumber', sortable: false, tooltip: 'Submission Number' },
       ],
       loadingTable: true,
