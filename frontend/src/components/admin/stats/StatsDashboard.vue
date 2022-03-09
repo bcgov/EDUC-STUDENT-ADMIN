@@ -112,7 +112,7 @@ export default {
 
     },
     fillMergeData() {
-      ApiService.apiAxios.get(CHART_STAT_URLS.MERGE+'?statsType=MERGES_IN_LAST_12_MONTH')
+      ApiService.apiAxios.get(CHART_STAT_URLS.MERGE+'?statsType=MERGES_IN_LAST_13_MONTH')
         .then(response => {
           this.mergeLabels = response.data.labels;
           this.mergeChartdata = response.data.data;
