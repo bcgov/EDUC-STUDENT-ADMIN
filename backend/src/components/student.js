@@ -32,6 +32,14 @@ async function updateStudent(req, res) {
     const currentStudent = await getData(token, `${config.get('server:student:rootURL')}/${req.params.studentID}`);
     const student = req.body.student;
 
+    if(student.statusCode === 'D' && currentStudent.statusCode !== 'D') { //student statusCode changed to deceased
+      student.demogCode = 'F';
+    }
+
+    if(student.statusCode !== 'D' && currentStudent.statusCode === 'D') { //student statusCode changed to no longer deceased
+      student.demogCode = 'A';
+    }
+
     if(req.body.isDateOfConfirmationChanged){
       student.dateOfConfirmation = LocalDateTime.now().withNano(0).toJSON();
     }else if(currentStudent.demogCode === 'C'){
@@ -45,6 +53,7 @@ async function updateStudent(req, res) {
       student.demogCode = 'C';
       student.dateOfConfirmation = LocalDateTime.now().withNano(0).toJSON();
     }
+
     student.sexCode = student.genderCode;
     student.createDate = null;
     student.updateDate = null;
