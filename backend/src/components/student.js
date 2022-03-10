@@ -36,7 +36,7 @@ async function updateStudent(req, res) {
       student.demogCode = 'F';
     }
 
-    if(student.statusCode !== 'D' && currentStudent.statusCode === 'D') { //student statusCode no longer deceased
+    if(student.statusCode !== 'D' && currentStudent.statusCode === 'D') { //student statusCode changed to no longer deceased
       student.demogCode = 'A';
     }
 
