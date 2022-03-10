@@ -18,6 +18,7 @@
       <v-col cols="12" xl="6" lg="6" md="6" sm="6">
         <v-row no-gutters class="request-title justify-center pb-4">
           <strong>Current</strong>
+          <PrimaryButton id="search" class="request-title-btn ml-4" text="Search" :short="true" @click.native="searchStudent"></PrimaryButton>
         </v-row>
         <v-row no-gutters>
           <v-col cols="12" xl="3" lg="3" md="3" sm="3">
@@ -91,6 +92,7 @@
 
 <script>
 import PrimaryButton from '../util/PrimaryButton';
+import router from '@/router';
 export default {
   name: 'studentRequestCard',
   components: {PrimaryButton},
@@ -119,7 +121,19 @@ export default {
       el.select();
       document.execCommand('copy');
       document.body.removeChild(el);
-    }
+    },
+    searchStudent() {
+      const searchParams = {
+        pen: this.request.recordedPen?? null,
+        legalLastName: this.request.recordedLegalLastName?? null,
+        legalFirstName: this.request.recordedLegalFirstName?? null,
+        legalMiddleNames: this.request.recordedLegalMiddleNames?? null, 
+        dob: this.request.recordedDob? this.request.recordedDob.replaceAll('-', '/') : null,
+      };
+
+      const route = router.resolve({name: 'basicSearch', query: { ...searchParams }});
+      window.open(route.href, '_blank');
+    },
   }
 };
 </script>
@@ -139,11 +153,17 @@ export default {
   }
 
   .request-title {
+    position: relative;
     text-decoration: underline;
     font-size: 1.1rem;
   }
 
   .update-data {
     min-height: 1.5rem;
+  }
+
+  .request-title-btn {
+    position: absolute;
+    right: 4px;
   }
 </style>
