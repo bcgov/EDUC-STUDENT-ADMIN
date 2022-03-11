@@ -4,7 +4,7 @@
       <v-col cols="9">
         <BarChartContainer v-if="mergeChartData" :displayYAxis="displayYAxis" :heightValue="heightValue"
                            :labels="mergeLabels"
-                           :chart-data="mergeChartData" data-type="Merges by Month"></BarChartContainer>
+                           :chart-data="mergeChartData" title="Merges by Month" data-type="Merges" annualTotal></BarChartContainer>
         <spinner v-else/>
       </v-col>
       <v-col cols="3">
@@ -155,7 +155,7 @@ export default {
   mixins: [alertMixin],
   data: () => ({
     loadingDataTable: false,
-    mergedAndTrueStudents: undefined,
+    mergedAndTrueStudents: [],
     validForm: false,
     menu: false,
     localDate: LocalDate,
