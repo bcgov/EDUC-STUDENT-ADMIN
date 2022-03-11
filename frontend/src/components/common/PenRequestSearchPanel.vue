@@ -177,7 +177,6 @@
         v-on:input="[searchHasValues(),upperCaseInput('postalCode')]"
         maxlength="7"
         @keyup.enter="enterPushed()"
-        :rules="validateField(searchParams.postalCode, isValidPostalCode, postalCodeHint)"
         dense
       ></v-text-field>
     </v-col>
