@@ -177,7 +177,6 @@
         v-on:input="[searchHasValues(),upperCaseInput('postalCode')]"
         maxlength="7"
         @keyup.enter="enterPushed()"
-        :rules="validateField(searchParams.postalCode, isValidPostalCode, postalCodeHint)"
         dense
       ></v-text-field>
     </v-col>
@@ -223,7 +222,7 @@
 <script>
 import {mapGetters, mapState} from 'vuex';
 import PrimaryButton from '@/components/util/PrimaryButton';
-import {isValidAlphanumericValue, isValidDob, isValidMincode, isValidPEN, isValidPostalCode} from '@/utils/validation';
+import {isValidAlphanumericValue, isValidDob, isValidMincode, isValidPEN} from '@/utils/validation';
 
 export default {
   name: 'PenRequestSearchPanel',
@@ -251,7 +250,6 @@ export default {
   data() {
     return {
       penHint: 'Fails check-digit test',
-      postalCodeHint: 'Invalid Postal Code',
       mincodeHint: 'Digits only',
       genderHint: 'Invalid gender',
       gradeHint: 'Invalid grade',
@@ -301,7 +299,6 @@ export default {
       return !!(code && this.gradeCodes.includes(code.toUpperCase()));
     },
     isValidMincode,
-    isValidPostalCode,
     isValidDob,
     validateField(value, validator=isValidAlphanumericValue, hint=this.alphanumericHint, length=0) {
       if(!value || validator(value)) {
