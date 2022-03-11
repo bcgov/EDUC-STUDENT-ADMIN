@@ -18,10 +18,10 @@
         ></v-select>
       </v-flex>
       <div v-if="!hasReadOnlyRoleAccess()">
-        <PrimaryButton id="unignoreRecord" v-if="!canIgnore" :disabled="!canRecover" @click.native="clickRecover" text="Recover Record"></PrimaryButton>
-        <PrimaryButton id="ignoreRecord" v-else :disabled="!canIgnore" @click.native="clickIgnore" text="Ignore Record"></PrimaryButton>
-        <PrimaryButton id="viewSelected" class="ml-1" v-if="selected" :disabled="!viewSelectionEnabled" @click.native="clickViewSelected" text="View Selected"></PrimaryButton>
-        <PrimaryButton id="viewDetails" class="ml-1" v-else :loading="loadingRequestIDs" :disabled="!viewDetailsEnabled || hasReadOnlyRoleAccess()" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
+        <PrimaryButton id="unignoreRecord" v-if="!canIgnore" :disabled="!canRecover || isPosted" @click.native="clickRecover" text="Recover Record"></PrimaryButton>
+        <PrimaryButton id="ignoreRecord" v-else :disabled="!canIgnore || isPosted" @click.native="clickIgnore" text="Ignore Record"></PrimaryButton>
+        <PrimaryButton id="viewSelected" class="ml-1" v-if="selected" :disabled="!viewSelectionEnabled || isPosted" @click.native="clickViewSelected" text="View Selected"></PrimaryButton>
+        <PrimaryButton id="viewDetails" class="ml-1" v-else :loading="loadingRequestIDs" :disabled="!viewDetailsEnabled || hasReadOnlyRoleAccess() || isPosted" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
         <PrimaryButton id="postRecords" class="ml-1" :loading="processing" :disabled="isPosted || hasReadOnlyRoleAccess()" @click.native="clickPostRecords" text="Post"></PrimaryButton>
         <PrimaryButton id="exportIgnored" class="ml-1" :loading="processing" :disabled="hasReadOnlyRoleAccess() || !hasFilterOnlyIgnored()" @click.native="retrieveAndDownloadIgnoredPenRequests" text="Export Ignored"></PrimaryButton>
       </div>
