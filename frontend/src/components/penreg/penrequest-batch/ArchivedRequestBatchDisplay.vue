@@ -224,7 +224,7 @@ import {
   isValidEndDate,
   isValidPEN
 } from '@/utils/validation';
-import {deepCloneObject, setEmptyInputParams} from '@/utils/common';
+import {deepCloneObject} from '@/utils/common';
 import pluralize from 'pluralize';
 import ApiService from '@/common/apiService';
 import {formatDob} from '@/utils/format';
@@ -319,10 +319,6 @@ export default {
           this.setFailureAlert('An error occurred while fetching PEN Request Files! Please try again later.');
           console.log(error);
         });
-    },
-    clearSearchParams() {
-      setEmptyInputParams(this.searchInputParams, 'mincode');
-      this.search();
     },
     upperCaseInput(params, fieldName) {
       params[fieldName] = params[fieldName] && params[fieldName].toUpperCase();

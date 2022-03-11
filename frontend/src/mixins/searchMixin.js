@@ -35,6 +35,7 @@ export default {
     },
     clearSearchParams() {
       setEmptyInputParams(this.searchInputParams);
+      this.searchHasValues();
       this.search();
     },
     searchHasValues(){
