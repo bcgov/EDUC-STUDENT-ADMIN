@@ -4,7 +4,10 @@
             v-model="validForm"
     >
       <v-row>
-        <v-col cols="9"><BarChartContainer v-if="labels && chartData" :displayYAxis="displayYAxis" :heightValue="heightValue" :labels="labels" :chart-data="chartData" data-type="New PENs by Month"></BarChartContainer><spinner v-else></spinner></v-col>
+        <v-col cols="9">
+          <BarChartContainer v-if="labels && chartData" :displayYAxis="displayYAxis" :heightValue="heightValue" :labels="labels" :chart-data="chartData" title="New PENs by Month" data-type="New PENs" annualTotal></BarChartContainer>
+          <spinner v-else></spinner>
+        </v-col>
         <v-col cols="3">
           <v-row no-gutters class="d-flex justify-end">
               <v-col style="text-align: -webkit-right">

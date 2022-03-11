@@ -7,7 +7,7 @@
       >
         <bar-chart-container v-if="completionsLast13Month && completionsLast13MonthLabels" :displayYAxis="false"
                              :labels="completionsLast13MonthLabels" :chart-data="completionsLast13Month"
-                             data-type="Completions Last 13 month"></bar-chart-container>
+                             title="Completions Last 13 months" data-type="Completions" annualTotal></bar-chart-container>
         <Spinner v-else/>
       </v-col>
       <v-col
@@ -51,7 +51,7 @@
       >
         <bar-chart-container v-if="completionsLastWeek && completionsLastWeekLabels" :displayYAxis="false"
                              :labels="completionsLastWeekLabels" :chart-data="completionsLastWeek"
-                             data-type="Completions Last week"></bar-chart-container>
+                             title="Completions Last week"></bar-chart-container>
         <Spinner v-else/>
       </v-col>
       <v-col
@@ -60,7 +60,7 @@
       >
         <DoughnutChartContainer v-if="CHART_STAT_URLS[`${requestTypeWithAllUpperCase}_ALL_STATUS_LAST_12_MONTH`]"
                                 :key="refreshIdx"
-                                data-type="All Statuses Last 12 month" span-content="All statuses last 12 month"
+                                data-type="All Statuses Last 12 months" span-content="All statuses last 12 months"
                                 :completion-states="COMPLETION_STATES[requestTypeWithAllUpperCase]"
                                 :url="CHART_STAT_URLS[`${requestTypeWithAllUpperCase}_ALL_STATUS_LAST_12_MONTH`]"></DoughnutChartContainer>
       </v-col>
