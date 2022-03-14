@@ -52,8 +52,8 @@
                         :text="prbStudent.infoRequest"
                     ></InfoDialog>
                   </v-row>
-                  <v-row no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
-                    <span>
+                  <v-row no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white">
+                    <span style="font-size: 1.25rem">
                       <strong>{{ prbStudent.mincode }} {{ batchFile.schoolName }}</strong>
                     </span>
                     <v-spacer></v-spacer>
