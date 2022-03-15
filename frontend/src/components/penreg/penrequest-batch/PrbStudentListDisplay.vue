@@ -180,14 +180,14 @@ export default {
         this.searchHasValues();
       }
     },
-    searchPenRequests(initial = false) {
+    async searchPenRequests(initial = false) {
       this.searchLoading = true;
       this.prbStudentSearchResultsKey += 1; //forces prbStudentSearchResults to rerender and update curPage
       this.disablePageHandler=true;
       this.setPageNumber(1);
 
       if(initial || (this.$refs.prbStudentSearchForm.validate() && this.searchHasValues())) {
-        const searchCriteria = this.prbStudentSearchCriteriaList(this.prbStudentSearchParams);
+        const searchCriteria = await this.prbStudentSearchCriteriaList(this.prbStudentSearchParams);
         this.retrievePenRequests(searchCriteria, true)
           .then(() => {
             this.setCurrentPrbStudentSearchParams(JSON.parse(JSON.stringify(this.prbStudentSearchParams)));
