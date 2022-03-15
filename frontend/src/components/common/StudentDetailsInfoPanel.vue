@@ -11,10 +11,15 @@
         >
         </PrimaryButton>
 
-        <PrimaryButton width="15%"
-                       text="Modify Search"
+        <PrimaryButton width="15%" text="Modify Request"
                        id="searchDemogModalSearchBtn"
                        @click.native="isFormValid()"
+        >
+        </PrimaryButton>
+        <PrimaryButton width="15%"
+                       text="Advanced Search"
+                       id="runAdvancedSearch"
+                       @click.native="searchStudent()"
         >
         </PrimaryButton>
       </template>
@@ -115,6 +120,7 @@ import {mapMutations, mapState} from 'vuex';
 import StudentValidationWarningHint from './StudentValidationWarningHint';
 import PrimaryButton from '../util/PrimaryButton';
 import {partialRight} from 'lodash';
+import router from '@/router';
 
 export default {
   name: 'StudentDetailsInfoPanel',
@@ -226,6 +232,23 @@ export default {
         return this.studentDetails[fieldName]?.toLowerCase() !== this.studentDetailsCopy[fieldName]?.toLowerCase();
       }
       return false;
+    },
+    searchStudent() {
+      const searchParams = {
+        legalLastName: this.student.legalLastName?? null,
+        legalFirstName: this.student.legalFirstName?? null,
+        legalMiddleNames: this.student.legalMiddleNames?? null,
+        usualFirstName: this.student.usualFirstName?? null,
+        usualMiddleNames: this.student.usualMiddleNames?? null,
+        usualLastName: this.student.usualLastName?? null,
+        gradeCode: this.student.gradeCode?? null,
+        postalCode: this.student.postalCode?? null,
+        genderCode: this.student.genderCode?? null,
+        dob: this.student.dob? formatDob(this.student.dob) : null,
+      };
+
+      const route = router.resolve({name: 'basicSearch', query: { ...searchParams }});
+      window.open(route.href, '_blank');
     },
     openSearchDemographicsModal() {
       this.setModalStudentFromRequestStudent();
