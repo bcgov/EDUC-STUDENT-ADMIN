@@ -40,7 +40,8 @@ import {
   Routes,
   SEARCH_CONDITION,
   SEARCH_FILTER_OPERATION,
-  SEARCH_VALUE_TYPE
+  SEARCH_VALUE_TYPE,
+  PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER
 } from '@/utils/constants';
 import {mapMutations, mapState} from 'vuex';
 import PrbStudentSearchResults from './PrbStudentSearchResults';
@@ -214,6 +215,7 @@ export default {
 
       students.forEach(rec => {
         rec.isSelected = this.isSelected(rec);
+        rec.validationIssues = [];
       });
 
       formatPrbStudents(students);
@@ -291,11 +293,45 @@ export default {
       return ApiService.apiAxios
         .get(Routes['penRequestBatch'].STUDENTS_SEARCH_URL, params)
         .then(response => {
-          response.data && response.data.content && this.initializePrbStudents(response.data.content, isFilterOperation);
-          this.setPrbStudentSearchResponse(response.data);
+          if(response.data && response.data.content) {
+            this.initializePrbStudents(response.data.content, isFilterOperation);
+            this.setPrbStudentSearchResponse(response.data);
+            const prbStudentIDs = response.data.content.map(prbStudent => prbStudent.penRequestBatchStudentID);
+            return this.retrieveValidationIssuesByBatchStudentIDs(prbStudentIDs);
+          }
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while loading the PEN requests. Please try again later.');
+          console.log(error);
+          throw error;
+        });
+    },
+    retrieveValidationIssuesByBatchStudentIDs(prbStudentIDs) {
+      const params = {
+        params: {
+          penRequestBatchStudentIDs: prbStudentIDs.join(','),
+        }
+      };
+
+      return ApiService.apiAxios.get(Routes.penRequestBatch.ROOT_ENDPOINT + '/students/validation-issues', params)
+        .then(response => {
+          const validationIssues = response.data.reduce((result, issue) => {
+            issue.dataFieldName = PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER[issue.penRequestBatchValidationFieldCode];
+
+            const prbStudentValidationIssues = result[issue.penRequestBatchStudentID];
+            if(prbStudentValidationIssues) {
+              prbStudentValidationIssues.push(issue);
+            } else {
+              result[issue.penRequestBatchStudentID] = [issue];
+            }
+            return result;
+          }, {});
+          this.prbStudentSearchResponse.content.forEach(prbStudent => {
+            prbStudent.validationIssues = validationIssues[prbStudent.penRequestBatchStudentID] || [];
+          });
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while loading the validation issues. Please try again later.');
           console.log(error);
           throw error;
         });

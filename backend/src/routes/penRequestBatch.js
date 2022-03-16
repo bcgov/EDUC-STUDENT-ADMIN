@@ -94,4 +94,5 @@ router.post('/deleteFiles', passport.authenticate('jwt', {session: false}, undef
 router.post('/release-batch-files', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, releaseBatchFilesForFurtherProcessing);
 router.post('/repostReports', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, repostReports);
 router.get('/students/:id/validation-issues', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, findValidationIssuesByPrbStudentID);
+router.get('/students/validation-issues', passport.authenticate('jwt', {session: false}, undefined), auth.isValidPenRequestBatchAdmin, extendSession, utils.forwardGet('getValidationIssuesByPrbStudentIDs', 'server:penRequestBatch:rootURL', '/pen-request-batch/students/validation-issues'));
 module.exports = router;
