@@ -58,9 +58,9 @@
                   </template>
                   <span>{{getSchoolName(props.item) }}</span>
                 </v-tooltip>
-                <span v-else>{{ props.item[header.topValue] }}</span>
+                <span v-else :class="[{'mark-field-value-errored':isFieldValueErrored(header.topValue, props.item)}]">{{ props.item[header.topValue] }}</span>
               </span>
-              <span class="double-column-item">{{props.item[header.doubleValue]}}</span>
+              <span :class="['double-column-item', {'mark-field-value-errored':isFieldValueErrored(header.doubleValue, props.item)}]">{{props.item[header.doubleValue]}}</span>
               <br>
               <span class="bottom-column-item mt-1">
                 <PrbStudentStatusChip 
@@ -71,7 +71,7 @@
                   class="bottom-column-item">
                   {{props.item[header.bottomValue]}}
                 </span>
-                <span v-else class="bottom-column-item">{{ props.item[header.bottomValue] !== props.item[header.topValue] ? props.item[header.bottomValue]: '' }}</span>
+                <span v-else :class="['bottom-column-item', {'mark-field-value-errored':isFieldValueErrored(header.bottomValue, props.item)}]">{{ props.item[header.bottomValue] !== props.item[header.topValue] ? props.item[header.bottomValue]: '' }}</span>
               </span>
             </div>
           </td>
@@ -306,7 +306,10 @@ export default {
       const statusFilters = '';
       const route = router.resolve({name: 'prbStudentList', query: { batchIDs, statusFilters }});
       window.open(route.href, '_blank');
-    }
+    },
+    isFieldValueErrored(fieldName, record) {
+      return record.validationIssues?.some(issue => issue.dataFieldName === fieldName && issue.penRequestBatchValidationIssueSeverityCode === 'ERROR');
+    },
   }
 };
 </script>
@@ -388,5 +391,10 @@ export default {
 
   .select {
     max-width: 245px;
+  }
+
+  .mark-field-value-errored {
+    color: #D8292F !important;
+    font-weight: bold;
   }
 </style>
