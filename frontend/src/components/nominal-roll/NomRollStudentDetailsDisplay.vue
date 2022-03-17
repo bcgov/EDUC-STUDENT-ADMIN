@@ -235,7 +235,7 @@ export default {
       this.nomRollStudent.givenNames = val.legalFirstName;
       this.nomRollStudent.gender = val.genderCode;
       this.nomRollStudent.birthDate = formatDob(val.dob, 'uuuuMMdd', 'uuuu-MM-dd');
-      this.nomRollStudent.grade = val.gradeCode.replace(/^0/, '');
+      this.nomRollStudent.grade = val.gradeCode? val.gradeCode.replace(/^0/, ''): '';
     }
   },
   computed: {
