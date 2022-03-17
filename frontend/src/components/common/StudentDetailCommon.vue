@@ -34,6 +34,13 @@
             </v-col>
           </v-row>
 
+          <StudentDetailsComboBox label="Demog Code" colspan="1"
+                                  :name="STUDENT_DETAILS_FIELDS.DEMOG_CODE"
+                                  @changeStudentObjectValue="changeStudentObjectValue"
+                                  :model="studentCopy.demogCode?studentCopy.demogCode:''"
+                                  :has-edits="hasEdits" tab-index="14" :revert-field="revertField"
+                                  :items="getDemogCodeComboBox()" revert-id="revertDemogCode"
+                                  :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DEMOG_CODE)"></StudentDetailsComboBox>
           <div class="mb-5" v-if="studentCopy.statusCode === STUDENT_CODES.MERGED">
             <v-row cols="1" no-gutters>
               <v-col>
@@ -52,14 +59,6 @@
                                   :has-edits="hasEdits" tab-index="16" :revert-field="revertField"
                                   :items="getStatusLevels()" revert-id="revertStatusCode"
                                   :disabled="isFieldDisabledWithReadOnly('statusCode')"></StudentDetailsComboBox>
-
-          <StudentDetailsComboBox label="Demog Code" colspan="1"
-                                  :name="STUDENT_DETAILS_FIELDS.DEMOG_CODE"
-                                  @changeStudentObjectValue="changeStudentObjectValue"
-                                  :model="studentCopy.demogCode?studentCopy.demogCode:''"
-                                  :has-edits="hasEdits" tab-index="14" :revert-field="revertField"
-                                  :items="getDemogCodeComboBox()" revert-id="revertDemogCode"
-                                  :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DEMOG_CODE)"></StudentDetailsComboBox>
           <StudentDetailsComboBox label="Document Type Code" colspan="1"
                                   :name="STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE"
                                   @changeStudentObjectValue="changeStudentObjectValue"
