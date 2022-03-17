@@ -18,7 +18,7 @@
       <v-col cols="12" xl="6" lg="6" md="6" sm="6">
         <v-row no-gutters class="request-title justify-center pb-4">
           <strong>Current</strong>
-          <PrimaryButton id="search" class="request-title-btn ml-4" text="Search" :short="true" @click.native="searchStudent"></PrimaryButton>
+          <PrimaryButton id="search" class="request-title-btn ml-4" text="Open Details" :short="true" :disabled="!this.request.recordedPen" :loading="loading" @click.native="searchStudent"></PrimaryButton>
         </v-row>
         <v-row no-gutters>
           <v-col cols="12" xl="3" lg="3" md="3" sm="3">
@@ -93,8 +93,13 @@
 <script>
 import PrimaryButton from '../util/PrimaryButton';
 import router from '@/router';
+import {Routes, REQUEST_TYPES} from '@/utils/constants';
+import alertMixin from '@/mixins/alertMixin';
+import ApiService from '@/common/apiService';
+
 export default {
   name: 'studentRequestCard',
+  mixins: [alertMixin],
   components: {PrimaryButton},
   props: {
     request: {
@@ -105,6 +110,7 @@ export default {
   data() {
     return {
       clipboard: false,
+      loading: false,
     };
   },
   methods: {
@@ -123,16 +129,25 @@ export default {
       document.body.removeChild(el);
     },
     searchStudent() {
-      const searchParams = {
-        pen: this.request.recordedPen?? null,
-        legalLastName: this.request.recordedLegalLastName?? null,
-        legalFirstName: this.request.recordedLegalFirstName?? null,
-        legalMiddleNames: this.request.recordedLegalMiddleNames?? null, 
-        dob: this.request.recordedDob? this.request.recordedDob.replaceAll('-', '/') : null,
-      };
-
-      const route = router.resolve({name: 'basicSearch', query: { ...searchParams }});
-      window.open(route.href, '_blank');
+      this.loading = true;
+      ApiService.apiAxios
+        .get(Routes.student.ROOT_ENDPOINT, {params: {pen: this.request.recordedPen}})
+        .then(response => {
+          const studentID = response.data.studentID;
+          const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
+          window.open(route.href, '_blank', 'location=yes'); //add location to open in new window
+        })
+        .catch(error => {
+          console.log(error);
+          if (error?.response?.status === 404 && error?.response?.data?.message) {
+            this.setFailureAlert(`No demographic data was found for pen :: ${this.request.recordedPen}`);
+          } else {
+            this.setFailureAlert('An error occurred while loading the demographic data. Please try again later.');
+          }
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     },
   }
 };
