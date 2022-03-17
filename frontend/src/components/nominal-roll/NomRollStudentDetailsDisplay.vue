@@ -360,7 +360,7 @@ export default {
       this.modalStudent.legalFirstName = nomRollStudent.givenNames;
       this.modalStudent.genderCode = nomRollStudent.gender;
       this.modalStudent.dob = formatDob(nomRollStudent.birthDate, 'uuuu-MM-dd', 'uuuuMMdd');
-      this.modalStudent.gradeCode = formatGrade(nomRollStudent.grade);
+      this.modalStudent.gradeCode = nomRollStudent.grade? formatGrade(nomRollStudent.grade) : '';
     },
     async confirmToProceed() {
       let result = true;
