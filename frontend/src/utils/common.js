@@ -52,9 +52,10 @@ export function getPossibleMatches(penMatch) {
           };
           ApiService.apiAxios.get(Routes.student.GET_ALL_STUDENTS_BY_IDS, params)
             .then(result => {
+              var ordered = orderStudentsAccordingToPenMatch(result.data, studentIDs);
               resolve({
                 penStatus: response.data.penStatus,
-                data: result.data
+                data: ordered
               });
             })
             .catch(error => {
@@ -72,6 +73,12 @@ export function getPossibleMatches(penMatch) {
       });
   });
 
+}
+
+function orderStudentsAccordingToPenMatch(array, order) {
+  return array.sort(function(a, b){
+    return order.indexOf(a['studentID']) - order.indexOf(b['studentID']);
+  });
 }
 
 export function deepCloneObject(objectToBeCloned) {
