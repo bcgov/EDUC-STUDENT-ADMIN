@@ -242,7 +242,7 @@ export default {
         usualMiddleNames: this.student.usualMiddleNames?? null,
         usualLastName: this.student.usualLastName?? null,
         gradeCode: this.student.gradeCode?? null,
-        postalCode: this.student.postalCode?? null,
+        postalCode: null,
         genderCode: this.student.genderCode?? null,
         dob: this.student.dob? formatDob(this.student.dob) : null,
       };
