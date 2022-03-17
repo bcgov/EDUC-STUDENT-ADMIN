@@ -374,10 +374,10 @@ export default {
       return this.selectedRecords.length > 0 && this.hasRecoverOnlyRecordsSelected() && !this.hasReadOnlyRoleAccess();
     },
     viewSelectionEnabled() {
-      return this.nomRollStudentSearchResponse.totalElements > 0 && !this.loading && !this.hasOnlyErrorRecordsInList() && !this.hasErrorRecordsSelected();
+      return this.nomRollStudentSearchResponse.totalElements > 0 && !this.loading && !this.hasOnlyErrorRecordsInList() && !this.hasErrorRecordsSelected() && !this.hasIgnoreRecordsSelected() && !this.hasFilterOnlyIgnored();
     },
     viewDetailsEnabled() {
-      return this.nomRollStudentSearchResponse.totalElements > 0 && !this.loading && !this.hasErrorRecordsSelected();
+      return this.nomRollStudentSearchResponse.totalElements > 0 && !this.loading && !this.hasErrorRecordsSelected() && !this.hasIgnoreRecordsSelected() && !this.hasFilterOnlyIgnored();
     },
     rowExpandedIcon() {
       return !this.isEmpty(this.expanded)?'mdi-chevron-up':'mdi-chevron-down';
@@ -403,6 +403,13 @@ export default {
     },
     hasErrorRecordsSelected(){
       let filteredError = this.selectedRecords.filter(record =>  record.status === 'ERROR');
+      if(filteredError.length > 0) {
+        return true;
+      }
+      return false;
+    },
+    hasIgnoreRecordsSelected(){
+      let filteredError = this.selectedRecords.filter(record =>  record.status === 'IGNORED');
       if(filteredError.length > 0) {
         return true;
       }
