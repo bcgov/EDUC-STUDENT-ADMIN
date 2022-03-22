@@ -41,6 +41,14 @@
                                   :has-edits="hasEdits" tab-index="14" :revert-field="revertField"
                                   :items="getDemogCodeComboBox()" revert-id="revertDemogCode"
                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DEMOG_CODE)"></StudentDetailsComboBox>
+          <StudentDetailsComboBox label="Document Type Code" colspan="1"
+                                  :name="STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE"
+                                  @changeStudentObjectValue="changeStudentObjectValue"
+                                  :model="studentCopy.documentTypeCode?studentCopy.documentTypeCode:''"
+                                  :rules="validateDemogCode()"
+                                  :has-edits="hasEdits" tab-index="15" :revert-field="revertField"
+                                  :items="getDocumentTypes()" revert-id="revertDocumentTypeCode"
+                                  :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE)"></StudentDetailsComboBox>
           <div class="mb-5" v-if="studentCopy.statusCode === STUDENT_CODES.MERGED">
             <v-row cols="1" no-gutters>
               <v-col>
@@ -59,14 +67,6 @@
                                   :has-edits="hasEdits" tab-index="16" :revert-field="revertField"
                                   :items="getStatusLevels()" revert-id="revertStatusCode"
                                   :disabled="isFieldDisabledWithReadOnly('statusCode')"></StudentDetailsComboBox>
-          <StudentDetailsComboBox label="Document Type Code" colspan="1"
-                                  :name="STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE"
-                                  @changeStudentObjectValue="changeStudentObjectValue"
-                                  :model="studentCopy.documentTypeCode?studentCopy.documentTypeCode:''"
-                                  :rules="validateDemogCode()"
-                                  :has-edits="hasEdits" tab-index="15" :revert-field="revertField"
-                                  :items="getDocumentTypes()" revert-id="revertDocumentTypeCode"
-                                  :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE)"></StudentDetailsComboBox>
             <v-row no-gutters v-if="dateOfConfirmation" class="mb-2 pb-2">
               <v-col>
                 <div><span class="ma-0">Date Of Confirmation:</span> <span class="bolder mb-0 customNoBorder py-0 my-0"> {{dateOfConfirmation}}</span>
