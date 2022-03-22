@@ -1330,8 +1330,6 @@ export default {
           .catch(error => {
             console.log(error);
             this.setFailureAlert('An error occurred while unlinking the digital identity for this user. Please try again later.');
-          })
-          .finally(() => {
           });
       }
     },
