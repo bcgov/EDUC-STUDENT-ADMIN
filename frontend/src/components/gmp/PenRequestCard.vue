@@ -59,15 +59,7 @@
     </v-row>
     <v-row no-gutters class="px-2">
       <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-        <p>Gender:</p>
-      </v-col>
-      <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-        <p><strong>{{ this.request.genderCode }}</strong></p>
-      </v-col>
-    </v-row>
-    <v-row no-gutters class="px-2">
-      <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-        <p class="mb-2">Current Sch:</p>
+        <p class="mb-2">Current School:</p>
       </v-col>
       <v-col cols="12" xl="9" lg="9" md="9" sm="9">
         <p class="mb-2"><strong>{{ this.request.currentSchool }}</strong></p>
@@ -75,7 +67,7 @@
     </v-row>
     <v-row no-gutters class="px-2">
       <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-        <p class="mb-2">Last BC Sch:</p>
+        <p class="mb-2">Last BC School:</p>
       </v-col>
       <v-col cols="12" xl="9" lg="9" md="9" sm="9">
         <p class="mb-2"><strong>{{ this.request.lastBCSchool }}</strong></p>

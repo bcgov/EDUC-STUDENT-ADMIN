@@ -4,6 +4,7 @@ const getDefaultState = () => {
   return {
     pageNumber: 1,
     selectedRecords: [],
+    showSamePENAssigned: null,
     prbStudentSearchParams: {
       bestMatchPEN: null,
       submittedPen: null,
@@ -37,6 +38,9 @@ export default {
     },
     setSelectedRecords: (state, selectedRecords) => {
       state.selectedRecords = selectedRecords || [];
+    },
+    setShowSamePENAssigned: (state, showSamePENAssigned) => {
+      state.showSamePENAssigned = showSamePENAssigned;
     },
     setPrbStudentSearchResponse: (state, prbStudentSearchResponse) => {
       state.prbStudentSearchResponse = prbStudentSearchResponse;

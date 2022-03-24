@@ -19,7 +19,7 @@
     <v-col order="1" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
       <v-text-field
         id='legalLastName'
-        v-model="searchParams.legalLastName"
+        v-model.trim="searchParams.legalLastName"
         color="#003366"
         label="Legal Surname"
         @keyup.enter="enterPushed()"
@@ -32,7 +32,7 @@
     <v-col order="1" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
       <v-text-field
         id='legalFirstName'
-        v-model="searchParams.legalFirstName"
+        v-model.trim="searchParams.legalFirstName"
         tabindex="3"
         color="#003366"
         label="Legal Given"
@@ -45,7 +45,7 @@
     <v-col order="1" v-if="!(fields.legalMiddleNames && fields.legalMiddleNames.hidden)" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
       <v-text-field
         id='legalMiddleNames'
-        v-model="searchParams.legalMiddleNames"
+        v-model.trim="searchParams.legalMiddleNames"
         color="#003366"
         label="Legal Middle"
         v-on:input="[searchHasValues(),upperCaseInput('legalMiddleNames')]"
@@ -131,7 +131,7 @@
     <v-col order="2" v-if="!(fields.usualLastName && fields.usualLastName.hidden)" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
       <v-text-field
         id='usualLastName'
-        v-model="searchParams.usualLastName"
+        v-model.trim="searchParams.usualLastName"
         color="#003366"
         label="Usual Surname"
         @keyup.enter="enterPushed()"
@@ -144,7 +144,7 @@
     <v-col order="2" v-if="!(fields.usualFirstName && fields.usualFirstName.hidden)" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
       <v-text-field
         id='usualFirstName'
-        v-model="searchParams.usualFirstName"
+        v-model.trim="searchParams.usualFirstName"
         color="#003366"
         label="Usual Given"
         @keyup.enter="enterPushed()"
@@ -157,7 +157,7 @@
     <v-col order="2" v-if="!(fields.usualMiddleNames && fields.usualMiddleNames.hidden)" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
       <v-text-field
         id='usualMiddleNames'
-        v-model="searchParams.usualMiddleNames"
+        v-model.trim="searchParams.usualMiddleNames"
         color="#003366"
         label="Usual Middle"
         @keyup.enter="enterPushed()"
@@ -177,7 +177,6 @@
         v-on:input="[searchHasValues(),upperCaseInput('postalCode')]"
         maxlength="7"
         @keyup.enter="enterPushed()"
-        :rules="validateField(searchParams.postalCode, isValidPostalCode, postalCodeHint)"
         dense
       ></v-text-field>
     </v-col>
@@ -223,7 +222,7 @@
 <script>
 import {mapGetters, mapState} from 'vuex';
 import PrimaryButton from '@/components/util/PrimaryButton';
-import {isValidAlphanumericValue, isValidDob, isValidMincode, isValidPEN, isValidPostalCode} from '@/utils/validation';
+import {isValidAlphanumericValue, isValidDob, isValidMincode, isValidPEN} from '@/utils/validation';
 
 export default {
   name: 'PenRequestSearchPanel',
@@ -251,7 +250,6 @@ export default {
   data() {
     return {
       penHint: 'Fails check-digit test',
-      postalCodeHint: 'Invalid Postal Code',
       mincodeHint: 'Digits only',
       genderHint: 'Invalid gender',
       gradeHint: 'Invalid grade',
@@ -301,7 +299,6 @@ export default {
       return !!(code && this.gradeCodes.includes(code.toUpperCase()));
     },
     isValidMincode,
-    isValidPostalCode,
     isValidDob,
     validateField(value, validator=isValidAlphanumericValue, hint=this.alphanumericHint, length=0) {
       if(!value || validator(value)) {

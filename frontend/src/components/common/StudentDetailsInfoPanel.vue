@@ -11,10 +11,15 @@
         >
         </PrimaryButton>
 
-        <PrimaryButton width="15%"
-                       text="Modify Search"
+        <PrimaryButton width="15%" text="Modify Request"
                        id="searchDemogModalSearchBtn"
                        @click.native="isFormValid()"
+        >
+        </PrimaryButton>
+        <PrimaryButton width="15%"
+                       text="Advanced Search"
+                       id="runAdvancedSearch"
+                       @click.native="searchStudent()"
         >
         </PrimaryButton>
       </template>
@@ -111,10 +116,11 @@
 import SearchDemographicModal from './SearchDemographicModal';
 import {deepCloneObject} from '@/utils/common';
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
-import {mapMutations} from 'vuex';
+import {mapMutations, mapState} from 'vuex';
 import StudentValidationWarningHint from './StudentValidationWarningHint';
 import PrimaryButton from '../util/PrimaryButton';
 import {partialRight} from 'lodash';
+import router from '@/router';
 
 export default {
   name: 'StudentDetailsInfoPanel',
@@ -180,12 +186,17 @@ export default {
     };
   },
   mounted() {
-    this.setStickyInfoPanelHeight(this.$refs.stickyInfoPanel.clientHeight);
     if(!_.isEmpty(this.studentDetails)) { //don't run validation on page load if create new pen screen
       this.setModalStudentFromRequestStudent();
     }
   },
+  updated() {
+    if(this.$refs.stickyInfoPanel.clientHeight !== this.stickyInfoPanelHeight) {
+      this.setStickyInfoPanelHeight(this.$refs.stickyInfoPanel.clientHeight);
+    }
+  },
   computed: {
+    ...mapState('app', ['stickyInfoPanelHeight']),
     studentDetails: {
       get: function() {
         return this.student;
@@ -194,14 +205,6 @@ export default {
         this.$emit('update:student', value);
       }
     },
-    stickyInfoPanelHeight() {
-      return this.$refs.stickyInfoPanel?.clientHeight;
-    }
-  },
-  watch: {
-    stickyInfoPanelHeight(newValue) {
-      this.setStickyInfoPanelHeight(newValue);
-    }
   },
   methods: {
     ...mapMutations('app', ['setStickyInfoPanelHeight']),
@@ -229,6 +232,23 @@ export default {
         return this.studentDetails[fieldName]?.toLowerCase() !== this.studentDetailsCopy[fieldName]?.toLowerCase();
       }
       return false;
+    },
+    searchStudent() {
+      const searchParams = {
+        legalLastName: this.student.legalLastName?? null,
+        legalFirstName: this.student.legalFirstName?? null,
+        legalMiddleNames: this.student.legalMiddleNames?? null,
+        usualFirstName: this.student.usualFirstName?? null,
+        usualMiddleNames: this.student.usualMiddleNames?? null,
+        usualLastName: this.student.usualLastName?? null,
+        gradeCode: this.student.gradeCode?? null,
+        postalCode: null,
+        genderCode: this.student.genderCode?? null,
+        dob: this.student.dob? formatDob(this.student.dob) : null,
+      };
+
+      const route = router.resolve({name: 'basicSearch', query: { ...searchParams }});
+      window.open(route.href, '_blank');
     },
     openSearchDemographicsModal() {
       this.setModalStudentFromRequestStudent();

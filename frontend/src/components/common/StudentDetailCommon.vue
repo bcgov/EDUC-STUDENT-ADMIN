@@ -33,6 +33,7 @@
               </PrimaryButton>
             </v-col>
           </v-row>
+
           <StudentDetailsComboBox label="Demog Code" colspan="1"
                                   :name="STUDENT_DETAILS_FIELDS.DEMOG_CODE"
                                   @changeStudentObjectValue="changeStudentObjectValue"
@@ -48,6 +49,24 @@
                                   :has-edits="hasEdits" tab-index="15" :revert-field="revertField"
                                   :items="getDocumentTypes()" revert-id="revertDocumentTypeCode"
                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE)"></StudentDetailsComboBox>
+          <div class="mb-5" v-if="studentCopy.statusCode === STUDENT_CODES.MERGED">
+            <v-row cols="1" no-gutters>
+              <v-col>
+                <p class="mb-0">Status</p>
+              </v-col>
+            </v-row>
+            <v-chip color="#003366"
+                    small
+                    dark>
+              <Strong>{{ statusCodeObjects.filter(obj => obj.statusCode === studentCopy.statusCode)[0].label }}</Strong>
+            </v-chip>
+          </div>
+          <StudentDetailsComboBox v-else label="Status" colspan="1" name="statusCode"
+                                  @changeStudentObjectValue="changeStudentObjectValue"
+                                  :model="studentCopy.statusCode?studentCopy.statusCode:''"
+                                  :has-edits="hasEdits" tab-index="16" :revert-field="revertField"
+                                  :items="getStatusLevels()" revert-id="revertStatusCode"
+                                  :disabled="isFieldDisabledWithReadOnly('statusCode')"></StudentDetailsComboBox>
             <v-row no-gutters v-if="dateOfConfirmation" class="mb-2 pb-2">
               <v-col>
                 <div><span class="ma-0">Date Of Confirmation:</span> <span class="bolder mb-0 customNoBorder py-0 my-0"> {{dateOfConfirmation}}</span>
@@ -86,25 +105,23 @@
                                                    :name="STUDENT_DETAILS_FIELDS.UPDATED_DATE" colspan="1"
                                                    label="Updated"
                                                    :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.UPDATED_DATE)"></StudentDetailsTextFieldSideCardReadOnly>
-          <div v-if="studentCopy.statusCode === STUDENT_CODES.MERGED">
-            <v-row cols="1" no-gutters>
-              <v-col>
-                <p class="mb-0">Status</p>
-              </v-col>
-            </v-row>
-            <v-chip color="#003366"
-                    small
-                    dark>
-              <Strong>{{ statusCodeObjects.filter(obj => obj.statusCode === studentCopy.statusCode)[0].label }}</Strong>
-            </v-chip>
-          </div>
-          <StudentDetailsComboBox v-else label="Status" colspan="1" name="statusCode"
-                                  @changeStudentObjectValue="changeStudentObjectValue"
-                                  :model="studentCopy.statusCode?studentCopy.statusCode:''"
-                                  :has-edits="hasEdits" tab-index="16" :revert-field="revertField"
-                                  :items="getStatusLevels()" revert-id="revertStatusCode"
 
-                                  :disabled="isFieldDisabledWithReadOnly('statusCode')"></StudentDetailsComboBox>
+          <v-row no-gutters class="mb-2 pb-2">
+            <v-col>
+              <StudentDetailsTextFieldSideCardReadOnly :model="digitalIDType" name="CREDENTIAL_TYPE"
+                                                       colspan="1" label="Credential Type"
+                                                       :loading="loadingDigitalIDData"
+                                                       :disabled="fullReadOnly"></StudentDetailsTextFieldSideCardReadOnly>
+              <div v-if="this.getAutoMatchedDate !== null" style="font-size: small" class="mt-n5">
+                (Auto-matched {{ this.getAutoMatchedDate }})
+              </div>
+            </v-col>
+            <v-col v-if="!fullReadOnly && this.digitalIDType !== 'None'">
+                <a style="float: right;font-weight: bold" class="mr-4 mt-6" @click="unlinkStudent">
+                  Unlink Credential
+                </a>
+            </v-col>
+          </v-row>
         </v-card>
       </v-col>
       <v-col cols="7" class="py-0 pl-0">
@@ -559,6 +576,15 @@
       ></TwinnedStudentsCard>
     </v-dialog>
     <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>
+    <ConfirmationDialog ref="confirmedStudentUnlinkConfirmationDialog">
+      <template v-slot:message>
+        <v-col class="mt-n6">
+          <v-row class="mb-3">
+            Are you sure you want to unlink this student?
+          </v-row>
+        </v-col>
+      </template>
+    </ConfirmationDialog>
     <ConfirmationDialog ref="confirmedStudentUpdateConfirmationDialog">
       <template v-slot:message>
         <v-col class="mt-n6">
@@ -596,7 +622,7 @@ import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsCo
 import StudentDetailsTextFieldSideCardReadOnly from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
 import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
 import {formatDateTime, formatDob, formatMincode, formatPen} from '@/utils/format';
-import {cloneDeep, pick, sortBy} from 'lodash';
+import {cloneDeep, pick, sortBy, debounce} from 'lodash';
 import alertMixin from '../../mixins/alertMixin';
 import schoolMixin from '../../mixins/schoolMixin';
 import servicesSagaMixin from '../../mixins/servicesSagaMixin';
@@ -693,6 +719,8 @@ export default {
       unsavedChanges: false,
       gradDateAndMincode: [],
       traxStatus: '',
+      digitalIDType: '',
+      loadingDigitalIDData: false,
       loadingTraxData: false,
       loadingSchoolData: false,
       compareStudent: [],
@@ -714,6 +742,7 @@ export default {
       gradeCodes: [],
       genderLabels:[],
       genderLabel:null,
+      digitalIdentity: {},
     };
   },
   created() {
@@ -732,6 +761,12 @@ export default {
     ...mapGetters('auth', ['userInfo', 'PROCESS_STUDENT_ROLE']),
     mergedTo() {
       return this.merges.find(merge => merge.studentMergeDirectionCode === 'TO');
+    },
+    getAutoMatchedDate(){
+      if(this.digitalIdentity && this.digitalIdentity.autoMatchedDate){
+        return this.frontEndDateFormat(this.digitalIdentity.autoMatchedDate);
+      }
+      return null;
     },
     mergedFrom() {
       return sortBy(this.merges.filter(merge => merge.studentMergeDirectionCode === 'FROM'), ['mergeStudent.pen']);
@@ -830,15 +865,21 @@ export default {
     onError(e) {
       console.log(e);
     },
-    changeStudentObjectValue(key, value) {
+    changeStudentObjectValue: debounce(function (key, value, event) {
       if (key === STUDENT_DETAILS_FIELDS.DEMOG_CODE && value === 'C' && this.origStudent[`${key}`] !== 'C') {
         this.$nextTick(() => {
           this.parentRefs.studentDetailForm.validate();
         });
       }
-      this.studentCopy[`${key}`] = value?.toUpperCase();
+      this.studentCopy[`${key}`] = value?.toUpperCase().trim();
+      //PEN-1018 and PEN-1891. Calling Trim() or toUpperCase() on a string resets the cursor. SetTimeout needed to reset the cursor position after value has changed.
+      if(event) {
+        let cursorPositionStart = event.target.selectionStart;
+        let cursorPositionEnd = event.target.selectionEnd;
+        setTimeout(() => event.target.setSelectionRange(cursorPositionStart, cursorPositionEnd), 0);
+      }
       this.clearFieldError(key);
-    },
+    }, 500),
     setEnableDisableForFields(value, ...excludedFields) {
       this.enableDisableFieldsMap.forEach((fieldValue, fieldKey) => excludedFields.includes(fieldKey) ? this.enableDisableFieldsMap.set(fieldKey, fieldValue) : this.enableDisableFieldsMap.set(fieldKey, value));
     },
@@ -1144,6 +1185,11 @@ export default {
         student: student
       };
     },
+    prepPutDigitalID(digitalID) {
+      return {
+        digitalIdentity: digitalID
+      };
+    },
     getGenderCodes() {
       if (this.genders && this.genderCodes.length === 0) {
         this.genderCodes = this.genders.map(a => a.genderCode);
@@ -1222,6 +1268,7 @@ export default {
       this.merges = merges;
       this.possibleMatches = possibleMatches;
       this.getTraxData(student.pen);
+      this.getDigitalIDData(student.studentID);
     },
     formatGradDate(date) {
       return date > 0 ? moment(date + '', 'YYYYMM').format('YYYY/MM') : '';
@@ -1246,12 +1293,60 @@ export default {
           this.loadingTraxData = false;
         });
     },
+    getDigitalIDData(studentID) {
+      this.loadingDigitalIDData = true;
+      ApiService.apiAxios
+        .get(Routes.digitalIdentity.DIGITAL_ID_LIST_URL, {params: {studentID}})
+        .then(response => {
+          let digitalIDResults = response.data.digitalIDResult;
+          let digitalParsed = JSON.parse(JSON.stringify(digitalIDResults));
+          if(digitalParsed.length > 0){
+            this.digitalIdentity = digitalParsed[0];
+            this.setCredentialType(digitalParsed[0].identityTypeCode);
+          }else{
+            this.setCredentialType('None');
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          this.setFailureAlert('An error occurred while loading the digital identity for this user. Please try again later.');
+        })
+        .finally(() => {
+          this.loadingDigitalIDData = false;
+        });
+    },
+    async unlinkStudent() {
+      const confirmation = await this.$refs.confirmedStudentUnlinkConfirmationDialog.open(null, null,
+        {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, resolveText: 'Yes'});
+      if (confirmation) {
+        const body = this.prepPutDigitalID(this.digitalIdentity);
+        ApiService.apiAxios
+          .put(Routes.digitalIdentity.ROOT_ENDPOINT + '/' + this.digitalIdentity.digitalID, body)
+          .then(() => {
+            this.digitalIDType = '';
+            this.setCredentialType('None');
+            this.setSuccessAlert('Student has been successfully unlinked.');
+          })
+          .catch(error => {
+            console.log(error);
+            this.setFailureAlert('An error occurred while unlinking the digital identity for this user. Please try again later.');
+          });
+      }
+    },
     disableDemerge() {
       if (this.isProcessing || this.demergeSagaComplete || this.hasSagaInProgress(this.origStudent) || this.fullReadOnly) {
         return true;
       }
       return !(this.origStudent.statusCode === 'M' && !!this.origStudent.trueStudentID);
-
+    },
+    setCredentialType(value) {
+      if(value === 'BASIC'){
+        this.digitalIDType = 'Basic BCeID';
+      } else if(value === 'BCSC'){
+        this.digitalIDType = 'BC Services Card';
+      } else {
+        this.digitalIDType = 'None';
+      }
     },
     async demerge() {
       if (this.isStudentUpdated) {

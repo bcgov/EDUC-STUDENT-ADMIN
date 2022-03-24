@@ -2,7 +2,6 @@
   <v-row justify="center">
     <v-dialog v-model="mapSchoolCodeDialog"
               max-width="60%"
-              persistent
     >
       <template v-slot:activator="{ on, attrs }">
         <TertiaryButton id="add-school-code"
@@ -158,3 +157,11 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+  .v-select-list/deep/.v-list-item__mask {
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    background: rgba(238, 238, 238, 0.02);
+  }
+</style>

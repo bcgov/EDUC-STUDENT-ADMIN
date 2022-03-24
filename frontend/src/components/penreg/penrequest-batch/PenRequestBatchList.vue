@@ -17,6 +17,9 @@ import ApiService from '../../../common/apiService';
 import {Routes, PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
 import filtersMixin from '@/mixins/filtersMixin';
 import alertMixin from '../../../mixins/alertMixin';
+import {getSearchParam} from '@/utils/penrequest-batch/search';
+import {deepCloneObject} from '@/utils/common';
+import {formatDateTime} from '@/utils/format';
 
 export default {
   name: 'PenRequestBatchList',
@@ -28,6 +31,11 @@ export default {
     schoolGroup: {
       type: String,
       required: true
+    },
+    searchParams: {
+      type: Object,
+      required: false,
+      default: () => ({})
     },
     filters: {
       type: Array,
@@ -56,6 +64,13 @@ export default {
         { text: 'FIX', value: 'fixableCount', sortable: false, filterName: 'Fixable', countable: true, isFiltered: false, tooltip: 'Fixable Requests' },
         { text: 'DUP', value: 'duplicateCount', sortable: false, filterName: 'Duplicates', countable: true, isFiltered: false, tooltip: 'Duplicate Requests' },
         { text: 'FLT', value: 'filteredCount', sortable: false, countable: true, tooltip: 'Filtered Item Count' },
+        {
+          text: 'Load Date',
+          value: 'extractDate',
+          sortable: false,
+          tooltip: 'Loaded Date',
+          format: _.partialRight(formatDateTime, 'uuuu-MM-dd\'T\'HH:mm:ss', 'uuuu/MM/dd')
+        },
         { text: 'Submission', value: 'submissionNumber', sortable: false, tooltip: 'Submission Number' },
       ],
       loadingTable: true,
@@ -71,17 +86,17 @@ export default {
     filters: {
       handler() {
         this.setPrbStudentStatusFilters(this.selectFilters(this.headers, 'value'));
-        this.isFilterOperation = true;
-        if (this.pageNumber === 1) {
-          this.pagination();
-        } else {
-          this.pageNumber = 1;
-        }
+        this.reloadTable();
       }
     },
     schoolGroup: {
       handler() {
         this.initializeFilters();
+      }
+    },
+    searchParams: {
+      handler() {
+        this.reloadTable();
       }
     },
     loadingFiles: {
@@ -108,11 +123,15 @@ export default {
     searchCriteria() {
       const statusCriteriaList = this.prbStudentStatusFilters.map(statusCriteria => ({key: statusCriteria, operation: 'gt', value: 0, valueType: 'LONG', condition: 'OR'}));
       const statusCodeList = [PEN_REQ_BATCH_STATUS_CODES.ACTIVE, PEN_REQ_BATCH_STATUS_CODES.UNARCHIVED, PEN_REQ_BATCH_STATUS_CODES.UNARCH_CHG].join();
+      const searchParamCriteriaList = _.compact(Object.entries(this.searchParams).map(([paramName, paramValue]) =>
+        getSearchParam(paramName, paramValue))
+      );
       return [
         {
           searchCriteriaList: [
             {key: 'schoolGroupCode', operation: 'eq', value: this.schoolGroup, valueType: 'STRING'},
-            {key: 'penRequestBatchStatusCode', operation: 'in', value: statusCodeList, valueType: 'STRING', condition: 'AND'}
+            {key: 'penRequestBatchStatusCode', operation: 'in', value: statusCodeList, valueType: 'STRING', condition: 'AND'},
+            ...searchParamCriteriaList
           ]
         },
         {
@@ -127,7 +146,7 @@ export default {
     this.initializeFilters();
   },
   methods: {
-    ...mapMutations('penRequestBatch', ['setSelectedFiles', 'setPrbStudentStatusFilters', 'setPenRequestBatchResponse']),
+    ...mapMutations('penRequestBatch', ['setSelectedFiles', 'setPrbStudentStatusFilters', 'setPenRequestBatchResponse', 'setCurrentBatchFileSearchParams']),
     initializeFilters() {
       if(this.prbStudentStatusFilters?.length > 0) {
         const filterNames = this.prbStudentStatusFilters.map(filter => this.headers.find(header => header.value === filter)?.filterName);
@@ -182,14 +201,26 @@ export default {
           if (response.data && response.data.content) {
             this.initializeFiles(response.data.content);
             this.setPenRequestBatchResponse(response.data);
+            this.setCurrentBatchFileSearchParams(deepCloneObject(this.searchParams));
           }
         })
         .catch(error => {
           console.log(error);
           this.setFailureAlert('An error occurred while loading the file list. Please try again later.');
         })
-        .finally(() => (this.loadingTable = false));
-    }
+        .finally(() => {
+          this.loadingTable = false;
+          this.$emit('table-load');
+        });
+    },
+    reloadTable() {
+      this.isFilterOperation = true;
+      if (this.pageNumber === 1) {
+        this.pagination();
+      } else {
+        this.pageNumber = 1;
+      }
+    },
   }
 };
 </script>

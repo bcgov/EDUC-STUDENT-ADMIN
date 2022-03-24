@@ -52,8 +52,8 @@
                         :text="prbStudent.infoRequest"
                     ></InfoDialog>
                   </v-row>
-                  <v-row no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
-                    <span>
+                  <v-row no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white">
+                    <span style="font-size: 1.25rem">
                       <strong>{{ prbStudent.mincode }} {{ batchFile.schoolName }}</strong>
                     </span>
                     <v-spacer></v-spacer>
@@ -123,10 +123,19 @@
           </v-col>
         </v-row>
       </div>
+      <ConfirmationDialog ref="confirmedStudentUnlinkConfirmationDialog">
+        <template v-slot:message>
+          <v-col class="mt-n6">
+            <v-row class="mb-3">
+              This PEN must be merged to another PEN. Are you sure you want to unmatch this student?
+            </v-row>
+          </v-col>
+        </template>
+      </ConfirmationDialog>
       <ConfirmationDialog ref="confirmationDialog" contentClass="match-confirmation-dialog">
         <template v-slot:message>
           <v-col class="pt-0">
-            <v-row class="mb-3">There is <strong>&nbsp;{{ demogValidationResult.length }}&nbsp;</strong> questionable
+            <v-row class="mb-3">There is <strong class="mx-1">{{ demogValidationResult.length }}</strong> questionable
               {{ `error${demogValidationResult.length > 1 ? 's' : ''}` }} with this PEN request:
             </v-row>
             <v-row v-for="warning in demogValidationResult" :key="warning.description">
@@ -171,13 +180,12 @@ import {
   deepCloneObject,
   getMatchedRecordssWithDemographicsByStudent,
   getPossibleMatches,
-  getDemogValidationResults
+  getDemogValidationResults, abbreviateCamelCase
 } from '@/utils/common';
 import {formatPen} from '@/utils/format';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
 import router from '../../../router';
 import Mousetrap from 'mousetrap';
-import {activateMultipleDraggableDialog} from '@/utils/draggable';
 
 export default {
   name: 'PrbStudentDetailsDisplay',
@@ -223,7 +231,6 @@ export default {
       demogValidationResult: [],
       isStudentDataUpdated: false, // make it true, if any of the student gets updated from possible match list
       sagaId: undefined,
-      deactivateMultipleDraggableDialog: null,
       hiddenSearchFields: [STUDENT_DETAILS_FIELDS.MINCODE],
       validationWarningFields: [],
       validationErrorFields: [],
@@ -257,10 +264,16 @@ export default {
     }
   },
   computed: {
-    ...mapState('setNavigation', ['selectedIDs', 'currentRequest']),
+    ...mapState('setNavigation', ['selectedIDs', 'currentRequest', 'requestType']),
     ...mapGetters('setNavigation', ['title']),
     ...mapState('notifications', ['notification']),
     ...mapState('penRequestBatch', ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
+    nextRoute() {
+      return this.currentRequest >= this.total - 1 ? this.currentRequest : this.currentRequest + 1;
+    },
+    total() {
+      return Object.keys(this.selectedIDs).length;
+    },
     disableRefresh() {
       return this.prbStudent?.sagaInProgress || this.isArchived
           || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.FIXABLE !== this.prbStudent?.penRequestBatchStudentStatusCode;
@@ -343,7 +356,6 @@ export default {
 
   },
   beforeDestroy() {
-    this.deactivateMultipleDraggableDialog && this.deactivateMultipleDraggableDialog();
     this.clearNavigation();
   },
   mounted() {
@@ -355,11 +367,17 @@ export default {
       }
       return false;
     });
-    this.deactivateMultipleDraggableDialog = activateMultipleDraggableDialog('match-confirmation-dialog');
   },
   methods: {
     ...mapMutations('setNavigation', ['clearNavigation']),
     ...mapMutations('prbStudentSearch', ['setSelectedRecords']),
+    ...mapMutations('setNavigation', ['setCurrentRequest']),
+    clickNextBtn() {
+      let route = this.nextRoute;
+      this.setCurrentRequest(route);
+      const requestTypeAbbrev = abbreviateCamelCase(this.requestType);
+      router.push({name: `${requestTypeAbbrev}StudentDetails`, params: {[`${requestTypeAbbrev}StudentID`]: this.selectedIDs[route][`${this.requestType}StudentID`]}, query: {archived: this.archived}});
+    },
     formatPen,
     async initializeDetails() {
       this.resetValidationResult(); // reset the validation results, on clicking next or previous
@@ -575,6 +593,7 @@ export default {
      */
     async matchUnmatchStudentToPRBStudent(student, buttonText) {
       let operation;
+      let confirmation;
       if ('Match' === buttonText) {
         const result = await this.confirmToProceed();
         if (!result) {
@@ -597,37 +616,46 @@ export default {
         this.prbStudent.assignedPEN = student.pen;
         this.prbStudent.studentID = student.studentID;
         operation = 'match';
+        confirmation = true;
       } else {
         operation = 'unmatch';
+        if(PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS === this.prbStudent.penRequestBatchStudentStatusCode || PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR === this.prbStudent.penRequestBatchStudentStatusCode) {
+          confirmation = await this.$refs.confirmedStudentUnlinkConfirmationDialog.open(null, null,
+            {color: '#fff', width: 580, closeIcon: true, subtitle: false, dark: false, resolveText: 'Yes'});
+        } else {
+          confirmation = true;
+        }
       }
-      this.isMatchingToStudentRecord = true;
-      const payload = {
-        prbStudent: this.prbStudent,
-        studentID: student.studentID,
-        matchedPEN: student.pen,
-        matchedStudentIDList: this.possibleMatches.filter(el => el.studentID !== student.studentID).map(el => el.studentID)
-      };
-      const params = {
-        penNumbersInOps: student.pen
-      };
-      ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}/user-${operation}`, payload, {params})
-        .then(response => {
-          if (response.data) {
-            this.sagaId = response.data;
-            this.prbStudent.sagaInProgress = true;
-            this.setSuccessAlert(`Your request to ${operation} student to Pen Request is accepted.`);
-          }
-        })
-        .catch(error => {
-          if (error?.response?.data?.code === 409) {
-            this.setFailureAlert(error?.response?.data?.message);
-          }
-          this.setFailureAlert(`Your request to ${operation} student to Pen Request could not be accepted,  Please try again later.`);
-          console.log(error);
-        })
-        .finally(() => {
-          this.isMatchingToStudentRecord = false;
-        });
+      if(confirmation){
+        this.isMatchingToStudentRecord = true;
+        const payload = {
+          prbStudent: this.prbStudent,
+          studentID: student.studentID,
+          matchedPEN: student.pen,
+          matchedStudentIDList: this.possibleMatches.filter(el => el.studentID !== student.studentID).map(el => el.studentID)
+        };
+        const params = {
+          penNumbersInOps: student.pen
+        };
+        ApiService.apiAxios.post(`${Routes['penRequestBatch'].FILES_URL}/${this.prbStudent.penRequestBatchID}/students/${this.prbStudent.penRequestBatchStudentID}/user-${operation}`, payload, {params})
+          .then(response => {
+            if (response.data) {
+              this.sagaId = response.data;
+              this.prbStudent.sagaInProgress = true;
+              this.setSuccessAlert(`Your request to ${operation} student to Pen Request is accepted.`);
+            }
+          })
+          .catch(error => {
+            if (error?.response?.data?.code === 409) {
+              this.setFailureAlert(error?.response?.data?.message);
+            }
+            this.setFailureAlert(`Your request to ${operation} student to Pen Request could not be accepted,  Please try again later.`);
+            console.log(error);
+          })
+          .finally(() => {
+            this.isMatchingToStudentRecord = false;
+          });
+      }
     },
     /**
      * this function returns stored possible matches from DB for a particular student, backed by PEN_MATCH_API,
@@ -656,6 +684,7 @@ export default {
       const updatedPrbStudent = JSON.parse(notificationData.eventPayload);
       if (updatedPrbStudent?.penRequestBatchStudentID === this.prbStudent.penRequestBatchStudentID) {
         if (notificationData.sagaStatus === 'COMPLETED') {
+          let shouldMove = false;
           switch (notificationData?.sagaName) {
           case PRB_SAGA_NAMES.PEN_REQUEST_BATCH_NEW_PEN_PROCESSING_SAGA:
             if (this.sagaId) {
@@ -663,6 +692,7 @@ export default {
             } else {
               this.setSuccessAlert(`${updatedPrbStudent.updateUser} issued a new PEN to this pen request.`);
             }
+            shouldMove = true;
             break;
           case PRB_SAGA_NAMES.PEN_REQUEST_BATCH_USER_MATCH_PROCESSING_SAGA:
             if (this.sagaId) {
@@ -670,6 +700,7 @@ export default {
             } else {
               this.setSuccessAlert(`${updatedPrbStudent.updateUser} matched a student to this Pen Request.`);
             }
+            shouldMove = true;
             break;
           case PRB_SAGA_NAMES.PEN_REQUEST_BATCH_USER_UNMATCH_PROCESSING_SAGA:
             if (this.sagaId) {
@@ -683,6 +714,9 @@ export default {
           this.initializeDetails();
           this.prbStudent.sagaInProgress = false;
           this.sagaId = undefined; // change it after the saga is completed.
+          if(shouldMove) {
+            this.clickNextBtn();
+          }
         } else if (notificationData.sagaStatus === 'INITIATED') {
           this.prbStudent.sagaInProgress = true;
         }
@@ -753,7 +787,7 @@ export default {
           && PEN_REQ_BATCH_STUDENT_REQUEST_CODES.ERROR === this.prbStudent.penRequestBatchStudentStatusCode));
     },
     showUnmatchButton(matchedStudent) {
-      return ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR]
+      return ([PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDSYS, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.MATCHEDUSR, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENSYS, PEN_REQ_BATCH_STUDENT_REQUEST_CODES.NEWPENUSR]
         .some(element => element === this.prbStudent.penRequestBatchStudentStatusCode) && matchedStudent.studentID === this.prbStudent.studentID);
     },
     grayoutPossibleMatches(matchedStudent) {

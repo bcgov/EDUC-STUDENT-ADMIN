@@ -45,6 +45,7 @@ import ModalIdle from './components/ModalIdle';
 import NavBar from './components/util/NavBar';
 import SnackBar from './components/util/SnackBar';
 import StaticConfig from './common/staticConfig';
+import {activateMultipleDraggableDialog} from '@/utils/draggable';
 
 export default {
   name: 'app',
@@ -59,7 +60,8 @@ export default {
     return {
       showToTopBtn: false,
       bannerEnvironment: StaticConfig.BANNER_ENVIRONMENT,
-      bannerColor: StaticConfig.BANNER_COLOR
+      bannerColor: StaticConfig.BANNER_COLOR,
+      deactivateMultipleDraggableDialog: null,
     };
   },
   computed: {
@@ -72,7 +74,11 @@ export default {
       this.handleWebSocket();
     }
   },
+  beforeDestroy() {
+    this.deactivateMultipleDraggableDialog && this.deactivateMultipleDraggableDialog();
+  },
   mounted() {
+    this.deactivateMultipleDraggableDialog = activateMultipleDraggableDialog();
     this.handleWebSocket();
   },
   methods:{

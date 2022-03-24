@@ -10,7 +10,6 @@
               <v-tab key="Demographics" class="student-details-tabs-style"><strong>Demographics</strong></v-tab>
               <v-tab key="SLD" v-if="VIEW_SLD_HISTORY_ROLE" class="student-details-tabs-style"><strong>SLD History</strong></v-tab>
               <v-tab key="Audit" v-if="VIEW_AUDIT_HISTORY_ROLE" class="student-details-tabs-style"><strong>Audit History</strong></v-tab>
-              <v-tab class="student-details-tabs-style" v-if="VIEW_TRANSCRIPT_ROLE" :disabled="true"><strong>Transcript</strong></v-tab>
             </v-tabs>
           </v-row>
           <v-tabs-items v-if="!isLoading">

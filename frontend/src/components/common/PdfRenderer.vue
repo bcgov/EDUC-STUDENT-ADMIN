@@ -3,23 +3,24 @@
     <v-col>
       <v-dialog v-model="PDFRenderDialog"
                 max-width="80%"
-                persistent
       >
         <v-card>
-          <v-list-item>
-            <v-list-item-content class="pt-4 pl-2">
-              <slot name="headLine">
-                <v-list-item-title class="headline">
-                  Document Viewer
-                </v-list-item-title>
-              </slot>
-            </v-list-item-content>
-            <v-list-item-icon>
-              <v-btn id="closePDFRendererModalBtn" text icon @click="[$emit('closeDialog')]">
-                <v-icon large color="#38598A">mdi-close</v-icon>
-              </v-btn>
-            </v-list-item-icon>
-          </v-list-item>
+          <v-card-title class="px-0 pb-0 pt-5">
+            <v-list-item>
+              <v-list-item-content class="pt-0 pl-2">
+                <slot name="headLine">
+                  <v-list-item-title class="headline">
+                    Document Viewer
+                  </v-list-item-title>
+                </slot>
+              </v-list-item-content>
+              <v-list-item-icon class="my-0">
+                <v-btn id="closePDFRendererModalBtn" text icon @click="PDFRenderDialog=false">
+                  <v-icon large color="#38598A">mdi-close</v-icon>
+                </v-btn>
+              </v-list-item-icon>
+            </v-list-item>
+          </v-card-title>
           <v-spacer/>
           <v-card style="min-height: 740px">
             <v-card-text>
@@ -134,6 +135,11 @@ export default {
   watch: {
     dialog(newValue) {
       this.PDFRenderDialog = newValue;
+    },
+    PDFRenderDialog(newValue) {
+      if(!newValue && this.dialog) {
+        this.$emit('closeDialog');
+      }
     },
     documentId(newValue) {
       this.documentID = newValue;

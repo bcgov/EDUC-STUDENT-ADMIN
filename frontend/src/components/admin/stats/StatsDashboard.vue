@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="6" v-if="STUDENT_ANALYTICS_BATCH">
         <router-link v-if="mergeChartdata && mergeLabels" :to="{ name: 'merges'}">
-          <bar-chart-container v-if="mergeChartdata && mergeLabels" class="pt-4" :displayYAxis="false" :labels="mergeLabels" :chart-data="mergeChartdata" :data-type="CHART_TYPES.MERGES"></bar-chart-container>
+          <bar-chart-container v-if="mergeChartdata && mergeLabels" class="pt-4" :displayYAxis="false" :labels="mergeLabels" :chart-data="mergeChartdata" :title="CHART_TYPES.MERGES" :data-type="CHART_TYPES.MERGES" annualTotal></bar-chart-container>
         </router-link>
         <v-card v-else-if="loadingMerge" class="mx-auto pa-4">
           <v-row align="center" justify="center">
@@ -30,7 +30,7 @@
       </v-col>
       <v-col cols="6" v-if="STUDENT_ANALYTICS_BATCH">
         <router-link v-if="newPenChartdata && newPenLabels" :to="{ name: 'new-pens'}">
-          <bar-chart-container class="pb-4" :displayYAxis="false" :labels="newPenLabels" :chart-data="newPenChartdata" :data-type="CHART_TYPES.NEW_PENS"></bar-chart-container>
+          <bar-chart-container class="pb-4" :displayYAxis="false" :labels="newPenLabels" :chart-data="newPenChartdata" :title="CHART_TYPES.NEW_PENS" :data-type="CHART_TYPES.NEW_PENS" annualTotal></bar-chart-container>
         </router-link>
         <v-card v-else-if="loadingNewPen" class="mx-auto pa-4">
           <v-row align="center" justify="center">
@@ -112,7 +112,7 @@ export default {
 
     },
     fillMergeData() {
-      ApiService.apiAxios.get(CHART_STAT_URLS.MERGE+'?statsType=MERGES_IN_LAST_12_MONTH')
+      ApiService.apiAxios.get(CHART_STAT_URLS.MERGE+'?statsType=MERGES_IN_LAST_13_MONTH')
         .then(response => {
           this.mergeLabels = response.data.labels;
           this.mergeChartdata = response.data.data;

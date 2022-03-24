@@ -2,6 +2,7 @@ let baseRoot = '/api';
 const authRoot = baseRoot + '/auth';
 const penRequestBatchRoot = baseRoot + '/penRequestBatch';
 const penRequestRoot = baseRoot + '/penRequest';
+const digitalIDRoot = baseRoot + '/digitalID';
 const sldRequestRoot = baseRoot + '/sld';
 const studentRequestRoot = baseRoot + '/studentRequest';
 const demographicRoot = baseRoot + '/studentDemographics';
@@ -23,6 +24,11 @@ let object = {
   USER: authRoot + '/user',
   SESSION_REMAINING_TIME: authRoot + '/user-session-remaining-time',
 
+  digitalIdentity: {
+    ROOT_ENDPOINT: digitalIDRoot,
+    DIGITAL_ID_LIST_URL: digitalIDRoot + '/list'
+  },
+
   penRequestBatch: {
     ROOT_ENDPOINT: penRequestBatchRoot,
     STATS_URL: penRequestBatchRoot + '/stats',
@@ -30,6 +36,7 @@ let object = {
     SOURCE_URL: penRequestBatchRoot + '/source',
     SOURCE_METADATA_URL: penRequestBatchRoot + '/sourceMetadata',
     STUDENTS_SEARCH_URL: penRequestBatchRoot + '/students',
+    SAME_PEN_SEARCH_URL: penRequestBatchRoot + '/same-pen',
     STUDENT_STATUS_CODE_URL: penRequestBatchRoot + '/studentStatusCodes',
     MATCH_OUTCOME_URL: penRequestBatchRoot + '/matchOutcome',
     STUDENT_INFO_MACROS_URL: macroRoot + '/?businessUseTypeCode=PENREG&macroTypeCode=INFOREQ',

@@ -2,19 +2,20 @@
   <v-dialog           
           id="studentDetailDialog"
           v-model="isDialogOpen"
-          persistent
           content-class="studentDialog">
-    <v-card class="studentDetailDialogCard fill-height ma-0 pa-4">
-        <v-list-item>
-          <v-list-item-content style="padding-bottom: 0px; padding-top: 0px">
-            <v-list-item-title class="headline">Student Details</v-list-item-title>
-          </v-list-item-content>
-          <v-list-item-icon style="margin: 0px;">
-            <v-btn text icon @click="$emit('closeDialog')">
-              <v-icon large color="#38598A">mdi-close</v-icon>
-            </v-btn>
-          </v-list-item-icon>
-        </v-list-item>
+    <v-card class="studentDetailDialogCard fill-height ma-0 px-4 pb-4">
+        <v-card-title class="px-0 pb-0 pt-5">
+          <v-list-item>
+            <v-list-item-content style="padding-bottom: 0px; padding-top: 0px">
+              <v-list-item-title class="headline">Student Details</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-icon style="margin: 0px;">
+              <v-btn text icon @click="isDialogOpen=false">
+                <v-icon large color="#38598A">mdi-close</v-icon>
+              </v-btn>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-card-title>
         <v-col>
           <StudentDetailCommon 
             class="mx-3"
@@ -82,7 +83,12 @@ export default {
   watch: {
     openDialog(val) {
       this.isDialogOpen = val;
-    }
+    },
+    isDialogOpen(newValue) {
+      if(!newValue && this.openDialog) {
+        this.$emit('closeDialog');
+      }
+    },
   }
 };
 </script>

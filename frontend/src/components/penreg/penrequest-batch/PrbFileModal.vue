@@ -3,9 +3,10 @@
       id="prbFileModal"
       v-model="isFileViewerOpen"
       max-width="85%"
-      persistent
   >
-    <v-card class="studentDetailDialogCard fill-height ma-0 pa-4">
+    <v-card class="studentDetailDialogCard fill-height ma-0 px-4 pb-4">
+      <v-card-title class="px-0 pb-0 pt-5">
+      </v-card-title>
       <div v-if="!loading" class="file-header-box">
         <span>{{`File: ${penWebBlob.fileName}`}}</span>
         <span>{{`Mincode: ${penWebBlob.mincode}`}}</span>
@@ -23,7 +24,7 @@
         <PrimaryButton
             id="closeFileViewer"
             text="Close"
-            @click.native="$emit('closeDialog')">
+            @click.native="isFileViewerOpen=false">
         </PrimaryButton>
       </div>
     </v-card>
@@ -59,6 +60,11 @@ export default {
   watch: {
     openDialog(val) {
       this.isFileViewerOpen = val;
+    },
+    isFileViewerOpen(newValue) {
+      if(!newValue && this.openDialog) {
+        this.$emit('closeDialog');
+      }
     },
     submissionNumber(val) {
       this.submissionNumber = val;
@@ -104,7 +110,7 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin: -8px 6px 4px 6px;
+  margin: 0px 6px 4px 6px;
   font-size: 0.8em;
 }
 .text-area-box {

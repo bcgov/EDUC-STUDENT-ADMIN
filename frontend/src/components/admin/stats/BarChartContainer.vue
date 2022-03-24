@@ -4,7 +4,7 @@
       <bar-chart ref='chart' :chartData="data" :options="options" :styles="styles"></bar-chart>
       <v-card-text class="v-card-text--offset pt-0">
         <div class="text-h6 font-weight-light mb-2">
-          {{ dataType }}
+          {{ title }}
         </div>
         <v-divider class="my-2"></v-divider>
         <v-icon
@@ -13,7 +13,7 @@
         >
           mdi-calculator
         </v-icon>
-        <span class="text-caption grey--text font-weight-light">There are {{ average }} {{ dataType.toLowerCase() }} on average</span>
+        <span class="text-caption grey--text font-weight-light">{{ description }}</span>
       </v-card-text>
     </v-card>
   </div>
@@ -37,6 +37,10 @@ export default {
     },
     dataType: {
       type: String,
+      default: ''
+    },
+    title: {
+      type: String,
       required: true
     },
     heightValue: {
@@ -48,6 +52,10 @@ export default {
       type: Boolean,
       required: false,
       default: true
+    },
+    annualTotal: {
+      type: Boolean,
+      default: false
     }
   },
   data: () => ({
@@ -84,6 +92,16 @@ export default {
   computed: {
     average() {
       return Math.round(this.chartData.reduce((partial_sum, a) => partial_sum + a,0) / this.chartData.length);
+    },
+    total() {
+      return this.chartData.slice(-12).reduce((partial_sum, a) => partial_sum + a,0);
+    },
+    description() {
+      let desc = `There are ${this.average} ${this.title.toLowerCase()} on average`;
+      if(this.annualTotal) {
+        desc += ` and a total of ${this.total} ${this.dataType.toLowerCase()} in the last 12 months`;
+      }
+      return desc;
     }
   },
   methods: {

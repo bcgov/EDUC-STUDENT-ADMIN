@@ -2,10 +2,11 @@
   <v-dialog
     id="historyModal"
     v-model="modalOpen"
-    persistent
     max-width="65%"
   >
     <v-card fluid class="px-6 pt-2" elevation="0">
+      <v-card-title class="px-0 pb-0 pt-5">
+      </v-card-title>
       <v-row>
         <div class="flex-grow-1 pt-0 px-3">
           <DataListItem
@@ -19,7 +20,7 @@
         </div>
         <div class="pt-0 d-flex justify-end">
           <PrimaryButton id="repostBtn" class="mr-5" text="Repost Reports" @click.native="repostReports" :disabled="batchFile.sagaInProgress" :loading="isProcessing"></PrimaryButton>
-          <v-btn id="closeModalBtn" text icon @click="closeModal">
+          <v-btn id="closeModalBtn" text icon @click="modalOpen=false">
             <v-icon large color="#38598A">mdi-close</v-icon>
           </v-btn>
         </div>     
@@ -143,6 +144,11 @@ export default {
         this.modalOpen = v;
       }
     },
+    modalOpen(newValue) {
+      if(!newValue && this.value) {
+        this.$emit('input', this.modalOpen);
+      }
+    },
     notification(notificationData) {
       if (notificationData) {
         if (notificationData.penRequestBatchID === this.batchFile.penRequestBatchID && notificationData.sagaStatus === 'COMPLETED' &&
@@ -156,10 +162,6 @@ export default {
   },
   methods: {
     formatTableColumn,
-    closeModal() {
-      this.modalOpen = false;
-      this.$emit('input', this.modalOpen);
-    },
     loadPenWebBlobs() {
       this.loadingTable = true;
       const req = {

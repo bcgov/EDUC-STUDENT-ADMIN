@@ -247,6 +247,8 @@ async function getStudentDemographicsById(req, res) {
         message: 'No access token'
       });
     }
+
+    let statusCode;
     if(config.get('server:enablePrrStudentDemographics')) {
       const response = await utils.getData(token, config.get('server:student:rootURL') + '/', {params: {pen: req.params.id}});
       if(response.length === 0) {
@@ -269,6 +271,7 @@ async function getStudentDemographicsById(req, res) {
         grade: response[0]['gradeCode'],
         mincode: response[0]['mincode']
       };
+      statusCode = response[0]['statusCode'];
     } else {
       const response = await utils.getData(token, config.get('server:demographicsURL') + '/' + req.params.id);
       const birthDate = utils.formatDate(response['studBirth']);
@@ -284,7 +287,8 @@ async function getStudentDemographicsById(req, res) {
       usualMiddle: req['session'].studentDemographics['usualMiddle'],
       usualLast: req['session'].studentDemographics['usualSurname'],
       dob: req['session'].studentDemographics['dob'],
-      gender: req['session'].studentDemographics['studGender']
+      gender: req['session'].studentDemographics['studGender'],
+      statusCode,
     };
     return res.status(200).json(formattedResponse);
   } catch (e) {

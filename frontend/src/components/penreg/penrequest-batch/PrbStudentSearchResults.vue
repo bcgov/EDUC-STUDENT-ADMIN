@@ -4,6 +4,9 @@
       <h3 id="numberResults" class="px-2 pb-2"><strong>{{ prbStudentSearchResponse.totalElements }} Records</strong> ({{selectedFiles.length}} files selected)</h3>
       <v-icon class="mt-1" color="#2E8540" v-if="archived">mdi-package-up</v-icon>
       <v-spacer/>
+      <v-flex class="select mr-n10">
+        <v-checkbox id="showSamePENAssignedCheckbox" class="ma-0 pa-0" height="100%" label="Same PEN Assigned" color="#606060" v-model="showSamePENAssigned"></v-checkbox>
+      </v-flex>
       <v-flex class="select mr-1">
         <v-select
           id="selectStatus"
@@ -55,9 +58,9 @@
                   </template>
                   <span>{{getSchoolName(props.item) }}</span>
                 </v-tooltip>
-                <span v-else>{{ props.item[header.topValue] }}</span>
+                <span v-else :class="[{'mark-field-value-errored':isFieldValueErrored(header.topValue, props.item)}]">{{ props.item[header.topValue] }}</span>
               </span>
-              <span class="double-column-item">{{props.item[header.doubleValue]}}</span>
+              <span :class="['double-column-item', {'mark-field-value-errored':isFieldValueErrored(header.doubleValue, props.item)}]">{{props.item[header.doubleValue]}}</span>
               <br>
               <span class="bottom-column-item mt-1">
                 <PrbStudentStatusChip 
@@ -68,7 +71,7 @@
                   class="bottom-column-item">
                   {{props.item[header.bottomValue]}}
                 </span>
-                <span v-else class="bottom-column-item">{{ props.item[header.bottomValue] !== props.item[header.topValue] ? props.item[header.bottomValue]: '' }}</span>
+                <span v-else :class="['bottom-column-item', {'mark-field-value-errored':isFieldValueErrored(header.bottomValue, props.item)}]">{{ props.item[header.bottomValue] !== props.item[header.topValue] ? props.item[header.bottomValue]: '' }}</span>
               </span>
             </div>
           </td>
@@ -92,7 +95,10 @@ import PrimaryButton from '../../util/PrimaryButton';
 import PrbStudentStatusChip from './PrbStudentStatusChip';
 import {sortBy, uniqBy, values} from 'lodash';
 import router from '../../../router';
-import {PEN_REQ_BATCH_STUDENT_REQUEST_CODES, Routes} from '../../../utils/constants';
+import {
+  PEN_REQ_BATCH_STUDENT_REQUEST_CODES,
+  Routes
+} from '../../../utils/constants';
 import ApiService from '@/common/apiService';
 
 export default {
@@ -168,6 +174,14 @@ export default {
       },
       set(status){
         return this.$store.state['prbStudentSearch'].selectedStudentStatus = status;
+      }
+    },
+    showSamePENAssigned: {
+      get(){
+        return this.$store.state['prbStudentSearch'].showSamePENAssigned;
+      },
+      set(status){
+        return this.$store.state['prbStudentSearch'].showSamePENAssigned = status;
       }
     },
     selected() {
@@ -292,7 +306,10 @@ export default {
       const statusFilters = '';
       const route = router.resolve({name: 'prbStudentList', query: { batchIDs, statusFilters }});
       window.open(route.href, '_blank');
-    }
+    },
+    isFieldValueErrored(fieldName, record) {
+      return record.validationIssues?.some(issue => issue.dataFieldName === fieldName && issue.penRequestBatchValidationIssueSeverityCode === 'ERROR');
+    },
   }
 };
 </script>
@@ -374,5 +391,10 @@ export default {
 
   .select {
     max-width: 245px;
+  }
+
+  .mark-field-value-errored {
+    color: #D8292F !important;
+    font-weight: bold;
   }
 </style>

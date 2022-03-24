@@ -9,16 +9,16 @@ const {logApiError} = require('../components/utils');
 const logger = require('../components/logger');
 const utils = require('./utils');
 
-function getLast12MonthsPaginatedStats(url) {
+function getLast13MonthsPaginatedStats(url) {
   return function (req, res) {
     try {
       let today = LocalDateTime.now();
       let requestPromises = [];
       let labels = [];
-      for (let i = 11; i >= 0; i--) {
+      for (let i = 12; i >= 0; i--) {
         let startDate = today.minusMonths(i).withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
         let endDate = today.minusMonths(i).withDayOfMonth(today.minusMonths(i).toLocalDate().lengthOfMonth()).withHour(23).withMinute(59).withSecond(59);
-        labels.push(startDate.month());
+        labels.push((i === 0) ? 'CURRENT' : startDate.month());
         let params = {
           params: {
             pageNumber: 0,
@@ -69,12 +69,12 @@ function getStatsByStatsType(url) {
   };
 }
 
-function getNumberOfMergesInLast12Month(req, res) {
-  getData(getBackendToken(req), config.get('server:penServices:rootURL') + '/merges/stats?statsType=NUMBER_OF_MERGES_IN_LAST_12_MONTH')
+function getNumberOfMergesInLast13Month(req, res) {
+  getData(getBackendToken(req), config.get('server:penServices:rootURL') + '/merges/stats?statsType=NUMBER_OF_MERGES_IN_LAST_13_MONTH')
     .then(response => {
       return res.status(HttpStatus.OK).json({
-        labels: Object.keys(response.numberOfMergesInLastTwelveMonth),
-        data: Object.values(response.numberOfMergesInLastTwelveMonth)
+        labels: Object.keys(response.numberOfMergesInLastMonths),
+        data: Object.values(response.numberOfMergesInLastMonths)
       });
     }).catch(e => {
       return errorResponse(res, e.data, e.status);
@@ -131,8 +131,8 @@ const getMergeStats = async (req, res) => {
   let backMidnight = today.withHour(0).withMinute(0).withSecond(0).withNano(0);
   let yesterday;
   switch (statsType) {
-  case 'MERGES_IN_LAST_12_MONTH':
-    return getNumberOfMergesInLast12Month(req, res);
+  case 'MERGES_IN_LAST_13_MONTH':
+    return getNumberOfMergesInLast13Month(req, res);
   case 'MERGE_DETAILS_TODAY':
     yesterday = backMidnight;
     return findMergeDetailsBetween(req, res, yesterday.toString(), today.toString());
@@ -150,6 +150,6 @@ const getMergeStats = async (req, res) => {
 module.exports = {
   getGMPStatsByStatsType: getStatsByStatsType(config.get('server:penRequest:rootURL')),
   getUMPStatsByStatsType: getStatsByStatsType(config.get('server:studentRequest:rootURL')),
-  getNewPenStats: getLast12MonthsPaginatedStats(config.get('server:student:rootURL') + '/paginated'),
+  getNewPenStats: getLast13MonthsPaginatedStats(config.get('server:student:rootURL') + '/paginated'),
   getMergeStats
 };

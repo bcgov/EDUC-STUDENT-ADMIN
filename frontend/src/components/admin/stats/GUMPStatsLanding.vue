@@ -2,12 +2,12 @@
   <v-container fluid>
     <v-row dense>
       <v-col
-        key="completionsLast12months"
+        key="completionsLast13Months"
         cols="6"
       >
-        <bar-chart-container v-if="completionsLast12Month && completionsLast12MonthLabels" :displayYAxis="false"
-                             :labels="completionsLast12MonthLabels" :chart-data="completionsLast12Month"
-                             data-type="Completions Last 12 month"></bar-chart-container>
+        <bar-chart-container v-if="completionsLast13Month && completionsLast13MonthLabels" :displayYAxis="false"
+                             :labels="completionsLast13MonthLabels" :chart-data="completionsLast13Month"
+                             title="Completions Last 13 months" data-type="Completions" annualTotal></bar-chart-container>
         <Spinner v-else/>
       </v-col>
       <v-col
@@ -51,7 +51,7 @@
       >
         <bar-chart-container v-if="completionsLastWeek && completionsLastWeekLabels" :displayYAxis="false"
                              :labels="completionsLastWeekLabels" :chart-data="completionsLastWeek"
-                             data-type="Completions Last week"></bar-chart-container>
+                             title="Completions Last week"></bar-chart-container>
         <Spinner v-else/>
       </v-col>
       <v-col
@@ -60,7 +60,7 @@
       >
         <DoughnutChartContainer v-if="CHART_STAT_URLS[`${requestTypeWithAllUpperCase}_ALL_STATUS_LAST_12_MONTH`]"
                                 :key="refreshIdx"
-                                data-type="All Statuses Last 12 month" span-content="All statuses last 12 month"
+                                data-type="All Statuses Last 12 months" span-content="All statuses last 12 months"
                                 :completion-states="COMPLETION_STATES[requestTypeWithAllUpperCase]"
                                 :url="CHART_STAT_URLS[`${requestTypeWithAllUpperCase}_ALL_STATUS_LAST_12_MONTH`]"></DoughnutChartContainer>
       </v-col>
@@ -106,8 +106,8 @@ export default {
     CHART_STAT_URLS: CHART_STAT_URLS,
     COMPLETION_STATES: COMPLETION_STATES,
     CHART_TYPES: CHART_TYPES,
-    completionsLast12Month: null,
-    completionsLast12MonthLabels: null,
+    completionsLast13Month: null,
+    completionsLast13MonthLabels: null,
     completionsLastWeekLabels: null,
     completionsLastWeek: null,
     completionsCurrentMonth: null,
@@ -128,8 +128,8 @@ export default {
   },
   watch: {
     requestType() {
-      this.completionsLast12Month = null;
-      this.completionsLast12MonthLabels = null;
+      this.completionsLast13Month = null;
+      this.completionsLast13MonthLabels = null;
       this.completionsLastWeekLabels = null;
       this.completionsLastWeek = null;
       this.completionsCurrentMonth = null;
@@ -152,10 +152,10 @@ export default {
     loadData() {
       const requestTypeWithFirstUpperCase = capitalizeFirstLetter(this.requestType);
       const baseUrl = CHART_STAT_URLS[`${this.requestTypeWithAllUpperCase}_STATS`];
-      ApiService.apiAxios.get(baseUrl + '?statsType=COMPLETIONS_LAST_12_MONTH')
+      ApiService.apiAxios.get(baseUrl + '?statsType=COMPLETIONS_LAST_13_MONTH')
         .then(response => {
-          this.completionsLast12Month = Object.values(response.data.completionsInLastTwelveMonth);
-          this.completionsLast12MonthLabels = Object.keys(response.data.completionsInLastTwelveMonth);
+          this.completionsLast13Month = Object.values(response.data.completionsInLastMonths);
+          this.completionsLast13MonthLabels = Object.keys(response.data.completionsInLastMonths);
         })
         .catch(e => {
           console.error(e);

@@ -1,12 +1,12 @@
 <template>
   <v-card fluid class="px-4" elevation="0">
-    <v-card-title class="px-0 pb-0">
+    <v-card-title class="px-0 pb-0 pt-5">
       <v-row>
-        <v-col v-if="title" cols="10" class="pr-0 ml-2">
+        <v-col v-if="title" cols="10" class="pr-0 pt-0 ml-2">
           {{ title }}
         </v-col>
 
-        <v-col class="pt-0">
+        <v-col class="pt-0 d-flex justify-end">
           <v-btn id="closeStudentsMergeModalBtn" text icon
                  @click=closeStudentsMergeModal>
             <v-icon large color="#38598A">mdi-close</v-icon>

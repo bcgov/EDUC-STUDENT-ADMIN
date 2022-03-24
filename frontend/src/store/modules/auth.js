@@ -47,7 +47,7 @@ export default {
     EDIT_MACROS_ROLE: state => state.isValidStaffAdministrationAdmin,
     CREATE_NEW_PEN_ROLE: state => state.isValidStaffAdministrationAdmin,
     NOMINAL_ROLL_READ_ONLY_ROLE: state => state.isValidNominalRollReadOnly,
-    NOMINAL_ROLL_ROLE: state => state.isValidNominalRollUser,
+    NOMINAL_ROLL_ROLE: state => state.isValidNominalRollReadOnly || state.isValidNominalRollUser,
     EDIT_NOMINAL_ROLL_ROLE: state => state.isValidNominalRollAdmin,
     STAFF_ADMINISTRATION_ADMIN: state => state.isValidNominalRollAdmin || state.isValidStaffAdministrationAdmin, //gives access to admin section of navigation menu
     STUDENT_ANALYTICS_STUDENT_PROFILE: state => state.isValidGUMPAnalyticsUser,

@@ -40,13 +40,14 @@ import {
   Routes,
   SEARCH_CONDITION,
   SEARCH_FILTER_OPERATION,
-  SEARCH_VALUE_TYPE
+  SEARCH_VALUE_TYPE,
+  PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER
 } from '@/utils/constants';
 import {mapMutations, mapState} from 'vuex';
 import PrbStudentSearchResults from './PrbStudentSearchResults';
 import {formatPrbStudents} from '@/utils/penrequest-batch/format';
 import alertMixin from '../../../mixins/alertMixin';
-import {difference} from 'lodash';
+import _, {difference} from 'lodash';
 import Mousetrap from 'mousetrap';
 import router from '@/router';
 import PenRequestSearchPanel from '@/components/common/PenRequestSearchPanel';
@@ -81,7 +82,7 @@ export default {
     };
   },
   computed:{
-    ...mapState('prbStudentSearch', ['pageNumber', 'selectedRecords', 'prbStudentSearchResponse', 'selectedStudentStatus', 'currentPrbStudentSearchParams', 'prbStudentSearchCriteria']),
+    ...mapState('prbStudentSearch', ['pageNumber', 'selectedRecords', 'prbStudentSearchResponse', 'selectedStudentStatus', 'currentPrbStudentSearchParams', 'prbStudentSearchCriteria', 'showSamePENAssigned']),
     prbStudentSearchParams: {
       get(){
         return this.$store.state['prbStudentSearch'].prbStudentSearchParams;
@@ -124,6 +125,11 @@ export default {
         this.initialSearch();
       }
     },
+    showSamePENAssigned: {
+      handler() {
+        this.initialSearch();
+      }
+    },
   },
   mounted() {
     Mousetrap.bind('ctrl+b', () => {
@@ -149,6 +155,23 @@ export default {
       this.searchEnabled = Object.values(this.prbStudentSearchParams).some(v => !!v);
       return this.searchEnabled;
     },
+    async getSamePENStudents(){
+      const params = {
+        params: {
+          batchIDs: this.batchIDs,
+        }
+      };
+      return ApiService.apiAxios
+        .get(Routes['penRequestBatch'].SAME_PEN_SEARCH_URL, params)
+        .then(response => {
+          return response.data;
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while loading getSamePENStudents. Please try again later.');
+          console.log(error);
+          throw error;
+        });
+    },
     initialSearch() {
       if(this.currentPrbStudentSearchParams) {
         this.prbStudentSearchParams = JSON.parse(JSON.stringify(this.currentPrbStudentSearchParams));
@@ -158,14 +181,14 @@ export default {
         this.searchHasValues();
       }
     },
-    searchPenRequests(initial = false) {
+    async searchPenRequests(initial = false) {
       this.searchLoading = true;
       this.prbStudentSearchResultsKey += 1; //forces prbStudentSearchResults to rerender and update curPage
       this.disablePageHandler=true;
       this.setPageNumber(1);
 
       if(initial || (this.$refs.prbStudentSearchForm.validate() && this.searchHasValues())) {
-        const searchCriteria = this.prbStudentSearchCriteriaList(this.prbStudentSearchParams);
+        const searchCriteria = await this.prbStudentSearchCriteriaList(this.prbStudentSearchParams);
         this.retrievePenRequests(searchCriteria, true)
           .then(() => {
             this.setCurrentPrbStudentSearchParams(JSON.parse(JSON.stringify(this.prbStudentSearchParams)));
@@ -192,6 +215,7 @@ export default {
 
       students.forEach(rec => {
         rec.isSelected = this.isSelected(rec);
+        rec.validationIssues = [];
       });
 
       formatPrbStudents(students);
@@ -201,8 +225,21 @@ export default {
       const foundItem = this.selectedRecords?.find(item => item?.penRequestBatchStudentID === rec.penRequestBatchStudentID);
       return !!foundItem;
     },
-    prbStudentSearchCriteriaList(searchParams) {
+    async prbStudentSearchCriteriaList(searchParams) {
       let optionalCriteriaList = [this.prbStudentStatusSearchCriteria];
+
+      if(this.showSamePENAssigned){
+        let students = await this.getSamePENStudents();
+        if(students.length > 0){
+          optionalCriteriaList.push({
+            key: 'penRequestBatchStudentID',
+            operation: SEARCH_FILTER_OPERATION.IN,
+            value: students.join(','),
+            valueType: SEARCH_VALUE_TYPE.UUID,
+            condition: SEARCH_CONDITION.AND
+          });
+        }
+      }
 
       const prbStudentSearchKeys = Object.keys(searchParams).filter(k => (searchParams[k] && searchParams[k].length !== 0));
       if (prbStudentSearchKeys && prbStudentSearchKeys.length > 0) {
@@ -234,7 +271,12 @@ export default {
       }];
 
     },
-    retrievePenRequests(searchCriteria, isFilterOperation) {
+    async retrievePenRequests(searchCriteria, isFilterOperation) {
+      let crit = searchCriteria;
+      if(_.isEmpty(searchCriteria)) {
+        crit = await this.prbStudentSearchCriteriaList(this.prbStudentSearchParams);
+      }
+
       const params = {
         params: {
           pageNumber: this.pageNumber-1,
@@ -244,18 +286,52 @@ export default {
             legalFirstName: 'ASC',
             legalMiddleNames: 'ASC'
           },
-          searchQueries: searchCriteria || this.prbStudentSearchCriteriaList(this.prbStudentSearchParams),
+          searchQueries: crit,
         }
       };
 
       return ApiService.apiAxios
         .get(Routes['penRequestBatch'].STUDENTS_SEARCH_URL, params)
         .then(response => {
-          response.data && response.data.content && this.initializePrbStudents(response.data.content, isFilterOperation);
-          this.setPrbStudentSearchResponse(response.data);
+          if(response.data && response.data.content) {
+            this.initializePrbStudents(response.data.content, isFilterOperation);
+            this.setPrbStudentSearchResponse(response.data);
+            const prbStudentIDs = response.data.content.map(prbStudent => prbStudent.penRequestBatchStudentID);
+            return this.retrieveValidationIssuesByBatchStudentIDs(prbStudentIDs);
+          }
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while loading the PEN requests. Please try again later.');
+          console.log(error);
+          throw error;
+        });
+    },
+    retrieveValidationIssuesByBatchStudentIDs(prbStudentIDs) {
+      const params = {
+        params: {
+          penRequestBatchStudentIDs: prbStudentIDs.join(','),
+        }
+      };
+
+      return ApiService.apiAxios.get(Routes.penRequestBatch.ROOT_ENDPOINT + '/students/validation-issues', params)
+        .then(response => {
+          const validationIssues = response.data.reduce((result, issue) => {
+            issue.dataFieldName = PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER[issue.penRequestBatchValidationFieldCode];
+
+            const prbStudentValidationIssues = result[issue.penRequestBatchStudentID];
+            if(prbStudentValidationIssues) {
+              prbStudentValidationIssues.push(issue);
+            } else {
+              result[issue.penRequestBatchStudentID] = [issue];
+            }
+            return result;
+          }, {});
+          this.prbStudentSearchResponse.content.forEach(prbStudent => {
+            prbStudent.validationIssues = validationIssues[prbStudent.penRequestBatchStudentID] || [];
+          });
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while loading the validation issues. Please try again later.');
           console.log(error);
           throw error;
         });

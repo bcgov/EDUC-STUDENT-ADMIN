@@ -1,13 +1,12 @@
 <template>
   <v-dialog
           id="mergeStudentsModal"
-          v-model="mergeStudentsModalOpen"
-          persistent
+          v-model="dialog"
           max-width="43%"
   >
     <v-card id="mergeStudentsDialogCard">
       <MergeStudentsCommon
-          :mergeStudentsModalOpen=mergeStudentsModalOpen
+          :mergeStudentsModalOpen=dialog
           :mergedToStudentID=mergedToStudentID
           :mergedFromStudentID=mergedFromStudentID
           :title=PAGE_TITLES.MERGE_STUDENTS
@@ -43,8 +42,22 @@ export default {
   },
   data() {
     return {
-      PAGE_TITLES
+      PAGE_TITLES,
+      dialog: false,
     };
+  },
+  created() {
+    this.dialog = this.mergeStudentsModalOpen;
+  },
+  watch: {
+    mergeStudentsModalOpen(newValue) {
+      this.dialog = newValue;
+    },
+    dialog(newValue) {
+      if(!newValue && this.mergeStudentsModalOpen) {
+        this.$emit('mergeStudentsModalOpenEmit', newValue);
+      }
+    },
   },
   methods: {
     mergeStudentsModalOpenEmit(value){

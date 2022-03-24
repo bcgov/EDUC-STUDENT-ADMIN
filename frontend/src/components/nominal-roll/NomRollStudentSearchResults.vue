@@ -18,11 +18,12 @@
         ></v-select>
       </v-flex>
       <div v-if="!hasReadOnlyRoleAccess()">
-        <PrimaryButton id="unignoreRecord" v-if="!canIgnore" :disabled="!canRecover" @click.native="clickRecover" text="Recover Record"></PrimaryButton>
-        <PrimaryButton id="ignoreRecord" v-else :disabled="!canIgnore" @click.native="clickIgnore" text="Ignore Record"></PrimaryButton>
-        <PrimaryButton id="viewSelected" class="ml-1" v-if="selected" :disabled="!viewSelectionEnabled" @click.native="clickViewSelected" text="View Selected"></PrimaryButton>
-        <PrimaryButton id="viewDetails" class="ml-1" v-else :loading="loadingRequestIDs" :disabled="!viewDetailsEnabled || hasReadOnlyRoleAccess()" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
+        <PrimaryButton id="unignoreRecord" v-if="!canIgnore" :disabled="!canRecover || isPosted" @click.native="clickRecover" text="Recover Record"></PrimaryButton>
+        <PrimaryButton id="ignoreRecord" v-else :disabled="!canIgnore || isPosted" @click.native="clickIgnore" text="Ignore Record"></PrimaryButton>
+        <PrimaryButton id="viewSelected" class="ml-1" v-if="selected" :disabled="!viewSelectionEnabled || isPosted" @click.native="clickViewSelected" text="View Selected"></PrimaryButton>
+        <PrimaryButton id="viewDetails" class="ml-1" v-else :loading="loadingRequestIDs" :disabled="!viewDetailsEnabled || hasReadOnlyRoleAccess() || isPosted" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
         <PrimaryButton id="postRecords" class="ml-1" :loading="processing" :disabled="isPosted || hasReadOnlyRoleAccess()" @click.native="clickPostRecords" text="Post"></PrimaryButton>
+        <PrimaryButton id="exportIgnored" class="ml-1" :loading="processing" :disabled="hasReadOnlyRoleAccess() || !hasFilterOnlyIgnored()" @click.native="retrieveAndDownloadIgnoredPenRequests" text="Export Ignored"></PrimaryButton>
       </div>
     </v-row>
     <v-divider class="mb-1 subheader-divider"/>
@@ -224,13 +225,19 @@ import PrimaryButton from '../util/PrimaryButton';
 import NomRollStudentStatusChip from './NomRollStudentStatusChip';
 import {uniqBy, values, partialRight} from 'lodash';
 import router from '../../router';
-import {NOMINAL_ROLL_STUDENT_STATUS_CODES, NOMINAL_ROLL_STUDENT_STATUSES, Routes} from '../../utils/constants';
+import {
+  NOMINAL_ROLL_STUDENT_STATUS_CODES,
+  NOMINAL_ROLL_STUDENT_STATUSES,
+  Routes, SEARCH_CONDITION,
+  SEARCH_FILTER_OPERATION, SEARCH_VALUE_TYPE
+} from '../../utils/constants';
 import ApiService from '@/common/apiService';
 import {formatDob, formatPen, formatGrade, formatDistrictNumber} from '@/utils/format';
 import {constructPenMatchObjectFromNominalRollStudent, deepCloneObject, getPossibleMatches} from '../../utils/common';
 import alertMixin from '@/mixins/alertMixin';
 import MapSchoolCodeModal from './MapSchoolCodeModal';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
+import {LocalDate} from '@js-joda/core';
 
 export default {
   name: 'NomRollStudentSearchResults',
@@ -367,10 +374,10 @@ export default {
       return this.selectedRecords.length > 0 && this.hasRecoverOnlyRecordsSelected() && !this.hasReadOnlyRoleAccess();
     },
     viewSelectionEnabled() {
-      return this.nomRollStudentSearchResponse.totalElements > 0 && !this.loading && !this.hasOnlyErrorRecordsInList() && !this.hasErrorRecordsSelected();
+      return this.nomRollStudentSearchResponse.totalElements > 0 && !this.loading && !this.hasOnlyErrorRecordsInList() && !this.hasErrorRecordsSelected() && !this.hasIgnoreRecordsSelected() && !this.hasFilterOnlyIgnored();
     },
     viewDetailsEnabled() {
-      return this.nomRollStudentSearchResponse.totalElements > 0 && !this.loading && !this.hasErrorRecordsSelected();
+      return this.nomRollStudentSearchResponse.totalElements > 0 && !this.loading && !this.hasErrorRecordsSelected() && !this.hasIgnoreRecordsSelected() && !this.hasFilterOnlyIgnored();
     },
     rowExpandedIcon() {
       return !this.isEmpty(this.expanded)?'mdi-chevron-up':'mdi-chevron-down';
@@ -391,8 +398,18 @@ export default {
     hasReadOnlyRoleAccess() {
       return this.NOMINAL_ROLL_READ_ONLY_ROLE === true;
     },
+    hasFilterOnlyIgnored() {
+      return this.selectedStudentStatus === 'IGNORED';
+    },
     hasErrorRecordsSelected(){
       let filteredError = this.selectedRecords.filter(record =>  record.status === 'ERROR');
+      if(filteredError.length > 0) {
+        return true;
+      }
+      return false;
+    },
+    hasIgnoreRecordsSelected(){
+      let filteredError = this.selectedRecords.filter(record =>  record.status === 'IGNORED');
       if(filteredError.length > 0) {
         return true;
       }
@@ -680,7 +697,49 @@ export default {
             this.setFailureAlert('An error occurred while posting nominal roll data. Please try again later.');
           }
         });
-    }
+    },
+    retrieveAndDownloadIgnoredPenRequests() {
+      let optionalCriteriaList = [];
+      optionalCriteriaList.push({key: 'status', operation: SEARCH_FILTER_OPERATION.EQUAL, value: 'IGNORED', valueType: SEARCH_VALUE_TYPE.STRING, condition: SEARCH_CONDITION.AND});
+      optionalCriteriaList.push({key: 'processingYear', operation: SEARCH_FILTER_OPERATION.EQUAL, value: '' + LocalDate.now().year(), valueType: SEARCH_VALUE_TYPE.STRING, condition: SEARCH_CONDITION.AND});
+      const params = {
+        params: {
+          pageNumber: 0,
+          pageSize: 10000,
+          pageSizeOverride: true,
+          sort: {
+            status: 'ASC',
+            schoolNumber: 'ASC',
+            surname: 'ASC',
+            givenNames: 'ASC',
+          },
+          searchQueries:  [{searchCriteriaList: [...optionalCriteriaList]}],
+        }
+      };
+      return ApiService.apiAxios
+        .get(`${Routes['nominalRoll'].ROOT_ENDPOINT}/search`, params)
+        .then(response => {
+          let csv = 'School District,School Number,School Name,LEA/Provincial,Recipient Number,' +
+            'Recipient Name,FTE,Surname,Given Name(s),Gender,Birth Date,Grade,Band of Residence\n';
+          response.data.content.forEach((s) => {
+            csv += s.schoolDistrictNumber + ',' + s.schoolNumber + ','
+              + s.schoolName+ ',' + s.leaProvincial + ',' + s.recipientNumber + ','
+              + s.recipientName + ',' + s.fte + ',' + s.surname+ ',' + s.givenNames
+              + ',' + s.gender + ',' + s.birthDate + ',' + s.grade + ',' + s.bandOfResidence;
+            csv += '\n';
+          });
+          const anchor = document.createElement('a');
+          anchor.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+          anchor.target = '_blank';
+          anchor.download = LocalDate.now().year() + '-NomRoll-Ignored.csv';
+          anchor.click();
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while loading nominal roll ignored data. Please try again later.');
+          console.log(error);
+          throw error;
+        });
+    },
   }
 };
 </script>
@@ -718,11 +777,11 @@ export default {
     font-size: 0.875rem;
   }
   #dataTable /deep/ table tr.selected-record,
-  #dataTable /deep/ table tbody tr:hover { 
+  #dataTable /deep/ table tbody tr:hover {
     background-color: #E1F5FE
   }
 
-  #dataTable /deep/ table { 
+  #dataTable /deep/ table {
     border-bottom: thin solid #d7d7d7;
   }
 

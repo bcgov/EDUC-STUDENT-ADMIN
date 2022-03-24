@@ -100,7 +100,7 @@
       <ConfirmationDialog ref="confirmationDialog">
         <template v-slot:message>
           <v-col class="pt-0">
-            <v-row class="mb-3">There is <strong>&nbsp;{{ demogValidationResult.length }}&nbsp;</strong> questionable
+            <v-row class="mb-3">There is <strong class="mx-1">{{ demogValidationResult.length }}</strong> questionable
               {{ `error${demogValidationResult.length > 1 ? 's' : ''}` }} with this PEN request:
             </v-row>
             <v-row v-for="warning in demogValidationResult" :key="warning.description">
@@ -235,7 +235,7 @@ export default {
       this.nomRollStudent.givenNames = val.legalFirstName;
       this.nomRollStudent.gender = val.genderCode;
       this.nomRollStudent.birthDate = formatDob(val.dob, 'uuuuMMdd', 'uuuu-MM-dd');
-      this.nomRollStudent.grade = val.gradeCode.replace(/^0/, '');
+      this.nomRollStudent.grade = val.gradeCode? val.gradeCode.replace(/^0/, ''): '';
     }
   },
   computed: {
@@ -360,7 +360,7 @@ export default {
       this.modalStudent.legalFirstName = nomRollStudent.givenNames;
       this.modalStudent.genderCode = nomRollStudent.gender;
       this.modalStudent.dob = formatDob(nomRollStudent.birthDate, 'uuuu-MM-dd', 'uuuuMMdd');
-      this.modalStudent.gradeCode = formatGrade(nomRollStudent.grade);
+      this.modalStudent.gradeCode = nomRollStudent.grade? formatGrade(nomRollStudent.grade) : '';
     },
     async confirmToProceed() {
       let result = true;
