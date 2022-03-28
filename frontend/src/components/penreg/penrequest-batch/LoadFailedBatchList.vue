@@ -65,7 +65,7 @@
         <template v-slot:message>
           <v-col class="mt-n6">
             <v-row class="mt-n2 mb-3">
-              Are you sure you want to&nbsp;<strong>Delete</strong>&nbsp;submission&nbsp;<strong>{{submissionNumber}}</strong>?
+              <span>Are you sure you want to <strong>Delete</strong> submission <strong>{{submissionNumber}}</strong>?</span>
             </v-row>
           </v-col>
         </template>
