@@ -28,7 +28,11 @@
     </v-col>
     <v-col>
       <v-row class='d-flex justify-end pb-2'>
-        <NewMessageDialog :myTeam="myTeam" @send="getRequests"/>
+        <PrimaryButton
+          id="newMessageBtn"
+          text="New Message"
+          to="newExchange"
+        ></PrimaryButton>
       </v-row>
       <v-data-table
           :headers="headers"
@@ -183,13 +187,11 @@ import ApiService from '../common/apiService';
 import {Routes} from '@/utils/constants';
 
 import PrimaryButton from './util/PrimaryButton';
-import NewMessageDialog from './secure-message/NewMessageDialog';
 
 export default {
   name: 'ExchangePage',
   components: {
     PrimaryButton,
-    NewMessageDialog,
   },
   data() {
     return {
