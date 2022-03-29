@@ -589,7 +589,7 @@
       <template v-slot:message>
         <v-col class="mt-n6">
           <v-row class="mb-3">
-            Are you sure you want to edit this&nbsp;<strong>Confirmed</strong>&nbsp;student?
+           <span>Are you sure you want to edit this <strong>Confirmed</strong> student?</span>
           </v-row>
         </v-col>
       </template>
@@ -598,12 +598,12 @@
       <template v-slot:message>
         <v-col class="mt-n6">
           <v-row v-if="isConfirmedStudent" class="mb-3">
-            Are you sure you want to de-merge this&nbsp;<strong>Confirmed</strong>&nbsp;student?
+             <span>Are you sure you want to de-merge this <strong>Confirmed</strong> student?</span>
           </v-row>
           <v-row v-else class="mb-3">
-            Are you sure you want to demerge PENs&nbsp;<strong>{{ getMergedFromPen() }}</strong>&nbsp;and&nbsp;<strong>{{
+            <span>Are you sure you want to demerge PENs <strong>{{ getMergedFromPen() }}</strong> and <strong>{{
               getMergedToPen()
-            }}</strong>?
+            }}</strong>?</span>
           </v-row>
         </v-col>
       </template>

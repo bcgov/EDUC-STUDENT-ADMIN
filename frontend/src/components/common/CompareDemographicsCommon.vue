@@ -167,7 +167,7 @@
       <template v-slot:message>
         <v-col class="mt-n6">
           <v-row class="mb-3">
-            Are you sure you want to demerge PENs&nbsp;<strong>{{getMergedFromPen()}}</strong>&nbsp;and&nbsp;<strong>{{getMergedToPen()}}</strong>?
+            <span>Are you sure you want to demerge PENs <strong>{{getMergedFromPen()}}</strong> and <strong>{{getMergedToPen()}}</strong>?</span>
           </v-row>
         </v-col>
       </template>
@@ -176,7 +176,7 @@
       <template v-slot:message>
         <v-col class="mt-n6">
           <v-row>
-            Are you sure you want to move the selected SLD records from &nbsp;<strong>{{movedFromStudent.pen}}</strong>&nbsp;to&nbsp;<strong>{{movedToStudent.pen}}</strong>?
+            <span>Are you sure you want to move the selected SLD records from <strong>{{movedFromStudent.pen}}</strong> to <strong>{{movedToStudent.pen}}</strong></span>?
           </v-row>
         </v-col>
       </template>

@@ -378,7 +378,8 @@ export const PAGE_TITLES = Object.freeze(
     STATS_DASHBOARD: 'Student and System Analytics',
     VIEW_MERGES: 'View Merges',
     ANALYTICS: 'Analytics',
-    EXCHANGE: 'Secure Exchange Messaging'
+    EXCHANGE: 'Secure Exchange Messaging',
+    NEW_EXCHANGE: 'New Message',
   }
 );
 

@@ -36,6 +36,7 @@ import StatsDashboard from './components/admin/stats/StatsDashboard';
 import NewPENs from './components/admin/stats/NewPENs';
 import GUMPStatsLanding from '@/components/admin/stats/GUMPStatsLanding';
 import Merges from '@/components/admin/stats/Merges';
+import NewMessagePage from '@/components/secure-message/NewMessagePage';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -314,10 +315,20 @@ const router = new VueRouter({
       children: [
         {
           path: 'exchange',
-          name: 'Secure Exchange',
+          name: 'exchange',
           component: ExchangePage,
           meta: {
             pageTitle: PAGE_TITLES.EXCHANGE,
+            requiresAuth: true,
+            role: 'EXCHANGE_ROLE'
+          }
+        },
+        {
+          path: 'newExchange',
+          name: 'newExchange',
+          component: NewMessagePage,
+          meta: {
+            pageTitle: PAGE_TITLES.NEW_EXCHANGE,
             requiresAuth: true,
             role: 'EXCHANGE_ROLE'
           }
