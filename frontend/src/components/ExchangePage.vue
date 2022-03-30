@@ -45,6 +45,21 @@
           :loading="loadingTable"
           :server-items-length="totalRequests"
       >
+        <template v-slot:header.sequenceNumber="{ header }">
+          <th
+              id="sequence-number-header"
+          >
+            {{ header.text }}
+          </th>
+          <v-text-field
+              id="sequence-number-text-field"
+              v-model="headerSearchParams.sequenceNumber"
+              class="header-text"
+              outlined
+              dense
+              clearable
+          ></v-text-field>
+        </template>
         <template v-slot:header.contact="{ header }">
           <th
               id="contact-header"
@@ -78,12 +93,8 @@
         <template v-slot:header.createDate="{ header }">
           <th
               id="create-date-header"
-              :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
           >
             {{ header.text }}
-            <em
-                :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
-            ></em>
           </th>
           <v-menu
               ref="dateMenu"
@@ -144,25 +155,22 @@
           >
             {{ header.text }}
           </th>
-          <v-select
+          <v-text-field
               id="reviewer-text-field"
               v-model="headerSearchParams.reviewer"
-              :items="reviewers"
-              item-text="reviewerText"
-              item-value="reviewerCode"
               class="header-text"
               outlined
               dense
               clearable
-          >
-          </v-select>
+          ></v-text-field>
         </template>
         <template v-slot:no-data>There are no messages.</template>
         <template v-slot:item="{ item, index }">
           <tr v-on:click="clickViewMessageDetails(item)"
               :key="index"
               :class="[{'unread': item.isReadByMinistry === 'N'}, 'tableRow']">
-            <td>{{ item.contact }}</td>
+            <td>{{ item.sequenceNumber }}</td>
+            <td>{{ getContactName(item)}}</td>
             <td>{{ item.subject }}</td>
             <td>{{
                 item.createDate ? moment(item.createDate).format('YYYY/MM/DD') : ''
@@ -170,7 +178,7 @@
             </td>
             <td>{{ item.secureExchangeStatusCode }}</td>
 
-            <td v-if="item.reviewer !== 'unclaimed'">{{ item.reviewer }}</td>
+            <td v-if="item.reviewer">{{ item.reviewer }}</td>
             <td v-else>
               <primary-button v-on:click.native.stop="claim">Claim</primary-button>
             </td>
@@ -199,10 +207,11 @@ export default {
       pageNumber: 1,
       pageSize: 25,
       totalRequests: 0,
-      itemsPerPageOptions: [1, 2, 10, 15, 25, 50, 100],
+      itemsPerPageOptions: [10, 15, 25, 50, 100],
       loadingTable: false,
       dateMenu: false,
       headerSearchParams: {
+        sequenceNumber: '',
         contact: '',
         subject: '',
         createDate: [],
@@ -214,20 +223,6 @@ export default {
         currentSortDir: true
       },
       requests: [],
-      reviewers: [
-        {
-          reviewerCode: '404',
-          reviewerText: 'Unclaimed'
-        },
-        {
-          reviewerCode: '100',
-          reviewerText: 'JONES, TIM EDUC:EX'
-        },
-        {
-          reviewerCode: '101',
-          reviewerText: 'ROUND, ROBIN EDUC:EX'
-        }
-      ]
     };
   },
   computed: {
@@ -236,11 +231,17 @@ export default {
     }),
     ...mapState('auth', ['userInfo']),
     ...mapState('edx', ['ministryTeams', 'statuses']),
+    ...mapState('app', ['mincodeSchoolNames']),
     myTeam() {
       return this.ministryTeams.find(team => this.userInfo.userRoles.some(role => team.groupRoleIdentifier === role)) || {};
     },
     headers() {
       return [
+        {
+          text: 'Id',
+          value: 'sequenceNumber',
+          sortable: false
+        },
         {
           text: 'Contact',
           value: 'contact',
@@ -281,7 +282,7 @@ export default {
     },
     clickViewMessageDetails(message) {
       //mocked function that will show the full message details when clicked
-      console.log(`message id ${message?.id} was clicked`);
+      console.log(`message id ${message.secureExchangeID} was clicked`);
     },
     clickShowMessageType(messageType) {
       //mocked function that will send a get request for the message inbox items
@@ -292,8 +293,10 @@ export default {
       this.loadingTable = true;
       this.requests = [];
       const sort = {
-        createDate: 'ASC',
+        isReadByMinistry: 'ASC',
+        createDate: 'ASC'
       };
+
       ApiService.apiAxios.get(Routes.edx.EXCHANGE_URL, {params: {pageNumber: this.pageNumber - 1, pageSize: this.pageSize, sort}})
         .then(response => {
           this.requests = response.data.content;
@@ -305,6 +308,29 @@ export default {
         .finally(() => {
           this.loadingTable = false;
         });
+    },
+    getContactName(secureExchange) {
+      let contactName = '';
+
+      switch (secureExchange.secureExchangeContactTypeCode) {
+      case 'MINTEAM' :
+        if (this.ministryTeams.length > 0) {
+          let ministryTeam = this.ministryTeams.find((minTeam) => minTeam.ministryOwnershipTeamId === secureExchange.ministryOwnershipTeamID);
+          contactName = ministryTeam?.teamName || 'minteam not found';
+        }
+        break;
+      case 'SCHOOL' :
+        if (this.mincodeSchoolNames.size > 0) {
+          let schoolName = this.mincodeSchoolNames.get(secureExchange.contactIdentifier);
+          contactName = schoolName ? `${schoolName} (${secureExchange.contactIdentifier})` : 'school not found';
+        }
+        break;
+      default:
+        console.error(`unable to process Secure Exchange Contact Type Code ${secureExchange.secureExchangeContactTypeCode}`);
+        contactName = 'Contact Type Not Found';
+      }
+
+      return contactName;
     }
   },
   watch: {
@@ -320,17 +346,8 @@ export default {
 
 <style scoped>
 
-.table-header {
-  cursor: pointer;
-  margin-bottom: 0;
-}
-
 .tableRow {
   cursor: pointer;
-}
-
-.v-icon {
-  font-size: 18px;
 }
 
 .unread {
