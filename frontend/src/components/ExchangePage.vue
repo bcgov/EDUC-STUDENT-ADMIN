@@ -215,7 +215,7 @@ export default {
       pageNumber: 1,
       pageSize: 25,
       totalRequests: 0,
-      itemsPerPageOptions: [1, 2, 10, 15, 25, 50, 100],
+      itemsPerPageOptions: [10, 15, 25, 50, 100],
       loadingTable: false,
       dateMenu: false,
       headerSearchParams: {
@@ -314,8 +314,10 @@ export default {
       this.loadingTable = true;
       this.requests = [];
       const sort = {
-        createDate: 'ASC',
+        isReadByMinistry: 'ASC',
+        createDate: 'ASC'
       };
+
       ApiService.apiAxios.get(Routes.edx.EXCHANGE_URL, {params: {pageNumber: this.pageNumber - 1, pageSize: this.pageSize, sort}})
         .then(response => {
           this.requests = response.data.content;
@@ -332,23 +334,23 @@ export default {
       let contactName = '';
 
       switch (secureExchange.secureExchangeContactTypeCode) {
-        case 'MINTEAM' :
-          if (this.ministryTeams.length > 0) {
-            let ministryTeam = this.ministryTeams.find((ministryTeam) => ministryTeam.ministryOwnershipTeamId === secureExchange.ministryOwnershipTeamID);
-            contactName = ministryTeam?.teamName || 'minteam not found';
-          }
-          break;
-        case 'SCHOOL' :
-          contactName = 'School';
-          break;
-        case 'EDXUSER' :
-          contactName = 'EDX User';
-          break;
-        case 'DISTRICT' :
-          contactName = 'District';
-          break;
-        default:
-          contactName = 'Contact Type Not Found';
+      case 'MINTEAM' :
+        if (this.ministryTeams.length > 0) {
+          let ministryTeam = this.ministryTeams.find((ministryTeam) => ministryTeam.ministryOwnershipTeamId === secureExchange.ministryOwnershipTeamID);
+          contactName = ministryTeam?.teamName || 'minteam not found';
+        }
+        break;
+      case 'SCHOOL' :
+        contactName = 'School';
+        break;
+      case 'EDXUSER' :
+        contactName = 'EDX User';
+        break;
+      case 'DISTRICT' :
+        contactName = 'District';
+        break;
+      default:
+        contactName = 'Contact Type Not Found';
       }
 
       return contactName;

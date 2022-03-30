@@ -24,10 +24,19 @@ async function getExchangeById(req, res) {
 }
 
 async function getExchanges(req, res) {
+
+  const params = {
+    params: {
+      pageNumber: req.query.pageNumber,
+      pageSize: req.query.pageSize,
+      sort: req.query.sort,
+    }
+  };
+
   try {
     const token = utils.getBackendToken(req);
 
-    const response = await utils.getData(token, config.get('server:edx:exchangeURL')+'/paginated', {params: req.query});
+    const response = await utils.getData(token, config.get('server:edx:exchangeURL')+'/paginated', params);
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     logApiError(e, 'getExchanges', 'Error getting paginated list of secure exchanges.');
