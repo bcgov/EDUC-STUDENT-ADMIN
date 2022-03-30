@@ -325,13 +325,8 @@ export default {
           contactName = schoolName ? `${schoolName} (${secureExchange.contactIdentifier})` : 'school not found';
         }
         break;
-      case 'EDXUSER' :
-        contactName = 'EDX User';
-        break;
-      case 'DISTRICT' :
-        contactName = 'District';
-        break;
       default:
+        console.error(`unable to process Secure Exchange Contact Type Code ${secureExchange.secureExchangeContactTypeCode}`);
         contactName = 'Contact Type Not Found';
       }
 
