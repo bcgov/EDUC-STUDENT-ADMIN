@@ -321,7 +321,7 @@ export default {
         break;
       case 'SCHOOL' :
         if (this.mincodeSchoolNames.size > 0) {
-          const schoolName = this.mincodeSchoolNames.get(secureExchange.contactIdentifier);
+          let schoolName = this.mincodeSchoolNames.get(secureExchange.contactIdentifier);
           contactName = schoolName ? `${schoolName} (${secureExchange.contactIdentifier})` : 'school not found';
         }
         break;
