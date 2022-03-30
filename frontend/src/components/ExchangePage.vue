@@ -93,12 +93,8 @@
         <template v-slot:header.createDate="{ header }">
           <th
               id="create-date-header"
-              :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
           >
             {{ header.text }}
-            <em
-                :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
-            ></em>
           </th>
           <v-menu
               ref="dateMenu"
@@ -235,6 +231,7 @@ export default {
     }),
     ...mapState('auth', ['userInfo']),
     ...mapState('edx', ['ministryTeams', 'statuses']),
+    ...mapState('app', ['mincodeSchoolNames']),
     myTeam() {
       return this.ministryTeams.find(team => this.userInfo.userRoles.some(role => team.groupRoleIdentifier === role)) || {};
     },
@@ -323,7 +320,10 @@ export default {
         }
         break;
       case 'SCHOOL' :
-        contactName = 'School';
+        if (this.mincodeSchoolNames.size > 0) {
+          const schoolName = this.mincodeSchoolNames.get(secureExchange.contactIdentifier);
+          contactName = schoolName ? `${schoolName} (${secureExchange.contactIdentifier})` : 'school not found';
+        }
         break;
       case 'EDXUSER' :
         contactName = 'EDX User';
@@ -351,17 +351,8 @@ export default {
 
 <style scoped>
 
-.table-header {
-  cursor: pointer;
-  margin-bottom: 0;
-}
-
 .tableRow {
   cursor: pointer;
-}
-
-.v-icon {
-  font-size: 18px;
 }
 
 .unread {
