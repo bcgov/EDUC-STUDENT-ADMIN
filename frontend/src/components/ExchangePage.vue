@@ -315,7 +315,7 @@ export default {
       switch (secureExchange.secureExchangeContactTypeCode) {
       case 'MINTEAM' :
         if (this.ministryTeams.length > 0) {
-          let ministryTeam = this.ministryTeams.find((ministryTeam) => ministryTeam.ministryOwnershipTeamId === secureExchange.ministryOwnershipTeamID);
+          let ministryTeam = this.ministryTeams.find((minTeam) => minTeam.ministryOwnershipTeamId === secureExchange.ministryOwnershipTeamID);
           contactName = ministryTeam?.teamName || 'minteam not found';
         }
         break;
