@@ -159,18 +159,14 @@
           >
             {{ header.text }}
           </th>
-          <v-select
+          <v-text-field
               id="reviewer-text-field"
               v-model="headerSearchParams.reviewer"
-              :items="reviewers"
-              item-text="reviewerText"
-              item-value="reviewerCode"
               class="header-text"
               outlined
               dense
               clearable
-          >
-          </v-select>
+          ></v-text-field>
         </template>
         <template v-slot:no-data>There are no messages.</template>
         <template v-slot:item="{ item, index }">
@@ -231,20 +227,6 @@ export default {
         currentSortDir: true
       },
       requests: [],
-      reviewers: [
-        {
-          reviewerCode: '404',
-          reviewerText: 'Unclaimed'
-        },
-        {
-          reviewerCode: '100',
-          reviewerText: 'JONES, TIM EDUC:EX'
-        },
-        {
-          reviewerCode: '101',
-          reviewerText: 'ROUND, ROBIN EDUC:EX'
-        }
-      ]
     };
   },
   computed: {
