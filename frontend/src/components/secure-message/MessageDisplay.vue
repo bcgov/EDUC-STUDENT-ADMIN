@@ -12,6 +12,7 @@
               color="blue"
               :active="loading"
             ></v-progress-linear>
+            <div>{{secureExchangeID}}</div>
             <div v-if="!loading && secureExchange" style="width: 100%;" :overlay=false>
 
               <v-row no-gutters
@@ -80,17 +81,17 @@
 </template>
 
 <script>
-import {mapMutations, mapState} from 'vuex';
+// import {mapMutations, mapState} from 'vuex';
 import PrimaryButton from '../util/PrimaryButton';
 import TertiaryButton from '../util/TertiaryButton';
-import ApiService from '../../common/apiService';
-import {
-  Routes,
-} from '@/utils/constants';
+// import ApiService from '../../common/apiService';
+// import {
+//   Routes,
+// } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
-import {
-  deepCloneObject,
-} from '@/utils/common';
+// import {
+//   deepCloneObject,
+// } from '@/utils/common';
 import router from '../../router';
 import Mousetrap from 'mousetrap';
 
@@ -116,14 +117,14 @@ export default {
   computed: {
     
   },
-  created() {
-    //Go back to Files page if refresh button is pressed
-    if(Object.keys(this.selectedIDs).length > 0) {
-      this.initializeDetails();
-    } else {
-      router.push({name: 'nominal-roll-list'});
-    }
-  },
+  // created() {
+  //   //Go back to Files page if refresh button is pressed
+  //   if(Object.keys(this.selectedIDs).length > 0) {
+  //     this.initializeDetails();
+  //   } else {
+  //     router.push({name: 'nominal-roll-list'});
+  //   }
+  // },
   mounted() {
     Mousetrap.bind('ctrl+b', () => {
       router.push({name: 'nominal-roll'});

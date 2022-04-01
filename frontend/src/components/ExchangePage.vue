@@ -193,6 +193,7 @@
 import {mapState} from 'vuex';
 import ApiService from '../common/apiService';
 import {Routes} from '@/utils/constants';
+import router from '../router';
 
 import PrimaryButton from './util/PrimaryButton';
 
@@ -281,8 +282,7 @@ export default {
       alert(`claim as ${this.userName}?`);
     },
     clickViewMessageDetails(message) {
-      //mocked function that will show the full message details when clicked
-      console.log(`message id ${message.secureExchangeID} was clicked`);
+      router.push({ name: 'viewExchange', params: {secureExchangeID: message.secureExchangeID}});
     },
     clickShowMessageType(messageType) {
       //mocked function that will send a get request for the message inbox items

@@ -380,6 +380,7 @@ export const PAGE_TITLES = Object.freeze(
     ANALYTICS: 'Analytics',
     EXCHANGE: 'Secure Exchange Messaging',
     NEW_EXCHANGE: 'New Message',
+    VIEW_EXCHANGE: 'View Message',
   }
 );
 
