@@ -44,6 +44,18 @@ async function getExchanges(req, res) {
   }
 }
 
+async function getExchange(req, res) {
+
+  try {
+    const token = utils.getBackendToken(req);
+    const response = await utils.getData(token, config.get('server:edx:exchangeURL')+`/${req.params.secureExchangeID}`);
+    return res.status(HttpStatus.OK).json(response);
+  } catch (e) {
+    logApiError(e, 'getExchange', 'Error getting a secure exchange message.');
+    return errorResponse(res);
+  }
+}
+
 async function createExchange(req, res) {
   try {
     const token = utils.getBackendToken(req);
@@ -81,4 +93,5 @@ module.exports = {
   getExchangeById,
   getExchanges,
   createExchange,
+  getExchange,
 };

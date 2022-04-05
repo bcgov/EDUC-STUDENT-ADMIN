@@ -1,105 +1,148 @@
-  <template>
+<template>
   <v-container fluid class="fill-height pa-0 mb-4">
-
     <div style="width: 100%;" :overlay=false>
-      <div class="full-width">
-        <v-row class="pt-0">
-          <v-col cols="12 pt-0">
-            <v-progress-linear
+      <v-row class="pt-0">
+        <v-col cols="12 pt-0">
+          <v-progress-linear
               absolute
               top
               indeterminate
               color="blue"
               :active="loading"
-            ></v-progress-linear>
-            <div>{{secureExchangeID}}</div>
-            <div v-if="!loading && secureExchange" style="width: 100%;" :overlay=false>
+          ></v-progress-linear>
+          <div v-if="!loading && secureExchange" style="width: 100%;" :overlay=false>
 
-              <v-row no-gutters
-                class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center"
-                style="background-color:white;"
+            <v-row no-gutters
+                   class="pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex"
+            >
+              <PrimaryButton id="go-back-action"
+                             icon="mdi-arrow-left"
+                             to="/edx/exchange"
               >
-                <TertiaryButton id="go-back-action"
-                                icon="mdi-arrow-left" 
-                ></TertiaryButton>
-                <v-spacer></v-spacer>
-                <TertiaryButton id="update-status-action" 
+                Return To Inbox
+              </PrimaryButton>
+              <v-spacer></v-spacer>
+              <div :class="['d-flex', 'align-center']">
+                <TertiaryButton id="update-status-action"
                                 text="IN PROGRESS"
                                 icon="mdi-chevron-down"
                 ></TertiaryButton>
-                <TertiaryButton id="claim-action" 
-                                text="Tester"
-                                icon="mdi-chevron-down"
-                ></TertiaryButton>
-                <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2"
+                <div v-if="secureExchange.reviewer">{{ `Claimed by ${secureExchange.reviewer}` }}</div>
+                <PrimaryButton v-else id="modify-search-action" class="mx-2"
                                text="Claim"
                 ></PrimaryButton>
-              </v-row>
-              <!-- <v-row v-if="isLoading">
-                <v-container fluid class="full-height">
-                  <article id="message-container" class="top-banner full-height">
-                    <v-row align="center" justify="center">
-                      <v-progress-circular
-                          :size="70"
-                          :width="7"
-                          color="primary"
-                          indeterminate
-                      ></v-progress-circular>
-                    </v-row>
-                  </article>
-                </v-container>
-              </v-row> -->
-              <v-row class="full-width">
-                <v-col cols='8'>
-                  <v-card outlined>
-                    <v-row no-gutters>
-                      <span>
-                        <strong>{{ secureExchange.subject }}</strong>
-                      </span>
-                      <v-spacer></v-spacer>
-                      <v-icon
-                        large
-                      >
-                        mdi-email-mark-as-unread
-                      </v-icon>
-                      <v-icon
-                        large
-                      >
-                        mdi-plus
-                      </v-icon>
-                    </v-row>
-                      
-                  </v-card>
-                </v-col>
-              </v-row>
-            </div>
-          </v-col>
-        </v-row>
-      </div>
+              </div>
+            </v-row>
+            <v-row class="full-width">
+              <v-col cols='6'>
+                <v-row no-gutters>
+                  <v-col>
+                    <v-card>
+                      <v-row no-gutters>
+                        <v-col :class="['d-flex', 'justify-space-between', 'pa-3']">
+                          <div>
+                            <strong>{{ secureExchange.subject }}</strong>
+                            <div>{{ secureExchange.secureExchangeContactTypeCode }}</div>
+                          </div>
+                          <primary-button>Read/Unread</primary-button>
+                        </v-col>
+                      </v-row>
+                      <v-row :class="['pa-3']" no-gutters>
+                        <v-col>
+                          <v-form ref="newCommentForm" v-model="isValidForm">
+                            <v-textarea id="new-comment-textArea"
+                                        outlined
+                                        clearable
+                                        rows="10"
+                                        maxlength="4000"
+                                        dense
+                                        :rules="requiredRules"
+                                        hide-details="auto"
+                                        placeholder="sending comments not implemented yet"
+                            ></v-textarea>
+                          </v-form>
+                        </v-col>
+                      </v-row>
+                      <v-row :class="['pa-1', 'd-flex', 'justify-end']" no-gutters>
+                        <primary-button id="send-comment-button" :disabled="!isValidForm">
+                          Send Message
+                        </primary-button>
+                      </v-row>
+                    </v-card>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col>
+                    <v-card>
+                      <div v-for="comment in secureExchange.commentsList"
+                           :key="comment.secureExchangeID">
+                        <v-card>
+                          <v-card-title class="comment-title">{{ commentTitleGenerator(comment) }}</v-card-title>
+                          <v-card-text>{{ comment.content }}</v-card-text>
+                        </v-card>
+                      </div>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </v-col>
+              <v-col cols="3">
+                <v-card>
+                  <v-card-title>Students</v-card-title>
+                  <v-card-text>Adding a student will allow the school to see the student's demographic details</v-card-text>
+                  <v-card-actions :class="['d-flex', 'align-start']">
+                    <v-text-field class="ma-0" solo label="Not functional yet" dense></v-text-field>
+                    <PrimaryButton>Add Student</PrimaryButton>
+                  </v-card-actions>
+                </v-card>
+              </v-col>
+              <v-col cols="3">
+                <DocumentUpload/>
+                <v-row dense>
+                  <v-col>
+                    <v-card :class="['pl-3', 'pr-3']">
+                      <v-card-title>
+                        Notes
+                      </v-card-title>
+                      <v-card-text>
+                        <p>notes are only visible to other ministry staff members</p>
+                        <v-form ref="newNoteForm" v-model="isValidNoteForm">
+                          <v-textarea outlined auto-grow clearable dense rows="2"
+                                      :rules="requiredRules"
+                                      placeholder="sending notes not implemented yet"
+                                      hide-details="auto"></v-textarea>
+                        </v-form>
+                      </v-card-text>
+                      <v-card-actions :class="['d-flex', 'justify-end']">
+                        <PrimaryButton :disabled="!isValidNoteForm">Add Note</PrimaryButton>
+                      </v-card-actions>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+          </div>
+        </v-col>
+      </v-row>
     </div>
   </v-container>
 </template>
 
 <script>
-// import {mapMutations, mapState} from 'vuex';
+import {mapState} from 'vuex';
 import PrimaryButton from '../util/PrimaryButton';
 import TertiaryButton from '../util/TertiaryButton';
-// import ApiService from '../../common/apiService';
-// import {
-//   Routes,
-// } from '@/utils/constants';
+import DocumentUpload from '../common/DocumentUpload';
+import ApiService from '../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
-// import {
-//   deepCloneObject,
-// } from '@/utils/common';
-import router from '../../router';
-import Mousetrap from 'mousetrap';
+import {Routes} from '@/utils/constants';
+import {formatDateTime} from '@/utils/format';
 
 export default {
   name: 'NomRollStudentDetailsDisplay',
   components: {
     PrimaryButton,
     TertiaryButton,
+    DocumentUpload,
   },
   mixins: [alertMixin],
   props: {
@@ -112,35 +155,50 @@ export default {
     return {
       secureExchange: null,
       loading: true,
+      requiredRules: [v => !!v?.trim() || 'Required'],
+      isValidForm: false,
+      isValidNoteForm: false,
     };
   },
   computed: {
-    
+    ...mapState('edx', ['ministryTeams']),
+    ...mapState('app', ['mincodeSchoolNames']),
   },
-  // created() {
-  //   //Go back to Files page if refresh button is pressed
-  //   if(Object.keys(this.selectedIDs).length > 0) {
-  //     this.initializeDetails();
-  //   } else {
-  //     router.push({name: 'nominal-roll-list'});
-  //   }
-  // },
+  created() {
+    ApiService.apiAxios.get(Routes.edx.EXCHANGE_URL+`/${this.secureExchangeID}`)
+      .then(response => {
+        this.secureExchange = response.data;
+      })
+      .catch(error => {
+        this.setFailureAlert('Error loading secure exchange message. Please try again');
+        console.log(error);
+      })
+      .finally(() => {
+        this.loading = false;
+      });
+  },
   mounted() {
-    Mousetrap.bind('ctrl+b', () => {
-      router.push({name: 'nominal-roll'});
-      return false;
-    });
   },
   methods: {
+    commentTitleGenerator: function(comment) {
+      let commentUser = '';
+
+      if (comment.edxUserID !== null) {
+        commentUser = comment.commentUserName;
+      } else if (comment.staffUserIdentifier) {
+        let ministryTeam = this.ministryTeams.find((minTeam) => minTeam.ministryOwnershipTeamId === this.secureExchange.ministryOwnershipTeamID);
+        commentUser = ministryTeam?.teamName || 'minteam not found';
+      }
+
+      let commentDate = formatDateTime(comment.commentTimestamp,'uuuu-MM-dd\'T\'HH:mm:ss','uuuu/MM/dd', true);
+
+      return `${commentUser} ${commentDate}`;
+    }
   }
 };
 </script>
 
 <style scoped>
-.batch-title {
-  font-size: 1.065rem;
-}
-
 .pre-style {
   white-space: pre-wrap; /* Since CSS 2.1 */
   white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
@@ -150,39 +208,12 @@ export default {
   overflow-y: auto;
 }
 
-.pen-placeholder {
-  margin-right: 5.7em;
-}
-
-#bottom-table /deep/ table th,
-#top-table /deep/ table th {
-  border-bottom: none !important;
-  font-size: 0.875rem;
-  font-weight: normal;
-  color: rgba(0, 0, 0, 0.87) !important;
-  height: 1.5rem;
-}
-
-
-.details-table /deep/ table > tbody > tr > td {
-  height: 1.5rem;
-}
-
-.details-table /deep/ table > tbody > tr:hover {
-  background: transparent !important;
-}
-
-.details-table /deep/ table > tbody > tr:not(:last-child) > td {
-  border-bottom: none !important;
-}
-
-.full-width {
-  margin-left: -32px;
-  margin-right: -32px;
-}
-
 pre {
   font-family: inherit;
   font-size: inherit;
+}
+
+.comment-title {
+  font-size: 1.023rem;
 }
 </style>
