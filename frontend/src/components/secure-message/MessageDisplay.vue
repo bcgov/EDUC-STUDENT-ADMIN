@@ -42,7 +42,7 @@
                         <v-col :class="['d-flex', 'justify-space-between', 'pa-3']">
                           <div>
                             <strong>{{ secureExchange.subject }}</strong>
-                            <div>{{ secureExchange.secureExchangeContactTypeCode }}</div>
+                            <div>{{ getContactName(secureExchange) }}</div>
                           </div>
                           <primary-button>Read/Unread</primary-button>
                         </v-col>
@@ -134,6 +134,7 @@ import TertiaryButton from '../util/TertiaryButton';
 import DocumentUpload from '../common/DocumentUpload';
 import ApiService from '../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
+import getSecureExchangeContactMixin from '@/mixins/getSecureExchangeContactMixin';
 import {Routes} from '@/utils/constants';
 import {formatDateTime} from '@/utils/format';
 
@@ -144,7 +145,7 @@ export default {
     TertiaryButton,
     DocumentUpload,
   },
-  mixins: [alertMixin],
+  mixins: [alertMixin, getSecureExchangeContactMixin],
   props: {
     secureExchangeID: {
       type: String,

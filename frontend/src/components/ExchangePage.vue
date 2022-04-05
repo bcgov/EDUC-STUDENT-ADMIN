@@ -196,12 +196,14 @@ import {Routes} from '@/utils/constants';
 import router from '../router';
 
 import PrimaryButton from './util/PrimaryButton';
+import getSecureExchangeContactMixin from '@/mixins/getSecureExchangeContactMixin';
 
 export default {
   name: 'ExchangePage',
   components: {
     PrimaryButton,
   },
+  mixins: [getSecureExchangeContactMixin],
   data() {
     return {
       selectedItem: 0,
@@ -231,11 +233,7 @@ export default {
       userName: state => state.auth.userInfo.userName
     }),
     ...mapState('auth', ['userInfo']),
-    ...mapState('edx', ['ministryTeams', 'statuses']),
-    ...mapState('app', ['mincodeSchoolNames']),
-    myTeam() {
-      return this.ministryTeams.find(team => this.userInfo.userRoles.some(role => team.groupRoleIdentifier === role)) || {};
-    },
+    ...mapState('edx', ['statuses']),
     headers() {
       return [
         {
@@ -272,8 +270,6 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('app/getCodes');
-    this.$store.dispatch('edx/getCodes');
     this.getRequests();
   },
   methods: {
@@ -309,29 +305,6 @@ export default {
           this.loadingTable = false;
         });
     },
-    getContactName(secureExchange) {
-      let contactName = '';
-
-      switch (secureExchange.secureExchangeContactTypeCode) {
-      case 'MINTEAM' :
-        if (this.ministryTeams.length > 0) {
-          let ministryTeam = this.ministryTeams.find((minTeam) => minTeam.ministryOwnershipTeamId === secureExchange.ministryOwnershipTeamID);
-          contactName = ministryTeam?.teamName || 'minteam not found';
-        }
-        break;
-      case 'SCHOOL' :
-        if (this.mincodeSchoolNames.size > 0) {
-          let schoolName = this.mincodeSchoolNames.get(secureExchange.contactIdentifier);
-          contactName = schoolName ? `${schoolName} (${secureExchange.contactIdentifier})` : 'school not found';
-        }
-        break;
-      default:
-        console.error(`unable to process Secure Exchange Contact Type Code ${secureExchange.secureExchangeContactTypeCode}`);
-        contactName = 'Contact Type Not Found';
-      }
-
-      return contactName;
-    }
   },
   watch: {
     pageSize() {
