@@ -187,8 +187,7 @@ export default {
       if (comment.edxUserID !== null) {
         commentUser = comment.commentUserName;
       } else if (comment.staffUserIdentifier) {
-        let ministryTeam = this.ministryTeams.find((minTeam) => minTeam.ministryOwnershipTeamId === this.secureExchange.ministryOwnershipTeamID);
-        commentUser = ministryTeam?.teamName || 'minteam not found';
+        commentUser = this.getContactName(this.secureExchange);
       }
 
       let commentDate = formatDateTime(comment.commentTimestamp,'uuuu-MM-dd\'T\'HH:mm:ss','uuuu/MM/dd', true);
