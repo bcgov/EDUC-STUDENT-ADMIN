@@ -178,16 +178,15 @@ export default {
         this.loading = false;
       });
   },
-  mounted() {
-  },
   methods: {
     commentTitleGenerator: function(comment) {
       let commentUser = '';
 
-      if (comment.edxUserID !== null) {
+      //if there is an edxUserID, comment is from a school otherwise the comment is from the ministry
+      if (comment.edxUserID) {
         commentUser = comment.commentUserName;
-      } else if (comment.staffUserIdentifier) {
-        commentUser = this.getContactName(this.secureExchange);
+      } else {
+        commentUser = this.getMinistryTeamNameByID(this.secureExchange.ministryOwnershipTeamID);
       }
 
       let commentDate = formatDateTime(comment.commentTimestamp,'uuuu-MM-dd\'T\'HH:mm:ss','uuuu/MM/dd', true);
