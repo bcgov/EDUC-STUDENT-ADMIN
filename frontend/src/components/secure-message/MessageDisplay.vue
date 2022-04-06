@@ -37,14 +37,14 @@
               <v-col cols='6'>
                 <v-row no-gutters>
                   <v-col>
-                    <v-card>
+                    <v-card v-if="!secureExchangeStatusIsClosed()">
                       <v-row no-gutters>
                         <v-col :class="['d-flex', 'justify-space-between', 'pa-3']">
                           <div>
                             <strong>{{ secureExchange.subject }}</strong>
                             <div>{{ getContactName(secureExchange) }}</div>
                           </div>
-                          <primary-button>Read/Unread</primary-button>
+                          <primary-button :disabled="secureExchangeStatusIsClosed()">Read/Unread</primary-button>
                         </v-col>
                       </v-row>
                       <v-row :class="['pa-3']" no-gutters>
@@ -59,6 +59,7 @@
                                         :rules="requiredRules"
                                         hide-details="auto"
                                         placeholder="sending comments not implemented yet"
+                                        :disabled="secureExchangeStatusIsClosed()"
                             ></v-textarea>
                           </v-form>
                         </v-col>
@@ -68,6 +69,11 @@
                           Send Message
                         </primary-button>
                       </v-row>
+                    </v-card>
+                    <v-card v-else :class="['pa-3']">
+                          <strong>{{ secureExchange.subject }}</strong>
+                          <div>{{ getContactName(secureExchange) }}</div>
+                          <div>Secure Exchange cannot be edited because status is closed</div>
                     </v-card>
                   </v-col>
                 </v-row>
@@ -135,7 +141,7 @@ import DocumentUpload from '../common/DocumentUpload';
 import ApiService from '../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import getSecureExchangeContactMixin from '@/mixins/getSecureExchangeContactMixin';
-import {Routes} from '@/utils/constants';
+import {Routes, Statuses} from '@/utils/constants';
 import {formatDateTime} from '@/utils/format';
 
 export default {
@@ -192,6 +198,9 @@ export default {
       let commentDate = formatDateTime(comment.commentTimestamp,'uuuu-MM-dd\'T\'HH:mm:ss','uuuu/MM/dd', true);
 
       return `${commentUser} ${commentDate}`;
+    },
+    secureExchangeStatusIsClosed: function () {
+      return this.secureExchange.secureExchangeStatusCode === Statuses.exchange.CLOSED;
     }
   }
 };

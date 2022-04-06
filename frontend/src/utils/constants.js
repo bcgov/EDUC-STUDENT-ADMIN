@@ -146,6 +146,11 @@ export const Statuses = Object.freeze(
       COMPLETED: 'COMPLETED',
       REJECTED: 'REJECTED',
       ABANDONED: 'ABANDONED'
+    },
+    exchange: {
+      NEW: 'NEW',
+      INPROG: 'INPROG',
+      CLOSED: 'CLOSED'
     }
   }
 );
