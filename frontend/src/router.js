@@ -95,7 +95,7 @@ const router = new VueRouter({
           }
         },
       ],
-      beforeEnter(to, from, next) {
+      beforeEnter(_to, _from, next) {
         store.commit('app/setRequestType',REQUEST_TYPES.penRequest.name);
         next();
       }
@@ -131,7 +131,7 @@ const router = new VueRouter({
           }
         }
       ],
-      beforeEnter(to, from, next) {
+      beforeEnter(_to, _from, next) {
         store.commit('app/setRequestType',REQUEST_TYPES.studentRequest.name);
         next();
       }
@@ -170,7 +170,7 @@ const router = new VueRouter({
         requiresAuth: true,
         role: 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE'
       },
-      beforeEnter(to, from, next) {
+      beforeEnter(_to, from, next) {
         if(!from.path.includes('/prb')) {
           store.commit('penRequestBatch/clearPenRequestBatchState');
         }
@@ -212,7 +212,7 @@ const router = new VueRouter({
         requiresAuth: true,
         role: 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE'
       },
-      beforeEnter(to, from, next) {
+      beforeEnter(_to, from, next) {
         if(!from.path.includes('/archivedPrb') && !from.path.includes('/prb')) {
           store.commit('archivedRequestBatch/clearPenRequestBatchState');
         }
