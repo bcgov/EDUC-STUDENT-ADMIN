@@ -88,7 +88,6 @@
                            :key="comment.secureExchangeID">
                         <v-timeline-item v-bind="timelineItemProps(comment)" small>
                           <v-card>
-<!--                            <v-card-title class="comment-title">{{ commentTitleGenerator(comment) }}</v-card-title>-->
                             <v-card-title class="comment-title">
                               <div>{{commentTitleGenerator(comment)}}</div>
                               <v-spacer></v-spacer>
@@ -215,13 +214,11 @@ export default {
       return this.secureExchange.secureExchangeStatusCode === Statuses.exchange.CLOSED;
     },
     timelineItemProps: function (comment) {
-      let props = {
+      return {
         left: !!comment.edxUser,
         right: comment.edxUser,
         color: comment.edxUser ? '#F2F2F2' : '#38598A'
       };
-
-      return props;
     }
   }
 };
