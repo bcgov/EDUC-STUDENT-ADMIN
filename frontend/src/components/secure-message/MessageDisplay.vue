@@ -18,6 +18,7 @@
               <PrimaryButton id="go-back-action"
                              icon="mdi-arrow-left"
                              to="/edx/exchange"
+                             secondary
               >
                 Return To Inbox
               </PrimaryButton>
@@ -35,25 +36,28 @@
             </v-row>
             <v-row class="full-width">
               <v-col cols='6'>
+                <v-row>
+                  <v-col>
+                    <v-card>
+                      <v-card-title>
+                        <div>{{ secureExchange.subject }}</div>
+                        <v-spacer></v-spacer>
+                        <primary-button :disabled="secureExchangeStatusIsClosed()">Read/Unread</primary-button>
+                      </v-card-title>
+                      <v-card-text>{{ getContactName(secureExchange) }}</v-card-text>
+                    </v-card>
+                  </v-col>
+                </v-row>
                 <v-row no-gutters>
                   <v-col>
                     <v-card v-if="!secureExchangeStatusIsClosed()">
-                      <v-row no-gutters>
-                        <v-col :class="['d-flex', 'justify-space-between', 'pa-3']">
-                          <div>
-                            <strong>{{ secureExchange.subject }}</strong>
-                            <div>{{ getContactName(secureExchange) }}</div>
-                          </div>
-                          <primary-button :disabled="secureExchangeStatusIsClosed()">Read/Unread</primary-button>
-                        </v-col>
-                      </v-row>
                       <v-row :class="['pa-3']" no-gutters>
                         <v-col>
                           <v-form ref="newCommentForm" v-model="isValidForm">
                             <v-textarea id="new-comment-textArea"
                                         outlined
                                         clearable
-                                        rows="10"
+                                        rows="5"
                                         maxlength="4000"
                                         dense
                                         :rules="requiredRules"
@@ -79,15 +83,22 @@
                 </v-row>
                 <v-row>
                   <v-col>
-                    <v-card>
+                    <v-timeline v-if="secureExchange.commentsList.length > 0" >
                       <div v-for="comment in secureExchange.commentsList"
                            :key="comment.secureExchangeID">
-                        <v-card>
-                          <v-card-title class="comment-title">{{ commentTitleGenerator(comment) }}</v-card-title>
-                          <v-card-text>{{ comment.content }}</v-card-text>
-                        </v-card>
+                        <v-timeline-item v-bind="timelineItemProps(comment)" small>
+                          <v-card>
+<!--                            <v-card-title class="comment-title">{{ commentTitleGenerator(comment) }}</v-card-title>-->
+                            <v-card-title class="comment-title">
+                              <div>{{commentTitleGenerator(comment)}}</div>
+                              <v-spacer></v-spacer>
+                              <div>{{ dateTimeFormatter(comment.commentTimestamp) }}</div>
+                            </v-card-title>
+                            <v-card-text>{{ comment.content }}</v-card-text>
+                          </v-card>
+                        </v-timeline-item>
                       </div>
-                    </v-card>
+                    </v-timeline>
                   </v-col>
                 </v-row>
               </v-col>
@@ -190,17 +201,27 @@ export default {
 
       //if there is an edxUserID, comment is from a school otherwise the comment is from the ministry
       if (comment.edxUserID) {
-        commentUser = comment.commentUserName;
+        commentUser = this.getContactName(this.secureExchange);
       } else {
         commentUser = this.getMinistryTeamNameByID(this.secureExchange.ministryOwnershipTeamID);
       }
 
-      let commentDate = formatDateTime(comment.commentTimestamp,'uuuu-MM-dd\'T\'HH:mm:ss','uuuu/MM/dd', true);
-
-      return `${commentUser} ${commentDate}`;
+      return commentUser;
+    },
+    dateTimeFormatter: function (timestamp = '') {
+      return formatDateTime(timestamp,'uuuu-MM-dd\'T\'HH:mm:ss','uuuu/MM/dd', true);
     },
     secureExchangeStatusIsClosed: function () {
       return this.secureExchange.secureExchangeStatusCode === Statuses.exchange.CLOSED;
+    },
+    timelineItemProps: function (comment) {
+      let props = {
+        left: !!comment.edxUser,
+        right: comment.edxUser,
+        color: comment.edxUser ? '#F2F2F2' : '#38598A'
+      };
+
+      return props;
     }
   }
 };
@@ -224,4 +245,10 @@ pre {
 .comment-title {
   font-size: 1.023rem;
 }
+
+/*this makes the primary button not have a grey background when a to property is added.*/
+.theme--dark.v-btn--active::before {
+  opacity: 0;
+}
+
 </style>
