@@ -155,7 +155,7 @@ import {Routes, Statuses} from '@/utils/constants';
 import {formatDateTime} from '@/utils/format';
 
 export default {
-  name: 'NomRollStudentDetailsDisplay',
+  name: 'MessageDisplay',
   components: {
     PrimaryButton,
     TertiaryButton,
