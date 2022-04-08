@@ -18,6 +18,7 @@ NATS_URL="nats://nats.${COMMON_NAMESPACE}-${envValue}.svc.cluster.local:4222"
 SOAM_KC_LOAD_USER_ADMIN=$(oc -n $COMMON_NAMESPACE-$envValue -o json get secret sso-admin-${envValue} | sed -n 's/.*"username": "\(.*\)"/\1/p' | base64 --decode)
 SOAM_KC_LOAD_USER_PASS=$(oc -n $COMMON_NAMESPACE-$envValue -o json get secret sso-admin-${envValue} | sed -n 's/.*"password": "\(.*\)",/\1/p' | base64 --decode)
 SPLUNK_TOKEN=$(oc -n $PEN_NAMESPACE-$envValue -o json get configmaps ${APP_NAME}-${envValue}-setup-config | sed -n "s/.*\"SPLUNK_TOKEN_${APP_NAME_UPPER}\": \"\(.*\)\"/\1/p")
+SERVER_FRONTEND="student-admin-$PEN_NAMESPACE-$envValue.apps.silver.devops.gov.bc.ca"
 
 echo Fetching SOAM token
 TKN=$(curl -s \
@@ -148,15 +149,6 @@ studentAdminClientSecret=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOA
   -H "Authorization: Bearer $TKN" \
   | jq -r '.value')
 
-SERVER_FRONTEND="student-admin-$PEN_NAMESPACE-$envValue.apps.silver.devops.gov.bc.ca"
-if [ "$envValue" = "tools" ]; then
-  SERVER_FRONTEND="student-admin-$PEN_NAMESPACE-dev.apps.silver.devops.gov.bc.ca"
-elif [ "$envValue" = "dev" ]; then
-  SERVER_FRONTEND="student-admin-$PEN_NAMESPACE-test.apps.silver.devops.gov.bc.ca"
-elif [ "$envValue" = "test" ]; then
-  SERVER_FRONTEND="student-admin-$PEN_NAMESPACE-uat.apps.silver.devops.gov.bc.ca"
-fi
-
 echo
 echo Removing student-admin-soam if exists
 curl -sX DELETE "https://$SOAM_KC/auth/admin/realms/$SOAM_KC_REALM_ID/clients/$studentAdminClientID" \
@@ -224,29 +216,19 @@ fi
 bannerEnvironment=""
 bannerColor=""
 SCHEDULER_CRON_DOC_TYPE_MIGRATION=""
-ENABLE_PRR_STUDENT_DEMOGRAPHICS="false"
-if [ "$envValue" = "tools" ]; then
-  BACKEND_ROOT=$APP_NAME-$PEN_NAMESPACE-dev.apps.silver.devops.gov.bc.ca
+ENABLE_PRR_STUDENT_DEMOGRAPHICS="true"
+BACKEND_ROOT=$APP_NAME-$PEN_NAMESPACE-$envValue.apps.silver.devops.gov.bc.ca
+
+if [ "$envValue" = "dev" ]; then
   bannerEnvironment="DEV"
-  bannerColor="#dba424"
-  SCHEDULER_CRON_DOC_TYPE_MIGRATION="0 0 0 * * *"
-  ENABLE_PRR_STUDENT_DEMOGRAPHICS="true"
-elif [ "$envValue" = "dev" ]; then
-  BACKEND_ROOT=$APP_NAME-$PEN_NAMESPACE-test.apps.silver.devops.gov.bc.ca
-  bannerEnvironment="TEST"
   bannerColor="#8d28d7"
   SCHEDULER_CRON_DOC_TYPE_MIGRATION="0 0 0 * * *"
-  ENABLE_PRR_STUDENT_DEMOGRAPHICS="true"
 elif [ "$envValue" = "test" ]; then
-  BACKEND_ROOT=$APP_NAME-$PEN_NAMESPACE-uat.apps.silver.devops.gov.bc.ca
-  bannerEnvironment="UAT"
+  bannerEnvironment="TEST"
   bannerColor="#58fe01"
   SCHEDULER_CRON_DOC_TYPE_MIGRATION="0 0 0 * * *"
-  ENABLE_PRR_STUDENT_DEMOGRAPHICS="true"
 else
-  BACKEND_ROOT=$APP_NAME-$PEN_NAMESPACE-$envValue.apps.silver.devops.gov.bc.ca
   SCHEDULER_CRON_DOC_TYPE_MIGRATION="0 0 0 17 9 *"
-  ENABLE_PRR_STUDENT_DEMOGRAPHICS="true"
 fi
 
 echo Creating config map $APP_NAME-backend-config-map
