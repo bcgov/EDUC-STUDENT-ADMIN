@@ -37,6 +37,7 @@ import NewPENs from './components/admin/stats/NewPENs';
 import GUMPStatsLanding from '@/components/admin/stats/GUMPStatsLanding';
 import Merges from '@/components/admin/stats/Merges';
 import NewMessagePage from '@/components/secure-message/NewMessagePage';
+import MessageDisplay from '@/components/secure-message/MessageDisplay';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -94,7 +95,7 @@ const router = new VueRouter({
           }
         },
       ],
-      beforeEnter(to, from, next) {
+      beforeEnter(_to, _from, next) {
         store.commit('app/setRequestType',REQUEST_TYPES.penRequest.name);
         next();
       }
@@ -130,7 +131,7 @@ const router = new VueRouter({
           }
         }
       ],
-      beforeEnter(to, from, next) {
+      beforeEnter(_to, _from, next) {
         store.commit('app/setRequestType',REQUEST_TYPES.studentRequest.name);
         next();
       }
@@ -169,7 +170,7 @@ const router = new VueRouter({
         requiresAuth: true,
         role: 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE'
       },
-      beforeEnter(to, from, next) {
+      beforeEnter(_to, from, next) {
         if(!from.path.includes('/prb')) {
           store.commit('penRequestBatch/clearPenRequestBatchState');
         }
@@ -211,7 +212,7 @@ const router = new VueRouter({
         requiresAuth: true,
         role: 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE'
       },
-      beforeEnter(to, from, next) {
+      beforeEnter(_to, from, next) {
         if(!from.path.includes('/archivedPrb') && !from.path.includes('/prb')) {
           store.commit('archivedRequestBatch/clearPenRequestBatchState');
         }
@@ -319,6 +320,17 @@ const router = new VueRouter({
           component: ExchangePage,
           meta: {
             pageTitle: PAGE_TITLES.EXCHANGE,
+            requiresAuth: true,
+            role: 'EXCHANGE_ROLE'
+          }
+        },
+        {
+          path: 'exchange/:secureExchangeID',
+          name: 'viewExchange',
+          component: MessageDisplay,
+          props: true,
+          meta: {
+            pageTitle: PAGE_TITLES.VIEW_EXCHANGE,
             requiresAuth: true,
             role: 'EXCHANGE_ROLE'
           }
