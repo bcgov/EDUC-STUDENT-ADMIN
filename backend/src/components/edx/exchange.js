@@ -5,6 +5,8 @@ const HttpStatus = require('http-status-codes');
 const config = require('../../config');
 const {getData} = require('../utils');
 const utils = require('../utils');
+const {FILTER_OPERATION, VALUE_TYPE} = require('../../util/constants');
+const {LocalDateTime} = require('@js-joda/core');
 
 async function getExchangeById(req, res) {
   try {
@@ -30,6 +32,7 @@ async function getExchanges(req, res) {
       pageNumber: req.query.pageNumber,
       pageSize: req.query.pageSize,
       sort: req.query.sort,
+      searchCriteriaList: JSON.stringify(buildSearchParams(req.query.headerSearchParams)),
     }
   };
 
@@ -88,6 +91,47 @@ async function createExchange(req, res) {
     return errorResponse(res);
   }
 }
+
+/**
+ * Returns an array of search criteria objects for search results
+ *
+ * @param searchParams object with keys of the columns we are searching for
+ */
+const buildSearchParams = (searchParams) => {
+  let searchCriteriaArray = Object.entries(JSON.parse(searchParams))
+    .map(([key, value]) => createSearchParamObject(key, value));
+
+  return searchCriteriaArray;
+};
+
+/**
+ * Returns an object that has the following properties key, value, operation, valueType
+ * Helper function when building search params for backend API search
+ *
+ * @param key of what we are searching in
+ * @param value of what we are searching for
+ */
+const createSearchParamObject = (key, value) => {
+  let operation = FILTER_OPERATION.CONTAINS_IGNORE_CASE;
+  let valueType = VALUE_TYPE.STRING;
+
+  if (key === 'sequenceNumber') {
+    operation = FILTER_OPERATION.EQUAL;
+  }
+
+  if (key === 'createDate') {
+    value.forEach((date, index) => {
+      value[index] = date + 'T00:00:01';
+    });
+    if (value.length === 1) {
+      value.push(LocalDateTime.now().toString());
+    }
+    value = value.join(',');
+    operation = FILTER_OPERATION.BETWEEN;
+    valueType = VALUE_TYPE.DATE_TIME;
+  }
+  return {key, value, operation, valueType};
+};
 
 module.exports = {
   getExchangeById,

@@ -138,7 +138,7 @@
           </th>
           <v-select
               id="status-text-field"
-              v-model="headerSearchParams.status"
+              v-model="headerSearchParams.secureExchangeStatusCode"
               :items="statuses"
               item-text='secureExchangeStatusCode'
               item-value='secureExchangeStatusCode'
@@ -194,6 +194,7 @@ import {mapState} from 'vuex';
 import ApiService from '../common/apiService';
 import {Routes} from '@/utils/constants';
 import router from '../router';
+import {omitBy, isEmpty} from 'lodash';
 
 import PrimaryButton from './util/PrimaryButton';
 import getSecureExchangeContactMixin from '@/mixins/getSecureExchangeContactMixin';
@@ -218,12 +219,8 @@ export default {
         contact: '',
         subject: '',
         createDate: [],
-        status: '',
+        secureExchangeStatusCode: '',
         reviewer: ''
-      },
-      headerSortParams: {
-        currentSort: 'createDate',
-        currentSortDir: true
       },
       requests: [],
     };
@@ -293,7 +290,7 @@ export default {
         createDate: 'ASC'
       };
 
-      ApiService.apiAxios.get(Routes.edx.EXCHANGE_URL, {params: {pageNumber: this.pageNumber - 1, pageSize: this.pageSize, sort}})
+      ApiService.apiAxios.get(Routes.edx.EXCHANGE_URL, {params: {pageNumber: this.pageNumber - 1, pageSize: this.pageSize, sort, headerSearchParams: omitBy(this.headerSearchParams, isEmpty) }})
         .then(response => {
           this.requests = response.data.content;
           this.totalRequests = response.data.totalElements;
