@@ -53,7 +53,7 @@
           </th>
           <v-text-field
               id="sequence-number-text-field"
-              v-model="headerSearchParams.sequenceNumber"
+              v-model.trim="headerSearchParams.sequenceNumber"
               class="header-text"
               outlined
               dense
@@ -68,7 +68,7 @@
           </th>
           <v-text-field
               id="contact-text-field"
-              v-model="headerSearchParams.contact"
+              v-model.trim="headerSearchParams.contact"
               class="header-text"
               outlined
               dense
@@ -83,7 +83,7 @@
           </th>
           <v-text-field
               id="subject-text-field"
-              v-model="headerSearchParams.subject"
+              v-model.trim="headerSearchParams.subject"
               class="header-text"
               outlined
               dense
@@ -157,7 +157,7 @@
           </th>
           <v-text-field
               id="reviewer-text-field"
-              v-model="headerSearchParams.reviewer"
+              v-model.trim="headerSearchParams.reviewer"
               class="header-text"
               outlined
               dense
@@ -190,11 +190,11 @@
 </template>
 
 <script>
-import {mapState} from 'vuex';
+import {mapState,mapMutations} from 'vuex';
 import ApiService from '../common/apiService';
 import {Routes} from '@/utils/constants';
 import router from '../router';
-import {omitBy, isEmpty} from 'lodash';
+import {omitBy, isEmpty, debounce} from 'lodash';
 
 import PrimaryButton from './util/PrimaryButton';
 import getSecureExchangeContactMixin from '@/mixins/getSecureExchangeContactMixin';
@@ -208,8 +208,6 @@ export default {
   data() {
     return {
       selectedItem: 0,
-      pageNumber: 1,
-      pageSize: 25,
       totalRequests: 0,
       itemsPerPageOptions: [10, 15, 25, 50, 100],
       loadingTable: false,
@@ -230,7 +228,7 @@ export default {
       userName: state => state.auth.userInfo.userName
     }),
     ...mapState('auth', ['userInfo']),
-    ...mapState('edx', ['statuses']),
+    ...mapState('edx', ['statuses', 'exchangeSearchParams']),
     headers() {
       return [
         {
@@ -264,12 +262,30 @@ export default {
           sortable: false
         }
       ];
+    },
+    pageNumber: {
+      get() {
+        return this.$store.state.edx.pageNumber;
+      },
+      set(page) {
+        this.setPageNumber(page);
+      }
+    },
+    pageSize: {
+      get() {
+        return this.$store.state.edx.pageSize;
+      },
+      set(pageSize) {
+        this.setPageSize(pageSize);
+      }
     }
   },
   created() {
-    this.getRequests();
+    this.headerSearchParams = this.exchangeSearchParams;
+    this.getRequestsWithDebounce();
   },
   methods: {
+    ...mapMutations('edx', ['setPageNumber', 'setPageSize']),
     claim() {
       console.log(this.userName + ' would like to claim');
       alert(`claim as ${this.userName}?`);
@@ -302,13 +318,25 @@ export default {
           this.loadingTable = false;
         });
     },
+    getRequestsWithDebounce: debounce(function() {this.getRequests();}, 1000),
   },
   watch: {
-    pageSize() {
-      this.getRequests();
+    pageSize: {
+      handler() {
+        this.getRequests();
+      }
+
     },
-    pageNumber() {
-      this.getRequests();
+    pageNumber: {
+      handler() {
+        this.getRequests();
+      }
+    },
+    headerSearchParams: {
+      handler() {
+        this.getRequestsWithDebounce();
+      },
+      deep: true
     }
   }
 };
