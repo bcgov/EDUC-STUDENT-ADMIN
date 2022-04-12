@@ -207,6 +207,7 @@ export default {
   mixins: [getSecureExchangeContactMixin],
   data() {
     return {
+      initialLoad: true,
       selectedItem: 0,
       totalRequests: 0,
       itemsPerPageOptions: [10, 15, 25, 50, 100],
@@ -228,7 +229,7 @@ export default {
       userName: state => state.auth.userInfo.userName
     }),
     ...mapState('auth', ['userInfo']),
-    ...mapState('edx', ['statuses', 'exchangeSearchParams']),
+    ...mapState('edx', ['statuses', 'exchangeSearchParams', 'pageSize', 'pageNumber']),
     headers() {
       return [
         {
@@ -316,6 +317,7 @@ export default {
         })
         .finally(() => {
           this.loadingTable = false;
+          this.initialLoad = false;
         });
     },
     getRequestsWithDebounce: debounce(function() {this.getRequests();}, 1000),
@@ -323,17 +325,20 @@ export default {
   watch: {
     pageSize: {
       handler() {
-        this.getRequests();
+        this.getRequestsWithDebounce();
       }
 
     },
     pageNumber: {
       handler() {
-        this.getRequests();
+        this.getRequestsWithDebounce();
       }
     },
     headerSearchParams: {
       handler() {
+        if (!this.initialLoad) {
+          this.setPageNumber(1);
+        }
         this.getRequestsWithDebounce();
       },
       deep: true
