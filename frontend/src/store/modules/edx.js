@@ -35,6 +35,9 @@ export default {
     },
     setPageSize(state, payload) {
       state.pageSize = payload;
+    },
+    setExchangeSearchParams(state, exchangeSearchParams) {
+      state.exchangeSearchParams = {...state.exchangeSearchParams, ...exchangeSearchParams};
     }
   },
   actions: {

@@ -53,7 +53,7 @@
           </th>
           <v-text-field
               id="sequence-number-text-field"
-              v-model.trim="headerSearchParams.sequenceNumber"
+              v-model.trim="searchParams.sequenceNumber"
               class="header-text"
               outlined
               dense
@@ -68,7 +68,7 @@
           </th>
           <v-text-field
               id="contact-text-field"
-              v-model.trim="headerSearchParams.contact"
+              v-model.trim="searchParams.contact"
               class="header-text"
               outlined
               dense
@@ -83,7 +83,7 @@
           </th>
           <v-text-field
               id="subject-text-field"
-              v-model.trim="headerSearchParams.subject"
+              v-model.trim="searchParams.subject"
               class="header-text"
               outlined
               dense
@@ -108,19 +108,19 @@
             <template v-slot:activator="{ on }">
               <v-text-field
                   id="date-picker-text-field"
-                  :value="headerSearchParams.createDate? headerSearchParams.createDate.join(): ''"
+                  :value="searchParams.createDate? searchParams.createDate.join(): ''"
                   outlined
                   dense
                   readonly
                   v-on="on"
-                  @click:clear="headerSearchParams.createDate = []"
+                  @click:clear="searchParams.createDate = []"
                   clearable
                   class="header-text"
               ></v-text-field>
             </template>
             <v-date-picker
                 id="date-picker"
-                v-model="headerSearchParams.createDate"
+                v-model="searchParams.createDate"
                 no-title
                 range
             >
@@ -138,7 +138,7 @@
           </th>
           <v-select
               id="status-text-field"
-              v-model="headerSearchParams.secureExchangeStatusCode"
+              v-model="searchParams.secureExchangeStatusCode"
               :items="statuses"
               item-text='secureExchangeStatusCode'
               item-value='secureExchangeStatusCode'
@@ -157,7 +157,7 @@
           </th>
           <v-text-field
               id="reviewer-text-field"
-              v-model.trim="headerSearchParams.reviewer"
+              v-model.trim="searchParams.reviewer"
               class="header-text"
               outlined
               dense
@@ -210,10 +210,7 @@ export default {
       initialLoad: true,
       selectedItem: 0,
       totalRequests: 0,
-      itemsPerPageOptions: [10, 15, 25, 50, 100],
-      loadingTable: false,
-      dateMenu: false,
-      headerSearchParams: {
+      searchParams: {
         sequenceNumber: '',
         contact: '',
         subject: '',
@@ -221,6 +218,9 @@ export default {
         secureExchangeStatusCode: '',
         reviewer: ''
       },
+      itemsPerPageOptions: [10, 15, 25, 50, 100],
+      loadingTable: false,
+      dateMenu: false,
       requests: [],
     };
   },
@@ -279,14 +279,14 @@ export default {
       set(pageSize) {
         this.setPageSize(pageSize);
       }
-    }
+    },
   },
   created() {
-    this.headerSearchParams = this.exchangeSearchParams;
+    this.searchParams = {...this.exchangeSearchParams};
     this.getRequestsWithDebounce();
   },
   methods: {
-    ...mapMutations('edx', ['setPageNumber', 'setPageSize']),
+    ...mapMutations('edx', ['setPageNumber', 'setPageSize', 'setExchangeSearchParams']),
     claim() {
       console.log(this.userName + ' would like to claim');
       alert(`claim as ${this.userName}?`);
@@ -307,7 +307,7 @@ export default {
         createDate: 'ASC'
       };
 
-      ApiService.apiAxios.get(Routes.edx.EXCHANGE_URL, {params: {pageNumber: this.pageNumber - 1, pageSize: this.pageSize, sort, headerSearchParams: omitBy(this.headerSearchParams, isEmpty) }})
+      ApiService.apiAxios.get(Routes.edx.EXCHANGE_URL, {params: {pageNumber: this.pageNumber - 1, pageSize: this.pageSize, sort, searchParams: omitBy(this.searchParams, isEmpty) }})
         .then(response => {
           this.requests = response.data.content;
           this.totalRequests = response.data.totalElements;
@@ -334,15 +334,17 @@ export default {
         this.getRequestsWithDebounce();
       }
     },
-    headerSearchParams: {
-      handler() {
+    searchParams: {
+      handler(updatedSearchParams) {
         if (!this.initialLoad) {
           this.setPageNumber(1);
         }
+
+        this.setExchangeSearchParams(updatedSearchParams);
         this.getRequestsWithDebounce();
       },
       deep: true
-    }
+    },
   }
 };
 </script>

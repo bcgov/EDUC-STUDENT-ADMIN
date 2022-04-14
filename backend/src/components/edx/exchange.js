@@ -32,7 +32,7 @@ async function getExchanges(req, res) {
       pageNumber: req.query.pageNumber,
       pageSize: req.query.pageSize,
       sort: req.query.sort,
-      searchCriteriaList: JSON.stringify(buildSearchParams(req.query.headerSearchParams)),
+      searchCriteriaList: JSON.stringify(buildSearchParams(req.query.searchParams)),
     }
   };
 
