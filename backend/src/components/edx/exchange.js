@@ -93,20 +93,18 @@ async function createExchange(req, res) {
 }
 
 /**
- * Returns an array of search criteria objects for search results
+ * Returns an array of search criteria objects to query EDX API
  *
  * @param searchParams object with keys of the columns we are searching for
  */
 const buildSearchParams = (searchParams) => {
-  let searchCriteriaArray = Object.entries(JSON.parse(searchParams))
+  return Object.entries(JSON.parse(searchParams))
     .map(([key, value]) => createSearchParamObject(key, value));
-
-  return searchCriteriaArray;
 };
 
 /**
  * Returns an object that has the following properties key, value, operation, valueType
- * Helper function when building search params for backend API search
+ * Helper function when building search params for querying EDX API
  *
  * @param key of what we are searching in
  * @param value of what we are searching for
