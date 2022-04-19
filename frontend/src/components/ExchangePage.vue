@@ -53,7 +53,7 @@
           </th>
           <v-text-field
               id="sequence-number-text-field"
-              v-model="headerSearchParams.sequenceNumber"
+              v-model.trim="searchParams.sequenceNumber"
               class="header-text"
               outlined
               dense
@@ -68,7 +68,7 @@
           </th>
           <v-text-field
               id="contact-text-field"
-              v-model="headerSearchParams.contact"
+              v-model.trim="searchParams.contact"
               class="header-text"
               outlined
               dense
@@ -83,7 +83,7 @@
           </th>
           <v-text-field
               id="subject-text-field"
-              v-model="headerSearchParams.subject"
+              v-model.trim="searchParams.subject"
               class="header-text"
               outlined
               dense
@@ -108,19 +108,19 @@
             <template v-slot:activator="{ on }">
               <v-text-field
                   id="date-picker-text-field"
-                  :value="headerSearchParams.createDate? headerSearchParams.createDate.join(): ''"
+                  :value="searchParams.createDate? searchParams.createDate.join(): ''"
                   outlined
                   dense
                   readonly
                   v-on="on"
-                  @click:clear="headerSearchParams.createDate = []"
+                  @click:clear="searchParams.createDate = []"
                   clearable
                   class="header-text"
               ></v-text-field>
             </template>
             <v-date-picker
                 id="date-picker"
-                v-model="headerSearchParams.createDate"
+                v-model="searchParams.createDate"
                 no-title
                 range
             >
@@ -138,7 +138,7 @@
           </th>
           <v-select
               id="status-text-field"
-              v-model="headerSearchParams.status"
+              v-model="searchParams.secureExchangeStatusCode"
               :items="statuses"
               item-text='secureExchangeStatusCode'
               item-value='secureExchangeStatusCode'
@@ -157,7 +157,7 @@
           </th>
           <v-text-field
               id="reviewer-text-field"
-              v-model="headerSearchParams.reviewer"
+              v-model.trim="searchParams.reviewer"
               class="header-text"
               outlined
               dense
@@ -190,10 +190,11 @@
 </template>
 
 <script>
-import {mapState} from 'vuex';
+import {mapState,mapMutations} from 'vuex';
 import ApiService from '../common/apiService';
 import {Routes} from '@/utils/constants';
 import router from '../router';
+import {omitBy, isEmpty, debounce} from 'lodash';
 
 import PrimaryButton from './util/PrimaryButton';
 import getSecureExchangeContactMixin from '@/mixins/getSecureExchangeContactMixin';
@@ -206,25 +207,20 @@ export default {
   mixins: [getSecureExchangeContactMixin],
   data() {
     return {
+      initialLoad: true,
       selectedItem: 0,
-      pageNumber: 1,
-      pageSize: 25,
       totalRequests: 0,
-      itemsPerPageOptions: [10, 15, 25, 50, 100],
-      loadingTable: false,
-      dateMenu: false,
-      headerSearchParams: {
+      searchParams: {
         sequenceNumber: '',
         contact: '',
         subject: '',
         createDate: [],
-        status: '',
+        secureExchangeStatusCode: '',
         reviewer: ''
       },
-      headerSortParams: {
-        currentSort: 'createDate',
-        currentSortDir: true
-      },
+      itemsPerPageOptions: [10, 15, 25, 50, 100],
+      loadingTable: false,
+      dateMenu: false,
       requests: [],
     };
   },
@@ -233,7 +229,7 @@ export default {
       userName: state => state.auth.userInfo.userName
     }),
     ...mapState('auth', ['userInfo']),
-    ...mapState('edx', ['statuses']),
+    ...mapState('edx', ['statuses', 'exchangeSearchParams', 'pageSize', 'pageNumber']),
     headers() {
       return [
         {
@@ -267,12 +263,30 @@ export default {
           sortable: false
         }
       ];
-    }
+    },
+    pageNumber: {
+      get() {
+        return this.$store.state.edx.pageNumber;
+      },
+      set(page) {
+        this.setPageNumber(page);
+      }
+    },
+    pageSize: {
+      get() {
+        return this.$store.state.edx.pageSize;
+      },
+      set(pageSize) {
+        this.setPageSize(pageSize);
+      }
+    },
   },
   created() {
-    this.getRequests();
+    this.searchParams = {...this.exchangeSearchParams};
+    this.getRequestsWithDebounce();
   },
   methods: {
+    ...mapMutations('edx', ['setPageNumber', 'setPageSize', 'setExchangeSearchParams']),
     claim() {
       console.log(this.userName + ' would like to claim');
       alert(`claim as ${this.userName}?`);
@@ -293,7 +307,7 @@ export default {
         createDate: 'ASC'
       };
 
-      ApiService.apiAxios.get(Routes.edx.EXCHANGE_URL, {params: {pageNumber: this.pageNumber - 1, pageSize: this.pageSize, sort}})
+      ApiService.apiAxios.get(Routes.edx.EXCHANGE_URL, {params: {pageNumber: this.pageNumber - 1, pageSize: this.pageSize, sort, searchParams: omitBy(this.searchParams, isEmpty) }})
         .then(response => {
           this.requests = response.data.content;
           this.totalRequests = response.data.totalElements;
@@ -303,16 +317,34 @@ export default {
         })
         .finally(() => {
           this.loadingTable = false;
+          this.initialLoad = false;
         });
     },
+    getRequestsWithDebounce: debounce(function() {this.getRequests();}, 1000),
   },
   watch: {
-    pageSize() {
-      this.getRequests();
+    pageSize: {
+      handler() {
+        this.getRequestsWithDebounce();
+      }
+
     },
-    pageNumber() {
-      this.getRequests();
-    }
+    pageNumber: {
+      handler() {
+        this.getRequestsWithDebounce();
+      }
+    },
+    searchParams: {
+      handler(updatedSearchParams) {
+        if (!this.initialLoad) {
+          this.setPageNumber(1);
+        }
+
+        this.setExchangeSearchParams(updatedSearchParams);
+        this.getRequestsWithDebounce();
+      },
+      deep: true
+    },
   }
 };
 </script>

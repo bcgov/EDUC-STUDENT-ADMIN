@@ -6,6 +6,16 @@ export default {
     ministryTeams: [],
     statuses: [],
     exchangeMincodes: [],
+    pageNumber: 1,
+    pageSize: 25,
+    exchangeSearchParams: {
+      sequenceNumber: '',
+      contact: '',
+      subject: '',
+      createDate: [],
+      secureExchangeStatusCode: '',
+      reviewer: ''
+    },
   },
   getters: {
     getStatuses: state => state.statuses?.sort((a,b) => a.displayOrder > b.displayOrder ? 1 : -1),
@@ -19,6 +29,15 @@ export default {
     },
     setExchangeMincodes(state, payload) {
       state.exchangeMincodes = payload;
+    },
+    setPageNumber(state, payload) {
+      state.pageNumber = payload;
+    },
+    setPageSize(state, payload) {
+      state.pageSize = payload;
+    },
+    setExchangeSearchParams(state, exchangeSearchParams) {
+      state.exchangeSearchParams = {...state.exchangeSearchParams, ...exchangeSearchParams};
     }
   },
   actions: {
