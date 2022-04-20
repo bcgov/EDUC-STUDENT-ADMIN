@@ -66,26 +66,14 @@
           >
             {{ header.text }}
           </th>
-<!--          <v-text-field-->
-<!--              id="contact-text-field"-->
-<!--              v-model.trim="searchParams.contact"-->
-<!--              class="header-text"-->
-<!--              outlined-->
-<!--              dense-->
-<!--              clearable-->
-<!--          ></v-text-field>-->
           <v-autocomplete
               id='contact-text-field'
               v-model="searchParams.contactIdentifier"
               :items="contacts"
               dense
               clearable
-              clear-icon="clear"
-          >
-            <template v-slot:selection="{ item }">
-              <span> {{ item.text }} </span>
-            </template>
-          </v-autocomplete>
+              outlined
+          />
         </template>
         <template v-slot:header.subject="{ header }">
           <th
