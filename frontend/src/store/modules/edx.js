@@ -3,14 +3,14 @@ import ApiService from '@/common/apiService';
 export default {
   namespaced: true,
   state: {
-    ministryTeams: new Map(),
+    ministryTeams: [],
     statuses: [],
     exchangeMincodes: [],
     pageNumber: 1,
     pageSize: 25,
     exchangeSearchParams: {
       sequenceNumber: '',
-      contact: '',
+      contactIdentifier: '',
       subject: '',
       createDate: [],
       secureExchangeStatusCode: '',
@@ -22,10 +22,7 @@ export default {
   },
   mutations: {
     setMinistryTeams(state, ministryTeamList) {
-      state.ministryTeams = new Map();
-      ministryTeamList.forEach(element => {
-        state.ministryTeams.set(element.ministryOwnershipTeamId, element.teamName);
-      });
+      state.ministryTeams = ministryTeamList;
     },
     setStatuses: (state, statuses) => {
       state.statuses = statuses;
@@ -54,7 +51,7 @@ export default {
     },
     async getCodes({commit, state}) {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        if(state.ministryTeams.size === 0) {
+        if(state.ministryTeams.length === 0) {
           ApiService.getMinistryTeams().then(response => {
             commit('setMinistryTeams', response.data);
           });

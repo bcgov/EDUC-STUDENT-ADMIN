@@ -66,14 +66,26 @@
           >
             {{ header.text }}
           </th>
-          <v-text-field
-              id="contact-text-field"
-              v-model.trim="searchParams.contact"
-              class="header-text"
-              outlined
+<!--          <v-text-field-->
+<!--              id="contact-text-field"-->
+<!--              v-model.trim="searchParams.contact"-->
+<!--              class="header-text"-->
+<!--              outlined-->
+<!--              dense-->
+<!--              clearable-->
+<!--          ></v-text-field>-->
+          <v-autocomplete
+              id='contact-text-field'
+              v-model="searchParams.contactIdentifier"
+              :items="contacts"
               dense
               clearable
-          ></v-text-field>
+              clear-icon="clear"
+          >
+            <template v-slot:selection="{ item }">
+              <span> {{ item.text }} </span>
+            </template>
+          </v-autocomplete>
         </template>
         <template v-slot:header.subject="{ header }">
           <th
@@ -229,7 +241,14 @@ export default {
       userName: state => state.auth.userInfo.userName
     }),
     ...mapState('auth', ['userInfo']),
-    ...mapState('edx', ['statuses', 'exchangeSearchParams', 'pageSize', 'pageNumber']),
+    ...mapState('edx', ['statuses', 'exchangeSearchParams', 'pageSize', 'pageNumber', 'ministryTeams']),
+    ...mapState('app', ['mincodeSchoolNames']),
+    contacts() {
+      //creates the items within the contacts search
+      const schoolNames = _.sortBy(Array.from(this.mincodeSchoolNames.entries()).map(school => ({ text: `${school[1]} (${school[0]})`, value: school[0]})), ['text']);
+      const ministryNames = this.ministryTeams.map(ministryTeam => ({text: `${ministryTeam.teamName} Team`, value: ministryTeam.ministryOwnershipTeamId}));
+      return [...ministryNames, ...schoolNames];
+    },
     headers() {
       return [
         {
