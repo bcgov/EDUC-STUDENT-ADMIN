@@ -18,7 +18,7 @@ export default {
       switch (secureExchange.secureExchangeContactTypeCode) {
       case 'MINTEAM' :
         if (this.ministryTeams.length > 0) {
-          contactName = this.getMinistryTeamNameByID(secureExchange.ministryOwnershipTeamID);
+          contactName = this.getMinistryTeamNameByID(secureExchange.contactIdentifier);
         }
         break;
       case 'SCHOOL' :
@@ -35,7 +35,7 @@ export default {
     },
     getMinistryTeamNameByID(ministryOwnershipTeamID) {
       let ministryTeam = this.ministryTeams.find((minTeam) => minTeam.ministryOwnershipTeamId === ministryOwnershipTeamID);
-      return (`${ministryTeam?.teamName} Team` || 'Ministry team was not found');
+      return ministryTeam ? `${ministryTeam?.teamName} Team` : 'Ministry team was not found';
     },
     getSchoolNameByMincode(mincode) {
       let schoolName = this.mincodeSchoolNames.get(mincode);

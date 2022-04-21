@@ -10,7 +10,7 @@ export default {
     pageSize: 25,
     exchangeSearchParams: {
       sequenceNumber: '',
-      contact: '',
+      contactIdentifier: '',
       subject: '',
       createDate: [],
       secureExchangeStatusCode: '',
@@ -21,8 +21,8 @@ export default {
     getStatuses: state => state.statuses?.sort((a,b) => a.displayOrder > b.displayOrder ? 1 : -1),
   },
   mutations: {
-    setMinistryTeams(state, payload) {
-      state.ministryTeams = payload;
+    setMinistryTeams(state, ministryTeamList) {
+      state.ministryTeams = ministryTeamList;
     },
     setStatuses: (state, statuses) => {
       state.statuses = statuses;
