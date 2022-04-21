@@ -67,7 +67,7 @@
             {{ header.text }}
           </th>
           <v-autocomplete
-              id='contact-text-field'
+              id='contact-dropdown'
               v-model="searchParams.contactIdentifier"
               :items="contacts"
               dense
@@ -137,7 +137,7 @@
             {{ header.text }}
           </th>
           <v-select
-              id="status-text-field"
+              id="status-dropdown"
               v-model="searchParams.secureExchangeStatusCode"
               :items="statuses"
               item-text='secureExchangeStatusCode'
