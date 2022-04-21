@@ -232,7 +232,7 @@ export default {
     ...mapState('edx', ['statuses', 'exchangeSearchParams', 'pageSize', 'pageNumber', 'ministryTeams']),
     ...mapState('app', ['mincodeSchoolNames']),
     contacts() {
-      //creates the items within the contacts search
+      //creates the text and value items for the contacts search dropdown.
       const schoolNames = _.sortBy(Array.from(this.mincodeSchoolNames.entries()).map(school => ({ text: `${school[1]} (${school[0]})`, value: school[0]})), ['text']);
       const ministryNames = this.ministryTeams.map(ministryTeam => ({text: `${ministryTeam.teamName} Team`, value: ministryTeam.ministryOwnershipTeamId}));
       return [...ministryNames, ...schoolNames];
