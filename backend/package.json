@@ -44,7 +44,7 @@
     "memory-cache": "^0.2.0",
     "morgan": "^1.9.1",
     "nats": "^2.0.8",
-    "nconf": "^0.11.2",
+    "nconf": "^0.11.4",
     "nocache": "^2.1.0",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
