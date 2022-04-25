@@ -40,6 +40,7 @@
               ></v-text-field>
               <v-text-field
                 v-model="subject"
+                id='subjectTxtField'
                 label="Subject"
                 :rules="requiredRules"
                 maxlength="255"
@@ -80,7 +81,7 @@
             Student
           </v-card-title>
           <v-card-text class="pb-0 card-hint">
-            <span>Addding a student will allow you and the school to see the student's record at the Ministry of Education.</span>
+            <span>Adding a student will allow you and the school to see the student's record at the Ministry of Education.</span>
           </v-card-text>
           <v-card-actions class="pt-0">
             <v-row class="justify-center mt-4"> 
