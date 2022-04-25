@@ -8,7 +8,7 @@
         secondary 
         short
         @click.native="navigateToList"
-      ></PrimaryButton>
+      >Return to Inbox</PrimaryButton>
     </v-row>
     <v-row no-gutters>
       <v-col cols="7">
