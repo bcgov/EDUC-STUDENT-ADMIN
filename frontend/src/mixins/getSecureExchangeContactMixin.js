@@ -35,7 +35,7 @@ export default {
     },
     getMinistryTeamNameByID(ministryOwnershipTeamID) {
       let ministryTeam = this.ministryTeams.find((minTeam) => minTeam.ministryOwnershipTeamId === ministryOwnershipTeamID);
-      return ministryTeam ? `${ministryTeam?.teamName} Team` : 'Ministry team was not found';
+      return ministryTeam ? ministryTeam?.teamName : 'Ministry team was not found';
     },
     getSchoolNameByMincode(mincode) {
       let schoolName = this.mincodeSchoolNames.get(mincode);
