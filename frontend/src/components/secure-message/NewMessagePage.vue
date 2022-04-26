@@ -7,8 +7,8 @@
         iconClass="pt-0"
         secondary 
         short
-        @click.native="closeNewMessagePage"
-      ></PrimaryButton>
+        @click.native="navigateToList"
+      >Return to Inbox</PrimaryButton>
     </v-row>
     <v-row no-gutters>
       <v-col cols="7">
@@ -161,18 +161,6 @@ export default {
   methods: {
     navigateToList() {
       router.push({name: 'exchange'});
-    },
-    async closeNewMessagePage() {
-      if(this.newMessage?.trim()) {
-        await this.$refs.confirmationDialog.open('Warning!', 'Changes will be lost. Are you sure?', { color: '#003366', rejectText: 'No, go back' })
-          .then((result) => {
-            if(result) {
-              this.navigateToList();
-            }
-          });
-      } else {
-        this.navigateToList();
-      }
     },
     sendNewMessage() {
       this.processing = true;
