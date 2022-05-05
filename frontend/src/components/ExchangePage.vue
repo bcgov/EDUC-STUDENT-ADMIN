@@ -367,7 +367,8 @@ export default {
 }
 
 .truncate {
-  word-break: break-word;
+  word-break: normal;
+  overflow-wrap: anywhere;
 }
 
 </style>
