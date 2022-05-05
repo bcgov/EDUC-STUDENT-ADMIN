@@ -171,7 +171,7 @@
               :class="[{'unread': item.isReadByMinistry === 'N'}, 'tableRow']">
             <td>{{ item.sequenceNumber }}</td>
             <td>{{ getContactName(item)}}</td>
-            <td>{{ item.subject }}</td>
+            <td :class="['truncate']">{{ item.subject }}</td>
             <td>{{
                 item.createDate ? moment(item.createDate).format('YYYY/MM/DD') : ''
               }}
@@ -364,6 +364,10 @@ export default {
 
 .unread {
   font-weight: bold;
+}
+
+.truncate {
+  word-break: break-word;
 }
 
 </style>
