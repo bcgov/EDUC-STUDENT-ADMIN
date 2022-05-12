@@ -1,3 +1,11 @@
+let cacheKeys;
+
+cacheKeys = {
+  EDX_SECURE_EXCHANGE_STATUS: 'edx_exchangeStatuses',
+  EDX_MINISTRY_TEAMS:'edx_ministryTeams'
+};
+const CACHE_KEYS = Object.freeze(cacheKeys);
+
 const FILTER_OPERATION = Object.freeze(
   {
     /**
@@ -129,5 +137,6 @@ module.exports = {
   PEN_REQ_BATCH_STATUS_CODES,
   EVENT_TYPE,
   EVENT_OUTCOME,
-  EVENT_WS_TOPIC
+  EVENT_WS_TOPIC,
+  CACHE_KEYS
 };
