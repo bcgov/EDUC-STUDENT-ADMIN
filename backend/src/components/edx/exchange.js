@@ -84,7 +84,7 @@ async function getExchanges(req, res) {
     });
 }
 
-async function getExchangesPaginated(req) {
+async function getExchangesPaginated(req, res) {
   let criteria = [];
   if (req.query.searchParams) {
     criteria = buildSearchParams(req.query.searchParams);
