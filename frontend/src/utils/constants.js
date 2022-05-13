@@ -111,6 +111,7 @@ let object = {
     ROOT_ENDPOINT: edxRoot,
     EXCHANGE_URL: edxRoot + '/exchange',
     STATUSES_URL: edxRoot + '/exchange/statuses',
+    CLAIM_URL: edxRoot + '/exchange/claim',
     USERS_URL: edxRoot + '/users',
   }
 };
