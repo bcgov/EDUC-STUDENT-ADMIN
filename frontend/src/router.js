@@ -17,7 +17,7 @@ import PrbStudentDetailsDisplay from './components/penreg/penrequest-batch/PrbSt
 import ArchivedRequestBatchDisplay from './components/penreg/penrequest-batch/ArchivedRequestBatchDisplay';
 import LoadFailedBatchList from './components/penreg/penrequest-batch/LoadFailedBatchList';
 import HeldRequestBatchDisplay from './components/penreg/penrequest-batch/HeldRequestBatchDisplay';
-import ExchangePage from './components/ExchangePage';
+import ExchangePage from './components/secure-message/ExchangePage';
 import UnAuthorized from './components/UnAuthorized';
 import { REQUEST_TYPES, PAGE_TITLES } from './utils/constants';
 import authStore from './store/modules/auth';

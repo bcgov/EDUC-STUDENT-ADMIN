@@ -3,10 +3,10 @@
 const {errorResponse, logApiError} = require('../utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../../config');
-const {getData} = require('../utils');
+const {getData, getCodeTable} = require('../utils');
 const utils = require('../utils');
-const {FILTER_OPERATION, VALUE_TYPE} = require('../../util/constants');
-const {LocalDateTime} = require('@js-joda/core');
+const {FILTER_OPERATION, VALUE_TYPE, CACHE_KEYS} = require('../../util/constants');
+const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
 
 async function getExchangeById(req, res) {
   try {
@@ -26,29 +26,64 @@ async function getExchangeById(req, res) {
 }
 
 async function getExchanges(req, res) {
+  const token = utils.getBackendToken(req);
+  if (!token && req.session.userMinCodes) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No access token'
+    });
+  }
+
+  return Promise.all([
+    getCodeTable(token, CACHE_KEYS.EDX_SECURE_EXCHANGE_STATUS, config.get('server:edx:exchangeStatusesURL')),
+    getCodeTable(token, CACHE_KEYS.EDX_MINISTRY_TEAMS, config.get('server:edx:ministryTeamURL')),
+    getExchangesPaginated(req)
+  ])
+    .then(async ([statusCodeResponse, ministryTeamCodeResponse, dataResponse]) => {
+      if (statusCodeResponse && ministryTeamCodeResponse && dataResponse?.content) {
+        dataResponse['content'].forEach((element) => {
+          if (element['secureExchangeStatusCode']) {
+            let tempStatus = statusCodeResponse.find(codeStatus => codeStatus['secureExchangeStatusCode'] === element['secureExchangeStatusCode']);
+            if (tempStatus?.label) {
+              element['secureExchangeStatusCode'] = tempStatus.label;
+            }
+          }
+          if (element['ministryOwnershipTeamID']) {
+            let tempMinTeam = ministryTeamCodeResponse.find(minstryTeam => minstryTeam['ministryOwnershipTeamId'] === element['ministryOwnershipTeamID']);
+            if (tempMinTeam?.teamName) {
+              element['contactIdentifierName'] = tempMinTeam.teamName;
+            }
+          }
+          if (element['createDate']) {
+            element['createDate'] = LocalDateTime.parse(element['createDate']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd'));
+          }
+        });
+      }
+      return res.status(200).json(dataResponse);
+    }).catch(e => {
+      logApiError(e, 'getExchanges', 'Error getting paginated list of secure exchanges.');
+      return errorResponse(res);
+    });
+}
+
+async function getExchangesPaginated(req) {
+  let criteria = [];
+  if (req.query.searchParams) {
+    criteria = buildSearchParams(req.query.searchParams);
+  }
 
   const params = {
     params: {
       pageNumber: req.query.pageNumber,
       pageSize: req.query.pageSize,
       sort: req.query.sort,
-      searchCriteriaList: JSON.stringify(buildSearchParams(req.query.searchParams)),
+      searchCriteriaList: JSON.stringify(criteria),
     }
   };
 
-  try {
-    const token = utils.getBackendToken(req);
-
-    const response = await utils.getData(token, config.get('server:edx:exchangeURL')+'/paginated', params);
-    return res.status(HttpStatus.OK).json(response);
-  } catch (e) {
-    logApiError(e, 'getExchanges', 'Error getting paginated list of secure exchanges.');
-    return errorResponse(res);
-  }
+  return utils.getData(utils.getBackendToken(req), config.get('server:edx:exchangeURL') + '/paginated', params);
 }
 
 async function getExchange(req, res) {
-
   try {
     const token = utils.getBackendToken(req);
     const response = await utils.getData(token, config.get('server:edx:exchangeURL')+`/${req.params.secureExchangeID}`);
@@ -115,18 +150,22 @@ const createSearchParamObject = (key, value) => {
 
   if (key === 'sequenceNumber') {
     operation = FILTER_OPERATION.EQUAL;
-  }
-
-  if (key === 'createDate') {
+  } else if (key === 'ministryOwnershipTeamID') {
+    operation = FILTER_OPERATION.EQUAL;
+    valueType = VALUE_TYPE.UUID;
+  } else if (key === 'createDate') {
     value.forEach((date, index) => {
-      value[index] = date + 'T00:00:01';
+      value[index] = date + 'T00:00:00';
     });
     if (value.length === 1) {
-      value.push(LocalDateTime.now().toString());
+      value.push(LocalDateTime.parse(value[0]).plusHours(23).plusMinutes(59).plusSeconds(59));
     }
     value = value.join(',');
     operation = FILTER_OPERATION.BETWEEN;
     valueType = VALUE_TYPE.DATE_TIME;
+  }else if (key === 'secureExchangeStatusCode') {
+    value = value.join(',');
+    operation = FILTER_OPERATION.IN;
   }
   return {key, value, operation, valueType};
 };
