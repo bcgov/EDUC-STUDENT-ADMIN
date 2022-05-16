@@ -84,6 +84,7 @@
                 <v-col cols="12" md="4" class="pt-0">
                   <v-text-field
                     class="pt-0 mt-0 pl-9"
+                    id="subject-text-field"
                     v-model="subjectFilter"
                     label="Subject"
                     prepend-inner-icon="mdi-book-open-variant"
@@ -149,6 +150,7 @@
                 <v-col cols="12" md="4" class="pt-0">
                   <v-text-field
                     class="pt-0 mt-0 pl-9"
+                    id="claimed-by-text-field"
                     v-model="claimedByFilter"
                     label="Claimed By"
                     prepend-inner-icon="mdi-account-check-outline"
@@ -169,7 +171,7 @@
                 <v-col cols="12" class="d-flex justify-end">
                   <PrimaryButton class="mr-3" id="search-clear" :secondary="true" @click.native="clearSearch"
                                  text="Clear"></PrimaryButton>
-                  <PrimaryButton @click.native="getExchanges" :loading="loadingTable" :disabled="!searchEnabled" text="Search"></PrimaryButton>
+                  <PrimaryButton @click.native="getExchanges" id="searchButton" :loading="loadingTable" :disabled="!searchEnabled" text="Search"></PrimaryButton>
                 </v-col>
               </v-row>
             </v-expansion-panel-content>
