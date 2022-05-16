@@ -3,8 +3,22 @@
     <v-row class="pt-0" :class="{'mr-0 ml-0': $vuetify.breakpoint.smAndDown, 'mr-3 ml-3': $vuetify.breakpoint.mdAndUp}">
       <v-col class="pt-0">
         <v-row class='d-flex justify-end pb-2'>
-          <v-col class='d-flex justify-end'>
+          <v-col class='d-flex justify-start'>
+            <h1>{{ ministryTeamName }} Inbox</h1>
+          </v-col>
+          <v-col class='d-flex justify-end pt-6'>
             <PrimaryButton
+              :iconLeft=true
+              :large-icon=true
+              icon="mdi-account-check-outline"
+              id="claimBTN"
+              text="Claim"
+              class="mr-2"
+              :disabled="selectedExchanges.length === 0"
+              @click.native="claimExchanges"
+            ></PrimaryButton>
+            <PrimaryButton
+              :iconLeft=true
               :large-icon=true
               icon="mdi-plus"
               id="newMessageBtn"
@@ -25,20 +39,20 @@
                 class="pt-0 pb-0 mt-0 mb-0"
               >
                 <v-radio class="mt-2 radio-blue-text"
-                         label="Active Only"
+                         label="My Active Messages"
                          color="#003366"
                          value="statusFilterActive"
                          @click.native="statusFilterActiveClicked"
                 ><template v-slot:label>
-                  <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">Active Only</span>
+                  <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">My Active Messages</span>
                 </template></v-radio>
                 <v-radio class="mt-2 radio-blue-text"
-                         label="All"
+                         label="All Active Messages"
                          color="#003366"
                          value="statusFilterAll"
                          @click.native="statusFilterAllClicked"
                 ><template v-slot:label>
-                  <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">All</span>
+                  <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">All Active Messages</span>
                 </template></v-radio>
               </v-radio-group>
               <template v-slot:actions>
@@ -55,16 +69,28 @@
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <v-row>
-                <v-col cols="12" md="4">
-                  <v-text-field
+                <v-col cols="12" md="4" class="pt-0">
+                  <v-autocomplete
+                    id='schoolName'
                     class="pt-0 mt-0"
+                    prepend-inner-icon="mdi-account-box-outline"
+                    v-model="contactNameFilter"
+                    :items="schools"
+                    color="#003366"
+                    label="Contact"
+                    clearable
+                  ></v-autocomplete>
+                </v-col>
+                <v-col cols="12" md="4" class="pt-0">
+                  <v-text-field
+                    class="pt-0 mt-0 pl-9"
                     v-model="subjectFilter"
                     label="Subject"
                     prepend-inner-icon="mdi-book-open-variant"
                     clearable
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12" md="4" :class="{'pl-12 pr-12': $vuetify.breakpoint.mdAndUp}">
+                <v-col cols="12" md="4" class="pt-0" :class="{'pl-12 pr-12': $vuetify.breakpoint.mdAndUp}">
                   <v-menu
                     ref="messageDateFilter"
                     v-model="messageDateFilter"
@@ -94,7 +120,9 @@
                     ></v-date-picker>
                   </v-menu>
                 </v-col>
-                <v-col cols="12" md="4">
+                </v-row>
+              <v-row>
+                <v-col cols="12" md="4" class="pt-0">
                   <v-select
                     v-model="statusSelectFilter"
                     :items="secureExchangeStatusCodes"
@@ -118,12 +146,30 @@
                     </template>
                   </v-select>
                 </v-col>
-              </v-row>
+                <v-col cols="12" md="4" class="pt-0">
+                  <v-text-field
+                    class="pt-0 mt-0 pl-9"
+                    v-model="claimedByFilter"
+                    label="Claimed By"
+                    prepend-inner-icon="mdi-account-check-outline"
+                    clearable
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="4" class="pt-0">
+                  <v-text-field
+                    class="pt-0 mt-0 pl-9 pr-9"
+                    v-model="messageIDFilter"
+                    label="Message ID"
+                    prepend-inner-icon="mdi-pound"
+                    clearable
+                  ></v-text-field>
+                </v-col>
+                </v-row>
               <v-row no-gutters class="justify-end mt-n2">
                 <v-col cols="12" class="d-flex justify-end">
                   <PrimaryButton class="mr-3" id="search-clear" :secondary="true" @click.native="clearSearch"
                                  text="Clear"></PrimaryButton>
-                  <PrimaryButton @click.native="getRequests" :loading="loadingTable" :disabled="!searchEnabled" text="Search"></PrimaryButton>
+                  <PrimaryButton @click.native="getExchanges" :loading="loadingTable" :disabled="!searchEnabled" text="Search"></PrimaryButton>
                 </v-col>
               </v-row>
             </v-expansion-panel-content>
@@ -138,16 +184,18 @@
               :footer-props="{
                       'items-per-page-options': itemsPerPageOptions
                     }"
-              :items="requests"
+              :items="exchanges"
               :loading="loadingTable"
               :server-items-length="totalRequests"
               class="elevation-1"
-              hide-default-header
+              show-select
+              item-key="secureExchangeID"
               mobile-breakpoint="0"
+              v-model="selectedExchanges"
             >
-
+              <template #header.data-table-select></template>
               <template v-slot:item.secureExchangeStatusCode="{ item }">
-                <v-row>
+                <v-row class="ml-n6">
                   <v-col cols="7" md="10" class="pb-0 pt-0">
                     <v-row class="mb-n4">
                       <v-col cols="12" class="pb-2 pt-2 pr-0">
@@ -156,7 +204,7 @@
                     </v-row>
                     <v-row>
                       <v-col cols="12" class="pb-1 pr-0">
-                        <span class="ministryLine">{{ getMinistryTeamName(item.ministryOwnershipTeamID) }} - {{ item.createDate }}</span>
+                        <span class="ministryLine">{{ getContactLineItem(item) }}</span>
                       </v-col>
                     </v-row>
                     <v-row>
@@ -166,16 +214,28 @@
                     </v-row>
                   </v-col>
                   <v-col cols="5" md="2" style="text-align: end" class="pb-0 pt-0">
-                    <v-row class="mb-n4">
-                      <v-col cols="12" class="pb-1">
+                    <v-row>
+                      <v-col cols="12" class="pb-1 pt-1">
+                        <v-icon style="margin-bottom: 0.25em" color="grey darken-3" right size="medium" dark>mdi-pound</v-icon>
+                        <span class="statusCodeLabel">{{ item.sequenceNumber }}</span>
+                      </v-col>
+                    </v-row>
+                    <v-row>
+                      <v-col cols="12" class="pb-1 pt-0">
                         <v-icon class="pb-1" :color="getStatusColor(item.secureExchangeStatusCode)" right dark>mdi-circle-medium</v-icon>
                         <span class="statusCodeLabel">{{ item.secureExchangeStatusCode }}</span>
                       </v-col>
                     </v-row>
                     <v-row>
-                      <v-col cols="12" class="pb-2">
-                        <v-icon style="margin-bottom: 0.15em" color="grey darken-3" right size="medium" dark>mdi-pound</v-icon>
-                        <span class="statusCodeLabel">{{ item.sequenceNumber }}</span>
+                      <v-col cols="12" class="pb-1 pt-0">
+                        <v-icon style="margin-bottom: 0.2em" color="grey darken-3" right dark>mdi-account-outline</v-icon>
+                        <span class="statusCodeLabel">{{ item.reviewer }}</span>
+                      </v-col>
+                    </v-row>
+                    <v-row>
+                      <v-col cols="12" class="pb-1 pt-0">
+                        <v-icon class="pr-1" style="margin-bottom: 0.2em" color="grey darken-3" right dark>mdi-clock-outline</v-icon>
+                        <span class="statusCodeLabel">{{ getNumberOfDays(item.createDate) }}</span>
                       </v-col>
                     </v-row>
                   </v-col>
@@ -198,11 +258,14 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton';
-import {mapState} from 'vuex';
+import {mapGetters, mapState} from 'vuex';
 import {isEmpty, omitBy} from 'lodash';
+import {LocalDate, ChronoUnit, DateTimeFormatter} from '@js-joda/core';
+import alertMixin from '@/mixins/alertMixin';
 
 export default {
   name: 'ExchangeInbox',
+  mixins: [alertMixin],
   props: {
     ministryOwnershipGroupRoleID: {
       type: String,
@@ -222,16 +285,24 @@ export default {
       activeMessageDatePicker: null,
       messageDate: null,
       subjectFilter: '',
+      messageIDFilter: '',
+      claimedByFilter: '',
+      contactNameFilter: '',
       filterText: 'More Filters',
+      ministryTeamName: '',
       headers: [
         {
-          text: 'Status',
+          text: '',
+          align: 'end',
+          value: 'data-table-select'
+        },
+        {
+          text: '',
           align: 'start',
           sortable: false,
           value: 'secureExchangeStatusCode',
-        }
+        },
       ],
-      selectedItem: 0,
       pageNumber: 1,
       pageSize: 25,
       totalRequests: 0,
@@ -249,56 +320,91 @@ export default {
         currentSort: 'createDate',
         currentSortDir: true
       },
-      requests: [],
+      exchanges: [],
+      selectedExchanges: [],
       isActiveMessagesTabEnabled: true,
     };
   },
   computed: {
+    ...mapGetters('auth', ['userInfo']),
+    ...mapState('app', ['mincodeSchoolNames']),
     ...mapState('edx', ['statuses']),
     ...mapState('edx', ['ministryTeams']),
     secureExchangeStatusCodes(){
       return this.statuses;
     },
     searchEnabled(){
-      return (this.subjectFilter !== '' && this.subjectFilter !== null) || this.messageDate !== null || this.secureExchangeStatusCodes.some(item => item.secureExchangeStatusCode === this.statusSelectFilter);
+      return (this.claimedByFilter !== '' && this.claimedByFilter !== null)
+        || (this.messageIDFilter !== '' && this.messageIDFilter !== null)
+        || (this.subjectFilter !== '' && this.subjectFilter !== null)
+        || (this.contactNameFilter !== '' && this.contactNameFilter !== null)
+        || this.messageDate !== null
+        || this.secureExchangeStatusCodes.some(item => item.secureExchangeStatusCode === this.statusSelectFilter);
+    },
+    schools() {
+      return _.sortBy(Array.from(this.mincodeSchoolNames.entries()).map(school => ({ text: `${school[0]} - ${school[1]}`, value: school[0]})), ['value']);
+    },
+    myself() {
+      return { name: this.userInfo.userName, id: this.userInfo.userGuid };
     },
   },
   created() {
     this.$store.dispatch('edx/getCodes');
     this.$store.dispatch('edx/getMinistryTeams').then(() => {
-      this.getRequests();
+      this.getExchanges();
+      this.getMinistryTeamNameByGroupRoleID();
     });
-    this.headerSearchParams.secureExchangeStatusCode = ['NEW', 'INPROG'];
+    this.setFilterStatusActive();
   },
   methods: {
-    getMinistryTeamName(ministryOwnershipTeamId){
-      return this.ministryTeams.find(item => item.ministryOwnershipTeamId === ministryOwnershipTeamId).teamName;
+    getMinistryTeamNameByGroupRoleID(){
+      this.ministryTeamName = this.ministryTeams.find(item => item.groupRoleIdentifier === this.ministryOwnershipGroupRoleID).teamName;
+    },
+    getNumberOfDays(start) {
+      const start_date = new LocalDate.parse(start, DateTimeFormatter.ofPattern('yyyy/MM/dd'));
+      const end_date = LocalDate.now();
+
+      return ChronoUnit.DAYS.between(start_date, end_date) + ' days';
+    },
+    getSchoolName(mincode) {
+      return this.mincodeSchoolNames.get(mincode?.replace(' ', ''));
+    },
+    getContactLineItem(item){
+      switch (item.secureExchangeContactTypeCode) {
+      case 'SCHOOL':
+        return this.getSchoolName(item.contactIdentifier) + ' (' + item.contactIdentifier + ') - ' + item.createDate;
+      }
     },
     getMinistryTeamIDByGroupRoleID(groupRoleID) {
       return this.ministryTeams.find(item => item.groupRoleIdentifier === groupRoleID).ministryOwnershipTeamId;
     },
     setFilterStatusAll(){
-      this.headerSearchParams.secureExchangeStatusCode = ['NEW', 'INPROG','COMPLETE'];
+      this.headerSearchParams.secureExchangeStatusCode = ['NEW', 'INPROG'];
+      this.headerSearchParams.reviewer = '';
     },
     setFilterStatusActive(){
       this.headerSearchParams.secureExchangeStatusCode = ['NEW', 'INPROG'];
+      this.headerSearchParams.reviewer = this.myself.name;
     },
     statusFilterActiveClicked(){
       this.setFilterStatusActive();
-      this.getRequests();
+      this.getExchanges();
     },
     statusFilterAllClicked(){
       this.setFilterStatusAll();
-      this.getRequests();
+      this.getExchanges();
     },
     clearSearch(runSearch = true){
       this.subjectFilter = '';
+      this.messageIDFilter = '';
+      this.claimedByFilter = '';
+      this.contactNameFilter = '';
       this.messageDate = null;
       this.messageDateFilter = null;
       this.statusSelectFilter = '';
       if(runSearch){
         this.setFilterStatusAll();
-        this.getRequests();
+        this.getExchanges();
       }
     },
     onExpansionPanelClick(event) {
@@ -308,7 +414,7 @@ export default {
         this.statusRadioGroup = 'statusFilterActive';
         this.setFilterStatusActive();
         this.clearSearch(false);
-        this.getRequests();
+        this.getExchanges();
       } else {
         this.setFilterStatusAll();
         this.statusRadioGroup = 'statusFilterAll';
@@ -371,22 +477,42 @@ export default {
       }
       return content;
     },
-    getCompletedMessages() {
-      this.headerSearchParams.secureExchangeStatusCode = ['COMPLETE'];
-      this.isActiveMessagesTabEnabled = false;
-      this.getRequests();
-    },
-    getRequests() {
+    claimExchanges() {
       this.loadingTable = true;
-      this.requests = [];
+      var selected = this.selectedExchanges.map(({ secureExchangeID }) => secureExchangeID);
+      const payload = {
+        secureExchangeIDs: selected,
+      };
+      ApiService.apiAxios.post(`${Routes['edx'].CLAIM_URL}`, payload)
+        .then(() => {
+          this.setSuccessAlert('Secure exchanges have been claimed successfully.');
+          this.getExchanges();
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while claiming exchanges. Please try again later.');
+          console.log(error);
+        })
+        .finally(() => {
+          this.loadingTable = false;
+        });
+    },
+    getExchanges() {
+      this.loadingTable = true;
+      this.exchanges = [];
       const sort = {
         isReadByExchangeContact: 'ASC',
         createDate: 'ASC'
       };
 
       this.headerSearchParams.subject = this.subjectFilter;
+      this.headerSearchParams.contactIdentifier = this.contactNameFilter;
+      this.headerSearchParams.sequenceNumber = this.messageIDFilter;
       this.headerSearchParams.ministryOwnershipTeamID = this.getMinistryTeamIDByGroupRoleID(this.ministryOwnershipGroupRoleID);
       this.headerSearchParams.createDate = this.messageDate === null ? null : [this.messageDate];
+
+      if(this.claimedByFilter !== '') {
+        this.headerSearchParams.reviewer = this.claimedByFilter;
+      }
 
       if(this.statusSelectFilter !== null && this.statusSelectFilter !== '') {
         this.headerSearchParams.secureExchangeStatusCode = [this.statusSelectFilter];
@@ -400,7 +526,7 @@ export default {
           searchParams: omitBy(this.headerSearchParams, isEmpty),
         }
       }).then(response => {
-        this.requests = response.data.content;
+        this.exchanges = response.data.content;
         if(this.isActiveMessagesTabEnabled){
           this.totalRequests = response.data.totalElements;
         }
@@ -410,19 +536,14 @@ export default {
       }).finally(() => {
         this.loadingTable = false;
       });
-    },
-    getActiveMessages() {
-      this.headerSearchParams.secureExchangeStatusCode = ['NEW', 'INPROG'];
-      this.isActiveMessagesTabEnabled = true;
-      this.getRequests();
     }
   },
   watch: {
     pageSize() {
-      this.getRequests();
+      this.getExchanges();
     },
     pageNumber() {
-      this.getRequests();
+      this.getExchanges();
     }
   }
 };
@@ -459,6 +580,18 @@ export default {
 
 .statusCodeLabel{
   font-size: large;
+}
+
+>>>.v-data-table-header{
+  height: 0px !important;
+}
+
+>>>.v-data-table-header > tr{
+  height: 0px !important;
+}
+
+>>>.v-data-table-header > tr > th{
+  height: 0px !important;
 }
 
 .ministryLine{

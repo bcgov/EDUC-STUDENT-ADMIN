@@ -7,6 +7,7 @@ const {getData, getCodeTable} = require('../utils');
 const utils = require('../utils');
 const {FILTER_OPERATION, VALUE_TYPE, CACHE_KEYS} = require('../../util/constants');
 const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
+const cacheService = require('../cache-service');
 
 async function getExchangeById(req, res) {
   try {
@@ -25,6 +26,24 @@ async function getExchangeById(req, res) {
   }
 }
 
+async function claimAllExchanges(req, res) {
+  try {
+    const token = utils.getBackendToken(req);
+    const userInfo = utils.getUser(req);
+
+    const params = new URLSearchParams({
+      reviewer: userInfo.idir_username,
+      secureExchangeIDs: req.body.secureExchangeIDs
+    }).toString();
+
+    await utils.postData(token, config.get('server:edx:claimExchangesURL') + '?' + params, null , null , null);
+    return res.status(HttpStatus.OK).json({});
+  } catch (e) {
+    logApiError(e, 'claimAllExchanges', 'Error occurred while attempting to claim a exchanges.');
+    return errorResponse(res);
+  }
+}
+
 async function getExchanges(req, res) {
   const token = utils.getBackendToken(req);
   if (!token && req.session.userMinCodes) {
@@ -36,7 +55,7 @@ async function getExchanges(req, res) {
   return Promise.all([
     getCodeTable(token, CACHE_KEYS.EDX_SECURE_EXCHANGE_STATUS, config.get('server:edx:exchangeStatusesURL')),
     getCodeTable(token, CACHE_KEYS.EDX_MINISTRY_TEAMS, config.get('server:edx:ministryTeamURL')),
-    getExchangesPaginated(req)
+    getExchangesPaginated(req, res)
   ])
     .then(async ([statusCodeResponse, ministryTeamCodeResponse, dataResponse]) => {
       if (statusCodeResponse && ministryTeamCodeResponse && dataResponse?.content) {
@@ -65,10 +84,14 @@ async function getExchanges(req, res) {
     });
 }
 
-async function getExchangesPaginated(req) {
+async function getExchangesPaginated(req, res) {
   let criteria = [];
   if (req.query.searchParams) {
     criteria = buildSearchParams(req.query.searchParams);
+  }
+
+  if(req.query.searchParams.contactIdentifier){
+    criteria.push(getCriteria('secureExchangeContactTypeCode', getContactIdentifierType(req.query.searchParams.contactIdentifier, res), FILTER_OPERATION.EQUAL, VALUE_TYPE.STRING));
   }
 
   const params = {
@@ -81,6 +104,10 @@ async function getExchangesPaginated(req) {
   };
 
   return utils.getData(utils.getBackendToken(req), config.get('server:edx:exchangeURL') + '/paginated', params);
+}
+
+function getCriteria(key, value, operation, valueType) {
+  return {key, value, operation, valueType};
 }
 
 async function getExchange(req, res) {
@@ -170,9 +197,21 @@ const createSearchParamObject = (key, value) => {
   return {key, value, operation, valueType};
 };
 
+const getContactIdentifierType = (contactIdentifier, res) => {
+  let data = cacheService.getAllSchoolsJSON();
+  let isPresent = data.some(school => school.mincode === contactIdentifier);
+  if (isPresent) {
+    return 'SCHOOL';
+  }else{
+    logApiError(null, 'getContactIdentifierType', 'Error occurred while attempting to get the identifier type.');
+    return errorResponse(res);
+  }
+};
+
 module.exports = {
   getExchangeById,
   getExchanges,
   createExchange,
   getExchange,
+  claimAllExchanges,
 };

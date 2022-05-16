@@ -14,8 +14,9 @@
            v-bind="bind"
            v-on="on"
     >
+      <v-icon :class="largeIcon ? '' : 'ml-1 pr-2'" v-if="iconLeft && icon" :large="largeIcon" left>{{ icon }}</v-icon>
       <span :class="hover ? 'text-decoration-underline': ''">{{ text }}</span>
-      <v-icon :class="largeIcon ? '' : 'ml-1 pr-2'" v-if="icon" :nudge-down="4" :large="largeIcon" right dark>{{ icon }}</v-icon>
+      <v-icon :class="largeIcon ? '' : 'ml-1 pr-2'" v-if="!iconLeft && icon" :large="largeIcon" right>{{ icon }}</v-icon>
       <slot></slot>
     </v-btn>
   </v-hover>
@@ -62,6 +63,10 @@ export default {
       type: Object
     },
     largeIcon: {
+      type: Boolean,
+      default: false
+    },
+    iconLeft: {
       type: Boolean,
       default: false
     },
