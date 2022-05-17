@@ -12,15 +12,22 @@
           clearable
       ></v-autocomplete>
     </v-col>
+    <v-col>
+      <PrimaryButton :to="{name: 'exchangeAccessUsers', params: {mincode: schoolMincode}}" :disabled="!schoolMincode">Search School</PrimaryButton>
+    </v-col>
   </v-row>
 </template>
 
 <script>
 
 import {mapState} from 'vuex';
+import PrimaryButton from '../util/PrimaryButton';
 
 export default {
   name: 'AccessPage',
+  components: {
+    PrimaryButton,
+  },
   data() {
     return {
       schoolMincode: ''

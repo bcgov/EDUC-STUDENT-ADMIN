@@ -340,6 +340,7 @@ const router = new VueRouter({
           path: 'exchange/access/school/:mincode',
           name: 'exchangeAccessUsers',
           component: AccessUsersPage,
+          props: true,
           meta: {
             pageTitle: PAGE_TITLES.EXCHANGE_USERS,
             requiresAuth: true,
