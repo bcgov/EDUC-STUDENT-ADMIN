@@ -387,6 +387,8 @@ export const PAGE_TITLES = Object.freeze(
     EXCHANGE: 'Secure Exchange Messaging',
     NEW_EXCHANGE: 'New Message',
     VIEW_EXCHANGE: 'View Message',
+    EXCHANGE_ACCESS: 'Exchange Access',
+    EXCHANGE_USERS: 'Exchange Users'
   }
 );
 

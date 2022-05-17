@@ -38,6 +38,8 @@ import GUMPStatsLanding from '@/components/admin/stats/GUMPStatsLanding';
 import Merges from '@/components/admin/stats/Merges';
 import NewMessagePage from '@/components/secure-message/NewMessagePage';
 import MessageDisplay from '@/components/secure-message/MessageDisplay';
+import AccessPage from '@/components/secure-message/AccessPage';
+import AccessUsersPage from '@/components/secure-message/AccessUsersPage';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -325,6 +327,26 @@ const router = new VueRouter({
           }
         },
         {
+          path: 'exchange/access',
+          name: 'exchangeAccess',
+          component: AccessPage,
+          meta: {
+            pageTitle: PAGE_TITLES.EXCHANGE_ACCESS,
+            requiresAuth: true,
+            role: 'EXCHANGE_ROLE'
+          }
+        },
+        {
+          path: 'exchange/access/school/:mincode',
+          name: 'exchangeAccessUsers',
+          component: AccessUsersPage,
+          meta: {
+            pageTitle: PAGE_TITLES.EXCHANGE_USERS,
+            requiresAuth: true,
+            role: 'EXCHANGE_ROLE'
+          }
+        },
+        {
           path: 'exchange/:secureExchangeID',
           name: 'viewExchange',
           component: MessageDisplay,
@@ -344,7 +366,7 @@ const router = new VueRouter({
             requiresAuth: true,
             role: 'EXCHANGE_ROLE'
           }
-        }
+        },
       ]
     },
     {
