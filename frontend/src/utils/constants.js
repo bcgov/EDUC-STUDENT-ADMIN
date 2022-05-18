@@ -113,6 +113,7 @@ let object = {
     STATUSES_URL: edxRoot + '/exchange/statuses',
     CLAIM_URL: edxRoot + '/exchange/claim',
     USERS_URL: edxRoot + '/users',
+    EXCHANGE_ACCESS_URL: edxRoot + '/users'
   }
 };
 

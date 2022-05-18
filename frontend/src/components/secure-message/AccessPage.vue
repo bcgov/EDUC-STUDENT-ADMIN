@@ -13,7 +13,7 @@
       ></v-autocomplete>
     </v-col>
     <v-col>
-      <PrimaryButton :to="{name: 'exchangeAccessUsers', params: {mincode: schoolMincode}}" :disabled="!schoolMincode">Search School</PrimaryButton>
+      <PrimaryButton :to="`/edx/exchange/access/school/${schoolMincode}`" :disabled="!schoolMincode">Manage School Access</PrimaryButton>
     </v-col>
   </v-row>
 </template>
