@@ -133,8 +133,8 @@ async function createExchange(req, res) {
       subject: message.subject,
       reviewer: userInfo.idir_username,
       secureExchangeStatusCode: 'INPROG',
-      isReadByMinistry: 'Y',
-      isReadByExchangeContact: 'N',
+      isReadByMinistry: true,
+      isReadByExchangeContact: false,
       commentsList: [
         {
           staffUserIdentifier: userInfo.idir_guid?.toUpperCase(),
