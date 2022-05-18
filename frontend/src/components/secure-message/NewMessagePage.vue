@@ -1,112 +1,89 @@
 <template>
   <v-container fluid class="full-height px-0 mb-4">
-    <v-row no-gutters class="pb-4">
-      <PrimaryButton 
-        id="go-back-action"
-        icon="mdi-arrow-left"
-        iconClass="pt-0"
-        secondary 
-        short
-        @click.native="navigateToList"
-      >Return to Inbox</PrimaryButton>
-    </v-row>
-    <v-row no-gutters>
+    <v-row>
       <v-col cols="7">
-        <v-card id="newMessageCard" flat outlined class="mr-4">
-          <v-card-title class="headline">
-            New Message
-          </v-card-title>
-          <v-card-text id="newMessageCardText" class="pb-0">
-            <v-form ref="newMessageForm" v-model="isValidForm">
-              <v-autocomplete
-                id='schoolNameTxtField'
-                label="To"
-                v-model="mincode"
-                :items="schools"
-                :rules="requiredRules"
-                dense
-                clearable
-                clear-icon="clear"
-              >
-                <template v-slot:selection="{ item }">
-                  <span> {{ item.text }} </span>
-                </template>
-              </v-autocomplete>
-              <v-text-field
-                :value="myTeam.teamName"
-                label="From"
-                dense 
-                readonly
-              ></v-text-field>
-              <v-text-field
-                v-model="subject"
-                id='subjectTxtField'
-                label="Subject"
-                :rules="requiredRules"
-                maxlength="255"
-                dense
-                clearable
-                clear-icon="clear"
-              ></v-text-field>
-              <v-textarea
-                id="newMessageTextArea"
-                v-model="newMessage"
-                :rules="requiredRules"
-                rows="10"
-                maxlength="4000"
-                dense
-                clearable
-                clear-icon="clear"
-                ref="newMessageTextArea">
-              </v-textarea>
-            </v-form>
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <v-col>
-        <v-card flat outlined class="ml-4">
-          <v-card-title class="headline justify-space-between">
-            <span>Attachments</span>
-            <span class="subtitle-1 font-italic">optional</span>
-          </v-card-title>
-          <v-card-text class="pb-0 card-hint">
-            <span>Add any information that may be helpful for this request.</span>
-          </v-card-text>
-          <v-card-actions class="pt-4 pb-4 justify-center">
-            <PrimaryButton id="attachFileBtn" text="Attach File"></PrimaryButton>
-          </v-card-actions>
-        </v-card>
-        <v-card flat outlined class="ml-4 mt-4">
-          <v-card-title class="headline">
-            Student
-          </v-card-title>
-          <v-card-text class="pb-0 card-hint">
-            <span>Adding a student will allow you and the school to see the student's record at the Ministry of Education.</span>
-          </v-card-text>
-          <v-card-actions class="pt-0">
-            <v-row class="justify-center mt-4"> 
-              <v-col cols="5" class="py-0">
-                <v-text-field
-                  id="studentPenField"
-                  v-model="pen"
-                  label="Student's PEN"
-                  maxlength="9"
-                  :rules="penRules"
-                  outlined
-                  dense
-                  clearable
-                  clear-icon="clear"
-                ></v-text-field>
-              </v-col>
-              <PrimaryButton id="addStudentBtn" text="Add Student"></PrimaryButton>
-            </v-row>
-          </v-card-actions>
-        </v-card>
+        <v-row>
+          <v-col class="pr-0">
+            <v-row><v-col>
+              <v-card id="newMessageCard" flat outlined>
+                <v-row>
+                  <v-col class="pb-0">
+                    <v-card-text id="newMessageCardText" class="pb-0">
+                      <v-form ref="newMessageForm" v-model="isValidForm">
+                        <v-text-field
+                          :value="myTeam.teamName"
+                          label="From"
+                          class="pt-0"
+                          readonly
+                        ></v-text-field>
+                        <v-autocomplete
+                          id='schoolNameTxtField'
+                          label="To"
+                          class="pt-0"
+                          v-model="mincode"
+                          :items="schools"
+                          :rules="requiredRules"
+                        >
+                          <template v-slot:selection="{ item }">
+                            <span> {{ item.text }} </span>
+                          </template>
+                        </v-autocomplete>
+                        <v-text-field
+                          v-model="subject"
+                          id='subjectTxtField'
+                          label="Subject"
+                          :rules="requiredRules"
+                          maxlength="255"
+                          class="pt-0"
+                        ></v-text-field>
+                        <v-textarea
+                          id="newMessageTextArea"
+                          v-model="newMessage"
+                          :rules="requiredRules"
+                          rows="10"
+                          label="Message"
+                          maxlength="4000"
+                          class="pt-0"
+                          ref="newMessageTextArea">
+                        </v-textarea>
+                      </v-form>
+                    </v-card-text>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col class="d-flex justify-end mr-3 pt-0">
+                    <v-btn id="attachFileID"
+                           title="Attach File"
+                           color="#1A5A96"
+                           outlined
+                           class="addButton pl-0 pr-2"
+                    >
+                      <v-icon color="#1A5A96" class="mr-0" right dark>mdi-paperclip</v-icon>
+                      <span class="ml-1">Attach File</span>
+                    </v-btn>
+                    <v-btn id="addStudentID"
+                           title="Add Student"
+                           color="#1A5A96"
+                           outlined
+                           class="addButton pl-0 pr-2"
+                    >
+                      <v-icon color="#1A5A96" class="mr-0" right dark>mdi-account-multiple-plus-outline</v-icon>
+                      <span class="ml-1">Add Student</span>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-card>
+            </v-col></v-row>
+
+          </v-col>
+        </v-row>
+        <v-row class="py-4 justify-end">
+          <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2" @click.native="navigateToList"></PrimaryButton>
+          <PrimaryButton id="newMessagePostBtn" text="Send" width="8rem" :disabled="!isValidForm" :loading="processing" @click.native="sendNewMessage"></PrimaryButton>
+        </v-row>
       </v-col>
     </v-row>
-    <v-row no-gutters class="py-4 justify-end">
-      <PrimaryButton id="newMessagePostBtn" text="Send" width="10rem" :disabled="!isValidForm" :loading="processing" @click.native="sendNewMessage"></PrimaryButton>
-    </v-row>
+
     <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>
   </v-container>
 </template>
@@ -189,8 +166,10 @@ export default {
 </script>
 
 <style scoped>
-.card-hint {
-  color: #000 !important;
-  font-size: 1rem;
+.addButton.v-btn--outlined {
+  border: thin solid #FFFFFF;
+  text-transform: none;
+  font-weight: bolder;
 }
+
 </style>
