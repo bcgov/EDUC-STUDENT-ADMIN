@@ -1,14 +1,14 @@
 <template>
-  <v-container fluid class="full-height px-0 mb-4 pt-0">
+  <v-container fluid class="full-height px-0 pt-0">
     <v-row class="d-flex justify-center">
-      <v-col class="pt-0" cols="10">
+      <v-col class="pt-0" cols="11">
         <v-row>
-          <v-col class="pr-0">
+          <v-col class="pr-0 pb-0">
             <v-row><v-col>
               <v-card id="newMessageCard" flat outlined>
                 <v-row>
                   <v-col class="pb-0">
-                    <v-card-text id="newMessageCardText" class="pb-0">
+                    <v-card-text id="newMessageCardText" class="pb-0 pt-0">
                       <v-form ref="newMessageForm" v-model="isValidForm">
                         <v-text-field
                           :value="myTeam.teamName"
