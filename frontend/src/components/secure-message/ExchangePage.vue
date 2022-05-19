@@ -23,7 +23,7 @@
               icon="mdi-plus"
               id="newMessageBtn"
               text="New Message"
-              to="newExchange"
+              @click.native="newMessageSheet = !newMessageSheet"
             ></PrimaryButton>
           </v-col>
         </v-row>
@@ -68,6 +68,7 @@
                        title="filter"
                        color="#003366"
                        outlined
+
                        class="mt-0 pt-0 filterButton"
                 >
                   <v-icon color="#003366" class="ml-n1" :nudge-down="4" right dark>mdi-filter-outline</v-icon>
@@ -251,14 +252,35 @@
                   </v-col>
                 </v-row>
               </template>
-
               <template v-slot:no-data>There are no messages.</template>
-
             </v-data-table>
           </v-col>
         </v-row>
       </v-col>
     </v-row>
+    <v-bottom-sheet
+      v-model="newMessageSheet"
+      inset
+      hide-overlay
+      persistent
+      width="30%"
+
+    >
+      <v-sheet
+        class="text-center"
+      >
+        <v-row no-gutters class="sheetRowHeader">
+          <v-col cols="10" class="d-flex justify-start pt-2 pb-2 ml-3">
+            <h3 class="sheetHeader">New Message</h3>
+          </v-col>
+        </v-row>
+        <NewMessagePage
+          @secure-exchange:messageSent="newMessageSheet = !newMessageSheet"
+          @secure-exchange:cancelMessage="newMessageSheet = false"
+        >
+        </NewMessagePage>
+      </v-sheet>
+    </v-bottom-sheet>
   </v-container>
 </template>
 
@@ -268,6 +290,7 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton';
+import NewMessagePage from './NewMessagePage';
 import {mapGetters, mapState} from 'vuex';
 import {isEmpty, omitBy} from 'lodash';
 import {LocalDate, ChronoUnit, DateTimeFormatter} from '@js-joda/core';
@@ -285,11 +308,13 @@ export default {
   },
   components: {
     PrimaryButton,
+    NewMessagePage
   },
   data() {
     return {
+      newMessageSheet: false,
       statusSelectFilter: null,
-      statusRadioGroup: 'statusFilterActive',
+      statusRadioGroup: 'statusFilterAllActive',
       statusRadioGroupEnabled: true,
       messageDateFilter: false,
       activeMessageDatePicker: null,
@@ -573,12 +598,27 @@ export default {
   cursor: pointer;
 }
 
+.sheetHeader{
+  color: white;
+  font-size: medium;
+}
+
+.sheetRowHeader{
+  background-color: #003366;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
 .unread {
   font-weight: bold;
 }
 
 .v-data-table >>> .v-data-table__wrapper {
   overflow-x: hidden;
+}
+
+.v-btn {
+  text-transform: none;
 }
 
 .filterButton.v-btn--outlined {

@@ -1,7 +1,7 @@
 <template>
-  <v-container fluid class="full-height px-0 mb-4">
-    <v-row>
-      <v-col cols="7">
+  <v-container fluid class="full-height px-0 mb-4 pt-0">
+    <v-row class="d-flex justify-center">
+      <v-col class="pt-0" cols="10">
         <v-row>
           <v-col class="pr-0">
             <v-row><v-col>
@@ -40,8 +40,9 @@
                           id="newMessageTextArea"
                           v-model="newMessage"
                           :rules="requiredRules"
-                          rows="10"
+                          rows="8"
                           label="Message"
+                          no-resize
                           maxlength="4000"
                           class="pt-0"
                           ref="newMessageTextArea">
@@ -97,7 +98,6 @@ import ApiService from '@/common/apiService';
 import {
   Routes,
 } from '@/utils/constants';
-import router from '@/router';
 import {isValidPEN} from '@/utils/validation';
 
 export default {
@@ -137,7 +137,15 @@ export default {
   },
   methods: {
     navigateToList() {
-      router.push({name: 'exchange'});
+      this.$emit('secure-exchange:cancelMessage');
+    },
+    messageSent(){
+      this.subject = '';
+      this.mincode = null;
+      this.newMessage = '';
+      this.requiredRules = [v => !!v?.trim() || 'Required'];
+      this.penRules = [v => (!v || isValidPEN(v)) || this.penHint];
+      this.$emit('secure-exchange:messageSent');
     },
     sendNewMessage() {
       this.processing = true;
@@ -151,7 +159,7 @@ export default {
       ApiService.apiAxios.post(`${Routes['edx'].EXCHANGE_URL}`, payload)
         .then(() => {
           this.setSuccessAlert('Success! The message has been sent.');
-          this.navigateToList();
+          this.messageSent();
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while sending message. Please try again later.');
