@@ -179,7 +179,7 @@
                 <v-col cols="12" class="d-flex justify-end">
                   <PrimaryButton class="mr-3" id="search-clear" :secondary="true" @click.native="clearSearch"
                                  text="Clear"></PrimaryButton>
-                  <PrimaryButton @click.native="getExchanges" id="searchButton" :loading="loadingTable" :disabled="!searchEnabled" text="Search"></PrimaryButton>
+                  <PrimaryButton @click.native="filterExchanges" id="searchButton" :loading="loadingTable" :disabled="!searchEnabled" text="Search"></PrimaryButton>
                 </v-col>
               </v-row>
             </v-expansion-panel-content>
@@ -388,7 +388,7 @@ export default {
       this.getExchanges();
       this.getMinistryTeamNameByGroupRoleID();
     });
-    this.setFilterStatusActive();
+    this.setFilterStatusAllActive();
   },
   methods: {
     messageSent(){
@@ -528,6 +528,10 @@ export default {
         }
       }
       return content;
+    },
+    filterExchanges(){
+      this.pageNumber = 1;
+      this.getExchanges();
     },
     claimExchanges() {
       this.loadingTable = true;
