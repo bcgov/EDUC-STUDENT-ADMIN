@@ -382,6 +382,7 @@ export default {
     },
   },
   created() {
+    this.$store.dispatch('app/getCodes');
     this.$store.dispatch('edx/getCodes');
     this.$store.dispatch('edx/getMinistryTeams').then(() => {
       this.getExchanges();
