@@ -272,7 +272,7 @@
         <v-divider></v-divider>
         <v-card-text>
           <NewMessagePage
-            @secure-exchange:messageSent="newMessageSheet = !newMessageSheet"
+            @secure-exchange:messageSent="messageSent"
             @secure-exchange:cancelMessage="newMessageSheet = false"
           >
           </NewMessagePage>
@@ -391,6 +391,10 @@ export default {
     this.setFilterStatusActive();
   },
   methods: {
+    messageSent(){
+      this.newMessageSheet = !this.newMessageSheet;
+      this.getExchanges();
+    },
     getMinistryTeamNameByGroupRoleID(){
       this.ministryTeamName = this.ministryTeams.find(item => item.groupRoleIdentifier === this.ministryOwnershipGroupRoleID).teamName;
     },
@@ -548,7 +552,7 @@ export default {
       this.loadingTable = true;
       this.exchanges = [];
       const sort = {
-        isReadByExchangeContact: 'ASC',
+        isReadByMinistry: 'ASC',
         createDate: 'ASC'
       };
 
