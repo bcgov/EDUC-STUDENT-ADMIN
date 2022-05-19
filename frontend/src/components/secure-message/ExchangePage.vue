@@ -454,7 +454,7 @@ export default {
       if(event.currentTarget.classList.contains('v-expansion-panel-header--active')) {
         this.filterText = 'More Filters';
         this.statusRadioGroupEnabled = true;
-        this.statusRadioGroup = 'statusFilterActive';
+        this.statusRadioGroup = 'statusFilterAllActive';
         this.setFilterStatusActive();
         this.clearSearch(false);
         this.getExchanges();
