@@ -260,27 +260,24 @@
     <v-bottom-sheet
       v-model="newMessageSheet"
       inset
-      hide-overlay
       no-click-animation
       scrollable
       persistent
       width="30%"
     >
-        <v-row no-gutters class="sheetRowHeader">
-          <v-col cols="10" class="d-flex justify-start pt-2 pb-2 ml-3">
-            <h3 class="sheetHeader">New Message</h3>
-          </v-col>
-        </v-row>
-      <v-row>
-        <v-col>
+      <v-card
+        v-if="newMessageSheet"
+        class="information-window-v-card">
+        <v-card-title class="sheetHeader pt-1 pb-1">New Message</v-card-title>
+        <v-divider></v-divider>
+        <v-card-text>
           <NewMessagePage
             @secure-exchange:messageSent="newMessageSheet = !newMessageSheet"
             @secure-exchange:cancelMessage="newMessageSheet = false"
           >
           </NewMessagePage>
-        </v-col>
-      </v-row>
-
+        </v-card-text>
+      </v-card>
     </v-bottom-sheet>
   </v-container>
 </template>
@@ -428,15 +425,21 @@ export default {
     },
     statusFilterActiveClicked(){
       this.setFilterStatusActive();
+      this.resetPageNumber();
       this.getExchanges();
     },
     statusFilterAllActiveClicked(){
       this.setFilterStatusAllActive();
+      this.resetPageNumber();
       this.getExchanges();
     },
     statusFilterAllClicked(){
       this.setFilterStatusAll();
+      this.resetPageNumber();
       this.getExchanges();
+    },
+    resetPageNumber(){
+      this.pageNumber = 1;
     },
     clearSearch(runSearch = true){
       this.subjectFilter = '';
@@ -600,14 +603,10 @@ export default {
 }
 
 .sheetHeader{
-  color: white;
-  font-size: medium;
-}
-
-.sheetRowHeader{
   background-color: #003366;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
+  color: white;
+  font-size: medium !important;
+  font-weight: bolder !important;
 }
 
 .unread {
