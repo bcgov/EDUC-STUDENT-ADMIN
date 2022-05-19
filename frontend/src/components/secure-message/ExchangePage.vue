@@ -49,10 +49,18 @@
                 <v-radio class="mt-2 radio-blue-text"
                          label="All Active Messages"
                          color="#003366"
+                         value="statusFilterAllActive"
+                         @click.native="statusFilterAllActiveClicked"
+                ><template v-slot:label>
+                  <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">All Active Messages</span>
+                </template></v-radio>
+                <v-radio class="mt-2 radio-blue-text"
+                         label="All Active Messages"
+                         color="#003366"
                          value="statusFilterAll"
                          @click.native="statusFilterAllClicked"
                 ><template v-slot:label>
-                  <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">All Active Messages</span>
+                  <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">All Messages</span>
                 </template></v-radio>
               </v-radio-group>
               <template v-slot:actions>
@@ -306,9 +314,9 @@ export default {
         },
       ],
       pageNumber: 1,
-      pageSize: 25,
+      pageSize: 15,
       totalRequests: 0,
-      itemsPerPageOptions: [10],
+      itemsPerPageOptions: [15],
       loadingTable: false,
       dateMenu: false,
       headerSearchParams: {
@@ -380,8 +388,12 @@ export default {
     getMinistryTeamIDByGroupRoleID(groupRoleID) {
       return this.ministryTeams.find(item => item.groupRoleIdentifier === groupRoleID).ministryOwnershipTeamId;
     },
-    setFilterStatusAll(){
+    setFilterStatusAllActive(){
       this.headerSearchParams.secureExchangeStatusCode = ['NEW', 'INPROG'];
+      this.headerSearchParams.reviewer = '';
+    },
+    setFilterStatusAll(){
+      this.headerSearchParams.secureExchangeStatusCode = ['NEW', 'INPROG', 'COMPLETE'];
       this.headerSearchParams.reviewer = '';
     },
     setFilterStatusActive(){
@@ -390,6 +402,10 @@ export default {
     },
     statusFilterActiveClicked(){
       this.setFilterStatusActive();
+      this.getExchanges();
+    },
+    statusFilterAllActiveClicked(){
+      this.setFilterStatusAllActive();
       this.getExchanges();
     },
     statusFilterAllClicked(){
