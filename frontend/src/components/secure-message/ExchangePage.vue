@@ -29,7 +29,7 @@
         </v-row>
         <v-expansion-panels flat style="border-radius: 6px">
           <v-expansion-panel @click="onExpansionPanelClick" style="background: #ebedef">
-            <v-expansion-panel-header class="pt-0 pb-0" disable-icon-rotate>
+            <v-expansion-panel-header color="#ebedef" class="pt-0 pb-0" disable-icon-rotate>
               <v-radio-group
                 @click.native.stop
                 color="#003366"
@@ -605,6 +605,10 @@ export default {
 
 .tableRow {
   cursor: pointer;
+}
+
+.v-expansion-panel-header:not(.v-expansion-panel-header--mousedown):focus::before {
+  display: none;
 }
 
 .sheetHeader{
