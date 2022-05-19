@@ -68,7 +68,6 @@
                        title="filter"
                        color="#003366"
                        outlined
-
                        class="mt-0 pt-0 filterButton"
                 >
                   <v-icon color="#003366" class="ml-n1" :nudge-down="4" right dark>mdi-filter-outline</v-icon>
@@ -262,24 +261,26 @@
       v-model="newMessageSheet"
       inset
       hide-overlay
+      no-click-animation
+      scrollable
       persistent
       width="30%"
-
     >
-      <v-sheet
-        class="text-center"
-      >
         <v-row no-gutters class="sheetRowHeader">
           <v-col cols="10" class="d-flex justify-start pt-2 pb-2 ml-3">
             <h3 class="sheetHeader">New Message</h3>
           </v-col>
         </v-row>
-        <NewMessagePage
-          @secure-exchange:messageSent="newMessageSheet = !newMessageSheet"
-          @secure-exchange:cancelMessage="newMessageSheet = false"
-        >
-        </NewMessagePage>
-      </v-sheet>
+      <v-row>
+        <v-col>
+          <NewMessagePage
+            @secure-exchange:messageSent="newMessageSheet = !newMessageSheet"
+            @secure-exchange:cancelMessage="newMessageSheet = false"
+          >
+          </NewMessagePage>
+        </v-col>
+      </v-row>
+
     </v-bottom-sheet>
   </v-container>
 </template>
