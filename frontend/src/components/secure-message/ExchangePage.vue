@@ -23,13 +23,13 @@
               icon="mdi-plus"
               id="newMessageBtn"
               text="New Message"
-              to="newExchange"
+              @click.native="newMessageSheet = !newMessageSheet"
             ></PrimaryButton>
           </v-col>
         </v-row>
         <v-expansion-panels flat style="border-radius: 6px">
           <v-expansion-panel @click="onExpansionPanelClick" style="background: #ebedef">
-            <v-expansion-panel-header class="pt-0 pb-0" disable-icon-rotate>
+            <v-expansion-panel-header color="#ebedef" class="pt-0 pb-0" disable-icon-rotate>
               <v-radio-group
                 @click.native.stop
                 color="#003366"
@@ -179,7 +179,7 @@
                 <v-col cols="12" class="d-flex justify-end">
                   <PrimaryButton class="mr-3" id="search-clear" :secondary="true" @click.native="clearSearch"
                                  text="Clear"></PrimaryButton>
-                  <PrimaryButton @click.native="getExchanges" id="searchButton" :loading="loadingTable" :disabled="!searchEnabled" text="Search"></PrimaryButton>
+                  <PrimaryButton @click.native="filterExchanges" id="searchButton" :loading="loadingTable" :disabled="!searchEnabled" text="Search"></PrimaryButton>
                 </v-col>
               </v-row>
             </v-expansion-panel-content>
@@ -251,14 +251,34 @@
                   </v-col>
                 </v-row>
               </template>
-
               <template v-slot:no-data>There are no messages.</template>
-
             </v-data-table>
           </v-col>
         </v-row>
       </v-col>
     </v-row>
+    <v-bottom-sheet
+      v-model="newMessageSheet"
+      inset
+      no-click-animation
+      scrollable
+      persistent
+      width="30%"
+    >
+      <v-card
+        v-if="newMessageSheet"
+        class="information-window-v-card">
+        <v-card-title class="sheetHeader pt-1 pb-1">New Message</v-card-title>
+        <v-divider></v-divider>
+        <v-card-text>
+          <NewMessagePage
+            @secure-exchange:messageSent="messageSent"
+            @secure-exchange:cancelMessage="newMessageSheet = false"
+          >
+          </NewMessagePage>
+        </v-card-text>
+      </v-card>
+    </v-bottom-sheet>
   </v-container>
 </template>
 
@@ -268,6 +288,7 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton';
+import NewMessagePage from './NewMessagePage';
 import {mapGetters, mapState} from 'vuex';
 import {isEmpty, omitBy} from 'lodash';
 import {LocalDate, ChronoUnit, DateTimeFormatter} from '@js-joda/core';
@@ -285,11 +306,13 @@ export default {
   },
   components: {
     PrimaryButton,
+    NewMessagePage
   },
   data() {
     return {
+      newMessageSheet: false,
       statusSelectFilter: null,
-      statusRadioGroup: 'statusFilterActive',
+      statusRadioGroup: 'statusFilterAllActive',
       statusRadioGroupEnabled: true,
       messageDateFilter: false,
       activeMessageDatePicker: null,
@@ -347,7 +370,7 @@ export default {
       return (this.claimedByFilter !== '' && this.claimedByFilter !== null)
         || (this.messageIDFilter !== '' && this.messageIDFilter !== null)
         || (this.subjectFilter !== '' && this.subjectFilter !== null)
-        || (this.contactNameFilter !== '' && this.contactNameFilter !== null)
+        || (this.contactNameFilter !== '' && this.contactNameFilter !== null && this.contactNameFilter !== undefined)
         || this.messageDate !== null
         || this.secureExchangeStatusCodes.some(item => item.secureExchangeStatusCode === this.statusSelectFilter);
     },
@@ -359,14 +382,19 @@ export default {
     },
   },
   created() {
+    this.$store.dispatch('app/getCodes');
     this.$store.dispatch('edx/getCodes');
     this.$store.dispatch('edx/getMinistryTeams').then(() => {
       this.getExchanges();
       this.getMinistryTeamNameByGroupRoleID();
     });
-    this.setFilterStatusActive();
+    this.setFilterStatusAllActive();
   },
   methods: {
+    messageSent(){
+      this.newMessageSheet = !this.newMessageSheet;
+      this.getExchanges();
+    },
     getMinistryTeamNameByGroupRoleID(){
       this.ministryTeamName = this.ministryTeams.find(item => item.groupRoleIdentifier === this.ministryOwnershipGroupRoleID).teamName;
     },
@@ -402,15 +430,21 @@ export default {
     },
     statusFilterActiveClicked(){
       this.setFilterStatusActive();
+      this.resetPageNumber();
       this.getExchanges();
     },
     statusFilterAllActiveClicked(){
       this.setFilterStatusAllActive();
+      this.resetPageNumber();
       this.getExchanges();
     },
     statusFilterAllClicked(){
       this.setFilterStatusAll();
+      this.resetPageNumber();
       this.getExchanges();
+    },
+    resetPageNumber(){
+      this.pageNumber = 1;
     },
     clearSearch(runSearch = true){
       this.subjectFilter = '';
@@ -421,6 +455,7 @@ export default {
       this.messageDateFilter = null;
       this.statusSelectFilter = '';
       if(runSearch){
+        this.resetPageNumber();
         this.setFilterStatusAll();
         this.getExchanges();
       }
@@ -429,8 +464,8 @@ export default {
       if(event.currentTarget.classList.contains('v-expansion-panel-header--active')) {
         this.filterText = 'More Filters';
         this.statusRadioGroupEnabled = true;
-        this.statusRadioGroup = 'statusFilterActive';
-        this.setFilterStatusActive();
+        this.statusRadioGroup = 'statusFilterAllActive';
+        this.setFilterStatusAllActive();
         this.clearSearch(false);
         this.getExchanges();
       } else {
@@ -495,6 +530,10 @@ export default {
       }
       return content;
     },
+    filterExchanges(){
+      this.resetPageNumber();
+      this.getExchanges();
+    },
     claimExchanges() {
       this.loadingTable = true;
       var selected = this.selectedExchanges.map(({ secureExchangeID }) => secureExchangeID);
@@ -518,7 +557,7 @@ export default {
       this.loadingTable = true;
       this.exchanges = [];
       const sort = {
-        isReadByExchangeContact: 'ASC',
+        isReadByMinistry: 'ASC',
         createDate: 'ASC'
       };
 
@@ -573,12 +612,27 @@ export default {
   cursor: pointer;
 }
 
+.v-expansion-panel-header:not(.v-expansion-panel-header--mousedown):focus::before {
+  display: none;
+}
+
+.sheetHeader{
+  background-color: #003366;
+  color: white;
+  font-size: medium !important;
+  font-weight: bolder !important;
+}
+
 .unread {
   font-weight: bold;
 }
 
 .v-data-table >>> .v-data-table__wrapper {
   overflow-x: hidden;
+}
+
+.v-btn {
+  text-transform: none;
 }
 
 .filterButton.v-btn--outlined {

@@ -126,6 +126,7 @@ async function createExchange(req, res) {
     const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
     const message = req.body;
+    console.log('User Info: ', JSON.stringify(userInfo));
     const payload = {
       contactIdentifier: message.contactIdentifier,
       secureExchangeContactTypeCode: message.secureExchangeContactTypeCode,
@@ -137,8 +138,8 @@ async function createExchange(req, res) {
       isReadByExchangeContact: false,
       commentsList: [
         {
-          staffUserIdentifier: userInfo.idir_guid?.toUpperCase(),
-          commentUserName: userInfo.idir_username,
+          staffUserIdentifier: userInfo.idir_username,
+          commentUserName: userInfo.name,
           content: message.content,
           createUser: userInfo.idir_username,
           updateUser: userInfo.idir_username
