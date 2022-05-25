@@ -464,7 +464,7 @@ export default {
         this.filterText = 'More Filters';
         this.statusRadioGroupEnabled = true;
         this.statusRadioGroup = 'statusFilterAllActive';
-        this.setFilterStatusActive();
+        this.setFilterStatusAllActive();
         this.clearSearch(false);
         this.getExchanges();
       } else {
