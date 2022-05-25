@@ -370,7 +370,7 @@ export default {
       return (this.claimedByFilter !== '' && this.claimedByFilter !== null)
         || (this.messageIDFilter !== '' && this.messageIDFilter !== null)
         || (this.subjectFilter !== '' && this.subjectFilter !== null)
-        || (this.contactNameFilter !== '' && this.contactNameFilter !== null)
+        || (this.contactNameFilter !== '' && this.contactNameFilter !== null && this.contactNameFilter !== undefined)
         || this.messageDate !== null
         || this.secureExchangeStatusCodes.some(item => item.secureExchangeStatusCode === this.statusSelectFilter);
     },
@@ -455,6 +455,7 @@ export default {
       this.messageDateFilter = null;
       this.statusSelectFilter = '';
       if(runSearch){
+        this.resetPageNumber();
         this.setFilterStatusAll();
         this.getExchanges();
       }
@@ -530,7 +531,7 @@ export default {
       return content;
     },
     filterExchanges(){
-      this.pageNumber = 1;
+      this.resetPageNumber();
       this.getExchanges();
     },
     claimExchanges() {
