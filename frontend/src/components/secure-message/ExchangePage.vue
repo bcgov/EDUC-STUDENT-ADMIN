@@ -58,7 +58,7 @@
                          label="All Active Messages"
                          color="#003366"
                          value="statusFilterAll"
-                         @click.native="statusFilterAllClicked"
+                         @click.native="filterExchanges"
                 ><template v-slot:label>
                   <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">All Messages</span>
                 </template></v-radio>
@@ -375,7 +375,7 @@ export default {
         || this.secureExchangeStatusCodes.some(item => item.secureExchangeStatusCode === this.statusSelectFilter);
     },
     schools() {
-      return _.sortBy(Array.from(this.mincodeSchoolNames.entries()).map(school => ({ text: `${school[0]} - ${school[1]}`, value: school[0]})), ['value']);
+      return _.sortBy(Array.from(this.mincodeSchoolNames.entries()).map(school => ({ text: `${school[1]} (${school[0]})`, value: school[0]})), ['value']);
     },
     myself() {
       return { name: this.userInfo.userName, id: this.userInfo.userGuid };
@@ -435,11 +435,6 @@ export default {
     },
     statusFilterAllActiveClicked(){
       this.setFilterStatusAllActive();
-      this.resetPageNumber();
-      this.getExchanges();
-    },
-    statusFilterAllClicked(){
-      this.setFilterStatusAll();
       this.resetPageNumber();
       this.getExchanges();
     },
@@ -531,6 +526,7 @@ export default {
       return content;
     },
     filterExchanges(){
+      this.setFilterStatusAll();
       this.resetPageNumber();
       this.getExchanges();
     },
@@ -557,8 +553,7 @@ export default {
       this.loadingTable = true;
       this.exchanges = [];
       const sort = {
-        isReadByMinistry: 'ASC',
-        createDate: 'ASC'
+        createDate: 'DESC'
       };
 
       this.headerSearchParams.subject = this.subjectFilter;
@@ -571,7 +566,7 @@ export default {
         this.headerSearchParams.reviewer = this.claimedByFilter;
       }
 
-      if(this.statusSelectFilter !== null && this.statusSelectFilter !== '') {
+      if(this.statusSelectFilter !== null && this.statusSelectFilter !== '' && this.statusSelectFilter !== undefined) {
         this.headerSearchParams.secureExchangeStatusCode = [this.statusSelectFilter];
       }
 
