@@ -87,4 +87,5 @@ export default {
   getExchangeStatuses: getCodes(`${Routes.edx.STATUSES_URL}`),
   getMinistryTeams: getCodes(`${Routes.edx.USERS_URL}/ministryTeams`),
   getEdxMincodes: getCodes(`${Routes.edx.USERS_URL}/user-schools/mincodes`),
+  getEdxRoles: getCodes(`${Routes.edx.USERS_URL}/roles`),
 };

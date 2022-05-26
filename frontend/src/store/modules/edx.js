@@ -5,7 +5,8 @@ export default {
   state: {
     ministryTeams: [],
     statuses: [],
-    exchangeMincodes: []
+    exchangeMincodes: [],
+    roles: [],
   },
   getters: {
     getStatuses: state => state.statuses?.sort((a,b) => a.displayOrder > b.displayOrder ? 1 : -1),
@@ -19,6 +20,9 @@ export default {
     },
     setExchangeMincodes(state, payload) {
       state.exchangeMincodes = payload;
+    },
+    setRoles(state, payload) {
+      state.roles = payload;
     }
   },
   actions: {
@@ -56,6 +60,15 @@ export default {
     
           const response = await ApiService.getEdxMincodes(query);
           commit('setExchangeMincodes', response.data);
+        }
+      }
+    },
+    async getExchangeRoles({ commit, state}) {
+      if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
+        if (state.roles.length === 0) {
+          ApiService.getEdxRoles().then(response => {
+            commit('setRoles', response.data);
+          });
         }
       }
     },

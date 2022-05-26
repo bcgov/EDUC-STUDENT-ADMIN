@@ -26,22 +26,38 @@
 <!--    search filter -->
       <v-row :class="['d-sm-flex', 'align-center', 'searchBox']">
         <v-col cols="12" md="4">
-          <v-text-field dense label="name"></v-text-field>
+          <v-text-field label="name" clearable></v-text-field>
         </v-col>
         <v-col cols="12" md="4">
-          <v-select dense></v-select>
+          <v-select clearable :items="roles" item-text="roleName" item-value="roleName" label="role"></v-select>
         </v-col>
         <v-col cols="12" md="4" :class="['text-right']">
           <PrimaryButton secondary>Clear</PrimaryButton>
           <PrimaryButton class="ml-2">Search</PrimaryButton>
         </v-col>
       </v-row>
-<!--    user info -->
+    <!--    user info -->
     <v-row v-for="user in users" :key="user.digitalID">
       <v-col>
-        {{user.firstName}}
-        {{user.lastName}}
-        {{user.email}}
+        <v-card>
+          <v-card-title>
+            <v-row>
+              <v-col :class="['d-flex','justify-space-between']">
+                <div :class="['d-flex', 'flex-column']">
+                  <strong>{{`${user.firstName} ${user.lastName}`}}</strong>
+                  <span>{{user.email}}</span>
+                </div>
+                <PrimaryButton secondary icon="mdi-pencil">Edit</PrimaryButton>
+              </v-col>
+            </v-row>
+          </v-card-title>
+          <v-card-text v-for="userRole in user.edxUserSchools[0].edxUserSchoolRoles"
+                       :key="userRole.edxRoleID">
+            <v-chip>
+              {{ userRole.edxRole.roleName }}
+            </v-chip>
+          </v-card-text>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
@@ -73,6 +89,10 @@ export default {
     if (this.mincodeSchoolNames.size === 0) {
       this.$store.dispatch('app/getCodes');
     }
+
+    if (this.roles.length === 0) {
+      this.$store.dispatch('edx/getExchangeRoles');
+    }
   },
   created() {
     this.getUsersData();
@@ -83,11 +103,7 @@ export default {
       ApiService.apiAxios.get(Routes.edx.EXCHANGE_ACCESS_URL, payload)
         .then(response => {
           this.users = response.data;
-          console.log(response.data);
         });
-    },
-    btnClick() {
-      this.getUsersData();
     },
     getSchoolName() {
       const schoolName = this.mincodeSchoolNames.get(this.mincode);
@@ -95,7 +111,8 @@ export default {
     }
   },
   computed: {
-    ...mapState('app', ['mincodeSchoolNames'])
+    ...mapState('app', ['mincodeSchoolNames']),
+    ...mapState('edx', ['roles'])
   }
 };
 </script>
