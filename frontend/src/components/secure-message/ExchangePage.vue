@@ -209,7 +209,7 @@
                   <v-col cols="7" md="10" class="pb-0 pt-0">
                     <v-row class="mb-n4">
                       <v-col cols="12" class="pb-2 pt-2 pr-0">
-                        <h3 class="subjectHeading">{{ getSubject(item.subject) }}</h3>
+                        <h3 class="subjectHeading" :style="{color: item.isReadByExchangeContact ? 'black': '#1f7cef'}">{{ getSubject(item.subject) }}</h3>
                       </v-col>
                     </v-row>
                     <v-row>
