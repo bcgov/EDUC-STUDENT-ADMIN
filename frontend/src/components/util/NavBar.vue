@@ -148,6 +148,11 @@ export default {
             title: 'Macro Management',
             link: 'macros',
             authorized: this.EDIT_MACROS_ROLE
+          },
+          {
+            title: 'Access Management',
+            link: 'exchangeAccess',
+            authorized: this.EXCHANGE_ACCESS_ROLE
           }
         ],
       },
@@ -191,7 +196,7 @@ export default {
   },
   computed: {
     ...mapState('auth', ['isAuthorizedUser']),
-    ...mapGetters('auth', ['ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE', 'STAFF_ADMINISTRATION_ADMIN', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH'])
+    ...mapGetters('auth', ['ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE', 'STAFF_ADMINISTRATION_ADMIN', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ACCESS_ROLE'])
   },
   methods: {
     setActive(item) {

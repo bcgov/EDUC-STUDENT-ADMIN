@@ -54,6 +54,7 @@ export default {
     STUDENT_ANALYTICS_BATCH: state => state.isValidPenRequestBatchAnalyticsUser,
     HAS_STATS_ROLE: state => state.isValidGUMPAnalyticsUser || state.isValidPenRequestBatchAnalyticsUser,
     EXCHANGE_ROLE: state => state.isValidExchangeUser,
+    EXCHANGE_ACCESS_ROLE: state => state.isValidStaffAdministrationAdmin,
   },
   mutations: {
     //sets Json web token and determines whether user is authenticated

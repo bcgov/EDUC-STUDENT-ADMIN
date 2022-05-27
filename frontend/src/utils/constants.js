@@ -113,6 +113,8 @@ let object = {
     STATUSES_URL: edxRoot + '/exchange/statuses',
     CLAIM_URL: edxRoot + '/exchange/claim',
     USERS_URL: edxRoot + '/users',
+    EXCHANGE_ACCESS_URL: edxRoot + '/users',
+    EXCHANGE_ACCESS_ROLES_URL: edxRoot + '/users/roles'
   }
 };
 
@@ -387,6 +389,8 @@ export const PAGE_TITLES = Object.freeze(
     EXCHANGE: 'Secure Exchange Messaging',
     NEW_EXCHANGE: 'New Message',
     VIEW_EXCHANGE: 'View Message',
+    EXCHANGE_ACCESS: 'Exchange Access',
+    EXCHANGE_USERS: 'Exchange Users'
   }
 );
 

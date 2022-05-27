@@ -1,0 +1,155 @@
+<template>
+  <v-container>
+    <v-row>
+      <v-col>
+        <h2>
+          <strong>
+            {{getSchoolName()}}
+          </strong>
+        </h2>
+      </v-col>
+      <v-col class="text-right">
+        <PrimaryButton icon="mdi-plus">
+          New User
+        </PrimaryButton>
+      </v-col>
+    </v-row>
+    <v-divider class="divider"></v-divider>
+    <v-row>
+      <v-col :class="['d-sm-flex', 'align-center']">
+        <div>Primary EDX Code - To be implemented</div>
+        <PrimaryButton short secondary icon="mdi-sync" class="ml-2">
+          Generate New Code
+        </PrimaryButton>
+      </v-col>
+    </v-row>
+<!--    search filter -->
+      <v-row :class="['d-sm-flex', 'align-center', 'searchBox']">
+        <v-col cols="12" md="4">
+          <v-text-field id="name-text-field" label="name" v-model="searchFilter.name" clearable></v-text-field>
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-select id="roleName-select-field" clearable :items="roles" v-model="searchFilter.roleName" item-text="label" item-value="roleName" label="role"></v-select>
+        </v-col>
+        <v-col cols="12" md="4" :class="['text-right']">
+          <PrimaryButton id="user-search-button" secondary @click.native="clearButtonClick">Clear</PrimaryButton>
+          <PrimaryButton id="user-clear-button" class="ml-2" @click.native="searchButtonClick" :disabled="searchEnabled()">Search</PrimaryButton>
+        </v-col>
+      </v-row>
+    <!--    user info -->
+    <div v-if="filteredUsers.length">
+      <div v-for="user in filteredUsers" :key="user.digitalID">
+        <AccessUserCard type="school" :roles="user.edxUserSchools[0].edxUserSchoolRoles" :user="user"></AccessUserCard>
+      </div>
+    </div>
+    <div v-else>
+      No users found
+    </div>
+  </v-container>
+
+</template>
+
+<script>
+
+import ApiService from '../../common/apiService';
+import {setEmptyInputParams} from '@/utils/common';
+import {isNotEmptyInputParams} from '@/utils/validation';
+import {Routes} from '@/utils/constants';
+import {mapState} from 'vuex';
+import PrimaryButton from '@/components/util/PrimaryButton';
+import AccessUserCard from './AccessUserCard';
+
+export default {
+  name: 'AccessUsersPage',
+  components: {PrimaryButton, AccessUserCard},
+  props: {
+    mincode: {
+      type: String,
+      required: true
+    },
+  },
+  data() {
+    return {
+      users: [],
+      filteredUsers: [],
+      searchFilter: {
+        name: '',
+        roleName: '',
+      }
+    };
+  },
+  beforeMount() {
+    if (this.mincodeSchoolNames.size === 0) {
+      this.$store.dispatch('app/getCodes');
+    }
+
+    if (this.roles.length === 0) {
+      this.$store.dispatch('edx/getExchangeRoles');
+    }
+  },
+  created() {
+    this.getUsersData();
+  },
+  methods: {
+    getUsersData() {
+      const payload = {params: {mincode: this.mincode}};
+      ApiService.apiAxios.get(Routes.edx.EXCHANGE_ACCESS_URL, payload)
+        .then(response => {
+          this.users = response.data;
+          this.filteredUsers = response.data;
+        });
+    },
+    getSchoolName() {
+      const schoolName = this.mincodeSchoolNames.get(this.mincode);
+      return `${schoolName} (${this.mincode})`;
+    },
+    clearButtonClick() {
+      setEmptyInputParams(this.searchFilter);
+      this.searchButtonClick();
+    },
+    searchButtonClick() {
+      this.filteredUsers = this.users
+        .filter(user => {
+          return this.nameFilter(user, this.searchFilter?.name) && this.roleFilter(user, this.searchFilter?.roleName);
+        });
+    },
+    nameFilter(user, name) {
+      if (name) {
+        return `${user.firstName} ${user.lastName}`.toLowerCase().includes(name);
+      }
+
+      return true;
+    },
+    roleFilter(user, roleName) {
+      if (roleName) {
+        return user.edxUserSchools[0].edxUserSchoolRoles.some(role => role.edxRole.roleName === roleName);
+      }
+
+      return true;
+    },
+    searchEnabled() {
+      return !isNotEmptyInputParams(this.searchFilter);
+    }
+  },
+  computed: {
+    ...mapState('app', ['mincodeSchoolNames']),
+    ...mapState('edx', ['roles'])
+  }
+};
+</script>
+
+<style scoped>
+.divider {
+  border-color: #FCBA19;
+  border-width: medium;
+}
+
+.searchBox {
+  border-radius: 5px;
+  background-color: #F2F2F2;
+}
+.card-hint {
+  color: #000 !important;
+  font-size: 1rem;
+}
+</style>
