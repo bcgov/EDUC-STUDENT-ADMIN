@@ -333,7 +333,7 @@ const router = new VueRouter({
           meta: {
             pageTitle: PAGE_TITLES.EXCHANGE_ACCESS,
             requiresAuth: true,
-            role: 'EXCHANGE_ROLE'
+            role: 'EXCHANGE_ACCESS_ROLE'
           }
         },
         {
@@ -344,7 +344,7 @@ const router = new VueRouter({
           meta: {
             pageTitle: PAGE_TITLES.EXCHANGE_USERS,
             requiresAuth: true,
-            role: 'EXCHANGE_ROLE'
+            role: 'EXCHANGE_ACCESS_ROLE'
           }
         },
         {
