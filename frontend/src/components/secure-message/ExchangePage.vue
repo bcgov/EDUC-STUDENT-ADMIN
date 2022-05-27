@@ -205,7 +205,7 @@
             >
               <template #header.data-table-select></template>
               <template v-slot:item.secureExchangeStatusCode="{ item }">
-                <v-row class="ml-n6">
+                <v-row class="ml-n6" style="cursor: pointer;">
                   <v-col cols="7" md="10" class="pb-0 pt-0">
                     <v-row class="mb-n4">
                       <v-col cols="12" class="pb-2 pt-2 pr-0">
@@ -462,6 +462,7 @@ export default {
         this.statusRadioGroup = 'statusFilterAllActive';
         this.setFilterStatusAllActive();
         this.clearSearch(false);
+        this.resetPageNumber();
         this.getExchanges();
       } else {
         this.setFilterStatusAll();
