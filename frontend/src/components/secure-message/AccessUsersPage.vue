@@ -26,40 +26,25 @@
 <!--    search filter -->
       <v-row :class="['d-sm-flex', 'align-center', 'searchBox']">
         <v-col cols="12" md="4">
-          <v-text-field label="name" clearable></v-text-field>
+          <v-text-field id="name-text-field" label="name" v-model="searchFilter.name" clearable></v-text-field>
         </v-col>
         <v-col cols="12" md="4">
-          <v-select clearable :items="roles" item-text="roleName" item-value="roleName" label="role"></v-select>
+          <v-select id="roleName-select-field" clearable :items="roles" v-model="searchFilter.roleName" item-text="label" item-value="roleName" label="role"></v-select>
         </v-col>
         <v-col cols="12" md="4" :class="['text-right']">
-          <PrimaryButton secondary>Clear</PrimaryButton>
-          <PrimaryButton class="ml-2">Search</PrimaryButton>
+          <PrimaryButton id="user-search-button" secondary @click.native="clearButtonClick">Clear</PrimaryButton>
+          <PrimaryButton id="user-clear-button" class="ml-2" @click.native="searchButtonClick" :disabled="searchEnabled()">Search</PrimaryButton>
         </v-col>
       </v-row>
     <!--    user info -->
-    <v-row v-for="user in users" :key="user.digitalID">
-      <v-col>
-        <v-card>
-          <v-card-title>
-            <v-row>
-              <v-col :class="['d-flex','justify-space-between']">
-                <div :class="['d-flex', 'flex-column']">
-                  <strong>{{`${user.firstName} ${user.lastName}`}}</strong>
-                  <span>{{user.email}}</span>
-                </div>
-                <PrimaryButton secondary icon="mdi-pencil">Edit</PrimaryButton>
-              </v-col>
-            </v-row>
-          </v-card-title>
-          <v-card-text v-for="userRole in user.edxUserSchools[0].edxUserSchoolRoles"
-                       :key="userRole.edxRoleID">
-            <v-chip>
-              {{ userRole.edxRole.roleName }}
-            </v-chip>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+    <div v-if="filteredUsers.length">
+      <div v-for="user in filteredUsers" :key="user.digitalID">
+        <AccessUserCard type="school" :roles="user.edxUserSchools[0].edxUserSchoolRoles" :user="user"></AccessUserCard>
+      </div>
+    </div>
+    <div v-else>
+      No users found
+    </div>
   </v-container>
 
 </template>
@@ -67,13 +52,16 @@
 <script>
 
 import ApiService from '../../common/apiService';
+import {setEmptyInputParams} from '@/utils/common';
+import {isNotEmptyInputParams} from '@/utils/validation';
 import {Routes} from '@/utils/constants';
 import {mapState} from 'vuex';
 import PrimaryButton from '@/components/util/PrimaryButton';
+import AccessUserCard from './AccessUserCard';
 
 export default {
   name: 'AccessUsersPage',
-  components: {PrimaryButton},
+  components: {PrimaryButton, AccessUserCard},
   props: {
     mincode: {
       type: String,
@@ -83,6 +71,11 @@ export default {
   data() {
     return {
       users: [],
+      filteredUsers: [],
+      searchFilter: {
+        name: '',
+        roleName: '',
+      }
     };
   },
   beforeMount() {
@@ -103,11 +96,39 @@ export default {
       ApiService.apiAxios.get(Routes.edx.EXCHANGE_ACCESS_URL, payload)
         .then(response => {
           this.users = response.data;
+          this.filteredUsers = response.data;
         });
     },
     getSchoolName() {
       const schoolName = this.mincodeSchoolNames.get(this.mincode);
       return `${schoolName} (${this.mincode})`;
+    },
+    clearButtonClick() {
+      setEmptyInputParams(this.searchFilter);
+      this.searchButtonClick();
+    },
+    searchButtonClick() {
+      this.filteredUsers = this.users
+        .filter(user => {
+          return this.nameFilter(user, this.searchFilter?.name) && this.roleFilter(user, this.searchFilter?.roleName);
+        });
+    },
+    nameFilter(user, name) {
+      if (name) {
+        return `${user.firstName} ${user.lastName}`.toLowerCase().includes(name);
+      }
+
+      return true;
+    },
+    roleFilter(user, roleName) {
+      if (roleName) {
+        return user.edxUserSchools[0].edxUserSchoolRoles.some(role => role.edxRole.roleName === roleName);
+      }
+
+      return true;
+    },
+    searchEnabled() {
+      return !isNotEmptyInputParams(this.searchFilter);
     }
   },
   computed: {
