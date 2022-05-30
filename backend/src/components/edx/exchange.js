@@ -3,28 +3,11 @@
 const {errorResponse, logApiError} = require('../utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../../config');
-const {getData, getCodeTable} = require('../utils');
+const {getData, getCodeTable, putData} = require('../utils');
 const utils = require('../utils');
 const {FILTER_OPERATION, VALUE_TYPE, CACHE_KEYS} = require('../../util/constants');
 const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
 const cacheService = require('../cache-service');
-
-async function getExchangeById(req, res) {
-  try {
-    const token = utils.getBackendToken(req);
-    const params = {
-      headers: {
-        correlationID: req.session.correlationID,
-      },
-    };
-    const url = `${config.get('server:edx:exchangeURL')}/${req.params.id}`;
-    const result = await getData(token, url, params);
-    return res.status(HttpStatus.OK).json(result);
-  } catch (e) {
-    logApiError(e, 'getExchangeById', 'Error getting a secure exchange by ID.');
-    return errorResponse(res);
-  }
-}
 
 async function claimAllExchanges(req, res) {
   try {
@@ -111,14 +94,54 @@ function getCriteria(key, value, operation, valueType) {
 }
 
 async function getExchange(req, res) {
-  try {
-    const token = utils.getBackendToken(req);
-    const response = await utils.getData(token, config.get('server:edx:exchangeURL')+`/${req.params.secureExchangeID}`);
-    return res.status(HttpStatus.OK).json(response);
-  } catch (e) {
-    logApiError(e, 'getExchange', 'Error getting a secure exchange message.');
-    return errorResponse(res);
+  const token = utils.getBackendToken(req);
+  if (!token && req.session.userMinCodes) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No access token'
+    });
   }
+
+  return Promise.all([
+    getCodeTable(token, CACHE_KEYS.EDX_SECURE_EXCHANGE_STATUS, config.get('server:edx:exchangeStatusesURL')),
+    getCodeTable(token, CACHE_KEYS.EDX_MINISTRY_TEAMS, config.get('server:edx:ministryTeamURL')),
+    getData(token, config.get('server:edx:exchangeURL')+`/${req.params.secureExchangeID}`)
+  ])
+    .then(async ([statusCodeResponse, ministryTeamCodeResponse, dataResponse]) => {
+
+      if (statusCodeResponse && ministryTeamCodeResponse && dataResponse) {
+        let school = cacheService.getSchoolNameJSONByMincode(dataResponse['contactIdentifier']);
+
+        if (statusCodeResponse && dataResponse['secureExchangeStatusCode']) {
+          let tempStatus = statusCodeResponse.find(codeStatus => codeStatus['secureExchangeStatusCode'] === dataResponse['secureExchangeStatusCode']);
+          dataResponse['secureExchangeStatusCode'] = tempStatus?.label ? tempStatus.label : dataResponse['secureExchangeStatusCode'];
+        }
+
+        dataResponse['ministryOwnershipTeamName'] = 'Unknown Team';
+        if (ministryTeamCodeResponse && dataResponse['ministryOwnershipTeamID']) {
+          let tempMinTeam = ministryTeamCodeResponse.find(ministryTeam => ministryTeam['ministryOwnershipTeamId'] === dataResponse['ministryOwnershipTeamID']);
+          dataResponse['ministryOwnershipTeamName'] = tempMinTeam?.teamName ? tempMinTeam.teamName : dataResponse['ministryOwnershipTeamName'];
+        }
+
+        //creating activities list for timeline display on the frontend
+        dataResponse['activities'] = [];
+        dataResponse['commentsList'].forEach((comment) => {
+          let activity = {};
+          activity['type'] = 'message';
+          activity['timestamp'] = comment['commentTimestamp'] ? LocalDateTime.parse(comment['commentTimestamp']) : '';
+          activity['actor'] = comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+          activity['title'] =  comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+          activity['displayDate'] = comment['commentTimestamp'] ? LocalDateTime.parse(comment['commentTimestamp']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd')) : 'Unknown Date';
+          activity['content'] = comment['content'];
+          activity['secureExchangeID'] = comment['secureExchangeID'];
+          dataResponse['activities'].push(activity);
+        });
+        dataResponse['activities'].sort((activity1, activity2) => { return activity2.timestamp.compareTo(activity1.timestamp); });
+      }
+      return res.status(HttpStatus.OK).json(dataResponse);
+    }).catch(e => {
+      logApiError(e, 'getExchange', 'Error getting secure exchange by ID.');
+      return errorResponse(res);
+    });
 }
 
 async function createExchange(req, res) {
@@ -151,6 +174,29 @@ async function createExchange(req, res) {
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'createExchange', 'Error occurred while attempting to create a new exchange.');
+    return errorResponse(res);
+  }
+}
+
+async function markAs(req, res) {
+  const token = utils.getBackendToken(req);
+  if (!token) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No access token'
+    });
+  }
+  try {
+    const currentExchange = await getData(token, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}`);
+    currentExchange.isReadByMinistry = !currentExchange.isReadByMinistry;
+    currentExchange.createDate = null;
+    currentExchange.updateDate = null;
+
+    await putData(token, `${config.get('server:edx:exchangeURL')}`, currentExchange);
+
+    return getExchange(req, res);
+  }
+  catch (e) {
+    logApiError(e, 'markAs', 'Error updating the read status of an exchange');
     return errorResponse(res);
   }
 }
@@ -210,9 +256,9 @@ const getContactIdentifierType = (contactIdentifier, res) => {
 };
 
 module.exports = {
-  getExchangeById,
   getExchanges,
   createExchange,
   getExchange,
   claimAllExchanges,
+  markAs
 };

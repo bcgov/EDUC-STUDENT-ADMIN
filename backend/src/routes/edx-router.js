@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../components/auth');
 const utils = require('../components/utils');
-const { getExchanges, createExchange, getExchange, claimAllExchanges } = require('../components/edx/exchange');
+const { getExchanges, createExchange, getExchange, claimAllExchanges, markAs } = require('../components/edx/exchange');
 
 const extendSession = utils.extendSession();
 
@@ -17,6 +17,7 @@ router.get('/users', passport.authenticate('jwt', {session: false}, undefined), 
 //edx exchange routes
 router.get('/exchange/:secureExchangeID', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, getExchange);
 router.get('/exchange', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, getExchanges);
+router.put('/exchange/:secureExchangeID/markAs', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, markAs);
 router.post('/exchange/claim', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, claimAllExchanges);
 router.get('/exchange/statuses', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, utils.cacheMiddleware(), utils.getCodes('server:edx:exchangeStatusesURL', 'exchangeStatuses'));
 
