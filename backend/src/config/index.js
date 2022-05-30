@@ -108,7 +108,7 @@ nconf.defaults({
       exchangeStatusesURL: process.env.EDX_API_URL + '/exchange/statuses',
       ministryTeamURL : process.env.EDX_API_URL+ '/users/ministry-teams',
       edxUsersURL: process.env.EDX_API_URL+ '/users',
-      claimExchangesURL: process.env.EDX_API_URL+ '/claim'
+      claimExchangesURL: process.env.EDX_API_URL+ '/exchange/claim'
     },
     macro: {
       rootURL: process.env.MACRO_API_URL,
