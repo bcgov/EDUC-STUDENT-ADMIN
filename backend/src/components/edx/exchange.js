@@ -108,35 +108,34 @@ async function getExchange(req, res) {
   ])
     .then(async ([statusCodeResponse, ministryTeamCodeResponse, dataResponse]) => {
 
-      if (statusCodeResponse && ministryTeamCodeResponse && dataResponse) {
-        let school = cacheService.getSchoolNameJSONByMincode(dataResponse['contactIdentifier']);
+      let school = cacheService.getSchoolNameJSONByMincode(dataResponse['contactIdentifier']);
 
-        if (dataResponse['secureExchangeStatusCode']) {
-          let tempStatus = statusCodeResponse.find(codeStatus => codeStatus['secureExchangeStatusCode'] === dataResponse['secureExchangeStatusCode']);
-          dataResponse['secureExchangeStatusCode'] = tempStatus?.label ? tempStatus.label : dataResponse['secureExchangeStatusCode'];
-        }
-
-        dataResponse['ministryOwnershipTeamName'] = 'Unknown Team';
-        if (dataResponse['ministryOwnershipTeamID']) {
-          let tempMinTeam = ministryTeamCodeResponse.find(ministryTeam => ministryTeam['ministryOwnershipTeamId'] === dataResponse['ministryOwnershipTeamID']);
-          dataResponse['ministryOwnershipTeamName'] = tempMinTeam?.teamName ? tempMinTeam.teamName : dataResponse['ministryOwnershipTeamName'];
-        }
-
-        //creating activities list for timeline display on the frontend
-        dataResponse['activities'] = [];
-        dataResponse['commentsList'].forEach((comment) => {
-          let activity = {};
-          activity['type'] = 'message';
-          activity['timestamp'] = comment['commentTimestamp'] ? LocalDateTime.parse(comment['commentTimestamp']) : '';
-          activity['actor'] = comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
-          activity['title'] =  comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
-          activity['displayDate'] = comment['commentTimestamp'] ? LocalDateTime.parse(comment['commentTimestamp']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd')) : 'Unknown Date';
-          activity['content'] = comment['content'];
-          activity['secureExchangeID'] = comment['secureExchangeID'];
-          dataResponse['activities'].push(activity);
-        });
-        dataResponse['activities'].sort((activity1, activity2) => { return activity2.timestamp.compareTo(activity1.timestamp); });
+      if (dataResponse['secureExchangeStatusCode']) {
+        let tempStatus = statusCodeResponse.find(codeStatus => codeStatus['secureExchangeStatusCode'] === dataResponse['secureExchangeStatusCode']);
+        dataResponse['secureExchangeStatusCode'] = tempStatus?.label ? tempStatus.label : dataResponse['secureExchangeStatusCode'];
       }
+
+      dataResponse['ministryOwnershipTeamName'] = 'Unknown Team';
+      if (dataResponse['ministryOwnershipTeamID']) {
+        let tempMinTeam = ministryTeamCodeResponse.find(ministryTeam => ministryTeam['ministryOwnershipTeamId'] === dataResponse['ministryOwnershipTeamID']);
+        dataResponse['ministryOwnershipTeamName'] = tempMinTeam?.teamName ? tempMinTeam.teamName : dataResponse['ministryOwnershipTeamName'];
+      }
+
+      //creating activities list for timeline display on the frontend
+      dataResponse['activities'] = [];
+      dataResponse['commentsList'].forEach((comment) => {
+        let activity = {};
+        activity['type'] = 'message';
+        activity['timestamp'] = comment['commentTimestamp'] ? LocalDateTime.parse(comment['commentTimestamp']) : '';
+        activity['actor'] = comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+        activity['title'] =  comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+        activity['displayDate'] = comment['commentTimestamp'] ? LocalDateTime.parse(comment['commentTimestamp']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd')) : 'Unknown Date';
+        activity['content'] = comment['content'];
+        activity['secureExchangeID'] = comment['secureExchangeID'];
+        dataResponse['activities'].push(activity);
+      });
+      dataResponse['activities'].sort((activity1, activity2) => { return activity2.timestamp.compareTo(activity1.timestamp); });
+
       return res.status(HttpStatus.OK).json(dataResponse);
     }).catch(e => {
       logApiError(e, 'getExchange', 'Error getting secure exchange by ID.');
