@@ -22,7 +22,7 @@ async function claimAllExchanges(req, res) {
     await utils.postData(token, config.get('server:edx:claimExchangesURL') + '?' + params, null , null , null);
     return res.status(HttpStatus.OK).json({});
   } catch (e) {
-    logApiError(e, 'claimAllExchanges', 'Error occurred while attempting to claim a exchanges.');
+    logApiError(e, 'claimAllExchanges', 'Error occurred while attempting to claim exchanges.');
     return errorResponse(res);
   }
 }
@@ -38,7 +38,7 @@ async function getExchanges(req, res) {
   return Promise.all([
     getCodeTable(token, CACHE_KEYS.EDX_SECURE_EXCHANGE_STATUS, config.get('server:edx:exchangeStatusesURL')),
     getCodeTable(token, CACHE_KEYS.EDX_MINISTRY_TEAMS, config.get('server:edx:ministryTeamURL')),
-    getExchangesPaginated(req, res)
+    getExchangesPaginated(req, res),
   ])
     .then(async ([statusCodeResponse, ministryTeamCodeResponse, dataResponse]) => {
       if (statusCodeResponse && ministryTeamCodeResponse && dataResponse?.content) {

@@ -31,8 +31,12 @@
                 </v-row>
               </v-col>
               <v-col cols="5" md="2" style="text-align: end" class="pb-0 pt-0">
-                <v-row class="mb-n4">
-                  <v-col cols="12" class="pb-1">
+                <v-row class="mb-n4" no-gutters>
+                  <v-col cols="12">
+                      <v-icon>{{ secureExchange.reviewer ? 'mdi-account-outline' : 'mdi-account-off-outline' }}</v-icon>
+                      <span class="ml-1">{{ secureExchange.reviewer ? secureExchange.reviewer : 'Unclaimed' }}</span>
+                  </v-col>
+                  <v-col cols="12">
                     <v-icon class="pb-1" :color="getStatusColor(secureExchange.secureExchangeStatusCode)" right dark>
                       mdi-circle-medium
                     </v-icon>
@@ -40,7 +44,7 @@
                   </v-col>
                 </v-row>
                 <v-row>
-                  <v-col cols="12" class="pb-2">
+                  <v-col cols="12">
                     <v-icon style="margin-bottom: 0.15em" color="grey darken-3" right size="medium" dark>
                       mdi-pound
                     </v-icon>
@@ -73,10 +77,17 @@
                 </v-card>
               </v-speed-dial>
               <v-spacer></v-spacer>
-              <v-btn id="markAsButton" class="ma-4" v-on:click="toggleIsReadByMinistry" :loading="loadingReadStatus">
+              <v-btn id="markAsButton" class="my-4" v-on:click="toggleIsReadByMinistry" :loading="loadingReadStatus">
                 <v-icon v-if="secureExchange.isReadByExchangeContact">mdi-email-outline</v-icon>
                 <v-icon v-else>mdi-email-open-outline</v-icon>
                 <span class="ml-1 markAsSpan">{{`Mark As ${secureExchange.isReadByMinistry ? 'Unread' : 'Read'}` }}</span>
+              </v-btn>
+              <v-btn id="claimAsButton" class="my-4">
+                <v-icon>{{ secureExchange.reviewer ? 'mdi-account-outline' : 'mdi-account-off-outline' }}</v-icon>
+                <span class="ml-1">{{ secureExchange.reviewer ? 'Unclaim' : 'Claim' }}</span>
+              </v-btn>
+              <v-btn id="changeStatusButton" class="my-4">
+                <span class="ml-1">Complete</span>
               </v-btn>
             </v-row>
             <v-row>
