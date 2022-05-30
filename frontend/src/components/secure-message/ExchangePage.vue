@@ -207,7 +207,7 @@
               <template v-slot:item.secureExchangeStatusCode="{ item }">
                 <v-row class="ml-n6" style="cursor: pointer;">
                   <v-col cols="7" md="10" class="pb-0 pt-0">
-                    <v-row class="mb-n4">
+                    <v-row class="mb-n4" @click="openExchange(item.secureExchangeID)">
                       <v-col cols="12" class="pb-2 pt-2 pr-0">
                         <h3 class="subjectHeading" :style="{color: item.isReadByMinistry ? 'black': '#1f7cef'}">{{ getSubject(item.subject) }}</h3>
                       </v-col>
@@ -223,7 +223,7 @@
                       </v-col>
                     </v-row>
                   </v-col>
-                  <v-col cols="5" md="2" style="text-align: end" class="pb-0 pt-0">
+                  <v-col cols="5" md="2" style="text-align: end" class="pb-0 pt-0" @click="openExchange(item.secureExchangeID)">
                     <v-row>
                       <v-col cols="12" class="pb-1 pt-1">
                         <v-icon style="margin-bottom: 0.25em" color="grey darken-3" right size="medium" dark>mdi-pound</v-icon>
@@ -290,6 +290,7 @@ import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton';
 import NewMessagePage from './NewMessagePage';
 import {mapGetters, mapState} from 'vuex';
+import router from '@/router';
 import {isEmpty, omitBy} from 'lodash';
 import {LocalDate, ChronoUnit, DateTimeFormatter} from '@js-joda/core';
 import alertMixin from '@/mixins/alertMixin';
@@ -589,6 +590,9 @@ export default {
       }).finally(() => {
         this.loadingTable = false;
       });
+    },
+    openExchange(exchangeID) {
+      router.push({name: 'viewExchange', params: {secureExchangeID: exchangeID}});
     }
   },
   watch: {
@@ -644,6 +648,7 @@ export default {
 }
 .subjectHeading{
   font-size: x-large;
+  cursor: pointer;
 }
 
 .statusCodeLabel{
