@@ -111,13 +111,13 @@ async function getExchange(req, res) {
       if (statusCodeResponse && ministryTeamCodeResponse && dataResponse) {
         let school = cacheService.getSchoolNameJSONByMincode(dataResponse['contactIdentifier']);
 
-        if (statusCodeResponse && dataResponse['secureExchangeStatusCode']) {
+        if (dataResponse['secureExchangeStatusCode']) {
           let tempStatus = statusCodeResponse.find(codeStatus => codeStatus['secureExchangeStatusCode'] === dataResponse['secureExchangeStatusCode']);
           dataResponse['secureExchangeStatusCode'] = tempStatus?.label ? tempStatus.label : dataResponse['secureExchangeStatusCode'];
         }
 
         dataResponse['ministryOwnershipTeamName'] = 'Unknown Team';
-        if (ministryTeamCodeResponse && dataResponse['ministryOwnershipTeamID']) {
+        if (dataResponse['ministryOwnershipTeamID']) {
           let tempMinTeam = ministryTeamCodeResponse.find(ministryTeam => ministryTeam['ministryOwnershipTeamId'] === dataResponse['ministryOwnershipTeamID']);
           dataResponse['ministryOwnershipTeamName'] = tempMinTeam?.teamName ? tempMinTeam.teamName : dataResponse['ministryOwnershipTeamName'];
         }
