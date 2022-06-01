@@ -12,8 +12,8 @@
               :active="loading"
           ></v-progress-linear>
           <div v-if="!loading && secureExchange" style="width: 100%;" :overlay=false>
-            <v-row class="secureExchangeHeader" style="border-bottom: 5px solid rgb(252, 186, 25) !important">
-              <v-col cols="7" md="10" class="pb-0 pt-0">
+            <v-row class="secureExchangeHeader">
+              <v-col cols="7" md="8" class="pb-0 pt-0">
                 <v-row class="mb-n4">
                   <v-col cols="12" class="pb-2 pt-2 pr-0">
                     <h3 class="subjectHeading">{{ secureExchange.subject }}</h3>
@@ -30,29 +30,32 @@
                   </v-col>
                 </v-row>
               </v-col>
-              <v-col cols="5" md="2" style="text-align: end" class="pb-0 pt-0">
-                <v-row class="mb-n4" no-gutters>
-                  <v-col cols="12">
+              <v-col cols="5" md="4" style="text-align: end" class="pb-0 pt-0">
+                <v-row no-gutters>
+                  <v-col cols="12" md="6">
                       <v-icon>{{ secureExchange.reviewer ? 'mdi-account-outline' : 'mdi-account-off-outline' }}</v-icon>
                       <span class="ml-1">{{ secureExchange.reviewer ? secureExchange.reviewer : 'Unclaimed' }}</span>
                   </v-col>
-                  <v-col cols="12">
-                    <v-icon class="pb-1" :color="getStatusColor(secureExchange.secureExchangeStatusCode)" right dark>
+                  <v-col cols="12" md="6">
+                    <v-icon class="pb-1" :color="getStatusColor(secureExchange.secureExchangeStatusCode)" dark>
                       mdi-circle-medium
                     </v-icon>
                     <span class="secureExchangeStatusCode">{{ secureExchange.secureExchangeStatusCode }}</span>
                   </v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="12">
-                    <v-icon style="margin-bottom: 0.15em" color="grey darken-3" right size="medium" dark>
+                  <v-col cols="12" md="6">
+                    <v-icon color="grey darken-3" size="medium" dark>
                       mdi-pound
                     </v-icon>
                     <span class="sequenceNumber">{{ secureExchange.sequenceNumber }}</span>
                   </v-col>
+                  <v-col cols="12" md="6">
+                    <v-icon class="pr-1" color="grey darken-3" dark>mdi-clock-outline</v-icon>
+                    <span class="statusCodeLabel">{{getNumberOfDays(secureExchange.createDate)}}</span>
+                  </v-col>
                 </v-row>
               </v-col>
             </v-row>
+            <v-divider class="divider"></v-divider>
             <v-row>
               <v-speed-dial id="editOptionsMenu" v-if="isEditable()" v-model="editOptionsOpen" top left direction="right">
                 <template v-slot:activator>
@@ -120,6 +123,7 @@
 
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
+import {ChronoUnit, DateTimeFormatter, LocalDate} from '@js-joda/core';
 
 export default {
   name: 'MessageDisplay',
@@ -202,12 +206,18 @@ export default {
       default:
         return '';
       }
-    }
+    },
+    getNumberOfDays(start) {
+      const start_date = new LocalDate.parse(start, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
+      const end_date = LocalDate.now();
+
+      return ChronoUnit.DAYS.between(start_date, end_date) + ' days';
+    },
   }
 };
 </script>
 
-<style>
+<style scoped>
 .subjectHeading {
   overflow-wrap: break-word;
 }
@@ -216,5 +226,10 @@ export default {
   .subjectHeading {
     font-size: medium;
   }
+}
+
+.divider {
+  border-color: #FCBA19;
+  border-width: medium;
 }
 </style>
