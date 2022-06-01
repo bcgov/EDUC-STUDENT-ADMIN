@@ -135,6 +135,7 @@
                   <v-select
                     v-model="statusSelectFilter"
                     :items="secureExchangeStatusCodes"
+                    id="statusSelector"
                     item-text="label"
                     class="pt-0 mt-0"
                     item-value="secureExchangeStatusCode"
