@@ -101,6 +101,7 @@
                 </v-col>
                 <v-col cols="12" md="4" class="pt-0" :class="{'pl-12 pr-12': $vuetify.breakpoint.mdAndUp}">
                   <v-menu
+                    id="messageDate"
                     ref="messageDateFilter"
                     v-model="messageDateFilter"
                     :close-on-content-click="false"
@@ -110,6 +111,7 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
+                        id="messageDateTextField"
                         class="pt-0 mt-0"
                         v-model="messageDate"
                         label="Message Date"
@@ -240,7 +242,7 @@
                     <v-row>
                       <v-col cols="12" class="pb-1 pt-0">
                         <v-icon style="margin-bottom: 0.2em" color="grey darken-3" right dark>mdi-account-outline</v-icon>
-                        <span class="statusCodeLabel">{{ item.reviewer }}</span>
+                        <span class="statusCodeLabel">{{ getReviewer(item.reviewer) }}</span>
                       </v-col>
                     </v-row>
                     <v-row>
@@ -414,6 +416,10 @@ export default {
       case 'SCHOOL':
         return this.getSchoolName(item.contactIdentifier) + ' (' + item.contactIdentifier + ') - ' + item.createDate;
       }
+    },
+    getReviewer(reviewer){
+      if(!reviewer) return 'Unclaimed';
+      return reviewer;
     },
     getMinistryTeamIDByGroupRoleID(groupRoleID) {
       return this.ministryTeams.find(item => item.groupRoleIdentifier === groupRoleID).ministryOwnershipTeamId;
