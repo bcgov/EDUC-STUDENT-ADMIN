@@ -31,30 +31,42 @@
                 </v-row>
               </v-col>
               <v-col class="pb-0 pt-0 d-flex justify-end">
-                  <v-row no-gutters>
-                    <v-col>
-                      <v-row no-gutters>
-                        <v-col class="d-flex justify-end">
-                          <v-icon>{{ secureExchange.reviewer ? 'mdi-account-outline' : 'mdi-account-off-outline' }}</v-icon>
-                          <span class="mr-8">{{ secureExchange.reviewer ? secureExchange.reviewer : 'Unclaimed' }}</span>
-                          <v-icon :color="getStatusColor(secureExchange.secureExchangeStatusCode)" dark>
+                <v-row>
+                  <v-col class="d-flex justify-end">
+                    <v-card outlined color="transparent" class="mr-5">
+                      <v-row>
+                        <v-col>
+                          <v-icon class="ml-n1" :color="getStatusColor(secureExchange.secureExchangeStatusCode)" dark>
                             mdi-circle-medium
                           </v-icon>
-                          <span class="mr-4">{{ secureExchange.secureExchangeStatusCode }}</span>
+                          <span class="ml-n1">{{ secureExchange.secureExchangeStatusCode }}</span>
                         </v-col>
                       </v-row>
-                      <v-row no-gutters class="mt-1">
-                        <v-col class="d-flex justify-end">
+                      <v-row no-gutters>
+                        <v-col>
                           <v-icon color="grey darken-3" size="medium" dark>
                             mdi-pound
                           </v-icon>
-                          <span style="margin-right: 5em;">{{ secureExchange.sequenceNumber }}</span>
-                          <v-icon class="pr-1" color="grey darken-3" dark>mdi-clock-outline</v-icon>
-                          <span class="statusCodeLabel">{{getNumberOfDays(secureExchange.createDate)}}</span>
+                          <span>{{ secureExchange.sequenceNumber }}</span>
                         </v-col>
                       </v-row>
-                    </v-col>
-                  </v-row>
+                      </v-card>
+                    <v-card outlined color="transparent">
+                      <v-row>
+                        <v-col>
+                          <v-icon>{{ secureExchange.reviewer ? 'mdi-account-outline' : 'mdi-account-off-outline' }}</v-icon>
+                          <span>{{ secureExchange.reviewer ? secureExchange.reviewer : 'Unclaimed' }}</span>
+                        </v-col>
+                      </v-row>
+                      <v-row no-gutters>
+                        <v-col>
+                          <v-icon class="pr-1" color="grey darken-3" dark>mdi-clock-outline</v-icon>
+                          <span class="mr-2">{{getNumberOfDays(secureExchange.createDate)}}</span>
+                        </v-col>
+                      </v-row>
+                    </v-card>
+                  </v-col>
+                </v-row>
               </v-col>
             </v-row>
             <v-divider class="divider"></v-divider>
