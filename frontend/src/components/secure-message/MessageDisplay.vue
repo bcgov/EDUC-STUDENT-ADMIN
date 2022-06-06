@@ -11,9 +11,9 @@
               color="blue"
               :active="loading"
           ></v-progress-linear>
-          <div v-if="!loading && secureExchange" style="width: 100%;" :overlay=false>
-            <v-row class="secureExchangeHeader">
-              <v-col cols="7" md="8" class="pb-0 pt-0">
+          <div v-if="!loading && secureExchange" :overlay=false>
+            <v-row>
+              <v-col class="pb-0 pt-0">
                 <v-row class="mb-n4">
                   <v-col cols="12" class="pb-2 pt-2 pr-0">
                     <h3 class="subjectHeading">{{ secureExchange.subject }}</h3>
@@ -30,68 +30,85 @@
                   </v-col>
                 </v-row>
               </v-col>
-              <v-col cols="5" md="4" style="text-align: end" class="pb-0 pt-0">
-                <v-row no-gutters>
-                  <v-col cols="12" md="6">
-                      <v-icon>{{ secureExchange.reviewer ? 'mdi-account-outline' : 'mdi-account-off-outline' }}</v-icon>
-                      <span class="ml-1">{{ secureExchange.reviewer ? secureExchange.reviewer : 'Unclaimed' }}</span>
-                  </v-col>
-                  <v-col cols="12" md="6">
-                    <v-icon class="pb-1" :color="getStatusColor(secureExchange.secureExchangeStatusCode)" dark>
-                      mdi-circle-medium
-                    </v-icon>
-                    <span class="secureExchangeStatusCode">{{ secureExchange.secureExchangeStatusCode }}</span>
-                  </v-col>
-                  <v-col cols="12" md="6">
-                    <v-icon color="grey darken-3" size="medium" dark>
-                      mdi-pound
-                    </v-icon>
-                    <span class="sequenceNumber">{{ secureExchange.sequenceNumber }}</span>
-                  </v-col>
-                  <v-col cols="12" md="6">
-                    <v-icon class="pr-1" color="grey darken-3" dark>mdi-clock-outline</v-icon>
-                    <span class="statusCodeLabel">{{getNumberOfDays(secureExchange.createDate)}}</span>
+              <v-col class="pb-0 pt-0 d-flex justify-end">
+                <v-row>
+                  <v-col class="d-flex justify-end">
+                    <v-card outlined color="transparent" class="mr-5">
+                      <v-row>
+                        <v-col>
+                          <v-icon class="ml-n1" :color="getStatusColor(secureExchange.secureExchangeStatusCode)" dark>
+                            mdi-circle-medium
+                          </v-icon>
+                          <span class="ml-n1">{{ secureExchange.secureExchangeStatusCode }}</span>
+                        </v-col>
+                      </v-row>
+                      <v-row no-gutters>
+                        <v-col>
+                          <v-icon color="grey darken-3" size="medium" dark>
+                            mdi-pound
+                          </v-icon>
+                          <span>{{ secureExchange.sequenceNumber }}</span>
+                        </v-col>
+                      </v-row>
+                      </v-card>
+                    <v-card outlined color="transparent">
+                      <v-row>
+                        <v-col>
+                          <v-icon>{{ secureExchange.reviewer ? 'mdi-account-outline' : 'mdi-account-off-outline' }}</v-icon>
+                          <span>{{ secureExchange.reviewer ? secureExchange.reviewer : 'Unclaimed' }}</span>
+                        </v-col>
+                      </v-row>
+                      <v-row no-gutters>
+                        <v-col>
+                          <v-icon class="pr-1" color="grey darken-3" dark>mdi-clock-outline</v-icon>
+                          <span class="mr-2">{{getNumberOfDays(secureExchange.createDate)}}</span>
+                        </v-col>
+                      </v-row>
+                    </v-card>
                   </v-col>
                 </v-row>
               </v-col>
             </v-row>
             <v-divider class="divider"></v-divider>
             <v-row>
-              <v-speed-dial id="editOptionsMenu" v-if="isEditable()" v-model="editOptionsOpen" top left direction="right">
-                <template v-slot:activator>
-                  <v-btn class="mx-2" fab dark large color="#003366">
-                    <v-icon v-if="editOptionsOpen" dark large>mdi-close</v-icon>
-                    <v-icon v-else dark large>mdi-plus</v-icon>
-                  </v-btn>
-                </template>
-                <v-card>
-                  <v-btn dark small color="green">
-                    <v-icon>mdi-email-outline</v-icon>
-                    <span class="ml-1">Message</span>
-                  </v-btn>
-                  <v-btn dark small color="indigo">
-                    <v-icon>mdi-paperclip</v-icon>
-                    <span class="ml-1">Document</span>
-                  </v-btn>
-                  <v-btn dark small color="rgb(252, 186, 25)">
-                    <v-icon>mdi-emoticon-happy-outline</v-icon>
-                    <span class="ml-1">Student</span>
-                  </v-btn>
-                </v-card>
-              </v-speed-dial>
-              <v-spacer></v-spacer>
-              <v-btn id="markAsButton" class="my-4" v-on:click="toggleIsReadByMinistry" :loading="loadingReadStatus">
-                <v-icon v-if="secureExchange.isReadByExchangeContact">mdi-email-outline</v-icon>
-                <v-icon v-else>mdi-email-open-outline</v-icon>
-                <span class="ml-1 markAsSpan">{{`Mark As ${secureExchange.isReadByMinistry ? 'Unread' : 'Read'}` }}</span>
-              </v-btn>
-              <v-btn id="claimAsButton" class="my-4">
-                <v-icon>{{ secureExchange.reviewer ? 'mdi-account-off-outline' : 'mdi-account-check-outline' }}</v-icon>
-                <span class="ml-1">{{ secureExchange.reviewer ? 'Unclaim' : 'Claim' }}</span>
-              </v-btn>
-              <v-btn id="changeStatusButton" class="my-4">
-                <span class="ml-1">Complete</span>
-              </v-btn>
+              <v-col>
+                <v-speed-dial id="editOptionsMenu" v-if="isEditable()" v-model="editOptionsOpen" top left direction="right">
+                  <template v-slot:activator>
+                    <v-btn class="mx-2" fab dark large color="#003366">
+                      <v-icon v-if="editOptionsOpen" dark large>mdi-close</v-icon>
+                      <v-icon v-else dark large>mdi-plus</v-icon>
+                    </v-btn>
+                  </template>
+                  <v-card>
+                    <v-btn dark small color="green">
+                      <v-icon>mdi-email-outline</v-icon>
+                      <span class="ml-1">Message</span>
+                    </v-btn>
+                    <v-btn dark small color="indigo">
+                      <v-icon>mdi-paperclip</v-icon>
+                      <span class="ml-1">Document</span>
+                    </v-btn>
+                    <v-btn dark small color="rgb(252, 186, 25)">
+                      <v-icon>mdi-emoticon-happy-outline</v-icon>
+                      <span class="ml-1">Student</span>
+                    </v-btn>
+                  </v-card>
+                </v-speed-dial>
+              </v-col>
+              <v-col class="d-flex justify-end">
+                <v-btn id="markAsButton" class="my-4" v-on:click="toggleIsReadByMinistry" :loading="loadingReadStatus">
+                  <v-icon v-if="secureExchange.isReadByExchangeContact">mdi-email-outline</v-icon>
+                  <v-icon v-else>mdi-email-open-outline</v-icon>
+                  <span class="ml-1 markAsSpan">{{`Mark As ${secureExchange.isReadByMinistry ? 'Unread' : 'Read'}` }}</span>
+                </v-btn>
+                <v-btn id="claimAsButton" class="my-4 mx-2">
+                  <v-icon>{{ secureExchange.reviewer ? 'mdi-account-off-outline' : 'mdi-account-check-outline' }}</v-icon>
+                  <span class="ml-1">{{ secureExchange.reviewer ? 'Unclaim' : 'Claim' }}</span>
+                </v-btn>
+                <v-btn id="changeStatusButton" class="my-4">
+                  <span>Complete</span>
+                </v-btn>
+              </v-col>
             </v-row>
             <v-row>
               <v-col>
