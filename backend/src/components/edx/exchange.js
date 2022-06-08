@@ -121,6 +121,10 @@ async function getExchange(req, res) {
         dataResponse['ministryOwnershipTeamName'] = tempMinTeam?.teamName ? tempMinTeam.teamName : dataResponse['ministryOwnershipTeamName'];
       }
 
+      if (dataResponse['createDate']) {
+        dataResponse['createDate'] = LocalDateTime.parse(dataResponse['createDate']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd'));
+      }
+
       //creating activities list for timeline display on the frontend
       dataResponse['activities'] = [];
       dataResponse['commentsList'].forEach((comment) => {

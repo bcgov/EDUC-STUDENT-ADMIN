@@ -225,7 +225,7 @@ export default {
       }
     },
     getNumberOfDays(start) {
-      const start_date = new LocalDate.parse(start, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
+      const start_date = new LocalDate.parse(start, DateTimeFormatter.ofPattern('uuuu/MM/dd'));
       const end_date = LocalDate.now();
 
       return ChronoUnit.DAYS.between(start_date, end_date) + ' days';
