@@ -8,7 +8,7 @@
         <v-row>
           <v-col cols="8" class="pt-0">
             <v-autocomplete
-                id='schoolName'
+                id='selectSchoolName'
                 class="pt-0 mt-0"
                 prepend-inner-icon="mdi-account-box-outline"
                 v-model="schoolMincode"
@@ -19,7 +19,7 @@
             ></v-autocomplete>
           </v-col>
           <v-col>
-            <PrimaryButton :to="`/edx/exchange/access/school/${schoolMincode}`" :disabled="!schoolMincode">Manage School Access</PrimaryButton>
+            <PrimaryButton id="manageSchoolButton" :to="`/edx/exchange/access/school/${schoolMincode}`" :disabled="!schoolMincode">Manage School Access</PrimaryButton>
           </v-col>
         </v-row>
       </v-card-text>

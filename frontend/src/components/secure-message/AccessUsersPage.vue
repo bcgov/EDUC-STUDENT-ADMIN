@@ -32,8 +32,8 @@
           <v-select id="roleName-select-field" clearable :items="roles" v-model="searchFilter.roleName" item-text="label" item-value="roleName" label="role"></v-select>
         </v-col>
         <v-col cols="12" md="4" :class="['text-right']">
-          <PrimaryButton id="user-search-button" secondary @click.native="clearButtonClick">Clear</PrimaryButton>
-          <PrimaryButton id="user-clear-button" class="ml-2" @click.native="searchButtonClick" :disabled="searchEnabled()">Search</PrimaryButton>
+          <PrimaryButton id="user-clear-button" secondary @click.native="clearButtonClick">Clear</PrimaryButton>
+          <PrimaryButton id="user-search-button" class="ml-2" @click.native="searchButtonClick" :disabled="searchEnabled()">Search</PrimaryButton>
         </v-col>
       </v-row>
     <!--    user info -->
