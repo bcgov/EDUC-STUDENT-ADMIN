@@ -114,7 +114,6 @@ utils.getOidcDiscovery().then(discovery => {
     scope: discovery.scopes_supported,
     kc_idp_hint: config.get('server:idirIDPHint')
   }, (_issuer, profile, _context, _idToken, accessToken, refreshToken, done) => {
-    console.log('TokeN: ' + accessToken);
     if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
       (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
       return done('No access token', null);
