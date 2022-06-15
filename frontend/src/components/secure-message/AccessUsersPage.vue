@@ -26,10 +26,10 @@
 <!--    search filter -->
       <v-row :class="['d-sm-flex', 'align-center', 'searchBox']">
         <v-col cols="12" md="4">
-          <v-text-field id="name-text-field" label="name" v-model="searchFilter.name" clearable></v-text-field>
+          <v-text-field id="name-text-field" label="Name" v-model="searchFilter.name" clearable></v-text-field>
         </v-col>
         <v-col cols="12" md="4">
-          <v-select id="roleName-select-field" clearable :items="roles" v-model="searchFilter.roleName" item-text="label" item-value="roleName" label="role"></v-select>
+          <v-select id="roleName-select-field" clearable :items="roles" v-model="searchFilter.roleName" item-text="label" item-value="roleName" label="Role"></v-select>
         </v-col>
         <v-col cols="12" md="4" :class="['text-right']">
           <PrimaryButton id="user-clear-button" secondary @click.native="clearButtonClick">Clear</PrimaryButton>
