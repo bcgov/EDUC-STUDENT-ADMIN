@@ -150,7 +150,7 @@ export default {
             authorized: this.EDIT_MACROS_ROLE
           },
           {
-            title: 'Access Management',
+            title: 'EDX Access',
             link: 'exchangeAccess',
             authorized: this.EXCHANGE_ACCESS_ROLE
           }
