@@ -17,7 +17,7 @@ dotenv.config();
 
 const JWTStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
-const OidcStrategy = require('passport-openidconnect-kc-idp').Strategy;
+const OidcStrategy = require('passport-openidconnect-keycloak-idp').Strategy;
 require('./schedulers/student-admin-scheduler');
 require('./schedulers/cache-service-scheduler');
 require('./schedulers/doc-type-migration-scheduler');
@@ -113,7 +113,7 @@ utils.getOidcDiscovery().then(discovery => {
     callbackURL: config.get('server:frontend') + '/api/auth/callback',
     scope: discovery.scopes_supported,
     kc_idp_hint: config.get('server:idirIDPHint')
-  }, (_issuer, _sub, profile, accessToken, refreshToken, done) => {
+  }, (_issuer, profile, _context, _idToken, accessToken, refreshToken, done) => {
     if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
       (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
       return done('No access token', null);
