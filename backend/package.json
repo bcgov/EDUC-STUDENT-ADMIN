@@ -48,7 +48,7 @@
     "nocache": "^2.1.0",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
-    "passport-openidconnect-kc-idp": "^0.0.7",
+    "passport-openidconnect-keycloak-idp": "^0.1.6",
     "path": "0.12.7",
     "querystring": "0.2.0",
     "redlock": "^4.2.0",
