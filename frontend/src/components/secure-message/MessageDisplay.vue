@@ -106,7 +106,7 @@
                   <span class="ml-1">{{ secureExchange.reviewer ? 'Unclaim' : 'Claim' }}</span>
                 </v-btn>
                 <v-btn id="changeStatusButton" class="my-4">
-                  <span>Complete</span>
+                  <span>Close</span>
                 </v-btn>
               </v-col>
             </v-row>
@@ -205,14 +205,11 @@ export default {
       return this.secureExchange.secureExchangeStatusCode !== 'Complete';
     },
     getStatusColor(status) {
-      if (status === 'New') {
-        return 'blue';
-      }
-      if (status === 'In Progress') {
-        return 'yellow darken-2';
-      }
-      if (status === 'Complete') {
+      if (status === 'Open') {
         return 'green';
+      }
+      if (status === 'Closed') {
+        return 'black';
       }
     },
     getActivityColour(activity) {

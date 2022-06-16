@@ -425,15 +425,15 @@ export default {
       return this.ministryTeams.find(item => item.groupRoleIdentifier === groupRoleID).ministryOwnershipTeamId;
     },
     setFilterStatusAllActive(){
-      this.headerSearchParams.secureExchangeStatusCode = ['NEW', 'INPROG'];
+      this.headerSearchParams.secureExchangeStatusCode = ['OPEN'];
       this.headerSearchParams.reviewer = '';
     },
     setFilterStatusAll(){
-      this.headerSearchParams.secureExchangeStatusCode = ['NEW', 'INPROG', 'COMPLETE'];
+      this.headerSearchParams.secureExchangeStatusCode = ['OPEN', 'CLOSED'];
       this.headerSearchParams.reviewer = '';
     },
     setFilterStatusActive(){
-      this.headerSearchParams.secureExchangeStatusCode = ['NEW', 'INPROG'];
+      this.headerSearchParams.secureExchangeStatusCode = ['OPEN', 'CLOSED'];
       this.headerSearchParams.reviewer = this.myself.name;
     },
     statusFilterActiveClicked(){
@@ -485,12 +485,10 @@ export default {
       this.$refs.messageDateFilter.save(date);
     },
     getStatusColor(status){
-      if(status === 'New') {
-        return 'blue';
-      } else if(status === 'In Progress') {
-        return 'yellow darken-2';
-      } else if(status === 'Complete') {
+      if(status === 'Open') {
         return 'green';
+      } else if(status === 'Closed') {
+        return 'black';
       }
     },
     getSubject(subject){
