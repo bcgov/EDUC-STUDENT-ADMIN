@@ -14,7 +14,7 @@
               id="claimBTN"
               text="Claim"
               class="mr-2"
-              :disabled="selectedExchanges.length === 0"
+              :disabled="isClaimDisabled"
               @click.native="claimExchanges"
             ></PrimaryButton>
             <PrimaryButton
@@ -369,6 +369,10 @@ export default {
     ...mapState('edx', ['ministryTeams']),
     secureExchangeStatusCodes(){
       return this.statuses;
+    },
+    isClaimDisabled(){
+      let closedExchanges = this.selectedExchanges.find(exchange => exchange.secureExchangeStatusCode.toUpperCase() === 'CLOSED');
+      return this.selectedExchanges.length === 0 || closedExchanges !== undefined;
     },
     searchEnabled(){
       return (this.claimedByFilter !== '' && this.claimedByFilter !== null)
