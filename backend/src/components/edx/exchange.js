@@ -159,7 +159,7 @@ async function createExchange(req, res) {
       ministryOwnershipTeamID: message.ministryOwnershipTeamID,
       subject: message.subject,
       reviewer: userInfo.idir_username,
-      secureExchangeStatusCode: 'INPROG',
+      secureExchangeStatusCode: 'OPEN',
       isReadByMinistry: true,
       isReadByExchangeContact: false,
       commentsList: [
