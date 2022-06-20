@@ -115,7 +115,7 @@ export default {
     },
     nameFilter(user, name) {
       if (name) {
-        return `${user.firstName} ${user.lastName}`.toLowerCase().includes(name);
+        return `${user.firstName} ${user.lastName}`.toLowerCase().includes(name.toLowerCase());
       }
 
       return true;
