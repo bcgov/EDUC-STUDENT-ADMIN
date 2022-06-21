@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-snackbar v-model="doShowGeneratePrimaryActivationCodeSnackbar" elevation="24" top centered :color="this.generatePrimaryActivationCodeSnackbarColour" transition="slide-y-transition">{{ this.generatePrimaryActivationCodeSnackbarMessage }}</v-snackbar><v-row>
+    <v-row>
       <v-col>
         <h2>
           <strong>
@@ -64,9 +64,11 @@ import {Routes} from '@/utils/constants';
 import {mapState} from 'vuex';
 import PrimaryButton from '@/components/util/PrimaryButton';
 import AccessUserCard from './AccessUserCard';
+import alertMixin from '@/mixins/alertMixin';
 
 export default {
   name: 'AccessUsersPage',
+  mixins: [ alertMixin ],
   components: { PrimaryButton, AccessUserCard },
   props: {
     mincode: {
@@ -83,10 +85,7 @@ export default {
         name: '',
         roleName: '',
       },
-      doShowGenerateNewPrimaryEdxActivationCodeDialog: false,
-      generatePrimaryActivationCodeSnackbarMessage: '',
-      generatePrimaryActivationCodeSnackbarColour: '',
-      doShowGeneratePrimaryActivationCodeSnackbar: false,
+      doShowGenerateNewPrimaryEdxActivationCodeDialog: false
     };
   },
   beforeMount() {
@@ -124,10 +123,10 @@ export default {
       ApiService.apiAxios.post(Routes.edx.PRIMARY_ACTIVATION_CODE_URL + `/${this.mincode}`)
         .then(response => {
           this.primaryEdxActivationCode = response.data;
-          this.showGeneratePrimaryEdxActivationCodeSnackbar(`The new Primary EDX Activation Code is ${ this.primaryEdxActivationCode.activationCode }.`, 'success');
+          this.setSuccessAlert(`The new Primary EDX Activation Code is ${ this.primaryEdxActivationCode.activationCode }.`);
         }).catch (e => {
           this.primaryEdxActivationCode = null;
-          this.showGeneratePrimaryEdxActivationCodeSnackbar('There was an error generating the Primary EDX Activation code. Please try again.', 'error');
+          this.setFailureAlert('There was an error generating the Primary EDX Activation code. Please try again.',);
           console.log(e);
         });
     },
@@ -140,11 +139,6 @@ export default {
     doGeneratePrimaryEdxActivationCode() {
       this.generateOrRegeneratePrimaryEdxActivationCode();
       this.closeGenerateNewPrimaryEdxActivationCodeDialog();
-    },
-    showGeneratePrimaryEdxActivationCodeSnackbar(message, colour) {
-      this.generatePrimaryActivationCodeSnackbarMessage = message;
-      this.generatePrimaryActivationCodeSnackbarColour = colour;
-      this.doShowGeneratePrimaryActivationCodeSnackbar = true;
     },
     getSchoolName() {
       const schoolName = this.mincodeSchoolNames.get(this.mincode);
