@@ -204,6 +204,37 @@ async function markAs(req, res) {
   }
 }
 
+async function getEdxUsers(req, res) {
+  const token = utils.getBackendToken(req);
+  if (!token && req.session.userMinCodes) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No access token'
+    });
+  }
+
+  try {
+    let response = await getData(token, config.get('server:edx:exchangeUsersURL'), {params: req.query});
+    let filteredResponse = [];
+
+    //if we search by mincode strip out other school and district information for the frontend
+    if(req.query.mincode) {
+      filteredResponse = response.map(user => {
+        return {
+          ...user,
+          edxUserDistricts: [],
+          edxUserSchools: user.edxUserSchools.filter(school => school.mincode === req.query.mincode)
+        };
+      });
+    }
+
+    return res.status(HttpStatus.OK).json(filteredResponse);
+  }
+  catch (e) {
+    logApiError(e, 'getEdxUsers', 'Error getting EDX users');
+    return errorResponse(res);
+  }
+}
+
 async function findPrimaryEdxActivationCode(req, res) {
   const token = utils.getBackendToken(req);
   if (!token && req.session.userMinCodes) {
@@ -298,6 +329,7 @@ module.exports = {
   getExchange,
   claimAllExchanges,
   markAs,
+  getEdxUsers,
   findPrimaryEdxActivationCode,
   generateOrRegeneratePrimaryEdxActivationCode
 };
