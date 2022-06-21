@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../components/auth');
 const utils = require('../components/utils');
-const { getExchanges, createExchange, getExchange, claimAllExchanges, markAs } = require('../components/edx/exchange');
+const { getExchanges, createExchange, getExchange, claimAllExchanges, markAs, getEdxUsers } = require('../components/edx/exchange');
 
 const extendSession = utils.extendSession();
 
@@ -12,7 +12,7 @@ router.get('/users/ministryTeams', passport.authenticate('jwt', {session: false}
 
 router.get('/users/user-schools/mincodes', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, utils.forwardGet('getMinCodes', 'server:edx:rootURL', '/users/user-schools/mincodes'));
 router.get('/users/roles', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, utils.forwardGet('getUserRoles', 'server:edx:rootURL', '/users/roles'));
-router.get('/users', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, utils.forwardGet('getUsersByMincode', 'server:edx:rootURL', '/users'));
+router.get('/users', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, getEdxUsers);
 
 //edx exchange routes
 router.get('/exchange', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, getExchanges);
