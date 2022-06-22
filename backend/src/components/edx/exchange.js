@@ -235,6 +235,40 @@ async function getEdxUsers(req, res) {
   }
 }
 
+async function findPrimaryEdxActivationCode(req, res) {
+  const token = utils.getBackendToken(req);
+  if (!token && req.session.userMinCodes) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No access token'
+    });
+  }
+  try {
+    const data = await getData(token, config.get('server:edx:activationCodeUrl') + `/primary/${req.params.mincode}`);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    if (e.status === 404) {
+      return res.status(HttpStatus.NOT_FOUND).json();
+    }
+    logApiError(e, 'findPrimaryEdxActivationCode', 'Error getting findPrimaryEdxActivationCode.');
+    return errorResponse(res);
+  }
+}
+
+async function generateOrRegeneratePrimaryEdxActivationCode(req, res) {
+  try {
+    const token = utils.getBackendToken(req);
+    const userInfo = utils.getUser(req);
+    const payload = {
+      mincode: req.params.mincode
+    };
+    const result = await utils.postData(token, config.get('server:edx:activationCodeUrl') + `/primary/${req.params.mincode}`, payload, null, userInfo.idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'generateOrRegeneratePrimaryEdxActivationCode', 'Error occurred while attempting to generate a Primary EDX Activation Code.');
+    return errorResponse(res);
+  }
+}
+
 /**
  * Returns an array of search criteria objects to query EDX API
  *
@@ -295,5 +329,7 @@ module.exports = {
   getExchange,
   claimAllExchanges,
   markAs,
-  getEdxUsers
+  getEdxUsers,
+  findPrimaryEdxActivationCode,
+  generateOrRegeneratePrimaryEdxActivationCode
 };

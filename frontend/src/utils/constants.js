@@ -114,7 +114,8 @@ let object = {
     CLAIM_URL: edxRoot + '/exchange/claim',
     USERS_URL: edxRoot + '/users',
     EXCHANGE_ACCESS_URL: edxRoot + '/users',
-    EXCHANGE_ACCESS_ROLES_URL: edxRoot + '/users/roles'
+    EXCHANGE_ACCESS_ROLES_URL: edxRoot + '/users/roles',
+    PRIMARY_ACTIVATION_CODE_URL: edxRoot + '/users/activation-code/primary'
   }
 };
 

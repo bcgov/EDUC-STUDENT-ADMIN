@@ -17,25 +17,31 @@
     <v-divider class="divider"></v-divider>
     <v-row>
       <v-col :class="['d-sm-flex', 'align-center']">
-        <div>Primary EDX Code - To be implemented</div>
-        <PrimaryButton short secondary icon="mdi-sync" class="ml-2">
-          Generate New Code
-        </PrimaryButton>
+        <div>Primary EDX Code - <span id="primaryEdxActivationCode" v-if="this.primaryEdxActivationCode === null">code not found</span><span id="primaryEdxActivationCode" v-else>{{ this.primaryEdxActivationCode.activationCode }}</span></div>
+        <PrimaryButton short secondary icon="mdi-sync" class="ml-2" @click.native="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibility">Generate New Code</PrimaryButton>
       </v-col>
     </v-row>
-<!--    search filter -->
-      <v-row :class="['d-sm-flex', 'align-center', 'searchBox']">
-        <v-col cols="12" md="4">
-          <v-text-field id="name-text-field" label="Name" v-model="searchFilter.name" clearable></v-text-field>
-        </v-col>
-        <v-col cols="12" md="4">
-          <v-select id="roleName-select-field" clearable :items="roles" v-model="searchFilter.roleName" item-text="label" item-value="roleName" label="Role"></v-select>
-        </v-col>
-        <v-col cols="12" md="4" :class="['text-right']">
-          <PrimaryButton id="user-clear-button" secondary @click.native="clearButtonClick">Clear</PrimaryButton>
-          <PrimaryButton id="user-search-button" class="ml-2" @click.native="searchButtonClick" :disabled="searchEnabled()">Search</PrimaryButton>
-        </v-col>
-      </v-row>
+    <v-row id="generateNewPrimaryEdxActivationCodeDialog" :class="['d-sm-flex', 'my-1', 'align-center']" v-if="this.doShowGenerateNewPrimaryEdxActivationCodeDialog">
+      <v-col>
+        <p>Generating a new Primary EDX Activation Code for a school will replace the existing code for the school. The new code will have to be communicated to the school administrator.</p>
+        <p>Are you sure that you want to generate a new Primary EDX Activation Code?</p>
+        <PrimaryButton short class="ml-2" @click.native="doGeneratePrimaryEdxActivationCode">Yes</PrimaryButton>
+        <PrimaryButton short secondary class="ml-2" @click.native="closeGenerateNewPrimaryEdxActivationCodeDialog">No</PrimaryButton>
+      </v-col>
+    </v-row>
+    <!--    search filter -->
+    <v-row :class="['d-sm-flex', 'align-center', 'searchBox']">
+      <v-col cols="12" md="4">
+        <v-text-field id="name-text-field" label="Name" v-model="searchFilter.name" clearable></v-text-field>
+      </v-col>
+      <v-col cols="12" md="4">
+        <v-select id="roleName-select-field" clearable :items="roles" v-model="searchFilter.roleName" item-text="label" item-value="roleName" label="Role"></v-select>
+      </v-col>
+      <v-col cols="12" md="4" :class="['text-right']">
+        <PrimaryButton id="user-clear-button" secondary @click.native="clearButtonClick">Clear</PrimaryButton>
+        <PrimaryButton id="user-search-button" class="ml-2" @click.native="searchButtonClick" :disabled="searchEnabled()">Search</PrimaryButton>
+      </v-col>
+    </v-row>
     <!--    user info -->
     <div v-if="filteredUsers.length">
       <div v-for="user in filteredUsers" :key="user.digitalID">
@@ -58,10 +64,12 @@ import {Routes} from '@/utils/constants';
 import {mapState} from 'vuex';
 import PrimaryButton from '@/components/util/PrimaryButton';
 import AccessUserCard from './AccessUserCard';
+import alertMixin from '@/mixins/alertMixin';
 
 export default {
   name: 'AccessUsersPage',
-  components: {PrimaryButton, AccessUserCard},
+  mixins: [ alertMixin ],
+  components: { PrimaryButton, AccessUserCard },
   props: {
     mincode: {
       type: String,
@@ -70,12 +78,14 @@ export default {
   },
   data() {
     return {
+      primaryEdxActivationCode: null,
       users: [],
       filteredUsers: [],
       searchFilter: {
         name: '',
         roleName: '',
-      }
+      },
+      doShowGenerateNewPrimaryEdxActivationCodeDialog: false
     };
   },
   beforeMount() {
@@ -89,6 +99,7 @@ export default {
   },
   created() {
     this.getUsersData();
+    this.getPrimaryEdxActivationCode();
   },
   methods: {
     getUsersData() {
@@ -98,6 +109,36 @@ export default {
           this.users = response.data;
           this.filteredUsers = response.data;
         });
+    },
+    getPrimaryEdxActivationCode() {
+      ApiService.apiAxios.get(Routes.edx.PRIMARY_ACTIVATION_CODE_URL + `/${this.mincode}`)
+        .then(response => {
+          this.primaryEdxActivationCode = response.data;
+        }).catch(e => {
+          this.primaryEdxActivationCode = null;
+          console.log(e);
+        });
+    },
+    generateOrRegeneratePrimaryEdxActivationCode() {
+      ApiService.apiAxios.post(Routes.edx.PRIMARY_ACTIVATION_CODE_URL + `/${this.mincode}`)
+        .then(response => {
+          this.primaryEdxActivationCode = response.data;
+          this.setSuccessAlert(`The new Primary EDX Activation Code is ${ this.primaryEdxActivationCode.activationCode }.`);
+        }).catch (e => {
+          this.primaryEdxActivationCode = null;
+          this.setFailureAlert('There was an error generating the Primary EDX Activation code. Please try again.',);
+          console.log(e);
+        });
+    },
+    toggleGenerateNewPrimaryEdxActivationCodeDialogVisibility() {
+      this.doShowGenerateNewPrimaryEdxActivationCodeDialog = !this.doShowGenerateNewPrimaryEdxActivationCodeDialog;
+    },
+    closeGenerateNewPrimaryEdxActivationCodeDialog() {
+      this.doShowGenerateNewPrimaryEdxActivationCodeDialog = false;
+    },
+    doGeneratePrimaryEdxActivationCode() {
+      this.generateOrRegeneratePrimaryEdxActivationCode();
+      this.closeGenerateNewPrimaryEdxActivationCodeDialog();
     },
     getSchoolName() {
       const schoolName = this.mincodeSchoolNames.get(this.mincode);
@@ -144,10 +185,16 @@ export default {
   border-width: medium;
 }
 
+#generateNewPrimaryEdxActivationCodeDialog {
+  border-radius: 5px;
+  background-color: #e7ebf0;
+}
+
 .searchBox {
   border-radius: 5px;
   background-color: #F2F2F2;
 }
+
 .card-hint {
   color: #000 !important;
   font-size: 1rem;
