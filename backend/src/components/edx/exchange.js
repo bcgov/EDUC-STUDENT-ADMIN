@@ -213,7 +213,7 @@ async function getEdxUsers(req, res) {
   }
 
   try {
-    let response = await getData(token, config.get('server:edx:exchangeUsersURL'), {params: req.query});
+    let response = await getData(token, config.get('server:edx:edxUsersURL'), {params: req.query});
     let filteredResponse = [];
 
     //if we search by mincode strip out other school and district information for the frontend
