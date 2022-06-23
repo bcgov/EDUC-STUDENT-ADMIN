@@ -492,7 +492,7 @@ export default {
       if(status === 'Open') {
         return 'green';
       } else if(status === 'Closed') {
-        return 'black';
+        return 'red';
       }
     },
     getSubject(subject){
@@ -551,6 +551,7 @@ export default {
         .then(() => {
           this.setSuccessAlert('Secure exchanges have been claimed successfully.');
           this.getExchanges();
+          this.selectedExchanges = [];
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while claiming exchanges. Please try again later.');

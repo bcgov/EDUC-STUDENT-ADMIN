@@ -209,7 +209,7 @@ export default {
         return 'green';
       }
       if (status === 'Closed') {
-        return 'black';
+        return 'red';
       }
     },
     getActivityColour(activity) {
