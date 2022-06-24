@@ -45,7 +45,7 @@
     <!--    user info -->
     <div v-if="filteredUsers.length">
       <div v-for="user in filteredUsers" :key="user.digitalID">
-        <AccessUserCard type="school" :roles="user.edxUserSchools[0].edxUserSchoolRoles" :user="user"></AccessUserCard>
+        <AccessUserCard type="school" :userRoles="user.edxUserSchools[0].edxUserSchoolRoles" :user="user"></AccessUserCard>
       </div>
     </div>
     <div v-else>
