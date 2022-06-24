@@ -96,7 +96,7 @@
                 </v-speed-dial>
               </v-col>
               <v-col class="d-flex justify-end">
-                <v-btn id="markAsButton" class="my-4" v-on:click="clickMarkAsButton" :loading="loadingReadStatus">
+                <v-btn :disabled="isEditable"  id="markAsButton" class="my-4" v-on:click="clickMarkAsButton" :loading="loadingReadStatus">
                   <v-icon v-if="secureExchange.isReadByExchangeContact">mdi-email-outline</v-icon>
                   <v-icon v-else>mdi-email-open-outline</v-icon>
                   <span class="ml-1 markAsSpan">{{`Mark As ${secureExchange.isReadByMinistry ? 'Unread' : 'Read'}` }}</span>
@@ -202,7 +202,7 @@ export default {
       router.push({name: 'exchange'});
     },
     isEditable() {
-      return this.secureExchange.secureExchangeStatusCode !== 'Complete';
+      return this.secureExchange.secureExchangeStatusCode !== 'Closed';
     },
     getStatusColor(status) {
       if (status === 'Open') {
