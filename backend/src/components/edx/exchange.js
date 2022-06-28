@@ -269,6 +269,52 @@ async function generateOrRegeneratePrimaryEdxActivationCode(req, res) {
   }
 }
 
+async function updateEdxUserRoles(req, res) {
+  try {
+    const token = utils.getBackendToken(req);
+    const userInfo = utils.getUser(req);
+    let response = await getData(token, config.get('server:edx:edxUsersURL') + '/' + req.body.params.edxUserID);
+
+    let selectedUserSchool = response.edxUserSchools.filter(school => school.mincode === req.body.params.mincode);
+
+    let rolesToBeRemoved = [];
+
+    //Determine roles to be removed
+    selectedUserSchool[0].edxUserSchoolRoles.forEach(function(userSchoolRole) {
+      if(!req.body.params.selectedRoles.filter(value  => userSchoolRole.edxRoleCode === value).length > 0){
+        rolesToBeRemoved.push(userSchoolRole.edxRoleCode);
+      }
+    });
+
+    selectedUserSchool[0].edxUserSchoolRoles = selectedUserSchool[0].edxUserSchoolRoles.filter(value  =>  !rolesToBeRemoved.includes(value.edxRoleCode));
+
+    //Roles to be added
+    req.body.params.selectedRoles.forEach(function(role) {
+      if(!selectedUserSchool[0].edxUserSchoolRoles.filter(value  => role === value.edxRoleCode).length > 0){
+        let newRole = {};
+        newRole.createUser = userInfo.idir_username;
+        newRole.updateUser = userInfo.idir_username;
+        newRole.edxUserSchoolID = selectedUserSchool[0].edxUserSchoolID;
+        newRole.edxRoleCode = role;
+        selectedUserSchool[0].edxUserSchoolRoles.push(newRole);
+      }
+    });
+
+    selectedUserSchool[0].updateDate = null;
+    selectedUserSchool[0].createDate = null;
+
+    const payload = {
+      ...selectedUserSchool[0]
+    };
+
+    const result = await utils.putData(token, config.get('server:edx:edxUsersURL') + '/' + selectedUserSchool[0].edxUserID + '/school', payload, userInfo.idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'updateEdxUserRoles', 'Error occurred while attempting to update user roles.');
+    return errorResponse(res);
+  }
+}
+
 /**
  * Returns an array of search criteria objects to query EDX API
  *
@@ -331,5 +377,6 @@ module.exports = {
   markAs,
   getEdxUsers,
   findPrimaryEdxActivationCode,
-  generateOrRegeneratePrimaryEdxActivationCode
+  generateOrRegeneratePrimaryEdxActivationCode,
+  updateEdxUserRoles
 };

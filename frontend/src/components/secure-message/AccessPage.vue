@@ -6,7 +6,7 @@
       </v-card-title>
       <v-card-text>
         <v-row>
-          <v-col cols="8" class="pt-0">
+          <v-col cols="8" class="pt-1">
             <v-autocomplete
                 id='selectSchoolName'
                 class="pt-0 mt-0"
@@ -51,9 +51,3 @@ export default {
 };
 </script>
 
-<style scoped>
-.card-hint {
-  color: #000 !important;
-  font-size: 1rem;
-}
-</style>
