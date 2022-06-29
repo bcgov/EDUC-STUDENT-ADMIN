@@ -109,7 +109,8 @@ nconf.defaults({
       ministryTeamURL : process.env.EDX_API_URL+ '/users/ministry-teams',
       edxUsersURL: process.env.EDX_API_URL+ '/users',
       claimExchangesURL: process.env.EDX_API_URL+ '/exchange/claim',
-      activationCodeUrl: process.env.EDX_API_URL + '/users/activation-code'
+      activationCodeUrl: process.env.EDX_API_URL + '/users/activation-code',
+      schoolUserActivationInviteURL:process.env.EDX_API_URL+ '/exchange'+ '/school-user-activation-invite-saga'
     },
     macro: {
       rootURL: process.env.MACRO_API_URL,

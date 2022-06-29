@@ -268,7 +268,25 @@ async function generateOrRegeneratePrimaryEdxActivationCode(req, res) {
     return errorResponse(res);
   }
 }
+async function schoolUserActivationInvite(req,res){
+  const token = utils.getBackendToken(req);
+  if (!token) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No access token'
+    });
+  }
+  const payload = {
+    ...req.body
+  };
+  try {
+    const response = await utils.postData(token,  config.get('server:edx:schoolUserActivationInviteURL'), payload, null, utils.getUser(req).idir_username);
+    return res.status(200).json(response);
+  } catch (e) {
+    logApiError(e, 'schoolUserActivationInvite', 'Error occurred while sending user activation invite');
+    return errorResponse(res);
+  }
 
+}
 async function updateEdxUserRoles(req, res) {
   try {
     const token = utils.getBackendToken(req);
@@ -314,6 +332,7 @@ async function updateEdxUserRoles(req, res) {
     return errorResponse(res);
   }
 }
+
 
 /**
  * Returns an array of search criteria objects to query EDX API
@@ -378,5 +397,6 @@ module.exports = {
   getEdxUsers,
   findPrimaryEdxActivationCode,
   generateOrRegeneratePrimaryEdxActivationCode,
-  updateEdxUserRoles
+  updateEdxUserRoles,
+  schoolUserActivationInvite
 };

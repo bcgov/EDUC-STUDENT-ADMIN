@@ -40,6 +40,7 @@ import NewMessagePage from '@/components/secure-message/NewMessagePage';
 import MessageDisplay from '@/components/secure-message/MessageDisplay';
 import AccessPage from '@/components/secure-message/AccessPage';
 import AccessUsersPage from '@/components/secure-message/AccessUsersPage';
+import NewUserInvitePage from '@/components/secure-message/NewUserPage';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -368,6 +369,16 @@ const router = new VueRouter({
             role: 'EXCHANGE_ROLE'
           }
         },
+        {
+          path: 'newUserInvite',
+          name: 'newUserInvite',
+          component: NewUserInvitePage,
+          meta: {
+            pageTitle: PAGE_TITLES.NEW_USER_INVITE,
+            requiresAuth: true,
+            role: '*'
+          }
+        }
       ]
     },
     {
