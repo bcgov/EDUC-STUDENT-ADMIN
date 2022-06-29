@@ -9,9 +9,11 @@
         </h2>
       </v-col>
       <v-col class="text-right">
-        <PrimaryButton icon="mdi-plus">
-          New User
-        </PrimaryButton>
+        <PrimaryButton icon="mdi-plus"
+                       :large-icon=true
+                       id="new-user-button"
+                       text="New User"
+                       @click.native="newUserInviteSheet = !newUserInviteSheet"/>
       </v-col>
     </v-row>
     <v-divider class="divider"></v-divider>
@@ -54,6 +56,32 @@
         No users found
       </v-col>
     </v-row>
+    <v-bottom-sheet
+        v-model="newUserInviteSheet"
+        inset
+        no-click-animation
+        scrollable
+        persistent
+    >
+      <v-card
+          id="newUserInviteVCard"
+          v-if="newUserInviteSheet"
+          class="information-window-v-card">
+        <v-card-title id="newUserInviteVCardTitle" class="sheetHeader pt-1 pb-1">New User</v-card-title>
+        <v-divider></v-divider>
+        <v-card-text>
+          <NewUserPage
+              :userRoles="roles"
+              :mincode="mincode"
+              :schoolName='getSchoolNameForUserInvite()'
+              @access-user:messageSent="messageSent"
+              @access-user:updateRoles="updateUserRoles"
+              @access-user:cancelMessage="closeNewUserModal"
+          >
+          </NewUserPage>
+        </v-card-text>
+      </v-card>
+    </v-bottom-sheet>
   </v-container>
 
 </template>
@@ -67,13 +95,14 @@ import {Routes} from '@/utils/constants';
 import {mapState} from 'vuex';
 import PrimaryButton from '@/components/util/PrimaryButton';
 import AccessUserCard from './AccessUserCard';
+import NewUserPage from '@/components/secure-message/NewUserPage';
 import alertMixin from '@/mixins/alertMixin';
 import Spinner from '@/components/common/Spinner';
 
 export default {
   name: 'AccessUsersPage',
   mixins: [ alertMixin ],
-  components: { PrimaryButton, AccessUserCard, Spinner },
+  components: { NewUserPage, PrimaryButton, AccessUserCard, Spinner },
   props: {
     mincode: {
       type: String,
@@ -82,6 +111,7 @@ export default {
   },
   data() {
     return {
+      newUserInviteSheet: false,
       primaryEdxActivationCode: null,
       users: [],
       filteredUsers: [],
@@ -93,13 +123,12 @@ export default {
       doShowGenerateNewPrimaryEdxActivationCodeDialog: false
     };
   },
-  beforeMount() {
+  async beforeMount() {
+    if (this.roles.length === 0) {
+      await this.$store.dispatch('edx/getExchangeRoles');
+    }
     if (this.mincodeSchoolNames.size === 0) {
       this.$store.dispatch('app/getCodes');
-    }
-
-    if (this.roles.length === 0) {
-      this.$store.dispatch('edx/getExchangeRoles');
     }
   },
   created() {
@@ -181,23 +210,43 @@ export default {
     },
     roleFilter(user, roleName) {
       if (roleName) {
-        return user.edxUserSchools[0].edxUserSchoolRoles.some(role => role.edxRole.roleName === roleName);
+        return user.edxUserSchools[0].edxUserSchoolRoles.some(role => role.edxRoleCode === roleName);
       }
 
       return true;
     },
     searchEnabled() {
       return !isNotEmptyInputParams(this.searchFilter);
+    },
+    messageSent() {
+      this.newUserInviteSheet = !this.newUserInviteSheet;
+    },
+    updateUserRoles(newValue){
+      this.$store.commit('edx/setRoles', newValue);
+    },
+    closeNewUserModal(){
+      this.$store.commit('edx/setRoles', JSON.parse(JSON.stringify(this.rolesCopy)));
+      this.newUserInviteSheet = false; // close the modal window.
+    },
+    getSchoolNameForUserInvite(){
+      return this.mincodeSchoolNames.get(this.mincode);
     }
   },
   computed: {
     ...mapState('app', ['mincodeSchoolNames']),
-    ...mapState('edx', ['roles'])
+    ...mapState('edx', ['roles','rolesCopy']),
   }
 };
 </script>
 
 <style scoped>
+.sheetHeader{
+  background-color: #003366;
+  color: white;
+  font-size: medium !important;
+  font-weight: bolder !important;
+}
+
 .divider {
   border-color: #FCBA19;
   border-width: medium;

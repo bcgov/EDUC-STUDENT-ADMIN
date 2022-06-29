@@ -115,7 +115,8 @@ let object = {
     USERS_URL: edxRoot + '/users',
     EXCHANGE_ACCESS_URL: edxRoot + '/users',
     EXCHANGE_ACCESS_ROLES_URL: edxRoot + '/users/roles',
-    PRIMARY_ACTIVATION_CODE_URL: edxRoot + '/users/activation-code/primary'
+    PRIMARY_ACTIVATION_CODE_URL: edxRoot + '/users/activation-code/primary',
+    NEW_SCHOOL_USER_ACTIVATION_INVITE: edxRoot + '/school-user-activation-invite'
   }
 };
 
@@ -391,7 +392,8 @@ export const PAGE_TITLES = Object.freeze(
     NEW_EXCHANGE: 'New Message',
     VIEW_EXCHANGE: 'View Message',
     EXCHANGE_ACCESS: 'Exchange Access',
-    EXCHANGE_USERS: 'Exchange Users'
+    EXCHANGE_USERS: 'Exchange Users',
+    NEW_USER_INVITE:'New User'
   }
 );
 
