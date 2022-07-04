@@ -27,16 +27,28 @@
               {{ getRoleLabel(role) }}
             </v-chip>
           </v-chip-group>
-          <!-- we are in edit state below show all roles and highlight the ones the user has -->
-          <v-chip-group multiple v-else v-model="selectedRoles">
-            <v-chip v-for="role in roles"
-                    :key="role.edxRoleCode"
-                    :value="role.edxRoleCode"
-                    filter
-            >
-              {{ getRoleLabel(role) }}
-            </v-chip>
-          </v-chip-group>
+          <v-list-item-group
+            v-model="selectedRoles"
+            v-else
+            multiple
+          >
+            <v-list-item :disabled="roleDisabled(newrole)" @input="disableRoles" v-for="newrole in roles" :key="newrole.edxRoleCode" :value="newrole.edxRoleCode">
+              <template v-slot:default="{ active, }">
+                <v-list-item-action class="mt-0 mb-2 mr-3">
+                  <v-checkbox
+                    :disabled="roleDisabled(newrole)"
+                    :input-value="active"
+                    color="primary"
+                  ></v-checkbox>
+                </v-list-item-action>
+
+                <v-list-item-content>
+                  <v-list-item-title>{{ newrole.label }}</v-list-item-title>
+                  <v-list-item-subtitle style="color: black; font-weight: bold" v-if="isSelectedAdmin && newrole.edxRoleCode === 'EDX_ADMIN'">EDX School Admin users will be set up with all EDX school roles</v-list-item-subtitle>
+                </v-list-item-content>
+              </template>
+            </v-list-item>
+          </v-list-item-group>
         </v-card-text>
       </v-card>
     </v-col>
@@ -78,10 +90,27 @@ export default {
   data() {
     return {
       editState: false,
-      selectedRoles: []
+      selectedRoles: [],
+      isSelectedAdmin: false
     };
   },
   methods: {
+    isSelectedEDXAdmin(){
+      return this.selectedRoles.filter((role) => role === 'EDX_ADMIN').length > 0;
+    },
+    roleDisabled(role){
+      if(this.isSelectedEDXAdmin() && role.edxRoleCode !== 'EDX_ADMIN'){
+        this.isSelectedAdmin = true;
+        return true;
+      }
+      return false;
+    },
+    disableRoles() {
+      this.isSelectedAdmin = false;
+      if(this.isSelectedEDXAdmin()){
+        this.selectedRoles = this.selectedRoles.filter((role) => role === 'EDX_ADMIN');
+      }
+    },
     getRoleLabel(curRole){
       if(this.roles.length > 0) {
         return this.roles.find((role) => role.edxRoleCode === curRole.edxRoleCode).label;
