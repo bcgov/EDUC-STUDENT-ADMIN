@@ -14,7 +14,7 @@
     >
       <v-icon :class="largeIcon ? '' : 'ml-1 pr-2'" v-if="iconLeft && icon" :large="largeIcon" left>{{ icon }}</v-icon>
       <span>{{ text }}</span>
-      <v-icon :class="largeIcon ? '' : 'ml-1 pr-2'" v-if="!iconLeft && icon" :large="largeIcon" right>{{ icon }}</v-icon>
+      <v-icon :class="largeIcon ? '' : 'ml-1 pr-4'" v-if="!iconLeft && icon" :large="largeIcon" right>{{ icon }}</v-icon>
       <slot></slot>
     </v-btn>
 </template>
