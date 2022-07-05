@@ -57,7 +57,11 @@
                               @input="disableRoles"
                               required
                               :rules="requireRoleRules"
-                          ></v-select>
+                          >
+                            <template v-slot:message="{ message, key }">
+                              <span v-html="message" :style="edxAdminUserCodeSelected ? 'color: black; font-weight: bold' : ''"></span>
+                            </template>
+                          </v-select>
                         </v-card-text>
                       </v-col>
                     </v-row>
@@ -135,8 +139,10 @@ export default {
         v => !!v || this.emailHint,
         v => /^[\w!#$%&’*+/=?`{|}~^-]+(?:\.[\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}$/.test(v) || this.emailHint,
       ];
+    },
+    edxAdminUserCodeSelected() {
+      return this.edxActivationRoleCodes.includes(this.edxAdminUserCode);
     }
-
   },
   created() {
     if (!this.schoolNameMincode) {
@@ -157,7 +163,7 @@ export default {
         }
       }
       let newRoles = [];
-      if (this.edxActivationRoleCodes.includes(this.edxAdminUserCode)) {
+      if (this.edxAdminUserCodeSelected) {
         newRoles = this.userRoles.map(el => {
           el.disabled = el.edxRoleCode !== this.edxAdminUserCode;
           if (el.disabled) {
@@ -184,7 +190,7 @@ export default {
     sendNewUserInvite() {
       let selectedRoleCodes = [];
       this.processing = true;
-      if (this.edxActivationRoleCodes.includes(this.edxAdminUserCode)) {
+      if (this.edxAdminUserCodeSelected) {
         selectedRoleCodes = this.userRoles.map(el => el.edxRoleCode);
       }
       const payload = {
