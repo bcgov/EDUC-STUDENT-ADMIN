@@ -121,6 +121,8 @@ async function getExchange(req, res) {
         dataResponse['ministryOwnershipTeamName'] = tempMinTeam?.teamName ? tempMinTeam.teamName : dataResponse['ministryOwnershipTeamName'];
       }
 
+      dataResponse['contactName'] = dataResponse['secureExchangeContactTypeCode'] === 'SCHOOL' ? `${school.schoolName} (${dataResponse['contactIdentifier']})` : 'Unknown Contact';
+
       if (dataResponse['createDate']) {
         dataResponse['createDate'] = LocalDateTime.parse(dataResponse['createDate']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd'));
       }
