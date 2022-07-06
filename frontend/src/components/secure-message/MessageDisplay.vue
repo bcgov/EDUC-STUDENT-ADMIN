@@ -71,7 +71,6 @@
             </v-row>
             <v-divider class="divider"></v-divider>
             <v-row>
-              <v-col>
                 <v-speed-dial id="editOptionsMenu" v-if="isEditable()" v-model="editOptionsOpen" top left direction="right">
                   <template v-slot:activator>
                     <v-btn  id="editOptionsMenuBtn" class="mx-2" fab dark large color="#003366">
@@ -94,7 +93,6 @@
                     </v-btn>
                   </v-card>
                 </v-speed-dial>
-              </v-col>
               <v-col class="d-flex justify-end">
                 <v-btn :disabled="!isEditable()"   id="markAsButton" class="my-4" v-on:click="clickMarkAsButton" :loading="loadingReadStatus">
                   <v-icon v-if="secureExchange.isReadByExchangeContact">mdi-email-outline</v-icon>
