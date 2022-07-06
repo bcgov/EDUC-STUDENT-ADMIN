@@ -34,7 +34,8 @@ const roles = {
     PenRequestBatch: config.get('server:penRequestBatch:roleAdmin'),
     //Help functions created in auth module: isValidStaffAdministrationAdmin
     StaffAdministration: config.get('server:administration:roleAdmin'),
-    NominalRoll: config.get('server:nominalRoll:roleAdmin')
+    NominalRoll: config.get('server:nominalRoll:roleAdmin'),
+    EDXAdmin: config.get('server:edx:roleAdmin')
   }
 };
 

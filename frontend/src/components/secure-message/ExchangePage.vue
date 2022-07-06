@@ -209,44 +209,33 @@
               <template #header.data-table-select></template>
               <template v-slot:item.secureExchangeStatusCode="{ item }">
                 <v-row class="ml-n6" style="cursor: pointer;">
-                  <v-col cols="7" md="10" class="pb-0 pt-0" @click="openExchange(item.secureExchangeID)">
+                  <v-col cols="6" lg="7" xl="9" class="pb-0 pt-0" @click="openExchange(item.secureExchangeID)">
                     <v-row class="mb-n4">
                       <v-col cols="12" class="pb-2 pt-2 pr-0">
-                        <h3 class="subjectHeading" :style="{color: item.isReadByMinistry ? 'black': '#1f7cef'}">{{ getSubject(item.subject) }}</h3>
+                        <span class="subjectHeading" :style="{color: item.isReadByMinistry ? 'black': '#1f7cef'}">{{ getSubject(item.subject) }}</span><span style="color: gray"> - {{ getLatestComment(item) }}</span>
                       </v-col>
                     </v-row>
                     <v-row>
                       <v-col cols="12" class="pb-1 pr-0">
-                        <span class="ministryLine">{{ getContactLineItem(item) }}</span>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12" class="pt-0 pb-1 pr-0">
-                        <span style="color: gray">{{ getLatestComment(item) }}</span>
+                        <span class="ministryLine" >{{ getContactLineItem(item) }}</span>
                       </v-col>
                     </v-row>
                   </v-col>
-                  <v-col cols="5" md="2" style="text-align: end" class="pb-0 pt-0" @click="openExchange(item.secureExchangeID)">
+                  <v-col cols="6" lg="5" xl="3" style="text-align: end" class="pb-0 pt-0" @click="openExchange(item.secureExchangeID)">
                     <v-row>
-                      <v-col cols="12" class="pb-1 pt-1">
+                      <v-col class="pr-0">
                         <v-icon style="margin-bottom: 0.25em" color="grey darken-3" right size="medium" dark>mdi-pound</v-icon>
                         <span class="statusCodeLabel">{{ item.sequenceNumber }}</span>
                       </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12" class="pb-1 pt-0">
+                      <v-col class="ml-n5">
                         <v-icon class="pb-1" :color="getStatusColor(item.secureExchangeStatusCode)" right dark>mdi-circle-medium</v-icon>
                         <span class="statusCodeLabel">{{ item.secureExchangeStatusCode }}</span>
                       </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12" class="pb-1 pt-0">
+                      <v-col class="pl-0 ml-n5" cols="4">
                         <v-icon style="margin-bottom: 0.2em" color="grey darken-3" right dark>mdi-account-outline</v-icon>
                         <span class="statusCodeLabel">{{ getReviewer(item.reviewer) }}</span>
                       </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12" class="pb-1 pt-0">
+                      <v-col class="pl-0 ml-n5">
                         <v-icon class="pr-1" style="margin-bottom: 0.2em" color="grey darken-3" right dark>mdi-clock-outline</v-icon>
                         <span class="statusCodeLabel">{{ getNumberOfDays(item.createDate) }}</span>
                       </v-col>
@@ -657,8 +646,9 @@ export default {
   color: #003366;
 }
 .subjectHeading{
-  font-size: x-large;
+  font-size: large;
   cursor: pointer;
+  font-weight: bold;
 }
 
 .statusCodeLabel{
@@ -679,7 +669,7 @@ export default {
 
 .ministryLine{
   color: black;
-  font-size: large;
+  font-size: medium;
 }
 
 @media screen and (max-width: 801px){
@@ -688,11 +678,17 @@ export default {
   }
 
   .statusCodeLabel{
-    font-size: inherit;
+    font-size: medium;
   }
 
   .ministryLine{
     font-size: inherit;
+  }
+}
+
+@media screen and (max-width: 1401px){
+  .statusCodeLabel{
+    font-size: medium;
   }
 }
 
