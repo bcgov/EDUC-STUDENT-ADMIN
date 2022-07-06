@@ -21,7 +21,7 @@
                 </v-row>
                 <v-row>
                   <v-col cols="12" class="pb-1 pr-0">
-                    <span class="ministryOwnershipTeamName" style="color: black">{{ secureExchange.ministryOwnershipTeamName }}</span>
+                    <span class="ministryOwnershipTeamName" style="color: black">{{ secureExchange.contactName }}</span>
                   </v-col>
                 </v-row>
                 <v-row>
