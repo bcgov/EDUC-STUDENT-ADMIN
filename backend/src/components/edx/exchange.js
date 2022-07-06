@@ -136,6 +136,7 @@ async function getExchange(req, res) {
         activity['displayDate'] = comment['commentTimestamp'] ? LocalDateTime.parse(comment['commentTimestamp']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : 'Unknown Date';
         activity['content'] = comment['content'];
         activity['secureExchangeID'] = comment['secureExchangeID'];
+        activity['secureExchangeCommentID'] = comment['secureExchangeCommentID'];
         dataResponse['activities'].push(activity);
       });
       dataResponse['activities'].sort((activity1, activity2) => { return activity2.timestamp.compareTo(activity1.timestamp); });
@@ -282,7 +283,7 @@ async function schoolUserActivationInvite(req,res){
     const response = await utils.postData(token,  config.get('server:edx:schoolUserActivationInviteURL'), payload, null, utils.getUser(req).idir_username);
     return res.status(200).json(response);
   } catch (e) {
-    logApiError(e, 'schoolUserActivationInvite', 'Error occurred while sending user activation invite');
+    await logApiError(e, 'schoolUserActivationInvite', 'Error occurred while sending user activation invite');
     return errorResponse(res);
   }
 
@@ -328,11 +329,32 @@ async function updateEdxUserRoles(req, res) {
     const result = await utils.putData(token, config.get('server:edx:edxUsersURL') + '/' + selectedUserSchool[0].edxUserID + '/school', payload, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
-    logApiError(e, 'updateEdxUserRoles', 'Error occurred while attempting to update user roles.');
+    await logApiError(e, 'updateEdxUserRoles', 'Error occurred while attempting to update user roles.');
     return errorResponse(res);
   }
 }
+async function createSecureExchangeComment(req,res){
+  try {
+    const token = utils.getBackendToken(req);
+    const userInfo = utils.getUser(req);
+    const message = req.body;
+    const payload = {
+      secureExchangeID: req.params.secureExchangeID,
+      staffUserIdentifier: userInfo.idir_username,
+      commentUserName: userInfo.name,
+      content: message.content,
+      commentTimestamp: LocalDateTime.now().toJSON(),
+      createUser: userInfo.idir_username,
+      updateUser: userInfo.idir_username
+    };
 
+    const result = await utils.postData(token, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}` + '/comments', payload, null, userInfo.idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    await logApiError(e, 'createExchangeComment', 'Error occurred while attempting to create a new exchange comment.');
+    return errorResponse(res);
+  }
+}
 
 /**
  * Returns an array of search criteria objects to query EDX API
@@ -398,5 +420,6 @@ module.exports = {
   findPrimaryEdxActivationCode,
   generateOrRegeneratePrimaryEdxActivationCode,
   updateEdxUserRoles,
-  schoolUserActivationInvite
+  schoolUserActivationInvite,
+  createSecureExchangeComment
 };
