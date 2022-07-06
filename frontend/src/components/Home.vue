@@ -118,7 +118,7 @@
         </v-card>
       </v-col>
       <v-col cols="8" v-if="EXCHANGE_ROLE">
-        <DashboardTable v-if="!isLoadingExchange" title="Secure Exchange Messaging" colour="#CED6E2"
+        <DashboardTable v-if="!isLoadingExchange" title="Secure Messaging Inbox" colour="#CED6E2"
                         :tableData="exchangeData"></DashboardTable>
         <v-container v-else-if="isLoadingExchange" class="full-height" fluid>
           <article class="top-banner full-height">
@@ -241,8 +241,6 @@ export default {
     }).finally(()=>{
       this.isLoadingGmpUmp = false;
     });
-
-    //TODO: replace this with API call for secure exchange messaging
     if (this.EXCHANGE_ROLE) {
       this.exchangeData.push({
         title: 'PEN Team Inbox',
