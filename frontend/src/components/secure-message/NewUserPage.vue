@@ -59,7 +59,7 @@
                               :rules="requireRoleRules"
                           >
                             <template v-slot:message="{ message, key }">
-                              <span v-html="message" :style="edxAdminUserCodeSelected ? 'color: black; font-weight: bold' : ''"></span>
+                              <span :style="edxAdminUserCodeSelected ? 'color: black; font-weight: bold' : ''">{{ message }}</span>
                             </template>
                           </v-select>
                         </v-card-text>
