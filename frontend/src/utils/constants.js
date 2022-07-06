@@ -388,11 +388,11 @@ export const PAGE_TITLES = Object.freeze(
     STATS_DASHBOARD: 'Student and System Analytics',
     VIEW_MERGES: 'View Merges',
     ANALYTICS: 'Analytics',
-    EXCHANGE: 'Secure Exchange Messaging',
+    EXCHANGE: 'Secure Messaging Inbox',
     NEW_EXCHANGE: 'New Message',
-    VIEW_EXCHANGE: 'View Message',
-    EXCHANGE_ACCESS: 'Exchange Access',
-    EXCHANGE_USERS: 'Exchange Users',
+    VIEW_EXCHANGE: 'Secure Message',
+    EXCHANGE_ACCESS: 'EDX School Access',
+    EXCHANGE_USERS: 'EDX School Access',
     NEW_USER_INVITE:'New User'
   }
 );
