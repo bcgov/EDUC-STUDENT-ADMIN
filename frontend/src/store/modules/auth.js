@@ -25,6 +25,7 @@ export default {
     isValidGUMPAnalyticsUser: localStorage.getItem('isValidGUMPAnalyticsUser') !== null,
     isValidPenRequestBatchAnalyticsUser: localStorage.getItem('isValidPenRequestBatchAnalyticsUser') !== null,
     isValidExchangeUser: localStorage.getItem('isValidExchangeUser') !== null,
+    isValidEDXAdmin: localStorage.getItem('isValidEDXAdmin') !== null,
   },
   getters: {
     acronyms: state => state.acronyms,
@@ -49,12 +50,12 @@ export default {
     NOMINAL_ROLL_READ_ONLY_ROLE: state => state.isValidNominalRollReadOnly,
     NOMINAL_ROLL_ROLE: state => state.isValidNominalRollReadOnly || state.isValidNominalRollUser,
     EDIT_NOMINAL_ROLL_ROLE: state => state.isValidNominalRollAdmin,
-    STAFF_ADMINISTRATION_ADMIN: state => state.isValidNominalRollAdmin || state.isValidStaffAdministrationAdmin, //gives access to admin section of navigation menu
+    STAFF_ADMINISTRATION_ADMIN: state => state.isValidNominalRollAdmin || state.isValidStaffAdministrationAdmin || state.isValidEDXAdmin, //gives access to admin section of navigation menu
     STUDENT_ANALYTICS_STUDENT_PROFILE: state => state.isValidGUMPAnalyticsUser,
     STUDENT_ANALYTICS_BATCH: state => state.isValidPenRequestBatchAnalyticsUser,
     HAS_STATS_ROLE: state => state.isValidGUMPAnalyticsUser || state.isValidPenRequestBatchAnalyticsUser,
     EXCHANGE_ROLE: state => state.isValidExchangeUser,
-    EXCHANGE_ACCESS_ROLE: state => state.isValidStaffAdministrationAdmin && state.isValidExchangeUser,
+    EXCHANGE_ACCESS_ROLE: state => state.isValidEDXAdmin,
   },
   mutations: {
     //sets Json web token and determines whether user is authenticated
@@ -220,6 +221,15 @@ export default {
         localStorage.removeItem(('isValidExchangeUser'));
       }
     },
+    setEDXAdmin: (state, isValidEDXAdmin) => {
+      if (isValidEDXAdmin) {
+        state.isValidEDXAdmin = true;
+        localStorage.setItem('isValidEDXAdmin', 'true');
+      } else {
+        state.isValidEDXAdmin = false;
+        localStorage.removeItem(('isValidEDXAdmin'));
+      }
+    },
     setUserInfo: (state, userInf) => {
       if (userInf) {
         state.userInfo = userInf;
@@ -290,5 +300,6 @@ function setAuthorizations(context, response) {
   context.commit('setGUMPAnalytics', response.isValidGUMPAnalyticsUser);
   context.commit('setPenRequestBatchAnalytics', response.isValidPenRequestBatchAnalyticsUser);
   context.commit('setExchangeUser', response.isValidExchangeUser);
+  context.commit('setEDXAdmin', response.isValidEDXAdmin);
   ApiService.setAuthHeader(response.jwtFrontend);
 }

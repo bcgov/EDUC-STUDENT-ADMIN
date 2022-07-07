@@ -35,7 +35,7 @@ const roles = {
     //Help functions created in auth module: isValidStaffAdministrationAdmin
     StaffAdministration: config.get('server:administration:roleAdmin'),
     NominalRoll: config.get('server:nominalRoll:roleAdmin'),
-    EDXAdmin: config.get('server:edx:roleAdmin')
+    EDX: config.get('server:edx:roleAdmin')
   }
 };
 
