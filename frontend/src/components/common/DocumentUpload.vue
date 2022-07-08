@@ -29,39 +29,27 @@
       </v-alert>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn
-          color="#003366"
-          class="white--text"
-          id="upload_form"
-          @click="submitRequest"
-          :disabled="!dataReady"
-          :loading="active"
-          :key="buttonKey"
-        >
-          Upload
-        </v-btn>
-        <v-btn
-          color="#003366"
-          class="white--text"
-          @click="closeForm"
-        >
-          Close
-        </v-btn>
+        <PrimaryButton id="cancelMessage" secondary text="Cancel" @click.native="closeForm"></PrimaryButton>
+        <PrimaryButton :key="buttonKey" :loading="active" :disabled="!dataReady" id="upload_form" text="Upload" width="7rem" @click.native="submitRequest"></PrimaryButton>
       </v-card-actions>
-
-
   </v-card>
 </template>
 
 <script>
 import {getFileExtensionWithDot, getFileNameWithMaxNameLength} from '@/utils/file';
 import {mapGetters} from 'vuex';
+import PrimaryButton from '../util/PrimaryButton';
 
 export default {
+  components: {PrimaryButton},
   props: {
     eager: {
       type: Boolean,
       default: false
+    },
+    smallFileExtension: {
+      type: Boolean,
+      default: true
     },
   },
   data() {
@@ -154,9 +142,16 @@ export default {
       this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
     },
     async uploadFile(env) {
+      let fileExtensionValue;
+      if(this.smallFileExtension){
+        fileExtensionValue = getFileExtensionWithDot(this.file.name);
+      }else{
+        fileExtensionValue = this.file.type;
+      }
+
       let document = {
         fileName: getFileNameWithMaxNameLength(this.file.name),
-        fileExtension: getFileExtensionWithDot(this.file.name),
+        fileExtension: fileExtensionValue,
         fileSize: this.file.size,
         documentData: btoa(env.target.result)
       };
