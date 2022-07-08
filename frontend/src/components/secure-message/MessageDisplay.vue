@@ -180,12 +180,9 @@ export default {
       loading: true,
       loadingReadStatus: false,
       editOptionsOpen: false,
-      assignedMinistryTeam: null,
-      subject: '',
       isNewMessageDisplayed: false,
-      newMessageBtnDisplayed:false,
       processing: false,
-      newMessage:''
+      newMessage: ''
     };
   },
   computed: {},
@@ -197,11 +194,11 @@ export default {
       this.isNewMessageDisplayed = true;
     },
     hideNewMessageField(){
-      this.isNewMessageDisplayed=false;
+      this.isNewMessageDisplayed = false;
+      this.resetNewMessageForm();
     },
     getExchange(initialLoad = false) {
       this.loading = true;
-
       ApiService.apiAxios.get(Routes.edx.EXCHANGE_URL + `/${this.secureExchangeID}`)
         .then(response => {
           //Always set secure exchange as read by ministry if this is the first load
@@ -267,9 +264,7 @@ export default {
 
       return ChronoUnit.DAYS.between(start_date, end_date) + ' days';
     },
-    messageSent(){
-      this.subject = '';
-      this.assignedMinistryTeam = null;
+    resetNewMessageForm() {
       this.newMessage = '';
     },
     sendNewExchangeComment() {
@@ -280,18 +275,16 @@ export default {
       ApiService.apiAxios.post(Routes.edx.EXCHANGE_URL + `/${this.secureExchangeID}/comments`, payload)
         .then(() => {
           this.setSuccessAlert('Success! The message has been sent.');
-          this.messageSent();
           this.getExchange();
         })
         .catch(error => {
           console.error(error);
           this.setFailureAlert('An error occurred while sending message. Please try again later.');
-
         })
         .finally(() => {
           this.processing = false;
-          this.isNewMessageDisplayed=false;
-
+          this.isNewMessageDisplayed = false;
+          this.resetNewMessageForm();
         });
     },
   }
