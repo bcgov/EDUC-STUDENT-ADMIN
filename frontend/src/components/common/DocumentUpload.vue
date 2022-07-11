@@ -9,6 +9,7 @@
       <v-file-input
         color="#003366"
         :accept="fileAccept"
+        :rules="fileRules"
         :disabled="hasReadOnlyRoleAccess()"
         placeholder="Select your file"
         :error-messages="fileInputError"
@@ -51,10 +52,15 @@ export default {
       type: Boolean,
       default: true
     },
+    checkFileRules: {
+      type: Boolean,
+      default: false
+    },
   },
   data() {
     return {
       fileAccept: 'xls, xlsx',
+      fileRules: [ ],
       requiredRules: [v => !!v || 'Required'],
       validForm: true,
       fileInputError: [],
@@ -68,6 +74,12 @@ export default {
       alertType: null
 
     };
+  },
+  created() {
+    this.getFileRules().catch(e => {
+      console.log(e);
+      this.setErrorAlert('Sorry, an unexpected error seems to have occurred. You can upload files later.');
+    });
   },
   watch: {
     dataReady() {
@@ -158,6 +170,17 @@ export default {
       this.$emit('upload', document);
       this.resetForm();
       this.$emit('close:form');
+    },
+    async getFileRules() {
+      const response = await ApiService.getFileRequirements(this.requestType);
+      const fileRequirements = response.data;
+      const maxSize = fileRequirements.maxSize;
+      this.fileRules = [
+        value => !value || value.size < maxSize || `File size should not be larger than ${humanFileSize(maxSize)}!`,
+        value => !value || fileRequirements.extensions.includes(value.type) || `File formats should be ${this.fileFormats}.`,
+      ];
+      this.fileAccept = fileRequirements.extensions.join();
+      this.fileFormats = this.makefileFormatList(fileRequirements.extensions);
     },
   },
 };
