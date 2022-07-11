@@ -318,9 +318,10 @@ const router = new VueRouter({
       component: RouterView,
       children: [
         {
-          path: 'exchange',
+          path: 'exchange/:ministryOwnershipGroupRoleID',
           name: 'exchange',
           component: ExchangePage,
+          props: true,
           meta: {
             pageTitle: PAGE_TITLES.EXCHANGE,
             requiresAuth: true,
@@ -514,6 +515,8 @@ router.beforeEach((to, _from, next) => {
         next(nextRouteInError);
       } else {
         store.dispatch('auth/getUserInfo').then(() => {
+          console.log('Keegan');
+          console.log(JSON.stringify(authStore.state.userInfo));
           if (!authStore.state.isAuthorizedUser) {
             next('unauthorized');
           } else if (to.meta.role && !store.getters[`auth/${to.meta.role}`]) {

@@ -21,7 +21,9 @@ const roles = {
     //Help functions created in auth module: isValidPenRequestBatchAnalyticsUser
     PenRequestBatchAnalytics: config.get('server:penRequestBatch:roleAnalytics'),
     //Help functions created in auth module: isValidExchangeUserToken, isValidExchangeUser
-    Exchange: ['SECURE_EXCHANGE']
+    Exchange: ['SECURE_EXCHANGE'],
+    //Help functions created in auth module: isValidPenTeamRoleUserToken, isValidPenTeamRoleUser
+    PenTeamRole: ['PEN_TEAM_ROLE']
   },
   Admin: {
     //Help functions created in auth module: isValidGMPAdmin
