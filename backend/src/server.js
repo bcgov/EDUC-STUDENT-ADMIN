@@ -30,9 +30,14 @@ const WS = require('./socket/web-socket');
 const NATS = require('./messaging/message-pub-sub');
 const cacheService = require('./components/cache-service');
 cacheService.loadAllSchoolsToMap().then(() => {
-  log.info('loaded school data to memory');
+  log.info('Loaded school data to memory');
 }).catch((e) => {
-  log.error('error loading schools during boot .', e);
+  log.error('Error loading schools during boot .', e);
+});
+cacheService.loadAllDocumentTypeCodesToMap().then(() => {
+  log.info('Loaded document type codes to memory');
+}).catch((e) => {
+  log.error('Error loading document type codes during boot .', e);
 });
 WS.init(app, server);
 
@@ -78,11 +83,9 @@ function onError(error) {
   switch (error.code) {
   case 'EACCES':
     log.error(bind + ' requires elevated privileges');
-    //process.exit(1);
     break;
   case 'EADDRINUSE':
     log.error(bind + ' is already in use');
-    //process.exit(1);
     break;
   default:
     throw error;

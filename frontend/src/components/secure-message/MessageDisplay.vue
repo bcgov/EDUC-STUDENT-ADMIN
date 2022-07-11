@@ -136,22 +136,27 @@
             </v-row>
             <v-row>
               <v-col>
-                <v-timeline v-if="secureExchange.activities.length > 0" dense>
+                <v-timeline v-if="secureExchange.activities.length > 0">
                   <div v-for="activity in secureExchange.activities"
                        :key="activity.secureExchangeCommentID">
-                    <v-timeline-item icon-color="#003366" large color="white" :icon="getActivityIcon(activity)">
-                      <v-card>
+                    <v-timeline-item :left="activity.isSchool"  large color="#003366" :icon="getActivityIcon(activity)">
+                      <v-card v-if="activity.type === 'message'">
                         <v-card-title>
                           <div class="activityTitle">{{ activity.title }}</div>
                           <v-spacer></v-spacer>
                           <div class="activityDisplayDate">{{ activity.displayDate }}</div>
                         </v-card-title>
+                        <v-card-text class="activityContent">{{ activity.content }}</v-card-text>
+                      </v-card>
+                      <v-card  v-bind:style="{ color: activity.isSchool ? 'gray': 'black'}" v-if="activity.type === 'document'">
+                        <v-card-title>
+                          <div class="activityTitle">{{ activity.documentType.label }}</div>
+                          <v-spacer></v-spacer>
+                          <div class="activityDisplayDate">{{ activity.displayDate }}</div>
+                        </v-card-title>
                         <v-row no-gutters v-if="activity.type === 'document'">
-                          <v-col class="pl-5 pb-3">
-                              <router-link :to="{ path: documentUrl(activity) }" target="_blank">Download file</router-link>
-                          </v-col>
+                          <v-card-text class="pt-0">{{ activity.title }} (<router-link :to="{ path: documentUrl(activity) }" target="_blank">Download file</router-link>)</v-card-text>
                         </v-row>
-                        <v-card-text v-else class="activityContent">{{ activity.content }}</v-card-text>
                       </v-card>
                     </v-timeline-item>
                   </div>
@@ -347,6 +352,10 @@ export default {
 <style scoped>
 .subjectHeading {
   overflow-wrap: break-word;
+}
+
+.activityDisplayDate{
+  font-size: medium;
 }
 
 .containerSetup{

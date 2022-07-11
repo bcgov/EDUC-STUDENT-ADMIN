@@ -133,6 +133,7 @@ async function getExchange(req, res) {
       dataResponse['commentsList'].forEach((comment) => {
         let activity = {};
         activity['type'] = 'message';
+        activity['isSchool'] = comment.edxUserID ? true : false;
         activity['timestamp'] = comment['commentTimestamp'] ? LocalDateTime.parse(comment['commentTimestamp']) : '';
         activity['actor'] = comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
         activity['title'] =  comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
@@ -146,9 +147,11 @@ async function getExchange(req, res) {
         dataResponse['documentList'].forEach((document) => {
           let activity = {};
           activity['type'] = 'document';
+          activity['isSchool'] = document.edxUserID ? true : false;
           activity['timestamp'] = document['createDate'] ? LocalDateTime.parse(document['createDate']) : '';
           activity['actor'] = document.edxUserID ? document.edxUserID : document.staffUserIdentifier;
           activity['title'] =  document.fileName;
+          activity['documentType'] = cacheService.getDocumentTypeCodeLabelByCode(document.documentTypeCode);
           activity['displayDate'] = document['createDate'] ? LocalDateTime.parse(document['createDate']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : 'Unknown Date';
           activity['documentID'] = document['documentID'];
           dataResponse['activities'].push(activity);
