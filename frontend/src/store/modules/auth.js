@@ -234,10 +234,10 @@ export default {
     },
     setIsValidPenTeamRoleUser: (state, isValidPenTeamRoleUser) => {
       if (isValidPenTeamRoleUser) {
-        state.isValidPenTeaamRole = true;
+        state.isValidPenTeamRoleUser = true;
         localStorage.setItem('isValidPenTeamRoleUser', 'true');
       } else {
-        state.isValidPenTeaamRole = false;
+        state.isValidPenTeamRoleUser = false;
         localStorage.removeItem('isValidPenTeamRoleUser');
       }
     },
