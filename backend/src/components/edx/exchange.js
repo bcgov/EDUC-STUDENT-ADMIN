@@ -1,6 +1,6 @@
 'use strict';
 
-const {errorResponse, logApiError} = require('../utils');
+const {errorResponse, logApiError, postData, getBackendToken} = require('../utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../../config');
 const {getData, getCodeTable, putData} = require('../utils');
@@ -8,6 +8,7 @@ const utils = require('../utils');
 const {FILTER_OPERATION, VALUE_TYPE, CACHE_KEYS} = require('../../util/constants');
 const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
 const cacheService = require('../cache-service');
+const log = require('../logger');
 
 async function claimAllExchanges(req, res) {
   try {
@@ -132,6 +133,7 @@ async function getExchange(req, res) {
       dataResponse['commentsList'].forEach((comment) => {
         let activity = {};
         activity['type'] = 'message';
+        activity['isSchool'] = comment.edxUserID ? true : false;
         activity['timestamp'] = comment['commentTimestamp'] ? LocalDateTime.parse(comment['commentTimestamp']) : '';
         activity['actor'] = comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
         activity['title'] =  comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
@@ -141,6 +143,22 @@ async function getExchange(req, res) {
         activity['secureExchangeCommentID'] = comment['secureExchangeCommentID'];
         dataResponse['activities'].push(activity);
       });
+      if(dataResponse['documentList']){
+        dataResponse['documentList'].forEach((document) => {
+          let activity = {};
+          activity['type'] = 'document';
+          activity['isSchool'] = document.edxUserID ? true : false;
+          activity['timestamp'] = document['createDate'] ? LocalDateTime.parse(document['createDate']) : '';
+          activity['actor'] = document.edxUserID ? document.edxUserID : document.staffUserIdentifier;
+          activity['title'] = document.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+          activity['fileName'] =  document.fileName;
+          activity['documentType'] = cacheService.getDocumentTypeCodeLabelByCode(document.documentTypeCode);
+          activity['displayDate'] = document['createDate'] ? LocalDateTime.parse(document['createDate']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : 'Unknown Date';
+          activity['documentID'] = document['documentID'];
+          dataResponse['activities'].push(activity);
+        });
+      }
+
       dataResponse['activities'].sort((activity1, activity2) => { return activity2.timestamp.compareTo(activity1.timestamp); });
 
       return res.status(HttpStatus.OK).json(dataResponse);
@@ -412,6 +430,49 @@ const getContactIdentifierType = (contactIdentifier, res) => {
   }
 };
 
+const uploadDocumentToExchange = async (req, res) => {
+  try {
+    const token = utils.getBackendToken(req);
+
+    const userName = utils.getUser(req).idir_username;
+
+    const document = {
+      fileExtension: req.body.fileExtension,
+      documentData: req.body.documentData,
+      documentTypeCode: 'OTHER',
+      fileName: req.body.fileName,
+      fileSize: req.body.fileSize,
+      staffUserIdentifier: userName
+    };
+
+    const params = {
+      headers: {
+        correlationID: req.session.correlationID,
+      }
+    };
+    const result = await postData(token, config.get('server:edx:exchangeURL') + '/' + req.params.secureExchangeID + '/documents', document, params, userName);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    return errorResponse(res, e.data?.message, e.status);
+  }
+};
+
+function getExchangeDocumentById() {
+  return async function getDocumentByIdHandler(req, res) {
+    const token = getBackendToken(req);
+    const url = `${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/documents/${req.params.documentId}`;
+    getData(token, url).then(resultData =>{
+      res.setHeader('Content-disposition', 'attachment; filename=' + resultData.fileName?.replace(/ /g, '_').replace(/,/g, '_').trim());
+      res.setHeader('Content-type', resultData.fileExtension);
+      return res.status(200).send(Buffer.from(resultData.documentData, 'base64'));
+    }).catch(error=>{
+      log.error('An error occurred attempting to get documents.');
+      log.error(error);
+      return res.status(500).json();
+    });
+  };
+}
+
 module.exports = {
   getExchanges,
   createExchange,
@@ -423,5 +484,7 @@ module.exports = {
   generateOrRegeneratePrimaryEdxActivationCode,
   updateEdxUserRoles,
   schoolUserActivationInvite,
-  createSecureExchangeComment
+  createSecureExchangeComment,
+  uploadDocumentToExchange,
+  getExchangeDocumentById
 };

@@ -8,6 +8,7 @@ export default {
     exchangeMincodes: [],
     roles: [],
     rolesCopy: [],
+    fileRequirements: []
   },
   getters: {
     getStatuses: state => state.statuses?.sort((a,b) => a.displayOrder > b.displayOrder ? 1 : -1),
@@ -21,6 +22,9 @@ export default {
     },
     setExchangeMincodes(state, payload) {
       state.exchangeMincodes = payload;
+    },
+    setFileRequirements(state, payload) {
+      state.fileRequirements = payload;
     },
     setRoles(state, payload) {
       state.roles = JSON.parse(JSON.stringify(payload));
@@ -38,6 +42,14 @@ export default {
         }
       }
     },
+    async getFileRequirements({ commit, state}) {
+      if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
+        if(state.fileRequirements.length === 0) {
+          const response = await ApiService.getFileRequirements();
+          commit('setFileRequirements', response.data);
+        }
+      }
+    },
     async getCodes({commit, state}) {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
         if(state.ministryTeams.length === 0) {
@@ -49,6 +61,12 @@ export default {
         if (state.statuses.length === 0) {
           ApiService.getExchangeStatuses().then(response => {
             commit('setStatuses', response.data);
+          });
+        }
+
+        if (state.fileRequirements.length === 0) {
+          ApiService.getFileRequirements().then(response => {
+            commit('setFileRequirements', response.data);
           });
         }
       }
