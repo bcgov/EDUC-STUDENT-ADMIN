@@ -206,7 +206,6 @@ export default {
     removeDocumentByIndex(index) {
       //since we don't have a unique UUID to identify the document to remove, we will use the index
       this.$store.commit('edx/deleteSecureExchangeDocumentByIndex', index);
-      console.log(index);
     },
     clearSecureExchangeDocuments() {
       this.$store.commit('edx/setSecureExchangeDocuments', []);
