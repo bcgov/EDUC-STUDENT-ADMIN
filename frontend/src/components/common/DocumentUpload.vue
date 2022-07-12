@@ -37,8 +37,8 @@
 </template>
 
 <script>
-import {getFileExtensionWithDot, getFileNameWithMaxNameLength} from '@/utils/file';
-import {mapGetters} from 'vuex';
+import {humanFileSize, getFileExtensionWithDot, getFileNameWithMaxNameLength} from '@/utils/file';
+import {mapGetters, mapState} from 'vuex';
 import PrimaryButton from '../util/PrimaryButton';
 
 export default {
@@ -76,7 +76,17 @@ export default {
     };
   },
   created() {
-    this.getFileRules().catch(e => {
+    this.$store.dispatch('edx/getFileRequirements').then(() => {
+      console.log('Reqs ' + JSON.stringify(this.fileRequirements));
+      const fileRequirements = this.fileRequirements;
+      const maxSize = fileRequirements.maxSize;
+      this.fileRules = [
+        value => !value || value.size < maxSize || `File size should not be larger than ${humanFileSize(maxSize)}!`,
+        value => !value || fileRequirements.extensions.includes(value.type) || `File formats should be ${this.fileFormats}.`,
+      ];
+      this.fileAccept = fileRequirements.extensions.join();
+      this.fileFormats = this.makefileFormatList(fileRequirements.extensions);
+    }).catch(e => {
       console.log(e);
       this.setErrorAlert('Sorry, an unexpected error seems to have occurred. You can upload files later.');
     });
@@ -89,11 +99,22 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['NOMINAL_ROLL_READ_ONLY_ROLE']),
+    ...mapState('edx', ['fileRequirements']),
     dataReady () {
       return this.validForm && this.file;
     },
   },
   methods: {
+    makefileFormatList(extensions) {
+      extensions = extensions.map(v => v.split(new RegExp('/'))[1]).filter(v => v).map(v => v.toUpperCase());
+      if(extensions.length <= 2) {
+        return extensions.join(' and ');
+      } else {
+        const lastTwo = extensions.splice(-2, 2).join(', and ');
+        extensions.push(lastTwo);
+        return extensions.join(', ');
+      }
+    },
     hasReadOnlyRoleAccess() {
       return this.NOMINAL_ROLL_READ_ONLY_ROLE === true;
     },
@@ -170,18 +191,7 @@ export default {
       this.$emit('upload', document);
       this.resetForm();
       this.$emit('close:form');
-    },
-    async getFileRules() {
-      const response = await ApiService.getFileRequirements(this.requestType);
-      const fileRequirements = response.data;
-      const maxSize = fileRequirements.maxSize;
-      this.fileRules = [
-        value => !value || value.size < maxSize || `File size should not be larger than ${humanFileSize(maxSize)}!`,
-        value => !value || fileRequirements.extensions.includes(value.type) || `File formats should be ${this.fileFormats}.`,
-      ];
-      this.fileAccept = fileRequirements.extensions.join();
-      this.fileFormats = this.makefileFormatList(fileRequirements.extensions);
-    },
+    }
   },
 };
 </script>

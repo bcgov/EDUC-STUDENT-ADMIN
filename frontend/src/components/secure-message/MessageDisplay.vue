@@ -106,7 +106,7 @@
               </v-col>
             </v-row>
             <v-row v-if="isNewMessageDisplayed">
-              <v-card-text id="newMessageCardText" class="pb-0 pt-5 pl-16 ml-10">
+              <v-card-text id="newMessageCardText" class="pb-0 pt-5 pl-16 ml-10 pr-16 mr-10">
                 <v-textarea id="newMessageToConvTextArea"
                             outlined
                             solo
@@ -120,19 +120,20 @@
                 >
                 </v-textarea>
               </v-card-text>
-              <v-row class="py-4 justify-end pt-0 pr-8">
+              <v-row class="py-4 justify-end pt-0 pr-16 mr-10">
                 <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2" @click.native="hideNewMessageField"></PrimaryButton>
                 <PrimaryButton id="newMessagePostBtn" text="Send" width="8rem" :disabled="!newMessage" :loading="processing" @click.native="sendNewExchangeComment"></PrimaryButton>
               </v-row>
             </v-row>
             <v-row v-if="isNewAttachmentDisplayed">
-              <v-card-text id="newMessageCardText" class="pb-0 pt-2 ml-16 pl-11">
+              <v-col class="d-flex justify-center">
                 <DocumentUpload
+                  style="min-width: 40em"
                   :small-file-extension="false"
                   @close:form="hideAttachmentPanel"
                   @upload="upload">
                 </DocumentUpload>
-              </v-card-text>
+              </v-col>
             </v-row>
             <v-row>
               <v-col>
@@ -352,6 +353,12 @@ export default {
 <style scoped>
 .subjectHeading {
   overflow-wrap: break-word;
+}
+
+.document-upload{
+  padding: 1.1rem;
+  max-width: 50rem;
+  min-width: 10rem;
 }
 
 .activityDisplayDate{
