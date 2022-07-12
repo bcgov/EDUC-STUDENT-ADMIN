@@ -173,7 +173,18 @@ async function createExchange(req, res) {
     const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
     const message = req.body;
-    console.log('User Info: ', JSON.stringify(userInfo));
+
+    const documentPayload = message.secureExchangeDocuments.map(document => {
+      return {
+        fileExtension: document.fileExtension,
+        documentData: document.documentData,
+        documentTypeCode: 'OTHER',
+        fileName: document.fileName,
+        fileSize: document.fileSize,
+        staffUserIdentifier: userInfo.idir_username
+      };
+    });
+
     const payload = {
       contactIdentifier: message.contactIdentifier,
       secureExchangeContactTypeCode: message.secureExchangeContactTypeCode,
@@ -191,7 +202,8 @@ async function createExchange(req, res) {
           createUser: userInfo.idir_username,
           updateUser: userInfo.idir_username
         }
-      ]
+      ],
+      documentList: documentPayload
     };
 
     const result = await utils.postData(token, config.get('server:edx:exchangeURL'), payload, null, userInfo.idir_username);

@@ -8,10 +8,12 @@ export default {
     exchangeMincodes: [],
     roles: [],
     rolesCopy: [],
-    fileRequirements: []
+    fileRequirements: [],
+    secureExchangeDocuments: [],
   },
   getters: {
     getStatuses: state => state.statuses?.sort((a,b) => a.displayOrder > b.displayOrder ? 1 : -1),
+    secureExchangeDocuments: state => state.secureExchangeDocuments
   },
   mutations: {
     setMinistryTeams(state, ministryTeamList) {
@@ -31,7 +33,15 @@ export default {
     },
     setRolesCopy(state, payload) {
       state.rolesCopy = JSON.parse(JSON.stringify(payload));
-    }
+    },
+    setSecureExchangeDocuments(state, payload) {
+      state.secureExchangeDocuments = payload;
+    },
+    deleteSecureExchangeDocumentByIndex(state, index) {
+      if (index < state.secureExchangeDocuments.length) {
+        state.secureExchangeDocuments.splice(index, 1);
+      }
+    },
   },
   actions: {
     async getMinistryTeams({ commit, state}) {

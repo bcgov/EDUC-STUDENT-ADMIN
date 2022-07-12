@@ -51,13 +51,20 @@
                     </v-card-text>
                   </v-col>
                 </v-row>
-                <v-row>
+                <v-row no-gutters>
+                  <v-col>
+                    <v-icon v-if="secureExchangeDocuments.length > 0" >mdi-paperclip</v-icon>
+                    <v-chip :class="['ma-1']" v-for="(document, index) in secureExchangeDocuments" :key="index" close @click:close="removeDocumentByIndex(index)">{{document.fileName}}</v-chip>
+                  </v-col>
+                </v-row>
+                <v-row v-if="shouldShowOptions">
                   <v-col class="d-flex justify-end mr-3 pt-0">
                     <v-btn id="attachFileID"
                            title="Attach File"
                            color="#1A5A96"
                            outlined
                            class="addButton pl-0 pr-2"
+                           @click="showAttachFilePanel"
                     >
                       <v-icon color="#1A5A96" class="mr-0" right dark>mdi-paperclip</v-icon>
                       <span class="ml-1">Attach File</span>
@@ -73,9 +80,25 @@
                     </v-btn>
                   </v-col>
                 </v-row>
+                <!--pop out for attaching files-->
+                <v-row no-gutters>
+                  <v-col>
+                    <v-expand-transition
+                        max-width="30rem"
+                        max-height="50rem"
+                        xl="2" lg="2" md="2" xs="2" sm="2"
+                    >
+                      <DocumentUpload
+                          v-show="expandAttachFile"
+                          @close:form="showOptions"
+                          @upload="uploadDocument"
+                      ></DocumentUpload>
+                    </v-expand-transition>
+                  </v-col>
+                </v-row>
+                <!--end pop out for attaching files-->
               </v-card>
             </v-col></v-row>
-
           </v-col>
         </v-row>
         <v-row class="py-4 justify-end">
@@ -91,6 +114,7 @@
 
 <script>
 import PrimaryButton from '@/components/util/PrimaryButton';
+import DocumentUpload from '@/components/common/DocumentUpload';
 import { mapState } from 'vuex';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import alertMixin from '@/mixins/alertMixin';
@@ -106,6 +130,7 @@ export default {
   components: {
     PrimaryButton,
     ConfirmationDialog,
+    DocumentUpload,
   },
   data() {
     return {
@@ -118,12 +143,15 @@ export default {
       pen: null,
       penRules: [v => (!v || isValidPEN(v)) || this.penHint],
       penHint: 'Invalid PEN',
+      expandAttachFile: false,
+      expandAddStudent: false,
+      shouldShowOptions: true,
     };
   },
   computed: {
     ...mapState('app', ['mincodeSchoolNames']),
     ...mapState('auth', ['userInfo']),
-    ...mapState('edx', ['ministryTeams', 'exchangeMincodes']),
+    ...mapState('edx', ['ministryTeams', 'exchangeMincodes', 'secureExchangeDocuments']),
     myTeam() {
       return this.ministryTeams.find(team => this.userInfo.userRoles.some(role => team.groupRoleIdentifier === role)) || {};
     },
@@ -134,6 +162,7 @@ export default {
   },
   created() {
     this.$store.dispatch('edx/getExchangeMincodes');
+    this.clearSecureExchangeDocuments();
   },
   methods: {
     navigateToList() {
@@ -155,11 +184,13 @@ export default {
         ministryOwnershipTeamID: this.myTeam.ministryOwnershipTeamId,
         subject: this.subject,
         content: this.newMessage,
+        secureExchangeDocuments: this.secureExchangeDocuments,
       };
       ApiService.apiAxios.post(`${Routes['edx'].EXCHANGE_URL}`, payload)
         .then(() => {
           this.setSuccessAlert('Success! The message has been sent.');
           this.messageSent();
+          this.clearSecureExchangeDocuments();
         })
         .catch(error => {
           this.setFailureAlert('An error occurred while sending message. Please try again later.');
@@ -169,6 +200,27 @@ export default {
           this.processing = false;
         });
     },
+    async uploadDocument(document) {
+      this.$store.commit('edx/setSecureExchangeDocuments', [...this.secureExchangeDocuments, document]);
+    },
+    removeDocumentByIndex(index) {
+      //since we don't have a unique UUID to identify the document to remove, we will use the index
+      this.$store.commit('edx/deleteSecureExchangeDocumentByIndex', index);
+      console.log(index);
+    },
+    clearSecureExchangeDocuments() {
+      this.$store.commit('edx/setSecureExchangeDocuments', []);
+    },
+    showOptions() {
+      this.expandAttachFile = false;
+      this.expandAddStudent = false;
+      this.shouldShowOptions = true;
+    },
+    showAttachFilePanel() {
+      this.expandAttachFile = true;
+      this.expandAddStudent = false;
+      this.shouldShowOptions = false;
+    }
   }
 };
 </script>
