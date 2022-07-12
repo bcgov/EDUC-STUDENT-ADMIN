@@ -130,6 +130,7 @@
                 <DocumentUpload
                   style="min-width: 40em"
                   :small-file-extension="false"
+                  :check-file-rules="true"
                   @close:form="hideAttachmentPanel"
                   @upload="upload">
                 </DocumentUpload>
@@ -140,7 +141,7 @@
                 <v-timeline v-if="secureExchange.activities.length > 0">
                   <div v-for="activity in secureExchange.activities"
                        :key="activity.secureExchangeCommentID">
-                    <v-timeline-item :left="activity.isSchool"  large color="#003366" :icon="getActivityIcon(activity)">
+                    <v-timeline-item :left="activity.isSchool" icon-color="#003366" large color="white" :icon="getActivityIcon(activity)">
                       <v-card v-if="activity.type === 'message'">
                         <v-card-title>
                           <div class="activityTitle">{{ activity.title }}</div>
@@ -149,14 +150,15 @@
                         </v-card-title>
                         <v-card-text class="activityContent">{{ activity.content }}</v-card-text>
                       </v-card>
-                      <v-card  v-bind:style="{ color: activity.isSchool ? 'gray': 'black'}" v-if="activity.type === 'document'">
+                      <v-card v-if="activity.type === 'document'">
                         <v-card-title>
-                          <div class="activityTitle">{{ activity.documentType.label }}</div>
+                          <div class="activityTitle">{{ activity.title }}</div>
                           <v-spacer></v-spacer>
                           <div class="activityDisplayDate">{{ activity.displayDate }}</div>
                         </v-card-title>
-                        <v-row no-gutters v-if="activity.type === 'document'">
-                          <v-card-text class="pt-0">{{ activity.title }} (<router-link :to="{ path: documentUrl(activity) }" target="_blank">Download file</router-link>)</v-card-text>
+                        <v-row no-gutters>
+                          <v-card-text class="mt-n2 pt-0 pb-0" :class="{'pb-0': activity.documentType.label !== 'Other', 'pb-3': activity.documentType.label === 'Other'}"><router-link :to="{ path: documentUrl(activity) }" target="_blank">{{ activity.fileName }}</router-link></v-card-text>
+                          <v-card-text v-if="activity.documentType.label !== 'Other'" class="pt-0 pb-3">{{ activity.documentType.label }}</v-card-text>
                         </v-row>
                       </v-card>
                     </v-timeline-item>

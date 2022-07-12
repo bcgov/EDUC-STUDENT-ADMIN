@@ -13,10 +13,9 @@
         :disabled="hasReadOnlyRoleAccess()"
         placeholder="Select your file"
         :error-messages="fileInputError"
+        class="pt-0"
         @change="selectFile"
       ></v-file-input>
-
-
       </v-form>
       <v-alert
         dense
@@ -77,14 +76,21 @@ export default {
   },
   created() {
     this.$store.dispatch('edx/getFileRequirements').then(() => {
-      console.log('Reqs ' + JSON.stringify(this.fileRequirements));
       const fileRequirements = this.fileRequirements;
       const maxSize = fileRequirements.maxSize;
-      this.fileRules = [
-        value => !value || value.size < maxSize || `File size should not be larger than ${humanFileSize(maxSize)}!`,
-        value => !value || fileRequirements.extensions.includes(value.type) || `File formats should be ${this.fileFormats}.`,
-      ];
-      this.fileAccept = fileRequirements.extensions.join();
+
+      if(this.checkFileRules){
+        this.fileRules = [
+          value => !value || value.size < maxSize || `File size should not be larger than ${humanFileSize(maxSize)}!`,
+          value => !value || fileRequirements.extensions.includes(value.type) || `File formats should be ${this.fileFormats}.`,
+        ];
+        this.fileAccept = fileRequirements.extensions.join();
+      }else{
+        this.fileRules = [
+          value => !value || value.size < maxSize || `File size should not be larger than ${humanFileSize(maxSize)}!`
+        ];
+      }
+
       this.fileFormats = this.makefileFormatList(fileRequirements.extensions);
     }).catch(e => {
       console.log(e);
@@ -214,9 +220,10 @@ ul{
   width: 100%;
 }
 
-.v-input{
-  padding-bottom: 0;
+.v-input >>> .v-input__slot{
+  padding-top: 0;
 }
+
 .bottom-text{
   /* margin-top: -0.7rem; */
   padding-top: 0;
