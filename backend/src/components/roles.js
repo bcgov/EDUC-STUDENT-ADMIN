@@ -23,7 +23,7 @@ const roles = {
     //Help functions created in auth module: isValidExchangeUserToken, isValidExchangeUser
     Exchange: ['SECURE_EXCHANGE'],
     //Help functions created in auth module: isValidPenTeamRoleUserToken, isValidPenTeamRoleUser
-    PenTeamRole: ['PEN_TEAM_ROLE']
+    PenTeamRole: config.get('server:edx:teamRoles:pen'),
   },
   Admin: {
     //Help functions created in auth module: isValidGMPAdmin
