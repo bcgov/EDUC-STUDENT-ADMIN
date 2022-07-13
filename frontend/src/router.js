@@ -319,13 +319,26 @@ const router = new VueRouter({
       children: [
         {
           path: 'exchange',
-          name: 'exchange',
-          component: ExchangePage,
+          component: RouterView,
           meta: {
-            pageTitle: PAGE_TITLES.EXCHANGE,
             requiresAuth: true,
             role: 'EXCHANGE_ROLE'
-          }
+          },
+          children: [
+            {
+              path: 'PEN_TEAM_ROLE',
+              name: 'exchangePenTeamRole',
+              component: ExchangePage,
+              props: {
+                ministryOwnershipGroupRoleID: 'PEN_TEAM_ROLE'
+              },
+              meta: {
+                pageTitle: PAGE_TITLES.EXCHANGE,
+                requiresAuth: true,
+                role: 'PEN_TEAM_ROLE'
+              }
+            }
+          ]
         },
         {
           path: 'exchange/access',

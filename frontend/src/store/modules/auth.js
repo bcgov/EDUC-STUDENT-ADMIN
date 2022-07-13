@@ -26,6 +26,7 @@ export default {
     isValidPenRequestBatchAnalyticsUser: localStorage.getItem('isValidPenRequestBatchAnalyticsUser') !== null,
     isValidExchangeUser: localStorage.getItem('isValidExchangeUser') !== null,
     isValidEDXAdmin: localStorage.getItem('isValidEDXAdmin') !== null,
+    isValidPenTeamRoleUser: localStorage.getItem('isValidPenTeamRoleUser') !== null
   },
   getters: {
     acronyms: state => state.acronyms,
@@ -56,6 +57,7 @@ export default {
     HAS_STATS_ROLE: state => state.isValidGUMPAnalyticsUser || state.isValidPenRequestBatchAnalyticsUser,
     EXCHANGE_ROLE: state => state.isValidExchangeUser,
     EXCHANGE_ACCESS_ROLE: state => state.isValidEDXAdmin,
+    PEN_TEAM_ROLE: state => state.isValidPenTeamRoleUser
   },
   mutations: {
     //sets Json web token and determines whether user is authenticated
@@ -230,6 +232,15 @@ export default {
         localStorage.removeItem(('isValidEDXAdmin'));
       }
     },
+    setIsValidPenTeamRoleUser: (state, isValidPenTeamRoleUser) => {
+      if (isValidPenTeamRoleUser) {
+        state.isValidPenTeamRoleUser = true;
+        localStorage.setItem('isValidPenTeamRoleUser', 'true');
+      } else {
+        state.isValidPenTeamRoleUser = false;
+        localStorage.removeItem('isValidPenTeamRoleUser');
+      }
+    },
     setUserInfo: (state, userInf) => {
       if (userInf) {
         state.userInfo = userInf;
@@ -301,5 +312,6 @@ function setAuthorizations(context, response) {
   context.commit('setPenRequestBatchAnalytics', response.isValidPenRequestBatchAnalyticsUser);
   context.commit('setExchangeUser', response.isValidExchangeUser);
   context.commit('setEDXAdmin', response.isValidEDXAdmin);
+  context.commit('setIsValidPenTeamRoleUser', response.isValidPenTeamRoleUser);
   ApiService.setAuthHeader(response.jwtFrontend);
 }

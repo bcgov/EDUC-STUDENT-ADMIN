@@ -117,9 +117,9 @@
           </v-row>
         </v-card>
       </v-col>
-      <v-col cols="8" v-if="EXCHANGE_ROLE">
+      <v-col cols="8" v-if="EXCHANGE_ROLE && hasAuthorizedExchangeData">
         <DashboardTable v-if="!isLoadingExchange" title="Secure Messaging Inbox" colour="#CED6E2"
-                        :tableData="exchangeData"></DashboardTable>
+                        :tableData="authorizedExchangeData"></DashboardTable>
         <v-container v-else-if="isLoadingExchange" class="full-height" fluid>
           <article class="top-banner full-height">
             <v-row align="center" justify="center">
@@ -244,14 +244,14 @@ export default {
     if (this.EXCHANGE_ROLE) {
       this.exchangeData.push({
         title: 'PEN Team Inbox',
-        button: {route: REQUEST_TYPES.exchange.path, text: 'View Inbox'},
+        button: {route: `${REQUEST_TYPES.exchange.path}/PEN_TEAM_ROLE`, text: 'View Inbox'},
+        authorized: this.PEN_TEAM_ROLE
       });
-
       setTimeout(() => this.isLoadingExchange = false, 1000);
     }
   },
   computed: {
-    ...mapGetters('auth', ['VIEW_GMP_REQUESTS_ROLE','VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ROLE']),
+    ...mapGetters('auth', ['VIEW_GMP_REQUESTS_ROLE','VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ROLE', 'PEN_TEAM_ROLE']),
     ...mapState('app', ['mincodeSchoolNames', 'districtCodes']),
     requestTypes() {
       return REQUEST_TYPES;
@@ -267,6 +267,12 @@ export default {
       return (!this.mincode || this.isValidDistrictOrMincode(this.mincode)) &&
           (!this.loadDate || isPresentDateAndAfter1900(this.loadDate));
     },
+    authorizedExchangeData() {
+      return this.exchangeData.filter(exchangeInbox => exchangeInbox.authorized);
+    },
+    hasAuthorizedExchangeData() {
+      return this.authorizedExchangeData.length > 0;
+    }
   },
   methods: {
     quickSearch() {

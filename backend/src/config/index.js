@@ -112,7 +112,10 @@ nconf.defaults({
       claimExchangesURL: process.env.EDX_API_URL+ '/exchange/claim',
       activationCodeUrl: process.env.EDX_API_URL + '/users/activation-code',
       schoolUserActivationInviteURL:process.env.EDX_API_URL+ '/exchange'+ '/school-user-activation-invite-saga',
-      roleAdmin: process.env.EDX_ADMIN
+      roleAdmin: process.env.EDX_ADMIN,
+      teamRoles: {
+        pen: process.env.EDX_PEN_TEAM_ROLES
+      }
     },
     macro: {
       rootURL: process.env.MACRO_API_URL,

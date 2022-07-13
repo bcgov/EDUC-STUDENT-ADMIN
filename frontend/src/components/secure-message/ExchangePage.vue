@@ -293,8 +293,7 @@ export default {
   props: {
     ministryOwnershipGroupRoleID: {
       type: String,
-      required: false,
-      default: 'PEN_TEAM_ROLE'
+      required: true
     },
   },
   components: {
