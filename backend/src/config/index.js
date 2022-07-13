@@ -114,7 +114,7 @@ nconf.defaults({
       schoolUserActivationInviteURL:process.env.EDX_API_URL+ '/exchange'+ '/school-user-activation-invite-saga',
       roleAdmin: process.env.EDX_ADMIN,
       teamRoles: {
-        pen: process.env.EDX_PEN_TEAM_ROLES
+        pen: process.env.EDX_PEN_TEAM_ROLES ? process.env.EDX_PEN_TEAM_ROLES.split(',') : '', // comma separated list
       }
     },
     macro: {
