@@ -153,13 +153,13 @@ async function logRequestData(operationType, url, data) {
 async function postData(token, url, data, params, user) {
   try {
     params = addTokenToHeader(params, token);
+    params.maxContentLength = Infinity;
+    params.maxBodyLength = Infinity;
+
     if (user && typeof user === 'string') {
       data.createUser = user;
       data.updateUser = user;
     }
-
-    params.maxContentLength = Infinity;
-    params.maxBodyLength = Infinity;
 
     logRequestData('POST', url, data);
     const response = await axios.post(url, data, params);
