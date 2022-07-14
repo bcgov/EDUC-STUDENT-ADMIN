@@ -39,7 +39,7 @@
     </v-row>
     <!--    user info -->
     <Spinner v-if="loadingUsers"/>
-    <v-row v-else-if="filteredUsers.length">
+    <v-row v-else>
       <v-col xl="4" cols="6" class="pb-0" v-for="user in filteredUsers" :key="user.digitalID">
         <AccessUserCard @refresh="getUsersData" :mincode="mincode" type="school" :userRoles="user.edxUserSchools[0].edxUserSchoolRoles" :user="user"></AccessUserCard>
       </v-col>
@@ -62,11 +62,6 @@
             </v-card>
           </v-col>
         </v-row>
-      </v-col>
-    </v-row>
-    <v-row  v-else>
-      <v-col class="d-flex justify-center">
-        No users found
       </v-col>
     </v-row>
     <v-bottom-sheet
