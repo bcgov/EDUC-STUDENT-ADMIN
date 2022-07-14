@@ -4,19 +4,34 @@
       <v-card>
         <v-card-title>
           <v-row no-gutters>
-            <v-col :class="['d-flex','justify-space-between']">
-              <div :class="['d-flex', 'flex-column']">
-                <strong>{{`${user.firstName} ${user.lastName}`}}</strong>
-                <span>{{user.email}}</span>
-              </div>
-                <div v-if="!editState">
-                  <PrimaryButton :id="`user-edit-button-${user.firstName}-${user.lastName}`" secondary icon="mdi-pencil" :on="{click: clickEditButton}">Edit</PrimaryButton>
-                </div>
-              <!-- we are in edit state below show save and cancel options-->
-                <div v-else>
-                  <PrimaryButton :id="`user-cancel-button-${user.firstName}-${user.lastName}`" class="mr-2" secondary :on="{click: clickEditButton}">Cancel</PrimaryButton>
-                  <PrimaryButton :id="`user-save-button-${user.firstName}-${user.lastName}`" :on="{click: clickSaveButton}">Save</PrimaryButton>
-                </div>
+            <v-col>
+              <v-row no-gutters>
+                <v-col cols="6">
+                  <strong>{{`${user.firstName} ${user.lastName}`}}</strong>
+                </v-col>
+                <v-col cols="6" v-if="!editState" class="d-flex justify-end">
+                  <v-btn :id="`user-edit-button-${user.firstName}-${user.lastName}`"
+                         title="Edit"
+                         color="#003366"
+                         :width="getButtonWidth()"
+                         min-width="3em"
+                         outlined
+                         @click="clickEditButton"
+                  >
+                    <v-icon class="ml-n1" :class="{'mr-1': $vuetify.breakpoint.mdAndUp}" color="#003366" :nudge-down="4" right dark>mdi-pencil</v-icon>
+                    <span v-if="$vuetify.breakpoint.mdAndUp" style="color: #003366" class="ml-1">Edit</span>
+                  </v-btn>
+                </v-col>
+                <v-col class="d-flex justify-end" cols="6" v-if="editState">
+                  <PrimaryButton width="5em" :id="`user-cancel-button-${user.firstName}-${user.lastName}`" text="Cancel" class="mr-2" secondary :on="{click: clickEditButton}"></PrimaryButton>
+                  <PrimaryButton :id="`user-save-button-${user.firstName}-${user.lastName}`" text="Save" :on="{click: clickSaveButton}"></PrimaryButton>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col class="pt-1">
+                  <span>{{user.email}}</span>
+                </v-col>
+              </v-row>
             </v-col>
           </v-row>
         </v-card-title>
@@ -104,6 +119,18 @@ export default {
         return true;
       }
       return false;
+    },
+    getButtonWidth() {
+      switch (this.$vuetify.breakpoint.name) {
+      case 'xs':
+      case 'sm':
+      case 'md':
+        return '2em';
+      case 'lg':
+      case 'xl':
+      default:
+        return '7em';
+      }
     },
     disableRoles() {
       this.isSelectedAdmin = false;
