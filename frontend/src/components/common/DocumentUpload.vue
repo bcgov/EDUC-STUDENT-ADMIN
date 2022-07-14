@@ -21,6 +21,8 @@
         dense
         outlined
         dismissible
+        color="#763939"
+        style="background-color: #efbaba !important;"
         v-model="alert"
         :class="alertType"
         class="mb-3"
