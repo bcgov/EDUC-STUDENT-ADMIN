@@ -1,5 +1,5 @@
 <template>
-  <v-card class="document-upload">
+  <v-card class="document-upload" max-width="640px">
 
     <v-card-title><h3>Document Upload</h3></v-card-title>
     <v-form
@@ -21,8 +21,8 @@
         dense
         outlined
         dismissible
-        color="#763939"
-        style="background-color: #efbaba !important;"
+        color="#712024"
+        style="background-color: #f7d8da !important;"
         v-model="alert"
         :class="alertType"
         class="mb-3"
@@ -207,7 +207,7 @@ export default {
 <style scoped>
 .document-upload{
   padding: 1.1rem;
-  max-width: 50rem;
+  max-width: 40rem;
   min-width: 10rem;
 }
 
