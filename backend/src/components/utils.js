@@ -157,6 +157,10 @@ async function postData(token, url, data, params, user) {
       data.createUser = user;
       data.updateUser = user;
     }
+
+    params.maxContentLength = Infinity;
+    params.maxBodyLength = Infinity;
+
     logRequestData('POST', url, data);
     const response = await axios.post(url, data, params);
     logResponseData(url, response, 'POST');
