@@ -20,15 +20,15 @@
     <v-row>
       <v-col :class="['d-sm-flex', 'align-center']">
         <div>Primary EDX Code - <span id="primaryEdxActivationCode" v-if="this.primaryEdxActivationCode === null">code not found</span><span id="primaryEdxActivationCode" v-else>{{ this.primaryEdxActivationCode.activationCode }}</span></div>
-        <PrimaryButton short secondary icon="mdi-sync" class="ml-2 pl-2 pr-2" @click.native="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibility">Generate New Code</PrimaryButton>
+        <PrimaryButton id="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibilityButton" short secondary icon="mdi-sync" class="ml-2 pl-2 pr-2" @click.native="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibility">Generate New Code</PrimaryButton>
       </v-col>
     </v-row>
     <v-row no-gutters id="generateNewPrimaryEdxActivationCodeDialog" :class="['d-sm-flex', 'my-1', 'align-center']" v-if="this.doShowGenerateNewPrimaryEdxActivationCodeDialog">
       <v-col class="pa-3">
         <p>Generating a new Primary EDX Activation Code for a school will replace the existing code for the school. The new code will have to be communicated to the school administrator.</p>
         <p>Are you sure that you want to generate a new Primary EDX Activation Code?</p>
-        <PrimaryButton short class="ml-2" @click.native="doGeneratePrimaryEdxActivationCode">Yes</PrimaryButton>
-        <PrimaryButton short secondary class="ml-2" @click.native="closeGenerateNewPrimaryEdxActivationCodeDialog">No</PrimaryButton>
+        <PrimaryButton id="doGeneratePrimaryEdxActivationCodeButton" short class="ml-2" @click.native="doGeneratePrimaryEdxActivationCode">Yes</PrimaryButton>
+        <PrimaryButton id="closeGenerateNewPrimaryEdxActivationCodeDialogButton" short secondary class="ml-2" @click.native="closeGenerateNewPrimaryEdxActivationCodeDialog">No</PrimaryButton>
       </v-col>
     </v-row>
     <!--    search filter -->
