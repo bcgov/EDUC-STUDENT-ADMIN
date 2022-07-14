@@ -82,7 +82,7 @@
                   </v-btn>
                   <v-btn small @click="displayAttachmentPanel">
                     <v-icon color="#003366">mdi-paperclip</v-icon>
-                    <span style="color: #003366" class="ml-1">Document</span>
+                    <span style="color: #003366" class="ml-1">Attachment</span>
                   </v-btn>
                   <v-btn small>
                     <v-icon color="#003366">mdi-emoticon-happy-outline</v-icon>
