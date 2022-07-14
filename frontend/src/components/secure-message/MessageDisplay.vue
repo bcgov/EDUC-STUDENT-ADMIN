@@ -125,15 +125,18 @@
                 <PrimaryButton id="newMessagePostBtn" text="Send" width="8rem" :disabled="!newMessage" :loading="processing" @click.native="sendNewExchangeComment"></PrimaryButton>
               </v-row>
             </v-row>
-            <v-row v-if="isNewAttachmentDisplayed">
+            <v-row no-gutters>
               <v-col class="d-flex justify-center">
-                <DocumentUpload
-                  style="min-width: 40em"
-                  :small-file-extension="false"
-                  :check-file-rules="true"
-                  @close:form="hideAttachmentPanel"
-                  @upload="upload">
-                </DocumentUpload>
+                <v-expand-transition>
+                  <DocumentUpload
+                      style="min-width: 40em"
+                      :small-file-extension="false"
+                      :check-file-rules="true"
+                      v-show="isNewAttachmentDisplayed"
+                      @close:form="hideAttachmentPanel"
+                      @upload="upload">
+                  </DocumentUpload>
+                </v-expand-transition>
               </v-col>
             </v-row>
             <v-row>

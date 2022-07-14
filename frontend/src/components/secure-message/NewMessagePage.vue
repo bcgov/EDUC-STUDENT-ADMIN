@@ -89,6 +89,8 @@
                         xl="2" lg="2" md="2" xs="2" sm="2"
                     >
                       <DocumentUpload
+                          :small-file-extension="false"
+                          :check-file-rules="true"
                           v-show="expandAttachFile"
                           @close:form="showOptions"
                           @upload="uploadDocument"
