@@ -61,6 +61,22 @@
                             <template v-slot:message="{ message, key }">
                               <span :style="edxAdminUserCodeSelected ? 'color: black; font-weight: bold' : ''">{{ message }}</span>
                             </template>
+                            <template v-slot:item="{ item, on, attrs }">
+                              <v-list-item :disabled="item.disabled" @input="disableRoles" :value="item.edxRoleCode" v-bind="attrs" v-on="on">
+                                <template v-slot:default="{ active }">
+                                  <v-list-item-action class="mt-0 mb-2 mr-3">
+                                    <v-checkbox
+                                        :disabled="item.disabled"
+                                        :input-value="active"
+                                        color="primary"
+                                    ></v-checkbox>
+                                  </v-list-item-action>
+                                  <v-list-item-content>
+                                    <v-list-item-title>{{ item.label }}</v-list-item-title>
+                                  </v-list-item-content>
+                                </template>
+                              </v-list-item>
+                            </template>
                           </v-select>
                         </v-card-text>
                       </v-col>
