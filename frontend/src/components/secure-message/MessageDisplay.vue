@@ -19,7 +19,7 @@
           <div v-if="!loading && secureExchange" :overlay=false>
             <v-row>
               <v-col class="pb-0 pt-0 d-flex justify-start">
-                <v-row class="mb-n4">
+                <v-row >
                   <v-col cols="12" class="pb-2 pt-2 pr-0" style="text-align: left">
                     <h2 class="subjectHeading">{{ secureExchange.subject }}</h2>
                     <div class="ministryOwnershipTeamName" style="color: black">{{ secureExchange.contactName }}</div>
@@ -66,7 +66,11 @@
                 </v-row>
               </v-col>
             </v-row>
-            <v-divider class="divider"></v-divider>
+            <v-row no-gutters>
+              <v-col>
+                <v-divider class="divider"></v-divider>
+              </v-col>
+            </v-row>
             <v-row>
               <v-speed-dial id="editOptionsMenu" v-if="isEditable() && shouldDisplaySpeedDial" v-model="editOptionsOpen" top left direction="right">
                 <template v-slot:activator>
@@ -371,8 +375,8 @@ export default {
 }
 
 .containerSetup{
-  padding-right: 32em !important;
-  padding-left: 32em !important;
+  padding-right: 30em !important;
+  padding-left: 30em !important;
 }
 
 @media screen and (max-width: 1900px) {
