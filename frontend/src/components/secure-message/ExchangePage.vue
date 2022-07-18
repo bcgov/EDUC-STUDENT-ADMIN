@@ -425,7 +425,7 @@ export default {
       this.headerSearchParams.reviewer = '';
     },
     setFilterStatusActive(){
-      this.headerSearchParams.secureExchangeStatusCode = ['OPEN', 'CLOSED'];
+      this.headerSearchParams.secureExchangeStatusCode = ['OPEN'];
       this.headerSearchParams.reviewer = this.myself.name;
     },
     statusFilterActiveClicked(){
