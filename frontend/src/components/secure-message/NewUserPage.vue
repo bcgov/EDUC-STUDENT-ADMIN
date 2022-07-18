@@ -188,18 +188,14 @@ export default {
       this.$emit('access-user:messageSent');
     },
     sendNewUserInvite() {
-      let selectedRoleCodes = [];
       this.processing = true;
-      if (this.edxAdminUserCodeSelected) {
-        selectedRoleCodes = this.userRoles.map(el => el.edxRoleCode);
-      }
       const payload = {
         schoolName: this.schoolName,
         firstName: this.firstName,
         lastName: this.lastName,
         email: this.email,
         mincode: this.mincode,
-        edxActivationRoleCodes: selectedRoleCodes.length === 0 ? this.edxActivationRoleCodes : selectedRoleCodes,
+        edxActivationRoleCodes: this.edxActivationRoleCodes
       };
       ApiService.apiAxios.post(`${Routes.edx.NEW_SCHOOL_USER_ACTIVATION_INVITE}`, payload)
         .then(() => {
