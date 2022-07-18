@@ -15,6 +15,7 @@
         :error-messages="fileInputError"
         class="pt-0"
         @change="selectFile"
+        id="selectFileInput"
       ></v-file-input>
       </v-form>
       <v-alert
@@ -26,6 +27,7 @@
         v-model="alert"
         :class="alertType"
         class="mb-3"
+        id="uploadAlert"
       >
          {{ alertMessage }}
       </v-alert>
