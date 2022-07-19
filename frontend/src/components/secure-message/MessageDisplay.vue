@@ -294,7 +294,7 @@ export default {
     },
     clickMarkAsButton() {
       this.toggleIsReadByMinistry();
-      router.push({name: 'exchange'});
+      router.push({name: `exchange_inbox_${this.secureExchange.ministryOwnershipGroupRoleIdentifier}`});
     },
     isEditable() {
       return this.secureExchange.secureExchangeStatusCode !== 'Closed';

@@ -327,7 +327,7 @@ const router = new VueRouter({
           children: [
             {
               path: 'PEN_TEAM_ROLE',
-              name: 'exchangePenTeamRole',
+              name: 'exchange_inbox_PEN_TEAM_ROLE',
               component: ExchangePage,
               props: {
                 ministryOwnershipGroupRoleID: 'PEN_TEAM_ROLE'
