@@ -120,6 +120,7 @@ async function getExchange(req, res) {
       if (dataResponse['ministryOwnershipTeamID']) {
         let tempMinTeam = ministryTeamCodeResponse.find(ministryTeam => ministryTeam['ministryOwnershipTeamId'] === dataResponse['ministryOwnershipTeamID']);
         dataResponse['ministryOwnershipTeamName'] = tempMinTeam?.teamName ? tempMinTeam.teamName : dataResponse['ministryOwnershipTeamName'];
+        dataResponse['ministryOwnershipGroupRoleIdentifier'] = tempMinTeam?.groupRoleIdentifier ? tempMinTeam.groupRoleIdentifier : '';
       }
 
       dataResponse['contactName'] = dataResponse['secureExchangeContactTypeCode'] === 'SCHOOL' ? `${school.schoolName} (${dataResponse['contactIdentifier']})` : 'Unknown Contact';
