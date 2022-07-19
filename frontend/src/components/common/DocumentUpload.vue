@@ -2,38 +2,39 @@
   <v-card class="document-upload" max-width="640px">
 
     <v-card-title><h3>Document Upload</h3></v-card-title>
-    <v-form
-      ref="form"
-      v-model="validForm"
-    >
-      <v-file-input
-        color="#003366"
-        :accept="fileAccept"
-        :rules="fileRules"
-        :disabled="hasReadOnlyRoleAccess()"
-        placeholder="Select your file"
-        :error-messages="fileInputError"
-        class="pt-0"
-        @change="selectFile"
-        id="selectFileInput"
-      ></v-file-input>
+    <v-card-text>
+      <v-form
+          ref="form"
+          v-model="validForm"
+      >
+        <v-file-input
+            color="#003366"
+            :accept="fileAccept"
+            :rules="fileRules"
+            :disabled="hasReadOnlyRoleAccess()"
+            placeholder="Select your file"
+            :error-messages="fileInputError"
+            class="pt-0"
+            @change="selectFile"
+            id="selectFileInput"
+        ></v-file-input>
       </v-form>
       <v-alert
-        dense
-        outlined
-        dismissible
-        color="#712024"
-        style="background-color: #f7d8da !important;"
-        v-model="alert"
-        :class="alertType"
-        class="mb-3"
-        id="uploadAlert"
+          dense
+          outlined
+          dismissible
+          color="#712024"
+          style="background-color: #f7d8da !important;"
+          v-model="alert"
+          :class="alertType"
+          class="mb-3"
       >
-         {{ alertMessage }}
+        {{ alertMessage }}
       </v-alert>
+    </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <PrimaryButton id="cancelMessage" secondary text="Cancel" @click.native="closeForm"></PrimaryButton>
+        <PrimaryButton id="cancelUploadButton" secondary text="Cancel" @click.native="closeForm"></PrimaryButton>
         <PrimaryButton :key="buttonKey" :loading="active" :disabled="!dataReady" id="upload_form" text="Upload" width="7rem" @click.native="submitRequest"></PrimaryButton>
       </v-card-actions>
   </v-card>
