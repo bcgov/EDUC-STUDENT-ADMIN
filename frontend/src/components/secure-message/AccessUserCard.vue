@@ -59,7 +59,7 @@
 
                 <v-list-item-content>
                   <v-list-item-title>{{ newrole.label }}</v-list-item-title>
-                  <v-list-item-subtitle style="color: black; font-weight: bold" v-if="isSelectedAdmin && newrole.edxRoleCode === 'EDX_ADMIN'">EDX School Admin users will be set up with all EDX school roles</v-list-item-subtitle>
+                  <div style="color: black; font-weight: bold" v-if="isSelectedAdmin && newrole.edxRoleCode === 'EDX_ADMIN'">EDX School Admin users will be set up with all school roles</div>
                 </v-list-item-content>
               </template>
             </v-list-item>
