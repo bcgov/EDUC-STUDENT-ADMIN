@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="containerSetup">
     <v-row>
       <v-col>
         <h2>
@@ -286,6 +286,11 @@ export default {
   .v-dialog__content /deep/ .v-bottom-sheet {
     width: 60% !important;
   }
+}
+
+.containerSetup{
+  padding-right: 10em !important;
+  padding-left: 10em !important;
 }
 
 </style>

@@ -23,7 +23,7 @@
                   </v-btn>
                 </v-col>
                 <v-col class="d-flex justify-end" cols="6" v-if="editState">
-                  <PrimaryButton width="5em" :id="`user-cancel-button-${user.firstName}-${user.lastName}`" text="Cancel" class="mr-2" secondary :on="{click: clickEditButton}"></PrimaryButton>
+                  <PrimaryButton style="word-break: break-word;" width="5em" :id="`user-cancel-button-${user.firstName}-${user.lastName}`" text="Cancel" class="mr-2" secondary :on="{click: clickEditButton}"></PrimaryButton>
                   <PrimaryButton :id="`user-save-button-${user.firstName}-${user.lastName}`" text="Save" :on="{click: clickSaveButton}"></PrimaryButton>
                 </v-col>
               </v-row>

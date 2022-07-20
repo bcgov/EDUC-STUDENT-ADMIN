@@ -1,25 +1,33 @@
 <template>
-  <v-container>
+  <v-container class="containerSetup">
     <v-card color="#F2F2F2">
       <v-card-title>
-        <strong>Search a school below to manage their EDX Access</strong>
+        <v-row justify="center">
+          <v-col class="d-flex justify-center">
+            <strong>Search a school below to manage their EDX Access</strong>
+          </v-col>
+        </v-row>
       </v-card-title>
       <v-card-text>
-        <v-row>
-          <v-col cols="8" class="pt-1">
-            <v-autocomplete
-                id='selectSchoolName'
-                class="pt-0 mt-0"
-                prepend-inner-icon="mdi-account-box-outline"
-                v-model="schoolMincode"
-                :items="schools"
-                color="#003366"
-                label="School"
-                clearable
-            ></v-autocomplete>
-          </v-col>
-          <v-col>
-            <PrimaryButton id="manageSchoolButton" :to="`/edx/exchange/access/school/${schoolMincode}`" :disabled="!schoolMincode">Manage School Access</PrimaryButton>
+        <v-row justify="center">
+          <v-col cols="8">
+            <v-row justify="center" no-gutters>
+             <v-col cols="9">
+               <v-autocomplete
+                 id='selectSchoolName'
+                 class="pt-0 mt-n1"
+                 prepend-inner-icon="mdi-account-box-outline"
+                 v-model="schoolMincode"
+                 :items="schools"
+                 color="#003366"
+                 label="School"
+                 clearable
+               ></v-autocomplete>
+             </v-col>
+              <v-col class="pl-4" cols="3">
+                <PrimaryButton id="manageSchoolButton" :to="`/edx/exchange/access/school/${schoolMincode}`" :disabled="!schoolMincode">Manage School Access</PrimaryButton>
+              </v-col>
+            </v-row>
           </v-col>
         </v-row>
       </v-card-text>
@@ -51,3 +59,10 @@ export default {
 };
 </script>
 
+<style scoped>
+.containerSetup{
+  padding-right: 20em !important;
+  padding-left: 20em !important;
+}
+
+</style>
