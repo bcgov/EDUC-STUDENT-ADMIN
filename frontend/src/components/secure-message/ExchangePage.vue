@@ -1,6 +1,6 @@
 <template>
-  <v-container fluid>
-    <v-row class="pt-0" :class="{'mr-0 ml-0': $vuetify.breakpoint.smAndDown, 'mr-3 ml-3': $vuetify.breakpoint.mdAndUp}">
+  <v-container class="containerSetup" fluid>
+    <v-row class="pt-0">
       <v-col class="pt-0">
         <v-row class='d-flex justify-end pb-2'>
           <v-col class='d-flex justify-start'>
@@ -131,7 +131,7 @@
                     ></v-date-picker>
                   </v-menu>
                 </v-col>
-                </v-row>
+              </v-row>
               <v-row>
                 <v-col cols="12" md="4" class="pt-0">
                   <v-select
@@ -177,7 +177,7 @@
                     clearable
                   ></v-text-field>
                 </v-col>
-                </v-row>
+              </v-row>
               <v-row no-gutters class="justify-end mt-n2">
                 <v-col cols="12" class="d-flex justify-end">
                   <PrimaryButton class="mr-3" id="search-clear" :secondary="true" @click.native="clearSearch"
@@ -209,7 +209,7 @@
               <template #header.data-table-select></template>
               <template v-slot:item.secureExchangeStatusCode="{ item }">
                 <v-row class="ml-n6" style="cursor: pointer;">
-                  <v-col cols="6" lg="7" xl="9" class="pb-0 pt-0" @click="openExchange(item.secureExchangeID)">
+                  <v-col cols="6" lg="7" xl="7" class="pb-0 pt-0" @click="openExchange(item.secureExchangeID)">
                     <v-row class="mb-n4">
                       <v-col cols="12" class="pb-2 pt-2 pr-0">
                         <span class="subjectHeading" :style="{color: item.isReadByMinistry ? 'black': '#1f7cef'}">{{ getSubject(item.subject) }}</span><span style="color: gray"> - {{ getLatestComment(item) }}</span>
@@ -221,23 +221,47 @@
                       </v-col>
                     </v-row>
                   </v-col>
-                  <v-col cols="6" lg="5" xl="3" style="text-align: end" class="pb-0 pt-0" @click="openExchange(item.secureExchangeID)">
-                    <v-row>
-                      <v-col class="pr-0">
-                        <v-icon style="margin-bottom: 0.25em" color="grey darken-3" right size="medium" dark>mdi-pound</v-icon>
-                        <span class="statusCodeLabel">{{ item.sequenceNumber }}</span>
+                  <v-col cols="6" lg="5" xl="5" style="text-align: end" class="pb-0 pt-0" @click="openExchange(item.secureExchangeID)">
+                    <v-row class="d-flex justify-end">
+                      <v-col cols="2">
+                        <v-row no-gutters>
+                          <v-col cols="6">
+                            <v-icon  color="grey darken-3" right size="medium" dark>mdi-pound</v-icon>
+                          </v-col>
+                          <v-col cols="6">
+                            <span class="statusCodeLabel">{{ item.sequenceNumber }}</span>
+                          </v-col>
+                        </v-row>
                       </v-col>
-                      <v-col class="ml-n5">
-                        <v-icon class="pb-1" :color="getStatusColor(item.secureExchangeStatusCode)" right dark>mdi-circle-medium</v-icon>
-                        <span class="statusCodeLabel">{{ item.secureExchangeStatusCode }}</span>
+                      <v-col cols="2">
+                        <v-row no-gutters>
+                          <v-col cols="6">
+                            <v-icon class="pb-1" :color="getStatusColor(item.secureExchangeStatusCode)" right dark>mdi-circle-medium</v-icon>
+                          </v-col>
+                          <v-col cols="6">
+                            <span class="statusCodeLabel">{{ item.secureExchangeStatusCode }}</span>
+                          </v-col>
+                        </v-row>
                       </v-col>
-                      <v-col class="pl-0 ml-n5" cols="4">
-                        <v-icon style="margin-bottom: 0.2em" color="grey darken-3" right dark>mdi-account-outline</v-icon>
-                        <span class="statusCodeLabel">{{ getReviewer(item.reviewer) }}</span>
+                      <v-col cols="3" class="pr-0">
+                        <v-row no-gutters>
+                          <v-col cols="6">
+                            <v-icon style="margin-bottom: 0.2em" color="grey darken-3" right dark>mdi-account-outline</v-icon>
+                          </v-col>
+                          <v-col cols="6">
+                            <span class="statusCodeLabel">{{ getReviewer(item.reviewer) }}</span>
+                          </v-col>
+                        </v-row>
                       </v-col>
-                      <v-col class="pl-0 ml-n5">
-                        <v-icon class="pr-1" style="margin-bottom: 0.2em" color="grey darken-3" right dark>mdi-clock-outline</v-icon>
-                        <span class="statusCodeLabel">{{ getNumberOfDays(item.createDate) }}</span>
+                      <v-col cols="4" class="pl-0 pr-0">
+                        <v-row no-gutters>
+                          <v-col cols="6">
+                            <v-icon class="pr-1" style="margin-bottom: 0.2em" color="grey darken-3" right dark>mdi-clock-outline</v-icon>
+                          </v-col>
+                          <v-col cols="4">
+                            <span class="statusCodeLabel">{{ getNumberOfDays(item.createDate) }}</span>
+                          </v-col>
+                        </v-row>
                       </v-col>
                     </v-row>
                   </v-col>
@@ -488,13 +512,13 @@ export default {
         switch (this.$vuetify.breakpoint.name) {
         case 'xs':
         case 'sm':
-          return this.getContentString(subject, 16);
+          return this.getContentString(subject, 15);
         case 'md':
-          return this.getContentString(subject, 40);
+          return this.getContentString(subject, 15);
         case 'lg':
-          return this.getContentString(subject, 75);
+          return this.getContentString(subject, 20);
         default:
-          return this.getContentString(subject, 120);
+          return this.getContentString(subject, 25);
         }
       }
       return subject;
@@ -511,13 +535,12 @@ export default {
         switch (this.$vuetify.breakpoint.name) {
         case 'xs':
         case 'sm':
-          return this.getContentString(content, 25);
+          return this.getContentString(content, 30);
         case 'md':
-          return this.getContentString(content, 100);
+          return this.getContentString(content, 40);
         case 'lg':
-          return this.getContentString(content, 130);
         case 'xl':
-          return this.getContentString(content, 220);
+          return this.getContentString(content, 45);
         default:
           return content;
         }
@@ -651,7 +674,8 @@ export default {
 }
 
 .statusCodeLabel{
-  font-size: large;
+  font-size: medium;
+  white-space: nowrap;
 }
 
 >>>.v-data-table-header{
@@ -688,6 +712,26 @@ export default {
 @media screen and (max-width: 1401px){
   .statusCodeLabel{
     font-size: medium;
+  }
+}
+
+
+.containerSetup{
+  padding-right: 32em !important;
+  padding-left: 32em !important;
+}
+
+@media screen and (max-width: 1950px) {
+  .containerSetup{
+    padding-right: 20em !important;
+    padding-left: 20em !important;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .containerSetup{
+    padding-right: 4em !important;
+    padding-left: 4em !important;
   }
 }
 
