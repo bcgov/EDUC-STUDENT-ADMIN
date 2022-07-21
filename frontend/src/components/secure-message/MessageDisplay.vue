@@ -100,11 +100,11 @@
                   <v-icon v-else>mdi-email-open-outline</v-icon>
                   <span class="ml-1 markAsSpan">{{`Mark As ${secureExchange.isReadByMinistry ? 'Unread' : 'Read'}` }}</span>
                 </v-btn>
-                <v-btn id="claimAsButton" class="my-4 mx-2">
+                <v-btn id="claimAsButton" class="my-4 mx-2" :disabled="!isEditable()">
                   <v-icon>{{ secureExchange.reviewer ? 'mdi-account-off-outline' : 'mdi-account-check-outline' }}</v-icon>
                   <span class="ml-1">{{ secureExchange.reviewer ? 'Unclaim' : 'Claim' }}</span>
                 </v-btn>
-                <v-btn id="changeStatusButton" class="my-4">
+                <v-btn id="changeStatusButton" class="my-4" v-on:click="clickMarkAsClosedButton" :disabled="!isEditable()">
                   <span>Close</span>
                 </v-btn>
               </v-col>
@@ -354,6 +354,21 @@ export default {
           this.processing = false;
           this.resetNewMessageForm();
         });
+    },
+    clickMarkAsClosedButton() {
+      this.loadingReadStatus = true;
+      ApiService.apiAxios.put(Routes.edx.EXCHANGE_URL + `/${this.secureExchangeID}/markAsClosed`)
+        .then((response) => {
+          this.secureExchange = response.data;
+        })
+        .catch(error => {
+          console.log(error);
+        })
+        .finally(() => {
+          this.loadingReadStatus = false;
+        });
+      //router.push({name: 'exchange_inbox_PEN_TEAM_ROLE'});
+      router.push({name: `exchange_inbox_${this.secureExchange.ministryOwnershipGroupRoleIdentifier}`});
     },
   }
 };

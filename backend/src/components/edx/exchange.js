@@ -238,6 +238,29 @@ async function markAs(req, res) {
   }
 }
 
+async function markAsClosed(req, res) {
+  const token = utils.getBackendToken(req);
+  if (!token) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No access token'
+    });
+  }
+  try {
+    const currentExchange = await getData(token, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}`);
+    currentExchange.secureExchangeStatusCode = 'CLOSED';
+    currentExchange.createDate = null;
+    currentExchange.updateDate = null;
+
+    await putData(token, `${config.get('server:edx:exchangeURL')}`, currentExchange);
+
+    return getExchange(req, res);
+  }
+  catch (e) {
+    logApiError(e, 'markAs', 'Error updating the read status of an exchange');
+    return errorResponse(res);
+  }
+}
+
 async function getEdxUsers(req, res) {
   const token = utils.getBackendToken(req);
   if (!token && req.session.userMinCodes) {
@@ -499,5 +522,6 @@ module.exports = {
   schoolUserActivationInvite,
   createSecureExchangeComment,
   uploadDocumentToExchange,
-  getExchangeDocumentById
+  getExchangeDocumentById,
+  markAsClosed
 };
