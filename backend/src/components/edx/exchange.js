@@ -307,7 +307,6 @@ async function getEdxUsers(req, res) {
         };
       });
     }
-    console.log('getEdxUsers:response:== ' + JSON.stringify(filteredResponse, null, 2));
     return res.status(HttpStatus.OK).json(filteredResponse);
   }
   catch (e) {
