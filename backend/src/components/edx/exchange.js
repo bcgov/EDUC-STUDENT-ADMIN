@@ -252,6 +252,8 @@ async function markAsClosed(req, res) {
   ])
     .then(async ([statusCodeResponse, ministryTeamCodeResponse, dataResponse]) => {
       if (statusCodeResponse && ministryTeamCodeResponse && dataResponse) {
+        const userInfo = utils.getUser(req);
+        let userRoles = userInfo.realm_access.roles;
         let roleCheckPass = false;
         let ownerTeamCheckPass = false;
         let exchange = dataResponse;
@@ -259,8 +261,10 @@ async function markAsClosed(req, res) {
           let matchedMinTeam = ministryTeamCodeResponse.find(minstryTeam => minstryTeam['ministryOwnershipTeamId'] === exchange['ministryOwnershipTeamID']);
           if(matchedMinTeam['groupRoleIdentifier']) {
             ownerTeamCheckPass = true;
-            if(matchedMinTeam['groupRoleIdentifier'] == 'PEN_TEAM_ROLE'){
-              roleCheckPass = true;
+            for (const role of userRoles) {
+              if (role == 'SECURE_EXCHANGE') {
+                roleCheckPass = true;
+              }
             }
           } else{
             return res.status(HttpStatus.NOT_FOUND).json({
