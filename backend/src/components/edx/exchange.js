@@ -245,20 +245,44 @@ async function markAsClosed(req, res) {
       message: 'No access token'
     });
   }
-  try {
-    const currentExchange = await getData(token, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}`);
-    currentExchange.secureExchangeStatusCode = 'CLOSED';
-    currentExchange.createDate = null;
-    currentExchange.updateDate = null;
+  return Promise.all([
+    getCodeTable(token, CACHE_KEYS.EDX_SECURE_EXCHANGE_STATUS, config.get('server:edx:exchangeStatusesURL')),
+    getCodeTable(token, CACHE_KEYS.EDX_MINISTRY_TEAMS, config.get('server:edx:ministryTeamURL')),
+    getData(token, config.get('server:edx:exchangeURL')+`/${req.params.secureExchangeID}`),
+  ])
+    .then(async ([statusCodeResponse, ministryTeamCodeResponse, dataResponse]) => {
+      if (statusCodeResponse && ministryTeamCodeResponse && dataResponse) {
+        let roleCheckPass = false;
+        let ownerTeamCheckPass = false;
+        let exchange = dataResponse;
+        if(exchange['ministryOwnershipTeamID']){
+          let matchedMinTeam = ministryTeamCodeResponse.find(minstryTeam => minstryTeam['ministryOwnershipTeamId'] === exchange['ministryOwnershipTeamID']);
+          if(matchedMinTeam['groupRoleIdentifier']) {
+            ownerTeamCheckPass = true;
+            if(matchedMinTeam['groupRoleIdentifier'] == 'PEN_TEAM_ROLE'){
+              roleCheckPass = true;
+            }
+          } else{
+            return res.status(HttpStatus.NOT_FOUND).json({
+              message: 'User Team Code Missing'
+            });
+          }
 
-    await putData(token, `${config.get('server:edx:exchangeURL')}`, currentExchange);
+          if(ownerTeamCheckPass && roleCheckPass){
+            const currentExchange = dataResponse;
+            currentExchange.secureExchangeStatusCode = 'CLOSED';
+            currentExchange.createDate = null;
+            currentExchange.updateDate = null;
+            await putData(token, `${config.get('server:edx:exchangeURL')}`, currentExchange);
 
-    return getExchange(req, res);
-  }
-  catch (e) {
-    logApiError(e, 'markAs', 'Error updating the read status of an exchange');
-    return errorResponse(res);
-  }
+            return getExchange(req, res);
+          }
+        }
+      }
+    }).catch(e => {
+      logApiError(e, 'markAsClosed', 'Error getting current secure exchange to close.');
+      return errorResponse(res);
+    });
 }
 
 async function getEdxUsers(req, res) {
@@ -283,7 +307,7 @@ async function getEdxUsers(req, res) {
         };
       });
     }
-
+    console.log('getEdxUsers:response:== ' + JSON.stringify(filteredResponse, null, 2));
     return res.status(HttpStatus.OK).json(filteredResponse);
   }
   catch (e) {

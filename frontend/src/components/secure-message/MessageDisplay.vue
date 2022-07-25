@@ -367,7 +367,6 @@ export default {
         .finally(() => {
           this.loadingReadStatus = false;
         });
-      //router.push({name: 'exchange_inbox_PEN_TEAM_ROLE'});
       router.push({name: `exchange_inbox_${this.secureExchange.ministryOwnershipGroupRoleIdentifier}`});
     },
   }
