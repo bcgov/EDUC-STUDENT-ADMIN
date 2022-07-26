@@ -258,16 +258,15 @@ async function markAsClosed(req, res) {
         let ownerTeamCheckPass = false;
         let exchange = dataResponse;
         if(exchange['ministryOwnershipTeamID']){
-          let matchedMinTeam = ministryTeamCodeResponse.find(minstryTeam => minstryTeam['ministryOwnershipTeamId'] === exchange['ministryOwnershipTeamID']);
+          const matchedMinTeam = ministryTeamCodeResponse.find(minstryTeam => minstryTeam['ministryOwnershipTeamId'] === exchange['ministryOwnershipTeamID']);
           if(matchedMinTeam['groupRoleIdentifier']) {
             ownerTeamCheckPass = true;
-            for (const role of userRoles) {
-              if (role == 'SECURE_EXCHANGE') {
-                roleCheckPass = true;
-              }
+            let matchedUserRole = userRoles.find(uRole => uRole === matchedMinTeam['groupRoleIdentifier']);
+            if(matchedUserRole) {
+              roleCheckPass = true;
             }
           } else{
-            return res.status(HttpStatus.NOT_FOUND).json({
+            return res.status(HttpStatus.UNAUTHORIZED).json({
               message: 'User Team Code Missing'
             });
           }
@@ -281,6 +280,10 @@ async function markAsClosed(req, res) {
 
             return getExchange(req, res);
           }
+        } else{
+          return res.status(HttpStatus.UNAUTHORIZED).json({
+            message: 'Permission check failed.'
+          });
         }
       }
     }).catch(e => {
