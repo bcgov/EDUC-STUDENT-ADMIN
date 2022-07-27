@@ -20,7 +20,7 @@ async function claimAllExchanges(req, res) {
       secureExchangeIDs: req.body.secureExchangeIDs
     }).toString();
 
-    await utils.postData(token, config.get('server:edx:claimExchangesURL') + '?' + params, null , null , null);
+    await utils.postData(token, config.get('server:edx:claimExchangesURL') + '?' + params, null, null, null);
     return res.status(HttpStatus.OK).json({});
   } catch (e) {
     logApiError(e, 'claimAllExchanges', 'Error occurred while attempting to claim exchanges.');
@@ -74,7 +74,7 @@ async function getExchangesPaginated(req, res) {
     criteria = buildSearchParams(req.query.searchParams);
   }
 
-  if(req.query.searchParams.contactIdentifier){
+  if (req.query.searchParams.contactIdentifier) {
     criteria.push(getCriteria('secureExchangeContactTypeCode', getContactIdentifierType(req.query.searchParams.contactIdentifier, res), FILTER_OPERATION.EQUAL, VALUE_TYPE.STRING));
   }
 
@@ -105,7 +105,7 @@ async function getExchange(req, res) {
   return Promise.all([
     getCodeTable(token, CACHE_KEYS.EDX_SECURE_EXCHANGE_STATUS, config.get('server:edx:exchangeStatusesURL')),
     getCodeTable(token, CACHE_KEYS.EDX_MINISTRY_TEAMS, config.get('server:edx:ministryTeamURL')),
-    getData(token, config.get('server:edx:exchangeURL')+`/${req.params.secureExchangeID}`)
+    getData(token, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}`)
   ])
     .then(async ([statusCodeResponse, ministryTeamCodeResponse, dataResponse]) => {
 
@@ -137,14 +137,14 @@ async function getExchange(req, res) {
         activity['isSchool'] = comment.edxUserID ? true : false;
         activity['timestamp'] = comment['commentTimestamp'] ? LocalDateTime.parse(comment['commentTimestamp']) : '';
         activity['actor'] = comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
-        activity['title'] =  comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+        activity['title'] = comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
         activity['displayDate'] = comment['commentTimestamp'] ? LocalDateTime.parse(comment['commentTimestamp']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : 'Unknown Date';
         activity['content'] = comment['content'];
         activity['secureExchangeID'] = comment['secureExchangeID'];
         activity['secureExchangeCommentID'] = comment['secureExchangeCommentID'];
         dataResponse['activities'].push(activity);
       });
-      if(dataResponse['documentList']){
+      if (dataResponse['documentList']) {
         dataResponse['documentList'].forEach((document) => {
           let activity = {};
           activity['type'] = 'document';
@@ -152,7 +152,7 @@ async function getExchange(req, res) {
           activity['timestamp'] = document['createDate'] ? LocalDateTime.parse(document['createDate']) : '';
           activity['actor'] = document.edxUserID ? document.edxUserID : document.staffUserIdentifier;
           activity['title'] = document.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
-          activity['fileName'] =  document.fileName;
+          activity['fileName'] = document.fileName;
           activity['documentType'] = cacheService.getDocumentTypeCodeLabelByCode(document.documentTypeCode);
           activity['displayDate'] = document['createDate'] ? LocalDateTime.parse(document['createDate']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : 'Unknown Date';
           activity['documentID'] = document['documentID'];
@@ -160,7 +160,9 @@ async function getExchange(req, res) {
         });
       }
 
-      dataResponse['activities'].sort((activity1, activity2) => { return activity2.timestamp.compareTo(activity1.timestamp); });
+      dataResponse['activities'].sort((activity1, activity2) => {
+        return activity2.timestamp.compareTo(activity1.timestamp);
+      });
 
       return res.status(HttpStatus.OK).json(dataResponse);
     }).catch(e => {
@@ -231,8 +233,7 @@ async function markAs(req, res) {
     await putData(token, `${config.get('server:edx:exchangeURL')}`, currentExchange);
 
     return getExchange(req, res);
-  }
-  catch (e) {
+  } catch (e) {
     logApiError(e, 'markAs', 'Error updating the read status of an exchange');
     return errorResponse(res);
   }
@@ -248,43 +249,26 @@ async function markAsClosed(req, res) {
   return Promise.all([
     getCodeTable(token, CACHE_KEYS.EDX_SECURE_EXCHANGE_STATUS, config.get('server:edx:exchangeStatusesURL')),
     getCodeTable(token, CACHE_KEYS.EDX_MINISTRY_TEAMS, config.get('server:edx:ministryTeamURL')),
-    getData(token, config.get('server:edx:exchangeURL')+`/${req.params.secureExchangeID}`),
+    getData(token, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}`),
   ])
-    .then(async ([statusCodeResponse, ministryTeamCodeResponse, dataResponse]) => {
-      if (statusCodeResponse && ministryTeamCodeResponse && dataResponse) {
+    .then(async ([statusCodeResponse, ministryTeamCodeResponse, exchange]) => {
+      if (statusCodeResponse && ministryTeamCodeResponse && exchange) {
         const userInfo = utils.getUser(req);
         let userRoles = userInfo.realm_access.roles;
-        let roleCheckPass = false;
-        let ownerTeamCheckPass = false;
-        let exchange = dataResponse;
-        if(exchange['ministryOwnershipTeamID']){
-          const matchedMinTeam = ministryTeamCodeResponse.find(minstryTeam => minstryTeam['ministryOwnershipTeamId'] === exchange['ministryOwnershipTeamID']);
-          if(matchedMinTeam['groupRoleIdentifier']) {
-            ownerTeamCheckPass = true;
-            let matchedUserRole = userRoles.find(uRole => uRole === matchedMinTeam['groupRoleIdentifier']);
-            if(matchedUserRole) {
-              roleCheckPass = true;
-            }
-          } else{
-            return res.status(HttpStatus.UNAUTHORIZED).json({
-              message: 'User Team Code Missing'
-            });
-          }
-
-          if(ownerTeamCheckPass && roleCheckPass){
-            const currentExchange = dataResponse;
-            currentExchange.secureExchangeStatusCode = 'CLOSED';
-            currentExchange.createDate = null;
-            currentExchange.updateDate = null;
-            await putData(token, `${config.get('server:edx:exchangeURL')}`, currentExchange);
-
-            return getExchange(req, res);
-          }
-        } else{
+        const matchedMinTeam = ministryTeamCodeResponse.find(ministryTeam => ministryTeam['ministryOwnershipTeamId'] === exchange['ministryOwnershipTeamID']);
+        let matchedUserRole = userRoles.find(uRole => uRole === matchedMinTeam['groupRoleIdentifier']);
+        if (!matchedUserRole) {
           return res.status(HttpStatus.UNAUTHORIZED).json({
-            message: 'Permission check failed.'
+            message: 'User does not have required role'
           });
         }
+
+        exchange.secureExchangeStatusCode = 'CLOSED';
+        exchange.createDate = null;
+        exchange.updateDate = null;
+        await putData(token, `${config.get('server:edx:exchangeURL')}`, exchange);
+
+        return getExchange(req, res);
       }
     }).catch(e => {
       logApiError(e, 'markAsClosed', 'Error getting current secure exchange to close.');
@@ -305,7 +289,7 @@ async function getEdxUsers(req, res) {
     let filteredResponse = [];
 
     //if we search by mincode strip out other school and district information for the frontend
-    if(req.query.mincode) {
+    if (req.query.mincode) {
       filteredResponse = response.map(user => {
         return {
           ...user,
@@ -315,8 +299,7 @@ async function getEdxUsers(req, res) {
       });
     }
     return res.status(HttpStatus.OK).json(filteredResponse);
-  }
-  catch (e) {
+  } catch (e) {
     logApiError(e, 'getEdxUsers', 'Error getting EDX users');
     return errorResponse(res);
   }
@@ -355,7 +338,8 @@ async function generateOrRegeneratePrimaryEdxActivationCode(req, res) {
     return errorResponse(res);
   }
 }
-async function schoolUserActivationInvite(req,res){
+
+async function schoolUserActivationInvite(req, res) {
   const token = utils.getBackendToken(req);
   if (!token) {
     return res.status(HttpStatus.UNAUTHORIZED).json({
@@ -366,7 +350,7 @@ async function schoolUserActivationInvite(req,res){
     ...req.body
   };
   try {
-    const response = await utils.postData(token,  config.get('server:edx:schoolUserActivationInviteURL'), payload, null, utils.getUser(req).idir_username);
+    const response = await utils.postData(token, config.get('server:edx:schoolUserActivationInviteURL'), payload, null, utils.getUser(req).idir_username);
     return res.status(200).json(response);
   } catch (e) {
     await logApiError(e, 'schoolUserActivationInvite', 'Error occurred while sending user activation invite');
@@ -374,6 +358,7 @@ async function schoolUserActivationInvite(req,res){
   }
 
 }
+
 async function updateEdxUserRoles(req, res) {
   try {
     const token = utils.getBackendToken(req);
@@ -385,17 +370,17 @@ async function updateEdxUserRoles(req, res) {
     let rolesToBeRemoved = [];
 
     //Determine roles to be removed
-    selectedUserSchool[0].edxUserSchoolRoles.forEach(function(userSchoolRole) {
-      if(!req.body.params.selectedRoles.filter(value  => userSchoolRole.edxRoleCode === value).length > 0){
+    selectedUserSchool[0].edxUserSchoolRoles.forEach(function (userSchoolRole) {
+      if (!req.body.params.selectedRoles.filter(value => userSchoolRole.edxRoleCode === value).length > 0) {
         rolesToBeRemoved.push(userSchoolRole.edxRoleCode);
       }
     });
 
-    selectedUserSchool[0].edxUserSchoolRoles = selectedUserSchool[0].edxUserSchoolRoles.filter(value  =>  !rolesToBeRemoved.includes(value.edxRoleCode));
+    selectedUserSchool[0].edxUserSchoolRoles = selectedUserSchool[0].edxUserSchoolRoles.filter(value => !rolesToBeRemoved.includes(value.edxRoleCode));
 
     //Roles to be added
-    req.body.params.selectedRoles.forEach(function(role) {
-      if(!selectedUserSchool[0].edxUserSchoolRoles.filter(value  => role === value.edxRoleCode).length > 0){
+    req.body.params.selectedRoles.forEach(function (role) {
+      if (!selectedUserSchool[0].edxUserSchoolRoles.filter(value => role === value.edxRoleCode).length > 0) {
         let newRole = {};
         newRole.createUser = userInfo.idir_username;
         newRole.updateUser = userInfo.idir_username;
@@ -419,7 +404,8 @@ async function updateEdxUserRoles(req, res) {
     return errorResponse(res);
   }
 }
-async function createSecureExchangeComment(req,res){
+
+async function createSecureExchangeComment(req, res) {
   try {
     const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
@@ -478,7 +464,7 @@ const createSearchParamObject = (key, value) => {
     value = value.join(',');
     operation = FILTER_OPERATION.BETWEEN;
     valueType = VALUE_TYPE.DATE_TIME;
-  }else if (key === 'secureExchangeStatusCode') {
+  } else if (key === 'secureExchangeStatusCode') {
     value = value.join(',');
     operation = FILTER_OPERATION.IN;
   }
@@ -490,7 +476,7 @@ const getContactIdentifierType = (contactIdentifier, res) => {
   let isPresent = data.some(school => school.mincode === contactIdentifier);
   if (isPresent) {
     return 'SCHOOL';
-  }else{
+  } else {
     logApiError(null, 'getContactIdentifierType', 'Error occurred while attempting to get the identifier type.');
     return errorResponse(res);
   }
@@ -527,11 +513,11 @@ function getExchangeDocumentById() {
   return async function getDocumentByIdHandler(req, res) {
     const token = getBackendToken(req);
     const url = `${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/documents/${req.params.documentId}`;
-    getData(token, url).then(resultData =>{
+    getData(token, url).then(resultData => {
       res.setHeader('Content-disposition', 'attachment; filename=' + resultData.fileName?.replace(/ /g, '_').replace(/,/g, '_').trim());
       res.setHeader('Content-type', resultData.fileExtension);
       return res.status(200).send(Buffer.from(resultData.documentData, 'base64'));
-    }).catch(error=>{
+    }).catch(error => {
       log.error('An error occurred attempting to get documents.');
       log.error(error);
       return res.status(500).json();
