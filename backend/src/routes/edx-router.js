@@ -6,7 +6,7 @@ const auth = require('../components/auth');
 const utils = require('../components/utils');
 const { getExchanges, createExchange, getExchange, claimAllExchanges, markAs, getEdxUsers, findPrimaryEdxActivationCode, generateOrRegeneratePrimaryEdxActivationCode, updateEdxUserRoles,
   schoolUserActivationInvite,
-  createSecureExchangeComment, uploadDocumentToExchange, getExchangeDocumentById
+  createSecureExchangeComment, uploadDocumentToExchange, getExchangeDocumentById, markAsClosed
 } = require('../components/edx/exchange');
 
 const extendSession = utils.extendSession();
@@ -27,6 +27,7 @@ router.post('/exchange/claim', passport.authenticate('jwt', {session: false}, un
 router.get('/exchange/statuses', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, utils.cacheMiddleware(), utils.getCodes('server:edx:exchangeStatusesURL', 'exchangeStatuses'));
 router.get('/exchange/file-requirements', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, utils.cacheMiddleware(), utils.getCodes('server:edx:fileRequirementsURL', 'fileRequirements'));
 router.put('/exchange/:secureExchangeID/markAs', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, markAs);
+router.put('/exchange/:secureExchangeID/markAsClosed', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, markAsClosed);
 router.get('/exchange/:secureExchangeID', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, getExchange);
 router.post('/exchange/:secureExchangeID/comments', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken,extendSession, createSecureExchangeComment);
 router.post('/exchange', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, createExchange);
