@@ -28,6 +28,37 @@ async function claimAllExchanges(req, res) {
   }
 }
 
+async function claimExchange(req, res) {
+  try {
+    const token = utils.getBackendToken(req);
+    if (!token && req.session.userMinCodes) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'No access token'
+      });
+    }
+    let params;
+    if (!req.body.claimedStatus) {
+      const userInfo = utils.getUser(req);
+      params = new URLSearchParams({
+        reviewer: userInfo.idir_username,
+        secureExchangeIDs: req.body.secureExchangeIDs
+      }).toString();
+    } else {
+      params = new URLSearchParams({
+        reviewer: '',
+        secureExchangeIDs: req.body.secureExchangeIDs
+      }).toString();
+    }
+    await utils.postData(token, config.get('server:edx:claimExchangesURL') + '?' + params, null, null, null);
+    const thisExchange = await getData(token, config.get('server:edx:exchangeURL') + `/${req.body.secureExchangeIDs}`);
+
+    return res.status(HttpStatus.OK).json({'reviewer':thisExchange['reviewer']});
+  } catch (e) {
+    logApiError(e, 'claimAllExchanges', 'Error occurred while attempting to claim exchanges.');
+    return errorResponse(res);
+  }
+}
+
 async function getExchanges(req, res) {
   const token = utils.getBackendToken(req);
   if (!token && req.session.userMinCodes) {
@@ -539,5 +570,6 @@ module.exports = {
   createSecureExchangeComment,
   uploadDocumentToExchange,
   getExchangeDocumentById,
-  markAsClosed
+  markAsClosed,
+  claimExchange
 };
