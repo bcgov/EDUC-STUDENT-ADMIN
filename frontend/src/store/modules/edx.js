@@ -48,7 +48,6 @@ export default {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
         if(state.ministryTeams.length === 0) {
           const response = await ApiService.getMinistryTeams();
-          console.log('MinistryTeamsss ->' + response.data);
           commit('setMinistryTeams', response.data);
         }
       }
