@@ -421,10 +421,8 @@ export default {
     toggleRemove(index) {
       this.isHideIndex = index;
       if( this.isOpenIndex !== null ){
-        console.log('IF');
         this.isOpenIndex = ( this.isOpenIndex === index ) ? null : index;
       } else {
-        console.log('ELSE');
         this.isOpenIndex = index;
       }
     },
@@ -433,14 +431,9 @@ export default {
       this.isHideIndex = false;
     },
     removeAttachment(documentID) {
-      console.log('DOCUMENT_ID:== '+documentID);
 
-      //this.loadingReadStatus = true;
       ApiService.apiAxios.put(Routes.edx.EXCHANGE_URL + `/${this.secureExchangeID}/removeDoc/${documentID}`)
         .then((response) => {
-          console.log(''+ response.status);
-          console.log('response here:== ');
-          console.log(response);
           this.getExchange();
           if(response.status === 200){
             this.setSuccessAlert('Success! The document has been removed.');
@@ -453,7 +446,6 @@ export default {
           console.log(error);
         })
         .finally(() => {
-          //this.loadingReadStatus = false;
         });
     }
   }

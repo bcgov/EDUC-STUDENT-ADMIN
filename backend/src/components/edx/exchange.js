@@ -548,10 +548,6 @@ async function removeDocumentFromExchange(req, res){
         message: 'No access token'
       });
     }
-    console.log('EXCHANGE_ID:== ' + req.params.secureExchangeID);
-    const documentId = req.params.documentID;
-    console.log('Document_ID:== ' + documentId);
-
     const result = await utils.deleteData(token, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}/documents/${req.params.documentID}`);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
