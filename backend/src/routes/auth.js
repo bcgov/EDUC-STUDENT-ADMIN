@@ -151,6 +151,7 @@ router.get('/user', passport.authenticate('jwt', {session: false}), (req, res) =
     if (userToken === undefined || userToken.realm_access === undefined || userToken.realm_access.roles === undefined) {
       return res.status(HttpStatus.UNAUTHORIZED).json();
     }
+    thisSession.roles = userToken.realm_access.roles;
   } catch (e) {
     log.error('error is from verify', e);
     return res.status(HttpStatus.UNAUTHORIZED).json();
