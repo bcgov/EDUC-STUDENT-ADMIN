@@ -540,6 +540,26 @@ const uploadDocumentToExchange = async (req, res) => {
   }
 };
 
+async function removeDocumentFromExchange(req, res){
+  try {
+    const token = utils.getBackendToken(req);
+    if (!token) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'No access token'
+      });
+    }
+    console.log('EXCHANGE_ID:== ' + req.params.secureExchangeID);
+    const documentId = req.params.documentID;
+    console.log('Document_ID:== ' + documentId);
+
+    const result = await utils.deleteData(token, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}/documents/${req.params.documentID}`);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    await logApiError(e, 'removeDocumentFromExchange', 'Error occurred while attempting to remove a document from an exchange.');
+    return errorResponse(res);
+  }
+}
+
 function getExchangeDocumentById() {
   return async function getDocumentByIdHandler(req, res) {
     const token = getBackendToken(req);
@@ -571,5 +591,6 @@ module.exports = {
   uploadDocumentToExchange,
   getExchangeDocumentById,
   markAsClosed,
-  claimExchange
+  claimExchange,
+  removeDocumentFromExchange
 };
