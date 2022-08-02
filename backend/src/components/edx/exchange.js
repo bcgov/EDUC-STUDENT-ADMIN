@@ -556,6 +556,25 @@ async function removeDocumentFromExchange(req, res){
   }
 }
 
+async function removeUserSchoolAccess(req, res) {
+  try {
+    const token = utils.getBackendToken(req);
+
+    if(!req.session.roles.includes('EDX_ADMIN')){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        status: HttpStatus.UNAUTHORIZED,
+        message: 'You are not authorized to access this page'
+      });
+    }
+
+    await utils.deleteData(token, config.get('server:edx:edxUsersURL') + `/${req.body.params.userToRemove}` + '/school' + `/${req.body.params.userSchoolID}`);
+    return res.status(HttpStatus.OK).json('');
+  } catch (e) {
+    log.error(e, 'removeUserSchoolAccess', 'Error occurred while attempting to remove user school access.');
+    return errorResponse(res);
+  }
+}
+
 function getExchangeDocumentById() {
   return async function getDocumentByIdHandler(req, res) {
     const token = getBackendToken(req);
@@ -588,5 +607,6 @@ module.exports = {
   getExchangeDocumentById,
   markAsClosed,
   claimExchange,
-  removeDocumentFromExchange
+  removeDocumentFromExchange,
+  removeUserSchoolAccess
 };
