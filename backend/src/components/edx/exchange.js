@@ -219,7 +219,7 @@ async function createExchange(req, res) {
       };
     });
 
-    const payload = {
+    const secureExchangeCreate = {
       contactIdentifier: message.contactIdentifier,
       secureExchangeContactTypeCode: message.secureExchangeContactTypeCode,
       ministryOwnershipTeamID: message.ministryOwnershipTeamID,
@@ -239,8 +239,14 @@ async function createExchange(req, res) {
       ],
       documentList: documentPayload
     };
+    const payload ={
+      secureExchangeCreate,
+      ministryTeamName : message.ministryTeamName,
+      mincode: message.mincode,
+      schoolName: message.schoolName
+    };
 
-    const result = await utils.postData(token, config.get('server:edx:exchangeURL'), payload, null, userInfo.idir_username);
+    const result = await utils.postData(token, config.get('server:edx:newSecureExchangeSagaURL'), payload, null, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'createExchange', 'Error occurred while attempting to create a new exchange.');
