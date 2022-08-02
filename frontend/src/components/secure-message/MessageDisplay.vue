@@ -146,7 +146,7 @@
             <v-row>
               <v-col>
                 <v-timeline v-if="secureExchange.activities.length > 0">
-                  <div v-for="activity in secureExchange.activities"
+                  <div v-for="(activity, index) in secureExchange.activities"
                        :key="activity.secureExchangeCommentID">
                     <v-timeline-item :left="activity.isSchool" icon-color="#003366" large color="white" :icon="getActivityIcon(activity)">
                       <v-card v-if="activity.type === 'message'">
@@ -166,7 +166,30 @@
                         <v-row no-gutters>
                           <v-card-text class="mt-n2 pt-0 pb-0" :class="{'pb-0': activity.documentType.label !== 'Other', 'pb-3': activity.documentType.label === 'Other'}"><router-link :to="{ path: documentUrl(activity) }" target="_blank">{{ activity.fileName }}</router-link></v-card-text>
                           <v-card-text v-if="activity.documentType.label !== 'Other'" class="pt-0 pb-3">{{ activity.documentType.label }}</v-card-text>
+                          <v-btn class="ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemove(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="!isEditable()">
+                            <v-icon>mdi-delete-forever-outline</v-icon>
+                          </v-btn>
                         </v-row>
+                        <v-expand-transition>
+                          <div v-show="isOpenIndex === index" class="greyBackground">
+                            <v-divider></v-divider>
+
+                            <v-card-text>
+                              <p><strong>Removing the attachment will remove it for all users.</strong></p>
+                              <br/>
+                              <p><strong>Are you sure you want to remove the attachment?</strong></p>
+                              <br/>
+                            </v-card-text>
+                            <v-row no-gutters>
+                              <v-btn class="pl-0 pr-0 yesBtn" bottom right absolute dark color="#003366" @click="removeAttachment(activity.documentID)">
+                                Yes
+                              </v-btn>
+                              <v-btn class="ml-12 pl-0 pr-0" bottom right absolute @click="closeIndex()">
+                                No
+                              </v-btn>
+                            </v-row>
+                          </div>
+                        </v-expand-transition>
                       </v-card>
                     </v-timeline-item>
                   </div>
@@ -214,7 +237,10 @@ export default {
       newMessageBtnDisplayed:false,
       shouldDisplaySpeedDial: true,
       processing: false,
-      newMessage:''
+      newMessage:'',
+      isOpenIndex: false,
+      show: false,
+      isHideIndex: false
     };
   },
   computed: {},
@@ -391,6 +417,34 @@ export default {
         .finally(() => {
           this.loadingReadStatus = false;
         });
+    },
+    toggleRemove(index) {
+      this.isHideIndex = index;
+      if( this.isOpenIndex !== null ){
+        this.isOpenIndex = ( this.isOpenIndex === index ) ? null : index;
+      } else {
+        this.isOpenIndex = index;
+      }
+    },
+    closeIndex() {
+      this.isOpenIndex = false;
+      this.isHideIndex = false;
+    },
+    removeAttachment(documentID) {
+
+      ApiService.apiAxios.put(Routes.edx.EXCHANGE_URL + `/${this.secureExchangeID}/removeDoc/${documentID}`)
+        .then((response) => {
+          this.getExchange();
+          if(response.status === 200){
+            this.setSuccessAlert('Success! The document has been removed.');
+          } else{
+            this.setSuccessAlert('Error! The document was not removed.');
+          }
+          this.closeIndex();
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
   }
 };
@@ -439,5 +493,19 @@ export default {
 .divider {
   border-color: #FCBA19;
   border-width: medium;
+}
+
+.plainBtn {
+  background-color: white !important;
+  height: 2em !important;
+  min-width: 1em !important;
+  bottom: 0em;
+  right: 0em;
+}
+.greyBackground {
+  background-color: #f5f5f5;
+}
+.yesBtn {
+  margin-right: 6em;
 }
 </style>
