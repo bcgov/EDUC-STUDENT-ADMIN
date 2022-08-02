@@ -187,6 +187,9 @@ export default {
         subject: this.subject,
         content: this.newMessage,
         secureExchangeDocuments: this.secureExchangeDocuments,
+        ministryTeamName : this.myTeam.teamName,
+        mincode: this.mincode,
+        schoolName: this.mincodeSchoolNames.get(this.mincode)
       };
       ApiService.apiAxios.post(`${Routes['edx'].EXCHANGE_URL}`, payload)
         .then(() => {
