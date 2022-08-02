@@ -175,9 +175,9 @@
                             <v-divider></v-divider>
 
                             <v-card-text>
-                              <p><b>Removing the attachment will remove it for all users.</b></p>
+                              <p><strong>Removing the attachment will remove it for all users.</strong></p>
                               <br/>
-                              <p><b>Are you sure you want to remove the attachment?</b></p>
+                              <p><strong>Are you sure you want to remove the attachment?</strong></p>
                               <br/>
                             </v-card-text>
                             <v-row no-gutters>
@@ -444,8 +444,6 @@ export default {
         })
         .catch(error => {
           console.log(error);
-        })
-        .finally(() => {
         });
     }
   }
