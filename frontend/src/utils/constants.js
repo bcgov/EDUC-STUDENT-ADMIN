@@ -118,6 +118,7 @@ let object = {
     EXCHANGE_ACCESS_URL: edxRoot + '/users',
     EXCHANGE_ACCESS_ROLES_URL: edxRoot + '/users/roles',
     EXCHANGE_REMOVE_USER: edxRoot + '/users/remove',
+    EXCHANGE_RELINK_USER: edxRoot + '/users/relink',
     PRIMARY_ACTIVATION_CODE_URL: edxRoot + '/users/activation-code/primary',
     NEW_SCHOOL_USER_ACTIVATION_INVITE: edxRoot + '/school-user-activation-invite'
   }

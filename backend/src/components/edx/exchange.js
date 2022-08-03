@@ -597,6 +597,42 @@ function getExchangeDocumentById() {
   };
 }
 
+async function relinkUserSchoolAccess(req, res) {
+  try {
+    const token = getBackendToken(req);
+    const userName = utils.getUser(req).idir_username;
+
+    if(!req.session.roles.includes('EDX_ADMIN')){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        status: HttpStatus.UNAUTHORIZED,
+        message: 'You are not authorized to access this page'
+      });
+    }
+
+    let edxUserDetails = await getData(token, config.get('server:edx:edxUsersURL') + '/' + req.body.params.userToRelink);
+    let userSchool = edxUserDetails.edxUserSchools.find(school => school.mincode === req.body.params.mincode);
+    let activationRoles = userSchool.edxUserSchoolRoles.map(role => role.edxRoleCode);
+
+    const payload = {
+      mincode: req.body.params.mincode,
+      schoolName: cacheService.getSchoolNameJSONByMincode(req.body.params.mincode).schoolName,
+      edxActivationRoleCodes: activationRoles,
+      firstName: edxUserDetails.firstName,
+      lastName: edxUserDetails.lastName,
+      email: edxUserDetails.email,
+      edxUserID: req.body.params.userToRelink,
+      edxUserSchoolID: req.body.params.userSchoolID,
+    };
+
+    await postData(token, config.get('server:edx:exchangeURL') + '/school-user-activation-relink-saga', payload,null, userName);
+
+    return res.status(HttpStatus.OK).json('');
+  } catch (e) {
+    log.error(e, 'removeUserSchoolAccess', 'Error occurred while attempting to remove user school access.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getExchanges,
   createExchange,
@@ -614,5 +650,6 @@ module.exports = {
   markAsClosed,
   claimExchange,
   removeDocumentFromExchange,
-  removeUserSchoolAccess
+  removeUserSchoolAccess,
+  relinkUserSchoolAccess
 };

@@ -49,6 +49,7 @@
                          width="0.5em"
                          min-width="0.5em"
                          depressed
+                         @click="clickRelinkButton"
                   >
                     <v-icon size="x-large" class="mr-2" color="#003366" :nudge-down="4" right dark>mdi-autorenew</v-icon>
                   </v-btn>
@@ -96,8 +97,28 @@
             </v-row>
             <v-row no-gutters>
               <v-col class="mt-0 d-flex justify-end">
-                <PrimaryButton width="5em" :id="`user-cancel-button-${user.firstName}-${user.lastName}`" text="Cancel" class="mr-2" secondary :on="{click: clickDeleteButton}"></PrimaryButton>
+                <PrimaryButton width="5em" :id="`user-cancel-remove-button-${user.firstName}-${user.lastName}`" text="Cancel" class="mr-2" secondary :on="{click: clickDeleteButton}"></PrimaryButton>
                 <PrimaryButton :id="`user-remove-action-button-${user.firstName}-${user.lastName}`" text="Remove" @click.native="clickRemoveButton(user)" ></PrimaryButton>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </Transition>
+        <Transition name="bounce">
+          <v-card-text style="background-color: #e7ebf0;" v-if="relinkState">
+            <v-row no-gutters>
+              <v-col class="d-flex justify-center">
+                <span style="font-size: medium; font-weight: bold; color: black">Re-linking an account will remove the current user and resend the activation code so that the user can set up EDX access with their new credential.</span>
+              </v-col>
+            </v-row>
+            <v-row no-gutters>
+              <v-col class="pt-3 d-flex justify-start">
+                <span style="font-size: medium; font-weight: bold; color: black">Are you sure you want to re-link this account?</span>
+              </v-col>
+            </v-row>
+            <v-row no-gutters>
+              <v-col class="mt-3 d-flex justify-end">
+                <PrimaryButton width="5em" :id="`user-cancel-relink-button-${user.firstName}-${user.lastName}`" text="Cancel" class="mr-2" secondary :on="{click: clickRelinkButton}"></PrimaryButton>
+                <PrimaryButton :id="`user-relink-action-button-${user.firstName}-${user.lastName}`" text="Re-Link" @click.native="clickActionRelinkButton(user)" ></PrimaryButton>
               </v-col>
             </v-row>
           </v-card-text>
@@ -106,7 +127,7 @@
           <v-card-text class="pt-0" style="background-color: #e7ebf0;" v-if="editState">
             <v-row no-gutters>
               <v-col class="mt-0 d-flex justify-end">
-                <PrimaryButton width="5em" :id="`user-cancel-button-${user.firstName}-${user.lastName}`" text="Cancel" class="mr-2" secondary :on="{click: clickEditButton}"></PrimaryButton>
+                <PrimaryButton width="5em" :id="`user-cancel-edit-button-${user.firstName}-${user.lastName}`" text="Cancel" class="mr-2" secondary :on="{click: clickEditButton}"></PrimaryButton>
                 <PrimaryButton :id="`user-save-action-button-${user.firstName}-${user.lastName}`" text="Save" :on="{click: clickSaveButton}"></PrimaryButton>
               </v-col>
             </v-row>
@@ -153,6 +174,7 @@ export default {
     return {
       editState: false,
       deleteState: false,
+      relinkState: false,
       selectedRoles: [],
       isSelectedAdmin: false
     };
@@ -193,13 +215,39 @@ export default {
       return '';
     },
     clickEditButton() {
-      this.editState = !this.editState;
+      this.relinkState = false;
       this.deleteState = false;
+      this.editState = !this.editState;
       this.setUserRolesAsSelected();
     },
     clickDeleteButton() {
       this.editState = false;
+      this.relinkState = false;
       this.deleteState = !this.deleteState;
+    },
+    clickRelinkButton() {
+      this.editState = false;
+      this.deleteState = false;
+      this.relinkState = !this.relinkState;
+    },
+    clickActionRelinkButton(userToRelink) {
+      let userSchool = userToRelink.edxUserSchools.find(school => school.mincode === this.mincode);
+      const payload = {params:
+          {
+            userToRelink: userToRelink.edxUserID,
+            mincode: this.mincode,
+            userSchoolID: userSchool.edxUserSchoolID
+          }
+      };
+      ApiService.apiAxios.post(Routes.edx.EXCHANGE_RELINK_USER, payload)
+        .then(()=> {
+          this.setSuccessAlert('User has been removed, email sent with instructions to re-link.');
+        }).catch(error => {
+          this.setFailureAlert('An error occurred while re-linking a user. Please try again later.');
+          console.log(error);
+        }).finally(() => {
+          this.$emit('refresh');
+        });
     },
     clickRemoveButton(userToRemove) {
       let userSchool = userToRemove.edxUserSchools.find(school => school.mincode === this.mincode);
