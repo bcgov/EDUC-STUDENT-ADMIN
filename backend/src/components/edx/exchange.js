@@ -586,9 +586,7 @@ function getExchangeDocumentById() {
     const token = getBackendToken(req);
     const url = `${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/documents/${req.params.documentId}`;
     getData(token, url).then(resultData => {
-      res.setHeader('Content-disposition', 'attachment; filename=' + resultData.fileName?.replace(/ /g, '_').replace(/,/g, '_').trim());
-      res.setHeader('Content-type', resultData.fileExtension);
-      return res.status(200).send(Buffer.from(resultData.documentData, 'base64'));
+      return res.status(200).send(resultData.documentData);
     }).catch(error => {
       log.error('An error occurred attempting to get documents.');
       log.error(error);
