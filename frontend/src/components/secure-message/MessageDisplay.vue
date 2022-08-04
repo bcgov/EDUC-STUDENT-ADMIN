@@ -265,7 +265,7 @@ export default {
       try {
         this.items = undefined;
         this.loading = true;
-        await ApiService.apiAxios.post(Routes.edx.EXCHANGE_URL + '/' + this.secureExchangeID + '/documents', document);
+        await ApiService.apiAxios.post(this.documentRoute + '/' + this.secureExchangeID + '/documents', document);
         this.setSuccessAlert('Your document was uploaded successfully.');
         this.getExchange();
       } catch (e) {
@@ -277,7 +277,7 @@ export default {
       }
     },
     documentUrl(document) {
-      return `${Routes.edx.EXCHANGE_URL}/${this.secureExchangeID}/documents/${document.documentID}`;
+      return `${this.documentRoute}/${this.secureExchangeID}/documents/${document.documentID}`;
     },
     displayMessageField() {
       this.isNewAttachmentDisplayed = false;
@@ -302,7 +302,7 @@ export default {
     },
     getExchange(initialLoad = false) {
       this.loading = true;
-      ApiService.apiAxios.get(Routes.edx.EXCHANGE_URL + `/${this.secureExchangeID}`)
+      ApiService.apiAxios.get(this.documentRoute + `/${this.secureExchangeID}`)
         .then(response => {
           //Always set secure exchange as read by ministry if this is the first load
           if (initialLoad && !response.data.isReadByMinistry) {
@@ -320,7 +320,7 @@ export default {
     },
     toggleIsReadByMinistry() {
       this.loadingReadStatus = true;
-      ApiService.apiAxios.put(Routes.edx.EXCHANGE_URL + `/${this.secureExchangeID}/markAs`)
+      ApiService.apiAxios.put(this.documentRoute + `/${this.secureExchangeID}/markAs`)
         .then((response) => {
           this.secureExchange = response.data;
         })
@@ -379,7 +379,7 @@ export default {
       const payload = {
         content: this.newMessage,
       };
-      ApiService.apiAxios.post(Routes.edx.EXCHANGE_URL + `/${this.secureExchangeID}/comments`, payload)
+      ApiService.apiAxios.post(this.documentRoute + `/${this.secureExchangeID}/comments`, payload)
         .then(() => {
           this.setSuccessAlert('Success! The message has been sent.');
           this.messageSent();
@@ -396,7 +396,7 @@ export default {
     },
     clickMarkAsClosedButton() {
       this.loadingReadStatus = true;
-      ApiService.apiAxios.put(Routes.edx.EXCHANGE_URL + `/${this.secureExchangeID}/markAsClosed`)
+      ApiService.apiAxios.put(this.documentRoute + `/${this.secureExchangeID}/markAsClosed`)
         .then((response) => {
           this.secureExchange = response.data;
         })
@@ -445,7 +445,7 @@ export default {
     },
     removeAttachment(documentID) {
 
-      ApiService.apiAxios.put(Routes.edx.EXCHANGE_URL + `/${this.secureExchangeID}/removeDoc/${documentID}`)
+      ApiService.apiAxios.put(this.documentRoute + `/${this.secureExchangeID}/removeDoc/${documentID}`)
         .then((response) => {
           this.getExchange();
           if(response.status === 200){
