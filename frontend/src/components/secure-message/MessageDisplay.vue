@@ -16,7 +16,9 @@
       <v-row class="pt-0"
              :class="{'mr-0 ml-0': $vuetify.breakpoint.smAndDown, 'mr-3 ml-3': $vuetify.breakpoint.mdAndUp}">
         <v-col cols="12 pt-0">
-          <div v-if="!loading && secureExchange" :overlay=false>
+          <PdfRenderer :route="this.documentRoute" :dialog="pdfRenderDialog" @closeDialog="closeDialog" :request-id="this.secureExchangeID" :document-id="this.documentId"></PdfRenderer>
+          <ImageRenderer  :request-type="requestType" :dialog="imageRendererDialog" @closeDialog="closeDialog" :request-id="this.secureExchangeID" :image-id="this.imageId"></ImageRenderer>
+          <div v-if="!loading && secureExchange">
             <v-row>
               <v-col class="pb-0 pt-0 d-flex justify-start">
                 <v-row >
@@ -164,7 +166,11 @@
                           <div class="activityDisplayDate">{{ activity.displayDate }}</div>
                         </v-card-title>
                         <v-row no-gutters>
-                          <v-card-text class="mt-n2 pt-0 pb-0" :class="{'pb-0': activity.documentType.label !== 'Other', 'pb-3': activity.documentType.label === 'Other'}"><router-link :to="{ path: documentUrl(activity) }" target="_blank">{{ activity.fileName }}</router-link></v-card-text>
+                          <v-card-text class="mt-n2 pt-0 pb-0" :class="{'pb-0': activity.documentType.label !== 'Other', 'pb-3': activity.documentType.label === 'Other'}">
+                            <a @click="showDocModal(activity)">
+                              {{ activity.fileName }}
+                            </a>
+                          </v-card-text>
                           <v-card-text v-if="activity.documentType.label !== 'Other'" class="pt-0 pb-3">{{ activity.documentType.label }}</v-card-text>
                           <v-btn class="ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemove(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="!isEditable()">
                             <v-icon>mdi-delete-forever-outline</v-icon>
@@ -212,12 +218,14 @@ import PrimaryButton from '../util/PrimaryButton';
 import {ChronoUnit, DateTimeFormatter, LocalDate} from '@js-joda/core';
 import alertMixin from '@/mixins/alertMixin';
 import DocumentUpload from '@/components/common/DocumentUpload';
+import PdfRenderer from '@/components/common/PdfRenderer';
+import ImageRenderer from '@/components/common/ImageRenderer';
 
 
 export default {
   name: 'MessageDisplay',
   mixins: [alertMixin],
-  components: {DocumentUpload, PrimaryButton},
+  components: {DocumentUpload, PrimaryButton, ImageRenderer, PdfRenderer},
   props: {
     secureExchangeID: {
       type: String,
@@ -240,7 +248,13 @@ export default {
       newMessage:'',
       isOpenIndex: false,
       show: false,
-      isHideIndex: false
+      isHideIndex: false,
+      pdfRenderDialog: false,
+      imageRendererDialog: false,
+      documentId: '',
+      imageId: '',
+      requestType: '',
+      documentRoute: Routes.edx.EXCHANGE_URL
     };
   },
   computed: {},
@@ -445,6 +459,29 @@ export default {
         .catch(error => {
           console.log(error);
         });
+    },
+    showDocModal(document){
+      if (this.isPdf(document)) {
+        this.documentId = document.documentID;
+        this.pdfRenderDialog = true;
+      }else {
+        this.imageId = document.documentID;
+        this.imageRendererDialog = true;
+      }
+    },
+    isPdf(document){
+      return (
+        'fileName' in document &&
+        typeof document.fileName === 'string' &&
+        document.fileName.toLowerCase().endsWith('.pdf')
+      );
+    },
+    async closeDialog() {
+      this.documentId = '';
+      this.imageId = '';
+      this.pdfRenderDialog = false;
+      this.imageRendererDialog = false;
+      await this.$nextTick(); //need to wait so update can be made in parent and propagated back down to child component
     }
   }
 };
