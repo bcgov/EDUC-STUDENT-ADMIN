@@ -153,9 +153,7 @@ export default {
         let url = (typeof this.route != 'undefined')
           ? `${this.route}/${this.requestId}/documents/${this.documentId}`
           : `${Routes[this.requestType].ROOT_ENDPOINT}/${this.requestId}/documents/${this.documentId}`;
-        //console.log('URL IS: ' + url);
         ApiService.apiAxios.get(url).then((response) => {
-          console.log('data is: ' + JSON.stringify(response.data));
           this.base64ToArrayBuffer(response.data);
         }).catch(e => {
           console.error(e);
