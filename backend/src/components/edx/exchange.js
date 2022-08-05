@@ -190,6 +190,26 @@ async function getExchange(req, res) {
           dataResponse['activities'].push(activity);
         });
       }
+      if (dataResponse['studentsList']) {
+        for (const student of dataResponse['studentsList']) {
+          let studentDetail = await getData(token, config.get('server:student:rootURL') + '/' + student.studentId);
+          let activity = {};
+          activity['type'] = 'student';
+          activity['studentID'] = student.studentId;
+          activity['studentPEN'] = studentDetail.pen;
+          activity['studentLocalID'] = studentDetail.localID;
+          activity['studentSurname'] = studentDetail.legalLastName;
+          activity['studentGiven'] = studentDetail.legalFirstName;
+          activity['studentMiddle'] = studentDetail.legalMiddleNames;
+          activity['studentDOB'] = studentDetail.dob;
+          activity['studentGender'] = studentDetail.genderCode;
+          activity['timestamp'] = student['createDate'] ? LocalDateTime.parse(student['createDate']) : '';
+          activity['actor'] = student.edxUserID ? student.edxUserID : student.staffUserIdentifier;
+          activity['title'] = student.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+          activity['displayDate'] = student['createDate'] ? LocalDateTime.parse(student['createDate']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : 'Unknown Date';
+          dataResponse['activities'].push(activity);
+        }
+      }
 
       dataResponse['activities'].sort((activity1, activity2) => {
         return activity2.timestamp.compareTo(activity1.timestamp);
@@ -631,6 +651,35 @@ async function relinkUserSchoolAccess(req, res) {
   }
 }
 
+async function createSecureExchangeStudent(req, res) {
+  try {
+    const accessToken = getBackendToken(req);
+    const userName = utils.getUser(req).idir_username;
+    if (!accessToken) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'No access token'
+      });
+    }
+
+    if(!req.session.roles.includes('SECURE_EXCHANGE')){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        status: HttpStatus.UNAUTHORIZED,
+        message: 'You are not authorized to access this page'
+      });
+    }
+
+    const secureExchangeStudent = {
+      staffUserIdentifier: userName,
+      studentId: req.body.studentID
+    };
+    const result = await postData(accessToken,`${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/students`, secureExchangeStudent,null, userName );
+    return res.status(HttpStatus.CREATED).json(result);
+  } catch (e) {
+    log.error(e, 'createSecureExchangeStudent', 'Error occurred while attempting to add a secure exchange student.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getExchanges,
   createExchange,
@@ -649,5 +698,6 @@ module.exports = {
   claimExchange,
   removeDocumentFromExchange,
   removeUserSchoolAccess,
-  relinkUserSchoolAccess
+  relinkUserSchoolAccess,
+  createSecureExchangeStudent
 };

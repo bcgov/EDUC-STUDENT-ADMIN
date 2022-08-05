@@ -90,7 +90,7 @@
                     <v-icon color="#003366">mdi-paperclip</v-icon>
                     <span style="color: #003366; text-transform: none!important;" class="ml-1">Attachment</span>
                   </v-btn>
-                  <v-btn small id="addStudentConvButton">
+                  <v-btn small id="addStudentConvButton" @click="displayStudentPanel">
                     <v-icon color="#003366">mdi-emoticon-happy-outline</v-icon>
                     <span style="color: #003366; text-transform: none!important;" class="ml-1">Student</span>
                   </v-btn>
@@ -145,6 +145,12 @@
                 </v-expand-transition>
               </v-col>
             </v-row>
+            <v-row v-if="isNewStudentDisplayed">
+              <v-col class="d-flex justify-center">
+                <AddStudent @addStudent="sendNewSecureExchangeStudent" @close:form="hideStudentPanel" :mincode="secureExchange.contactIdentifier" :additionalStudentAddWarning="addStudentWarningMessage" @updateAdditionalStudentAddWarning="updateAddStudentWarningMessage">
+                </AddStudent>
+              </v-col>
+            </v-row>
             <v-row>
               <v-col>
                 <v-timeline v-if="secureExchange.activities.length > 0">
@@ -158,6 +164,72 @@
                           <div class="activityDisplayDate">{{ activity.displayDate }}</div>
                         </v-card-title>
                         <v-card-text class="activityContent">{{ activity.content }}</v-card-text>
+                      </v-card>
+                      <v-card v-if="activity.type === 'student'">
+                        <v-card-title>
+                          <div class="activityTitle">{{ activity.title }}</div>
+                          <v-spacer></v-spacer>
+                          <div class="activityDisplayDate">{{ activity.displayDate }}</div>
+                        </v-card-title>
+
+                        <v-card-text class="">
+                          <v-row v-if="activity.studentPEN !== null">
+                            <v-col class="pt-0" cols="3">
+                              <span>PEN: </span>
+                            </v-col>
+                            <v-col class="pt-0" cols="9" >
+                              <a @click="openStudentDetail(activity)">{{ activity.studentPEN }}</a>
+                            </v-col>
+                          </v-row>
+                          <v-row v-if="activity.studentLocalID !== null">
+                            <v-col class="pt-0" cols="3">
+                              <span>Local ID: </span>
+                            </v-col>
+                            <v-col class="pt-0" cols="9">
+                              <span>{{ activity.studentLocalID }}</span>
+                            </v-col>
+                          </v-row>
+                          <v-row v-if="activity.studentSurname !== null">
+                            <v-col class="pt-0" cols="3">
+                              <span>Surname: </span>
+                            </v-col>
+                            <v-col class="pt-0" cols="9">
+                              <span>{{ activity.studentSurname }}</span>
+                            </v-col>
+                          </v-row>
+                          <v-row v-if="activity.studentGiven !== null">
+                            <v-col class="pt-0" cols="3">
+                              <span>Given Name: </span>
+                            </v-col>
+                            <v-col class="pt-0" cols="9">
+                              <span>{{ activity.studentGiven }}</span>
+                            </v-col>
+                          </v-row>
+                          <v-row v-if="activity.studentMiddle !== null">
+                            <v-col class="pt-0" cols="3">
+                              <span>Middle Name: </span>
+                            </v-col>
+                            <v-col class="pt-0" cols="9">
+                              <span>{{ activity.studentMiddle }}</span>
+                            </v-col>
+                          </v-row>
+                          <v-row v-if="activity.studentDOB !== null">
+                            <v-col class="pt-0" cols="3">
+                              <span>Birth Date: </span>
+                            </v-col>
+                            <v-col class="pt-0" cols="9">
+                              <span>{{ activity.studentDOB }}</span>
+                            </v-col>
+                          </v-row>
+                          <v-row v-if="activity.studentGender !== null">
+                            <v-col class="pt-0" cols="3">
+                              <span>Gender: </span>
+                            </v-col>
+                            <v-col class="pt-0" cols="9">
+                              <span>{{ activity.studentGender }}</span>
+                            </v-col>
+                          </v-row>
+                        </v-card-text>
                       </v-card>
                       <v-card v-if="activity.type === 'document'">
                         <v-card-title>
@@ -179,7 +251,6 @@
                         <v-expand-transition>
                           <div v-show="isOpenIndex === index" class="greyBackground">
                             <v-divider></v-divider>
-
                             <v-card-text>
                               <p><strong>Removing the attachment will remove it for all users.</strong></p>
                               <br/>
@@ -214,18 +285,19 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import router from '@/router';
-import PrimaryButton from '../util/PrimaryButton';
+import PrimaryButton from '@/components/util/PrimaryButton';
 import {ChronoUnit, DateTimeFormatter, LocalDate} from '@js-joda/core';
 import alertMixin from '@/mixins/alertMixin';
 import DocumentUpload from '@/components/common/DocumentUpload';
 import PdfRenderer from '@/components/common/PdfRenderer';
 import ImageRenderer from '@/components/common/ImageRenderer';
-
+import {mapState} from 'vuex';
+import AddStudent from '@/components/common/AddStudent';
 
 export default {
   name: 'MessageDisplay',
   mixins: [alertMixin],
-  components: {DocumentUpload, PrimaryButton, ImageRenderer, PdfRenderer},
+  components: {DocumentUpload, AddStudent, PrimaryButton, ImageRenderer, PdfRenderer},
   props: {
     secureExchangeID: {
       type: String,
@@ -242,21 +314,26 @@ export default {
       subject: '',
       isNewMessageDisplayed: false,
       isNewAttachmentDisplayed: false,
-      newMessageBtnDisplayed:false,
+      isNewStudentDisplayed: false,
+      newMessageBtnDisplayed: false,
       shouldDisplaySpeedDial: true,
       processing: false,
       newMessage:'',
+      mincode: null,
       isOpenIndex: false,
       show: false,
       isHideIndex: false,
       pdfRenderDialog: false,
       imageRendererDialog: false,
+      addStudentWarningMessage: '',
       documentId: '',
       imageId: '',
       documentRoute: Routes.edx.EXCHANGE_URL
     };
   },
-  computed: {},
+  computed: {
+    ...mapState('auth', ['userInfo']),
+  },
   created() {
     this.getExchange(true);
   },
@@ -282,6 +359,7 @@ export default {
     displayMessageField() {
       this.isNewAttachmentDisplayed = false;
       this.isNewMessageDisplayed = true;
+      this.isNewStudentDisplayed = false;
       this.shouldDisplaySpeedDial = false;
       this.editOptionsOpen = false;
     },
@@ -293,6 +371,7 @@ export default {
     displayAttachmentPanel() {
       this.isNewMessageDisplayed = false;
       this.isNewAttachmentDisplayed = true;
+      this.isNewStudentDisplayed = false;
       this.shouldDisplaySpeedDial = false;
       this.editOptionsOpen = false;
     },
@@ -439,12 +518,50 @@ export default {
         this.isOpenIndex = index;
       }
     },
+    displayStudentPanel() {
+      this.isNewMessageDisplayed = false;
+      this.isNewAttachmentDisplayed = false;
+      this.isNewStudentDisplayed = true;
+      this.shouldDisplaySpeedDial = false;
+      this.editOptionsOpen = false;
+    },
+    hideStudentPanel() {
+      this.isNewStudentDisplayed = false;
+      this.shouldDisplaySpeedDial = true;
+    },
+    updateAddStudentWarningMessage(newValue) {
+      this.addStudentWarningMessage = newValue;
+    },
     closeIndex() {
       this.isOpenIndex = false;
       this.isHideIndex = false;
     },
+    openStudentDetail(student){
+      router.push(`/student/${student.studentID}`);
+    },
+    sendNewSecureExchangeStudent(student) {
+      this.processing = true;
+      this.loading = true;
+      const payload = {
+        secureExchangeID: this.secureExchangeID,
+        studentID: student.studentID
+      };
+      ApiService.apiAxios.post(`${Routes.edx.EXCHANGE_URL}/${this.secureExchangeID}/students`, payload)
+        .then(() => {
+          this.setSuccessAlert('Success! The student has been added to the Secure Exchange.');
+          this.getExchange();
+        })
+        .catch(error => {
+          console.error(error);
+          this.setFailureAlert('An error occurred while adding the student to the Secure Exchange. Please try again later.');
+        })
+        .finally(() => {
+          this.processing = false;
+          this.loading = false;
+          this.isNewStudentDisplayed = false;
+        });
+    },
     removeAttachment(documentID) {
-
       ApiService.apiAxios.put(this.documentRoute + `/${this.secureExchangeID}/removeDoc/${documentID}`)
         .then((response) => {
           this.getExchange();

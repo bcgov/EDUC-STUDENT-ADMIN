@@ -8,7 +8,8 @@ const { getExchanges, createExchange, getExchange, claimAllExchanges, markAs, ge
   schoolUserActivationInvite,
   createSecureExchangeComment, uploadDocumentToExchange, getExchangeDocumentById, markAsClosed, claimExchange, removeDocumentFromExchange,
   removeUserSchoolAccess,
-  relinkUserSchoolAccess
+  relinkUserSchoolAccess,
+  createSecureExchangeStudent
 } = require('../components/edx/exchange');
 
 const extendSession = utils.extendSession();
@@ -28,6 +29,7 @@ router.post('/users/activation-code/primary/:mincode', passport.authenticate('jw
 //edx exchange routes
 router.get('/exchange', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, getExchanges);
 router.post('/exchange/claim', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, claimAllExchanges);
+router.post('/exchange/:secureExchangeID/students', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, createSecureExchangeStudent);
 router.post('/exchange/claimOne', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, claimExchange);
 router.get('/exchange/statuses', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, utils.cacheMiddleware(), utils.getCodes('server:edx:exchangeStatusesURL', 'exchangeStatuses'));
 router.get('/exchange/file-requirements', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, utils.cacheMiddleware(), utils.getCodes('server:edx:fileRequirementsURL', 'fileRequirements'));
