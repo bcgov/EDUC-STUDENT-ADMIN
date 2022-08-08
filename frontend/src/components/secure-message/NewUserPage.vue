@@ -15,20 +15,20 @@
 
                           <v-text-field id="newUserFirstName"
                                         label="First Name"
-                                        v-model="firstName"
+                                        v-model.trim="firstName"
                                         class="pt-0"
                                         maxlength="255"
                                         :rules="requiredRules"
                           ></v-text-field>
                           <v-text-field id="newUserLastName"
                                         label="Last Name"
-                                        v-model="lastName"
+                                        v-model.trim="lastName"
                                         maxlength="255"
                                         :rules="requiredRules"
                           ></v-text-field>
                           <v-text-field id="newUserEmail"
                                         label="Email"
-                                        v-model="email"
+                                        v-model.trim="email"
                                         class="pt-0"
                                         :rules="emailRules"
                                         maxlength="255"
