@@ -4,7 +4,6 @@ const HttpStatus = require('http-status-codes');
 const axios = require('axios');
 const config = require('../config/index');
 const jsonwebtoken = require('jsonwebtoken');
-const {v4: uuidv4} = require('uuid');
 const lodash = require('lodash');
 const log = require('./logger');
 const cache = require('memory-cache');
