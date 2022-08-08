@@ -238,6 +238,12 @@ async function createExchange(req, res) {
         staffUserIdentifier: userInfo.idir_username
       };
     });
+    const studentPayload = message.secureExchangeStudents.map(student => {
+      return {
+        studentId: student.studentID,
+        staffUserIdentifier: userInfo.idir_username
+      };
+    });
 
     const secureExchangeCreate = {
       contactIdentifier: message.contactIdentifier,
@@ -257,7 +263,8 @@ async function createExchange(req, res) {
           updateUser: userInfo.idir_username
         }
       ],
-      documentList: documentPayload
+      documentList: documentPayload,
+      studentList: studentPayload
     };
     const payload ={
       secureExchangeCreate,
@@ -344,7 +351,6 @@ async function getEdxUsers(req, res) {
   try {
     let response = await getData(token, config.get('server:edx:edxUsersURL'), {params: req.query});
     let filteredResponse = [];
-
     //if we search by mincode strip out other school and district information for the frontend
     if (req.query.mincode) {
       filteredResponse = response.map(user => {

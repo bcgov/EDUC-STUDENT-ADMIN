@@ -263,7 +263,6 @@ export default {
       if(!this.mincode && !this.loadDate) {
         return false;
       }
-
       return (!this.mincode || this.isValidDistrictOrMincode(this.mincode)) &&
           (!this.loadDate || isPresentDateAndAfter1900(this.loadDate));
     },
