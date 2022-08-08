@@ -229,6 +229,18 @@
                               <span>{{ activity.studentGender }}</span>
                             </v-col>
                           </v-row>
+                          <v-row v-if="shouldShowMincodeWarning(activity)">
+                            <v-col class="pt-0" cols="12">
+                              <v-alert
+                                id="addStudentAlert"
+                                dense
+                                outlined
+                                class="mb-3 bootstrap-info"
+                              >
+                                Student's mincode does not match the school that added the student. As such, the school cannot see the student details.
+                              </v-alert>
+                            </v-col>
+                          </v-row>
                         </v-card-text>
                       </v-card>
                       <v-card v-if="activity.type === 'document'">
@@ -362,6 +374,12 @@ export default {
       this.isNewStudentDisplayed = false;
       this.shouldDisplaySpeedDial = false;
       this.editOptionsOpen = false;
+    },
+    shouldShowMincodeWarning(studentActivity){
+      if(this.secureExchange.contactIdentifier !== studentActivity.mincode){
+        return true;
+      }
+      return false;
     },
     hideNewMessageField(){
       this.isNewMessageDisplayed = false;
