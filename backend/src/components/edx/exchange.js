@@ -155,7 +155,7 @@ async function getExchange(req, res) {
       }
 
       dataResponse['contactName'] = dataResponse['secureExchangeContactTypeCode'] === 'SCHOOL' ? `${school.schoolName} (${dataResponse['contactIdentifier']})` : 'Unknown Contact';
-
+      dataResponse['schoolName'] = school.schoolName;
       if (dataResponse['createDate']) {
         dataResponse['createDate'] = LocalDateTime.parse(dataResponse['createDate']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd'));
       }
@@ -467,7 +467,7 @@ async function createSecureExchangeComment(req, res) {
     const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
     const message = req.body;
-    const payload = {
+    const secureExchangeComment = {
       secureExchangeID: req.params.secureExchangeID,
       staffUserIdentifier: userInfo.idir_username,
       commentUserName: userInfo.name,
@@ -477,7 +477,16 @@ async function createSecureExchangeComment(req, res) {
       updateUser: userInfo.idir_username
     };
 
-    const result = await utils.postData(token, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}` + '/comments', payload, null, userInfo.idir_username);
+    const payload = {
+      secureExchangeComment,
+      mincode: message.mincode,
+      schoolName:message.schoolName,
+      sequenceNumber: message.sequenceNumber,
+      ministryTeamName:message.ministryTeamName,
+      secureExchangeId:message.secureExchangeId,
+    };
+
+    const result = await utils.postData(token, config.get('server:edx:secureExchangeCommentSagaURL') , payload, null, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     await logApiError(e, 'createExchangeComment', 'Error occurred while attempting to create a new exchange comment.');

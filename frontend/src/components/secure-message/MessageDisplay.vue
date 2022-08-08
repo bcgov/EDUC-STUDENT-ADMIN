@@ -457,6 +457,11 @@ export default {
       this.processing = true;
       const payload = {
         content: this.newMessage,
+        mincode: this.secureExchange.contactIdentifier,
+        schoolName:this.secureExchange.schoolName,
+        sequenceNumber: this.secureExchange.sequenceNumber,
+        ministryTeamName:this.secureExchange.ministryOwnershipTeamName,
+        secureExchangeId:this.secureExchangeID,
       };
       ApiService.apiAxios.post(this.documentRoute + `/${this.secureExchangeID}/comments`, payload)
         .then(() => {
