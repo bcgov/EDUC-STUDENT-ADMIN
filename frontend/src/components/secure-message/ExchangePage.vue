@@ -288,6 +288,7 @@
         <v-divider></v-divider>
         <v-card-text>
           <NewMessagePage
+            :mincodeSchoolNames="mincodeSchoolNames"
             @secure-exchange:messageSent="messageSent"
             @secure-exchange:cancelMessage="newMessageSheet = false"
           >

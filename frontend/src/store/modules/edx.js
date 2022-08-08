@@ -10,10 +10,12 @@ export default {
     rolesCopy: [],
     fileRequirements: [],
     secureExchangeDocuments: [],
+    secureExchangeStudents:[]
   },
   getters: {
     getStatuses: state => state.statuses?.sort((a,b) => a.displayOrder > b.displayOrder ? 1 : -1),
-    secureExchangeDocuments: state => state.secureExchangeDocuments
+    secureExchangeDocuments: state => state.secureExchangeDocuments,
+    secureExchangeStudents: state => state.secureExchangeStudents,
   },
   mutations: {
     setMinistryTeams(state, ministryTeamList) {
@@ -42,6 +44,12 @@ export default {
         state.secureExchangeDocuments.splice(index, 1);
       }
     },
+    setSecureExchangeStudents(state,payload){
+      state.secureExchangeStudents= payload;
+    },
+    deleteSecureExchangeStudentsByID(state, payload) {
+      state.secureExchangeStudents = state.secureExchangeStudents.filter(secureExchangeStudent => secureExchangeStudent.studentID !== payload.studentID);
+    }
   },
   actions: {
     async getMinistryTeams({ commit, state}) {

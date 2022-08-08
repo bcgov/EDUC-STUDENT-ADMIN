@@ -80,6 +80,7 @@ let object = {
   student: {
     ROOT_ENDPOINT: studentRoot,
     SEARCH_URL: studentRoot + '/search',
+    SEARCH_BY_PEN_URL: studentRoot + '/',
     GENDER_CODE_URL: studentRoot + '/activeGenderCodes',
     DEMOG_CODE_URL: studentRoot + '/demogCodes',
     STATUS_CODE_URL: studentRoot + '/statusCodes',
@@ -400,6 +401,8 @@ export const PAGE_TITLES = Object.freeze(
     NEW_USER_INVITE:'New User'
   }
 );
+
+export const MINISTRY_NAME = 'Ministry of Education and Child Care';
 
 export const SEARCH_FILTER_OPERATION = Object.freeze(
   {

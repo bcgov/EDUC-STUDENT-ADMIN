@@ -23,6 +23,7 @@
                           v-model="mincode"
                           :items="schools"
                           :rules="requiredRules"
+                          @change="onSchoolSelected"
                         >
                           <template v-slot:selection="{ item }">
                             <span> {{ item.text }} </span>
@@ -52,9 +53,17 @@
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
-                  <v-col>
-                    <v-icon v-if="secureExchangeDocuments.length > 0" >mdi-paperclip</v-icon>
-                    <v-chip :class="['ma-1']" v-for="(document, index) in secureExchangeDocuments" :key="index" close @click:close="removeDocumentByIndex(index)">{{document.fileName}}</v-chip>
+                  <v-col v-if="secureExchangeDocuments.length > 0 || secureExchangeStudents.length>0" class="d-flex px-0 pb-2">
+                    <v-chip id="documentChip" :class="['ma-1']" v-for="(document, index) in secureExchangeDocuments" :key="index" close @click:close="removeDocumentByIndex(index)">
+                      <v-avatar left>
+                        <v-icon>mdi-paperclip</v-icon>
+                      </v-avatar>
+                      {{document.fileName}}</v-chip>
+                    <v-chip id="studentChip" :class="['ma-1']" v-for="(secureExchangeStudent) in secureExchangeStudents" :key="secureExchangeStudent.studentID" close @click:close="removeSecureExchangeStudentByID(secureExchangeStudent)">
+                      <v-avatar left>
+                        <v-icon>mdi-account-circle</v-icon>
+                      </v-avatar>
+                      {{secureExchangeStudent.pen}}</v-chip>
                   </v-col>
                 </v-row>
                 <v-row v-if="shouldShowOptions">
@@ -73,7 +82,9 @@
                            title="Add Student"
                            color="#1A5A96"
                            outlined
-                           class="addButton pl-0 pr-2"
+                           class="addButton pl-0 pr-2 ml-1"
+                           @click="showAddStudentPanel"
+                           :disabled="disableAddStudent"
                     >
                       <v-icon color="#1A5A96" class="mr-0" right dark>mdi-account-multiple-plus-outline</v-icon>
                       <span class="ml-1">Add Student</span>
@@ -95,6 +106,17 @@
                           @close:form="showOptions"
                           @upload="uploadDocument"
                       ></DocumentUpload>
+                    </v-expand-transition>
+                    <v-expand-transition>
+                      <AddStudent
+                          v-show="expandAddStudent"
+                          @close:form="showOptions"
+                          @addStudent="addSecureExchangeStudent"
+                          :mincode="this.mincode"
+                          :additionalStudentAddWarning="additionalStudentAddWarningMessage"
+                          @updateAdditionalStudentAddWarning="updateAdditionalStudentAddWarning"
+                      >
+                      </AddStudent>
                     </v-expand-transition>
                   </v-col>
                 </v-row>
@@ -125,19 +147,27 @@ import {
   Routes,
 } from '@/utils/constants';
 import {isValidPEN} from '@/utils/validation';
+import AddStudent from '@/components/AddStudent';
 
 export default {
   name: 'NewMessagePage',
   mixins: [alertMixin],
   components: {
+    AddStudent,
     PrimaryButton,
     ConfirmationDialog,
     DocumentUpload,
   },
+  props: {
+    mincodeSchoolNames: {
+      type: Map,
+      required: true
+    },
+  },
   data() {
     return {
       newMessage: '',
-      mincode: null,
+      mincode: '',
       subject: '',
       requiredRules: [v => !!v?.trim() || 'Required'],
       isValidForm: false,
@@ -148,12 +178,13 @@ export default {
       expandAttachFile: false,
       expandAddStudent: false,
       shouldShowOptions: true,
+      additionalStudentAddWarningMessage:'',
+      disableAddStudent: true,
     };
   },
   computed: {
-    ...mapState('app', ['mincodeSchoolNames']),
     ...mapState('auth', ['userInfo']),
-    ...mapState('edx', ['ministryTeams', 'exchangeMincodes', 'secureExchangeDocuments']),
+    ...mapState('edx', ['ministryTeams', 'exchangeMincodes', 'secureExchangeDocuments','secureExchangeStudents']),
     myTeam() {
       return this.ministryTeams.find(team => this.userInfo.userRoles.some(role => team.groupRoleIdentifier === role)) || {};
     },
@@ -165,6 +196,7 @@ export default {
   created() {
     this.$store.dispatch('edx/getExchangeMincodes');
     this.clearSecureExchangeDocuments();
+    this.clearSecureExchangeStudents();
   },
   methods: {
     navigateToList() {
@@ -177,6 +209,10 @@ export default {
       this.requiredRules = [v => !!v?.trim() || 'Required'];
       this.penRules = [v => (!v || isValidPEN(v)) || this.penHint];
       this.$emit('secure-exchange:messageSent');
+      this.clearSecureExchangeDocuments();
+      this.clearSecureExchangeStudents();
+      this.additionalStudentAddWarningMessage='';
+      this.disableAddStudent = true;
     },
     sendNewMessage() {
       this.processing = true;
@@ -189,7 +225,8 @@ export default {
         secureExchangeDocuments: this.secureExchangeDocuments,
         ministryTeamName : this.myTeam.teamName,
         mincode: this.mincode,
-        schoolName: this.mincodeSchoolNames.get(this.mincode)
+        schoolName: this.mincodeSchoolNames.get(this.mincode),
+        secureExchangeStudents: this.secureExchangeStudents
       };
       ApiService.apiAxios.post(`${Routes['edx'].EXCHANGE_URL}`, payload)
         .then(() => {
@@ -224,6 +261,32 @@ export default {
       this.expandAttachFile = true;
       this.expandAddStudent = false;
       this.shouldShowOptions = false;
+    },
+    updateAdditionalStudentAddWarning(newValue){
+      this.additionalStudentAddWarningMessage = newValue;
+    },
+    showAddStudentPanel() {
+      if(this.secureExchangeStudents.length > 0){
+        this.additionalStudentAddWarningMessage='Additional students should only be added if the details are relevant to this request. Requests for separate students should be sent in a new message.';
+      }
+      this.expandAttachFile = false;
+      this.expandAddStudent = true;
+      this.shouldShowOptions = false;
+    },
+    async addSecureExchangeStudent(secureExchangeStudent) {
+      const found =this.secureExchangeStudents.some(el =>el.studentID === secureExchangeStudent.studentID);
+      if(!found){
+        this.$store.commit('edx/setSecureExchangeStudents', [...this.secureExchangeStudents, secureExchangeStudent]);
+      }
+    },
+    removeSecureExchangeStudentByID(secureExchangeStudent) {
+      this.$store.commit('edx/deleteSecureExchangeStudentsByID', secureExchangeStudent);
+    },
+    clearSecureExchangeStudents() {
+      this.$store.commit('edx/setSecureExchangeStudents', []);
+    },
+    onSchoolSelected(){
+      this.disableAddStudent = false;
     }
   }
 };

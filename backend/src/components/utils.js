@@ -4,6 +4,7 @@ const HttpStatus = require('http-status-codes');
 const axios = require('axios');
 const config = require('../config/index');
 const jsonwebtoken = require('jsonwebtoken');
+const {v4: uuidv4} = require('uuid');
 const lodash = require('lodash');
 const log = require('./logger');
 const cache = require('memory-cache');
@@ -109,6 +110,27 @@ async function getData(token, url, params) {
     return response.data;
   } catch (e) {
     throwError(e, url, 'GET');
+  }
+}
+
+async function getDataWithParams(token, url, params, correlationID) {
+  try {
+    params.headers = {
+      Authorization: `Bearer ${token}`,
+      correlationID: correlationID || uuidv4()
+    };
+
+    log.info('get Data Url', url);
+    const response = await axios.get(url, params);
+    log.info(`get Data Status for url ${url} :: is :: `, response.status);
+    log.info(`get Data StatusText for url ${url}  :: is :: `, response.statusText);
+    log.verbose(`get Data Response for url ${url}  :: is :: `, minify(response.data));
+
+    return response.data;
+  } catch (e) {
+    log.error('getDataWithParams Error', e.response ? e.response.status : e.message);
+    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
+    throw new ApiError(status, {message: 'API Get error'}, e);
   }
 }
 
