@@ -147,7 +147,7 @@ import {
   Routes,
 } from '@/utils/constants';
 import {isValidPEN} from '@/utils/validation';
-import AddStudent from '@/components/AddStudent';
+import AddStudent from '@/components/common/AddStudent';
 
 export default {
   name: 'NewMessagePage',
