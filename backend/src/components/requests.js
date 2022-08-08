@@ -205,7 +205,6 @@ function getRequestById(requestType) {
 }
 
 async function getStudentById(req, res) {
-  console.log('TOP_getStudentById');
   const token = utils.getBackendToken(req);
   if (!token) {
     return unauthorizedError(res);

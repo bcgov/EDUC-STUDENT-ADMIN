@@ -113,27 +113,6 @@ async function getData(token, url, params) {
   }
 }
 
-async function getDataWithParams(token, url, params, correlationID) {
-  try {
-    params.headers = {
-      Authorization: `Bearer ${token}`,
-      correlationID: correlationID || uuidv4()
-    };
-
-    log.info('get Data Url', url);
-    const response = await axios.get(url, params);
-    log.info(`get Data Status for url ${url} :: is :: `, response.status);
-    log.info(`get Data StatusText for url ${url}  :: is :: `, response.statusText);
-    log.verbose(`get Data Response for url ${url}  :: is :: `, minify(response.data));
-
-    return response.data;
-  } catch (e) {
-    log.error('getDataWithParams Error', e.response ? e.response.status : e.message);
-    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ApiError(status, {message: 'API Get error'}, e);
-  }
-}
-
 async function logApiError(e, functionName, message) {
   if (e?.response?.status === 404) {
     log.info('Entity not found', e);
