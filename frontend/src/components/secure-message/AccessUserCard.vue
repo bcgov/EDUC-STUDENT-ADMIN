@@ -17,16 +17,11 @@
                          min-width="0.5em"
                          depressed
                          @click="clickEditButton"
+                         small
+                         class="mr-2"
                   >
-                    <v-icon size="x-large" class="mr-2" color="#003366" :nudge-down="4" right dark>mdi-pencil</v-icon>
+                    <v-icon size="x-large" color="#003366" dark>mdi-pencil</v-icon>
                   </v-btn>
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col cols="10" class="pt-1">
-                  <span>{{user.email}}</span>
-                </v-col>
-                <v-col cols="2" class="pt-1 d-flex justify-end">
                   <v-btn :id="`user-remove-button-${user.firstName}-${user.lastName}`"
                          title="Remove"
                          color="white"
@@ -34,15 +29,11 @@
                          min-width="0.5em"
                          depressed
                          @click="clickDeleteButton"
+                         small
+                         class="mr-2"
                   >
-                    <v-icon size="x-large" class="mr-2" color="#003366" :nudge-down="4" right dark>mdi-delete</v-icon>
+                    <v-icon size="x-large" color="#003366" dark>mdi-delete</v-icon>
                   </v-btn>
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col cols="10" class="pt-1">
-                </v-col>
-                <v-col cols="2" class="pt-1 d-flex justify-end">
                   <v-btn :id="`user-relink-button-${user.firstName}-${user.lastName}`"
                          title="Re-Link"
                          color="white"
@@ -50,9 +41,19 @@
                          min-width="0.5em"
                          depressed
                          @click="clickRelinkButton"
+                         small
                   >
-                    <v-icon size="x-large" class="mr-2" color="#003366" :nudge-down="4" right dark>mdi-autorenew</v-icon>
+                    <v-icon size="x-large" color="#003366" dark>mdi-autorenew</v-icon>
                   </v-btn>
+                </v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col cols="12" class="pt-1">
+                  <span>{{user.email}}</span>
+                </v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col cols="12" class="pt-1">
                 </v-col>
               </v-row>
             </v-col>
