@@ -232,7 +232,7 @@
                           <v-row v-if="shouldShowMincodeWarning(activity)">
                             <v-col class="pt-0" cols="12">
                               <v-alert
-                                id="addStudentAlert"
+                                id="studentNotFromMincode"
                                 dense
                                 outlined
                                 class="mb-3 bootstrap-info"
