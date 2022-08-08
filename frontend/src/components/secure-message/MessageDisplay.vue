@@ -376,10 +376,7 @@ export default {
       this.editOptionsOpen = false;
     },
     shouldShowMincodeWarning(studentActivity){
-      if(this.secureExchange.contactIdentifier !== studentActivity.mincode){
-        return true;
-      }
-      return false;
+      return this.secureExchange.contactIdentifier !== studentActivity.mincode;
     },
     hideNewMessageField(){
       this.isNewMessageDisplayed = false;
