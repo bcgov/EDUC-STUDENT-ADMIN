@@ -195,6 +195,7 @@ async function getExchange(req, res) {
           let studentDetail = await getData(token, config.get('server:student:rootURL') + '/' + student.studentId);
           let activity = {};
           activity['type'] = 'student';
+          activity['isSchool'] = student.edxUserID ? true : false;
           activity['studentID'] = student.studentId;
           activity['studentPEN'] = studentDetail.pen;
           activity['studentLocalID'] = studentDetail.localID;
