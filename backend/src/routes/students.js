@@ -20,6 +20,8 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles('GMP & UMP & P
 
 const isValidUITokenWithSearchRoles = auth.isValidUiTokenWithRoles('StudentSearch & PenRequestBatchAnalytics', [...roles.User.StudentSearch, ...roles.User.PenRequestBatchAnalytics]);
 
+const isValidUiTokenWithSimpleSearchRoles = auth.isValidUiTokenWithRoles('GMP & UMP & PenRequestBatch & StudentSearch', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.StudentSearch, ...roles.User.StaffAdministration, ...roles.User.Exchange]);
+
 router.get('/allStudents', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getAllStudentByStudentIds);
 router.get('/genderCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:student:genderCodesURL', 'studentGenderCodes'));
 router.get('/activeGenderCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getActiveCodes('server:student:genderCodesURL', 'studentGenderCodes'));
@@ -30,7 +32,7 @@ router.get('/document-type-codes', passport.authenticate('jwt', {session: false}
 router.get('/historyActivityCodes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, utils.cacheMiddleware(), utils.getCodes('server:student:historyActivityCodesURL', 'studentHistoryActivityCodes'));
 router.get('/search', passport.authenticate('jwt', {session: false}, undefined), isValidUITokenWithSearchRoles, extendSession, searchStudent);
 router.get('/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentById);
-router.get('/', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentByPen);
+router.get('/', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithSimpleSearchRoles, extendSession, getStudentByPen);
 router.get('/detail/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentByStudentId);
 router.get('/demographics/:id', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, getStudentDemographicsOnlyByStudentId);
 router.put('/:studentID', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, extendSession, atomicStudentUpdate.handleConcurrentStudentModification, updateStudent);
