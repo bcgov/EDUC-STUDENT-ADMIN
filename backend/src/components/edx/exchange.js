@@ -37,8 +37,8 @@ async function claimExchange(req, res) {
       });
     }
     let params;
-    if (!req.body.claimedStatus) {
-      const userInfo = utils.getUser(req);
+    const userInfo = utils.getUser(req);
+    if (!req.body.claimedStatus || req.body.currentlyClaimedBy !== userInfo.idir_username) {
       params = new URLSearchParams({
         reviewer: userInfo.idir_username,
         secureExchangeIDs: req.body.secureExchangeIDs
@@ -52,7 +52,8 @@ async function claimExchange(req, res) {
     await utils.postData(token, config.get('server:edx:claimExchangesURL') + '?' + params, null, null, null);
     const thisExchange = await getData(token, config.get('server:edx:exchangeURL') + `/${req.body.secureExchangeIDs}`);
 
-    return res.status(HttpStatus.OK).json({'reviewer':thisExchange['reviewer']});
+    return res.status(HttpStatus.OK).json(thisExchange);
+
   } catch (e) {
     logApiError(e, 'claimAllExchanges', 'Error occurred while attempting to claim exchanges.');
     return errorResponse(res);
