@@ -104,8 +104,7 @@
                 </v-btn>
                 <v-btn id="claimAsButton" class="my-4 mx-2" v-on:click="clickClaimMsgButton" :disabled="!isEditable() && !isClaimable() && !isUnClaimable()">
                   <v-icon>{{ !isClaimable() ? 'mdi-account-off-outline' : 'mdi-account-check-outline' }}</v-icon>
-                  <span v-if="isClaimable()" class="ml-1">Claim</span>
-                  <span v-if="!isClaimable()" class="ml-1">Unclaim</span>
+                  <span class="ml-1">{{ isClaimable() ? 'Claim' : 'Unclaim' }}</span>
                 </v-btn>
                 <v-btn id="changeStatusButton" class="my-4" v-on:click="clickMarkAsClosedButton" :disabled="!isEditable()">
                   <span>Close</span>
