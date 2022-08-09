@@ -521,11 +521,13 @@ export default {
       return result;
     },
     isUnClaimable(){
+      let result;
       if(this.secureExchange.reviewer !== '' && this.secureExchange.reviewer === this.userInfo.userName){
-        return true;
+        result = true;
       } else {
-        return false;
+        result = false;
       }
+      return result;
     },
     clickClaimMsgButton() {
       this.loadingReadStatus = true;
