@@ -508,25 +508,10 @@ export default {
       router.push({name: `exchange_inbox_${this.secureExchange.ministryOwnershipGroupRoleIdentifier}`});
     },
     isClaimable(){
-      let result;
-      if(this.secureExchange.reviewer === ''){
-        result = true;
-      }
-      if(this.secureExchange.reviewer !== '' && this.secureExchange.reviewer !== this.userInfo.userName){
-        result = true;
-      } else {
-        result = false;
-      }
-      return result;
+      return this.secureExchange.reviewer === '' || this.secureExchange.reviewer !== this.userInfo.userName;
     },
     isUnClaimable(){
-      let result;
-      if(this.secureExchange.reviewer !== '' && this.secureExchange.reviewer === this.userInfo.userName){
-        result = true;
-      } else {
-        result = false;
-      }
-      return result;
+      return this.secureExchange.reviewer !== '' && this.secureExchange.reviewer === this.userInfo.userName;
     },
     clickClaimMsgButton() {
       this.loadingReadStatus = true;
