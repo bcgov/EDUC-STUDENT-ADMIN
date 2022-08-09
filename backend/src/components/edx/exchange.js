@@ -655,7 +655,7 @@ async function relinkUserSchoolAccess(req, res) {
       firstName: edxUserDetails.firstName,
       lastName: edxUserDetails.lastName,
       email: edxUserDetails.email,
-      edxUserID: req.body.params.userToRelink,
+      edxUserId: req.body.params.userToRelink,
       edxUserSchoolID: req.body.params.userSchoolID,
     };
 
