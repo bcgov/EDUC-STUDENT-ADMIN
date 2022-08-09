@@ -43,7 +43,7 @@
                          @click="clickRelinkButton"
                          small
                   >
-                    <v-icon size="x-large" color="#003366" dark>mdi-autorenew</v-icon>
+                    <v-icon size="x-large" color="#003366" dark>mdi-backup-restore</v-icon>
                   </v-btn>
                 </v-col>
               </v-row>
