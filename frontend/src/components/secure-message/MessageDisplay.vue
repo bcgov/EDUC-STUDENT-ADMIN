@@ -509,14 +509,16 @@ export default {
       router.push({name: `exchange_inbox_${this.secureExchange.ministryOwnershipGroupRoleIdentifier}`});
     },
     isClaimable(){
+      let result;
       if(this.secureExchange.reviewer === ''){
-        return true;
+        result = true;
       }
       if(this.secureExchange.reviewer !== '' && this.secureExchange.reviewer !== this.userInfo.userName){
-        return true;
+        result = true;
       } else {
-        return false;
+        result = false;
       }
+      return result;
     },
     isUnClaimable(){
       if(this.secureExchange.reviewer !== '' && this.secureExchange.reviewer === this.userInfo.userName){
