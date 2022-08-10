@@ -232,16 +232,40 @@
                           <v-row v-if="shouldShowMincodeWarning(activity)">
                             <v-col class="pt-0" cols="12">
                               <v-alert
-                                id="studentNotFromMincode"
-                                dense
-                                outlined
-                                class="mb-3 bootstrap-info"
+                                  id="studentNotFromMincode"
+                                  dense
+                                  outlined
+                                  class="mb-3 bootstrap-info"
                               >
                                 Student's mincode does not match the school that added the student. As such, the school cannot see the student details.
                               </v-alert>
                             </v-col>
                           </v-row>
                         </v-card-text>
+                          <v-row>
+                            <v-btn class="ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveStudent(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="!isEditable()">
+                              <v-icon>mdi-delete-forever-outline</v-icon>
+                            </v-btn>
+                          </v-row>
+                          <v-expand-transition>
+                            <div v-show="isOpenStudentIndex === index" class="greyBackground">
+                              <v-divider></v-divider>
+                              <v-card-text>
+                                <p><strong>Removing the student will remove it for all users.</strong></p>
+                                <br/>
+                                <p><strong>Are you sure you want to remove the student?</strong></p>
+                                <br/>
+                              </v-card-text>
+                              <v-row no-gutters class="">
+                                <v-btn class="pl-0 pr-0 yesBtn" bottom right absolute dark color="#003366" @click="removeStudent(activity.secureExchangeStudentId)">
+                                  Yes
+                                </v-btn>
+                                <v-btn class="ml-12 pl-0 pr-0" bottom right absolute @click="closeStudentIndex()">
+                                  No
+                                </v-btn>
+                              </v-row>
+                            </div>
+                          </v-expand-transition>
                       </v-card>
                       <v-card v-if="activity.type === 'document'">
                         <v-card-title>
@@ -256,12 +280,12 @@
                             </a>
                           </v-card-text>
                           <v-card-text v-if="activity.documentType.label !== 'Other'" class="pt-0 pb-3">{{ activity.documentType.label }}</v-card-text>
-                          <v-btn class="ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemove(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="!isEditable()">
+                          <v-btn class="ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveDoc(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="!isEditable()">
                             <v-icon>mdi-delete-forever-outline</v-icon>
                           </v-btn>
                         </v-row>
                         <v-expand-transition>
-                          <div v-show="isOpenIndex === index" class="greyBackground">
+                          <div v-show="isOpenDocIndex === index" class="greyBackground">
                             <v-divider></v-divider>
                             <v-card-text>
                               <p><strong>Removing the attachment will remove it for all users.</strong></p>
@@ -273,7 +297,7 @@
                               <v-btn class="pl-0 pr-0 yesBtn" bottom right absolute dark color="#003366" @click="removeAttachment(activity.documentID)">
                                 Yes
                               </v-btn>
-                              <v-btn class="ml-12 pl-0 pr-0" bottom right absolute @click="closeIndex()">
+                              <v-btn class="ml-12 pl-0 pr-0" bottom right absolute @click="closeDocIndex()">
                                 No
                               </v-btn>
                             </v-row>
@@ -332,7 +356,8 @@ export default {
       processing: false,
       newMessage:'',
       mincode: null,
-      isOpenIndex: false,
+      isOpenDocIndex: false,
+      isOpenStudentIndex: false,
       show: false,
       isHideIndex: false,
       pdfRenderDialog: false,
@@ -538,13 +563,29 @@ export default {
           this.loadingReadStatus = false;
         });
     },
-    toggleRemove(index) {
+    toggleRemoveDoc(index) {
       this.isHideIndex = index;
-      if( this.isOpenIndex !== null ){
-        this.isOpenIndex = ( this.isOpenIndex === index ) ? null : index;
+      if( this.isOpenDocIndex !== null ){
+        this.isOpenDocIndex = ( this.isOpenDocIndex === index ) ? null : index;
       } else {
-        this.isOpenIndex = index;
+        this.isOpenDocIndex = index;
       }
+    },
+    closeDocIndex() {
+      this.isOpenDocIndex = false;
+      this.isHideIndex = false;
+    },
+    toggleRemoveStudent(index) {
+      this.isHideIndex = index;
+      if( this.isOpenStudentIndex !== null ){
+        this.isOpenStudentIndex = ( this.isOpenStudentIndex === index ) ? null : index;
+      } else {
+        this.isOpenStudentIndex = index;
+      }
+    },
+    closeStudentIndex() {
+      this.isOpenStudentIndex = false;
+      this.isHideIndex = false;
     },
     displayStudentPanel() {
       this.isNewMessageDisplayed = false;
@@ -559,10 +600,6 @@ export default {
     },
     updateAddStudentWarningMessage(newValue) {
       this.addStudentWarningMessage = newValue;
-    },
-    closeIndex() {
-      this.isOpenIndex = false;
-      this.isHideIndex = false;
     },
     openStudentDetail(student){
       router.push(`/student/${student.studentID}`);
@@ -598,7 +635,29 @@ export default {
           } else{
             this.setSuccessAlert('Error! The document was not removed.');
           }
-          this.closeIndex();
+          this.closeDocIndex();
+        })
+        .catch(error => {
+          console.log(error);
+        })
+        .finally(() => {
+          this.processing = false;
+          this.loading = false;
+        });
+    },
+    removeStudent(studentID) {
+      this.processing = true;
+      this.loading = true;
+
+      ApiService.apiAxios.put(`${Routes.edx.EXCHANGE_URL}/${this.secureExchangeID}/removeStudent/${studentID}`)
+        .then((response) => {
+          this.getExchange();
+          if(response.status === 200){
+            this.setSuccessAlert('Success! The student has been removed.');
+          } else{
+            this.setSuccessAlert('Error! The student was not removed.');
+          }
+          this.closeDocIndex();
         })
         .catch(error => {
           console.log(error);

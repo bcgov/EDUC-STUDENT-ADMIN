@@ -198,6 +198,7 @@ async function getExchange(req, res) {
           activity['type'] = 'student';
           activity['isSchool'] = student.edxUserID ? true : false;
           activity['studentID'] = student.studentId;
+          activity['secureExchangeStudentId'] = student.secureExchangeStudentId;
           activity['mincode'] = studentDetail.mincode;
           activity['studentPEN'] = studentDetail.pen;
           activity['studentLocalID'] = studentDetail.localID;
@@ -698,6 +699,31 @@ async function createSecureExchangeStudent(req, res) {
   }
 }
 
+async function removeSecureExchangeStudent(req, res){
+  try {
+    const accessToken = getBackendToken(req);
+    if (!accessToken) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'No access token'
+      });
+    }
+
+    if(!req.session.roles.includes('SECURE_EXCHANGE')){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        status: HttpStatus.UNAUTHORIZED,
+        message: 'You are not authorized to access this page'
+      });
+    }
+
+    const result = await utils.deleteData(accessToken, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}/students/${req.params.studentID}`);
+    return res.status(HttpStatus.OK).json(result);
+
+  } catch (e) {
+    log.error(e, 'removeSecureExchangeStudent', 'Error occurred while attempting to remove a secure exchange student.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getExchanges,
   createExchange,
@@ -717,5 +743,6 @@ module.exports = {
   removeDocumentFromExchange,
   removeUserSchoolAccess,
   relinkUserSchoolAccess,
-  createSecureExchangeStudent
+  createSecureExchangeStudent,
+  removeSecureExchangeStudent
 };
