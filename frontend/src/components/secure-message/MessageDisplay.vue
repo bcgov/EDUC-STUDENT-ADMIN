@@ -82,7 +82,7 @@
                   </v-btn>
                 </template>
                 <v-card>
-                  <v-btn id="newMessageToConvBtn" small @click="displayMessageField">
+                  <v-btn id="newMessageToConvBtn" small @click="displayMessagePanel">
                     <v-icon color="#003366">mdi-email-outline</v-icon>
                     <span style="color: #003366; text-transform: none!important;" class="ml-1">Message</span>
                   </v-btn>
@@ -93,6 +93,10 @@
                   <v-btn small id="addStudentConvButton" @click="displayStudentPanel">
                     <v-icon color="#003366">mdi-emoticon-happy-outline</v-icon>
                     <span style="color: #003366; text-transform: none!important;" class="ml-1">Student</span>
+                  </v-btn>
+                  <v-btn small id="addNoteConvButton" @click="displayNotePanel">
+                    <v-icon color="#003366">mdi-text</v-icon>
+                    <span style="color: #003366; text-transform: none!important;" class="ml-1">Note</span>
                   </v-btn>
                 </v-card>
               </v-speed-dial>
@@ -127,8 +131,28 @@
                 </v-textarea>
               </v-card-text>
               <v-row class="py-4 justify-end pt-0 pr-16 mr-10">
-                <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2" @click.native="hideNewMessageField"></PrimaryButton>
+                <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2" @click.native="hideNewMessagePanel"></PrimaryButton>
                 <PrimaryButton id="newMessagePostBtn" text="Send" width="8rem" :disabled="!newMessage" :loading="processing" @click.native="sendNewExchangeComment"></PrimaryButton>
+              </v-row>
+            </v-row>
+            <v-row v-if="isNewNoteDisplayed">
+              <v-card-text id="newNoteCardText" class="pb-0 pt-5 pl-16 ml-10 pr-16 mr-10">
+                <v-textarea id="newNoteToConvTextArea"
+                            outlined
+                            solo
+                            label="New Note..."
+                            auto-grow
+                            v-model="newNote"
+                            rows="8"
+                            maxlength="4000"
+                            class="pt-0"
+                            ref="newNoteToConvTextArea"
+                >
+                </v-textarea>
+              </v-card-text>
+              <v-row class="py-4 justify-end pt-0 pr-16 mr-10">
+                <PrimaryButton id="cancelNote" secondary text="Cancel" class="mr-2" @click.native="hideNewNotePanel"></PrimaryButton>
+                <PrimaryButton id="newNotePostBtn" text="Send" width="8rem" :disabled="!newNote" :loading="processing" @click.native="sendNewExchangeNote"></PrimaryButton>
               </v-row>
             </v-row>
             <v-row no-gutters>
@@ -304,6 +328,14 @@
                           </div>
                         </v-expand-transition>
                       </v-card>
+                      <v-card v-if="activity.type === 'note'">
+                        <v-card-title>
+                          <div class="activityTitle">{{ activity.title }}</div>
+                          <v-spacer></v-spacer>
+                          <div class="activityDisplayDate">{{ activity.displayDate }}</div>
+                        </v-card-title>
+                        <v-card-text class="activityContent">{{ activity.content }}</v-card-text>
+                      </v-card>
                     </v-timeline-item>
                   </div>
                 </v-timeline>
@@ -351,6 +383,7 @@ export default {
       isNewMessageDisplayed: false,
       isNewAttachmentDisplayed: false,
       isNewStudentDisplayed: false,
+      isNewNoteDisplayed: false,
       newMessageBtnDisplayed: false,
       shouldDisplaySpeedDial: true,
       processing: false,
@@ -365,7 +398,8 @@ export default {
       addStudentWarningMessage: '',
       documentId: '',
       imageId: '',
-      documentRoute: Routes.edx.EXCHANGE_URL
+      documentRoute: Routes.edx.EXCHANGE_URL,
+      newNote: ''
     };
   },
   computed: {
@@ -393,27 +427,21 @@ export default {
     documentUrl(document) {
       return `${this.documentRoute}/${this.secureExchangeID}/documents/${document.documentID}`;
     },
-    displayMessageField() {
-      this.isNewAttachmentDisplayed = false;
+    displayMessagePanel() {
+      this.closeAllPanels();
       this.isNewMessageDisplayed = true;
-      this.isNewStudentDisplayed = false;
-      this.shouldDisplaySpeedDial = false;
-      this.editOptionsOpen = false;
     },
     shouldShowMincodeWarning(studentActivity){
       return this.secureExchange.contactIdentifier !== studentActivity.mincode;
     },
-    hideNewMessageField(){
+    hideNewMessagePanel(){
       this.isNewMessageDisplayed = false;
       this.shouldDisplaySpeedDial = true;
       this.resetNewMessageForm();
     },
     displayAttachmentPanel() {
-      this.isNewMessageDisplayed = false;
+      this.closeAllPanels();
       this.isNewAttachmentDisplayed = true;
-      this.isNewStudentDisplayed = false;
-      this.shouldDisplaySpeedDial = false;
-      this.editOptionsOpen = false;
     },
     hideAttachmentPanel(){
       this.isNewAttachmentDisplayed = false;
@@ -473,6 +501,8 @@ export default {
         return 'mdi-paperclip';
       case 'student':
         return 'mdi-emoticon-happy-outline';
+      case 'note':
+        return 'mdi-text';
       default:
         return '';
       }
@@ -588,11 +618,8 @@ export default {
       this.isHideIndex = false;
     },
     displayStudentPanel() {
-      this.isNewMessageDisplayed = false;
-      this.isNewAttachmentDisplayed = false;
+      this.closeAllPanels();
       this.isNewStudentDisplayed = true;
-      this.shouldDisplaySpeedDial = false;
-      this.editOptionsOpen = false;
     },
     hideStudentPanel() {
       this.isNewStudentDisplayed = false;
@@ -692,6 +719,43 @@ export default {
       this.pdfRenderDialog = false;
       this.imageRendererDialog = false;
       await this.$nextTick(); //need to wait so update can be made in parent and propagated back down to child component
+    },
+    displayNotePanel() {
+      this.closeAllPanels();
+      this.isNewNoteDisplayed = true;
+    },
+    hideNewNotePanel() {
+      this.isNewNoteDisplayed = false;
+      this.shouldDisplaySpeedDial = true;
+      this.newNote = '';
+    },
+    sendNewExchangeNote() {
+      this.processing = true;
+      const payload = {
+        content: this.newNote,
+      };
+      ApiService.apiAxios.post(`${Routes.edx.EXCHANGE_URL}/${this.secureExchangeID}/notes`, payload)
+        .then(() => {
+          this.setSuccessAlert('Success! The note has been sent.');
+          this.getExchange();
+        })
+        .catch(error => {
+          console.error(error);
+          this.setFailureAlert('An error occurred while sending note. Please try again later.');
+        })
+        .finally(() => {
+          this.processing = false;
+          this.hideNewNotePanel();
+        });
+    },
+    //helper function to close all panels before setting one to visible in another method
+    closeAllPanels() {
+      this.isNewMessageDisplayed = false;
+      this.isNewAttachmentDisplayed = false;
+      this.isNewStudentDisplayed = false;
+      this.shouldDisplaySpeedDial = false;
+      this.editOptionsOpen = false;
+      this.isNewNoteDisplayed = false;
     }
   }
 };

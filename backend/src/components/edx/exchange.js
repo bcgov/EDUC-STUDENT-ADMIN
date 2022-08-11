@@ -214,7 +214,17 @@ async function getExchange(req, res) {
           dataResponse['activities'].push(activity);
         }
       }
-
+      if (dataResponse['noteList']) {
+        for (const note of dataResponse['noteList']) {
+          let activity = {};
+          activity['type'] = 'note';
+          activity['timestamp'] = LocalDateTime.parse(note['noteTimestamp']);
+          activity['title'] = note.staffUserIdentifier;
+          activity['displayDate'] = LocalDateTime.parse(note['noteTimestamp']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm'));
+          activity['content'] = note['content'];
+          dataResponse['activities'].push(activity);
+        }
+      }
       dataResponse['activities'].sort((activity1, activity2) => {
         return activity2.timestamp.compareTo(activity1.timestamp);
       });
@@ -724,6 +734,33 @@ async function removeSecureExchangeStudent(req, res){
   }
 }
 
+async function createSecureExchangeNote(req, res) {
+  try {
+    const token = utils.getBackendToken(req);
+    const userInfo = utils.getUser(req);
+
+    if(!req.session.roles.includes('SECURE_EXCHANGE')){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        status: HttpStatus.UNAUTHORIZED,
+        message: 'You are not authorized to access this page'
+      });
+    }
+
+    const payload = {
+      secureExchangeID: req.params.secureExchangeID,
+      staffUserIdentifier: userInfo.idir_username,
+      content: req.body.content,
+      noteTimestamp: LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss')),
+    };
+
+    const result = await utils.postData(token, `${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/notes` , payload, null, userInfo.idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    await logApiError(e, 'createExchangeNote', 'Error occurred while attempting to create a new exchange note.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getExchanges,
   createExchange,
@@ -744,5 +781,6 @@ module.exports = {
   removeUserSchoolAccess,
   relinkUserSchoolAccess,
   createSecureExchangeStudent,
-  removeSecureExchangeStudent
+  removeSecureExchangeStudent,
+  createSecureExchangeNote
 };
