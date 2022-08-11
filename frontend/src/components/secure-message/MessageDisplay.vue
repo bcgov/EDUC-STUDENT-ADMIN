@@ -627,6 +627,9 @@ export default {
         });
     },
     removeAttachment(documentID) {
+      this.processing = true;
+      this.loading = true;
+
       ApiService.apiAxios.put(this.documentRoute + `/${this.secureExchangeID}/removeDoc/${documentID}`)
         .then((response) => {
           this.getExchange();
@@ -661,6 +664,10 @@ export default {
         })
         .catch(error => {
           console.log(error);
+        })
+        .finally(() => {
+          this.processing = false;
+          this.loading = false;
         });
     },
     showDocModal(document){
