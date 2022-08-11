@@ -12,7 +12,7 @@
     <v-divider class="divider"></v-divider>
     <v-row>
       <v-col :class="['d-sm-flex', 'align-center']">
-        <div>Primary EDX Code - <span id="primaryEdxActivationCode" v-if="this.primaryEdxActivationCode === null">code not found</span><span id="primaryEdxActivationCode" v-else>{{ this.primaryEdxActivationCode.activationCode }}</span></div>
+        <div>Primary EDX Code - <span id="primaryEdxActivationCode">{{ this.primaryEdxActivationCode ? this.primaryEdxActivationCode.activationCode : `Code Not Found` }}</span></div>
         <PrimaryButton id="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibilityButton" short secondary icon="mdi-sync" class="ml-2 pl-2 pr-2" @click.native="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibility">Generate New Code</PrimaryButton>
       </v-col>
     </v-row>
