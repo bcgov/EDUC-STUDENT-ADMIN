@@ -738,11 +738,10 @@ async function createSecureExchangeNote(req, res) {
   try {
     const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
-    const message = req.body;
     const payload = {
       secureExchangeID: req.params.secureExchangeID,
       staffUserIdentifier: userInfo.idir_username,
-      content: message.content,
+      content: req.body.content,
       noteTimestamp: LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss')),
     };
 
