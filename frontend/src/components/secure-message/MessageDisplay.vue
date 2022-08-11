@@ -261,7 +261,7 @@
                                   outlined
                                   class="mb-3 bootstrap-info"
                               >
-                                Student's mincode does not match the school that added the student. As such, the school cannot see the student details.
+                                Student's mincode does not match the school the student has on file. As such, the school cannot see the student details.
                               </v-alert>
                             </v-col>
                           </v-row>
