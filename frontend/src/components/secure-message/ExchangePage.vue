@@ -4,7 +4,7 @@
       <v-col class="pt-0">
         <v-row class='d-flex justify-end pb-2'>
           <v-col class='d-flex justify-start'>
-            <h1>{{ ministryTeamName }} Inbox</h1>
+            <h1 id="ministryTeamInboxTitle">{{ ministryTeamName }} Inbox</h1>
           </v-col>
           <v-col class='d-flex justify-end pt-6'>
             <PrimaryButton
