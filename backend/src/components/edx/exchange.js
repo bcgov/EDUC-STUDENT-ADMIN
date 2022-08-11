@@ -738,6 +738,14 @@ async function createSecureExchangeNote(req, res) {
   try {
     const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
+
+    if(!req.session.roles.includes('SECURE_EXCHANGE')){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        status: HttpStatus.UNAUTHORIZED,
+        message: 'You are not authorized to access this page'
+      });
+    }
+
     const payload = {
       secureExchangeID: req.params.secureExchangeID,
       staffUserIdentifier: userInfo.idir_username,
