@@ -328,6 +328,14 @@
                           </div>
                         </v-expand-transition>
                       </v-card>
+                      <v-card v-if="activity.type === 'note'">
+                        <v-card-title>
+                          <div class="activityTitle">{{ activity.title }}</div>
+                          <v-spacer></v-spacer>
+                          <div class="activityDisplayDate">{{ activity.displayDate }}</div>
+                        </v-card-title>
+                        <v-card-text class="activityContent">{{ activity.content }}</v-card-text>
+                      </v-card>
                     </v-timeline-item>
                   </div>
                 </v-timeline>
@@ -501,6 +509,8 @@ export default {
         return 'mdi-paperclip';
       case 'student':
         return 'mdi-emoticon-happy-outline';
+      case 'note':
+        return 'mdi-text';
       default:
         return '';
       }

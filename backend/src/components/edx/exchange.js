@@ -214,7 +214,17 @@ async function getExchange(req, res) {
           dataResponse['activities'].push(activity);
         }
       }
-
+      if (dataResponse['noteList']) {
+        for (const note of dataResponse['noteList']) {
+          let activity = {};
+          activity['type'] = 'note';
+          activity['timestamp'] = LocalDateTime.parse(note['noteTimestamp']);
+          activity['title'] = note.staffUserIdentifier;
+          activity['displayDate'] = LocalDateTime.parse(note['noteTimestamp']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm'));
+          activity['content'] = note['content'];
+          dataResponse['activities'].push(activity);
+        }
+      }
       dataResponse['activities'].sort((activity1, activity2) => {
         return activity2.timestamp.compareTo(activity1.timestamp);
       });
