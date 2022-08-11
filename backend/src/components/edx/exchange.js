@@ -724,6 +724,26 @@ async function removeSecureExchangeStudent(req, res){
   }
 }
 
+async function createSecureExchangeNote(req, res) {
+  try {
+    const token = utils.getBackendToken(req);
+    const userInfo = utils.getUser(req);
+    const message = req.body;
+    const payload = {
+      secureExchangeID: req.params.secureExchangeID,
+      staffUserIdentifier: userInfo.idir_username,
+      content: message.content,
+      noteTimestamp: LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss')),
+    };
+
+    const result = await utils.postData(token, `${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/notes` , payload, null, userInfo.idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    await logApiError(e, 'createExchangeNote', 'Error occurred while attempting to create a new exchange note.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getExchanges,
   createExchange,
@@ -744,5 +764,6 @@ module.exports = {
   removeUserSchoolAccess,
   relinkUserSchoolAccess,
   createSecureExchangeStudent,
-  removeSecureExchangeStudent
+  removeSecureExchangeStudent,
+  createSecureExchangeNote
 };
