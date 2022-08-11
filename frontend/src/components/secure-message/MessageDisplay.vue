@@ -82,7 +82,7 @@
                   </v-btn>
                 </template>
                 <v-card>
-                  <v-btn id="newMessageToConvBtn" small @click="displayMessageField">
+                  <v-btn id="newMessageToConvBtn" small @click="displayMessagePanel">
                     <v-icon color="#003366">mdi-email-outline</v-icon>
                     <span style="color: #003366; text-transform: none!important;" class="ml-1">Message</span>
                   </v-btn>
@@ -131,7 +131,7 @@
                 </v-textarea>
               </v-card-text>
               <v-row class="py-4 justify-end pt-0 pr-16 mr-10">
-                <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2" @click.native="hideNewMessageField"></PrimaryButton>
+                <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2" @click.native="hideNewMessagePanel"></PrimaryButton>
                 <PrimaryButton id="newMessagePostBtn" text="Send" width="8rem" :disabled="!newMessage" :loading="processing" @click.native="sendNewExchangeComment"></PrimaryButton>
               </v-row>
             </v-row>
@@ -427,29 +427,21 @@ export default {
     documentUrl(document) {
       return `${this.documentRoute}/${this.secureExchangeID}/documents/${document.documentID}`;
     },
-    displayMessageField() {
-      this.isNewAttachmentDisplayed = false;
+    displayMessagePanel() {
+      this.closeAllPanels();
       this.isNewMessageDisplayed = true;
-      this.isNewStudentDisplayed = false;
-      this.shouldDisplaySpeedDial = false;
-      this.editOptionsOpen = false;
-      this.isNewNoteDisplayed = false;
     },
     shouldShowMincodeWarning(studentActivity){
       return this.secureExchange.contactIdentifier !== studentActivity.mincode;
     },
-    hideNewMessageField(){
+    hideNewMessagePanel(){
       this.isNewMessageDisplayed = false;
       this.shouldDisplaySpeedDial = true;
       this.resetNewMessageForm();
     },
     displayAttachmentPanel() {
-      this.isNewMessageDisplayed = false;
+      this.closeAllPanels();
       this.isNewAttachmentDisplayed = true;
-      this.isNewStudentDisplayed = false;
-      this.shouldDisplaySpeedDial = false;
-      this.editOptionsOpen = false;
-      this.isNewNoteDisplayed = false;
     },
     hideAttachmentPanel(){
       this.isNewAttachmentDisplayed = false;
@@ -626,11 +618,8 @@ export default {
       this.isHideIndex = false;
     },
     displayStudentPanel() {
-      this.isNewMessageDisplayed = false;
-      this.isNewAttachmentDisplayed = false;
+      this.closeAllPanels();
       this.isNewStudentDisplayed = true;
-      this.shouldDisplaySpeedDial = false;
-      this.editOptionsOpen = false;
     },
     hideStudentPanel() {
       this.isNewStudentDisplayed = false;
@@ -732,11 +721,7 @@ export default {
       await this.$nextTick(); //need to wait so update can be made in parent and propagated back down to child component
     },
     displayNotePanel() {
-      this.isNewMessageDisplayed = false;
-      this.isNewAttachmentDisplayed = false;
-      this.isNewStudentDisplayed = false;
-      this.shouldDisplaySpeedDial = false;
-      this.editOptionsOpen = false;
+      this.closeAllPanels();
       this.isNewNoteDisplayed = true;
     },
     hideNewNotePanel() {
@@ -762,6 +747,15 @@ export default {
           this.processing = false;
           this.hideNewNotePanel();
         });
+    },
+    //helper function to close all panels before setting one to visible in another method
+    closeAllPanels() {
+      this.isNewMessageDisplayed = false;
+      this.isNewAttachmentDisplayed = false;
+      this.isNewStudentDisplayed = false;
+      this.shouldDisplaySpeedDial = false;
+      this.editOptionsOpen = false;
+      this.isNewNoteDisplayed = false;
     }
   }
 };
