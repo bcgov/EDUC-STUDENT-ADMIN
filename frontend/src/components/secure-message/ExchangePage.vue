@@ -178,6 +178,19 @@
                   ></v-text-field>
                 </v-col>
               </v-row>
+              <v-row>
+                <v-col cols="12" md="4" class="pt-0">
+                  <v-text-field
+                    class="pt-0 mt-0"
+                    v-model="studentIDFilter"
+                    label="Student PEN"
+                    prepend-inner-icon="mdi-account"
+                    maxlength="9"
+                    counter="9"
+                    clearable
+                  ></v-text-field>
+                </v-col>
+              </v-row>
               <v-row no-gutters class="justify-end mt-n2">
                 <v-col cols="12" class="d-flex justify-end">
                   <PrimaryButton class="mr-3" id="search-clear" :secondary="true" @click.native="clearSearch"
@@ -336,6 +349,7 @@ export default {
       messageDate: null,
       subjectFilter: '',
       messageIDFilter: '',
+      studentIDFilter: '',
       claimedByFilter: '',
       contactNameFilter: '',
       filterText: 'More Filters',
@@ -390,6 +404,7 @@ export default {
     searchEnabled(){
       return (this.claimedByFilter !== '' && this.claimedByFilter !== null)
         || (this.messageIDFilter !== '' && this.messageIDFilter !== null)
+        || (this.studentIDFilter !== '' && this.studentIDFilter !== null)
         || (this.subjectFilter !== '' && this.subjectFilter !== null)
         || (this.contactNameFilter !== '' && this.contactNameFilter !== null && this.contactNameFilter !== undefined)
         || this.messageDate !== null
@@ -469,6 +484,7 @@ export default {
     clearSearch(runSearch = true){
       this.subjectFilter = '';
       this.messageIDFilter = '';
+      this.studentIDFilter = '';
       this.claimedByFilter = '';
       this.contactNameFilter = '';
       this.messageDate = null;
@@ -583,6 +599,7 @@ export default {
       this.headerSearchParams.subject = this.subjectFilter;
       this.headerSearchParams.contactIdentifier = this.contactNameFilter;
       this.headerSearchParams.sequenceNumber = this.messageIDFilter;
+      this.headerSearchParams.studentPEN = this.studentIDFilter;
       this.headerSearchParams.ministryOwnershipTeamID = this.getMinistryTeamIDByGroupRoleID(this.ministryOwnershipGroupRoleID);
       this.headerSearchParams.createDate = this.messageDate === null ? null : [this.messageDate];
 
