@@ -266,9 +266,6 @@ export default {
       this.additionalStudentAddWarningMessage = newValue;
     },
     showAddStudentPanel() {
-      if(this.secureExchangeStudents.length > 0){
-        this.additionalStudentAddWarningMessage='Additional students should only be added if the details are relevant to this request. Requests for separate students should be sent in a new message.';
-      }
       this.expandAttachFile = false;
       this.expandAddStudent = true;
       this.shouldShowOptions = false;
