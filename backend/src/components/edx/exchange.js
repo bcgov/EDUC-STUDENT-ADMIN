@@ -102,8 +102,27 @@ async function getExchanges(req, res) {
 
 async function getExchangesPaginated(req, res) {
   let criteria = [];
+  let token = utils.getBackendToken(req);
+  if (!token) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No access token'
+    });
+  }
+
+  let parsedParams = JSON.parse(req.query.searchParams);
+
   if (req.query.searchParams) {
-    criteria = buildSearchParams(req.query.searchParams);
+    if (parsedParams.studentPEN) {
+      let studentDetail = await getData(token, config.get('server:student:rootURL') + '/?pen=' + parsedParams.studentPEN);
+      if(studentDetail[0]){
+        parsedParams.studentId = studentDetail[0].studentID;
+        delete parsedParams.studentPEN;
+      }else{
+        return '';
+      }
+    }
+
+    criteria = buildSearchParams(JSON.stringify(parsedParams));
   }
 
   if (req.query.searchParams.contactIdentifier) {
@@ -119,7 +138,7 @@ async function getExchangesPaginated(req, res) {
     }
   };
 
-  return utils.getData(utils.getBackendToken(req), config.get('server:edx:exchangeURL') + '/paginated', params);
+  return utils.getData(token, config.get('server:edx:exchangeURL') + '/paginated', params);
 }
 
 function getCriteria(key, value, operation, valueType) {
@@ -538,6 +557,10 @@ const createSearchParamObject = (key, value) => {
   if (key === 'sequenceNumber') {
     operation = FILTER_OPERATION.EQUAL;
   } else if (key === 'ministryOwnershipTeamID') {
+    operation = FILTER_OPERATION.EQUAL;
+    valueType = VALUE_TYPE.UUID;
+  } else if (key === 'studentId') {
+    key = 'secureExchangeStudents.studentId';
     operation = FILTER_OPERATION.EQUAL;
     valueType = VALUE_TYPE.UUID;
   } else if (key === 'createDate') {
