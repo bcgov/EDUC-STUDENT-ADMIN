@@ -465,7 +465,7 @@ async function updateEdxUserRoles(req, res) {
 
     let rolesToBeRemoved = [];
 
-    //Determine roles to be removed
+    //Determine schoolRoles to be removed
     selectedUserSchool[0].edxUserSchoolRoles.forEach(function (userSchoolRole) {
       if (!req.body.params.selectedRoles.filter(value => userSchoolRole.edxRoleCode === value).length > 0) {
         rolesToBeRemoved.push(userSchoolRole.edxRoleCode);
@@ -638,7 +638,7 @@ async function removeUserSchoolAccess(req, res) {
   try {
     const token = utils.getBackendToken(req);
 
-    if(!req.session.roles.includes('EDX_ADMIN')){
+    if(!req.session.roles.includes('EDX_SCHOOL_ADMIN')){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         status: HttpStatus.UNAUTHORIZED,
         message: 'You are not authorized to access this page'
@@ -672,7 +672,7 @@ async function relinkUserSchoolAccess(req, res) {
     const token = getBackendToken(req);
     const userName = utils.getUser(req).idir_username;
 
-    if(!req.session.roles.includes('EDX_ADMIN')){
+    if(!req.session.roles.includes('EDX_SCHOOL_ADMIN')){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         status: HttpStatus.UNAUTHORIZED,
         message: 'You are not authorized to access this page'

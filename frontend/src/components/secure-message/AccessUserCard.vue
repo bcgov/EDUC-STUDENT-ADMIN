@@ -83,7 +83,7 @@
 
                 <v-list-item-content>
                   <v-list-item-title>{{ newrole.label }}</v-list-item-title>
-                  <div style="color: black; font-weight: bold" v-if="isSelectedAdmin && newrole.edxRoleCode === 'EDX_ADMIN'">EDX School Admin users will be set up with all school roles</div>
+                  <div style="color: black; font-weight: bold" v-if="isSelectedAdmin && newrole.edxRoleCode === 'EDX_SCHOOL_ADMIN'">EDX School Admin users will be set up with all school Roles</div>
                 </v-list-item-content>
               </template>
             </v-list-item>
@@ -181,11 +181,11 @@ export default {
     };
   },
   methods: {
-    isSelectedEDXAdmin(){
-      return this.selectedRoles.filter((role) => role === 'EDX_ADMIN').length > 0;
+    isSelectedEDXSchoolAdmin(){
+      return this.selectedRoles.filter((role) => role === 'EDX_SCHOOL_ADMIN').length > 0;
     },
     roleDisabled(role){
-      if(this.isSelectedEDXAdmin() && role.edxRoleCode !== 'EDX_ADMIN'){
+      if(this.isSelectedEDXSchoolAdmin() && role.edxRoleCode !== 'EDX_SCHOOL_ADMIN'){
         this.isSelectedAdmin = true;
         return true;
       }
@@ -205,8 +205,8 @@ export default {
     },
     disableRoles() {
       this.isSelectedAdmin = false;
-      if(this.isSelectedEDXAdmin()){
-        this.selectedRoles = this.selectedRoles.filter((role) => role === 'EDX_ADMIN');
+      if(this.isSelectedEDXSchoolAdmin()){
+        this.selectedRoles = this.selectedRoles.filter((role) => role === 'EDX_SCHOOL_ADMIN');
       }
     },
     getRoleLabel(curRole){
@@ -306,7 +306,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('edx', ['roles'])
+    ...mapState('edx', ['schoolRoles'])
   }
 };
 </script>
