@@ -52,14 +52,16 @@
                     </v-card-text>
                   </v-col>
                 </v-row>
-                <v-row no-gutters>
-                  <v-col v-if="secureExchangeDocuments.length > 0 || secureExchangeStudents.length>0" class="d-flex px-0 pb-2">
-                    <v-chip id="documentChip" :class="['ma-1']" v-for="(document, index) in secureExchangeDocuments" :key="index" close @click:close="removeDocumentByIndex(index)">
+                <v-row class="ml-6" no-gutters>
+                  <v-col cols="4" v-for="(document, index) in secureExchangeDocuments" :key="index" class="d-flex px-0 pb-2">
+                    <v-chip id="documentChip" :class="['ma-1']"   close @click:close="removeDocumentByIndex(index)">
                       <v-avatar left>
                         <v-icon>mdi-paperclip</v-icon>
                       </v-avatar>
-                      {{document.fileName}}</v-chip>
-                    <v-chip id="studentChip" :class="['ma-1']" v-for="(secureExchangeStudent) in secureExchangeStudents" :key="secureExchangeStudent.studentID" close @click:close="removeSecureExchangeStudentByID(secureExchangeStudent)">
+                      {{abbreviateFileName(document.fileName)}}</v-chip>
+                  </v-col>
+                  <v-col cols="4" v-for="(secureExchangeStudent) in secureExchangeStudents" :key="secureExchangeStudent.studentID" class="d-flex px-0 pb-2">
+                    <v-chip id="studentChip" :class="['ma-1']"  close @click:close="removeSecureExchangeStudentByID(secureExchangeStudent)">
                       <v-avatar left>
                         <v-icon>mdi-account-circle</v-icon>
                       </v-avatar>
@@ -213,6 +215,12 @@ export default {
       this.clearSecureExchangeStudents();
       this.additionalStudentAddWarningMessage='';
       this.disableAddStudent = true;
+    },
+    abbreviateFileName(fileName){
+      if(fileName.length > 8){
+        return fileName.substring(0,8) + '...';
+      }
+      return fileName;
     },
     sendNewMessage() {
       this.processing = true;
