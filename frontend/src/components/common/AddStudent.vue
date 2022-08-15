@@ -153,6 +153,11 @@ export default {
       this.student['studentLocalID'] = data.localID;
       this.student['studentGender'] = data.genderCode;
       this.student['studentDoB'] = data.dob;
+      if (data.mincode !== this.mincode) {
+        this.setInfoAlert('This student\'s mincode does not match the school which you are sending the message.');
+      } else{
+        this.alert = false;
+      }
     },
     closeForm() {
       this.resetForm();
@@ -192,5 +197,8 @@ ul {
 }
 h3 {
   font-size: 1.2rem
+}
+.v-alert >>> .v-alert__content {
+  max-width: 28em;
 }
 </style>
