@@ -71,7 +71,7 @@
             v-else
             multiple
           >
-            <v-list-item :disabled="roleDisabled(newrole)" @input="disableRoles" v-for="newrole in roles" :key="newrole.edxRoleCode" :value="newrole.edxRoleCode">
+            <v-list-item :disabled="roleDisabled(newrole)" @input="disableRoles" v-for="newrole in schoolRoles" :key="newrole.edxRoleCode" :value="newrole.edxRoleCode">
               <template v-slot:default="{ active, }">
                 <v-list-item-action class="mt-0 mb-2 mr-3">
                   <v-checkbox
@@ -210,8 +210,8 @@ export default {
       }
     },
     getRoleLabel(curRole){
-      if(this.roles.length > 0) {
-        return this.roles.find((role) => role.edxRoleCode === curRole.edxRoleCode).label;
+      if(this.schoolRoles.length > 0) {
+        return this.schoolRoles.find((role) => role.edxRoleCode === curRole.edxRoleCode).label;
       }
       return '';
     },
@@ -292,7 +292,7 @@ export default {
       let mySelection = [];
 
       //look through all our roles. If user has this role, then mark the index
-      this.roles.forEach((role) => {
+      this.schoolRoles.forEach((role) => {
         let result = this.userRoles.find((userRole) =>
           userRole.edxRoleCode === role.edxRoleCode
         );
