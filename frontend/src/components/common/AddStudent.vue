@@ -132,12 +132,8 @@ export default {
         .then(response => {
           this.populateStudentInfoCard(response.data);
         })
-        .catch(error => {
-          if (error?.response?.data?.message) {
-            this.setErrorAlert(error?.response?.data?.message);
-          } else {
-            this.setErrorAlert('PEN must be a valid PEN associated with a student');
-          }
+        .catch(() => {
+          this.setErrorAlert('PEN must be a valid PEN associated with a student');
         }).finally(() => {
           this.isSearchingStudent = false;
         });
