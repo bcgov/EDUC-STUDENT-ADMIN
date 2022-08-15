@@ -172,7 +172,7 @@ export default {
     disableRoles() {
       if (this.edxAdminUserCode === '') {
         for (const element of this.userRoles) {
-          if (element.edxRoleCode === 'EDX_ADMIN') {
+          if (element.edxRoleCode === 'EDX_SCHOOL_ADMIN') {
             this.edxAdminUserCode = element.edxRoleCode;
             break;
           }
