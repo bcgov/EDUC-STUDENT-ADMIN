@@ -152,7 +152,7 @@
               </v-card-text>
               <v-row class="py-4 justify-end pt-0 pr-16 mr-10">
                 <PrimaryButton id="cancelNote" secondary text="Cancel" class="mr-2" @click.native="hideNewNotePanel"></PrimaryButton>
-                <PrimaryButton id="newNotePostBtn" text="Send" width="8rem" :disabled="!newNote" :loading="processing" @click.native="sendNewExchangeNote"></PrimaryButton>
+                <PrimaryButton id="newNotePostBtn" text="Save" width="8rem" :disabled="!newNote" :loading="processing" @click.native="sendNewExchangeNote"></PrimaryButton>
               </v-row>
             </v-row>
             <v-row no-gutters>
@@ -551,13 +551,13 @@ export default {
       };
       ApiService.apiAxios.post(this.documentRoute + `/${this.secureExchangeID}/comments`, payload)
         .then(() => {
-          this.setSuccessAlert('Success! The message has been sent.');
+          this.setSuccessAlert('Success! The note has been added.');
           this.messageSent();
           this.getExchange();
         })
         .catch(error => {
           console.error(error);
-          this.setFailureAlert('An error occurred while sending message. Please try again later.');
+          this.setFailureAlert('An error occurred while adding note. Please try again later.');
         })
         .finally(() => {
           this.processing = false;
