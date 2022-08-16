@@ -711,6 +711,7 @@ export default {
         .finally(() => {
           this.processing = false;
           this.loading = false;
+          this.closeStudentIndex();
         });
     },
     showDocModal(document){
