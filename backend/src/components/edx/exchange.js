@@ -720,10 +720,16 @@ async function createSecureExchangeStudent(req, res) {
       });
     }
 
+    const attachedSecureExchangeStudents = await getData(accessToken, `${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/students`);
+    if (attachedSecureExchangeStudents && attachedSecureExchangeStudents?.some((student) => student.studentId === req.body.studentID)) {
+      return errorResponse(res, 'Error adding student to an existing secure exchange. Student already attached.', HttpStatus.CONFLICT);
+    }
+
     const secureExchangeStudent = {
       staffUserIdentifier: userName,
       studentId: req.body.studentID
     };
+
     const result = await postData(accessToken,`${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/students`, secureExchangeStudent,null, userName );
     return res.status(HttpStatus.CREATED).json(result);
   } catch (e) {
