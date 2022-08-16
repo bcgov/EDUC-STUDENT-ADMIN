@@ -54,14 +54,14 @@
                 </v-row>
                 <v-row class="ml-6" no-gutters>
                   <v-col cols="4" v-for="(document, index) in secureExchangeDocuments" :key="index" class="d-flex px-0 pb-2">
-                    <v-chip id="documentChip" :class="['ma-1']"   close @click:close="removeDocumentByIndex(index)">
+                    <v-chip :id="`documentChip-${index}`" :class="['ma-1']"   close @click:close="removeDocumentByIndex(index)">
                       <v-avatar left>
                         <v-icon>mdi-paperclip</v-icon>
                       </v-avatar>
                       {{abbreviateFileName(document.fileName)}}</v-chip>
                   </v-col>
-                  <v-col cols="4" v-for="(secureExchangeStudent) in secureExchangeStudents" :key="secureExchangeStudent.studentID" class="d-flex px-0 pb-2">
-                    <v-chip id="studentChip" :class="['ma-1']"  close @click:close="removeSecureExchangeStudentByID(secureExchangeStudent)">
+                  <v-col cols="4" v-for="(secureExchangeStudent, index) in secureExchangeStudents" :key="secureExchangeStudent.studentID" class="d-flex px-0 pb-2">
+                    <v-chip :id="`studentChip-${index}`" :class="['ma-1']"  close @click:close="removeSecureExchangeStudentByID(secureExchangeStudent)">
                       <v-avatar left>
                         <v-icon>mdi-account-circle</v-icon>
                       </v-avatar>
