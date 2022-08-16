@@ -267,35 +267,27 @@
                           </v-row>
                         </v-card-text>
                           <v-row>
-                            <v-btn class="ml-12 mr-1 mb-1 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveStudent(index)" v-show="isOpenStudentIndex !== index" :disabled="!isEditable()">
+                            <v-btn class="ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveStudent(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="!isEditable()">
                               <v-icon>mdi-delete-forever-outline</v-icon>
                             </v-btn>
                           </v-row>
                           <v-expand-transition>
                             <div v-show="isOpenStudentIndex === index" class="greyBackground">
                               <v-divider></v-divider>
-                              <v-card-text style="background-color: #e7ebf0;">
-                                <v-row no-gutters>
-                                  <v-col class="d-flex justify-start">
-                                    <span style="font-size: medium; font-weight: bold; color: black">Removing the student will remove it for all users.</span>
-                                  </v-col>
-                                </v-row>
-                                <v-row no-gutters>
-                                  <v-col class="pt-3 d-flex justify-start">
-                                    <span style="font-size: medium; font-weight: bold; color: black">Are you sure you want to remove the student?</span>
-                                  </v-col>
-                                </v-row>
-                                <v-row no-gutters>
-                                  <v-col class="mt-3 d-flex justify-end">
-                                    <v-btn class="mr-2" outlined @click="closeStudentIndex()">
-                                      No
-                                    </v-btn>
-                                    <v-btn dark color="#003366" @click="removeStudent(activity.secureExchangeStudentId)">
-                                      Yes
-                                    </v-btn>
-                                  </v-col>
-                                </v-row>
+                              <v-card-text>
+                                <p><strong>Removing the student will remove it for all users.</strong></p>
+                                <br/>
+                                <p><strong>Are you sure you want to remove the student?</strong></p>
+                                <br/>
                               </v-card-text>
+                              <v-row no-gutters class="">
+                                <v-btn class="pl-0 pr-0 yesBtn" bottom right absolute dark color="#003366" @click="removeStudent(activity.secureExchangeStudentId)">
+                                  Yes
+                                </v-btn>
+                                <v-btn class="ml-12 pl-0 pr-0" bottom right absolute @click="closeStudentIndex()">
+                                  No
+                                </v-btn>
+                              </v-row>
                             </div>
                           </v-expand-transition>
                       </v-card>
@@ -312,35 +304,27 @@
                             </a>
                           </v-card-text>
                           <v-card-text v-if="activity.documentType.label !== 'Other'" class="pt-0 pb-3">{{ activity.documentType.label }}</v-card-text>
-                          <v-btn class="ml-12 mb-2 mr-1 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveDoc(index)" v-show="isOpenDocIndex !== index" :disabled="!isEditable()">
+                          <v-btn class="ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveDoc(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="!isEditable()">
                             <v-icon>mdi-delete-forever-outline</v-icon>
                           </v-btn>
                         </v-row>
                         <v-expand-transition>
                           <div v-show="isOpenDocIndex === index" class="greyBackground">
                             <v-divider></v-divider>
-                            <v-card-text style="background-color: #e7ebf0;">
-                              <v-row no-gutters>
-                                <v-col class="d-flex justify-start">
-                                  <span style="font-size: medium; font-weight: bold; color: black">Removing the attachment will remove it for all users.</span>
-                                </v-col>
-                              </v-row>
-                              <v-row no-gutters>
-                                <v-col class="pt-3 d-flex justify-start">
-                                  <span style="font-size: medium; font-weight: bold; color: black">Are you sure you want to remove the attachment?</span>
-                                </v-col>
-                              </v-row>
-                              <v-row no-gutters>
-                                <v-col class="mt-3 d-flex justify-end">
-                                  <v-btn class="mr-2" outlined @click="closeDocIndex()">
-                                    No
-                                  </v-btn>
-                                  <v-btn dark color="#003366" @click="removeAttachment(activity.documentID)">
-                                    Yes
-                                  </v-btn>
-                                </v-col>
-                              </v-row>
+                            <v-card-text>
+                              <p><strong>Removing the attachment will remove it for all users.</strong></p>
+                              <br/>
+                              <p><strong>Are you sure you want to remove the attachment?</strong></p>
+                              <br/>
                             </v-card-text>
+                            <v-row no-gutters>
+                              <v-btn class="pl-0 pr-0 yesBtn" bottom right absolute dark color="#003366" @click="removeAttachment(activity.documentID)">
+                                Yes
+                              </v-btn>
+                              <v-btn class="ml-12 pl-0 pr-0" bottom right absolute @click="closeDocIndex()">
+                                No
+                              </v-btn>
+                            </v-row>
                           </div>
                         </v-expand-transition>
                       </v-card>
@@ -351,6 +335,28 @@
                           <div class="activityDisplayDate">{{ activity.displayDate }}</div>
                         </v-card-title>
                         <v-card-text class="activityContent">{{ activity.content }}</v-card-text>
+                        <v-btn class="ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveNote(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="!isEditable()">
+                          <v-icon>mdi-delete-forever-outline</v-icon>
+                        </v-btn>
+                        <v-expand-transition>
+                          <div v-show="isOpenNoteIndex === index" class="greyBackground">
+                            <v-divider></v-divider>
+                            <v-card-text>
+                              <p><strong>Removing the note will remove it for all users.</strong></p>
+                              <br/>
+                              <p><strong>Are you sure you want to remove the note?</strong></p>
+                              <br/>
+                            </v-card-text>
+                            <v-row no-gutters>
+                              <v-btn class="pl-0 pr-0 yesBtn" bottom right absolute dark color="#003366" @click="removeNote(activity.secureExchangeNoteID)">
+                                Yes
+                              </v-btn>
+                              <v-btn class="ml-12 pl-0 pr-0" bottom right absolute @click="closeNoteIndex()">
+                                No
+                              </v-btn>
+                            </v-row>
+                          </div>
+                        </v-expand-transition>
                       </v-card>
                     </v-timeline-item>
                   </div>
@@ -407,6 +413,7 @@ export default {
       mincode: null,
       isOpenDocIndex: false,
       isOpenStudentIndex: false,
+      isOpenNoteIndex: false,
       show: false,
       isHideIndex: false,
       pdfRenderDialog: false,
@@ -633,6 +640,18 @@ export default {
       this.isOpenStudentIndex = false;
       this.isHideIndex = false;
     },
+    toggleRemoveNote(index) {
+      this.isHideIndex = index;
+      if( this.isOpenNoteIndex !== null ){
+        this.isOpenNoteIndex = ( this.isOpenNoteIndex === index ) ? null : index;
+      } else {
+        this.isOpenNoteIndex = index;
+      }
+    },
+    closeNoteIndex() {
+      this.isOpenNoteIndex = false;
+      this.isHideIndex = false;
+    },
     displayStudentPanel() {
       this.closeAllPanels();
       this.isNewStudentDisplayed = true;
@@ -661,7 +680,7 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while adding the student to the Secure Exchange. Please try again later.');
+          this.setFailureAlert('An error occurred while adding the student to the Secure Exchange. Please try again later.');
         })
         .finally(() => {
           this.processing = false;
@@ -704,6 +723,28 @@ export default {
             this.setSuccessAlert('Error! The student was not removed.');
           }
           this.closeStudentIndex();
+        })
+        .catch(error => {
+          console.log(error);
+        })
+        .finally(() => {
+          this.processing = false;
+          this.loading = false;
+        });
+    },
+    removeNote(noteID) {
+      this.processing = true;
+      this.loading = true;
+
+      ApiService.apiAxios.put(`${Routes.edx.EXCHANGE_URL}/${this.secureExchangeID}/removeNote/${noteID}`)
+        .then((response) => {
+          this.getExchange();
+          if(response.status === 200){
+            this.setSuccessAlert('Success! The note has been removed.');
+          } else{
+            this.setSuccessAlert('Error! The note was not removed.');
+          }
+          this.closeNoteIndex();
         })
         .catch(error => {
           console.log(error);

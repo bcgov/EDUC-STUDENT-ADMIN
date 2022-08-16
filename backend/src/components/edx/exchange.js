@@ -238,6 +238,7 @@ async function getExchange(req, res) {
           let activity = {};
           activity['type'] = 'note';
           activity['timestamp'] = LocalDateTime.parse(note['noteTimestamp']);
+          activity['secureExchangeNoteID'] = note.secureExchangeNoteID;
           activity['title'] = note.staffUserIdentifier;
           activity['displayDate'] = LocalDateTime.parse(note['noteTimestamp']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm'));
           activity['content'] = note['content'];
@@ -790,6 +791,31 @@ async function createSecureExchangeNote(req, res) {
   }
 }
 
+async function removeSecureExchangeNote(req, res){
+  try {
+    const accessToken = getBackendToken(req);
+    if (!accessToken) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'No access token'
+      });
+    }
+
+    if(!req.session.roles.includes('SECURE_EXCHANGE')){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        status: HttpStatus.UNAUTHORIZED,
+        message: 'You are not authorized to access this page'
+      });
+    }
+
+    const result = await utils.deleteData(accessToken, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}/notes/${req.params.noteID}`);
+    return res.status(HttpStatus.OK).json(result);
+
+  } catch (e) {
+    log.error(e, 'removeSecureExchangeNote', 'Error occurred while attempting to remove a secure exchange note.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getExchanges,
   createExchange,
@@ -811,5 +837,6 @@ module.exports = {
   relinkUserSchoolAccess,
   createSecureExchangeStudent,
   removeSecureExchangeStudent,
-  createSecureExchangeNote
+  createSecureExchangeNote,
+  removeSecureExchangeNote
 };
