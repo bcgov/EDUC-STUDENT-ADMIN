@@ -551,13 +551,13 @@ export default {
       };
       ApiService.apiAxios.post(this.documentRoute + `/${this.secureExchangeID}/comments`, payload)
         .then(() => {
-          this.setSuccessAlert('Success! The note has been added.');
+          this.setSuccessAlert('Success! The message has been sent.');
           this.messageSent();
           this.getExchange();
         })
         .catch(error => {
           console.error(error);
-          this.setFailureAlert('An error occurred while adding note. Please try again later.');
+          this.setFailureAlert('An error occurred while sending message. Please try again later.');
         })
         .finally(() => {
           this.processing = false;
@@ -753,12 +753,12 @@ export default {
       };
       ApiService.apiAxios.post(`${Routes.edx.EXCHANGE_URL}/${this.secureExchangeID}/notes`, payload)
         .then(() => {
-          this.setSuccessAlert('Success! The note has been sent.');
+          this.setSuccessAlert('Success! The note has been added.');
           this.getExchange();
         })
         .catch(error => {
           console.error(error);
-          this.setFailureAlert('An error occurred while sending note. Please try again later.');
+          this.setFailureAlert('An error occurred while adding note. Please try again later.');
         })
         .finally(() => {
           this.processing = false;
