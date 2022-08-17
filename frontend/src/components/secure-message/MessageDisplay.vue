@@ -735,12 +735,10 @@ export default {
       this.loading = true;
 
       ApiService.apiAxios.put(`${Routes.edx.EXCHANGE_URL}/${this.secureExchangeID}/removeNote/${noteID}`)
-        .then((response) => {
+        .then(() => {
           this.getExchange();
-          if(response.status === 200){
-            this.setSuccessAlert('Success! The note has been removed.');
-            this.closeNoteIndex();
-          }
+          this.setSuccessAlert('Success! The note has been removed.');
+          this.closeNoteIndex();
         })
         .catch(error => {
           this.setErrorAlert('Error! The note was not removed.');
