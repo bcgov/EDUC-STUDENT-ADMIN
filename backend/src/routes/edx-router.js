@@ -6,7 +6,7 @@ const auth = require('../components/auth');
 const utils = require('../components/utils');
 const { getExchanges, createExchange, getExchange, claimAllExchanges, markAs, getEdxUsers, findPrimaryEdxActivationCode, generateOrRegeneratePrimaryEdxActivationCode, updateEdxUserRoles,
   schoolUserActivationInvite, createSecureExchangeComment, uploadDocumentToExchange, getExchangeDocumentById, markAsClosed, claimExchange, removeDocumentFromExchange,
-  removeUserSchoolAccess, relinkUserSchoolAccess, createSecureExchangeStudent, removeSecureExchangeStudent, createSecureExchangeNote, getExchangeStats
+  removeUserSchoolAccess, relinkUserSchoolAccess, createSecureExchangeStudent, removeSecureExchangeStudent, createSecureExchangeNote, removeSecureExchangeNote, getExchangeStats
 } = require('../components/edx/exchange');
 
 const extendSession = utils.extendSession();
@@ -35,6 +35,7 @@ router.put('/exchange/:secureExchangeID/markAs', passport.authenticate('jwt', {s
 router.put('/exchange/:secureExchangeID/markAsClosed', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, markAsClosed);
 router.put('/exchange/:secureExchangeID/removeDoc/:documentID', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, removeDocumentFromExchange);
 router.put('/exchange/:secureExchangeID/removeStudent/:studentID', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, removeSecureExchangeStudent);
+router.put('/exchange/:secureExchangeID/removeNote/:noteID', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, removeSecureExchangeNote);
 router.get('/exchange/:secureExchangeID', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, getExchange);
 router.post('/exchange/:secureExchangeID/comments', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken,extendSession, createSecureExchangeComment);
 router.post('/exchange/:secureExchangeID/notes', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken,extendSession, createSecureExchangeNote);

@@ -238,6 +238,7 @@ async function getExchange(req, res) {
           let activity = {};
           activity['type'] = 'note';
           activity['timestamp'] = LocalDateTime.parse(note['noteTimestamp']);
+          activity['secureExchangeNoteID'] = note.secureExchangeNoteID;
           activity['title'] = note.staffUserIdentifier;
           activity['displayDate'] = LocalDateTime.parse(note['noteTimestamp']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm'));
           activity['content'] = note['content'];
@@ -790,11 +791,36 @@ async function createSecureExchangeNote(req, res) {
   }
 }
 
+async function removeSecureExchangeNote(req, res) {
+  try {
+    const accessToken = getBackendToken(req);
+    if (!accessToken) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'No access token'
+      });
+    }
+
+    if (!req.session.roles.includes('SECURE_EXCHANGE')) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        status: HttpStatus.UNAUTHORIZED,
+        message: 'You are not authorized to access this page'
+      });
+    }
+
+    const result = await utils.deleteData(accessToken,config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}/notes/${req.params.noteID}`);
+    return res.status(HttpStatus.OK).json(result);
+
+  } catch (e) {
+    log.error(e, 'removeSecureExchangeNote', 'Error occurred while attempting to remove a secure exchange note.');
+    return errorResponse(res);
+  }
+}
+
 async function getExchangeStats(req, res) {
   try {
     const token = utils.getBackendToken(req);
 
-    if(!req.session.roles.includes('SECURE_EXCHANGE')){
+    if (!req.session.roles.includes('SECURE_EXCHANGE')) {
       return res.status(HttpStatus.UNAUTHORIZED).json({
         status: HttpStatus.UNAUTHORIZED,
         message: 'You are not authorized to access this page'
@@ -805,7 +831,7 @@ async function getExchangeStats(req, res) {
 
     let ministryTeam = ministryTeamCodeResponse.find(ministryTeam => ministryTeam['groupRoleIdentifier'] === req.params.teamRole);
     if (!ministryTeam) {
-      await logError( 'getExchangeStats', 'Error occurred while getting secure exchange statistics. Ministry team not found');
+      await logError('getExchangeStats','Error occurred while getting secure exchange statistics. Ministry team not found');
       return errorResponse(res, 'Team not found for statistics', HttpStatus.NOT_FOUND);
     }
 
@@ -831,7 +857,7 @@ async function getExchangeStats(req, res) {
       }
     };
 
-    let openMessages = await utils.getData(token, config.get('server:edx:exchangeURL') + '/paginated', paramsOpen).then(response => response?.totalElements);
+    let openMessages = await utils.getData(token,config.get('server:edx:exchangeURL') + '/paginated', paramsOpen).then(response => response?.totalElements);
 
     searchCriteriaList.push({
       key: 'isReadByMinistry',
@@ -847,13 +873,12 @@ async function getExchangeStats(req, res) {
       }
     };
 
-    let unreadMessages = await utils.getData(token, config.get('server:edx:exchangeURL') + '/paginated', paramsOpenAndUnread).then(response => response?.totalElements);
+    let unreadMessages = await utils.getData(token,config.get('server:edx:exchangeURL') + '/paginated', paramsOpenAndUnread).then(response => response?.totalElements);
 
     return res.status(HttpStatus.OK).json({unreadMessages, openMessages});
 
   } catch (e) {
-    await logApiError(e, 'getExchangeStats', 'Error occurred while getting secure exchange statistics.');
-    return errorResponse(res);
+    await logApiError(e, 'getExchangeStats','Error occurred while getting secure exchange statistics.');
   }
 }
 
@@ -879,5 +904,6 @@ module.exports = {
   createSecureExchangeStudent,
   removeSecureExchangeStudent,
   createSecureExchangeNote,
-  getExchangeStats
+  getExchangeStats,
+  removeSecureExchangeNote
 };

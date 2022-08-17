@@ -291,7 +291,11 @@ export default {
       this.$store.commit('edx/setSecureExchangeStudents', []);
     },
     onSchoolSelected(){
-      this.disableAddStudent = false;
+      if(this.mincode){
+        this.disableAddStudent = false;
+      }else{
+        this.disableAddStudent = true;
+      }
     }
   }
 };
