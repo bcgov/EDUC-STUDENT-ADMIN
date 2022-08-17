@@ -242,12 +242,17 @@ export default {
       this.isLoadingGmpUmp = false;
     });
     if (this.EXCHANGE_ROLE) {
-      this.exchangeData.push({
-        title: 'PEN Team Inbox',
-        button: {route: `${REQUEST_TYPES.exchange.path}/PEN_TEAM_ROLE`, text: 'View Inbox'},
-        authorized: this.PEN_TEAM_ROLE
+      ApiService.apiAxios.get(`${Routes.edx.STATS_URL}/PEN_TEAM_ROLE`).then(response => {
+        this.exchangeData.push({
+          title: 'PEN Team Inbox',
+          button: {route: `${REQUEST_TYPES.exchange.path}/PEN_TEAM_ROLE`, text: 'View Inbox'},
+          authorized: this.PEN_TEAM_ROLE,
+          unreadMessages: {data: response.data.unreadMessages, name: 'unread messages'},
+          openMessages: {data: response.data.openMessages, name: 'open messages'},
+        });
+      }).finally(() => {
+        this.isLoadingExchange = false;
       });
-      setTimeout(() => this.isLoadingExchange = false, 1000);
     }
   },
   computed: {

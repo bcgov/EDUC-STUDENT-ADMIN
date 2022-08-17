@@ -1,6 +1,6 @@
 'use strict';
 
-const {errorResponse, logApiError, postData, getBackendToken} = require('../utils');
+const {errorResponse, logApiError, logError, postData, getBackendToken} = require('../utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../../config');
 const {getData, getCodeTable, putData} = require('../utils');
@@ -790,6 +790,73 @@ async function createSecureExchangeNote(req, res) {
   }
 }
 
+async function getExchangeStats(req, res) {
+  try {
+    const token = utils.getBackendToken(req);
+
+    if(!req.session.roles.includes('SECURE_EXCHANGE')){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        status: HttpStatus.UNAUTHORIZED,
+        message: 'You are not authorized to access this page'
+      });
+    }
+
+    let ministryTeamCodeResponse = await getCodeTable(token, CACHE_KEYS.EDX_MINISTRY_TEAMS, config.get('server:edx:ministryTeamURL'));
+
+    let ministryTeam = ministryTeamCodeResponse.find(ministryTeam => ministryTeam['groupRoleIdentifier'] === req.params.teamRole);
+    if (!ministryTeam) {
+      await logError( 'getExchangeStats', 'Error occurred while getting secure exchange statistics. Ministry team not found');
+      return errorResponse(res, 'Team not found for statistics', HttpStatus.NOT_FOUND);
+    }
+
+    let searchCriteriaList = [
+      {
+        key: 'ministryOwnershipTeamID',
+        operation: FILTER_OPERATION.EQUAL,
+        value: '9b4b71db-5093-4c3e-81ce-554972af3d48',
+        valueType: VALUE_TYPE.UUID
+      },
+      {
+        key: 'secureExchangeStatusCode',
+        operation: FILTER_OPERATION.EQUAL,
+        value: 'OPEN',
+        valueType: VALUE_TYPE.STRING
+      }
+    ];
+
+    const paramsOpen = {
+      params: {
+        pageNumber: 1,
+        searchCriteriaList: JSON.stringify(searchCriteriaList),
+      }
+    };
+
+    let openMessages = await utils.getData(token, config.get('server:edx:exchangeURL') + '/paginated', paramsOpen).then(response => response?.totalElements);
+
+    searchCriteriaList.push({
+      key: 'isReadByMinistry',
+      operation: FILTER_OPERATION.EQUAL,
+      value: 'false',
+      valueType: 'BOOLEAN'
+    });
+
+    const paramsOpenAndUnread = {
+      params: {
+        pageNumber: 1,
+        searchCriteriaList: JSON.stringify(searchCriteriaList)
+      }
+    };
+
+    let unreadMessages = await utils.getData(token, config.get('server:edx:exchangeURL') + '/paginated', paramsOpenAndUnread).then(response => response?.totalElements);
+
+    return res.status(HttpStatus.OK).json({unreadMessages, openMessages});
+
+  } catch (e) {
+    await logApiError(e, 'getExchangeStats', 'Error occurred while getting secure exchange statistics.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getExchanges,
   createExchange,
@@ -811,5 +878,6 @@ module.exports = {
   relinkUserSchoolAccess,
   createSecureExchangeStudent,
   removeSecureExchangeStudent,
-  createSecureExchangeNote
+  createSecureExchangeNote,
+  getExchangeStats
 };
