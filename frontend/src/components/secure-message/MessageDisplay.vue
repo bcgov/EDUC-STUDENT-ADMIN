@@ -106,7 +106,7 @@
                   <v-icon v-else>mdi-email-open-outline</v-icon>
                   <span class="ml-1 markAsSpan">{{`Mark As ${secureExchange.isReadByMinistry ? 'Unread' : 'Read'}` }}</span>
                 </v-btn>
-                <v-btn id="claimAsButton" class="my-4 mx-2" v-on:click="clickClaimMsgButton" :disabled="!isEditable() && !isClaimable() && !isUnClaimable()">
+                <v-btn id="claimAsButton" class="my-4 mx-2" v-on:click="clickClaimMsgButton" :disabled="!isEditable()">
                   <v-icon>{{ !isClaimable() ? 'mdi-account-off-outline' : 'mdi-account-check-outline' }}</v-icon>
                   <span class="ml-1">{{ isClaimable() ? 'Claim' : 'Unclaim' }}</span>
                 </v-btn>
@@ -581,9 +581,6 @@ export default {
     isClaimable(){
       return this.secureExchange.reviewer === '' || this.secureExchange.reviewer !== this.userInfo.userName;
     },
-    isUnClaimable(){
-      return this.secureExchange.reviewer !== '' && this.secureExchange.reviewer === this.userInfo.userName;
-    },
     clickClaimMsgButton() {
       this.loadingReadStatus = true;
       let claimed = this.secureExchange.reviewer !== '';
@@ -595,7 +592,7 @@ export default {
       };
       ApiService.apiAxios.post(Routes.edx.CLAIM_ONE_URL, payload)
         .then((response) => {
-          this.secureExchange = this.getExchange();
+          this.getExchange();
           if(response.data.reviewer){
             this.setSuccessAlert('Success! The message has been claimed.');
           } else{
