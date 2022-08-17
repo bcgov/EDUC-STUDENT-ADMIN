@@ -106,7 +106,7 @@
                   <v-icon v-else>mdi-email-open-outline</v-icon>
                   <span class="ml-1 markAsSpan">{{`Mark As ${secureExchange.isReadByMinistry ? 'Unread' : 'Read'}` }}</span>
                 </v-btn>
-                <v-btn id="claimAsButton" class="my-4 mx-2" v-on:click="clickClaimMsgButton" :disabled="!isEditable() && !isClaimable() && !isUnClaimable()">
+                <v-btn id="claimAsButton" class="my-4 mx-2" v-on:click="clickClaimMsgButton" :disabled="!isEditable()">
                   <v-icon>{{ !isClaimable() ? 'mdi-account-off-outline' : 'mdi-account-check-outline' }}</v-icon>
                   <span class="ml-1">{{ isClaimable() ? 'Claim' : 'Unclaim' }}</span>
                 </v-btn>
@@ -152,7 +152,7 @@
               </v-card-text>
               <v-row class="py-4 justify-end pt-0 pr-16 mr-10">
                 <PrimaryButton id="cancelNote" secondary text="Cancel" class="mr-2" @click.native="hideNewNotePanel"></PrimaryButton>
-                <PrimaryButton id="newNotePostBtn" text="Send" width="8rem" :disabled="!newNote" :loading="processing" @click.native="sendNewExchangeNote"></PrimaryButton>
+                <PrimaryButton id="newNotePostBtn" text="Save" width="8rem" :disabled="!newNote" :loading="processing" @click.native="sendNewExchangeNote"></PrimaryButton>
               </v-row>
             </v-row>
             <v-row no-gutters>
@@ -588,9 +588,6 @@ export default {
     isClaimable(){
       return this.secureExchange.reviewer === '' || this.secureExchange.reviewer !== this.userInfo.userName;
     },
-    isUnClaimable(){
-      return this.secureExchange.reviewer !== '' && this.secureExchange.reviewer === this.userInfo.userName;
-    },
     clickClaimMsgButton() {
       this.loadingReadStatus = true;
       let claimed = this.secureExchange.reviewer !== '';
@@ -602,7 +599,7 @@ export default {
       };
       ApiService.apiAxios.post(Routes.edx.CLAIM_ONE_URL, payload)
         .then((response) => {
-          this.secureExchange = this.getExchange();
+          this.getExchange();
           if(response.data.reviewer){
             this.setSuccessAlert('Success! The message has been claimed.');
           } else{
@@ -730,6 +727,7 @@ export default {
         .finally(() => {
           this.processing = false;
           this.loading = false;
+          this.closeStudentIndex();
         });
     },
     removeNote(noteID) {
@@ -793,12 +791,12 @@ export default {
       };
       ApiService.apiAxios.post(`${Routes.edx.EXCHANGE_URL}/${this.secureExchangeID}/notes`, payload)
         .then(() => {
-          this.setSuccessAlert('Success! The note has been sent.');
+          this.setSuccessAlert('Success! The note has been added.');
           this.getExchange();
         })
         .catch(error => {
           console.error(error);
-          this.setFailureAlert('An error occurred while sending note. Please try again later.');
+          this.setFailureAlert('An error occurred while adding note. Please try again later.');
         })
         .finally(() => {
           this.processing = false;
