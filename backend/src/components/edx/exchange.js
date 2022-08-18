@@ -839,7 +839,7 @@ async function getExchangeStats(req, res) {
       {
         key: 'ministryOwnershipTeamID',
         operation: FILTER_OPERATION.EQUAL,
-        value: '9b4b71db-5093-4c3e-81ce-554972af3d48',
+        value: ministryTeam.ministryOwnershipTeamId,
         valueType: VALUE_TYPE.UUID
       },
       {
@@ -863,7 +863,7 @@ async function getExchangeStats(req, res) {
       key: 'isReadByMinistry',
       operation: FILTER_OPERATION.EQUAL,
       value: 'false',
-      valueType: 'BOOLEAN'
+      valueType: VALUE_TYPE.BOOLEAN
     });
 
     const paramsOpenAndUnread = {
