@@ -741,7 +741,7 @@ export default {
           this.closeNoteIndex();
         })
         .catch(error => {
-          this.setErrorAlert('Error! The note was not removed.');
+          this.setFailureAlert('Error! The note was not removed.');
           console.log(error);
         })
         .finally(() => {

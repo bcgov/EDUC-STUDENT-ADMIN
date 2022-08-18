@@ -6,7 +6,7 @@ const auth = require('../components/auth');
 const utils = require('../components/utils');
 const { getExchanges, createExchange, getExchange, claimAllExchanges, markAs, getEdxUsers, findPrimaryEdxActivationCode, generateOrRegeneratePrimaryEdxActivationCode, updateEdxUserRoles,
   schoolUserActivationInvite, createSecureExchangeComment, uploadDocumentToExchange, getExchangeDocumentById, markAsClosed, claimExchange, removeDocumentFromExchange,
-  removeUserSchoolAccess, relinkUserSchoolAccess, createSecureExchangeStudent, removeSecureExchangeStudent, createSecureExchangeNote, removeSecureExchangeNote
+  removeUserSchoolAccess, relinkUserSchoolAccess, createSecureExchangeStudent, removeSecureExchangeStudent, createSecureExchangeNote, removeSecureExchangeNote, getExchangeStats
 } = require('../components/edx/exchange');
 
 const extendSession = utils.extendSession();
@@ -25,6 +25,7 @@ router.post('/users/activation-code/primary/:mincode', passport.authenticate('jw
 
 //edx exchange routes
 router.get('/exchange', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, getExchanges);
+router.get('/exchange/stats/:teamRole', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, getExchangeStats);
 router.post('/exchange/claim', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, claimAllExchanges);
 router.post('/exchange/:secureExchangeID/students', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, createSecureExchangeStudent);
 router.post('/exchange/claimOne', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, claimExchange);
