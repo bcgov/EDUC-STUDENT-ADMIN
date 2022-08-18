@@ -800,14 +800,14 @@ async function removeSecureExchangeNote(req, res) {
       });
     }
 
-    if (!req.session.roles.includes('SECURE_EXCHANGE')) {
+    if(!req.session.roles.includes('SECURE_EXCHANGE')){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         status: HttpStatus.UNAUTHORIZED,
         message: 'You are not authorized to access this page'
       });
     }
 
-    const result = await utils.deleteData(accessToken,config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}/notes/${req.params.noteID}`);
+    const result = await utils.deleteData(accessToken, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}/notes/${req.params.noteID}`);
     return res.status(HttpStatus.OK).json(result);
 
   } catch (e) {
