@@ -347,7 +347,7 @@
                           <div class="activityDisplayDate">{{ activity.displayDate }}</div>
                         </v-card-title>
                         <v-card-text class="activityContent">{{ activity.content }}</v-card-text>
-                        <v-btn class="ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveNote(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="!isEditable()">
+                        <v-btn class="ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveNote(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="(!isEditable()) || (activity.staffUserIdentifier !== userInfo.userName)">
                           <v-icon>mdi-delete-forever-outline</v-icon>
                         </v-btn>
                         <v-expand-transition>
@@ -367,7 +367,7 @@
                               <v-row no-gutters>
                                 <v-col class="mt-3 d-flex justify-end">
                                   <v-btn class="mr-2" outlined @click="closeNoteIndex()">No</v-btn>
-                                  <v-btn dark color="#003366" @click="removeNote(activity.secureExchangeNoteID)">Yes</v-btn>
+                                  <v-btn dark color="#003366" @click="removeNote(activity)">Yes</v-btn>
                                 </v-col>
                               </v-row>
                             </v-card-text>
@@ -746,11 +746,17 @@ export default {
           this.closeStudentIndex();
         });
     },
-    removeNote(noteID) {
+    removeNote(note) {
+      if (note.staffUserIdentifier !== this.userInfo.userName) {
+        this.setWarningAlert(`This note was added by ${note.staffUserIdentifier}; you don't have permission to delete it.`);
+        this.closeNoteIndex();
+        return;
+      }
+
       this.processing = true;
       this.loading = true;
 
-      ApiService.apiAxios.put(`${Routes.edx.EXCHANGE_URL}/${this.secureExchangeID}/removeNote/${noteID}`)
+      ApiService.apiAxios.put(`${Routes.edx.EXCHANGE_URL}/${this.secureExchangeID}/removeNote/${note.secureExchangeNoteID}`)
         .then(() => {
           this.getExchange();
           this.setSuccessAlert('Success! The note has been removed.');
