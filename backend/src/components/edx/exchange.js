@@ -239,6 +239,7 @@ async function getExchange(req, res) {
           activity['type'] = 'note';
           activity['timestamp'] = LocalDateTime.parse(note['noteTimestamp']);
           activity['secureExchangeNoteID'] = note.secureExchangeNoteID;
+          activity['staffUserIdentifier'] = note.staffUserIdentifier;
           activity['title'] = note.staffUserIdentifier;
           activity['displayDate'] = LocalDateTime.parse(note['noteTimestamp']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm'));
           activity['content'] = note['content'];
@@ -794,6 +795,7 @@ async function createSecureExchangeNote(req, res) {
 async function removeSecureExchangeNote(req, res) {
   try {
     const accessToken = getBackendToken(req);
+    const userInfo = utils.getUser(req);
     if (!accessToken) {
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'No access token'
@@ -807,7 +809,22 @@ async function removeSecureExchangeNote(req, res) {
       });
     }
 
-    const result = await utils.deleteData(accessToken, config.get('server:edx:exchangeURL') + `/${req.params.secureExchangeID}/notes/${req.params.noteID}`);
+    let secureExchange = await getData(accessToken, `${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}`);
+    if (!secureExchange) {
+      return res.status(HttpStatus.NOT_FOUND).json();
+    }
+    let noteToDelete = secureExchange.noteList.find(note => note.secureExchangeNoteID === req.params.noteID);
+    if (!noteToDelete) {
+      return res.status(HttpStatus.NOT_FOUND).json();
+    }
+    if (noteToDelete.staffUserIdentifier !== userInfo.idir_username) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        status: HttpStatus.UNAUTHORIZED,
+        message: 'This note was added by another person; you don\'t have permission to delete it.'
+      });
+    }
+
+    const result = await utils.deleteData(accessToken, `${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/notes/${req.params.noteID}`);
     return res.status(HttpStatus.OK).json(result);
 
   } catch (e) {

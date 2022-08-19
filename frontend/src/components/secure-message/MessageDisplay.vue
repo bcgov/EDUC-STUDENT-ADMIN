@@ -274,20 +274,28 @@
                           <v-expand-transition>
                             <div v-show="isOpenStudentIndex === index" class="greyBackground">
                               <v-divider></v-divider>
-                              <v-card-text>
-                                <p><strong>Removing the student will remove it for all users.</strong></p>
-                                <br/>
-                                <p><strong>Are you sure you want to remove the student?</strong></p>
-                                <br/>
+                              <v-card-text style="background-color: #e7ebf0;">
+                                <v-row no-gutters>
+                                  <v-col class="d-flex justify-start">
+                                    <span style="font-size: medium; font-weight: bold; color: black">Removing the student will remove it for all users.</span>
+                                  </v-col>
+                                </v-row>
+                                <v-row no-gutters>
+                                  <v-col class="pt-3 d-flex justify-start">
+                                    <span style="font-size: medium; font-weight: bold; color: black">Are you sure you want to remove the student?</span>
+                                  </v-col>
+                                </v-row>
+                                <v-row no-gutters>
+                                  <v-col class="mt-3 d-flex justify-end">
+                                    <v-btn class="mr-2" outlined @click="closeStudentIndex()">
+                                      No
+                                    </v-btn>
+                                    <v-btn dark color="#003366" @click="removeStudent(activity.secureExchangeStudentId)">
+                                      Yes
+                                    </v-btn>
+                                  </v-col>
+                                </v-row>
                               </v-card-text>
-                              <v-row no-gutters class="">
-                                <v-btn class="pl-0 pr-0 yesBtn" bottom right absolute dark color="#003366" @click="removeStudent(activity.secureExchangeStudentId)">
-                                  Yes
-                                </v-btn>
-                                <v-btn class="ml-12 pl-0 pr-0" bottom right absolute @click="closeStudentIndex()">
-                                  No
-                                </v-btn>
-                              </v-row>
                             </div>
                           </v-expand-transition>
                       </v-card>
@@ -311,20 +319,24 @@
                         <v-expand-transition>
                           <div v-show="isOpenDocIndex === index" class="greyBackground">
                             <v-divider></v-divider>
-                            <v-card-text>
-                              <p><strong>Removing the attachment will remove it for all users.</strong></p>
-                              <br/>
-                              <p><strong>Are you sure you want to remove the attachment?</strong></p>
-                              <br/>
+                            <v-card-text style="background-color: #e7ebf0;">
+                              <v-row no-gutters>
+                                <v-col class="d-flex justify-start">
+                                  <span style="font-size: medium; font-weight: bold; color: black">Removing the attachment will remove it for all users.</span>
+                                </v-col>
+                              </v-row>
+                              <v-row no-gutters>
+                                <v-col class="pt-3 d-flex justify-start">
+                                  <span style="font-size: medium; font-weight: bold; color: black">Are you sure you want to remove the attachment?</span>
+                                </v-col>
+                              </v-row>
+                              <v-row no-gutters>
+                                <v-col class="mt-3 d-flex justify-end">
+                                  <v-btn class="mr-2" outlined @click="closeDocIndex()">No</v-btn>
+                                  <v-btn dark color="#003366" @click="removeAttachment(activity.documentID)">Yes</v-btn>
+                                </v-col>
+                              </v-row>
                             </v-card-text>
-                            <v-row no-gutters>
-                              <v-btn class="pl-0 pr-0 yesBtn" bottom right absolute dark color="#003366" @click="removeAttachment(activity.documentID)">
-                                Yes
-                              </v-btn>
-                              <v-btn class="ml-12 pl-0 pr-0" bottom right absolute @click="closeDocIndex()">
-                                No
-                              </v-btn>
-                            </v-row>
                           </div>
                         </v-expand-transition>
                       </v-card>
@@ -335,26 +347,30 @@
                           <div class="activityDisplayDate">{{ activity.displayDate }}</div>
                         </v-card-title>
                         <v-card-text class="activityContent">{{ activity.content }}</v-card-text>
-                        <v-btn class="ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveNote(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="!isEditable()">
+                        <v-btn class="ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveNote(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="(!isEditable()) || (activity.staffUserIdentifier !== userInfo.userName)">
                           <v-icon>mdi-delete-forever-outline</v-icon>
                         </v-btn>
                         <v-expand-transition>
                           <div v-show="isOpenNoteIndex === index" class="greyBackground">
                             <v-divider></v-divider>
-                            <v-card-text>
-                              <p><strong>Removing the note will remove it for all users.</strong></p>
-                              <br/>
-                              <p><strong>Are you sure you want to remove the note?</strong></p>
-                              <br/>
+                            <v-card-text style="background-color: #e7ebf0;">
+                              <v-row no-gutters>
+                                <v-col class="d-flex justify-start">
+                                  <span style="font-size: medium; font-weight: bold; color: black">Removing the note will remove it for all users.</span>
+                                </v-col>
+                              </v-row>
+                              <v-row no-gutters>
+                                <v-col class="pt-3 d-flex justify-start">
+                                  <span style="font-size: medium; font-weight: bold; color: black">Are you sure you want to remove the note?</span>
+                                </v-col>
+                              </v-row>
+                              <v-row no-gutters>
+                                <v-col class="mt-3 d-flex justify-end">
+                                  <v-btn class="mr-2" outlined @click="closeNoteIndex()">No</v-btn>
+                                  <v-btn dark color="#003366" @click="removeNote(activity)">Yes</v-btn>
+                                </v-col>
+                              </v-row>
                             </v-card-text>
-                            <v-row no-gutters>
-                              <v-btn class="pl-0 pr-0 yesBtn" bottom right absolute dark color="#003366" @click="removeNote(activity.secureExchangeNoteID)">
-                                Yes
-                              </v-btn>
-                              <v-btn class="ml-12 pl-0 pr-0" bottom right absolute @click="closeNoteIndex()">
-                                No
-                              </v-btn>
-                            </v-row>
                           </div>
                         </v-expand-transition>
                       </v-card>
@@ -730,11 +746,17 @@ export default {
           this.closeStudentIndex();
         });
     },
-    removeNote(noteID) {
+    removeNote(note) {
+      if (note.staffUserIdentifier !== this.userInfo.userName) {
+        this.setWarningAlert(`This note was added by ${note.staffUserIdentifier}; you don't have permission to delete it.`);
+        this.closeNoteIndex();
+        return;
+      }
+
       this.processing = true;
       this.loading = true;
 
-      ApiService.apiAxios.put(`${Routes.edx.EXCHANGE_URL}/${this.secureExchangeID}/removeNote/${noteID}`)
+      ApiService.apiAxios.put(`${Routes.edx.EXCHANGE_URL}/${this.secureExchangeID}/removeNote/${note.secureExchangeNoteID}`)
         .then(() => {
           this.getExchange();
           this.setSuccessAlert('Success! The note has been removed.');
@@ -862,13 +884,10 @@ export default {
   background-color: white !important;
   height: 2em !important;
   min-width: 1em !important;
-  bottom: 0em;
-  right: 0em;
+  bottom: 0;
+  right: 0;
 }
 .greyBackground {
   background-color: #f5f5f5;
-}
-.yesBtn {
-  margin-right: 6em;
 }
 </style>
