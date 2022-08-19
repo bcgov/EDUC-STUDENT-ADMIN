@@ -424,7 +424,7 @@ export default {
       editOptionsOpen: false,
       assignedMinistryTeam: null,
       subject: '',
-      isNewMessageDisplayed: true,
+      isNewMessageDisplayed: false,
       isNewAttachmentDisplayed: false,
       isNewStudentDisplayed: false,
       isNewNoteDisplayed: false,
