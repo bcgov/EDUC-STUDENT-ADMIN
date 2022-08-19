@@ -127,9 +127,11 @@
                             maxlength="4000"
                             class="pt-0"
                             ref="newMessageToConvTextArea"
+                            @input="replaceMessageMacro"
                 >
                 </v-textarea>
               </v-card-text>
+              <MacroMenu :macros="messageMacros" @select="insertMacroMessage" />
               <v-row class="py-4 justify-end pt-0 pr-16 mr-10">
                 <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2" @click.native="hideNewMessagePanel"></PrimaryButton>
                 <PrimaryButton id="newMessagePostBtn" text="Send" width="8rem" :disabled="!newMessage" :loading="processing" @click.native="sendNewExchangeComment"></PrimaryButton>
@@ -391,19 +393,22 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import router from '@/router';
-import PrimaryButton from '@/components/util/PrimaryButton';
+import {mapState, mapActions, mapGetters} from 'vuex';
+import {replaceMacro, insertMacro} from '../../utils/macro';
 import {ChronoUnit, DateTimeFormatter, LocalDate} from '@js-joda/core';
+import PrimaryButton from '@/components/util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
 import DocumentUpload from '@/components/common/DocumentUpload';
 import PdfRenderer from '@/components/common/PdfRenderer';
 import ImageRenderer from '@/components/common/ImageRenderer';
-import {mapState} from 'vuex';
 import AddStudent from '@/components/common/AddStudent';
+import MacroMenu from '../common/MacroMenu';
+
 
 export default {
   name: 'MessageDisplay',
   mixins: [alertMixin],
-  components: {DocumentUpload, AddStudent, PrimaryButton, ImageRenderer, PdfRenderer},
+  components: {DocumentUpload, AddStudent, PrimaryButton, ImageRenderer, PdfRenderer, MacroMenu},
   props: {
     secureExchangeID: {
       type: String,
@@ -443,11 +448,14 @@ export default {
   },
   computed: {
     ...mapState('auth', ['userInfo']),
+    ...mapGetters('edx', ['messageMacros'])
   },
   created() {
     this.getExchange(true);
+    this.getMacros();
   },
   methods: {
+    ...mapActions('edx', ['getMacros']),
     async upload(document) {
       try {
         this.items = undefined;
@@ -830,7 +838,13 @@ export default {
       this.shouldDisplaySpeedDial = false;
       this.editOptionsOpen = false;
       this.isNewNoteDisplayed = false;
-    }
+    },
+    replaceMessageMacro() {
+      this.newMessage = replaceMacro(this.newMessage, this.messageMacros);
+    },
+    insertMacroMessage(macroText) {
+      this.newMessage = insertMacro(macroText, this.newMessage, this.$refs.newMessageToConvTextArea.$refs.input);
+    },
   }
 };
 </script>

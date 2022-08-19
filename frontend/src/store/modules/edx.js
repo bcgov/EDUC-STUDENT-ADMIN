@@ -1,4 +1,6 @@
 import ApiService from '@/common/apiService';
+import {Routes} from '@/utils/constants';
+import {groupBy} from 'lodash';
 
 export default {
   namespaced: true,
@@ -10,12 +12,14 @@ export default {
     schoolRolesCopy: [],
     fileRequirements: [],
     secureExchangeDocuments: [],
-    secureExchangeStudents:[]
+    secureExchangeStudents:[],
+    messageMacros:[]
   },
   getters: {
     getStatuses: state => state.statuses?.sort((a,b) => a.displayOrder > b.displayOrder ? 1 : -1),
     secureExchangeDocuments: state => state.secureExchangeDocuments,
     secureExchangeStudents: state => state.secureExchangeStudents,
+    messageMacros: state => state.messageMacros
   },
   mutations: {
     setMinistryTeams(state, ministryTeamList) {
@@ -49,6 +53,9 @@ export default {
     },
     deleteSecureExchangeStudentsByID(state, payload) {
       state.secureExchangeStudents = state.secureExchangeStudents.filter(secureExchangeStudent => secureExchangeStudent.studentID !== payload.studentID);
+    },
+    setMessageMacros(state, macros) {
+      state.messageMacros = macros;
     }
   },
   actions: {
@@ -118,5 +125,19 @@ export default {
         }
       }
     },
+    async getMacros({commit}) {
+      if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
+        const params = {params: {businessUseTypeCode: 'EDX'}};
+        ApiService.apiAxios
+          .get(Routes.MACRO_URL, params)
+          .then(response => {
+            const macros = groupBy(response.data, 'macroTypeCode');
+            commit('setMessageMacros', macros.MESSAGE);
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
+    }
   },
 };
