@@ -34,6 +34,11 @@ cacheService.loadAllSchoolsToMap().then(() => {
 }).catch((e) => {
   log.error('Error loading schools during boot .', e);
 });
+cacheService.loadAllDistrictsToMap().then(() => {
+  log.info('Loaded districts data to memory');
+}).catch((e) => {
+  log.error('Error loading districts data codes during boot .', e);
+});
 cacheService.loadAllDocumentTypeCodesToMap().then(() => {
   log.info('Loaded document type codes to memory');
 }).catch((e) => {

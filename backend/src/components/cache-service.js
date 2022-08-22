@@ -7,6 +7,8 @@ const retry = require('async-retry');
 
 let mincodeSchoolMap = new Map();
 let mincodeSchools = [];
+let districts = [];
+let districtsMap = new Map();
 
 let documentTypeCodesMap = new Map();
 let documentTypeCodes = [];
@@ -45,7 +47,39 @@ const cacheService = {
   getSchoolNameJSONByMincode(mincode) {
     return mincodeSchoolMap.get(mincode);
   },
+  async loadAllDistrictsToMap() {
+    log.debug('loading all districts during start up');
+    await retry(async () => {
+      const data = await getApiCredentials();
+      const districtsResponse = await getData(data.accessToken, `${config.get('server:instituteAPIURL')}/district`);
+      // reset the value.
+      districts = [];
+      districtsMap.clear();
+      if (districtsResponse && districtsResponse.length > 0) {
+        for (const district of districtsResponse) {
+          const districtData = {
+            districtId: district.districtId,
+            districtNumber: district.districtNumber,
+            name: district.displayName,
+            districtRegionCode: district.districtRegionCode,
+            districtStatusCode: district.districtStatusCode,
+          };
+          districtsMap.set(district.districtId, districtData);
+          districts.push(districtData);
+        }
+      }
+      log.info(`loaded ${districtsMap.size} districts.`);
+    }, {
+      retries: 50
+    });
 
+  },
+  getAllDistrictsJSON() {
+    return districts;
+  },
+  getDistrictJSONByDistrictId(districtId) {
+    return districtsMap.get(districtId);
+  },
   async loadAllDocumentTypeCodesToMap() {
     log.debug('Loading all document type codes during start up');
     await retry(async () => {

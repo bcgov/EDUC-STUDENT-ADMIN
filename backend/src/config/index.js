@@ -73,6 +73,7 @@ nconf.defaults({
     profileSagaAPIURL: process.env.PROFILE_REQUEST_SAGA_API_URL,
     schoolAPIURL: process.env.SCHOOL_API_URL,
     penTraxURL: process.env.PEN_TRAX_API_URL,
+    instituteAPIURL: process.env.INSTITUTE_API_URL,
     sld: {
       rootURL: process.env.SLD_API_URL,
       studentHistoryURL: process.env.SLD_API_URL + '/student'
@@ -112,6 +113,7 @@ nconf.defaults({
       claimExchangesURL: process.env.EDX_API_URL+ '/exchange/claim',
       activationCodeUrl: process.env.EDX_API_URL + '/users/activation-code',
       schoolUserActivationInviteURL:process.env.EDX_API_URL+ '/exchange'+ '/school-user-activation-invite-saga',
+      districtUserActivationInviteURL:process.env.EDX_API_URL+ '/exchange'+ '/district-user-activation-invite-saga',
       newSecureExchangeSagaURL: process.env.EDX_API_URL + '/exchange/new-secure-exchange-saga',
       secureExchangeCommentSagaURL: process.env.EDX_API_URL + '/exchange/secure-exchange-comment-saga',
       roleAdmin: process.env.EDX_ADMIN,

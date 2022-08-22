@@ -8,6 +8,8 @@ export default {
     exchangeMincodes: [],
     schoolRoles: [],
     schoolRolesCopy: [],
+    districtRoles: [],
+    districtRolesCopy:[],
     fileRequirements: [],
     secureExchangeDocuments: [],
     secureExchangeStudents:[]
@@ -35,6 +37,12 @@ export default {
     },
     setSchoolRolesCopy(state, payload) {
       state.schoolRolesCopy = JSON.parse(JSON.stringify(payload));
+    },
+    setDistrictRoles(state, payload) {
+      state.districtRoles = JSON.parse(JSON.stringify(payload));
+    },
+    setDistrictRolesCopy(state, payload) {
+      state.districtRolesCopy = JSON.parse(JSON.stringify(payload));
     },
     setSecureExchangeDocuments(state, payload) {
       state.secureExchangeDocuments = payload;
@@ -118,5 +126,20 @@ export default {
         }
       }
     },
+    async getEdxDistrictRoles({ commit, state}) {
+      if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
+        if (state.districtRoles.length === 0) {
+          const params = {
+            params: {
+              instituteType:'DISTRICT'
+            }
+          };
+          const response = await ApiService.getEdxRoles(params);
+          commit('setDistrictRoles', response.data);
+          commit('setDistrictRolesCopy', response.data);
+
+        }
+      }
+    }
   },
 };

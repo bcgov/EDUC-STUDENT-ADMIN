@@ -13,6 +13,7 @@ export default {
     pageTitle: null,
     stickyInfoPanelHeight: null,
     mincodeSchoolNames: new Map(),
+    districts : new Map(),
     districtCodes: new Set(),
     alertNotificationText: '',
     alertNotificationQueue: [],
@@ -23,6 +24,7 @@ export default {
     selectedRequest: state => state.selectedRequest,
     districtCodesObjectSorted: state => Array.from(state.districtCodes).sort(),
     mincodeSchoolNamesObjectSorted: state => Object.values(Object.fromEntries(state.mincodeSchoolNames)).map(v => v.toUpperCase()).sort(),
+    districtsObjectSorted: state => Object.values(Object.fromEntries(state.districts)).map(v => v.toUpperCase()).sort(),
     messages: state => state.messages,
     participants: state => state.participants,
     requestType: state => state.requestType,
@@ -61,6 +63,13 @@ export default {
         state.districtCodes.add(element.mincode?.substring(0, 3));
       });
     },
+    setDistricts(state, districtList) {
+      state.districts = new Map();
+      console.table(districtList);
+      districtList.forEach(element => {
+        state.districts.set(element.districtId, element);
+      });
+    },
     setAlertNotificationText: (state, alertNotificationText) => {
       state.alertNotificationText = alertNotificationText;
     },
@@ -80,6 +89,11 @@ export default {
         if(state.mincodeSchoolNames.size === 0) {
           const response = await ApiService.getMincodeSchoolNames();
           commit('setMincodeSchoolNameAndDistrictCodes', response.data);
+        }
+        if(state.districts.size === 0) {
+          const response = await ApiService.getDistricts();
+          console.table(response.data);
+          commit('setDistricts', response.data);
         }
       }
     },
