@@ -47,11 +47,21 @@
                           maxlength="4000"
                           class="pt-0"
                           ref="newMessageTextArea"
+                          hide-details="auto"
                           @input="replaceMessageMacro">
                         </v-textarea>
-                        <MacroMenu id="newMessageMacroSelector" :macros="messageMacros" @select="insertMacroMessage" />
                       </v-form>
                     </v-card-text>
+<!--                    <v-row no-gutters>-->
+<!--                      <v-spacer></v-spacer>-->
+<!--                      <v-col>-->
+<!--                        <MacroMenu margin="my-2 ml-3" id="newMessageMacroSelector" :macros="messageMacros" @select="insertMacroMessage" />-->
+<!--                      </v-col>-->
+<!--                    </v-row>-->
+                    <div class="text-right">
+                      <MacroMenu margin="my-2 mr-3" id="newMessageMacroSelector" :macros="messageMacros" @select="insertMacroMessage" />
+                    </div>
+                    <v-divider />
                   </v-col>
                 </v-row>
                 <v-row class="ml-6" no-gutters>
