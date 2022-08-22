@@ -106,7 +106,7 @@
                   <v-icon v-else>mdi-email-open-outline</v-icon>
                   <span class="ml-1 markAsSpan">{{`Mark As ${secureExchange.isReadByMinistry ? 'Unread' : 'Read'}` }}</span>
                 </v-btn>
-                <v-btn id="claimAsButton" class="my-4 mx-2" v-on:click="clickClaimMsgButton" :disabled="!isEditable() && !isClaimable() && !isUnClaimable()">
+                <v-btn id="claimAsButton" class="my-4 mx-2" v-on:click="clickClaimMsgButton" :disabled="!isEditable()">
                   <v-icon>{{ !isClaimable() ? 'mdi-account-off-outline' : 'mdi-account-check-outline' }}</v-icon>
                   <span class="ml-1">{{ isClaimable() ? 'Claim' : 'Unclaim' }}</span>
                 </v-btn>
@@ -127,10 +127,13 @@
                             maxlength="4000"
                             class="pt-0"
                             ref="newMessageToConvTextArea"
+                            @input="replaceMessageMacro"
                 >
                 </v-textarea>
               </v-card-text>
-              <v-row class="py-4 justify-end pt-0 pr-16 mr-10">
+              <v-row class="py-4 justify-end pt-0 pr-16 mr-10 ml-7 pl-16">
+                <MacroMenu id="newMessageMacroSelector" :macros="messageMacros" @select="insertMacroMessage" />
+                <v-spacer></v-spacer>
                 <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2" @click.native="hideNewMessagePanel"></PrimaryButton>
                 <PrimaryButton id="newMessagePostBtn" text="Send" width="8rem" :disabled="!newMessage" :loading="processing" @click.native="sendNewExchangeComment"></PrimaryButton>
               </v-row>
@@ -267,7 +270,7 @@
                           </v-row>
                         </v-card-text>
                           <v-row>
-                            <v-btn class="ml-12 mr-1 mb-1 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveStudent(index)" v-show="isOpenStudentIndex !== index" :disabled="!isEditable()">
+                            <v-btn class="mb-1 ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveStudent(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="!isEditable()">
                               <v-icon>mdi-delete-forever-outline</v-icon>
                             </v-btn>
                           </v-row>
@@ -312,7 +315,7 @@
                             </a>
                           </v-card-text>
                           <v-card-text v-if="activity.documentType.label !== 'Other'" class="pt-0 pb-3">{{ activity.documentType.label }}</v-card-text>
-                          <v-btn class="ml-12 mb-2 mr-1 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveDoc(index)" v-show="isOpenDocIndex !== index" :disabled="!isEditable()">
+                          <v-btn class="mb-1 ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveDoc(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="!isEditable()">
                             <v-icon>mdi-delete-forever-outline</v-icon>
                           </v-btn>
                         </v-row>
@@ -332,12 +335,8 @@
                               </v-row>
                               <v-row no-gutters>
                                 <v-col class="mt-3 d-flex justify-end">
-                                  <v-btn class="mr-2" outlined @click="closeDocIndex()">
-                                    No
-                                  </v-btn>
-                                  <v-btn dark color="#003366" @click="removeAttachment(activity.documentID)">
-                                    Yes
-                                  </v-btn>
+                                  <v-btn class="mr-2" outlined @click="closeDocIndex()">No</v-btn>
+                                  <v-btn dark color="#003366" @click="removeAttachment(activity.documentID)">Yes</v-btn>
                                 </v-col>
                               </v-row>
                             </v-card-text>
@@ -351,6 +350,32 @@
                           <div class="activityDisplayDate">{{ activity.displayDate }}</div>
                         </v-card-title>
                         <v-card-text class="activityContent">{{ activity.content }}</v-card-text>
+                        <v-btn class="mb-1 ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveNote(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="(!isEditable()) || (activity.staffUserIdentifier !== userInfo.userName)">
+                          <v-icon>mdi-delete-forever-outline</v-icon>
+                        </v-btn>
+                        <v-expand-transition>
+                          <div v-show="isOpenNoteIndex === index" class="greyBackground">
+                            <v-divider></v-divider>
+                            <v-card-text style="background-color: #e7ebf0;">
+                              <v-row no-gutters>
+                                <v-col class="d-flex justify-start">
+                                  <span style="font-size: medium; font-weight: bold; color: black">Removing the note will remove it for all users.</span>
+                                </v-col>
+                              </v-row>
+                              <v-row no-gutters>
+                                <v-col class="pt-3 d-flex justify-start">
+                                  <span style="font-size: medium; font-weight: bold; color: black">Are you sure you want to remove the note?</span>
+                                </v-col>
+                              </v-row>
+                              <v-row no-gutters>
+                                <v-col class="mt-3 d-flex justify-end">
+                                  <v-btn class="mr-2" outlined @click="closeNoteIndex()">No</v-btn>
+                                  <v-btn dark color="#003366" @click="removeNote(activity)">Yes</v-btn>
+                                </v-col>
+                              </v-row>
+                            </v-card-text>
+                          </div>
+                        </v-expand-transition>
                       </v-card>
                     </v-timeline-item>
                   </div>
@@ -369,19 +394,22 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import router from '@/router';
-import PrimaryButton from '@/components/util/PrimaryButton';
+import {mapState, mapActions, mapGetters} from 'vuex';
+import {replaceMacro, insertMacro} from '../../utils/macro';
 import {ChronoUnit, DateTimeFormatter, LocalDate} from '@js-joda/core';
+import PrimaryButton from '@/components/util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
 import DocumentUpload from '@/components/common/DocumentUpload';
 import PdfRenderer from '@/components/common/PdfRenderer';
 import ImageRenderer from '@/components/common/ImageRenderer';
-import {mapState} from 'vuex';
 import AddStudent from '@/components/common/AddStudent';
+import MacroMenu from '../common/MacroMenu';
+
 
 export default {
   name: 'MessageDisplay',
   mixins: [alertMixin],
-  components: {DocumentUpload, AddStudent, PrimaryButton, ImageRenderer, PdfRenderer},
+  components: {DocumentUpload, AddStudent, PrimaryButton, ImageRenderer, PdfRenderer, MacroMenu},
   props: {
     secureExchangeID: {
       type: String,
@@ -407,6 +435,7 @@ export default {
       mincode: null,
       isOpenDocIndex: false,
       isOpenStudentIndex: false,
+      isOpenNoteIndex: false,
       show: false,
       isHideIndex: false,
       pdfRenderDialog: false,
@@ -420,11 +449,14 @@ export default {
   },
   computed: {
     ...mapState('auth', ['userInfo']),
+    ...mapGetters('edx', ['messageMacros'])
   },
   created() {
     this.getExchange(true);
+    this.getMacros();
   },
   methods: {
+    ...mapActions('edx', ['getMacros']),
     async upload(document) {
       try {
         this.items = undefined;
@@ -581,9 +613,6 @@ export default {
     isClaimable(){
       return this.secureExchange.reviewer === '' || this.secureExchange.reviewer !== this.userInfo.userName;
     },
-    isUnClaimable(){
-      return this.secureExchange.reviewer !== '' && this.secureExchange.reviewer === this.userInfo.userName;
-    },
     clickClaimMsgButton() {
       this.loadingReadStatus = true;
       let claimed = this.secureExchange.reviewer !== '';
@@ -595,7 +624,7 @@ export default {
       };
       ApiService.apiAxios.post(Routes.edx.CLAIM_ONE_URL, payload)
         .then((response) => {
-          this.secureExchange = this.getExchange();
+          this.getExchange();
           if(response.data.reviewer){
             this.setSuccessAlert('Success! The message has been claimed.');
           } else{
@@ -609,7 +638,13 @@ export default {
           this.loadingReadStatus = false;
         });
     },
+    closeAllIndexes(){
+      this.closeDocIndex();
+      this.closeStudentIndex();
+      this.closeNoteIndex();
+    },
     toggleRemoveDoc(index) {
+      this.closeAllIndexes();
       this.isHideIndex = index;
       if( this.isOpenDocIndex !== null ){
         this.isOpenDocIndex = ( this.isOpenDocIndex === index ) ? null : index;
@@ -622,6 +657,7 @@ export default {
       this.isHideIndex = false;
     },
     toggleRemoveStudent(index) {
+      this.closeAllIndexes();
       this.isHideIndex = index;
       if( this.isOpenStudentIndex !== null ){
         this.isOpenStudentIndex = ( this.isOpenStudentIndex === index ) ? null : index;
@@ -631,6 +667,19 @@ export default {
     },
     closeStudentIndex() {
       this.isOpenStudentIndex = false;
+      this.isHideIndex = false;
+    },
+    toggleRemoveNote(index) {
+      this.closeAllIndexes();
+      this.isHideIndex = index;
+      if( this.isOpenNoteIndex !== null ){
+        this.isOpenNoteIndex = ( this.isOpenNoteIndex === index ) ? null : index;
+      } else {
+        this.isOpenNoteIndex = index;
+      }
+    },
+    closeNoteIndex() {
+      this.isOpenNoteIndex = false;
       this.isHideIndex = false;
     },
     displayStudentPanel() {
@@ -714,6 +763,31 @@ export default {
           this.closeStudentIndex();
         });
     },
+    removeNote(note) {
+      if (note.staffUserIdentifier !== this.userInfo.userName) {
+        this.setWarningAlert(`This note was added by ${note.staffUserIdentifier}; you don't have permission to delete it.`);
+        this.closeNoteIndex();
+        return;
+      }
+
+      this.processing = true;
+      this.loading = true;
+
+      ApiService.apiAxios.put(`${Routes.edx.EXCHANGE_URL}/${this.secureExchangeID}/removeNote/${note.secureExchangeNoteID}`)
+        .then(() => {
+          this.getExchange();
+          this.setSuccessAlert('Success! The note has been removed.');
+          this.closeNoteIndex();
+        })
+        .catch(error => {
+          this.setFailureAlert('Error! The note was not removed.');
+          console.log(error);
+        })
+        .finally(() => {
+          this.processing = false;
+          this.loading = false;
+        });
+    },
     showDocModal(document){
       if (this.isPdf(document)) {
         this.documentId = document.documentID;
@@ -773,7 +847,13 @@ export default {
       this.shouldDisplaySpeedDial = false;
       this.editOptionsOpen = false;
       this.isNewNoteDisplayed = false;
-    }
+    },
+    replaceMessageMacro() {
+      this.newMessage = replaceMacro(this.newMessage, this.messageMacros);
+    },
+    insertMacroMessage(macroText) {
+      this.newMessage = insertMacro(macroText, this.newMessage, this.$refs.newMessageToConvTextArea.$refs.input);
+    },
   }
 };
 </script>
@@ -827,13 +907,10 @@ export default {
   background-color: white !important;
   height: 2em !important;
   min-width: 1em !important;
-  bottom: 0em;
-  right: 0em;
+  bottom: 0;
+  right: 0;
 }
 .greyBackground {
   background-color: #f5f5f5;
-}
-.yesBtn {
-  margin-right: 6em;
 }
 </style>

@@ -112,6 +112,7 @@ let object = {
   },
   edx: {
     ROOT_ENDPOINT: edxRoot,
+    STATS_URL: edxRoot + '/exchange/stats',
     EXCHANGE_URL: edxRoot + '/exchange',
     EXCHANGE_FILE_REQUIREMENTS_URL: edxRoot + '/exchange/file-requirements',
     STATUSES_URL: edxRoot + '/exchange/statuses',
