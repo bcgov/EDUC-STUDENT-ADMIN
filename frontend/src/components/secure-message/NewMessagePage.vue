@@ -46,10 +46,16 @@
                           no-resize
                           maxlength="4000"
                           class="pt-0"
-                          ref="newMessageTextArea">
+                          ref="newMessageTextArea"
+                          hide-details="auto"
+                          @input="replaceMessageMacro">
                         </v-textarea>
                       </v-form>
                     </v-card-text>
+                    <div class="text-right">
+                      <MacroMenu margin="my-2 mr-3" id="newMessageMacroSelector" :macros="messageMacros" @select="insertMacroMessage" />
+                    </div>
+                    <v-divider />
                   </v-col>
                 </v-row>
                 <v-row class="ml-6" no-gutters>
@@ -139,17 +145,19 @@
 </template>
 
 <script>
-import PrimaryButton from '@/components/util/PrimaryButton';
-import DocumentUpload from '@/components/common/DocumentUpload';
-import { mapState } from 'vuex';
-import ConfirmationDialog from '@/components/util/ConfirmationDialog';
-import alertMixin from '@/mixins/alertMixin';
+import { mapState, mapActions, mapGetters } from 'vuex';
+import {replaceMacro, insertMacro} from '../../utils/macro';
 import ApiService from '@/common/apiService';
 import {
   Routes,
 } from '@/utils/constants';
 import {isValidPEN} from '@/utils/validation';
+import alertMixin from '@/mixins/alertMixin';
+import PrimaryButton from '@/components/util/PrimaryButton';
+import DocumentUpload from '@/components/common/DocumentUpload';
+import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import AddStudent from '@/components/common/AddStudent';
+import MacroMenu from '../common/MacroMenu';
 
 export default {
   name: 'NewMessagePage',
@@ -159,6 +167,7 @@ export default {
     PrimaryButton,
     ConfirmationDialog,
     DocumentUpload,
+    MacroMenu
   },
   props: {
     mincodeSchoolNames: {
@@ -187,6 +196,7 @@ export default {
   computed: {
     ...mapState('auth', ['userInfo']),
     ...mapState('edx', ['ministryTeams', 'exchangeMincodes', 'secureExchangeDocuments','secureExchangeStudents']),
+    ...mapGetters('edx', ['messageMacros']),
     myTeam() {
       return this.ministryTeams.find(team => this.userInfo.userRoles.some(role => team.groupRoleIdentifier === role)) || {};
     },
@@ -199,8 +209,10 @@ export default {
     this.$store.dispatch('edx/getExchangeMincodes');
     this.clearSecureExchangeDocuments();
     this.clearSecureExchangeStudents();
+    this.getMacros();
   },
   methods: {
+    ...mapActions('edx', ['getMacros']),
     navigateToList() {
       this.$emit('secure-exchange:cancelMessage');
     },
@@ -296,7 +308,13 @@ export default {
       }else{
         this.disableAddStudent = true;
       }
-    }
+    },
+    replaceMessageMacro() {
+      this.newMessage = replaceMacro(this.newMessage, this.messageMacros);
+    },
+    insertMacroMessage(macroText) {
+      this.newMessage = insertMacro(macroText, this.newMessage, this.$refs.newMessageTextArea.$refs.input);
+    },
   }
 };
 </script>
