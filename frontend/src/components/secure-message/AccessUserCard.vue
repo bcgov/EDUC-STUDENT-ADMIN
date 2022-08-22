@@ -191,10 +191,7 @@ export default {
       if (role.edxRoleCode === this.edxSchoolAdminRole) {
         return false;
       }
-      if (this.isEDXSchoolAdminSelected) {
-        return true;
-      }
-      return this.absoluteMinimumRolesSelected && this.selectedRoles.includes(role.edxRoleCode);
+      return this.isEDXSchoolAdminSelected;
     },
     selectedRolesChanged() {
       if (!this.isEDXSchoolAdminSelected) {
@@ -318,9 +315,6 @@ export default {
     ...mapState('edx', ['schoolRoles']),
     isEDXSchoolAdminSelected() {
       return this.selectedRoles.includes(this.edxSchoolAdminRole);
-    },
-    absoluteMinimumRolesSelected() {
-      return this.selectedRoles.length === 1;
     },
     minimumRolesSelected() {
       return this.selectedRoles.length > 0;
