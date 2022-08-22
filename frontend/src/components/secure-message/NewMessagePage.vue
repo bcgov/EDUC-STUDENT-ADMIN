@@ -52,12 +52,6 @@
                         </v-textarea>
                       </v-form>
                     </v-card-text>
-<!--                    <v-row no-gutters>-->
-<!--                      <v-spacer></v-spacer>-->
-<!--                      <v-col>-->
-<!--                        <MacroMenu margin="my-2 ml-3" id="newMessageMacroSelector" :macros="messageMacros" @select="insertMacroMessage" />-->
-<!--                      </v-col>-->
-<!--                    </v-row>-->
                     <div class="text-right">
                       <MacroMenu margin="my-2 mr-3" id="newMessageMacroSelector" :macros="messageMacros" @select="insertMacroMessage" />
                     </div>
