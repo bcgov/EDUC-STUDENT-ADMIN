@@ -65,7 +65,6 @@ export default {
     },
     setDistricts(state, districtList) {
       state.districts = new Map();
-      console.table(districtList);
       districtList.forEach(element => {
         state.districts.set(element.districtId, element);
       });
@@ -92,7 +91,6 @@ export default {
         }
         if(state.districts.size === 0) {
           const response = await ApiService.getDistricts();
-          console.table(response.data);
           commit('setDistricts', response.data);
         }
       }
