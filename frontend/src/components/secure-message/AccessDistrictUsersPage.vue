@@ -18,7 +18,7 @@
     </v-row>
     <v-row no-gutters id="generateNewPrimaryEdxActivationCodeDialog" :class="['d-sm-flex', 'my-1', 'align-center']" v-if="this.doShowGenerateNewPrimaryEdxActivationCodeDialog">
       <v-col class="pa-3">
-        <p>Generating a new Primary EDX Activation Code for a school will replace the existing code for the school. The new code will have to be communicated to the school administrator.</p>
+        <p>Generating a new Primary EDX Activation Code for a district will replace the existing code for the district. The new code will have to be communicated to the district administrator.</p>
         <p>Are you sure that you want to generate a new Primary EDX Activation Code?</p>
         <PrimaryButton id="doGeneratePrimaryEdxActivationCodeButton" short class="ml-2" @click.native="doGeneratePrimaryEdxActivationCode">Yes</PrimaryButton>
         <PrimaryButton id="closeGenerateNewPrimaryEdxActivationCodeDialogButton" short secondary class="ml-2" @click.native="closeGenerateNewPrimaryEdxActivationCodeDialog">No</PrimaryButton>
@@ -41,7 +41,7 @@
     <Spinner v-if="loadingUsers"/>
     <v-row v-else>
       <v-col xl="4" cols="6" class="pb-0" v-for="user in filteredUsers" :key="user.digitalID">
-        <AccessDistrictUserCard @refresh="getUsersData" :districtId="districtId" type="school" :userRoles="user.edxUserDistricts[0].edxUserDistrictRoles" :user="user"></AccessDistrictUserCard>
+        <AccessUserCard @refresh="getUsersData" :userRoles="user.edxUserSchools[0].edxUserSchoolRoles" :user="user" :institute-code="districtId" :institute-roles="districtRoles" institute-type-code="DISTRICT" institute-type-label="District"></AccessUserCard>
       </v-col>
       <v-col xl="4" cols="6" >
         <v-row>
@@ -78,15 +78,17 @@
         <v-card-title id="newUserInviteVCardTitle" class="sheetHeader pt-1 pb-1">New User</v-card-title>
         <v-divider></v-divider>
         <v-card-text>
-          <NewDistrictUserPage
+          <InviteUserPage
               :userRoles="districtRoles"
-              :districtId="districtId"
+              :institute-code="districtId"
+               institute-type-code="DISTRICT"
+              instituteTypeLabel="District"
               :districtName='getDistrictNameForUserInvite()'
               @access-user:messageSent="messageSent"
               @access-user:updateRoles="updateUserRoles"
               @access-user:cancelMessage="closeNewUserModal"
           >
-          </NewDistrictUserPage>
+          </InviteUserPage>
         </v-card-text>
       </v-card>
     </v-bottom-sheet>
@@ -104,13 +106,13 @@ import {mapState} from 'vuex';
 import PrimaryButton from '@/components/util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
 import Spinner from '@/components/common/Spinner';
-import AccessDistrictUserCard from '@/components/secure-message/AccessDistrictUserCard';
-import NewDistrictUserPage from '@/components/secure-message/NewDistrictUserPage';
+import InviteUserPage from '@/components/secure-message/InviteUserPage';
+import AccessUserCard from '@/components/secure-message/AccessUserCard';
 
 export default {
   name: 'AccessDistrictUsersPage',
   mixins: [ alertMixin ],
-  components: { NewDistrictUserPage, PrimaryButton, AccessDistrictUserCard, Spinner },
+  components: { InviteUserPage, PrimaryButton, AccessUserCard, Spinner },
   props: {
     districtId: {
       type: String,

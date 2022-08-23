@@ -34,15 +34,15 @@
                                         maxlength="255"
                                         :hint="emailHint"
                           ></v-text-field>
-                          <v-text-field id="newUserSchool"
-                                        label="District"
-                                        v-model="districtNameAndCode"
+                          <v-text-field id="newUserInstituteType"
+                                        :label="instituteTypeLabel"
+                                        v-model="instituteNameAndCode"
                                         :disabled=true
                                         class="pt-0"
                                         :rules="requiredRules"
                           ></v-text-field>
                           <v-select
-                              id="newSchoolUserRolesSelect"
+                              id="instituteNewUserRolesSelect"
                               :items="userRoles"
                               item-value='edxRoleCode'
                               item-text='label'
@@ -110,7 +110,7 @@ import {Routes} from '@/utils/constants';
 import {mapGetters, mapState} from 'vuex';
 
 export default {
-  name: 'newDistrictUserPage',
+  name: 'InviteUserPage',
   mixins: [alertMixin],
   components: {
     PrimaryButton,
@@ -121,11 +121,23 @@ export default {
       type: Array,
       required: true
     },
-    districtId:{
+    instituteCode:{
       type: String,
       required:true
     },
+    schoolName:{
+      type:String,
+      required:false
+    },
     districtName:{
+      type:String,
+      required:false
+    },
+    instituteTypeLabel:{
+      type:String,
+      required:true
+    },
+    instituteTypeCode:{
       type:String,
       required:true
     }
@@ -136,7 +148,7 @@ export default {
       firstName: '',
       lastName: '',
       email: '',
-      districtNameAndCode: '',
+      instituteNameAndCode: '',
       edxActivationRoleCodes: [],
       requiredRules: [v => !!v || 'Required'],
       requireRoleRules: [(v) => v.length > 0 || 'Role Selection is required'],
@@ -149,7 +161,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('app', ['districts']),
+    ...mapState('app', ['mincodeSchoolNames','districts']),
     emailRules() {
       return [
         v => !!v || this.emailHint,
@@ -161,8 +173,12 @@ export default {
     }
   },
   created() {
-    if (!this.districtNameAndCode) {
-      this.districtNameAndCode = this.districtName + ' (' + this.districts.get(this.districtId).districtNumber + ')';
+    if (!this.instituteNameAndCode) {
+      if(this.instituteTypeCode=== 'SCHOOL'){
+        this.instituteNameAndCode = this.schoolName + ' (' + this.instituteCode + ')';
+      }else{
+        this.instituteNameAndCode = this.districtName + ' (' + this.districts.get(this.instituteCode).districtNumber + ')';
+      }
     }
   },
   methods: {
@@ -172,7 +188,8 @@ export default {
     disableRoles() {
       if (this.edxAdminUserCode === '') {
         for (const element of this.userRoles) {
-          if (element.edxRoleCode === 'EDX_DISTRICT_ADMIN') {
+          if ((this.instituteTypeCode === 'SCHOOL' && element.edxRoleCode === 'EDX_SCHOOL_ADMIN')
+              || (this.instituteTypeCode === 'DISTRICT' && element.edxRoleCode === 'EDX_DISTRICT_ADMIN')) {
             this.edxAdminUserCode = element.edxRoleCode;
             break;
           }
@@ -189,7 +206,7 @@ export default {
         });
         this.edxActivationRoleCodes.length = 0;
         this.edxActivationRoleCodes.push(this.edxAdminUserCode);
-        this.rolesHint = 'EDX District Admin users will be set up with all EDX district roles';
+        this.rolesHint = `EDX ${this.instituteTypeLabel} Admin users will be set up with all EDX ${this.instituteTypeLabel.toLowerCase()} roles`;
       } else {
         newRoles = this.userRoles.map(el => {
           el.disabled = false;
@@ -206,15 +223,23 @@ export default {
     sendNewUserInvite() {
       this.processing = true;
       const payload = {
-        districtName: this.districtName,
-        districtCode: this.districts.get(this.districtId).districtNumber,
         firstName: this.firstName,
         lastName: this.lastName,
         email: this.email,
-        districtId: this.districtId,
         edxActivationRoleCodes: this.edxActivationRoleCodes
       };
-      ApiService.apiAxios.post(`${Routes.edx.NEW_DISTRICT_USER_ACTIVATION_INVITE}`, payload)
+      let url = null;
+      if(this.instituteTypeCode === 'SCHOOL') {
+        payload.mincode = this.instituteCode;
+        payload.schoolName = this.schoolName;
+        url = `${Routes.edx.NEW_SCHOOL_USER_ACTIVATION_INVITE}`;
+      }else {
+        payload.districtName = this.districtName;
+        payload.districtCode = this.districts.get(this.instituteCode).districtNumber;
+        payload.districtId = this.instituteCode;
+        url = `${Routes.edx.NEW_DISTRICT_USER_ACTIVATION_INVITE}`;
+      }
+      ApiService.apiAxios.post(url, payload)
         .then(() => {
           this.setSuccessAlert('Success! The request is being processed.');
           this.messageSent();
