@@ -39,8 +39,10 @@ import Merges from '@/components/admin/stats/Merges';
 import NewMessagePage from '@/components/secure-message/NewMessagePage';
 import MessageDisplay from '@/components/secure-message/MessageDisplay';
 import AccessPage from '@/components/secure-message/AccessPage';
+import DistrictAccessPage from '@/components/secure-message/DistrictAccessPage';
 import AccessUsersPage from '@/components/secure-message/AccessUsersPage';
 import NewUserInvitePage from '@/components/secure-message/NewUserPage';
+import AccessDistrictUsersPage from '@/components/secure-message/AccessDistrictUsersPage';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -357,6 +359,27 @@ const router = new VueRouter({
           props: true,
           meta: {
             pageTitle: PAGE_TITLES.EXCHANGE_USERS,
+            requiresAuth: true,
+            role: 'EXCHANGE_ACCESS_ROLE'
+          }
+        },
+        {
+          path: 'exchange/district/access',
+          name: 'exchangeDistrictAccess',
+          component: DistrictAccessPage,
+          meta: {
+            pageTitle: PAGE_TITLES.EDX_DISTRICT_ACCESS,
+            requiresAuth: true,
+            role: 'EXCHANGE_ACCESS_ROLE'
+          }
+        },
+        {
+          path: 'exchange/access/district/:districtId',
+          name: 'exchangeAccessDistrictUsers',
+          component: AccessDistrictUsersPage,
+          props: true,
+          meta: {
+            pageTitle: PAGE_TITLES.EDX_DISTRICT_ACCESS,
             requiresAuth: true,
             role: 'EXCHANGE_ACCESS_ROLE'
           }

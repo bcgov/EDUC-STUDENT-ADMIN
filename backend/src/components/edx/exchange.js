@@ -377,7 +377,7 @@ async function markAsClosed(req, res) {
 
 async function getEdxUsers(req, res) {
   const token = utils.getBackendToken(req);
-  if (!token && req.session.userMinCodes) {
+  if (!token && !req.session.roles.includes('EDX_ADMIN')) {
     return res.status(HttpStatus.UNAUTHORIZED).json({
       message: 'No access token'
     });
@@ -395,6 +395,15 @@ async function getEdxUsers(req, res) {
           edxUserSchools: user.edxUserSchools.filter(school => school.mincode === req.query.mincode)
         };
       });
+    }else if(req.query.districtCode){
+      // if we search by district strip out other schools and district information for the frontend
+      filteredResponse = response.map(user => {
+        return {
+          ...user,
+          edxUserSchools: [],
+          edxUserDistricts: user.edxUserDistricts.filter(district => district.districtCode === req.query.districtCode)
+        };
+      });
     }
     return res.status(HttpStatus.OK).json(filteredResponse);
   } catch (e) {
@@ -405,7 +414,7 @@ async function getEdxUsers(req, res) {
 
 async function findPrimaryEdxActivationCode(req, res) {
   const token = utils.getBackendToken(req);
-  if (!token && req.session.userMinCodes) {
+  if (!token && !req.session.roles.includes('EDX_ADMIN')) {
     return res.status(HttpStatus.UNAUTHORIZED).json({
       message: 'No access token'
     });
@@ -437,6 +446,26 @@ async function generateOrRegeneratePrimaryEdxActivationCode(req, res) {
   }
 }
 
+
+async function districtUserActivationInvite(req, res) {
+  const token = utils.getBackendToken(req);
+  if (!token) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No access token'
+    });
+  }
+  const payload = {
+    ...req.body
+  };
+  try {
+    const response = await utils.postData(token, config.get('server:edx:districtUserActivationInviteURL'), payload, null, utils.getUser(req).idir_username);
+    return res.status(200).json(response);
+  } catch (e) {
+    await logApiError(e, 'districtUserActivationInvite', 'Error occurred while sending district user activation invite');
+    return errorResponse(res);
+  }
+
+}
 async function schoolUserActivationInvite(req, res) {
   const token = utils.getBackendToken(req);
   if (!token) {
@@ -640,7 +669,7 @@ async function removeUserSchoolAccess(req, res) {
   try {
     const token = utils.getBackendToken(req);
 
-    if(!req.session.roles.includes('EDX_SCHOOL_ADMIN')){
+    if(!req.session.roles.includes('EDX_ADMIN')){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         status: HttpStatus.UNAUTHORIZED,
         message: 'You are not authorized to access this page'
@@ -922,5 +951,6 @@ module.exports = {
   removeSecureExchangeStudent,
   createSecureExchangeNote,
   getExchangeStats,
-  removeSecureExchangeNote
+  removeSecureExchangeNote,
+  districtUserActivationInvite
 };

@@ -161,8 +161,13 @@ export default {
             authorized: this.EDIT_MACROS_ROLE
           },
           {
-            title: 'EDX Access',
+            title: 'EDX School Access',
             link: 'exchangeAccess',
+            authorized: this.EXCHANGE_ACCESS_ROLE
+          },
+          {
+            title: 'EDX District Access',
+            link: 'exchangeDistrictAccess',
             authorized: this.EXCHANGE_ACCESS_ROLE
           }
         ],

@@ -9,6 +9,7 @@ const demographicRoot = baseRoot + '/studentDemographics';
 const studentRoot = baseRoot + '/students';
 const penServicesRoot = baseRoot + '/pen-services';
 const schoolRequestRoot = baseRoot + '/schools';
+const districtRequestRoot = baseRoot + '/institute/districts';
 const penTraxRoot = baseRoot + '/penTrax';
 const penMatchRoot = baseRoot + '/penMatches';
 const macroRoot = baseRoot + '/macros';
@@ -90,6 +91,7 @@ let object = {
     DOC_TYPE_CODES_URL: studentRoot + '/document-type-codes'
   },
   SCHOOL_DATA_URL: schoolRequestRoot,
+  DISTRICT_DATA_URL: districtRequestRoot,
   penServices: {
     ROOT_ENDPOINT: penServicesRoot,
     VALIDATE_DEMOGRAPHICS: penServicesRoot + '/demog-validation',
@@ -122,7 +124,8 @@ let object = {
     EXCHANGE_REMOVE_USER: edxRoot + '/users/remove',
     EXCHANGE_RELINK_USER: edxRoot + '/users/relink',
     PRIMARY_ACTIVATION_CODE_URL: edxRoot + '/users/activation-code/primary',
-    NEW_SCHOOL_USER_ACTIVATION_INVITE: edxRoot + '/school-user-activation-invite'
+    NEW_SCHOOL_USER_ACTIVATION_INVITE: edxRoot + '/school-user-activation-invite',
+    NEW_DISTRICT_USER_ACTIVATION_INVITE: edxRoot + '/district-user-activation-invite'
   }
 };
 
@@ -398,6 +401,7 @@ export const PAGE_TITLES = Object.freeze(
     NEW_EXCHANGE: 'New Message',
     VIEW_EXCHANGE: 'Secure Message',
     EXCHANGE_ACCESS: 'EDX School Access',
+    EDX_DISTRICT_ACCESS: 'EDX District Access',
     EXCHANGE_USERS: 'EDX School Access',
     NEW_USER_INVITE:'New User'
   }
