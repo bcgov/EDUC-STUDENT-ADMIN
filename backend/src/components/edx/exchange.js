@@ -396,7 +396,7 @@ async function getEdxUsers(req, res) {
         };
       });
     }else if(req.query.districtCode){
-      // if we search by mincode strip out other schools and district information for the frontend
+      // if we search by district strip out other schools and district information for the frontend
       filteredResponse = response.map(user => {
         return {
           ...user,
