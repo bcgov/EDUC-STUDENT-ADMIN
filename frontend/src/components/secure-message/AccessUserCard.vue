@@ -67,24 +67,25 @@
             </v-chip>
           </v-chip-group>
           <v-list-item-group
-            v-model="selectedRoles"
-            @change="selectedRolesChanged"
-            v-else
-            multiple
+              v-model="selectedRoles"
+              @change="selectedRolesChanged"
+              v-else
+              multiple
           >
-            <v-list-item :disabled="roleDisabled(newrole)" v-for="newrole in schoolRoles" :key="newrole.edxRoleCode" :value="newrole.edxRoleCode">
+            <v-list-item :disabled="roleDisabled(newrole)" v-for="newrole in instituteRoles" :key="newrole.edxRoleCode" :value="newrole.edxRoleCode">
               <template v-slot:default="{ active, }">
                 <v-list-item-action class="mt-0 mb-2 mr-3">
                   <v-checkbox
-                    :disabled="roleDisabled(newrole)"
-                    :input-value="active"
-                    color="primary"
+                      :disabled="roleDisabled(newrole)"
+                      :input-value="active"
+                      color="primary"
                   ></v-checkbox>
                 </v-list-item-action>
 
                 <v-list-item-content>
                   <v-list-item-title>{{ newrole.label }}</v-list-item-title>
-                  <div style="color: black; font-weight: bold" v-if="isEDXSchoolAdminSelected && newrole.edxRoleCode === edxSchoolAdminRole">EDX School Admin users will be set up with all school Roles</div>
+                  <div style="color: black; font-weight: bold" v-if="isEDXInstituteAdminSelected && newrole.edxRoleCode === edxInstituteAdminRole">EDX
+                    {{ instituteTypeLabel }} Admin users will be set up with all {{ instituteTypeLabel.toLowerCase() }} Roles</div>
                 </v-list-item-content>
               </template>
             </v-list-item>
@@ -94,7 +95,7 @@
           <v-card-text style="background-color: #e7ebf0;" v-if="deleteState">
             <v-row no-gutters>
               <v-col class="d-flex justify-center">
-                <span style="font-size: medium; font-weight: bold; color: black" >Are you sure you want to remove this users access for the school?</span>
+                <span style="font-size: medium; font-weight: bold; color: black" >Are you sure you want to remove this users access for the {{ instituteTypeLabel.toLowerCase() }}?</span>
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -147,7 +148,6 @@
 
 <script>
 import PrimaryButton from '@/components/util/PrimaryButton';
-import {mapState} from 'vuex';
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
@@ -165,39 +165,43 @@ export default {
       type: Array,
       required: true
     },
-    mincode: {
+    instituteRoles: {
+      type: Array,
+      required: true
+    },
+    instituteCode: {
       type: String,
       required: true
     },
-    type: {
-      validator(value) {
-        return ['district', 'school'].includes(value);
-      },
-      type: String,
-      required: true
-    }
+    instituteTypeLabel:{
+      type:String,
+      required:true
+    },
+    instituteTypeCode:{
+      type:String,
+      required:true
+    },
   },
   data() {
     return {
       editState: false,
       deleteState: false,
       relinkState: false,
-      edxSchoolAdminRole: 'EDX_SCHOOL_ADMIN',
       selectedRoles: []
     };
   },
   methods: {
     roleDisabled(role) {
-      if (role.edxRoleCode === this.edxSchoolAdminRole) {
+      if (role.edxRoleCode === this.edxInstituteAdminRole) {
         return false;
       }
-      return this.isEDXSchoolAdminSelected;
+      return this.isEDXInstituteAdminSelected;
     },
     selectedRolesChanged() {
-      if (!this.isEDXSchoolAdminSelected) {
+      if (!this.isEDXInstituteAdminSelected) {
         return;
       }
-      this.selectedRoles = [this.edxSchoolAdminRole];
+      this.selectedRoles = [this.edxInstituteAdminRole];
     },
     getButtonWidth() {
       switch (this.$vuetify.breakpoint.name) {
@@ -212,8 +216,8 @@ export default {
       }
     },
     getRoleLabel(curRole){
-      if(this.schoolRoles.length > 0) {
-        return this.schoolRoles.find((role) => role.edxRoleCode === curRole.edxRoleCode).label;
+      if(this.instituteRoles.length > 0) {
+        return this.instituteRoles.find((role) => role.edxRoleCode === curRole.edxRoleCode).label;
       }
       return '';
     },
@@ -234,42 +238,84 @@ export default {
       this.relinkState = !this.relinkState;
     },
     clickActionRelinkButton(userToRelink) {
-      let userSchool = userToRelink.edxUserSchools.find(school => school.mincode === this.mincode);
-      const payload = {params:
-          {
-            userToRelink: userToRelink.edxUserID,
-            mincode: this.mincode,
-            userSchoolID: userSchool.edxUserSchoolID
-          }
-      };
-      ApiService.apiAxios.post(Routes.edx.EXCHANGE_RELINK_USER, payload)
-        .then(()=> {
-          this.setSuccessAlert('User has been removed, email sent with instructions to re-link.');
-        }).catch(error => {
-          this.setFailureAlert('An error occurred while re-linking a user. Please try again later.');
-          console.log(error);
-        }).finally(() => {
-          this.$emit('refresh');
-        });
+      if(this.instituteTypeCode === 'SCHOOL'){
+        let userSchool = userToRelink.edxUserSchools.find(school => school.mincode === this.instituteCode);
+        const payload = {params:
+              {
+                userToRelink: userToRelink.edxUserID,
+                mincode: this.instituteCode,
+                userSchoolID: userSchool.edxUserSchoolID
+              }
+        };
+        ApiService.apiAxios.post(Routes.edx.EXCHANGE_RELINK_USER, payload)
+          .then(()=> {
+            this.setSuccessAlert('User has been removed, email sent with instructions to re-link.');
+          }).catch(error => {
+            this.setFailureAlert('An error occurred while re-linking a user. Please try again later.');
+            console.log(error);
+          }).finally(() => {
+            this.$emit('refresh');
+          });
+      }else{
+        let userDistrict = userToRelink.edxUserDistricts.find(district => district.districtId === this.instituteCode);
+        const payload = {params:
+              {
+                userToRelink: userToRelink.edxUserID,
+                districtId: this.instituteCode,
+                edxUserDistrictID: userDistrict.edxUserDistrictID
+              }
+        };
+        ApiService.apiAxios.post(Routes.edx.EXCHANGE_RELINK_USER, payload)
+          .then(()=> {
+            this.setSuccessAlert('User has been removed, email sent with instructions to re-link.');
+          }).catch(error => {
+            this.setFailureAlert('An error occurred while re-linking a user. Please try again later.');
+            console.log(error);
+          }).finally(() => {
+            this.$emit('refresh');
+          });
+      }
+
     },
     clickRemoveButton(userToRemove) {
-      let userSchool = userToRemove.edxUserSchools.find(school => school.mincode === this.mincode);
-      const payload = {params:
-          {
-            userToRemove: userToRemove.edxUserID,
-            mincode: this.mincode,
-            userSchoolID: userSchool.edxUserSchoolID
-          }
-      };
-      ApiService.apiAxios.post(Routes.edx.EXCHANGE_REMOVE_USER, payload)
-        .then(()=> {
-          this.setSuccessAlert('User has been removed.');
-        }).catch(error => {
-          this.setFailureAlert('An error occurred while removing a user. Please try again later.');
-          console.log(error);
-        }).finally(() => {
-          this.$emit('refresh');
-        });
+      if(this.instituteTypeCode === 'SCHOOL'){
+        let userSchool = userToRemove.edxUserSchools.find(school => school.mincode === this.instituteCode);
+        const payload = {params:
+              {
+                userToRemove: userToRemove.edxUserID,
+                mincode: this.instituteCode,
+                userSchoolID: userSchool.edxUserSchoolID
+              }
+        };
+        ApiService.apiAxios.post(Routes.edx.EXCHANGE_REMOVE_USER, payload)
+          .then(()=> {
+            this.setSuccessAlert('User has been removed.');
+          }).catch(error => {
+            this.setFailureAlert('An error occurred while removing a user. Please try again later.');
+            console.log(error);
+          }).finally(() => {
+            this.$emit('refresh');
+          });
+      }else{
+        let userDistrict = userToRemove.edxUserDistricts.find(district => district.districtId === this.instituteCode);
+        const payload = {params:
+              {
+                userToRemove: userToRemove.edxUserID,
+                districtId: this.instituteCode,
+                edxUserDistrictID: userDistrict.edxUserDistrictID
+              }
+        };
+        ApiService.apiAxios.post(Routes.edx.EXCHANGE_REMOVE_USER, payload)
+          .then(()=> {
+            this.setSuccessAlert('User has been removed.');
+          }).catch(error => {
+            this.setFailureAlert('An error occurred while removing a user. Please try again later.');
+            console.log(error);
+          }).finally(() => {
+            this.$emit('refresh');
+          });
+      }
+
     },
     clickSaveButton() {
       if (!this.minimumRolesSelected) {
@@ -277,28 +323,48 @@ export default {
         return;
       }
       this.editState = !this.editState;
-      const payload = {params:
-          {
-            edxUserID: this.user.edxUserID,
-            mincode: this.mincode,
-            selectedRoles: this.selectedRoles
-          }
-      };
-      ApiService.apiAxios.post(Routes.edx.EXCHANGE_ACCESS_ROLES_URL, payload)
-        .then(()=> {
-          this.setSuccessAlert('User roles have been updated.');
-        }).catch(error => {
-          this.setFailureAlert('An error occurred while updating user roles. Please try again later.');
-          console.log(error);
-        }).finally(() => {
-          this.$emit('refresh');
-        });
+      if(this.instituteTypeCode === 'SCHOOL'){
+        const payload = {params:
+              {
+                edxUserID: this.user.edxUserID,
+                mincode: this.instituteCode,
+                selectedRoles: this.selectedRoles
+              }
+        };
+        ApiService.apiAxios.post(Routes.edx.EXCHANGE_ACCESS_ROLES_URL, payload)
+          .then(()=> {
+            this.setSuccessAlert('User roles have been updated.');
+          }).catch(error => {
+            this.setFailureAlert('An error occurred while updating user roles. Please try again later.');
+            console.log(error);
+          }).finally(() => {
+            this.$emit('refresh');
+          });
+      }else{
+        const payload = {params:
+              {
+                edxUserID: this.user.edxUserID,
+                districtId: this.instituteCode,
+                selectedRoles: this.selectedRoles
+              }
+        };
+        ApiService.apiAxios.post(Routes.edx.EXCHANGE_ACCESS_ROLES_URL, payload)
+          .then(()=> {
+            this.setSuccessAlert('User roles have been updated.');
+          }).catch(error => {
+            this.setFailureAlert('An error occurred while updating user roles. Please try again later.');
+            console.log(error);
+          }).finally(() => {
+            this.$emit('refresh');
+          });
+      }
+
     },
     setUserRolesAsSelected() {
       let mySelection = [];
 
       //look through all our roles. If user has this role, then mark the index
-      this.schoolRoles.forEach((role) => {
+      this.instituteRoles.forEach((role) => {
         let result = this.userRoles.find((userRole) =>
           userRole.edxRoleCode === role.edxRoleCode
         );
@@ -312,12 +378,17 @@ export default {
     }
   },
   computed: {
-    ...mapState('edx', ['schoolRoles']),
-    isEDXSchoolAdminSelected() {
-      return this.selectedRoles.includes(this.edxSchoolAdminRole);
+    isEDXInstituteAdminSelected() {
+      return this.selectedRoles.includes(this.edxInstituteAdminRole);
     },
     minimumRolesSelected() {
       return this.selectedRoles.length > 0;
+    },
+    edxInstituteAdminRole(){
+      if(this.instituteTypeCode=== 'SCHOOL'){
+        return 'EDX_SCHOOL_ADMIN';
+      }
+      return 'EDX_DISTRICT_ADMIN';
     }
   }
 };

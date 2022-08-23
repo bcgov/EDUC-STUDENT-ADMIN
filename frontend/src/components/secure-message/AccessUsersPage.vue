@@ -41,7 +41,7 @@
     <Spinner v-if="loadingUsers"/>
     <v-row v-else>
       <v-col xl="4" cols="6" class="pb-0" v-for="user in filteredUsers" :key="user.digitalID">
-        <AccessUserCard @refresh="getUsersData" :mincode="mincode" type="school" :userRoles="user.edxUserSchools[0].edxUserSchoolRoles" :user="user"></AccessUserCard>
+        <AccessUserCard @refresh="getUsersData" :userRoles="user.edxUserSchools[0].edxUserSchoolRoles" :user="user" :institute-code="mincode" :institute-roles="schoolRoles" institute-type-code="SCHOOL" institute-type-label="School"></AccessUserCard>
       </v-col>
       <v-col xl="4" cols="6" >
         <v-row>
@@ -78,15 +78,17 @@
         <v-card-title id="newUserInviteVCardTitle" class="sheetHeader pt-1 pb-1">New User</v-card-title>
         <v-divider></v-divider>
         <v-card-text>
-          <NewUserPage
+          <InviteUserPage
               :userRoles="schoolRoles"
-              :mincode="mincode"
+              :institute-code="mincode"
+              institute-type-code="SCHOOL"
+              instituteTypeLabel="School"
               :schoolName='getSchoolNameForUserInvite()'
               @access-user:messageSent="messageSent"
               @access-user:updateRoles="updateUserRoles"
               @access-user:cancelMessage="closeNewUserModal"
           >
-          </NewUserPage>
+          </InviteUserPage>
         </v-card-text>
       </v-card>
     </v-bottom-sheet>
@@ -103,14 +105,14 @@ import {Routes} from '@/utils/constants';
 import {mapState} from 'vuex';
 import PrimaryButton from '@/components/util/PrimaryButton';
 import AccessUserCard from './AccessUserCard';
-import NewUserPage from '@/components/secure-message/NewUserPage';
 import alertMixin from '@/mixins/alertMixin';
 import Spinner from '@/components/common/Spinner';
+import InviteUserPage from '@/components/secure-message/InviteUserPage';
 
 export default {
   name: 'AccessUsersPage',
   mixins: [ alertMixin ],
-  components: { NewUserPage, PrimaryButton, AccessUserCard, Spinner },
+  components: {InviteUserPage, PrimaryButton, AccessUserCard, Spinner },
   props: {
     mincode: {
       type: String,

@@ -38,11 +38,9 @@ import GUMPStatsLanding from '@/components/admin/stats/GUMPStatsLanding';
 import Merges from '@/components/admin/stats/Merges';
 import NewMessagePage from '@/components/secure-message/NewMessagePage';
 import MessageDisplay from '@/components/secure-message/MessageDisplay';
-import AccessPage from '@/components/secure-message/AccessPage';
-import DistrictAccessPage from '@/components/secure-message/DistrictAccessPage';
 import AccessUsersPage from '@/components/secure-message/AccessUsersPage';
-import NewUserInvitePage from '@/components/secure-message/NewUserPage';
 import AccessDistrictUsersPage from '@/components/secure-message/AccessDistrictUsersPage';
+import InstituteAccessPage from '@/components/secure-message/InstituteAccessPage';
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -345,7 +343,11 @@ const router = new VueRouter({
         {
           path: 'exchange/access',
           name: 'exchangeAccess',
-          component: AccessPage,
+          component: InstituteAccessPage,
+          props: {
+            instituteTypeCode : 'SCHOOL',
+            instituteTypeLabel : 'School'
+          },
           meta: {
             pageTitle: PAGE_TITLES.EXCHANGE_ACCESS,
             requiresAuth: true,
@@ -366,7 +368,11 @@ const router = new VueRouter({
         {
           path: 'exchange/district/access',
           name: 'exchangeDistrictAccess',
-          component: DistrictAccessPage,
+          component: InstituteAccessPage,
+          props: {
+            instituteTypeLabel: 'District',
+            instituteTypeCode: 'DISTRICT'
+          },
           meta: {
             pageTitle: PAGE_TITLES.EDX_DISTRICT_ACCESS,
             requiresAuth: true,
@@ -403,16 +409,6 @@ const router = new VueRouter({
             pageTitle: PAGE_TITLES.NEW_EXCHANGE,
             requiresAuth: true,
             role: 'EXCHANGE_ROLE'
-          }
-        },
-        {
-          path: 'newUserInvite',
-          name: 'newUserInvite',
-          component: NewUserInvitePage,
-          meta: {
-            pageTitle: PAGE_TITLES.NEW_USER_INVITE,
-            requiresAuth: true,
-            role: '*'
           }
         }
       ]
