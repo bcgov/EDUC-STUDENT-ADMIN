@@ -703,7 +703,7 @@ async function relinkUserSchoolAccess(req, res) {
     const token = getBackendToken(req);
     const userName = utils.getUser(req).idir_username;
 
-    if(!req.session.roles.includes('EDX_SCHOOL_ADMIN')){
+    if(!req.session.roles.includes('EDX_ADMIN')){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         status: HttpStatus.UNAUTHORIZED,
         message: 'You are not authorized to access this page'

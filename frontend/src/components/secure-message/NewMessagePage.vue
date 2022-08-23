@@ -53,7 +53,7 @@
                       </v-form>
                     </v-card-text>
                     <div class="text-right">
-                      <MacroMenu margin="my-2 mr-3" id="newMessageMacroSelector" :macros="messageMacros" @select="insertMacroMessage" />
+                      <MacroMenu margin="my-2 mr-3" id="newMessageMacroSelector" :macros="messageMacros" @select="insertMacroMessage" menuMaxWidth="25%" small/>
                     </div>
                     <v-divider />
                   </v-col>
