@@ -222,52 +222,35 @@ export default {
     },
     sendNewUserInvite() {
       this.processing = true;
-
-      if(this.instituteTypeCode === 'SCHOOL'){
-        const payload = {
-          schoolName: this.schoolName,
-          firstName: this.firstName,
-          lastName: this.lastName,
-          email: this.email,
-          mincode: this.instituteCode,
-          edxActivationRoleCodes: this.edxActivationRoleCodes
-        };
-        ApiService.apiAxios.post(`${Routes.edx.NEW_SCHOOL_USER_ACTIVATION_INVITE}`, payload)
-          .then(() => {
-            this.setSuccessAlert('Success! The request is being processed.');
-            this.messageSent();
-          })
-          .catch(error => {
-            this.setFailureAlert('An error occurred while sending message. Please try again later.');
-            console.log(error);
-          })
-          .finally(() => {
-            this.processing = false;
-          });
-      }else{
-        const payload = {
-          districtName: this.districtName,
-          districtCode: this.districts.get(this.instituteCode).districtNumber,
-          firstName: this.firstName,
-          lastName: this.lastName,
-          email: this.email,
-          districtId: this.instituteCode,
-          edxActivationRoleCodes: this.edxActivationRoleCodes
-        };
-        ApiService.apiAxios.post(`${Routes.edx.NEW_DISTRICT_USER_ACTIVATION_INVITE}`, payload)
-          .then(() => {
-            this.setSuccessAlert('Success! The request is being processed.');
-            this.messageSent();
-          })
-          .catch(error => {
-            this.setFailureAlert('An error occurred while sending message. Please try again later.');
-            console.log(error);
-          })
-          .finally(() => {
-            this.processing = false;
-          });
+      const payload = {
+        firstName: this.firstName,
+        lastName: this.lastName,
+        email: this.email,
+        edxActivationRoleCodes: this.edxActivationRoleCodes
+      };
+      let url = null;
+      if(this.instituteTypeCode === 'SCHOOL') {
+        payload.mincode = this.instituteCode;
+        payload.schoolName = this.schoolName;
+        url = `${Routes.edx.NEW_SCHOOL_USER_ACTIVATION_INVITE}`;
+      }else {
+        payload.districtName = this.districtName;
+        payload.districtCode = this.districts.get(this.instituteCode).districtNumber;
+        payload.districtId = this.instituteCode;
+        url = `${Routes.edx.NEW_DISTRICT_USER_ACTIVATION_INVITE}`;
       }
-
+      ApiService.apiAxios.post(url, payload)
+        .then(() => {
+          this.setSuccessAlert('Success! The request is being processed.');
+          this.messageSent();
+        })
+        .catch(error => {
+          this.setFailureAlert('An error occurred while sending message. Please try again later.');
+          console.log(error);
+        })
+        .finally(() => {
+          this.processing = false;
+        });
     },
   }
 };

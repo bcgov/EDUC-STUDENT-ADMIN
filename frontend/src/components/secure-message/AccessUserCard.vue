@@ -7,7 +7,7 @@
             <v-col>
               <v-row no-gutters>
                 <v-col cols="10">
-                  <strong>{{`${user.firstName} ${user.lastName}`}}</strong>
+                  <strong>{{ `${user.firstName} ${user.lastName}` }}</strong>
                 </v-col>
                 <v-col cols="2" class="d-flex justify-end">
                   <v-btn :id="`user-edit-button-${user.firstName}-${user.lastName}`"
@@ -49,7 +49,7 @@
               </v-row>
               <v-row no-gutters>
                 <v-col cols="12" class="pt-1">
-                  <span>{{user.email}}</span>
+                  <span>{{ user.email }}</span>
                 </v-col>
               </v-row>
               <v-row no-gutters>
@@ -59,7 +59,8 @@
             </v-col>
           </v-row>
         </v-card-title>
-        <v-card-text class="pt-2" :style="[editState ? {'background-color': '#e7ebf0'} : {'background-color': 'white'}]" >
+        <v-card-text class="pt-2"
+                     :style="[editState ? {'background-color': '#e7ebf0'} : {'background-color': 'white'}]">
           <v-chip-group v-if="!editState">
             <v-chip v-for="role in userRoles"
                     :key="role.edxRoleCode" disabled>
@@ -72,7 +73,8 @@
               v-else
               multiple
           >
-            <v-list-item :disabled="roleDisabled(newrole)" v-for="newrole in instituteRoles" :key="newrole.edxRoleCode" :value="newrole.edxRoleCode">
+            <v-list-item :disabled="roleDisabled(newrole)" v-for="newrole in instituteRoles" :key="newrole.edxRoleCode"
+                         :value="newrole.edxRoleCode">
               <template v-slot:default="{ active, }">
                 <v-list-item-action class="mt-0 mb-2 mr-3">
                   <v-checkbox
@@ -84,8 +86,11 @@
 
                 <v-list-item-content>
                   <v-list-item-title>{{ newrole.label }}</v-list-item-title>
-                  <div style="color: black; font-weight: bold" v-if="isEDXInstituteAdminSelected && newrole.edxRoleCode === edxInstituteAdminRole">EDX
-                    {{ instituteTypeLabel }} Admin users will be set up with all {{ instituteTypeLabel.toLowerCase() }} Roles</div>
+                  <div style="color: black; font-weight: bold"
+                       v-if="isEDXInstituteAdminSelected && newrole.edxRoleCode === edxInstituteAdminRole">EDX
+                    {{ instituteTypeLabel }} Admin users will be set up with all {{ instituteTypeLabel.toLowerCase() }}
+                    Roles
+                  </div>
                 </v-list-item-content>
               </template>
             </v-list-item>
@@ -95,13 +100,17 @@
           <v-card-text style="background-color: #e7ebf0;" v-if="deleteState">
             <v-row no-gutters>
               <v-col class="d-flex justify-center">
-                <span style="font-size: medium; font-weight: bold; color: black" >Are you sure you want to remove this users access for the {{ instituteTypeLabel.toLowerCase() }}?</span>
+                <span style="font-size: medium; font-weight: bold; color: black">Are you sure you want to remove this users access for the {{
+                    instituteTypeLabel.toLowerCase()
+                  }}?</span>
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col class="mt-0 d-flex justify-end">
-                <PrimaryButton width="5em" :id="`user-cancel-remove-button-${user.firstName}-${user.lastName}`" text="Cancel" class="mr-2" secondary :on="{click: clickDeleteButton}"></PrimaryButton>
-                <PrimaryButton :id="`user-remove-action-button-${user.firstName}-${user.lastName}`" text="Remove" @click.native="clickRemoveButton(user)" ></PrimaryButton>
+                <PrimaryButton width="5em" :id="`user-cancel-remove-button-${user.firstName}-${user.lastName}`"
+                               text="Cancel" class="mr-2" secondary :on="{click: clickDeleteButton}"></PrimaryButton>
+                <PrimaryButton :id="`user-remove-action-button-${user.firstName}-${user.lastName}`" text="Remove"
+                               @click.native="clickRemoveButton(user)"></PrimaryButton>
               </v-col>
             </v-row>
           </v-card-text>
@@ -120,8 +129,10 @@
             </v-row>
             <v-row no-gutters>
               <v-col class="mt-3 d-flex justify-end">
-                <PrimaryButton width="5em" :id="`user-cancel-relink-button-${user.firstName}-${user.lastName}`" text="Cancel" class="mr-2" secondary :on="{click: clickRelinkButton}"></PrimaryButton>
-                <PrimaryButton :id="`user-relink-action-button-${user.firstName}-${user.lastName}`" text="Re-Link" @click.native="clickActionRelinkButton(user)" ></PrimaryButton>
+                <PrimaryButton width="5em" :id="`user-cancel-relink-button-${user.firstName}-${user.lastName}`"
+                               text="Cancel" class="mr-2" secondary :on="{click: clickRelinkButton}"></PrimaryButton>
+                <PrimaryButton :id="`user-relink-action-button-${user.firstName}-${user.lastName}`" text="Re-Link"
+                               @click.native="clickActionRelinkButton(user)"></PrimaryButton>
               </v-col>
             </v-row>
           </v-card-text>
@@ -135,8 +146,10 @@
             </v-row>
             <v-row no-gutters>
               <v-col class="mt-0 d-flex justify-end">
-                <PrimaryButton width="5em" :id="`user-cancel-edit-button-${user.firstName}-${user.lastName}`" text="Cancel" class="mr-2" secondary :on="{click: clickEditButton}"></PrimaryButton>
-                <PrimaryButton :id="`user-save-action-button-${user.firstName}-${user.lastName}`" text="Save" :disabled="!minimumRolesSelected" :on="{click: clickSaveButton}"></PrimaryButton>
+                <PrimaryButton width="5em" :id="`user-cancel-edit-button-${user.firstName}-${user.lastName}`"
+                               text="Cancel" class="mr-2" secondary :on="{click: clickEditButton}"></PrimaryButton>
+                <PrimaryButton :id="`user-save-action-button-${user.firstName}-${user.lastName}`" text="Save"
+                               :disabled="!minimumRolesSelected" :on="{click: clickSaveButton}"></PrimaryButton>
               </v-col>
             </v-row>
           </v-card-text>
@@ -173,13 +186,13 @@ export default {
       type: String,
       required: true
     },
-    instituteTypeLabel:{
-      type:String,
-      required:true
+    instituteTypeLabel: {
+      type: String,
+      required: true
     },
-    instituteTypeCode:{
-      type:String,
-      required:true
+    instituteTypeCode: {
+      type: String,
+      required: true
     },
   },
   data() {
@@ -215,8 +228,8 @@ export default {
         return '7em';
       }
     },
-    getRoleLabel(curRole){
-      if(this.instituteRoles.length > 0) {
+    getRoleLabel(curRole) {
+      if (this.instituteRoles.length > 0) {
         return this.instituteRoles.find((role) => role.edxRoleCode === curRole.edxRoleCode).label;
       }
       return '';
@@ -238,84 +251,54 @@ export default {
       this.relinkState = !this.relinkState;
     },
     clickActionRelinkButton(userToRelink) {
-      if(this.instituteTypeCode === 'SCHOOL'){
-        let userSchool = userToRelink.edxUserSchools.find(school => school.mincode === this.instituteCode);
-        const payload = {params:
-              {
-                userToRelink: userToRelink.edxUserID,
-                mincode: this.instituteCode,
-                userSchoolID: userSchool.edxUserSchoolID
-              }
-        };
-        ApiService.apiAxios.post(Routes.edx.EXCHANGE_RELINK_USER, payload)
-          .then(()=> {
-            this.setSuccessAlert('User has been removed, email sent with instructions to re-link.');
-          }).catch(error => {
-            this.setFailureAlert('An error occurred while re-linking a user. Please try again later.');
-            console.log(error);
-          }).finally(() => {
-            this.$emit('refresh');
-          });
-      }else{
-        let userDistrict = userToRelink.edxUserDistricts.find(district => district.districtId === this.instituteCode);
-        const payload = {params:
-              {
-                userToRelink: userToRelink.edxUserID,
-                districtId: this.instituteCode,
-                edxUserDistrictID: userDistrict.edxUserDistrictID
-              }
-        };
-        ApiService.apiAxios.post(Routes.edx.EXCHANGE_RELINK_USER, payload)
-          .then(()=> {
-            this.setSuccessAlert('User has been removed, email sent with instructions to re-link.');
-          }).catch(error => {
-            this.setFailureAlert('An error occurred while re-linking a user. Please try again later.');
-            console.log(error);
-          }).finally(() => {
-            this.$emit('refresh');
-          });
+      const payload = {
+        params:{
+          userToRelink: userToRelink.edxUserID,
+        }
+      };
+      if (this.instituteTypeCode === 'SCHOOL') {
+        const userSchool = userToRelink.edxUserSchools.find(school => school.mincode === this.instituteCode);
+        payload.params.mincode = this.instituteCode;
+        payload.params.userSchoolID = userSchool.edxUserSchoolID;
+      } else {
+        const userDistrict = userToRelink.edxUserDistricts.find(district => district.districtId === this.instituteCode);
+        payload.params.districtId = this.instituteCode;
+        payload.params.edxUserDistrictID = userDistrict.edxUserDistrictID;
       }
-
+      ApiService.apiAxios.post(Routes.edx.EXCHANGE_RELINK_USER, payload)
+        .then(() => {
+          this.setSuccessAlert('User has been removed, email sent with instructions to re-link.');
+        }).catch(error => {
+          this.setFailureAlert('An error occurred while re-linking a user. Please try again later.');
+          console.log(error);
+        }).finally(() => {
+          this.$emit('refresh');
+        });
     },
     clickRemoveButton(userToRemove) {
-      if(this.instituteTypeCode === 'SCHOOL'){
-        let userSchool = userToRemove.edxUserSchools.find(school => school.mincode === this.instituteCode);
-        const payload = {params:
-              {
-                userToRemove: userToRemove.edxUserID,
-                mincode: this.instituteCode,
-                userSchoolID: userSchool.edxUserSchoolID
-              }
-        };
-        ApiService.apiAxios.post(Routes.edx.EXCHANGE_REMOVE_USER, payload)
-          .then(()=> {
-            this.setSuccessAlert('User has been removed.');
-          }).catch(error => {
-            this.setFailureAlert('An error occurred while removing a user. Please try again later.');
-            console.log(error);
-          }).finally(() => {
-            this.$emit('refresh');
-          });
-      }else{
-        let userDistrict = userToRemove.edxUserDistricts.find(district => district.districtId === this.instituteCode);
-        const payload = {params:
-              {
-                userToRemove: userToRemove.edxUserID,
-                districtId: this.instituteCode,
-                edxUserDistrictID: userDistrict.edxUserDistrictID
-              }
-        };
-        ApiService.apiAxios.post(Routes.edx.EXCHANGE_REMOVE_USER, payload)
-          .then(()=> {
-            this.setSuccessAlert('User has been removed.');
-          }).catch(error => {
-            this.setFailureAlert('An error occurred while removing a user. Please try again later.');
-            console.log(error);
-          }).finally(() => {
-            this.$emit('refresh');
-          });
+      const payload = {
+        params:{
+          userToRemove: userToRemove.edxUserID,
+        }
+      };
+      if (this.instituteTypeCode === 'SCHOOL') {
+        const userSchool = userToRemove.edxUserSchools.find(school => school.mincode === this.instituteCode);
+        payload.params.mincode = this.instituteCode;
+        payload.params.userSchoolID = userSchool.edxUserSchoolID;
+      } else {
+        const userDistrict = userToRemove.edxUserDistricts.find(district => district.districtId === this.instituteCode);
+        payload.params.districtId = this.instituteCode;
+        payload.params.edxUserDistrictID = userDistrict.edxUserDistrictID;
       }
-
+      ApiService.apiAxios.post(Routes.edx.EXCHANGE_REMOVE_USER, payload)
+        .then(() => {
+          this.setSuccessAlert('User has been removed.');
+        }).catch(error => {
+          this.setFailureAlert('An error occurred while removing a user. Please try again later.');
+          console.log(error);
+        }).finally(() => {
+          this.$emit('refresh');
+        });
     },
     clickSaveButton() {
       if (!this.minimumRolesSelected) {
@@ -323,46 +306,29 @@ export default {
         return;
       }
       this.editState = !this.editState;
-      if(this.instituteTypeCode === 'SCHOOL'){
-        const payload = {params:
-              {
-                edxUserID: this.user.edxUserID,
-                mincode: this.instituteCode,
-                selectedRoles: this.selectedRoles
-              }
-        };
-        ApiService.apiAxios.post(Routes.edx.EXCHANGE_ACCESS_ROLES_URL, payload)
-          .then(()=> {
-            this.setSuccessAlert('User roles have been updated.');
-          }).catch(error => {
-            this.setFailureAlert('An error occurred while updating user roles. Please try again later.');
-            console.log(error);
-          }).finally(() => {
-            this.$emit('refresh');
-          });
-      }else{
-        const payload = {params:
-              {
-                edxUserID: this.user.edxUserID,
-                districtId: this.instituteCode,
-                selectedRoles: this.selectedRoles
-              }
-        };
-        ApiService.apiAxios.post(Routes.edx.EXCHANGE_ACCESS_ROLES_URL, payload)
-          .then(()=> {
-            this.setSuccessAlert('User roles have been updated.');
-          }).catch(error => {
-            this.setFailureAlert('An error occurred while updating user roles. Please try again later.');
-            console.log(error);
-          }).finally(() => {
-            this.$emit('refresh');
-          });
+      const payload = {
+        params: {
+          edxUserID: this.user.edxUserID,
+          selectedRoles: this.selectedRoles
+        }
+      };
+      if (this.instituteTypeCode === 'SCHOOL') {
+        payload.params.mincode = this.instituteCode;
+      } else {
+        payload.params.districtId = this.instituteCode;
       }
-
+      ApiService.apiAxios.post(Routes.edx.EXCHANGE_ACCESS_ROLES_URL, payload)
+        .then(() => {
+          this.setSuccessAlert('User roles have been updated.');
+        }).catch(error => {
+          this.setFailureAlert('An error occurred while updating user roles. Please try again later.');
+          console.log(error);
+        }).finally(() => {
+          this.$emit('refresh');
+        });
     },
     setUserRolesAsSelected() {
       let mySelection = [];
-
       //look through all our roles. If user has this role, then mark the index
       this.instituteRoles.forEach((role) => {
         let result = this.userRoles.find((userRole) =>
@@ -384,8 +350,8 @@ export default {
     minimumRolesSelected() {
       return this.selectedRoles.length > 0;
     },
-    edxInstituteAdminRole(){
-      if(this.instituteTypeCode=== 'SCHOOL'){
+    edxInstituteAdminRole() {
+      if (this.instituteTypeCode === 'SCHOOL') {
         return 'EDX_SCHOOL_ADMIN';
       }
       return 'EDX_DISTRICT_ADMIN';
@@ -398,9 +364,11 @@ export default {
 .bounce-enter-active {
   animation: bounce-in 0.2s;
 }
+
 .bounce-leave-active {
   animation: bounce-in 0.1s reverse;
 }
+
 @keyframes bounce-in {
   0% {
     transform: scale(0);
