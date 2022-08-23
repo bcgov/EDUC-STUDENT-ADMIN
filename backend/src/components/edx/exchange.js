@@ -377,7 +377,7 @@ async function markAsClosed(req, res) {
 
 async function getEdxUsers(req, res) {
   const token = utils.getBackendToken(req);
-  if (!token) {
+  if (!token && !req.session.roles.includes('EDX_ADMIN')) {
     return res.status(HttpStatus.UNAUTHORIZED).json({
       message: 'No access token'
     });
@@ -414,7 +414,7 @@ async function getEdxUsers(req, res) {
 
 async function findPrimaryEdxActivationCode(req, res) {
   const token = utils.getBackendToken(req);
-  if (!token) {
+  if (!token && !req.session.roles.includes('EDX_ADMIN')) {
     return res.status(HttpStatus.UNAUTHORIZED).json({
       message: 'No access token'
     });
@@ -669,7 +669,7 @@ async function removeUserSchoolAccess(req, res) {
   try {
     const token = utils.getBackendToken(req);
 
-    if(!req.session.roles.includes('EDX_SCHOOL_ADMIN')){
+    if(!req.session.roles.includes('EDX_ADMIN')){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         status: HttpStatus.UNAUTHORIZED,
         message: 'You are not authorized to access this page'
