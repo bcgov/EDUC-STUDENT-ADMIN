@@ -132,7 +132,7 @@
                 </v-textarea>
               </v-card-text>
               <v-row class="py-4 justify-end pt-0 pr-16 mr-10 ml-7 pl-16">
-                <MacroMenu id="newMessageMacroSelector" :macros="messageMacros" @select="insertMacroMessage" />
+                <MacroMenu id="newMessageMacroSelector"  small :macros="messageMacros" menuMaxWidth="25%" @select="insertMacroMessage" />
                 <v-spacer></v-spacer>
                 <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2" @click.native="hideNewMessagePanel"></PrimaryButton>
                 <PrimaryButton id="newMessagePostBtn" text="Send" width="8rem" :disabled="!newMessage" :loading="processing" @click.native="sendNewExchangeComment"></PrimaryButton>
