@@ -115,49 +115,53 @@
                 </v-btn>
               </v-col>
             </v-row>
-            <v-row v-if="isNewMessageDisplayed">
-              <v-card-text id="newMessageCardText" class="pb-0 pt-5 pl-16 ml-10 pr-16 mr-10">
-                <v-textarea id="newMessageToConvTextArea"
-                            outlined
-                            solo
-                            label="New Message..."
-                            auto-grow
-                            v-model="newMessage"
-                            rows="8"
-                            maxlength="4000"
-                            class="pt-0"
-                            ref="newMessageToConvTextArea"
-                            @input="replaceMessageMacro"
-                >
-                </v-textarea>
-              </v-card-text>
-              <v-row class="py-4 justify-end pt-0 pr-16 mr-10 ml-7 pl-16">
-                <MacroMenu id="newMessageMacroSelector"  small :macros="messageMacros" menuMaxWidth="25%" @select="insertMacroMessage" />
-                <v-spacer></v-spacer>
-                <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2" @click.native="hideNewMessagePanel"></PrimaryButton>
-                <PrimaryButton id="newMessagePostBtn" text="Send" width="8rem" :disabled="!newMessage" :loading="processing" @click.native="sendNewExchangeComment"></PrimaryButton>
+            <v-expand-transition>
+              <v-row v-if="isNewMessageDisplayed">
+                <v-card-text id="newMessageCardText" class="pb-0 pt-5 pl-16 ml-10 pr-16 mr-10">
+                  <v-textarea id="newMessageToConvTextArea"
+                              outlined
+                              solo
+                              label="New Message..."
+                              auto-grow
+                              v-model="newMessage"
+                              rows="8"
+                              maxlength="4000"
+                              class="pt-0"
+                              ref="newMessageToConvTextArea"
+                              @input="replaceMessageMacro"
+                  >
+                  </v-textarea>
+                </v-card-text>
+                <v-row class="py-4 justify-end pt-0 pr-16 mr-10 ml-7 pl-16">
+                  <MacroMenu id="newMessageMacroSelector"  small :macros="messageMacros" menuMaxWidth="25%" @select="insertMacroMessage" />
+                  <v-spacer></v-spacer>
+                  <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2" @click.native="hideNewMessagePanel"></PrimaryButton>
+                  <PrimaryButton id="newMessagePostBtn" text="Send" width="8rem" :disabled="!newMessage" :loading="processing" @click.native="sendNewExchangeComment"></PrimaryButton>
+                </v-row>
               </v-row>
-            </v-row>
-            <v-row v-if="isNewNoteDisplayed">
-              <v-card-text id="newNoteCardText" class="pb-0 pt-5 pl-16 ml-10 pr-16 mr-10">
-                <v-textarea id="newNoteToConvTextArea"
-                            outlined
-                            solo
-                            label="New Note..."
-                            auto-grow
-                            v-model="newNote"
-                            rows="8"
-                            maxlength="4000"
-                            class="pt-0"
-                            ref="newNoteToConvTextArea"
-                >
-                </v-textarea>
-              </v-card-text>
-              <v-row class="py-4 justify-end pt-0 pr-16 mr-10">
-                <PrimaryButton id="cancelNote" secondary text="Cancel" class="mr-2" @click.native="hideNewNotePanel"></PrimaryButton>
-                <PrimaryButton id="newNotePostBtn" text="Save" width="8rem" :disabled="!newNote" :loading="processing" @click.native="sendNewExchangeNote"></PrimaryButton>
+            </v-expand-transition>
+            <v-expand-transition>
+              <v-row v-if="isNewNoteDisplayed">
+                <v-card-text id="newNoteCardText" class="pb-0 pt-5 pl-16 ml-10 pr-16 mr-10">
+                  <v-textarea id="newNoteToConvTextArea"
+                              outlined
+                              solo
+                              label="New Note..."
+                              auto-grow
+                              v-model="newNote"
+                              rows="8"
+                              maxlength="4000"
+                              class="pt-0"
+                              ref="newNoteToConvTextArea"
+                  >
+                  </v-textarea>
+                </v-card-text>
+                <v-row class="py-4 justify-end pt-0 pr-16 mr-10">
+                  <PrimaryButton id="cancelNote" secondary text="Cancel" class="mr-2" @click.native="hideNewNotePanel"></PrimaryButton>
+                  <PrimaryButton id="newNotePostBtn" text="Save" width="8rem" :disabled="!newNote" :loading="processing" @click.native="sendNewExchangeNote"></PrimaryButton>
+                </v-row>
               </v-row>
-            </v-row>
+            </v-expand-transition>
             <v-row no-gutters>
               <v-col class="d-flex justify-center">
                 <v-expand-transition>
@@ -172,12 +176,16 @@
                 </v-expand-transition>
               </v-col>
             </v-row>
-            <v-row v-if="isNewStudentDisplayed">
-              <v-col class="d-flex justify-center">
-                <AddStudent @addStudent="sendNewSecureExchangeStudent" @close:form="hideStudentPanel" :mincode="secureExchange.contactIdentifier" :additionalStudentAddWarning="addStudentWarningMessage" @updateAdditionalStudentAddWarning="updateAddStudentWarningMessage">
-                </AddStudent>
-              </v-col>
-            </v-row>
+            <v-expand-transition>
+              <v-row v-if="isNewStudentDisplayed">
+                <v-col class="d-flex justify-center">
+
+                    <AddStudent @addStudent="sendNewSecureExchangeStudent" @close:form="hideStudentPanel" :mincode="secureExchange.contactIdentifier" :additionalStudentAddWarning="addStudentWarningMessage" @updateAdditionalStudentAddWarning="updateAddStudentWarningMessage">
+                    </AddStudent>
+
+                </v-col>
+              </v-row>
+            </v-expand-transition>
             <v-row>
               <v-col>
                 <v-timeline v-if="secureExchange.activities.length > 0">
