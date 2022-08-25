@@ -420,7 +420,7 @@ async function findPrimaryEdxActivationCode(req, res) {
     });
   }
   try {
-    const data = await getData(token, `${config.get('server:edx:activationCodeUrl')}/primary/${req.params.instituteType}/${req.params.instituteIdentifier}`);
+    const data = await getData(token, `${config.get('server:edx:activationCodeUrl')}/primary/${req.params.instituteType.toUpperCase()}/${req.params.instituteIdentifier}`);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
     if (e.status === 404) {
@@ -435,10 +435,12 @@ async function generateOrRegeneratePrimaryEdxActivationCode(req, res) {
   try {
     const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
+    const instituteType = req.params.instituteType.toUpperCase();
     const payload = {
-      mincode: req.params.mincode
+      mincode: instituteType === 'SCHOOL' ? req.params.instituteIdentifier : null,
+      districtCode: instituteType === 'DISTRICT' ? req.params.instituteIdentifier : null
     };
-    const result = await utils.postData(token, `${config.get('server:edx:activationCodeUrl')}/primary/${req.params.instituteType}/${req.params.instituteIdentifier}`, payload, null, userInfo.idir_username);
+    const result = await utils.postData(token, `${config.get('server:edx:activationCodeUrl')}/primary/${instituteType}/${req.params.instituteIdentifier}`, payload, null, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'generateOrRegeneratePrimaryEdxActivationCode', 'Error occurred while attempting to generate a Primary EDX Activation Code.');
