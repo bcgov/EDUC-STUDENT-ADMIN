@@ -371,7 +371,7 @@ export default {
       pageSize: 15,
       totalRequests: 0,
       itemsPerPageOptions: [15],
-      loadingTable: false,
+      loadingTableCount: 0,
       dateMenu: false,
       headerSearchParams: {
         sequenceNumber: '',
@@ -415,6 +415,9 @@ export default {
     },
     myself() {
       return { name: this.userInfo.userName, id: this.userInfo.userGuid };
+    },
+    loadingTable() {
+      return this.loadingTableCount !== 0;
     },
   },
   created() {
@@ -547,7 +550,7 @@ export default {
       return content;
     },
     getLatestComment(item){
-      var content = item.commentsList.reduce((a, b) => (a.createDate > b.createDate ? a : b)).content;
+      const content = item.commentsList.reduce((a, b) => (a.createDate > b.createDate ? a : b)).content;
       if(content.length > 25){
         switch (this.$vuetify.breakpoint.name) {
         case 'xs':
@@ -570,8 +573,8 @@ export default {
       this.getExchanges();
     },
     claimExchanges() {
-      this.loadingTable = true;
-      var selected = this.selectedExchanges.map(({ secureExchangeID }) => secureExchangeID);
+      this.loadingTableCount += 1;
+      const selected = this.selectedExchanges.map(({ secureExchangeID }) => secureExchangeID);
       const payload = {
         secureExchangeIDs: selected,
       };
@@ -582,15 +585,15 @@ export default {
           this.selectedExchanges = [];
         })
         .catch(error => {
+          console.error(error);
           this.setFailureAlert('An error occurred while claiming exchanges. Please try again later.');
-          console.log(error);
         })
         .finally(() => {
-          this.loadingTable = false;
+          this.loadingTableCount -= 1;
         });
     },
     getExchanges() {
-      this.loadingTable = true;
+      this.loadingTableCount += 1;
       this.exchanges = [];
       const sort = {
         createDate: 'DESC'
@@ -624,10 +627,10 @@ export default {
           this.totalRequests = response.data.totalElements;
         }
       }).catch(error => {
-        //to do add the alert framework for error or success
         console.error(error);
+        this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get a list of Secure Exchanges. Please try again later.');
       }).finally(() => {
-        this.loadingTable = false;
+        this.loadingTableCount -= 1;
       });
     },
     openExchange(exchangeID) {
