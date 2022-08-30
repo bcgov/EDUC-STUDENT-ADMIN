@@ -15,6 +15,7 @@ const penMatchRoot = baseRoot + '/penMatches';
 const macroRoot = baseRoot + '/macros';
 const nominalRollRoot= baseRoot+'/nominal-roll';
 const edxRoot= baseRoot+'/edx';
+const instituteRoot = baseRoot + '/institute';
 
 let object = {
   LOGIN: authRoot + '/login',
@@ -92,6 +93,10 @@ let object = {
   },
   SCHOOL_DATA_URL: schoolRequestRoot,
   DISTRICT_DATA_URL: districtRequestRoot,
+  institute: {
+    ROOT_ENDPOINT: instituteRoot,
+    SCHOOL_DATA_URL: instituteRoot + '/school'
+  },
   penServices: {
     ROOT_ENDPOINT: penServicesRoot,
     VALIDATE_DEMOGRAPHICS: penServicesRoot + '/demog-validation',

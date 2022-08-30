@@ -13,6 +13,7 @@ export default {
     pageTitle: null,
     stickyInfoPanelHeight: null,
     mincodeSchoolNames: new Map(),
+    schoolIdToMincodeSchoolNamesMap: new Map(),
     districts : new Map(),
     districtCodes: new Set(),
     alertNotificationText: '',
@@ -58,8 +59,10 @@ export default {
     },
     setMincodeSchoolNameAndDistrictCodes(state, mincodeSchoolNameList) {
       state.mincodeSchoolNames = new Map();
+      state.schoolIdToMincodeSchoolNamesMap = new Map();
       mincodeSchoolNameList.forEach(element => {
         state.mincodeSchoolNames.set(element.mincode, element.schoolName);
+        state.schoolIdToMincodeSchoolNamesMap.set(element.schoolId, {...element});
         state.districtCodes.add(element.mincode?.substring(0, 3));
       });
     },
