@@ -136,7 +136,7 @@
                   <MacroMenu id="newMessageMacroSelector"  small :macros="messageMacros" menuMaxWidth="25%" @select="insertMacroMessage" />
                   <v-spacer></v-spacer>
                   <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2" @click.native="hideNewMessagePanel"></PrimaryButton>
-                  <PrimaryButton id="newMessagePostBtn" text="Send" width="8rem" :disabled="!newMessage" :loading="processing" @click.native="sendNewExchangeComment"></PrimaryButton>
+                  <PrimaryButton id="newMessagePostBtn" text="Send" width="8rem" :disabled="!newMessage" :loading="loading" @click.native="sendNewExchangeComment"></PrimaryButton>
                 </v-row>
               </v-row>
             </v-expand-transition>
@@ -158,7 +158,7 @@
                 </v-card-text>
                 <v-row class="py-4 justify-end pt-0 pr-16 mr-10">
                   <PrimaryButton id="cancelNote" secondary text="Cancel" class="mr-2" @click.native="hideNewNotePanel"></PrimaryButton>
-                  <PrimaryButton id="newNotePostBtn" text="Save" width="8rem" :disabled="!newNote" :loading="processing" @click.native="sendNewExchangeNote"></PrimaryButton>
+                  <PrimaryButton id="newNotePostBtn" text="Save" width="8rem" :disabled="!newNote" :loading="loading" @click.native="sendNewExchangeNote"></PrimaryButton>
                 </v-row>
               </v-row>
             </v-expand-transition>
@@ -426,8 +426,8 @@ export default {
   },
   data() {
     return {
+      loadingCount: 0,
       secureExchange: null,
-      loading: true,
       loadingReadStatus: false,
       editOptionsOpen: false,
       assignedMinistryTeam: null,
@@ -438,7 +438,6 @@ export default {
       isNewNoteDisplayed: false,
       newMessageBtnDisplayed: false,
       shouldDisplaySpeedDial: true,
-      processing: false,
       newMessage:'',
       mincode: null,
       isOpenDocIndex: false,
@@ -457,7 +456,10 @@ export default {
   },
   computed: {
     ...mapState('auth', ['userInfo']),
-    ...mapGetters('edx', ['messageMacros'])
+    ...mapGetters('edx', ['messageMacros']),
+    loading() {
+      return this.loadingCount !== 0;
+    }
   },
   created() {
     this.getExchange(true);
@@ -467,8 +469,8 @@ export default {
     ...mapActions('edx', ['getMacros']),
     async upload(document) {
       try {
+        this.loadingCount += 1;
         this.items = undefined;
-        this.loading = true;
         await ApiService.apiAxios.post(this.documentRoute + '/' + this.secureExchangeID + '/documents', document);
         this.setSuccessAlert('Your document was uploaded successfully.');
         this.getExchange();
@@ -476,8 +478,8 @@ export default {
         console.error(e);
         this.setFailureAlert(e.response?.data?.message || e.message);
       } finally {
+        this.loadingCount -= 1;
         this.dialog = false;
-        this.loading = false;
       }
     },
     documentUrl(document) {
@@ -504,7 +506,7 @@ export default {
       this.shouldDisplaySpeedDial = true;
     },
     getExchange(initialLoad = false) {
-      this.loading = true;
+      this.loadingCount += 1;
       ApiService.apiAxios.get(this.documentRoute + `/${this.secureExchangeID}`)
         .then(response => {
           //Always set secure exchange as read by ministry if this is the first load
@@ -515,10 +517,11 @@ export default {
           }
         })
         .catch(error => {
-          console.log(error);
+          console.error(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while getting the details of the Secure Exchange. Please try again later.');
         })
         .finally(() => {
-          this.loading = false;
+          this.loadingCount -= 1;
         });
     },
     toggleIsReadByMinistry() {
@@ -580,7 +583,7 @@ export default {
       this.newMessage = '';
     },
     sendNewExchangeComment() {
-      this.processing = true;
+      this.loadingCount += 1;
       const payload = {
         content: this.newMessage,
         mincode: this.secureExchange.contactIdentifier,
@@ -597,10 +600,10 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          this.setFailureAlert('An error occurred while sending message. Please try again later.');
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while adding the message to the Secure Exchange. Please try again later.');
         })
         .finally(() => {
-          this.processing = false;
+          this.loadingCount -= 1;
           this.resetNewMessageForm();
         });
     },
@@ -611,12 +614,13 @@ export default {
           this.secureExchange = response.data;
         })
         .catch(error => {
-          console.log(error);
+          console.error(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to close the Secure Exchange. Please try again later.');
         })
         .finally(() => {
           this.loadingReadStatus = false;
+          router.push({name: `exchange_inbox_${this.secureExchange.ministryOwnershipGroupRoleIdentifier}`});
         });
-      router.push({name: `exchange_inbox_${this.secureExchange.ministryOwnershipGroupRoleIdentifier}`});
     },
     isClaimable(){
       return this.secureExchange.reviewer === '' || this.secureExchange.reviewer !== this.userInfo.userName;
@@ -640,7 +644,8 @@ export default {
           }
         })
         .catch(error => {
-          console.log(error);
+          console.error(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to claim the Secure Exchange. Please try again later.');
         })
         .finally(() => {
           this.loadingReadStatus = false;
@@ -705,8 +710,7 @@ export default {
       router.push(`/student/${student.studentID}`);
     },
     sendNewSecureExchangeStudent(student) {
-      this.processing = true;
-      this.loading = true;
+      this.loadingCount += 1;
       const payload = {
         secureExchangeID: this.secureExchangeID,
         studentID: student.studentID
@@ -721,53 +725,48 @@ export default {
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while adding the student to the Secure Exchange. Please try again later.');
         })
         .finally(() => {
-          this.processing = false;
-          this.loading = false;
+          this.loadingCount -= 1;
           this.isNewStudentDisplayed = false;
         });
     },
     removeAttachment(documentID) {
-      this.processing = true;
-      this.loading = true;
-
+      this.loadingCount += 1;
       ApiService.apiAxios.put(this.documentRoute + `/${this.secureExchangeID}/removeDoc/${documentID}`)
         .then((response) => {
           this.getExchange();
           if(response.status === 200){
             this.setSuccessAlert('Success! The document has been removed.');
           } else{
-            this.setSuccessAlert('Error! The document was not removed.');
+            this.setFailureAlert('Error! The document was not removed.');
           }
           this.closeDocIndex();
         })
         .catch(error => {
-          console.log(error);
+          console.error(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to remove the attachment from the Secure Exchange. Please try again later.');
         })
         .finally(() => {
-          this.processing = false;
-          this.loading = false;
+          this.loadingCount -= 1;
         });
     },
     removeStudent(studentID) {
-      this.processing = true;
-      this.loading = true;
-
+      this.loadingCount += 1;
       ApiService.apiAxios.put(`${Routes.edx.EXCHANGE_URL}/${this.secureExchangeID}/removeStudent/${studentID}`)
         .then((response) => {
           this.getExchange();
           if(response.status === 200){
             this.setSuccessAlert('Success! The student has been removed.');
           } else{
-            this.setSuccessAlert('Error! The student was not removed.');
+            this.setFailureAlert('Error! The student was not removed.');
           }
           this.closeStudentIndex();
         })
         .catch(error => {
-          console.log(error);
+          console.error(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to remove the student from the Secure Exchange. Please try again later.');
         })
         .finally(() => {
-          this.processing = false;
-          this.loading = false;
+          this.loadingCount -= 1;
           this.closeStudentIndex();
         });
     },
@@ -777,10 +776,7 @@ export default {
         this.closeNoteIndex();
         return;
       }
-
-      this.processing = true;
-      this.loading = true;
-
+      this.loadingCount += 1;
       ApiService.apiAxios.put(`${Routes.edx.EXCHANGE_URL}/${this.secureExchangeID}/removeNote/${note.secureExchangeNoteID}`)
         .then(() => {
           this.getExchange();
@@ -788,12 +784,11 @@ export default {
           this.closeNoteIndex();
         })
         .catch(error => {
-          this.setFailureAlert('Error! The note was not removed.');
-          console.log(error);
+          console.error(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to remove the note from the Secure Exchange. Please try again later.');
         })
         .finally(() => {
-          this.processing = false;
-          this.loading = false;
+          this.loadingCount -= 1;
         });
     },
     showDocModal(document){
@@ -829,7 +824,7 @@ export default {
       this.newNote = '';
     },
     sendNewExchangeNote() {
-      this.processing = true;
+      this.loadingCount += 1;
       const payload = {
         content: this.newNote,
       };
@@ -840,10 +835,10 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          this.setFailureAlert('An error occurred while adding note. Please try again later.');
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while adding the note to the Secure Exchange. Please try again later.');
         })
         .finally(() => {
-          this.processing = false;
+          this.loadingCount -= 1;
           this.hideNewNotePanel();
         });
     },
