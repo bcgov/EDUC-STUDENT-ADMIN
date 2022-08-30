@@ -13,7 +13,7 @@ export default {
     pageTitle: null,
     stickyInfoPanelHeight: null,
     mincodeSchoolNames: new Map(),
-    schoolIdToMincodeSchoolNamesMap: new Map(),
+    schoolMap: new Map(),
     districts : new Map(),
     districtCodes: new Set(),
     alertNotificationText: '',
@@ -30,6 +30,7 @@ export default {
     participants: state => state.participants,
     requestType: state => state.requestType,
     requestTypeLabel: state => state.requestTypeLabel,
+    schoolMap: state => state.schoolMap,
   },
   mutations: {
     setRequest: (state, request) => {
@@ -59,10 +60,10 @@ export default {
     },
     setMincodeSchoolNameAndDistrictCodes(state, mincodeSchoolNameList) {
       state.mincodeSchoolNames = new Map();
-      state.schoolIdToMincodeSchoolNamesMap = new Map();
+      state.schoolMap = new Map();
       mincodeSchoolNameList.forEach(element => {
         state.mincodeSchoolNames.set(element.mincode, element.schoolName);
-        state.schoolIdToMincodeSchoolNamesMap.set(element.schoolId, {...element});
+        state.schoolMap.set(element.schoolId, {...element});
         state.districtCodes.add(element.mincode?.substring(0, 3));
       });
     },

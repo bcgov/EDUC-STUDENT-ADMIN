@@ -20,7 +20,7 @@
                           id='schoolNameTxtField'
                           label="To"
                           class="pt-0"
-                          v-model="mincode"
+                          v-model="schoolId"
                           :items="schools"
                           :rules="requiredRules"
                           @change="onSchoolSelected"
@@ -120,7 +120,7 @@
                           v-show="expandAddStudent"
                           @close:form="showOptions"
                           @addStudent="addSecureExchangeStudent"
-                          :mincode="this.mincode"
+                          :mincode="getMincode()"
                           :additionalStudentAddWarning="additionalStudentAddWarningMessage"
                           @updateAdditionalStudentAddWarning="updateAdditionalStudentAddWarning"
                       >
@@ -169,16 +169,10 @@ export default {
     DocumentUpload,
     MacroMenu
   },
-  props: {
-    mincodeSchoolNames: {
-      type: Map,
-      required: true
-    },
-  },
   data() {
     return {
       newMessage: '',
-      mincode: '',
+      schoolId: '',
       subject: '',
       requiredRules: [v => !!v?.trim() || 'Required'],
       isValidForm: false,
@@ -196,13 +190,13 @@ export default {
   computed: {
     ...mapState('auth', ['userInfo']),
     ...mapState('edx', ['ministryTeams', 'exchangeMincodes', 'secureExchangeDocuments','secureExchangeStudents']),
+    ...mapGetters('app', ['schoolMap']),
     ...mapGetters('edx', ['messageMacros']),
     myTeam() {
       return this.ministryTeams.find(team => this.userInfo.userRoles.some(role => team.groupRoleIdentifier === role)) || {};
     },
     schools() {
-      const schoolNames = Array.from(this.mincodeSchoolNames.entries()).filter(entry => this.exchangeMincodes.some(mincode => entry[0] === mincode));
-      return _.sortBy(schoolNames.map(school => ({ text: `${school[1]} (${school[0]})`, value: school[0]})), ['text']);
+      return _.sortBy(Array.from(this.schoolMap.entries()).map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolId, mincode: school[1].mincode})), ['mincode']);
     },
   },
   created() {
@@ -218,7 +212,7 @@ export default {
     },
     messageSent(){
       this.subject = '';
-      this.mincode = null;
+      this.schoolId = null;
       this.newMessage = '';
       this.requiredRules = [v => !!v?.trim() || 'Required'];
       this.penRules = [v => (!v || isValidPEN(v)) || this.penHint];
@@ -238,14 +232,14 @@ export default {
       this.processing = true;
       const payload = {
         secureExchangeContactTypeCode: 'SCHOOL',
-        contactIdentifier: this.mincode,
+        contactIdentifier: this.schoolId,
         ministryOwnershipTeamID: this.myTeam.ministryOwnershipTeamId,
         subject: this.subject,
         content: this.newMessage,
         secureExchangeDocuments: this.secureExchangeDocuments,
         ministryTeamName : this.myTeam.teamName,
-        mincode: this.mincode,
-        schoolName: this.mincodeSchoolNames.get(this.mincode),
+        schoolId: this.schoolId,
+        schoolName: this.mincodeSchoolNames.get(this.schoolId),
         secureExchangeStudents: this.secureExchangeStudents
       };
       ApiService.apiAxios.post(`${Routes['edx'].EXCHANGE_URL}`, payload)
@@ -303,7 +297,7 @@ export default {
       this.$store.commit('edx/setSecureExchangeStudents', []);
     },
     onSchoolSelected(){
-      if(this.mincode){
+      if(this.schoolId){
         this.disableAddStudent = false;
       }else{
         this.disableAddStudent = true;
@@ -314,6 +308,9 @@ export default {
     },
     insertMacroMessage(macroText) {
       this.newMessage = insertMacro(macroText, this.newMessage, this.$refs.newMessageTextArea.$refs.input);
+    },
+    getMincode() {
+      return this.schoolMap.get(this.schoolId)?.mincode || '';
     },
   }
 };
