@@ -7,6 +7,7 @@ const retry = require('async-retry');
 
 let mincodeSchoolMap = new Map();
 let mincodeSchools = [];
+let schoolMap = new Map();
 let districts = [];
 let districtsMap = new Map();
 
@@ -33,6 +34,7 @@ const cacheService = {
             expiryDate: school.closedDate,
           };
           mincodeSchoolMap.set(school.mincode, mincodeSchool);
+          schoolMap.set(school.schoolId, mincodeSchool);
           mincodeSchools.push(mincodeSchool);
         }
       }
@@ -47,6 +49,9 @@ const cacheService = {
   },
   getSchoolNameJSONByMincode(mincode) {
     return mincodeSchoolMap.get(mincode);
+  },
+  getSchoolBySchoolId(schoolId) {
+    return schoolMap.get(schoolId);
   },
   async loadAllDistrictsToMap() {
     log.debug('loading all districts during start up');

@@ -160,7 +160,7 @@ async function getExchange(req, res) {
   ])
     .then(async ([statusCodeResponse, ministryTeamCodeResponse, dataResponse]) => {
 
-      let school = cacheService.getSchoolNameJSONByMincode(dataResponse['contactIdentifier']);
+      let school = cacheService.getSchoolBySchoolId(dataResponse['contactIdentifier']);
 
       if (dataResponse['secureExchangeStatusCode']) {
         let tempStatus = statusCodeResponse.find(codeStatus => codeStatus['secureExchangeStatusCode'] === dataResponse['secureExchangeStatusCode']);
@@ -218,7 +218,7 @@ async function getExchange(req, res) {
           activity['isSchool'] = student.edxUserID ? true : false;
           activity['studentID'] = student.studentId;
           activity['secureExchangeStudentId'] = student.secureExchangeStudentId;
-          activity['mincode'] = studentDetail.mincode;
+          activity['schoolId'] = studentDetail.schoolId;
           activity['studentPEN'] = studentDetail.pen;
           activity['studentLocalID'] = studentDetail.localID;
           activity['studentSurname'] = studentDetail.legalLastName;
@@ -304,7 +304,7 @@ async function createExchange(req, res) {
     const payload ={
       secureExchangeCreate,
       ministryTeamName : message.ministryTeamName,
-      mincode: message.mincode,
+      schoolId: message.schoolId,
       schoolName: message.schoolName
     };
 
@@ -386,13 +386,13 @@ async function getEdxUsers(req, res) {
   try {
     let response = await getData(token, config.get('server:edx:edxUsersURL'), {params: req.query});
     let filteredResponse = [];
-    //if we search by mincode strip out other school and district information for the frontend
-    if (req.query.mincode) {
+    //if we search by school strip out other school and district information for the frontend
+    if (req.query.schoolId) {
       filteredResponse = response.map(user => {
         return {
           ...user,
           edxUserDistricts: [],
-          edxUserSchools: user.edxUserSchools.filter(school => school.mincode === req.query.mincode)
+          edxUserSchools: user.edxUserSchools.filter(school => school.schoolId === req.query.schoolId)
         };
       });
     }else if(req.query.districtCode){
@@ -437,8 +437,8 @@ async function generateOrRegeneratePrimaryEdxActivationCode(req, res) {
     const userInfo = utils.getUser(req);
     const instituteType = req.params.instituteType.toUpperCase();
     const payload = {
-      mincode: instituteType === 'SCHOOL' ? req.params.instituteIdentifier : null,
-      districtCode: instituteType === 'DISTRICT' ? req.params.instituteIdentifier : null
+      schoolID: instituteType === 'SCHOOL' ? req.params.instituteIdentifier : null,
+      districtID: instituteType === 'DISTRICT' ? req.params.instituteIdentifier : null
     };
     const result = await utils.postData(token, `${config.get('server:edx:activationCodeUrl')}/primary/${instituteType}/${req.params.instituteIdentifier}`, payload, null, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
@@ -494,7 +494,7 @@ async function updateEdxUserRoles(req, res) {
     const userInfo = utils.getUser(req);
     let response = await getData(token, config.get('server:edx:edxUsersURL') + '/' + req.body.params.edxUserID);
 
-    let selectedUserSchool = response.edxUserSchools.filter(school => school.mincode === req.body.params.mincode);
+    let selectedUserSchool = response.edxUserSchools.filter(school => school.schoolId === req.body.params.schoolId);
 
     let rolesToBeRemoved = [];
 
@@ -551,7 +551,7 @@ async function createSecureExchangeComment(req, res) {
 
     const payload = {
       secureExchangeComment,
-      mincode: message.mincode,
+      schoolId: message.schoolId,
       schoolName:message.schoolName,
       sequenceNumber: message.sequenceNumber,
       ministryTeamName:message.ministryTeamName,
@@ -609,13 +609,16 @@ const createSearchParamObject = (key, value) => {
   } else if (key === 'secureExchangeStatusCode') {
     value = value.join(',');
     operation = FILTER_OPERATION.IN;
+  } else if (key === 'contactIdentifier') {
+    operation = FILTER_OPERATION.EQUAL;
+    valueType = VALUE_TYPE.UUID;
   }
   return {key, value, operation, valueType};
 };
 
 const getContactIdentifierType = (contactIdentifier, res) => {
   let data = cacheService.getAllSchoolsJSON();
-  let isPresent = data.some(school => school.mincode === contactIdentifier);
+  let isPresent = data.some(school => school.schoolId === contactIdentifier);
   if (isPresent) {
     return 'SCHOOL';
   } else {
@@ -713,12 +716,12 @@ async function relinkUserSchoolAccess(req, res) {
     }
 
     let edxUserDetails = await getData(token, config.get('server:edx:edxUsersURL') + '/' + req.body.params.userToRelink);
-    let userSchool = edxUserDetails.edxUserSchools.find(school => school.mincode === req.body.params.mincode);
+    let userSchool = edxUserDetails.edxUserSchools.find(school => school.schoolId === req.body.params.schoolId);
     let activationRoles = userSchool.edxUserSchoolRoles.map(role => role.edxRoleCode);
 
     const payload = {
-      mincode: req.body.params.mincode,
-      schoolName: cacheService.getSchoolNameJSONByMincode(req.body.params.mincode).schoolName,
+      schoolId: req.body.params.schoolId,
+      schoolName: cacheService.getSchoolBySchoolId(req.body.params.schoolId).schoolName,
       edxActivationRoleCodes: activationRoles,
       firstName: edxUserDetails.firstName,
       lastName: edxUserDetails.lastName,
