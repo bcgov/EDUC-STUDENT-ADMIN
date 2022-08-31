@@ -444,7 +444,7 @@ export default {
       return ChronoUnit.DAYS.between(start_date, end_date) + ' days';
     },
     getSchoolName(schoolID) {
-      return this.schoolMap.get(schoolID)?.schoolName
+      return this.schoolMap.get(schoolID)?.schoolName;
     },
     getContactLineItem(item){
       switch (item.secureExchangeContactTypeCode) {
