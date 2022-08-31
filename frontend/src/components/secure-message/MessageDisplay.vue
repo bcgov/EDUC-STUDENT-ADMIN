@@ -490,7 +490,7 @@ export default {
       this.isNewMessageDisplayed = true;
     },
     shouldShowMincodeWarning(studentActivity){
-      return this.secureExchange.contactIdentifier !== studentActivity.schoolId;
+      return this.secureExchange.contactIdentifier !== studentActivity.schoolID;
     },
     hideNewMessagePanel(){
       this.isNewMessageDisplayed = false;
@@ -586,7 +586,7 @@ export default {
       this.loadingCount += 1;
       const payload = {
         content: this.newMessage,
-        schoolId: this.secureExchange.contactIdentifier,
+        schoolID: this.secureExchange.contactIdentifier,
         schoolName:this.secureExchange.schoolName,
         sequenceNumber: this.secureExchange.sequenceNumber,
         ministryTeamName:this.secureExchange.ministryOwnershipTeamName,

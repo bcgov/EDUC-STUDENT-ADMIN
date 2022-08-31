@@ -63,7 +63,7 @@ export default {
       state.schoolMap = new Map();
       mincodeSchoolNameList.forEach(element => {
         state.mincodeSchoolNames.set(element.mincode, element.schoolName);
-        state.schoolMap.set(element.schoolId, {...element});
+        state.schoolMap.set(element.schoolID, {...element});
         state.districtCodes.add(element.mincode?.substring(0, 3));
       });
     },

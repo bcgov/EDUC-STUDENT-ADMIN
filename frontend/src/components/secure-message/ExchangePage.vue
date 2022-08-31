@@ -411,7 +411,7 @@ export default {
         || this.secureExchangeStatusCodes.some(item => item.secureExchangeStatusCode === this.statusSelectFilter);
     },
     schools() {
-      return _.sortBy(Array.from(this.schoolMap.entries()).map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolId, mincode: school[1].mincode})), ['mincode']);
+      return _.sortBy(Array.from(this.schoolMap.entries()).map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolID, mincode: school[1].mincode})), ['mincode']);
     },
     myself() {
       return { name: this.userInfo.userName, id: this.userInfo.userGuid };
@@ -443,9 +443,8 @@ export default {
 
       return ChronoUnit.DAYS.between(start_date, end_date) + ' days';
     },
-    getSchoolName(schoolId) {
-      //return this.schoolMap.get(schoolId)?.schoolName
-      return this.mincodeSchoolNames.get(schoolId?.replace(' ', '')); //TODO Remove
+    getSchoolName(schoolID) {
+      return this.schoolMap.get(schoolID)?.schoolName
     },
     getContactLineItem(item){
       switch (item.secureExchangeContactTypeCode) {

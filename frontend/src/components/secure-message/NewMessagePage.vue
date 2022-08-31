@@ -20,7 +20,7 @@
                           id='schoolNameTxtField'
                           label="To"
                           class="pt-0"
-                          v-model="schoolId"
+                          v-model="schoolID"
                           :items="schools"
                           :rules="requiredRules"
                           @change="onSchoolSelected"
@@ -172,7 +172,7 @@ export default {
   data() {
     return {
       newMessage: '',
-      schoolId: '',
+      schoolID: '',
       subject: '',
       requiredRules: [v => !!v?.trim() || 'Required'],
       isValidForm: false,
@@ -196,7 +196,7 @@ export default {
       return this.ministryTeams.find(team => this.userInfo.userRoles.some(role => team.groupRoleIdentifier === role)) || {};
     },
     schools() {
-      return _.sortBy(Array.from(this.schoolMap.entries()).map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolId, mincode: school[1].mincode})), ['mincode']);
+      return _.sortBy(Array.from(this.schoolMap.entries()).map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolID, mincode: school[1].mincode})), ['mincode']);
     },
   },
   created() {
@@ -212,7 +212,7 @@ export default {
     },
     messageSent(){
       this.subject = '';
-      this.schoolId = null;
+      this.schoolID = null;
       this.newMessage = '';
       this.requiredRules = [v => !!v?.trim() || 'Required'];
       this.penRules = [v => (!v || isValidPEN(v)) || this.penHint];
@@ -232,14 +232,14 @@ export default {
       this.processing = true;
       const payload = {
         secureExchangeContactTypeCode: 'SCHOOL',
-        contactIdentifier: this.schoolId,
+        contactIdentifier: this.schoolID,
         ministryOwnershipTeamID: this.myTeam.ministryOwnershipTeamId,
         subject: this.subject,
         content: this.newMessage,
         secureExchangeDocuments: this.secureExchangeDocuments,
         ministryTeamName : this.myTeam.teamName,
-        schoolId: this.schoolId,
-        schoolName: this.mincodeSchoolNames.get(this.schoolId),
+        schoolID: this.schoolID,
+        schoolName: this.mincodeSchoolNames.get(this.schoolID),
         secureExchangeStudents: this.secureExchangeStudents
       };
       ApiService.apiAxios.post(`${Routes['edx'].EXCHANGE_URL}`, payload)
@@ -297,7 +297,7 @@ export default {
       this.$store.commit('edx/setSecureExchangeStudents', []);
     },
     onSchoolSelected(){
-      if(this.schoolId){
+      if(this.schoolID){
         this.disableAddStudent = false;
       }else{
         this.disableAddStudent = true;
@@ -310,7 +310,7 @@ export default {
       this.newMessage = insertMacro(macroText, this.newMessage, this.$refs.newMessageTextArea.$refs.input);
     },
     getMincode() {
-      return this.schoolMap.get(this.schoolId)?.mincode || '';
+      return this.schoolMap.get(this.schoolID)?.mincode || '';
     },
   }
 };

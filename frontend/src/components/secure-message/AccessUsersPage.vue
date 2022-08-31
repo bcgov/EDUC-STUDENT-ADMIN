@@ -64,7 +64,7 @@
     <Spinner v-if="loadingUsers"/>
     <v-row v-else>
       <v-col xl="4" cols="6" class="pb-0" v-for="user in filteredUsers" :key="user.digitalID">
-        <AccessUserCard @refresh="getUsersData" :userRoles="user.edxUserSchools[0].edxUserSchoolRoles" :user="user" :institute-code="schoolId" :institute-roles="schoolRoles" institute-type-code="SCHOOL" institute-type-label="School"></AccessUserCard>
+        <AccessUserCard @refresh="getUsersData" :userRoles="user.edxUserSchools[0].edxUserSchoolRoles" :user="user" :institute-code="schoolID" :institute-roles="schoolRoles" institute-type-code="SCHOOL" institute-type-label="School"></AccessUserCard>
       </v-col>
       <v-col xl="4" cols="6" >
         <v-row>
@@ -103,7 +103,7 @@
         <v-card-text>
           <InviteUserPage
               :userRoles="schoolRoles"
-              :institute-code="schoolId"
+              :institute-code="schoolID"
               institute-type-code="SCHOOL"
               instituteTypeLabel="School"
               :schoolName='getSchoolNameForUserInvite()'
@@ -137,7 +137,7 @@ export default {
   mixins: [ alertMixin ],
   components: {InviteUserPage, PrimaryButton, AccessUserCard, Spinner },
   props: {
-    schoolId: {
+    schoolID: {
       type: String,
       required: true
     },
@@ -187,7 +187,7 @@ export default {
     },
     getUsersData() {
       this.loadingUsers = true;
-      const payload = {params: {schoolId: this.schoolId}};
+      const payload = {params: {schoolID: this.schoolID}};
       ApiService.apiAxios.get(Routes.edx.EXCHANGE_ACCESS_URL, payload)
         .then(response => {
           this.filteredUsers = this.sortUserData(response.data);
@@ -197,7 +197,7 @@ export default {
         });
     },
     getPrimaryEdxActivationCode() {
-      ApiService.apiAxios.get(`${Routes.edx.PRIMARY_ACTIVATION_CODE_URL}/school/${this.schoolId}`)
+      ApiService.apiAxios.get(`${Routes.edx.PRIMARY_ACTIVATION_CODE_URL}/school/${this.schoolID}`)
         .then(response => {
           this.primaryEdxActivationCode = response.data;
         }).catch(e => {
@@ -206,7 +206,7 @@ export default {
         });
     },
     generateOrRegeneratePrimaryEdxActivationCode() {
-      ApiService.apiAxios.post(`${Routes.edx.PRIMARY_ACTIVATION_CODE_URL }/school/${this.schoolId}`)
+      ApiService.apiAxios.post(`${Routes.edx.PRIMARY_ACTIVATION_CODE_URL }/school/${this.schoolID}`)
         .then(response => {
           this.primaryEdxActivationCode = response.data;
           this.setSuccessAlert(`The new Primary EDX Activation Code is ${ this.primaryEdxActivationCode.activationCode }.`);
@@ -227,8 +227,8 @@ export default {
       this.closeGenerateNewPrimaryEdxActivationCodeDialog();
     },
     getSchoolName() {
-      const schoolName = this.schoolMap.get(this.schoolId)?.schoolName;
-      const mincode = this.schoolMap.get(this.schoolId)?.mincode;
+      const schoolName = this.schoolMap.get(this.schoolID)?.schoolName;
+      const mincode = this.schoolMap.get(this.schoolID)?.mincode;
       return `${schoolName} (${mincode})`;
     },
     clearButtonClick() {
@@ -269,7 +269,7 @@ export default {
       this.newUserInviteSheet = false; // close the modal window.
     },
     getSchoolNameForUserInvite(){
-      return this.schoolMap.get(this.schoolId).schoolName;
+      return this.schoolMap.get(this.schoolID).schoolName;
     }
   },
   computed: {

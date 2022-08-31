@@ -27,14 +27,14 @@ const cacheService = {
       if (schools && schools.length > 0) {
         for (const school of schools) {
           const mincodeSchool = {
-            schoolId: school.schoolId,
+            schoolID: school.schoolID,
             mincode: school.mincode,
             schoolName: school.displayName,
             effectiveDate: school.openedDate,
             expiryDate: school.closedDate,
           };
           mincodeSchoolMap.set(school.mincode, mincodeSchool);
-          schoolMap.set(school.schoolId, mincodeSchool);
+          schoolMap.set(school.schoolID, mincodeSchool);
           mincodeSchools.push(mincodeSchool);
         }
       }
@@ -50,8 +50,8 @@ const cacheService = {
   getSchoolNameJSONByMincode(mincode) {
     return mincodeSchoolMap.get(mincode);
   },
-  getSchoolBySchoolId(schoolId) {
-    return schoolMap.get(schoolId);
+  getSchoolBySchoolID(schoolID) {
+    return schoolMap.get(schoolID);
   },
   async loadAllDistrictsToMap() {
     log.debug('loading all districts during start up');
