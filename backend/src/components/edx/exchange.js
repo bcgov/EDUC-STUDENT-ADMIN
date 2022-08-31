@@ -609,9 +609,6 @@ const createSearchParamObject = (key, value) => {
   } else if (key === 'secureExchangeStatusCode') {
     value = value.join(',');
     operation = FILTER_OPERATION.IN;
-  } else if (key === 'contactIdentifier') {
-    operation = FILTER_OPERATION.EQUAL;
-    valueType = VALUE_TYPE.UUID;
   }
   return {key, value, operation, valueType};
 };
