@@ -180,7 +180,7 @@
               <v-row v-if="isNewStudentDisplayed">
                 <v-col class="d-flex justify-center">
 
-                    <AddStudent @addStudent="sendNewSecureExchangeStudent" @close:form="hideStudentPanel" :mincode="secureExchange.contactIdentifier" :additionalStudentAddWarning="addStudentWarningMessage" @updateAdditionalStudentAddWarning="updateAddStudentWarningMessage">
+                    <AddStudent @addStudent="sendNewSecureExchangeStudent" @close:form="hideStudentPanel" :mincode="getMincode()" :additionalStudentAddWarning="addStudentWarningMessage" @updateAdditionalStudentAddWarning="updateAddStudentWarningMessage">
                     </AddStudent>
 
                 </v-col>
@@ -456,7 +456,7 @@ export default {
   },
   computed: {
     ...mapState('auth', ['userInfo']),
-    ...mapGetters('edx', ['messageMacros']),
+    ...mapGetters('edx', ['messageMacros', 'schoolMap']),
     loading() {
       return this.loadingCount !== 0;
     }
@@ -490,7 +490,7 @@ export default {
       this.isNewMessageDisplayed = true;
     },
     shouldShowMincodeWarning(studentActivity){
-      return this.secureExchange.contactIdentifier !== studentActivity.mincode;
+      return this.secureExchange.contactIdentifier !== studentActivity.schoolID;
     },
     hideNewMessagePanel(){
       this.isNewMessageDisplayed = false;
@@ -586,7 +586,7 @@ export default {
       this.loadingCount += 1;
       const payload = {
         content: this.newMessage,
-        mincode: this.secureExchange.contactIdentifier,
+        schoolID: this.secureExchange.contactIdentifier,
         schoolName:this.secureExchange.schoolName,
         sequenceNumber: this.secureExchange.sequenceNumber,
         ministryTeamName:this.secureExchange.ministryOwnershipTeamName,
@@ -856,6 +856,9 @@ export default {
     },
     insertMacroMessage(macroText) {
       this.newMessage = insertMacro(macroText, this.newMessage, this.$refs.newMessageToConvTextArea.$refs.input);
+    },
+    getMincode() {
+      return this.schoolMap.get(this.secureExchange?.contactIdentifier)?.mincode || '';
     },
   }
 };

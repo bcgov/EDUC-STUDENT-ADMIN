@@ -161,7 +161,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('app', ['mincodeSchoolNames','districts']),
+    ...mapState('app', ['schoolMap','districts']),
     emailRules() {
       return [
         v => !!v || this.emailHint,
@@ -175,7 +175,7 @@ export default {
   created() {
     if (!this.instituteNameAndCode) {
       if(this.instituteTypeCode=== 'SCHOOL'){
-        this.instituteNameAndCode = this.schoolName + ' (' + this.instituteCode + ')';
+        this.instituteNameAndCode = this.schoolName + ' (' + this.schoolMap.get(this.instituteCode)?.mincode + ')';
       }else{
         this.instituteNameAndCode = this.districtName + ' (' + this.districts.get(this.instituteCode).districtNumber + ')';
       }
@@ -230,7 +230,7 @@ export default {
       };
       let url = null;
       if(this.instituteTypeCode === 'SCHOOL') {
-        payload.mincode = this.instituteCode;
+        payload.schoolID = this.instituteCode;
         payload.schoolName = this.schoolName;
         url = `${Routes.edx.NEW_SCHOOL_USER_ACTIVATION_INVITE}`;
       }else {

@@ -22,7 +22,17 @@ function getDistrictByDistrictId(req, res) {
   }
 }
 
+function getSchools(_req, res) {
+  try {
+    return res.status(HttpStatus.OK).json(cacheService.getAllSchoolsJSON());
+  } catch (e) {
+    logApiError(e, 'getSchools', 'Error occurred while attempting to GET school entity.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getDistricts,
-  getDistrictByDistrictId
+  getDistrictByDistrictId,
+  getSchools
 };

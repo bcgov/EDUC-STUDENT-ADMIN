@@ -7,6 +7,7 @@ const retry = require('async-retry');
 
 let mincodeSchoolMap = new Map();
 let mincodeSchools = [];
+let schoolMap = new Map();
 let districts = [];
 let districtsMap = new Map();
 
@@ -20,18 +21,20 @@ const cacheService = {
     await retry(async () => {
       // if anything throws, we retry
       const data = await getApiCredentials(); // get the tokens first to make api calls.
-      const schools = await getData(data.accessToken, `${config.get('server:schoolAPIURL')}/schools`);
+      const schools = await getData(data.accessToken, `${config.get('server:instituteAPIURL')}/school`);
       mincodeSchools = []; // reset the value.
       mincodeSchoolMap.clear();// reset the value.
       if (schools && schools.length > 0) {
         for (const school of schools) {
           const mincodeSchool = {
-            mincode: `${school.distNo}${school.schlNo}`,
-            schoolName: school.schoolName,
-            effectiveDate: school.dateOpened,
-            expiryDate: school.dateClosed,
+            schoolID: school.schoolID,
+            mincode: school.mincode,
+            schoolName: school.displayName,
+            effectiveDate: school.openedDate,
+            expiryDate: school.closedDate,
           };
-          mincodeSchoolMap.set(`${school.distNo}${school.schlNo}`, mincodeSchool);
+          mincodeSchoolMap.set(school.mincode, mincodeSchool);
+          schoolMap.set(school.schoolID, mincodeSchool);
           mincodeSchools.push(mincodeSchool);
         }
       }
@@ -46,6 +49,9 @@ const cacheService = {
   },
   getSchoolNameJSONByMincode(mincode) {
     return mincodeSchoolMap.get(mincode);
+  },
+  getSchoolBySchoolID(schoolID) {
+    return schoolMap.get(schoolID);
   },
   async loadAllDistrictsToMap() {
     log.debug('loading all districts during start up');

@@ -301,7 +301,6 @@
         <v-divider></v-divider>
         <v-card-text>
           <NewMessagePage
-            :mincodeSchoolNames="mincodeSchoolNames"
             @secure-exchange:messageSent="messageSent"
             @secure-exchange:cancelMessage="newMessageSheet = false"
           >
@@ -391,6 +390,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
+    ...mapGetters('app', ['schoolMap']),
     ...mapState('app', ['mincodeSchoolNames']),
     ...mapState('edx', ['statuses']),
     ...mapState('edx', ['ministryTeams']),
@@ -411,7 +411,7 @@ export default {
         || this.secureExchangeStatusCodes.some(item => item.secureExchangeStatusCode === this.statusSelectFilter);
     },
     schools() {
-      return _.sortBy(Array.from(this.mincodeSchoolNames.entries()).map(school => ({ text: `${school[1]} (${school[0]})`, value: school[0]})), ['value']);
+      return _.sortBy(Array.from(this.schoolMap.entries()).map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolID, mincode: school[1].mincode})), ['mincode']);
     },
     myself() {
       return { name: this.userInfo.userName, id: this.userInfo.userGuid };
@@ -443,8 +443,8 @@ export default {
 
       return ChronoUnit.DAYS.between(start_date, end_date) + ' days';
     },
-    getSchoolName(mincode) {
-      return this.mincodeSchoolNames.get(mincode?.replace(' ', ''));
+    getSchoolName(schoolID) {
+      return this.schoolMap.get(schoolID)?.schoolName
     },
     getContactLineItem(item){
       switch (item.secureExchangeContactTypeCode) {
