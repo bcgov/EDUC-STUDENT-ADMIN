@@ -355,7 +355,7 @@ const router = new VueRouter({
           }
         },
         {
-          path: 'exchange/access/school/:mincode',
+          path: 'exchange/access/school/:schoolId',
           name: 'exchangeAccessUsers',
           component: AccessUsersPage,
           props: true,
