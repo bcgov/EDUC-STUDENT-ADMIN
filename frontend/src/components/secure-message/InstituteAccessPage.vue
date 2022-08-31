@@ -62,13 +62,10 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['mincodeSchoolNames','districts']),
+    ...mapState('app', ['schoolMap','districts']),
     institutes() {
       if(this.instituteTypeCode === 'SCHOOL') {
-        return _.sortBy(Array.from(this.mincodeSchoolNames.entries()).map(school => ({
-          text: `${school[0]} - ${school[1]}`,
-          value: school[0]
-        })), ['value']);
+        return _.sortBy(Array.from(this.schoolMap.entries()).map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolId, mincode: school[1].mincode})), ['mincode']);
       }else{
         return _.sortBy(Array.from(this.districts.entries()).map(district => ({ text: `${district[1].name} - ${district[1].districtNumber}`, value: district[0], key:district[1].districtNumber})), ['key']);
       }

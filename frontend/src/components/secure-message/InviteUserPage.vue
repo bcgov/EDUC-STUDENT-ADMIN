@@ -230,7 +230,7 @@ export default {
       };
       let url = null;
       if(this.instituteTypeCode === 'SCHOOL') {
-        payload.mincode = this.instituteCode;
+        payload.schoolId = this.instituteCode;
         payload.schoolName = this.schoolName;
         url = `${Routes.edx.NEW_SCHOOL_USER_ACTIVATION_INVITE}`;
       }else {
