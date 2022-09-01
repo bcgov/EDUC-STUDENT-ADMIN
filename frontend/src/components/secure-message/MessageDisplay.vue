@@ -456,7 +456,8 @@ export default {
   },
   computed: {
     ...mapState('auth', ['userInfo']),
-    ...mapGetters('edx', ['messageMacros', 'schoolMap']),
+    ...mapGetters('edx', ['messageMacros']),
+    ...mapGetters('app', ['schoolMap']),
     loading() {
       return this.loadingCount !== 0;
     }
