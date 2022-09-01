@@ -174,7 +174,7 @@ async function getExchange(req, res) {
         dataResponse['ministryOwnershipGroupRoleIdentifier'] = tempMinTeam?.groupRoleIdentifier ? tempMinTeam.groupRoleIdentifier : '';
       }
 
-      dataResponse['contactName'] = dataResponse['secureExchangeContactTypeCode'] === 'SCHOOL' ? `${school.schoolName} (${dataResponse['contactIdentifier']})` : 'Unknown Contact';
+      dataResponse['contactName'] = dataResponse['secureExchangeContactTypeCode'] === 'SCHOOL' ? `${school.schoolName} (${school.mincode})` : 'Unknown Contact';
       dataResponse['schoolName'] = school.schoolName;
       if (dataResponse['createDate']) {
         dataResponse['createDate'] = LocalDateTime.parse(dataResponse['createDate']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd'));
