@@ -27,7 +27,7 @@ const cacheService = {
       if (schools && schools.length > 0) {
         for (const school of schools) {
           const mincodeSchool = {
-            schoolID: school.schoolID,
+            schoolID: school.schoolId,
             mincode: school.mincode,
             schoolName: school.displayName,
             effectiveDate: school.openedDate,
