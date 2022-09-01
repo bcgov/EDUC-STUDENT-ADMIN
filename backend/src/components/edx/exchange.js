@@ -392,7 +392,7 @@ async function getEdxUsers(req, res) {
         return {
           ...user,
           edxUserDistricts: [],
-          edxUserSchools: user.edxUserSchools.filter(school => school.schoolId === req.query.schoolID)
+          edxUserSchools: user.edxUserSchools.filter(school => school.schoolID === req.query.schoolID)
         };
       });
     }else if(req.query.districtCode){
@@ -494,7 +494,7 @@ async function updateEdxUserRoles(req, res) {
     const userInfo = utils.getUser(req);
     let response = await getData(token, config.get('server:edx:edxUsersURL') + '/' + req.body.params.edxUserID);
 
-    let selectedUserSchool = response.edxUserSchools.filter(school => school.schoolId === req.body.params.schoolID);
+    let selectedUserSchool = response.edxUserSchools.filter(school => school.schoolID === req.body.params.schoolID);
 
     let rolesToBeRemoved = [];
 
@@ -678,7 +678,7 @@ async function removeUserSchoolAccess(req, res) {
       });
     }
 
-    await utils.deleteData(token, config.get('server:edx:edxUsersURL') + `/${req.body.params.userToRemove}` + '/school' + `/${req.body.params.userschoolID}`);
+    await utils.deleteData(token, config.get('server:edx:edxUsersURL') + `/${req.body.params.userToRemove}` + '/school' + `/${req.body.params.userSchoolID}`);
     return res.status(HttpStatus.OK).json('');
   } catch (e) {
     log.error(e, 'removeUserSchoolAccess', 'Error occurred while attempting to remove user school access.');
@@ -713,7 +713,7 @@ async function relinkUserSchoolAccess(req, res) {
     }
 
     let edxUserDetails = await getData(token, config.get('server:edx:edxUsersURL') + '/' + req.body.params.userToRelink);
-    let userSchool = edxUserDetails.edxUserSchools.find(school => school.schoolId === req.body.params.schoolID);
+    let userSchool = edxUserDetails.edxUserSchools.find(school => school.schoolID === req.body.params.schoolID);
     let activationRoles = userSchool.edxUserSchoolRoles.map(role => role.edxRoleCode);
 
     const payload = {

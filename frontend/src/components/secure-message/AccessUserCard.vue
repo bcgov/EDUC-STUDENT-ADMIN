@@ -257,7 +257,7 @@ export default {
         }
       };
       if (this.instituteTypeCode === 'SCHOOL') {
-        const userSchool = userToRelink.edxUserSchools.find(school => school.schoolId === this.instituteCode);
+        const userSchool = userToRelink.edxUserSchools.find(school => school.schoolID === this.instituteCode);
         payload.params.schoolID = this.instituteCode;
         payload.params.userSchoolID = userSchool.edxUserSchoolID;
       } else {
@@ -282,8 +282,7 @@ export default {
         }
       };
       if (this.instituteTypeCode === 'SCHOOL') {
-        const userSchool = userToRemove.edxUserSchools.find(school => school.schoolId === this.instituteCode);
-        payload.params.schoolID = this.instituteCode;
+        const userSchool = userToRemove.edxUserSchools.find(school => school.schoolID === this.instituteCode);
         payload.params.userSchoolID = userSchool.edxUserSchoolID;
       } else {
         const userDistrict = userToRemove.edxUserDistricts.find(district => district.districtId === this.instituteCode);
