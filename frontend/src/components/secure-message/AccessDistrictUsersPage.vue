@@ -168,7 +168,7 @@ export default {
         });
     },
     getPrimaryEdxActivationCode() {
-      ApiService.apiAxios.get(Routes.edx.PRIMARY_ACTIVATION_CODE_URL + `/${this.districtId}`)
+      ApiService.apiAxios.get(`${Routes.edx.PRIMARY_ACTIVATION_CODE_URL}/district/${this.districtId}`)
         .then(response => {
           this.primaryEdxActivationCode = response.data;
         }).catch(e => {
@@ -177,7 +177,7 @@ export default {
         });
     },
     generateOrRegeneratePrimaryEdxActivationCode() {
-      ApiService.apiAxios.post(Routes.edx.PRIMARY_ACTIVATION_CODE_URL + `/${this.districtId}`)
+      ApiService.apiAxios.post(`${Routes.edx.PRIMARY_ACTIVATION_CODE_URL}/district/${this.districtId}`)
         .then(response => {
           this.primaryEdxActivationCode = response.data;
           this.setSuccessAlert(`The new Primary EDX Activation Code is ${ this.primaryEdxActivationCode.activationCode }.`);
