@@ -107,7 +107,7 @@
               institute-type-code="SCHOOL"
               instituteTypeLabel="School"
               :schoolName='getSchoolNameForUserInvite()'
-              @access-user:messageSent="messageSent"
+              @access-user:messageSent="closeNewUserModal"
               @access-user:updateRoles="updateUserRoles"
               @access-user:cancelMessage="closeNewUserModal"
           >
@@ -257,9 +257,6 @@ export default {
     },
     searchEnabled() {
       return !isNotEmptyInputParams(this.searchFilter);
-    },
-    messageSent() {
-      this.newUserInviteSheet = !this.newUserInviteSheet;
     },
     updateUserRoles(newValue){
       this.$store.commit('edx/setSchoolRoles', newValue);
