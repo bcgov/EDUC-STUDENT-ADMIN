@@ -34,7 +34,7 @@ const cacheService = {
             expiryDate: school.closedDate,
           };
           mincodeSchoolMap.set(school.mincode, mincodeSchool);
-          schoolMap.set(school.schoolID, mincodeSchool);
+          schoolMap.set(school.schoolId, mincodeSchool);
           mincodeSchools.push(mincodeSchool);
         }
       }
