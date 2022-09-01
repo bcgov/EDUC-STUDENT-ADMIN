@@ -239,7 +239,7 @@ export default {
         secureExchangeDocuments: this.secureExchangeDocuments,
         ministryTeamName : this.myTeam.teamName,
         schoolID: this.schoolID,
-        schoolName: this.mincodeSchoolNames.get(this.schoolID),
+        schoolName: this.schoolMap.get(this.schoolID).schoolName,
         secureExchangeStudents: this.secureExchangeStudents
       };
       ApiService.apiAxios.post(`${Routes['edx'].EXCHANGE_URL}`, payload)

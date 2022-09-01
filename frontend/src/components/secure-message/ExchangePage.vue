@@ -449,7 +449,7 @@ export default {
     getContactLineItem(item){
       switch (item.secureExchangeContactTypeCode) {
       case 'SCHOOL':
-        return this.getSchoolName(item.contactIdentifier) + ' (' + item.contactIdentifier + ') - ' + item.createDate;
+        return `${this.schoolMap.get(item.contactIdentifier).schoolName} (${this.schoolMap.get(item.contactIdentifier).mincode}) - ${item.createDate}`;
       }
     },
     getReviewer(reviewer){

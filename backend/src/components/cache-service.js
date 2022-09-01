@@ -27,14 +27,14 @@ const cacheService = {
       if (schools && schools.length > 0) {
         for (const school of schools) {
           const mincodeSchool = {
-            schoolID: school.schoolID,
+            schoolID: school.schoolId,
             mincode: school.mincode,
             schoolName: school.displayName,
             effectiveDate: school.openedDate,
             expiryDate: school.closedDate,
           };
           mincodeSchoolMap.set(school.mincode, mincodeSchool);
-          schoolMap.set(school.schoolID, mincodeSchool);
+          schoolMap.set(school.schoolId, mincodeSchool);
           mincodeSchools.push(mincodeSchool);
         }
       }
