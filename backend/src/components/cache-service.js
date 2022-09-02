@@ -27,7 +27,7 @@ const cacheService = {
       mincodeSchoolMap.clear(); // reset the value.
       schoolMap.clear(); // reset the value.
       mincodeSchools = []; // reset the value.
-      activeSchools = [] ;// reset the value.
+      activeSchools = [];// reset the value.
       if (schools && schools.length > 0) {
         for (const school of schools) {
           const mincodeSchool = generateSchoolObject(school);
