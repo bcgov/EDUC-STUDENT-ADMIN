@@ -17,7 +17,7 @@
       <v-col class="d-flex justify-end">
         <v-chip
           :color="getChipColor()"
-
+          id="primaryEdxActivationCode"
         >
           <v-icon left>
             mdi-shield-key-outline
