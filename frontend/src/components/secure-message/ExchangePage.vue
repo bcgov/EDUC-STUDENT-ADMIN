@@ -2,11 +2,17 @@
   <v-container class="containerSetup" fluid>
     <v-row class="pt-0">
       <v-col class="pt-0">
-        <v-row class='d-flex justify-end pb-2'>
+        <v-row no-gutters class='pt-2 d-flex justify-end'>
           <v-col class='d-flex justify-start'>
             <h1 id="ministryTeamInboxTitle">{{ ministryTeamName }} Inbox</h1>
           </v-col>
-          <v-col class='d-flex justify-end pt-6'>
+        </v-row>
+        <v-row class="pt-0">
+          <v-col class="mt-1 d-flex justify-start">
+            <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
+            <a class="pt-1 ml-1" @click="backButtonClick">Return to Dashboard</a>
+          </v-col>
+          <v-col class='d-flex justify-end'>
             <PrimaryButton
               :iconLeft=true
               :large-icon=true
@@ -633,8 +639,11 @@ export default {
         this.loadingTableCount -= 1;
       });
     },
+    backButtonClick() {
+      router.push({name: 'home'});
+    },
     openExchange(exchangeID) {
-      router.push({name: 'viewExchange', params: {secureExchangeID: exchangeID}});
+      router.push({name: 'viewExchange', params: {secureExchangeID: exchangeID, ministryOwnershipGroupRoleID: this.ministryOwnershipGroupRoleID, ministryOwnershipTeamName: this.ministryTeamName}});
     }
   },
   watch: {

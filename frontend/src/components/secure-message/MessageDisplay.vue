@@ -68,6 +68,26 @@
                 </v-row>
               </v-col>
             </v-row>
+            <v-row>
+              <v-col class="mt-1 d-flex justify-start">
+                <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
+                <a class="pt-1 ml-1" @click="backButtonClick">Return to {{ this.ministryOwnershipTeamName }} Inbox</a>
+              </v-col>
+              <v-col class="d-flex justify-end">
+                <v-btn :disabled="!isEditable()"   id="markAsButton" v-on:click="clickMarkAsButton" :loading="loadingReadStatus">
+                  <v-icon v-if="secureExchange.isReadByExchangeContact">mdi-email-outline</v-icon>
+                  <v-icon v-else>mdi-email-open-outline</v-icon>
+                  <span class="ml-1 markAsSpan">{{`Mark As ${secureExchange.isReadByMinistry ? 'Unread' : 'Read'}` }}</span>
+                </v-btn>
+                <v-btn id="claimAsButton" class="mx-2" v-on:click="clickClaimMsgButton" :disabled="!isEditable()">
+                  <v-icon>{{ !isClaimable() ? 'mdi-account-off-outline' : 'mdi-account-check-outline' }}</v-icon>
+                  <span class="ml-1">{{ isClaimable() ? 'Claim' : 'Unclaim' }}</span>
+                </v-btn>
+                <v-btn id="changeStatusButton" v-on:click="clickMarkAsClosedButton" :disabled="!isEditable()">
+                  <span>Close</span>
+                </v-btn>
+              </v-col>
+            </v-row>
             <v-row no-gutters>
               <v-col>
                 <v-divider class="divider"></v-divider>
@@ -100,20 +120,6 @@
                   </v-btn>
                 </v-card>
               </v-speed-dial>
-              <v-col class="d-flex justify-end">
-                <v-btn :disabled="!isEditable()"   id="markAsButton" class="my-4" v-on:click="clickMarkAsButton" :loading="loadingReadStatus">
-                  <v-icon v-if="secureExchange.isReadByExchangeContact">mdi-email-outline</v-icon>
-                  <v-icon v-else>mdi-email-open-outline</v-icon>
-                  <span class="ml-1 markAsSpan">{{`Mark As ${secureExchange.isReadByMinistry ? 'Unread' : 'Read'}` }}</span>
-                </v-btn>
-                <v-btn id="claimAsButton" class="my-4 mx-2" v-on:click="clickClaimMsgButton" :disabled="!isEditable()">
-                  <v-icon>{{ !isClaimable() ? 'mdi-account-off-outline' : 'mdi-account-check-outline' }}</v-icon>
-                  <span class="ml-1">{{ isClaimable() ? 'Claim' : 'Unclaim' }}</span>
-                </v-btn>
-                <v-btn id="changeStatusButton" class="my-4" v-on:click="clickMarkAsClosedButton" :disabled="!isEditable()">
-                  <span>Close</span>
-                </v-btn>
-              </v-col>
             </v-row>
             <v-expand-transition>
               <v-row v-if="isNewMessageDisplayed">
@@ -420,6 +426,14 @@ export default {
   components: {DocumentUpload, AddStudent, PrimaryButton, ImageRenderer, PdfRenderer, MacroMenu},
   props: {
     secureExchangeID: {
+      type: String,
+      required: true
+    },
+    ministryOwnershipGroupRoleID: {
+      type: String,
+      required: true
+    },
+    ministryOwnershipTeamName: {
       type: String,
       required: true
     }
@@ -842,6 +856,9 @@ export default {
           this.loadingCount -= 1;
           this.hideNewNotePanel();
         });
+    },
+    backButtonClick() {
+      router.push({name: 'exchange_inbox_' + this.ministryOwnershipGroupRoleID});
     },
     //helper function to close all panels before setting one to visible in another method
     closeAllPanels() {
