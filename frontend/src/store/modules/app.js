@@ -1,4 +1,4 @@
-import { REQUEST_TYPES } from '../../utils/constants';
+import { REQUEST_TYPES } from '@/utils/constants';
 import ApiService from '@/common/apiService';
 
 export default {
@@ -14,6 +14,7 @@ export default {
     stickyInfoPanelHeight: null,
     mincodeSchoolNames: new Map(),
     schoolMap: new Map(),
+    activeSchools: [],
     districts : new Map(),
     districtCodes: new Set(),
     alertNotificationText: '',
@@ -30,7 +31,7 @@ export default {
     participants: state => state.participants,
     requestType: state => state.requestType,
     requestTypeLabel: state => state.requestTypeLabel,
-    schoolMap: state => state.schoolMap,
+    schoolMap: state => state.schoolMap
   },
   mutations: {
     setRequest: (state, request) => {
@@ -67,6 +68,9 @@ export default {
         state.districtCodes.add(element.mincode?.substring(0, 3));
       });
     },
+    setActiveSchools(state, activeSchools) {
+      state.activeSchools = activeSchools;
+    },
     setDistricts(state, districtList) {
       state.districts = new Map();
       districtList.forEach(element => {
@@ -92,6 +96,10 @@ export default {
         if(state.mincodeSchoolNames.size === 0) {
           const response = await ApiService.getMincodeSchoolNames();
           commit('setMincodeSchoolNameAndDistrictCodes', response.data);
+        }
+        if (state.activeSchools.length === 0) {
+          const response = await ApiService.getActiveSchools();
+          commit('setActiveSchools', response.data);
         }
         if(state.districts.size === 0) {
           const response = await ApiService.getDistricts();

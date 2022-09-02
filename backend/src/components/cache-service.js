@@ -4,10 +4,12 @@ const log = require('../components/logger');
 const {getApiCredentials} = require('../components/auth');
 const {getData} = require('../components/utils');
 const retry = require('async-retry');
+const {generateSchoolObject,isSchoolActive} = require('./schoolUtils');
 
 let mincodeSchoolMap = new Map();
 let mincodeSchools = [];
 let schoolMap = new Map();
+let activeSchools = [];
 let districts = [];
 let districtsMap = new Map();
 
@@ -22,23 +24,23 @@ const cacheService = {
       // if anything throws, we retry
       const data = await getApiCredentials(); // get the tokens first to make api calls.
       const schools = await getData(data.accessToken, `${config.get('server:instituteAPIURL')}/school`);
+      mincodeSchoolMap.clear(); // reset the value.
+      schoolMap.clear(); // reset the value.
       mincodeSchools = []; // reset the value.
-      mincodeSchoolMap.clear();// reset the value.
+      activeSchools = [];// reset the value.
       if (schools && schools.length > 0) {
         for (const school of schools) {
-          const mincodeSchool = {
-            schoolID: school.schoolId,
-            mincode: school.mincode,
-            schoolName: school.displayName,
-            effectiveDate: school.openedDate,
-            expiryDate: school.closedDate,
-          };
+          const mincodeSchool = generateSchoolObject(school);
           mincodeSchoolMap.set(school.mincode, mincodeSchool);
           schoolMap.set(school.schoolId, mincodeSchool);
           mincodeSchools.push(mincodeSchool);
+          if (isSchoolActive(mincodeSchool)) {
+            activeSchools.push(mincodeSchool);
+          }
         }
       }
       log.info(`loaded ${mincodeSchoolMap.size} schools.`);
+      log.info(`Loaded ${activeSchools.length} active schools.`);
     }, {
       retries: 50
     });
@@ -52,6 +54,9 @@ const cacheService = {
   },
   getSchoolBySchoolID(schoolID) {
     return schoolMap.get(schoolID);
+  },
+  getAllActiveSchoolsJSON() {
+    return activeSchools;
   },
   async loadAllDistrictsToMap() {
     log.debug('loading all districts during start up');

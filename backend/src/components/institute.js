@@ -22,9 +22,10 @@ function getDistrictByDistrictId(req, res) {
   }
 }
 
-function getSchools(_req, res) {
+function getSchools(req, res) {
   try {
-    return res.status(HttpStatus.OK).json(cacheService.getAllSchoolsJSON());
+    let schools = req.query.active === '1' ? cacheService.getAllActiveSchoolsJSON() : cacheService.getAllSchoolsJSON();
+    return res.status(HttpStatus.OK).json(schools);
   } catch (e) {
     logApiError(e, 'getSchools', 'Error occurred while attempting to GET school entity.');
     return errorResponse(res);
