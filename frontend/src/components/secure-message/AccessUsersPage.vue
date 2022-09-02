@@ -1,7 +1,7 @@
 <template>
   <v-container class="containerSetup">
     <v-row>
-      <v-col>
+      <v-col class="pb-0">
         <h2>
           <strong>
             {{getSchoolName()}}
@@ -9,20 +9,22 @@
         </h2>
       </v-col>
     </v-row>
-    <v-divider class="divider"></v-divider>
     <v-row>
-      <v-col :class="['d-sm-flex', 'align-center']">
+      <v-col class="mt-1 d-flex justify-start">
+        <v-icon class="mt-1" small color="#1976d2">mdi-arrow-left</v-icon>
+        <a class="ml-1 mt-1" @click="backButtonClick">Return to School Search</a>
+      </v-col>
+      <v-col class="d-flex justify-end">
         <v-chip
-          class="ma-2"
           :color="getChipColor()"
 
         >
           <v-icon left>
             mdi-shield-key-outline
-          </v-icon>
+          </v-icon>Primary Activation Code:
           {{ this.primaryEdxActivationCode ? this.primaryEdxActivationCode.activationCode : `Code Not Found` }}
         </v-chip>
-        <PrimaryButton id="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibilityButton" short secondary icon="mdi-sync" class="ml-2 pl-2 pr-2" @click.native="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibility">Generate New Code</PrimaryButton>
+        <PrimaryButton id="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibilityButton" short secondary icon="mdi-sync" style="margin-top: 0.2em" class="ml-2 pl-2 pr-2" @click.native="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibility">Generate</PrimaryButton>
       </v-col>
     </v-row>
     <v-expand-transition>
@@ -47,8 +49,10 @@
         </v-col>
       </v-row>
     </v-expand-transition>
+    <v-divider class="divider"></v-divider>
+
     <!--    search filter -->
-    <v-row :class="['d-sm-flex', 'align-center', 'searchBox']">
+    <v-row :class="['d-sm-flex', 'align-center', 'searchBox', 'mt-4']">
       <v-col cols="12" md="4">
         <v-text-field id="name-text-field" label="Name" v-model="searchFilter.name" clearable></v-text-field>
       </v-col>
@@ -131,6 +135,7 @@ import AccessUserCard from './AccessUserCard';
 import alertMixin from '@/mixins/alertMixin';
 import Spinner from '@/components/common/Spinner';
 import InviteUserPage from '@/components/secure-message/InviteUserPage';
+import router from '@/router';
 
 export default {
   name: 'AccessUsersPage',
@@ -254,6 +259,9 @@ export default {
       }
 
       return true;
+    },
+    backButtonClick() {
+      router.push({name: 'exchangeAccess'});
     },
     searchEnabled() {
       return !isNotEmptyInputParams(this.searchFilter);

@@ -1,7 +1,7 @@
 <template>
   <v-container class="containerSetup">
     <v-row>
-      <v-col>
+      <v-col class="pb-0">
         <h2>
           <strong>
             {{ getDistrictName() }}
@@ -9,23 +9,50 @@
         </h2>
       </v-col>
     </v-row>
-    <v-divider class="divider"></v-divider>
     <v-row>
-      <v-col :class="['d-sm-flex', 'align-center']">
-        <div>Primary EDX Code - <span id="primaryEdxActivationCode">{{ this.primaryEdxActivationCode ? this.primaryEdxActivationCode.activationCode : `Code Not Found` }}</span></div>
-        <PrimaryButton id="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibilityButton" short secondary icon="mdi-sync" class="ml-2 pl-2 pr-2" @click.native="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibility">Generate New Code</PrimaryButton>
+      <v-col class="mt-1 d-flex justify-start">
+        <v-icon class="mt-1" small color="#1976d2">mdi-arrow-left</v-icon>
+        <a class="ml-1 mt-1" @click="backButtonClick">Return to District Search</a>
+      </v-col>
+      <v-col class="d-flex justify-end">
+        <v-chip
+          :color="getChipColor()"
+
+        >
+          <v-icon left>
+            mdi-shield-key-outline
+          </v-icon>Primary Activation Code:
+          {{ this.primaryEdxActivationCode ? this.primaryEdxActivationCode.activationCode : `Code Not Found` }}
+        </v-chip>
+        <PrimaryButton id="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibilityButton" short secondary icon="mdi-sync" style="margin-top: 0.2em" class="ml-2 pl-2 pr-2" @click.native="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibility">Generate</PrimaryButton>
       </v-col>
     </v-row>
-    <v-row no-gutters id="generateNewPrimaryEdxActivationCodeDialog" :class="['d-sm-flex', 'my-1', 'align-center']" v-if="this.doShowGenerateNewPrimaryEdxActivationCodeDialog">
-      <v-col class="pa-3">
-        <p>Generating a new Primary EDX Activation Code for a district will replace the existing code for the district. The new code will have to be communicated to the district administrator.</p>
-        <p>Are you sure that you want to generate a new Primary EDX Activation Code?</p>
-        <PrimaryButton id="doGeneratePrimaryEdxActivationCodeButton" short class="ml-2" @click.native="doGeneratePrimaryEdxActivationCode">Yes</PrimaryButton>
-        <PrimaryButton id="closeGenerateNewPrimaryEdxActivationCodeDialogButton" short secondary class="ml-2" @click.native="closeGenerateNewPrimaryEdxActivationCodeDialog">No</PrimaryButton>
-      </v-col>
-    </v-row>
+    <v-expand-transition>
+      <v-row :class="['d-sm-flex', 'align-center', 'searchBox']" class="px-2 mb-4" style="margin-right: 14em;margin-left: 14em;" id="generateNewPrimaryEdxActivationCodeDialog" v-if="this.doShowGenerateNewPrimaryEdxActivationCodeDialog">
+        <v-col>
+          <v-row no-gutters >
+            <v-col>
+              <span>Generating a new Primary EDX Activation Code for a school will replace the existing code for the school. The new code will have to be communicated to the school administrator.</span>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <p>Are you sure that you want to generate a new Primary EDX Activation Code?</p>
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col class="d-flex justify-end">
+              <PrimaryButton id="closeGenerateNewPrimaryEdxActivationCodeDialogButton" secondary class="ml-2" @click.native="closeGenerateNewPrimaryEdxActivationCodeDialog">No</PrimaryButton>
+              <PrimaryButton id="doGeneratePrimaryEdxActivationCodeButton" class="ml-2" @click.native="doGeneratePrimaryEdxActivationCode">Yes</PrimaryButton>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+    </v-expand-transition>
+    <v-divider class="divider"></v-divider>
+
     <!--    search filter -->
-    <v-row :class="['d-sm-flex', 'align-center', 'searchBox']">
+    <v-row :class="['d-sm-flex', 'align-center', 'searchBox', 'mt-4']">
       <v-col cols="12" md="4">
         <v-text-field id="name-text-field" label="Name" v-model="searchFilter.name" clearable></v-text-field>
       </v-col>
@@ -108,6 +135,7 @@ import alertMixin from '@/mixins/alertMixin';
 import Spinner from '@/components/common/Spinner';
 import InviteUserPage from '@/components/secure-message/InviteUserPage';
 import AccessUserCard from '@/components/secure-message/AccessUserCard';
+import router from '@/router';
 
 export default {
   name: 'AccessDistrictUsersPage',
@@ -233,6 +261,15 @@ export default {
     },
     updateUserRoles(newValue){
       this.$store.commit('edx/setDistrictRoles', newValue);
+    },
+    backButtonClick() {
+      router.push({name: 'exchangeDistrictAccess'});
+    },
+    getChipColor(){
+      if(this.primaryEdxActivationCode){
+        return 'success';
+      }
+      return 'secondary';
     },
     closeNewUserModal(){
       this.$store.commit('edx/setDistrictRoles', JSON.parse(JSON.stringify(this.districtRolesCopy)));
