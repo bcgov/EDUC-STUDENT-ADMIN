@@ -24,8 +24,10 @@ const cacheService = {
       // if anything throws, we retry
       const data = await getApiCredentials(); // get the tokens first to make api calls.
       const schools = await getData(data.accessToken, `${config.get('server:instituteAPIURL')}/school`);
+      mincodeSchoolMap.clear(); // reset the value.
+      schoolMap.clear(); // reset the value.
       mincodeSchools = []; // reset the value.
-      mincodeSchoolMap.clear();// reset the value.
+      activeSchools = [] ;// reset the value.
       if (schools && schools.length > 0) {
         for (const school of schools) {
           const mincodeSchool = generateSchoolObject(school);

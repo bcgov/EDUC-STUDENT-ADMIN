@@ -14,7 +14,7 @@ export default {
     stickyInfoPanelHeight: null,
     mincodeSchoolNames: new Map(),
     schoolMap: new Map(),
-    activeSchoolMap: new Map(),
+    activeSchools: [],
     districts : new Map(),
     districtCodes: new Set(),
     alertNotificationText: '',
@@ -69,10 +69,7 @@ export default {
       });
     },
     setActiveSchools(state, activeSchools) {
-      state.activeSchoolMap = new Map();
-      activeSchools.forEach(element => {
-        state.activeSchoolMap.set(element.schoolID, element);
-      });
+      state.activeSchools = activeSchools;
     },
     setDistricts(state, districtList) {
       state.districts = new Map();
@@ -100,7 +97,7 @@ export default {
           const response = await ApiService.getMincodeSchoolNames();
           commit('setMincodeSchoolNameAndDistrictCodes', response.data);
         }
-        if (state.activeSchoolMap.size === 0) {
+        if (state.activeSchools.length === 0) {
           const response = await ApiService.getActiveSchools();
           commit('setActiveSchools', response.data);
         }
