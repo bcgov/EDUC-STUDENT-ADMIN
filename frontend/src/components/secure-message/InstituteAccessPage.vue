@@ -68,16 +68,19 @@ export default {
 
     };
   },
+  async beforeMount() {
+    await this.$store.dispatch('app/getCodes');
+  },
   methods:{
     backButtonClick() {
       router.push({name: 'home'});
     },
   },
   computed: {
-    ...mapState('app', ['schoolMap','districts']),
+    ...mapState('app', ['activeSchoolMap','districts']),
     institutes() {
       if(this.instituteTypeCode === 'SCHOOL') {
-        return _.sortBy(Array.from(this.schoolMap.entries()).map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolID, mincode: school[1].mincode})), ['mincode']);
+        return _.sortBy(Array.from(this.activeSchoolMap.entries()).map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolID, mincode: school[1].mincode})), ['mincode']);
       }else{
         return _.sortBy(Array.from(this.districts.entries()).map(district => ({ text: `${district[1].name} - ${district[1].districtNumber}`, value: district[0], key:district[1].districtNumber})), ['key']);
       }
