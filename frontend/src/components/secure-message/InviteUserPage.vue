@@ -236,7 +236,7 @@ export default {
       }else {
         payload.districtName = this.districtName;
         payload.districtCode = this.districts.get(this.instituteCode).districtNumber;
-        payload.districtId = this.instituteCode;
+        payload.districtID = this.instituteCode;
         url = `${Routes.edx.NEW_DISTRICT_USER_ACTIVATION_INVITE}`;
       }
       ApiService.apiAxios.post(url, payload)

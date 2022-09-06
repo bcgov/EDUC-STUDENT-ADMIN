@@ -32,7 +32,7 @@
         <v-col>
           <v-row no-gutters >
             <v-col>
-              <span>Generating a new Primary EDX Activation Code for a school will replace the existing code for the school. The new code will have to be communicated to the school administrator.</span>
+              <span>Generating a new Primary EDX Activation Code for a district will replace the existing code for the district. The new code will have to be communicated to the district administrator.</span>
             </v-col>
           </v-row>
           <v-row>
