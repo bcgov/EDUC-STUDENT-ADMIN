@@ -1,5 +1,11 @@
 <template>
   <v-container class="containerSetup" fluid>
+    <v-row>
+      <v-col class="mt-1 d-flex justify-start">
+        <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
+        <a class="ml-1" @click="backButtonClick">Return to Dashboard</a>
+      </v-col>
+    </v-row>
     <!--    search filter -->
     <v-row :class="['d-sm-flex', 'align-center', 'searchBox']" @keydown.enter="searchButtonClick">
       <v-col cols="12" md="4">
@@ -65,6 +71,7 @@
 
 import {mapGetters} from 'vuex';
 import {formatPhoneNumber} from '@/utils/format';
+import router from '@/router';
 
 import PrimaryButton from '@/components/util/PrimaryButton';
 import {setEmptyInputParams} from '@/utils/common';
@@ -134,6 +141,9 @@ export default {
       }
 
       return true;
+    },
+    backButtonClick() {
+      router.push({name: 'home'});
     },
   },
   computed: {
