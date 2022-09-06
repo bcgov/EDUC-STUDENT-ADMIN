@@ -173,6 +173,27 @@ export default {
         ],
       },
       {
+        title: 'Institutions', //TODO see how this name works
+        authorized: this.STAFF_ADMINISTRATION_ADMIN, //TODO confirm the authorization requirement for this
+        items: [
+          {
+            title: 'Schools',
+            link: 'instituteDistrict',
+            authorized: this.EXCHANGE_ACCESS_ROLE //TODO confirm role
+          },
+          {
+            title: 'Districts',
+            link: 'instituteDistrict',
+            authorized: this.EXCHANGE_ACCESS_ROLE //TODO confirm role
+          },
+          {
+            title: 'Authorities',
+            link: 'instituteDistrict',
+            authorized: this.EXCHANGE_ACCESS_ROLE //TODO confirm role
+          }
+        ],
+      },
+      {
         title: 'Nominal Roll',
         link: 'nominal-roll',
         authorized: this.NOMINAL_ROLL_ROLE

@@ -119,7 +119,12 @@ nconf.defaults({
       roleAdmin: process.env.EDX_ADMIN,
       teamRoles: {
         pen: process.env.EDX_PEN_TEAM_ROLES ? process.env.EDX_PEN_TEAM_ROLES.split(',') : '', // comma separated list
-      }
+      },
+    },
+    institute: {
+      rootURL: process.env.INSTITUTE_API_URL,
+      instituteDistrictURL: process.env.INSTITUTE_API_URL + '/district',
+      instituteSchoolURL: process.env.INSTITUTE_API_URL + '/school',
     },
     macro: {
       rootURL: process.env.MACRO_API_URL,
