@@ -9,7 +9,6 @@ const demographicRoot = baseRoot + '/studentDemographics';
 const studentRoot = baseRoot + '/students';
 const penServicesRoot = baseRoot + '/pen-services';
 const schoolRequestRoot = baseRoot + '/schools';
-const districtRequestRoot = baseRoot + '/institute/districts';
 const penTraxRoot = baseRoot + '/penTrax';
 const penMatchRoot = baseRoot + '/penMatches';
 const macroRoot = baseRoot + '/macros';
@@ -92,10 +91,10 @@ let object = {
     DOC_TYPE_CODES_URL: studentRoot + '/document-type-codes'
   },
   SCHOOL_DATA_URL: schoolRequestRoot,
-  DISTRICT_DATA_URL: districtRequestRoot,
   institute: {
     ROOT_ENDPOINT: instituteRoot,
-    SCHOOL_DATA_URL: instituteRoot + '/school'
+    SCHOOL_DATA_URL: instituteRoot + '/school',
+    DISTRICT_DATA_URL: instituteRoot + '/districts'
   },
   penServices: {
     ROOT_ENDPOINT: penServicesRoot,

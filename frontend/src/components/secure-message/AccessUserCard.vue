@@ -286,7 +286,7 @@ export default {
         payload.params.userSchoolID = userSchool.edxUserSchoolID;
       } else {
         const userDistrict = userToRemove.edxUserDistricts.find(district => district.districtId === this.instituteCode);
-        payload.params.districtId = this.instituteCode;
+        payload.params.districtID = this.instituteCode;
         payload.params.edxUserDistrictID = userDistrict.edxUserDistrictID;
       }
       ApiService.apiAxios.post(Routes.edx.EXCHANGE_REMOVE_USER, payload)
