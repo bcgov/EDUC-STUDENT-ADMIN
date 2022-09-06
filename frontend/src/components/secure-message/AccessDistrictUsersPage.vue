@@ -186,7 +186,7 @@ export default {
     },
     getUsersData() {
       this.loadingUsers = true;
-      const payload = {params: {districtId: this.districtId}};
+      const payload = {params: {districtID: this.districtId}};
       ApiService.apiAxios.get(Routes.edx.EXCHANGE_ACCESS_URL, payload)
         .then(response => {
           this.filteredUsers = this.sortUserData(response.data);
