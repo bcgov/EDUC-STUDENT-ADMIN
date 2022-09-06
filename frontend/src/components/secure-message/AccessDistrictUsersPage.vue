@@ -68,7 +68,7 @@
     <Spinner v-if="loadingUsers"/>
     <v-row v-else>
       <v-col xl="4" cols="6" class="pb-0" v-for="user in filteredUsers" :key="user.digitalID">
-        <AccessUserCard @refresh="getUsersData" :userRoles="user.edxUserSchools[0].edxUserSchoolRoles" :user="user" :institute-code="districtId" :institute-roles="districtRoles" institute-type-code="DISTRICT" institute-type-label="District"></AccessUserCard>
+        <AccessUserCard @refresh="getUsersData" :userRoles="user.edxUserDistricts[0].edxUserDistrictRoles" :user="user" :institute-code="districtId" :institute-roles="districtRoles" institute-type-code="DISTRICT" institute-type-label="District"></AccessUserCard>
       </v-col>
       <v-col xl="4" cols="6" >
         <v-row>
