@@ -82,7 +82,7 @@ export default {
       if(this.instituteTypeCode === 'SCHOOL') {
         return _.sortBy(this.activeSchools.map(school => ({ text: `${school.schoolName} (${school.mincode})`, value: school.schoolID, mincode: school.mincode})), ['mincode']);
       }else{
-        return _.sortBy(this.activeDistricts.map(district => ({ text: `${district[1].name} - ${district[1].districtNumber}`, value: district[0], key:district[1].districtNumber})), ['key']);
+        return _.sortBy(this.activeDistricts.map(district => ({ text: `${district.name} - ${district.districtNumber}`, value: district.districtId, key:district.districtNumber})), ['key']);
       }
     },
 
