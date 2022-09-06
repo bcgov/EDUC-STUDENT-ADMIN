@@ -395,13 +395,13 @@ async function getEdxUsers(req, res) {
           edxUserSchools: user.edxUserSchools.filter(school => school.schoolID === req.query.schoolID)
         };
       });
-    }else if(req.query.districtCode){
+    }else if(req.query.districtID){
       // if we search by district strip out other schools and district information for the frontend
       filteredResponse = response.map(user => {
         return {
           ...user,
           edxUserSchools: [],
-          edxUserDistricts: user.edxUserDistricts.filter(district => district.districtCode === req.query.districtCode)
+          edxUserDistricts: user.edxUserDistricts.filter(district => district.districtID === req.query.districtID)
         };
       });
     }
