@@ -77,12 +77,12 @@ export default {
     },
   },
   computed: {
-    ...mapState('app', ['activeSchools','districts']),
+    ...mapState('app', ['activeSchools','activeDistricts']),
     institutes() {
       if(this.instituteTypeCode === 'SCHOOL') {
         return _.sortBy(this.activeSchools.map(school => ({ text: `${school.schoolName} (${school.mincode})`, value: school.schoolID, mincode: school.mincode})), ['mincode']);
       }else{
-        return _.sortBy(Array.from(this.districts.entries()).map(district => ({ text: `${district[1].name} - ${district[1].districtNumber}`, value: district[0], key:district[1].districtNumber})), ['key']);
+        return _.sortBy(Array.from(this.activeDistricts.entries()).map(district => ({ text: `${district[1].name} - ${district[1].districtNumber}`, value: district[0], key:district[1].districtNumber})), ['key']);
       }
     },
 
