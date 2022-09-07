@@ -20,7 +20,8 @@
       </v-col>
     </v-row>
     <!--    district list -->
-    <v-row>
+    <Spinner v-if="loadingDistricts"/>
+    <v-row v-else>
       <v-col>
         <div v-if="filteredDistrictList.length === 0">No Districts Found</div>
         <v-card v-for="district in filteredDistrictList" :key="district.districtId">
@@ -69,22 +70,22 @@
 </template>
 <script>
 
-import {mapGetters} from 'vuex';
 import {formatPhoneNumber} from '@/utils/format';
 import router from '@/router';
-
-import PrimaryButton from '@/components/util/PrimaryButton';
+import ApiService from '@/common/apiService';
 import {setEmptyInputParams} from '@/utils/common';
+
+import alertMixin from '@/mixins/alertMixin';
+import PrimaryButton from '@/components/util/PrimaryButton';
+import Spinner from '@/components/common/Spinner';
+
 
 export default {
   name: 'instituteDistrict',
-  components: {PrimaryButton},
+  components: {PrimaryButton, Spinner},
+  mixins: [alertMixin],
   async beforeMount() {
-    if (this.districts.size === 0) {
-      await this.$store.dispatch('app/getCodes');
-    }
-    this.districtList = Array.from(this.districts.values());
-    this.searchButtonClick();
+    this.getDistricts();
   },
   data() {
     return {
@@ -97,10 +98,23 @@ export default {
         {label: 'Closed', districtStatusCode: 'INACTIVE'}
       ],
       districtList: [],
-      filteredDistrictList: []
+      filteredDistrictList: [],
+      loadingDistricts: true
     };
   },
   methods: {
+    getDistricts() {
+      this.loadingDistricts = true;
+      ApiService.getDistricts({params: {refreshCache: true}}).then((response) => {
+        this.districtList = response.data;
+        this.searchButtonClick();
+      }).catch(error => {
+        console.error(error);
+        this.setFailureAlert('An error occurred while getting districts. Please try again later.');
+      }).finally(() => {
+        this.loadingDistricts = false;
+      });
+    },
     getStatusColor(districtStatusCode){
       if(districtStatusCode === 'ACTIVE') {
         return 'green';
@@ -146,9 +160,6 @@ export default {
       router.push({name: 'home'});
     }
   },
-  computed: {
-    ...mapGetters('app', ['districts']),
-  }
 };
 
 </script>
