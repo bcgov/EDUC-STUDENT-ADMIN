@@ -144,7 +144,7 @@ export default {
     },
     backButtonClick() {
       router.push({name: 'home'});
-    },
+    }
   },
   computed: {
     ...mapGetters('app', ['districts']),

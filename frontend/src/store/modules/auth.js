@@ -57,7 +57,10 @@ export default {
     HAS_STATS_ROLE: state => state.isValidGUMPAnalyticsUser || state.isValidPenRequestBatchAnalyticsUser,
     EXCHANGE_ROLE: state => state.isValidExchangeUser,
     EXCHANGE_ACCESS_ROLE: state => state.isValidEDXAdmin,
-    PEN_TEAM_ROLE: state => state.isValidPenTeamRoleUser
+    PEN_TEAM_ROLE: state => state.isValidPenTeamRoleUser,
+    DISTRICT_ADMIN_ROLE: state => state.isValidDistrictAdmin,
+    SCHOOL_ADMIN_ROLE: state => state.isValidSchoolAdmin,
+    INDEPENDENT_AUTHORITY_ADMIN_ROLE: state => state.isValidIndependentAuthorityAdmin
   },
   mutations: {
     //sets Json web token and determines whether user is authenticated
