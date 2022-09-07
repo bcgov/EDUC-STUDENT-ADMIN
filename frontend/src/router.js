@@ -426,7 +426,6 @@ const router = new VueRouter({
           meta: {
             pageTitle: PAGE_TITLES.DISTRICT_LIST,
             requiresAuth: true,
-            role: 'EXCHANGE_ROLE' //TODO see if we need a new role? INSTITITUTE_ROLE?
           },
         }
       ]
