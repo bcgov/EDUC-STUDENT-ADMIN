@@ -206,7 +206,7 @@ export default {
         });
         this.edxActivationRoleCodes.length = 0;
         this.edxActivationRoleCodes.push(this.edxAdminUserCode);
-        this.rolesHint = `EDX ${this.instituteTypeLabel} Admin users will be set up with all EDX ${this.instituteTypeLabel.toLowerCase()} roles`;
+        this.rolesHint = `EDX ${this.instituteTypeLabel} Admin users will be set up with all ${this.instituteTypeLabel.toLowerCase()} roles.`;
       } else {
         newRoles = this.userRoles.map(el => {
           el.disabled = false;
