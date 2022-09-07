@@ -37,7 +37,10 @@ const roles = {
     //Help functions created in auth module: isValidStaffAdministrationAdmin
     StaffAdministration: config.get('server:administration:roleAdmin'),
     NominalRoll: config.get('server:nominalRoll:roleAdmin'),
-    EDX: config.get('server:edx:roleAdmin')
+    EDX: config.get('server:edx:roleAdmin'),
+    District: 'DISTRICT_ADMIN',
+    School: 'SCHOOL_ADMIN',
+    IndependentAuthority: 'INDEPENDENT_AUTHORITY_ADMIN',
   }
 };
 

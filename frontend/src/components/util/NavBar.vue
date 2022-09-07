@@ -173,23 +173,23 @@ export default {
         ],
       },
       {
-        title: 'Institutions', //TODO see how this name works
-        authorized: this.STAFF_ADMINISTRATION_ADMIN, //TODO confirm the authorization requirement for this
+        title: 'Institutions',
+        authorized: this.isAuthorizedUser,
         items: [
           {
             title: 'Schools',
             link: 'instituteDistrict',
-            authorized: this.EXCHANGE_ACCESS_ROLE //TODO confirm role
+            authorized: this.isAuthorizedUser
           },
           {
             title: 'Districts',
             link: 'instituteDistrict',
-            authorized: this.EXCHANGE_ACCESS_ROLE //TODO confirm role
+            authorized: this.isAuthorizedUser
           },
           {
             title: 'Authorities',
             link: 'instituteDistrict',
-            authorized: this.EXCHANGE_ACCESS_ROLE //TODO confirm role
+            authorized: this.isAuthorizedUser
           }
         ],
       },
