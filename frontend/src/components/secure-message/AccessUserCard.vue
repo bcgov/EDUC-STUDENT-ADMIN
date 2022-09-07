@@ -162,7 +162,7 @@
 <script>
 import PrimaryButton from '@/components/util/PrimaryButton';
 import ApiService from '../../common/apiService';
-import {Routes} from '@/utils/constants';
+import {EDX_SAGA_REQUEST_DELAY_MILLISECONDS, Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 
 export default {
@@ -272,7 +272,7 @@ export default {
           this.setFailureAlert('An error occurred while re-linking a user. Please try again later.');
           console.log(error);
         }).finally(() => {
-          this.$emit('refresh');
+          setTimeout(() => { this.$emit('refresh'); }, EDX_SAGA_REQUEST_DELAY_MILLISECONDS);
         });
     },
     clickRemoveButton(userToRemove) {
