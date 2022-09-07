@@ -406,10 +406,10 @@
 <script>
 
 import ApiService from '../../common/apiService';
-import {Routes} from '@/utils/constants';
+import {EDX_SAGA_REQUEST_DELAY_MILLISECONDS, Routes} from '@/utils/constants';
 import router from '@/router';
 import {mapState, mapActions, mapGetters} from 'vuex';
-import {replaceMacro, insertMacro} from '../../utils/macro';
+import {replaceMacro, insertMacro} from '@/utils/macro';
 import {ChronoUnit, DateTimeFormatter, LocalDate} from '@js-joda/core';
 import PrimaryButton from '@/components/util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
@@ -618,8 +618,8 @@ export default {
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while adding the message to the Secure Exchange. Please try again later.');
         })
         .finally(() => {
-          this.loadingCount -= 1;
           this.resetNewMessageForm();
+          setTimeout(() => { this.loadingCount -= 1; }, EDX_SAGA_REQUEST_DELAY_MILLISECONDS);
         });
     },
     clickMarkAsClosedButton() {

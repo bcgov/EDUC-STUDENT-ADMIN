@@ -321,7 +321,7 @@
 <script>
 
 import ApiService from '../../common/apiService';
-import {Routes} from '@/utils/constants';
+import {EDX_SAGA_REQUEST_DELAY_MILLISECONDS, Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton';
 import NewMessagePage from './NewMessagePage';
 import {mapGetters, mapState} from 'vuex';
@@ -438,7 +438,7 @@ export default {
   methods: {
     messageSent(){
       this.newMessageSheet = !this.newMessageSheet;
-      this.getExchanges();
+      setTimeout(this.getExchanges, EDX_SAGA_REQUEST_DELAY_MILLISECONDS);
     },
     getMinistryTeamNameByGroupRoleID(){
       this.ministryTeamName = this.ministryTeams.find(item => item.groupRoleIdentifier === this.ministryOwnershipGroupRoleID).teamName;
@@ -709,15 +709,15 @@ export default {
 }
 
 >>>.v-data-table-header{
-  height: 0px !important;
+  height: 0 !important;
 }
 
 >>>.v-data-table-header > tr{
-  height: 0px !important;
+  height: 0 !important;
 }
 
 >>>.v-data-table-header > tr > th{
-  height: 0px !important;
+  height: 0 !important;
 }
 
 .ministryLine{
