@@ -32,7 +32,8 @@ export default {
     participants: state => state.participants,
     requestType: state => state.requestType,
     requestTypeLabel: state => state.requestTypeLabel,
-    schoolMap: state => state.schoolMap
+    schoolMap: state => state.schoolMap,
+    districts: state => state.districts,
   },
   mutations: {
     setRequest: (state, request) => {

@@ -10,6 +10,7 @@ try {
     try {
       await cacheService.loadAllSchoolsToMap();
       await cacheService.loadAllDocumentTypeCodesToMap();
+      await cacheService.loadAllDistrictsToMap();
     } catch (e) {
       log.error(e);
     }

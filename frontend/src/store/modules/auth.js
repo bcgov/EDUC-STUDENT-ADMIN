@@ -57,7 +57,10 @@ export default {
     HAS_STATS_ROLE: state => state.isValidGUMPAnalyticsUser || state.isValidPenRequestBatchAnalyticsUser,
     EXCHANGE_ROLE: state => state.isValidExchangeUser,
     EXCHANGE_ACCESS_ROLE: state => state.isValidEDXAdmin,
-    PEN_TEAM_ROLE: state => state.isValidPenTeamRoleUser
+    PEN_TEAM_ROLE: state => state.isValidPenTeamRoleUser,
+    DISTRICT_ADMIN_ROLE: state => state.isValidDistrictAdmin,
+    SCHOOL_ADMIN_ROLE: state => state.isValidSchoolAdmin,
+    INDEPENDENT_AUTHORITY_ADMIN_ROLE: state => state.isValidIndependentAuthorityAdmin
   },
   mutations: {
     //sets Json web token and determines whether user is authenticated
@@ -241,6 +244,32 @@ export default {
         localStorage.removeItem('isValidPenTeamRoleUser');
       }
     },
+    setIsValidDistrictAdmin: (state, isValidDistrictAdmin) => {
+      if (isValidDistrictAdmin) {
+        state.isValidDistrictAdmin = true;
+        localStorage.setItem('isValidDistrictAdmin', 'true');
+      } else {
+        state.isValidDistrictAdmin = false;
+        localStorage.removeItem('isValidDistrictAdmin');
+      }
+    },setIsValidSchoolAdmin: (state, isValidSchoolAdmin) => {
+      if (isValidSchoolAdmin) {
+        state.isValidSchoolAdmin = true;
+        localStorage.setItem('isValidSchoolAdmin', 'true');
+      } else {
+        state.isValidSchoolAdmin = false;
+        localStorage.removeItem('isValidSchoolAdmin');
+      }
+    },
+    setIsValidIndependentAuthorityAdmin: (state, isValidIndependentAuthorityAdmin) => {
+      if (isValidIndependentAuthorityAdmin) {
+        state.isValidIndependentAuthorityAdmin = true;
+        localStorage.setItem('isValidIndependentAuthorityAdmin', 'true');
+      } else {
+        state.isValidIndependentAuthorityAdmin = false;
+        localStorage.removeItem('isValidIndependentAuthorityAdmin');
+      }
+    },
     setUserInfo: (state, userInf) => {
       if (userInf) {
         state.userInfo = userInf;
@@ -313,5 +342,8 @@ function setAuthorizations(context, response) {
   context.commit('setExchangeUser', response.isValidExchangeUser);
   context.commit('setEDXAdmin', response.isValidEDXAdmin);
   context.commit('setIsValidPenTeamRoleUser', response.isValidPenTeamRoleUser);
+  context.commit('setIsValidDistrictAdmin', response.isValidDistrictAdmin);
+  context.commit('setIsValidSchoolAdmin', response.isValidSchoolAdmin);
+  context.commit('setIsValidIndependentAuthorityAdmin', response.isValidIndependentAuthorityAdmin);
   ApiService.setAuthHeader(response.jwtFrontend);
 }

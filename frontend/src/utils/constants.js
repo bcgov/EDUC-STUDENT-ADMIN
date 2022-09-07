@@ -407,7 +407,9 @@ export const PAGE_TITLES = Object.freeze(
     EXCHANGE_ACCESS: 'EDX School Access',
     EDX_DISTRICT_ACCESS: 'EDX District Access',
     EXCHANGE_USERS: 'EDX School Access',
-    NEW_USER_INVITE:'New User'
+    NEW_USER_INVITE:'New User',
+    DISTRICT_LIST: 'District List',
+
   }
 );
 

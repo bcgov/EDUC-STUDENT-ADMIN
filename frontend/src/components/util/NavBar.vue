@@ -173,6 +173,27 @@ export default {
         ],
       },
       {
+        title: 'Institutions',
+        authorized: this.isAuthorizedUser,
+        items: [
+          {
+            title: 'Schools',
+            link: 'instituteDistrict',
+            authorized: this.isAuthorizedUser
+          },
+          {
+            title: 'Districts',
+            link: 'instituteDistrict',
+            authorized: this.isAuthorizedUser
+          },
+          {
+            title: 'Authorities',
+            link: 'instituteDistrict',
+            authorized: this.isAuthorizedUser
+          }
+        ],
+      },
+      {
         title: 'Nominal Roll',
         link: 'nominal-roll',
         authorized: this.NOMINAL_ROLL_ROLE

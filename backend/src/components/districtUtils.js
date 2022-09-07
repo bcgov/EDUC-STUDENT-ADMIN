@@ -6,7 +6,8 @@ function generateDistrictObject(district) {
     districtNumber: district.districtNumber,
     name: district.displayName,
     districtRegionCode: district.districtRegionCode,
-    districtStatusCode: district.districtStatusCode
+    districtStatusCode: district.districtStatusCode,
+    phoneNumber: district.phoneNumber,
   };
 }
 

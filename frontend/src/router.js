@@ -41,6 +41,8 @@ import MessageDisplay from '@/components/secure-message/MessageDisplay';
 import AccessUsersPage from '@/components/secure-message/AccessUsersPage';
 import AccessDistrictUsersPage from '@/components/secure-message/AccessDistrictUsersPage';
 import InstituteAccessPage from '@/components/secure-message/InstituteAccessPage';
+import DistrictsPage from '@/components/institute/DistrictsPage';
+
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -410,6 +412,21 @@ const router = new VueRouter({
             requiresAuth: true,
             role: 'EXCHANGE_ROLE'
           }
+        }
+      ]
+    },
+    {
+      path: '/institute',
+      component: RouterView,
+      children: [
+        {
+          path: 'district',
+          name: 'instituteDistrict',
+          component: DistrictsPage,
+          meta: {
+            pageTitle: PAGE_TITLES.DISTRICT_LIST,
+            requiresAuth: true,
+          },
         }
       ]
     },
