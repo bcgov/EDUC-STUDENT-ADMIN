@@ -15,7 +15,8 @@ export default {
     mincodeSchoolNames: new Map(),
     schoolMap: new Map(),
     activeSchools: [],
-    districts: new Map(),
+    activeDistricts: [],
+    districts : new Map(),
     districtCodes: new Set(),
     alertNotificationText: '',
     alertNotificationQueue: [],
@@ -72,6 +73,9 @@ export default {
     setActiveSchools(state, activeSchools) {
       state.activeSchools = activeSchools;
     },
+    setActiveDistricts(state, activeDistricts) {
+      state.activeDistricts = activeDistricts;
+    },
     setDistricts(state, districtList) {
       state.districts = new Map();
       districtList.forEach(element => {
@@ -105,6 +109,10 @@ export default {
         if(state.districts.size === 0) {
           const response = await ApiService.getDistricts();
           commit('setDistricts', response.data);
+        }
+        if (state.activeDistricts.length === 0) {
+          const response = await ApiService.getActiveDistricts();
+          commit('setActiveDistricts', response.data);
         }
       }
     },

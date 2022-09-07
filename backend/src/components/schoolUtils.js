@@ -19,6 +19,6 @@ function isSchoolActive(school) {
 }
 
 module.exports = {
-  generateSchoolObject: generateSchoolObject,
+  generateSchoolObject,
   isSchoolActive
 };

@@ -5,11 +5,13 @@ const {getApiCredentials} = require('../components/auth');
 const {getData} = require('../components/utils');
 const retry = require('async-retry');
 const {generateSchoolObject,isSchoolActive} = require('./schoolUtils');
+const {generateDistrictObject, isDistrictActive} = require('./districtUtils');
 
 let mincodeSchoolMap = new Map();
 let mincodeSchools = [];
 let schoolMap = new Map();
 let activeSchools = [];
+let activeDistricts = [];
 let districts = [];
 let districtsMap = new Map();
 
@@ -65,19 +67,16 @@ const cacheService = {
       const districtsResponse = await getData(data.accessToken, config.get('server:institute:instituteDistrictURL'));
       // reset the value.
       districts = [];
+      activeDistricts = [];
       districtsMap.clear();
       if (districtsResponse && districtsResponse.length > 0) {
         for (const district of districtsResponse) {
-          const districtData = {
-            districtId: district.districtId,
-            districtNumber: district.districtNumber,
-            name: district.displayName,
-            districtRegionCode: district.districtRegionCode,
-            districtStatusCode: district.districtStatusCode,
-            phoneNumber: district.phoneNumber,
-          };
+          const districtData = generateDistrictObject(district);
           districtsMap.set(district.districtId, districtData);
           districts.push(districtData);
+          if(isDistrictActive(districtData)){
+            activeDistricts.push(districtData);
+          }
         }
       }
       log.info(`loaded ${districtsMap.size} districts.`);
@@ -85,6 +84,9 @@ const cacheService = {
       retries: 50
     });
 
+  },
+  getAllActiveDistrictsJSON(){
+    return activeDistricts;
   },
   getAllDistrictsJSON() {
     return districts;
