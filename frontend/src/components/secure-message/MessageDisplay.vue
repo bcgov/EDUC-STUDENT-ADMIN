@@ -897,6 +897,12 @@ export default {
   font-size: medium;
 }
 
+.activityContent {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-width: 100%;
+}
+
 .containerSetup{
   padding-right: 30em !important;
   padding-left: 30em !important;
