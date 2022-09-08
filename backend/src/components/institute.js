@@ -9,7 +9,7 @@ async function getDistricts(req, res) {
     if (req.query.refreshCache === 'true') {
       await cacheService.loadAllDistrictsToMap();
     }
-    const districts = req.query.active === 'true' ? cacheService.getAllActiveDistrictsJSON() : cacheService.getAllDistrictsJSON();
+    const districts = req.query.active === '1' ? cacheService.getAllActiveDistrictsJSON() : cacheService.getAllDistrictsJSON();
     return res.status(HttpStatus.OK).json(districts);
   } catch (e) {
     logApiError(e, 'getDistricts', 'Error occurred while attempting to GET district entity.');
