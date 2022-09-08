@@ -248,7 +248,7 @@ export default {
     },
     roleFilter(user, roleName) {
       if (roleName) {
-        return user.edxUserSchools[0].edxUserSchoolRoles.some(role => role.edxRoleCode === roleName);
+        return user.edxUserDistricts[0].edxUserDistrictRoles.some(role => role.edxRoleCode === roleName);
       }
 
       return true;
