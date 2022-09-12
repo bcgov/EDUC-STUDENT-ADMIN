@@ -16,7 +16,7 @@ export default {
     schoolMap: new Map(),
     activeSchools: [],
     activeDistricts: [],
-    districts : new Map(),
+    districtMap : new Map(),
     districtCodes: new Set(),
     alertNotificationText: '',
     alertNotificationQueue: [],
@@ -33,7 +33,7 @@ export default {
     requestType: state => state.requestType,
     requestTypeLabel: state => state.requestTypeLabel,
     schoolMap: state => state.schoolMap,
-    districts: state => state.districts,
+    districtMap: state => state.districtMap,
   },
   mutations: {
     setRequest: (state, request) => {
@@ -77,9 +77,9 @@ export default {
       state.activeDistricts = activeDistricts;
     },
     setDistricts(state, districtList) {
-      state.districts = new Map();
+      state.districtMap = new Map();
       districtList.forEach(element => {
-        state.districts.set(element.districtId, element);
+        state.districtMap.set(element.districtId, element);
       });
     },
     setAlertNotificationText: (state, alertNotificationText) => {
@@ -106,7 +106,7 @@ export default {
           const response = await ApiService.getActiveSchools();
           commit('setActiveSchools', response.data);
         }
-        if(state.districts.size === 0) {
+        if(state.districtMap.size === 0) {
           const response = await ApiService.getDistricts();
           commit('setDistricts', response.data);
         }
