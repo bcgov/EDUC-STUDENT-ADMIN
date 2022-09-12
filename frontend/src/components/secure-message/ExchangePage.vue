@@ -103,6 +103,7 @@
                     label="Subject"
                     prepend-inner-icon="mdi-book-open-variant"
                     clearable
+                    @keyup.enter="enterPushed()"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" md="4" class="pt-0" :class="{'pl-12 pr-12': $vuetify.breakpoint.mdAndUp}">
@@ -172,6 +173,7 @@
                     label="Claimed By"
                     prepend-inner-icon="mdi-account-check-outline"
                     clearable
+                    @keyup.enter="enterPushed()"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" md="4" class="pt-0">
@@ -181,6 +183,7 @@
                     label="Message ID"
                     prepend-inner-icon="mdi-pound"
                     clearable
+                    @keyup.enter="enterPushed()"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -194,6 +197,7 @@
                     maxlength="9"
                     counter="9"
                     clearable
+                    @keyup.enter="enterPushed()"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -436,6 +440,11 @@ export default {
     this.setFilterStatusAllActive();
   },
   methods: {
+    enterPushed() {
+      if (this.searchEnabled) {
+        this.filterExchanges();
+      }
+    },
     messageSent(){
       this.newMessageSheet = !this.newMessageSheet;
       setTimeout(this.getExchanges, EDX_SAGA_REQUEST_DELAY_MILLISECONDS);

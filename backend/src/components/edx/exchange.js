@@ -443,7 +443,7 @@ async function generateOrRegeneratePrimaryEdxActivationCode(req, res) {
     const result = await utils.postData(token, `${config.get('server:edx:activationCodeUrl')}/primary/${instituteType}/${req.params.instituteIdentifier}`, payload, null, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
-    logApiError(e, 'generateOrRegeneratePrimaryEdxActivationCode', 'Error occurred while attempting to generate a Primary EDX Activation Code.');
+    logApiError(e, 'generateOrRegeneratePrimaryEdxActivationCode', 'Error occurred while attempting to generate a Primary Activation Code.');
     return errorResponse(res);
   }
 }
