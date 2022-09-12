@@ -5,7 +5,7 @@
   "description": "Simple Student Admin UI.",
   "author": "Marco Villeneuve",
   "scripts": {
-    "serve": "vue-cli-service serve --port 8081",
+    "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit --unhandled-rejections=strict",
     "lint": "vue-cli-service lint --no-fix",
