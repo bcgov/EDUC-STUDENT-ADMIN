@@ -555,4 +555,4 @@ export const NOMINAL_ROLL_STUDENT_STATUS_CODES = Object.freeze(
   Object.fromEntries(NOMINAL_ROLL_STUDENT_STATUSES.map(status => [status.value, status.value]))
 );
 
-export const EDX_SAGA_REQUEST_DELAY_MILLISECONDS = 1000;
+export const EDX_SAGA_REQUEST_DELAY_MILLISECONDS = 2000;
