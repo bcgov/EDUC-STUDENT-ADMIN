@@ -161,7 +161,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('app', ['schoolMap','districts']),
+    ...mapState('app', ['schoolMap','districtMap']),
     emailRules() {
       return [
         v => !!v || this.emailHint,
@@ -177,7 +177,7 @@ export default {
       if(this.instituteTypeCode=== 'SCHOOL'){
         this.instituteNameAndCode = this.schoolName + ' (' + this.schoolMap.get(this.instituteCode)?.mincode + ')';
       }else{
-        this.instituteNameAndCode = this.districtName + ' (' + this.districts.get(this.instituteCode).districtNumber + ')';
+        this.instituteNameAndCode = this.districtName + ' (' + this.districtMap.get(this.instituteCode).districtNumber + ')';
       }
     }
   },
@@ -206,7 +206,7 @@ export default {
         });
         this.edxActivationRoleCodes.length = 0;
         this.edxActivationRoleCodes.push(this.edxAdminUserCode);
-        this.rolesHint = `EDX ${this.instituteTypeLabel} Admin users will be set up with all ${this.instituteTypeLabel.toLowerCase()} roles.`;
+        this.rolesHint = `EDX ${this.instituteTypeLabel} Admin users will be set up with all EDX ${this.instituteTypeLabel.toLowerCase()} roles`;
       } else {
         newRoles = this.userRoles.map(el => {
           el.disabled = false;
@@ -235,7 +235,7 @@ export default {
         url = `${Routes.edx.NEW_SCHOOL_USER_ACTIVATION_INVITE}`;
       }else {
         payload.districtName = this.districtName;
-        payload.districtCode = this.districts.get(this.instituteCode).districtNumber;
+        payload.districtCode = this.districtMap.get(this.instituteCode).districtNumber;
         payload.districtID = this.instituteCode;
         url = `${Routes.edx.NEW_DISTRICT_USER_ACTIVATION_INVITE}`;
       }

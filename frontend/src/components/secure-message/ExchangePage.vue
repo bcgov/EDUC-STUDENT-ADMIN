@@ -396,7 +396,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapGetters('app', ['schoolMap', 'districts']),
+    ...mapGetters('app', ['schoolMap', 'districtMap']),
     ...mapState('app', ['mincodeSchoolNames']),
     ...mapState('edx', ['statuses']),
     ...mapState('edx', ['ministryTeams']),
@@ -457,7 +457,7 @@ export default {
       case 'SCHOOL':
         return `${this.schoolMap.get(item.contactIdentifier).schoolName} (${this.schoolMap.get(item.contactIdentifier).mincode}) - ${item.createDate}`;
       case 'DISTRICT':
-        return `${this.districts.get(item.contactIdentifier).name} (${this.districts.get(item.contactIdentifier).districtNumber}) - ${item.createDate}`;
+        return `${this.districtMap.get(item.contactIdentifier).name} (${this.districtMap.get(item.contactIdentifier).districtNumber}) - ${item.createDate}`;
       }
     },
     getReviewer(reviewer){

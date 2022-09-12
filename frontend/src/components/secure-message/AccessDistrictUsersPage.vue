@@ -165,7 +165,7 @@ export default {
     if (this.districtRoles.length === 0) {
       await this.$store.dispatch('edx/getEdxDistrictRoles');
     }
-    if (this.districts.size === 0) {
+    if (this.districtMap.size === 0) {
       await this.$store.dispatch('app/getCodes');
     }
   },
@@ -226,7 +226,7 @@ export default {
       this.closeGenerateNewPrimaryEdxActivationCodeDialog();
     },
     getDistrictName() {
-      const district = this.districts.get(this.districtId);
+      const district = this.districtMap.get(this.districtId);
       return `${district.name} (${district.districtNumber})`;
     },
     clearButtonClick() {
@@ -248,7 +248,7 @@ export default {
     },
     roleFilter(user, roleName) {
       if (roleName) {
-        return user.edxUserDistricts[0].edxUserDistrictRoles.some(role => role.edxRoleCode === roleName);
+        return user.edxUserSchools[0].edxUserSchoolRoles.some(role => role.edxRoleCode === roleName);
       }
 
       return true;
@@ -276,11 +276,11 @@ export default {
       this.newUserInviteSheet = false; // close the modal window.
     },
     getDistrictNameForUserInvite(){
-      return this.districts.get(this.districtId).name;
+      return this.districtMap.get(this.districtId).name;
     }
   },
   computed: {
-    ...mapState('app', ['districts']),
+    ...mapState('app', ['districtMap']),
     ...mapState('edx', ['districtRoles','districtRolesCopy']),
   }
 };
