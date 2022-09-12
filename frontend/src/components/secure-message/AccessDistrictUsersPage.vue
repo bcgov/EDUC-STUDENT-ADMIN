@@ -32,12 +32,12 @@
         <v-col>
           <v-row no-gutters >
             <v-col>
-              <span>Generating a new Primary EDX Activation Code for a district will replace the existing code for the district. The new code will have to be communicated to the district administrator.</span>
+              <span>Generating a new Primary Activation Code for a district will replace the existing code for the district. The new code will have to be communicated to the district administrator.</span>
             </v-col>
           </v-row>
           <v-row>
             <v-col>
-              <p>Are you sure that you want to generate a new Primary EDX Activation Code?</p>
+              <p>Are you sure that you want to generate a new Primary Activation Code?</p>
             </v-col>
           </v-row>
           <v-row no-gutters>
@@ -54,7 +54,7 @@
     <!--    search filter -->
     <v-row :class="['d-sm-flex', 'align-center', 'searchBox', 'mt-4']">
       <v-col cols="12" md="4">
-        <v-text-field id="name-text-field" label="Name" v-model="searchFilter.name" clearable></v-text-field>
+        <v-text-field id="name-text-field" label="Name" v-model="searchFilter.name" clearable @keyup.enter="enterPushed()"></v-text-field>
       </v-col>
       <v-col cols="12" md="4">
         <v-select id="roleName-select-field" clearable :items="districtRoles" v-model="searchFilter.roleName" item-text="label" item-value="edxRoleCode" label="Role"></v-select>
@@ -174,6 +174,11 @@ export default {
     this.getPrimaryEdxActivationCode();
   },
   methods: {
+    enterPushed() {
+      if (this.searchFilter.name) {
+        this.searchButtonClick();
+      }
+    },
     sortUserData(users){
       return users.sort((a, b) => {
         if (a.firstName > b.firstName) {
@@ -208,10 +213,10 @@ export default {
       ApiService.apiAxios.post(`${Routes.edx.PRIMARY_ACTIVATION_CODE_URL}/district/${this.districtId}`)
         .then(response => {
           this.primaryEdxActivationCode = response.data;
-          this.setSuccessAlert(`The new Primary EDX Activation Code is ${ this.primaryEdxActivationCode.activationCode }.`);
+          this.setSuccessAlert(`The new Primary Activation Code is ${ this.primaryEdxActivationCode.activationCode }.`);
         }).catch (e => {
           this.primaryEdxActivationCode = null;
-          this.setFailureAlert('There was an error generating the Primary EDX Activation code. Please try again.',);
+          this.setFailureAlert('There was an error generating the Primary Activation code. Please try again.',);
           console.log(e);
         });
     },

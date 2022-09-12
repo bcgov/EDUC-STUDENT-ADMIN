@@ -12,25 +12,23 @@
     >
       {{ alertMessage }}
     </v-alert>
-    <v-form
-      ref="form"
-      v-model="validForm"
-    >
-      <v-row row d-flex nowrap align="center" justify="center" class="px-2">
-        <v-text-field class="pr-5"
-                      clearable
-                      v-model="penNumber"
-                      placeholder="Enter a Student's PEN"
-                      :rules="penRules"
-                      maxlength="9"
-                      counter="9"
-                      id="studentPenTextField">
-        </v-text-field>
-        <PrimaryButton width="6rem" :disabled="enableSearchButton" id="searchPenBtn" text="Search"
-                       :loading="isSearchingStudent"
-                       @click.native="searchStudentForGivenPEN"/>
-      </v-row>
-    </v-form>
+
+    <v-row row d-flex nowrap align="center" justify="center" class="px-2">
+      <v-text-field class="pr-5"
+                    clearable
+                    v-model="penNumber"
+                    placeholder="Enter a Student's PEN"
+                    :rules="penRules"
+                    maxlength="9"
+                    counter="9"
+                    id="studentPenTextField"
+                    @keyup.enter="enterPushed()">
+      </v-text-field>
+      <PrimaryButton width="6rem" :disabled="enableSearchButton" id="searchPenBtn" text="Search"
+                     :loading="isSearchingStudent"
+                     @click.native="searchStudentForGivenPEN"/>
+    </v-row>
+
     <v-row no-gutters v-if="showStudentDetails">
       <v-icon x-large v-if="showStudentDetails" class="pr-2">mdi-account-box-outline</v-icon>
       <div :class="['d-flex', 'flex-column']">
@@ -79,7 +77,6 @@ export default {
       isSearchingStudent: false,
       showStudentDetails: false,
       penNumber: null,
-      validForm: false,
       penRules: [v => (!v || isValidPEN(v))],
       studentExist: false,
       student: {},
@@ -114,6 +111,11 @@ export default {
     },
   },
   methods: {
+    enterPushed() {
+      if ((isValidPEN(this.penNumber))) {
+        this.searchStudentForGivenPEN();
+      }
+    },
     setErrorAlert(alertMessage) {
       this.alertMessage = alertMessage;
       this.alertType = 'bootstrap-error';
@@ -156,16 +158,13 @@ export default {
       }
     },
     closeForm() {
-      this.resetForm();
+      this.resetFields();
       this.$emit('close:form');
     },
-    resetForm() {
-      this.$refs.form.reset();
+    resetFields() {
+      this.penNumber = null;
       this.alert = false;
       this.alertMessage = null;
-    },
-    validate() {
-      this.$refs.form.validate();
     },
     addStudentToMessage() {
       let secureExchangeStudent = {
@@ -173,7 +172,7 @@ export default {
         pen: this.student['pen'],
       };
       this.$emit('addStudent', secureExchangeStudent);
-      this.resetForm();
+      this.resetFields();
       this.$emit('close:form');
     },
   },
