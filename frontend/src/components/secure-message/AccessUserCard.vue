@@ -137,7 +137,7 @@
           <v-card-text class="pt-0" style="background-color: #e7ebf0;" v-if="editState">
             <v-row v-if="!minimumRolesSelected" no-gutters>
               <v-col class="mt-0 d-flex justify-start">
-                <p>Please select at least one role for {{ user.firstName }}.</p>
+                <p style="font-weight: bolder;color: black;">Please select at least one role for {{ user.firstName }}.</p>
               </v-col>
             </v-row>
             <v-row no-gutters>
