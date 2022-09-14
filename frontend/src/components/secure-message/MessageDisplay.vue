@@ -69,7 +69,7 @@
             <v-row>
               <v-col class="mt-1 d-flex justify-start">
                 <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
-                <a class="pt-1 ml-1" @click="backButtonClick">Return to {{ this.ministryOwnershipTeamName }} Inbox</a>
+                <a class="pt-1 ml-1" @click="backButtonClick">Return to {{ this.secureExchange.ministryOwnershipTeamName }} Inbox</a>
               </v-col>
               <v-col class="d-flex justify-end">
                 <v-btn :disabled="!isEditable()"   id="markAsButton" v-on:click="clickMarkAsButton" :loading="loadingReadStatus">
