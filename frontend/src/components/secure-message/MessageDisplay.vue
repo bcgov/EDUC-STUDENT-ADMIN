@@ -858,7 +858,7 @@ export default {
         });
     },
     backButtonClick() {
-      router.push({name: 'exchange_inbox_' + this.ministryOwnershipGroupRoleID});
+      router.push({name: `exchange_inbox_${this.secureExchange.ministryOwnershipGroupRoleIdentifier}`});
     },
     //helper function to close all panels before setting one to visible in another method
     closeAllPanels() {
