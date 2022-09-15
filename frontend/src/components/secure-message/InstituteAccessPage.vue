@@ -68,7 +68,7 @@ export default {
 
     };
   },
-  async beforeMount() {
+  async created() {
     await this.$store.dispatch('app/getCodes');
   },
   methods:{
