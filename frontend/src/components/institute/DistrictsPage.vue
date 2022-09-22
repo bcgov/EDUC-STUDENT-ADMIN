@@ -11,7 +11,15 @@
       <!--    search filter -->
       <v-row :class="['d-sm-flex', 'align-center', 'searchBox']" @keydown.enter="searchButtonClick">
         <v-col cols="12" md="4">
-          <v-text-field id="name-text-field" label="District Number and Name" v-model="searchFilter.name" clearable></v-text-field>
+          <v-autocomplete
+            id="name-text-field"
+            label="District Number and Name"
+            item-value="districtId"
+            item-text="districtNumberName"
+            :items="districtSearchNames"
+            v-model="searchFilter.districtId"
+            clearable>
+          </v-autocomplete>
         </v-col>
         <v-col cols="12" md="4">
           <v-select id="status-select-field" clearable :items="status" v-model="searchFilter.status" item-text="label" item-value="districtStatusCode" label="Status"></v-select>
@@ -29,7 +37,7 @@
             <v-card-text>
               <v-row no-gutters>
                 <v-col>
-                  <strong>{{ `${district.districtNumber} - ${district.name}` }}</strong>
+                  <strong class="largeFont">{{ `${district.districtNumber} - ${district.name}` }}</strong>
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col lg="2" md="3" sm="4">
@@ -38,27 +46,43 @@
                       <v-icon :color="getStatusColor(district.districtStatusCode)">
                         mdi-circle-medium
                       </v-icon>
-                      <span>{{ getStatusText(district.districtStatusCode) }}</span>
+                      <span class="largeFont">{{ getStatusText(district.districtStatusCode) }}</span>
                     </v-col>
                   </v-row>
                   <v-row no-gutters>
-                    <v-col>
+                    <v-col class="mt-1">
                       <v-icon>
                         mdi-phone-outline
                       </v-icon>
-                      <span>{{ getPhoneNumber(district.phoneNumber) }}</span>
+                      <span class="largeFont">{{ getPhoneNumber(district.phoneNumber) }}</span>
                     </v-col>
                   </v-row>
                 </v-col>
                 <v-col lg="2" md="3" sm="4">
-                  <v-row class="mb-1" no-gutters>
+                  <v-row class="mb-2" no-gutters>
                     <v-col>
-                      <PrimaryButton class="districtDetailButton" width="100%" secondary icon="mdi-domain">District Details</PrimaryButton>
+                      <v-btn id="districtDetails"
+                             color="#003366"
+                             width="100%"
+                             outlined
+                             class="mt-0 pt-0 filterButton"
+                      >
+                        <v-icon color="#003366" style="margin-top: 0.07em" class="ml-n5 mr-1" right dark>mdi-newspaper-variant-outline</v-icon>
+                        <span class="ml-1" style="text-transform: initial">District Details</span>
+                      </v-btn>
                     </v-col>
                   </v-row>
                   <v-row no-gutters>
                     <v-col>
-                      <PrimaryButton class="districtContactButton" width="100%" secondary icon="mdi-account-multiple-outline">District Contacts</PrimaryButton>
+                      <v-btn id="districtContacts"
+                             color="#003366"
+                             width="100%"
+                             outlined
+                             class="mt-0 pt-0 filterButton"
+                      >
+                        <v-icon color="#003366" style="margin-top: 0.07em" class="ml-n1 mr-1" right dark>mdi-account-multiple-outline</v-icon>
+                        <span class="ml-1" style="text-transform: initial">District Contacts</span>
+                      </v-btn>
                     </v-col>
                   </v-row>
                 </v-col>
@@ -96,10 +120,11 @@ export default {
         status: 'ACTIVE'
       },
       status: [
-        {label: 'Open', districtStatusCode: 'ACTIVE'},
-        {label: 'Closed', districtStatusCode: 'INACTIVE'}
+        {label: 'Active', districtStatusCode: 'ACTIVE'},
+        {label: 'Inactive', districtStatusCode: 'INACTIVE'}
       ],
       districtList: [],
+      districtSearchNames: [],
       filteredDistrictList: [],
       loadingDistricts: true
     };
@@ -109,6 +134,13 @@ export default {
       this.loadingDistricts = true;
       ApiService.getDistricts({params: {refreshCache: true}}).then((response) => {
         this.districtList = response.data;
+        for(const district of this.districtList){
+          let districtItem = {
+            districtNumberName: district.districtNumber + ' - ' + district.name,
+            districtId: district.districtId,
+          };
+          this.districtSearchNames.push(districtItem);
+        }
         this.searchButtonClick();
       }).catch(error => {
         console.error(error);
@@ -126,9 +158,9 @@ export default {
     },
     getStatusText(districtStatusCode) {
       if (districtStatusCode === 'ACTIVE') {
-        return 'Open';
+        return 'Active';
       } else if (districtStatusCode === 'INACTIVE') {
-        return 'Closed';
+        return 'Inactive';
       }
     },
     getPhoneNumber(phoneNumber) {
@@ -141,12 +173,12 @@ export default {
     searchButtonClick() {
       this.filteredDistrictList = this.districtList
         .filter(district => {
-          return this.nameFilter(district, this.searchFilter?.name) && this.statusFilter(district, this.searchFilter?.status);
+          return this.districtIdFilter(district, this.searchFilter?.districtId) && this.statusFilter(district, this.searchFilter?.status);
         });
     },
-    nameFilter(district, name) {
-      if (name) {
-        return `${district.districtNumber} ${district.name}`.toLowerCase().includes(name.toLowerCase());
+    districtIdFilter(district, districtId) {
+      if (districtId) {
+        return district.districtId === districtId;
       }
 
       return true;
@@ -175,6 +207,10 @@ export default {
   margin-right: 0;
   border-radius: 5px;
   background-color: #F2F2F2;
+}
+
+.largeFont {
+  font-size: large;
 }
 
 .containerSetup{
