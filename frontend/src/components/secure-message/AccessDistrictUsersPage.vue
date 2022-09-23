@@ -15,15 +15,13 @@
         <a class="ml-1 mt-1" @click="backButtonClick">Return to District Search</a>
       </v-col>
       <v-col class="d-flex justify-end">
-        <v-chip
-          :color="getChipColor()"
-
-        >
+        <v-chip id="primaryEdxActivationCode" :color="getChipColor()">
           <v-icon left>
             mdi-shield-key-outline
           </v-icon>Primary Activation Code:
           {{ this.primaryEdxActivationCode ? this.primaryEdxActivationCode.activationCode : `Code Not Found` }}
         </v-chip>
+        <ClipboardButton id="copyPrimaryEdxActivationCodeButton" v-if="this.primaryEdxActivationCode" :copyText="this.primaryEdxActivationCode.activationCode" icon="$copy"></ClipboardButton>
         <PrimaryButton id="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibilityButton" short secondary icon="mdi-sync" style="margin-top: 0.2em" class="ml-2 pl-2 pr-2" @click.native="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibility">Generate</PrimaryButton>
       </v-col>
     </v-row>
@@ -136,11 +134,12 @@ import Spinner from '@/components/common/Spinner';
 import InviteUserPage from '@/components/secure-message/InviteUserPage';
 import AccessUserCard from '@/components/secure-message/AccessUserCard';
 import router from '@/router';
+import ClipboardButton from '@/components/util/ClipboardButton';
 
 export default {
   name: 'AccessDistrictUsersPage',
   mixins: [ alertMixin ],
-  components: { InviteUserPage, PrimaryButton, AccessUserCard, Spinner },
+  components: { ClipboardButton, InviteUserPage, PrimaryButton, AccessUserCard, Spinner },
   props: {
     districtId: {
       type: String,
