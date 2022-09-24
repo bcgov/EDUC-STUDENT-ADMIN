@@ -1,8 +1,9 @@
 'use strict';
-const { logApiError, errorResponse} = require('./utils');
+const { logApiError, getData, errorResponse, getBackendToken, validateAccessToken} = require('./utils');
 const HttpStatus = require('http-status-codes');
 const cacheService = require('./cache-service');
-
+const {FILTER_OPERATION, VALUE_TYPE, CONDITION} = require('../util/constants');
+const config = require('../config/index');
 
 async function getDistricts(req, res) {
   try {
@@ -36,8 +37,81 @@ async function getSchools(req, res) {
   }
 }
 
+async function getSchoolsPaginated(req, res){
+  const accessToken = getBackendToken(req);
+  validateAccessToken(accessToken, res);
+
+  let parsedParams = '';
+  if (req.query.searchParams) {
+    parsedParams = JSON.parse(req.query.searchParams);
+  }
+
+  const schoolSearchCriteria = [{
+    condition: null,
+    searchCriteriaList: createSchoolSearchCriteria(parsedParams),
+  }];
+
+  const schoolSearchParam = {
+    params: {
+      pageNumber: req.query.pageNumber,
+      pageSize: req.query.pageSize,
+      sort: req.query.sort,
+      searchCriteriaList: JSON.stringify(schoolSearchCriteria)
+    }
+  };
+  let response = await getData(accessToken, config.get('server:institute:rootURL') + '/school/paginated', schoolSearchParam);
+  return res.status(HttpStatus.OK).json(response);
+}
+
+function createSchoolSearchCriteria(searchParams){
+
+  let searchCriteriaList = [];
+
+  Object.keys(searchParams).forEach(function(key){
+    let pValue = searchParams[key];
+    if(key === 'status'){
+      let currentDate = new Date().toISOString().substring(0,19);
+
+      if(pValue === 'Open'){
+        searchCriteriaList.push({key: 'openedDate', operation: FILTER_OPERATION.LESS_THAN_OR_EQUAL_TO, value: currentDate, valueType: VALUE_TYPE.DATE_TIME, condition: CONDITION.AND});
+        searchCriteriaList.push({key: 'closedDate', operation: FILTER_OPERATION.EQUAL, value: null, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND});
+      } else if (pValue === 'Opening'){
+        searchCriteriaList.push({key: 'openedDate', operation: FILTER_OPERATION.GREATER_THAN, value: currentDate, valueType: VALUE_TYPE.DATE_TIME, condition: CONDITION.AND});
+      } else if (pValue === 'Closing'){
+        searchCriteriaList.push({key: 'closedDate', operation: FILTER_OPERATION.GREATER_THAN, value: currentDate, valueType: VALUE_TYPE.DATE_TIME, condition: CONDITION.AND});
+      } else if (pValue === 'Closed'){
+        searchCriteriaList.push({key: 'closedDate', operation: FILTER_OPERATION.LESS_THAN_OR_EQUAL_TO, value: currentDate, valueType: VALUE_TYPE.DATE_TIME, condition: CONDITION.AND});
+      } else if (pValue === 'NeverOpened'){
+        searchCriteriaList.push({key: 'openedDate', operation: FILTER_OPERATION.EQUAL, value: null, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND});
+        searchCriteriaList.push({key: 'closedDate', operation: FILTER_OPERATION.EQUAL, value: null, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND});
+      } else if (pValue === 'NotClosed'){
+        searchCriteriaList.push({key: 'closedDate', operation: FILTER_OPERATION.GREATER_THAN, value: currentDate, valueType: VALUE_TYPE.DATE_TIME, condition: CONDITION.OR});
+        searchCriteriaList.push({key: 'closedDate', operation: FILTER_OPERATION.EQUAL, value: null, valueType: VALUE_TYPE.STRING, condition: CONDITION.OR});
+      }
+    }
+    if(key === 'pubEarlyLearning'){
+      searchCriteriaList.push({key: 'schoolCategoryCode', operation: FILTER_OPERATION.IN, value: 'EAR_LEARN,PUBLIC', valueType: VALUE_TYPE.STRING, condition: CONDITION.AND});
+    }
+    if(key === 'schoolID'){
+      searchCriteriaList.push({key: 'schoolId', operation: FILTER_OPERATION.EQUAL, value: pValue, valueType: VALUE_TYPE.UUID, condition: CONDITION.AND});
+    }
+    if(key === 'districtID'){
+      searchCriteriaList.push({key: 'districtID', operation: FILTER_OPERATION.EQUAL, value: pValue, valueType: VALUE_TYPE.UUID, condition: CONDITION.AND});
+    }
+    if(key === 'type'){
+      searchCriteriaList.push({key: 'facilityTypeCode', operation: FILTER_OPERATION.EQUAL, value: pValue, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND});
+    }
+    if(key === 'category'){
+      searchCriteriaList.push({key: 'schoolCategoryCode', operation: FILTER_OPERATION.EQUAL, value: pValue, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND});
+    }
+  });
+
+  return searchCriteriaList;
+}
+
 module.exports = {
   getDistricts,
   getDistrictByDistrictId,
-  getSchools
+  getSchools,
+  getSchoolsPaginated
 };

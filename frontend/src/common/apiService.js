@@ -92,4 +92,6 @@ export default {
   getEdxMincodes: getCodes(`${Routes.edx.USERS_URL}/user-schools/mincodes`),
   getEdxRoles: getCodes(`${Routes.edx.USERS_URL}/roles`),
   getFileRequirements: getCodes(`${Routes.edx.EXCHANGE_FILE_REQUIREMENTS_URL}`),
+  getFacilityTypeCodes: getCodes(`${Routes.institute.FACILITY_TYPES_URL}`),
+  getSchoolCategoryTypeCodes: getCodes(`${Routes.institute.SCHOOL_CATEGORY_TYPES_URL}`),
 };

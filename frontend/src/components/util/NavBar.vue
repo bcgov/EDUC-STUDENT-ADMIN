@@ -178,7 +178,7 @@ export default {
         items: [
           {
             title: 'Schools',
-            link: 'instituteDistrict',
+            link: 'instituteSchoolList',
             authorized: this.isAuthorizedUser
           },
           {

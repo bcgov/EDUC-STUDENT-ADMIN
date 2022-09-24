@@ -94,6 +94,9 @@ let object = {
   institute: {
     ROOT_ENDPOINT: instituteRoot,
     SCHOOL_DATA_URL: instituteRoot + '/school',
+    SCHOOL_PAGINATED_DATA_URL: instituteRoot + '/schoolsPaginated',
+    FACILITY_TYPES_URL: instituteRoot + '/facility-types',
+    SCHOOL_CATEGORY_TYPES_URL: instituteRoot + '/school-category-types',
     DISTRICT_DATA_URL: instituteRoot + '/districts'
   },
   penServices: {
@@ -409,6 +412,7 @@ export const PAGE_TITLES = Object.freeze(
     EXCHANGE_USERS: 'EDX School Access',
     NEW_USER_INVITE:'New User',
     DISTRICT_LIST: 'District List',
+    SCHOOL_LIST: 'School List',
 
   }
 );

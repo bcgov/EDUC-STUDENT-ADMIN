@@ -39,6 +39,14 @@ function errorResponse(res, msg, code) {
   });
 }
 
+function validateAccessToken(token, res) {
+  if (!token) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No access token'
+    });
+  }
+}
+
 function addTokenToHeader(params, token) {
   if (params) {
     if (params.headers) {
@@ -527,6 +535,7 @@ const utils = {
   deleteData,
   deleteDataWithBody,
   addSagaStatusToRecords,
+  validateAccessToken,
   forwardGet
 };
 
