@@ -550,10 +550,6 @@ export default {
   display: none;
 }
 
-.filterButton.v-btn--outlined {
-  border: thin solid #ebedef;
-}
-
 @media screen and (max-width: 801px){
   .subjectHeading {
     font-size: medium;
