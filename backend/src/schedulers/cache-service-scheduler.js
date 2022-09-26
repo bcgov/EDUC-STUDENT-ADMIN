@@ -11,6 +11,7 @@ try {
       await cacheService.loadAllSchoolsToMap();
       await cacheService.loadAllDocumentTypeCodesToMap();
       await cacheService.loadAllDistrictsToMap();
+      await cacheService.loadAllAuthoritiesToMap();
     } catch (e) {
       log.error(e);
     }

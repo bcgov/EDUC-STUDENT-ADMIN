@@ -39,6 +39,11 @@ cacheService.loadAllDistrictsToMap().then(() => {
 }).catch((e) => {
   log.error('Error loading districts data codes during boot .', e);
 });
+cacheService.loadAllAuthoritiesToMap().then(() => {
+  log.info('Loaded authorities data to memory');
+}).catch((e) => {
+  log.error('Error loading authorities data codes during boot .', e);
+});
 cacheService.loadAllDocumentTypeCodesToMap().then(() => {
   log.info('Loaded document type codes to memory');
 }).catch((e) => {

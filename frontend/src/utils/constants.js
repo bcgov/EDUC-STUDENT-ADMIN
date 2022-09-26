@@ -97,7 +97,8 @@ let object = {
     SCHOOL_PAGINATED_DATA_URL: instituteRoot + '/schoolsPaginated',
     FACILITY_TYPES_URL: instituteRoot + '/facility-types',
     SCHOOL_CATEGORY_TYPES_URL: instituteRoot + '/school-category-types',
-    DISTRICT_DATA_URL: instituteRoot + '/districts'
+    DISTRICT_DATA_URL: instituteRoot + '/districts',
+    AUTHORITY_DATA_URL: instituteRoot + '/authorities',
   },
   penServices: {
     ROOT_ENDPOINT: penServicesRoot,

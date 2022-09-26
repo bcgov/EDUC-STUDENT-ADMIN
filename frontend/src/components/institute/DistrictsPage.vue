@@ -9,7 +9,7 @@
         </v-col>
       </v-row>
       <!--    search filter -->
-      <v-row :class="['d-sm-flex', 'align-center', 'searchBox']" @keydown.enter="searchButtonClick">
+      <v-row :class="['d-sm-flex', 'align-center', 'searchBox', 'elevation-2']" @keydown.enter="searchButtonClick">
         <v-col cols="12" md="4">
           <v-autocomplete
             id="name-text-field"
@@ -29,68 +29,75 @@
           <PrimaryButton id="district-search-button" class="ml-2" @click.native="searchButtonClick">Search</PrimaryButton>
         </v-col>
       </v-row>
-      <!--    district list -->
-      <v-row>
-        <v-col>
-          <div v-if="filteredDistrictList.length === 0">No Districts Found</div>
-          <v-card v-for="district in filteredDistrictList" :key="district.districtId">
-            <v-card-text>
+
+      <v-data-table
+        :headers="headers"
+        :items="filteredDistrictList"
+        :items-per-page=1000
+        class="elevation-2 mt-4"
+        hide-default-header
+        hide-default-footer
+        mobile-breakpoint="0"
+      >
+
+        <template v-slot:item.secureExchangeStatusCode="{ item }">
+          <v-row>
+            <v-col>
+              <strong class="largeFont">{{ `${item.districtNumber} - ${item.name}` }}</strong>
+            </v-col>
+            <v-spacer></v-spacer>
+            <v-col lg="2" md="3" sm="4">
               <v-row no-gutters>
                 <v-col>
-                  <strong class="largeFont">{{ `${district.districtNumber} - ${district.name}` }}</strong>
-                </v-col>
-                <v-spacer></v-spacer>
-                <v-col lg="2" md="3" sm="4">
-                  <v-row no-gutters>
-                    <v-col>
-                      <v-icon :color="getStatusColor(district.districtStatusCode)">
-                        mdi-circle-medium
-                      </v-icon>
-                      <span class="largeFont">{{ getStatusText(district.districtStatusCode) }}</span>
-                    </v-col>
-                  </v-row>
-                  <v-row no-gutters>
-                    <v-col class="mt-1">
-                      <v-icon>
-                        mdi-phone-outline
-                      </v-icon>
-                      <span class="largeFont">{{ getPhoneNumber(district.phoneNumber) }}</span>
-                    </v-col>
-                  </v-row>
-                </v-col>
-                <v-col lg="2" md="3" sm="4">
-                  <v-row class="mb-2" no-gutters>
-                    <v-col>
-                      <v-btn id="districtDetails"
-                             color="#003366"
-                             width="100%"
-                             outlined
-                             class="mt-0 pt-0 filterButton"
-                      >
-                        <v-icon color="#003366" style="margin-top: 0.07em" class="ml-n5 mr-1" right dark>mdi-newspaper-variant-outline</v-icon>
-                        <span class="ml-1" style="text-transform: initial">District Details</span>
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                  <v-row no-gutters>
-                    <v-col>
-                      <v-btn id="districtContacts"
-                             color="#003366"
-                             width="100%"
-                             outlined
-                             class="mt-0 pt-0 filterButton"
-                      >
-                        <v-icon color="#003366" style="margin-top: 0.07em" class="ml-n1 mr-1" right dark>mdi-account-multiple-outline</v-icon>
-                        <span class="ml-1" style="text-transform: initial">District Contacts</span>
-                      </v-btn>
-                    </v-col>
-                  </v-row>
+                  <v-icon :color="getStatusColor(item.districtStatusCode)">
+                    mdi-circle-medium
+                  </v-icon>
+                  <span class="largeFont">{{ getStatusText(item.districtStatusCode) }}</span>
                 </v-col>
               </v-row>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
+              <v-row no-gutters>
+                <v-col class="mt-1">
+                  <v-icon>
+                    mdi-phone-outline
+                  </v-icon>
+                  <span class="largeFont">{{ getPhoneNumber(item.phoneNumber) }}</span>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col lg="2" md="3" sm="4">
+              <v-row class="mb-2" no-gutters>
+                <v-col>
+                  <v-btn id="districtDetails"
+                         color="#003366"
+                         width="100%"
+                         outlined
+                         class="mt-0 pt-0 filterButton"
+                  >
+                    <v-icon color="#003366" style="margin-top: 0.07em" class="ml-n4 mr-1" dark>mdi-newspaper-variant-outline</v-icon>
+                    <span class="ml-1" style="text-transform: initial">Details</span>
+                  </v-btn>
+                </v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col>
+                  <v-btn id="districtContacts"
+                         color="#003366"
+                         width="100%"
+                         outlined
+                         class="mt-0 pt-0 filterButton"
+                  >
+                    <v-icon color="#003366" style="margin-top: 0.07em" class="mr-1" dark>mdi-account-multiple-outline</v-icon>
+                    <span class="ml-1" style="text-transform: initial">Contacts</span>
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+        </template>
+
+        <template v-slot:no-data>There are no districts.</template>
+
+      </v-data-table>
     </div>
   </v-container>
 </template>
@@ -115,6 +122,14 @@ export default {
   },
   data() {
     return {
+      headers: [
+        {
+          text: 'Status',
+          align: 'start',
+          sortable: false,
+          value: 'secureExchangeStatusCode',
+        }
+      ],
       searchFilter: {
         name: '',
         status: 'ACTIVE'

@@ -125,6 +125,7 @@ nconf.defaults({
       rootURL: process.env.INSTITUTE_API_URL,
       instituteDistrictURL: process.env.INSTITUTE_API_URL + '/district',
       instituteSchoolURL: process.env.INSTITUTE_API_URL + '/school',
+      instituteAuthorityURL: process.env.INSTITUTE_API_URL + '/authority',
     },
     macro: {
       rootURL: process.env.MACRO_API_URL,

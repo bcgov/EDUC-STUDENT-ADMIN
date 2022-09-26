@@ -1,5 +1,11 @@
 <template>
   <v-container class="containerSetup" fluid>
+    <v-row>
+      <v-col class="mt-1 d-flex justify-start">
+        <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
+        <a class="ml-1" @click="backButtonClick">Return to Dashboard</a>
+      </v-col>
+    </v-row>
     <v-row style="background: rgb(235, 237, 239);border-radius: 8px;" class="px-3 elevation-2">
       <v-col>
         <v-row>
@@ -55,13 +61,13 @@
               label="Authority Code & Name"
               item-value="authorityID"
               item-text="authorityCodeName"
-              :items="schoolSearchNames"
-              v-model="schoolCodeNameFilter"
+              :items="authoritySearchNames"
+              v-model="authorityCodeNameFilter"
               clearable>
             </v-autocomplete>
           </v-col>
         </v-row>
-        <v-row class="d-flex justify-end">
+        <v-row class="d-flex justify-end mt-n8">
           <v-col cols="12" md="2">
             <PrimaryButton id="user-search-button" text="Clear" secondary @click.native="clearButtonClick"/>
             <PrimaryButton class="ml-3" width="8em" id="user-clear-button" text="Search" @click.native="searchButtonClick"
@@ -150,8 +156,8 @@
                              class="mt-0 pt-0 filterButton"
                              style="text-transform: initial"
                       >
-                        <v-icon color="#003366" style="margin-top: 0.07em" class="ml-n5 mr-1" right dark>mdi-newspaper-variant-outline</v-icon>
-                        <span class="ml-1">School Details</span>
+                        <v-icon color="#003366" style="margin-top: 0.07em" class="ml-n5 mr-1" dark>mdi-newspaper-variant-outline</v-icon>
+                        <span class="ml-1">Details</span>
                       </v-btn>
                     </v-col>
                   </v-row>
@@ -165,8 +171,8 @@
                              class="mt-0 pt-0 filterButton"
                              style="text-transform: initial"
                       >
-                        <v-icon color="#003366" style="margin-top: 0.07em" class="ml-n1 mr-1" right dark>mdi-account-multiple-outline</v-icon>
-                        <span class="ml-1">School Contacts</span>
+                        <v-icon color="#003366" style="margin-top: 0.07em" class="ml-n1 mr-1" dark>mdi-account-multiple-outline</v-icon>
+                        <span class="ml-1">Contacts</span>
                       </v-btn>
                     </v-col>
                   </v-row>
@@ -192,6 +198,7 @@ import {isEmpty, omitBy} from 'lodash';
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber} from '@/utils/format';
 import {DateTimeFormatter, LocalDate} from '@js-joda/core';
+import router from '@/router';
 
 export default {
   name: 'SchoolListPage',
@@ -270,6 +277,7 @@ export default {
     this.setSchoolStatuses();
     this.getSchoolDropDownItems();
     this.getDistrictDropDownItems();
+    this.getAuthorityDropDownItems();
     this.getSchoolList();
   },
   methods: {
@@ -295,23 +303,29 @@ export default {
       });
     },
     getSchoolDropDownItems(){
-      ApiService.apiAxios.get(Routes.institute.SCHOOL_PAGINATED_DATA_URL, {
-        params: {
-          pageNumber: 0,
-          pageSize: 5000,
-          sort: {
-            schoolNumber: 'ASC'
-          },
-          searchParams: omitBy(this.headerSearchParams, isEmpty),
-        }
-      }).then(response => {
-        let schoolList = response.data.content;
+      ApiService.getSchools().then((response) => {
+        let schoolList = response.data;
         for(const school of schoolList){
           let schoolItem = {
-            schoolCodeName: school.mincode +' - '+school.displayName,
-            schoolID: school.schoolId,
+            schoolCodeName: school.mincode + ' - ' +school.schoolName,
+            schoolID: school.schoolID,
           };
           this.schoolSearchNames.push(schoolItem);
+        }
+      }).catch(error => {
+        //to do add the alert framework for error or success
+        console.error(error);
+      });
+    },
+    getAuthorityDropDownItems(){
+      ApiService.getAuthorities().then((response) => {
+        let authorityList = response.data;
+        for(const authority of authorityList){
+          let authorityItem = {
+            authorityCodeName: authority.authorityNumber + ' - ' + authority.name,
+            authorityID: authority.authorityID,
+          };
+          this.authoritySearchNames.push(authorityItem);
         }
       }).catch(error => {
         //to do add the alert framework for error or success
@@ -335,12 +349,13 @@ export default {
         this.headerSearchParams.districtID = '';
       }
 
-      if(!this.schoolStatusFilter){
-        this.headerSearchParams.status = 'NotClosed';
+      if(this.authorityCodeNameFilter !== null && this.authorityCodeNameFilter!== '') {
+        this.headerSearchParams.authorityID = this.authorityCodeNameFilter;
       }else{
-        this.headerSearchParams.status = this.schoolStatusFilter;
+        this.headerSearchParams.authorityID = '';
       }
 
+      this.headerSearchParams.status = this.schoolStatusFilter;
       this.headerSearchParams.category = this.schoolCategoryTypeFilter;
       this.headerSearchParams.type = this.schoolFacilityTypeFilter;
 
@@ -442,8 +457,11 @@ export default {
     },
     searchEnabled(){
       return (this.schoolCodeNameFilter !== '' && this.schoolCodeNameFilter !== null) || (this.schoolStatusFilter !== '' && this.schoolStatusFilter !== null)
-          || this.schoolFacilityTypeFilter !== '' && this.schoolFacilityTypeFilter !== null || this.districtCodeNameFilter !== '' && this.districtCodeNameFilter !== null
-          || this.schoolCategoryTypeFilter !== '' && this.schoolCategoryTypeFilter !== null;
+          || (this.schoolFacilityTypeFilter !== '' && this.schoolFacilityTypeFilter !== null) || (this.districtCodeNameFilter !== '' && this.districtCodeNameFilter !== null)
+          || (this.schoolCategoryTypeFilter !== '' && this.schoolCategoryTypeFilter !== null) || (this.authorityCodeNameFilter !== '' && this.authorityCodeNameFilter !== null);
+    },
+    backButtonClick() {
+      router.push({name: 'home'});
     },
     clearButtonClick() {
       this.schoolCodeNameFilter = '';

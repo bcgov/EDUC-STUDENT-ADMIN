@@ -4,8 +4,9 @@ const log = require('../components/logger');
 const {getApiCredentials} = require('../components/auth');
 const {getData} = require('../components/utils');
 const retry = require('async-retry');
-const {generateSchoolObject,isSchoolActive} = require('./schoolUtils');
-const {generateDistrictObject, isDistrictActive} = require('./districtUtils');
+const {generateDistrictObject, isDistrictActive, generateSchoolObject, isSchoolActive, isAuthorityActive,
+  generateAuthorityObject
+} = require('./institute/instituteUtils');
 
 let mincodeSchoolMap = new Map();
 let mincodeSchools = [];
@@ -14,6 +15,10 @@ let activeSchools = [];
 let activeDistricts = [];
 let districts = [];
 let districtsMap = new Map();
+let activeAuthorities = [];
+let authorities = [];
+let authoritiesMap = new Map();
+
 
 let documentTypeCodesMap = new Map();
 let documentTypeCodes = [];
@@ -94,6 +99,41 @@ const cacheService = {
   getDistrictJSONByDistrictId(districtId) {
     return districtsMap.get(districtId);
   },
+  async loadAllAuthoritiesToMap() {
+    log.debug('loading all authorities during start up');
+    await retry(async () => {
+      const data = await getApiCredentials();
+      const authoritiesResponse = await getData(data.accessToken, config.get('server:institute:instituteAuthorityURL'));
+      // reset the value.
+      authorities = [];
+      activeAuthorities = [];
+      authoritiesMap.clear();
+      if (authoritiesResponse && authoritiesResponse.length > 0) {
+        for (const authority of authoritiesResponse) {
+          const authorityData = generateAuthorityObject(authority);
+          authoritiesMap.set(authority.independentAuthorityId, authorityData);
+          authorities.push(authorityData);
+          if(isAuthorityActive(authorityData)){
+            activeAuthorities.push(authorityData);
+          }
+        }
+      }
+      log.info(`loaded ${authoritiesMap.size} authorities.`);
+    }, {
+      retries: 50
+    });
+
+  },
+  getAllActiveAuthoritiesJSON(){
+    return activeAuthorities;
+  },
+  getAllAuthoritiesJSON() {
+    return authorities;
+  },
+  getAuthorityJSONByAuthorityId(authorityId) {
+    return authoritiesMap.get(authorityId);
+  },
+
   async loadAllDocumentTypeCodesToMap() {
     log.debug('Loading all document type codes during start up');
     await retry(async () => {

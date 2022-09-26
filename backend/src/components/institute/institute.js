@@ -1,9 +1,9 @@
 'use strict';
-const { logApiError, getData, errorResponse, getBackendToken, validateAccessToken} = require('./utils');
+const { logApiError, getData, errorResponse, getBackendToken, validateAccessToken} = require('../utils');
 const HttpStatus = require('http-status-codes');
-const cacheService = require('./cache-service');
-const {FILTER_OPERATION, VALUE_TYPE, CONDITION} = require('../util/constants');
-const config = require('../config/index');
+const cacheService = require('../cache-service');
+const {FILTER_OPERATION, VALUE_TYPE, CONDITION} = require('../../util/constants');
+const config = require('../../config');
 
 async function getDistricts(req, res) {
   try {
@@ -98,6 +98,9 @@ function createSchoolSearchCriteria(searchParams){
     if(key === 'districtID'){
       searchCriteriaList.push({key: 'districtID', operation: FILTER_OPERATION.EQUAL, value: pValue, valueType: VALUE_TYPE.UUID, condition: CONDITION.AND});
     }
+    if(key === 'authorityID'){
+      searchCriteriaList.push({key: 'independentAuthorityId', operation: FILTER_OPERATION.EQUAL, value: pValue, valueType: VALUE_TYPE.UUID, condition: CONDITION.AND});
+    }
     if(key === 'type'){
       searchCriteriaList.push({key: 'facilityTypeCode', operation: FILTER_OPERATION.EQUAL, value: pValue, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND});
     }
@@ -109,9 +112,23 @@ function createSchoolSearchCriteria(searchParams){
   return searchCriteriaList;
 }
 
+async function getAuthorities(req, res) {
+  try {
+    if (req.query.refreshCache === 'true') {
+      await cacheService.loadAllDistrictsToMap();
+    }
+    const authorities = req.query.active === 'true' ? cacheService.getAllActiveAuthoritiesJSON() : cacheService.getAllAuthoritiesJSON();
+    return res.status(HttpStatus.OK).json(authorities);
+  } catch (e) {
+    logApiError(e, 'getAuthorities', 'Error occurred while attempting to GET authority entity.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getDistricts,
   getDistrictByDistrictId,
   getSchools,
-  getSchoolsPaginated
+  getSchoolsPaginated,
+  getAuthorities
 };
