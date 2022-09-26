@@ -96,4 +96,5 @@ export default {
   getFileRequirements: getCodes(`${Routes.edx.EXCHANGE_FILE_REQUIREMENTS_URL}`),
   getFacilityTypeCodes: getCodes(`${Routes.institute.FACILITY_TYPES_URL}`),
   getSchoolCategoryTypeCodes: getCodes(`${Routes.institute.SCHOOL_CATEGORY_TYPES_URL}`),
+  getAuthorityTypeCodes: getCodes(`${Routes.institute.AUTHORITY_TYPES_URL}`),
 };

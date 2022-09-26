@@ -48,8 +48,7 @@
                           class="pt-0"
                           ref="newMessageTextArea"
                           hide-details="auto"
-                          @input="replaceMessageMacro"
-                          @keyup.enter="enterPushed()">
+                          @input="replaceMessageMacro">
                         </v-textarea>
                       </v-form>
                     </v-card-text>
@@ -302,11 +301,6 @@ export default {
         this.disableAddStudent = false;
       }else{
         this.disableAddStudent = true;
-      }
-    },
-    enterPushed() {
-      if (this.isValidForm) {
-        this.sendNewMessage();
       }
     },
     replaceMessageMacro() {

@@ -97,8 +97,10 @@ let object = {
     SCHOOL_PAGINATED_DATA_URL: instituteRoot + '/schoolsPaginated',
     FACILITY_TYPES_URL: instituteRoot + '/facility-types',
     SCHOOL_CATEGORY_TYPES_URL: instituteRoot + '/school-category-types',
+    AUTHORITY_TYPES_URL: instituteRoot + '/authority-types',
     DISTRICT_DATA_URL: instituteRoot + '/districts',
     AUTHORITY_DATA_URL: instituteRoot + '/authorities',
+    AUTHORITIES_PAGINATED_DATA_URL: instituteRoot + '/authoritiesPaginated',
   },
   penServices: {
     ROOT_ENDPOINT: penServicesRoot,
@@ -414,7 +416,7 @@ export const PAGE_TITLES = Object.freeze(
     NEW_USER_INVITE:'New User',
     DISTRICT_LIST: 'District List',
     SCHOOL_LIST: 'School List',
-
+    AUTHORITIES_LIST: 'Authorities List',
   }
 );
 
