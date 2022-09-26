@@ -13,6 +13,7 @@ import archivedRequestBatch from './modules/archivedRequestBatch';
 import nominalRoll from './modules/nominalRoll';
 import nomRollStudentSearch from './modules/nomRollStudentSearch';
 import edx from './modules/edx';
+import institute from './modules/institute';
 
 Vue.use(Vuex);
 
@@ -31,7 +32,8 @@ const store = new Vuex.Store({
     archivedRequestBatch,
     nominalRoll,
     nomRollStudentSearch,
-    edx
+    edx,
+    institute
   }
 });
 
