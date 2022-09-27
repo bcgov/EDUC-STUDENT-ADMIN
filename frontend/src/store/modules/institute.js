@@ -7,6 +7,7 @@ export default {
     schoolCategoryTypeCodes: null,
     schoolOrganizationTypeCodes: null,
     schoolNeighborhoodLearningCodes: null,
+    authorityTypeCodes: null,
     gradeCodes: null,
   },
   getters: {
@@ -14,6 +15,7 @@ export default {
     schoolCategoryTypeCodes: state => state.schoolCategoryTypeCodes,
     schoolOrganizationTypeCodes: state => state.schoolOrganizationTypeCodes,
     schoolNeighborhoodLearningCodes: state => state.schoolNeighborhoodLearningCodes,
+    authorityTypeCodes: state => state.authorityTypeCodes,
     gradeCodes: state => state.gradeCodes,
   },
   mutations: {
@@ -28,6 +30,9 @@ export default {
     },
     setSchoolNeighborhoodLearningCodes: (state, schoolNeighborhoodLearningCodes) => {
       state.schoolNeighborhoodLearningCodes = schoolNeighborhoodLearningCodes;
+    },
+    setAuthorityTypeCodes: (state, authorityTypeCodes) => {
+      state.authorityTypeCodes = authorityTypeCodes;
     },
     setGradeCodes: (state, gradeCodes) => {
       state.gradeCodes = gradeCodes;
@@ -49,6 +54,10 @@ export default {
     async getSchoolNeighborhoodLearningCodes({commit}) {
       const reponse = await ApiService.getSchoolNeighborhoodLearningCodes();
       commit('setSchoolNeighborhoodLearningCodes', reponse.data);
+    },
+    async getAuthorityTypeCodes({commit}) {
+      const reponse = await ApiService.getAuthorityTypeCodes();
+      commit('setAuthorityTypeCodes', reponse.data);
     },
     async getGradeCodes({commit}) {
       const response = await ApiService.getGradeCodes();

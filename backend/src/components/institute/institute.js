@@ -125,10 +125,65 @@ async function getAuthorities(req, res) {
   }
 }
 
+async function getAuthoritiesPaginated(req, res){
+  const accessToken = getBackendToken(req);
+  validateAccessToken(accessToken, res);
+
+  let parsedParams = '';
+  if (req.query.searchParams) {
+    parsedParams = JSON.parse(req.query.searchParams);
+  }
+
+  const authoritySearchCriteria = [{
+    condition: null,
+    searchCriteriaList: createAuthoritySearchCriteria(parsedParams),
+  }];
+
+  const authoritySearchParam = {
+    params: {
+      pageNumber: req.query.pageNumber,
+      pageSize: req.query.pageSize,
+      sort: req.query.sort,
+      searchCriteriaList: JSON.stringify(authoritySearchCriteria)
+    }
+  };
+  let response = await getData(accessToken, config.get('server:institute:rootURL') + '/authority/paginated', authoritySearchParam);
+  return res.status(HttpStatus.OK).json(response);
+}
+
+function createAuthoritySearchCriteria(searchParams){
+  let searchCriteriaList = [];
+
+  Object.keys(searchParams).forEach(function(key){
+    let pValue = searchParams[key];
+    if(key === 'status'){
+      let currentDate = new Date().toISOString().substring(0,19);
+
+      if(pValue === 'Open'){
+        searchCriteriaList.push({key: 'openedDate', operation: FILTER_OPERATION.LESS_THAN_OR_EQUAL_TO, value: currentDate, valueType: VALUE_TYPE.DATE_TIME, condition: CONDITION.AND});
+        searchCriteriaList.push({key: 'closedDate', operation: FILTER_OPERATION.EQUAL, value: null, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND});
+      } else if (pValue === 'Closing'){
+        searchCriteriaList.push({key: 'closedDate', operation: FILTER_OPERATION.GREATER_THAN, value: currentDate, valueType: VALUE_TYPE.DATE_TIME, condition: CONDITION.AND});
+      } else if (pValue === 'Closed'){
+        searchCriteriaList.push({key: 'closedDate', operation: FILTER_OPERATION.LESS_THAN_OR_EQUAL_TO, value: currentDate, valueType: VALUE_TYPE.DATE_TIME, condition: CONDITION.AND});
+      }
+    }
+    if(key === 'authorityID'){
+      searchCriteriaList.push({key: 'independentAuthorityId', operation: FILTER_OPERATION.EQUAL, value: pValue, valueType: VALUE_TYPE.UUID, condition: CONDITION.AND});
+    }
+    if(key === 'type'){
+      searchCriteriaList.push({key: 'authorityTypeCode', operation: FILTER_OPERATION.EQUAL, value: pValue, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND});
+    }
+  });
+
+  return searchCriteriaList;
+}
+
 module.exports = {
   getDistricts,
   getDistrictByDistrictId,
   getSchools,
   getSchoolsPaginated,
-  getAuthorities
+  getAuthorities,
+  getAuthoritiesPaginated
 };

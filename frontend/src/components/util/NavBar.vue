@@ -188,7 +188,7 @@ export default {
           },
           {
             title: 'Authorities',
-            link: 'instituteDistrict',
+            link: 'instituteAuthoritiesList',
             authorized: this.isAuthorizedUser
           }
         ],

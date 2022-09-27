@@ -1,7 +1,7 @@
 const passport = require('passport');
 const express = require('express');
 const router = express.Router();
-const { getDistricts, getDistrictByDistrictId, getSchools, getSchoolsPaginated, getAuthorities} = require('../components/institute/institute');
+const { getDistricts, getDistrictByDistrictId, getSchools, getSchoolsPaginated, getAuthorities, getAuthoritiesPaginated} = require('../components/institute/institute');
 const utils = require('../components/utils');
 const extendSession = utils.extendSession();
 
@@ -14,10 +14,14 @@ router.get('/school', passport.authenticate('jwt', {session: false}, undefined),
 
 router.get('/schoolsPaginated', passport.authenticate('jwt', {session: false}, undefined), extendSession, getSchoolsPaginated);
 
+router.get('/authoritiesPaginated', passport.authenticate('jwt', {session: false}, undefined), extendSession, getAuthoritiesPaginated);
+
 router.get('/authorities', passport.authenticate('jwt', {session: false}, undefined), extendSession, getAuthorities);
 
 router.get('/facility-types', passport.authenticate('jwt', {session: false}, undefined), extendSession, utils.cacheMiddleware(), utils.getCodes('server:institute:rootURL', 'schoolFacilityTypeCodes', '/facility-codes'));
 
 router.get('/school-category-types', passport.authenticate('jwt', {session: false}, undefined), extendSession, utils.cacheMiddleware(), utils.getCodes('server:institute:rootURL', 'schoolCategoryTypeCodes', '/category-codes'));
+
+router.get('/authority-types', passport.authenticate('jwt', {session: false}, undefined), extendSession, utils.cacheMiddleware(), utils.getCodes('server:institute:rootURL', 'authorityTypeCodes', '/authority-type-codes'));
 
 module.exports = router;
