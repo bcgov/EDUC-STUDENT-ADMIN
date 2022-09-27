@@ -260,9 +260,6 @@ export default {
       let openedDate = this.authority.openedDate;
       let closedDate = this.authority.closedDate;
 
-      if (!openedDate) {
-        return 'Never Opened';
-      }
       const parsedOpenDate = new LocalDate.parse(openedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
 
       let parsedCloseDate = null;
@@ -272,12 +269,6 @@ export default {
 
       if (parsedOpenDate <= currentDate && parsedCloseDate === null) {
         return 'Open';
-      } else if (parsedOpenDate > currentDate) {
-        return 'Opening';
-      } else if (parsedOpenDate <= currentDate && parsedCloseDate > currentDate) {
-        return 'Closing';
-      } else if (parsedCloseDate <= currentDate) {
-        return 'Closed';
       }
 
       return 'Closed';
