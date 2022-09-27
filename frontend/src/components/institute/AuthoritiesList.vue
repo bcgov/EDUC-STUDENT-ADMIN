@@ -97,7 +97,7 @@
                              color="#003366"
                              width="100%"
                              outlined
-                             @click="openAuthority(item.schoolId)"
+                             @click="openAuthority(item.independentAuthorityId)"
                              class="mt-0 pt-0 filterButton"
                              style="text-transform: initial"
                       >
@@ -112,7 +112,7 @@
                              color="#003366"
                              width="100%"
                              outlined
-                             @click="openAuthorityContacts(item.schoolId)"
+                             @click="openAuthorityContacts(item.independentAuthorityId)"
                              class="mt-0 pt-0 filterButton"
                              style="text-transform: initial"
                       >
@@ -322,11 +322,11 @@ export default {
         return 'red';
       }
     },
-    openAuthority(schoolId){
-      this.$router.push({name: 'schoolDetails', params: {schoolID: schoolId}});
+    openAuthority(authorityId){
+      this.$router.push({name: 'authorityDetails', params: {authorityID: authorityId}});
     },
-    openAuthorityContacts(schoolId){
-      this.$router.push({name: 'schoolContacts', params: {schoolID: schoolId}});
+    openAuthorityContacts(authorityId){
+      this.$router.push({name: 'authorityContacts', params: {authorityID: authorityId}});
     },
     resetPageNumber(){
       this.pageNumber = 1;

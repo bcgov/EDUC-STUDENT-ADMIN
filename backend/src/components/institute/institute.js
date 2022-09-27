@@ -120,7 +120,19 @@ async function getAuthorities(req, res) {
     const authorities = req.query.active === 'true' ? cacheService.getAllActiveAuthoritiesJSON() : cacheService.getAllAuthoritiesJSON();
     return res.status(HttpStatus.OK).json(authorities);
   } catch (e) {
-    logApiError(e, 'getAuthorities', 'Error occurred while attempting to GET authority entity.');
+    logApiError(e, 'getAuthorities', 'Error occurred while attempting to GET authorities cached.');
+    return errorResponse(res);
+  }
+}
+
+async function getAuthorityByID(req, res) {
+  const token = getBackendToken(req);
+  try {
+    const url = `${config.get('server:institute:rootURL')}/authority/${req.params.id}`;
+    const data = await getData(token, url);
+    return res.status(200).json(data);
+  } catch (e) {
+    logApiError(e, 'getAuthorityByID', 'Error occurred while attempting to GET authority entity.');
     return errorResponse(res);
   }
 }
@@ -185,5 +197,6 @@ module.exports = {
   getSchools,
   getSchoolsPaginated,
   getAuthorities,
-  getAuthoritiesPaginated
+  getAuthoritiesPaginated,
+  getAuthorityByID
 };
