@@ -43,6 +43,7 @@ import AccessDistrictUsersPage from '@/components/secure-message/AccessDistrictU
 import InstituteAccessPage from '@/components/secure-message/InstituteAccessPage';
 import DistrictsPage from '@/components/institute/DistrictsPage';
 import SchoolListPage from '@/components/institute/SchoolList';
+import SchoolDetails from '@/components/institute/SchoolDetails';
 import AuthoritiesListPage from '@/components/institute/AuthoritiesList';
 import AuthorityDetailsPage from '@/components/institute/AuthorityDetails';
 
@@ -430,13 +431,7 @@ const router = new VueRouter({
             pageTitle: PAGE_TITLES.DISTRICT_LIST,
             requiresAuth: true,
           },
-        }
-      ]
-    },
-    {
-      path: '/institute',
-      component: RouterView,
-      children: [
+        },
         {
           path: 'school',
           name: 'instituteSchoolList',
@@ -445,13 +440,17 @@ const router = new VueRouter({
             pageTitle: PAGE_TITLES.SCHOOL_LIST,
             requiresAuth: true,
           },
-        }
-      ]
-    },
-    {
-      path: '/institute',
-      component: RouterView,
-      children: [
+        },
+        {
+          path: 'school/:schoolID/details',
+          name: 'schoolDetails',
+          props: true,
+          component: SchoolDetails,
+          meta: {
+            pageTitle: PAGE_TITLES.SCHOOL_DETAILS,
+            requiresAuth: true,
+          },
+        },
         {
           path: 'authority',
           name: 'instituteAuthoritiesList',
