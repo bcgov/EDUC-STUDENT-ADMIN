@@ -101,6 +101,7 @@ let object = {
     DISTRICT_DATA_URL: instituteRoot + '/districts',
     AUTHORITY_DATA_URL: instituteRoot + '/authorities',
     AUTHORITIES_PAGINATED_DATA_URL: instituteRoot + '/authoritiesPaginated',
+    AUTHORITY_BY_ID_URL: instituteRoot + '/authority',
   },
   penServices: {
     ROOT_ENDPOINT: penServicesRoot,
@@ -417,6 +418,7 @@ export const PAGE_TITLES = Object.freeze(
     DISTRICT_LIST: 'District List',
     SCHOOL_LIST: 'School List',
     AUTHORITIES_LIST: 'Authorities List',
+    AUTHORITY_DETAILS: 'Authority Details',
   }
 );
 

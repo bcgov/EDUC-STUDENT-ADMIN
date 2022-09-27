@@ -44,6 +44,7 @@ import InstituteAccessPage from '@/components/secure-message/InstituteAccessPage
 import DistrictsPage from '@/components/institute/DistrictsPage';
 import SchoolListPage from '@/components/institute/SchoolList';
 import AuthoritiesListPage from '@/components/institute/AuthoritiesList';
+import AuthorityDetailsPage from '@/components/institute/AuthorityDetails';
 
 Vue.prototype.moment = moment;
 
@@ -461,6 +462,17 @@ const router = new VueRouter({
           },
         }
       ]
+    },
+    {
+      path: '/authority/:authorityID',
+      name: 'authorityDetails',
+      props: true,
+      component: AuthorityDetailsPage,
+      meta: {
+        pageTitle: PAGE_TITLES.AUTHORITY_DETAILS,
+        requiresAuth: true,
+        permission: 'SECURE_EXCHANGE'
+      }
     },
     {
       path: '/login',
