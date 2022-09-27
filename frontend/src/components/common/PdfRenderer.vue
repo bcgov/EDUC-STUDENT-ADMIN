@@ -125,11 +125,15 @@ export default {
     },
     requestType: {
       type: String,
-      required: true
+      required: false
     },
     documentId: {
       type: String,
       required: true
+    },
+    route: {
+      type: String,
+      required: false
     }
   },
   watch: {
@@ -146,7 +150,10 @@ export default {
       this.isLoading = true;
       this.arrayBuffer = undefined;
       if (this.documentID?.length > 0) {
-        ApiService.apiAxios.get(`${Routes[this.requestType].ROOT_ENDPOINT}/${this.requestId}/documents/${this.documentId}`).then((response) => {
+        let url = (typeof this.route != 'undefined')
+          ? `${this.route}/${this.requestId}/documents/${this.documentId}`
+          : `${Routes[this.requestType].ROOT_ENDPOINT}/${this.requestId}/documents/${this.documentId}`;
+        ApiService.apiAxios.get(url).then((response) => {
           this.base64ToArrayBuffer(response.data);
         }).catch(e => {
           console.error(e);

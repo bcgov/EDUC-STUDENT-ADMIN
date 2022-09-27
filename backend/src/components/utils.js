@@ -39,6 +39,14 @@ function errorResponse(res, msg, code) {
   });
 }
 
+function validateAccessToken(token, res) {
+  if (!token) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No access token'
+    });
+  }
+}
+
 function addTokenToHeader(params, token) {
   if (params) {
     if (params.headers) {
@@ -153,10 +161,14 @@ async function logRequestData(operationType, url, data) {
 async function postData(token, url, data, params, user) {
   try {
     params = addTokenToHeader(params, token);
+    params.maxContentLength = Infinity;
+    params.maxBodyLength = Infinity;
+
     if (user && typeof user === 'string') {
       data.createUser = user;
       data.updateUser = user;
     }
+
     logRequestData('POST', url, data);
     const response = await axios.post(url, data, params);
     logResponseData(url, response, 'POST');
@@ -523,6 +535,7 @@ const utils = {
   deleteData,
   deleteDataWithBody,
   addSagaStatusToRecords,
+  validateAccessToken,
   forwardGet
 };
 

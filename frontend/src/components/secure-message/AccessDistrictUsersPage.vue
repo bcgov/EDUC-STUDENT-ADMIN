@@ -4,7 +4,7 @@
       <v-col class="pb-0">
         <h2>
           <strong>
-            {{getSchoolName()}}
+            {{ getDistrictName() }}
           </strong>
         </h2>
       </v-col>
@@ -12,7 +12,7 @@
     <v-row>
       <v-col class="mt-1 d-flex justify-start">
         <v-icon class="mt-1" small color="#1976d2">mdi-arrow-left</v-icon>
-        <a class="ml-1 mt-1" @click="backButtonClick">Return to School Search</a>
+        <a class="ml-1 mt-1" @click="backButtonClick">Return to District Search</a>
       </v-col>
       <v-col class="d-flex justify-end">
         <v-chip id="primaryEdxActivationCode" :color="getChipColor()">
@@ -30,7 +30,7 @@
         <v-col>
           <v-row no-gutters >
             <v-col>
-              <span>Generating a new Primary Activation Code for a school will replace the existing code for the school. The new code will have to be communicated to the school administrator.</span>
+              <span>Generating a new Primary Activation Code for a district will replace the existing code for the district. The new code will have to be communicated to the district administrator.</span>
             </v-col>
           </v-row>
           <v-row>
@@ -55,7 +55,7 @@
         <v-text-field id="name-text-field" label="Name" v-model="searchFilter.name" clearable @keyup.enter="enterPushed()"></v-text-field>
       </v-col>
       <v-col cols="12" md="4">
-        <v-select id="roleName-select-field" clearable :items="schoolRoles" v-model="searchFilter.roleName" item-text="label" item-value="edxRoleCode" label="Role"></v-select>
+        <v-select id="roleName-select-field" clearable :items="districtRoles" v-model="searchFilter.roleName" item-text="label" item-value="edxRoleCode" label="Role"></v-select>
       </v-col>
       <v-col cols="12" md="4" :class="['text-right']">
         <PrimaryButton id="user-clear-button" secondary @click.native="clearButtonClick">Clear</PrimaryButton>
@@ -66,7 +66,7 @@
     <Spinner v-if="loadingUsers"/>
     <v-row v-else>
       <v-col xl="4" cols="6" class="pb-0" v-for="user in filteredUsers" :key="user.digitalID">
-        <AccessUserCard @refresh="getUsersData" :userRoles="user.edxUserSchools[0].edxUserSchoolRoles" :user="user" :institute-code="schoolID" :institute-roles="schoolRoles" institute-type-code="SCHOOL" institute-type-label="School"></AccessUserCard>
+        <AccessUserCard @refresh="getUsersData" :userRoles="user.edxUserDistricts[0].edxUserDistrictRoles" :user="user" :institute-code="districtId" :institute-roles="districtRoles" institute-type-code="DISTRICT" institute-type-label="District"></AccessUserCard>
       </v-col>
       <v-col xl="4" cols="6" >
         <v-row>
@@ -104,12 +104,12 @@
         <v-divider></v-divider>
         <v-card-text>
           <InviteUserPage
-              :userRoles="schoolRoles"
-              :institute-code="schoolID"
-              institute-type-code="SCHOOL"
-              instituteTypeLabel="School"
-              :schoolName='getSchoolNameForUserInvite()'
-              @access-user:messageSent="closeNewUserModal"
+              :userRoles="districtRoles"
+              :institute-code="districtId"
+               institute-type-code="DISTRICT"
+              instituteTypeLabel="District"
+              :districtName='getDistrictNameForUserInvite()'
+              @access-user:messageSent="messageSent"
               @access-user:updateRoles="updateUserRoles"
               @access-user:cancelMessage="closeNewUserModal"
           >
@@ -129,19 +129,19 @@ import {isNotEmptyInputParams} from '@/utils/validation';
 import {Routes} from '@/utils/constants';
 import {mapState} from 'vuex';
 import PrimaryButton from '@/components/util/PrimaryButton';
-import AccessUserCard from './AccessUserCard';
 import alertMixin from '@/mixins/alertMixin';
 import Spinner from '@/components/common/Spinner';
 import InviteUserPage from '@/components/secure-message/InviteUserPage';
+import AccessUserCard from '@/components/secure-message/AccessUserCard';
 import router from '@/router';
 import ClipboardButton from '@/components/util/ClipboardButton';
 
 export default {
-  name: 'AccessUsersPage',
+  name: 'AccessDistrictUsersPage',
   mixins: [ alertMixin ],
   components: { ClipboardButton, InviteUserPage, PrimaryButton, AccessUserCard, Spinner },
   props: {
-    schoolID: {
+    districtId: {
       type: String,
       required: true
     },
@@ -161,10 +161,10 @@ export default {
     };
   },
   async beforeMount() {
-    if (this.schoolRoles.length === 0) {
-      await this.$store.dispatch('edx/getSchoolExchangeRoles');
+    if (this.districtRoles.length === 0) {
+      await this.$store.dispatch('edx/getEdxDistrictRoles');
     }
-    if (this.schoolMap.size === 0) {
+    if (this.districtMap.size === 0) {
       await this.$store.dispatch('app/getCodes');
     }
   },
@@ -178,12 +178,6 @@ export default {
         this.searchButtonClick();
       }
     },
-    getChipColor(){
-      if(this.primaryEdxActivationCode){
-        return 'success';
-      }
-      return 'secondary';
-    },
     sortUserData(users){
       return users.sort((a, b) => {
         if (a.firstName > b.firstName) {
@@ -196,7 +190,7 @@ export default {
     },
     getUsersData() {
       this.loadingUsers = true;
-      const payload = {params: {schoolID: this.schoolID}};
+      const payload = {params: {districtID: this.districtId}};
       ApiService.apiAxios.get(Routes.edx.EXCHANGE_ACCESS_URL, payload)
         .then(response => {
           this.filteredUsers = this.sortUserData(response.data);
@@ -206,7 +200,7 @@ export default {
         });
     },
     getPrimaryEdxActivationCode() {
-      ApiService.apiAxios.get(`${Routes.edx.PRIMARY_ACTIVATION_CODE_URL}/school/${this.schoolID}`)
+      ApiService.apiAxios.get(`${Routes.edx.PRIMARY_ACTIVATION_CODE_URL}/district/${this.districtId}`)
         .then(response => {
           this.primaryEdxActivationCode = response.data;
         }).catch(e => {
@@ -215,7 +209,7 @@ export default {
         });
     },
     generateOrRegeneratePrimaryEdxActivationCode() {
-      ApiService.apiAxios.post(`${Routes.edx.PRIMARY_ACTIVATION_CODE_URL }/school/${this.schoolID}`)
+      ApiService.apiAxios.post(`${Routes.edx.PRIMARY_ACTIVATION_CODE_URL}/district/${this.districtId}`)
         .then(response => {
           this.primaryEdxActivationCode = response.data;
           this.setSuccessAlert(`The new Primary Activation Code is ${ this.primaryEdxActivationCode.activationCode }.`);
@@ -235,10 +229,9 @@ export default {
       this.generateOrRegeneratePrimaryEdxActivationCode();
       this.closeGenerateNewPrimaryEdxActivationCodeDialog();
     },
-    getSchoolName() {
-      const schoolName = this.schoolMap.get(this.schoolID)?.schoolName;
-      const mincode = this.schoolMap.get(this.schoolID)?.mincode;
-      return `${schoolName} (${mincode})`;
+    getDistrictName() {
+      const district = this.districtMap.get(this.districtId);
+      return `${district.name} (${district.districtNumber})`;
     },
     clearButtonClick() {
       setEmptyInputParams(this.searchFilter);
@@ -259,31 +252,40 @@ export default {
     },
     roleFilter(user, roleName) {
       if (roleName) {
-        return user.edxUserSchools[0].edxUserSchoolRoles.some(role => role.edxRoleCode === roleName);
+        return user.edxUserDistricts[0].edxUserDistrictRoles.some(role => role.edxRoleCode === roleName);
       }
 
       return true;
     },
-    backButtonClick() {
-      router.push({name: 'exchangeAccess'});
-    },
     searchEnabled() {
       return !isNotEmptyInputParams(this.searchFilter);
     },
+    messageSent() {
+      this.newUserInviteSheet = !this.newUserInviteSheet;
+    },
     updateUserRoles(newValue){
-      this.$store.commit('edx/setSchoolRoles', newValue);
+      this.$store.commit('edx/setDistrictRoles', newValue);
+    },
+    backButtonClick() {
+      router.push({name: 'exchangeDistrictAccess'});
+    },
+    getChipColor(){
+      if(this.primaryEdxActivationCode){
+        return 'success';
+      }
+      return 'secondary';
     },
     closeNewUserModal(){
-      this.$store.commit('edx/setSchoolRoles', JSON.parse(JSON.stringify(this.schoolRolesCopy)));
+      this.$store.commit('edx/setDistrictRoles', JSON.parse(JSON.stringify(this.districtRolesCopy)));
       this.newUserInviteSheet = false; // close the modal window.
     },
-    getSchoolNameForUserInvite(){
-      return this.schoolMap.get(this.schoolID).schoolName;
+    getDistrictNameForUserInvite(){
+      return this.districtMap.get(this.districtId).name;
     }
   },
   computed: {
-    ...mapState('app', ['schoolMap']),
-    ...mapState('edx', ['schoolRoles','schoolRolesCopy']),
+    ...mapState('app', ['districtMap']),
+    ...mapState('edx', ['districtRoles','districtRolesCopy']),
   }
 };
 </script>

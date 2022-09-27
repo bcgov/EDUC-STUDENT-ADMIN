@@ -61,3 +61,16 @@ export function formatGrade(grade) {
 export function formatDistrictNumber(districtNumber) {
   return districtNumber.padStart(3, '0');
 }
+
+export function formatPhoneNumber(phoneNumber) {
+
+  if (!phoneNumber) {
+    return 'Not provided';
+  }
+
+  if (phoneNumber?.length === 10) {
+    return `${phoneNumber.substring(0,3)}-${phoneNumber.substring(3,6)}-${phoneNumber.substring(6)}`;
+  }
+
+  return 'Phone number format not recognized';
+}

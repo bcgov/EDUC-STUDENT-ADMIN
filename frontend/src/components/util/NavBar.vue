@@ -141,6 +141,17 @@ export default {
         authorized: this.VIEW_PEN_COORDINATOR_INFO_ROLE
       },
       {
+        title: PAGE_TITLES.EXCHANGE,
+        authorized: this.EXCHANGE_ROLE,
+        items: [
+          {
+            title: 'PEN Team Inbox',
+            link: 'exchange_inbox_PEN_TEAM_ROLE',
+            authorized: this.PEN_TEAM_ROLE
+          }
+        ]
+      },
+      {
         title: PAGE_TITLES.ADMINISTRATION,
         authorized: this.STAFF_ADMINISTRATION_ADMIN,
         items: [
@@ -150,9 +161,35 @@ export default {
             authorized: this.EDIT_MACROS_ROLE
           },
           {
-            title: 'EDX Access',
+            title: 'EDX School Access',
             link: 'exchangeAccess',
             authorized: this.EXCHANGE_ACCESS_ROLE
+          },
+          {
+            title: 'EDX District Access',
+            link: 'exchangeDistrictAccess',
+            authorized: this.EXCHANGE_ACCESS_ROLE
+          }
+        ],
+      },
+      {
+        title: 'Institutions',
+        authorized: this.isAuthorizedUser,
+        items: [
+          {
+            title: 'Schools',
+            link: 'instituteSchoolList',
+            authorized: this.isAuthorizedUser
+          },
+          {
+            title: 'Districts',
+            link: 'instituteDistrict',
+            authorized: this.isAuthorizedUser
+          },
+          {
+            title: 'Authorities',
+            link: 'instituteDistrict',
+            authorized: this.isAuthorizedUser
           }
         ],
       },
@@ -196,7 +233,7 @@ export default {
   },
   computed: {
     ...mapState('auth', ['isAuthorizedUser']),
-    ...mapGetters('auth', ['ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE', 'STAFF_ADMINISTRATION_ADMIN', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ACCESS_ROLE'])
+    ...mapGetters('auth', ['ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE', 'STAFF_ADMINISTRATION_ADMIN', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ROLE', 'EXCHANGE_ACCESS_ROLE', 'PEN_TEAM_ROLE'])
   },
   methods: {
     setActive(item) {

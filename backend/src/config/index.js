@@ -73,6 +73,7 @@ nconf.defaults({
     profileSagaAPIURL: process.env.PROFILE_REQUEST_SAGA_API_URL,
     schoolAPIURL: process.env.SCHOOL_API_URL,
     penTraxURL: process.env.PEN_TRAX_API_URL,
+    instituteAPIURL: process.env.INSTITUTE_API_URL,
     sld: {
       rootURL: process.env.SLD_API_URL,
       studentHistoryURL: process.env.SLD_API_URL + '/student'
@@ -106,10 +107,25 @@ nconf.defaults({
       rootURL: process.env.EDX_API_URL,
       exchangeURL: process.env.EDX_API_URL + '/exchange',
       exchangeStatusesURL: process.env.EDX_API_URL + '/exchange/statuses',
+      fileRequirementsURL: process.env.EDX_API_URL + '/exchange/file-requirements',
       ministryTeamURL : process.env.EDX_API_URL+ '/users/ministry-teams',
       edxUsersURL: process.env.EDX_API_URL+ '/users',
       claimExchangesURL: process.env.EDX_API_URL+ '/exchange/claim',
-      activationCodeUrl: process.env.EDX_API_URL + '/users/activation-code'
+      activationCodeUrl: process.env.EDX_API_URL + '/users/activation-code',
+      schoolUserActivationInviteURL:process.env.EDX_API_URL+ '/exchange'+ '/school-user-activation-invite-saga',
+      districtUserActivationInviteURL:process.env.EDX_API_URL+ '/exchange'+ '/district-user-activation-invite-saga',
+      newSecureExchangeSagaURL: process.env.EDX_API_URL + '/exchange/new-secure-exchange-saga',
+      secureExchangeCommentSagaURL: process.env.EDX_API_URL + '/exchange/secure-exchange-comment-saga',
+      roleAdmin: process.env.EDX_ADMIN,
+      teamRoles: {
+        pen: process.env.EDX_PEN_TEAM_ROLES ? process.env.EDX_PEN_TEAM_ROLES.split(',') : '', // comma separated list
+      },
+    },
+    institute: {
+      rootURL: process.env.INSTITUTE_API_URL,
+      instituteDistrictURL: process.env.INSTITUTE_API_URL + '/district',
+      instituteSchoolURL: process.env.INSTITUTE_API_URL + '/school',
+      instituteAuthorityURL: process.env.INSTITUTE_API_URL + '/authority',
     },
     macro: {
       rootURL: process.env.MACRO_API_URL,

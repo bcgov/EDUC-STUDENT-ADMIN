@@ -14,7 +14,7 @@ const {
   validationResult
 } = require('express-validator');
 
-const isValidStaffUserWithRoles = auth.isValidUserWithRoles('GMP & UMP & PenRequestBatch & StudentSearch & StaffAdministration & NominalRoll & NominalRollReadOnly & GUMPAnalytics & PenRequestBatchAnalytics', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.StudentSearch, ...roles.User.StaffAdministration, ...roles.User.NominalRoll , ...roles.User.NominalRollReadOnly, ...roles.User.GUMPAnalytics, ...roles.User.PenRequestBatchAnalytics]);
+const isValidStaffUserWithRoles = auth.isValidUserWithRoles('GMP & UMP & PenRequestBatch & StudentSearch & StaffAdministration & NominalRoll & NominalRollReadOnly & GUMPAnalytics & PenRequestBatchAnalytics & Exchange', [...roles.User.GMP, ...roles.User.UMP, ...roles.User.PenRequestBatch, ...roles.User.StudentSearch, ...roles.User.StaffAdministration, ...roles.User.NominalRoll , ...roles.User.NominalRollReadOnly, ...roles.User.GUMPAnalytics, ...roles.User.PenRequestBatchAnalytics, ...roles.User.Exchange]);
 
 const router = express.Router();
 
@@ -151,6 +151,7 @@ router.get('/user', passport.authenticate('jwt', {session: false}), (req, res) =
     if (userToken === undefined || userToken.realm_access === undefined || userToken.realm_access.roles === undefined) {
       return res.status(HttpStatus.UNAUTHORIZED).json();
     }
+    thisSession.roles = userToken.realm_access.roles;
   } catch (e) {
     log.error('error is from verify', e);
     return res.status(HttpStatus.UNAUTHORIZED).json();

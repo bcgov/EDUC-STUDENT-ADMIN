@@ -4,9 +4,24 @@ const log = require('../components/logger');
 const {getApiCredentials} = require('../components/auth');
 const {getData} = require('../components/utils');
 const retry = require('async-retry');
+const {generateDistrictObject, isDistrictActive, generateSchoolObject, isSchoolActive, isAuthorityActive,
+  generateAuthorityObject
+} = require('./institute/instituteUtils');
 
 let mincodeSchoolMap = new Map();
 let mincodeSchools = [];
+let schoolMap = new Map();
+let activeSchools = [];
+let activeDistricts = [];
+let districts = [];
+let districtsMap = new Map();
+let activeAuthorities = [];
+let authorities = [];
+let authoritiesMap = new Map();
+
+
+let documentTypeCodesMap = new Map();
+let documentTypeCodes = [];
 
 const cacheService = {
 
@@ -15,22 +30,24 @@ const cacheService = {
     await retry(async () => {
       // if anything throws, we retry
       const data = await getApiCredentials(); // get the tokens first to make api calls.
-      const schools = await getData(data.accessToken, `${config.get('server:schoolAPIURL')}/schools`);
+      const schools = await getData(data.accessToken, config.get('server:institute:instituteSchoolURL'));
+      mincodeSchoolMap.clear(); // reset the value.
+      schoolMap.clear(); // reset the value.
       mincodeSchools = []; // reset the value.
-      mincodeSchoolMap.clear();// reset the value.
+      activeSchools = [];// reset the value.
       if (schools && schools.length > 0) {
         for (const school of schools) {
-          const mincodeSchool = {
-            mincode: `${school.distNo}${school.schlNo}`,
-            schoolName: school.schoolName,
-            effectiveDate: school.dateOpened,
-            expiryDate: school.dateClosed,
-          };
-          mincodeSchoolMap.set(`${school.distNo}${school.schlNo}`, mincodeSchool);
+          const mincodeSchool = generateSchoolObject(school);
+          mincodeSchoolMap.set(school.mincode, mincodeSchool);
+          schoolMap.set(school.schoolId, mincodeSchool);
           mincodeSchools.push(mincodeSchool);
+          if (isSchoolActive(mincodeSchool)) {
+            activeSchools.push(mincodeSchool);
+          }
         }
       }
       log.info(`loaded ${mincodeSchoolMap.size} schools.`);
+      log.info(`Loaded ${activeSchools.length} active schools.`);
     }, {
       retries: 50
     });
@@ -41,6 +58,114 @@ const cacheService = {
   },
   getSchoolNameJSONByMincode(mincode) {
     return mincodeSchoolMap.get(mincode);
+  },
+  getSchoolBySchoolID(schoolID) {
+    return schoolMap.get(schoolID);
+  },
+  getAllActiveSchoolsJSON() {
+    return activeSchools;
+  },
+  async loadAllDistrictsToMap() {
+    log.debug('loading all districts during start up');
+    await retry(async () => {
+      const data = await getApiCredentials();
+      const districtsResponse = await getData(data.accessToken, config.get('server:institute:instituteDistrictURL'));
+      // reset the value.
+      districts = [];
+      activeDistricts = [];
+      districtsMap.clear();
+      if (districtsResponse && districtsResponse.length > 0) {
+        for (const district of districtsResponse) {
+          const districtData = generateDistrictObject(district);
+          districtsMap.set(district.districtId, districtData);
+          districts.push(districtData);
+          if(isDistrictActive(districtData)){
+            activeDistricts.push(districtData);
+          }
+        }
+      }
+      log.info(`loaded ${districtsMap.size} districts.`);
+    }, {
+      retries: 50
+    });
+
+  },
+  getAllActiveDistrictsJSON(){
+    return activeDistricts;
+  },
+  getAllDistrictsJSON() {
+    return districts;
+  },
+  getDistrictJSONByDistrictId(districtId) {
+    return districtsMap.get(districtId);
+  },
+  async loadAllAuthoritiesToMap() {
+    log.debug('loading all authorities during start up');
+    await retry(async () => {
+      const data = await getApiCredentials();
+      const authoritiesResponse = await getData(data.accessToken, config.get('server:institute:instituteAuthorityURL'));
+      // reset the value.
+      authorities = [];
+      activeAuthorities = [];
+      authoritiesMap.clear();
+      if (authoritiesResponse && authoritiesResponse.length > 0) {
+        for (const authority of authoritiesResponse) {
+          const authorityData = generateAuthorityObject(authority);
+          authoritiesMap.set(authority.independentAuthorityId, authorityData);
+          authorities.push(authorityData);
+          if(isAuthorityActive(authorityData)){
+            activeAuthorities.push(authorityData);
+          }
+        }
+      }
+      log.info(`loaded ${authoritiesMap.size} authorities.`);
+    }, {
+      retries: 50
+    });
+
+  },
+  getAllActiveAuthoritiesJSON(){
+    return activeAuthorities;
+  },
+  getAllAuthoritiesJSON() {
+    return authorities;
+  },
+  getAuthorityJSONByAuthorityId(authorityId) {
+    return authoritiesMap.get(authorityId);
+  },
+
+  async loadAllDocumentTypeCodesToMap() {
+    log.debug('Loading all document type codes during start up');
+    await retry(async () => {
+      // if anything throws, we retry
+      const data = await getApiCredentials(); // get the tokens first to make api calls.
+      const documentTypeCodesList = await getData(data.accessToken, `${config.get('server:edx:exchangeURL')}/document-types`);
+      documentTypeCodes = []; // reset the value.
+      documentTypeCodesMap.clear();// reset the value.
+      if (documentTypeCodesList && documentTypeCodesList.length > 0) {
+        for (const documentTypeCode of documentTypeCodesList) {
+          const docTypeCode = {
+            secureExchangeDocumentTypeCode: documentTypeCode.secureExchangeDocumentTypeCode,
+            label: documentTypeCode.label,
+            description: documentTypeCode.description,
+            effectiveDate: documentTypeCode.effectiveDate,
+            expiryDate: documentTypeCode.expiryDate,
+          };
+          documentTypeCodesMap.set(documentTypeCode.secureExchangeDocumentTypeCode, docTypeCode);
+          documentTypeCodes.push(docTypeCode);
+        }
+      }
+      log.info(`Loaded ${documentTypeCodesMap.size} document type codes.`);
+    }, {
+      retries: 50
+    });
+
+  },
+  getAllDocumentTypeCodesJSON() {
+    return documentTypeCodes;
+  },
+  getDocumentTypeCodeLabelByCode(code) {
+    return documentTypeCodesMap.get(code);
   }
 };
 

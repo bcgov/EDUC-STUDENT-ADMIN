@@ -120,6 +120,24 @@ export default {
     border-color: #accbaa !important;
   }
 
+  .v-alert.bootstrap-info {
+    color: #4e6478;
+    background-color: #eaf2fa !important;
+    border-color: #b8d4ee !important;
+  }
+
+  .v-alert.bootstrap-warning {
+    color: #81692c;
+    background-color: #fef4dd !important;
+    border-color: #fbdb8b !important;
+  }
+
+  .v-alert.bootstrap-error {
+    color: #712024;
+    background-color: #f7d8da !important;
+    border-color: #eeaaad !important;
+  }
+
   .v-alert .v-icon {
     padding-left: 0;
   }

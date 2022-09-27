@@ -1,65 +1,62 @@
 <template>
-  <v-card class="document-upload">
+  <v-card class="document-upload" max-width="640px">
 
     <v-card-title><h3>Document Upload</h3></v-card-title>
-    <v-form
-      ref="form"
-      v-model="validForm"
-    >
-      <v-file-input
-        color="#003366"
-        :accept="fileAccept"
-        :disabled="hasReadOnlyRoleAccess()"
-        placeholder="Select your file"
-        :error-messages="fileInputError"
-        @change="selectFile"
-      ></v-file-input>
-
-
+    <v-card-text>
+      <v-form
+          ref="form"
+          v-model="validForm"
+      >
+        <v-file-input
+            color="#003366"
+            :accept="fileAccept"
+            :rules="fileRules"
+            :disabled="hasReadOnlyRoleAccess()"
+            placeholder="Select your file"
+            :error-messages="fileInputError"
+            class="pt-0"
+            @change="selectFile"
+            id="selectFileInput"
+        ></v-file-input>
       </v-form>
       <v-alert
-        dense
-        outlined
-        dismissible
-        v-model="alert"
-        :class="alertType"
-        class="mb-3"
+          dense
+          outlined
+          dismissible
+          color="#712024"
+          style="background-color: #f7d8da !important;"
+          v-model="alert"
+          :class="alertType"
+          class="mb-3"
       >
-         {{ alertMessage }}
+        {{ alertMessage }}
       </v-alert>
+    </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn
-          color="#003366"
-          class="white--text"
-          id="upload_form"
-          @click="submitRequest"
-          :disabled="!dataReady"
-          :loading="active"
-          :key="buttonKey"
-        >
-          Upload
-        </v-btn>
-        <v-btn
-          color="#003366"
-          class="white--text"
-          @click="closeForm"
-        >
-          Close
-        </v-btn>
+        <PrimaryButton id="cancelUploadButton" secondary text="Cancel" @click.native="closeForm"></PrimaryButton>
+        <PrimaryButton :key="buttonKey" :loading="active" :disabled="!dataReady" id="upload_form" text="Upload" width="7rem" @click.native="submitRequest"></PrimaryButton>
       </v-card-actions>
-
-
   </v-card>
 </template>
 
 <script>
-import {getFileExtensionWithDot, getFileNameWithMaxNameLength} from '@/utils/file';
-import {mapGetters} from 'vuex';
+import {humanFileSize, getFileExtensionWithDot, getFileNameWithMaxNameLength} from '@/utils/file';
+import {mapGetters, mapState} from 'vuex';
+import PrimaryButton from '../util/PrimaryButton';
 
 export default {
+  components: {PrimaryButton},
   props: {
     eager: {
+      type: Boolean,
+      default: false
+    },
+    smallFileExtension: {
+      type: Boolean,
+      default: true
+    },
+    checkFileRules: {
       type: Boolean,
       default: false
     },
@@ -67,6 +64,7 @@ export default {
   data() {
     return {
       fileAccept: 'xls, xlsx',
+      fileRules: [ ],
       requiredRules: [v => !!v || 'Required'],
       validForm: true,
       fileInputError: [],
@@ -81,6 +79,29 @@ export default {
 
     };
   },
+  created() {
+    this.$store.dispatch('edx/getFileRequirements').then(() => {
+      const fileRequirements = this.fileRequirements;
+      const maxSize = fileRequirements.maxSize;
+
+      if(this.checkFileRules){
+        this.fileRules = [
+          value => !value || value.size < maxSize || `File size should not be larger than ${humanFileSize(maxSize)}!`,
+          value => !value || fileRequirements.extensions.includes(value.type) || `File formats should be ${this.fileFormats}.`,
+        ];
+        this.fileAccept = fileRequirements.extensions.join();
+      }else{
+        this.fileRules = [
+          value => !value || value.size < maxSize || `File size should not be larger than ${humanFileSize(maxSize)}!`
+        ];
+      }
+
+      this.fileFormats = this.makefileFormatList(fileRequirements.extensions);
+    }).catch(e => {
+      console.log(e);
+      this.setErrorAlert('Sorry, an unexpected error seems to have occurred. You can upload files later.');
+    });
+  },
   watch: {
     dataReady() {
       //force re-renders of the button to solve the color issue
@@ -89,11 +110,22 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['NOMINAL_ROLL_READ_ONLY_ROLE']),
+    ...mapState('edx', ['fileRequirements']),
     dataReady () {
       return this.validForm && this.file;
     },
   },
   methods: {
+    makefileFormatList(extensions) {
+      extensions = extensions.map(v => v.split(new RegExp('/'))[1]).filter(v => v).map(v => v.toUpperCase());
+      if(extensions.length <= 2) {
+        return extensions.join(' and ');
+      } else {
+        const lastTwo = extensions.splice(-2, 2).join(', and ');
+        extensions.push(lastTwo);
+        return extensions.join(', ');
+      }
+    },
     hasReadOnlyRoleAccess() {
       return this.NOMINAL_ROLL_READ_ONLY_ROLE === true;
     },
@@ -154,16 +186,23 @@ export default {
       this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
     },
     async uploadFile(env) {
+      let fileExtensionValue;
+      if(this.smallFileExtension){
+        fileExtensionValue = getFileExtensionWithDot(this.file.name);
+      }else{
+        fileExtensionValue = this.file.type;
+      }
+
       let document = {
         fileName: getFileNameWithMaxNameLength(this.file.name),
-        fileExtension: getFileExtensionWithDot(this.file.name),
+        fileExtension: fileExtensionValue,
         fileSize: this.file.size,
         documentData: btoa(env.target.result)
       };
       this.$emit('upload', document);
       this.resetForm();
       this.$emit('close:form');
-    },
+    }
   },
 };
 </script>
@@ -171,7 +210,7 @@ export default {
 <style scoped>
 .document-upload{
   padding: 1.1rem;
-  max-width: 50rem;
+  max-width: 40rem;
   min-width: 10rem;
 }
 
@@ -186,9 +225,10 @@ ul{
   width: 100%;
 }
 
-.v-input{
-  padding-bottom: 0;
+.v-input >>> .v-input__slot{
+  padding-top: 0;
 }
+
 .bottom-text{
   /* margin-top: -0.7rem; */
   padding-top: 0;

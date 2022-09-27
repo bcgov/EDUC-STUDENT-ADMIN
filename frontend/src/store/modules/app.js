@@ -1,4 +1,4 @@
-import { REQUEST_TYPES } from '../../utils/constants';
+import { REQUEST_TYPES } from '@/utils/constants';
 import ApiService from '@/common/apiService';
 
 export default {
@@ -13,6 +13,10 @@ export default {
     pageTitle: null,
     stickyInfoPanelHeight: null,
     mincodeSchoolNames: new Map(),
+    schoolMap: new Map(),
+    activeSchools: [],
+    activeDistricts: [],
+    districtMap : new Map(),
     districtCodes: new Set(),
     alertNotificationText: '',
     alertNotificationQueue: [],
@@ -23,10 +27,13 @@ export default {
     selectedRequest: state => state.selectedRequest,
     districtCodesObjectSorted: state => Array.from(state.districtCodes).sort(),
     mincodeSchoolNamesObjectSorted: state => Object.values(Object.fromEntries(state.mincodeSchoolNames)).map(v => v.toUpperCase()).sort(),
+    districtsObjectSorted: state => Object.values(Object.fromEntries(state.districts)).map(v => v.toUpperCase()).sort(),
     messages: state => state.messages,
     participants: state => state.participants,
     requestType: state => state.requestType,
     requestTypeLabel: state => state.requestTypeLabel,
+    schoolMap: state => state.schoolMap,
+    districtMap: state => state.districtMap,
   },
   mutations: {
     setRequest: (state, request) => {
@@ -56,9 +63,23 @@ export default {
     },
     setMincodeSchoolNameAndDistrictCodes(state, mincodeSchoolNameList) {
       state.mincodeSchoolNames = new Map();
+      state.schoolMap = new Map();
       mincodeSchoolNameList.forEach(element => {
         state.mincodeSchoolNames.set(element.mincode, element.schoolName);
+        state.schoolMap.set(element.schoolID, {...element});
         state.districtCodes.add(element.mincode?.substring(0, 3));
+      });
+    },
+    setActiveSchools(state, activeSchools) {
+      state.activeSchools = activeSchools;
+    },
+    setActiveDistricts(state, activeDistricts) {
+      state.activeDistricts = activeDistricts;
+    },
+    setDistricts(state, districtList) {
+      state.districtMap = new Map();
+      districtList.forEach(element => {
+        state.districtMap.set(element.districtId, element);
       });
     },
     setAlertNotificationText: (state, alertNotificationText) => {
@@ -80,6 +101,18 @@ export default {
         if(state.mincodeSchoolNames.size === 0) {
           const response = await ApiService.getMincodeSchoolNames();
           commit('setMincodeSchoolNameAndDistrictCodes', response.data);
+        }
+        if (state.activeSchools.length === 0) {
+          const response = await ApiService.getActiveSchools();
+          commit('setActiveSchools', response.data);
+        }
+        if(state.districtMap.size === 0) {
+          const response = await ApiService.getDistricts();
+          commit('setDistricts', response.data);
+        }
+        if (state.activeDistricts.length === 0) {
+          const response = await ApiService.getActiveDistricts();
+          commit('setActiveDistricts', response.data);
         }
       }
     },
