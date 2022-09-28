@@ -367,6 +367,7 @@ export default {
           searchParams: omitBy(this.headerSearchParams, isEmpty),
         }
       }).then(response => {
+        this.schools = [];
         let schoolList = response.data.content;
         for(const school of schoolList){
           this.populateExtraSchoolFields(school);
