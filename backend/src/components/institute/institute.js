@@ -37,6 +37,18 @@ async function getSchools(req, res) {
   }
 }
 
+async function getSchoolByID(req, res) {
+  const token = getBackendToken(req);
+  try {
+    const url = `${config.get('server:institute:rootURL')}/school/${req.params.id}`;
+    const data = await getData(token, url);
+    return res.status(200).json(data);
+  } catch (e) {
+    logApiError(e, 'getSchoolByID', 'Error occurred while attempting to GET school entity.');
+    return errorResponse(res);
+  }
+}
+
 async function getSchoolsPaginated(req, res){
   const accessToken = getBackendToken(req);
   validateAccessToken(accessToken, res);
@@ -198,5 +210,6 @@ module.exports = {
   getSchoolsPaginated,
   getAuthorities,
   getAuthoritiesPaginated,
-  getAuthorityByID
+  getAuthorityByID,
+  getSchoolByID
 };
