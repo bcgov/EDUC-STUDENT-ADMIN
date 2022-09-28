@@ -66,9 +66,7 @@
               clearable>
             </v-autocomplete>
           </v-col>
-        </v-row>
-        <v-row class="d-flex justify-end mt-n8">
-          <v-col cols="12" md="2">
+          <v-col class="mt-6 d-flex justify-end">
             <PrimaryButton id="user-search-button" text="Clear" secondary @click.native="clearButtonClick"/>
             <PrimaryButton class="ml-3" width="8em" id="user-clear-button" text="Search" @click.native="searchButtonClick"
                            :disabled="!searchEnabled()"/>
