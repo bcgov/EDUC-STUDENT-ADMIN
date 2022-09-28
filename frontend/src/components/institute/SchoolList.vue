@@ -293,19 +293,22 @@ export default {
           };
           this.districtSearchNames.push(districtItem);
         }
-        this.districtSearchNames = this.districtSearchNames.sort(function(a, b) {
-          if (a.districtNumberName > b.districtNumberName) {
-            return 1;
-          } else if (a.districtNumberName < b.districtNumberName) {
-            return -1;
-          }
-          return 0;
-        });
+        this.districtSearchNames = this.sortByNameValue(this.districtSearchNames, 'districtNumberName');
       }).catch(error => {
         console.error(error);
         this.setFailureAlert('An error occurred while getting districts. Please try again later.');
       }).finally(() => {
         this.loadingDistricts = false;
+      });
+    },
+    sortByNameValue(list, valueToSortBy){
+      return list.sort(function(a, b) {
+        if (a[valueToSortBy] > b[valueToSortBy]) {
+          return 1;
+        } else if (a[valueToSortBy] < b[valueToSortBy]) {
+          return -1;
+        }
+        return 0;
       });
     },
     getSchoolDropDownItems(){
@@ -318,14 +321,7 @@ export default {
           };
           this.schoolSearchNames.push(schoolItem);
         }
-        this.schoolSearchNames = this.schoolSearchNames.sort(function(a, b) {
-          if (a.schoolCodeName > b.schoolCodeName) {
-            return 1;
-          } else if (a.schoolCodeName < b.schoolCodeName) {
-            return -1;
-          }
-          return 0;
-        });
+        this.schoolSearchNames = this.sortByNameValue(this.schoolSearchNames, 'schoolCodeName');
       }).catch(error => {
         //to do add the alert framework for error or success
         console.error(error);
@@ -341,14 +337,7 @@ export default {
           };
           this.authoritySearchNames.push(authorityItem);
         }
-        this.authoritySearchNames = this.authoritySearchNames.sort(function(a, b) {
-          if (a.authorityCodeName > b.authorityCodeName) {
-            return 1;
-          } else if (a.authorityCodeName < b.authorityCodeName) {
-            return -1;
-          }
-          return 0;
-        });
+        this.authoritySearchNames = this.sortByNameValue(this.authoritySearchNames, 'authorityCodeName');
       }).catch(error => {
         //to do add the alert framework for error or success
         console.error(error);
