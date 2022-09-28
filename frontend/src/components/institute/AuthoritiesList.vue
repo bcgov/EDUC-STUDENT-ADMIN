@@ -263,6 +263,7 @@ export default {
         }
       }).then(response => {
         let authorityList = response.data.content;
+        this.authorities = [];
         for(const authority of authorityList){
           this.populateExtraAuthorityFields(authority);
           this.authorities.push(authority);
