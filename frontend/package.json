@@ -19,6 +19,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
     "@babel/preset-env": "7.11.0",
+    "@braintree/sanitize-url": "^6.0.0",
     "@fortawesome/fontawesome-free": "5.11.2",
     "@js-joda/core": "^2.0.0",
     "@mdi/font": "^4.9.95",

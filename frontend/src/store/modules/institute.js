@@ -60,7 +60,7 @@ export default {
       commit('setAuthorityTypeCodes', reponse.data);
     },
     async getGradeCodes({commit}) {
-      const response = await ApiService.getGradeCodes();
+      const response = await ApiService.getInstituteGradeCodes();
       commit('setGradeCodes', response.data);
     }
   }
