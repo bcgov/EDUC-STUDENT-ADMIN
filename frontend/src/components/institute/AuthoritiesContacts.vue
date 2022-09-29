@@ -16,14 +16,14 @@
       <v-row>
         <v-col class="mt-1 d-flex justify-start">
           <v-icon class="mt-1" small color="#1976d2">mdi-arrow-left</v-icon>
-          <a class="ml-1 mt-1" @click="backButtonClick">Return to School List</a>
+          <a class="ml-1 mt-1" @click="backButtonClick">Return to Authority List</a>
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="12" class="d-flex justify-start">
           <v-row no-gutters>
             <v-col cols="12">
-              <h2 class="subjectHeading">{{school.mincode}} - {{school.displayName}}</h2>
+              <h2 class="subjectHeading">{{authority.authorityNumber}} - {{authority.displayName}}</h2>
             </v-col>
           </v-row>
         </v-col>
@@ -38,15 +38,14 @@
           <PrimaryButton icon-left width="11em" icon="mdi-plus-thick" text="New Contact"></PrimaryButton>
         </v-col>
       </v-row>
-
-      <div v-for="schoolContactType in schoolContactTypes" :key="schoolContactType.code">
+      <div v-for="authorityContactType in authorityContactTypes" :key="authorityContactType.code">
         <v-row>
           <v-col>
-            <h2 style="color:#1A5A96">{{schoolContactType.label}}</h2>
+            <h2 style="color:#1A5A96">{{authorityContactType.label}}</h2>
           </v-col>
         </v-row>
-        <v-row cols="2" v-if="schoolContacts.has(schoolContactType.schoolContactTypeCode)">
-          <v-col cols="5" lg="4" v-for="contact in schoolContacts.get(schoolContactType.schoolContactTypeCode)" :key="contact.schoolId">
+        <v-row cols="2" v-if="authorityContacts.has(authorityContactType.authorityContactTypeCode)">
+          <v-col cols="5" lg="4" v-for="contact in authorityContacts.get(authorityContactType.authorityContactTypeCode)" :key="contact.independentAuthorityId">
             <v-card>
               <v-card-title class="pb-0">
                 <v-row no-gutters>
@@ -115,105 +114,96 @@ import {formatPhoneNumber, formatDate} from '@/utils/format';
 import {getStatusColor} from '@/utils/institute/status';
 
 export default {
-  name: 'SchoolContactsPage',
+  name: 'AuthorityContactPage',
   mixins: [alertMixin],
   components: {
     PrimaryButton,
   },
-  props: {
-    schoolID: {
-      type: String,
-      required: true
-    },
-  },
   data() {
     return {
       loadingCount: 0,
-      schoolContactTypes: [],
-      schoolContacts: new Map(),
-      school: {}
+      authorityContactTypes: [],
+      authorityContacts: new Map(),
+      authority: {},
     };
+  },
+  created() {
+    this.getThisAuthorityContacts();
+    this.getAuthorityContactTypeCodes();
   },
   computed: {
     loading() {
       return this.loadingCount !== 0;
     }
   },
-  created() {
-    this.getSchoolContactTypeCodes();
-    this.getThisSchoolsContacts();
-  },
   methods: {
-    getSchoolContactTypeCodes() {
+    getThisAuthorityContacts() {
       this.loadingCount += 1;
-      ApiService.apiAxios.get(Routes.institute.SCHOOL_CONTACT_TYPES_URL)
+
+      ApiService.apiAxios.get(`${Routes.institute.AUTHORITY_BY_ID_URL}/${this.$route.params.authorityID}`)
         .then(response => {
-          this.schoolContactTypes = response.data;
+          this.authorityContacts = new Map();
+          this.authority = response.data;
+          response.data.contacts.forEach(contact => {
+            if (!this.authorityContacts.has(contact.authorityContactTypeCode)) {
+              this.authorityContacts.set(contact.authorityContactTypeCode, [contact]);
+              return;
+            }
+            this.schoolContacts.get(contact.authorityContactTypeCode).push(contact);
+          });
         })
         .catch(error => {
-          console.error(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get the details of available School Contact Type Codes. Please try again later.');
-        }).finally(() => {
+          console.log(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get Authority by ID. Please try again later.');
+        })
+        .finally(() => {
           this.loadingCount -= 1;
         });
     },
-    getThisSchoolsContacts(){
+    getAuthorityContactTypeCodes() {
       this.loadingCount += 1;
-      let searchSchoolID = this.schoolID;
 
-      ApiService.apiAxios.get(`${Routes.institute.SCHOOL_DATA_URL}/` + searchSchoolID)
+      ApiService.apiAxios.get(Routes.institute.AUTHORITY_CONTACT_TYPES_URL)
         .then(response => {
-          this.schoolContacts = new Map();
-          this.school = response.data;
-          response.data.contacts.forEach(contact => {
-            if (!this.schoolContacts.has(contact.schoolContactTypeCode)) {
-              this.schoolContacts.set(contact.schoolContactTypeCode, [contact]);
-              return;
-            }
-            this.schoolContacts.get(contact.schoolContactTypeCode).push(contact);
-          });
-        }).catch(error => {
+          this.authorityContactTypes = response.data;
+        })
+        .catch(error => {
           console.error(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get a list of the school\'s contacts. Please try again later.');
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get the details of available Authority Contact Type Codes. Please try again later.');
         }).finally(() => {
           this.loadingCount -= 1;
         });
     },
     backButtonClick() {
-      this.$router.push({name: 'instituteSchoolList'});
+      this.$router.push({name: 'instituteAuthoritiesList'});
     },
     formatDate,
     formatPhoneNumber,
-    getStatusColor,
+    getStatusColor
   }
 };
+
 </script>
-
 <style scoped>
-
 @media screen and (max-width: 950px){
   .v-dialog__content /deep/ .v-bottom-sheet {
     width: 60% !important;
   }
 }
-
 .containerSetup{
   padding-right: 32em !important;
   padding-left: 32em !important;
 }
-
 @media screen and (max-width: 1950px) {
   .containerSetup{
     padding-right: 20em !important;
     padding-left: 20em !important;
   }
 }
-
 @media screen and (max-width: 1200px) {
   .containerSetup{
     padding-right: 4em !important;
     padding-left: 4em !important;
   }
 }
-
 </style>

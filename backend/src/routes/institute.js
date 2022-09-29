@@ -32,4 +32,6 @@ router.get('/school-contact-types', passport.authenticate('jwt', {session: false
 
 router.get('/authority-types', passport.authenticate('jwt', {session: false}, undefined), extendSession, utils.cacheMiddleware(), utils.getCodes('server:institute:rootURL', 'authorityTypeCodes', '/authority-type-codes'));
 
+router.get('/authority-contact-types', passport.authenticate('jwt', {session: false}, undefined), extendSession, utils.cacheMiddleware(), utils.getCodes('server:institute:rootURL', 'authorityContactTypeCodes', '/authority-contact-type-codes'));
+
 module.exports = router;
