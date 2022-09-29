@@ -99,6 +99,7 @@ let object = {
     SCHOOL_CATEGORY_TYPES_URL: instituteRoot + '/school-category-types',
     SCHOOL_ORGANIZATION_TYPES_URL: instituteRoot + '/school-organization-types',
     SCHOOL_NEIGHBORHOOD_LEARNING_TYPES_URL: instituteRoot + '/school-neighborhood-learning-types',
+    SCHOOL_CONTACT_TYPES_URL: instituteRoot + '/school-contact-types',
     AUTHORITY_TYPES_URL: instituteRoot + '/authority-types',
     GRADE_TYPES_URL: instituteRoot + '/grade-codes',
     DISTRICT_DATA_URL: instituteRoot + '/districts',
@@ -423,6 +424,7 @@ export const PAGE_TITLES = Object.freeze(
     SCHOOL_DETAILS: 'School Details',
     AUTHORITIES_LIST: 'Authorities List',
     AUTHORITY_DETAILS: 'Authority Details',
+    SCHOOL_CONTACTS: 'School Contacts',
   }
 );
 

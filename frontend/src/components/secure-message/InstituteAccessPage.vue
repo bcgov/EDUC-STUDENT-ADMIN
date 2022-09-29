@@ -1,5 +1,6 @@
 <template>
   <v-container class="containerSetup">
+    <div v-if="institutes.length >=1">
     <v-row>
       <v-col class="mt-1 d-flex justify-start">
         <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
@@ -38,6 +39,8 @@
         </v-row>
       </v-card-text>
     </v-card>
+    </div>
+    <Spinner v-else/>
   </v-container>
 </template>
 
@@ -46,10 +49,12 @@
 import {mapState} from 'vuex';
 import PrimaryButton from '../util/PrimaryButton';
 import router from '@/router';
+import Spinner from '@/components/common/Spinner';
 
 export default {
   name: 'InstituteAccessPage',
   components: {
+    Spinner,
     PrimaryButton,
   },
   props: {

@@ -37,16 +37,14 @@ async function getSchools(req, res) {
   }
 }
 
-async function getSchoolBySchoolId(req, res) {
+async function getSchoolByID(req, res) {
+  const token = getBackendToken(req);
   try {
-    if (req.query.fromCache === 'true') {
-      return res.status(HttpStatus.OK).json(cacheService.getSchoolBySchoolID(req.params.schoolID));
-    }
-    const token = getBackendToken(req);
-    const data = await getData(token, `${config.get('server:institute:rootURL')}/school/${req.params.schoolID}`);
+    const url = `${config.get('server:institute:rootURL')}/school/${req.params.id}`;
+    const data = await getData(token, url);
     return res.status(200).json(data);
   } catch (e) {
-    logApiError(e, 'getSchoolBySchoolId', 'Error occurred while attempting to GET the School entity.');
+    logApiError(e, 'getSchoolByID', 'Error occurred while attempting to GET school entity.');
     return errorResponse(res);
   }
 }
@@ -213,5 +211,6 @@ module.exports = {
   getSchoolsPaginated,
   getAuthorities,
   getAuthoritiesPaginated,
-  getAuthorityByID
+  getAuthorityByID,
+  getSchoolByID
 };

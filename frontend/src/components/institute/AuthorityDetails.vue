@@ -3,7 +3,7 @@
     <v-row>
       <v-col class="mt-1 d-flex justify-start">
         <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
-        <a class="ml-1" @click="backButtonClick">Return to Dashboard</a>
+        <a class="ml-1" @click="backButtonClick">Return to Authorities List</a>
       </v-col>
     </v-row>
     <v-row v-if="loading">
@@ -29,25 +29,25 @@
           </v-col>
         </v-row>
         <v-row class="d-flex justify-start">
-          <v-col  lg="3" sm="4">
+          <v-col class="d-flex">
             <v-icon class="pb-1" :color="getStatusColor()" right dark>
               mdi-circle-medium
             </v-icon>
             <span>{{getStatusText()}}</span>
           </v-col>
-          <v-col lg="3" sm="4">
+          <v-col class="d-flex">
             <v-icon class="mb-1 mr-1" aria-hidden="false">
               mdi-phone-outline
             </v-icon>
             <span>{{ formatPhoneNumber(authority.phoneNumber) }}</span>
           </v-col>
-          <v-col lg="3" sm="4">
+          <v-col class="d-flex">
             <v-icon class="mb-1 mr-1" aria-hidden="false">
               mdi-at
             </v-icon>
             <span>{{ authority.email }}</span>
           </v-col>
-          <v-col lg="3" sm="4">
+          <v-col class="d-flex">
             <v-icon class="mb-1 mr-1" aria-hidden="false">
               mdi-fax
             </v-icon>
@@ -249,9 +249,14 @@ export default {
       });
     },
     getStatusColor() {
-      if (this.getStatusText() === 'Open') {
+      let status = this.getStatusText();
+      if (status === 'Open') {
         return 'green';
-      } else {
+      } else if (status === 'Opening'){
+        return 'blue';
+      } else if (status === 'Closing'){
+        return 'orange';
+      } else if (status === 'Closed') {
         return 'red';
       }
     },
@@ -269,6 +274,8 @@ export default {
 
       if (parsedOpenDate <= currentDate && parsedCloseDate === null) {
         return 'Open';
+      } else if (parsedOpenDate <= currentDate && parsedCloseDate > currentDate) {
+        return 'Closing';
       }
 
       return 'Closed';
