@@ -456,6 +456,8 @@ export default {
         return 'orange';
       } else if (status === 'Closed') {
         return 'red';
+      } else if (status === 'Never Opened') {
+        return 'grey';
       }
     },
     openSchool(schoolId){

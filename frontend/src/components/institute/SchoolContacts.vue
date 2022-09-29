@@ -14,9 +14,12 @@
     </v-row>
     <template v-if="!loading">
       <v-row>
-        <v-col class="mt-1 d-flex justify-start">
-          <v-icon class="mt-1" small color="#1976d2">mdi-arrow-left</v-icon>
-          <a class="ml-1 mt-1" @click="backButtonClick">Return to School List</a>
+        <v-col cols="12" class="d-flex justify-start">
+          <v-row no-gutters>
+            <v-col cols="12">
+              <h2 class="subjectHeading">{{school.mincode}} - {{school.displayName}}</h2>
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
       <v-row cols="2">
@@ -27,6 +30,12 @@
         </v-col>
         <v-col class="d-flex justify-end">
           <PrimaryButton icon-left width="11em" icon="mdi-plus-thick" text="New Contact"></PrimaryButton>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col class="mt-1 d-flex justify-start">
+          <v-icon class="mt-1" small color="#1976d2">mdi-arrow-left</v-icon>
+          <a class="ml-1 mt-1" @click="backButtonClick">Return to School List</a>
         </v-col>
       </v-row>
       <div v-for="schoolContactType in schoolContactTypes" :key="schoolContactType.code">
@@ -121,6 +130,7 @@ export default {
       loadingCount: 0,
       schoolContactTypes: [],
       schoolContacts: new Map(),
+      school: {}
     };
   },
   computed: {
@@ -153,6 +163,7 @@ export default {
       ApiService.apiAxios.get(`${Routes.institute.SCHOOL_DATA_URL}/` + searchSchoolID)
         .then(response => {
           this.schoolContacts = new Map();
+          this.school = response.data;
           response.data.contacts.forEach(contact => {
             if (!this.schoolContacts.has(contact.schoolContactTypeCode)) {
               this.schoolContacts.set(contact.schoolContactTypeCode, [contact]);
