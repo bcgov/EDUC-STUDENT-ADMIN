@@ -14,6 +14,12 @@
     </v-row>
     <template v-if="!loading">
       <v-row>
+        <v-col class="mt-1 d-flex justify-start">
+          <v-icon class="mt-1" small color="#1976d2">mdi-arrow-left</v-icon>
+          <a class="ml-1 mt-1" @click="backButtonClick">Return to School List</a>
+        </v-col>
+      </v-row>
+      <v-row>
         <v-col cols="12" class="d-flex justify-start">
           <v-row no-gutters>
             <v-col cols="12">
@@ -32,12 +38,7 @@
           <PrimaryButton icon-left width="11em" icon="mdi-plus-thick" text="New Contact"></PrimaryButton>
         </v-col>
       </v-row>
-      <v-row>
-        <v-col class="mt-1 d-flex justify-start">
-          <v-icon class="mt-1" small color="#1976d2">mdi-arrow-left</v-icon>
-          <a class="ml-1 mt-1" @click="backButtonClick">Return to School List</a>
-        </v-col>
-      </v-row>
+
       <div v-for="schoolContactType in schoolContactTypes" :key="schoolContactType.code">
         <v-row>
           <v-col>

@@ -62,6 +62,17 @@ export function formatDistrictNumber(districtNumber) {
   return districtNumber.padStart(3, '0');
 }
 
+export function sortByNameValue(list, valueToSortBy){
+  return list.sort(function(a, b) {
+    if (a[valueToSortBy] > b[valueToSortBy]) {
+      return 1;
+    } else if (a[valueToSortBy] < b[valueToSortBy]) {
+      return -1;
+    }
+    return 0;
+  });
+}
+
 export function formatPhoneNumber(phoneNumber) {
 
   if (!phoneNumber) {
