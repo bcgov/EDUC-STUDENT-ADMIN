@@ -30,6 +30,16 @@ router.get('/school-category-types', passport.authenticate('jwt', {session: fals
 
 router.get('/school-contact-types', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, utils.cacheMiddleware(), utils.getCodes('server:institute:rootURL', 'schoolContactTypeCodes', '/school-contact-type-codes'));
 
+router.get('/school-organization-types', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, utils.cacheMiddleware(), utils.getCodes('server:institute:rootURL', 'schoolOrganizationTypeCodes', '/organization-codes'));
+
+router.get('/school-neighborhood-learning-types', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, utils.cacheMiddleware(), utils.getCodes('server:institute:rootURL', 'schoolNeighborhoodLearningTypeCodes', '/neighborhood-learning-codes'));
+
+router.get('/school-contact-types', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, utils.cacheMiddleware(), utils.getCodes('server:institute:rootURL', 'schoolContactTypeCodes', '/school-contact-type-codes'));
+
 router.get('/authority-types', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, utils.cacheMiddleware(), utils.getCodes('server:institute:rootURL', 'authorityTypeCodes', '/authority-type-codes'));
+
+router.get('/grade-codes', passport.authenticate('jwt', {session: false}, undefined), extendSession, utils.cacheMiddleware(), utils.getCodes('server:institute:rootURL', 'gradeCodes', '/grade-codes'));
+
+router.get('/authority-contact-types', passport.authenticate('jwt', {session: false}, undefined), extendSession, utils.cacheMiddleware(), utils.getCodes('server:institute:rootURL', 'authorityContactTypeCodes', '/authority-contact-type-codes'));
 
 module.exports = router;
