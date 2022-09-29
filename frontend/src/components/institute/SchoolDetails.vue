@@ -72,7 +72,7 @@
                 <v-icon class="mr-1" aria-hidden="false">
                   mdi-web
                 </v-icon>
-                <a target="_blank" :href="$sanitizeUrl(school.website)">{{ school.website }}</a>
+                <a v-if="cleanWebsiteUrl" :href="cleanWebsiteUrl" target="_blank">{{ cleanWebsiteUrl }}</a>
               </v-col>
             </v-row>
           </v-col>
@@ -271,9 +271,6 @@ import {formatPhoneNumber} from '@/utils/format';
 import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 import router from '@/router';
 import { sanitizeUrl } from '@braintree/sanitize-url';
-import Vue from 'vue';
-
-Vue.prototype.$sanitizeUrl = sanitizeUrl;
 
 export default {
   name: 'SchoolDetailsPage',
@@ -291,6 +288,7 @@ export default {
     return {
       school: '',
       district: '',
+      cleanWebsiteUrl: '',
       schoolFacilityTypes: [],
       schoolCategoryTypes: [],
       schoolOrganizationTypes: [],
@@ -342,6 +340,7 @@ export default {
       ApiService.apiAxios.get(`${Routes.institute.SCHOOL_DATA_URL}/${this.schoolID}`)
         .then(response => {
           this.school = response.data;
+          this.cleanWebsiteUrl = this.school.website ? sanitizeUrl(this.school.website) : '';
           this.populateExtraSchoolFields(this.school);
           this.getDistrictDetails(this.school.districtId);
         }).catch(error => {
