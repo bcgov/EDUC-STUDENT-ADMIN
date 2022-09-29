@@ -72,7 +72,7 @@
                 <v-icon class="mr-1" aria-hidden="false">
                   mdi-web
                 </v-icon>
-                <a target="_blank" :href="cleanWebsiteUrl">{{ cleanWebsiteUrl }}</a>
+                <a target="_blank" :href="$sanitizeUrl(school.website)">{{ school.website }}</a>
               </v-col>
             </v-row>
           </v-col>
@@ -271,6 +271,9 @@ import {formatPhoneNumber} from '@/utils/format';
 import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 import router from '@/router';
 import { sanitizeUrl } from '@braintree/sanitize-url';
+import Vue from 'vue';
+
+Vue.prototype.$sanitizeUrl = sanitizeUrl;
 
 export default {
   name: 'SchoolDetailsPage',
@@ -311,12 +314,6 @@ export default {
     },
     isOffshoreSchool(){
       return this.school.schoolCategoryCode === 'OFFSHORE';
-    },
-    cleanWebsiteUrl() {
-      if (!this.school) {
-        return '';
-      }
-      return sanitizeUrl(this.school.website);
     }
   },
   created() {

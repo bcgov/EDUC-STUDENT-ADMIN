@@ -207,7 +207,6 @@ module.exports = {
   getDistricts,
   getDistrictByDistrictId,
   getSchools,
-  getSchoolBySchoolId,
   getSchoolsPaginated,
   getAuthorities,
   getAuthoritiesPaginated,
