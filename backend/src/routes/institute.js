@@ -39,4 +39,6 @@ router.get('/authority-types', passport.authenticate('jwt', {session: false}, un
 
 router.get('/grade-codes', passport.authenticate('jwt', {session: false}, undefined), extendSession, utils.cacheMiddleware(), utils.getCodes('server:institute:rootURL', 'gradeCodes', '/grade-codes'));
 
+router.get('/authority-contact-types', passport.authenticate('jwt', {session: false}, undefined), extendSession, utils.cacheMiddleware(), utils.getCodes('server:institute:rootURL', 'authorityContactTypeCodes', '/authority-contact-type-codes'));
+
 module.exports = router;

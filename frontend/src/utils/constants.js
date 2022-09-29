@@ -106,6 +106,7 @@ let object = {
     AUTHORITY_DATA_URL: instituteRoot + '/authorities',
     AUTHORITIES_PAGINATED_DATA_URL: instituteRoot + '/authoritiesPaginated',
     AUTHORITY_BY_ID_URL: instituteRoot + '/authority',
+    AUTHORITY_CONTACT_TYPES_URL: instituteRoot + '/authority-contact-types'
   },
   penServices: {
     ROOT_ENDPOINT: penServicesRoot,
@@ -424,6 +425,7 @@ export const PAGE_TITLES = Object.freeze(
     SCHOOL_DETAILS: 'School Details',
     AUTHORITIES_LIST: 'Authorities List',
     AUTHORITY_DETAILS: 'Authority Details',
+    AUTHORITY_CONTACTS: 'Authority Contacts',
     SCHOOL_CONTACTS: 'School Contacts',
   }
 );

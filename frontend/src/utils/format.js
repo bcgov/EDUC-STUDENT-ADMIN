@@ -85,3 +85,7 @@ export function formatPhoneNumber(phoneNumber) {
 
   return 'Phone number format not recognized';
 }
+
+export function  formatDate(rawDate){
+  return new Date(rawDate).toISOString().slice(0,10).replace(/-/g,'/');
+}
