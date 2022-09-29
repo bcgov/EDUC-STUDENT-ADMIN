@@ -10,7 +10,7 @@
       </v-row>
       <!--    search filter -->
       <v-row :class="['d-sm-flex', 'align-center', 'searchBox', 'elevation-2']" @keydown.enter="searchButtonClick">
-        <v-col cols="12" md="4">
+        <v-col cols="12" md="5">
           <v-autocomplete
             id="name-text-field"
             label="District Number and Name"
@@ -21,7 +21,7 @@
             clearable>
           </v-autocomplete>
         </v-col>
-        <v-col cols="12" md="4">
+        <v-col cols="12" md="3">
           <v-select id="status-select-field" clearable :items="status" v-model="searchFilter.status" item-text="label" item-value="districtStatusCode" label="Status"></v-select>
         </v-col>
         <v-col cols="12" md="4" :class="['text-right']">
@@ -42,11 +42,11 @@
 
         <template v-slot:item.secureExchangeStatusCode="{ item }">
           <v-row>
-            <v-col>
+            <v-col cols="6">
               <strong class="largeFont">{{ `${item.districtNumber} - ${item.name}` }}</strong>
             </v-col>
             <v-spacer></v-spacer>
-            <v-col lg="2" md="3" sm="4">
+            <v-col cols="3">
               <v-row no-gutters>
                 <v-col>
                   <v-icon :color="getStatusColor(item.districtStatusCode)">
@@ -64,33 +64,22 @@
                 </v-col>
               </v-row>
             </v-col>
-            <v-col lg="2" md="3" sm="4">
-              <v-row class="mb-2" no-gutters>
-                <v-col>
-                  <v-btn id="districtDetails"
-                         color="#003366"
-                         width="100%"
-                         outlined
-                         class="mt-0 pt-0 filterButton"
-                  >
-                    <v-icon color="#003366" style="margin-top: 0.07em" class="ml-n4 mr-1" dark>mdi-newspaper-variant-outline</v-icon>
-                    <span class="ml-1" style="text-transform: initial">Details</span>
-                  </v-btn>
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col>
+            <v-col class="d-flex justify-end">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
                   <v-btn id="districtContacts"
                          color="#003366"
-                         width="100%"
                          outlined
-                         class="mt-0 pt-0 filterButton"
+                         @click.native.stop="openAuthorityContacts(item.independentAuthorityId)"
+                         class="mt-0 pt-0 filterButton ml-2"
+                         style="text-transform: initial"
+                         v-on="on"
                   >
-                    <v-icon color="#003366" style="margin-top: 0.07em" class="mr-1" dark>mdi-account-multiple-outline</v-icon>
-                    <span class="ml-1" style="text-transform: initial">Contacts</span>
+                    <v-icon color="#003366" style="margin-top: 0.07em" dark>mdi-account-multiple-outline</v-icon>
                   </v-btn>
-                </v-col>
-              </v-row>
+                </template>
+                <span>View Contacts</span>
+              </v-tooltip>
             </v-col>
           </v-row>
         </template>
@@ -156,12 +145,24 @@ export default {
           };
           this.districtSearchNames.push(districtItem);
         }
+        this.districtSearchNames = this.sortByNameValue(this.districtSearchNames, 'districtNumberName');
+        this.districtList = this.sortByNameValue(this.districtList, 'districtNumber');
         this.searchButtonClick();
       }).catch(error => {
         console.error(error);
         this.setFailureAlert('An error occurred while getting districts. Please try again later.');
       }).finally(() => {
         this.loadingDistricts = false;
+      });
+    },
+    sortByNameValue(list, valueToSortBy){
+      return list.sort(function(a, b) {
+        if (a[valueToSortBy] > b[valueToSortBy]) {
+          return 1;
+        } else if (a[valueToSortBy] < b[valueToSortBy]) {
+          return -1;
+        }
+        return 0;
       });
     },
     getStatusColor(districtStatusCode){
@@ -229,14 +230,14 @@ export default {
 }
 
 .containerSetup{
-  padding-right: 32em !important;
-  padding-left: 32em !important;
+  padding-right: 40em !important;
+  padding-left: 40em !important;
 }
 
 @media screen and (max-width: 1950px) {
   .containerSetup{
-    padding-right: 20em !important;
-    padding-left: 20em !important;
+    padding-right: 30em !important;
+    padding-left: 30em !important;
   }
 }
 

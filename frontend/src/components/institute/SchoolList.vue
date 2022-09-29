@@ -92,90 +92,63 @@
         >
 
           <template v-slot:item.secureExchangeStatusCode="{ item }">
-              <v-row style="cursor: pointer;">
-                <v-col cols="12" lg="4" xl="5" class="pb-0 pt-0">
-                  <v-row class="mb-n4">
-                    <v-col cols="12" class="pb-2 pt-2 pr-0">
-                      <span class="subjectHeading">{{ item.mincode }} - {{ item.displayName }}</span>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="12" class="pb-1 pr-0">
-                      <span class="ministryLine" style="color: black">{{
-                          item.schoolCategory
-                        }} | {{ item.facilityType }}</span>
-                    </v-col>
-                  </v-row>
-                </v-col>
-                <v-col cols="6" lg="5" xl="2" class="pb-0 pt-0 mt-2">
-                  <v-row>
-                    <v-col cols="12" class="pb-1 pr-0">
-                      <v-icon class="ml-0 pb-1" :color="getStatusColor(item.status)" right dark>
-                        mdi-circle-medium
-                      </v-icon>
-                      <span class="ml-1 statusCodeLabel">{{ item.status }}</span>
-                    </v-col>
-                  </v-row>
-                  <v-row no-gutters>
-                    <v-col cols="12" class="pb-1 pr-0">
-                      <v-icon class="mb-1" aria-hidden="false">
-                        mdi-phone-outline
-                      </v-icon>
-                      <span class="statusCodeLabel"> {{ formatPhoneNumber(item.phoneNumber) }}</span>
-                    </v-col>
-                  </v-row>
-                </v-col>
-                <v-col cols="6" lg="5" xl="3" style="text-align: start" class="pb-0 pt-0 mt-2">
-                  <v-row>
-                    <v-col cols="12" class="pb-1 pr-0">
-                      <v-icon class="mr-1" aria-hidden="false">
-                        mdi-at
-                      </v-icon>
-                      <span class="statusCodeLabel">{{ item.email }}</span>
-                    </v-col>
-                  </v-row>
-                  <v-row no-gutters>
-                    <v-col cols="12" class="pb-1 pr-0">
-                      <v-icon class="mb-1 mr-1" aria-hidden="false">
-                        mdi-account-outline
-                      </v-icon>
-                      <span class="statusCodeLabel" style="color: black">{{item.principalsName}}</span>
-                    </v-col>
-                  </v-row>
-                </v-col>
-                <v-col lg="2" md="3" sm="4">
-                  <v-row class="mb-2" no-gutters>
-                    <v-col>
-                      <v-btn id="schoolDetails"
-                             color="#003366"
-                             width="100%"
-                             outlined
-                             @click="openSchool(item.schoolId)"
-                             class="mt-0 pt-0 filterButton"
-                             style="text-transform: initial"
-                      >
-                        <v-icon color="#003366" style="margin-top: 0.07em" class="ml-n5 mr-1" dark>mdi-newspaper-variant-outline</v-icon>
-                        <span class="ml-1">Details</span>
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                  <v-row no-gutters>
-                    <v-col>
-                      <v-btn id="schoolContacts"
-                             color="#003366"
-                             width="100%"
-                             outlined
-                             @click="openSchoolContacts(item.schoolId)"
-                             class="mt-0 pt-0 filterButton"
-                             style="text-transform: initial"
-                      >
-                        <v-icon color="#003366" style="margin-top: 0.07em" class="ml-n1 mr-1" dark>mdi-account-multiple-outline</v-icon>
-                        <span class="ml-1">Contacts</span>
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                </v-col>
-              </v-row>
+            <v-row style="cursor: pointer;" @click="openSchool(item.schoolId)">
+              <v-col class="pb-0 pt-0">
+                <v-row class="mb-n4">
+                  <v-col cols="5">
+                    <span class="subjectHeading">{{ item.mincode }} - {{ item.displayName }}</span>
+                  </v-col>
+                  <v-col cols="2">
+                    <v-icon class="ml-0 mb-1" :color="getStatusColor(item.status)" right dark>
+                      mdi-circle-medium
+                    </v-icon>
+                    <span class="statusCodeLabel">{{ item.status }}</span>
+                  </v-col>
+                  <v-col class="d-flex">
+                    <v-icon class="mb-1 mr-1" aria-hidden="false">
+                      mdi-account-outline
+                    </v-icon>
+                    <span class="statusCodeLabel" style="color: black">{{item.principalsName}}</span>
+                  </v-col>
+                  <v-col class="d-flex justify-end">
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn id="schoolContacts"
+                               color="#003366"
+                               outlined
+                               @click.native.stop="openSchoolContacts(item.schoolId)"
+                               class="mt-0 pt-0 filterButton ml-2"
+                               style="text-transform: initial"
+                               v-on="on"
+                        >
+                          <v-icon color="#003366" style="margin-top: 0.07em" dark>mdi-account-multiple-outline</v-icon>
+                        </v-btn>
+                      </template>
+                      <span>View Contacts</span>
+                    </v-tooltip>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="5" class="mt-n4">
+                    <span class="ministryLine mt-n5" style="color: black">{{
+                        item.schoolCategory
+                      }} | {{ item.facilityType }}</span>
+                  </v-col>
+                  <v-col cols="2" class="mt-n2">
+                    <v-icon class="mb-1" aria-hidden="false">
+                      mdi-phone-outline
+                    </v-icon>
+                    <span class="statusCodeLabel">{{ formatPhoneNumber(item.phoneNumber) }}</span>
+                  </v-col>
+                  <v-col class="d-flex mt-n2">
+                    <v-icon class="ml-0 mr-1 mb-1" aria-hidden="false">
+                      mdi-at
+                    </v-icon>
+                    <span class="statusCodeLabel">{{ item.email }}</span>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
           </template>
 
           <template v-slot:no-data>There are no schools.</template>
