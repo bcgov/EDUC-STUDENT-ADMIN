@@ -67,11 +67,12 @@
             <v-col lg="2" md="3" sm="4">
               <v-row class="mb-2" no-gutters>
                 <v-col>
-                  <v-btn id="districtDetails"
+                  <v-btn id="districtDetailsBtn"
                          color="#003366"
                          width="100%"
                          outlined
                          class="mt-0 pt-0 filterButton"
+                         @click="openDistrictDetails(item.districtID)"
                   >
                     <v-icon color="#003366" style="margin-top: 0.07em" class="ml-n4 mr-1" dark>mdi-newspaper-variant-outline</v-icon>
                     <span class="ml-1" style="text-transform: initial">Details</span>
@@ -207,7 +208,10 @@ export default {
     },
     backButtonClick() {
       router.push({name: 'home'});
-    }
+    },
+    openDistrictDetails(districtID){
+      this.$router.push({name: 'districtDetails', params: {districtID: districtID}});
+    },
   },
 };
 

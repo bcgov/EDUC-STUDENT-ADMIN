@@ -42,6 +42,7 @@ import AccessUsersPage from '@/components/secure-message/AccessUsersPage';
 import AccessDistrictUsersPage from '@/components/secure-message/AccessDistrictUsersPage';
 import InstituteAccessPage from '@/components/secure-message/InstituteAccessPage';
 import DistrictsPage from '@/components/institute/DistrictsPage';
+import DistrictDetailsPage from '@/components/institute/DistrictsDetails';
 import SchoolListPage from '@/components/institute/SchoolList';
 import AuthoritiesListPage from '@/components/institute/AuthoritiesList';
 import AuthorityDetailsPage from '@/components/institute/AuthorityDetails';
@@ -432,6 +433,17 @@ const router = new VueRouter({
           },
         }
       ]
+    },
+    {
+      path: '/district/:districtID',
+      name: 'districtDetails',
+      props: true,
+      component: DistrictDetailsPage,
+      meta: {
+        pageTitle: PAGE_TITLES.DISTRICT_DETAILS,
+        requiresAuth: true,
+        permission: 'SECURE_EXCHANGE'
+      }
     },
     {
       path: '/institute',

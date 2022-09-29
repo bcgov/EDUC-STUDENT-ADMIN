@@ -419,6 +419,7 @@ export const PAGE_TITLES = Object.freeze(
     SCHOOL_LIST: 'School List',
     AUTHORITIES_LIST: 'Authorities List',
     AUTHORITY_DETAILS: 'Authority Details',
+    DISTRICT_DETAILS:'District Details',
   }
 );
 
