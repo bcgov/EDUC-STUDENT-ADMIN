@@ -9,12 +9,12 @@
     <v-row v-if="loading">
       <v-col class="d-flex justify-center">
         <v-progress-circular
-          class="mt-16"
-          :size="70"
-          :width="7"
-          color="primary"
-          indeterminate
-          :active="loading"
+            class="mt-16"
+            :size="70"
+            :width="7"
+            color="primary"
+            indeterminate
+            :active="loading"
         ></v-progress-circular>
       </v-col>
     </v-row>
@@ -72,7 +72,7 @@
                 <v-icon class="mr-1" aria-hidden="false">
                   mdi-web
                 </v-icon>
-                <a target="_blank" :href="school.website">{{ school.website }}</a>
+                <a target="_blank" :href="$sanitizeUrl(school.website)">{{ school.website }}</a>
               </v-col>
             </v-row>
           </v-col>
@@ -112,31 +112,31 @@
               </v-col>
             </v-row>
           </v-col>
-            <v-col cols="4" lg="3" class="pb-0 pt-0">
-              <v-row no-gutters>
-                <v-col cols="10" class="pt-2 pr-0">
-                  <span style="color: grey">Facility Type</span>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="10" class="pb-1 pr-0">
-                  <span class="ministryLine" style="color: black">{{school.facilityType}}</span>
-                </v-col>
-              </v-row>
-            </v-col>
-            <v-col cols="4" lg="3" class="pb-0 pt-0">
-              <v-row no-gutters>
-                <v-col cols="10" class="pt-2 pr-0">
-                  <span style="color: grey">School Category</span>
-                </v-col>
+          <v-col cols="4" lg="3" class="pb-0 pt-0">
+            <v-row no-gutters>
+              <v-col cols="10" class="pt-2 pr-0">
+                <span style="color: grey">Facility Type</span>
+              </v-col>
             </v-row>
             <v-row>
-                <v-col cols="10" class="pb-1 pr-0">
-                  <span class="ministryLine" style="color: black">{{ school.schoolCategory }}</span>
-                </v-col>
-              </v-row>
-            </v-col>
-          </v-row>
+              <v-col cols="10" class="pb-1 pr-0">
+                <span class="ministryLine" style="color: black">{{school.facilityType}}</span>
+              </v-col>
+            </v-row>
+          </v-col>
+          <v-col cols="4" lg="3" class="pb-0 pt-0">
+            <v-row no-gutters>
+              <v-col cols="10" class="pt-2 pr-0">
+                <span style="color: grey">School Category</span>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="10" class="pb-1 pr-0">
+                <span class="ministryLine" style="color: black">{{ school.schoolCategory }}</span>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
         <v-row class="pt-5 pl-3">
           <v-col cols="4" lg="3" class="pb-0 pt-0">
             <v-row no-gutters>
@@ -270,6 +270,10 @@ import {Routes} from '@/utils/constants';
 import {formatPhoneNumber} from '@/utils/format';
 import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 import router from '@/router';
+import { sanitizeUrl } from '@braintree/sanitize-url';
+import Vue from 'vue';
+
+Vue.prototype.$sanitizeUrl = sanitizeUrl;
 
 export default {
   name: 'SchoolDetailsPage',
@@ -455,7 +459,7 @@ export default {
     formatPhoneNumber,
     backButtonClick() {
       router.push({name: 'instituteSchoolList'});
-    },
+    }
   }
 };
 </script>
@@ -490,4 +494,3 @@ export default {
   }
 }
 </style>
-  
