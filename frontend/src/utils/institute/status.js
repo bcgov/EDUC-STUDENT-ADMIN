@@ -1,6 +1,7 @@
 //utils function for institutes displays for status (schools and authorities only)
 import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 
+//helper function for getStatusColor
 const getContactStatus = function (contact) {
   const currentDate = LocalDate.now();
   let effectiveDate = contact.effectiveDate;

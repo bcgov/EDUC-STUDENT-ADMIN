@@ -110,7 +110,7 @@ import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
-import {formatPhoneNumber} from '@/utils/format';
+import {formatPhoneNumber, formatDate} from '@/utils/format';
 import {getStatusColor} from '@/utils/institute/status';
 
 export default {
@@ -177,9 +177,7 @@ export default {
     backButtonClick() {
       this.$router.push({name: 'instituteAuthoritiesList'});
     },
-    formatDate(rawDate){
-      return new Date(rawDate).toISOString().slice(0,10).replace(/-/g,'/');
-    },
+    formatDate,
     formatPhoneNumber,
     getStatusColor
   }
