@@ -6,8 +6,8 @@
         <a class="ml-1" @click="backButtonClick">Return to Dashboard</a>
       </v-col>
     </v-row>
-    <v-row style="background: rgb(235, 237, 239);border-radius: 8px;" class="px-3 elevation-2">
-      <v-col>
+    <v-row style="background: rgb(235, 237, 239);border-radius: 8px;" class="pt-0 px-3 elevation-2">
+      <v-col class="pt-0">
         <v-row>
           <v-col cols="12" md="4" class="d-flex justify-start">
             <v-autocomplete

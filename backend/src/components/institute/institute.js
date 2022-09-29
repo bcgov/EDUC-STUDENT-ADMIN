@@ -50,29 +50,34 @@ async function getSchoolByID(req, res) {
 }
 
 async function getSchoolsPaginated(req, res){
-  const accessToken = getBackendToken(req);
-  validateAccessToken(accessToken, res);
+  try {
+    const accessToken = getBackendToken(req);
+    validateAccessToken(accessToken, res);
 
-  let parsedParams = '';
-  if (req.query.searchParams) {
-    parsedParams = JSON.parse(req.query.searchParams);
-  }
-
-  const schoolSearchCriteria = [{
-    condition: null,
-    searchCriteriaList: createSchoolSearchCriteria(parsedParams),
-  }];
-
-  const schoolSearchParam = {
-    params: {
-      pageNumber: req.query.pageNumber,
-      pageSize: req.query.pageSize,
-      sort: req.query.sort,
-      searchCriteriaList: JSON.stringify(schoolSearchCriteria)
+    let parsedParams = '';
+    if (req.query.searchParams) {
+      parsedParams = JSON.parse(req.query.searchParams);
     }
-  };
-  let response = await getData(accessToken, config.get('server:institute:rootURL') + '/school/paginated', schoolSearchParam);
-  return res.status(HttpStatus.OK).json(response);
+
+    const schoolSearchCriteria = [{
+      condition: null,
+      searchCriteriaList: createSchoolSearchCriteria(parsedParams),
+    }];
+
+    const schoolSearchParam = {
+      params: {
+        pageNumber: req.query.pageNumber,
+        pageSize: req.query.pageSize,
+        sort: req.query.sort,
+        searchCriteriaList: JSON.stringify(schoolSearchCriteria)
+      }
+    };
+    let response = await getData(accessToken, config.get('server:institute:rootURL') + '/school/paginated', schoolSearchParam);
+    return res.status(HttpStatus.OK).json(response);
+  } catch (e) {
+    logApiError(e, 'getSchoolsPaginated', 'Error occurred while attempting to GET schools paginated.');
+    return errorResponse(res);
+  }
 }
 
 function createSchoolSearchCriteria(searchParams){
