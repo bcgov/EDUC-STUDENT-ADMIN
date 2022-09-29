@@ -92,7 +92,7 @@
 </template>
 <script>
 
-import {formatPhoneNumber} from '@/utils/format';
+import {formatPhoneNumber, sortByNameValue} from '@/utils/format';
 import router from '@/router';
 import ApiService from '@/common/apiService';
 import {setEmptyInputParams} from '@/utils/common';
@@ -155,16 +155,7 @@ export default {
         this.loadingDistricts = false;
       });
     },
-    sortByNameValue(list, valueToSortBy){
-      return list.sort(function(a, b) {
-        if (a[valueToSortBy] > b[valueToSortBy]) {
-          return 1;
-        } else if (a[valueToSortBy] < b[valueToSortBy]) {
-          return -1;
-        }
-        return 0;
-      });
-    },
+    sortByNameValue,
     getStatusColor(districtStatusCode){
       if(districtStatusCode === 'ACTIVE') {
         return 'green';

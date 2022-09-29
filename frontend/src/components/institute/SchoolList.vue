@@ -167,7 +167,7 @@ import PrimaryButton from '../util/PrimaryButton';
 import {mapGetters, mapState} from 'vuex';
 import {isEmpty, omitBy} from 'lodash';
 import alertMixin from '@/mixins/alertMixin';
-import {formatPhoneNumber} from '@/utils/format';
+import {formatPhoneNumber, sortByNameValue} from '@/utils/format';
 import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 import router from '@/router';
 
@@ -274,16 +274,6 @@ export default {
         this.loadingDistricts = false;
       });
     },
-    sortByNameValue(list, valueToSortBy){
-      return list.sort(function(a, b) {
-        if (a[valueToSortBy] > b[valueToSortBy]) {
-          return 1;
-        } else if (a[valueToSortBy] < b[valueToSortBy]) {
-          return -1;
-        }
-        return 0;
-      });
-    },
     getSchoolDropDownItems(){
       ApiService.getSchools().then((response) => {
         let schoolList = response.data;
@@ -384,6 +374,7 @@ export default {
       return this.schoolCategoryTypeCodes.find((category) => category.schoolCategoryCode === school.schoolCategoryCode).label;
     },
     formatPhoneNumber,
+    sortByNameValue,
     getPrincipalsName(contacts) {
       let principalsName = null;
       for (const contact of contacts){
