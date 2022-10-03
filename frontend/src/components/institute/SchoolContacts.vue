@@ -112,7 +112,7 @@ import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber, formatDate} from '@/utils/format';
-import {getStatusColor} from '@/utils/institute/status';
+import {getStatusColor, isExpired} from '@/utils/institute/status';
 
 export default {
   name: 'SchoolContactsPage',
@@ -166,11 +166,13 @@ export default {
           this.schoolContacts = new Map();
           this.school = response.data;
           response.data.contacts.forEach(contact => {
-            if (!this.schoolContacts.has(contact.schoolContactTypeCode)) {
-              this.schoolContacts.set(contact.schoolContactTypeCode, [contact]);
-              return;
+            if (!isExpired(contact.expiryDate)) {
+              if (!this.schoolContacts.has(contact.schoolContactTypeCode)) {
+                this.schoolContacts.set(contact.schoolContactTypeCode, [contact]);
+                return;
+              }
+              this.schoolContacts.get(contact.schoolContactTypeCode).push(contact);
             }
-            this.schoolContacts.get(contact.schoolContactTypeCode).push(contact);
           });
         }).catch(error => {
           console.error(error);

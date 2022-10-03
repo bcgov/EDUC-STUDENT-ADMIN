@@ -36,3 +36,24 @@ export function getStatusColor(contact) {
   }
 }
 
+/**
+ * Determines whether contact is expired
+ * Used in school, district and authority contact pages
+ * @param expiryDate
+ * @returns Boolean
+ */
+export function isExpired(expiryDate) {
+  const currentDate = LocalDateTime.now();
+  let parsedExpiryDate = null;
+  let expired = false;
+
+  if (expiryDate) {
+    parsedExpiryDate = new LocalDateTime.parse(expiryDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
+  }
+
+  if (expiryDate !== null && parsedExpiryDate < currentDate) {
+    expired = true;
+  }
+
+  return expired;
+}
