@@ -41,7 +41,7 @@ import MessageDisplay from '@/components/secure-message/MessageDisplay';
 import AccessUsersPage from '@/components/secure-message/AccessUsersPage';
 import AccessDistrictUsersPage from '@/components/secure-message/AccessDistrictUsersPage';
 import InstituteAccessPage from '@/components/secure-message/InstituteAccessPage';
-import DistrictsPage from '@/components/institute/DistrictsPage';
+import DistrictList from '@/components/institute/DistrictList';
 import DistrictDetailsPage from '@/components/institute/DistrictDetails';
 import SchoolListPage from '@/components/institute/SchoolList';
 import SchoolDetails from '@/components/institute/SchoolDetails';
@@ -429,7 +429,7 @@ const router = new VueRouter({
         {
           path: 'district',
           name: 'instituteDistrict',
-          component: DistrictsPage,
+          component: DistrictList,
           meta: {
             pageTitle: PAGE_TITLES.DISTRICT_LIST,
             requiresAuth: true,
