@@ -158,7 +158,7 @@ import alertMixin from '@/mixins/alertMixin';
 import PrimaryButton from '@/components/util/PrimaryButton';
 import {formatPhoneNumber} from '@/utils/format';
 import router from '@/router';
-import {sanitizeUrl} from "@braintree/sanitize-url";
+import { sanitizeUrl } from '@braintree/sanitize-url';
 
 export default {
   name: 'DistrictDetails',
