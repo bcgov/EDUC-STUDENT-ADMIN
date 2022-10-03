@@ -2,17 +2,13 @@ const passport = require('passport');
 const express = require('express');
 const router = express.Router();
 const { getDistricts, getSchools, getSchoolsPaginated, getAuthorities, getAuthoritiesPaginated,
-  getAuthorityByID, getSchoolByID, getCachedDistrictByDistrictId,getDistrictByDistrictID,getCachedDistricts
+  getAuthorityByID, getSchoolByID, getDistrictByDistrictID
 } = require('../components/institute/institute');
 const utils = require('../components/utils');
 const auth = require('../components/auth');
 const extendSession = utils.extendSession();
 
 router.get('/districts', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getDistricts);
-
-router.get('/cache/districts/:districtID', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedDistrictByDistrictId);
-
-router.get('/cache/districts', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedDistricts);
 
 router.get('/districts/:districtId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getDistrictByDistrictID);
 

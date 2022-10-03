@@ -112,8 +112,8 @@ let object = {
   cache:{
     ROOT_ENDPOINT: cacheRoot,
     SCHOOL_DATA_URL: cacheRoot + '/school',
-    DISTRICT_DATA_URL: instituteRoot + '/districts',
-    AUTHORITY_DATA_URL: instituteRoot + '/authorities',
+    DISTRICT_DATA_URL: cacheRoot + '/districts',
+    AUTHORITY_DATA_URL: cacheRoot + '/authorities',
   },
   penServices: {
     ROOT_ENDPOINT: penServicesRoot,
