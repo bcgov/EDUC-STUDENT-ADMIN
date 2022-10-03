@@ -10,7 +10,7 @@
       </v-row>
       <!--    search filter -->
       <v-row :class="['d-sm-flex', 'align-center', 'searchBox', 'elevation-2']" @keydown.enter="searchButtonClick">
-        <v-col cols="12" md="5">
+        <v-col cols="12" md="4">
           <v-autocomplete
             id="name-text-field"
             label="District Number and Name"
@@ -21,7 +21,7 @@
             clearable>
           </v-autocomplete>
         </v-col>
-        <v-col cols="12" md="3">
+        <v-col cols="12" md="4">
           <v-select id="status-select-field" clearable :items="status" v-model="searchFilter.status" item-text="label" item-value="districtStatusCode" label="Status"></v-select>
         </v-col>
         <v-col cols="12" md="4" :class="['text-right']">
@@ -41,12 +41,12 @@
       >
 
         <template v-slot:item.secureExchangeStatusCode="{ item }">
-          <v-row>
-            <v-col cols="6">
+          <v-row style="cursor: pointer;" @click="openDistrict(item.districtId)">
+            <v-col>
               <strong class="largeFont">{{ `${item.districtNumber} - ${item.name}` }}</strong>
             </v-col>
             <v-spacer></v-spacer>
-            <v-col cols="3">
+            <v-col lg="2" md="3" sm="4">
               <v-row no-gutters>
                 <v-col>
                   <v-icon :color="getStatusColor(item.districtStatusCode)">
@@ -199,7 +199,10 @@ export default {
     },
     backButtonClick() {
       router.push({name: 'home'});
-    }
+    },
+    openDistrict(districtId){
+      this.$router.push({name: 'districtDetails', params: {districtID: districtId}});
+    },
   },
 };
 

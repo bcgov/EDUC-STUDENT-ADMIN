@@ -33,7 +33,7 @@
                     </v-row>
                   </v-col>
                   <v-col cols="6" class="d-flex justify-end">
-                    <PrimaryButton icon-left width="6em" icon="mdi-pencil" text="Edit"></PrimaryButton>
+                    <PrimaryButton width="6em" icon="mdi-pencil" icon-left text="Edit"></PrimaryButton>
                   </v-col>
                 </v-row>
               </v-col>
@@ -361,7 +361,7 @@ export default {
     },
     getDistrictDetails(districtId){
       this.district = '';
-      ApiService.apiAxios.get(`${Routes.institute.DISTRICT_DATA_URL}/${districtId}`)
+      ApiService.apiAxios.get(`${Routes.cache.DISTRICT_DATA_URL}/${districtId}`)
         .then(response => {
           this.district = response.data;
         }).catch(error => {

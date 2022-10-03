@@ -5,7 +5,7 @@ const cacheService = require('../cache-service');
 const {FILTER_OPERATION, VALUE_TYPE, CONDITION} = require('../../util/constants');
 const config = require('../../config');
 
-async function getDistricts(req, res) {
+async function getCachedDistricts(req, res) {
   try {
     if (req.query.refreshCache === 'true') {
       await cacheService.loadAllDistrictsToMap();
@@ -17,12 +17,37 @@ async function getDistricts(req, res) {
     return errorResponse(res);
   }
 }
-async function getDistrictByDistrictId(req, res) {
+
+async function getDistricts(req, res) {
+  const token = getBackendToken(req);
+  try {
+    const url = `${config.get('server:institute:instituteDistrictURL')}`;
+    const data = await getData(token, url);
+    return res.status(200).json(data);
+  } catch (e) {
+    logApiError(e, 'getDistricts', 'Error occurred while attempting to GET all districts.');
+    return errorResponse(res);
+  }
+}
+
+async function getCachedDistrictByDistrictId(req, res) {
   try {
     const districtId = req.params.districtId;
     return res.status(HttpStatus.OK).json(cacheService.getDistrictJSONByDistrictId(districtId));
   } catch (e) {
     logApiError(e, 'getDistrictByDistrictId', 'Error occurred while attempting to GET District entity.');
+    return errorResponse(res);
+  }
+}
+
+async function getDistrictByDistrictID(req, res) {
+  const token = getBackendToken(req);
+  try {
+    const url = `${config.get('server:institute:rootURL')}/district/${req.params.districtId}`;
+    const data = await getData(token, url);
+    return res.status(200).json(data);
+  } catch (e) {
+    logApiError(e, 'getDistrictByID', 'Error occurred while attempting to GET district entity.');
     return errorResponse(res);
   }
 }
@@ -209,9 +234,11 @@ function createAuthoritySearchCriteria(searchParams){
 }
 
 module.exports = {
-  getDistricts,
-  getDistrictByDistrictId,
+  getCachedDistricts,
+  getCachedDistrictByDistrictId,
+  getDistrictByDistrictID,
   getSchools,
+  getDistricts,
   getSchoolsPaginated,
   getAuthorities,
   getAuthoritiesPaginated,
