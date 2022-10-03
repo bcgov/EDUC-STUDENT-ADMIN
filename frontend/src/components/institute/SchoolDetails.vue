@@ -38,9 +38,14 @@
                 </v-row>
               </v-col>
             </v-row>
-            <v-row class="pb-2">
+            <v-row v-if="school.schoolCategoryCode !== 'INDEPEND'" class="pb-2">
               <v-col class="pt-0 mt-n2" cols="12">
                 <div class="ministryOwnershipTeamName"  style="color: black">{{district.districtNumber}} - {{district.name}}</div>
+              </v-col>
+            </v-row>
+            <v-row v-else class="pb-2">
+              <v-col class="pt-0 mt-n2" cols="12">
+                <div class="ministryOwnershipTeamName"  style="color: black">{{authority.authorityNumber}} - {{authority.displayName}}</div>
               </v-col>
             </v-row>
             <v-row>
@@ -96,7 +101,7 @@
             </v-row>
             <v-row>
               <v-col cols="10" class="pb-1 pr-0">
-                <span class="ministryLine" style="color: black">{{ formatDate(school.openedDate) }}</span>
+                <span class="ministryLine" style="color: black">{{ formatDate(school.openedDate) || '-' }}</span>
               </v-col>
             </v-row>
           </v-col>
@@ -108,7 +113,7 @@
             </v-row>
             <v-row>
               <v-col cols="10" class="pb-1 pr-0">
-                <span class="ministryLine" style="color: black">{{ formatDate(school.closedDate) }}</span>
+                <span class="ministryLine" style="color: black">{{ formatDate(school.closedDate) || '-' }}</span>
               </v-col>
             </v-row>
           </v-col>
@@ -267,7 +272,7 @@ import {mapGetters, mapState} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
-import {formatPhoneNumber} from '@/utils/format';
+import {formatPhoneNumber, formatDate} from '@/utils/format';
 import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 import router from '@/router';
 import { sanitizeUrl } from '@braintree/sanitize-url';
@@ -288,6 +293,7 @@ export default {
     return {
       school: '',
       district: '',
+      authority: '',
       cleanWebsiteUrl: '',
       schoolFacilityTypes: [],
       schoolCategoryTypes: [],
@@ -343,6 +349,9 @@ export default {
           this.cleanWebsiteUrl = this.school.website ? sanitizeUrl(this.school.website) : '';
           this.populateExtraSchoolFields(this.school);
           this.getDistrictDetails(this.school.districtId);
+          if(this.school.independentAuthorityId){
+            this.getAuthorityDetails(this.school.independentAuthorityId);
+          }
         }).catch(error => {
           console.error(error);
           this.setFailureAlert(error.response?.data?.message || error.message);
@@ -355,6 +364,18 @@ export default {
       ApiService.apiAxios.get(`${Routes.cache.DISTRICT_DATA_URL}/${districtId}`)
         .then(response => {
           this.district = response.data;
+        }).catch(error => {
+          console.error(error);
+          this.setFailureAlert(error.response?.data?.message || error.message);
+        }).finally(() => {
+          this.loading = false;
+        });
+    },
+    getAuthorityDetails(authorityId){
+      this.authority = '';
+      ApiService.apiAxios.get(`${Routes.institute.AUTHORITY_BY_ID_URL}/${authorityId}`)
+        .then(response => {
+          this.authority = response.data;
         }).catch(error => {
           console.error(error);
           this.setFailureAlert(error.response?.data?.message || error.message);
@@ -448,13 +469,7 @@ export default {
         return 'red';
       }
     },
-    formatDate(date){
-      if(date) {
-        return new Date(date).toISOString().slice(0, 10).replace(/-/g, '/');
-      } else {
-        return '-';
-      }
-    },
+    formatDate,
     formatPhoneNumber,
     backButtonClick() {
       router.push({name: 'instituteSchoolList'});

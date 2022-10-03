@@ -86,6 +86,7 @@ export function formatPhoneNumber(phoneNumber) {
   return 'Phone number format not recognized';
 }
 
-export function  formatDate(rawDate){
-  return new Date(rawDate).toISOString().slice(0,10).replace(/-/g,'/');
+//used in institution schools/districts/authorities date formatting
+export function formatDate(rawDate, from='uuuu-MM-dd\'T\'HH:mm:ss', to='uuuu/MM/dd'){
+  return formatDateTime(rawDate,from, to);
 }
