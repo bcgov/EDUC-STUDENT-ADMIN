@@ -1,5 +1,7 @@
 <template>
   <v-container class="containerSetup" fluid>
+    <Spinner v-if="loadingSchools"/>
+    <div v-else>
     <v-row>
       <v-col class="mt-1 d-flex justify-start">
         <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
@@ -156,6 +158,7 @@
         </v-data-table>
       </v-col>
     </v-row>
+    </div>
   </v-container>
 </template>
 
@@ -218,6 +221,7 @@ export default {
       schoolCategoryTypes: [],
       schoolCategoryTypeFilter: '',
       schoolFacilityTypeFilter: '',
+      loadingSchools: true,
     };
   },
   computed: {
@@ -275,6 +279,7 @@ export default {
       });
     },
     getSchoolDropDownItems(){
+      this.loadingSchools = true;
       ApiService.getSchools().then((response) => {
         let schoolList = response.data;
         for(const school of schoolList){
@@ -288,6 +293,8 @@ export default {
       }).catch(error => {
         //to do add the alert framework for error or success
         console.error(error);
+      }).finally(() => {
+        this.loadingSchools = false;
       });
     },
     getAuthorityDropDownItems(){
