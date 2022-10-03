@@ -430,7 +430,7 @@ export const PAGE_TITLES = Object.freeze(
     DISTRICT_LIST: 'District List',
     SCHOOL_LIST: 'School List',
     SCHOOL_DETAILS: 'School Details',
-    AUTHORITIES_LIST: 'Authorities List',
+    AUTHORITIES_LIST: 'Authority List',
     AUTHORITY_DETAILS: 'Authority Details',
     DISTRICT_DETAILS:'District Details',
     AUTHORITY_CONTACTS: 'Authority Contacts',
