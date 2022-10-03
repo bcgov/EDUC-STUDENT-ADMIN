@@ -33,7 +33,7 @@
                     </v-row>
                   </v-col>
                   <v-col cols="6" class="d-flex justify-end">
-                    <PrimaryButton width="6em" icon="mdi-pencil" text="Edit"></PrimaryButton>
+                    <PrimaryButton icon-left width="6em" icon="mdi-pencil" text="Edit"></PrimaryButton>
                   </v-col>
                 </v-row>
               </v-col>
