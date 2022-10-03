@@ -22,7 +22,6 @@ const getContactStatus = function (contact) {
   } else if (parsedExpiryDate > currentDate) {
     status = 'Pending End Date';
   }
-  console.log('Status: ' + status);
   return status;
 };
 
