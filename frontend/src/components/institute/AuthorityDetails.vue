@@ -73,7 +73,7 @@
             </v-row>
             <v-row>
               <v-col cols="10" class="pb-1 pr-0">
-                <span class="ministryLine" style="color: black">{{ formatDate(authority.openedDate) }}</span>
+                <span class="ministryLine" style="color: black">{{ formatDate(authority.openedDate) || '-' }}</span>
               </v-col>
             </v-row>
           </v-col>
@@ -85,7 +85,7 @@
             </v-row>
             <v-row>
               <v-col cols="10" class="pb-1 pr-0">
-                <span class="ministryLine" style="color: black">{{ formatDate(authority.closedDate) }}</span>
+                <span class="ministryLine" style="color: black">{{ formatDate(authority.closedDate) || '-'}}</span>
               </v-col>
             </v-row>
           </v-col>
@@ -193,7 +193,7 @@ import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import PrimaryButton from '@/components/util/PrimaryButton';
-import {formatPhoneNumber} from '@/utils/format';
+import {formatPhoneNumber, formatDate} from '@/utils/format';
 import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 import {mapState} from 'vuex';
 import router from '@/router';
@@ -229,13 +229,7 @@ export default {
   },
   methods: {
     formatPhoneNumber,
-    formatDate(date){
-      if(date) {
-        return new Date(date).toISOString().slice(0, 10).replace(/-/g, '/');
-      } else {
-        return '-';
-      }
-    },
+    formatDate,
     getAuthority() {
       this.loading = true;
 
