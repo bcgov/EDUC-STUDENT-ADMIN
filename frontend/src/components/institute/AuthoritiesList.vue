@@ -59,7 +59,7 @@
         >
 
           <template v-slot:item.secureExchangeStatusCode="{ item }">
-              <v-row style="cursor: pointer;">
+              <v-row style="cursor: pointer;" @click="openAuthority(item.independentAuthorityId)">
                 <v-col cols="12" lg="4" xl="8" class="pb-0 pt-0">
                   <v-row class="mb-n4">
                     <v-col cols="12" class="pb-2 pt-2 pr-0">
@@ -72,7 +72,7 @@
                     </v-col>
                   </v-row>
                 </v-col>
-                <v-col cols="6" lg="5" xl="2" class="pb-0 pt-0 mt-2">
+                <v-col cols="6" lg="5" xl="2" class="pb-0 pt-0">
                   <v-row>
                     <v-col cols="12" class="pb-1 pr-0">
                       <v-icon class="ml-0 pb-1" :color="getStatusColor(item.status)" right dark>
@@ -90,37 +90,22 @@
                     </v-col>
                   </v-row>
                 </v-col>
-                <v-col lg="2" md="3" sm="4">
-                  <v-row class="mb-2" no-gutters>
-                    <v-col>
-                      <v-btn id="schoolDetails"
+                <v-col class="d-flex justify-end">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn id="authorityContacts"
                              color="#003366"
-                             width="100%"
                              outlined
-                             @click="openAuthority(item.independentAuthorityId)"
-                             class="mt-0 pt-0 filterButton"
+                             @click.native.stop="openAuthorityContacts(item.independentAuthorityId)"
+                             class="mt-0 pt-0 filterButton ml-2"
                              style="text-transform: initial"
+                             v-on="on"
                       >
-                        <v-icon color="#003366" style="margin-top: 0.07em" class="ml-n5 mr-1" dark>mdi-newspaper-variant-outline</v-icon>
-                        <span class="ml-1">Details</span>
+                        <v-icon color="#003366" style="margin-top: 0.07em" dark>mdi-account-multiple-outline</v-icon>
                       </v-btn>
-                    </v-col>
-                  </v-row>
-                  <v-row no-gutters>
-                    <v-col>
-                      <v-btn id="schoolContacts"
-                             color="#003366"
-                             width="100%"
-                             outlined
-                             @click="openAuthorityContacts(item.independentAuthorityId)"
-                             class="mt-0 pt-0 filterButton"
-                             style="text-transform: initial"
-                      >
-                        <v-icon color="#003366" style="margin-top: 0.07em" class="ml-n1 mr-1" dark>mdi-account-multiple-outline</v-icon>
-                        <span class="ml-1">Contacts</span>
-                      </v-btn>
-                    </v-col>
-                  </v-row>
+                    </template>
+                    <span>View Contacts</span>
+                  </v-tooltip>
                 </v-col>
               </v-row>
           </template>

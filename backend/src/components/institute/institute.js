@@ -37,30 +37,47 @@ async function getSchools(req, res) {
   }
 }
 
-async function getSchoolsPaginated(req, res){
-  const accessToken = getBackendToken(req);
-  validateAccessToken(accessToken, res);
-
-  let parsedParams = '';
-  if (req.query.searchParams) {
-    parsedParams = JSON.parse(req.query.searchParams);
+async function getSchoolByID(req, res) {
+  const token = getBackendToken(req);
+  try {
+    const url = `${config.get('server:institute:rootURL')}/school/${req.params.id}`;
+    const data = await getData(token, url);
+    return res.status(200).json(data);
+  } catch (e) {
+    logApiError(e, 'getSchoolByID', 'Error occurred while attempting to GET school entity.');
+    return errorResponse(res);
   }
+}
 
-  const schoolSearchCriteria = [{
-    condition: null,
-    searchCriteriaList: createSchoolSearchCriteria(parsedParams),
-  }];
+async function getSchoolsPaginated(req, res){
+  try {
+    const accessToken = getBackendToken(req);
+    validateAccessToken(accessToken, res);
 
-  const schoolSearchParam = {
-    params: {
-      pageNumber: req.query.pageNumber,
-      pageSize: req.query.pageSize,
-      sort: req.query.sort,
-      searchCriteriaList: JSON.stringify(schoolSearchCriteria)
+    let parsedParams = '';
+    if (req.query.searchParams) {
+      parsedParams = JSON.parse(req.query.searchParams);
     }
-  };
-  let response = await getData(accessToken, config.get('server:institute:rootURL') + '/school/paginated', schoolSearchParam);
-  return res.status(HttpStatus.OK).json(response);
+
+    const schoolSearchCriteria = [{
+      condition: null,
+      searchCriteriaList: createSchoolSearchCriteria(parsedParams),
+    }];
+
+    const schoolSearchParam = {
+      params: {
+        pageNumber: req.query.pageNumber,
+        pageSize: req.query.pageSize,
+        sort: req.query.sort,
+        searchCriteriaList: JSON.stringify(schoolSearchCriteria)
+      }
+    };
+    let response = await getData(accessToken, config.get('server:institute:rootURL') + '/school/paginated', schoolSearchParam);
+    return res.status(HttpStatus.OK).json(response);
+  } catch (e) {
+    logApiError(e, 'getSchoolsPaginated', 'Error occurred while attempting to GET schools paginated.');
+    return errorResponse(res);
+  }
 }
 
 function createSchoolSearchCriteria(searchParams){
@@ -198,5 +215,6 @@ module.exports = {
   getSchoolsPaginated,
   getAuthorities,
   getAuthoritiesPaginated,
-  getAuthorityByID
+  getAuthorityByID,
+  getSchoolByID
 };

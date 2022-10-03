@@ -97,11 +97,16 @@ let object = {
     SCHOOL_PAGINATED_DATA_URL: instituteRoot + '/schoolsPaginated',
     FACILITY_TYPES_URL: instituteRoot + '/facility-types',
     SCHOOL_CATEGORY_TYPES_URL: instituteRoot + '/school-category-types',
+    SCHOOL_ORGANIZATION_TYPES_URL: instituteRoot + '/school-organization-types',
+    SCHOOL_NEIGHBORHOOD_LEARNING_TYPES_URL: instituteRoot + '/school-neighborhood-learning-types',
+    SCHOOL_CONTACT_TYPES_URL: instituteRoot + '/school-contact-types',
     AUTHORITY_TYPES_URL: instituteRoot + '/authority-types',
+    GRADE_TYPES_URL: instituteRoot + '/grade-codes',
     DISTRICT_DATA_URL: instituteRoot + '/districts',
     AUTHORITY_DATA_URL: instituteRoot + '/authorities',
     AUTHORITIES_PAGINATED_DATA_URL: instituteRoot + '/authoritiesPaginated',
     AUTHORITY_BY_ID_URL: instituteRoot + '/authority',
+    AUTHORITY_CONTACT_TYPES_URL: instituteRoot + '/authority-contact-types'
   },
   penServices: {
     ROOT_ENDPOINT: penServicesRoot,
@@ -417,9 +422,12 @@ export const PAGE_TITLES = Object.freeze(
     NEW_USER_INVITE:'New User',
     DISTRICT_LIST: 'District List',
     SCHOOL_LIST: 'School List',
+    SCHOOL_DETAILS: 'School Details',
     AUTHORITIES_LIST: 'Authorities List',
     AUTHORITY_DETAILS: 'Authority Details',
     DISTRICT_DETAILS:'District Details',
+    AUTHORITY_CONTACTS: 'Authority Contacts',
+    SCHOOL_CONTACTS: 'School Contacts'
   }
 );
 

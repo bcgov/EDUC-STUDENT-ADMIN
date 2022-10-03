@@ -44,8 +44,11 @@ import InstituteAccessPage from '@/components/secure-message/InstituteAccessPage
 import DistrictsPage from '@/components/institute/DistrictsPage';
 import DistrictDetailsPage from '@/components/institute/DistrictsDetails';
 import SchoolListPage from '@/components/institute/SchoolList';
+import SchoolDetails from '@/components/institute/SchoolDetails';
 import AuthoritiesListPage from '@/components/institute/AuthoritiesList';
 import AuthorityDetailsPage from '@/components/institute/AuthorityDetails';
+import AuthorityContactsPage from '@/components/institute/AuthoritiesContacts';
+import SchoolContactsPage from '@/components/institute/SchoolContacts';
 
 Vue.prototype.moment = moment;
 
@@ -431,24 +434,7 @@ const router = new VueRouter({
             pageTitle: PAGE_TITLES.DISTRICT_LIST,
             requiresAuth: true,
           },
-        }
-      ]
-    },
-    {
-      path: '/district/:districtID',
-      name: 'districtDetails',
-      props: true,
-      component: DistrictDetailsPage,
-      meta: {
-        pageTitle: PAGE_TITLES.DISTRICT_DETAILS,
-        requiresAuth: true,
-        permission: 'SECURE_EXCHANGE'
-      }
-    },
-    {
-      path: '/institute',
-      component: RouterView,
-      children: [
+        },
         {
           path: 'school',
           name: 'instituteSchoolList',
@@ -457,13 +443,17 @@ const router = new VueRouter({
             pageTitle: PAGE_TITLES.SCHOOL_LIST,
             requiresAuth: true,
           },
-        }
-      ]
-    },
-    {
-      path: '/institute',
-      component: RouterView,
-      children: [
+        },
+        {
+          path: 'school/:schoolID/details',
+          name: 'schoolDetails',
+          props: true,
+          component: SchoolDetails,
+          meta: {
+            pageTitle: PAGE_TITLES.SCHOOL_DETAILS,
+            requiresAuth: true,
+          },
+        },
         {
           path: 'authority',
           name: 'instituteAuthoritiesList',
@@ -482,8 +472,27 @@ const router = new VueRouter({
       component: AuthorityDetailsPage,
       meta: {
         pageTitle: PAGE_TITLES.AUTHORITY_DETAILS,
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/schoolContacts/:schoolID',
+      name: 'schoolContacts',
+      component: SchoolContactsPage,
+      props: true,
+      meta: {
+        pageTitle: PAGE_TITLES.SCHOOL_CONTACTS,
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/authorityContacts/:authorityID',
+      name: 'authorityContacts',
+      props: true,
+      component: AuthorityContactsPage,
+      meta: {
+        pageTitle: PAGE_TITLES.AUTHORITY_CONTACTS,
         requiresAuth: true,
-        permission: 'SECURE_EXCHANGE'
       }
     },
     {
