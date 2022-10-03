@@ -87,6 +87,6 @@ export function formatPhoneNumber(phoneNumber) {
 }
 
 //used in institution schools/districts/authorities date formatting
-export function formatDate(rawDate){
-  return formatDateTime(rawDate,'uuuu-MM-dd\'T\'HH:mm:ss', 'uuuu/MM/dd');
+export function formatDate(rawDate, from='uuuu-MM-dd\'T\'HH:mm:ss', to='uuuu/MM/dd'){
+  return formatDateTime(rawDate,from, to);
 }
