@@ -15,6 +15,7 @@ const macroRoot = baseRoot + '/macros';
 const nominalRollRoot= baseRoot+'/nominal-roll';
 const edxRoot= baseRoot+'/edx';
 const instituteRoot = baseRoot + '/institute';
+const cacheRoot = baseRoot + '/cache';
 
 let object = {
   LOGIN: authRoot + '/login',
@@ -107,6 +108,12 @@ let object = {
     AUTHORITIES_PAGINATED_DATA_URL: instituteRoot + '/authoritiesPaginated',
     AUTHORITY_BY_ID_URL: instituteRoot + '/authority',
     AUTHORITY_CONTACT_TYPES_URL: instituteRoot + '/authority-contact-types'
+  },
+  cache:{
+    ROOT_ENDPOINT: cacheRoot,
+    SCHOOL_DATA_URL: cacheRoot + '/school',
+    DISTRICT_DATA_URL: instituteRoot + '/districts',
+    AUTHORITY_DATA_URL: instituteRoot + '/authorities',
   },
   penServices: {
     ROOT_ENDPOINT: penServicesRoot,

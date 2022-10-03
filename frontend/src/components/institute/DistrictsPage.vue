@@ -41,7 +41,7 @@
       >
 
         <template v-slot:item.secureExchangeStatusCode="{ item }">
-          <v-row>
+          <v-row style="cursor: pointer;" @click="openDistrict(item.districtId)">
             <v-col>
               <strong class="largeFont">{{ `${item.districtNumber} - ${item.name}` }}</strong>
             </v-col>
@@ -199,7 +199,10 @@ export default {
     },
     backButtonClick() {
       router.push({name: 'home'});
-    }
+    },
+    openDistrict(districtId){
+      this.$router.push({name: 'districtDetails', params: {districtID: districtId}});
+    },
   },
 };
 

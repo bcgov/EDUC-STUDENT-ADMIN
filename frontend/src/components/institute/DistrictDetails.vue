@@ -1,5 +1,11 @@
 <template>
   <v-container class="containerSetup" fluid>
+    <v-row>
+      <v-col class="mt-1 d-flex justify-start">
+        <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
+        <a class="ml-1" @click="backButtonClick">Return to the List of Districts</a>
+      </v-col>
+    </v-row>
     <v-row v-if="loading">
       <v-col class="d-flex justify-center">
         <v-progress-circular
@@ -19,7 +25,7 @@
             <h2 id="districtName">{{ district.districtNumber }} - {{ district.displayName }}</h2>
           </v-col>
           <v-col cols="6" class="d-flex justify-end">
-            <PrimaryButton width="6em" icon="mdi-pencil" text="Edit"></PrimaryButton>
+            <PrimaryButton width="6em" icon="mdi-pencil" icon-left text="Edit"></PrimaryButton>
           </v-col>
         </v-row>
         <v-row class="d-flex justify-start">
@@ -147,13 +153,14 @@
 <script>
 
 import ApiService from '../../common/apiService';
-import {ApiRoutes} from '@/utils/constants';
+import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import PrimaryButton from '@/components/util/PrimaryButton';
 import {formatPhoneNumber} from '@/utils/format';
+import router from '@/router';
 
 export default {
-  name: 'DistrictDetailsPage',
+  name: 'DistrictDetails',
   mixins: [alertMixin],
   components: {PrimaryButton},
   props: {
@@ -180,15 +187,15 @@ export default {
     formatPhoneNumber,
     getDistrict() {
       this.loading = true;
-
-      ApiService.apiAxios.get(ApiRoutes.district.BASE_URL + '/' + this.districtID, {
-      }).then(response => {
-        this.district = response.data;
-      }).catch(error => {
-        console.error(error);
-      }).finally(() => {
-        this.loading = false;
-      });
+      ApiService.apiAxios.get(`${Routes.institute.DISTRICT_DATA_URL}/${this.districtID}`)
+        .then(response => {
+          this.district = response.data;
+        }).catch(error => {
+          console.error(error);
+          this.setFailureAlert(error.response?.data?.message || error.message);
+        }).finally(() => {
+          this.loading = false;
+        });
     },
     getStatusColor() {
       if (this.district.districtStatusCode === 'ACTIVE') {
@@ -222,6 +229,9 @@ export default {
           return physicalAddress[0][item];
         }
       }
+    },
+    backButtonClick() {
+      router.push({name: 'instituteDistrict'});
     }
   }
 };
