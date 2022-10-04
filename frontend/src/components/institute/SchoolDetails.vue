@@ -50,7 +50,7 @@
             </v-row>
             <v-row>
               <v-col cols="2" lg="2" class="pb-0 pt-0">
-                <v-icon class="ml-n1 pr-3" :color="getStatusColor(school.status)" dark>
+                <v-icon class="ml-n1 pr-3" :color="getStatusColorAuthorityOrSchool(school.status)" dark>
                   mdi-circle-medium
                 </v-icon>
                 <span class="ml-n1">{{ school.status }}</span>
@@ -273,7 +273,7 @@ import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import {formatPhoneNumber, formatDate} from '@/utils/format';
-import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
+import {getStatusColorAuthorityOrSchool,getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import router from '@/router';
 import { sanitizeUrl } from '@braintree/sanitize-url';
 
@@ -384,7 +384,7 @@ export default {
         });
     },
     populateExtraSchoolFields(school){
-      school.status = this.getSchoolStatus(school);
+      school.status = getStatusAuthorityOrSchool(school);
       school.facilityType = this.getFacilityType(school);
       school.schoolCategory = this.getSchoolCategory(school);
     },
@@ -433,42 +433,7 @@ export default {
     getSchoolCategory(school){
       return this.schoolCategoryTypeCodes.find((category) => category.schoolCategoryCode === school.schoolCategoryCode).label;
     },
-    getSchoolStatus: function (school) {
-      const currentDate = LocalDateTime.now();
-      let openedDate = school.openedDate;
-      let closedDate = school.closedDate;
-
-      if (!openedDate) {
-        return 'Never Opened';
-      }
-      const parsedOpenDate = new LocalDateTime.parse(openedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
-
-      let parsedCloseDate = null;
-      if(closedDate){
-        parsedCloseDate = new LocalDateTime.parse(closedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
-      }
-
-      if (parsedOpenDate <= currentDate && parsedCloseDate === null) {
-        return 'Open';
-      } else if (parsedOpenDate > currentDate) {
-        return 'Opening';
-      } else if (parsedOpenDate <= currentDate && parsedCloseDate > currentDate) {
-        return 'Closing';
-      }
-
-      return 'Closed';
-    },
-    getStatusColor(status) {
-      if (status === 'Open') {
-        return 'green';
-      } else if (status === 'Opening'){
-        return 'blue';
-      } else if (status === 'Closing'){
-        return 'orange';
-      } else if (status === 'Closed') {
-        return 'red';
-      }
-    },
+    getStatusColorAuthorityOrSchool,
     formatDate,
     formatPhoneNumber,
     backButtonClick() {

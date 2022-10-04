@@ -101,7 +101,7 @@
                     <span class="subjectHeading">{{ item.mincode }} - {{ item.displayName }}</span>
                   </v-col>
                   <v-col cols="2">
-                    <v-icon class="ml-0 mb-1" :color="getStatusColor(item.status)" right dark>
+                    <v-icon class="ml-0 mb-1" :color="getStatusColorAuthorityOrSchool(item.status)" right dark>
                       mdi-circle-medium
                     </v-icon>
                     <span class="statusCodeLabel">{{ item.status }}</span>
@@ -171,7 +171,7 @@ import {mapGetters, mapState} from 'vuex';
 import {isEmpty, omitBy} from 'lodash';
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber, sortByNameValue} from '@/utils/format';
-import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
+import {getStatusColorAuthorityOrSchool,getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import router from '@/router';
 
 export default {
@@ -367,7 +367,7 @@ export default {
 
     },
     populateExtraSchoolFields(school){
-      school.status = this.getSchoolStatus(school);
+      school.status = getStatusAuthorityOrSchool(school);
       school.facilityType = this.getFacilityType(school);
       school.schoolCategory = this.getSchoolCategory(school);
       //Populate school principal from contacts list
@@ -390,46 +390,6 @@ export default {
         }
       }
       return principalsName;
-    },
-    getSchoolStatus: function (school) {
-      const currentDate = LocalDateTime.now();
-      let openedDate = school.openedDate;
-      let closedDate = school.closedDate;
-
-      if (!openedDate) {
-        return 'Never Opened';
-      }
-      const parsedOpenDate = new LocalDateTime.parse(openedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
-
-      let parsedCloseDate = null;
-      if(closedDate){
-        parsedCloseDate = new LocalDateTime.parse(closedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
-      }
-
-      if (parsedOpenDate <= currentDate && parsedCloseDate === null) {
-        return 'Open';
-      } else if (parsedOpenDate > currentDate) {
-        return 'Opening';
-      } else if (parsedOpenDate <= currentDate && parsedCloseDate > currentDate) {
-        return 'Closing';
-      } else if (parsedCloseDate <= currentDate) {
-        return 'Closed';
-      }
-
-      return 'Closed';
-    },
-    getStatusColor(status) {
-      if (status === 'Open') {
-        return 'green';
-      } else if (status === 'Opening'){
-        return 'blue';
-      } else if (status === 'Closing'){
-        return 'orange';
-      } else if (status === 'Closed') {
-        return 'red';
-      } else if (status === 'Never Opened') {
-        return 'grey';
-      }
     },
     openSchool(schoolId){
       this.$router.push({name: 'schoolDetails', params: {schoolID: schoolId}});
@@ -467,6 +427,7 @@ export default {
       this.resetPageNumber();
       this.getSchoolList();
     },
+    getStatusColorAuthorityOrSchool
   },
   watch: {
     pageSize() {

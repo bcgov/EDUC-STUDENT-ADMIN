@@ -75,7 +75,7 @@
                 <v-col cols="6" lg="5" xl="2" class="pb-0 pt-0">
                   <v-row>
                     <v-col cols="12" class="pb-1 pr-0">
-                      <v-icon class="ml-0 pb-1" :color="getStatusColor(item.status)" right dark>
+                      <v-icon class="ml-0 pb-1" :color="getStatusColorAuthorityOrSchool(item.status)" right dark>
                         mdi-circle-medium
                       </v-icon>
                       <span class="ml-1 statusCodeLabel">{{ item.status }}</span>
@@ -127,7 +127,7 @@ import {mapGetters, mapState} from 'vuex';
 import {isEmpty, omitBy} from 'lodash';
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber} from '@/utils/format';
-import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
+import {getStatusColorAuthorityOrSchool,getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import router from '@/router';
 
 export default {
@@ -263,51 +263,14 @@ export default {
 
     },
     populateExtraAuthorityFields(authority){
-      authority.status = this.getAuthorityStatus(authority);
+      authority.status = getStatusAuthorityOrSchool(authority);
       authority.type = this.getAuthorityType(authority);
     },
     getAuthorityType(authority){
       return this.authorityTypes.find((auth) => auth.authorityTypeCode === authority.authorityTypeCode).label;
     },
     formatPhoneNumber,
-    getAuthorityStatus: function (school) {
-      const currentDate = LocalDateTime.now();
-      let openedDate = school.openedDate;
-      let closedDate = school.closedDate;
-
-      if (!openedDate) {
-        return 'Never Opened';
-      }
-      const parsedOpenDate = new LocalDateTime.parse(openedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
-
-      let parsedCloseDate = null;
-      if(closedDate){
-        parsedCloseDate = new LocalDateTime.parse(closedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
-      }
-
-      if (parsedOpenDate <= currentDate && parsedCloseDate === null) {
-        return 'Open';
-      } else if (parsedOpenDate > currentDate) {
-        return 'Opening';
-      } else if (parsedOpenDate <= currentDate && parsedCloseDate > currentDate) {
-        return 'Closing';
-      } else if (parsedCloseDate <= currentDate) {
-        return 'Closed';
-      }
-
-      return 'Closed';
-    },
-    getStatusColor(status) {
-      if (status === 'Open') {
-        return 'green';
-      } else if (status === 'Opening'){
-        return 'blue';
-      } else if (status === 'Closing'){
-        return 'orange';
-      } else if (status === 'Closed') {
-        return 'red';
-      }
-    },
+    getStatusColorAuthorityOrSchool,
     openAuthority(authorityId){
       this.$router.push({name: 'authorityDetails', params: {authorityID: authorityId}});
     },

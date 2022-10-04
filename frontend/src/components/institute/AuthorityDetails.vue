@@ -30,10 +30,10 @@
         </v-row>
         <v-row class="d-flex justify-start">
           <v-col class="d-flex">
-            <v-icon class="pb-1" :color="getStatusColor()" right dark>
+            <v-icon class="pb-1" :color="getStatusColorAuthorityOrSchool(this.authority.status)" right dark>
               mdi-circle-medium
             </v-icon>
-            <span>{{getStatusText()}}</span>
+            <span>{{this.authority.status}}</span>
           </v-col>
           <v-col class="d-flex">
             <v-icon class="mb-1 mr-1" aria-hidden="false">
@@ -97,7 +97,7 @@
             </v-row>
             <v-row>
               <v-col cols="10" class="pb-1 pr-0">
-                <span class="ministryLine" style="color: black">{{ getAuthorityType(authority) }}</span>
+                <span class="ministryLine" style="color: black">{{ this.authority.type }}</span>
               </v-col>
             </v-row>
           </v-col>
@@ -194,7 +194,7 @@ import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import PrimaryButton from '@/components/util/PrimaryButton';
 import {formatPhoneNumber, formatDate} from '@/utils/format';
-import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
+import {getStatusColorAuthorityOrSchool,getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import {mapState} from 'vuex';
 import router from '@/router';
 
@@ -230,49 +230,23 @@ export default {
   methods: {
     formatPhoneNumber,
     formatDate,
+    getStatusColorAuthorityOrSchool,
+    populateExtraAuthorityFields(authority) {
+      authority.status = getStatusAuthorityOrSchool(authority);
+      authority.type = this.getAuthorityType(authority);
+    },
     getAuthority() {
       this.loading = true;
 
       ApiService.apiAxios.get(Routes.institute.AUTHORITY_BY_ID_URL + '/' + this.authorityID, {
       }).then(response => {
         this.authority = response.data;
+        this.populateExtraAuthorityFields(this.authority);
       }).catch(error => {
         console.error(error);
       }).finally(() => {
         this.loading = false;
       });
-    },
-    getStatusColor() {
-      let status = this.getStatusText();
-      if (status === 'Open') {
-        return 'green';
-      } else if (status === 'Opening'){
-        return 'blue';
-      } else if (status === 'Closing'){
-        return 'orange';
-      } else if (status === 'Closed') {
-        return 'red';
-      }
-    },
-    getStatusText() {
-      const currentDate = LocalDateTime.now();
-      let openedDate = this.authority.openedDate;
-      let closedDate = this.authority.closedDate;
-
-      const parsedOpenDate = new LocalDateTime.parse(openedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
-
-      let parsedCloseDate = null;
-      if(closedDate){
-        parsedCloseDate = new LocalDateTime.parse(closedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
-      }
-
-      if (parsedOpenDate <= currentDate && parsedCloseDate === null) {
-        return 'Open';
-      } else if (parsedOpenDate <= currentDate && parsedCloseDate > currentDate) {
-        return 'Closing';
-      }
-
-      return 'Closed';
     },
     backButtonClick() {
       router.push({name: 'instituteAuthoritiesList'});
