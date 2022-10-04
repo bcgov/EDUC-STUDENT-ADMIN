@@ -12,7 +12,7 @@ jest.mock('../../../src/components/utils', () => {
   };
 });
 jest.mock('../../../src/components/cache-service');
-const cacheService = require('../../../src/components/cache-service');
+const cacheService = require('../../../src/components/school-api-cache-service');
 const { mockRequest, mockResponse } = require('../helpers');
 const utils = require('../../../src/components/utils');
 const { ApiError } = require('../../../src/components/error');
