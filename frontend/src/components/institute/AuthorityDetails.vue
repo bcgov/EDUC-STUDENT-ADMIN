@@ -138,7 +138,7 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="3">
+          <v-col cols="3" v-if="showPhysicalAddress">
             <v-row>
               <v-col>
                 <v-icon class="pb-1 mr-1" right >
@@ -212,18 +212,25 @@ export default {
     return {
       authority: null,
       loading: false,
-      authorityTypes: []
+      authorityTypes: [],
+      excludeShowingPhysicalAddressesForAuthoritiesOfType: [
+        'OFFSHORE',
+      ]
     };
   },
   computed:{
     ...mapState('institute', ['authorityTypeCodes']),
-    hasSamePhysicalAddress(){
+    hasSamePhysicalAddress() {
       return !this.authority.addresses.filter(address => address.addressTypeCode === 'PHYSICAL').length > 0;
+    },
+    showPhysicalAddress() {
+      return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.authority.authorityTypeCode);
     }
   },
   created() {
     this.$store.dispatch('institute/getAuthorityTypeCodes').then(() => {
       this.authorityTypes = this.authorityTypeCodes;
+      console.log(this.authorityTypes);
     });
     this.getAuthority();
   },
