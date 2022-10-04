@@ -199,7 +199,7 @@ export default {
     ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse']),
     ...mapMutations('setNavigation', ['setSelectedIDs', 'setArchived']),
     getSchoolName(request) {
-      return this.$store.state['app'].mincodeSchoolNames.get(request?.mincode?.replace(' ',''));
+      return this.$store.state['app'].schoolApiMincodeSchoolNames.get(request?.mincode?.replace(' ',''));
     },
     clickViewSelected() {
       if(this.selectedRecords?.length > 0) {

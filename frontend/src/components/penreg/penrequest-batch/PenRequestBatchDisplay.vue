@@ -167,7 +167,7 @@ export default {
   },
   computed: {
     ...mapState('penRequestBatch', ['selectedFiles', 'prbStudentStatusFilters', 'currentBatchFileSearchParams']),
-    ...mapState('app', ['mincodeSchoolNames']),
+    ...mapState('app', ['schoolApiMincodeSchoolNames']),
     selectedSchoolGroup: {
       get(){
         return this.$store.state['penRequestBatch'].selectedSchoolGroup;
@@ -349,7 +349,7 @@ export default {
     formatArchivePayload(file) {
       return {
         penRequestBatchID: file.penRequestBatchID,
-        schoolName: this.mincodeSchoolNames.get(file?.mincode?.replace(' ', ''))
+        schoolName: this.schoolApiMincodeSchoolNames.get(file?.mincode?.replace(' ', ''))
       };
     },
     setSagaErrorMessage(error) {
