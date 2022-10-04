@@ -35,7 +35,7 @@ async function getCachedDistrictByDistrictId(req, res) {
     const districtId = req.params.districtId;
     return res.status(HttpStatus.OK).json(cacheService.getDistrictJSONByDistrictId(districtId));
   } catch (e) {
-    logApiError(e, 'getDistrictByDistrictId', 'Error occurred while attempting to GET District entity.');
+    logApiError(e, 'getCachedDistrictByDistrictId', 'Error occurred while attempting to GET District entity.');
     return errorResponse(res);
   }
 }
@@ -53,11 +53,36 @@ async function getDistrictByDistrictID(req, res) {
 }
 
 async function getSchools(req, res) {
+  const token = getBackendToken(req);
+  try {
+    const url = `${config.get('server:institute:instituteSchoolURL')}`;
+    const data = await getData(token, url);
+    return res.status(200).json(data);
+  } catch (e) {
+    logApiError(e, 'getSchools', 'Error occurred while attempting to GET all schools.');
+    return errorResponse(res);
+  }
+}
+
+async function getCachedSchools(req, res) {
+  if (req.query.refreshCache === 'true') {
+    await cacheService.loadAllSchoolsToMap();
+  }
   try {
     let schools = req.query.active === 'true' ? cacheService.getAllActiveSchoolsJSON() : cacheService.getAllSchoolsJSON();
     return res.status(HttpStatus.OK).json(schools);
   } catch (e) {
     logApiError(e, 'getSchools', 'Error occurred while attempting to GET school entity.');
+    return errorResponse(res);
+  }
+}
+
+async function getCachedSchoolBySchoolID(req, res) {
+  try {
+    const schoolID = req.params.schoolID;
+    return res.status(HttpStatus.OK).json(cacheService.getSchoolBySchoolID(schoolID));
+  } catch (e) {
+    logApiError(e, 'getCachedSchoolBySchoolID', 'Error occurred while attempting to GET School entity.');
     return errorResponse(res);
   }
 }
@@ -155,14 +180,26 @@ function createSchoolSearchCriteria(searchParams){
 }
 
 async function getAuthorities(req, res) {
+  const token = getBackendToken(req);
+  try {
+    const url = `${config.get('server:institute:instituteAuthorityURL')}`;
+    const data = await getData(token, url);
+    return res.status(200).json(data);
+  } catch (e) {
+    logApiError(e, 'getAuthorities', 'Error occurred while attempting to GET all authorities.');
+    return errorResponse(res);
+  }
+}
+
+async function getCachedAuthorities(req, res) {
   try {
     if (req.query.refreshCache === 'true') {
-      await cacheService.loadAllDistrictsToMap();
+      await cacheService.loadAllAuthoritiesToMap();
     }
     const authorities = req.query.active === 'true' ? cacheService.getAllActiveAuthoritiesJSON() : cacheService.getAllAuthoritiesJSON();
     return res.status(HttpStatus.OK).json(authorities);
   } catch (e) {
-    logApiError(e, 'getAuthorities', 'Error occurred while attempting to GET authorities cached.');
+    logApiError(e, 'getCachedAuthorities', 'Error occurred while attempting to GET all authorities cached.');
     return errorResponse(res);
   }
 }
@@ -175,6 +212,16 @@ async function getAuthorityByID(req, res) {
     return res.status(200).json(data);
   } catch (e) {
     logApiError(e, 'getAuthorityByID', 'Error occurred while attempting to GET authority entity.');
+    return errorResponse(res);
+  }
+}
+
+async function getCachedAuthorityByAuthorityID(req, res) {
+  try {
+    const authorityID = req.params.authorityID;
+    return res.status(HttpStatus.OK).json(cacheService.getAuthorityJSONByAuthorityId(authorityID));
+  } catch (e) {
+    logApiError(e, 'getCachedAuthorityByAuthorityID', 'Error occurred while attempting to GET Authority entity.');
     return errorResponse(res);
   }
 }
@@ -243,5 +290,9 @@ module.exports = {
   getAuthorities,
   getAuthoritiesPaginated,
   getAuthorityByID,
-  getSchoolByID
+  getSchoolByID,
+  getCachedSchools,
+  getCachedSchoolBySchoolID,
+  getCachedAuthorityByAuthorityID,
+  getCachedAuthorities
 };

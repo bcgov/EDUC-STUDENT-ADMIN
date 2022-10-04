@@ -2,7 +2,7 @@
 const config = require('../config/index');
 const {getBackendToken, getData, putData, getUser, logApiError, errorResponse} = require('./utils');
 const HttpStatus = require('http-status-codes');
-const cacheService = require('./cache-service');
+const schoolApiCacheService = require('./school-api-cache-service');
 const lodash = require('lodash');
 const retry = require('async-retry');
 const {LocalDate, DateTimeFormatter} = require('@js-joda/core');
@@ -10,12 +10,12 @@ const {LocalDate, DateTimeFormatter} = require('@js-joda/core');
 async function getSchoolByMincode(req, res) {
   try {
     if(req.query?.mincode){
-      const data = cacheService.getSchoolNameJSONByMincode(req.query.mincode);
+      const data = schoolApiCacheService.getSchoolNameJSONByMincode(req.query.mincode);
       if(data){
         return res.status(200).json(data);
       }
     }else {
-      let data = cacheService.getAllSchoolsJSON();
+      let data = schoolApiCacheService.getAllSchoolsJSON();
       if(data){
         data = data.filter(school => {
           return isSchoolExpired(school);
@@ -70,13 +70,13 @@ async function getPenCoordinators(req, res) {
     const data = await getData(token, url);
     const coords = lodash.sortBy(data, ['mincode', 'penCoordinatorName']);
     const filteredCords = coords.filter(coord=> {
-      const school = cacheService.getSchoolNameJSONByMincode(coord.mincode);
+      const school = schoolApiCacheService.getSchoolNameJSONByMincode(coord.mincode);
       if(!school){
         return true;
       }
       return isSchoolExpired(school);
     }).map(coord=> {
-      coord.schoolName = cacheService.getSchoolNameJSONByMincode(coord.mincode)?.schoolName;
+      coord.schoolName = schoolApiCacheService.getSchoolNameJSONByMincode(coord.mincode)?.schoolName;
       if(!coord.schoolName){
         coord.schoolName = 'District';
       }

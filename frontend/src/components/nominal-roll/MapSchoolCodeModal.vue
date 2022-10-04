@@ -52,7 +52,7 @@
                       id='schoolNameTxtField'
                       v-model="mincode"
                       :items="schools"
-                      :messages="mincode && mincodeSchoolNames.get(mincode)"
+                      :messages="mincode && schoolApiMincodeSchoolNames.get(mincode)"
                       :rules="requiredRules"
                       tabindex="2"
                       clearable
@@ -113,10 +113,10 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['mincodeSchoolNames']),
+    ...mapState('app', ['schoolApiMincodeSchoolNames']),
     ...mapState('nominalRoll', ['fedProvSchoolCodes']),
     schools() {
-      return _.sortBy(Array.from(this.mincodeSchoolNames.entries()).map(school => ({ text: `${school[0]} - ${school[1]}`, value: school[0]})), ['value']);
+      return _.sortBy(Array.from(this.schoolApiMincodeSchoolNames.entries()).map(school => ({ text: `${school[0]} - ${school[1]}`, value: school[0]})), ['value']);
     },
   },
   beforeMount() {

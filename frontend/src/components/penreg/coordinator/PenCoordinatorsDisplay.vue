@@ -192,10 +192,10 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['mincodeSchoolNames']),
+    ...mapState('app', ['schoolApiMincodeSchoolNames']),
     ...mapGetters('auth', ['EDIT_PEN_COORDINATOR_INFO_ROLE']),
     schools() {
-      return _.sortedUniq([...this.mincodeSchoolNames.values()].sort());
+      return _.sortedUniq([...this.schoolApiMincodeSchoolNames.values()].sort());
     },
     penCoordinatorPage() {
       return {

@@ -257,7 +257,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['VIEW_GMP_REQUESTS_ROLE','VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ROLE', 'PEN_TEAM_ROLE']),
-    ...mapState('app', ['mincodeSchoolNames', 'districtCodes']),
+    ...mapState('app', ['schoolApiMincodeSchoolNames', 'schoolApiDistrictCodes']),
     requestTypes() {
       return REQUEST_TYPES;
     },
@@ -309,9 +309,9 @@ export default {
     isValidDistrictOrMincode(v) {
       if(isValidMincode(v) && (v.length === 3 || v.length === 8)) {
         if(v.length === 3) {
-          return this.districtCodes.size === 0 || this.districtCodes.has(v);
+          return this.schoolApiDistrictCodes.size === 0 || this.schoolApiDistrictCodes.has(v);
         } else {
-          return this.mincodeSchoolNames.size === 0 || this.mincodeSchoolNames.has(v);
+          return this.schoolApiMincodeSchoolNames.size === 0 || this.schoolApiMincodeSchoolNames.has(v);
         }
       }
       return false;

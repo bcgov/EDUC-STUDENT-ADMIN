@@ -12,6 +12,8 @@ export default {
     requestTypeLabel: REQUEST_TYPES.penRequest.label,
     pageTitle: null,
     stickyInfoPanelHeight: null,
+    schoolApiMincodeSchoolNames: new Map(),
+    schoolApiDistrictCodes: new Set(),
     mincodeSchoolNames: new Map(),
     schoolMap: new Map(),
     activeSchools: [],
@@ -25,6 +27,8 @@ export default {
   getters: {
     request: state => state.request,
     selectedRequest: state => state.selectedRequest,
+    schoolApiDistrictCodesObjectSorted: state => Array.from(state.schoolApiDistrictCodes).sort(),
+    schoolApiMincodeSchoolNamesObjectSorted: state => Object.values(Object.fromEntries(state.schoolApiMincodeSchoolNames)).map(v => v.toUpperCase()).sort(),
     districtCodesObjectSorted: state => Array.from(state.districtCodes).sort(),
     mincodeSchoolNamesObjectSorted: state => Object.values(Object.fromEntries(state.mincodeSchoolNames)).map(v => v.toUpperCase()).sort(),
     districtsObjectSorted: state => Object.values(Object.fromEntries(state.districts)).map(v => v.toUpperCase()).sort(),
@@ -93,6 +97,13 @@ export default {
       if (!state.alertNotification) {
         state.alertNotification = true;
       }
+    },
+    setSchoolApiMincodeSchoolNameAndDistrictCodes(state, schoolApiMincodeSchoolNameList) {
+      state.schoolApiMincodeSchoolNames = new Map();
+      schoolApiMincodeSchoolNameList.forEach(element => {
+        state.schoolApiMincodeSchoolNames.set(element.mincode, element.schoolName);
+        state.schoolApiDistrictCodes.add(element.mincode?.substring(0, 3));
+      });
     }
   },
   actions: {
@@ -113,6 +124,10 @@ export default {
         if (state.activeDistricts.length === 0) {
           const response = await ApiService.getActiveDistricts();
           commit('setActiveDistricts', response.data);
+        }
+        if(state.schoolApiMincodeSchoolNames.size === 0) {
+          const response = await ApiService.getSchoolApiMincodeSchoolNames();
+          commit('setSchoolApiMincodeSchoolNameAndDistrictCodes', response.data);
         }
       }
     },

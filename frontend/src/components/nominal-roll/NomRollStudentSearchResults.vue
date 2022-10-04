@@ -94,7 +94,7 @@
                 <v-autocomplete v-model="editedRecord.schoolDistrictNumber"
                                 :disabled="!item.validationErrors['School District'] && !validationErrors['School District'] || hasReadOnlyRoleAccess()"
                                 outlined dense name="1" label="School District"
-                                :items="districtCodesObjectSorted"
+                                :items="schoolApiDistrictCodesObjectSorted"
                                 :rules="[!validationErrors['School District'] || validationErrors['School District']]"
                 ></v-autocomplete>
               </v-col>
@@ -116,7 +116,7 @@
                 <v-autocomplete v-model="editedRecord.schoolName"
                                 :disabled="!item.validationErrors['School Name'] && !validationErrors['School Name']  || hasNoEditRoleAccess()"
                                 outlined dense name="3" label="School Name"
-                                :items="mincodeSchoolNamesObjectSorted"
+                                :items="schoolApiMincodeSchoolNamesObjectSorted"
                                 :rules="[!validationErrors['School Name'] || validationErrors['School Name']]"
                 ></v-autocomplete>
               </v-col>
@@ -319,15 +319,15 @@ export default {
     if(!this.gradeCodeObjects || !this.genders) {
       this.$store.dispatch('student/getCodes');
     }
-    if(this.isEmpty(this.mincodeSchoolNamesObjectSorted) || this.isEmpty(this.districtCodesObjectSorted)) {
+    if(this.isEmpty(this.schoolApiMincodeSchoolNamesObjectSorted) || this.isEmpty(this.schoolApiDistrictCodesObjectSorted)) {
       this.$store.dispatch('app/getCodes');
     }
   },
   computed: {
     ...mapState('nomRollStudentSearch', ['nomRollStudentSearchResponse', 'nomRollStudentSearchCriteria', 'currentNomRollStudentSearchParams']),
     ...mapGetters('student', ['genders','gradeCodeObjects']),
-    ...mapState('app', ['mincodeSchoolNames', 'districtCodes']),
-    ...mapGetters('app', ['mincodeSchoolNamesObjectSorted', 'districtCodesObjectSorted']),
+    ...mapState('app', ['schoolApiMincodeSchoolNames', 'schoolApiDistrictCodes']),
+    ...mapGetters('app', ['schoolApiMincodeSchoolNamesObjectSorted', 'schoolApiDistrictCodesObjectSorted']),
     ...mapGetters('auth', ['EDIT_NOMINAL_ROLL_ROLE','NOMINAL_ROLL_READ_ONLY_ROLE']),
     ...mapState('nominalRoll', ['fedProvSchoolCodes']),
     ...mapGetters('notifications', ['notification']),
@@ -390,7 +390,7 @@ export default {
       return (format && column) ? format(column) : (column || ' ');
     },
     getSchoolName(request) {
-      return this.$store.state['app'].mincodeSchoolNames.get(request?.mincode?.replace(' ',''));
+      return this.$store.state['app'].schoolApiMincodeSchoolNames.get(request?.mincode?.replace(' ',''));
     },
     hasNoEditRoleAccess() {
       return this.EDIT_NOMINAL_ROLL_ROLE === false || this.hasReadOnlyRoleAccess();
