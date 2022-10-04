@@ -171,7 +171,7 @@ import {mapGetters, mapState} from 'vuex';
 import {isEmpty, omitBy} from 'lodash';
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber, sortByNameValue} from '@/utils/format';
-import {DateTimeFormatter, LocalDate} from '@js-joda/core';
+import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
 import router from '@/router';
 
 export default {
@@ -392,18 +392,18 @@ export default {
       return principalsName;
     },
     getSchoolStatus: function (school) {
-      const currentDate = LocalDate.now();
+      const currentDate = LocalDateTime.now();
       let openedDate = school.openedDate;
       let closedDate = school.closedDate;
 
       if (!openedDate) {
         return 'Never Opened';
       }
-      const parsedOpenDate = new LocalDate.parse(openedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
+      const parsedOpenDate = new LocalDateTime.parse(openedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
 
       let parsedCloseDate = null;
       if(closedDate){
-        parsedCloseDate = new LocalDate.parse(closedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
+        parsedCloseDate = new LocalDateTime.parse(closedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
       }
 
       if (parsedOpenDate <= currentDate && parsedCloseDate === null) {

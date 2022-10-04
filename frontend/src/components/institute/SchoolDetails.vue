@@ -273,7 +273,7 @@ import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import {formatPhoneNumber, formatDate} from '@/utils/format';
-import {DateTimeFormatter, LocalDate} from '@js-joda/core';
+import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
 import router from '@/router';
 import { sanitizeUrl } from '@braintree/sanitize-url';
 
@@ -434,18 +434,18 @@ export default {
       return this.schoolCategoryTypeCodes.find((category) => category.schoolCategoryCode === school.schoolCategoryCode).label;
     },
     getSchoolStatus: function (school) {
-      const currentDate = LocalDate.now();
+      const currentDate = LocalDateTime.now();
       let openedDate = school.openedDate;
       let closedDate = school.closedDate;
 
       if (!openedDate) {
         return 'Never Opened';
       }
-      const parsedOpenDate = new LocalDate.parse(openedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
+      const parsedOpenDate = new LocalDateTime.parse(openedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
 
       let parsedCloseDate = null;
       if(closedDate){
-        parsedCloseDate = new LocalDate.parse(closedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
+        parsedCloseDate = new LocalDateTime.parse(closedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
       }
 
       if (parsedOpenDate <= currentDate && parsedCloseDate === null) {

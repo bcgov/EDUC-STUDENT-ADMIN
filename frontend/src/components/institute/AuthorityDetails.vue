@@ -194,7 +194,7 @@ import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import PrimaryButton from '@/components/util/PrimaryButton';
 import {formatPhoneNumber, formatDate} from '@/utils/format';
-import {DateTimeFormatter, LocalDate} from '@js-joda/core';
+import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
 import {mapState} from 'vuex';
 import router from '@/router';
 
@@ -255,15 +255,15 @@ export default {
       }
     },
     getStatusText() {
-      const currentDate = LocalDate.now();
+      const currentDate = LocalDateTime.now();
       let openedDate = this.authority.openedDate;
       let closedDate = this.authority.closedDate;
 
-      const parsedOpenDate = new LocalDate.parse(openedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
+      const parsedOpenDate = new LocalDateTime.parse(openedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
 
       let parsedCloseDate = null;
       if(closedDate){
-        parsedCloseDate = new LocalDate.parse(closedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
+        parsedCloseDate = new LocalDateTime.parse(closedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
       }
 
       if (parsedOpenDate <= currentDate && parsedCloseDate === null) {
