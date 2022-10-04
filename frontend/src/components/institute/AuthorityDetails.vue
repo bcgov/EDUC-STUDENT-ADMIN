@@ -25,7 +25,7 @@
             <h2 id="authorityName">{{ authority.authorityNumber }} - {{ authority.displayName }}</h2>
           </v-col>
           <v-col cols="6" class="d-flex justify-end">
-            <PrimaryButton icon-left width="6em" icon="mdi-pencil-outline" text="Edit"></PrimaryButton>
+            <PrimaryButton icon-left width="6em" icon="mdi-pencil" text="Edit"></PrimaryButton>
           </v-col>
         </v-row>
         <v-row class="d-flex justify-start">
