@@ -96,12 +96,11 @@ let object = {
     ROOT_ENDPOINT: instituteRoot,
     SCHOOL_DATA_URL: instituteRoot + '/school',
     SCHOOL_PAGINATED_DATA_URL: instituteRoot + '/schoolsPaginated',
-    SCHOOL_CONTACT_TYPES_URL: instituteRoot + '/school-contact-types',
     DISTRICT_DATA_URL: instituteRoot + '/districts',
     AUTHORITY_DATA_URL: instituteRoot + '/authorities',
     AUTHORITIES_PAGINATED_DATA_URL: instituteRoot + '/authoritiesPaginated',
     AUTHORITY_BY_ID_URL: instituteRoot + '/authority',
-    AUTHORITY_CONTACT_TYPES_URL: instituteRoot + '/authority-contact-types'
+
   },
   cache:{
     ROOT_ENDPOINT: cacheRoot,
@@ -113,7 +112,9 @@ let object = {
     SCHOOL_ORGANIZATION_TYPES_URL: cacheRoot + '/school-organization-types',
     SCHOOL_NEIGHBORHOOD_LEARNING_TYPES_URL: cacheRoot + '/school-neighborhood-learning-types',
     AUTHORITY_TYPES_URL: cacheRoot + '/authority-types',
+    AUTHORITY_CONTACT_TYPES_URL: cacheRoot + '/authority-contact-types',
     GRADE_TYPES_URL: cacheRoot + '/grade-codes',
+    SCHOOL_CONTACT_TYPES_URL: cacheRoot + '/school-contact-types',
   },
   penServices: {
     ROOT_ENDPOINT: penServicesRoot,
