@@ -25,14 +25,14 @@
             <v-row cols="2">
               <v-col class="pb-0" cols="12">
                 <v-row>
-                  <v-col cols="6" class="d-flex justify-start">
+                  <v-col cols="10" class="d-flex justify-start">
                     <v-row no-gutters>
                       <v-col cols="12">
                         <h2 class="subjectHeading">{{school.mincode}} - {{school.displayName}}</h2>
                       </v-col>
                     </v-row>
                   </v-col>
-                  <v-col cols="6" class="d-flex justify-end">
+                  <v-col cols="2" class="d-flex justify-end">
                     <PrimaryButton width="6em" icon="mdi-pencil" icon-left text="Edit"></PrimaryButton>
                   </v-col>
                 </v-row>

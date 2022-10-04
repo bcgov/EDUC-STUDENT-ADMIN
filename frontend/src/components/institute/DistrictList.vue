@@ -1,6 +1,6 @@
 <template>
   <v-container class="containerSetup" fluid>
-    <Spinner v-if="loadingDistricts"/>
+    <Spinner flat v-if="loadingDistricts"/>
     <div v-else>
       <v-row>
         <v-col class="mt-1 d-flex justify-start">
@@ -56,7 +56,7 @@
                 </v-col>
               </v-row>
               <v-row no-gutters>
-                <v-col class="mt-1">
+                <v-col class="d-flex justify-end mt-1">
                   <v-icon>
                     mdi-phone-outline
                   </v-icon>

@@ -1,6 +1,6 @@
 <template>
   <v-container class="containerSetup" fluid>
-    <Spinner v-if="loadingSchools"/>
+    <Spinner flat v-if="loadingSchools"/>
     <div v-else>
     <v-row>
       <v-col class="mt-1 d-flex justify-start">
@@ -173,12 +173,14 @@ import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber, sortByNameValue} from '@/utils/format';
 import {getStatusColorAuthorityOrSchool,getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import router from '@/router';
+import Spinner from '@/components/common/Spinner';
 
 export default {
   name: 'SchoolListPage',
   mixins: [alertMixin],
   components: {
     PrimaryButton,
+    Spinner
   },
   data() {
     return {
