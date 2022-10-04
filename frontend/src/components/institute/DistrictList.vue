@@ -42,27 +42,20 @@
 
         <template v-slot:item.secureExchangeStatusCode="{ item }">
           <v-row style="cursor: pointer;" @click="openDistrict(item.districtId)">
-            <v-col>
+            <v-col cols="6" class="d-flex justify-start mt-1">
               <strong class="largeFont">{{ `${item.districtNumber} - ${item.name}` }}</strong>
             </v-col>
-            <v-spacer></v-spacer>
-            <v-col lg="2" md="3" sm="4">
-              <v-row no-gutters>
-                <v-col>
-                  <v-icon :color="getStatusColor(item.districtStatusCode)">
-                    mdi-circle-medium
-                  </v-icon>
-                  <span class="largeFont">{{ getStatusText(item.districtStatusCode) }}</span>
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col class="d-flex justify-end mt-1">
-                  <v-icon>
-                    mdi-phone-outline
-                  </v-icon>
-                  <span class="largeFont">{{ getPhoneNumber(item.phoneNumber) }}</span>
-                </v-col>
-              </v-row>
+            <v-col class="d-flex justify-start mt-1">
+              <v-icon class="mt-n1" :color="getStatusColor(item.districtStatusCode)">
+                mdi-circle-medium
+              </v-icon>
+              <span class="largeFont">{{ getStatusText(item.districtStatusCode) }}</span>
+            </v-col>
+            <v-col cols="3" class="d-flex justify-start mt-1">
+              <v-icon>
+                mdi-phone-outline
+              </v-icon>
+              <span class="largeFont">{{ getPhoneNumber(item.phoneNumber) }}</span>
             </v-col>
             <v-col class="d-flex justify-end">
               <v-tooltip bottom>
