@@ -25,6 +25,12 @@ const getContactStatus = function (contact) {
   return status;
 };
 
+/**
+ * Determines obtains status color for contacts
+ * Used in school, district and authority contact pages
+ * @param expiryDate
+ * @returns Boolean
+ */
 export function getStatusColor(contact) {
   let status = getContactStatus(contact);
   if (status === 'Active') {
@@ -56,4 +62,58 @@ export function isExpired(expiryDate) {
   }
 
   return expired;
+}
+
+/**
+ * Provides status text for schools and authorities NOT districts
+ * Used in school and authority list, details pages
+ * Note * Authorities will only have Open Closing Closed states
+ * @param expiryDate
+ * @returns String (Never Opened, Open, Opening, Closing, Closed)
+ */
+export function getStatusAuthorityOrSchool(authorityOrSchool) {
+  const currentDate = LocalDateTime.now();
+  let openedDate = authorityOrSchool.openedDate;
+  let closedDate = authorityOrSchool.closedDate;
+
+  if (!openedDate) {
+    return 'Never Opened';
+  }
+  const parsedOpenDate = new LocalDateTime.parse(openedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
+
+  let parsedCloseDate = null;
+  if(closedDate){
+    parsedCloseDate = new LocalDateTime.parse(closedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
+  }
+
+  if (parsedOpenDate <= currentDate && parsedCloseDate === null) {
+    return 'Open';
+  } else if (parsedOpenDate > currentDate) {
+    return 'Opening';
+  } else if (parsedOpenDate <= currentDate && parsedCloseDate > currentDate) {
+    return 'Closing';
+  }
+
+  return 'Closed';
+}
+
+/**
+ * Provides status color for Schools and Authorities
+ * Used in School and Authority list, details pages
+ * Note * Authorities will only have Open Closing Closed states
+ * @param status
+ * @returns String
+ */
+export function getStatusColorAuthorityOrSchool(statusText) {
+  if (statusText === 'Open') {
+    return 'green';
+  } else if (statusText === 'Opening'){
+    return 'blue';
+  } else if (statusText === 'Closing'){
+    return 'orange';
+  } else if (statusText === 'Closed') {
+    return 'red';
+  } else if (statusText === 'Never Opened') {
+    return 'grey';
+  }
 }
