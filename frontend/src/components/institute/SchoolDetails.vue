@@ -3,7 +3,7 @@
     <v-row>
       <v-col class="mt-1 d-flex justify-start">
         <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
-        <a class="ml-1" @click="backButtonClick">Return to the List of Schools</a>
+        <a class="ml-1" @click="backButtonClick">Return to School List</a>
       </v-col>
     </v-row>
     <v-row v-if="loading">
