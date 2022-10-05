@@ -146,7 +146,7 @@ export default {
   methods: {
     getSchoolContactTypeCodes() {
       this.loadingCount += 1;
-      ApiService.apiAxios.get(Routes.institute.SCHOOL_CONTACT_TYPES_URL)
+      ApiService.apiAxios.get(Routes.cache.SCHOOL_CONTACT_TYPES_URL)
         .then(response => {
           this.schoolContactTypes = response.data;
         })
