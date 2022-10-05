@@ -26,7 +26,7 @@
           </v-col>
           <v-col cols="12" md="4" class="d-flex justify-start">
             <v-select
-              id="status-select-field"
+              id="authoritytype-select-field"
               clearable
               :items="authorityTypes"
               v-model="authorityTypeFilter"
@@ -34,8 +34,8 @@
               item-value="authorityTypeCode" label="Authority Type"></v-select>
           </v-col>
           <v-col cols="12" md="2" class="d-flex justify-start mt-6">
-            <PrimaryButton id="user-search-button" text="Clear" secondary @click.native="clearButtonClick"/>
-            <PrimaryButton class="ml-3" width="8em" id="user-clear-button" text="Search" @click.native="searchButtonClick"
+            <PrimaryButton id="user-clear-button" text="Clear" secondary @click.native="clearButtonClick"/>
+            <PrimaryButton class="ml-3" width="8em" id="user-search-button" text="Search" @click.native="searchButtonClick"
                            :disabled="!searchEnabled()"/>
           </v-col>
         </v-row>
