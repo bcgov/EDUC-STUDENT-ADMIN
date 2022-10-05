@@ -97,17 +97,17 @@
             <v-row style="cursor: pointer;" @click="openSchool(item.schoolId)">
               <v-col class="pb-0 pt-0">
                 <v-row class="mb-n4">
-                  <v-col cols="5">
+                  <v-col cols="6">
                     <span class="subjectHeading">{{ item.mincode }} - {{ item.displayName }}</span>
                   </v-col>
-                  <v-col cols="2">
+                  <v-col cols="2" class="ml-n8">
                     <v-icon class="ml-0 mb-1" :color="getStatusColorAuthorityOrSchool(item.status)" right dark>
                       mdi-circle-medium
                     </v-icon>
                     <span class="statusCodeLabel">{{ item.status }}</span>
                   </v-col>
-                  <v-col class="d-flex">
-                    <v-icon class="mb-1 mr-1" aria-hidden="false">
+                  <v-col class="d-flex ml-n8">
+                    <v-icon class="mb-3 mr-1" aria-hidden="false">
                       mdi-account-outline
                     </v-icon>
                     <span class="statusCodeLabel" style="color: black">{{item.principalsName}}</span>
@@ -131,18 +131,18 @@
                   </v-col>
                 </v-row>
                 <v-row>
-                  <v-col cols="5" class="mt-n4">
+                  <v-col cols="6" class="mt-n4">
                     <span class="ministryLine mt-n5" style="color: black">{{
                         item.schoolCategory
                       }} | {{ item.facilityType }}</span>
                   </v-col>
-                  <v-col cols="2" class="mt-n2">
+                  <v-col cols="2" class="mt-n2 ml-n8">
                     <v-icon class="mb-1" aria-hidden="false">
                       mdi-phone-outline
                     </v-icon>
                     <span class="statusCodeLabel">{{ formatPhoneNumber(item.phoneNumber) }}</span>
                   </v-col>
-                  <v-col class="d-flex mt-n2">
+                  <v-col class="d-flex mt-n2 ml-n8">
                     <v-icon class="ml-0 mr-1 mb-1" aria-hidden="false">
                       mdi-at
                     </v-icon>
@@ -487,7 +487,7 @@ export default {
 }
 
 .statusCodeLabel {
-  font-size: large;
+  font-size: medium;
 }
 
 .v-dialog__content >>> .v-bottom-sheet {
