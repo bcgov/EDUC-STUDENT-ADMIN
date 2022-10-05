@@ -165,7 +165,7 @@ export default {
     getAuthorityContactTypeCodes() {
       this.loadingCount += 1;
 
-      ApiService.apiAxios.get(Routes.institute.AUTHORITY_CONTACT_TYPES_URL)
+      ApiService.apiAxios.get(Routes.cache.AUTHORITY_CONTACT_TYPES_URL)
         .then(response => {
           this.authorityContactTypes = response.data;
         })
