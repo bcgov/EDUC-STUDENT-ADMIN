@@ -59,7 +59,7 @@
         >
 
           <template v-slot:item.secureExchangeStatusCode="{ item }">
-              <v-row style="cursor: pointer;" @click="openAuthority(item.independentAuthorityId)">
+              <v-row id="authorityDetailsSelect" style="cursor: pointer;" @click="openAuthority(item.independentAuthorityId)">
                 <v-col cols="7" class="pb-0 pt-0">
                   <v-row class="mb-n4">
                     <v-col class="pb-2 pt-2 pr-0">
