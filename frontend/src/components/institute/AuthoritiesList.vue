@@ -9,7 +9,7 @@
     <v-row style="background: rgb(235, 237, 239);border-radius: 8px;" class="px-3 elevation-2">
       <v-col>
         <v-row>
-          <v-col cols="12" md="4" class="d-flex justify-start">
+          <v-col cols="5" class="d-flex justify-start">
             <v-autocomplete
               id="authority-text-field"
               label="Authority Code & Name"
@@ -20,11 +20,11 @@
               clearable>
             </v-autocomplete>
           </v-col>
-          <v-col cols="12" md="2" class="d-flex justify-start">
+          <v-col class="d-flex justify-start">
             <v-select id="status-select-field" clearable :items="authorityStatus" v-model="authorityStatusFilter" item-text="name"
                       item-value="code" label="Status"></v-select>
           </v-col>
-          <v-col cols="12" md="4" class="d-flex justify-start">
+          <v-col class="d-flex justify-start">
             <v-select
               id="authoritytype-select-field"
               clearable
@@ -33,9 +33,9 @@
               item-text="label"
               item-value="authorityTypeCode" label="Authority Type"></v-select>
           </v-col>
-          <v-col cols="12" md="2" class="d-flex justify-start mt-6">
+          <v-col class="d-flex justify-end mt-6">
             <PrimaryButton id="user-clear-button" text="Clear" secondary @click.native="clearButtonClick"/>
-            <PrimaryButton class="ml-3" width="8em" id="user-search-button" text="Search" @click.native="searchButtonClick"
+            <PrimaryButton class="ml-3"  id="user-search-button" text="Search" @click.native="searchButtonClick"
                            :disabled="!searchEnabled()"/>
           </v-col>
         </v-row>
@@ -60,35 +60,29 @@
 
           <template v-slot:item.secureExchangeStatusCode="{ item }">
               <v-row style="cursor: pointer;" @click="openAuthority(item.independentAuthorityId)">
-                <v-col cols="12" lg="4" xl="8" class="pb-0 pt-0">
+                <v-col cols="7" class="pb-0 pt-0">
                   <v-row class="mb-n4">
-                    <v-col cols="12" class="pb-2 pt-2 pr-0">
+                    <v-col class="pb-2 pt-2 pr-0">
                       <span class="subjectHeading">{{ item.authorityNumber }} - {{ item.displayName }}</span>
                     </v-col>
                   </v-row>
                   <v-row>
-                    <v-col cols="12" class="pb-1 pr-0">
+                    <v-col class="pb-2 pt-2 pr-0">
                       <span class="ministryLine" style="color: black">{{ item.type }}</span>
                     </v-col>
                   </v-row>
                 </v-col>
-                <v-col cols="6" lg="5" xl="2" class="pb-0 pt-0">
-                  <v-row>
-                    <v-col cols="12" class="pb-1 pr-0">
-                      <v-icon class="ml-0 pb-1" :color="getStatusColorAuthorityOrSchool(item.status)" right dark>
-                        mdi-circle-medium
-                      </v-icon>
-                      <span class="ml-1 statusCodeLabel">{{ item.status }}</span>
-                    </v-col>
-                  </v-row>
-                  <v-row no-gutters>
-                    <v-col cols="12" class="pb-1 pr-0">
-                      <v-icon class="mb-1" aria-hidden="false">
-                        mdi-phone-outline
-                      </v-icon>
-                      <span class="statusCodeLabel"> {{ formatPhoneNumber(item.phoneNumber) }}</span>
-                    </v-col>
-                  </v-row>
+                <v-col class="d-flex justify-start mt-1">
+                  <v-icon class="ml-0 pb-1" :color="getStatusColorAuthorityOrSchool(item.status)" right dark>
+                    mdi-circle-medium
+                  </v-icon>
+                  <span class="ml-0 statusCodeLabel" style="margin-top: 0.2em">{{ item.status }}</span>
+                </v-col>
+                <v-col cols="2" class="d-flex justify-start mt-1">
+                  <v-icon class="mb-1" aria-hidden="false">
+                    mdi-phone-outline
+                  </v-icon>
+                  <span class="statusCodeLabel" style="margin-top: 0.2em"> {{ formatPhoneNumber(item.phoneNumber) }}</span>
                 </v-col>
                 <v-col class="d-flex justify-end">
                   <v-tooltip bottom>
@@ -391,14 +385,14 @@ export default {
 }
 
 .containerSetup{
-  padding-right: 24em !important;
-  padding-left: 24em !important;
+  padding-right: 30em !important;
+  padding-left: 30em !important;
 }
 
 @media screen and (max-width: 1950px) {
   .containerSetup{
-    padding-right: 20em !important;
-    padding-left: 20em !important;
+    padding-right: 25em !important;
+    padding-left: 25em !important;
   }
 }
 
