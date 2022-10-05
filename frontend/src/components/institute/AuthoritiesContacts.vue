@@ -23,7 +23,7 @@
         <v-col cols="12" class="d-flex justify-start">
           <v-row no-gutters>
             <v-col cols="12">
-              <h2 class="subjectHeading">{{authority.authorityNumber}} - {{authority.displayName}}</h2>
+              <h2 id="authorityNameAndNumber" class="subjectHeading">{{authority.authorityNumber}} - {{authority.displayName}}</h2>
             </v-col>
           </v-row>
         </v-col>
@@ -41,7 +41,7 @@
       <div v-for="authorityContactType in authorityContactTypes" :key="authorityContactType.code">
         <v-row>
           <v-col>
-            <h2 style="color:#1A5A96">{{authorityContactType.label}}</h2>
+            <h2 id="authorityTypeLabel" style="color:#1A5A96">{{authorityContactType.label}}</h2>
           </v-col>
         </v-row>
         <v-row cols="2" v-if="authorityContacts.has(authorityContactType.authorityContactTypeCode)">
@@ -55,7 +55,7 @@
                         <v-icon class="pb-1" :color="getStatusColor(contact)" left dark>
                           mdi-circle-medium
                         </v-icon>
-                        <strong>{{ `${contact.firstName} ${contact.lastName}` }}</strong>
+                        <strong id="authorityContactName">{{ `${contact.firstName} ${contact.lastName}` }}</strong>
                       </v-col>
                       <v-col cols="3" class="d-flex justify-end">
                         <PrimaryButton icon-left width="100%" secondary icon="mdi-pencil" text="Edit"></PrimaryButton>
