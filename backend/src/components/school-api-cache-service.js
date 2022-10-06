@@ -30,7 +30,7 @@ const schoolApiCacheService = {
           mincodeSchools.push(mincodeSchool);
         }
       }
-      log.info(`loaded ${mincodeSchoolMap.size} schools.`);
+      log.info(`loaded ${mincodeSchoolMap.size} schools to school-api-cache.`);
     }, {
       retries: 50
     });
