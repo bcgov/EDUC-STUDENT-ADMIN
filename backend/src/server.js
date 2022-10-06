@@ -29,6 +29,8 @@ const server = http.createServer(app);
 const WS = require('./socket/web-socket');
 const NATS = require('./messaging/message-pub-sub');
 const cacheService = require('./components/cache-service');
+const schoolApiCacheServicce = require('./components/school-api-cache-service');
+
 cacheService.loadAllSchoolsToMap().then(() => {
   log.info('Loaded school data to memory');
 }).catch((e) => {
@@ -48,6 +50,11 @@ cacheService.loadAllDocumentTypeCodesToMap().then(() => {
   log.info('Loaded document type codes to memory');
 }).catch((e) => {
   log.error('Error loading document type codes during boot .', e);
+});
+schoolApiCacheServicce.loadAllSchoolsToMap().then(() => {
+  log.info('Loaded school data to memory school-api-cache');
+}).catch((e) => {
+  log.error('Error loading schools during boot school-api-cache .', e);
 });
 WS.init(app, server);
 
