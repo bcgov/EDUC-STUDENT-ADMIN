@@ -4,6 +4,7 @@ const HttpStatus = require('http-status-codes');
 const cacheService = require('../cache-service');
 const {FILTER_OPERATION, VALUE_TYPE, CONDITION} = require('../../util/constants');
 const config = require('../../config');
+const {LocalDateTime} = require('@js-joda/core');
 
 async function getCachedDistricts(req, res) {
   try {
@@ -137,7 +138,7 @@ function createSchoolSearchCriteria(searchParams){
   Object.keys(searchParams).forEach(function(key){
     let pValue = searchParams[key];
     if(key === 'status'){
-      let currentDate = new Date().toISOString().substring(0,19);
+      let currentDate = LocalDateTime.now();
 
       if(pValue === 'Open'){
         searchCriteriaList.push({key: 'openedDate', operation: FILTER_OPERATION.LESS_THAN_OR_EQUAL_TO, value: currentDate, valueType: VALUE_TYPE.DATE_TIME, condition: CONDITION.AND});
@@ -258,7 +259,7 @@ function createAuthoritySearchCriteria(searchParams){
   Object.keys(searchParams).forEach(function(key){
     let pValue = searchParams[key];
     if(key === 'status'){
-      let currentDate = new Date().toISOString().substring(0,19);
+      let currentDate = LocalDateTime.now();
 
       if(pValue === 'Open'){
         searchCriteriaList.push({key: 'openedDate', operation: FILTER_OPERATION.LESS_THAN_OR_EQUAL_TO, value: currentDate, valueType: VALUE_TYPE.DATE_TIME, condition: CONDITION.AND});
