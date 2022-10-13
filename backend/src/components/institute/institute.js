@@ -113,7 +113,6 @@ async function addNewSchoolNote(req, res) {
 }
 
 function hasSchoolAdminRole(req, school){
-  console.log('Req session: ' + JSON.stringify(req.session.roles));
   if(school.schoolCategoryCode === 'OFFSHORE' || school.schoolCategoryCode === 'INDEPEND'){
     return req.session.roles.includes('SCHOOL_ADMIN') || req.session.roles.includes('SCHOOL_INDEPENDENT_OFFSHORE_ADMIN');
   }
