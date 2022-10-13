@@ -12,7 +12,7 @@
     <v-row>
       <v-col class="mt-1 d-flex justify-start">
         <v-icon class="mt-1" small color="#1976d2">mdi-arrow-left</v-icon>
-        <a class="ml-1 mt-1" @click="backButtonClick">Return to District Search</a>
+        <a class="ml-1 mt-1" @click="backButtonClick">Return to EDX District Access</a>
       </v-col>
       <v-col class="d-flex justify-end">
         <v-chip id="primaryEdxActivationCode" :color="getChipColor()">
