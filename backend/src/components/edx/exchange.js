@@ -705,7 +705,7 @@ function getExchangeDocumentById() {
   };
 }
 
-async function relinkUserSchoolAccess(req, res) {
+async function relinkUserSchoolOrDistrictAccess(req, res) {
   try {
     const token = getBackendToken(req);
     const userName = utils.getUser(req).idir_username;
@@ -718,21 +718,36 @@ async function relinkUserSchoolAccess(req, res) {
     }
 
     let edxUserDetails = await getData(token, config.get('server:edx:edxUsersURL') + '/' + req.body.params.userToRelink);
-    let userSchool = edxUserDetails.edxUserSchools.find(school => school.schoolID === req.body.params.schoolID);
-    let activationRoles = userSchool.edxUserSchoolRoles.map(role => role.edxRoleCode);
-
-    const payload = {
-      schoolID: req.body.params.schoolID,
-      schoolName: cacheService.getSchoolBySchoolID(req.body.params.schoolID).schoolName,
-      edxActivationRoleCodes: activationRoles,
-      firstName: edxUserDetails.firstName,
-      lastName: edxUserDetails.lastName,
-      email: edxUserDetails.email,
-      edxUserId: req.body.params.userToRelink,
-      edxUserSchoolID: req.body.params.userSchoolID,
-    };
-
-    await postData(token, config.get('server:edx:exchangeURL') + '/school-user-activation-relink-saga', payload,null, userName);
+    let payload = {};
+    if(req.body.params.schoolID){
+      let userSchool = edxUserDetails.edxUserSchools.find(school => school.schoolID === req.body.params.schoolID);
+      let activationRoles = userSchool.edxUserSchoolRoles.map(role => role.edxRoleCode);
+      payload = {
+        schoolID: req.body.params.schoolID,
+        schoolName: cacheService.getSchoolBySchoolID(req.body.params.schoolID).name,
+        edxActivationRoleCodes: activationRoles,
+        firstName: edxUserDetails.firstName,
+        lastName: edxUserDetails.lastName,
+        email: edxUserDetails.email,
+        edxUserId: req.body.params.userToRelink,
+        edxUserSchoolID: req.body.params.userSchoolID,
+      };
+      await postData(token, config.get('server:edx:exchangeURL') + '/school-user-activation-relink-saga', payload,null, userName);
+    } else {
+      let userDistrict = edxUserDetails.edxUserDistricts.find(district => district.districtID === req.body.params.districtID);
+      let activationRoles = userDistrict.edxUserDistrictRoles.map(role => role.edxRoleCode);
+      payload = {
+        districtID: req.body.params.districtID,
+        districtName: cacheService.getDistrictJSONByDistrictId(req.body.params.districtID).name,
+        edxActivationRoleCodes: activationRoles,
+        firstName: edxUserDetails.firstName,
+        lastName: edxUserDetails.lastName,
+        email: edxUserDetails.email,
+        edxUserId: req.body.params.userToRelink,
+        edxUserDistrictID: req.body.params.edxUserDistrictID,
+      };
+      await postData(token, config.get('server:edx:exchangeURL') + '/district-user-activation-relink-saga', payload,null, userName);
+    }
 
     return res.status(HttpStatus.OK).json('');
   } catch (e) {
@@ -953,7 +968,7 @@ module.exports = {
   claimExchange,
   removeDocumentFromExchange,
   removeUserSchoolOrDistrictAccess,
-  relinkUserSchoolAccess,
+  relinkUserSchoolOrDistrictAccess,
   createSecureExchangeStudent,
   removeSecureExchangeStudent,
   createSecureExchangeNote,

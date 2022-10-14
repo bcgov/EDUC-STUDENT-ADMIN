@@ -133,6 +133,10 @@ export default {
       type:String,
       required:false
     },
+    districtNumber:{
+      type:String,
+      required:false
+    },
     instituteTypeLabel:{
       type:String,
       required:true
@@ -161,7 +165,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
-    ...mapState('app', ['schoolMap','districtMap']),
+    ...mapState('app', ['schoolMap']),
     emailRules() {
       return [
         v => !!v || this.emailHint,
@@ -177,7 +181,7 @@ export default {
       if(this.instituteTypeCode=== 'SCHOOL'){
         this.instituteNameAndCode = this.schoolName + ' (' + this.schoolMap.get(this.instituteCode)?.mincode + ')';
       }else{
-        this.instituteNameAndCode = this.districtName + ' (' + this.districtMap.get(this.instituteCode).districtNumber + ')';
+        this.instituteNameAndCode = this.districtName + ' (' + this.districtNumber + ')';
       }
     }
   },
@@ -235,7 +239,7 @@ export default {
         url = `${Routes.edx.NEW_SCHOOL_USER_ACTIVATION_INVITE}`;
       }else {
         payload.districtName = this.districtName;
-        payload.districtCode = this.districtMap.get(this.instituteCode).districtNumber;
+        payload.districtCode = this.districtNumber;
         payload.districtID = this.instituteCode;
         url = `${Routes.edx.NEW_DISTRICT_USER_ACTIVATION_INVITE}`;
       }
