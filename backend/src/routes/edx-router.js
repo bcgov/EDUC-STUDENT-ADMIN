@@ -6,7 +6,7 @@ const auth = require('../components/auth');
 const utils = require('../components/utils');
 const { getExchanges, createExchange, getExchange, claimAllExchanges, markAs, getEdxUsers, findPrimaryEdxActivationCode, generateOrRegeneratePrimaryEdxActivationCode, updateEdxUserRoles,
   schoolUserActivationInvite, createSecureExchangeComment, uploadDocumentToExchange, getExchangeDocumentById, markAsClosed, claimExchange, removeDocumentFromExchange,
-  removeUserSchoolAccess, relinkUserSchoolAccess, createSecureExchangeStudent, removeSecureExchangeStudent, createSecureExchangeNote, removeSecureExchangeNote, getExchangeStats,districtUserActivationInvite
+  removeUserSchoolOrDistrictAccess, relinkUserSchoolAccess, createSecureExchangeStudent, removeSecureExchangeStudent, createSecureExchangeNote, removeSecureExchangeNote, getExchangeStats,districtUserActivationInvite
 } = require('../components/edx/exchange');
 
 const extendSession = utils.extendSession();
@@ -17,7 +17,7 @@ router.get('/users/user-schools/mincodes', passport.authenticate('jwt', {session
 router.get('/users/roles', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, utils.forwardGet('getUserRoles', 'server:edx:rootURL', '/users/roles'));
 router.get('/users', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, getEdxUsers);
 router.post('/users/roles', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, updateEdxUserRoles);
-router.post('/users/remove', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, removeUserSchoolAccess);
+router.post('/users/remove', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, removeUserSchoolOrDistrictAccess);
 router.post('/users/relink', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, relinkUserSchoolAccess);
 
 router.get('/users/activation-code/primary/:instituteType/:instituteIdentifier', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, findPrimaryEdxActivationCode);

@@ -281,7 +281,7 @@ export default {
         const userSchool = userToRemove.edxUserSchools.find(school => school.schoolID === this.instituteCode);
         payload.params.userSchoolID = userSchool.edxUserSchoolID;
       } else {
-        const userDistrict = userToRemove.edxUserDistricts.find(district => district.districtId === this.instituteCode);
+        const userDistrict = userToRemove.edxUserDistricts.find(district => district.districtID === this.instituteCode);
         payload.params.districtID = this.instituteCode;
         payload.params.edxUserDistrictID = userDistrict.edxUserDistrictID;
       }

@@ -667,7 +667,7 @@ async function removeDocumentFromExchange(req, res){
   }
 }
 
-async function removeUserSchoolAccess(req, res) {
+async function removeUserSchoolOrDistrictAccess(req, res) {
   try {
     const token = utils.getBackendToken(req);
 
@@ -678,10 +678,15 @@ async function removeUserSchoolAccess(req, res) {
       });
     }
 
-    await utils.deleteData(token, config.get('server:edx:edxUsersURL') + `/${req.body.params.userToRemove}` + '/school' + `/${req.body.params.userSchoolID}`);
+    if(req.body.params.userSchoolID){
+      await utils.deleteData(token, config.get('server:edx:edxUsersURL') + `/${req.body.params.userToRemove}` + '/school' + `/${req.body.params.userSchoolID}`);
+    } else {
+      await utils.deleteData(token, config.get('server:edx:edxUsersURL') + `/${req.body.params.userToRemove}` + '/district' + `/${req.body.params.edxUserDistrictID}`);
+    }
+
     return res.status(HttpStatus.OK).json('');
   } catch (e) {
-    log.error(e, 'removeUserSchoolAccess', 'Error occurred while attempting to remove user school access.');
+    log.error(e, 'removeUserSchoolOrDistrictAccess', 'Error occurred while attempting to remove user school or district access.');
     return errorResponse(res);
   }
 }
@@ -877,7 +882,7 @@ async function getExchangeStats(req, res) {
 
     let ministryTeamCodeResponse = await getCodeTable(token, CACHE_KEYS.EDX_MINISTRY_TEAMS, config.get('server:edx:ministryTeamURL'));
 
-    let ministryTeam = ministryTeamCodeResponse.find(ministryTeam => ministryTeam['groupRoleIdentifier'] === req.params.teamRole);
+    let ministryTeam = ministryTeamCodeResponse.find(minTeam => minTeam['groupRoleIdentifier'] === req.params.teamRole);
     if (!ministryTeam) {
       await logError('getExchangeStats','Error occurred while getting secure exchange statistics. Ministry team not found');
       return errorResponse(res, 'Team not found for statistics', HttpStatus.NOT_FOUND);
@@ -947,7 +952,7 @@ module.exports = {
   markAsClosed,
   claimExchange,
   removeDocumentFromExchange,
-  removeUserSchoolAccess,
+  removeUserSchoolOrDistrictAccess,
   relinkUserSchoolAccess,
   createSecureExchangeStudent,
   removeSecureExchangeStudent,
