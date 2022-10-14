@@ -7,7 +7,6 @@ const { getDistricts, getSchools, getSchoolsPaginated, getAuthorities, getAuthor
 const utils = require('../components/utils');
 const auth = require('../components/auth');
 const extendSession = utils.extendSession();
-const isValidSchoolAdmin = auth.isValidSchoolIndependentOffshoreAdmin || auth.isValidSchoolAdmin;
 
 router.get('/districts', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getDistricts);
 
@@ -15,7 +14,7 @@ router.get('/districts/:districtId', passport.authenticate('jwt', {session: fals
 
 router.get('/school', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getSchools);
 
-router.post('/school/note', passport.authenticate('jwt', {session: false}, undefined), isValidSchoolAdmin, extendSession, addNewSchoolNote);
+router.post('/school/note', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, addNewSchoolNote);
 
 router.get('/school/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getSchoolByID);
 
