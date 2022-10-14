@@ -39,6 +39,7 @@ function generateSchoolObject(school) {
     schoolID: school.schoolId,
     mincode: school.mincode,
     schoolName: school.displayName,
+    schoolCategoryCode: school.schoolCategoryCode,
     effectiveDate: school.openedDate,
     expiryDate: school.closedDate,
   };

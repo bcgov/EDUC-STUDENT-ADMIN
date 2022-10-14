@@ -5,6 +5,7 @@ const cacheService = require('../cache-service');
 const {FILTER_OPERATION, VALUE_TYPE, CONDITION} = require('../../util/constants');
 const config = require('../../config');
 const {LocalDateTime} = require('@js-joda/core');
+const utils = require('../utils');
 
 async function getCachedDistricts(req, res) {
   try {
@@ -86,6 +87,36 @@ async function getCachedSchoolBySchoolID(req, res) {
     logApiError(e, 'getCachedSchoolBySchoolID', 'Error occurred while attempting to GET School entity.');
     return errorResponse(res);
   }
+}
+
+async function addNewSchoolNote(req, res) {
+  try {
+    const token = getBackendToken(req);
+
+    let school = cacheService.getSchoolBySchoolID(req.body.schoolID);
+    if(!school || !hasSchoolAdminRole(req, school)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+
+    const params = {
+      content: req.body.noteContent,
+      schoolId: req.body.schoolID
+    };
+    const result = await utils.postData(token, config.get('server:institute:instituteSchoolURL') + '/' + req.body.schoolID + '/note', params, null, utils.getUser(req).idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'addNewSchoolNote', 'Error occurred while attempting to add a new school note.');
+    return errorResponse(res);
+  }
+}
+
+function hasSchoolAdminRole(req, school){
+  if(school.schoolCategoryCode === 'OFFSHORE' || school.schoolCategoryCode === 'INDEPEND'){
+    return req.session.roles.includes('SCHOOL_ADMIN') || req.session.roles.includes('SCHOOL_INDEPENDENT_OFFSHORE_ADMIN');
+  }
+  return req.session.roles.includes('SCHOOL_ADMIN');
 }
 
 async function getSchoolByID(req, res) {
@@ -295,5 +326,6 @@ module.exports = {
   getCachedSchools,
   getCachedSchoolBySchoolID,
   getCachedAuthorityByAuthorityID,
-  getCachedAuthorities
+  getCachedAuthorities,
+  addNewSchoolNote
 };
