@@ -253,7 +253,7 @@ export default {
       ],
       emailRules: [
         v => !!v || 'E-mail is required',
-        v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+        v => /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(v) || 'E-mail must be valid',
       ],
       phNumRules: [
         v => !!v || 'Phone Number is required',
