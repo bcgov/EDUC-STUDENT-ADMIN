@@ -267,12 +267,12 @@
                 <h2>Ministry Notes</h2>
               </v-col>
               <v-col class="d-flex justify-end">
-                <PrimaryButton width="9em" icon="mdi-plus" icon-left text="New Note" :disabled="canCreateNewNote()" @click.native="newNoteSheet = !newNoteSheet"></PrimaryButton>
+                <PrimaryButton id="addNewNoteButton" width="9em" icon="mdi-plus" icon-left text="New Note" :disabled="canCreateNewNote()" @click.native="newNoteSheet = !newNoteSheet"></PrimaryButton>
               </v-col>
             </v-row>
             <v-row>
               <v-col class="d-flex justify-start">
-                <v-timeline dense v-if="school.notes.length > 0">
+                <v-timeline id="schoolNotesTimeline" dense v-if="school.notes.length > 0">
                   <div v-for="(activity) in school.notes"
                        :key="activity.noteId">
                     <v-timeline-item right icon="mdi-message-bulleted" icon-color="#003366" large color="white" >
@@ -287,7 +287,7 @@
                     </v-timeline-item>
                   </div>
                 </v-timeline>
-                <v-timeline dense v-else>
+                <v-timeline id="schoolNotesTimeline" dense v-else>
                   <v-timeline-item right icon="mdi-message-bulleted" icon-color="#003366" large color="white" >
                     <v-card width="40em">
                       <v-card-text class="activityContent">No notes have been recorded for this school</v-card-text>
@@ -310,6 +310,7 @@
     >
       <v-card
         v-if="newNoteSheet"
+        id="newNoteSheet"
         class="information-window-v-card">
         <v-card-title class="sheetHeader pt-1 pb-1">New Note</v-card-title>
         <v-divider></v-divider>
