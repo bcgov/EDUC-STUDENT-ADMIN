@@ -260,13 +260,13 @@ export default {
         v => /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(v) || 'Phone Number must be valid',
       ],
       phNumExtRules: [
-        v => /^[0-9]+$/.test(v) || 'Phone Extension must be valid',
+        v => /^\d+$/.test(v) || 'Phone Extension must be valid',
       ],
       altPhNumRules: [
         v => /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(v) || 'Alternate Phone Number must be valid',
       ],
       altPhNumExtRules: [
-        v => /^[0-9]+$/.test(v) || 'Phone Extension must be valid',
+        v => /^\d+$/.test(v) || 'Phone Extension must be valid',
       ],
       startDateRules: [
         v => !!v || 'Start Date is required',
