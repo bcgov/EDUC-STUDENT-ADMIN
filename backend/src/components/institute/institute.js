@@ -112,6 +112,26 @@ async function addNewSchoolNote(req, res) {
   }
 }
 
+async function editSchoolContact(req, res) {
+  try {
+    const token = getBackendToken(req);
+
+    let school = cacheService.getSchoolBySchoolID(req.body.schoolID);
+    if(!school || !hasSchoolAdminRole(req, school)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+
+    const params = req.body;
+    const result = await utils.putData(token, config.get('server:institute:instituteSchoolURL') + '/' + req.body.schoolId + '/contact/'+ req.body.schoolContactId , params, utils.getUser(req).idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'editSchoolContact', 'Error occurred while attempting to edit a school contact.');
+    return errorResponse(res);
+  }
+}
+
 function hasSchoolAdminRole(req, school){
   if(school.schoolCategoryCode === 'OFFSHORE' || school.schoolCategoryCode === 'INDEPEND'){
     return req.session.roles.includes('SCHOOL_ADMIN') || req.session.roles.includes('SCHOOL_INDEPENDENT_OFFSHORE_ADMIN');
@@ -327,5 +347,6 @@ module.exports = {
   getCachedSchoolBySchoolID,
   getCachedAuthorityByAuthorityID,
   getCachedAuthorities,
-  addNewSchoolNote
+  addNewSchoolNote,
+  editSchoolContact
 };

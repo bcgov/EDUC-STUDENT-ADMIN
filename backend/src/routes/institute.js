@@ -2,7 +2,7 @@ const passport = require('passport');
 const express = require('express');
 const router = express.Router();
 const { getDistricts, getSchools, getSchoolsPaginated, getAuthorities, getAuthoritiesPaginated,
-  getAuthorityByID, getSchoolByID, getDistrictByDistrictID, addNewSchoolNote
+  getAuthorityByID, getSchoolByID, getDistrictByDistrictID, addNewSchoolNote, editSchoolContact
 } = require('../components/institute/institute');
 const utils = require('../components/utils');
 const auth = require('../components/auth');
@@ -15,6 +15,8 @@ router.get('/districts/:districtId', passport.authenticate('jwt', {session: fals
 router.get('/school', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getSchools);
 
 router.post('/school/note', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, addNewSchoolNote);
+
+router.post('/school/contact', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, editSchoolContact);
 
 router.get('/school/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getSchoolByID);
 
