@@ -1,114 +1,117 @@
 <template>
   <v-container class="containerSetup" fluid>
-    <v-row>
-      <v-col class="mt-1 d-flex justify-start">
-        <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
-        <a class="ml-1" @click="backButtonClick">Return to Dashboard</a>
-      </v-col>
-    </v-row>
-    <v-row style="background: rgb(235, 237, 239);border-radius: 8px;" class="px-3 elevation-2">
-      <v-col>
-        <v-row>
-          <v-col cols="5" class="d-flex justify-start">
-            <v-autocomplete
-              id="authority-text-field"
-              label="Authority Code & Name"
-              item-value="authorityID"
-              item-text="authorityCodeName"
-              :items="authoritySearchNames"
-              v-model="authorityCodeNameFilter"
-              clearable>
-            </v-autocomplete>
-          </v-col>
-          <v-col class="d-flex justify-start">
-            <v-select id="status-select-field" clearable :items="authorityStatus" v-model="authorityStatusFilter" item-text="name"
-                      item-value="code" label="Status"></v-select>
-          </v-col>
-          <v-col class="d-flex justify-start">
-            <v-select
-              id="authoritytype-select-field"
-              clearable
-              :items="authorityTypes"
-              v-model="authorityTypeFilter"
-              item-text="label"
-              item-value="authorityTypeCode" label="Authority Type"></v-select>
-          </v-col>
-          <v-col class="d-flex justify-end mt-6">
-            <PrimaryButton id="user-clear-button" text="Clear" secondary @click.native="clearButtonClick"/>
-            <PrimaryButton class="ml-3"  id="user-search-button" text="Search" @click.native="searchButtonClick"
-                           :disabled="!searchEnabled()"/>
-          </v-col>
-        </v-row>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col class="px-0">
-        <v-data-table
-            :items-per-page.sync="pageSize"
-            :page.sync="pageNumber"
-            :headers="headers"
-            :footer-props="{
-                  'items-per-page-options': itemsPerPageOptions
-                }"
-            :items="authorities"
-            :loading="loadingTable"
-            :server-items-length="totalAuthorities"
-            class="elevation-2"
-            hide-default-header
-            mobile-breakpoint="0"
-        >
+    <Spinner flat v-if="loadingAuthorities" />
+    <div v-else>
+      <v-row>
+        <v-col class="mt-1 d-flex justify-start">
+          <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
+          <a class="ml-1" @click="backButtonClick">Return to Dashboard</a>
+        </v-col>
+      </v-row>
+      <v-row style="background: rgb(235, 237, 239);border-radius: 8px;" class="px-3 elevation-2">
+        <v-col>
+          <v-row>
+            <v-col cols="5" class="d-flex justify-start">
+              <v-autocomplete
+                id="authority-text-field"
+                label="Authority Code & Name"
+                item-value="authorityID"
+                item-text="authorityCodeName"
+                :items="authoritySearchNames"
+                v-model="authorityCodeNameFilter"
+                clearable>
+              </v-autocomplete>
+            </v-col>
+            <v-col class="d-flex justify-start">
+              <v-select id="status-select-field" clearable :items="authorityStatus" v-model="authorityStatusFilter" item-text="name"
+                        item-value="code" label="Status"></v-select>
+            </v-col>
+            <v-col class="d-flex justify-start">
+              <v-select
+                id="authoritytype-select-field"
+                clearable
+                :items="authorityTypes"
+                v-model="authorityTypeFilter"
+                item-text="label"
+                item-value="authorityTypeCode" label="Authority Type"></v-select>
+            </v-col>
+            <v-col class="d-flex justify-end mt-6">
+              <PrimaryButton id="user-clear-button" text="Clear" secondary @click.native="clearButtonClick"/>
+              <PrimaryButton class="ml-3"  id="user-search-button" text="Search" @click.native="searchButtonClick"
+                             :disabled="!searchEnabled()"/>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col class="px-0">
+          <v-data-table
+              :items-per-page.sync="pageSize"
+              :page.sync="pageNumber"
+              :headers="headers"
+              :footer-props="{
+                    'items-per-page-options': itemsPerPageOptions
+                  }"
+              :items="authorities"
+              :loading="loadingTable"
+              :server-items-length="totalAuthorities"
+              class="elevation-2"
+              hide-default-header
+              mobile-breakpoint="0"
+          >
 
-          <template v-slot:item.secureExchangeStatusCode="{ item }">
-              <v-row id="authorityDetailsSelect" style="cursor: pointer;" @click="openAuthority(item.independentAuthorityId)">
-                <v-col cols="7" class="pb-0 pt-0">
-                  <v-row class="mb-n4">
-                    <v-col class="pb-2 pt-2 pr-0">
-                      <span class="subjectHeading">{{ item.authorityNumber }} - {{ item.displayName }}</span>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col class="pb-2 pt-2 pr-0">
-                      <span class="ministryLine" style="color: black">{{ item.type }}</span>
-                    </v-col>
-                  </v-row>
-                </v-col>
-                <v-col class="d-flex justify-start mt-1">
-                  <v-icon class="ml-0 pb-1" :color="getStatusColorAuthorityOrSchool(item.status)" right dark>
-                    mdi-circle-medium
-                  </v-icon>
-                  <span class="ml-0 statusCodeLabel" style="margin-top: 0.2em">{{ item.status }}</span>
-                </v-col>
-                <v-col cols="2" class="d-flex justify-start mt-1">
-                  <v-icon class="mb-1" aria-hidden="false">
-                    mdi-phone-outline
-                  </v-icon>
-                  <span class="statusCodeLabel" style="margin-top: 0.2em"> {{ formatPhoneNumber(item.phoneNumber) }}</span>
-                </v-col>
-                <v-col class="d-flex justify-end">
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-btn id="authorityContacts"
-                             color="#003366"
-                             outlined
-                             @click.native.stop="openAuthorityContacts(item.independentAuthorityId)"
-                             class="mt-0 pt-0 filterButton ml-2"
-                             style="text-transform: initial"
-                             v-on="on"
-                      >
-                        <v-icon color="#003366" style="margin-top: 0.07em" dark>mdi-account-multiple-outline</v-icon>
-                      </v-btn>
-                    </template>
-                    <span>View Contacts</span>
-                  </v-tooltip>
-                </v-col>
-              </v-row>
-          </template>
+            <template v-slot:item.secureExchangeStatusCode="{ item }">
+                <v-row id="authorityDetailsSelect" style="cursor: pointer;" @click="openAuthority(item.independentAuthorityId)">
+                  <v-col cols="7" class="pb-0 pt-0">
+                    <v-row class="mb-n4">
+                      <v-col class="pb-2 pt-2 pr-0">
+                        <span class="subjectHeading">{{ item.authorityNumber }} - {{ item.displayName }}</span>
+                      </v-col>
+                    </v-row>
+                    <v-row>
+                      <v-col class="pb-2 pt-2 pr-0">
+                        <span class="ministryLine" style="color: black">{{ item.type }}</span>
+                      </v-col>
+                    </v-row>
+                  </v-col>
+                  <v-col class="d-flex justify-start mt-1">
+                    <v-icon class="ml-0 pb-1" :color="getStatusColorAuthorityOrSchool(item.status)" right dark>
+                      mdi-circle-medium
+                    </v-icon>
+                    <span class="ml-0 statusCodeLabel" style="margin-top: 0.2em">{{ item.status }}</span>
+                  </v-col>
+                  <v-col cols="2" class="d-flex justify-start mt-1">
+                    <v-icon class="mb-1" aria-hidden="false">
+                      mdi-phone-outline
+                    </v-icon>
+                    <span class="statusCodeLabel" style="margin-top: 0.2em"> {{ formatPhoneNumber(item.phoneNumber) }}</span>
+                  </v-col>
+                  <v-col class="d-flex justify-end">
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn id="authorityContacts"
+                               color="#003366"
+                               outlined
+                               @click.native.stop="openAuthorityContacts(item.independentAuthorityId)"
+                               class="mt-0 pt-0 filterButton ml-2"
+                               style="text-transform: initial"
+                               v-on="on"
+                        >
+                          <v-icon color="#003366" style="margin-top: 0.07em" dark>mdi-account-multiple-outline</v-icon>
+                        </v-btn>
+                      </template>
+                      <span>View Contacts</span>
+                    </v-tooltip>
+                  </v-col>
+                </v-row>
+            </template>
 
-          <template v-slot:no-data>There are no authorities.</template>
+            <template v-slot:no-data>There are no authorities.</template>
 
-        </v-data-table>
-      </v-col>
-    </v-row>
+          </v-data-table>
+        </v-col>
+      </v-row>
+    </div>
   </v-container>
 </template>
 
@@ -117,6 +120,7 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton';
+import Spinner from '@/components/common/Spinner';
 import {mapGetters, mapState} from 'vuex';
 import {isEmpty, omitBy} from 'lodash';
 import alertMixin from '@/mixins/alertMixin';
@@ -128,7 +132,7 @@ export default {
   name: 'AuthoritiesListPage',
   mixins: [alertMixin],
   components: {
-    PrimaryButton,
+    PrimaryButton, Spinner
   },
   data() {
     return {
@@ -164,7 +168,8 @@ export default {
       authorityCodeNameFilter: '',
       authorityStatusFilter: '',
       authorityTypeFilter: '',
-      authorityTypes: []
+      authorityTypes: [],
+      loadingAuthorities: true
     };
   },
   computed: {
@@ -195,6 +200,7 @@ export default {
       this.authorityStatus = [{name: 'Open', code: 'Open'}, {name: 'Closing', code: 'Closing'}, {name: 'Closed', code: 'Closed'}];
     },
     getAuthorityDropDownItems(){
+      this.loadingAuthorities = true;
       ApiService.getAuthorities().then((response) => {
         let authorityList = response.data;
         for(const authority of authorityList){
@@ -213,8 +219,10 @@ export default {
           return 0;
         });
       }).catch(error => {
-        //to do add the alert framework for error or success
+        this.setFailureAlert('An error occurred while getting authorities. Please try again later.');
         console.error(error);
+      }).finally(() => {
+        this.loadingAuthorities = false;
       });
     },
     getAuthorityList() {
