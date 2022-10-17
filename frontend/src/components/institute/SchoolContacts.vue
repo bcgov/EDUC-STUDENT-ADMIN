@@ -368,7 +368,6 @@ export default {
           this.schoolContacts = new Map();
           this.school = response.data;
           response.data.contacts.forEach(contact => {
-            console.log(contact);
             if (!isExpired(contact.expiryDate)) {
               if (!this.schoolContacts.has(contact.schoolContactTypeCode)) {
                 this.schoolContacts.set(contact.schoolContactTypeCode, [contact]);
