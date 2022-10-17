@@ -96,6 +96,7 @@ let object = {
     ROOT_ENDPOINT: instituteRoot,
     SCHOOL_DATA_URL: instituteRoot + '/school',
     SCHOOL_NOTE_URL: instituteRoot + '/school/note',
+    SCHOOL_CONTACT_URL: instituteRoot + '/school/contact',
     SCHOOL_PAGINATED_DATA_URL: instituteRoot + '/schoolsPaginated',
     DISTRICT_DATA_URL: instituteRoot + '/districts',
     AUTHORITY_DATA_URL: instituteRoot + '/authorities',
