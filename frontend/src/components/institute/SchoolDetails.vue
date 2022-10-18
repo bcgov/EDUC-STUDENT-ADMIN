@@ -523,10 +523,13 @@ export default {
         }
       }
     },
-    getGradesOffered(rawGrades){
+    getGradesOffered(rawGrades) {
       let gradeList = [];
-      for(const grade of rawGrades){
-        gradeList.push(this.schoolGradeTypes.find((facility) => facility.schoolGradeCode === grade.schoolGradeCode).label.replaceAll('Grade ', ''));
+      for (const grade of rawGrades) {
+        let schoolGradeType = this.schoolGradeTypes.find((facility) => facility.schoolGradeCode === grade.schoolGradeCode);
+        if (schoolGradeType) {
+          gradeList.push(schoolGradeType.label.replaceAll('Grade ', ''));
+        }
       }
       let onlyNumbers = gradeList.filter(Number);
       let onlyLetters = gradeList.filter(x => !onlyNumbers.includes(x));
@@ -535,22 +538,25 @@ export default {
       gradeList = onlyNumbers.concat(onlyLetters);
       return gradeList.toString().replace(/,/g, ', ');
     },
-    getSchoolOrganization(school){
-      return this.schoolOrganizationTypes.find((facility) => facility.schoolOrganizationCode === school.schoolOrganizationCode).label;
+    getSchoolOrganization(school) {
+      return this.schoolOrganizationTypes.find((facility) => facility.schoolOrganizationCode === school.schoolOrganizationCode)?.label;
     },
-    getNLCActivity(school){
+    getNLCActivity(school) {
       let nLCActivityList = [];
-      for(const nl of school.neighborhoodLearning){
-        nLCActivityList.push(this.schoolNeighborhoodLearningTypes.find((facility) => facility.neighborhoodLearningTypeCode === nl.neighborhoodLearningTypeCode).label);
+      for (const nl of school.neighborhoodLearning) {
+        let schoolNeighborhoodLearningType = this.schoolNeighborhoodLearningTypes.find((facility) => facility.neighborhoodLearningTypeCode === nl.neighborhoodLearningTypeCode);
+        if (schoolNeighborhoodLearningType) {
+          nLCActivityList.push(schoolNeighborhoodLearningType.label);
+        }
       }
       nLCActivityList.sort();
       return nLCActivityList.toString().replace(/,/g, ', ');
     },
-    getFacilityType(school){
-      return this.schoolFacilityTypes.find((facility) => facility.facilityTypeCode === school.facilityTypeCode).label;
+    getFacilityType(school) {
+      return this.schoolFacilityTypes.find((facility) => facility.facilityTypeCode === school.facilityTypeCode)?.label;
     },
-    getSchoolCategory(school){
-      return this.schoolCategoryTypeCodes.find((category) => category.schoolCategoryCode === school.schoolCategoryCode).label;
+    getSchoolCategory(school) {
+      return this.schoolCategoryTypeCodes.find((category) => category.schoolCategoryCode === school.schoolCategoryCode)?.label;
     },
     getStatusColorAuthorityOrSchool,
     formatDate,
