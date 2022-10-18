@@ -333,7 +333,7 @@
           </v-row>
           <v-row class="py-4 pr-2 justify-end">
             <PrimaryButton id="cancelNote" secondary text="Cancel" class="mr-2" @click.native="newNoteSheet = !newNoteSheet"></PrimaryButton>
-            <PrimaryButton id="saveNote" text="Save" width="7rem" :loading="loading" @click.native="saveNewSchoolNote"></PrimaryButton>
+            <PrimaryButton id="saveNote" text="Save" width="7rem" :loading="loading" @click.native="saveNewSchoolNote" :disabled="newNoteText === ''"></PrimaryButton>
           </v-row>
         </v-card-text>
       </v-card>
