@@ -108,31 +108,31 @@
                   <v-col>
                     <v-row>
                       <v-col>
-                        <v-text-field v-model="contactEdit.firstName" :rules="firstNameRules" label="First Name" type="text" validate-on-blur required></v-text-field>
+                        <v-text-field id="contactEditFirstName" v-model="contactEdit.firstName" :rules="firstNameRules" label="First Name" type="text" validate-on-blur required></v-text-field>
                       </v-col>
                       <v-col>
-                        <v-text-field v-model="contactEdit.lastName" :rules="lastNameRules" label="Last Name" type="text" validate-on-blur required></v-text-field>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col>
-                        <v-text-field v-model="contactEdit.email" :rules="emailRules" label="Email" type="text" validate-on-blur required></v-text-field>
+                        <v-text-field id="contactEditLastName" v-model="contactEdit.lastName" :rules="lastNameRules" label="Last Name" type="text" validate-on-blur required></v-text-field>
                       </v-col>
                     </v-row>
                     <v-row>
                       <v-col>
-                       <v-text-field v-model="contactEdit.phoneNumber" :rules="phNumRules" label="Phone" type="text" validate-on-blur required></v-text-field>
-                      </v-col>
-                      <v-col>
-                        <v-text-field v-model="contactEdit.phoneExtension" :rules="phNumExtRules" label="Ext" type="text" validate-on-blur></v-text-field>
+                        <v-text-field id="contactEditEmail" v-model="contactEdit.email" :rules="emailRules" label="Email" type="text" validate-on-blur required></v-text-field>
                       </v-col>
                     </v-row>
                     <v-row>
                       <v-col>
-                       <v-text-field v-model="contactEdit.alternatePhoneNumber" :rules="altPhNumRules" label="Alternative Phone" type="text" validate-on-blur></v-text-field>
+                       <v-text-field id="contactEditPhoneNumber" v-model="contactEdit.phoneNumber" :rules="phNumRules" label="Phone" type="text" validate-on-blur required></v-text-field>
                       </v-col>
                       <v-col>
-                        <v-text-field v-model="contactEdit.alternatePhoneExtension" :rules="altPhNumExtRules" label="Alternative Ext" type="text" validate-on-blur></v-text-field>
+                        <v-text-field id="contactEditPhoneExt" v-model="contactEdit.phoneExtension" :rules="phNumExtRules" label="Ext" type="text" validate-on-blur></v-text-field>
+                      </v-col>
+                    </v-row>
+                    <v-row>
+                      <v-col>
+                       <v-text-field id="contactEditAltPhoneNumber" v-model="contactEdit.alternatePhoneNumber" :rules="altPhNumRules" label="Alternative Phone" type="text" validate-on-blur></v-text-field>
+                      </v-col>
+                      <v-col>
+                        <v-text-field id="contactEditAltPhoneExt" v-model="contactEdit.alternatePhoneExtension" :rules="altPhNumExtRules" label="Alternative Ext" type="text" validate-on-blur></v-text-field>
                       </v-col>
                     </v-row>
                     <v-row>
@@ -141,6 +141,7 @@
                             offset-y max-width="290px" min-width="auto">
                           <template v-slot:activator="{ on, attrs }">
                             <v-text-field
+                                id="contactEditStartDate"
                                 v-model="computedEffDateFormatted"
                                 label="Start Date"
                                 hint="YYYY/MM/DD format"
@@ -164,6 +165,7 @@
                                 offset-y max-width="290px" min-width="auto">
                           <template v-slot:activator="{ on, attrs }">
                             <v-text-field
+                                id="contactEditEndDate"
                                 v-model="computedExpDateFormatted"
                                 label="End Date"
                                 hint="YYYY/MM/DD format"
