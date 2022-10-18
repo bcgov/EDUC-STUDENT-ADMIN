@@ -97,8 +97,7 @@
               <v-card v-show="expandEdit">
                 <v-form
                   ref="editContactForm"
-                  v-model="ecFormValid"
-                  lazy-validation>
+                  v-model="ecFormValid">
                   <v-row no-gutters class="justify-end mt-n2 pr-2 pt-2">
                     <v-col cols="12" class="d-flex justify-end">
                       <PrimaryButton class="mr-3" id="cancelEditButton" :secondary="true" @click.native="cancelSchoolContactEdit"
@@ -109,31 +108,31 @@
                   <v-col>
                     <v-row>
                       <v-col>
-                        <v-text-field v-model="contactEdit.firstName" :rules="firstNameRules" label="First Name" type="text" required></v-text-field>
+                        <v-text-field v-model="contactEdit.firstName" :rules="firstNameRules" label="First Name" type="text" validate-on-blur required></v-text-field>
                       </v-col>
                       <v-col>
-                        <v-text-field v-model="contactEdit.lastName" :rules="lastNameRules" label="Last Name" type="text" required></v-text-field>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col>
-                        <v-text-field v-model="contactEdit.email" :rules="emailRules" label="Email" type="text" required></v-text-field>
+                        <v-text-field v-model="contactEdit.lastName" :rules="lastNameRules" label="Last Name" type="text" validate-on-blur required></v-text-field>
                       </v-col>
                     </v-row>
                     <v-row>
                       <v-col>
-                       <v-text-field v-model="contactEdit.phoneNumber" :rules="phNumRules" label="Phone" type="text" required></v-text-field>
-                      </v-col>
-                      <v-col>
-                        <v-text-field v-model="contactEdit.phoneExtension" :rules="phNumExtRules" label="Ext" type="text"></v-text-field>
+                        <v-text-field v-model="contactEdit.email" :rules="emailRules" label="Email" type="text" validate-on-blur required></v-text-field>
                       </v-col>
                     </v-row>
                     <v-row>
                       <v-col>
-                       <v-text-field v-model="contactEdit.alternatePhoneNumber" :rules="altPhNumRules" label="Alternative Phone" type="text"></v-text-field>
+                       <v-text-field v-model="contactEdit.phoneNumber" :rules="phNumRules" label="Phone" type="text" validate-on-blur required></v-text-field>
                       </v-col>
                       <v-col>
-                        <v-text-field v-model="contactEdit.alternatePhoneExtension" :rules="altPhNumExtRules" label="Alternative Ext" type="text"></v-text-field>
+                        <v-text-field v-model="contactEdit.phoneExtension" :rules="phNumExtRules" label="Ext" type="text" validate-on-blur></v-text-field>
+                      </v-col>
+                    </v-row>
+                    <v-row>
+                      <v-col>
+                       <v-text-field v-model="contactEdit.alternatePhoneNumber" :rules="altPhNumRules" label="Alternative Phone" type="text" validate-on-blur></v-text-field>
+                      </v-col>
+                      <v-col>
+                        <v-text-field v-model="contactEdit.alternatePhoneExtension" :rules="altPhNumExtRules" label="Alternative Ext" type="text" validate-on-blur></v-text-field>
                       </v-col>
                     </v-row>
                     <v-row>
@@ -228,7 +227,7 @@ export default {
       school: {},
       expandEdit: false,
       saveEnabled: true,
-      ecFormValid: true,
+      ecFormValid: false,
       effDateMenu: false,
       expDateMenu: false,
       contactEdit: {
@@ -245,11 +244,11 @@ export default {
       contactOG: '',
       firstNameRules: [
         v => !!v || 'First Name is required',
-        v => (v && v.length <= 15) || 'First Name must be less than 10'
+        v => (v && v.length <= 255) || 'First Name must be less than 255'
       ],
       lastNameRules: [
         v => !!v || 'Last Name is required',
-        v => (v && v.length <= 15) || 'Last Name must be less than 10'
+        v => (v && v.length <= 255) || 'Last Name must be less than 255'
       ],
       emailRules: [
         v => !!v || 'E-mail is required',
@@ -257,16 +256,18 @@ export default {
       ],
       phNumRules: [
         v => !!v || 'Phone Number is required',
+        v => (v && v.length <= 10) || 'Phone Number must be 10 digits',
         v => /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(v) || 'Phone Number must be valid',
       ],
       phNumExtRules: [
-        v => /^\d+$/.test(v) || 'Phone Extension must be valid',
+        v => !v || /^\d+$/.test(v) || 'Phone Extension must be valid',
       ],
       altPhNumRules: [
-        v => /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(v) || 'Alternate Phone Number must be valid',
+        v => !v || (v && v.length <= 10) || 'Alternate Phone Number must be 10 digits',
+        v => !v || /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(v) || 'Alternate Phone Number must be valid',
       ],
       altPhNumExtRules: [
-        v => /^\d+$/.test(v) || 'Phone Extension must be valid',
+        v => !v || /^\d+$/.test(v) || 'Phone Extension must be valid',
       ],
       startDateRules: [
         v => !!v || 'Start Date is required',
@@ -306,8 +307,9 @@ export default {
       contact.createDate = null;
       contact.updateDate = null;
       contact.updateUser = this.userInfo.userName;
-
-      contact.effectiveDate = contact.effectiveDate + 'T00:00:00';
+      if(contact.effectiveDate.length <= 10) {
+        contact.effectiveDate = contact.effectiveDate + 'T00:00:00';
+      }
       if (contact.expiryDate !== null && contact.expiryDate !== '') {
         contact.expiryDate = contact.expiryDate + 'T00:00:00';
       }

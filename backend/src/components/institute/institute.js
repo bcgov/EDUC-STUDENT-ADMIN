@@ -116,7 +116,7 @@ async function editSchoolContact(req, res) {
   try {
     const token = getBackendToken(req);
 
-    let school = cacheService.getSchoolBySchoolID(req.body.schoolID);
+    let school = cacheService.getSchoolBySchoolID(req.body.schoolId);
     if(!school || !hasSchoolAdminRole(req, school)){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'You do not have the required access for this function'
