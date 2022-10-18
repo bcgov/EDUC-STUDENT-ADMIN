@@ -141,7 +141,7 @@
                             offset-y max-width="290px" min-width="auto">
                           <template v-slot:activator="{ on, attrs }">
                             <v-text-field
-                                id=""
+                                id="contactEditStartDate"
                                 v-model="computedEffDateFormatted"
                                 label="Start Date"
                                 hint="YYYY/MM/DD format"
@@ -165,7 +165,7 @@
                                 offset-y max-width="290px" min-width="auto">
                           <template v-slot:activator="{ on, attrs }">
                             <v-text-field
-                                id=""
+                                id="contactEditEndDate"
                                 v-model="computedExpDateFormatted"
                                 label="End Date"
                                 hint="YYYY/MM/DD format"
