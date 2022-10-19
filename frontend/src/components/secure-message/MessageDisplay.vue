@@ -322,7 +322,7 @@
                         </v-card-title>
                         <v-row no-gutters>
                           <v-card-text class="mt-n2 pt-0 pb-0" :class="{'pb-0': activity.documentType.label !== 'Other', 'pb-3': activity.documentType.label === 'Other'}">
-                            <a @click="showDocModal(activity)">
+                            <a @click="showDocModal(activity)" :class="disabledAnchorDocumentName">
                               {{ activity.fileName }}
                             </a>
                           </v-card-text>
@@ -465,7 +465,8 @@ export default {
       documentId: '',
       imageId: '',
       documentRoute: Routes.edx.EXCHANGE_URL,
-      newNote: ''
+      newNote: '',
+      disableAnchorTagDocumentName: true,
     };
   },
   computed: {
@@ -474,6 +475,9 @@ export default {
     ...mapGetters('app', ['schoolMap']),
     loading() {
       return this.loadingCount !== 0;
+    },
+    disabledAnchorDocumentName() {
+      return this.disableAnchorTagDocumentName ? 'disabled-anchor' : '';
     }
   },
   created() {
@@ -537,6 +541,9 @@ export default {
         })
         .finally(() => {
           this.loadingCount -= 1;
+          if (this.isEditable()) {
+            this.disableAnchorTagDocumentName = false;
+          }
         });
     },
     toggleIsReadByMinistry() {
@@ -807,13 +814,16 @@ export default {
         });
     },
     showDocModal(document){
-      if (this.isPdf(document)) {
-        this.documentId = document.documentID;
-        this.pdfRenderDialog = true;
-      }else {
-        this.imageId = document.documentID;
-        this.imageRendererDialog = true;
+      if(this.isEditable()){
+        if (this.isPdf(document)) {
+          this.documentId = document.documentID;
+          this.pdfRenderDialog = true;
+        }else {
+          this.imageId = document.documentID;
+          this.imageRendererDialog = true;
+        }
       }
+
     },
     isPdf(document){
       return (
@@ -942,5 +952,9 @@ export default {
 }
 .greyBackground {
   background-color: #f5f5f5;
+}
+.disabled-anchor {
+  cursor: not-allowed;
+  color: gray
 }
 </style>
