@@ -63,7 +63,7 @@
                   <v-btn id="districtContacts"
                          color="#003366"
                          outlined
-                         @click.native.stop="openAuthorityContacts(item.independentAuthorityId)"
+                         @click.native.stop="openDistrictContacts(item.districtId)"
                          class="mt-0 pt-0 filterButton ml-2"
                          style="text-transform: initial"
                          v-on="on"
@@ -195,6 +195,9 @@ export default {
     },
     openDistrict(districtId){
       this.$router.push({name: 'districtDetails', params: {districtID: districtId}});
+    },
+    openDistrictContacts(districtId){
+      this.$router.push({name: 'districtContacts', params: {districtID: districtId}});
     },
   },
 };
