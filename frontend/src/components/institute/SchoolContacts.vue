@@ -3,12 +3,12 @@
     <v-row v-if="loading">
       <v-col class="d-flex justify-center">
         <v-progress-circular
-            class="mt-16"
-            :size="70"
-            :width="7"
-            color="primary"
-            indeterminate
-            :active="loading"
+          class="mt-16"
+          :size="70"
+          :width="7"
+          color="primary"
+          indeterminate
+          :active="loading"
         ></v-progress-circular>
       </v-col>
     </v-row>
@@ -139,16 +139,16 @@
                     </v-row>
                     <v-row>
                       <v-col>
-                       <v-text-field id="contactEditPhoneNumber"
-                                     v-model="contactEdit.phoneNumber"
-                                     :rules="phNumRules"
-                                     label="Phone"
-                                     type="text"
-                                     placeholder="2501234567"
-                                     maxlength="10"
-                                     :counter="10"
-                                     @keypress="isNumber($event)"
-                                     required></v-text-field>
+                        <v-text-field id="contactEditPhoneNumber"
+                                      v-model="contactEdit.phoneNumber"
+                                      :rules="phNumRules"
+                                      label="Phone"
+                                      type="text"
+                                      placeholder="2501234567"
+                                      maxlength="10"
+                                      :counter="10"
+                                      @keypress="isNumber($event)"
+                                      required></v-text-field>
                       </v-col>
                       <v-col>
                         <v-text-field id="contactEditPhoneExt"
@@ -161,15 +161,15 @@
                     </v-row>
                     <v-row>
                       <v-col>
-                       <v-text-field id="contactEditAltPhoneNumber"
-                                     v-model="contactEdit.alternatePhoneNumber"
-                                     :rules="altPhNumRules"
-                                     label="Alternative Phone"
-                                     type="text"
-                                     placeholder="2501234567"
-                                     maxlength="10"
-                                     :counter="10"
-                                     @keypress="isNumber($event)"></v-text-field>
+                        <v-text-field id="contactEditAltPhoneNumber"
+                                      v-model="contactEdit.alternatePhoneNumber"
+                                      :rules="altPhNumRules"
+                                      label="Alternative Phone"
+                                      type="text"
+                                      placeholder="2501234567"
+                                      maxlength="10"
+                                      :counter="10"
+                                      @keypress="isNumber($event)"></v-text-field>
                       </v-col>
                       <v-col>
                         <v-text-field id="contactEditAltPhoneExt"
@@ -183,25 +183,25 @@
                     <v-row>
                       <v-col>
                         <v-menu v-model="effDateMenu" :close-on-content-click="true" transition="scale-transition"
-                            offset-y max-width="290px" min-width="auto">
+                                offset-y max-width="290px" min-width="auto">
                           <template v-slot:activator="{ on, attrs }">
                             <v-text-field
-                                id="contactEditStartDate"
-                                v-model="computedEffDateFormatted"
-                                label="Start Date"
-                                hint="YYYY/MM/DD format"
-                                persistent-hint
-                                append-icon="mdi-calendar"
-                                v-bind="attrs"
-                                v-on="on"
-                                :rules="startDateRules"
-                                required
+                              id="contactEditStartDate"
+                              v-model="computedEffDateFormatted"
+                              label="Start Date"
+                              hint="YYYY/MM/DD format"
+                              persistent-hint
+                              append-icon="mdi-calendar"
+                              v-bind="attrs"
+                              v-on="on"
+                              :rules="startDateRules"
+                              required
                             ></v-text-field>
                           </template>
                           <v-date-picker
-                              v-model="contactEdit.effectiveDate"
-                              no-title
-                              @input="effDateMenu = false"
+                            v-model="contactEdit.effectiveDate"
+                            no-title
+                            @input="effDateMenu = false"
                           ></v-date-picker>
                         </v-menu>
                       </v-col>
@@ -210,20 +210,20 @@
                                 offset-y max-width="290px" min-width="auto">
                           <template v-slot:activator="{ on, attrs }">
                             <v-text-field
-                                id="contactEditEndDate"
-                                v-model="computedExpDateFormatted"
-                                label="End Date"
-                                hint="YYYY/MM/DD format"
-                                persistent-hint
-                                append-icon="mdi-calendar"
-                                v-bind="attrs"
-                                v-on="on"
+                              id="contactEditEndDate"
+                              v-model="computedExpDateFormatted"
+                              label="End Date"
+                              hint="YYYY/MM/DD format"
+                              persistent-hint
+                              append-icon="mdi-calendar"
+                              v-bind="attrs"
+                              v-on="on"
                             ></v-text-field>
                           </template>
                           <v-date-picker
-                              v-model="contactEdit.expiryDate"
-                              no-title
-                              @input="expDateMenu = false"
+                            v-model="contactEdit.expiryDate"
+                            no-title
+                            @input="expDateMenu = false"
                           ></v-date-picker>
                         </v-menu>
                       </v-col>
@@ -402,8 +402,8 @@ export default {
           console.error(error);
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get the details of available School Contact Type Codes. Please try again later.');
         }).finally(() => {
-          this.loadingCount -= 1;
-        });
+        this.loadingCount -= 1;
+      });
     },
     getThisSchoolsContacts(){
       this.loadingCount += 1;
@@ -423,11 +423,11 @@ export default {
             }
           });
         }).catch(error => {
-          console.error(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get a list of the school\'s contacts. Please try again later.');
-        }).finally(() => {
-          this.loadingCount -= 1;
-        });
+        console.error(error);
+        this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get a list of the school\'s contacts. Please try again later.');
+      }).finally(() => {
+        this.loadingCount -= 1;
+      });
     },
     backButtonClick() {
       this.$router.push({name: 'instituteSchoolList'});
