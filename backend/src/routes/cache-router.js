@@ -31,6 +31,10 @@ router.get('/authority-types', passport.authenticate('jwt', {session: false}, un
 
 router.get('/grade-codes', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, utils.cacheMiddleware(), utils.getCodes('server:institute:rootURL', 'gradeCodes', '/grade-codes'));
 
+router.get('/province-codes', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, utils.cacheMiddleware(), utils.getCodes('server:institute:rootURL', 'provinceCodes', '/province-codes'));
+
+router.get('/country-codes', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, utils.cacheMiddleware(), utils.getCodes('server:institute:rootURL', 'countryCodes', '/country-codes'));
+
 router.get('/school-contact-types', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, utils.cacheMiddleware(), utils.getCodes('server:institute:rootURL', 'schoolContactTypeCodes', '/school-contact-type-codes'));
 
 router.get('/authority-contact-types', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, utils.cacheMiddleware(), utils.getCodes('server:institute:rootURL', 'authorityContactTypeCodes', '/authority-contact-type-codes'));

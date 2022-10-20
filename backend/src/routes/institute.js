@@ -1,8 +1,8 @@
 const passport = require('passport');
 const express = require('express');
 const router = express.Router();
-const { getDistricts, getSchools, getSchoolsPaginated, getAuthorities, getAuthoritiesPaginated,
-  getAuthorityByID, getSchoolByID, getDistrictByDistrictID, addNewSchoolNote, editSchoolContact
+const { getDistricts, getSchools, getSchoolsPaginated, getAuthoritiesPaginated,
+  getAuthorityByID, getSchoolByID, getDistrictByDistrictID, addNewSchoolNote, updateSchoolContact, updateAuthority
 } = require('../components/institute/institute');
 const utils = require('../components/utils');
 const auth = require('../components/auth');
@@ -16,7 +16,7 @@ router.get('/school', passport.authenticate('jwt', {session: false}, undefined),
 
 router.post('/school/note', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, addNewSchoolNote);
 
-router.post('/school/contact', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, editSchoolContact);
+router.post('/school/contact', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, updateSchoolContact);
 
 router.get('/school/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getSchoolByID);
 
@@ -24,7 +24,7 @@ router.get('/schoolsPaginated', passport.authenticate('jwt', {session: false}, u
 
 router.get('/authoritiesPaginated', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getAuthoritiesPaginated);
 
-router.get('/authorities', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getAuthorities);
+router.post('/authority/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, updateAuthority);
 
 router.get('/authority/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getAuthorityByID);
 
