@@ -100,5 +100,7 @@ export default {
   getSchoolNeighborhoodLearningCodes: getCodes(Routes.cache.SCHOOL_NEIGHBORHOOD_LEARNING_TYPES_URL),
   getAuthorityTypeCodes: getCodes(Routes.cache.AUTHORITY_TYPES_URL),
   getInstituteGradeCodes: getCodes(Routes.cache.GRADE_TYPES_URL),
+  getInstituteProvinceCodes: getCodes(Routes.cache.PROVINCES_URL),
+  getInstituteCountryCodes: getCodes(Routes.cache.COUNTRIES_URL),
   getSchoolApiMincodeSchoolNames: getCodes(Routes.SCHOOL_DATA_URL),
 };

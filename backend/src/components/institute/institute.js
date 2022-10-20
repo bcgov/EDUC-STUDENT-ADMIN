@@ -112,7 +112,7 @@ async function addNewSchoolNote(req, res) {
   }
 }
 
-async function editSchoolContact(req, res) {
+async function updateSchoolContact(req, res) {
   try {
     const token = getBackendToken(req);
 
@@ -127,7 +127,30 @@ async function editSchoolContact(req, res) {
     const result = await utils.putData(token, config.get('server:institute:instituteSchoolURL') + '/' + req.body.schoolId + '/contact/'+ req.body.schoolContactId , params, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
-    logApiError(e, 'editSchoolContact', 'Error occurred while attempting to edit a school contact.');
+    logApiError(e, 'updateSchoolContact', 'Error occurred while attempting to update a school contact.');
+    return errorResponse(res);
+  }
+}
+
+async function updateAuthority(req, res) {
+  try {
+    const token = getBackendToken(req);
+
+    let authority = cacheService.getAuthorityJSONByAuthorityId(req.params.id);
+    if(!authority || !hasAuthorityAdminRole(req)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+
+    const params = req.body;
+    params.createDate = null;
+    params.updateDate = null;
+    params.updateUser = utils.getUser(req).idir_username;
+    const result = await utils.putData(token, config.get('server:institute:instituteAuthorityURL') + '/' + req.params.id, params, utils.getUser(req).idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'updateAuthority', 'Error occurred while attempting to update an authority.');
     return errorResponse(res);
   }
 }
@@ -137,6 +160,10 @@ function hasSchoolAdminRole(req, school){
     return req.session.roles.includes('SCHOOL_ADMIN') || req.session.roles.includes('SCHOOL_INDEPENDENT_OFFSHORE_ADMIN');
   }
   return req.session.roles.includes('SCHOOL_ADMIN');
+}
+
+function hasAuthorityAdminRole(req){
+  return req.session.roles.includes('INDEPENDENT_AUTHORITY_ADMIN');
 }
 
 async function getSchoolByID(req, res) {
@@ -348,5 +375,6 @@ module.exports = {
   getCachedAuthorityByAuthorityID,
   getCachedAuthorities,
   addNewSchoolNote,
-  editSchoolContact
+  updateSchoolContact,
+  updateAuthority
 };

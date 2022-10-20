@@ -99,7 +99,7 @@ let object = {
     SCHOOL_CONTACT_URL: instituteRoot + '/school/contact',
     SCHOOL_PAGINATED_DATA_URL: instituteRoot + '/schoolsPaginated',
     DISTRICT_DATA_URL: instituteRoot + '/districts',
-    AUTHORITY_DATA_URL: instituteRoot + '/authorities',
+    AUTHORITY_DATA_URL: instituteRoot + '/authority',
     AUTHORITIES_PAGINATED_DATA_URL: instituteRoot + '/authoritiesPaginated',
     AUTHORITY_BY_ID_URL: instituteRoot + '/authority',
 
@@ -116,6 +116,8 @@ let object = {
     AUTHORITY_TYPES_URL: cacheRoot + '/authority-types',
     AUTHORITY_CONTACT_TYPES_URL: cacheRoot + '/authority-contact-types',
     GRADE_TYPES_URL: cacheRoot + '/grade-codes',
+    PROVINCES_URL: cacheRoot + '/province-codes',
+    COUNTRIES_URL: cacheRoot + '/country-codes',
     SCHOOL_CONTACT_TYPES_URL: cacheRoot + '/school-contact-types',
   },
   penServices: {
