@@ -144,7 +144,6 @@
                                       :rules="phNumRules"
                                       label="Phone"
                                       type="text"
-                                      placeholder="2501234567"
                                       maxlength="10"
                                       :counter="10"
                                       @keypress="isNumber($event)"
@@ -166,7 +165,6 @@
                                       :rules="altPhNumRules"
                                       label="Alternative Phone"
                                       type="text"
-                                      placeholder="2501234567"
                                       maxlength="10"
                                       :counter="10"
                                       @keypress="isNumber($event)"></v-text-field>
