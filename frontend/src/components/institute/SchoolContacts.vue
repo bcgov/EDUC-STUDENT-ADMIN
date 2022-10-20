@@ -59,7 +59,7 @@
                         <strong>{{ `${contact.firstName} ${contact.lastName}` }}</strong>
                       </v-col>
                       <v-col cols="3" class="d-flex justify-end">
-                        <PrimaryButton icon-left width="100%" secondary icon="mdi-pencil" text="Edit" @click.native="openContactEditForm(contact)"></PrimaryButton>
+                        <PrimaryButton icon-left width="100%" secondary icon="mdi-pencil" text="Edit" id="editContactButton" @click.native="openContactEditForm(contact)"></PrimaryButton>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
@@ -102,37 +102,82 @@
                     <v-col cols="12" class="d-flex justify-end">
                       <PrimaryButton class="mr-3" id="cancelEditButton" :secondary="true" @click.native="cancelSchoolContactEdit"
                                      text="Cancel"></PrimaryButton>
-                      <PrimaryButton @click.native="saveSchoolContact(contactEdit)" id="saveEditButton" :disabled="!saveSchoolContactEnabled" text="Save"></PrimaryButton>
+                      <PrimaryButton @click.native="saveSchoolContact(contactEdit)" id="saveEditButton" :disabled="!ecFormValid" text="Save"></PrimaryButton>
                     </v-col>
                   </v-row>
                   <v-col>
                     <v-row>
                       <v-col>
-                        <v-text-field id="contactEditFirstName" v-model="contactEdit.firstName" :rules="firstNameRules" label="First Name" type="text" validate-on-blur required></v-text-field>
+                        <v-text-field id="contactEditFirstName"
+                                      v-model="contactEdit.firstName"
+                                      :rules="firstNameRules"
+                                      label="First Name"
+                                      type="text"
+                                      maxlength="255"
+                                      required></v-text-field>
                       </v-col>
                       <v-col>
-                        <v-text-field id="contactEditLastName" v-model="contactEdit.lastName" :rules="lastNameRules" label="Last Name" type="text" validate-on-blur required></v-text-field>
+                        <v-text-field id="contactEditLastName"
+                                      v-model="contactEdit.lastName"
+                                      :rules="lastNameRules"
+                                      label="Last Name"
+                                      type="text"
+                                      maxlength="255"
+                                      required></v-text-field>
                       </v-col>
                     </v-row>
                     <v-row>
                       <v-col>
-                        <v-text-field id="contactEditEmail" v-model="contactEdit.email" :rules="emailRules" label="Email" type="text" validate-on-blur required></v-text-field>
+                        <v-text-field id="contactEditEmail"
+                                      v-model="contactEdit.email"
+                                      :rules="emailRules"
+                                      label="Email"
+                                      type="text"
+                                      maxlength="255"
+                                      required></v-text-field>
                       </v-col>
                     </v-row>
                     <v-row>
                       <v-col>
-                       <v-text-field id="contactEditPhoneNumber" v-model="contactEdit.phoneNumber" :rules="phNumRules" label="Phone" type="text" validate-on-blur required></v-text-field>
+                       <v-text-field id="contactEditPhoneNumber"
+                                     v-model="contactEdit.phoneNumber"
+                                     :rules="phNumRules"
+                                     label="Phone"
+                                     type="text"
+                                     placeholder="2501234567"
+                                     maxlength="10"
+                                     :counter="10"
+                                     @keypress="isNumber($event)"
+                                     required></v-text-field>
                       </v-col>
                       <v-col>
-                        <v-text-field id="contactEditPhoneExt" v-model="contactEdit.phoneExtension" :rules="phNumExtRules" label="Ext" type="text" validate-on-blur></v-text-field>
+                        <v-text-field id="contactEditPhoneExt"
+                                      v-model="contactEdit.phoneExtension"
+                                      :rules="phNumExtRules"
+                                      label="Ext"
+                                      type="text"
+                                      @keypress="isNumber($event)"></v-text-field>
                       </v-col>
                     </v-row>
                     <v-row>
                       <v-col>
-                       <v-text-field id="contactEditAltPhoneNumber" v-model="contactEdit.alternatePhoneNumber" :rules="altPhNumRules" label="Alternative Phone" type="text" validate-on-blur></v-text-field>
+                       <v-text-field id="contactEditAltPhoneNumber"
+                                     v-model="contactEdit.alternatePhoneNumber"
+                                     :rules="altPhNumRules"
+                                     label="Alternative Phone"
+                                     type="text"
+                                     placeholder="2501234567"
+                                     maxlength="10"
+                                     :counter="10"
+                                     @keypress="isNumber($event)"></v-text-field>
                       </v-col>
                       <v-col>
-                        <v-text-field id="contactEditAltPhoneExt" v-model="contactEdit.alternatePhoneExtension" :rules="altPhNumExtRules" label="Alternative Ext" type="text" validate-on-blur></v-text-field>
+                        <v-text-field id="contactEditAltPhoneExt"
+                                      v-model="contactEdit.alternatePhoneExtension"
+                                      :rules="altPhNumExtRules"
+                                      label="Alternative Ext"
+                                      type="text"
+                                      @keypress="isNumber($event)"></v-text-field>
                       </v-col>
                     </v-row>
                     <v-row>
@@ -246,11 +291,9 @@ export default {
       contactOG: '',
       firstNameRules: [
         v => !!v || 'First Name is required',
-        v => (v && v.length <= 255) || 'First Name must be less than 255'
       ],
       lastNameRules: [
         v => !!v || 'Last Name is required',
-        v => (v && v.length <= 255) || 'Last Name must be less than 255'
       ],
       emailRules: [
         v => !!v || 'E-mail is required',
@@ -258,15 +301,13 @@ export default {
       ],
       phNumRules: [
         v => !!v || 'Phone Number is required',
-        v => (v && v.length <= 10) || 'Phone Number must be 10 digits',
-        v => /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(v) || 'Phone Number must be valid',
+        v => v.length >= 10 || 'Phone Number must be 10 digits',
       ],
       phNumExtRules: [
         v => !v || /^\d+$/.test(v) || 'Phone Extension must be valid',
       ],
       altPhNumRules: [
-        v => !v || (v && v.length <= 10) || 'Alternate Phone Number must be 10 digits',
-        v => !v || /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(v) || 'Alternate Phone Number must be valid',
+        v => !v || v.length >= 10 || 'Alt. Phone Number must be 10 digits',
       ],
       altPhNumExtRules: [
         v => !v || /^\d+$/.test(v) || 'Phone Extension must be valid',
@@ -287,13 +328,6 @@ export default {
     },
     computedExpDateFormatted () {
       return this.formatEffectiveDisplayDate(this.contactEdit.expiryDate?.substring(0,10));
-    },
-    saveSchoolContactEnabled(){
-      return (this.contactEdit.firstName !== '' && this.contactEdit.firstName !== null) &&
-          (this.contactEdit.lastName !== '' && this.contactEdit.lastName !== null) &&
-          (this.contactEdit.email !== '' && this.contactEdit.email !== null) &&
-          (this.contactEdit.phoneNumber !== '' && this.contactEdit.phoneNumber !== null) &&
-          (this.contactEdit.effectiveDate !== '' && this.contactEdit.effectiveDate !== null);
     },
   },
   created() {
@@ -349,6 +383,15 @@ export default {
       if (!effectiveDate) return null;
       const [year, month, day] = effectiveDate.split('-');
       return `${year}/${month}/${day}`;
+    },
+    isNumber: function(evt) {
+      evt = (evt) ? evt : window.event;
+      var charCode = (evt.which) ? evt.which : evt.keyCode;
+      if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
+        evt.preventDefault();
+      } else {
+        return true;
+      }
     },
     getSchoolContactTypeCodes() {
       this.loadingCount += 1;
