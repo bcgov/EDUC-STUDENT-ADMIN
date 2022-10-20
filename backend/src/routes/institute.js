@@ -7,8 +7,12 @@ const { getDistricts, getSchools, getSchoolsPaginated, getAuthoritiesPaginated,
 const utils = require('../components/utils');
 const auth = require('../components/auth');
 const extendSession = utils.extendSession();
+const {getCodes} = require('../components/utils');
+const {CACHE_KEYS} = require('../components/constants');
 
 router.get('/districts', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getDistricts);
+
+router.get('/districtContactTypeCodes', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCodes('server:institute:rootURL', CACHE_KEYS.DISTRICT_CONTACT_TYPE_CODES, '/district-contact-type-codes'));
 
 router.get('/districts/:districtId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getDistrictByDistrictID);
 

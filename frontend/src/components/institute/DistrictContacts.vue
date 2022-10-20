@@ -1,0 +1,228 @@
+<template>
+  <v-container class="containerSetup" fluid>
+    <v-col class="mt-1 d-flex justify-start">
+      <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
+      <a class="pt-1 ml-1" @click="backButtonClick">Return to District List</a>
+    </v-col>
+    <v-row v-if="loading">
+      <v-col class="d-flex justify-center">
+        <v-progress-circular
+            class="mt-16"
+            :size="70"
+            :width="7"
+            color="primary"
+            indeterminate
+            :active="loading"
+        ></v-progress-circular>
+      </v-col>
+    </v-row>
+    <template v-if="!loading">
+      <v-row>
+        <v-col cols="12" class="d-flex justify-start">
+          <v-row no-gutters>
+            <v-col cols="12">
+              <h2 class="subjectHeading">{{districtDetails.districtNumber}} - {{districtDetails.displayName}}</h2>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+      <v-row cols="2">
+        <v-col class="d-flex justify-start">
+          <v-chip class="mr-3" color="#A9D18E">Active</v-chip>
+          <v-chip class="mr-3" color="#9DC3E6">Pending Start Date</v-chip>
+          <v-chip color="#F4B183">Pending End Date</v-chip>
+        </v-col>
+        <v-col class="d-flex justify-end">
+          <PrimaryButton width="12em" icon="mdi-plus-thick" text="New Contact"></PrimaryButton>
+        </v-col>
+      </v-row>
+      <div v-for="districtContactType in districtContactTypes" :key="districtContactType.code">
+        <v-row>
+          <v-col>
+            <h2 style="color:#1A5A96">{{districtContactType.label}}</h2>
+          </v-col>
+        </v-row>
+        <v-row cols="2" v-if="districtContacts.has(districtContactType.districtContactTypeCode)">
+          <v-col cols="5" lg="4" v-for="contact in districtContacts.get(districtContactType.districtContactTypeCode)" :key="contact.schoolId">
+            <v-card>
+              <v-card-title class="pb-0">
+                <v-row no-gutters>
+                  <v-col>
+                    <v-row no-gutters>
+                      <v-col cols="9">
+                        <v-icon class="pb-1" :color="getStatusColor(contact)" left dark>
+                          mdi-circle-medium
+                        </v-icon>
+                        <strong>{{ `${contact.firstName} ${contact.lastName}` }}</strong>
+                      </v-col>
+                      <v-col cols="3" class="d-flex justify-end">
+                        <PrimaryButton width="100%" secondary icon="mdi-pencil" text="Edit"></PrimaryButton>
+                      </v-col>
+                    </v-row>
+                    <v-row no-gutters class="titleSetup">
+                      <v-col cols="12" class="pt-1">
+                        <strong>{{ contact.jobTitle }}</strong>
+                      </v-col>
+                      <v-col cols="12" class="pt-1">
+                        <span>{{ contact.email }}</span>
+                      </v-col>
+                      <v-col cols="12" class="pt-1">
+                        <span>{{ formatPhoneNumber(contact.phoneNumber) }}</span><span v-if="contact.phoneExtension"> ext. {{contact.phoneExtension}}</span>
+                      </v-col>
+                      <v-col cols="12" class="pt-1" v-if="contact.alternatePhoneNumber">
+                        <span>{{ formatPhoneNumber(contact.alternatePhoneNumber) }} (alt.)</span> <span v-if="contact.alternatePhoneExtension"> ext. {{contact.alternatePhoneExtension}}</span>
+                      </v-col>
+                    </v-row>
+                  </v-col>
+                </v-row>
+              </v-card-title>
+              <v-card-text class="pt-2">
+                <v-row no-gutters>
+                  <v-col cols="12" class="pt-1" v-if="contact.expiryDate">
+                    <v-icon aria-hidden="false">
+                      mdi-calendar-today
+                    </v-icon>
+                    <span> {{ formatDate(contact.effectiveDate) }} - {{ formatDate(contact.expiryDate)}}</span>
+                  </v-col>
+                  <v-col cols="12" class="pt-1" v-else>
+                    <v-icon aria-hidden="false">
+                      mdi-calendar-today
+                    </v-icon>
+                    <span> {{ formatDate(contact.effectiveDate) }}</span>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+        <v-row cols="2" v-else>
+          <v-col>
+            <p>No contacts of this type have been listed.</p>
+          </v-col>
+        </v-row>
+      </div>
+    </template>
+  </v-container>
+</template>
+
+<script>
+
+import ApiService from '../../common/apiService';
+import {Routes} from '@/utils/constants';
+import PrimaryButton from '../util/PrimaryButton';
+import {mapGetters} from 'vuex';
+import alertMixin from '@/mixins/alertMixin';
+import {formatPhoneNumber, formatDate} from '@/utils/format';
+import {getStatusColor, isExpired} from '@/utils/institute/status';
+
+export default {
+  name: 'DistrictContactsPage',
+  mixins: [alertMixin],
+  components: {
+    PrimaryButton,
+  },
+  props: {
+    districtID: {
+      type: String,
+      required: false
+    },
+  },
+  data() {
+    return {
+      loadingCount: 0,
+      districtContactTypes: [],
+      districtContacts: new Map(),
+      districtDetails: '',
+    };
+  },
+  computed: {
+    ...mapGetters('auth', ['isAuthenticated','userInfo']),
+    loading() {
+      return this.loadingCount !== 0;
+    }
+  },
+  created() {
+    this.getDistrictContactTypeCodes();
+    this.getThisDistrictsContacts();
+  },
+  methods: {
+    getDistrictContactTypeCodes() {
+      this.loadingCount += 1;
+      ApiService.apiAxios.get(Routes.institute.DISTRICT_CONTACT_TYPE_CODES)
+        .then(response => {
+          this.districtContactTypes = response.data;
+          this.districtContactTypes.sort((a,b) => a.displayOrder - b.displayOrder);
+        })
+        .catch(error => {
+          console.error(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get the details of available District Contact Type Codes. Please try again later.');
+        }).finally(() => {
+          this.loadingCount -= 1;
+        });
+    },
+    getThisDistrictsContacts(){
+      this.loadingCount += 1;
+      let searchDistrictID = this.districtID ? this.districtID: this.userInfo.activeInstituteIdentifier;
+
+      ApiService.apiAxios.get(`${Routes.institute.DISTRICT_DATA_URL}/` + searchDistrictID)
+        .then(response => {
+          this.districtDetails = response.data;
+          this.districtContacts = new Map();
+          response.data.contacts.forEach(contact => {
+            if(!isExpired(contact.expiryDate)) {
+              if (!this.districtContacts.has(contact.districtContactTypeCode)) {
+                this.districtContacts.set(contact.districtContactTypeCode, [contact]);
+                return;
+              }
+              this.districtContacts.get(contact.districtContactTypeCode).push(contact);
+            }
+          });
+        }).catch(error => {
+          console.error(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get a list of the district\'s contacts. Please try again later.');
+        }).finally(() => {
+          this.loadingCount -= 1;
+        });
+    },
+    backButtonClick() {
+      this.$router.push({name: 'instituteDistrict'});
+    },
+    getStatusColor,
+    formatDate,
+    formatPhoneNumber,
+  }
+};
+</script>
+
+<style scoped>
+
+@media screen and (max-width: 950px){
+  .v-dialog__content /deep/ .v-bottom-sheet {
+    width: 60% !important;
+  }
+}
+
+.containerSetup{
+  padding-right: 32em !important;
+  padding-left: 32em !important;
+}
+
+.titleSetup{
+  word-break: break-word;
+}
+
+@media screen and (max-width: 1950px) {
+  .containerSetup{
+    padding-right: 20em !important;
+    padding-left: 20em !important;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .containerSetup{
+    padding-right: 4em !important;
+    padding-left: 4em !important;
+  }
+}
+
+</style>
