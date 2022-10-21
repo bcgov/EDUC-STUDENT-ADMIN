@@ -155,6 +155,7 @@
                                       :rules="phNumExtRules"
                                       label="Ext"
                                       type="text"
+                                      maxlength="10"
                                       @keypress="isNumber($event)"></v-text-field>
                       </v-col>
                     </v-row>
@@ -175,6 +176,7 @@
                                       :rules="altPhNumExtRules"
                                       label="Alternative Ext"
                                       type="text"
+                                      maxlength="10"
                                       @keypress="isNumber($event)"></v-text-field>
                       </v-col>
                     </v-row>
@@ -190,6 +192,7 @@
                               hint="YYYY/MM/DD format"
                               persistent-hint
                               append-icon="mdi-calendar"
+                              @click:append="effDateMenu = true"
                               v-bind="attrs"
                               v-on="on"
                               :rules="startDateRules"
@@ -214,6 +217,7 @@
                               hint="YYYY/MM/DD format"
                               persistent-hint
                               append-icon="mdi-calendar"
+                              @click:append="expDateMenu = true"
                               v-bind="attrs"
                               v-on="on"
                             ></v-text-field>
