@@ -487,8 +487,7 @@ export default {
         v => /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(v) || 'Phone Number must be valid',
       ],
       faxNumRules: [
-        v => (v && v.length <= 10 && v.length > 0) || 'Fax Number must be 10 digits',
-        v => /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(v) || 'Fax Number must be valid',
+        v => !v || /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(v) || 'Fax Number must be valid',
       ],
       emailRules: [
         v => !!v || 'E-mail is required',
