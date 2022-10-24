@@ -182,7 +182,7 @@
                     </v-row>
                     <v-row>
                       <v-col>
-                        <v-menu v-model="effDateMenu" :close-on-content-click="true" transition="scale-transition"
+                        <v-menu v-model="effDateMenu" :close-on-content-click="false" transition="scale-transition"
                                 offset-y max-width="290px" min-width="auto">
                           <template v-slot:activator="{ on, attrs }">
                             <v-text-field
@@ -207,7 +207,7 @@
                         </v-menu>
                       </v-col>
                       <v-col>
-                        <v-menu v-model="expDateMenu" :close-on-content-click="true" transition="scale-transition"
+                        <v-menu v-model="expDateMenu" :close-on-content-click="false" transition="scale-transition"
                                 offset-y max-width="290px" min-width="auto">
                           <template v-slot:activator="{ on, attrs }">
                             <v-text-field
@@ -349,7 +349,9 @@ export default {
         contact.effectiveDate = contact.effectiveDate + 'T00:00:00';
       }
       if (contact.expiryDate !== null && contact.expiryDate !== '') {
-        contact.expiryDate = contact.expiryDate + 'T00:00:00';
+        if(contact.expiryDate.length <= 10) {
+          contact.expiryDate = contact.expiryDate + 'T00:00:00';
+        }
       }
 
       const payload = contact;
