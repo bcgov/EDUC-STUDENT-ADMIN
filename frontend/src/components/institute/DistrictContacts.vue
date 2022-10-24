@@ -56,7 +56,7 @@
                         <strong>{{ `${contact.firstName} ${contact.lastName}` }}</strong>
                       </v-col>
                       <v-col cols="3" class="d-flex justify-end">
-                        <PrimaryButton width="100%" secondary icon="mdi-pencil" text="Edit"></PrimaryButton>
+                        <PrimaryButton width="6em" secondary icon="mdi-pencil" icon-left text="Edit"></PrimaryButton>
                       </v-col>
                     </v-row>
                     <v-row no-gutters class="titleSetup">
