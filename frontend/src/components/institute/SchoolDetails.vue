@@ -492,7 +492,7 @@ export default {
     },
     getAuthorityDetails(authorityId){
       this.authority = '';
-      ApiService.apiAxios.get(`${Routes.institute.AUTHORITY_BY_ID_URL}/${authorityId}`)
+      ApiService.apiAxios.get(`${Routes.institute.AUTHORITY_DATA_URL}/${authorityId}`)
         .then(response => {
           this.authority = response.data;
         }).catch(error => {

@@ -332,7 +332,7 @@ export default {
     getThisAuthorityContacts() {
       this.loadingCount += 1;
 
-      ApiService.apiAxios.get(`${Routes.institute.AUTHORITY_BY_ID_URL}/${this.$route.params.authorityID}`)
+      ApiService.apiAxios.get(`${Routes.institute.AUTHORITY_DATA_URL}/${this.$route.params.authorityID}`)
         .then(response => {
           this.authorityContacts = new Map();
           this.authority = response.data;

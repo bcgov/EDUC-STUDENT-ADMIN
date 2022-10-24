@@ -102,8 +102,6 @@ let object = {
     DISTRICT_CONTACT_TYPE_CODES: instituteRoot + '/districtContactTypeCodes',
     AUTHORITY_DATA_URL: instituteRoot + '/authority',
     AUTHORITIES_PAGINATED_DATA_URL: instituteRoot + '/authoritiesPaginated',
-    AUTHORITY_BY_ID_URL: instituteRoot + '/authority',
-
   },
   cache:{
     ROOT_ENDPOINT: cacheRoot,
