@@ -32,6 +32,6 @@ router.post('/authority/:id', passport.authenticate('jwt', {session: false}, und
 
 router.get('/authority/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getAuthorityByID);
 
-router.get('/authority/:id/contact/:contactId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, updateAuthorityContact);
+router.put('/authority/:authId/contact/:contactId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, updateAuthorityContact);
 
 module.exports = router;
