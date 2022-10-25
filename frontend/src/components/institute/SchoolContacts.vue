@@ -348,10 +348,8 @@ export default {
       if(contact.effectiveDate.length <= 10) {
         contact.effectiveDate = contact.effectiveDate + 'T00:00:00';
       }
-      if (contact.expiryDate !== null && contact.expiryDate !== '') {
-        if(contact.expiryDate.length <= 10) {
-          contact.expiryDate = contact.expiryDate + 'T00:00:00';
-        }
+      if (contact.expiryDate !== null && contact.expiryDate !== '' && contact.expiryDate.length <= 10) {
+        contact.expiryDate = contact.expiryDate + 'T00:00:00';
       }
 
       const payload = contact;
