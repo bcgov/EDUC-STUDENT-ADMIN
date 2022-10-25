@@ -358,7 +358,7 @@ export default {
       this.loading = true;
       this.validateEditContactForm();
 
-      contact.schoolId = this.schoolID;
+      contact.independentAuthorityId = this.$route.params.authorityID;
       contact.createDate = null;
       contact.updateDate = null;
       contact.updateUser = this.userInfo.userName;
@@ -370,7 +370,22 @@ export default {
       }
 
       const payload = contact;
+      // remove
       console.log('CONTACT: ' + JSON.stringify(payload));
+      console.log('URL: ' + `${Routes.institute.AUTHORITY_DATA_URL}/${this.$route.params.authorityID}/contact/${payload.authorityContactId}`);
+      ApiService.apiAxios.put(`${Routes.institute.AUTHORITY_DATA_URL}/${this.$route.params.authorityID}/contact/${payload.authorityContactId}`, payload)
+        .then(() => {
+          this.setSuccessAlert('Success! The authority contact has been updated.');
+        })
+        .catch(error => {
+          console.error(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while saving the authority contact information. Please try again later.');
+        })
+        .finally(() => {
+          this.getThisAuthorityContacts();
+          this.cancelContactEdit();
+          this.contactEdit = '';
+        });
     },
     cancelContactEdit(){
       this.expandEdit = !this.expandEdit;
