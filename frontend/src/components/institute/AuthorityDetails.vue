@@ -536,7 +536,7 @@ export default {
     getAuthority() {
       this.loading = true;
 
-      ApiService.apiAxios.get(Routes.institute.AUTHORITY_BY_ID_URL + '/' + this.authorityID, {
+      ApiService.apiAxios.get(Routes.institute.AUTHORITY_DATA_URL + '/' + this.authorityID, {
       }).then(response => {
         this.authority = response.data;
         this.populateExtraAuthorityFields(this.authority);

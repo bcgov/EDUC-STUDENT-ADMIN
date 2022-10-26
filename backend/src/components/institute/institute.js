@@ -132,6 +132,24 @@ async function updateSchoolContact(req, res) {
   }
 }
 
+async function updateAuthorityContact(req, res) {
+  try {
+    const token = getBackendToken(req);
+    let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.independentAuthorityId);
+    if(!authority || !hasAuthorityAdminRole(req)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+    const params = req.body;
+    const result = await utils.putData(token, config.get('server:institute:instituteAuthorityURL') + '/' + req.body.independentAuthorityId + '/contact/'+ req.body.authorityContactId , params, utils.getUser(req).idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'updateAuthorityContact', 'Error occurred while attempting to update an authority contact.');
+    return errorResponse(res);
+  }
+}
+
 async function updateAuthority(req, res) {
   try {
     const token = getBackendToken(req);
@@ -376,5 +394,6 @@ module.exports = {
   getCachedAuthorities,
   addNewSchoolNote,
   updateSchoolContact,
-  updateAuthority
+  updateAuthority,
+  updateAuthorityContact
 };
