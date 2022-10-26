@@ -502,6 +502,9 @@ export default {
       return !this.authority.addresses.filter(address => address.addressTypeCode === 'PHYSICAL').length > 0;
     },
     showPhysicalAddress() {
+      if (this.editing) {
+        return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.authorityCopy.authorityTypeCode);
+      }
       return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.authority.authorityTypeCode);
     }
   },
