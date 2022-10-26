@@ -33,7 +33,7 @@
           <v-chip color="#F4B183">Pending End Date</v-chip>
         </v-col>
         <v-col class="d-flex justify-end">
-          <PrimaryButton width="12em" icon="mdi-plus-thick" text="New Contact"></PrimaryButton>
+          <PrimaryButton icon-left width="11em" icon="mdi-plus-thick" text="New Contact"></PrimaryButton>
         </v-col>
       </v-row>
       <div v-for="districtContactType in districtContactTypes" :key="districtContactType.code">
