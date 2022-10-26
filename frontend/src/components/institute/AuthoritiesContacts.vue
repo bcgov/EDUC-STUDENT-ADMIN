@@ -370,9 +370,6 @@ export default {
       }
 
       const payload = contact;
-      // remove
-      console.log('CONTACT: ' + JSON.stringify(payload));
-      console.log('URL: ' + `${Routes.institute.AUTHORITY_DATA_URL}/${this.$route.params.authorityID}/contact/${payload.authorityContactId}`);
       ApiService.apiAxios.put(`${Routes.institute.AUTHORITY_DATA_URL}/${this.$route.params.authorityID}/contact/${payload.authorityContactId}`, payload)
         .then(() => {
           this.setSuccessAlert('Success! The authority contact has been updated.');
