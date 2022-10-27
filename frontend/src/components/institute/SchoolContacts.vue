@@ -59,7 +59,7 @@
                         <strong>{{ `${contact.firstName} ${contact.lastName}` }}</strong>
                       </v-col>
                       <v-col cols="3" class="d-flex justify-end">
-                        <PrimaryButton icon-left width="100%" secondary icon="mdi-pencil" text="Edit" id="editContactButton" @click.native="openContactEditForm(contact)"></PrimaryButton>
+                        <PrimaryButton icon-left width="100%" secondary icon="mdi-pencil" text="Edit" id="editContactButton" :disabled="!canEditSchoolContact()" @click.native="openContactEditForm(contact)"></PrimaryButton>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
@@ -320,7 +320,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo']),
+    ...mapGetters('auth', ['isAuthenticated','userInfo', 'SCHOOL_INDEPENDENT_OFFSHORE_ADMIN', 'SCHOOL_ADMIN_ROLE']),
 
     loading() {
       return this.loadingCount !== 0;
@@ -337,6 +337,19 @@ export default {
     this.getThisSchoolsContacts();
   },
   methods: {
+    canEditSchoolContact() {
+      //"INDEPEND", "OFFSHORE"
+      console.log(this.SCHOOL_INDEPENDENT_OFFSHORE_ADMIN);
+      let authorized = false;
+      if((this.school.schoolCategoryCode === 'INDEPEND' || this.school.schoolCategoryCode === 'OFFSHORE') && this.SCHOOL_INDEPENDENT_OFFSHORE_ADMIN){
+        authorized = true;
+        console.log('AUTH_1');
+      } else if((this.school.schoolCategoryCode !== 'INDEPEND' || this.school.schoolCategoryCode !== 'OFFSHORE') && this.SCHOOL_ADMIN_ROLE){
+        authorized = true;
+        console.log('AUTH_2');
+      }
+      return authorized;
+    },
     saveSchoolContact(contact) {
       this.loading = true;
       this.validateEditContactForm();
@@ -415,6 +428,10 @@ export default {
         .then(response => {
           this.schoolContacts = new Map();
           this.school = response.data;
+          console.log('SCHOOL_RECORD:==');
+          console.log(this.school);
+          console.log('CURRENT_USER:==');
+          console.log(this.userInfo);
           response.data.contacts.forEach(contact => {
             if (!isExpired(contact.expiryDate)) {
               if (!this.schoolContacts.has(contact.schoolContactTypeCode)) {
