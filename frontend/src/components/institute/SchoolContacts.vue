@@ -452,7 +452,6 @@ export default {
       if (this.contactEdit.effectiveDate && this.contactEdit.expiryDate) {
         const effDate = LocalDate.parse(this.contactEdit.effectiveDate.substring(0,10));
         const expDate = LocalDate.parse(this.contactEdit.expiryDate.substring(0,10));
-        // return effDate.isBefore(expDate) || effDate.equals(expDate) || 'End date cannot be before start date';
         return expDate.isAfter(effDate) || 'End date cannot be before start date';
       }
 
