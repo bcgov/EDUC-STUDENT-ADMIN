@@ -338,15 +338,11 @@ export default {
   },
   methods: {
     canEditSchoolContact() {
-      //"INDEPEND", "OFFSHORE"
-      console.log(this.SCHOOL_INDEPENDENT_OFFSHORE_ADMIN);
       let authorized = false;
       if((this.school.schoolCategoryCode === 'INDEPEND' || this.school.schoolCategoryCode === 'OFFSHORE') && this.SCHOOL_INDEPENDENT_OFFSHORE_ADMIN){
         authorized = true;
-        console.log('AUTH_1');
       } else if((this.school.schoolCategoryCode !== 'INDEPEND' || this.school.schoolCategoryCode !== 'OFFSHORE') && this.SCHOOL_ADMIN_ROLE){
         authorized = true;
-        console.log('AUTH_2');
       }
       return authorized;
     },
