@@ -59,7 +59,7 @@
                         <strong>{{ `${contact.firstName} ${contact.lastName}` }}</strong>
                       </v-col>
                       <v-col cols="3" class="d-flex justify-end">
-                        <PrimaryButton icon-left width="100%" secondary icon="mdi-pencil" text="Edit" id="editContactButton" @click.native="openContactEditForm(contact)"></PrimaryButton>
+                        <PrimaryButton icon-left width="100%" secondary icon="mdi-pencil" text="Edit" id="editContactButton" :disabled="!canEditSchoolContact()" @click.native="openContactEditForm(contact)"></PrimaryButton>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
@@ -320,7 +320,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo']),
+    ...mapGetters('auth', ['isAuthenticated','userInfo', 'SCHOOL_INDEPENDENT_OFFSHORE_ADMIN', 'SCHOOL_ADMIN_ROLE']),
 
     loading() {
       return this.loadingCount !== 0;
@@ -337,6 +337,15 @@ export default {
     this.getThisSchoolsContacts();
   },
   methods: {
+    canEditSchoolContact() {
+      let authorized = false;
+      if((this.school.schoolCategoryCode === 'INDEPEND' || this.school.schoolCategoryCode === 'OFFSHORE') && this.SCHOOL_INDEPENDENT_OFFSHORE_ADMIN){
+        authorized = true;
+      } else if((this.school.schoolCategoryCode !== 'INDEPEND' || this.school.schoolCategoryCode !== 'OFFSHORE') && this.SCHOOL_ADMIN_ROLE){
+        authorized = true;
+      }
+      return authorized;
+    },
     saveSchoolContact(contact) {
       this.loading = true;
       this.validateEditContactForm();
