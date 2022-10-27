@@ -326,7 +326,7 @@
                                     </v-row>
                                     <v-row no-gutters>
                                       <v-col cols="8">
-                                        <v-text-field id="physicalAddressLine2" class="shrink mt-n5 mb-3" v-model="getPhysicalAddressCopy()[0].addressLine2">
+                                        <v-text-field id="physicalAddressLine2" :maxlength="255" class="shrink mt-n5 mb-3" v-model="getPhysicalAddressCopy()[0].addressLine2">
                                         </v-text-field>
                                       </v-col>
                                     </v-row>
