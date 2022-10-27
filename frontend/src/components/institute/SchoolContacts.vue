@@ -212,6 +212,7 @@
                           <template v-slot:activator="{ on, attrs }">
                             <v-text-field
                               id="contactEditEndDate"
+                              :rules="endDateRules"
                               v-model="computedExpDateFormatted"
                               label="End Date"
                               hint="YYYY/MM/DD format"
@@ -255,6 +256,7 @@ import alertMixin from '@/mixins/alertMixin';
 import {mapGetters} from 'vuex';
 import {formatPhoneNumber, formatDate} from '@/utils/format';
 import {getStatusColor, isExpired} from '@/utils/institute/status';
+import {LocalDate} from '@js-joda/core';
 
 export default {
   name: 'SchoolContactsPage',
@@ -303,7 +305,7 @@ export default {
       ],
       phNumRules: [
         v => !!v || 'Phone Number is required',
-        v => v.length >= 10 || 'Phone Number must be 10 digits',
+        v => !v || v.length >= 10 || 'Phone Number must be 10 digits',
       ],
       phNumExtRules: [
         v => !v || /^\d+$/.test(v) || 'Phone Extension must be valid',
@@ -317,6 +319,9 @@ export default {
       startDateRules: [
         v => !!v || 'Start Date is required',
       ],
+      endDateRules: [
+        this.endDateRuleValidator,
+      ]
     };
   },
   computed: {
@@ -443,9 +448,25 @@ export default {
     backButtonClick() {
       this.$router.push({name: 'instituteSchoolList'});
     },
+    endDateRuleValidator() {
+      if (this.contactEdit.effectiveDate && this.contactEdit.expiryDate) {
+        const effDate = LocalDate.parse(this.contactEdit.effectiveDate.substring(0,10));
+        const expDate = LocalDate.parse(this.contactEdit.expiryDate.substring(0,10));
+        return expDate.isAfter(effDate) || 'End date cannot be before start date';
+      }
+
+      return true;
+    },
     formatDate,
     formatPhoneNumber,
     getStatusColor,
+  },
+  watch: {
+    'contactEdit.effectiveDate': {
+      handler() {
+        this.validateEditContactForm();
+      }
+    }
   }
 };
 </script>
