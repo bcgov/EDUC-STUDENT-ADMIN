@@ -619,7 +619,7 @@ export default {
       const payload = this.authorityCopy;
       ApiService.apiAxios.post(`${Routes.institute.AUTHORITY_DATA_URL}` + '/' + this.authorityCopy.independentAuthorityId, payload)
         .then(() => {
-          this.setSuccessAlert('Success! The authority has been updated.');
+          this.setSuccessAlert('Success! The authority details have been updated.');
         })
         .catch(error => {
           console.error(error);
