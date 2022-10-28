@@ -92,7 +92,7 @@
               <v-col>
                 <v-text-field id="contactEditPhoneNumber"
                               v-model="contactEdit.phoneNumber"
-                              :rules="[rules.required()]"
+                              :rules="[rules.required(), rules.phoneNumber()]"
                               label="Phone"
                               type="text"
                               maxlength="10"
@@ -102,6 +102,7 @@
               </v-col>
               <v-col>
                 <v-text-field id="contactEditPhoneExt"
+                              :rules="[rules.number()]"
                               v-model="contactEdit.phoneExtension"
                               label="Ext"
                               type="text"
@@ -112,6 +113,7 @@
             <v-row>
               <v-col>
                 <v-text-field id="contactEditAltPhoneNumber"
+                              :rules="[rules.phoneNumber()]"
                               v-model="contactEdit.alternatePhoneNumber"
                               label="Alternative Phone"
                               type="text"
@@ -121,6 +123,7 @@
               </v-col>
               <v-col>
                 <v-text-field id="contactEditAltPhoneExt"
+                              :rules="[rules.number()]"
                               v-model="contactEdit.alternatePhoneExtension"
                               label="Alternative Ext"
                               type="text"

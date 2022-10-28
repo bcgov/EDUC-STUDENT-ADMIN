@@ -22,6 +22,15 @@ const email = (message = 'E-mail must be valid') => {
 };
 
 /**
+ * Rule to check input is a number
+ * @param {String} message
+ * @returns Function
+ */
+const number = (message = 'Must be a number') => {
+  return v => !v || /^\d+$/.test(v) || message;
+};
+
+/**
  * Rule for phone numbers also works for fax numbers too
  * @param {String} message
  * @returns Function
@@ -77,6 +86,7 @@ const endDateRuleBeta = (effectiveDate, expiryDate) => {
 export {
   email,
   endDateRuleBeta,
+  number,
   phoneNumber,
   postalCode,
   required
