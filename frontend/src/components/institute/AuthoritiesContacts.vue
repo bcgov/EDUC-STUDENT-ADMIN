@@ -51,14 +51,14 @@
                 <v-row no-gutters>
                   <v-col>
                     <v-row no-gutters>
-                      <v-col cols="9">
+                      <v-col cols="8">
                         <v-icon class="pb-1" :color="getStatusColor(contact)" left dark>
                           mdi-circle-medium
                         </v-icon>
-                        <strong id="authorityContactName">{{ `${contact.firstName} ${contact.lastName}` }}</strong>
+                        <strong style="word-break: break-word;" id="authorityContactName">{{ `${contact.firstName} ${contact.lastName}` }}</strong>
                       </v-col>
-                      <v-col cols="3" class="d-flex justify-end">
-                        <PrimaryButton icon-left width="100%" secondary icon="mdi-pencil" text="Edit" id="editContactButton" @click.native="openContactEditForm(contact)"></PrimaryButton>
+                      <v-col cols="4" class="d-flex justify-end">
+                        <PrimaryButton icon-left width="6em" secondary icon="mdi-pencil" text="Edit" id="editContactButton" @click.native="openContactEditForm(contact)"></PrimaryButton>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
@@ -292,7 +292,7 @@ export default {
       ],
       emailRules: [
         v => !!v || 'E-mail is required',
-        v => /^[a-z\d]+@[a-z]+\.[a-z]{2,3}$/.test(v) || 'E-mail must be valid',
+        v => !v || /^[\w!#$%&’*+/=?`{|}~^-]+(?:\.[\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}$/.test(v) || 'E-mail must be valid',
       ],
       phNumRules: [
         v => !!v || 'Phone Number is required',

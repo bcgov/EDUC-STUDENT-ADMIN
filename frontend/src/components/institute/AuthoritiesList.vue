@@ -61,7 +61,7 @@
           >
 
             <template v-slot:item.secureExchangeStatusCode="{ item }">
-                <v-row id="authorityDetailsSelect" style="cursor: pointer;" @click="openAuthority(item.independentAuthorityId)">
+                <v-row align="center" justify="center" id="authorityDetailsSelect" style="cursor: pointer;" @click="openAuthority(item.independentAuthorityId)">
                   <v-col cols="7" class="pb-0 pt-0">
                     <v-row class="mb-n4">
                       <v-col class="pb-2 pt-2 pr-0">
@@ -74,17 +74,17 @@
                       </v-col>
                     </v-row>
                   </v-col>
-                  <v-col class="d-flex justify-start mt-1">
-                    <v-icon class="ml-0 pb-1" :color="getStatusColorAuthorityOrSchool(item.status)" right dark>
+                  <v-col class="d-flex justify-start">
+                    <v-icon class="ml-0" :color="getStatusColorAuthorityOrSchool(item.status)" right dark>
                       mdi-circle-medium
                     </v-icon>
-                    <span class="ml-0 statusCodeLabel" style="margin-top: 0.2em">{{ item.status }}</span>
+                    <span class="ml-0 statusCodeLabel">{{ item.status }}</span>
                   </v-col>
-                  <v-col cols="2" class="d-flex justify-start mt-1">
-                    <v-icon class="mb-1" aria-hidden="false">
+                  <v-col cols="2" class="d-flex justify-start">
+                    <v-icon aria-hidden="false">
                       mdi-phone-outline
                     </v-icon>
-                    <span class="statusCodeLabel" style="margin-top: 0.2em"> {{ formatPhoneNumber(item.phoneNumber) }}</span>
+                    <span class="statusCodeLabel"> {{ formatPhoneNumber(item.phoneNumber) }}</span>
                   </v-col>
                   <v-col class="d-flex justify-end">
                     <v-tooltip bottom>
