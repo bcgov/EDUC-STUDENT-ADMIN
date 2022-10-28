@@ -4,7 +4,7 @@ const HttpStatus = require('http-status-codes');
 const cacheService = require('../cache-service');
 const {FILTER_OPERATION, VALUE_TYPE, CONDITION} = require('../../util/constants');
 const config = require('../../config');
-const {LocalDateTime} = require('@js-joda/core');
+const {LocalDateTime, LocalDate, DateTimeFormatter} = require('@js-joda/core');
 const utils = require('../utils');
 
 async function getCachedDistricts(req, res) {
@@ -115,8 +115,9 @@ async function addNewSchoolNote(req, res) {
 async function updateSchoolContact(req, res) {
   try {
     const token = getBackendToken(req);
+    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
-    let school = cacheService.getSchoolBySchoolID(req.body.schoolId);
+    let school = cacheService.getSchoolBySchoolID(req.body.schoolID);
     if(!school || !hasSchoolAdminRole(req, school)){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'You do not have the required access for this function'
@@ -124,7 +125,13 @@ async function updateSchoolContact(req, res) {
     }
 
     const params = req.body;
-    const result = await utils.putData(token, config.get('server:institute:instituteSchoolURL') + '/' + req.body.schoolId + '/contact/'+ req.body.schoolContactId , params, utils.getUser(req).idir_username);
+    params.updateDate = null;
+    params.createDate = null;
+    params.updateUser = utils.getUser(req).idir_username;
+    params.effectiveDate = params.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null;
+    params.expiryDate = req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null;
+
+    const result = await utils.putData(token, config.get('server:institute:instituteSchoolURL') + '/' + req.body.schoolID + '/contact/'+ req.body.schoolContactId , params, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'updateSchoolContact', 'Error occurred while attempting to update a school contact.');
