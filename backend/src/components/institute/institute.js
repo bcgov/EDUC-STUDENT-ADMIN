@@ -161,11 +161,16 @@ async function updateAuthority(req, res) {
       });
     }
 
-    const params = req.body;
-    params.createDate = null;
-    params.updateDate = null;
-    params.updateUser = utils.getUser(req).idir_username;
-    const result = await utils.putData(token, config.get('server:institute:instituteAuthorityURL') + '/' + req.params.id, params, utils.getUser(req).idir_username);
+    var authorityPayload = req.body;
+
+    if(authorityPayload.authorityTypeCode === 'OFFSHORE'){
+      authorityPayload.addresses = authorityPayload.addresses.filter(address => address.addressTypeCode !== 'PHYSICAL');
+    }
+
+    authorityPayload.createDate = null;
+    authorityPayload.updateDate = null;
+    authorityPayload.updateUser = utils.getUser(req).idir_username;
+    const result = await utils.putData(token, config.get('server:institute:instituteAuthorityURL') + '/' + req.params.id, authorityPayload, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'updateAuthority', 'Error occurred while attempting to update an authority.');
