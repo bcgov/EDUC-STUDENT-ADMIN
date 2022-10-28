@@ -52,14 +52,14 @@
                 <v-row no-gutters>
                   <v-col>
                     <v-row no-gutters>
-                      <v-col cols="9">
+                      <v-col cols="8" class="justify-start">
                         <v-icon class="pb-1" :color="getStatusColor(contact)" left dark>
                           mdi-circle-medium
                         </v-icon>
-                        <strong>{{ `${contact.firstName} ${contact.lastName}` }}</strong>
+                        <strong style="word-break: break-word;">{{ `${contact.firstName} ${contact.lastName}` }}</strong>
                       </v-col>
-                      <v-col cols="3" class="d-flex justify-end">
-                        <PrimaryButton icon-left width="100%" secondary icon="mdi-pencil" text="Edit" id="editContactButton" :disabled="!canEditSchoolContact()" @click.native="openContactEditForm(contact)"></PrimaryButton>
+                      <v-col cols="4" class="d-flex justify-end">
+                        <PrimaryButton icon-left width="6em" secondary icon="mdi-pencil" text="Edit" id="editContactButton" :disabled="!canEditSchoolContact()" @click.native="openContactEditForm(contact)"></PrimaryButton>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
