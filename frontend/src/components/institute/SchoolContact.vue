@@ -205,7 +205,6 @@ import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
-import {mapGetters} from 'vuex';
 import {formatPhoneNumber, formatDate} from '@/utils/format';
 import {getStatusColor} from '@/utils/institute/status';
 import {LocalDate} from '@js-joda/core';
@@ -283,24 +282,12 @@ export default {
       editContactEffectiveDatePicker: null,
     };
   },
-  computed: {
-    ...mapGetters('auth', ['userInfo']),
-  },
   methods: {
     saveSchoolContact(contact) {
       this.processing = true;
       this.validateEditContactForm();
 
-      contact.schoolId = this.schoolID;
-      contact.createDate = null;
-      contact.updateDate = null;
-      contact.updateUser = this.userInfo.userName;
-      if(contact.effectiveDate.length <= 10) {
-        contact.effectiveDate = contact.effectiveDate + 'T00:00:00';
-      }
-      if (contact.expiryDate !== null && contact.expiryDate !== '' && contact.expiryDate.length <= 10) {
-        contact.expiryDate = contact.expiryDate + 'T00:00:00';
-      }
+      contact.schoolID = this.schoolID;
 
       const payload = contact;
       ApiService.apiAxios.post(`${Routes.institute.SCHOOL_CONTACT_URL}`, payload)
