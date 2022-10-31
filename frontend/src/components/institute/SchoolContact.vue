@@ -38,7 +38,7 @@
             <v-icon aria-hidden="false">
               mdi-calendar-today
             </v-icon>
-            <span id="contactEffectiveExpiryDate"> {{ formatDate(contact.effectiveDate) }} - {{ formatDate(contact.expiryDate)}}</span>
+            <span id="contactEffectiveAndExpiryDate"> {{ formatDate(contact.effectiveDate) }} - {{ formatDate(contact.expiryDate)}}</span>
           </v-col>
           <v-col cols="12" class="pt-1" v-else>
             <v-icon aria-hidden="false">
