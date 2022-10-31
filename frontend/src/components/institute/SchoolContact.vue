@@ -17,16 +17,16 @@
             </v-row>
             <v-row no-gutters>
               <v-col cols="12" class="pt-1">
-                <span>{{ contact.jobTitle }}</span>
+                <span id="contactJobTitle">{{ contact.jobTitle }}</span>
               </v-col>
               <v-col cols="12" class="pt-1">
-                <span>{{ contact.email }}</span>
+                <span id="contactEmail"> {{ contact.email }}</span>
               </v-col>
               <v-col cols="12" class="pt-1">
-                <span>{{ formatPhoneNumber(contact.phoneNumber) }}</span><span v-if="contact.phoneExtension"> ext. {{contact.phoneExtension}}</span>
+                <span id="contactPhoneNumber">{{ formatPhoneNumber(contact.phoneNumber) }}</span><span v-if="contact.phoneExtension"> ext. {{contact.phoneExtension}}</span>
               </v-col>
               <v-col cols="12" class="pt-1" v-if="contact.alternatePhoneNumber">
-                <span>{{ formatPhoneNumber(contact.alternatePhoneNumber) }} (alt.)</span> <span v-if="contact.alternatePhoneExtension"> ext. {{contact.alternatePhoneExtension}}</span>
+                <span id="contactAlternatePhoneNumber">{{ formatPhoneNumber(contact.alternatePhoneNumber) }} (alt.)</span> <span v-if="contact.alternatePhoneExtension"> ext. {{contact.alternatePhoneExtension}}</span>
               </v-col>
             </v-row>
           </v-col>
@@ -38,13 +38,13 @@
             <v-icon aria-hidden="false">
               mdi-calendar-today
             </v-icon>
-            <span> {{ formatDate(contact.effectiveDate) }} - {{ formatDate(contact.expiryDate)}}</span>
+            <span id="contactEffectiveExpiryDate"> {{ formatDate(contact.effectiveDate) }} - {{ formatDate(contact.expiryDate)}}</span>
           </v-col>
           <v-col cols="12" class="pt-1" v-else>
             <v-icon aria-hidden="false">
               mdi-calendar-today
             </v-icon>
-            <span> {{ formatDate(contact.effectiveDate) }}</span>
+            <span id="contactEffectiveDate"> {{ formatDate(contact.effectiveDate) }}</span>
           </v-col>
         </v-row>
       </v-card-text>
@@ -64,7 +64,7 @@
               <v-col>
                 <v-text-field id="contactEditFirstName"
                               v-model="contactEdit.firstName"
-                              :rules="[rules.required('First name required')]"
+                              :rules="[rules.required()]"
                               label="First Name"
                               type="text"
                               maxlength="255"
@@ -73,7 +73,7 @@
               <v-col>
                 <v-text-field id="contactEditLastName"
                               v-model="contactEdit.lastName"
-                              :rules="[rules.required('Last Name required')]"
+                              :rules="[rules.required()]"
                               label="Last Name"
                               type="text"
                               maxlength="255"
@@ -157,7 +157,7 @@
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
                         id="editContactEffectiveDateTextField"
-                        :rules="[rules.required('Start date required')]"
+                        :rules="[rules.required()]"
                         class="pt-0 mt-0"
                         v-model="contactEdit.effectiveDate"
                         label="Start Date"
@@ -255,6 +255,7 @@ export default {
       contactEdit: {
         firstName: '',
         lastName: '',
+        jobTitle: '',
         email: '',
         phoneNumber:'',
         phoneExtension:'',
