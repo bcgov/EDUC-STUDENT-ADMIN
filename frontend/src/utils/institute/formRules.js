@@ -64,7 +64,7 @@ const required = (message = 'Required') => {
  * happens after start date. Date format should be 2022-12-10 YYYY-MM-DD.
  * @param {String} effectiveDate
  * @param {String} expiryDate
- * @returns Function
+ * @returns {String, Boolean}
  */
 const endDateRule = (effectiveDate, expiryDate) => {
   let message = true;
