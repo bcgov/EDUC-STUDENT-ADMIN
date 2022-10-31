@@ -66,20 +66,16 @@ const required = (message = 'Required') => {
  * @param {String} expiryDate
  * @returns {String, Boolean}
  */
-const endDateRule = (effectiveDate, expiryDate) => {
-  let message = true;
-  if (!effectiveDate && expiryDate) {
-    message = 'Start date required';
-  }
+const endDateRule = (effectiveDate, expiryDate, message = 'End date cannot be before start date') => {
 
   if (effectiveDate && expiryDate) {
     const effDate = LocalDate.parse(effectiveDate.substring(0,10));
     const expDate = LocalDate.parse(expiryDate.substring(0,10));
 
-    message = expDate.isAfter(effDate) ? '' : 'End date cannot be before start date';
+    return expDate.isAfter(effDate) || message;
   }
 
-  return message;
+  return true;
 };
 
 export {
