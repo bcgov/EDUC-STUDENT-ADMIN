@@ -187,7 +187,7 @@
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
                         id="editContactExpiryDateTextField"
-                        :rules="[rules.endDateRuleBeta(contactEdit.effectiveDate, contactEdit.expiryDate)]"
+                        :rules="[rules.endDateRule(contactEdit.effectiveDate, contactEdit.expiryDate)]"
                         class="pt-0 mt-0"
                         v-model="contactEdit.expiryDate"
                         label="Expiry Date"

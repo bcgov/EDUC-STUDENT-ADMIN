@@ -6,6 +6,8 @@
 //     :rules="[rules.email(), rules.required('custom message here')]"
 //  </v-text-field>
 //
+// Example SchoolContact.vue
+//
 // REMEMBER to do the following in your .vue file
 //  import * as Rule from @/utils/institute/form
 //  under data do rules: Rules <- allows you to use in <template>.
@@ -57,18 +59,15 @@ const required = (message = 'Required') => {
   return v => !!(v && v.trim()) || message;
 };
 
-// *******************************************************************
-// BETA RULES STILL IN DEVELOPMENT
-// *******************************************************************
 /**
- * Custom endDate Rule BETA! Checks that we have start date and that end date
- * happens after start date.
+ * Custom endDate Rule! Checks that we have start date and that end date
+ * happens after start date. Date format should be 2022-12-10 YYYY-MM-DD.
  * @param {String} effectiveDate
  * @param {String} expiryDate
  * @returns Function
  */
-const endDateRuleBeta = (effectiveDate, expiryDate) => {
-  let message = '';
+const endDateRule = (effectiveDate, expiryDate) => {
+  let message = true;
   if (!effectiveDate && expiryDate) {
     message = 'Start date required';
   }
@@ -80,12 +79,12 @@ const endDateRuleBeta = (effectiveDate, expiryDate) => {
     message = expDate.isAfter(effDate) ? '' : 'End date cannot be before start date';
   }
 
-  return message || true;
+  return message;
 };
 
 export {
   email,
-  endDateRuleBeta,
+  endDateRule,
   number,
   phoneNumber,
   postalCode,
