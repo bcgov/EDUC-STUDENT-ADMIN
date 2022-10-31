@@ -17,6 +17,9 @@
             </v-row>
             <v-row no-gutters>
               <v-col cols="12" class="pt-1">
+                <span>{{ contact.jobTitle }}</span>
+              </v-col>
+              <v-col cols="12" class="pt-1">
                 <span>{{ contact.email }}</span>
               </v-col>
               <v-col cols="12" class="pt-1">
@@ -75,6 +78,16 @@
                               type="text"
                               maxlength="255"
                               ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-text-field id="contactEditJobTitle"
+                              v-model="contactEdit.jobTitle"
+                              label="Job Title"
+                              type="text"
+                              maxlength="255"
+                ></v-text-field>
               </v-col>
             </v-row>
             <v-row>
