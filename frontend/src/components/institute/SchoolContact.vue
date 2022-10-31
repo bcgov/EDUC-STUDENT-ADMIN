@@ -17,6 +17,9 @@
             </v-row>
             <v-row no-gutters>
               <v-col cols="12" class="pt-1">
+                <span>{{ contact.jobTitle }}</span>
+              </v-col>
+              <v-col cols="12" class="pt-1">
                 <span>{{ contact.email }}</span>
               </v-col>
               <v-col cols="12" class="pt-1">
@@ -61,49 +64,59 @@
               <v-col>
                 <v-text-field id="contactEditFirstName"
                               v-model="contactEdit.firstName"
-                              :rules="firstNameRules"
+                              :rules="[rules.required('First name required')]"
                               label="First Name"
                               type="text"
                               maxlength="255"
-                              required></v-text-field>
+                              ></v-text-field>
               </v-col>
               <v-col>
                 <v-text-field id="contactEditLastName"
                               v-model="contactEdit.lastName"
-                              :rules="lastNameRules"
+                              :rules="[rules.required('Last Name required')]"
                               label="Last Name"
                               type="text"
                               maxlength="255"
-                              required></v-text-field>
+                              ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-text-field id="contactEditJobTitle"
+                              v-model="contactEdit.jobTitle"
+                              label="Job Title"
+                              type="text"
+                              maxlength="255"
+                ></v-text-field>
               </v-col>
             </v-row>
             <v-row>
               <v-col>
                 <v-text-field id="contactEditEmail"
                               v-model="contactEdit.email"
-                              :rules="emailRules"
+                              :rules="[rules.required(), rules.email()]"
                               label="Email"
                               type="text"
                               maxlength="255"
-                              required></v-text-field>
+                              ></v-text-field>
               </v-col>
             </v-row>
             <v-row>
               <v-col>
                 <v-text-field id="contactEditPhoneNumber"
                               v-model="contactEdit.phoneNumber"
-                              :rules="phNumRules"
+                              :rules="[rules.required(), rules.phoneNumber()]"
                               label="Phone"
                               type="text"
                               maxlength="10"
                               :counter="10"
                               @keypress="isNumber($event)"
-                              required></v-text-field>
+                              ></v-text-field>
               </v-col>
               <v-col>
                 <v-text-field id="contactEditPhoneExt"
+                              :rules="[rules.number()]"
                               v-model="contactEdit.phoneExtension"
-                              :rules="phNumExtRules"
                               label="Ext"
                               type="text"
                               maxlength="10"
@@ -113,8 +126,8 @@
             <v-row>
               <v-col>
                 <v-text-field id="contactEditAltPhoneNumber"
+                              :rules="[rules.phoneNumber()]"
                               v-model="contactEdit.alternatePhoneNumber"
-                              :rules="altPhNumRules"
                               label="Alternative Phone"
                               type="text"
                               maxlength="10"
@@ -123,8 +136,8 @@
               </v-col>
               <v-col>
                 <v-text-field id="contactEditAltPhoneExt"
+                              :rules="[rules.number()]"
                               v-model="contactEdit.alternatePhoneExtension"
-                              :rules="altPhNumExtRules"
                               label="Alternative Ext"
                               type="text"
                               maxlength="10"
@@ -144,10 +157,10 @@
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
                         id="editContactEffectiveDateTextField"
-                        :rules="startDateRules"
+                        :rules="[rules.required('Start date required')]"
                         class="pt-0 mt-0"
                         v-model="contactEdit.effectiveDate"
-                        label="Expiry Date"
+                        label="Start Date"
                         prepend-inner-icon="mdi-calendar"
                         clearable
                         readonly
@@ -174,7 +187,7 @@
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
                         id="editContactExpiryDateTextField"
-                        :rules="endDateRules"
+                        :rules="[rules.endDateRule(contactEdit.effectiveDate, contactEdit.expiryDate)]"
                         class="pt-0 mt-0"
                         v-model="contactEdit.expiryDate"
                         label="Expiry Date"
@@ -207,7 +220,8 @@ import PrimaryButton from '../util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber, formatDate} from '@/utils/format';
 import {getStatusColor} from '@/utils/institute/status';
-import {LocalDate} from '@js-joda/core';
+import * as Rules from '@/utils/institute/formRules';
+import {isNumber} from '@/utils/institute/formInput';
 
 export default {
   name: 'SchoolContact',
@@ -249,35 +263,7 @@ export default {
         effectiveDate:'',
         expiryDate:''
       },
-      firstNameRules: [
-        v => !!v || 'First Name is required',
-      ],
-      lastNameRules: [
-        v => !!v || 'Last Name is required',
-      ],
-      emailRules: [
-        v => !!v || 'E-mail is required',
-        v => /^[\w!#$%&’*+/=?`{|}~^-]+(?:\.[\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}$/.test(v) || 'E-mail must be valid',
-      ],
-      phNumRules: [
-        v => !!v || 'Phone Number is required',
-        v => !v || v.length >= 10 || 'Phone Number must be 10 digits',
-      ],
-      phNumExtRules: [
-        v => !v || /^\d+$/.test(v) || 'Phone Extension must be valid',
-      ],
-      altPhNumRules: [
-        v => !v || v.length >= 10 || 'Alt. Phone Number must be 10 digits',
-      ],
-      altPhNumExtRules: [
-        v => !v || /^\d+$/.test(v) || 'Phone Extension must be valid',
-      ],
-      startDateRules: [
-        v => !!v || 'Start Date is required',
-      ],
-      endDateRules: [
-        this.endDateRuleValidator,
-      ],
+      rules: Rules,
       editContactExpiryDatePicker: null,
       editContactEffectiveDatePicker: null,
     };
@@ -327,23 +313,6 @@ export default {
       const [year, month, day] = effectiveDate.split('-');
       return `${year}/${month}/${day}`;
     },
-    isNumber: function(evt) {
-      let charCode = (evt.which) ? evt.which : evt.keyCode;
-      if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
-        evt.preventDefault();
-      } else {
-        return true;
-      }
-    },
-    endDateRuleValidator() {
-      if (this.contactEdit.effectiveDate && this.contactEdit.expiryDate) {
-        const effDate = LocalDate.parse(this.contactEdit.effectiveDate);
-        const expDate = LocalDate.parse(this.contactEdit.expiryDate);
-        return expDate.isAfter(effDate) || 'End date cannot be before start date';
-      }
-
-      return true;
-    },
     saveEditContactExpiryDate(date) {
       this.$refs.editContactExpiryDateFilter.save(date);
     },
@@ -353,6 +322,7 @@ export default {
     formatDate,
     formatPhoneNumber,
     getStatusColor,
+    isNumber,
   },
   watch: {
     'contactEdit.effectiveDate': {
