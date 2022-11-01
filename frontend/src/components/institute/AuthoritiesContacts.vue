@@ -144,7 +144,6 @@
                                       label="Phone"
                                       type="text"
                                       maxlength="10"
-                                      :counter="10"
                                       @keypress="isNumber($event)"
                                       required></v-text-field>
                       </v-col>
@@ -166,7 +165,6 @@
                                       label="Alternative Phone"
                                       type="text"
                                       maxlength="10"
-                                      :counter="10"
                                       @keypress="isNumber($event)"></v-text-field>
                       </v-col>
                       <v-col>
