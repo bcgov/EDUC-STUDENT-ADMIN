@@ -17,9 +17,6 @@
             </v-row>
             <v-row no-gutters>
               <v-col cols="12" class="pt-1">
-                <span id="contactJobTitle">{{ contact.jobTitle }}</span>
-              </v-col>
-              <v-col cols="12" class="pt-1">
                 <span id="contactEmail"> {{ contact.email }}</span>
               </v-col>
               <v-col cols="12" class="pt-1">
@@ -82,16 +79,6 @@
             </v-row>
             <v-row>
               <v-col>
-                <v-text-field id="contactEditJobTitle"
-                              v-model="contactEdit.jobTitle"
-                              label="Job Title"
-                              type="text"
-                              maxlength="255"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
                 <v-text-field id="contactEditEmail"
                               v-model="contactEdit.email"
                               :rules="[rules.required(), rules.email()]"
@@ -109,7 +96,6 @@
                               label="Phone"
                               type="text"
                               maxlength="10"
-                              :counter="10"
                               @keypress="isNumber($event)"
                               ></v-text-field>
               </v-col>
@@ -131,7 +117,6 @@
                               label="Alternative Phone"
                               type="text"
                               maxlength="10"
-                              :counter="10"
                               @keypress="isNumber($event)"></v-text-field>
               </v-col>
               <v-col>
@@ -255,7 +240,6 @@ export default {
       contactEdit: {
         firstName: '',
         lastName: '',
-        jobTitle: '',
         email: '',
         phoneNumber:'',
         phoneExtension:'',
