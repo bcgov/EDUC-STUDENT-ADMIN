@@ -72,7 +72,7 @@ const endDateRule = (effectiveDate, expiryDate, message = 'End date cannot be be
     const effDate = LocalDate.parse(effectiveDate.substring(0,10));
     const expDate = LocalDate.parse(expiryDate.substring(0,10));
 
-    return expDate.isAfter(effDate) || message;
+    return expDate.isAfter(effDate) || expDate.isEqual(effDate) || message;
   }
 
   return true;
