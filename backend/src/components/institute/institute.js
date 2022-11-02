@@ -142,13 +142,22 @@ async function updateSchoolContact(req, res) {
 async function updateAuthorityContact(req, res) {
   try {
     const token = getBackendToken(req);
+    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
+
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.independentAuthorityId);
     if(!authority || !hasAuthorityAdminRole(req)){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'You do not have the required access for this function'
       });
     }
+
     const params = req.body;
+    params.updateDate = null;
+    params.createDate = null;
+    params.updateUser = utils.getUser(req).idir_username;
+    params.effectiveDate = params.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null;
+    params.expiryDate = req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null;
+
     const result = await utils.putData(token, config.get('server:institute:instituteAuthorityURL') + '/' + req.body.independentAuthorityId + '/contact/'+ req.body.authorityContactId , params, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
@@ -168,7 +177,7 @@ async function updateAuthority(req, res) {
       });
     }
 
-    var authorityPayload = req.body;
+    let authorityPayload = req.body;
 
     if(authorityPayload.authorityTypeCode === 'OFFSHORE'){
       authorityPayload.addresses = authorityPayload.addresses.filter(address => address.addressTypeCode !== 'PHYSICAL');

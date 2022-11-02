@@ -46,204 +46,7 @@
         </v-row>
         <v-row cols="2" v-if="authorityContacts.has(authorityContactType.authorityContactTypeCode)">
           <v-col cols="5" lg="4" v-for="contact in authorityContacts.get(authorityContactType.authorityContactTypeCode)" :key="contact.independentAuthorityId">
-            <v-card v-show="!expandEdit">
-              <v-card-title class="pb-0">
-                <v-row no-gutters>
-                  <v-col>
-                    <v-row no-gutters>
-                      <v-col cols="8">
-                        <v-icon class="pb-1" :color="getStatusColor(contact)" left dark>
-                          mdi-circle-medium
-                        </v-icon>
-                        <strong style="word-break: break-word;" id="authorityContactName">{{ `${contact.firstName} ${contact.lastName}` }}</strong>
-                      </v-col>
-                      <v-col cols="4" class="d-flex justify-end">
-                        <PrimaryButton icon-left width="6em" secondary icon="mdi-pencil" text="Edit" id="editContactButton" @click.native="openContactEditForm(contact)"></PrimaryButton>
-                      </v-col>
-                    </v-row>
-                    <v-row no-gutters>
-                      <v-col cols="12" class="pt-1">
-                        <span>{{ contact.email }}</span>
-                      </v-col>
-                      <v-col cols="12" class="pt-1">
-                        <span>{{ formatPhoneNumber(contact.phoneNumber) }}</span><span v-if="contact.phoneExtension"> ext. {{contact.phoneExtension}}</span>
-                      </v-col>
-                      <v-col cols="12" class="pt-1" v-if="contact.alternatePhoneNumber">
-                        <span>{{ formatPhoneNumber(contact.alternatePhoneNumber) }} (alt.)</span> <span v-if="contact.alternatePhoneExtension"> ext. {{contact.alternatePhoneExtension}}</span>
-                      </v-col>
-                    </v-row>
-                  </v-col>
-                </v-row>
-              </v-card-title>
-              <v-card-text class="pt-2">
-                <v-row no-gutters>
-                  <v-col cols="12" class="pt-1" v-if="contact.expiryDate">
-                    <v-icon aria-hidden="false">
-                      mdi-calendar-today
-                    </v-icon>
-                    <span> {{ formatDate(contact.effectiveDate) }} - {{ formatDate(contact.expiryDate)}}</span>
-                  </v-col>
-                  <v-col cols="12" class="pt-1" v-else>
-                    <v-icon aria-hidden="false">
-                      mdi-calendar-today
-                    </v-icon>
-                    <span> {{ formatDate(contact.effectiveDate) }}</span>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
-            <v-expand-transition>
-              <v-card v-show="expandEdit">
-                <v-form
-                  ref="editContactForm"
-                  v-model="ecFormValid">
-                  <v-row no-gutters class="justify-end mt-n2 pr-2 pt-2">
-                    <v-col cols="12" class="d-flex justify-end">
-                      <PrimaryButton class="mr-3" id="cancelEditButton" :secondary="true" @click.native="cancelContactEdit"
-                                     text="Cancel"></PrimaryButton>
-                      <PrimaryButton @click.native="saveAuthorityContact(contactEdit)" id="saveEditButton" :disabled="!ecFormValid" text="Save"></PrimaryButton>
-                    </v-col>
-                  </v-row>
-                  <v-col>
-                    <v-row>
-                      <v-col>
-                        <v-text-field id="contactEditFirstName"
-                                      v-model="contactEdit.firstName"
-                                      :rules="[rules.required()]"
-                                      label="First Name"
-                                      type="text"
-                                      maxlength="255"
-                                      required></v-text-field>
-                      </v-col>
-                      <v-col>
-                        <v-text-field id="contactEditLastName"
-                                      v-model="contactEdit.lastName"
-                                      :rules="[rules.required()]"
-                                      label="Last Name"
-                                      type="text"
-                                      maxlength="255"
-                                      required></v-text-field>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col>
-                        <v-text-field id="contactEditEmail"
-                                      v-model="contactEdit.email"
-                                      :rules="[rules.required(), rules.email()]"
-                                      label="Email"
-                                      type="text"
-                                      maxlength="255"
-                                      required></v-text-field>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col>
-                        <v-text-field id="contactEditPhoneNumber"
-                                      v-model="contactEdit.phoneNumber"
-                                      :rules="[rules.required(), rules.phoneNumber()]"
-                                      label="Phone"
-                                      type="text"
-                                      maxlength="10"
-                                      @keypress="isNumber($event)"
-                                      required></v-text-field>
-                      </v-col>
-                      <v-col>
-                        <v-text-field id="contactEditPhoneExt"
-                                      v-model="contactEdit.phoneExtension"
-                                      :rules="[rules.number()]"
-                                      label="Ext"
-                                      type="text"
-                                      maxlength="10"
-                                      @keypress="isNumber($event)"></v-text-field>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col>
-                        <v-text-field id="contactEditAltPhoneNumber"
-                                      v-model="contactEdit.alternatePhoneNumber"
-                                      :rules="[rules.phoneNumber()]"
-                                      label="Alternative Phone"
-                                      type="text"
-                                      maxlength="10"
-                                      @keypress="isNumber($event)"></v-text-field>
-                      </v-col>
-                      <v-col>
-                        <v-text-field id="contactEditAltPhoneExt"
-                                      v-model="contactEdit.alternatePhoneExtension"
-                                      :rules="[rules.number()]"
-                                      label="Alternative Ext"
-                                      type="text"
-                                      maxlength="10"
-                                      @keypress="isNumber($event)"></v-text-field>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col>
-                        <v-menu
-                          id="editContactEffectiveDatePicker"
-                          ref="editContactEffectiveDateFilter"
-                          :close-on-content-click="false"
-                          transition="scale-transition"
-                          offset-y
-                          min-width="auto"
-                        >
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
-                              id="contactEditStartDate"
-                              v-model="contactEdit.effectiveDate"
-                              label="Start Date"
-                              hint="YYYY/MM/DD format"
-                              :rules="[rules.required()]"
-                              class="pt-0 mt-0"
-                              prepend-inner-icon="mdi-calendar"
-                              clearable
-                              readonly
-                              v-bind="attrs"
-                              v-on="on"
-                            ></v-text-field>
-                          </template>
-                          <v-date-picker
-                            v-model="contactEdit.effectiveDate"
-                            :active-picker.sync="editContactEffectiveDatePicker"
-                            @change="saveEditContactEffectiveDate"
-                          ></v-date-picker>
-                        </v-menu>
-                      </v-col>
-                      <v-col>
-                        <v-menu
-                          id="editContactExpiryDatePicker"
-                          ref="editContactExpiryDateFilter"
-                          :close-on-content-click="false"
-                          transition="scale-transition"
-                          offset-y
-                          min-width="auto"
-                        >
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
-                              id="editContactExpiryDateTextField"
-                              :rules="[rules.endDateRule(contactEdit.effectiveDate, contactEdit.expiryDate)]"
-                              class="pt-0 mt-0"
-                              v-model="contactEdit.expiryDate"
-                              label="Expiry Date"
-                              prepend-inner-icon="mdi-calendar"
-                              clearable
-                              readonly
-                              v-bind="attrs"
-                              v-on="on"
-                            ></v-text-field>
-                          </template>
-                          <v-date-picker
-                            v-model="contactEdit.expiryDate"
-                            :active-picker.sync="editContactExpiryDatePicker"
-                            @change="saveEditContactExpiryDate"
-                          ></v-date-picker>
-                        </v-menu>
-                      </v-col>
-                    </v-row>
-                  </v-col>
-                </v-form>
-              </v-card>
-            </v-expand-transition>
+            <AuthorityContact :contact="contact" :authorityID="$route.params.authorityID" @editAuthorityContact:editAuthorityContactSuccess="contactEditSuccess" :canEditAuthorityContact="canEditAuthorityContact()"/>
           </v-col>
         </v-row>
         <v-row cols="2" v-else>
@@ -262,15 +65,16 @@ import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
-import {formatPhoneNumber, formatDate} from '@/utils/format';
-import {getStatusColor, isExpired} from '@/utils/institute/status';
+import {isExpired} from '@/utils/institute/status';
 import {mapGetters} from 'vuex';
 import * as Rules from '@/utils/institute/formRules';
+import AuthorityContact from '@/components/institute/AuthorityContact';
 
 export default {
   name: 'AuthorityContactPage',
   mixins: [alertMixin],
   components: {
+    AuthorityContact,
     PrimaryButton,
   },
   data() {
@@ -306,15 +110,9 @@ export default {
     this.getAuthorityContactTypeCodes();
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo']),
+    ...mapGetters('auth', ['isAuthenticated','INDEPENDENT_AUTHORITY_ADMIN_ROLE']),
     loading() {
       return this.loadingCount !== 0;
-    },
-    computedEffDateFormatted () {
-      return this.formatEffectiveDisplayDate(this.contactEdit.effectiveDate?.substring(0,10));
-    },
-    computedExpDateFormatted () {
-      return this.formatEffectiveDisplayDate(this.contactEdit.expiryDate?.substring(0,10));
     }
   },
   methods: {
@@ -331,7 +129,7 @@ export default {
                 this.authorityContacts.set(contact.authorityContactTypeCode, [contact]);
                 return;
               }
-              this.schoolContacts.get(contact.authorityContactTypeCode).push(contact);
+              this.authorityContacts.get(contact.authorityContactTypeCode).push(contact);
             }
           });
         })
@@ -343,71 +141,11 @@ export default {
           this.loadingCount -= 1;
         });
     },
-    saveAuthorityContact(contact) {
-      this.loading = true;
-      this.validateEditContactForm();
-
-      contact.independentAuthorityId = this.$route.params.authorityID;
-      contact.createDate = null;
-      contact.updateDate = null;
-      contact.updateUser = this.userInfo.userName;
-      if(contact.effectiveDate.length <= 10) {
-        contact.effectiveDate = contact.effectiveDate + 'T00:00:00';
-      }
-      if (contact.expiryDate !== null && contact.expiryDate !== '') {
-        contact.expiryDate = contact.expiryDate + 'T00:00:00';
-      }
-
-      const payload = contact;
-      ApiService.apiAxios.put(`${Routes.institute.AUTHORITY_DATA_URL}/${this.$route.params.authorityID}/contact/${payload.authorityContactId}`, payload)
-        .then(() => {
-          this.setSuccessAlert('Success! The authority contact has been updated.');
-        })
-        .catch(error => {
-          console.error(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while saving the authority contact information. Please try again later.');
-        })
-        .finally(() => {
-          this.getThisAuthorityContacts();
-          this.cancelContactEdit();
-          this.contactEdit = '';
-        });
-    },
-    cancelContactEdit(){
-      this.expandEdit = !this.expandEdit;
-    },
-    validateEditContactForm(){
-      this.$refs.editContactForm[0].validate();
-    },
-    openContactEditForm(contact){
-      this.expandEdit = !this.expandEdit;
-      this.populateContactEditForm(contact);
-    },
-    populateContactEditForm(contact){
-      this.contactEdit = _.cloneDeep(contact);
-      this.contactOG = _.cloneDeep(contact);
-
-      this.contactEdit.effectiveDate = this.contactEdit?.effectiveDate?.substring(0, 10) || null;
-      this.contactEdit.expiryDate = this.contactEdit?.expiryDate?.substring(0, 10) || null;
-    },
-    formatEffectiveDisplayDate (effectiveDate) {
-      if (!effectiveDate) return null;
-      const [year, month, day] = effectiveDate.split('-');
-      return `${year}/${month}/${day}`;
-    },
-    isNumber: function(evt) {
-      let charCode = (evt.which) ? evt.which : evt.keyCode;
-      if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
-        evt.preventDefault();
-      } else {
-        return true;
-      }
-    },
     saveEditContactEffectiveDate(date) {
-      this.$refs.editContactEffectiveDateFilter.save(date);
+      this.$refs.editContactEffectiveDateFilter[0].save(date);
     },
     saveEditContactExpiryDate(date) {
-      this.$refs.editContactExpiryDateFilter.save(date);
+      this.$refs.editContactExpiryDateFilter[0].save(date);
     },
     getAuthorityContactTypeCodes() {
       this.loadingCount += 1;
@@ -426,9 +164,12 @@ export default {
     backButtonClick() {
       this.$router.push({name: 'instituteAuthoritiesList'});
     },
-    formatDate,
-    formatPhoneNumber,
-    getStatusColor
+    canEditAuthorityContact() {
+      return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE;
+    },
+    contactEditSuccess() {
+      this.getThisAuthorityContacts();
+    }
   }
 };
 
