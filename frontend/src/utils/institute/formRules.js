@@ -78,11 +78,21 @@ const endDateRule = (effectiveDate, expiryDate, message = 'End date cannot be be
   return true;
 };
 
+/**
+ * Rule for website url
+ * @param {String} message
+ * @returns Function
+ */
+const website = (message = 'Website must be valid') => {
+  return v => !v || /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&/=]*)$/.test(v) || message;
+};
+
 export {
   email,
   endDateRule,
   number,
   phoneNumber,
   postalCode,
-  required
+  required,
+  website
 };
