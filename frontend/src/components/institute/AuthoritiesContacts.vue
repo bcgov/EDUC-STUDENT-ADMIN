@@ -142,10 +142,10 @@ export default {
         });
     },
     saveEditContactEffectiveDate(date) {
-      this.$refs.editContactEffectiveDateFilter[0].save(date);
+      this.$refs.editContactEffectiveDateFilter.save(date);
     },
     saveEditContactExpiryDate(date) {
-      this.$refs.editContactExpiryDateFilter[0].save(date);
+      this.$refs.editContactExpiryDateFilter.save(date);
     },
     getAuthorityContactTypeCodes() {
       this.loadingCount += 1;
