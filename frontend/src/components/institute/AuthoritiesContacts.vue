@@ -109,7 +109,7 @@
                       <v-col>
                         <v-text-field id="contactEditFirstName"
                                       v-model="contactEdit.firstName"
-                                      :rules="firstNameRules"
+                                      :rules="[rules.required()]"
                                       label="First Name"
                                       type="text"
                                       maxlength="255"
@@ -118,7 +118,7 @@
                       <v-col>
                         <v-text-field id="contactEditLastName"
                                       v-model="contactEdit.lastName"
-                                      :rules="lastNameRules"
+                                      :rules="[rules.required()]"
                                       label="Last Name"
                                       type="text"
                                       maxlength="255"
@@ -129,7 +129,7 @@
                       <v-col>
                         <v-text-field id="contactEditEmail"
                                       v-model="contactEdit.email"
-                                      :rules="emailRules"
+                                      :rules="[rules.required(), rules.email()]"
                                       label="Email"
                                       type="text"
                                       maxlength="255"
@@ -140,7 +140,7 @@
                       <v-col>
                         <v-text-field id="contactEditPhoneNumber"
                                       v-model="contactEdit.phoneNumber"
-                                      :rules="phNumRules"
+                                      :rules="[rules.required(), rules.phoneNumber()]"
                                       label="Phone"
                                       type="text"
                                       maxlength="10"
@@ -150,7 +150,7 @@
                       <v-col>
                         <v-text-field id="contactEditPhoneExt"
                                       v-model="contactEdit.phoneExtension"
-                                      :rules="phNumExtRules"
+                                      :rules="[rules.number()]"
                                       label="Ext"
                                       type="text"
                                       maxlength="10"
@@ -161,7 +161,7 @@
                       <v-col>
                         <v-text-field id="contactEditAltPhoneNumber"
                                       v-model="contactEdit.alternatePhoneNumber"
-                                      :rules="altPhNumRules"
+                                      :rules="[rules.phoneNumber()]"
                                       label="Alternative Phone"
                                       type="text"
                                       maxlength="10"
@@ -170,7 +170,7 @@
                       <v-col>
                         <v-text-field id="contactEditAltPhoneExt"
                                       v-model="contactEdit.alternatePhoneExtension"
-                                      :rules="altPhNumExtRules"
+                                      :rules="[rules.number()]"
                                       label="Alternative Ext"
                                       type="text"
                                       maxlength="10"
@@ -179,50 +179,63 @@
                     </v-row>
                     <v-row>
                       <v-col>
-                        <v-menu v-model="effDateMenu" :close-on-content-click="true" transition="scale-transition"
-                                offset-y max-width="290px" min-width="auto">
+                        <v-menu
+                          id="editContactEffectiveDatePicker"
+                          ref="editContactEffectiveDateFilter"
+                          :close-on-content-click="false"
+                          transition="scale-transition"
+                          offset-y
+                          min-width="auto"
+                        >
                           <template v-slot:activator="{ on, attrs }">
                             <v-text-field
                               id="contactEditStartDate"
-                              v-model="computedEffDateFormatted"
+                              v-model="contactEdit.effectiveDate"
                               label="Start Date"
                               hint="YYYY/MM/DD format"
-                              persistent-hint
-                              append-icon="mdi-calendar"
-                              @click:append="effDateMenu = true"
+                              :rules="[rules.required()]"
+                              class="pt-0 mt-0"
+                              prepend-inner-icon="mdi-calendar"
+                              clearable
+                              readonly
                               v-bind="attrs"
                               v-on="on"
-                              :rules="startDateRules"
-                              required
                             ></v-text-field>
                           </template>
                           <v-date-picker
                             v-model="contactEdit.effectiveDate"
-                            no-title
-                            @input="effDateMenu = false"
+                            :active-picker.sync="editContactEffectiveDatePicker"
+                            @change="saveEditContactEffectiveDate"
                           ></v-date-picker>
                         </v-menu>
                       </v-col>
                       <v-col>
-                        <v-menu v-model="expDateMenu" :close-on-content-click="true" transition="scale-transition"
-                                offset-y max-width="290px" min-width="auto">
+                        <v-menu
+                          id="editContactExpiryDatePicker"
+                          ref="editContactExpiryDateFilter"
+                          :close-on-content-click="false"
+                          transition="scale-transition"
+                          offset-y
+                          min-width="auto"
+                        >
                           <template v-slot:activator="{ on, attrs }">
                             <v-text-field
-                              id="contactEditEndDate"
-                              v-model="computedExpDateFormatted"
-                              label="End Date"
-                              hint="YYYY/MM/DD format"
-                              persistent-hint
-                              append-icon="mdi-calendar"
-                              @click:append="expDateMenu = true"
+                              id="editContactExpiryDateTextField"
+                              :rules="[rules.endDateRule(contactEdit.effectiveDate, contactEdit.expiryDate)]"
+                              class="pt-0 mt-0"
+                              v-model="contactEdit.expiryDate"
+                              label="Expiry Date"
+                              prepend-inner-icon="mdi-calendar"
+                              clearable
+                              readonly
                               v-bind="attrs"
                               v-on="on"
                             ></v-text-field>
                           </template>
                           <v-date-picker
                             v-model="contactEdit.expiryDate"
-                            no-title
-                            @input="expDateMenu = false"
+                            :active-picker.sync="editContactExpiryDatePicker"
+                            @change="saveEditContactExpiryDate"
                           ></v-date-picker>
                         </v-menu>
                       </v-col>
@@ -252,6 +265,7 @@ import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber, formatDate} from '@/utils/format';
 import {getStatusColor, isExpired} from '@/utils/institute/status';
 import {mapGetters} from 'vuex';
+import * as Rules from '@/utils/institute/formRules';
 
 export default {
   name: 'AuthorityContactPage',
@@ -270,6 +284,8 @@ export default {
       ecFormValid: false,
       effDateMenu: false,
       expDateMenu: false,
+      editContactExpiryDatePicker: null,
+      editContactEffectiveDatePicker: null,
       contactEdit: {
         firstName: '',
         lastName: '',
@@ -281,33 +297,8 @@ export default {
         effectiveDate:'',
         expiryDate:''
       },
+      rules: Rules,
       contactOG: '',
-      firstNameRules: [
-        v => !!v || 'First Name is required',
-      ],
-      lastNameRules: [
-        v => !!v || 'Last Name is required',
-      ],
-      emailRules: [
-        v => !!v || 'E-mail is required',
-        v => !v || /^[\w!#$%&’*+/=?`{|}~^-]+(?:\.[\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}$/.test(v) || 'E-mail must be valid',
-      ],
-      phNumRules: [
-        v => !!v || 'Phone Number is required',
-        v => !!v && v.length >= 10 || 'Phone Number must be 10 digits',
-      ],
-      phNumExtRules: [
-        v => !v || /^\d+$/.test(v) || 'Phone Extension must be valid',
-      ],
-      altPhNumRules: [
-        v => !v || v.length >= 10 || 'Alt. Phone Number must be 10 digits',
-      ],
-      altPhNumExtRules: [
-        v => !v || /^\d+$/.test(v) || 'Phone Extension must be valid',
-      ],
-      startDateRules: [
-        v => !!v || 'Start Date is required',
-      ],
     };
   },
   created() {
@@ -395,6 +386,9 @@ export default {
     populateContactEditForm(contact){
       this.contactEdit = _.cloneDeep(contact);
       this.contactOG = _.cloneDeep(contact);
+
+      this.contactEdit.effectiveDate = this.contactEdit?.effectiveDate?.substring(0, 10) || null;
+      this.contactEdit.expiryDate = this.contactEdit?.expiryDate?.substring(0, 10) || null;
     },
     formatEffectiveDisplayDate (effectiveDate) {
       if (!effectiveDate) return null;
@@ -408,6 +402,12 @@ export default {
       } else {
         return true;
       }
+    },
+    saveEditContactEffectiveDate(date) {
+      this.$refs.editContactEffectiveDateFilter.save(date);
+    },
+    saveEditContactExpiryDate(date) {
+      this.$refs.editContactExpiryDateFilter.save(date);
     },
     getAuthorityContactTypeCodes() {
       this.loadingCount += 1;
