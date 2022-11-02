@@ -9,7 +9,7 @@
                 <v-icon class="pb-1" :color="getStatusColor(contact)" left dark>
                   mdi-circle-medium
                 </v-icon>
-                <strong style="word-break: break-word;">{{ `${contact.firstName} ${contact.lastName}` }}</strong>
+                <strong style="word-break: break-word;" id="authorityContactName">{{ `${contact.firstName} ${contact.lastName}` }}</strong>
               </v-col>
               <v-col cols="4" class="d-flex justify-end">
                 <PrimaryButton icon-left width="6em" secondary icon="mdi-pencil" text="Edit" id="editContactButton" :disabled="!canEditAuthorityContact" @click.native="openContactEditForm(contact)"></PrimaryButton>
