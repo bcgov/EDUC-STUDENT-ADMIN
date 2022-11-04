@@ -175,7 +175,7 @@
                         :rules="[rules.endDateRule(contactEdit.effectiveDate, contactEdit.expiryDate)]"
                         class="pt-0 mt-0"
                         v-model="contactEdit.expiryDate"
-                        label="Expiry Date"
+                        label="End Date"
                         prepend-inner-icon="mdi-calendar"
                         clearable
                         readonly
