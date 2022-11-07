@@ -9,7 +9,7 @@
                 <v-icon class="pb-1" :color="getStatusColor(contact)" left dark>
                   mdi-circle-medium
                 </v-icon>
-                <strong style="word-break: break-word;" id="authorityContactName">{{ `${contact.firstName} ${contact.lastName}` }}</strong>
+                <strong style="word-break: break-word;" id="authorityContactName">{{ formatContactName(contact) }}</strong>
               </v-col>
               <v-col cols="4" class="d-flex justify-end">
                 <PrimaryButton icon-left width="6em" secondary icon="mdi-pencil" text="Edit" id="editContactButton" :disabled="!canEditAuthorityContact" @click.native="openContactEditForm(contact)"></PrimaryButton>
@@ -61,7 +61,6 @@
               <v-col>
                 <v-text-field id="contactEditFirstName"
                               v-model="contactEdit.firstName"
-                              :rules="[rules.required()]"
                               label="First Name"
                               type="text"
                               maxlength="255"
@@ -203,7 +202,7 @@ import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
-import {formatPhoneNumber, formatDate} from '@/utils/format';
+import {formatPhoneNumber, formatDate, formatContactName} from '@/utils/format';
 import {getStatusColor} from '@/utils/institute/status';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
@@ -308,6 +307,7 @@ export default {
     formatPhoneNumber,
     getStatusColor,
     isNumber,
+    formatContactName
   },
   watch: {
     'contactEdit.effectiveDate': {
