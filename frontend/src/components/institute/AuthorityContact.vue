@@ -61,7 +61,6 @@
               <v-col>
                 <v-text-field id="contactEditFirstName"
                               v-model="contactEdit.firstName"
-                              :rules="[rules.required()]"
                               label="First Name"
                               type="text"
                               maxlength="255"
