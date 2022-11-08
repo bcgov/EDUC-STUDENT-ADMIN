@@ -170,8 +170,8 @@ import PrimaryButton from '../util/PrimaryButton';
 import {mapGetters, mapState} from 'vuex';
 import {isEmpty, omitBy} from 'lodash';
 import alertMixin from '@/mixins/alertMixin';
-import {formatPhoneNumber, sortByNameValue} from '@/utils/format';
-import {getStatusColorAuthorityOrSchool,getStatusAuthorityOrSchool} from '@/utils/institute/status';
+import {formatPhoneNumber, sortByNameValue, formatContactName} from '@/utils/format';
+import {getStatusColorAuthorityOrSchool,getStatusAuthorityOrSchool, isContactCurrent} from '@/utils/institute/status';
 import router from '@/router';
 import Spinner from '@/components/common/Spinner';
 
@@ -385,13 +385,23 @@ export default {
     formatPhoneNumber,
     sortByNameValue,
     getPrincipalsName(contacts) {
-      let principalsName = null;
-      for (const contact of contacts){
-        if(contact.schoolContactTypeCode === 'PRINCIPAL'){
-          principalsName = contact.firstName + ' ' + contact.lastName;
+      let oldestPrincipal = null;
+      for (const contact of contacts) {
+        if (contact.schoolContactTypeCode !== 'PRINCIPAL') {
+          continue;
         }
+        if (!isContactCurrent(contact)) {
+          continue;
+        }
+        if ((oldestPrincipal !== null) && (new Date(oldestPrincipal.effectiveDate) < new Date(contact.effectiveDate))) {
+          continue;
+        }
+        oldestPrincipal = contact;
       }
-      return principalsName;
+      if (oldestPrincipal == null) {
+        return '';
+      }
+      return formatContactName(oldestPrincipal);
     },
     openSchool(schoolId){
       this.$router.push({name: 'schoolDetails', params: {schoolID: schoolId}});
