@@ -724,7 +724,7 @@ async function relinkUserSchoolOrDistrictAccess(req, res) {
       let activationRoles = userSchool.edxUserSchoolRoles.map(role => role.edxRoleCode);
       payload = {
         schoolID: req.body.params.schoolID,
-        schoolName: cacheService.getSchoolBySchoolID(req.body.params.schoolID).name,
+        schoolName: cacheService.getSchoolBySchoolID(req.body.params.schoolID).schoolName,
         edxActivationRoleCodes: activationRoles,
         firstName: edxUserDetails.firstName,
         lastName: edxUserDetails.lastName,
