@@ -65,6 +65,21 @@ export function isExpired(expiryDate) {
 }
 
 /**
+ * Determines whether a contact is current.
+ * @param contact
+ * @returns Boolean
+ */
+export function isContactCurrent(contact) {
+  const currentTimestamp = LocalDateTime.now();
+  const parsedEffectiveDate = new LocalDateTime.parse(contact.effectiveDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
+  const parsedExpiryDate = contact.expiryDate ? new LocalDateTime.parse(contact.expiryDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss')) : null;
+  if (parsedEffectiveDate > currentTimestamp) {
+    return false;
+  }
+  return parsedExpiryDate == null || parsedExpiryDate > currentTimestamp;
+}
+
+/**
  * Provides status text for schools and authorities NOT districts
  * Used in school and authority list, details pages
  * Note * Authorities will only have Open Closing Closed states
