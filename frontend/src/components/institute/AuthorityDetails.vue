@@ -22,7 +22,7 @@
       <v-row v-else no-gutters>
           <v-col>
             <v-row  class="d-flex justify-start">
-              <v-col v-if="!editing" cols="6" class="d-flex justify-start">
+              <v-col v-if="!editing" cols="8" class="d-flex justify-start">
                 <h2 id="authorityName">{{ authority.authorityNumber }} - {{ authority.displayName }}</h2>
               </v-col>
               <v-col class="d-flex" v-else>
@@ -30,10 +30,10 @@
                 <v-text-field class="mt-n5 ml-3" style="font-size: x-large" :maxlength="255" :rules="[rules.required()]" required v-model="authorityCopy.displayName">
                 </v-text-field>
               </v-col>
-              <v-col v-if="!editing" cols="6" class="d-flex justify-end">
+              <v-col v-if="!editing" cols="4" class="d-flex justify-end">
                 <PrimaryButton id="editButton" icon-left width="6em" icon="mdi-pencil" text="Edit" :disabled="!canEditAuthorities()" @click.native="toggleEdit"></PrimaryButton>
               </v-col>
-              <v-col v-else cols="6" class="d-flex justify-end">
+              <v-col v-else cols="4" class="d-flex justify-end">
                 <PrimaryButton class="mr-2" secondary id="cancelButton" icon-left width="6em" text="Cancel" @click.native="editing = !editing"></PrimaryButton>
                 <PrimaryButton id="saveButton" icon-left width="6em" text="Save" :disabled="!authorityFormValid" @click.native="saveAuthority"></PrimaryButton>
               </v-col>
@@ -420,8 +420,85 @@
                 </v-row>
               </v-col>
             </v-row>
+            <v-row>
+              <v-col>
+                <v-row class="mt-6">
+                  <v-col class="d-flex justify-start">
+                    <h2>Ministry Notes</h2>
+                  </v-col>
+                  <v-col class="d-flex justify-end">
+                    <PrimaryButton id="addNewNoteButton" width="9em" icon="mdi-plus" icon-left text="New Note" :disabled="!canEditAuthorities()" @click.native="newNoteSheet = !newNoteSheet"></PrimaryButton>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col class="d-flex justify-start">
+                    <v-timeline id="authorityNotesTimeline" dense v-if="authority.notes.length > 0">
+                      <div v-for="(activity) in authority.notes"
+                           :key="activity.noteId">
+                        <v-timeline-item right icon="mdi-message-bulleted" icon-color="#003366" large color="white" >
+                          <v-card width="40em">
+                            <v-card-title>
+                              <div class="activityTitle">{{ activity.createUser }}</div>
+                              <v-spacer></v-spacer>
+                              <div class="activityDisplayDate">{{ formatDate(activity.createDate.substring(0,19),'uuuu-MM-dd\'T\'HH:mm:ss', to='uuuu/MM/dd') }}</div>
+                            </v-card-title>
+                            <v-card-text class="activityContent">{{ activity.content }}</v-card-text>
+                          </v-card>
+                        </v-timeline-item>
+                      </div>
+                    </v-timeline>
+                    <v-timeline id="authorityNotesTimeline" dense v-else>
+                      <v-timeline-item right icon="mdi-message-bulleted" icon-color="#003366" large color="white" >
+                        <v-card width="40em">
+                          <v-card-text class="activityContent">No notes have been recorded for this authority</v-card-text>
+                        </v-card>
+                      </v-timeline-item>
+                    </v-timeline>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
           </v-col>
       </v-row>
+
+      <v-bottom-sheet
+        v-model="newNoteSheet"
+        inset
+        no-click-animation
+        scrollable
+        persistent
+        width="30%"
+      >
+        <v-card
+          v-if="newNoteSheet"
+          id="newNoteSheet"
+          class="information-window-v-card">
+          <v-card-title class="sheetHeader pt-1 pb-1">New Note</v-card-title>
+          <v-divider></v-divider>
+          <v-card-text>
+            <v-row>
+              <v-col>
+                <v-textarea
+                  id="newNoteTextArea"
+                  v-model="newNoteText"
+                  rows="8"
+                  label="Note"
+                  autofocus
+                  no-resize
+                  maxlength="4000"
+                  class="pt-0"
+                  ref="newNoteTextArea"
+                  hide-details="auto">
+                </v-textarea>
+              </v-col>
+            </v-row>
+            <v-row class="py-4 pr-2 justify-end">
+              <PrimaryButton id="cancelNote" secondary text="Cancel" class="mr-2" @click.native="newNoteSheet = !newNoteSheet"></PrimaryButton>
+              <PrimaryButton id="saveNote" text="Save" width="7rem" :loading="loading" @click.native="saveNewAuthorityNote" :disabled="newNoteText === ''"></PrimaryButton>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-bottom-sheet>
     </v-container>
   </v-form>
 </template>
@@ -453,6 +530,8 @@ export default {
     return {
       sameAsMailingCheckbox: true,
       editing: false,
+      newNoteSheet: false,
+      newNoteText: '',
       authority: null,
       authorityFormValid: false,
       authorityCopy: null,
@@ -506,6 +585,26 @@ export default {
       } else {
         return true;
       }
+    },
+    saveNewAuthorityNote() {
+      this.loading = true;
+      const payload = {
+        authorityID: this.authorityID,
+        noteContent: this.newNoteText
+      };
+      ApiService.apiAxios.post(`${Routes.institute.AUTHORITY_NOTE_URL}`, payload)
+        .then(() => {
+          this.setSuccessAlert('Success! The note has been added to the authority.');
+        })
+        .catch(error => {
+          console.error(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while adding the saving the authority note. Please try again later.');
+        })
+        .finally(() => {
+          this.getAuthority();
+          this.newNoteSheet = false;
+          this.newNoteText = '';
+        });
     },
     getAuthority() {
       this.loading = true;

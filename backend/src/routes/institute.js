@@ -2,7 +2,8 @@ const passport = require('passport');
 const express = require('express');
 const router = express.Router();
 const { getDistricts, getSchools, getSchoolsPaginated, getAuthoritiesPaginated,
-  getAuthorityByID, getSchoolByID, getDistrictByDistrictID, addNewSchoolNote, updateSchoolContact, updateAuthority, updateAuthorityContact
+  getAuthorityByID, getSchoolByID, getDistrictByDistrictID, addNewSchoolNote, updateSchoolContact, updateAuthority, updateAuthorityContact,
+  addNewAuthorityNote
 } = require('../components/institute/institute');
 const utils = require('../components/utils');
 const auth = require('../components/auth');
@@ -29,6 +30,8 @@ router.get('/schoolsPaginated', passport.authenticate('jwt', {session: false}, u
 router.get('/authoritiesPaginated', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getAuthoritiesPaginated);
 
 router.post('/authority/contact', passport.authenticate('jwt', {session: false}, undefined), auth.isValidIndependentAuthorityAdmin, extendSession, updateAuthorityContact);
+
+router.post('/authority/note', passport.authenticate('jwt', {session: false}, undefined), auth.isValidIndependentAuthorityAdmin, extendSession, addNewAuthorityNote);
 
 router.post('/authority/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidIndependentAuthorityAdmin, extendSession, updateAuthority);
 
