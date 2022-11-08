@@ -334,6 +334,30 @@ async function getAuthorityByID(req, res) {
   }
 }
 
+async function addNewAuthorityNote(req, res) {
+  try {
+    const token = getBackendToken(req);
+
+    let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.authorityID);
+
+    if(!authority || !hasAuthorityAdminRole(req)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+
+    const params = {
+      content: req.body.noteContent,
+      authorityId: req.body.authorityID
+    };
+    const result = await utils.postData(token, config.get('server:institute:instituteAuthorityURL') + '/' + req.body.authorityID + '/note', params, null, utils.getUser(req).idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'addNewAuthorityNote', 'Error occurred while attempting to add a new authority note.');
+    return errorResponse(res);
+  }
+}
+
 async function getCachedAuthorityByAuthorityID(req, res) {
   try {
     const authorityID = req.params.authorityID;
@@ -416,5 +440,6 @@ module.exports = {
   addNewSchoolNote,
   updateSchoolContact,
   updateAuthority,
-  updateAuthorityContact
+  updateAuthorityContact,
+  addNewAuthorityNote
 };
