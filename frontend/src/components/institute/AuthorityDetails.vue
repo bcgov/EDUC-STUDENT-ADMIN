@@ -515,6 +515,7 @@ import {mapGetters, mapState} from 'vuex';
 import router from '@/router';
 import {deepCloneObject} from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
+import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
 
 export default {
   name: 'AuthorityDetailsPage',
@@ -613,11 +614,25 @@ export default {
       }).then(response => {
         this.authority = response.data;
         this.populateExtraAuthorityFields(this.authority);
+        this.sortNotes();
       }).catch(error => {
         console.error(error);
       }).finally(() => {
         this.setHasSamePhysicalFlag();
         this.loading = false;
+      });
+    },
+    sortNotes(){
+      this.authority.notes = this.authority.notes.sort(function(a, b) {
+        const aCreateDate = new LocalDateTime.parse(a.createDate.substring(0,19), DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
+        const bCreateDate = new LocalDateTime.parse(b.createDate.substring(0,19), DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
+        if ( aCreateDate < bCreateDate ){
+          return 1;
+        }
+        if ( aCreateDate > bCreateDate ){
+          return -1;
+        }
+        return 0;
       });
     },
     backButtonClick() {
