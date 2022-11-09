@@ -270,7 +270,7 @@ export default {
           this.setFailureAlert('An error occurred while re-linking a user. Please try again later.');
           console.log(error);
         }).finally(() => {
-          setTimeout(() => { this.$emit('refresh');  }, EDX_SAGA_REQUEST_DELAY_MILLISECONDS);
+          setTimeout(() => { this.$emit('refresh'); }, EDX_SAGA_REQUEST_DELAY_MILLISECONDS);
         });
     },
     clickRemoveButton(userToRemove) {
