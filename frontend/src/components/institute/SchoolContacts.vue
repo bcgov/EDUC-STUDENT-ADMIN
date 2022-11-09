@@ -35,7 +35,7 @@
           <v-chip color="#F4B183">Pending End Date</v-chip>
         </v-col>
         <v-col class="d-flex justify-end">
-          <PrimaryButton icon-left width="11em" icon="mdi-plus-thick" text="New Contact"></PrimaryButton>
+          <PrimaryButton :disabled="!canAddEditSchoolContact()" id="addSchoolContactBtn" icon-left width="11em" icon="mdi-plus-thick" text="New Contact" @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
         </v-col>
       </v-row>
       <div v-for="schoolContactType in schoolContactTypes" :key="schoolContactType.code">
@@ -46,7 +46,7 @@
         </v-row>
         <v-row cols="2" v-if="schoolContacts.has(schoolContactType.schoolContactTypeCode)">
           <v-col cols="5" lg="4" v-for="contact in schoolContacts.get(schoolContactType.schoolContactTypeCode)" :key="contact.schoolId">
-            <SchoolContact :contact="contact" :schoolID="$route.params.schoolID" @editSchoolContact:editSchoolContactSuccess="contactEditSuccess" :canEditSchoolContact="canEditSchoolContact()"/>
+            <SchoolContact :contact="contact" :schoolID="$route.params.schoolID" @editSchoolContact:editSchoolContactSuccess="contactEditSuccess" :canEditSchoolContact="canAddEditSchoolContact()"/>
           </v-col>
         </v-row>
         <v-row cols="2" v-else>
@@ -56,6 +56,22 @@
         </v-row>
       </div>
     </template>
+    <!--    new contact sheet -->
+    <v-bottom-sheet
+        v-model="newContactSheet"
+        inset
+        no-click-animation
+        scrollable
+        persistent
+    >
+      <NewSchoolContactPage
+          v-if="newContactSheet"
+          :schoolContactTypes="this.schoolContactTypes"
+          :schoolID="this.$route.params.schoolID"
+          @newSchoolContact:closeNewSchoolContactPage="newContactSheet = !newContactSheet"
+          @newSchoolContact:addNewSchoolContact="newSchoolContactAdded"
+      />
+    </v-bottom-sheet>
   </v-container>
 </template>
 
@@ -65,6 +81,7 @@ import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton';
 import SchoolContact from './SchoolContact';
+import NewSchoolContactPage from './NewSchoolContactPage';
 import alertMixin from '@/mixins/alertMixin';
 import {mapGetters} from 'vuex';
 import {isExpired} from '@/utils/institute/status';
@@ -73,7 +90,7 @@ export default {
   name: 'SchoolContactsPage',
   mixins: [alertMixin],
   components: {
-    PrimaryButton, SchoolContact
+    PrimaryButton, SchoolContact, NewSchoolContactPage
   },
   props: {
     schoolID: {
@@ -87,6 +104,7 @@ export default {
       schoolContactTypes: [],
       schoolContacts: new Map(),
       school: {},
+      newContactSheet: false
     };
   },
   computed: {
@@ -141,7 +159,7 @@ export default {
     backButtonClick() {
       this.$router.push({name: 'instituteSchoolList'});
     },
-    canEditSchoolContact() {
+    canAddEditSchoolContact() {
       let authorized = false;
       if((this.school.schoolCategoryCode === 'INDEPEND' || this.school.schoolCategoryCode === 'OFFSHORE') && this.SCHOOL_INDEPENDENT_OFFSHORE_ADMIN){
         authorized = true;
@@ -152,7 +170,11 @@ export default {
     },
     contactEditSuccess() {
       this.getThisSchoolsContacts();
-    }
+    },
+    newSchoolContactAdded() {
+      this.newContactSheet = !this.newContactSheet;
+      this.getThisSchoolsContacts();
+    },
   },
 };
 </script>
