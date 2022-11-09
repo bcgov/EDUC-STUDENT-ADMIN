@@ -32,6 +32,7 @@
     "dotenv": "^8.2.0",
     "glob-all": "^3.2.1",
     "jest-junit": "^7.0.0",
+    "jest-watch-typeahead": "0.4.2",
     "lodash": "^4.17.21",
     "moment": "^2.29.2",
     "mousetrap": "^1.6.5",
