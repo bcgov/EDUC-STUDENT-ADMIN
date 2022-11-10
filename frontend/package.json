@@ -7,7 +7,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test:unit": "vue-cli-service test:unit --unhandled-rejections=none",
+    "test:unit": "vue-cli-service test:unit --unhandled-rejections=strict",
     "lint": "vue-cli-service lint --no-fix",
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "lint:fix": "vue-cli-service lint --fix",
