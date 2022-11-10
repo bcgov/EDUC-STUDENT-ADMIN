@@ -31,7 +31,7 @@ function isAuthorityActive(authority) {
   const currentTime = LocalDate.now();
   const openedDate = authority?.effectiveDate;
   const closedDate = authority?.expiryDate;
-  return !(!authority || !authority.authorityName || !openedDate || currentTime.isBefore(LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)) || (closedDate && currentTime.isAfter(LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
+  return !(!authority || !authority.name || !openedDate || currentTime.isBefore(LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)) || (closedDate && currentTime.isAfter(LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
 }
 
 function generateSchoolObject(school) {
@@ -52,11 +52,19 @@ function isSchoolActive(school) {
   return !(!school || !school.schoolName || !openedDate || currentTime.isBefore(LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)) || (closedDate && currentTime.isAfter(LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
 }
 
+function isSchoolCategoryActive(schoolCategory){
+  const currentTime = LocalDate.now();
+  const openedDate = schoolCategory?.effectiveDate;
+  const closedDate = schoolCategory?.expiryDate;
+  return !(!schoolCategory || !schoolCategory.schoolName || !openedDate || currentTime.isBefore(LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)) || (closedDate && currentTime.isAfter(LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
+}
+
 module.exports = {
   generateDistrictObject,
   generateSchoolObject,
   generateAuthorityObject,
   isSchoolActive,
   isDistrictActive,
-  isAuthorityActive
+  isAuthorityActive,
+  isSchoolCategoryActive
 };

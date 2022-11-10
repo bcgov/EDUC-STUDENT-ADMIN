@@ -103,4 +103,6 @@ export default {
   getInstituteProvinceCodes: getCodes(Routes.cache.PROVINCES_URL),
   getInstituteCountryCodes: getCodes(Routes.cache.COUNTRIES_URL),
   getSchoolApiMincodeSchoolNames: getCodes(Routes.SCHOOL_DATA_URL),
+  getSchoolCategoryFacilityTypes: getCodes(Routes.cache.SCHOOL_CATEGORY_FACILITY_TYPE_URL),
+
 };

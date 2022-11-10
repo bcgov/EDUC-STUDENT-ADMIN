@@ -2,7 +2,7 @@ const auth = require('../components/auth');
 const passport = require('passport');
 const express = require('express');
 const router = express.Router();
-const {getCachedDistrictByDistrictId, getCachedDistricts, getCachedSchools, getCachedSchoolBySchoolID, getCachedAuthorities, getCachedAuthorityByAuthorityID} = require('../components/institute/institute');
+const {getCachedDistrictByDistrictId, getCachedDistricts, getCachedSchools, getCachedSchoolBySchoolID, getCachedAuthorities, getCachedAuthorityByAuthorityID,getCachedSchoolCategoryFacilityTypes} = require('../components/institute/institute');
 const utils = require('../components/utils');
 
 const extendSession = utils.extendSession();
@@ -18,6 +18,8 @@ router.get('/school/:id', passport.authenticate('jwt', {session: false}, undefin
 router.get('/authorities', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedAuthorities);
 
 router.get('/authority/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedAuthorityByAuthorityID);
+
+router.get('/school-category-facility-type', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedSchoolCategoryFacilityTypes);
 
 router.get('/facility-types', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, utils.cacheMiddleware(), utils.getCodes('server:institute:rootURL', 'schoolFacilityTypeCodes', '/facility-codes'));
 
