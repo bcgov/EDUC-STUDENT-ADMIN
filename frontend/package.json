@@ -72,7 +72,7 @@
     "jest-transform-stub": "^2.0.0",
     "stylus": "^0.54.8",
     "stylus-loader": "^3.0.1",
-    "vue-cli-plugin-vuetify": "^0.6.3",
+    "vue-cli-plugin-vuetify": "^2.5.8",
     "vue-template-compiler": "^2.6.12",
     "vuetify-loader": "^1.6.0",
     "webpack": "^5.74.0"
