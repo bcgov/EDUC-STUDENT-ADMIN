@@ -120,6 +120,7 @@ let object = {
     PROVINCES_URL: cacheRoot + '/province-codes',
     COUNTRIES_URL: cacheRoot + '/country-codes',
     SCHOOL_CONTACT_TYPES_URL: cacheRoot + '/school-contact-types',
+    SCHOOL_CATEGORY_FACILITY_TYPE_URL: cacheRoot + '/school-category-facility-type',
   },
   penServices: {
     ROOT_ENDPOINT: penServicesRoot,

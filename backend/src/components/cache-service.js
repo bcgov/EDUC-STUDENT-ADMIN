@@ -166,7 +166,51 @@ const cacheService = {
   },
   getDocumentTypeCodeLabelByCode(code) {
     return documentTypeCodesMap.get(code);
-  }
+  },
+  getSchoolCategoryAllowedFacilityMap(){
+    const publicSCAllowedFacilityTypeCodes = [];
+    publicSCAllowedFacilityTypeCodes.push('CONT_ED');
+    publicSCAllowedFacilityTypeCodes.push('ALT_PROGS');
+    publicSCAllowedFacilityTypeCodes.push('YOUTH');
+    publicSCAllowedFacilityTypeCodes.push('SHORT_PRP');
+    publicSCAllowedFacilityTypeCodes.push('LONG_PRP');
+    publicSCAllowedFacilityTypeCodes.push('DIST_LEARN');
+    publicSCAllowedFacilityTypeCodes.push('DISTONLINE');
+    publicSCAllowedFacilityTypeCodes.push('SUMMER');
+    publicSCAllowedFacilityTypeCodes.push('STANDARD');
+
+    const independentSchoolSCFacilityTypeCodes=[];
+    independentSchoolSCFacilityTypeCodes.push('STANDARD');
+    independentSchoolSCFacilityTypeCodes.push('DIST_LEARN');
+
+    const offshoreLearningSCFacilityTypeCodes=[];
+    offshoreLearningSCFacilityTypeCodes.push('STANDARD');
+
+    const federallyOpSCFacilityTypeCodes=[];
+    federallyOpSCFacilityTypeCodes.push('STANDARD');
+
+    const yukonSCFacilityTypeCodes=[];
+    yukonSCFacilityTypeCodes.push('STANDARD');
+    yukonSCFacilityTypeCodes.push('DIST_CONT');
+    yukonSCFacilityTypeCodes.push('SUMMER');
+
+    const postSecondarySCFacilityTypeCodes=[];
+
+    const earlyLearningSCFacilityTypeCodes=[];
+    earlyLearningSCFacilityTypeCodes.push('STRONG_CEN');
+    earlyLearningSCFacilityTypeCodes.push('STRONG_OUT');
+    earlyLearningSCFacilityTypeCodes.push('JUSTB4PRO');
+    return {
+      'PUBLIC':publicSCAllowedFacilityTypeCodes,
+      'INDEPEND':independentSchoolSCFacilityTypeCodes,
+      'OFFSHORE':offshoreLearningSCFacilityTypeCodes,
+      'FED_BAND':federallyOpSCFacilityTypeCodes,
+      'YUKON':yukonSCFacilityTypeCodes,
+      'POST_SEC':postSecondarySCFacilityTypeCodes,
+      'EAR_LEARN':earlyLearningSCFacilityTypeCodes
+
+    };
+  },
 };
 
 module.exports = cacheService;

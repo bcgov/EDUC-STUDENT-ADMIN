@@ -10,10 +10,12 @@ export default {
     authorityTypeCodes: null,
     gradeCodes: null,
     provinceCodes: null,
-    countryCodes: null
+    countryCodes: null,
+    schoolCategoryFacilityTypesMap: null,
   },
   getters: {
     facilityTypeCodes: state => state.facilityTypeCodes,
+    schoolCategoryFacilityTypesMap: state => state.schoolCategoryFacilityTypesMap,
     schoolCategoryTypeCodes: state => state.schoolCategoryTypeCodes,
     schoolOrganizationTypeCodes: state => state.schoolOrganizationTypeCodes,
     schoolNeighborhoodLearningCodes: state => state.schoolNeighborhoodLearningCodes,
@@ -46,7 +48,10 @@ export default {
     },
     setCountryCodes: (state, countryCodes) => {
       state.countryCodes = countryCodes;
-    }
+    },
+    setSchoolCategoryFacilityTypesMap: (state, schoolCategoryFacilityTypesMap) => {
+      state.schoolCategoryFacilityTypesMap = schoolCategoryFacilityTypesMap;
+    },
   },
   actions: {
     async getFacilityTypeCodes({commit}) {
@@ -80,6 +85,10 @@ export default {
     async getCountryCodes({commit}) {
       const response = await ApiService.getInstituteCountryCodes();
       commit('setCountryCodes', response.data);
-    }
+    },
+    async getSchoolCategoryFacilityTypesMap({commit}) {
+      const response = await ApiService.getSchoolCategoryFacilityTypes();
+      commit('setSchoolCategoryFacilityTypesMap', response.data);
+    },
   }
 };
