@@ -365,6 +365,7 @@ function createSchoolSearchCriteria(searchParams){
 }
 
 async function getAuthorities(req, res) {
+  console.log('hi jest');
   const token = getBackendToken(req);
   try {
     const url = `${config.get('server:institute:instituteAuthorityURL')}`;

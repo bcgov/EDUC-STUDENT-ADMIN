@@ -207,6 +207,7 @@ export default {
           let authorityItem = {
             authorityCodeName: authority.authorityNumber + ' - ' + authority.name,
             authorityID: authority.authorityID,
+            console.log('hi jest');
           };
           this.authoritySearchNames.push(authorityItem);
         }
