@@ -207,9 +207,9 @@ export default {
           let authorityItem = {
             authorityCodeName: authority.authorityNumber + ' - ' + authority.name,
             authorityID: authority.authorityID,
-            console.log('hi jest');
           };
           this.authoritySearchNames.push(authorityItem);
+          console.log('hi jest');
         }
         this.authoritySearchNames = this.authoritySearchNames.sort(function(a, b) {
           if (a.authorityCodeName > b.authorityCodeName) {
