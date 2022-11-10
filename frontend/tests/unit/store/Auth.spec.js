@@ -50,7 +50,7 @@ describe('auth.js', () => {
   });
 
   it('Logout if failed to get JWT', async () => {
-    jest.mock(AuthService, 'refreshAuthToken');
+    jest.spyOn(AuthService, 'refreshAuthToken');
     AuthService.refreshAuthToken.mockRejectedValue('Error');
     store.commit('setJwtToken', token);
     expect(store.state.isAuthenticated).toBe(true);
