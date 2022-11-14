@@ -41,5 +41,5 @@ module.exports = {
     '!src/router.js'
   ],
   testResultsProcessor: 'jest-sonar-reporter',
-
+  testEnvironment: 'jsdom',
 };
