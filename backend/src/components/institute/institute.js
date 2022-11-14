@@ -6,6 +6,7 @@ const {FILTER_OPERATION, VALUE_TYPE, CONDITION} = require('../../util/constants'
 const config = require('../../config');
 const {LocalDateTime, LocalDate, DateTimeFormatter} = require('@js-joda/core');
 const utils = require('../utils');
+const _ = require('lodash');
 
 async function getCachedDistricts(req, res) {
   try {
@@ -18,6 +19,10 @@ async function getCachedDistricts(req, res) {
     logApiError(e, 'getDistricts', 'Error occurred while attempting to GET district entity.');
     return errorResponse(res);
   }
+}
+
+async function getCachedSchoolCategoryFacilityTypes(req,res){
+  return res.status(HttpStatus.OK).json(cacheService.getSchoolCategoryAllowedFacilityMap());
 }
 
 async function getDistricts(req, res) {
@@ -108,6 +113,42 @@ async function addNewSchoolNote(req, res) {
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'addNewSchoolNote', 'Error occurred while attempting to add a new school note.');
+    return errorResponse(res);
+  }
+}
+
+async function addSchoolContact(req, res) {
+  try {
+    const token = getBackendToken(req);
+    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
+
+    let school = cacheService.getSchoolBySchoolID(req.body.schoolID);
+    if(!school || !hasSchoolAdminRole(req, school)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+
+    const url = `${config.get('server:institute:instituteSchoolURL')}/${req.params.schoolID}/contact`;
+
+    const payload = {
+      schoolContactTypeCode: req.body.schoolContactTypeCode,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      phoneNumber: req.body.phoneNumber,
+      phoneExtension: req.body.phoneExtension,
+      alternatePhoneNumber: req.body.alternatePhoneNumber,
+      alternatePhoneExtension: req.body.alternatePhoneExtension,
+      effectiveDate: req.body.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null,
+      expiryDate: req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null
+    };
+
+    const data = await utils.postData(token, url, payload, null, utils.getUser(req).idir_username);
+
+    return res.status(HttpStatus.OK).json(data);
+  }catch (e) {
+    logApiError(e, 'addSchoolContact', 'Error occurred while attempting to create a school contact.');
     return errorResponse(res);
   }
 }
@@ -215,6 +256,68 @@ async function getSchoolByID(req, res) {
     logApiError(e, 'getSchoolByID', 'Error occurred while attempting to GET school entity.');
     return errorResponse(res);
   }
+}
+
+async function updateSchool(req, res) {
+  try {
+    const token = getBackendToken(req);
+
+    let school = cacheService.getSchoolBySchoolID(req.body.schoolId);
+
+    if (!school || !hasSchoolAdminRole(req, school)) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+    const payload = req.body;
+    payload.createDate = null;
+    payload.updateDate = null;
+    payload.updateUser = utils.getUser(req).idir_username;
+    const nlcObjectsArray = [];
+    const gradesObjectArray = [];
+
+    for (const nlcCode of payload.neighborhoodLearning) {
+      //when there is an update in frontend to neigborhoodlearning system adds array of codes to the payload
+      if (_.isString(nlcCode)) {
+        nlcObjectsArray.push({
+          neighborhoodLearningTypeCode: nlcCode,
+          schoolId: payload.schoolId
+        });
+      } else {
+        //if neighborhood learning was not changed as part of edit , it will be passed as an array of objects from frontend.
+        nlcObjectsArray.push({
+          neighborhoodLearningTypeCode: nlcCode.neighborhoodLearningTypeCode,
+          schoolId: payload.schoolId
+        });
+      }
+    }
+    for (const gradeCode of payload.grades) {
+      //when there is an update in frontend to grades system adds array of codes to the payload
+      if (_.isString(gradeCode)) {
+        gradesObjectArray.push({
+          schoolGradeCode: gradeCode,
+          schoolId: payload.schoolId
+        });
+      } else {
+        //if grades was not changed as part of edit , it will be passed as an array of objects from frontend.
+        gradesObjectArray.push({
+          schoolGradeCode: gradeCode.schoolGradeCode,
+          schoolId: payload.schoolId
+        });
+      }
+
+    }
+    payload.neighborhoodLearning = nlcObjectsArray;
+    payload.grades=gradesObjectArray;
+    const result = await utils.putData(token, config.get('server:institute:instituteSchoolURL') + '/' + payload.schoolId, payload, utils.getUser(req).idir_username);
+    return res.status(HttpStatus.OK).json(result);
+
+  }catch(e)
+  {
+    await logApiError(e, 'updateSchool', 'Error occurred while attempting to update a school.');
+    return errorResponse(res);
+  }
+  
 }
 
 async function getSchoolsPaginated(req, res){
@@ -441,5 +544,8 @@ module.exports = {
   updateSchoolContact,
   updateAuthority,
   updateAuthorityContact,
-  addNewAuthorityNote
+  addNewAuthorityNote,
+  getCachedSchoolCategoryFacilityTypes,
+  updateSchool,
+  addSchoolContact
 };
