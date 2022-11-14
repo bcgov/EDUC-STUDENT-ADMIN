@@ -126,9 +126,9 @@
             <v-row no-gutters>
               <v-col class="mt-3 d-flex justify-end">
                 <PrimaryButton width="5em" :id="`user-cancel-relink-button-${user.firstName}-${user.lastName}`"
-                               text="Cancel" class="mr-2" secondary :on="{click: clickRelinkButton}"></PrimaryButton>
+                               text="Cancel" class="mr-2" secondary :on="{click: clickRelinkButton}" :disabled="isRelinking"></PrimaryButton>
                 <PrimaryButton :id="`user-relink-action-button-${user.firstName}-${user.lastName}`" text="Re-Link"
-                               @click.native="clickActionRelinkButton(user)"></PrimaryButton>
+                               @click.native="clickActionRelinkButton(user)" :disabled="isRelinking" :loading="isRelinking"></PrimaryButton>
               </v-col>
             </v-row>
           </v-card-text>
@@ -196,6 +196,7 @@ export default {
       editState: false,
       deleteState: false,
       relinkState: false,
+      isRelinking: false,
       selectedRoles: []
     };
   },
@@ -247,6 +248,7 @@ export default {
       this.relinkState = !this.relinkState;
     },
     clickActionRelinkButton(userToRelink) {
+      this.isRelinking = true;
       const payload = {
         params:{
           userToRelink: userToRelink.edxUserID,
