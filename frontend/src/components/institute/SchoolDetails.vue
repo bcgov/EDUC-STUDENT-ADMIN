@@ -162,8 +162,8 @@
         </v-row>
         <v-row class="d-flex justify-start">
           <v-col cols="4" lg="3" class="pb-0 pt-0">
-            <v-row no-gutters>
-              <v-col cols="10" class="pt-2 pr-0">
+            <v-row no-gutters class="d-flex justify-start">
+              <v-col cols="10" class="d-flex justify-start">
                 <span style="color: grey">Grades Offered</span>
               </v-col>
             </v-row>
