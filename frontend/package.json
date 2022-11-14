@@ -96,7 +96,7 @@
       "_": false
     },
     "parserOptions": {
-      "parser": "babel/eslint-parser",
+      "parser": "@babel/eslint-parser",
       "sourceType": "module",
       "ecmaVersion": 8
     },
