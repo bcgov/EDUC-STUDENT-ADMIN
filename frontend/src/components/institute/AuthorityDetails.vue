@@ -150,22 +150,22 @@
                   <v-col>
                     <v-row class="ml-9" no-gutters>
                       <v-col>
-                        <span>{{ getMailingAddressItem('addressLine1') }}</span>
+                        <span style="word-break: break-all;">{{ getMailingAddressItem('addressLine1') }}</span>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
                       <v-col class="ml-9">
-                        <span>{{ getMailingAddressItem('addressLine2') }}</span>
+                        <span style="word-break: break-all;">{{ getMailingAddressItem('addressLine2') }}</span>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
                       <v-col class="ml-9">
-                        <span>{{ getMailingAddressItem('city') + ', ' + getMailingAddressItem('provinceCode')  + ', ' + getMailingAddressItem('countryCode') }}</span>
+                        <span style="word-break: break-all;">{{ getMailingAddressItem('city') + ', ' + getMailingAddressItem('provinceCode')  + ', ' + getMailingAddressItem('countryCode') }}</span>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
                       <v-col class="ml-9">
-                        <span>{{ getMailingAddressItem('postal') }}</span>
+                        <span style="word-break: break-all;">{{ getMailingAddressItem('postal') }}</span>
                       </v-col>
                     </v-row>
                   </v-col>
@@ -275,22 +275,22 @@
                   <v-col>
                     <v-row no-gutters>
                       <v-col class="ml-9">
-                        <span>{{ getPhysicalAddressItem('addressLine1') }}</span>
+                        <span style="word-break: break-all;">{{ getPhysicalAddressItem('addressLine1') }}</span>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
                       <v-col class="ml-9">
-                        <span>{{ getPhysicalAddressItem('addressLine2') }}</span>
+                        <span style="word-break: break-all;">{{ getPhysicalAddressItem('addressLine2') }}</span>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
                       <v-col class="ml-9">
-                        <span>{{ getPhysicalAddressItem('city') + ', ' + getPhysicalAddressItem('provinceCode')  + ', ' + getPhysicalAddressItem('countryCode') }}</span>
+                        <span style="word-break: break-all;">{{ getPhysicalAddressItem('city') + ', ' + getPhysicalAddressItem('provinceCode')  + ', ' + getPhysicalAddressItem('countryCode') }}</span>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
                       <v-col class="ml-9">
-                        <span>{{ getPhysicalAddressItem('postal') }}</span>
+                        <span style="word-break: break-all;">{{ getPhysicalAddressItem('postal') }}</span>
                       </v-col>
                     </v-row>
                   </v-col>
@@ -515,6 +515,7 @@ import {mapGetters, mapState} from 'vuex';
 import router from '@/router';
 import {deepCloneObject} from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
+import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
 
 export default {
   name: 'AuthorityDetailsPage',
@@ -613,11 +614,25 @@ export default {
       }).then(response => {
         this.authority = response.data;
         this.populateExtraAuthorityFields(this.authority);
+        this.sortNotes();
       }).catch(error => {
         console.error(error);
       }).finally(() => {
         this.setHasSamePhysicalFlag();
         this.loading = false;
+      });
+    },
+    sortNotes(){
+      this.authority.notes = this.authority.notes.sort(function(a, b) {
+        const aCreateDate = new LocalDateTime.parse(a.createDate.substring(0,19), DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
+        const bCreateDate = new LocalDateTime.parse(b.createDate.substring(0,19), DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
+        if ( aCreateDate < bCreateDate ){
+          return 1;
+        }
+        if ( aCreateDate > bCreateDate ){
+          return -1;
+        }
+        return 0;
       });
     },
     backButtonClick() {
