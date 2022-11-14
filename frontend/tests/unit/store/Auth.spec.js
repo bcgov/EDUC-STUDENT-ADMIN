@@ -26,6 +26,9 @@ describe('auth.js', () => {
     jest.clearAllMocks();
   });
 
+  /**
+   * @jest-environment node
+   */
   it('User should be authenticated when legit token is given', () => {
     expect(store.state.isAuthenticated).toBe(false);
     store.commit('setJwtToken', token);
@@ -33,12 +36,18 @@ describe('auth.js', () => {
     expect(store.getters.jwtToken).toBe(token);
   });
 
+  /**
+   * @jest-environment node
+   */
   it('If no token is given, do not authenticate user', () => {
     expect(store.state.isAuthenticated).toBe(false);
     store.commit('setJwtToken');
     expect(store.state.isAuthenticated).toBe(false);
   });
 
+  /**
+  * @jest-environment node
+  */
   it('After logout, all session variables should be null or false', async () => {
     store.commit('setJwtToken', token);
     expect(store.state.isAuthenticated).toBe(true);
@@ -49,6 +58,9 @@ describe('auth.js', () => {
     expect(store.getters.userInfo).toBe(false);
   });
 
+  /**
+   * @jest-environment node
+   */
   it('Logout if failed to get JWT', async () => {
     jest.spyOn(AuthService, 'refreshAuthToken');
     AuthService.refreshAuthToken.mockRejectedValue('Error');
@@ -63,6 +75,9 @@ describe('auth.js', () => {
     expect(store.state.isAuthenticated).toBe(false);
   });
 
+  /**
+   * @jest-environment node
+   */
   it('Retrieve JWT from API', async () => {
     mockAxios.onGet(Routes.TOKEN).reply(200, {
       jwtFrontend: token
