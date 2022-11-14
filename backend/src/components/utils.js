@@ -8,10 +8,11 @@ const lodash = require('lodash');
 const log = require('./logger');
 const cache = require('memory-cache');
 const {ServiceError, ApiError} = require('./error');
-const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
+const {LocalDateTime, DateTimeFormatter, LocalDate} = require('@js-joda/core');
 const {Locale} = require('@js-joda/locale_en');
 const {FILTER_OPERATION, VALUE_TYPE} = require('../util/constants');
 const fsStringify = require('fast-safe-stringify');
+const {isArray} = require('lodash');
 
 axios.interceptors.request.use((axiosRequestConfig) => {
   axiosRequestConfig.headers['X-Client-Name'] = 'PEN-STUDENT-ADMIN';
@@ -315,6 +316,31 @@ function forwardGet(apiName, urlKey, extraPath, handleResponse) {
   };
 }
 
+// The logic to identify each data as an active record based on effective and expiry date.
+function isActiveRecord(record) {
+  const currentTime = LocalDate.now();
+  const openedDate = record?.effectiveDate;
+  const closedDate = record?.expiryDate;
+  return !(!record || !openedDate || currentTime.isBefore(LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)) || (closedDate && currentTime.isAfter(LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
+}
+
+function getActiveData(responseData) {
+  if (responseData) {
+    const parsedData = JSON.parse(responseData);
+    if (isArray(parsedData) && parsedData.length > 0) {
+      const activeDataArray = [];
+      for (const data of parsedData) {
+        if (isActiveRecord(data)) {
+          activeDataArray.push(data);
+        }
+      }
+      return activeDataArray;
+    }
+    return responseData;
+  }
+  return responseData;
+}
+
 const utils = {
   // Returns OIDC Discovery values
   async getOidcDiscovery() {
@@ -343,7 +369,6 @@ const utils = {
   },
   saveSession(req, res, penRequest) {
     req['session'].penRequest = Object.assign({}, penRequest);
-    //req['session'].save();
   },
   formatCommentTimestamp(time) {
     const timestamp = LocalDateTime.parse(time);
@@ -417,7 +442,8 @@ const utils = {
         res.sendResponse = res.send;
         res.send = (body) => {
           if (res.statusCode < 300 && res.statusCode >= 200) {
-            memCache.put(key, body);
+            const activeData = getActiveData(body);
+            memCache.put(key, activeData);
           }
           res.sendResponse(body);
         };
@@ -460,7 +486,7 @@ const utils = {
     };
   },
   /**
-  * This function will modify the session by changing `tempSessionExtensionIdentifier`. 
+  * This function will modify the session by changing `tempSessionExtensionIdentifier`.
   * Please be CAREFUL when using this with parallel api calls from UI Side, when you want to store some data in session in one of the api calls.
   * more documentation found here https://github.com/expressjs/session#readme, look at the resave section.
   * even though our app uses `resave:false` modifying session in parallel api calls will have race condition, which will lead to undesired outcomes based on api call finish times.

@@ -195,6 +195,7 @@ const cacheService = {
     yukonSCFacilityTypeCodes.push('SUMMER');
 
     const postSecondarySCFacilityTypeCodes=[];
+    postSecondarySCFacilityTypeCodes.push('POST_SEC');
 
     const earlyLearningSCFacilityTypeCodes=[];
     earlyLearningSCFacilityTypeCodes.push('STRONG_CEN');
