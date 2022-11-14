@@ -70,6 +70,7 @@
     "jest": "^27.5.1",
     "jest-sonar-reporter": "^2.0.0",
     "jest-transform-stub": "^2.0.0",
+    "jest-watch-typeahead": "^2.2.0",
     "stylus": "^0.54.8",
     "stylus-loader": "^3.0.1",
     "vue-cli-plugin-vuetify": "^0.6.3",
