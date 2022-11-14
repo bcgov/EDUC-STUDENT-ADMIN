@@ -82,22 +82,22 @@
             </v-row>
             <v-row class="ml-9" no-gutters>
               <v-col>
-                <span>{{ getMailingAddressItem('addressLine1') }}</span>
+                <span style="word-break: break-all;">{{ getMailingAddressItem('addressLine1') }}</span>
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col class="ml-9">
-                <span>{{ getMailingAddressItem('addressLine2') }}</span>
+                <span style="word-break: break-all;">{{ getMailingAddressItem('addressLine2') }}</span>
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col class="ml-9">
-                <span>{{ getMailingAddressItem('city') + ', ' + getMailingAddressItem('provinceCode')  + ', ' + getMailingAddressItem('countryCode') }}</span>
+                <span style="word-break: break-all;">{{ getMailingAddressItem('city') + ', ' + getMailingAddressItem('provinceCode')  + ', ' + getMailingAddressItem('countryCode') }}</span>
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col class="ml-9">
-                <span>{{ getMailingAddressItem('postal') }}</span>
+                <span style="word-break: break-all;">{{ getMailingAddressItem('postal') }}</span>
               </v-col>
             </v-row>
           </v-col>
@@ -114,22 +114,22 @@
               <v-col>
                 <v-row no-gutters>
                   <v-col class="ml-9">
-                    <span>{{ getPhysicalAddressItem('addressLine1') }}</span>
+                    <span style="word-break: break-all;">{{ getPhysicalAddressItem('addressLine1') }}</span>
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
                   <v-col class="ml-9">
-                    <span>{{ getPhysicalAddressItem('addressLine2') }}</span>
+                    <span style="word-break: break-all;">{{ getPhysicalAddressItem('addressLine2') }}</span>
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
                   <v-col class="ml-9">
-                    <span>{{ getPhysicalAddressItem('city') + ', ' + getPhysicalAddressItem('provinceCode')  + ', ' + getPhysicalAddressItem('countryCode') }}</span>
+                    <span style="word-break: break-all;">{{ getPhysicalAddressItem('city') + ', ' + getPhysicalAddressItem('provinceCode')  + ', ' + getPhysicalAddressItem('countryCode') }}</span>
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
                   <v-col class="ml-9">
-                    <span>{{ getPhysicalAddressItem('postal') }}</span>
+                    <span style="word-break: break-all;">{{ getPhysicalAddressItem('postal') }}</span>
                   </v-col>
                 </v-row>
               </v-col>
