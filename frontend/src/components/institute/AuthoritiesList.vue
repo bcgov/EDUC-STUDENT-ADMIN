@@ -209,7 +209,6 @@ export default {
             authorityID: authority.authorityID,
           };
           this.authoritySearchNames.push(authorityItem);
-          console.log('trigger jest');
         }
         this.authoritySearchNames = this.authoritySearchNames.sort(function(a, b) {
           if (a.authorityCodeName > b.authorityCodeName) {
