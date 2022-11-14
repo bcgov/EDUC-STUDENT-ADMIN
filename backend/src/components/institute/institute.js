@@ -369,7 +369,6 @@ async function getAuthorities(req, res) {
   try {
     const url = `${config.get('server:institute:instituteAuthorityURL')}`;
     const data = await getData(token, url);
-    console.log('trigger jest');
     return res.status(200).json(data);
   } catch (e) {
     logApiError(e, 'getAuthorities', 'Error occurred while attempting to GET all authorities.');
