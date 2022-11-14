@@ -37,11 +37,11 @@
     "mousetrap": "^1.6.5",
     "path": "^0.12.7",
     "pluralize": "^8.0.0",
-    "purgecss-webpack-plugin": "^1.6.0",
+    "purgecss-webpack-plugin": "^5.0.0",
     "regenerator-runtime": "^0.13.5",
     "rfdc": "^1.1.4",
     "sass": "^1.29.0",
-    "sass-loader": "^7.1.0",
+    "sass-loader": "^13.2.0",
     "v-viewer": "^1.6.4",
     "vue": "^2.6.12",
     "vue-chartjs": "3.5.1",
@@ -65,18 +65,17 @@
     "babel-eslint": "^10.1.0",
     "babel-jest": "^26.6.3",
     "eslint": "^7.32.0",
-    "eslint-plugin-vue": "^5.2.3",
+    "eslint-plugin-vue": "^9.7.0",
     "flush-promises": "^1.0.2",
-    "jest": "^27.5.1",
+    "jest": "^26.6.3",
     "jest-sonar-reporter": "^2.0.0",
     "jest-transform-stub": "^2.0.0",
-    "jest-watch-typeahead": "^2.2.0",
     "stylus": "^0.54.8",
     "stylus-loader": "^3.0.1",
     "vue-cli-plugin-vuetify": "^0.6.3",
     "vue-template-compiler": "^2.6.12",
     "vuetify-loader": "^1.6.0",
-    "webpack": "^5.74.0"
+    "webpack": "^5.75.0"
   },
   "eslintConfig": {
     "root": true,
@@ -100,6 +99,12 @@
       "ecmaVersion": 8
     },
     "rules": {
+      "vue/multi-word-component-names": 0,
+      "vue/no-v-text-v-html-on-component": 0,
+      "vue/no-mutating-props": 0,
+      "vue/no-unused-vars": 0,
+      "vue/valid-v-slot": 0,
+      "vue/no-reserved-component-names": 0,
       "no-console": "off",
       "eol-last": [
         "error",
