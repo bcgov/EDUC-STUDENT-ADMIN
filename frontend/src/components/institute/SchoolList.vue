@@ -377,10 +377,10 @@ export default {
 
     },
     getFacilityType(school){
-      return this.schoolFacilityTypes.find((facility) => facility?.facilityTypeCode === school?.facilityTypeCode)?.label;
+      return this.schoolFacilityTypes.find((facility) => facility.facilityTypeCode === school.facilityTypeCode)?.label;
     },
     getSchoolCategory(school){
-      return this.schoolCategoryTypeCodes.find((category) => category?.schoolCategoryCode === school?.schoolCategoryCode)?.label;
+      return this.schoolCategoryTypeCodes.find((category) => category.schoolCategoryCode === school.schoolCategoryCode)?.label;
     },
     formatPhoneNumber,
     sortByNameValue,
