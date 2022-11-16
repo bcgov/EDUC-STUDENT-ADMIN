@@ -7,6 +7,9 @@
         <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
         <a class="ml-1" @click="backButtonClick">Return to Dashboard</a>
       </v-col>
+      <v-col class="d-flex justify-end">
+        <PrimaryButton :disabled="!canAddSchool()" id="addSchoolBtn" icon-left width="11em" icon="mdi-plus-thick" text="New School" @click.native="newSchoolSheet = !newSchoolSheet"></PrimaryButton>
+      </v-col>
     </v-row>
     <v-row style="background: rgb(235, 237, 239);border-radius: 8px;" class="pt-0 px-3 elevation-2">
       <v-col class="pt-0">
@@ -159,6 +162,23 @@
       </v-col>
     </v-row>
     </div>
+    <!--    new school sheet -->
+    <v-bottom-sheet
+        v-model="newSchoolSheet"
+        inset
+        no-click-animation
+        scrollable
+        persistent
+        width="50% !important"
+    >
+      <NewSchoolPage
+          v-if="newSchoolSheet"
+          :districtNames="this.districtSearchNames"
+          :authorityNames="this.authoritySearchNames"
+          @newSchool:closeNewSchoolPage="newSchoolSheet = !newSchoolSheet"
+          @newSchool:addNewSchool="newSchoolAdded"
+      />
+    </v-bottom-sheet>
   </v-container>
 </template>
 
@@ -174,13 +194,15 @@ import {formatPhoneNumber, sortByNameValue, formatContactName} from '@/utils/for
 import {getStatusColorAuthorityOrSchool,getStatusAuthorityOrSchool, isContactCurrent} from '@/utils/institute/status';
 import router from '@/router';
 import Spinner from '@/components/common/Spinner';
+import NewSchoolPage from './NewSchoolPage';
 
 export default {
   name: 'SchoolListPage',
   mixins: [alertMixin],
   components: {
     PrimaryButton,
-    Spinner
+    Spinner,
+    NewSchoolPage
   },
   data() {
     return {
@@ -224,6 +246,7 @@ export default {
       schoolCategoryTypeFilter: '',
       schoolFacilityTypeFilter: '',
       loadingSchools: true,
+      newSchoolSheet: false,
     };
   },
   computed: {
@@ -258,6 +281,13 @@ export default {
     this.getSchoolList();
   },
   methods: {
+    canAddSchool() {
+      return true;
+    },
+    newSchoolAdded() {
+      this.newSchoolSheet = !this.newSchoolSheet;
+      this.getSchoolList();
+    },
     setSchoolStatuses() {
       this.schoolStatus = [{name: 'Open', code: 'Open'}, {name: 'Opening', code: 'Opening'}, {name: 'Closing', code: 'Closing'}, {name: 'Closed', code: 'Closed'}, {name: 'Never Opened', code: 'NeverOpened'}];
     },
