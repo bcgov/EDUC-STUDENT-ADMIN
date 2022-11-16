@@ -50,12 +50,19 @@
               </v-col>
             </v-row>
             <v-row class="d-flex justify-start">
-              <v-col class="d-flex">
+              <v-col v-if="!editing" class="d-flex">
                 <v-icon class="ml-n1 pr-3" :color="getStatusColorAuthorityOrSchool(school.status)" dark>
                   mdi-circle-medium
                 </v-icon>
-                <span v-if="!editing">{{ school.status }}</span>
-                <span v-else class="mt-5">{{ school.status }}</span>
+                <span>{{ school.status }}</span>
+              </v-col>
+              <v-col v-else class="d-flex justify-start pt-6">
+                <PrimaryButton id="editSchoolStatusButton" @click.native="openSchoolStatusEdit" :secondary="true" >
+                <v-icon class="ml-n1 pr-3" :color="getStatusColorAuthorityOrSchool(schoolDetailsCopy.status)" dark>
+                  mdi-circle-medium
+                </v-icon>
+                <span>{{ schoolDetailsCopy.status }}</span>
+                </PrimaryButton>
               </v-col>
               <v-col class="d-flex">
                 <v-icon aria-hidden="false" class="mb-1 mr-1">
@@ -105,7 +112,8 @@
             </v-row>
             <v-row>
               <v-col cols="10" class="d-flex justify-start">
-                <span class="ministryLine" style="color: black">{{ formatDate(school.openedDate) || '-' }}</span>
+                <span v-if="!editing" class="ministryLine" style="color: black">{{ formatDate(school.openedDate) || '-' }}</span>
+                <span v-else class="ministryLine" style="color: black">{{ formatDate(schoolDetailsCopy.openedDate) || '-' }}</span>
               </v-col>
             </v-row>
           </v-col>
@@ -599,6 +607,18 @@
         <p>Please be sure to review your changes carefully before you publish them.</p>
       </template>
     </ConfirmationDialog>
+    <!--    new contact sheet -->
+    <v-bottom-sheet
+        v-model="openSchoolStatusEditCard"
+        inset
+        no-click-animation
+        scrollable
+        persistent
+    >
+      <SchoolStatus v-if="openSchoolStatusEditCard"  @updateSchoolDates="handleUpdatesToSchoolStatus"
+                    @schoolStatus:closeEditSchoolStatusPage="openSchoolStatusEditCard = !openSchoolStatusEditCard"
+                    :school-open-date="schoolDetailsCopy.openedDate" :school-close-date="schoolDetailsCopy.closedDate" :school-status="schoolDetailsCopy.status"></SchoolStatus>
+    </v-bottom-sheet>
   </v-form>
 </template>
 
@@ -618,11 +638,13 @@ import {deepCloneObject} from '@/utils/common';
 import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
+import SchoolStatus from '@/components/institute/SchoolStatus';
 
 export default {
   name: 'SchoolDetailsPage',
   mixins: [alertMixin],
   components: {
+    SchoolStatus,
     PrimaryButton,
     ConfirmationDialog
   },
@@ -653,6 +675,7 @@ export default {
       provinceCodeValues: [],
       countryCodeValues: [],
       rules: Rules,
+      openSchoolStatusEditCard: false,
     };
   },
   computed: {
@@ -970,8 +993,27 @@ export default {
         return true;
       }
       return false;
-    }
-  }
+    },
+    async handleUpdatesToSchoolStatus(updatedDatesForSchool){
+      await this.$nextTick();
+      if(updatedDatesForSchool.openedDate){
+        this.schoolDetailsCopy.openedDate = updatedDatesForSchool.openedDate?.replaceAll('/','-').concat('T00:00:00');
+      }else{
+        this.schoolDetailsCopy.openedDate = null;
+      }
+      if(updatedDatesForSchool.closedDate){
+        this.schoolDetailsCopy.closedDate = updatedDatesForSchool.closedDate?.replaceAll('/','-').concat('T00:00:00');
+      }else{
+        this.schoolDetailsCopy.closedDate = null;
+      }
+
+      this.schoolDetailsCopy.status = getStatusAuthorityOrSchool(this.schoolDetailsCopy);
+      this.$refs.schoolDetailsForm.validate();
+    },
+    openSchoolStatusEdit(){
+      this.openSchoolStatusEditCard = true;
+    },
+  },
 };
 </script>
 
@@ -1022,4 +1064,14 @@ export default {
     padding-left: 4em !important;
   }
 }
+
+.v-dialog__content /deep/ .v-bottom-sheet {
+  width: 30% !important;
+}
+@media screen and (max-width: 950px){
+  .v-dialog__content /deep/ .v-bottom-sheet {
+    width: 60% !important;
+  }
+}
+
 </style>
