@@ -250,7 +250,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo']),
+    ...mapGetters('auth', ['userInfo', 'SCHOOL_ADMIN_ROLE']),
     ...mapState('app', ['schoolsMap']),
     ...mapState('institute', ['facilityTypeCodes']),
     ...mapState('institute', ['schoolCategoryTypeCodes']),
@@ -282,7 +282,7 @@ export default {
   },
   methods: {
     canAddSchool() {
-      return true;
+      return this.SCHOOL_ADMIN_ROLE;
     },
     newSchoolAdded() {
       this.newSchoolSheet = !this.newSchoolSheet;
