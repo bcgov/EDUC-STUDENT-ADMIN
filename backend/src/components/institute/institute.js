@@ -203,7 +203,7 @@ async function addAuthorityContact(req, res) {
     const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.authorityID);
-    if(!authority || !hasAuthorityAdminRole(req, authority)){
+    if(!authority || !hasAuthorityAdminRole(req)){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'You do not have the required access for this function'
       });
