@@ -244,10 +244,10 @@ export default {
   },
   created() {
     this.$store.dispatch('edx/getMinistryTeams');
-    this.$store.dispatch('institute/getFacilityTypeCodes').then(() => {
+    this.$store.dispatch('institute/getAllFacilityTypeCodes').then(() => {
       this.schoolFacilityTypes = this.facilityTypeCodes;
     });
-    this.$store.dispatch('institute/getSchoolCategoryTypeCodes').then(() => {
+    this.$store.dispatch('institute/getAllSchoolCategoryTypeCodes').then(() => {
       this.schoolCategoryTypes = this.schoolCategoryTypeCodes;
     });
 

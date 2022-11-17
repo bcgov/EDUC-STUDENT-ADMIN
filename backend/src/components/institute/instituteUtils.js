@@ -59,6 +59,14 @@ function isSchoolCategoryActive(schoolCategory){
   return !(!schoolCategory || !schoolCategory.schoolName || !openedDate || currentTime.isBefore(LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)) || (closedDate && currentTime.isAfter(LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
 }
 
+// The logic to identify each data as an active record based on effective and expiry date.
+function isActiveRecord(record) {
+  const currentTime = LocalDate.now();
+  const openedDate = record?.effectiveDate;
+  const closedDate = record?.expiryDate;
+  return !(!record || !openedDate || currentTime.isBefore(LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)) || (closedDate && currentTime.isAfter(LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
+}
+
 module.exports = {
   generateDistrictObject,
   generateSchoolObject,
@@ -66,5 +74,6 @@ module.exports = {
   isSchoolActive,
   isDistrictActive,
   isAuthorityActive,
-  isSchoolCategoryActive
+  isSchoolCategoryActive,
+  isActiveRecord
 };

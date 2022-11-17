@@ -25,6 +25,23 @@ async function getCachedSchoolCategoryFacilityTypes(req,res){
   return res.status(HttpStatus.OK).json(cacheService.getSchoolCategoryAllowedFacilityMap());
 }
 
+function getCachedInstituteData(cacheKey,url){
+  return  async function handler(req, res) {
+    try {
+      if (req.query.refreshCache === 'true') {
+        await cacheService.loadDataToCache(cacheKey, url);
+      }
+      const cachedData = cacheService.getCachedData();
+      const dataResponse = req.query.active === 'true' ? cachedData[cacheKey].activeRecords : cachedData[cacheKey].records;
+      return res.status(HttpStatus.OK).json(dataResponse);
+    } catch (e) {
+      logApiError(e, 'getCachedInstituteDate', `Error occurred while attempting to GET ${cacheKey}.`);
+      return errorResponse(res);
+    }
+  };
+}
+
+
 async function getDistricts(req, res) {
   const token = getBackendToken(req);
   try {
@@ -547,5 +564,6 @@ module.exports = {
   addNewAuthorityNote,
   getCachedSchoolCategoryFacilityTypes,
   updateSchool,
-  addSchoolContact
+  addSchoolContact,
+  getCachedInstituteData
 };

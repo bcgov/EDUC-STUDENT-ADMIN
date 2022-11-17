@@ -2,7 +2,17 @@ let cacheKeys;
 
 cacheKeys = {
   EDX_SECURE_EXCHANGE_STATUS: 'edx_exchangeStatuses',
-  EDX_MINISTRY_TEAMS:'edx_ministryTeams'
+  EDX_MINISTRY_TEAMS:'edx_ministryTeams',
+  SCHOOL_CATEGORY_TYPES:'school-category-types',
+  FACILITY_TYPES:'facility-types',
+  SCHOOL_ORGANIZATION_TYPES: 'school-organization-types',
+  SCHOOL_NEIGHBOURHOOD_LEARNING_TYPES :'school-neighborhood-learning-types',
+  AUTHORITY_TYPES: 'authority-types',
+  GRADE_CODES: 'grade-codes',
+  PROVINCE_CODES: 'province-codes',
+  COUNTRY_CODES: 'country-codes',
+  SCHOOL_CONTACT_TYPES: 'school-contact-types',
+  AUTHORITY_CONTACT_TYPES: 'authority-contact-types',
 };
 const CACHE_KEYS = Object.freeze(cacheKeys);
 

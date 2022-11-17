@@ -8,11 +8,10 @@ const lodash = require('lodash');
 const log = require('./logger');
 const cache = require('memory-cache');
 const {ServiceError, ApiError} = require('./error');
-const {LocalDateTime, DateTimeFormatter, LocalDate} = require('@js-joda/core');
+const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
 const {Locale} = require('@js-joda/locale_en');
 const {FILTER_OPERATION, VALUE_TYPE} = require('../util/constants');
 const fsStringify = require('fast-safe-stringify');
-const {isArray} = require('lodash');
 
 axios.interceptors.request.use((axiosRequestConfig) => {
   axiosRequestConfig.headers['X-Client-Name'] = 'PEN-STUDENT-ADMIN';
@@ -316,30 +315,6 @@ function forwardGet(apiName, urlKey, extraPath, handleResponse) {
   };
 }
 
-// The logic to identify each data as an active record based on effective and expiry date.
-function isActiveRecord(record) {
-  const currentTime = LocalDate.now();
-  const openedDate = record?.effectiveDate;
-  const closedDate = record?.expiryDate;
-  return !(!record || !openedDate || currentTime.isBefore(LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)) || (closedDate && currentTime.isAfter(LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
-}
-
-function getActiveData(responseData) {
-  if (responseData) {
-    const parsedData = JSON.parse(responseData);
-    if (isArray(parsedData) && parsedData.length > 0) {
-      const activeDataArray = [];
-      for (const data of parsedData) {
-        if (isActiveRecord(data)) {
-          activeDataArray.push(data);
-        }
-      }
-      return activeDataArray;
-    }
-    return responseData;
-  }
-  return responseData;
-}
 
 const utils = {
   // Returns OIDC Discovery values
@@ -442,8 +417,7 @@ const utils = {
         res.sendResponse = res.send;
         res.send = (body) => {
           if (res.statusCode < 300 && res.statusCode >= 200) {
-            const activeData = getActiveData(body);
-            memCache.put(key, activeData);
+            memCache.put(key, body);
           }
           res.sendResponse(body);
         };

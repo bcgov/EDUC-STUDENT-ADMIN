@@ -104,5 +104,13 @@ export default {
   getInstituteCountryCodes: getCodes(Routes.cache.COUNTRIES_URL),
   getSchoolApiMincodeSchoolNames: getCodes(Routes.SCHOOL_DATA_URL),
   getSchoolCategoryFacilityTypes: getCodes(Routes.cache.SCHOOL_CATEGORY_FACILITY_TYPE_URL),
+  getAllActiveFacilityTypeCodes: getCodes(`${Routes.cache.FACILITY_TYPES_URL}?active=true`),
+  getAllActiveSchoolCategoryTypeCodes: getCodes(`${Routes.cache.SCHOOL_CATEGORY_TYPES_URL}?active=true`),
+  getAllActiveSchoolOrganizationTypeCodes: getCodes(`${Routes.cache.SCHOOL_ORGANIZATION_TYPES_URL}?active=true`),
+  getAllActiveSchoolNeighborhoodLearningCodes: getCodes(`${Routes.cache.SCHOOL_NEIGHBORHOOD_LEARNING_TYPES_URL}?active=true`),
+  getAllActiveAuthorityTypeCodes: getCodes(`${Routes.cache.AUTHORITY_TYPES_URL}?active=true`),
+  getAllActiveInstituteGradeCodes: getCodes(`${Routes.cache.GRADE_TYPES_URL}?active=true`),
+  getAllActiveInstituteProvinceCodes: getCodes(`${Routes.cache.PROVINCES_URL}?active=true`),
+  getAllActiveInstituteCountryCodes: getCodes(`${Routes.cache.COUNTRIES_URL}?active=true`),
 
 };
