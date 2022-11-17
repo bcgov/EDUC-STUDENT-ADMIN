@@ -9,7 +9,6 @@
           <v-col>
             <v-select
                 id='newContactDropdown'
-                :rules="[rules.required()]"
                 v-model="newContact.authorityContactTypeCode"
                 :items="authorityContactTypes"
                 item-text="label"
