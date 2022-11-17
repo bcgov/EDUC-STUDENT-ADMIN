@@ -35,7 +35,7 @@
           <v-chip color="#F4B183">Pending End Date</v-chip>
         </v-col>
         <v-col class="d-flex justify-end">
-          <PrimaryButton icon-left width="11em" icon="mdi-plus-thick" text="New Contact"></PrimaryButton>
+          <PrimaryButton icon-left width="11em" icon="mdi-plus-thick" text="New Contact"  @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
         </v-col>
       </v-row>
       <div v-for="authorityContactType in authorityContactTypes" :key="authorityContactType.code">
@@ -56,6 +56,22 @@
         </v-row>
       </div>
     </template>
+    <!--    new contact sheet -->
+    <v-bottom-sheet
+        v-model="newContactSheet"
+        inset
+        no-click-animation
+        scrollable
+        persistent
+    >
+      <NewAuthorityContactPage
+          v-if="newContactSheet"
+          :authorityContactTypes="this.authorityContactTypes"
+          :authorityID="this.$route.params.authorityID"
+          @newAuthorityContact:closeNewAuthorityContactPage="newContactSheet = !newContactSheet"
+          @newAuthorityContact:addNewAuthorityContact="newAuthorityContactAdded"
+      />
+    </v-bottom-sheet>
   </v-container>
 </template>
 
@@ -67,15 +83,16 @@ import PrimaryButton from '../util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
 import {isExpired} from '@/utils/institute/status';
 import {mapGetters} from 'vuex';
-import * as Rules from '@/utils/institute/formRules';
 import AuthorityContact from '@/components/institute/AuthorityContact';
+import NewAuthorityContactPage from '@/components/institute/NewAuthorityContactPage';
 
 export default {
   name: 'AuthorityContactPage',
   mixins: [alertMixin],
   components: {
-    AuthorityContact,
     PrimaryButton,
+    AuthorityContact,
+    NewAuthorityContactPage
   },
   data() {
     return {
@@ -83,26 +100,7 @@ export default {
       authorityContactTypes: [],
       authorityContacts: new Map(),
       authority: {},
-      expandEdit: false,
-      saveEnabled: true,
-      ecFormValid: false,
-      effDateMenu: false,
-      expDateMenu: false,
-      editContactExpiryDatePicker: null,
-      editContactEffectiveDatePicker: null,
-      contactEdit: {
-        firstName: '',
-        lastName: '',
-        email: '',
-        phoneNumber:'',
-        phoneExtension:'',
-        alternatePhoneNumber:'',
-        alternatePhoneExtension:'',
-        effectiveDate:'',
-        expiryDate:''
-      },
-      rules: Rules,
-      contactOG: '',
+      newContactSheet: false,
     };
   },
   created() {
@@ -116,6 +114,20 @@ export default {
     }
   },
   methods: {
+    getAuthorityContactTypeCodes() {
+      this.loadingCount += 1;
+
+      ApiService.apiAxios.get(Routes.cache.AUTHORITY_CONTACT_TYPES_URL)
+        .then(response => {
+          this.authorityContactTypes = response.data;
+        })
+        .catch(error => {
+          console.error(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get the details of available Authority Contact Type Codes. Please try again later.');
+        }).finally(() => {
+          this.loadingCount -= 1;
+        });
+    },
     getThisAuthorityContacts() {
       this.loadingCount += 1;
 
@@ -141,26 +153,6 @@ export default {
           this.loadingCount -= 1;
         });
     },
-    saveEditContactEffectiveDate(date) {
-      this.$refs.editContactEffectiveDateFilter.save(date);
-    },
-    saveEditContactExpiryDate(date) {
-      this.$refs.editContactExpiryDateFilter.save(date);
-    },
-    getAuthorityContactTypeCodes() {
-      this.loadingCount += 1;
-
-      ApiService.apiAxios.get(Routes.cache.AUTHORITY_CONTACT_TYPES_URL)
-        .then(response => {
-          this.authorityContactTypes = response.data;
-        })
-        .catch(error => {
-          console.error(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get the details of available Authority Contact Type Codes. Please try again later.');
-        }).finally(() => {
-          this.loadingCount -= 1;
-        });
-    },
     backButtonClick() {
       this.$router.push({name: 'instituteAuthoritiesList'});
     },
@@ -169,7 +161,11 @@ export default {
     },
     contactEditSuccess() {
       this.getThisAuthorityContacts();
-    }
+    },
+    newAuthorityContactAdded() {
+      this.newContactSheet = !this.newContactSheet;
+      this.getThisAuthorityContacts();
+    },
   }
 };
 

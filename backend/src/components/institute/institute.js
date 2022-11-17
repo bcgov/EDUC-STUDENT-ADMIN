@@ -197,6 +197,42 @@ async function updateSchoolContact(req, res) {
   }
 }
 
+async function addAuthorityContact(req, res) {
+  try {
+    const token = getBackendToken(req);
+    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
+
+    let authority = cacheService.getAuthorityJSONByAuthorityId(req.body.authorityID);
+    if(!authority || !hasAuthorityAdminRole(req)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+
+    const url = `${config.get('server:institute:instituteAuthorityURL')}/${req.body.authorityID}/contact`;
+
+    const payload = {
+      authorityContactTypeCode: req.body.authorityContactTypeCode,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      phoneNumber: req.body.phoneNumber,
+      phoneExtension: req.body.phoneExtension,
+      alternatePhoneNumber: req.body.alternatePhoneNumber,
+      alternatePhoneExtension: req.body.alternatePhoneExtension,
+      effectiveDate: req.body.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null,
+      expiryDate: req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null
+    };
+
+    const data = await utils.postData(token, url, payload, null, utils.getUser(req).idir_username);
+
+    return res.status(HttpStatus.OK).json(data);
+  }catch (e) {
+    logApiError(e, 'addAuthorityContact', 'Error occurred while attempting to create an authority contact.');
+    return errorResponse(res);
+  }
+}
+
 async function updateAuthorityContact(req, res) {
   try {
     const token = getBackendToken(req);
@@ -560,6 +596,7 @@ module.exports = {
   addNewSchoolNote,
   updateSchoolContact,
   updateAuthority,
+  addAuthorityContact,
   updateAuthorityContact,
   addNewAuthorityNote,
   getCachedSchoolCategoryFacilityTypes,
