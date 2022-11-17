@@ -5,7 +5,7 @@ const {getApiCredentials} = require('../components/auth');
 const {getData} = require('../components/utils');
 const retry = require('async-retry');
 const {generateDistrictObject, isDistrictActive, generateSchoolObject, isSchoolActive, isAuthorityActive,
-  generateAuthorityObject
+  generateAuthorityObject, isActiveRecord
 } = require('./institute/instituteUtils');
 
 let mincodeSchoolMap = new Map();
@@ -18,7 +18,7 @@ let districtsMap = new Map();
 let activeAuthorities = [];
 let authorities = [];
 let authoritiesMap = new Map();
-
+const cachedData = {};
 
 let documentTypeCodesMap = new Map();
 let documentTypeCodes = [];
@@ -212,6 +212,35 @@ const cacheService = {
 
     };
   },
+
+  async loadDataToCache(cacheKey,url){
+    log.debug(` loading all ${cacheKey} during start up`);
+    await retry(async () => {
+      const tokenData = await getApiCredentials();
+      const responseData = await getData(tokenData.accessToken, config.get(url));
+      // reset the value.
+      const records = [];
+      const activeRecords = [];
+      if (responseData && responseData.length > 0) {
+        for (const data of responseData) {
+          records.push(data);
+          if(isActiveRecord(data)){
+            activeRecords.push(data);
+          }
+        }
+        cachedData[`${cacheKey}`]={
+          'activeRecords':activeRecords,
+          'records':records
+        };
+      }
+      log.info(`loaded ${responseData.length} ${cacheKey} Types.`);
+    }, {
+      retries: 50
+    });
+  },
+  getCachedData(){
+    return cachedData;
+  }
 };
 
 module.exports = cacheService;

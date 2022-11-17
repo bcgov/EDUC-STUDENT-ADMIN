@@ -707,25 +707,25 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('institute/getFacilityTypeCodes').then(() => {
+    this.$store.dispatch('institute/getAllFacilityTypeCodes').then(() => {
       this.schoolFacilityTypes = this.facilityTypeCodes;
     });
-    this.$store.dispatch('institute/getSchoolCategoryTypeCodes').then(() => {
+    this.$store.dispatch('institute/getAllSchoolCategoryTypeCodes').then(() => {
       this.schoolCategoryTypes = this.schoolCategoryTypeCodes;
     });
-    this.$store.dispatch('institute/getSchoolOrganizationTypeCodes').then(() => {
+    this.$store.dispatch('institute/getAllSchoolOrganizationTypeCodes').then(() => {
       this.schoolOrganizationTypes = this.schoolOrganizationTypeCodes;
     });
-    this.$store.dispatch('institute/getSchoolNeighborhoodLearningCodes').then(() => {
+    this.$store.dispatch('institute/getAllSchoolNeighborhoodLearningCodes').then(() => {
       this.schoolNeighborhoodLearningTypes = this.schoolNeighborhoodLearningCodes;
     });
-    this.$store.dispatch('institute/getGradeCodes').then(() => {
+    this.$store.dispatch('institute/getAllGradeCodes').then(() => {
       this.schoolGradeTypes = this.gradeCodes;
     });
-    this.$store.dispatch('institute/getProvinceCodes').then(() => {
+    this.$store.dispatch('institute/getAllProvinceCodes').then(() => {
       this.provinceCodeValues = this.provinceCodes.filter(province =>  province.provinceCode === 'BC' || province.provinceCode === 'YT');
     });
-    this.$store.dispatch('institute/getCountryCodes').then(() => {
+    this.$store.dispatch('institute/getAllCountryCodes').then(() => {
       this.countryCodeValues = this.countryCodes;
     });
     this.$store.dispatch('institute/getSchoolCategoryFacilityTypesMap');

@@ -560,13 +560,13 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('institute/getProvinceCodes').then(() => {
+    this.$store.dispatch('institute/getAllProvinceCodes').then(() => {
       this.provinceCodeValues = this.provinceCodes.filter(province =>  province.provinceCode === 'BC' || province.provinceCode === 'YT');
     });
-    this.$store.dispatch('institute/getCountryCodes').then(() => {
+    this.$store.dispatch('institute/getAllCountryCodes').then(() => {
       this.countryCodeValues = this.countryCodes;
     });
-    this.$store.dispatch('institute/getAuthorityTypeCodes').then(() => {
+    this.$store.dispatch('institute/getAllAuthorityTypeCodes').then(() => {
       this.authorityTypes = this.authorityTypeCodes;
     });
     this.getAuthority();

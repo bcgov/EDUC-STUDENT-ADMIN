@@ -30,6 +30,7 @@ const WS = require('./socket/web-socket');
 const NATS = require('./messaging/message-pub-sub');
 const cacheService = require('./components/cache-service');
 const schoolApiCacheServicce = require('./components/school-api-cache-service');
+const constants = require('./util/constants');
 
 cacheService.loadAllSchoolsToMap().then(() => {
   log.info('Loaded school data to memory');
@@ -41,6 +42,57 @@ cacheService.loadAllDistrictsToMap().then(() => {
 }).catch((e) => {
   log.error('Error loading districts data codes during boot .', e);
 });
+cacheService.loadDataToCache( constants.CACHE_KEYS.FACILITY_TYPES, 'server:institute:facilityTypeURL').then(() => {
+  log.info('Loaded FACILITY_TYPES data to memory');
+}).catch((e) => {
+  log.error('Error loading FACILITY_TYPES data during boot .', e);
+});
+cacheService.loadDataToCache( constants.CACHE_KEYS.SCHOOL_CATEGORY_TYPES, 'server:institute:categoryCodesURL').then(() => {
+  log.info('Loaded SCHOOL_CATEGORY_TYPES data to memory');
+}).catch((e) => {
+  log.error('Error loading SCHOOL_CATEGORY_TYPES data during boot .', e);
+});
+cacheService.loadDataToCache( constants.CACHE_KEYS.SCHOOL_ORGANIZATION_TYPES, 'server:institute:organizationCodeURL').then(() => {
+  log.info('Loaded SCHOOL_ORGANIZATION_TYPES data to memory');
+}).catch((e) => {
+  log.error('Error loading SCHOOL_ORGANIZATION_TYPES data during boot .', e);
+});
+cacheService.loadDataToCache( constants.CACHE_KEYS.SCHOOL_NEIGHBOURHOOD_LEARNING_TYPES, 'server:institute:neighbourhoodLearningURL').then(() => {
+  log.info('Loaded SCHOOL_NEIGHBOURHOOD_LEARNING_TYPES data to memory');
+}).catch((e) => {
+  log.error('Error loading SCHOOL_NEIGHBOURHOOD_LEARNING_TYPES data during boot .', e);
+});
+cacheService.loadDataToCache( constants.CACHE_KEYS.AUTHORITY_TYPES, 'server:institute:authorityTypeCodesURL').then(() => {
+  log.info('Loaded AUTHORITY_TYPES data to memory');
+}).catch((e) => {
+  log.error('Error loading AUTHORITY_TYPES data during boot .', e);
+});
+cacheService.loadDataToCache( constants.CACHE_KEYS.GRADE_CODES, 'server:institute:gradeCodeURL').then(() => {
+  log.info('Loaded GRADE_CODES data to memory');
+}).catch((e) => {
+  log.error('Error loading GRADE_CODES data during boot .', e);
+});
+cacheService.loadDataToCache( constants.CACHE_KEYS.PROVINCE_CODES, 'server:institute:provinceCodesURL').then(() => {
+  log.info('Loaded PROVINCE_CODES data to memory');
+}).catch((e) => {
+  log.error('Error loading PROVINCE_CODES data during boot .', e);
+});
+cacheService.loadDataToCache( constants.CACHE_KEYS.COUNTRY_CODES, 'server:institute:countryCodesURL').then(() => {
+  log.info('Loaded COUNTRY_CODES data to memory');
+}).catch((e) => {
+  log.error('Error loading COUNTRY_CODES data during boot .', e);
+});
+cacheService.loadDataToCache( constants.CACHE_KEYS.SCHOOL_CONTACT_TYPES, 'server:institute:schoolContactTypeCodesURL').then(() => {
+  log.info('Loaded SCHOOL_CONTACT_TYPES data to memory');
+}).catch((e) => {
+  log.error('Error loading SCHOOL_CONTACT_TYPES data during boot .', e);
+});
+cacheService.loadDataToCache( constants.CACHE_KEYS.AUTHORITY_CONTACT_TYPES, 'server:institute:authorityContactTypeCodesURL').then(() => {
+  log.info('Loaded AUTHORITY_CONTACT_TYPES data to memory');
+}).catch((e) => {
+  log.error('Error loading AUTHORITY_CONTACT_TYPES data during boot .', e);
+});
+
 cacheService.loadAllAuthoritiesToMap().then(() => {
   log.info('Loaded authorities data to memory');
 }).catch((e) => {

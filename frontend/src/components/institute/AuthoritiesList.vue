@@ -187,7 +187,7 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('institute/getAuthorityTypeCodes').then(() => {
+    this.$store.dispatch('institute/getAllAuthorityTypeCodes').then(() => {
       this.authorityTypes = this.authorityTypeCodes;
     });
 
