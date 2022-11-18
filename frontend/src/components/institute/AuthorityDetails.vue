@@ -769,6 +769,13 @@ export default {
   border-width: medium;
 }
 
+.activityContent {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-width: 100%;
+  font-size: medium;
+}
+
 .fontBolder{
   font-weight: bolder;
 }
