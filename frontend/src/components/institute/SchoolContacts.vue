@@ -85,6 +85,7 @@ import NewSchoolContactPage from './NewSchoolContactPage';
 import alertMixin from '@/mixins/alertMixin';
 import {mapGetters} from 'vuex';
 import {isExpired} from '@/utils/institute/status';
+import { sortBy } from 'lodash';
 
 export default {
   name: 'SchoolContactsPage',
@@ -140,6 +141,7 @@ export default {
         .then(response => {
           this.schoolContacts = new Map();
           this.school = response.data;
+          response.data.contacts = sortBy(response.data.contacts, ['firstName']);
           response.data.contacts.forEach(contact => {
             if (!isExpired(contact.expiryDate)) {
               if (!this.schoolContacts.has(contact.schoolContactTypeCode)) {
