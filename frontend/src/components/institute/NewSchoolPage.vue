@@ -471,7 +471,7 @@ export default {
   },
   methods: {
     saveNewSchoolOpenDate(date) {
-      this.$refs.newSchoolOpenDateFilter.save(date);//TODO
+      this.$refs.newSchoolOpenDateFilter.save(date);
     },
     closeNewSchoolPage() {
       this.resetForm();
