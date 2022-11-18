@@ -163,6 +163,7 @@
                           v-model="schoolDetailsCopy.facilityTypeCode"
                           single
                           required
+                          :rules="[rules.required()]"
                 ></v-select>
               </v-col>
             </v-row>
@@ -698,10 +699,18 @@ export default {
       return this.school.schoolCategoryCode === 'OFFSHORE';
     },
     allowedFacilityTypeCodesForSchoolCategoryCode(){
-      if(this.schoolDetailsCopy?.schoolCategoryCode){
-        return this.schoolCategoryFacilityTypesMap[this.schoolDetailsCopy?.schoolCategoryCode]
-          ?.map(schoolCatFacilityTypeCode =>  this.facilityTypeCodes.find(facTypCode=> facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
+      if(this.schoolDetailsCopy?.schoolCategoryCode) {
+        let resultingFacilityTypes = this.schoolCategoryFacilityTypesMap[this.schoolDetailsCopy?.schoolCategoryCode]?.map(schoolCatFacilityTypeCode => this.facilityTypeCodes.find(facTypCode => facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
+
+        if (resultingFacilityTypes !== undefined) {
+          let result = Array.from(resultingFacilityTypes.values()).filter(facType => facType.facilityTypeCode === this.schoolDetailsCopy.facilityTypeCode);
+          if(result.length === 0){
+            this.resetSchoolDetailsCopyFacilityType();
+          }
+        }
+        return resultingFacilityTypes;
       }else {
+        this.resetSchoolDetailsCopyFacilityType();
         return [];
       }
     },
@@ -1009,6 +1018,10 @@ export default {
     },
     openSchoolStatusEdit(){
       this.openSchoolStatusEditCard = true;
+    },
+    resetSchoolDetailsCopyFacilityType(){
+      this.schoolDetailsCopy.facilityType = null;
+      this.schoolDetailsCopy.facilityTypeCode = null;
     },
   },
 };
