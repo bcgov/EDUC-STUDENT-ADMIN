@@ -364,7 +364,7 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col v-if="displayPhysicalAddress()" cols="3">
+          <v-col v-if="displayPhysicalAddress() && !isOffshoreSchoolSelected()" cols="3">
             <v-row>
               <v-col>
                 <v-icon class="pb-1 mr-1" right >
@@ -529,7 +529,7 @@
                 <h2>Ministry Notes</h2>
               </v-col>
               <v-col class="d-flex justify-end">
-                <PrimaryButton id="addNewNoteButton" width="9em" icon="mdi-plus" icon-left text="New Note" :disabled="canCreateNewNote()" @click.native="newNoteSheet = !newNoteSheet"></PrimaryButton>
+                <PrimaryButton id="addNewNoteButton" width="9em" icon="mdi-plus" icon-left text="New Note" :disabled="!canEditSchoolDetails()" @click.native="newNoteSheet = !newNoteSheet"></PrimaryButton>
               </v-col>
             </v-row>
             <v-row>
@@ -732,11 +732,8 @@ export default {
     this.getThisSchoolsDetails();
   },
   methods: {
-    canCreateNewNote(){
-      if(this.school.schoolCategoryCode === 'OFFSHORE' || this.school.schoolCategoryCode === 'INDEPEND'){
-        return !(this.SCHOOL_ADMIN_ROLE || this.SCHOOL_INDEPENDENT_OFFSHORE_ADMIN);
-      }
-      return !this.SCHOOL_ADMIN_ROLE;
+    isOffshoreSchoolSelected(){
+      return this.schoolDetailsCopy?.schoolCategoryCode === 'OFFSHORE';
     },
     getThisSchoolsDetails(){
       this.loading = true;
@@ -975,8 +972,8 @@ export default {
       }
     },
     canEditSchoolDetails(){
-      if(this.school.schoolCategoryCode === 'OFFSHORE' || this.school.schoolCategoryCode === 'INDEPEND'){
-        return this.SCHOOL_INDEPENDENT_OFFSHORE_ADMIN;
+      if(this.school.schoolCategoryCode === 'INDEPEND'){
+        return this.SCHOOL_INDEPENDENT_OFFSHORE_ADMIN || this.SCHOOL_ADMIN_ROLE;
       }
       return this.SCHOOL_ADMIN_ROLE;
     },
