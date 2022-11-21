@@ -162,13 +162,10 @@ export default {
       this.$router.push({name: 'instituteSchoolList'});
     },
     canAddEditSchoolContact() {
-      let authorized = false;
-      if((this.school.schoolCategoryCode === 'INDEPEND' || this.school.schoolCategoryCode === 'OFFSHORE') && this.SCHOOL_INDEPENDENT_OFFSHORE_ADMIN){
-        authorized = true;
-      } else if((this.school.schoolCategoryCode !== 'INDEPEND' || this.school.schoolCategoryCode !== 'OFFSHORE') && this.SCHOOL_ADMIN_ROLE){
-        authorized = true;
+      if(this.school.schoolCategoryCode === 'INDEPEND'){
+        return this.SCHOOL_INDEPENDENT_OFFSHORE_ADMIN || this.SCHOOL_ADMIN_ROLE;
       }
-      return authorized;
+      return this.SCHOOL_ADMIN_ROLE;
     },
     contactEditSuccess() {
       this.getThisSchoolsContacts();

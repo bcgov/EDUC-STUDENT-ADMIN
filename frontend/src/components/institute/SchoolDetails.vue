@@ -365,7 +365,7 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col v-if="displayPhysicalAddress() && !isOffshoreSchoolSelected()" cols="3">
+          <v-col v-if="displayPhysicalAddress()" cols="3">
             <v-row>
               <v-col>
                 <v-icon class="pb-1 mr-1" right >
@@ -609,17 +609,18 @@
       </template>
     </ConfirmationDialog>
     <!--    new contact sheet -->
-    <v-bottom-sheet
+    <v-dialog
         v-model="openSchoolStatusEditCard"
         inset
         no-click-animation
         scrollable
         persistent
+        max-width="30%"
     >
       <SchoolStatus v-if="openSchoolStatusEditCard"  @updateSchoolDates="handleUpdatesToSchoolStatus"
                     @schoolStatus:closeEditSchoolStatusPage="openSchoolStatusEditCard = !openSchoolStatusEditCard"
                     :school-open-date="schoolDetailsCopy.openedDate" :school-close-date="schoolDetailsCopy.closedDate" :school-status="schoolDetailsCopy.status"></SchoolStatus>
-    </v-bottom-sheet>
+    </v-dialog>
   </v-form>
 </template>
 
@@ -758,6 +759,7 @@ export default {
             this.getAuthorityDetails(this.school.independentAuthorityId);
           }
           this.sortNotes();
+          this.setHasSamePhysicalFlag();
         }).catch(error => {
           console.error(error);
           this.setFailureAlert(error.response?.data?.message || error.message);
@@ -991,14 +993,7 @@ export default {
       this.$refs.schoolDetailsForm.validate();
     },
     displayPhysicalAddress(){
-      if(this.isOffshoreSchool){
-        return false;
-      }else if(this.editing){
-        return true;
-      } else if(!this.editing && this.school.addresses.filter(address => address.addressTypeCode === 'MAILING').length > 0){
-        return true;
-      }
-      return false;
+      return (this.editing && !this.isOffshoreSchoolSelected()) || (!this.editing && !this.isOffshoreSchool);
     },
     async handleUpdatesToSchoolStatus(updatedDatesForSchool){
       await this.$nextTick();
