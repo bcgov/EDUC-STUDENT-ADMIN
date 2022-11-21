@@ -51,7 +51,7 @@
                   mdi-phone-outline
                 </v-icon>
                 <span v-if="!editing">{{ formatPhoneNumber(authority.phoneNumber) }}</span>
-                <v-text-field v-else class="shrink py-0" @keypress="isNumber($event)" required :maxlength="10" :rules="[rules.required(), rules.phoneNumber()]" v-model="authorityCopy.phoneNumber">
+                <v-text-field v-else id="phoneNumberField" class="shrink py-0" @keypress="isNumber($event)" required :maxlength="10" :rules="[rules.required(), rules.phoneNumber()]" v-model="authorityCopy.phoneNumber">
                 </v-text-field>
               </v-col>
               <v-col class="d-flex">
@@ -59,7 +59,7 @@
                   mdi-at
                 </v-icon>
                 <span v-if="!editing">{{ authority.email }}</span>
-                <v-text-field v-else class="py-0" required :rules="[rules.required(), rules.email()]" :maxlength="255" v-model="authorityCopy.email">
+                <v-text-field v-else id="emailField" class="py-0" required :rules="[rules.required(), rules.email()]" :maxlength="255" v-model="authorityCopy.email">
                 </v-text-field>
               </v-col>
               <v-col class="d-flex">
@@ -67,7 +67,7 @@
                   mdi-fax
                 </v-icon>
                 <span v-if="!editing">{{ formatPhoneNumber(authority.faxNumber) }}</span>
-                <v-text-field v-else class="shrink py-0" @keypress="isNumber($event)" :rules="[rules.phoneNumber('Fax number must be valid')]" :maxlength="10" v-model="authorityCopy.faxNumber">
+                <v-text-field v-else id="faxNumberField" class="shrink py-0" @keypress="isNumber($event)" :rules="[rules.phoneNumber('Fax number must be valid')]" :maxlength="10" v-model="authorityCopy.faxNumber">
                 </v-text-field>
               </v-col>
             </v-row>
@@ -117,7 +117,7 @@
                     <span v-if="!editing" class="ministryLine" style="color: black">{{ this.authority.type }}</span>
                     <v-select
                       v-else
-                      id="authoritySelect"
+                      id="authorityTypeSelect"
                       :items="this.authorityTypes"
                       item-text="label"
                       item-value="authorityTypeCode"
