@@ -5,7 +5,7 @@
     <v-card-title class="sheetHeader pt-1 pb-1">Update School Status</v-card-title>
     <v-divider></v-divider>
     <v-card-text>
-        <v-row class="d-flex justify-center">
+        <v-row class="pl-3 pr-3 d-flex justify-center">
           <v-col >
             <v-row class="d-flex justify-start">
               <h3>How would you like to update the status?</h3>
@@ -28,34 +28,41 @@
             </v-row>
             <v-row class="d-flex justify-start" v-if="displayUpdateOpeningDatePanel()">
               <v-col>
-                <v-menu
-                    id="schoolStatusOpenDatePicker"
-                    ref="schoolStatusOpenDateFilter"
-                    :close-on-content-click="false"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                        id="schoolStatusOpenDateTextField"
-                        :rules="[rules.required()]"
-                        class="pt-0 mt-0"
-                        v-model="openDateFormatted"
-                        label="Open Date"
-                        prepend-inner-icon="mdi-calendar"
-                        clearable
-                        readonly
-                        v-bind="attrs"
-                        v-on="on"
-                        @click="openDate = parseDate(openDateFormatted)"
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker
-                      v-model="openDate"
-                      @change="saveOpenDate"
-                  ></v-date-picker>
-                </v-menu>
+                <v-row class="d-flex justify-start">
+                  <h3>Select the new open date</h3>
+                </v-row>
+                <v-row>
+                  <v-col>
+                    <v-menu
+                      id="schoolStatusOpenDatePicker"
+                      ref="schoolStatusOpenDateFilter"
+                      :close-on-content-click="false"
+                      transition="scale-transition"
+                      offset-y
+                      min-width="auto"
+                    >
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field
+                          id="schoolStatusOpenDateTextField"
+                          :rules="[rules.required()]"
+                          class="pt-0 mt-0"
+                          v-model="openDateFormatted"
+                          label="Open Date"
+                          prepend-inner-icon="mdi-calendar"
+                          clearable
+                          readonly
+                          v-bind="attrs"
+                          v-on="on"
+                          @click="openDate = parseDate(openDateFormatted)"
+                        ></v-text-field>
+                      </template>
+                      <v-date-picker
+                        v-model="openDate"
+                        @change="saveOpenDate"
+                      ></v-date-picker>
+                    </v-menu>
+                  </v-col>
+                </v-row>
               </v-col>
             </v-row>
           </v-col>
