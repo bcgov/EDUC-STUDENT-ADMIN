@@ -137,7 +137,7 @@
               </v-col>
             </v-row>
             <v-row no-gutters class="d-flex justify-start">
-              <v-col v-if="hasMailingAddress()" cols="3">
+              <v-col cols="3">
                 <v-row>
                   <v-col>
                     <v-icon class="pb-1 mr-1" right >
@@ -147,7 +147,7 @@
                   </v-col>
                 </v-row>
                 <v-row v-if="!editing" no-gutters>
-                  <v-col>
+                  <v-col v-if="hasMailingAddress()">
                     <v-row class="ml-9" no-gutters>
                       <v-col>
                         <span style="word-break: break-all;">{{ getMailingAddressItem('addressLine1') }}</span>
