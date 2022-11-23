@@ -277,6 +277,21 @@ async function updateAuthority(req, res) {
       authorityPayload.addresses = authorityPayload.addresses.filter(address => address.addressTypeCode !== 'PHYSICAL');
     }
 
+    authorityPayload.addresses.forEach(function(addy) {
+      addy.updateDate = null;
+      addy.createDate = null;
+    });
+
+    authorityPayload.notes.forEach(function(note) {
+      note.updateDate = null;
+      note.createDate = null;
+    });
+
+    authorityPayload.contacts.forEach(function(contact) {
+      contact.updateDate = null;
+      contact.createDate = null;
+    });
+
     authorityPayload.createDate = null;
     authorityPayload.updateDate = null;
     authorityPayload.updateUser = utils.getUser(req).idir_username;
@@ -324,6 +339,22 @@ async function updateSchool(req, res) {
       });
     }
     const payload = req.body;
+
+    payload.addresses.forEach(function(addy) {
+      addy.updateDate = null;
+      addy.createDate = null;
+    });
+
+    payload.notes.forEach(function(note) {
+      note.updateDate = null;
+      note.createDate = null;
+    });
+
+    payload.contacts.forEach(function(contact) {
+      contact.updateDate = null;
+      contact.createDate = null;
+    });
+
     payload.createDate = null;
     payload.updateDate = null;
     payload.updateUser = utils.getUser(req).idir_username;

@@ -35,7 +35,7 @@
           <v-chip color="#F4B183">Pending End Date</v-chip>
         </v-col>
         <v-col class="d-flex justify-end">
-          <PrimaryButton icon-left width="11em" icon="mdi-plus-thick" text="New Contact"  @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
+          <PrimaryButton icon-left width="11em" icon="mdi-plus-thick" text="New Contact" :disabled="!canEditAuthorityContact()"  @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
         </v-col>
       </v-row>
       <div v-for="authorityContactType in authorityContactTypes" :key="authorityContactType.code">
