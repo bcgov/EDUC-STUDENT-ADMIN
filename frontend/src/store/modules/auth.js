@@ -30,7 +30,7 @@ export default {
     isValidDistrictAdmin: localStorage.getItem('isValidDistrictAdmin') !== null,
     isValidSchoolAdmin: localStorage.getItem('isValidSchoolAdmin') !== null,
     isValidIndependentAuthorityAdmin: localStorage.getItem('isValidIndependentAuthorityAdmin') !== null,
-    isValidSchoolIndependentOffshoreAdmin: localStorage.getItem('isValidSchoolIndependentOffshoreAdmin') !== null
+    isValidSchoolIndependentAdmin: localStorage.getItem('isValidSchoolIndependentAdmin') !== null
   },
   getters: {
     acronyms: state => state.acronyms,
@@ -64,7 +64,7 @@ export default {
     PEN_TEAM_ROLE: state => state.isValidPenTeamRoleUser,
     DISTRICT_ADMIN_ROLE: state => state.isValidDistrictAdmin,
     SCHOOL_ADMIN_ROLE: state => state.isValidSchoolAdmin,
-    SCHOOL_INDEPENDENT_OFFSHORE_ADMIN: state => state.isValidSchoolIndependentOffshoreAdmin,
+    SCHOOL_INDEPENDENT_ADMIN: state => state.isValidSchoolIndependentAdmin,
     INDEPENDENT_AUTHORITY_ADMIN_ROLE: state => state.isValidIndependentAuthorityAdmin
   },
   mutations: {
@@ -266,13 +266,13 @@ export default {
         localStorage.removeItem('isValidSchoolAdmin');
       }
     },
-    setIsValidSchoolIndependentOffshoreAdmin: (state, isValidSchoolIndependentOffshoreAdmin) => {
-      if (isValidSchoolIndependentOffshoreAdmin) {
-        state.isValidSchoolIndependentOffshoreAdmin = true;
-        localStorage.setItem('isValidSchoolIndependentOffshoreAdmin', 'true');
+    setIsValidSchoolIndependentAdmin: (state, isValidSchoolIndependentAdmin) => {
+      if (isValidSchoolIndependentAdmin) {
+        state.isValidSchoolIndependentAdmin = true;
+        localStorage.setItem('isValidSchoolIndependentAdmin', 'true');
       } else {
-        state.isValidSchoolIndependentOffshoreAdmin = false;
-        localStorage.removeItem('isValidSchoolIndependentOffshoreAdmin');
+        state.isValidSchoolIndependentAdmin = false;
+        localStorage.removeItem('isValidSchoolIndependentAdmin');
       }
     },
     setIsValidIndependentAuthorityAdmin: (state, isValidIndependentAuthorityAdmin) => {
@@ -358,7 +358,7 @@ function setAuthorizations(context, response) {
   context.commit('setIsValidPenTeamRoleUser', response.isValidPenTeamRoleUser);
   context.commit('setIsValidDistrictAdmin', response.isValidDistrictAdmin);
   context.commit('setIsValidSchoolAdmin', response.isValidSchoolAdmin);
-  context.commit('setIsValidSchoolIndependentOffshoreAdmin', response.isValidSchoolIndependentOffshoreAdmin);
+  context.commit('setIsValidSchoolIndependentAdmin', response.isValidSchoolIndependentAdmin);
   context.commit('setIsValidIndependentAuthorityAdmin', response.isValidIndependentAuthorityAdmin);
   ApiService.setAuthHeader(response.jwtFrontend);
 }
