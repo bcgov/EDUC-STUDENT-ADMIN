@@ -194,8 +194,8 @@
     >
       <NewSchoolPage
           v-if="newSchoolSheet"
-          :districtNames="this.districtSearchNames"
-          :authorityNames="this.authoritySearchNames"
+          :districtNames="this.activeDistricts"
+          :authorityNames="this.activeAuthorities"
           @newSchool:closeNewSchoolPage="newSchoolSheet = !newSchoolSheet"
           @newSchool:addNewSchool="newSchoolAdded"
       />
@@ -256,7 +256,9 @@ export default {
       schools: [],
       schoolSearchNames: [],
       districtSearchNames: [],
+      activeDistricts: [],
       authoritySearchNames: [],
+      activeAuthorities: [],
       schoolStatus: [],
       schoolCodeNameFilter: '',
       districtCodeNameFilter: '',
@@ -298,7 +300,9 @@ export default {
     this.setSchoolStatuses();
     this.getSchoolDropDownItems();
     this.getDistrictDropDownItems();
+    this.getActiveDistrictDropDownItems();
     this.getAuthorityDropDownItems();
+    this.getActiveAuthorityDropDownItems();
     this.getSchoolList();
   },
   methods: {
@@ -313,12 +317,10 @@ export default {
       this.schoolStatus = [{name: 'Open', code: 'Open'}, {name: 'Opening', code: 'Opening'}, {name: 'Closing', code: 'Closing'}, {name: 'Closed', code: 'Closed'}, {name: 'Never Opened', code: 'NeverOpened'}];
     },
     getDistrictDropDownItems() {
-      this.loadingDistricts = true;
       ApiService.getDistricts().then((response) => {
-        this.districtList = response.data;
-        for(const district of this.districtList){
+        for(const district of response.data){
           let districtItem = {
-            districtNumberName: district.districtNumber + ' - ' + district.name,
+            districtNumberName: `${district.districtNumber} - ${district.name}`,
             districtId: district.districtId,
           };
           this.districtSearchNames.push(districtItem);
@@ -327,8 +329,21 @@ export default {
       }).catch(error => {
         console.error(error);
         this.setFailureAlert('An error occurred while getting districts. Please try again later.');
-      }).finally(() => {
-        this.loadingDistricts = false;
+      });
+    },
+    getActiveDistrictDropDownItems() {
+      ApiService.getActiveDistricts().then((response) => {
+        for(const district of response.data){
+          let districtItem = {
+            districtNumberName: `${district.districtNumber} - ${district.name}`,
+            districtId: district.districtId,
+          };
+          this.activeDistricts.push(districtItem);
+        }
+        this.activeDistricts = this.sortByNameValue(this.activeDistricts, 'districtNumberName');
+      }).catch(error => {
+        console.error(error);
+        this.setFailureAlert('An error occurred while getting active districts. Please try again later.');
       });
     },
     getSchoolDropDownItems(){
@@ -352,18 +367,32 @@ export default {
     },
     getAuthorityDropDownItems(){
       ApiService.getAuthorities().then((response) => {
-        let authorityList = response.data;
-        for(const authority of authorityList){
+        for(const authority of response.data){
           let authorityItem = {
-            authorityCodeName: authority.authorityNumber + ' - ' + authority.name,
+            authorityCodeName: `${authority.authorityNumber} - ${authority.name}`,
             authorityID: authority.authorityID,
           };
           this.authoritySearchNames.push(authorityItem);
         }
         this.authoritySearchNames = this.sortByNameValue(this.authoritySearchNames, 'authorityCodeName');
       }).catch(error => {
-        //to do add the alert framework for error or success
         console.error(error);
+        this.setFailureAlert('An error occurred while getting authorities. Please try again later.');
+      });
+    },
+    getActiveAuthorityDropDownItems(){
+      ApiService.getActiveAuthorities().then((response) => {
+        for(const authority of response.data){
+          let authorityItem = {
+            authorityCodeName: `${authority.authorityNumber} - ${authority.name}`,
+            authorityID: authority.authorityID,
+          };
+          this.activeAuthorities.push(authorityItem);
+        }
+        this.activeAuthorities = this.sortByNameValue(this.activeAuthorities, 'authorityCodeName');
+      }).catch(error => {
+        console.error(error);
+        this.setFailureAlert('An error occurred while getting active authorities. Please try again later.');
       });
     },
     getSchoolList() {

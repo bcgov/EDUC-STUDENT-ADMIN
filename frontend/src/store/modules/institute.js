@@ -145,12 +145,12 @@ export default {
       commit('setActiveSchoolOrganizationTypeCodes', response.data);
     },
     async getAllActiveSchoolNeighborhoodLearningCodes({commit}) {
-      const reponse = await ApiService.getAllActiveSchoolNeighborhoodLearningCodes();
-      commit('setActiveSchoolNeighborhoodLearningCodes', reponse.data);
+      const response = await ApiService.getAllActiveSchoolNeighborhoodLearningCodes();
+      commit('setActiveSchoolNeighborhoodLearningCodes', response.data);
     },
     async getAllActiveAuthorityTypeCodes({commit}) {
-      const reponse = await ApiService.getAllActiveAuthorityTypeCodes();
-      commit('setActiveAuthorityTypeCodes', reponse.data);
+      const response = await ApiService.getAllActiveAuthorityTypeCodes();
+      commit('setActiveAuthorityTypeCodes', response.data);
     },
     async getAllActiveGradeCodes({commit}) {
       const response = await ApiService.getAllActiveInstituteGradeCodes();
