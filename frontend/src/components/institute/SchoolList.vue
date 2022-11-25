@@ -227,7 +227,6 @@ export default {
   },
   data() {
     return {
-      statusSelectFilter: null,
       statusRadioGroup: 'statusFilterActive',
       statusRadioGroupEnabled: true,
       headers: [
@@ -261,7 +260,7 @@ export default {
       schoolCodeNameFilter: '',
       districtCodeNameFilter: '',
       authorityCodeNameFilter: '',
-      schoolStatusFilter: '',
+      schoolStatusFilter: 'Open',
       schoolFacilityTypes: [],
       schoolCategoryTypes: [],
       schoolCategoryTypeFilter: '',
