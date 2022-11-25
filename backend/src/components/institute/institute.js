@@ -305,7 +305,7 @@ async function updateAuthority(req, res) {
 
 function hasSchoolAdminRole(req, school){
   if(school.schoolCategoryCode === 'INDEPEND'){
-    return req.session.roles.includes('SCHOOL_ADMIN') || req.session.roles.includes('SCHOOL_INDEPENDENT_OFFSHORE_ADMIN');
+    return req.session.roles.includes('SCHOOL_ADMIN') || req.session.roles.includes('SCHOOL_INDEPENDENT_ADMIN');
   }
 
   return req.session.roles.includes('SCHOOL_ADMIN');

@@ -109,7 +109,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo', 'SCHOOL_INDEPENDENT_OFFSHORE_ADMIN', 'SCHOOL_ADMIN_ROLE']),
+    ...mapGetters('auth', ['isAuthenticated','userInfo', 'SCHOOL_INDEPENDENT_ADMIN', 'SCHOOL_ADMIN_ROLE']),
 
     loading() {
       return this.loadingCount !== 0;
@@ -163,7 +163,7 @@ export default {
     },
     canAddEditSchoolContact() {
       if(this.school.schoolCategoryCode === 'INDEPEND'){
-        return this.SCHOOL_INDEPENDENT_OFFSHORE_ADMIN || this.SCHOOL_ADMIN_ROLE;
+        return this.SCHOOL_INDEPENDENT_ADMIN || this.SCHOOL_ADMIN_ROLE;
       }
       return this.SCHOOL_ADMIN_ROLE;
     },
