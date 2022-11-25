@@ -76,6 +76,33 @@ async function getDistrictByDistrictID(req, res) {
   }
 }
 
+async function updateDistrictContact(req, res) {
+  try {
+    const token = getBackendToken(req);
+    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
+
+    let district = cacheService.getDistrictJSONByDistrictId(req.body.districtId);
+    if(!district || !hasDistrictAdminRole(req)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+
+    const params = req.body;
+    params.updateDate = null;
+    params.createDate = null;
+    params.updateUser = utils.getUser(req).idir_username;
+    params.effectiveDate = params.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null;
+    params.expiryDate = req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null;
+
+    const result = await utils.putData(token, `${config.get('server:institute:instituteDistrictURL')}/${req.body.districtId}/contact/${req.body.districtContactId}` , params, utils.getUser(req).idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'updateDistrictContact', 'Error occurred while attempting to update a district contact.');
+    return errorResponse(res);
+  }
+}
+
 async function getSchools(req, res) {
   const token = getBackendToken(req);
   try {
@@ -301,6 +328,10 @@ async function updateAuthority(req, res) {
     logApiError(e, 'updateAuthority', 'Error occurred while attempting to update an authority.');
     return errorResponse(res);
   }
+}
+
+function hasDistrictAdminRole(req){
+  return req.session.roles.includes('DISTRICT_ADMIN');
 }
 
 function hasSchoolAdminRole(req, school){
@@ -614,6 +645,7 @@ module.exports = {
   getCachedDistricts,
   getCachedDistrictByDistrictId,
   getDistrictByDistrictID,
+  updateDistrictContact,
   getSchools,
   getDistricts,
   getSchoolsPaginated,
