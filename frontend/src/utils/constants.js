@@ -99,6 +99,7 @@ let object = {
     SCHOOL_CONTACT_URL: instituteRoot + '/school/contact',
     SCHOOL_PAGINATED_DATA_URL: instituteRoot + '/schoolsPaginated',
     DISTRICT_DATA_URL: instituteRoot + '/districts',
+    DISTRICT_CONTACT_URL: instituteRoot + '/districts/contact',
     DISTRICT_CONTACT_TYPE_CODES: instituteRoot + '/districtContactTypeCodes',
     AUTHORITY_DATA_URL: instituteRoot + '/authority',
     AUTHORITY_CONTACT_URL: instituteRoot + '/authority/contact',
