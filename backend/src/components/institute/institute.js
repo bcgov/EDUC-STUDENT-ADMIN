@@ -76,6 +76,49 @@ async function getDistrictByDistrictID(req, res) {
   }
 }
 
+async function updateDistrict(req, res) {
+  try {
+    const token = getBackendToken(req);
+
+    let district = cacheService.getDistrictJSONByDistrictId(req.body.districtId);
+
+    if (!district || !hasDistrictAdminRole(req)) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+    const districtPayload = req.body;
+
+    districtPayload.addresses.forEach(function(addy) {
+      addy.updateDate = null;
+      addy.createDate = null;
+    });
+
+    districtPayload.notes.forEach(function(note) {
+      note.updateDate = null;
+      note.createDate = null;
+    });
+
+    districtPayload.contacts.forEach(function(contact) {
+      contact.updateDate = null;
+      contact.createDate = null;
+    });
+
+    districtPayload.createDate = null;
+    districtPayload.updateDate = null;
+    districtPayload.updateUser = utils.getUser(req).idir_username;
+
+    const result = await utils.putData(token, config.get('server:institute:instituteDistrictURL') + '/' + districtPayload.districtId, districtPayload, utils.getUser(req).idir_username);
+    return res.status(HttpStatus.OK).json(result);
+
+  }catch(e)
+  {
+    await logApiError(e, 'updateDistrict', 'Error occurred while attempting to update a district.');
+    return errorResponse(res);
+  }
+
+}
+
 async function updateDistrictContact(req, res) {
   try {
     const token = getBackendToken(req);
@@ -666,5 +709,6 @@ module.exports = {
   getCachedSchoolCategoryFacilityTypes,
   updateSchool,
   addSchoolContact,
-  getCachedInstituteData
+  getCachedInstituteData,
+  updateDistrict
 };

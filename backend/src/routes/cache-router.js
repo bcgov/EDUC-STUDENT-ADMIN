@@ -8,15 +8,15 @@ const constants = require('../util/constants');
 
 const extendSession = utils.extendSession();
 
-router.get('/districts/:districtId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedDistrictByDistrictId);
+router.get('/district/:districtId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedDistrictByDistrictId);
 
-router.get('/districts', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedDistricts);
+router.get('/district', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedDistricts);
 
 router.get('/school', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedSchools);
 
 router.get('/school/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedSchoolBySchoolID);
 
-router.get('/authorities', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedAuthorities);
+router.get('/authority', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedAuthorities);
 
 router.get('/authority/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedAuthorityByAuthorityID);
 

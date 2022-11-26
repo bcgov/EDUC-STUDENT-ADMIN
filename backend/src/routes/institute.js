@@ -3,8 +3,7 @@ const express = require('express');
 const router = express.Router();
 const { getDistricts, getSchools, getSchoolsPaginated, getAuthoritiesPaginated,
   getAuthorityByID, getSchoolByID, getDistrictByDistrictID, addNewSchoolNote, updateSchoolContact, updateAuthority, addAuthorityContact, updateAuthorityContact,
-  addNewAuthorityNote, updateSchool, addSchoolContact,
-  updateDistrictContact
+  addNewAuthorityNote, updateSchool, addSchoolContact, updateDistrict, updateDistrictContact
 } = require('../components/institute/institute');
 const utils = require('../components/utils');
 const auth = require('../components/auth');
@@ -12,13 +11,15 @@ const extendSession = utils.extendSession();
 const {getCodes} = require('../components/utils');
 const {CACHE_KEYS} = require('../components/constants');
 
-router.get('/districts', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getDistricts);
+router.get('/district', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getDistricts);
 
 router.get('/districtContactTypeCodes', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCodes('server:institute:rootURL', CACHE_KEYS.DISTRICT_CONTACT_TYPE_CODES, '/district-contact-type-codes'));
 
-router.get('/districts/:districtId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getDistrictByDistrictID);
+router.get('/district/:districtId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getDistrictByDistrictID);
 
-router.put('/districts/contact', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, updateDistrictContact);
+router.put('/district/:districtId', passport.authenticate('jwt', {session: false}, undefined), auth.isValidDistrictAdmin, extendSession, updateDistrict);
+
+router.put('/district/contact', passport.authenticate('jwt', {session: false}, undefined), auth.isValidDistrictAdmin, extendSession, updateDistrictContact);
 
 router.put('/authority/contact', passport.authenticate('jwt', {session: false}, undefined), auth.isValidIndependentAuthorityAdmin, extendSession, updateAuthorityContact);
 

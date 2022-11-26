@@ -20,24 +20,24 @@
     <v-row v-else no-gutters>
       <v-col>
         <v-row class="d-flex justify-start">
-          <v-col v-if="!editing" cols="6" class="d-flex justify-start">
-            <h2 class="subjectHeading">{{ school.mincode }} - {{ school.displayName }}</h2>
-          </v-col>
-          <v-col class="d-flex" v-else>
-            <h2 id="schoolMincode">{{ school.mincode }} - </h2>
-            <v-text-field class="mt-n5 ml-3" style="font-size: x-large" :maxlength="255" :rules="[rules.required()]" required v-model="schoolDetailsCopy.displayName">
-            </v-text-field>
-          </v-col>
-          <v-col v-if="!editing" cols="6" class="d-flex justify-end">
-            <PrimaryButton id="schoolDetailsEditButton" icon-left width="6em" icon="mdi-pencil" text="Edit"
-                           :disabled="!canEditSchoolDetails()" @click.native="toggleEdit"></PrimaryButton>
-          </v-col>
-          <v-col v-else cols="6" class="d-flex justify-end">
-            <PrimaryButton class="mr-2" secondary id="cancelButton" icon-left width="6em" text="Cancel"
-                           @click.native="cancelClicked"></PrimaryButton>
-            <PrimaryButton id="saveButton" icon-left width="6em" text="Save" :disabled="!schoolDetailsFormValid"
-                           @click.native="updateSchoolDetails"></PrimaryButton>
-          </v-col>
+            <v-col v-if="!editing" cols="6" class="d-flex justify-start">
+              <h2 class="subjectHeading">{{ school.mincode }} - {{ school.displayName }}</h2>
+            </v-col>
+            <v-col class="d-flex" v-else>
+              <h2 id="schoolMincode">{{ school.mincode }} - </h2>
+              <v-text-field class="mt-n5 ml-3" style="font-size: x-large" :maxlength="255" :rules="[rules.required()]" required v-model="schoolDetailsCopy.displayName">
+              </v-text-field>
+            </v-col>
+            <v-col v-if="!editing" cols="6" class="d-flex justify-end">
+              <PrimaryButton id="schoolDetailsEditButton" icon-left width="6em" icon="mdi-pencil" text="Edit"
+                             :disabled="!canEditSchoolDetails()" @click.native="toggleEdit"></PrimaryButton>
+            </v-col>
+            <v-col v-else cols="6" class="d-flex justify-end">
+              <PrimaryButton class="mr-2" secondary id="cancelButton" icon-left width="6em" text="Cancel"
+                             @click.native="cancelClicked"></PrimaryButton>
+              <PrimaryButton id="saveButton" icon-left width="6em" text="Save" :disabled="!schoolDetailsFormValid"
+                             @click.native="updateSchoolDetails"></PrimaryButton>
+            </v-col>
           </v-row>
           <v-row v-if="school.schoolCategoryCode !== 'INDEPEND'" class="d-flex justify-start">
               <v-col class="d-flex">
@@ -244,28 +244,28 @@
             </v-row>
             <v-row v-if="!editing" no-gutters>
               <v-col>
-            <v-row class="ml-9" no-gutters>
-              <v-col>
-                <span style="word-break: break-all;">{{ getMailingAddressItem('addressLine1') }}</span>
+                <v-row class="ml-9" no-gutters>
+                  <v-col>
+                    <span style="word-break: break-all;">{{ getMailingAddressItem('addressLine1') }}</span>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters>
+                  <v-col class="ml-9">
+                    <span style="word-break: break-all;">{{ getMailingAddressItem('addressLine2') }}</span>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters>
+                  <v-col class="ml-9">
+                    <span style="word-break: break-all;">{{ getMailingAddressItem('city') + ', ' + getMailingAddressItem('provinceCode')  + ', ' + getMailingAddressItem('countryCode') }}</span>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters>
+                  <v-col class="ml-9">
+                    <span style="word-break: break-all;">{{ getMailingAddressItem('postal') }}</span>
+                  </v-col>
+                </v-row>
               </v-col>
             </v-row>
-            <v-row no-gutters>
-              <v-col class="ml-9">
-                <span style="word-break: break-all;">{{ getMailingAddressItem('addressLine2') }}</span>
-              </v-col>
-            </v-row>
-            <v-row no-gutters>
-              <v-col class="ml-9">
-                <span style="word-break: break-all;">{{ getMailingAddressItem('city') + ', ' + getMailingAddressItem('provinceCode')  + ', ' + getMailingAddressItem('countryCode') }}</span>
-              </v-col>
-            </v-row>
-            <v-row no-gutters>
-              <v-col class="ml-9">
-                <span style="word-break: break-all;">{{ getMailingAddressItem('postal') }}</span>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
             <v-row v-else no-gutters>
               <v-col>
                 <v-row class="ml-9" no-gutters>
