@@ -259,7 +259,7 @@ export default {
 
       contact.independentAuthorityId = this.authorityID;
 
-      ApiService.apiAxios.put(`${Routes.institute.AUTHORITY_CONTACT_URL}`, contact)
+      ApiService.apiAxios.put(Routes.institute.AUTHORITY_CONTACT_URL + '/' + contact.authorityContactId, contact)
         .then(() => {
           this.setSuccessAlert('Success! The authority contact has been updated.');
           this.closeAuthorityContactEdit();

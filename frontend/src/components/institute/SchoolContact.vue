@@ -260,7 +260,7 @@ export default {
       contact.schoolID = this.schoolID;
 
       const payload = contact;
-      ApiService.apiAxios.post(`${Routes.institute.SCHOOL_CONTACT_URL}`, payload)
+      ApiService.apiAxios.put(Routes.institute.SCHOOL_CONTACT_URL + '/' + contact.schoolContactId, payload)
         .then(() => {
           this.setSuccessAlert('Success! The school contact has been updated.');
           this.closeSchoolContactEdit();
