@@ -272,7 +272,7 @@ export default {
 
       contact.districtId = this.districtID;
 
-      ApiService.apiAxios.put(Routes.institute.DISTRICT_CONTACT_URL, contact)
+      ApiService.apiAxios.put(Routes.institute.DISTRICT_CONTACT_URL + '/' + contact.districtContactId, contact)
         .then(() => {
           this.setSuccessAlert('Success! The district contact has been updated.');
           this.closeDistrictContactEdit();
