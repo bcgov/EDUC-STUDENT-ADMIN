@@ -19,6 +19,7 @@
                 <v-autocomplete
                     id="district-text-field"
                     label="District"
+                    :rules="[rules.required()]"
                     item-value="districtId"
                     item-text="districtNumberName"
                     :items="districtNames"
@@ -33,6 +34,7 @@
                     item-value="authorityID"
                     item-text="authorityCodeName"
                     :items="authorityNames"
+                    :rules="[authorityRule]"
                     v-model="newSchool.authorityName"
                     clearable>
                 </v-autocomplete>
@@ -79,6 +81,7 @@
                     item-value="schoolCategoryCode"
                     item-text="label"
                     class="pt-0"
+                    @change="clickSameAsAddressButton"
                     label="School Category"
                 />
               </v-col>
@@ -130,11 +133,12 @@
                     item-value="neighborhoodLearningTypeCode"
                     item-text="label"
                     class="pt-0"
+                    multiple
                     label="NLC Activity"
                 />
               </v-col>
             </v-row>
-            <v-row>
+            <v-row no-gutters class="mt-5">
               <v-col cols="4">
                 <h3>Contact Information</h3>
               </v-col>
@@ -154,7 +158,7 @@
               <v-col cols="4">
                 <v-text-field
                     id='newSchoolFaxNumberInput'
-                    :rules="[rules.required(), rules.phoneNumber()]"
+                    :rules="[rules.phoneNumber()]"
                     v-model="newSchool.faxNumber"
                     class="pt-0"
                     :maxlength="10"
@@ -185,12 +189,12 @@
                 />
               </v-col>
             </v-row>
-            <v-row>
+            <v-row no-gutters class="mt-5">
               <v-col cols="4">
                 <h3>Mailing Address</h3>
               </v-col>
             </v-row>
-            <v-row>
+            <v-row >
               <v-col cols="4">
                 <v-text-field
                     id='newSchoolMailingAddressLine1Input'
@@ -257,24 +261,22 @@
                 />
               </v-col>
             </v-row>
-            <v-row>
+            <v-row no-gutters class="mt-5">
               <v-col cols="4">
-                <v-row>
-                  <h3>Physical Address</h3>
-                </v-row>
-                <v-row class="pt-4">
-                  <v-checkbox
-                      dense
-                      id="sameAsMailingCheckbox"
-                      @click.native="clickSameAsAddressButton"
-                      v-model="sameAsMailingCheckbox"
-                      label="Same as mailing address"
-                      class="mt-n3 pt-0"
-                  ></v-checkbox>
-                </v-row>
+                <h3>Physical Address</h3>
               </v-col>
             </v-row>
-            <v-row v-if="!sameAsMailingCheckbox">
+            <v-row no-gutters v-if="sameAsMailingCheckbox" class="pt-4">
+              <v-checkbox
+                dense
+                id="sameAsMailingCheckbox"
+                @click.native="clickSameAsAddressButton"
+                v-model="sameAsMailingCheckbox"
+                label="Same as mailing address"
+                class="mt-n3 pt-0"
+              ></v-checkbox>
+            </v-row>
+            <v-row no-gutters v-else>
               <v-row>
                 <v-col cols="4">
                   <v-text-field
@@ -342,8 +344,18 @@
                   />
                 </v-col>
               </v-row>
-
-
+            </v-row>
+            <v-row no-gutters v-if="!sameAsMailingCheckbox" class="pt-4">
+              <v-col>
+                <v-checkbox
+                  dense
+                  id="sameAsMailingCheckbox"
+                  @click.native="clickSameAsAddressButton"
+                  v-model="sameAsMailingCheckbox"
+                  label="Same as mailing address"
+                  class="mt-n3 pt-0"
+                ></v-checkbox>
+              </v-col>
             </v-row>
           </v-col>
         </v-row>
@@ -471,6 +483,13 @@ export default {
     this.$store.dispatch('institute/getSchoolCategoryFacilityTypesMap');
   },
   methods: {
+    authorityRule(value) {
+      if (this.newSchool.categoryCode && this.newSchool.categoryCode === 'INDEPEND' && !value) {
+        return 'Authority is required';
+      } else {
+        return true;
+      }
+    },
     calculateDefaultOpenDate() {
       let currentDate = LocalDate.now();
       let defaultOpenDate = new LocalDate(currentDate.year(), 7, 1);
