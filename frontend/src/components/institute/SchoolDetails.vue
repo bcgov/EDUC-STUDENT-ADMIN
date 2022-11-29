@@ -138,7 +138,7 @@
             <v-row>
               <v-col cols="10" class="d-flex justify-start">
                 <span v-if="!editing" class="ministryLine" style="color: black">{{ school.schoolCategory }}</span>
-                <v-select v-else :items="schoolCategoryTypeCodes"
+                <v-select v-else :items="activeSchoolCategoryTypes"
                           item-value="schoolCategoryCode"
                           item-text="label"
                           v-model="schoolDetailsCopy.schoolCategoryCode"
@@ -665,7 +665,8 @@ export default {
       authority: '',
       cleanWebsiteUrl: '',
       schoolFacilityTypes: [],
-      schoolCategoryTypes: [],
+      activeSchoolCategoryTypes: [],
+      schoolCategoryTypes:[],
       schoolOrganizationTypes: [],
       schoolNeighborhoodLearningTypes: [],
       schoolGradeTypes: [],
@@ -684,6 +685,7 @@ export default {
     ...mapGetters('auth', ['isAuthenticated','userInfo','SCHOOL_ADMIN_ROLE','SCHOOL_INDEPENDENT_ADMIN_ROLE']),
     ...mapState('institute', ['facilityTypeCodes']),
     ...mapState('institute', ['schoolCategoryTypeCodes']),
+    ...mapState('institute', ['activeSchoolCategoryTypeCodes']),
     ...mapState('institute', ['schoolOrganizationTypeCodes']),
     ...mapState('institute', ['schoolNeighborhoodLearningCodes']),
     ...mapState('institute', ['gradeCodes']),
@@ -719,6 +721,9 @@ export default {
   created() {
     this.$store.dispatch('institute/getAllFacilityTypeCodes').then(() => {
       this.schoolFacilityTypes = this.facilityTypeCodes;
+    });
+    this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes').then(() => {
+      this.activeSchoolCategoryTypes = this.activeSchoolCategoryTypeCodes;
     });
     this.$store.dispatch('institute/getAllSchoolCategoryTypeCodes').then(() => {
       this.schoolCategoryTypes = this.schoolCategoryTypeCodes;
@@ -878,7 +883,7 @@ export default {
       return this.schoolFacilityTypes.find((facility) => facility.facilityTypeCode === school.facilityTypeCode)?.label;
     },
     getSchoolCategory(school) {
-      return this.schoolCategoryTypeCodes.find((category) => category.schoolCategoryCode === school.schoolCategoryCode)?.label;
+      return this.schoolCategoryTypes.find((category) => category.schoolCategoryCode === school.schoolCategoryCode)?.label;
     },
     getStatusColorAuthorityOrSchool,
     formatDate,
