@@ -666,6 +666,7 @@ export default {
       cleanWebsiteUrl: '',
       schoolFacilityTypes: [],
       activeSchoolCategoryTypes: [],
+      schoolCategoryTypes:[],
       schoolOrganizationTypes: [],
       schoolNeighborhoodLearningTypes: [],
       schoolGradeTypes: [],
@@ -683,6 +684,7 @@ export default {
   computed: {
     ...mapGetters('auth', ['isAuthenticated','userInfo','SCHOOL_ADMIN_ROLE','SCHOOL_INDEPENDENT_ADMIN_ROLE']),
     ...mapState('institute', ['facilityTypeCodes']),
+    ...mapState('institute', ['schoolCategoryTypeCodes']),
     ...mapState('institute', ['activeSchoolCategoryTypeCodes']),
     ...mapState('institute', ['schoolOrganizationTypeCodes']),
     ...mapState('institute', ['schoolNeighborhoodLearningCodes']),
@@ -722,6 +724,9 @@ export default {
     });
     this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes').then(() => {
       this.activeSchoolCategoryTypes = this.activeSchoolCategoryTypeCodes;
+    });
+    this.$store.dispatch('institute/getAllSchoolCategoryTypeCodes').then(() => {
+      this.schoolCategoryTypes = this.schoolCategoryTypeCodes;
     });
     this.$store.dispatch('institute/getAllSchoolOrganizationTypeCodes').then(() => {
       this.schoolOrganizationTypes = this.schoolOrganizationTypeCodes;
@@ -878,7 +883,7 @@ export default {
       return this.schoolFacilityTypes.find((facility) => facility.facilityTypeCode === school.facilityTypeCode)?.label;
     },
     getSchoolCategory(school) {
-      return this.schoolCategoryTypeCodes.find((category) => category.schoolCategoryCode === school.schoolCategoryCode)?.label;
+      return this.schoolCategoryTypes.find((category) => category.schoolCategoryCode === school.schoolCategoryCode)?.label;
     },
     getStatusColorAuthorityOrSchool,
     formatDate,
