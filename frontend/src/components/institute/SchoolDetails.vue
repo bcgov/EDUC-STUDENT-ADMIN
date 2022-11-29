@@ -138,7 +138,7 @@
             <v-row>
               <v-col cols="10" class="d-flex justify-start">
                 <span v-if="!editing" class="ministryLine" style="color: black">{{ school.schoolCategory }}</span>
-                <v-select v-else :items="schoolCategoryTypeCodes"
+                <v-select v-else :items="activeSchoolCategoryTypes"
                           item-value="schoolCategoryCode"
                           item-text="label"
                           v-model="schoolDetailsCopy.schoolCategoryCode"
@@ -665,7 +665,7 @@ export default {
       authority: '',
       cleanWebsiteUrl: '',
       schoolFacilityTypes: [],
-      schoolCategoryTypes: [],
+      activeSchoolCategoryTypes: [],
       schoolOrganizationTypes: [],
       schoolNeighborhoodLearningTypes: [],
       schoolGradeTypes: [],
@@ -683,7 +683,7 @@ export default {
   computed: {
     ...mapGetters('auth', ['isAuthenticated','userInfo','SCHOOL_ADMIN_ROLE','SCHOOL_INDEPENDENT_ADMIN']),
     ...mapState('institute', ['facilityTypeCodes']),
-    ...mapState('institute', ['schoolCategoryTypeCodes']),
+    ...mapState('institute', ['activeSchoolCategoryTypeCodes']),
     ...mapState('institute', ['schoolOrganizationTypeCodes']),
     ...mapState('institute', ['schoolNeighborhoodLearningCodes']),
     ...mapState('institute', ['gradeCodes']),
@@ -720,8 +720,8 @@ export default {
     this.$store.dispatch('institute/getAllFacilityTypeCodes').then(() => {
       this.schoolFacilityTypes = this.facilityTypeCodes;
     });
-    this.$store.dispatch('institute/getAllSchoolCategoryTypeCodes').then(() => {
-      this.schoolCategoryTypes = this.schoolCategoryTypeCodes;
+    this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes').then(() => {
+      this.activeSchoolCategoryTypes = this.activeSchoolCategoryTypeCodes;
     });
     this.$store.dispatch('institute/getAllSchoolOrganizationTypeCodes').then(() => {
       this.schoolOrganizationTypes = this.schoolOrganizationTypeCodes;
