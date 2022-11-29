@@ -272,7 +272,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo', 'SCHOOL_ADMIN_ROLE']),
+    ...mapGetters('auth', ['userInfo', 'SCHOOL_ADMIN_ROLE', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
     ...mapState('app', ['schoolsMap']),
     ...mapState('institute', ['facilityTypeCodes']),
     ...mapState('institute', ['schoolCategoryTypeCodes']),
@@ -306,7 +306,7 @@ export default {
   },
   methods: {
     canAddSchool() {
-      return this.SCHOOL_ADMIN_ROLE;
+      return this.SCHOOL_ADMIN_ROLE || this.SCHOOL_INDEPENDENT_ADMIN_ROLE;
     },
     newSchoolAdded() {
       this.newSchoolSheet = !this.newSchoolSheet;

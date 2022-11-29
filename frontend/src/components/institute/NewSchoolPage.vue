@@ -19,6 +19,7 @@
                 <v-autocomplete
                     id="district-text-field"
                     label="District"
+                    :rules="[rules.required()]"
                     item-value="districtId"
                     item-text="districtNumberName"
                     :items="districtNames"
@@ -33,6 +34,7 @@
                     item-value="authorityID"
                     item-text="authorityCodeName"
                     :items="authorityNames"
+                    :rules="[authorityRule]"
                     v-model="newSchool.authorityName"
                     clearable>
                 </v-autocomplete>
@@ -79,6 +81,7 @@
                     item-value="schoolCategoryCode"
                     item-text="label"
                     class="pt-0"
+                    @change="fireFormValidate"
                     label="School Category"
                 />
               </v-col>
@@ -90,6 +93,7 @@
                     :items="allowedFacilityTypeCodesForSchoolCategoryCode"
                     item-value="facilityTypeCode"
                     item-text="label"
+                    :disabled="isFacilityTypeDisabled"
                     class="pt-0"
                     label="Facility Type"
                 />
@@ -111,7 +115,6 @@
               <v-col cols="4">
                 <v-select
                     id='newSchoolGradesOfferedInput'
-                    :rules="[rules.required()]"
                     v-model="newSchool.gradesOffered"
                     :items="gradeCodes"
                     item-value="schoolGradeCode"
@@ -124,17 +127,17 @@
               <v-col cols="4">
                 <v-select
                     id='newSchoolNLCActivityInput'
-                    :rules="[rules.required()]"
                     v-model="newSchool.NLCActivity"
                     :items="schoolNeighborhoodLearningCodes"
                     item-value="neighborhoodLearningTypeCode"
                     item-text="label"
                     class="pt-0"
+                    multiple
                     label="NLC Activity"
                 />
               </v-col>
             </v-row>
-            <v-row>
+            <v-row no-gutters class="mt-5">
               <v-col cols="4">
                 <h3>Contact Information</h3>
               </v-col>
@@ -143,7 +146,7 @@
               <v-col cols="4">
                 <v-text-field
                     id='newSchoolPhoneNumberInput'
-                    :rules="[rules.required(), rules.phoneNumber()]"
+                    :rules="[rules.phoneNumber()]"
                     v-model="newSchool.phoneNumber"
                     class="pt-0"
                     :maxlength="10"
@@ -154,7 +157,7 @@
               <v-col cols="4">
                 <v-text-field
                     id='newSchoolFaxNumberInput'
-                    :rules="[rules.required(), rules.phoneNumber()]"
+                    :rules="[rules.phoneNumber()]"
                     v-model="newSchool.faxNumber"
                     class="pt-0"
                     :maxlength="10"
@@ -185,12 +188,12 @@
                 />
               </v-col>
             </v-row>
-            <v-row>
+            <v-row no-gutters class="mt-5">
               <v-col cols="4">
                 <h3>Mailing Address</h3>
               </v-col>
             </v-row>
-            <v-row>
+            <v-row >
               <v-col cols="4">
                 <v-text-field
                     id='newSchoolMailingAddressLine1Input'
@@ -257,93 +260,105 @@
                 />
               </v-col>
             </v-row>
-            <v-row>
-              <v-col cols="4">
-                <v-row>
-                  <h3>Physical Address</h3>
+            <v-row v-if="displayPhysicalAddress" no-gutters>
+              <v-col>
+                <v-row no-gutters class="mt-5">
+                  <v-col cols="4">
+                    <h3>Physical Address</h3>
+                  </v-col>
                 </v-row>
-                <v-row class="pt-4">
+                <v-row no-gutters v-if="sameAsMailingCheckbox" class="pt-4">
                   <v-checkbox
+                    dense
+                    id="sameAsMailingCheckbox"
+                    @click.native="fireFormValidate"
+                    v-model="sameAsMailingCheckbox"
+                    label="Same as mailing address"
+                    class="mt-n3 pt-0"
+                  ></v-checkbox>
+                </v-row>
+                <v-row no-gutters v-else>
+                  <v-row>
+                    <v-col cols="4">
+                      <v-text-field
+                        id='newSchoolPhysicalAddressLine1Input'
+                        :rules="[rules.required()]"
+                        v-model="newSchool.physicalAddrLine1"
+                        class="pt-0"
+                        :maxlength="255"
+                        label="Line 1"
+                      />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-text-field
+                        id='newSchoolPhysicalAddressLine2Input'
+                        v-model="newSchool.physicalAddrLine2"
+                        class="pt-0"
+                        :maxlength="255"
+                        label="Line 2"
+                      />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-text-field
+                        id='newContactPhysicalAddressCityInput'
+                        :rules="[rules.required()]"
+                        v-model="newSchool.physicalAddrCity"
+                        class="pt-0"
+                        :maxlength="255"
+                        label="City"
+                      />
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="4">
+                      <v-autocomplete
+                        id='newSchoolPhysicalAddressProvinceInput'
+                        :rules="[rules.required()]"
+                        v-model="newSchool.physicalAddrProvince"
+                        class="pt-0"
+                        label="Province"
+                        :items="provincialCodes"
+                        item-text="label"
+                        item-value="provinceCode"
+                      />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-autocomplete
+                        id='newSchoolPhysicalAddressCountryInput'
+                        :rules="[rules.required()]"
+                        v-model="newSchool.physicalAddrCountry"
+                        class="pt-0"
+                        label="Country"
+                        :items="countryCodes"
+                        item-text="label"
+                        item-value="countryCode"
+                      />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-text-field
+                        id='newContactPhysicalAddressPostalCodeInput'
+                        :rules="[rules.required(), rules.postalCode()]"
+                        v-model="newSchool.physicalAddrPostal"
+                        class="pt-0"
+                        :maxlength="6"
+                        label="Postal Code"
+                      />
+                    </v-col>
+                  </v-row>
+                </v-row>
+                <v-row no-gutters v-if="!sameAsMailingCheckbox" class="pt-4">
+                  <v-col>
+                    <v-checkbox
                       dense
                       id="sameAsMailingCheckbox"
-                      @click.native="clickSameAsAddressButton"
+                      @click.native="fireFormValidate"
                       v-model="sameAsMailingCheckbox"
                       label="Same as mailing address"
                       class="mt-n3 pt-0"
-                  ></v-checkbox>
+                    ></v-checkbox>
+                  </v-col>
                 </v-row>
               </v-col>
-            </v-row>
-            <v-row v-if="!sameAsMailingCheckbox">
-              <v-row>
-                <v-col cols="4">
-                  <v-text-field
-                      id='newSchoolPhysicalAddressLine1Input'
-                      :rules="[rules.required()]"
-                      v-model="newSchool.physicalAddrLine1"
-                      class="pt-0"
-                      :maxlength="255"
-                      label="Line 1"
-                  />
-                </v-col>
-                <v-col cols="4">
-                  <v-text-field
-                      id='newSchoolPhysicalAddressLine2Input'
-                      v-model="newSchool.physicalAddrLine2"
-                      class="pt-0"
-                      :maxlength="255"
-                      label="Line 2"
-                  />
-                </v-col>
-                <v-col cols="4">
-                  <v-text-field
-                      id='newContactPhysicalAddressCityInput'
-                      :rules="[rules.required()]"
-                      v-model="newSchool.physicalAddrCity"
-                      class="pt-0"
-                      :maxlength="255"
-                      label="City"
-                  />
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="4">
-                  <v-autocomplete
-                      id='newSchoolPhysicalAddressProvinceInput'
-                      :rules="[rules.required()]"
-                      v-model="newSchool.physicalAddrProvince"
-                      class="pt-0"
-                      label="Province"
-                      :items="provincialCodes"
-                      item-text="label"
-                      item-value="provinceCode"
-                  />
-                </v-col>
-                <v-col cols="4">
-                  <v-autocomplete
-                      id='newSchoolPhysicalAddressCountryInput'
-                      :rules="[rules.required()]"
-                      v-model="newSchool.physicalAddrCountry"
-                      class="pt-0"
-                      label="Country"
-                      :items="countryCodes"
-                      item-text="label"
-                      item-value="countryCode"
-                  />
-                </v-col>
-                <v-col cols="4">
-                  <v-text-field
-                      id='newContactPhysicalAddressPostalCodeInput'
-                      :rules="[rules.required(), rules.postalCode()]"
-                      v-model="newSchool.physicalAddrPostal"
-                      class="pt-0"
-                      :maxlength="6"
-                      label="Postal Code"
-                  />
-                </v-col>
-              </v-row>
-
-
             </v-row>
           </v-col>
         </v-row>
@@ -389,6 +404,7 @@ export default {
     return {
       isFormValid: false,
       processing: false,
+      isFacilityTypeDisabled: false,
       newSchool: {
         districtName: null,
         authorityName: null,
@@ -435,7 +451,10 @@ export default {
       if (!this.activeFacilityTypeCodes || !this.newSchool?.categoryCode) {
         return [];
       }
-      return this.schoolCategoryFacilityTypesMap[this.newSchool?.categoryCode]?.map(schoolCatFacilityTypeCode =>  this.activeFacilityTypeCodes.find(facTypCode=> facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
+
+      let facilityTypes = this.schoolCategoryFacilityTypesMap[this.newSchool?.categoryCode]?.map(schoolCatFacilityTypeCode =>  this.activeFacilityTypeCodes.find(facTypCode=> facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
+      this.enableOrDisableFacilityType(facilityTypes);
+      return facilityTypes;
     },
     schoolCategoryTypeCodes() {
       return this.activeSchoolCategoryTypeCodes ? this.activeSchoolCategoryTypeCodes : [];
@@ -445,6 +464,9 @@ export default {
     },
     schoolNeighborhoodLearningCodes() {
       return this.activeSchoolNeighborhoodLearningCodes ? this.activeSchoolNeighborhoodLearningCodes : [];
+    },
+    displayPhysicalAddress(){
+      return this.newSchool?.categoryCode !== 'OFFSHORE';
     },
     gradeCodes() {
       return this.activeGradeCodes ? this.activeGradeCodes : [];
@@ -471,6 +493,23 @@ export default {
     this.$store.dispatch('institute/getSchoolCategoryFacilityTypesMap');
   },
   methods: {
+    enableOrDisableFacilityType(facilityTypes){
+      this.isFacilityTypeDisabled = facilityTypes && facilityTypes.length === 1;
+      if(this.isFacilityTypeDisabled){
+        this.newSchool.facilityTypeCode = facilityTypes[0].facilityTypeCode;
+      }else{
+        this.newSchool.facilityTypeCode = null;
+      }
+
+      this.fireFormValidate();
+    },
+    authorityRule(value) {
+      if (this.newSchool.categoryCode && this.newSchool.categoryCode === 'INDEPEND' && !value) {
+        return 'Authority is required';
+      } else {
+        return true;
+      }
+    },
     calculateDefaultOpenDate() {
       let currentDate = LocalDate.now();
       let defaultOpenDate = new LocalDate(currentDate.year(), 7, 1);
@@ -487,21 +526,21 @@ export default {
     addNewSchool() {
       this.processing = true;
 
-      ApiService.apiAxios.post(`${Routes.institute.ROOT_ENDPOINT}/????`, this.newSchool)
+      ApiService.apiAxios.post(`${Routes.institute.SCHOOL_DATA_URL}`, this.newSchool)
         .then(() => {
           this.setSuccessAlert('Success! The school has been created.');
           this.resetForm();
           this.$emit('newSchool:addNewSchool');
         })
         .catch(error => {
-          this.setFailureAlert('An error occurred while sending message. Please try again later.');
+          this.setFailureAlert('An error occurred while saving a school. Please try again later.');
           console.log(error);
         })
         .finally(() => {
           this.processing = false;
         });
     },
-    async clickSameAsAddressButton(){
+    async fireFormValidate(){
       await this.$nextTick();
       this.validateForm();
     },
