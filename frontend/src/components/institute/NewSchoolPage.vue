@@ -81,7 +81,7 @@
                     item-value="schoolCategoryCode"
                     item-text="label"
                     class="pt-0"
-                    @change="clickSameAsAddressButton"
+                    @change="fireFormValidate"
                     label="School Category"
                 />
               </v-col>
@@ -93,6 +93,7 @@
                     :items="allowedFacilityTypeCodesForSchoolCategoryCode"
                     item-value="facilityTypeCode"
                     item-text="label"
+                    :disabled="isFacilityTypeDisabled"
                     class="pt-0"
                     label="Facility Type"
                 />
@@ -114,7 +115,6 @@
               <v-col cols="4">
                 <v-select
                     id='newSchoolGradesOfferedInput'
-                    :rules="[rules.required()]"
                     v-model="newSchool.gradesOffered"
                     :items="gradeCodes"
                     item-value="schoolGradeCode"
@@ -127,7 +127,6 @@
               <v-col cols="4">
                 <v-select
                     id='newSchoolNLCActivityInput'
-                    :rules="[rules.required()]"
                     v-model="newSchool.NLCActivity"
                     :items="schoolNeighborhoodLearningCodes"
                     item-value="neighborhoodLearningTypeCode"
@@ -272,7 +271,7 @@
                   <v-checkbox
                     dense
                     id="sameAsMailingCheckbox"
-                    @click.native="clickSameAsAddressButton"
+                    @click.native="fireFormValidate"
                     v-model="sameAsMailingCheckbox"
                     label="Same as mailing address"
                     class="mt-n3 pt-0"
@@ -352,7 +351,7 @@
                     <v-checkbox
                       dense
                       id="sameAsMailingCheckbox"
-                      @click.native="clickSameAsAddressButton"
+                      @click.native="fireFormValidate"
                       v-model="sameAsMailingCheckbox"
                       label="Same as mailing address"
                       class="mt-n3 pt-0"
@@ -405,6 +404,7 @@ export default {
     return {
       isFormValid: false,
       processing: false,
+      isFacilityTypeDisabled: false,
       newSchool: {
         districtName: null,
         authorityName: null,
@@ -451,7 +451,10 @@ export default {
       if (!this.activeFacilityTypeCodes || !this.newSchool?.categoryCode) {
         return [];
       }
-      return this.schoolCategoryFacilityTypesMap[this.newSchool?.categoryCode]?.map(schoolCatFacilityTypeCode =>  this.activeFacilityTypeCodes.find(facTypCode=> facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
+
+      let facilityTypes = this.schoolCategoryFacilityTypesMap[this.newSchool?.categoryCode]?.map(schoolCatFacilityTypeCode =>  this.activeFacilityTypeCodes.find(facTypCode=> facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
+      this.enableOrDisableFacilityType(facilityTypes);
+      return facilityTypes;
     },
     schoolCategoryTypeCodes() {
       return this.activeSchoolCategoryTypeCodes ? this.activeSchoolCategoryTypeCodes : [];
@@ -490,6 +493,16 @@ export default {
     this.$store.dispatch('institute/getSchoolCategoryFacilityTypesMap');
   },
   methods: {
+    enableOrDisableFacilityType(facilityTypes){
+      this.isFacilityTypeDisabled = facilityTypes && facilityTypes.length === 1;
+      if(this.isFacilityTypeDisabled){
+        this.newSchool.facilityTypeCode = facilityTypes[0].facilityTypeCode;
+      }else{
+        this.newSchool.facilityTypeCode = null;
+      }
+
+      this.fireFormValidate();
+    },
     authorityRule(value) {
       if (this.newSchool.categoryCode && this.newSchool.categoryCode === 'INDEPEND' && !value) {
         return 'Authority is required';
@@ -513,21 +526,21 @@ export default {
     addNewSchool() {
       this.processing = true;
 
-      ApiService.apiAxios.post(`${Routes.institute.ROOT_ENDPOINT}/????`, this.newSchool)
+      ApiService.apiAxios.post(`${Routes.institute.SCHOOL_DATA_URL}`, this.newSchool)
         .then(() => {
           this.setSuccessAlert('Success! The school has been created.');
           this.resetForm();
           this.$emit('newSchool:addNewSchool');
         })
         .catch(error => {
-          this.setFailureAlert('An error occurred while sending message. Please try again later.');
+          this.setFailureAlert('An error occurred while saving a school. Please try again later.');
           console.log(error);
         })
         .finally(() => {
           this.processing = false;
         });
     },
-    async clickSameAsAddressButton(){
+    async fireFormValidate(){
       await this.$nextTick();
       this.validateForm();
     },
