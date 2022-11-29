@@ -147,7 +147,7 @@
               <v-col cols="4">
                 <v-text-field
                     id='newSchoolPhoneNumberInput'
-                    :rules="[rules.required(), rules.phoneNumber()]"
+                    :rules="[rules.phoneNumber()]"
                     v-model="newSchool.phoneNumber"
                     class="pt-0"
                     :maxlength="10"
