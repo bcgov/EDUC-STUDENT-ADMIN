@@ -261,100 +261,104 @@
                 />
               </v-col>
             </v-row>
-            <v-row no-gutters class="mt-5">
-              <v-col cols="4">
-                <h3>Physical Address</h3>
-              </v-col>
-            </v-row>
-            <v-row no-gutters v-if="sameAsMailingCheckbox" class="pt-4">
-              <v-checkbox
-                dense
-                id="sameAsMailingCheckbox"
-                @click.native="clickSameAsAddressButton"
-                v-model="sameAsMailingCheckbox"
-                label="Same as mailing address"
-                class="mt-n3 pt-0"
-              ></v-checkbox>
-            </v-row>
-            <v-row no-gutters v-else>
-              <v-row>
-                <v-col cols="4">
-                  <v-text-field
-                      id='newSchoolPhysicalAddressLine1Input'
-                      :rules="[rules.required()]"
-                      v-model="newSchool.physicalAddrLine1"
-                      class="pt-0"
-                      :maxlength="255"
-                      label="Line 1"
-                  />
-                </v-col>
-                <v-col cols="4">
-                  <v-text-field
-                      id='newSchoolPhysicalAddressLine2Input'
-                      v-model="newSchool.physicalAddrLine2"
-                      class="pt-0"
-                      :maxlength="255"
-                      label="Line 2"
-                  />
-                </v-col>
-                <v-col cols="4">
-                  <v-text-field
-                      id='newContactPhysicalAddressCityInput'
-                      :rules="[rules.required()]"
-                      v-model="newSchool.physicalAddrCity"
-                      class="pt-0"
-                      :maxlength="255"
-                      label="City"
-                  />
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="4">
-                  <v-autocomplete
-                      id='newSchoolPhysicalAddressProvinceInput'
-                      :rules="[rules.required()]"
-                      v-model="newSchool.physicalAddrProvince"
-                      class="pt-0"
-                      label="Province"
-                      :items="provincialCodes"
-                      item-text="label"
-                      item-value="provinceCode"
-                  />
-                </v-col>
-                <v-col cols="4">
-                  <v-autocomplete
-                      id='newSchoolPhysicalAddressCountryInput'
-                      :rules="[rules.required()]"
-                      v-model="newSchool.physicalAddrCountry"
-                      class="pt-0"
-                      label="Country"
-                      :items="countryCodes"
-                      item-text="label"
-                      item-value="countryCode"
-                  />
-                </v-col>
-                <v-col cols="4">
-                  <v-text-field
-                      id='newContactPhysicalAddressPostalCodeInput'
-                      :rules="[rules.required(), rules.postalCode()]"
-                      v-model="newSchool.physicalAddrPostal"
-                      class="pt-0"
-                      :maxlength="6"
-                      label="Postal Code"
-                  />
-                </v-col>
-              </v-row>
-            </v-row>
-            <v-row no-gutters v-if="!sameAsMailingCheckbox" class="pt-4">
+            <v-row v-if="displayPhysicalAddress" no-gutters>
               <v-col>
-                <v-checkbox
-                  dense
-                  id="sameAsMailingCheckbox"
-                  @click.native="clickSameAsAddressButton"
-                  v-model="sameAsMailingCheckbox"
-                  label="Same as mailing address"
-                  class="mt-n3 pt-0"
-                ></v-checkbox>
+                <v-row no-gutters class="mt-5">
+                  <v-col cols="4">
+                    <h3>Physical Address</h3>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters v-if="sameAsMailingCheckbox" class="pt-4">
+                  <v-checkbox
+                    dense
+                    id="sameAsMailingCheckbox"
+                    @click.native="clickSameAsAddressButton"
+                    v-model="sameAsMailingCheckbox"
+                    label="Same as mailing address"
+                    class="mt-n3 pt-0"
+                  ></v-checkbox>
+                </v-row>
+                <v-row no-gutters v-else>
+                  <v-row>
+                    <v-col cols="4">
+                      <v-text-field
+                        id='newSchoolPhysicalAddressLine1Input'
+                        :rules="[rules.required()]"
+                        v-model="newSchool.physicalAddrLine1"
+                        class="pt-0"
+                        :maxlength="255"
+                        label="Line 1"
+                      />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-text-field
+                        id='newSchoolPhysicalAddressLine2Input'
+                        v-model="newSchool.physicalAddrLine2"
+                        class="pt-0"
+                        :maxlength="255"
+                        label="Line 2"
+                      />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-text-field
+                        id='newContactPhysicalAddressCityInput'
+                        :rules="[rules.required()]"
+                        v-model="newSchool.physicalAddrCity"
+                        class="pt-0"
+                        :maxlength="255"
+                        label="City"
+                      />
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="4">
+                      <v-autocomplete
+                        id='newSchoolPhysicalAddressProvinceInput'
+                        :rules="[rules.required()]"
+                        v-model="newSchool.physicalAddrProvince"
+                        class="pt-0"
+                        label="Province"
+                        :items="provincialCodes"
+                        item-text="label"
+                        item-value="provinceCode"
+                      />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-autocomplete
+                        id='newSchoolPhysicalAddressCountryInput'
+                        :rules="[rules.required()]"
+                        v-model="newSchool.physicalAddrCountry"
+                        class="pt-0"
+                        label="Country"
+                        :items="countryCodes"
+                        item-text="label"
+                        item-value="countryCode"
+                      />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-text-field
+                        id='newContactPhysicalAddressPostalCodeInput'
+                        :rules="[rules.required(), rules.postalCode()]"
+                        v-model="newSchool.physicalAddrPostal"
+                        class="pt-0"
+                        :maxlength="6"
+                        label="Postal Code"
+                      />
+                    </v-col>
+                  </v-row>
+                </v-row>
+                <v-row no-gutters v-if="!sameAsMailingCheckbox" class="pt-4">
+                  <v-col>
+                    <v-checkbox
+                      dense
+                      id="sameAsMailingCheckbox"
+                      @click.native="clickSameAsAddressButton"
+                      v-model="sameAsMailingCheckbox"
+                      label="Same as mailing address"
+                      class="mt-n3 pt-0"
+                    ></v-checkbox>
+                  </v-col>
+                </v-row>
               </v-col>
             </v-row>
           </v-col>
@@ -457,6 +461,9 @@ export default {
     },
     schoolNeighborhoodLearningCodes() {
       return this.activeSchoolNeighborhoodLearningCodes ? this.activeSchoolNeighborhoodLearningCodes : [];
+    },
+    displayPhysicalAddress(){
+      return this.newSchool?.categoryCode !== 'OFFSHORE';
     },
     gradeCodes() {
       return this.activeGradeCodes ? this.activeGradeCodes : [];
