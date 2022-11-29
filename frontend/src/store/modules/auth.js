@@ -64,7 +64,7 @@ export default {
     PEN_TEAM_ROLE: state => state.isValidPenTeamRoleUser,
     DISTRICT_ADMIN_ROLE: state => state.isValidDistrictAdmin,
     SCHOOL_ADMIN_ROLE: state => state.isValidSchoolAdmin,
-    SCHOOL_INDEPENDENT_ADMIN: state => state.isValidSchoolIndependentAdmin,
+    SCHOOL_INDEPENDENT_ADMIN_ROLE: state => state.isValidSchoolIndependentAdmin,
     INDEPENDENT_AUTHORITY_ADMIN_ROLE: state => state.isValidIndependentAuthorityAdmin
   },
   mutations: {

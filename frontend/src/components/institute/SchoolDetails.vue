@@ -681,7 +681,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo','SCHOOL_ADMIN_ROLE','SCHOOL_INDEPENDENT_ADMIN']),
+    ...mapGetters('auth', ['isAuthenticated','userInfo','SCHOOL_ADMIN_ROLE','SCHOOL_INDEPENDENT_ADMIN_ROLE']),
     ...mapState('institute', ['facilityTypeCodes']),
     ...mapState('institute', ['schoolCategoryTypeCodes']),
     ...mapState('institute', ['schoolOrganizationTypeCodes']),
@@ -984,7 +984,7 @@ export default {
     },
     canEditSchoolDetails(){
       if(this.school.schoolCategoryCode === 'INDEPEND'){
-        return this.SCHOOL_INDEPENDENT_ADMIN || this.SCHOOL_ADMIN_ROLE;
+        return this.SCHOOL_INDEPENDENT_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE;
       }
       return this.SCHOOL_ADMIN_ROLE;
     },
