@@ -34,6 +34,7 @@
                     item-value="authorityID"
                     item-text="authorityCodeName"
                     :items="authorityNames"
+                    :disabled="authorityDisabled"
                     :rules="[authorityRule]"
                     v-model="newSchool.authorityName"
                     clearable>
@@ -81,7 +82,7 @@
                     item-value="schoolCategoryCode"
                     item-text="label"
                     class="pt-0"
-                    @change="fireFormValidate"
+                    @change="schoolCategoryChanged"
                     label="School Category"
                 />
               </v-col>
@@ -405,6 +406,8 @@ export default {
       isFormValid: false,
       processing: false,
       isFacilityTypeDisabled: false,
+      authorityDisabled: true,
+      independentArray: ['INDEPEND', 'INDP_FNS'],
       newSchool: {
         districtName: null,
         authorityName: null,
@@ -437,7 +440,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo']),
+    ...mapGetters('auth', ['isAuthenticated','userInfo','SCHOOL_INDEPENDENT_ADMIN_ROLE']),
     ...mapState('institute', ['activeFacilityTypeCodes']),
     ...mapState('institute', ['activeSchoolCategoryTypeCodes']),
     ...mapState('institute', ['activeSchoolOrganizationTypeCodes']),
@@ -457,6 +460,9 @@ export default {
       return facilityTypes;
     },
     schoolCategoryTypeCodes() {
+      if(this.isIndependentOnlyUser()){
+        return this.activeSchoolCategoryTypeCodes?.filter(cat => this.independentArray.includes(cat.schoolCategoryCode));
+      }
       return this.activeSchoolCategoryTypeCodes ? this.activeSchoolCategoryTypeCodes : [];
     },
     schoolOrganizationTypeCodes() {
@@ -503,8 +509,11 @@ export default {
 
       this.fireFormValidate();
     },
+    isIndependentOnlyUser() {
+      return this.SCHOOL_INDEPENDENT_ADMIN_ROLE;
+    },
     authorityRule(value) {
-      if (this.newSchool.categoryCode && this.newSchool.categoryCode === 'INDEPEND' && !value) {
+      if (this.newSchool.categoryCode && this.independentArray.includes(this.newSchool.categoryCode) && !value) {
         return 'Authority is required';
       } else {
         return true;
@@ -536,6 +545,14 @@ export default {
         .finally(() => {
           this.processing = false;
         });
+    },
+    async schoolCategoryChanged(){
+      if(this.newSchool.categoryCode && this.independentArray.includes(this.newSchool.categoryCode)){
+        this.authorityDisabled = false;
+      }else{
+        this.authorityDisabled = true;
+      }
+      await this.fireFormValidate();
     },
     async fireFormValidate(){
       await this.$nextTick();
