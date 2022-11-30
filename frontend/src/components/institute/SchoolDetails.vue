@@ -658,6 +658,7 @@ export default {
   },
   data() {
     return {
+      independentArray: ['INDEPEND', 'INDP_FNS'],
       newNoteSheet: false,
       newNoteText: '',
       school: '',
@@ -988,7 +989,7 @@ export default {
       }
     },
     canEditSchoolDetails(){
-      if(this.school.schoolCategoryCode === 'INDEPEND'){
+      if(this.school.schoolCategoryCode && this.independentArray.includes(this.school.schoolCategoryCode)){
         return this.SCHOOL_INDEPENDENT_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE;
       }
       return this.SCHOOL_ADMIN_ROLE;
