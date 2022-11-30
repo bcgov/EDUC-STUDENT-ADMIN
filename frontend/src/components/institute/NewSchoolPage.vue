@@ -379,7 +379,7 @@ import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
-import {LocalDate} from '@js-joda/core';
+import {findUpcomingDate} from '@/utils/dateHelpers';
 
 export default {
   name: 'NewSchoolPage',
@@ -511,10 +511,7 @@ export default {
       }
     },
     calculateDefaultOpenDate() {
-      let currentDate = LocalDate.now();
-      let defaultOpenDate = new LocalDate(currentDate.year(), 7, 1);
-      defaultOpenDate = defaultOpenDate.isBefore(currentDate) ? defaultOpenDate.plusYears(1) : defaultOpenDate;
-      return defaultOpenDate.toString();
+      return findUpcomingDate(7, 1).toString();
     },
     saveNewSchoolOpenDate(date) {
       this.$refs.newSchoolOpenDateFilter.save(date);
