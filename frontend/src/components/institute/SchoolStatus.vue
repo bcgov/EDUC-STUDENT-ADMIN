@@ -10,23 +10,43 @@
             <v-row class="d-flex justify-start">
               <h3>How would you like to update the status?</h3>
             </v-row>
-            <v-row  class="d-flex justify-start" v-if="displayOptionsForOpeningSchoolStatus()">
-              <v-radio-group v-model="openingSchool">
-                <v-radio label="Cancel Opening"
-                         value="cancel">
-                </v-radio>
-                <v-radio label="Update Open Date"
-                         value="update">
-                </v-radio>
+            <v-row  class="d-flex justify-start">
+              <v-radio-group v-model="action">
+                <span v-if="displayOptionsForOpeningSchoolStatus">
+                  <v-radio label="Cancel Opening"
+                           value="cancelOpening">
+                  </v-radio>
+                  <v-radio label="Update Open Date"
+                           value="updateOpenDate">
+                  </v-radio>
+                </span>
+                <span v-if="displayOptionsForOpenSchoolStatus">
+                  <v-radio label="Close"
+                           value="setCloseDate">
+                  </v-radio>
+                </span>
+                <span v-if="displayOptionsForClosingSchoolStatus">
+                  <v-radio label="Open the School"
+                           value="setOpenDate">
+                  </v-radio>
+                  <v-radio label="Update Closing Date"
+                           value="updateCloseDate">
+                  </v-radio>
+                </span>
+                <span v-if="displayOptionsForClosedSchoolStatus || displayOptionsForNeverOpenedSchoolStatus">
+                  <v-radio label="Open the School"
+                           value="setOpenDate">
+                  </v-radio>
+                </span>
               </v-radio-group>
             </v-row>
             <v-row class="d-flex justify-start">
               <v-divider class="mt-1"></v-divider>
             </v-row>
-            <v-row  v-if="displayCancelOpeningDatePanel()"  class="pb-0 pt-2">
-              <span> Cancelling the school's opening will remove the schools open date.</span>
+            <v-row  v-if="action === 'cancelOpening'"  class="pb-0 pt-2">
+              <span>Cancelling the school's opening will remove the schools open date.</span>
             </v-row>
-            <v-row class="d-flex justify-start" v-if="displayUpdateOpeningDatePanel()">
+            <v-row class="d-flex justify-start" v-if="action === 'setOpenDate'">
               <v-col>
                 <v-row class="d-flex justify-start">
                   <h3>Select the new open date</h3>
@@ -34,31 +54,144 @@
                 <v-row>
                   <v-col>
                     <v-menu
-                      id="schoolStatusOpenDatePicker"
-                      ref="schoolStatusOpenDateFilter"
-                      :close-on-content-click="false"
-                      transition="scale-transition"
-                      offset-y
-                      min-width="auto"
+                        id="newOpenDatePicker"
+                        ref="newOpenDateFilter"
+                        :close-on-content-click="false"
+                        transition="scale-transition"
+                        offset-y
+                        min-width="auto"
                     >
                       <template v-slot:activator="{ on, attrs }">
                         <v-text-field
-                          id="schoolStatusOpenDateTextField"
-                          :rules="[rules.required()]"
-                          class="pt-0 mt-0"
-                          v-model="openDateFormatted"
-                          label="Open Date"
-                          prepend-inner-icon="mdi-calendar"
-                          clearable
-                          readonly
-                          v-bind="attrs"
-                          v-on="on"
-                          @click="openDate = parseDate(openDateFormatted)"
+                            id="newOpenDateTextField"
+                            :rules="[rules.required()]"
+                            class="pt-0 mt-0"
+                            v-model="newOpenDateFormatted"
+                            label="Open Date"
+                            prepend-inner-icon="mdi-calendar"
+                            clearable
+                            readonly
+                            v-bind="attrs"
+                            v-on="on"
                         ></v-text-field>
                       </template>
                       <v-date-picker
-                        v-model="openDate"
-                        @change="saveOpenDate"
+                          v-model="newOpenDate"
+                          @change="saveNewOpenDate"
+                      ></v-date-picker>
+                    </v-menu>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+            <v-row class="d-flex justify-start" v-if="action === 'updateOpenDate'">
+              <v-col>
+                <v-row class="d-flex justify-start">
+                  <h3>Select the open date</h3>
+                </v-row>
+                <v-row>
+                  <v-col>
+                    <v-menu
+                        id="updatedOpenDatePicker"
+                        ref="updatedOpenDateFilter"
+                        :close-on-content-click="false"
+                        transition="scale-transition"
+                        offset-y
+                        min-width="auto"
+                    >
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field
+                            id="updatedOpenDateTextField"
+                            :rules="[rules.required()]"
+                            class="pt-0 mt-0"
+                            v-model="updatedOpenDateFormatted"
+                            label="Open Date"
+                            prepend-inner-icon="mdi-calendar"
+                            clearable
+                            readonly
+                            v-bind="attrs"
+                            v-on="on"
+                        ></v-text-field>
+                      </template>
+                      <v-date-picker
+                          v-model="updatedOpenDate"
+                          @change="saveUpdatedOpenDate"
+                      ></v-date-picker>
+                    </v-menu>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+            <v-row class="d-flex justify-start" v-if="action === 'setCloseDate'">
+              <v-col>
+                <v-row class="d-flex justify-start">
+                  <h3>Select the new closure date</h3>
+                </v-row>
+                <v-row>
+                  <v-col>
+                    <v-menu
+                        id="newCloseDatePicker"
+                        ref="newCloseDateFilter"
+                        :close-on-content-click="false"
+                        transition="scale-transition"
+                        offset-y
+                        min-width="auto"
+                    >
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field
+                            id="newCloseDateTextField"
+                            :rules="[rules.required()]"
+                            class="pt-0 mt-0"
+                            v-model="newCloseDateFormatted"
+                            label="Close Date"
+                            prepend-inner-icon="mdi-calendar"
+                            clearable
+                            readonly
+                            v-bind="attrs"
+                            v-on="on"
+                        ></v-text-field>
+                      </template>
+                      <v-date-picker
+                          v-model="newCloseDate"
+                          @change="saveNewCloseDate"
+                      ></v-date-picker>
+                    </v-menu>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+            <v-row class="d-flex justify-start" v-if="action === 'updateCloseDate'">
+              <v-col>
+                <v-row class="d-flex justify-start">
+                  <h3>Select the closure date</h3>
+                </v-row>
+                <v-row>
+                  <v-col>
+                    <v-menu
+                        id="updatedCloseDatePicker"
+                        ref="updatedCloseDateFilter"
+                        :close-on-content-click="false"
+                        transition="scale-transition"
+                        offset-y
+                        min-width="auto"
+                    >
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field
+                            id="updatedCloseDateTextField"
+                            :rules="[rules.required()]"
+                            class="pt-0 mt-0"
+                            v-model="updatedCloseDateFormatted"
+                            label="Close Date"
+                            prepend-inner-icon="mdi-calendar"
+                            clearable
+                            readonly
+                            v-bind="attrs"
+                            v-on="on"
+                        ></v-text-field>
+                      </template>
+                      <v-date-picker
+                          v-model="updatedCloseDate"
+                          @change="saveUpdatedCloseDate"
                       ></v-date-picker>
                     </v-menu>
                   </v-col>
@@ -78,11 +211,11 @@
 
 <script>
 import PrimaryButton from '../util/PrimaryButton';
-import {mapGetters} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
 import {formatDate} from '@/utils/format';
+import {findUpcomingDate} from '@/utils/dateHelpers';
 
 export default {
   name: 'SchoolStatus',
@@ -112,29 +245,89 @@ export default {
       isFormValid: false,
       processing: false,
       rules: Rules,
-      endDate:null,
-      openingSchool:'cancel',
-      openDateFormatted: formatDate(this.schoolOpenDate),
-      openDate: this.parseDate(this.openDateFormatted),
+      action: this.defaultUpdateActionForSchool(),
+      newOpenDate: findUpcomingDate(7, 1).toString(),
+      updatedOpenDate: this.parseDate(formatDate(this.schoolOpenDate)),
+      newCloseDate: findUpcomingDate(6, 30).toString(),
+      updatedCloseDate: this.parseDate(formatDate(this.schoolCloseDate))
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo']),
-  },
-  methods: {
-    displayUpdateOpeningDatePanel(){
-      return this.openingSchool === 'update';
-    },
-    displayCancelOpeningDatePanel(){
-      return this.openingSchool === 'cancel';
-    },
-    displayOptionsForOpeningSchoolStatus(){
+    displayOptionsForOpeningSchoolStatus() {
       return this.schoolStatus === 'Opening';
     },
-    saveOpenDate(date) {
-      this.$refs.schoolStatusOpenDateFilter.save(date);
+    displayOptionsForOpenSchoolStatus() {
+      return this.schoolStatus === 'Open';
     },
-
+    displayOptionsForClosingSchoolStatus() {
+      return this.schoolStatus === 'Closing';
+    },
+    displayOptionsForClosedSchoolStatus() {
+      return this.schoolStatus === 'Closed';
+    },
+    displayOptionsForNeverOpenedSchoolStatus() {
+      return this.schoolStatus === 'Never Opened';
+    },
+    newOpenDateFormatted: {
+      get() {
+        return this.formatDisplayDate(this.newOpenDate);
+      },
+      set(newValue) {
+        this.newOpenDate = this.parseDate(newValue);
+      }
+    },
+    updatedOpenDateFormatted: {
+      get() {
+        return this.formatDisplayDate(this.updatedOpenDate);
+      },
+      set(newValue) {
+        this.updatedOpenDate = this.parseDate(newValue);
+      }
+    },
+    newCloseDateFormatted: {
+      get() {
+        return this.formatDisplayDate(this.newCloseDate);
+      },
+      set(newValue) {
+        this.newCloseDate = this.parseDate(newValue);
+      }
+    },
+    updatedCloseDateFormatted: {
+      get() {
+        return this.formatDisplayDate(this.updatedCloseDate);
+      },
+      set(newValue) {
+        this.updatedCloseDate = this.parseDate(newValue);
+      }
+    }
+  },
+  methods: {
+    defaultUpdateActionForSchool() {
+      switch (this.schoolStatus) {
+      case 'Opening':
+        return 'cancelOpening';
+      case 'Open':
+        return 'setCloseDate';
+      case 'Closing':
+      case 'Closed':
+      case 'Never Opened':
+        return 'setOpenDate';
+      default:
+        return '';
+      }
+    },
+    saveNewOpenDate(date) {
+      this.$refs.newOpenDateFilter.save(date);
+    },
+    saveUpdatedOpenDate(date) {
+      this.$refs.updatedOpenDateFilter.save(date);
+    },
+    saveNewCloseDate(date) {
+      this.$refs.newCloseDateFilter.save(date);
+    },
+    saveUpdatedCloseDate(date) {
+      this.$refs.updatedCloseDateFilter.save(date);
+    },
     closeEditSchoolStatus() {
       this.resetForm();
       this.$emit('schoolStatus:closeEditSchoolStatusPage');
@@ -143,18 +336,41 @@ export default {
       this.resetForm();
       this.$emit('schoolStatus:closeEditSchoolStatusPage');
     },
-    updateSchoolDates(){
+    updateSchoolDates() {
       let updatedSchoolDates = {};
-      if(this.displayCancelOpeningDatePanel()){
+      switch (this.action) {
+      case 'cancelOpening':
         updatedSchoolDates = {
           openedDate: null,
           closedDate: null,
         };
-      }else if(this.displayUpdateOpeningDatePanel()){
+        break;
+      case 'setOpenDate':
         updatedSchoolDates = {
-          openedDate: this.openDateFormatted,
-          closedDate: this.endDate
+          openedDate: this.newOpenDateFormatted,
+          closedDate: null,
         };
+        break;
+      case 'updateOpenDate':
+        updatedSchoolDates = {
+          openedDate: this.updatedOpenDateFormatted,
+          closedDate: null,
+        };
+        break;
+      case 'setCloseDate':
+        updatedSchoolDates = {
+          openedDate: this.parseDate(formatDate(this.schoolOpenDate)),
+          closedDate: this.newCloseDateFormatted
+        };
+        break;
+      case 'updateCloseDate':
+        updatedSchoolDates = {
+          openedDate: this.parseDate(formatDate(this.schoolOpenDate)),
+          closedDate: this.updatedCloseDateFormatted,
+        };
+        break;
+      default:
+        break;
       }
       this.$emit('updateSchoolDates', updatedSchoolDates);
       this.resetForm();
@@ -166,28 +382,41 @@ export default {
     validateForm() {
       this.isFormValid = this.$refs.schoolStatusForm.validate();
     },
-    isNumber,
-    formatDate,
     formatDisplayDate (date) {
       if (!date) return null;
       const [year, month, day] = date.split('-');
       return `${year}/${month}/${day}`;
     },
-    parseDate (date) {
+    parseDate(date) {
       if (!date) return null;
       const [year, month, day] = date.split('/');
       return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
     },
+    isNumber,
+    formatDate
   },
   watch: {
     //watching effective date to valid form because we need to cross validate expiry and effective date fields
-    'openDate': {
+    'newOpenDate': {
       handler() {
-        this.openDateFormatted = this.formatDisplayDate(this.openDate);
+        this.validateForm();
+      }
+    },
+    'updatedOpenDate': {
+      handler() {
+        this.validateForm();
+      }
+    },
+    'newCloseDate': {
+      handler() {
+        this.validateForm();
+      }
+    },
+    'updatedCloseDate': {
+      handler() {
         this.validateForm();
       }
     }
-
   }
 };
 </script>
@@ -199,6 +428,4 @@ export default {
   font-size: medium !important;
   font-weight: bolder !important;
 }
-
-
 </style>

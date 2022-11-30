@@ -125,7 +125,8 @@
             </v-row>
             <v-row>
               <v-col cols="10" class="d-flex justify-start">
-                <span class="ministryLine" style="color: black">{{ formatDate(school.closedDate) || '-' }}</span>
+                <span v-if="!editing" class="ministryLine" style="color: black">{{ formatDate(school.closedDate) || '-' }}</span>
+                <span v-else class="ministryLine" style="color: black">{{ formatDate(schoolDetailsCopy.closedDate) || '-' }}</span>
               </v-col>
             </v-row>
           </v-col>
