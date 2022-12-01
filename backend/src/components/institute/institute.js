@@ -378,7 +378,7 @@ function hasDistrictAdminRole(req){
 }
 
 function hasSchoolAdminRole(req, school){
-  if(school.schoolCategoryCode === 'INDEPEND'){
+  if(school.schoolCategoryCode === 'INDEPEND' || school.schoolCategoryCode === 'INDP_FNS'){
     return req.session.roles.includes('SCHOOL_ADMIN') || req.session.roles.includes('SCHOOL_INDEPENDENT_ADMIN');
   }
 
