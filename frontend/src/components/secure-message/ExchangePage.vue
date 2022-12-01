@@ -148,7 +148,7 @@
                     item-text="label"
                     class="pt-0 mt-0"
                     item-value="secureExchangeStatusCode"
-                    prepend-inner-icon="mdi-alert-circle-outline"
+                    prepend-inner-icon="mdi-circle-medium"
                     label="Status"
                     single-line
                     clearable
