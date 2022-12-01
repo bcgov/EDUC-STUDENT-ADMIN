@@ -603,12 +603,6 @@
     </v-col>
     </v-row>
   </v-container>
-    <ConfirmationDialog ref="confirmSchoolDetailsUpdateAndSave">
-      <template v-slot:message>
-        <p>All changes made to school details will be <strong>available to the public on save</strong>.</p>
-        <p>Please be sure to review your changes carefully before you publish them.</p>
-      </template>
-    </ConfirmationDialog>
     <!--    new contact sheet -->
     <v-dialog
         v-model="openSchoolStatusEditCard"
@@ -628,7 +622,6 @@
 <script>
 
 import PrimaryButton from '../util/PrimaryButton';
-import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import {mapGetters, mapState} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
@@ -648,8 +641,7 @@ export default {
   mixins: [alertMixin],
   components: {
     SchoolStatus,
-    PrimaryButton,
-    ConfirmationDialog
+    PrimaryButton
   },
   props: {
     schoolID: {
@@ -910,10 +902,6 @@ export default {
       this.sameAsMailingCheckbox = this.hasSamePhysicalAddress;
     },
     async updateSchoolDetails() {
-      const confirmation = await this.$refs.confirmSchoolDetailsUpdateAndSave.open('Confirm Updates to School Details', null, {color: '#fff', width: 580, closeIcon: false, subtitle: false, dark: false, resolveText: 'Publish Changes', rejectText: 'Return to School Details'});
-      if (!confirmation) {
-        return;
-      }
       this.loading = true;
 
       if(this.sameAsMailingCheckbox){

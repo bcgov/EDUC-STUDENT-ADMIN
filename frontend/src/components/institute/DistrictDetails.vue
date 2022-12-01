@@ -381,12 +381,6 @@
         </v-col>
       </v-row>
     </v-container>
-    <ConfirmationDialog ref="confirmDistrictDetailsUpdateAndSave">
-      <template v-slot:message>
-        <p>All changes made to district details will be <strong>available to the public on save</strong>.</p>
-        <p>Please be sure to review your changes carefully before you publish them.</p>
-      </template>
-    </ConfirmationDialog>
   </v-form>
 </template>
 
@@ -401,7 +395,6 @@ import router from '@/router';
 import { sanitizeUrl } from '@braintree/sanitize-url';
 import {mapGetters, mapState} from 'vuex';
 import {deepCloneObject} from '@/utils/common';
-import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
 
@@ -409,8 +402,7 @@ export default {
   name: 'DistrictDetails',
   mixins: [alertMixin],
   components: {
-    PrimaryButton,
-    ConfirmationDialog
+    PrimaryButton
   },
   props: {
     districtID: {
@@ -538,10 +530,6 @@ export default {
       }
     },
     async updateDistrictDetails() {
-      const confirmation = await this.$refs.confirmDistrictDetailsUpdateAndSave.open('Confirm Updates to District Details', null, {color: '#fff', width: 580, closeIcon: false, subtitle: false, dark: false, resolveText: 'Publish Changes', rejectText: 'Return to District Details'});
-      if (!confirmation) {
-        return;
-      }
       this.loading = true;
 
       if(this.sameAsMailingCheckbox){
