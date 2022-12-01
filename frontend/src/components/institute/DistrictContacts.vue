@@ -66,6 +66,7 @@ import {mapGetters} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import {isExpired} from '@/utils/institute/status';
 import DistrictContact from '@/components/institute/DistrictContact';
+import {sortBy} from 'lodash';
 
 export default {
   name: 'DistrictContactsPage',
@@ -121,6 +122,7 @@ export default {
         .then(response => {
           this.districtDetails = response.data;
           this.districtContacts = new Map();
+          response.data.contacts = sortBy(response.data.contacts, ['firstName']);
           response.data.contacts.forEach(contact => {
             if(!isExpired(contact.expiryDate)) {
               if (!this.districtContacts.has(contact.districtContactTypeCode)) {
