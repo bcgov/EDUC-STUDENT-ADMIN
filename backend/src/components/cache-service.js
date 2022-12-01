@@ -186,12 +186,9 @@ const cacheService = {
     const offshoreLearningSCFacilityTypeCodes=[];
     offshoreLearningSCFacilityTypeCodes.push('STANDARD');
 
-    const federallyOpSCFacilityTypeCodes=[];
-    federallyOpSCFacilityTypeCodes.push('STANDARD');
-
     const yukonSCFacilityTypeCodes=[];
     yukonSCFacilityTypeCodes.push('STANDARD');
-    yukonSCFacilityTypeCodes.push('DIST_CONT');
+    yukonSCFacilityTypeCodes.push('DIST_LEARN');
     yukonSCFacilityTypeCodes.push('SUMMER');
 
     const postSecondarySCFacilityTypeCodes=[];
@@ -201,14 +198,22 @@ const cacheService = {
     earlyLearningSCFacilityTypeCodes.push('STRONG_CEN');
     earlyLearningSCFacilityTypeCodes.push('STRONG_OUT');
     earlyLearningSCFacilityTypeCodes.push('JUSTB4PRO');
+
+    const independentFNSFacilityTypeCodes=[];
+    independentFNSFacilityTypeCodes.push('STANDARD');
+
+    const nonIndependentFNSFacilityTypeCodes=[];
+    nonIndependentFNSFacilityTypeCodes.push('STANDARD');
     return {
       'PUBLIC':publicSCAllowedFacilityTypeCodes,
       'INDEPEND':independentSchoolSCFacilityTypeCodes,
       'OFFSHORE':offshoreLearningSCFacilityTypeCodes,
-      'FED_BAND':federallyOpSCFacilityTypeCodes,
+      'FED_BAND':nonIndependentFNSFacilityTypeCodes,
       'YUKON':yukonSCFacilityTypeCodes,
       'POST_SEC':postSecondarySCFacilityTypeCodes,
-      'EAR_LEARN':earlyLearningSCFacilityTypeCodes
+      'EAR_LEARN':earlyLearningSCFacilityTypeCodes,
+      'INDP_FNS':independentFNSFacilityTypeCodes,
+
 
     };
   },

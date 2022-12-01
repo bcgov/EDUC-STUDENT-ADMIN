@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <v-card v-show="!expandEdit">
+  <span>
+    <v-card height="100%"  v-show="!expandEdit">
       <v-card-title class="pb-0">
         <v-row no-gutters>
           <v-col>
@@ -194,7 +194,7 @@
         </v-card-text>
       </v-card>
     </v-expand-transition>
-  </div>
+  </span>
 </template>
 
 <script>
@@ -259,7 +259,7 @@ export default {
 
       contact.independentAuthorityId = this.authorityID;
 
-      ApiService.apiAxios.put(`${Routes.institute.AUTHORITY_CONTACT_URL}`, contact)
+      ApiService.apiAxios.put(Routes.institute.AUTHORITY_CONTACT_URL + '/' + contact.authorityContactId, contact)
         .then(() => {
           this.setSuccessAlert('Success! The authority contact has been updated.');
           this.closeAuthorityContactEdit();

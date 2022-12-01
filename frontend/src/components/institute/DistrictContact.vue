@@ -1,6 +1,6 @@
 <template>
   <span>
-    <v-card height="100%" v-show="!expandEdit">
+    <v-card height="100%"  v-show="!expandEdit">
       <v-card-title class="pb-0">
         <v-row no-gutters>
           <v-col>
@@ -12,10 +12,13 @@
                 <strong style="word-break: break-word;">{{ formatContactName(contact) }}</strong>
               </v-col>
               <v-col cols="4" class="d-flex justify-end">
-                <PrimaryButton icon-left width="6em" secondary icon="mdi-pencil" text="Edit" id="editContactButton" :disabled="!canEditSchoolContact" @click.native="openContactEditForm(contact)"></PrimaryButton>
+                <PrimaryButton icon-left width="6em" secondary icon="mdi-pencil" text="Edit" id="editContactButton" :disabled="!canEditDistrictContact" @click.native="openContactEditForm(contact)"></PrimaryButton>
               </v-col>
             </v-row>
             <v-row no-gutters>
+              <v-col cols="12" class="pt-1">
+                <strong style="word-break: break-word;">{{ contact.jobTitle }}</strong>
+              </v-col>
               <v-col cols="12" class="pt-1">
                 <span id="contactEmail"> {{ contact.email }}</span>
               </v-col>
@@ -49,9 +52,9 @@
     <v-expand-transition>
       <v-card v-show="expandEdit">
         <v-card-actions class="justify-end">
-          <PrimaryButton id="cancelEditButton" :secondary="true" @click.native="closeSchoolContactEdit"
+          <PrimaryButton id="cancelEditButton" :secondary="true" @click.native="closeDistrictContactEdit"
                          text="Cancel"></PrimaryButton>
-          <PrimaryButton @click.native="saveSchoolContact(contactEdit)" id="saveEditButton" :disabled="!ecFormValid" :loading="processing" text="Save"></PrimaryButton>
+          <PrimaryButton @click.native="saveDistrictContact(contactEdit)" id="saveEditButton" :disabled="!ecFormValid" :loading="processing" text="Save"></PrimaryButton>
         </v-card-actions>
         <v-card-text>
           <v-form
@@ -74,6 +77,16 @@
                               type="text"
                               maxlength="255"
                               ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-text-field id="contactEditJobTitle"
+                              v-model="contactEdit.jobTitle"
+                              label="Title"
+                              type="text"
+                              maxlength="255"
+                ></v-text-field>
               </v-col>
             </v-row>
             <v-row>
@@ -208,13 +221,13 @@ import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
 
 export default {
-  name: 'SchoolContact',
+  name: 'DistrictContact',
   mixins: [alertMixin],
   components: {
     PrimaryButton,
   },
   props: {
-    schoolID: {
+    districtID: {
       type: String,
       required: true
     },
@@ -222,7 +235,7 @@ export default {
       type: Object,
       required: true
     },
-    canEditSchoolContact: {
+    canEditDistrictContact: {
       type: Boolean,
       required: true
     }
@@ -230,7 +243,7 @@ export default {
   data() {
     return {
       processing: false,
-      school: {},
+      district: {},
       expandEdit: false,
       saveEnabled: true,
       ecFormValid: false,
@@ -253,28 +266,27 @@ export default {
     };
   },
   methods: {
-    saveSchoolContact(contact) {
+    saveDistrictContact(contact) {
       this.processing = true;
       this.validateEditContactForm();
 
-      contact.schoolID = this.schoolID;
+      contact.districtId = this.districtID;
 
-      const payload = contact;
-      ApiService.apiAxios.put(Routes.institute.SCHOOL_CONTACT_URL + '/' + contact.schoolContactId, payload)
+      ApiService.apiAxios.put(Routes.institute.DISTRICT_CONTACT_URL + '/' + contact.districtContactId, contact)
         .then(() => {
-          this.setSuccessAlert('Success! The school contact has been updated.');
-          this.closeSchoolContactEdit();
-          this.$emit('editSchoolContact:editSchoolContactSuccess');
+          this.setSuccessAlert('Success! The district contact has been updated.');
+          this.closeDistrictContactEdit();
+          this.$emit('editDistrictContact:editDistrictContactSuccess');
         })
         .catch(error => {
           console.error(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while saving the school contact information. Please try again later.');
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while saving the district contact information. Please try again later.');
         })
         .finally(() => {
           this.processing = false;
         });
     },
-    closeSchoolContactEdit(){
+    closeDistrictContactEdit(){
       this.expandEdit = !this.expandEdit;
       this.$refs.editContactForm.reset();
     },

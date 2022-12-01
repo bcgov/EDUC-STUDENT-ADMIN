@@ -44,55 +44,7 @@
         </v-row>
         <v-row cols="2" v-if="districtContacts.has(districtContactType.districtContactTypeCode)">
           <v-col cols="5" lg="4" v-for="contact in districtContacts.get(districtContactType.districtContactTypeCode)" :key="contact.schoolId">
-            <v-card>
-              <v-card-title class="pb-0">
-                <v-row no-gutters>
-                  <v-col>
-                    <v-row no-gutters>
-                      <v-col cols="9">
-                        <v-icon class="pb-1" :color="getStatusColor(contact)" left dark>
-                          mdi-circle-medium
-                        </v-icon>
-                        <strong style="word-break: break-word;">{{ formatContactName(contact) }}</strong>
-                      </v-col>
-                      <v-col cols="3" class="d-flex justify-end">
-                        <PrimaryButton width="6em" secondary icon="mdi-pencil" icon-left text="Edit"></PrimaryButton>
-                      </v-col>
-                    </v-row>
-                    <v-row no-gutters class="titleSetup">
-                      <v-col cols="12" class="pt-1">
-                        <strong>{{ contact.jobTitle }}</strong>
-                      </v-col>
-                      <v-col cols="12" class="pt-1">
-                        <span>{{ contact.email }}</span>
-                      </v-col>
-                      <v-col cols="12" class="pt-1">
-                        <span>{{ formatPhoneNumber(contact.phoneNumber) }}</span><span v-if="contact.phoneExtension"> ext. {{contact.phoneExtension}}</span>
-                      </v-col>
-                      <v-col cols="12" class="pt-1" v-if="contact.alternatePhoneNumber">
-                        <span>{{ formatPhoneNumber(contact.alternatePhoneNumber) }} (alt.)</span> <span v-if="contact.alternatePhoneExtension"> ext. {{contact.alternatePhoneExtension}}</span>
-                      </v-col>
-                    </v-row>
-                  </v-col>
-                </v-row>
-              </v-card-title>
-              <v-card-text class="pt-2">
-                <v-row no-gutters>
-                  <v-col cols="12" class="pt-1" v-if="contact.expiryDate">
-                    <v-icon aria-hidden="false">
-                      mdi-calendar-today
-                    </v-icon>
-                    <span> {{ formatDate(contact.effectiveDate) }} - {{ formatDate(contact.expiryDate)}}</span>
-                  </v-col>
-                  <v-col cols="12" class="pt-1" v-else>
-                    <v-icon aria-hidden="false">
-                      mdi-calendar-today
-                    </v-icon>
-                    <span> {{ formatDate(contact.effectiveDate) }}</span>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
+            <DistrictContact :contact="contact" :districtID="$route.params.districtID" @editDistrictContact:editDistrictContactSuccess="contactEditSuccess" :canEditDistrictContact="canEditDistrictContact()" />
           </v-col>
         </v-row>
         <v-row cols="2" v-else>
@@ -112,13 +64,15 @@ import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton';
 import {mapGetters} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
-import {formatPhoneNumber, formatDate, formatContactName} from '@/utils/format';
-import {getStatusColor, isExpired} from '@/utils/institute/status';
+import {isExpired} from '@/utils/institute/status';
+import DistrictContact from '@/components/institute/DistrictContact';
+import {sortBy} from 'lodash';
 
 export default {
   name: 'DistrictContactsPage',
   mixins: [alertMixin],
   components: {
+    DistrictContact,
     PrimaryButton,
   },
   props: {
@@ -136,7 +90,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo']),
+    ...mapGetters('auth', ['isAuthenticated','userInfo', 'DISTRICT_ADMIN_ROLE']),
     loading() {
       return this.loadingCount !== 0;
     }
@@ -164,10 +118,11 @@ export default {
       this.loadingCount += 1;
       let searchDistrictID = this.districtID ? this.districtID: this.userInfo.activeInstituteIdentifier;
 
-      ApiService.apiAxios.get(`${Routes.institute.DISTRICT_DATA_URL}/` + searchDistrictID)
+      ApiService.apiAxios.get(`${Routes.institute.DISTRICT_DATA_URL}/${searchDistrictID}`)
         .then(response => {
           this.districtDetails = response.data;
           this.districtContacts = new Map();
+          response.data.contacts = sortBy(response.data.contacts, ['firstName']);
           response.data.contacts.forEach(contact => {
             if(!isExpired(contact.expiryDate)) {
               if (!this.districtContacts.has(contact.districtContactTypeCode)) {
@@ -187,10 +142,12 @@ export default {
     backButtonClick() {
       this.$router.push({name: 'instituteDistrict'});
     },
-    getStatusColor,
-    formatDate,
-    formatPhoneNumber,
-    formatContactName
+    canEditDistrictContact() {
+      return this.DISTRICT_ADMIN_ROLE;
+    },
+    contactEditSuccess() {
+      this.getThisDistrictsContacts();
+    }
   }
 };
 </script>
@@ -206,10 +163,6 @@ export default {
 .containerSetup{
   padding-right: 32em !important;
   padding-left: 32em !important;
-}
-
-.titleSetup{
-  word-break: break-word;
 }
 
 @media screen and (max-width: 1950px) {

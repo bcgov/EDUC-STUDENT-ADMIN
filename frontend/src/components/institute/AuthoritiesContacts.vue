@@ -85,6 +85,7 @@ import {isExpired} from '@/utils/institute/status';
 import {mapGetters} from 'vuex';
 import AuthorityContact from '@/components/institute/AuthorityContact';
 import NewAuthorityContactPage from '@/components/institute/NewAuthorityContactPage';
+import {sortBy} from 'lodash';
 
 export default {
   name: 'AuthorityContactPage',
@@ -135,6 +136,7 @@ export default {
         .then(response => {
           this.authorityContacts = new Map();
           this.authority = response.data;
+          response.data.contacts = sortBy(response.data.contacts, ['firstName']);
           response.data.contacts.forEach(contact => {
             if (!isExpired(contact.expiryDate)) {
               if (!this.authorityContacts.has(contact.authorityContactTypeCode)) {

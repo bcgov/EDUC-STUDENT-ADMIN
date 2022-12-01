@@ -185,7 +185,7 @@ export default {
       authoritySearchNames: [],
       authorityStatus: [],
       authorityCodeNameFilter: '',
-      authorityStatusFilter: '',
+      authorityStatusFilter: 'Open',
       authorityTypeFilter: '',
       authorityTypes: [],
       loadingAuthorities: true,

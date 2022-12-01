@@ -35,6 +35,7 @@
           <v-chip color="#F4B183">Pending End Date</v-chip>
         </v-col>
         <v-col class="d-flex justify-end">
+          <PrimaryButton id="viewSchoolContactsButton" class="mr-2" secondary icon-left icon="mdi-map-marker-outline" :to="`/institute/school/${schoolID}/details`" text="View School Details"></PrimaryButton>
           <PrimaryButton :disabled="!canAddEditSchoolContact()" id="addSchoolContactBtn" icon-left width="11em" icon="mdi-plus-thick" text="New Contact" @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
         </v-col>
       </v-row>
@@ -101,6 +102,7 @@ export default {
   },
   data() {
     return {
+      independentArray: ['INDEPEND', 'INDP_FNS'],
       loadingCount: 0,
       schoolContactTypes: [],
       schoolContacts: new Map(),
@@ -109,7 +111,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo', 'SCHOOL_INDEPENDENT_OFFSHORE_ADMIN', 'SCHOOL_ADMIN_ROLE']),
+    ...mapGetters('auth', ['isAuthenticated','userInfo', 'SCHOOL_INDEPENDENT_ADMIN_ROLE', 'SCHOOL_ADMIN_ROLE']),
 
     loading() {
       return this.loadingCount !== 0;
@@ -162,8 +164,8 @@ export default {
       this.$router.push({name: 'instituteSchoolList'});
     },
     canAddEditSchoolContact() {
-      if(this.school.schoolCategoryCode === 'INDEPEND'){
-        return this.SCHOOL_INDEPENDENT_OFFSHORE_ADMIN || this.SCHOOL_ADMIN_ROLE;
+      if(this.school.schoolCategoryCode && this.independentArray.includes(this.school.schoolCategoryCode)){
+        return this.SCHOOL_INDEPENDENT_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE;
       }
       return this.SCHOOL_ADMIN_ROLE;
     },

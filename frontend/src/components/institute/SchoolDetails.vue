@@ -20,24 +20,27 @@
     <v-row v-else no-gutters>
       <v-col>
         <v-row class="d-flex justify-start">
-          <v-col v-if="!editing" cols="6" class="d-flex justify-start">
-            <h2 class="subjectHeading">{{ school.mincode }} - {{ school.displayName }}</h2>
-          </v-col>
-          <v-col class="d-flex" v-else>
-            <h2 id="schoolMincode">{{ school.mincode }} - </h2>
-            <v-text-field class="mt-n5 ml-3" style="font-size: x-large" :maxlength="255" :rules="[rules.required()]" required v-model="schoolDetailsCopy.displayName">
-            </v-text-field>
-          </v-col>
-          <v-col v-if="!editing" cols="6" class="d-flex justify-end">
-            <PrimaryButton id="schoolDetailsEditButton" icon-left width="6em" icon="mdi-pencil" text="Edit"
-                           :disabled="!canEditSchoolDetails()" @click.native="toggleEdit"></PrimaryButton>
-          </v-col>
-          <v-col v-else cols="6" class="d-flex justify-end">
-            <PrimaryButton class="mr-2" secondary id="cancelButton" icon-left width="6em" text="Cancel"
-                           @click.native="cancelClicked"></PrimaryButton>
-            <PrimaryButton id="saveButton" icon-left width="6em" text="Save" :disabled="!schoolDetailsFormValid"
-                           @click.native="updateSchoolDetails"></PrimaryButton>
-          </v-col>
+            <v-col v-if="!editing" cols="6" class="d-flex justify-start">
+              <h2 class="subjectHeading">{{ school.mincode }} - {{ school.displayName }}</h2>
+            </v-col>
+            <v-col class="d-flex" v-else>
+              <h2 id="schoolMincode">{{ school.mincode }} - </h2>
+              <v-text-field class="mt-n5 ml-3" style="font-size: x-large" :maxlength="255" :rules="[rules.required()]" required v-model="schoolDetailsCopy.displayName">
+              </v-text-field>
+            </v-col>
+            <v-col v-if="!editing" cols="6" class="d-flex justify-end">
+              <PrimaryButton id="viewSchoolContactsButton" class="mr-2" secondary icon-left
+                             icon="mdi-account-multiple-outline" :to="`/schoolContacts/${schoolID}`"
+                             text="View School Contacts"></PrimaryButton>
+              <PrimaryButton id="schoolDetailsEditButton" icon-left width="6em" icon="mdi-pencil" text="Edit"
+                             :disabled="!canEditSchoolDetails()" @click.native="toggleEdit"></PrimaryButton>
+            </v-col>
+            <v-col v-else cols="6" class="d-flex justify-end">
+              <PrimaryButton class="mr-2" secondary id="cancelButton" icon-left width="6em" text="Cancel"
+                             @click.native="cancelClicked"></PrimaryButton>
+              <PrimaryButton id="saveButton" icon-left width="6em" text="Save" :disabled="!schoolDetailsFormValid"
+                             @click.native="updateSchoolDetails"></PrimaryButton>
+            </v-col>
           </v-row>
           <v-row v-if="school.schoolCategoryCode !== 'INDEPEND'" class="d-flex justify-start">
               <v-col class="d-flex">
@@ -125,7 +128,8 @@
             </v-row>
             <v-row>
               <v-col cols="10" class="d-flex justify-start">
-                <span class="ministryLine" style="color: black">{{ formatDate(school.closedDate) || '-' }}</span>
+                <span v-if="!editing" class="ministryLine" style="color: black">{{ formatDate(school.closedDate) || '-' }}</span>
+                <span v-else class="ministryLine" style="color: black">{{ formatDate(schoolDetailsCopy.closedDate) || '-' }}</span>
               </v-col>
             </v-row>
           </v-col>
@@ -138,7 +142,7 @@
             <v-row>
               <v-col cols="10" class="d-flex justify-start">
                 <span v-if="!editing" class="ministryLine" style="color: black">{{ school.schoolCategory }}</span>
-                <v-select v-else :items="schoolCategoryTypeCodes"
+                <v-select v-else :items="activeSchoolCategoryTypes"
                           item-value="schoolCategoryCode"
                           item-text="label"
                           v-model="schoolDetailsCopy.schoolCategoryCode"
@@ -244,28 +248,28 @@
             </v-row>
             <v-row v-if="!editing" no-gutters>
               <v-col>
-            <v-row class="ml-9" no-gutters>
-              <v-col>
-                <span style="word-break: break-all;">{{ getMailingAddressItem('addressLine1') }}</span>
+                <v-row class="ml-9" no-gutters>
+                  <v-col>
+                    <span style="word-break: break-all;">{{ getMailingAddressItem('addressLine1') }}</span>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters>
+                  <v-col class="ml-9">
+                    <span style="word-break: break-all;">{{ getMailingAddressItem('addressLine2') }}</span>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters>
+                  <v-col class="ml-9">
+                    <span style="word-break: break-all;">{{ getMailingAddressItem('city') + ', ' + getMailingAddressItem('provinceCode')  + ', ' + getMailingAddressItem('countryCode') }}</span>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters>
+                  <v-col class="ml-9">
+                    <span style="word-break: break-all;">{{ getMailingAddressItem('postal') }}</span>
+                  </v-col>
+                </v-row>
               </v-col>
             </v-row>
-            <v-row no-gutters>
-              <v-col class="ml-9">
-                <span style="word-break: break-all;">{{ getMailingAddressItem('addressLine2') }}</span>
-              </v-col>
-            </v-row>
-            <v-row no-gutters>
-              <v-col class="ml-9">
-                <span style="word-break: break-all;">{{ getMailingAddressItem('city') + ', ' + getMailingAddressItem('provinceCode')  + ', ' + getMailingAddressItem('countryCode') }}</span>
-              </v-col>
-            </v-row>
-            <v-row no-gutters>
-              <v-col class="ml-9">
-                <span style="word-break: break-all;">{{ getMailingAddressItem('postal') }}</span>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
             <v-row v-else no-gutters>
               <v-col>
                 <v-row class="ml-9" no-gutters>
@@ -602,12 +606,6 @@
     </v-col>
     </v-row>
   </v-container>
-    <ConfirmationDialog ref="confirmSchoolDetailsUpdateAndSave">
-      <template v-slot:message>
-        <p>All changes made to school details will be <strong>available to the public on save</strong>.</p>
-        <p>Please be sure to review your changes carefully before you publish them.</p>
-      </template>
-    </ConfirmationDialog>
     <!--    new contact sheet -->
     <v-dialog
         v-model="openSchoolStatusEditCard"
@@ -627,7 +625,6 @@
 <script>
 
 import PrimaryButton from '../util/PrimaryButton';
-import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import {mapGetters, mapState} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
@@ -647,8 +644,7 @@ export default {
   mixins: [alertMixin],
   components: {
     SchoolStatus,
-    PrimaryButton,
-    ConfirmationDialog
+    PrimaryButton
   },
   props: {
     schoolID: {
@@ -658,6 +654,7 @@ export default {
   },
   data() {
     return {
+      independentArray: ['INDEPEND', 'INDP_FNS'],
       newNoteSheet: false,
       newNoteText: '',
       school: '',
@@ -665,7 +662,8 @@ export default {
       authority: '',
       cleanWebsiteUrl: '',
       schoolFacilityTypes: [],
-      schoolCategoryTypes: [],
+      activeSchoolCategoryTypes: [],
+      schoolCategoryTypes:[],
       schoolOrganizationTypes: [],
       schoolNeighborhoodLearningTypes: [],
       schoolGradeTypes: [],
@@ -681,9 +679,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo','SCHOOL_ADMIN_ROLE','SCHOOL_INDEPENDENT_OFFSHORE_ADMIN']),
+    ...mapGetters('auth', ['isAuthenticated','userInfo','SCHOOL_ADMIN_ROLE','SCHOOL_INDEPENDENT_ADMIN_ROLE']),
     ...mapState('institute', ['facilityTypeCodes']),
     ...mapState('institute', ['schoolCategoryTypeCodes']),
+    ...mapState('institute', ['activeSchoolCategoryTypeCodes']),
     ...mapState('institute', ['schoolOrganizationTypeCodes']),
     ...mapState('institute', ['schoolNeighborhoodLearningCodes']),
     ...mapState('institute', ['gradeCodes']),
@@ -719,6 +718,9 @@ export default {
   created() {
     this.$store.dispatch('institute/getAllFacilityTypeCodes').then(() => {
       this.schoolFacilityTypes = this.facilityTypeCodes;
+    });
+    this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes').then(() => {
+      this.activeSchoolCategoryTypes = this.activeSchoolCategoryTypeCodes;
     });
     this.$store.dispatch('institute/getAllSchoolCategoryTypeCodes').then(() => {
       this.schoolCategoryTypes = this.schoolCategoryTypeCodes;
@@ -878,7 +880,7 @@ export default {
       return this.schoolFacilityTypes.find((facility) => facility.facilityTypeCode === school.facilityTypeCode)?.label;
     },
     getSchoolCategory(school) {
-      return this.schoolCategoryTypeCodes.find((category) => category.schoolCategoryCode === school.schoolCategoryCode)?.label;
+      return this.schoolCategoryTypes.find((category) => category.schoolCategoryCode === school.schoolCategoryCode)?.label;
     },
     getStatusColorAuthorityOrSchool,
     formatDate,
@@ -903,10 +905,6 @@ export default {
       this.sameAsMailingCheckbox = this.hasSamePhysicalAddress;
     },
     async updateSchoolDetails() {
-      const confirmation = await this.$refs.confirmSchoolDetailsUpdateAndSave.open('Confirm Updates to School Details', null, {color: '#fff', width: 580, closeIcon: false, subtitle: false, dark: false, resolveText: 'Publish Changes', rejectText: 'Return to School Details'});
-      if (!confirmation) {
-        return;
-      }
       this.loading = true;
 
       if(this.sameAsMailingCheckbox){
@@ -983,8 +981,8 @@ export default {
       }
     },
     canEditSchoolDetails(){
-      if(this.school.schoolCategoryCode === 'INDEPEND'){
-        return this.SCHOOL_INDEPENDENT_OFFSHORE_ADMIN || this.SCHOOL_ADMIN_ROLE;
+      if(this.school.schoolCategoryCode && this.independentArray.includes(this.school.schoolCategoryCode)){
+        return this.SCHOOL_INDEPENDENT_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE;
       }
       return this.SCHOOL_ADMIN_ROLE;
     },

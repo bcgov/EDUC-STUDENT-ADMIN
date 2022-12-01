@@ -76,6 +76,76 @@ async function getDistrictByDistrictID(req, res) {
   }
 }
 
+async function updateDistrict(req, res) {
+  try {
+    const token = getBackendToken(req);
+
+    let district = cacheService.getDistrictJSONByDistrictId(req.body.districtId);
+
+    if (!district || !hasDistrictAdminRole(req)) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+    const districtPayload = req.body;
+
+    districtPayload.addresses.forEach(function(addy) {
+      addy.updateDate = null;
+      addy.createDate = null;
+    });
+
+    districtPayload.notes.forEach(function(note) {
+      note.updateDate = null;
+      note.createDate = null;
+    });
+
+    districtPayload.contacts.forEach(function(contact) {
+      contact.updateDate = null;
+      contact.createDate = null;
+    });
+
+    districtPayload.createDate = null;
+    districtPayload.updateDate = null;
+    districtPayload.updateUser = utils.getUser(req).idir_username;
+
+    const result = await utils.putData(token, config.get('server:institute:instituteDistrictURL') + '/' + districtPayload.districtId, districtPayload, utils.getUser(req).idir_username);
+    return res.status(HttpStatus.OK).json(result);
+
+  }catch(e)
+  {
+    await logApiError(e, 'updateDistrict', 'Error occurred while attempting to update a district.');
+    return errorResponse(res);
+  }
+
+}
+
+async function updateDistrictContact(req, res) {
+  try {
+    const token = getBackendToken(req);
+    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
+
+    let district = cacheService.getDistrictJSONByDistrictId(req.body.districtId);
+    if(!district || !hasDistrictAdminRole(req)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+
+    const params = req.body;
+    params.updateDate = null;
+    params.createDate = null;
+    params.updateUser = utils.getUser(req).idir_username;
+    params.effectiveDate = params.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null;
+    params.expiryDate = req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null;
+
+    const result = await utils.putData(token, `${config.get('server:institute:instituteDistrictURL')}/${req.body.districtId}/contact/${req.params.contactId}` , params, utils.getUser(req).idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'updateDistrictContact', 'Error occurred while attempting to update a district contact.');
+    return errorResponse(res);
+  }
+}
+
 async function getSchools(req, res) {
   const token = getBackendToken(req);
   try {
@@ -189,7 +259,7 @@ async function updateSchoolContact(req, res) {
     params.effectiveDate = params.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null;
     params.expiryDate = req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null;
 
-    const result = await utils.putData(token, config.get('server:institute:instituteSchoolURL') + '/' + req.body.schoolID + '/contact/'+ req.body.schoolContactId , params, utils.getUser(req).idir_username);
+    const result = await utils.putData(token, config.get('server:institute:instituteSchoolURL') + '/' + req.body.schoolID + '/contact/'+ req.params.contactId , params, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'updateSchoolContact', 'Error occurred while attempting to update a school contact.');
@@ -252,90 +322,10 @@ async function updateAuthorityContact(req, res) {
     params.effectiveDate = params.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null;
     params.expiryDate = req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null;
 
-    const result = await utils.putData(token, config.get('server:institute:instituteAuthorityURL') + '/' + req.body.independentAuthorityId + '/contact/'+ req.body.authorityContactId , params, utils.getUser(req).idir_username);
+    const result = await utils.putData(token, config.get('server:institute:instituteAuthorityURL') + '/' + req.body.independentAuthorityId + '/contact/'+ req.params.contactId , params, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'updateAuthorityContact', 'Error occurred while attempting to update an authority contact.');
-    return errorResponse(res);
-  }
-}
-
-async function addAuthority(req, res) {
-  try {
-    console.log('HIT_ADD_AUTHORITY');
-    const token = getBackendToken(req);
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
-
-    if(!hasAuthorityAdminRole(req)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
-      });
-    }
-
-    const url = `${config.get('server:institute:instituteAuthorityURL')}`;
-
-    const payload = {
-
-      displayName: req.body.authorityName,
-      authorityTypeCode: req.body.authorityTypeCode,
-      openedDate: req.body.openDate ? LocalDate.parse(req.body.openDate).atStartOfDay().format(formatter) : null,
-      email: req.body.email,
-      phoneNumber: req.body.phoneNumber,
-      faxNumber: req.body.faxNumber,
-      addresses: []
-    };
-
-    if(req.body.mailingAddrLine1 !== null){
-      let mailingAddress = {
-        'createUser': null,
-        'updateUser': null,
-        'createDate': null,
-        'updateDate': null,
-        'addressId': null,
-        'schoolId': null,
-        'districtId': null,
-        'independentAuthorityId': null,
-        'phoneNumber': null,
-        'email': null,
-        'addressLine1': req.body.mailingAddrLine1,
-        'addressLine2': req.body.mailingAddrLine2,
-        'city': req.body.mailingAddrCity,
-        'postal': req.body.mailingAddrPostal,
-        'addressTypeCode': 'MAILING',
-        'provinceCode': req.body.mailingAddrProvince,
-        'countryCode': req.body.mailingAddrCountry,
-      };
-      payload.addresses.push(mailingAddress);
-    }
-
-    if(req.body.physicalAddrLine1 !== null){
-      let physicalAddress = {
-        'createUser': null,
-        'updateUser': null,
-        'createDate': null,
-        'updateDate': null,
-        'addressId': null,
-        'schoolId': null,
-        'districtId': null,
-        'independentAuthorityId': null,
-        'phoneNumber': null,
-        'email': null,
-        'addressLine1': req.body.physicalAddrLine1,
-        'addressLine2': req.body.physicalAddrLine2,
-        'city': req.body.physicalAddrCity,
-        'postal': req.body.physicalAddrPostal,
-        'addressTypeCode': 'PHYSICAL',
-        'provinceCode': req.body.physicalAddrProvince,
-        'countryCode': req.body.physicalAddrCountry,
-      };
-      payload.addresses.push(physicalAddress);
-    }
-
-    const data = await utils.postData(token, url, payload, null, utils.getUser(req).idir_username);
-
-    return res.status(HttpStatus.OK).json(data);
-  }catch (e) {
-    logApiError(e, 'addAuthority', 'Error occurred while attempting to create an authority.');
     return errorResponse(res);
   }
 }
@@ -383,9 +373,13 @@ async function updateAuthority(req, res) {
   }
 }
 
+function hasDistrictAdminRole(req){
+  return req.session.roles.includes('DISTRICT_ADMIN');
+}
+
 function hasSchoolAdminRole(req, school){
-  if(school.schoolCategoryCode === 'INDEPEND'){
-    return req.session.roles.includes('SCHOOL_ADMIN') || req.session.roles.includes('SCHOOL_INDEPENDENT_OFFSHORE_ADMIN');
+  if(school.schoolCategoryCode === 'INDEPEND' || school.schoolCategoryCode === 'INDP_FNS'){
+    return req.session.roles.includes('SCHOOL_ADMIN') || req.session.roles.includes('SCHOOL_INDEPENDENT_ADMIN');
   }
 
   return req.session.roles.includes('SCHOOL_ADMIN');
@@ -694,6 +688,7 @@ module.exports = {
   getCachedDistricts,
   getCachedDistrictByDistrictId,
   getDistrictByDistrictID,
+  updateDistrictContact,
   getSchools,
   getDistricts,
   getSchoolsPaginated,
@@ -715,5 +710,5 @@ module.exports = {
   updateSchool,
   addSchoolContact,
   getCachedInstituteData,
-  addAuthority
+  updateDistrict
 };

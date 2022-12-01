@@ -40,7 +40,7 @@ const roles = {
     EDX: config.get('server:edx:roleAdmin'),
     District: 'DISTRICT_ADMIN',
     School: 'SCHOOL_ADMIN',
-    SchoolIndependentOffshore: 'SCHOOL_INDEPENDENT_OFFSHORE_ADMIN',
+    SchoolIndependent: 'SCHOOL_INDEPENDENT_ADMIN',
     IndependentAuthority: 'INDEPENDENT_AUTHORITY_ADMIN',
   }
 };
