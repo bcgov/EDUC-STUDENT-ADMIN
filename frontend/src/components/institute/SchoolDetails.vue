@@ -29,6 +29,9 @@
               </v-text-field>
             </v-col>
             <v-col v-if="!editing" cols="6" class="d-flex justify-end">
+              <PrimaryButton id="viewSchoolContactsButton" class="mr-2" secondary icon-left
+                             icon="mdi-account-multiple-outline" :to="`/schoolContacts/${schoolID}`"
+                             text="View School Contacts"></PrimaryButton>
               <PrimaryButton id="schoolDetailsEditButton" icon-left width="6em" icon="mdi-pencil" text="Edit"
                              :disabled="!canEditSchoolDetails()" @click.native="toggleEdit"></PrimaryButton>
             </v-col>

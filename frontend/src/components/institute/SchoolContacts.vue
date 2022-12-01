@@ -35,6 +35,7 @@
           <v-chip color="#F4B183">Pending End Date</v-chip>
         </v-col>
         <v-col class="d-flex justify-end">
+          <PrimaryButton id="viewSchoolContactsButton" class="mr-2" secondary icon-left icon="mdi-map-marker-outline" :to="`/institute/school/${schoolID}/details`" text="View School Details"></PrimaryButton>
           <PrimaryButton :disabled="!canAddEditSchoolContact()" id="addSchoolContactBtn" icon-left width="11em" icon="mdi-plus-thick" text="New Contact" @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
         </v-col>
       </v-row>
