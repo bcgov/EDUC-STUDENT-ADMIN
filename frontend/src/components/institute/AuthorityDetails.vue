@@ -776,6 +776,13 @@ export default {
   font-size: medium;
 }
 
+.sheetHeader{
+  background-color: #003366;
+  color: white;
+  font-size: medium !important;
+  font-weight: bolder !important;
+}
+
 .fontBolder{
   font-weight: bolder;
 }
