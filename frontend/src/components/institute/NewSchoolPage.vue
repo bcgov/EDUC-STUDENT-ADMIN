@@ -163,11 +163,11 @@
               </v-col>
               <v-col cols="4">
                 <v-text-field
-                    id='newContactAltPhoneNumberInput'
+                    id='newContactEmailInput'
                     :rules="[rules.email()]"
                     v-model="newSchool.email"
                     class="pt-0"
-                    :maxlength="10"
+                    :maxlength="255"
                     label="Email"
                 />
               </v-col>
@@ -175,7 +175,7 @@
             <v-row>
               <v-col cols="4">
                 <v-text-field
-                    id='newContactAltPhoneNumberInput'
+                    id='newContactWebsiteInput'
                     :rules="[rules.website()]"
                     v-model="newSchool.website"
                     class="pt-0"
@@ -248,7 +248,7 @@
               <v-col cols="4">
                 <v-text-field
                     id='newContactMailingAddressPostalCodeInput'
-                    :rules="[rules.email()]"
+                    :rules="[rules.postalCode()]"
                     v-model="newSchool.mailingAddrPostal"
                     class="pt-0"
                     :maxlength="7"
@@ -333,7 +333,7 @@
                 <v-col cols="4">
                   <v-text-field
                       id='newContactPhysicalAddressPostalCodeInput'
-                      :rules="[rules.email()]"
+                      :rules="[rules.postalCode()]"
                       v-model="newSchool.physicalAddrPostal"
                       class="pt-0"
                       :maxlength="7"
