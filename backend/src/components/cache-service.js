@@ -188,7 +188,7 @@ const cacheService = {
 
     const yukonSCFacilityTypeCodes=[];
     yukonSCFacilityTypeCodes.push('STANDARD');
-    yukonSCFacilityTypeCodes.push('DIST_CONT');
+    yukonSCFacilityTypeCodes.push('DIST_LEARN');
     yukonSCFacilityTypeCodes.push('SUMMER');
 
     const postSecondarySCFacilityTypeCodes=[];

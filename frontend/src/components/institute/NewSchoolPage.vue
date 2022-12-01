@@ -408,6 +408,7 @@ export default {
       isFacilityTypeDisabled: false,
       authorityDisabled: true,
       independentArray: ['INDEPEND', 'INDP_FNS'],
+      requiredAuthoritySchoolCategories: ['INDEPEND', 'INDP_FNS', 'OFFSHORE'],
       newSchool: {
         districtName: null,
         authorityName: null,
@@ -513,7 +514,7 @@ export default {
       return this.SCHOOL_INDEPENDENT_ADMIN_ROLE;
     },
     authorityRule(value) {
-      if (this.newSchool.categoryCode && this.independentArray.includes(this.newSchool.categoryCode) && !value) {
+      if (this.newSchool.categoryCode && this.requiredAuthoritySchoolCategories.includes(this.newSchool.categoryCode) && !value) {
         return 'Authority is required';
       } else {
         return true;
@@ -547,7 +548,7 @@ export default {
         });
     },
     async schoolCategoryChanged(){
-      if(this.newSchool.categoryCode && this.independentArray.includes(this.newSchool.categoryCode)){
+      if(this.newSchool.categoryCode && this.requiredAuthoritySchoolCategories.includes(this.newSchool.categoryCode)){
         this.authorityDisabled = false;
       }else{
         this.authorityDisabled = true;
