@@ -60,7 +60,7 @@
                 mdi-at
               </v-icon>
               <span v-if="!editing" class="ml-n1">{{ district.email }}</span>
-              <v-text-field id="districtDetailsEmail" v-else class="py-0" required :rules="[rules.required(), rules.email()]" :maxlength="255" v-model="districtDetailsCopy.email"/>
+              <v-text-field id="districtDetailsEmail" v-else class="py-0" required :rules="[rules.email()]" :maxlength="255" v-model="districtDetailsCopy.email"/>
             </v-col>
             <v-col class="d-flex">
               <v-icon aria-hidden="false" class="mb-1 mr-1">

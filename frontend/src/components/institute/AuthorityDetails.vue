@@ -59,7 +59,7 @@
                   mdi-at
                 </v-icon>
                 <span v-if="!editing">{{ authority.email }}</span>
-                <v-text-field v-else id="emailField" class="py-0" required :rules="[rules.required(), rules.email()]" :maxlength="255" v-model="authorityCopy.email">
+                <v-text-field v-else id="emailField" class="py-0" required :rules="[rules.email()]" :maxlength="255" v-model="authorityCopy.email">
                 </v-text-field>
               </v-col>
               <v-col class="d-flex">
