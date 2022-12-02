@@ -449,6 +449,7 @@ export default {
         .then(response => {
           this.district = response.data;
           this.cleanWebsiteUrl = this.district.website ? sanitizeUrl(this.district.website) : '';
+          this.setHasSamePhysicalFlag();
         }).catch(error => {
           console.error(error);
           this.setFailureAlert(error.response?.data?.message || error.message);

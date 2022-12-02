@@ -187,6 +187,8 @@
                           item-value="schoolGradeCode"
                           item-text="label"
                           v-model="schoolDetailsCopy.grades"
+                          @input="sortGrades"
+                          return-object
                           multiple
                           required
                 ></v-select>
@@ -224,6 +226,8 @@
                 <v-select v-else :items="schoolNeighborhoodLearningTypes"
                           item-value="neighborhoodLearningTypeCode"
                           item-text="label"
+                          @input="sortNLC"
+                          return-object
                           v-model="schoolDetailsCopy.neighborhoodLearning"
                           multiple
                 ></v-select>
@@ -638,6 +642,7 @@ import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
 import SchoolStatus from '@/components/institute/SchoolStatus';
+import { sortBy } from 'lodash';
 
 export default {
   name: 'SchoolDetailsPage',
@@ -769,6 +774,12 @@ export default {
           this.loading = false;
         });
     },
+    sortGrades() {
+      this.schoolDetailsCopy.grades = sortBy(this.schoolDetailsCopy.grades,['schoolGradeCode']);
+    },
+    sortNLC() {
+      this.schoolDetailsCopy.neighborhoodLearning = sortBy(this.schoolDetailsCopy.neighborhoodLearning,['label']);
+    },
     sortNotes(){
       this.school.notes = this.school.notes.sort(function(a, b) {
         const aCreateDate = new LocalDateTime.parse(a.createDate.substring(0,19), DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
@@ -893,6 +904,8 @@ export default {
     async toggleEdit(){
       this.schoolDetailsCopy = this.deepCloneObject(this.school);
       this.addAddressesIfRequired(this.schoolDetailsCopy);
+      this.sortGrades();
+      this.sortNLC();
       this.editing = !this.editing;
       await this.$nextTick();
       this.$refs.schoolDetailsForm.validate();

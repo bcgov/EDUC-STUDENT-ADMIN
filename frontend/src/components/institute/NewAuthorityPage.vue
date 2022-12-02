@@ -11,6 +11,7 @@
                 v-model="newAuthority.authorityName"
                 class="pt-0"
                 :maxlength="255"
+                :rules="[rules.required()]"
                 label="Authority Name"
             />
             <v-row>
@@ -21,6 +22,7 @@
                     item-value="authorityTypeCode"
                     item-text="label"
                     :items="authorityTypes"
+                    :rules="[rules.required()]"
                     v-model="newAuthority.authorityTypeCode"
                     clearable>
                 </v-select>
@@ -60,7 +62,7 @@
               <v-col>
                 <v-text-field
                     id='newAuthorityEmailInput'
-                    :rules="[rules.email()]"
+                    :rules="[rules.email(),rules.required()]"
                     v-model="newAuthority.email"
                     class="pt-0"
                     :maxlength="255"
@@ -83,7 +85,7 @@
               <v-col cols="6">
                 <v-text-field
                     id='newAuthorityFaxNumberInput'
-                    :rules="[rules.required(), rules.phoneNumber()]"
+                    :rules="[rules.phoneNumber('Fax number must be valid')]"
                     v-model="newAuthority.faxNumber"
                     class="pt-0"
                     :maxlength="10"
@@ -312,13 +314,13 @@ export default {
       this.processing = true;
 
       ApiService.apiAxios.post(`${Routes.institute.ROOT_ENDPOINT}/authority`, this.newAuthority)
-        .then(() => {
-          this.setSuccessAlert('Success! The school has been created.');
+        .then((response) => {
+          this.setSuccessAlert('Success! The authority has been created.');
           this.resetForm();
-          this.$emit('newAuthority:addNewAuthority');
+          this.openAuthority(response.data.independentAuthorityId);
         })
         .catch(error => {
-          this.setFailureAlert('An error occurred while sending message. Please try again later.');
+          this.setFailureAlert('An error occurred while creating the authority. Please try again later.');
           console.log(error);
         })
         .finally(() => {
@@ -328,6 +330,9 @@ export default {
     async clickSameAsAddressButton(){
       await this.$nextTick();
       this.validateForm();
+    },
+    openAuthority(authorityId){
+      this.$router.push({name: 'authorityDetails', params: {authorityID: authorityId}});
     },
     resetForm() {
       this.$refs.newAuthorityForm.reset();
