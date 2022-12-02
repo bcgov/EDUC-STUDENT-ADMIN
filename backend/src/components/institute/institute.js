@@ -364,8 +364,6 @@ async function addAuthority(req, res) {
         'schoolId': null,
         'districtId': null,
         'independentAuthorityId': null,
-        'phoneNumber': null,
-        'email': null,
         'addressLine1': req.body.mailingAddrLine1,
         'addressLine2': req.body.mailingAddrLine2,
         'city': req.body.mailingAddrCity,
@@ -387,8 +385,6 @@ async function addAuthority(req, res) {
         'schoolId': null,
         'districtId': null,
         'independentAuthorityId': null,
-        'phoneNumber': null,
-        'email': null,
         'addressLine1': req.body.physicalAddrLine1,
         'addressLine2': req.body.physicalAddrLine2,
         'city': req.body.physicalAddrCity,
@@ -401,7 +397,7 @@ async function addAuthority(req, res) {
     }
 
     const data = await utils.postData(token, url, payload, null, utils.getUser(req).idir_username);
-
+    await cacheService.loadAllAuthoritiesToMap();
     return res.status(HttpStatus.OK).json(data);
   }catch (e) {
     logApiError(e, 'addAuthority', 'Error occurred while attempting to create an authority.');

@@ -62,7 +62,7 @@
               <v-col>
                 <v-text-field
                     id='newAuthorityEmailInput'
-                    :rules="[rules.email(),rules.required()]"
+                    :rules="[rules.email()]"
                     v-model="newAuthority.email"
                     class="pt-0"
                     :maxlength="255"
