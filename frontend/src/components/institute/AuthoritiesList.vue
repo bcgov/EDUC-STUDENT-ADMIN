@@ -7,6 +7,9 @@
           <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
           <a class="ml-1" @click="backButtonClick">Return to Dashboard</a>
         </v-col>
+        <v-col class="d-flex justify-end">
+          <PrimaryButton :disabled="!canAddAuthority()" id="addAuthorityBtn" icon-left width="12em" icon="mdi-plus-thick" text="New Authority" @click.native="newAuthoritySheet = !newAuthoritySheet"></PrimaryButton>
+        </v-col>
       </v-row>
       <v-row style="background: rgb(235, 237, 239);border-radius: 8px;" class="px-3 elevation-2">
         <v-col>
@@ -112,6 +115,21 @@
         </v-col>
       </v-row>
     </div>
+    <!--    new authority sheet -->
+    <v-bottom-sheet
+        v-model="newAuthoritySheet"
+        inset
+        no-click-animation
+        scrollable
+        persistent
+        width="30% !important"
+    >
+      <NewAuthorityPage
+          v-if="newAuthoritySheet"
+          @newAuthority:closeNewAuthorityPage="newAuthoritySheet = !newAuthoritySheet"
+          @newAuthority:addNewAuthority="newAuthorityAdded"
+      />
+    </v-bottom-sheet>
   </v-container>
 </template>
 
@@ -127,12 +145,13 @@ import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber} from '@/utils/format';
 import {getStatusColorAuthorityOrSchool,getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import router from '@/router';
+import NewAuthorityPage from './NewAuthorityPage';
 
 export default {
   name: 'AuthoritiesListPage',
   mixins: [alertMixin],
   components: {
-    PrimaryButton, Spinner
+    PrimaryButton, Spinner, NewAuthorityPage
   },
   data() {
     return {
@@ -169,11 +188,12 @@ export default {
       authorityStatusFilter: 'Open',
       authorityTypeFilter: '',
       authorityTypes: [],
-      loadingAuthorities: true
+      loadingAuthorities: true,
+      newAuthoritySheet: false,
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo']),
+    ...mapGetters('auth', ['userInfo', 'INDEPENDENT_AUTHORITY_ADMIN_ROLE']),
     ...mapState('institute', ['authorityTypeCodes']),
 
     getSheetWidth(){
@@ -303,6 +323,13 @@ export default {
     },
     searchButtonClick() {
       this.resetPageNumber();
+      this.getAuthorityList();
+    },
+    canAddAuthority(){
+      return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE;
+    },
+    newAuthorityAdded() {
+      this.newAuthoritySheet = !this.newAuthoritySheet;
       this.getAuthorityList();
     },
   },

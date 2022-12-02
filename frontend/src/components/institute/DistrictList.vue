@@ -42,16 +42,16 @@
 
         <template v-slot:item.secureExchangeStatusCode="{ item }">
           <v-row style="cursor: pointer;" @click="openDistrict(item.districtId)">
-            <v-col cols="6" class="d-flex justify-start mt-1">
+            <v-col cols="6" class="d-flex justify-start">
               <strong class="largeFont">{{ `${item.districtNumber} - ${item.name}` }}</strong>
             </v-col>
-            <v-col class="d-flex justify-start mt-1">
+            <v-col class="mt-1">
               <v-icon class="mt-n1" :color="getStatusColor(item.districtStatusCode)">
                 mdi-circle-medium
               </v-icon>
               <span class="largeFont">{{ getStatusText(item.districtStatusCode) }}</span>
             </v-col>
-            <v-col cols="3" class="d-flex justify-start mt-1">
+            <v-col  class="mt-1" cols="3">
               <v-icon>
                 mdi-phone-outline
               </v-icon>
