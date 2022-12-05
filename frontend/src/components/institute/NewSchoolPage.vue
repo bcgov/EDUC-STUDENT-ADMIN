@@ -515,7 +515,7 @@ export default {
     },
     authorityRule(value) {
       if (this.newSchool.categoryCode && this.requiredAuthoritySchoolCategories.includes(this.newSchool.categoryCode) && !value) {
-        return 'Authority is required';
+        return 'Required';
       } else {
         return true;
       }
@@ -552,6 +552,7 @@ export default {
         this.authorityDisabled = false;
       }else{
         this.authorityDisabled = true;
+        this.newSchool.authorityName = null;
       }
       await this.fireFormValidate();
     },
