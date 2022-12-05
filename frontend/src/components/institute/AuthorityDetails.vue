@@ -31,6 +31,7 @@
                 </v-text-field>
               </v-col>
               <v-col v-if="!editing" cols="4" class="d-flex justify-end">
+                <PrimaryButton id="viewAuthorityContactsButton" class="mr-2" secondary icon-left icon="mdi-account-multiple-outline" :to="`/authorityContacts/${authorityID}`" text="View Authority Contacts"></PrimaryButton>
                 <PrimaryButton id="editButton" icon-left width="6em" icon="mdi-pencil" text="Edit" :disabled="!canEditAuthorities()" @click.native="toggleEdit"></PrimaryButton>
               </v-col>
               <v-col v-else cols="4" class="d-flex justify-end">

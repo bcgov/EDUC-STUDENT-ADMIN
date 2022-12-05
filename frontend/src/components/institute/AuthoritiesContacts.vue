@@ -35,6 +35,7 @@
           <v-chip color="#F4B183">Pending End Date</v-chip>
         </v-col>
         <v-col class="d-flex justify-end">
+          <PrimaryButton id="viewAuthorityDetailsButton" class="mr-2" secondary icon-left icon="mdi-domain" :to="`/authority/${authorityID}`" text="View Authority Details"></PrimaryButton>
           <PrimaryButton icon-left width="11em" icon="mdi-plus-thick" text="New Contact" :disabled="!canEditAuthorityContact()"  @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
         </v-col>
       </v-row>
@@ -94,6 +95,12 @@ export default {
     PrimaryButton,
     AuthorityContact,
     NewAuthorityContactPage
+  },
+  props: {
+    authorityID: {
+      type: String,
+      required: true
+    }
   },
   data() {
     return {

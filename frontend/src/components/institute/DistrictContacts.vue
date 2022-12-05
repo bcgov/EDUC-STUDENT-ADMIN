@@ -33,6 +33,7 @@
           <v-chip color="#F4B183">Pending End Date</v-chip>
         </v-col>
         <v-col class="d-flex justify-end">
+          <PrimaryButton id="viewDistrictDetailsButton" class="mr-2" secondary icon-left icon="mdi-domain" :to="`/district/${districtID}`" text="View District Details"></PrimaryButton>
           <PrimaryButton icon-left width="11em" icon="mdi-plus-thick" text="New Contact"></PrimaryButton>
         </v-col>
       </v-row>
