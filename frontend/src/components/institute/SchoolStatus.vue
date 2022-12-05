@@ -21,7 +21,7 @@
                   </v-radio>
                 </span>
                 <span v-if="displayOptionsForOpenSchoolStatus">
-                  <v-radio label="Close"
+                  <v-radio label="Close the School"
                            value="setCloseDate">
                   </v-radio>
                 </span>
