@@ -226,14 +226,17 @@ export default {
         for(const authority of authorityList){
           let authorityItem = {
             authorityCodeName: authority.authorityNumber + ' - ' + authority.name,
+            authorityNumber: authority.authorityNumber,
             authorityID: authority.authorityID,
           };
           this.authoritySearchNames.push(authorityItem);
         }
         this.authoritySearchNames = this.authoritySearchNames.sort(function(a, b) {
-          if (a.authorityCodeName > b.authorityCodeName) {
+          let numA = parseInt(a.authorityNumber);
+          let numB = parseInt(b.authorityNumber);
+          if (numA > numB) {
             return 1;
-          } else if (a.authorityCodeName < b.authorityCodeName) {
+          } else if (numA < numB) {
             return -1;
           }
           return 0;

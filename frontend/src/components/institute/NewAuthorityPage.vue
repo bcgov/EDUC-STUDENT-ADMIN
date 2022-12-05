@@ -143,14 +143,14 @@
                 />
                 <v-text-field
                     id='newContactMailingAddressPostalCodeInput'
-                    :rules="[rules.postalCode()]"
+                    :rules="[rules.required(), rules.postalCode()]"
                     v-model="newAuthority.mailingAddrPostal"
                     class="pt-0"
                     :maxlength="7"
                     label="Postal Code"
                 />
             </v-col>
-            <v-col cols="6">
+            <v-col v-if="showPhysicalAddress" cols="6">
                 <v-row class="ml-lg-1">
                   <h3>Physical Address</h3>
                 </v-row>
@@ -200,7 +200,7 @@
                     />
                     <v-text-field
                         id='newContactPhysicalAddressPostalCodeInput'
-                        :rules="[rules.postalCode()]"
+                        :rules="[rules.required(), rules.postalCode()]"
                         v-model="newAuthority.physicalAddrPostal"
                         class="pt-0"
                         :maxlength="7"
@@ -238,6 +238,7 @@ import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
+import {LocalDate} from '@js-joda/core';
 
 export default {
   name: 'NewAuthorityPage',
@@ -255,7 +256,7 @@ export default {
       newAuthority: {
         authorityName: null,
         authorityTypeCode: null,
-        openDate: null,
+        openDate: this.calculateDefaultOpenDate(),
         email: null,
         phoneNumber: null,
         faxNumber: null,
@@ -283,13 +284,17 @@ export default {
       provinceCodeValues: [],
       countryCodeValues: [],
       authorityTypes: [],
-
+      excludeShowingPhysicalAddressesForAuthoritiesOfType: [
+        'OFFSHORE',
+      ],
     };
   },
   computed: {
     ...mapGetters('auth', ['isAuthenticated','userInfo']),
     ...mapState('institute', ['authorityTypeCodes', 'provinceCodes', 'countryCodes']),
-
+    showPhysicalAddress() {
+      return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.newAuthority.authorityTypeCode);
+    }
   },
   created() {
     this.$store.dispatch('institute/getAllAuthorityTypeCodes').then(() => {
@@ -303,6 +308,9 @@ export default {
     });
   },
   methods: {
+    calculateDefaultOpenDate() {
+      return LocalDate.now().toString();
+    },
     saveNewAuthorityOpenDate(date) {
       this.$refs.newAuthorityOpenDateFilter.save(date);
     },
