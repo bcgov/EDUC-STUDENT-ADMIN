@@ -778,7 +778,7 @@ export default {
       this.schoolDetailsCopy.grades = sortBy(this.schoolDetailsCopy.grades,['schoolGradeCode']);
     },
     sortNLC() {
-      this.schoolDetailsCopy.neighborhoodLearning = sortBy(this.schoolDetailsCopy.neighborhoodLearning,['label']);
+      this.schoolDetailsCopy.neighborhoodLearning = sortBy(this.schoolDetailsCopy.neighborhoodLearning,['neighborhoodLearningTypeCode']);
     },
     sortNotes(){
       this.school.notes = this.school.notes.sort(function(a, b) {
