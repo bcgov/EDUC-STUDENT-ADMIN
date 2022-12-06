@@ -219,7 +219,6 @@ async function addNewSchoolNote(req, res) {
       content: req.body.noteContent,
       schoolId: req.body.schoolID
     };
-    console.log(req)
     const result = await utils.postData(token, config.get('server:institute:instituteSchoolURL') + '/' + req.body.schoolID + '/note', params, null, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
