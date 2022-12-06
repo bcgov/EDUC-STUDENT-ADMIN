@@ -151,7 +151,7 @@ async function addNewDistrictNote(req, res) {
     const token = getBackendToken(req);
     
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtID);
-    if(!district || !hasDistrictAdminRole(req, district)){
+    if(!district || !hasDistrictAdminRole(req)){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'You do not have the required access for this function'
       });
