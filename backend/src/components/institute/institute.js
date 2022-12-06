@@ -146,6 +146,29 @@ async function updateDistrictContact(req, res) {
   }
 }
 
+async function addNewDistrictNote(req, res) {
+  try {
+    const token = getBackendToken(req);
+    
+    let district = cacheService.getDistrictJSONByDistrictId(req.body.districtID);
+    if(!district || !hasDistrictAdminRole(req)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+
+    const params = {
+      content: req.body.noteContent,
+      districtId: req.body.districtID
+    };
+    const result = await utils.postData(token, config.get('server:institute:instituteDistrictURL') + '/' + req.body.districtID + '/note', params, null, utils.getUser(req).idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'addNewDistrictNote', 'Error occurred while attempting to add a new district note.');
+    return errorResponse(res);
+  }
+}
+
 async function getSchools(req, res) {
   const token = getBackendToken(req);
   try {
@@ -786,5 +809,6 @@ module.exports = {
   addSchoolContact,
   getCachedInstituteData,
   updateDistrict,
-  addAuthority
+  addAuthority,
+  addNewDistrictNote
 };

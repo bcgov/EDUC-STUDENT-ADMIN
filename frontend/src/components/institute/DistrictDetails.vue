@@ -381,6 +381,67 @@
               </v-row>
             </v-col>
           </v-row>
+          <v-row>
+            <v-col>
+              <v-row>
+                <v-col class="d-flex justify-start">
+                  <h2>Ministry Notes</h2>
+                </v-col>
+                <v-col class="d-flex justify-end">
+                  <PrimaryButton id="addNewDistrictNoteButton" width="9em" icon="mdi-plus" icon-left text="New Note"
+                    :disabled="!canEditDistrictDetails()" @click.native="newNoteSheet = !newNoteSheet"></PrimaryButton>
+                </v-col>
+              </v-row>
+              <v-row>
+              <v-col class="d-flex justify-start">
+                <v-timeline id="districtNotesTimeline" dense v-if="district.notes.length > 0">
+                  <div v-for="(activity) in district.notes"
+                       :key="activity.noteId">
+                    <v-timeline-item right icon="mdi-message-bulleted" icon-color="#003366" large color="white" >
+                      <v-card width="40em">
+                        <v-card-title>
+                          <div class="activityTitle">{{ activity.createUser }}</div>
+                          <v-spacer></v-spacer>
+                          <div class="activityDisplayDate">{{ formatDate(activity.createDate.substring(0,19),'uuuu-MM-dd\'T\'HH:mm:ss', to='uuuu/MM/dd') }}</div>
+                        </v-card-title>
+                        <v-card-text class="activityContent">{{ activity.content }}</v-card-text>
+                      </v-card>
+                    </v-timeline-item>
+                  </div>
+                </v-timeline>
+                <v-timeline id="districtNotesTimeline" dense v-else >
+                  <v-timeline-item right icon="mdi-message-bulleted" icon-color="#003366" large color="white" >
+                    <v-card width="40em">
+                      <v-card-text class="activityContent">No notes have been recorded for this school</v-card-text>
+                    </v-card>
+                  </v-timeline-item>
+                </v-timeline>
+              </v-col>
+            </v-row>
+            </v-col>
+          </v-row>
+
+          <v-bottom-sheet v-model="newNoteSheet" inset no-click-animation scrollable persistent width="30%">
+            <v-card v-if="newNoteSheet" id="newDistrictNoteSheet" class="information-window-v-card">
+              <v-card-title class="sheetHeader pt-1 pb-1">New Note</v-card-title>
+              <v-divider></v-divider>
+              <v-card-text>
+                <v-row>
+                  <v-col>
+                    <v-textarea id="newDistrictNoteTextArea" v-model="newNoteText" rows="8" label="Note" autofocus no-resize
+                      maxlength="4000" class="pt-0" ref="newDistrictNoteTextArea" hide-details="auto">
+                    </v-textarea>
+                  </v-col>
+                </v-row>
+                <v-row class="py-4 pr-2 justify-end">
+                  <PrimaryButton id="cancelNote" secondary text="Cancel" class="mr-2"
+                    @click.native="newNoteSheet = !newNoteSheet; newNoteText = ''"></PrimaryButton>
+                  <PrimaryButton id="saveNote" text="Save" width="7rem" :disabled="newNoteText === ''" :loading="loading" @click.native="saveNewDistrictNote"></PrimaryButton>
+                </v-row>
+              </v-card-text>
+            </v-card>
+          </v-bottom-sheet>
+
         </v-col>
       </v-row>
     </v-container>
@@ -393,13 +454,14 @@ import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 import PrimaryButton from '@/components/util/PrimaryButton';
-import {formatPhoneNumber} from '@/utils/format';
+import {formatPhoneNumber, formatDate} from '@/utils/format';
 import router from '@/router';
 import { sanitizeUrl } from '@braintree/sanitize-url';
 import {mapGetters, mapState} from 'vuex';
 import {deepCloneObject} from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
+import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
 
 export default {
   name: 'DistrictDetails',
@@ -424,7 +486,9 @@ export default {
       districtDetailsCopy: {},
       provinceCodeValues: [],
       countryCodeValues: [],
-      sameAsMailingCheckbox: true
+      sameAsMailingCheckbox: true,
+      newNoteSheet: false,
+      newNoteText: '',
     };
   },
   computed:{
@@ -446,12 +510,33 @@ export default {
   },
   methods: {
     formatPhoneNumber,
+    saveNewDistrictNote() {
+      this.loading = false;
+
+      const payload = {
+        districtID: this.district.districtId,
+        noteContent: this.newNoteText
+      };
+      ApiService.apiAxios.post(`${Routes.institute.DISTRICT_NOTE_URL}`, payload)
+        .then(() => {
+          this.setSuccessAlert('Success! The note has been added to the district.');
+        })
+        .catch(error => {
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while adding the saving the district note. Please try again later.');
+        })
+        .finally(() => {
+          this.getDistrict();
+          this.newNoteSheet = false;
+          this.newNoteText = '';
+        });
+    },
     getDistrict() {
       this.loading = true;
       ApiService.apiAxios.get(`${Routes.institute.DISTRICT_DATA_URL}/${this.districtID}`)
         .then(response => {
           this.district = response.data;
           this.cleanWebsiteUrl = this.district.website ? sanitizeUrl(this.district.website) : '';
+          this.sortNotes();
           this.setHasSamePhysicalFlag();
         }).catch(error => {
           console.error(error);
@@ -484,6 +569,19 @@ export default {
       } else {
         return 'red';
       }
+    },
+    sortNotes(){
+      this.district.notes = this.district.notes.sort(function(a, b) {
+        const aCreateDate = new LocalDateTime.parse(a.createDate.substring(0,19), DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
+        const bCreateDate = new LocalDateTime.parse(b.createDate.substring(0,19), DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
+        if ( aCreateDate < bCreateDate ){
+          return 1;
+        }
+        if ( aCreateDate > bCreateDate ){
+          return -1;
+        }
+        return 0;
+      });
     },
     canEditDistrictDetails(){
       return this.DISTRICT_ADMIN_ROLE;
@@ -554,6 +652,7 @@ export default {
     },
     deepCloneObject,
     isNumber,
+    formatDate,
     getStatusText() {
       if (this.district.districtStatusCode === 'ACTIVE') {
         return 'Active';
@@ -600,6 +699,23 @@ export default {
 .divider {
   border-color: #FCBA19;
   border-width: medium;
+}
+.sheetHeader{
+  background-color: #003366;
+  color: white;
+  font-size: medium !important;
+  font-weight: bolder !important;
+}
+
+.activityDisplayDate{
+  font-size: smaller;
+}
+
+.activityContent {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-width: 100%;
+  font-size: medium;
 }
 
 .fontBolder{
