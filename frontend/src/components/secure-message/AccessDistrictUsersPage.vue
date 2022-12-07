@@ -91,6 +91,7 @@
                                        :large-icon=true
                                        id="new-user-button"
                                        secondary
+                                       icon-left
                                        text="Add New User"
                                        @click.native="newUserInviteSheet = !newUserInviteSheet"/>
                       </v-col>
