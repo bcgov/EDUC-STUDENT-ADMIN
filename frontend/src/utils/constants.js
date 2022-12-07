@@ -101,6 +101,7 @@ let object = {
     DISTRICT_DATA_URL: instituteRoot + '/district',
     DISTRICT_CONTACT_URL: instituteRoot + '/district/contact',
     DISTRICT_CONTACT_TYPE_CODES: instituteRoot + '/districtContactTypeCodes',
+    DISTRICT_NOTE_URL: instituteRoot + '/district/note',
     AUTHORITY_DATA_URL: instituteRoot + '/authority',
     AUTHORITY_CONTACT_URL: instituteRoot + '/authority/contact',
     AUTHORITY_NOTE_URL: instituteRoot + '/authority/note',
