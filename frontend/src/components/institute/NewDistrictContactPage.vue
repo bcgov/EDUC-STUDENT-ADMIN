@@ -1,7 +1,7 @@
 <template>
   <v-card
       id="newContactVCard">
-    <v-card-title class="sheetHeader pt-1 pb-1">New School Contact</v-card-title>
+    <v-card-title class="sheetHeader pt-1 pb-1">New District Contact</v-card-title>
     <v-divider></v-divider>
     <v-card-text>
       <v-form ref="newContactForm" v-model="isFormValid">
@@ -10,12 +10,12 @@
             <v-select
                 id='newContactDropdown'
                 :rules="[rules.required()]"
-                v-model="newContact.schoolContactTypeCode"
-                :items="schoolContactTypes"
+                v-model="newContact.districtContactTypeCode"
+                :items="districtContactTypes"
                 item-text="label"
                 class="pt-0"
-                item-value="schoolContactTypeCode"
-                label="School Contact Type"
+                item-value="districtContactTypeCode"
+                label="District Contact Type"
             />
             <v-text-field
                 id='newContactFirstNameInput'
@@ -31,6 +31,14 @@
                 class="pt-0"
                 :maxlength="255"
                 label="Last Name"
+            />
+            <v-text-field
+              id='newContactJobTitleInput'
+              :rules="[rules.required()]"
+              v-model="newContact.jobTitle"
+              class="pt-0"
+              :maxlength="255"
+              label="Title"
             />
             <v-text-field
                 id='newContactEmailInput'
@@ -156,7 +164,7 @@
     </v-card-text>
     <v-card-actions class="justify-end">
       <PrimaryButton id="cancelNewContactBtn" secondary text="Cancel" @click.native="closeNewContactPage"></PrimaryButton>
-      <PrimaryButton id="newContactPostBtn" text="Save" width="7rem" @click.native="addNewSchoolContact" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
+      <PrimaryButton id="newContactPostBtn" text="Save" width="7rem" @click.native="addNewDistrictContact" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
     </v-card-actions>
   </v-card>
 </template>
@@ -171,14 +179,14 @@ import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
 
 export default {
-  name: 'NewSchoolContactPage',
+  name: 'NewDistrictContactPage',
   mixins: [alertMixin],
   props: {
-    schoolContactTypes: {
+    districtContactTypes: {
       type: Array,
       required: true
     },
-    schoolID: {
+    districtID: {
       type: String,
       required: true
     }
@@ -194,10 +202,11 @@ export default {
       isFormValid: false,
       processing: false,
       newContact: {
-        schoolContactTypeCode: null,
+        districtContactTypeCode: this.districtContactTypes.length === 1 ? this.districtContactTypes[0].districtContactTypeCode : null,
         firstName: null,
         lastName: null,
         email: null,
+        jobTitle: null,
         phoneNumber: null,
         phoneExtension: null,
         alternatePhoneNumber: null,
@@ -224,20 +233,20 @@ export default {
     },
     closeNewContactPage() {
       this.resetForm();
-      this.$emit('newSchoolContact:closeNewSchoolContactPage');
+      this.$emit('newDistrictContact:closeNewDistrictContactPage');
     },
-    addNewSchoolContact() {
+    addNewDistrictContact() {
       this.processing = true;
-      this.newContact.schoolID = this.schoolID;
+      this.newContact.districtID = this.districtID;
 
-      ApiService.apiAxios.post(Routes.institute.SCHOOL_CONTACT_URL, this.newContact)
+      ApiService.apiAxios.post(Routes.institute.DISTRICT_CONTACT_URL, this.newContact)
         .then(() => {
-          this.setSuccessAlert('Success! The school contact has been created.');
+          this.setSuccessAlert('Success! The district contact has been created.');
           this.resetForm();
-          this.$emit('newSchoolContact:addNewSchoolContact');
+          this.$emit('newDistrictContact:addNewDistrictContact');
         })
         .catch(error => {
-          this.setFailureAlert('An error occurred while sending message. Please try again later.');
+          this.setFailureAlert('An error occurred while adding the new district contact. Please try again later.');
           console.log(error);
         })
         .finally(() => {
