@@ -33,8 +33,8 @@
           <v-chip color="#F4B183">Pending End Date</v-chip>
         </v-col>
         <v-col class="d-flex justify-end">
-          <PrimaryButton id="viewDistrictDetailsButton" class="mr-2" secondary icon-left icon="mdi-domain" :to="`/district/${districtID}`" text="View District Details"></PrimaryButton>
-          <PrimaryButton icon-left width="11em" icon="mdi-plus-thick" text="New Contact"></PrimaryButton>
+          <PrimaryButton id="viewDistrictDetailsButton" class="mr-2" secondary icon-left icon="mdi-domain" :to="`/district/${districtID}`" text="View District Details" ></PrimaryButton>
+          <PrimaryButton icon-left width="11em" icon="mdi-plus-thick" text="New Contact" @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
         </v-col>
       </v-row>
       <div v-for="districtContactType in districtContactTypes" :key="districtContactType.code">
@@ -55,6 +55,21 @@
         </v-row>
       </div>
     </template>
+    <v-bottom-sheet
+      v-model="newContactSheet"
+      inset
+      no-click-animation
+      scrollable
+      persistent
+    >
+      <NewDistrictContactPage
+        v-if="newContactSheet"
+        :districtContactTypes="this.districtContactTypes"
+        :districtID="this.$route.params.districtID"
+        @newDistrictContact:closeNewDistrictContactPage="newContactSheet = !newContactSheet"
+        @newDistrictContact:addNewDistrictContact="newDistrictContactAdded"
+      />
+    </v-bottom-sheet>
   </v-container>
 </template>
 
@@ -68,11 +83,13 @@ import alertMixin from '@/mixins/alertMixin';
 import {isExpired} from '@/utils/institute/status';
 import DistrictContact from '@/components/institute/DistrictContact';
 import {sortBy} from 'lodash';
+import NewDistrictContactPage from '@/components/institute/NewDistrictContactPage';
 
 export default {
   name: 'DistrictContactsPage',
   mixins: [alertMixin],
   components: {
+    NewDistrictContactPage,
     DistrictContact,
     PrimaryButton,
   },
@@ -88,6 +105,7 @@ export default {
       districtContactTypes: [],
       districtContacts: new Map(),
       districtDetails: '',
+      newContactSheet: false
     };
   },
   computed: {
@@ -148,12 +166,20 @@ export default {
     },
     contactEditSuccess() {
       this.getThisDistrictsContacts();
-    }
+    },
+    newDistrictContactAdded() {
+      this.newContactSheet = !this.newContactSheet;
+      this.getThisDistrictsContacts();
+    },
   }
 };
 </script>
 
 <style scoped>
+
+.v-dialog__content /deep/ .v-bottom-sheet {
+  width: 30% !important;
+}
 
 @media screen and (max-width: 950px){
   .v-dialog__content /deep/ .v-bottom-sheet {

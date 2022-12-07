@@ -54,6 +54,43 @@ async function getDistricts(req, res) {
   }
 }
 
+async function addDistrictContact(req, res) {
+  try {
+    const token = getBackendToken(req);
+    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
+
+    let district = cacheService.getDistrictJSONByDistrictId(req.body.districtID);
+    if(!district || !hasDistrictAdminRole(req)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+
+    const url = `${config.get('server:institute:instituteDistrictURL')}/${req.body.districtID}/contact`;
+
+    const payload = {
+      districtContactTypeCode: req.body.districtContactTypeCode,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      jobTitle: req.body.jobTitle,
+      phoneNumber: req.body.phoneNumber,
+      phoneExtension: req.body.phoneExtension,
+      alternatePhoneNumber: req.body.alternatePhoneNumber,
+      alternatePhoneExtension: req.body.alternatePhoneExtension,
+      effectiveDate: req.body.effectiveDate ? LocalDate.parse(req.body.effectiveDate).atStartOfDay().format(formatter) : null,
+      expiryDate: req.body.expiryDate ? LocalDate.parse(req.body.expiryDate).atStartOfDay().format(formatter) : null
+    };
+
+    const data = await utils.postData(token, url, payload, null, utils.getUser(req).idir_username);
+
+    return res.status(HttpStatus.OK).json(data);
+  }catch (e) {
+    logApiError(e, 'addDistrictContact', 'Error occurred while attempting to create a district contact.');
+    return errorResponse(res);
+  }
+}
+
 async function getCachedDistrictByDistrictId(req, res) {
   try {
     const districtId = req.params.districtId;
@@ -149,7 +186,7 @@ async function updateDistrictContact(req, res) {
 async function addNewDistrictNote(req, res) {
   try {
     const token = getBackendToken(req);
-    
+
     let district = cacheService.getDistrictJSONByDistrictId(req.body.districtID);
     if(!district || !hasDistrictAdminRole(req)){
       return res.status(HttpStatus.UNAUTHORIZED).json({
@@ -239,7 +276,7 @@ async function addSchoolContact(req, res) {
       });
     }
 
-    const url = `${config.get('server:institute:instituteSchoolURL')}/${req.params.schoolID}/contact`;
+    const url = `${config.get('server:institute:instituteSchoolURL')}/${req.body.schoolID}/contact`;
 
     const payload = {
       schoolContactTypeCode: req.body.schoolContactTypeCode,
@@ -810,5 +847,6 @@ module.exports = {
   getCachedInstituteData,
   updateDistrict,
   addAuthority,
-  addNewDistrictNote
+  addNewDistrictNote,
+  addDistrictContact
 };
