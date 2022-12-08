@@ -185,7 +185,9 @@ objects:
       - type: Resource
         resource:
           name: cpu
-          targetAverageUtilization: 90
+          target:
+            type: AverageUtilization
+            value: 90
 parameters:
 - name: REPO_NAME
   description: Application repository name
