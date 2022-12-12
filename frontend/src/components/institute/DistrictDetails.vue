@@ -366,7 +366,7 @@
                                     id="sameAsMailingCheckbox"
                                     @click.native="clickSameAsAddressButton"
                                     v-model="sameAsMailingCheckbox"
-                                    label="Same as mailing address"
+                                    label="Same as Mailing Address"
                                     class="mt-n3 pt-0"
                                   ></v-checkbox>
                                 </v-col>

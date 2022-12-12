@@ -274,7 +274,7 @@
                     id="sameAsMailingCheckbox"
                     @click.native="fireFormValidate"
                     v-model="sameAsMailingCheckbox"
-                    label="Same as mailing address"
+                    label="Same as Mailing Address"
                     class="mt-n3 pt-0"
                   ></v-checkbox>
                 </v-row>
@@ -354,7 +354,7 @@
                       id="sameAsMailingCheckbox"
                       @click.native="fireFormValidate"
                       v-model="sameAsMailingCheckbox"
-                      label="Same as mailing address"
+                      label="Same as Mailing Address"
                       class="mt-n3 pt-0"
                     ></v-checkbox>
                   </v-col>
