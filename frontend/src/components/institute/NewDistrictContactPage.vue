@@ -15,7 +15,7 @@
                 item-text="label"
                 class="pt-0"
                 item-value="districtContactTypeCode"
-                label="Contact Type"
+                label="District Contact Type"
             />
             <v-text-field
                 id='newContactFirstNameInput'
