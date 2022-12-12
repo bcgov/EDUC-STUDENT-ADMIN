@@ -34,7 +34,7 @@
         </v-col>
         <v-col class="d-flex justify-end">
           <PrimaryButton id="viewDistrictDetailsButton" class="mr-2" secondary icon-left icon="mdi-domain" :to="`/district/${districtID}`" text="View District Details" ></PrimaryButton>
-          <PrimaryButton icon-left width="11em" icon="mdi-plus-thick" text="New Contact" @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
+          <PrimaryButton :disabled="!canEditDistrictContact()" icon-left width="11em" icon="mdi-plus-thick" text="New Contact" @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
         </v-col>
       </v-row>
       <div v-for="districtContactType in districtContactTypes" :key="districtContactType.code">
