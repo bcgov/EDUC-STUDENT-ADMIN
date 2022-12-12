@@ -15,7 +15,7 @@
                 item-text="label"
                 class="pt-0"
                 item-value="districtContactTypeCode"
-                label="District Contact Type"
+                label="Contact Type"
             />
             <v-text-field
                 id='newContactFirstNameInput'
@@ -34,7 +34,6 @@
             />
             <v-text-field
               id='newContactJobTitleInput'
-              :rules="[rules.required()]"
               v-model="newContact.jobTitle"
               class="pt-0"
               :maxlength="255"
