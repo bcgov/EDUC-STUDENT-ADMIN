@@ -43,6 +43,11 @@
             <h2 style="color:#1A5A96">{{districtContactType.label}}</h2>
           </v-col>
         </v-row>
+        <v-row v-if="!districtContactType.publiclyAvailable">
+          <v-col>
+            <v-alert color="#003366" dense text type="info">Contacts of this type are only available to the ministry and not available to public.</v-alert>
+          </v-col>
+        </v-row>
         <v-row cols="2" v-if="districtContacts.has(districtContactType.districtContactTypeCode)">
           <v-col cols="5" lg="4" v-for="contact in districtContacts.get(districtContactType.districtContactTypeCode)" :key="contact.schoolId">
             <DistrictContact :contact="contact" :districtID="$route.params.districtID" @editDistrictContact:editDistrictContactSuccess="contactEditSuccess" :canEditDistrictContact="canEditDistrictContact()" />
