@@ -178,8 +178,7 @@
 import PrimaryButton from '../util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
 import * as Rules from '@/utils/institute/formRules';
-import {isNumber} from '@/utils/institute/formInput';
-import {formatDate} from '@/utils/format';
+import {formatDate, formatDisplayDate} from '@/utils/format';
 import {parseDate} from '@/utils/dateHelpers';
 import {LocalDate} from '@js-joda/core';
 
@@ -339,8 +338,8 @@ export default {
     validateForm() {
       this.isFormValid = this.$refs.authorityStatusForm.validate();
     },
-    isNumber,
     formatDate,
+    formatDisplayDate,
     parseDate
   },
   watch: {

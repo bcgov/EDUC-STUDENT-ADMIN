@@ -213,8 +213,7 @@
 import PrimaryButton from '../util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
 import * as Rules from '@/utils/institute/formRules';
-import {isNumber} from '@/utils/institute/formInput';
-import {formatDate} from '@/utils/format';
+import {formatDate, formatDisplayDate} from '@/utils/format';
 import {findUpcomingDate, parseDate} from '@/utils/dateHelpers';
 
 export default {
@@ -382,8 +381,8 @@ export default {
     validateForm() {
       this.isFormValid = this.$refs.schoolStatusForm.validate();
     },
-    isNumber,
     formatDate,
+    formatDisplayDate,
     parseDate
   },
   watch: {
