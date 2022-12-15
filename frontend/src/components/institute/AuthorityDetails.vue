@@ -40,12 +40,19 @@
               </v-col>
             </v-row>
             <v-row class="d-flex justify-start">
-              <v-col class="d-flex">
+              <v-col v-if="!editing" class="d-flex">
                 <v-icon class="pb-1" :color="getStatusColorAuthorityOrSchool(this.authority.status)" right dark>
                   mdi-circle-medium
                 </v-icon>
-                <span v-if="!editing">{{this.authority.status}}</span>
-                <span v-else class="mt-5">{{this.authority.status}}</span>
+                <span>{{ this.authority.status }}</span>
+              </v-col>
+              <v-col v-else class="d-flex justify-start pt-6">
+                <PrimaryButton id="editAuthorityStatusButton" @click.native="openAuthorityStatusEdit" :secondary="true" >
+                  <v-icon class="ml-n1 pr-3" :color="getStatusColorAuthorityOrSchool(this.authorityCopy.status)" dark>
+                    mdi-circle-medium
+                  </v-icon>
+                  <span>{{ this.authorityCopy.status }}</span>
+                </PrimaryButton>
               </v-col>
               <v-col class="d-flex">
                 <v-icon class="mb-1 mr-1" aria-hidden="false">
@@ -91,7 +98,8 @@
                 </v-row>
                 <v-row>
                   <v-col cols="10" class="pb-1 pr-0">
-                    <span class="ministryLine" style="color: black">{{ formatDate(authority.openedDate) || '-' }}</span>
+                    <span v-if="!editing" class="ministryLine" style="color: black">{{ formatDate(authority.openedDate) || '-' }}</span>
+                    <span v-else class="ministryLine" style="color: black">{{ formatDate(authorityCopy.openedDate) || '-' }}</span>
                   </v-col>
                 </v-row>
               </v-col>
@@ -103,7 +111,8 @@
                 </v-row>
                 <v-row>
                   <v-col cols="10" class="pb-1 pr-0">
-                    <span class="ministryLine" style="color: black">{{ formatDate(authority.closedDate) || '-'}}</span>
+                    <span v-if="!editing" class="ministryLine" style="color: black">{{ formatDate(authority.closedDate) || '-'}}</span>
+                    <span v-else class="ministryLine" style="color: black">{{ formatDate(authorityCopy.closedDate) || '-'}}</span>
                   </v-col>
                 </v-row>
               </v-col>
@@ -501,6 +510,18 @@
         </v-card>
       </v-bottom-sheet>
     </v-container>
+    <v-dialog
+        v-model="openAuthorityStatusEditCard"
+        inset
+        no-click-animation
+        scrollable
+        persistent
+        max-width="30%"
+    >
+      <AuthorityStatus v-if="openAuthorityStatusEditCard"  @updateAuthorityDates="handleUpdatesToAuthorityStatus"
+                    @authorityStatus:closeEditAuthorityStatusPage="openAuthorityStatusEditCard = !openAuthorityStatusEditCard"
+                    :authority-open-date="authorityCopy.openedDate" :authority-close-date="authorityCopy.closedDate" :authority-status="authorityCopy.status" :authority-has-open-schools="authorityHasOpenSchools" :date-of-last-school-closure="closedDateOfLastClosingSchool"></AuthorityStatus>
+    </v-dialog>
   </v-form>
 </template>
 
@@ -517,11 +538,16 @@ import router from '@/router';
 import {deepCloneObject} from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
 import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
+import AuthorityStatus from '@/components/institute/AuthorityStatus.vue';
+import {isEmpty, omitBy} from 'lodash';
 
 export default {
   name: 'AuthorityDetailsPage',
   mixins: [alertMixin],
-  components: {PrimaryButton},
+  components: {
+    AuthorityStatus,
+    PrimaryButton
+  },
   props: {
     authorityID: {
       type: String,
@@ -538,6 +564,9 @@ export default {
       authorityFormValid: false,
       authorityCopy: null,
       loading: false,
+      openAuthorityStatusEditCard: false,
+      authorityHasOpenSchools: false,
+      closedDateOfLastClosingSchool: null,
       rules: Rules,
       authorityTypes: [],
       provinceCodeValues: [],
@@ -571,6 +600,8 @@ export default {
       this.authorityTypes = this.authorityTypeCodes;
     });
     this.getAuthority();
+    this.determineIfAuthorityHasAnyOpenSchools();
+    this.findClosedDateOfLastClosingSchool();
   },
   methods: {
     formatPhoneNumber,
@@ -620,6 +651,49 @@ export default {
         console.error(error);
       }).finally(() => {
         this.setHasSamePhysicalFlag();
+        this.loading = false;
+      });
+    },
+    determineIfAuthorityHasAnyOpenSchools() {
+      this.loading = true;
+      ApiService.apiAxios.get(Routes.institute.SCHOOL_PAGINATED_DATA_URL, {
+        params: {
+          pageNumber: 0,
+          pageSize: 1,
+          searchParams: omitBy({
+            authorityID: this.authorityID,
+            status: 'Open'
+          }, isEmpty),
+        }
+      }).then(response => {
+        this.authorityHasOpenSchools = response.data.content.length > 0;
+      }).catch(error => {
+        console.error(error);
+        this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to determine if the authority has any open schools. Please try again later.');
+      }).finally(() => {
+        this.loading = false;
+      });
+    },
+    findClosedDateOfLastClosingSchool() {
+      this.loading = true;
+      ApiService.apiAxios.get(Routes.institute.SCHOOL_PAGINATED_DATA_URL, {
+        params: {
+          pageNumber: 0,
+          pageSize: 1,
+          sort: {
+            closedDate: 'DESC'
+          },
+          searchParams: omitBy({
+            authorityID: this.authorityID,
+            status: 'Closing'
+          }, isEmpty),
+        }
+      }).then(response => {
+        this.closedDateOfLastClosingSchool = response.data.content[0] ? response.data.content[0].closedDate.substring(0, 10) : null;
+      }).catch(error => {
+        console.error(error);
+        this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to find the closed date of the last closing school. Please try again later.');
+      }).finally(() => {
         this.loading = false;
       });
     },
@@ -759,6 +833,24 @@ export default {
           return physicalAddress[0][item];
         }
       }
+    },
+    openAuthorityStatusEdit(){
+      this.openAuthorityStatusEditCard = true;
+    },
+    async handleUpdatesToAuthorityStatus(updatedDatesForAuthority){
+      await this.$nextTick();
+      if (updatedDatesForAuthority.openedDate) {
+        this.authorityCopy.openedDate = updatedDatesForAuthority.openedDate?.replaceAll('/','-').concat('T00:00:00');
+      } else {
+        this.authorityCopy.openedDate = null;
+      }
+      if (updatedDatesForAuthority.closedDate) {
+        this.authorityCopy.closedDate = updatedDatesForAuthority.closedDate?.replaceAll('/','-').concat('T00:00:00');
+      } else {
+        this.authorityCopy.closedDate = null;
+      }
+      this.authorityCopy.status = getStatusAuthorityOrSchool(this.authorityCopy);
+      this.$refs.authorityForm.validate();
     }
   }
 };
@@ -782,10 +874,6 @@ export default {
   color: white;
   font-size: medium !important;
   font-weight: bolder !important;
-}
-
-.fontBolder{
-  font-weight: bolder;
 }
 
 .fontItalic{
