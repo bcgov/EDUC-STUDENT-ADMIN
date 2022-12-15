@@ -54,6 +54,7 @@
                       v-model="newAuthority.openDate"
                       :active-picker.sync="newAuthorityOpenDatePicker"
                       @change="saveNewAuthorityOpenDate"
+                      :max="new Date(this.localDate.now().toString()).toISOString().substr(0, 10)"
                   ></v-date-picker>
                 </v-menu>
               </v-col>
@@ -253,6 +254,7 @@ export default {
     return {
       isFormValid: false,
       processing: false,
+      localDate: LocalDate,
       newAuthority: {
         authorityName: null,
         authorityTypeCode: null,
