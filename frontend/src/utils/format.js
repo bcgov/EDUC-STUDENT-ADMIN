@@ -91,6 +91,12 @@ export function formatDate(rawDate, from='uuuu-MM-dd\'T\'HH:mm:ss', to='uuuu/MM/
   return formatDateTime(rawDate,from, to);
 }
 
+export function formatDisplayDate(date) {
+  if (!date) return null;
+  const [year, month, day] = date.split('-');
+  return `${year}/${month}/${day}`;
+}
+
 export function formatContactName(contact) {
   return contact.firstName ? `${contact.firstName} ${contact.lastName}` : contact.lastName;
 }

@@ -78,6 +78,36 @@ const endDateRule = (effectiveDate, expiryDate, message = 'End date cannot be be
   return true;
 };
 
+const dateIsPriorOrEqualTo = (inputDate, baseDate, allowNullBaseDate = false, message = 'The input date must be prior or equal to the base date.') => {
+  if (!inputDate) {
+    return 'Please specify an input date.';
+  }
+  if (!baseDate && !allowNullBaseDate) {
+    return 'Please specify a base date.';
+  }
+  if (!baseDate && allowNullBaseDate) {
+    return true;
+  }
+  inputDate = LocalDate.parse(inputDate.substring(0, 10));
+  baseDate = LocalDate.parse(baseDate.substring(0, 10));
+  return inputDate.isBefore(baseDate) || inputDate.isEqual(baseDate) || message;
+};
+
+const dateIsAfterOrEqualTo = (inputDate, baseDate, allowNullBaseDate = false, message = 'The input date must be after or equal to the base date.') => {
+  if (!inputDate) {
+    return 'Please specify an input date.';
+  }
+  if (!baseDate && !allowNullBaseDate) {
+    return 'Please specify a base date.';
+  }
+  if (!baseDate && allowNullBaseDate) {
+    return true;
+  }
+  inputDate = LocalDate.parse(inputDate.substring(0, 10));
+  baseDate = LocalDate.parse(baseDate.substring(0, 10));
+  return inputDate.isAfter(baseDate) || inputDate.isEqual(baseDate) || message;
+};
+
 /**
  * Rule for website url
  * @param {String} message
@@ -90,6 +120,8 @@ const website = (message = 'Website must be valid') => {
 export {
   email,
   endDateRule,
+  dateIsPriorOrEqualTo,
+  dateIsAfterOrEqualTo,
   number,
   phoneNumber,
   postalCode,
