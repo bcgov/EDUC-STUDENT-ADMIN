@@ -38,6 +38,8 @@ export default {
     requestTypeLabel: state => state.requestTypeLabel,
     schoolMap: state => state.schoolMap,
     districtMap: state => state.districtMap,
+    activeSchools: state => state.activeSchools,
+    activeDistricts: state => state.activeDistricts,
   },
   mutations: {
     setRequest: (state, request) => {

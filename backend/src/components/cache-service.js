@@ -56,7 +56,7 @@ const cacheService = {
   getAllSchoolsJSON() {
     return mincodeSchools;
   },
-  getSchoolNameJSONByMincode(mincode) {
+  getSchoolJSONByMincode(mincode) {
     return mincodeSchoolMap.get(mincode);
   },
   getSchoolBySchoolID(schoolID) {

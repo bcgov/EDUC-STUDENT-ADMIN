@@ -21,7 +21,7 @@
                           label="To"
                           class="pt-0"
                           v-model="schoolID"
-                          :items="schools"
+                          :items="validSchoolsForMessaging"
                           :rules="requiredRules"
                           @change="onSchoolSelected"
                         >
@@ -173,6 +173,7 @@ export default {
     return {
       newMessage: '',
       schoolID: '',
+      validSchoolsForMessaging: [],
       subject: '',
       requiredRules: [v => !!v?.trim() || 'Required'],
       isValidForm: false,
@@ -189,18 +190,19 @@ export default {
   },
   computed: {
     ...mapState('auth', ['userInfo']),
-    ...mapState('edx', ['ministryTeams', 'exchangeMincodes', 'secureExchangeDocuments','secureExchangeStudents']),
+    ...mapState('edx', ['ministryTeams', 'validSchoolIDsForMessaging', 'secureExchangeDocuments','secureExchangeStudents']),
     ...mapGetters('app', ['schoolMap']),
     ...mapGetters('edx', ['messageMacros']),
     myTeam() {
       return this.ministryTeams.find(team => this.userInfo.userRoles.some(role => team.groupRoleIdentifier === role)) || {};
     },
-    schools() {
-      return _.sortBy(Array.from(this.schoolMap.entries()).map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolID, mincode: school[1].mincode})), ['mincode']);
-    },
   },
   created() {
-    this.$store.dispatch('edx/getExchangeMincodes');
+    this.$store.dispatch('edx/getValidSchoolIDsForMessaging').then(() => {
+      this.validSchoolsForMessaging = _.sortBy(Array.from(this.schoolMap.entries())
+        .filter(school => this.validSchoolIDsForMessaging.includes(school[0]))
+        .map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolID, mincode: school[1].mincode})), ['mincode']);
+    });
     this.clearSecureExchangeDocuments();
     this.clearSecureExchangeStudents();
     this.getMacros();
