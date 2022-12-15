@@ -6,3 +6,9 @@ export function findUpcomingDate(month, day) {
   defaultUpcomingDate = defaultUpcomingDate.isBefore(currentDate) ? defaultUpcomingDate.plusYears(1) : defaultUpcomingDate;
   return defaultUpcomingDate;
 }
+
+export function parseDate(date) {
+  if (!date) return null;
+  const [year, month, day] = date.split('/');
+  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+}

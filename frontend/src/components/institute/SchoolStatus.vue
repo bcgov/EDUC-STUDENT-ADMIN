@@ -215,7 +215,7 @@ import alertMixin from '@/mixins/alertMixin';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
 import {formatDate} from '@/utils/format';
-import {findUpcomingDate} from '@/utils/dateHelpers';
+import {findUpcomingDate, parseDate} from '@/utils/dateHelpers';
 
 export default {
   name: 'SchoolStatus',
@@ -382,18 +382,9 @@ export default {
     validateForm() {
       this.isFormValid = this.$refs.schoolStatusForm.validate();
     },
-    formatDisplayDate (date) {
-      if (!date) return null;
-      const [year, month, day] = date.split('-');
-      return `${year}/${month}/${day}`;
-    },
-    parseDate(date) {
-      if (!date) return null;
-      const [year, month, day] = date.split('/');
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    },
     isNumber,
-    formatDate
+    formatDate,
+    parseDate
   },
   watch: {
     //watching effective date to valid form because we need to cross validate expiry and effective date fields
