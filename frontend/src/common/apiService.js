@@ -92,7 +92,7 @@ export default {
   getFedProvSchoolCodes: getCodes(`${Routes.SCHOOL_DATA_URL}/fedProvSchoolCodes`),
   getExchangeStatuses: getCodes(`${Routes.edx.STATUSES_URL}`),
   getMinistryTeams: getCodes(`${Routes.edx.USERS_URL}/ministryTeams`),
-  getEdxMincodes: getCodes(`${Routes.edx.USERS_URL}/user-schools/mincodes`),
+  getValidSchoolIDsForMessaging: getCodes(`${Routes.edx.USERS_URL}/user-schools`),
   getEdxRoles: getCodes(`${Routes.edx.USERS_URL}/roles`),
   getFileRequirements: getCodes(Routes.edx.EXCHANGE_FILE_REQUIREMENTS_URL),
   getFacilityTypeCodes: getCodes(Routes.cache.FACILITY_TYPES_URL),

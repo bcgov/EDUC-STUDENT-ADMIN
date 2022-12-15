@@ -1,6 +1,8 @@
 <template>
+  <v-hover v-slot:default="{ hover }">
     <v-btn :id="id"
            :title="title||text"
+           :class="[(hover && !disabled) ? secondary ? 'button-hover white--text':'button-hover':'']"
            color="#003366"
            :outlined="secondary"
            :small="short"
@@ -17,6 +19,7 @@
       <v-icon :class="largeIcon ? '' : 'ml-1 pr-4'" v-if="!iconLeft && icon" :large="largeIcon" right>{{ icon }}</v-icon>
       <slot></slot>
     </v-btn>
+  </v-hover>
 </template>
 
 <script>
