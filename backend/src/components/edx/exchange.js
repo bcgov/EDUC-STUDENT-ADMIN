@@ -218,7 +218,7 @@ async function getExchange(req, res) {
           activity['isSchool'] = student.edxUserID ? true : false;
           activity['studentID'] = student.studentId;
           activity['secureExchangeStudentId'] = student.secureExchangeStudentId;
-          activity['schoolID'] = studentDetail.schoolID;
+          activity['schoolID'] = cacheService.getSchoolJSONByMincode(studentDetail.mincode).schoolID;
           activity['studentPEN'] = studentDetail.pen;
           activity['studentLocalID'] = studentDetail.localID;
           activity['studentSurname'] = studentDetail.legalLastName;
