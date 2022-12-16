@@ -48,7 +48,7 @@ on:
 jobs:
   build-and-deploy-dev:
     name: Build and deploy to DEV
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-18.04
     environment: dev
 
     outputs:
@@ -212,7 +212,7 @@ jobs:
   deploy-test:
     name: Deploy to TEST
     needs: build-and-deploy-dev
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-18.04
     environment: test
 
     outputs:
