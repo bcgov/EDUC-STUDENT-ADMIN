@@ -102,8 +102,6 @@ app.use(require('./routes/health-check').router);
 app.use(passport.initialize());
 app.use(passport.session());
 
-const privateKey = config.get('tokenGenerate:privateKey');
-log.info('Private Key: ' + privateKey);
 //initialize our authentication strategy
 utils.getOidcDiscovery().then(discovery => {
   //OIDC Strategy is used for authorization

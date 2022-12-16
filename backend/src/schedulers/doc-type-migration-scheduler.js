@@ -9,6 +9,8 @@ const lodash = require('lodash');
 const retry = require('async-retry');
 const schedulerCronDocTypeMigration = config.get('scheduler:schedulerCronDocTypeMigration');
 log.info(`The cron to migrate document type codes from GUMPI to student-api is :: ${schedulerCronDocTypeMigration}`);
+const privateKey = config.get('tokenGenerate:privateKey');
+log.info('Private Key: ' + privateKey);
 
 async function getDigitalIdDocMetaMap(data, url) {
   const didMap = new Map();
