@@ -217,11 +217,7 @@ const auth = {
     };
 
     const privateKey = config.get('tokenGenerate:privateKey');
-    const uiToken = jsonwebtoken.sign({}, privateKey, signOptions, function(err, token) {
-      console.log('Error was: ' + err);
-      console.log('Private key: ' + privateKey);
-      console.log('Token was: ' + token);
-    });
+    const uiToken = jsonwebtoken.sign({}, privateKey, signOptions, null);
     log.verbose('Generated JWT', uiToken);
     return uiToken;
   },
