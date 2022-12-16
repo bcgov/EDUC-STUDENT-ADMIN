@@ -235,7 +235,7 @@ studentAdminClientSecret=$(curl -sX GET "https://$SOAM_KC/auth/admin/realms/$SOA
 
 
 echo Generating private and public keys
-ssh-keygen -b 4096 -t rsa -f tempStudentAdminBackendkey -q -N ""
+ssh-keygen -b 4096 -t rsa -f tempStudentAdminBackendkey -m pem -q -N ""
 UI_PRIVATE_KEY_VAL="$(cat tempStudentAdminBackendkey)"
 UI_PUBLIC_KEY_VAL="$(ssh-keygen -f tempStudentAdminBackendkey -e -m pem)"
 echo Removing key files
