@@ -151,6 +151,7 @@ let object = {
     CLAIM_URL: edxRoot + '/exchange/claim',
     CLAIM_ONE_URL: edxRoot + '/exchange/claimOne',
     USERS_URL: edxRoot + '/users',
+    VALID_USERS_FOR_MESSAGING: edxRoot + '/valid-schools-for-messaging',
     EXCHANGE_ACCESS_URL: edxRoot + '/users',
     EXCHANGE_ACCESS_ROLES_URL: edxRoot + '/users/roles',
     EXCHANGE_REMOVE_USER: edxRoot + '/users/remove',
