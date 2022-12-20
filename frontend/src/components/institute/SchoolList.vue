@@ -5,7 +5,7 @@
     <v-row>
       <v-col class="mt-1 d-flex justify-start">
         <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
-        <a class="ml-1" @click="backButtonClick">Return to Dashboard</a>
+        <a class="ml-1 mt-1" @click="backButtonClick">Return to Dashboard</a>
       </v-col>
       <v-col class="d-flex justify-end">
         <PrimaryButton :disabled="!canAddSchool()" id="addSchoolBtn" icon-left width="11em" icon="mdi-plus-thick" text="New School" @click.native="newSchoolSheet = !newSchoolSheet"></PrimaryButton>
@@ -368,12 +368,13 @@ export default {
       ApiService.getAuthorities().then((response) => {
         for(const authority of response.data){
           let authorityItem = {
+            authorityNumber: +authority.authorityNumber,
             authorityCodeName: `${authority.authorityNumber} - ${authority.name}`,
             authorityID: authority.authorityID,
           };
           this.authoritySearchNames.push(authorityItem);
         }
-        this.authoritySearchNames = this.sortByNameValue(this.authoritySearchNames, 'authorityCodeName');
+        this.authoritySearchNames = this.authoritySearchNames.sort(function(a, b){return a.authorityNumber-b.authorityNumber;});
       }).catch(error => {
         console.error(error);
         this.setFailureAlert('An error occurred while getting authorities. Please try again later.');
@@ -383,12 +384,13 @@ export default {
       ApiService.getActiveAuthorities().then((response) => {
         for(const authority of response.data){
           let authorityItem = {
+            authorityNumber: +authority.authorityNumber,
             authorityCodeName: `${authority.authorityNumber} - ${authority.name}`,
             authorityID: authority.authorityID,
           };
           this.activeAuthorities.push(authorityItem);
         }
-        this.activeAuthorities = this.sortByNameValue(this.activeAuthorities, 'authorityCodeName');
+        this.activeAuthorities = this.activeAuthorities.sort(function(a, b){return a.authorityNumber-b.authorityNumber;});
       }).catch(error => {
         console.error(error);
         this.setFailureAlert('An error occurred while getting active authorities. Please try again later.');
