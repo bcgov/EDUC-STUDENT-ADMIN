@@ -192,8 +192,8 @@
 
             <v-row no-gutters class="mt-5">
               <v-col class="mt-1 d-flex justify-start">
-                <v-icon color="#1976d2">{{this.addressButton.icon}}</v-icon>
-                <a class="ml-1 toggle" @click="toggleAddressForm">{{this.addressButton.label}}</a>
+                <v-icon color="#1976d2">{{this.addressButton?.icon}}</v-icon>
+                <a class="ml-1 toggle" @click="toggleAddressForm">{{this.addressButton?.label}}</a>
               </v-col>
             </v-row>
             
