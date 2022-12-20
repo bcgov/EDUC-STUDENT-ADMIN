@@ -40,8 +40,8 @@ function generateSchoolObject(school) {
     mincode: school.mincode,
     schoolName: school.displayName,
     schoolCategoryCode: school.schoolCategoryCode,
-    effectiveDate: school.openedDate,
-    expiryDate: school.closedDate,
+    openedDate: school.openedDate,
+    closedDate: school.closedDate,
   };
 }
 
