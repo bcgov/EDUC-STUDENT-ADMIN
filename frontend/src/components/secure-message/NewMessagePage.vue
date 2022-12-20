@@ -158,6 +158,7 @@ import DocumentUpload from '@/components/common/DocumentUpload';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import AddStudent from '@/components/common/AddStudent';
 import MacroMenu from '../common/MacroMenu';
+import {getStatusAuthorityOrSchool} from '@/utils/institute/status';
 
 export default {
   name: 'NewMessagePage',
@@ -200,7 +201,7 @@ export default {
   created() {
     this.$store.dispatch('edx/getValidSchoolIDsForMessaging').then(() => {
       this.validSchoolsForMessaging = _.sortBy(Array.from(this.schoolMap.entries())
-        .filter(school => this.validSchoolIDsForMessaging.includes(school[0]))
+        .filter(school => this.validSchoolIDsForMessaging.includes(school[0]) && getStatusAuthorityOrSchool(school[1]) === 'Open')
         .map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolID, mincode: school[1].mincode})), ['mincode']);
     });
     this.clearSecureExchangeDocuments();
