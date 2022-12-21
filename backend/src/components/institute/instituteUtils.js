@@ -47,8 +47,8 @@ function generateSchoolObject(school) {
 
 function isSchoolActive(school) {
   const currentTime = LocalDate.now();
-  const openedDate = school?.effectiveDate;
-  const closedDate = school?.expiryDate;
+  const openedDate = school?.openedDate;
+  const closedDate = school?.closedDate;
   return !(!school || !school.schoolName || !openedDate || currentTime.isBefore(LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)) || (closedDate && currentTime.isAfter(LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
 }
 
