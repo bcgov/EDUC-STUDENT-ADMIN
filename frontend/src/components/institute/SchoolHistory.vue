@@ -22,7 +22,7 @@
       <v-col :cols="showRecordDetail ? 6 : 12">
         <v-data-table id="schoolHistoryTable"
           :headers="getHeaders()"
-          :items="schoolHistory?.content"
+          :items="schoolHistory.content"
           :items-per-page="schoolHistory.pageable.pageSize"
           :page.sync="pageNumber"
           :loading="loading"
