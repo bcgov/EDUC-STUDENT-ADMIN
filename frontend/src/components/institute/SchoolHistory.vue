@@ -2,7 +2,7 @@
   <div id="auditHistory" class="px-0 pt-3 ma-0" style="width: 100%;">
     <v-row class="d-flex justify-start">
       <v-col cols="6" class="d-flex justify-start">
-        <h2 class="subjectHeading">{{ selectedSchool?.mincode }} - {{ selectedSchool?.displayName }}</h2>
+        <h2 class="subjectHeading">{{ selectedSchool.mincode }} - {{ selectedSchool.displayName }}</h2>
       </v-col>
     </v-row>
     <v-row>
