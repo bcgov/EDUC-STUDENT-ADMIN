@@ -906,7 +906,11 @@ export default {
       router.push({name: 'instituteSchoolList'});
     },
     openHistory() {
-      this.setSelectedSchool(this.school);
+      let schoolMetaData = {
+        displayName: this.school.displayName,
+        mincode: this.school.mincode
+      };
+      this.setSelectedSchool(schoolMetaData);
       router.push({path: `/school/${this.schoolID}/history`});
     },
     async toggleEdit(){

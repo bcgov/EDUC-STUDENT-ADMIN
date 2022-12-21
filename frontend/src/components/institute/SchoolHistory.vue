@@ -2,7 +2,7 @@
   <div id="auditHistory" class="px-0 pt-3 ma-0" style="width: 100%;">
     <v-row class="d-flex justify-start">
       <v-col cols="6" class="d-flex justify-start">
-        <h2 class="subjectHeading">{{ selectedSchool.mincode }} - {{ selectedSchool.displayName }}</h2>
+        <h2 class="subjectHeading">{{ schoolMetaData.mincode }} - {{ schoolMetaData.displayName }}</h2>
       </v-col>
     </v-row>
     <v-row>
@@ -72,9 +72,10 @@ import ApiService from '../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import router from '@/router';
 import {formatDob} from '@/utils/format';
-import {mapState, mapMutations} from 'vuex';
+import {mapState, mapMutations, mapGetters} from 'vuex';
 import {getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import SchoolHistoryDetailPanel from './SchoolHistoryDetailPanel.vue';
+import {omitBy, isEmpty} from 'lodash';
 export default {
   name: 'SchoolHistory',
   mixins: [alertMixin],
@@ -104,9 +105,13 @@ export default {
       selectedSchoolHistory:[],
       allDistricts:[],
       allAuthority:[],
+      schoolMetaData: {},
       schoolOrganizationTypes: [],
       schoolNeighborhoodLearningTypes: [],
       selectedSchoolHistoryId:null,
+      searchParams: {
+        schoolID: '',
+      },
       headers: [
         {text: 'Date', sortable: false, value: 'updateDate', format: this.formatDate, tooltip: 'Activity Date'},
         {text: 'Changed by', sortable: false, value: 'updateUser', tooltip: 'Changed By'},
@@ -135,7 +140,7 @@ export default {
     ...mapState('institute', ['gradeCodes']),
     ...mapState('institute', ['schoolNeighborhoodLearningCodes']),
     ...mapState('institute', ['schoolOrganizationTypeCodes']),
-    ...mapState('institute', ['selectedSchool']),
+    ...mapGetters('institute', ['selectedSchool']),
     showingFirstNumber() {
       return ((this.pageNumber - 1) * (this.schoolHistory.pageable.pageSize || 0) + ((this.schoolHistory.numberOfElements || 0) > 0 ? 1 : 0));
     },
@@ -146,6 +151,7 @@ export default {
   mounted() {
     this.getSchoolHistory();
     this.showRecordDetail = false;
+    this.schoolMetaData = JSON.parse(this.selectedSchool);
   },
   watch: {
     pageNumber: {
@@ -213,13 +219,15 @@ export default {
     },
     getSchoolHistory() {
       this.loading = true;
+      this.searchParams.schoolID = this.schoolID;
       const currentPageParams = {
         params: {
           pageSize: 15,
           pageNumber: this.pageNumber - 1,
           sort: {
             createDate: 'DESC'
-          }
+          },
+          searchParams: omitBy(this.searchParams, isEmpty),
         }
       };
 
@@ -229,7 +237,8 @@ export default {
           pageNumber: this.pageNumber * currentPageParams.params.pageSize,
           sort: {
             createDate: 'DESC'
-          }
+          },
+          searchParams: omitBy(this.searchParams, isEmpty),
         }
       };
 
@@ -244,23 +253,24 @@ export default {
         })
         .finally(() => this.loading = false);
     },
+    checkForDifferences(preHistory, history, key) {
+      if(key === 'mailingAddress') {
+        return history['mailingAddress_diff'] = !this.compareAddress(preHistory.mailingAddress, history.mailingAddress);
+      } else if(key === 'physicalAddress') {
+        return history['physicalAddress_diff'] = !this.compareAddress(preHistory.physicalAddress, history.physicalAddress);
+      } else if (history[key] !== preHistory[key] && !['createDate', 'createUser', 'addresses'].includes(key)) {
+        return history[`${key}_diff`] = true;
+      } else {
+        return history[`${key}_diff`] = false;
+      }
+    },
     markDifferences(currentPageContent, nextPageContent) {
       const historyContent = [...currentPageContent, ...nextPageContent];
       historyContent.forEach((history, index) => {
         if (index < historyContent.length - 1) {
           const preHistory = historyContent[index + 1];
           Object.keys(history).forEach(key => {
-            if (['mailingAddress', 'physicalAddress'].includes(key)) {
-              if(!this.compareAddress(preHistory.mailingAddress, history.mailingAddress)) {
-                history['mailingAddress_diff'] = true;
-              }
-              if(!this.compareAddress(preHistory.physicalAddress, history.physicalAddress)) {
-                history['physicalAddress_diff'] = true;
-              }
-            }
-            if (history[key] !== preHistory[key] && !['createDate', 'createUser', 'addresses', 'mailingAddress', 'physicalAddress'].includes(key)) {
-              history[`${key}_diff`] = true;
-            }
+            return this.checkForDifferences(preHistory, history, key);
           });
         }
       });

@@ -20,7 +20,7 @@ export default {
     activeGradeCodes: null,
     activeProvinceCodes: null,
     activeCountryCodes: null,
-    selectedSchool: null
+    selectedSchool: localStorage.getItem('selectedSchool')
   },
   getters: {
     facilityTypeCodes: state => state.facilityTypeCodes,
@@ -96,8 +96,8 @@ export default {
     },
     setSelectedSchool: (state, selectedSchool) => {
       if(selectedSchool) {
-        state.selectedSchool = selectedSchool;
-        localStorage.setItem('selectedSchool', selectedSchool);
+        state.selectedSchool = JSON.stringify(selectedSchool);
+        localStorage.setItem('selectedSchool', JSON.stringify(selectedSchool));
       } else {
         state.selectedSchool = null;
         localStorage.removeItem('selectedSchool');

@@ -3,24 +3,24 @@
         <v-col>
             <v-row no-gutters>
                 <v-col>
-                    <span style="word-break: break-all;">{{ address.addressLine1 }}</span>
+                    <span class="format-text">{{ address.addressLine1 }}</span>
                 </v-col>
             </v-row>
             <v-row no-gutters>
                 <v-col>
-                    <span style="word-break: break-all;">{{ address.addressLine2 }}</span>
+                    <span class="format-text">{{ address.addressLine2 }}</span>
                 </v-col>
             </v-row>
             <v-row no-gutters>
                 <v-col>
-                    <span style="word-break: break-all;">{{ address.city + ', ' + address.provinceCode + ', ' +
+                    <span class="format-text">{{ address.city + ', ' + address.provinceCode + ', ' +
                             address.countryCode
                     }}</span>
                 </v-col>
             </v-row>
             <v-row no-gutters>
                 <v-col>
-                    <span style="word-break: break-all;">{{ address.postal }}</span>
+                    <span class="format-text">{{ address.postal }}</span>
                 </v-col>
             </v-row>
         </v-col>
@@ -40,4 +40,7 @@ export default {
 </script>
   
 <style scoped>
+.format-text {
+    word-break: break-all;
+}
 </style>
