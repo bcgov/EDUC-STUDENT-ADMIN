@@ -98,6 +98,7 @@ let object = {
     SCHOOL_NOTE_URL: instituteRoot + '/school/note',
     SCHOOL_CONTACT_URL: instituteRoot + '/school/contact',
     SCHOOL_PAGINATED_DATA_URL: instituteRoot + '/schoolsPaginated',
+    SCHOOL_HISTORY_PAGINATED_DATA_URL: instituteRoot + '/schoolHistoryPaginated',
     DISTRICT_DATA_URL: instituteRoot + '/district',
     DISTRICT_CONTACT_URL: instituteRoot + '/district/contact',
     DISTRICT_CONTACT_TYPE_CODES: instituteRoot + '/districtContactTypeCodes',
@@ -444,7 +445,8 @@ export const PAGE_TITLES = Object.freeze(
     AUTHORITY_DETAILS: 'Authority Details',
     DISTRICT_DETAILS:'District Details',
     AUTHORITY_CONTACTS: 'Authority Contacts',
-    SCHOOL_CONTACTS: 'School Contacts'
+    SCHOOL_CONTACTS: 'School Contacts',
+    SCHOOL_HISTORY: 'School History',
   }
 );
 

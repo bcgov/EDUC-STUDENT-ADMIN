@@ -32,6 +32,9 @@
               <PrimaryButton id="viewSchoolContactsButton" class="mr-2" secondary icon-left
                              icon="mdi-account-multiple-outline" :to="`/schoolContacts/${schoolID}`"
                              text="View School Contacts"></PrimaryButton>
+              <PrimaryButton id="viewHistoryButton" class="mr-2" secondary icon-left
+                             icon="mdi-history" @click.native="openHistory"
+                             text="Show History"></PrimaryButton>
               <PrimaryButton id="schoolDetailsEditButton" icon-left width="6em" icon="mdi-pencil" text="Edit"
                              :disabled="!canEditSchoolDetails()" @click.native="toggleEdit"></PrimaryButton>
             </v-col>
@@ -629,7 +632,7 @@
 <script>
 
 import PrimaryButton from '../util/PrimaryButton';
-import {mapGetters, mapState} from 'vuex';
+import {mapGetters, mapState, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
@@ -749,6 +752,7 @@ export default {
     this.getThisSchoolsDetails();
   },
   methods: {
+    ...mapMutations('institute', ['setSelectedSchool']),
     isOffshoreSchoolSelected(){
       return this.schoolDetailsCopy?.schoolCategoryCode === 'OFFSHORE';
     },
@@ -900,6 +904,10 @@ export default {
     isNumber,
     backButtonClick() {
       router.push({name: 'instituteSchoolList'});
+    },
+    openHistory() {
+      this.setSelectedSchool(this.school);
+      router.push({path: `/school/${this.schoolID}/history`});
     },
     async toggleEdit(){
       this.schoolDetailsCopy = this.deepCloneObject(this.school);

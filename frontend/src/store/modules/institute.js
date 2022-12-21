@@ -20,6 +20,7 @@ export default {
     activeGradeCodes: null,
     activeProvinceCodes: null,
     activeCountryCodes: null,
+    selectedSchool: null
   },
   getters: {
     facilityTypeCodes: state => state.facilityTypeCodes,
@@ -39,7 +40,7 @@ export default {
     activeGradeCodes: state => state.activeGradeCodes,
     activeProvinceCodes: state => state.activeProvinceCodes,
     activeCountryCodes: state => state.activeCountryCodes,
-
+    selectedSchool: state => state.selectedSchool
   },
   mutations: {
     setFacilityTypeCodes: (state, facilityTypeCodes) => {
@@ -93,7 +94,15 @@ export default {
     setActiveCountryCodes: (state, activeCountryCodes) => {
       state.activeCountryCodes = activeCountryCodes;
     },
-
+    setSelectedSchool: (state, selectedSchool) => {
+      if(selectedSchool) {
+        state.selectedSchool = selectedSchool;
+        localStorage.setItem('selectedSchool', selectedSchool);
+      } else {
+        state.selectedSchool = null;
+        localStorage.removeItem('selectedSchool');
+      }  
+    },
   },
   actions: {
     async getAllFacilityTypeCodes({commit}) {
