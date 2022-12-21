@@ -255,13 +255,17 @@ export default {
     },
     checkForDifferences(preHistory, history, key) {
       if(key === 'mailingAddress') {
-        return history['mailingAddress_diff'] = !this.compareAddress(preHistory.mailingAddress, history.mailingAddress);
+        history['mailingAddress_diff'] = !this.compareAddress(preHistory.mailingAddress, history.mailingAddress);
+        return history;
       } else if(key === 'physicalAddress') {
-        return history['physicalAddress_diff'] = !this.compareAddress(preHistory.physicalAddress, history.physicalAddress);
+        history['physicalAddress_diff'] = !this.compareAddress(preHistory.physicalAddress, history.physicalAddress);
+        return history;
       } else if (history[key] !== preHistory[key] && !['createDate', 'createUser', 'addresses'].includes(key)) {
-        return history[`${key}_diff`] = true;
+        history[`${key}_diff`] = true;
+        return history;
       } else {
-        return history[`${key}_diff`] = false;
+        history[`${key}_diff`] = false;
+        return history;
       }
     },
     markDifferences(currentPageContent, nextPageContent) {
