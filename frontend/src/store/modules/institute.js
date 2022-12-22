@@ -19,8 +19,7 @@ export default {
     activeAuthorityTypeCodes: null,
     activeGradeCodes: null,
     activeProvinceCodes: null,
-    activeCountryCodes: null,
-    selectedSchool: localStorage.getItem('selectedSchool')
+    activeCountryCodes: null
   },
   getters: {
     facilityTypeCodes: state => state.facilityTypeCodes,
@@ -39,8 +38,7 @@ export default {
     activeAuthorityTypeCodes: state => state.activeAuthorityTypeCodes,
     activeGradeCodes: state => state.activeGradeCodes,
     activeProvinceCodes: state => state.activeProvinceCodes,
-    activeCountryCodes: state => state.activeCountryCodes,
-    selectedSchool: state => state.selectedSchool
+    activeCountryCodes: state => state.activeCountryCodes
   },
   mutations: {
     setFacilityTypeCodes: (state, facilityTypeCodes) => {
@@ -93,16 +91,7 @@ export default {
     },
     setActiveCountryCodes: (state, activeCountryCodes) => {
       state.activeCountryCodes = activeCountryCodes;
-    },
-    setSelectedSchool: (state, selectedSchool) => {
-      if(selectedSchool) {
-        state.selectedSchool = JSON.stringify(selectedSchool);
-        localStorage.setItem('selectedSchool', JSON.stringify(selectedSchool));
-      } else {
-        state.selectedSchool = null;
-        localStorage.removeItem('selectedSchool');
-      }  
-    },
+    }
   },
   actions: {
     async getAllFacilityTypeCodes({commit}) {

@@ -632,7 +632,7 @@
 <script>
 
 import PrimaryButton from '../util/PrimaryButton';
-import {mapGetters, mapState, mapMutations} from 'vuex';
+import {mapGetters, mapState} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
@@ -752,7 +752,6 @@ export default {
     this.getThisSchoolsDetails();
   },
   methods: {
-    ...mapMutations('institute', ['setSelectedSchool']),
     isOffshoreSchoolSelected(){
       return this.schoolDetailsCopy?.schoolCategoryCode === 'OFFSHORE';
     },
@@ -906,11 +905,6 @@ export default {
       router.push({name: 'instituteSchoolList'});
     },
     openHistory() {
-      let schoolMetaData = {
-        displayName: this.school.displayName,
-        mincode: this.school.mincode
-      };
-      this.setSelectedSchool(schoolMetaData);
       router.push({path: `/school/${this.schoolID}/history`});
     },
     async toggleEdit(){

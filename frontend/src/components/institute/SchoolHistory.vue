@@ -2,7 +2,7 @@
   <div id="auditHistory" class="px-0 pt-3 ma-0" style="width: 100%;">
     <v-row class="d-flex justify-start">
       <v-col cols="6" class="d-flex justify-start">
-        <h2 class="subjectHeading">{{ schoolMetaData.mincode }} - {{ schoolMetaData.displayName }}</h2>
+        <h2 class="subjectHeading">{{ getPageHeading() }}</h2>
       </v-col>
     </v-row>
     <v-row>
@@ -72,7 +72,7 @@ import ApiService from '../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import router from '@/router';
 import {formatDob} from '@/utils/format';
-import {mapState, mapMutations, mapGetters} from 'vuex';
+import {mapState} from 'vuex';
 import {getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import SchoolHistoryDetailPanel from './SchoolHistoryDetailPanel.vue';
 export default {
@@ -139,7 +139,7 @@ export default {
     ...mapState('institute', ['gradeCodes']),
     ...mapState('institute', ['schoolNeighborhoodLearningCodes']),
     ...mapState('institute', ['schoolOrganizationTypeCodes']),
-    ...mapGetters('institute', ['selectedSchool']),
+    ...mapState('app', ['schoolMap']),
     showingFirstNumber() {
       return ((this.pageNumber - 1) * (this.schoolHistory.pageable.pageSize || 0) + ((this.schoolHistory.numberOfElements || 0) > 0 ? 1 : 0));
     },
@@ -147,10 +147,12 @@ export default {
       return ((this.pageNumber - 1) * (this.schoolHistory.pageable.pageSize || 0) + (this.schoolHistory.numberOfElements || 0));
     },
   },
+  async beforeMount() {
+    await this.$store.dispatch('app/getCodes');
+  },
   mounted() {
     this.getSchoolHistory();
     this.showRecordDetail = false;
-    this.schoolMetaData = JSON.parse(this.selectedSchool);
   },
   watch: {
     pageNumber: {
@@ -162,24 +164,19 @@ export default {
   created() {
     this.getDistricts();
     this.getAuthority();
-    this.$store.dispatch('institute/getAllFacilityTypeCodes').then(() => {
-      this.schoolFacilityTypes = this.facilityTypeCodes;
-    });
-    this.$store.dispatch('institute/getAllSchoolCategoryTypeCodes').then(() => {
-      this.schoolCategoryTypes = this.schoolCategoryTypeCodes;
-    });
-    this.$store.dispatch('institute/getAllGradeCodes').then(() => {
-      this.schoolGradeTypes = this.gradeCodes;
-    });
-    this.$store.dispatch('institute/getAllSchoolNeighborhoodLearningCodes').then(() => {
-      this.schoolNeighborhoodLearningTypes = this.schoolNeighborhoodLearningCodes;
-    });
-    this.$store.dispatch('institute/getAllSchoolOrganizationTypeCodes').then(() => {
-      this.schoolOrganizationTypes = this.schoolOrganizationTypeCodes;
-    });
+    this.$store.dispatch('institute/getAllFacilityTypeCodes');
+    this.$store.dispatch('institute/getAllSchoolCategoryTypeCodes');
+    this.$store.dispatch('institute/getAllGradeCodes');
+    this.$store.dispatch('institute/getAllSchoolNeighborhoodLearningCodes');
+    this.$store.dispatch('institute/getAllSchoolOrganizationTypeCodes');
   },
   methods: {
-    ...mapMutations('institute', ['setSelectedSchool']),
+    getPageHeading() {
+      let school = this.schoolMap?.get(this.schoolID);
+      if(school) {
+        return school?.mincode + ' - ' + school?.schoolName;
+      }
+    },
     formatTableColumn(format, column) {
       return (format && column) ? format(column) : (column || ' ');
     },
@@ -279,7 +276,6 @@ export default {
       });
     },
     back() {
-      this.setSelectedSchool(null);
       router.push(`/institute/school/${this.schoolID}/details`);
     },
     formatDate(datetime) {
