@@ -75,7 +75,6 @@ import {formatDob} from '@/utils/format';
 import {mapState, mapMutations, mapGetters} from 'vuex';
 import {getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import SchoolHistoryDetailPanel from './SchoolHistoryDetailPanel.vue';
-import {omitBy, isEmpty} from 'lodash';
 export default {
   name: 'SchoolHistory',
   mixins: [alertMixin],
@@ -227,7 +226,7 @@ export default {
           sort: {
             createDate: 'DESC'
           },
-          searchParams: omitBy(this.searchParams, isEmpty),
+          searchParams: this.searchParams,
         }
       };
 
@@ -238,7 +237,7 @@ export default {
           sort: {
             createDate: 'DESC'
           },
-          searchParams: omitBy(this.searchParams, isEmpty),
+          searchParams: this.searchParams,
         }
       };
 
