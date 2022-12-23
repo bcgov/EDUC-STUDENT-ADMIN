@@ -113,6 +113,7 @@
                       <v-date-picker
                           v-model="newCloseDate"
                           :min="dateOfLastSchoolClosure"
+                          :show-current="dateOfLastSchoolClosure"
                           @change="saveNewCloseDate"
                       ></v-date-picker>
                     </v-menu>
@@ -214,13 +215,14 @@ export default {
     this.validateForm();
   },
   data() {
+    let currentLocalDate = LocalDate.now().toString();
     return {
-      currentDate: LocalDate.now().toString(),
+      currentDate: currentLocalDate,
       isFormValid: false,
       processing: false,
       rules: Rules,
       action: this.defaultUpdateActionForAuthority(),
-      newOpenDate: this.currentDate,
+      newOpenDate: currentLocalDate,
       newCloseDate: null,
       updatedCloseDate: this.parseDate(formatDate(this.authorityCloseDate))
     };
