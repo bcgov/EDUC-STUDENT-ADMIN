@@ -32,6 +32,9 @@
               <PrimaryButton id="viewSchoolContactsButton" class="mr-2" secondary icon-left
                              icon="mdi-account-multiple-outline" :to="`/schoolContacts/${schoolID}`"
                              text="View School Contacts"></PrimaryButton>
+              <PrimaryButton id="viewHistoryButton" class="mr-2" secondary icon-left
+                             icon="mdi-history" @click.native="openHistory"
+                             text="Show History"></PrimaryButton>
               <PrimaryButton id="schoolDetailsEditButton" icon-left width="6em" icon="mdi-pencil" text="Edit"
                              :disabled="!canEditSchoolDetails()" @click.native="toggleEdit"></PrimaryButton>
             </v-col>
@@ -900,6 +903,9 @@ export default {
     isNumber,
     backButtonClick() {
       router.push({name: 'instituteSchoolList'});
+    },
+    openHistory() {
+      router.push({name: 'schoolHistory', params: {schoolID: this.schoolID}});
     },
     async toggleEdit(){
       this.schoolDetailsCopy = this.deepCloneObject(this.school);

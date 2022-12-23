@@ -645,6 +645,36 @@ async function getSchoolsPaginated(req, res){
   }
 }
 
+async function getSchoolHistoryPaginated(req, res) {
+  try {
+    const accessToken = getBackendToken(req);
+    validateAccessToken(accessToken, res);
+
+    let parsedParams = '';
+    if (req.query.searchParams) {
+      parsedParams = JSON.parse(req.query.searchParams);
+    }
+
+    const historySearchCriteria = [{
+      condition: null,
+      searchCriteriaList: createSchoolSearchCriteria(parsedParams),
+    }];
+    const schoolHistorySearchParam = {
+      params: {
+        pageNumber: req.query.pageNumber,
+        pageSize: req.query.pageSize,
+        sort: req.query.sort,
+        searchCriteriaList: JSON.stringify(historySearchCriteria)
+      }
+    };
+    let response = await getData(accessToken, config.get('server:institute:rootURL') + '/school/history/paginated', schoolHistorySearchParam);
+    return res.status(HttpStatus.OK).json(response);
+  } catch (e) {
+    logApiError(e, 'getSchoolsPaginated', 'Error occurred while attempting to GET schools paginated.');
+    return errorResponse(res);
+  }
+}
+
 function createSchoolSearchCriteria(searchParams){
 
   let searchCriteriaList = [];
@@ -848,5 +878,6 @@ module.exports = {
   updateDistrict,
   addAuthority,
   addNewDistrictNote,
-  addDistrictContact
+  addDistrictContact,
+  getSchoolHistoryPaginated
 };

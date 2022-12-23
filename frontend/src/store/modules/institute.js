@@ -19,7 +19,7 @@ export default {
     activeAuthorityTypeCodes: null,
     activeGradeCodes: null,
     activeProvinceCodes: null,
-    activeCountryCodes: null,
+    activeCountryCodes: null
   },
   getters: {
     facilityTypeCodes: state => state.facilityTypeCodes,
@@ -38,8 +38,7 @@ export default {
     activeAuthorityTypeCodes: state => state.activeAuthorityTypeCodes,
     activeGradeCodes: state => state.activeGradeCodes,
     activeProvinceCodes: state => state.activeProvinceCodes,
-    activeCountryCodes: state => state.activeCountryCodes,
-
+    activeCountryCodes: state => state.activeCountryCodes
   },
   mutations: {
     setFacilityTypeCodes: (state, facilityTypeCodes) => {
@@ -92,8 +91,7 @@ export default {
     },
     setActiveCountryCodes: (state, activeCountryCodes) => {
       state.activeCountryCodes = activeCountryCodes;
-    },
-
+    }
   },
   actions: {
     async getAllFacilityTypeCodes({commit}) {
