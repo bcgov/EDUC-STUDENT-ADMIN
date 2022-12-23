@@ -102,9 +102,7 @@ export default {
       pageSize: 15,
       nextSchoolHistory: [],
       selectedSchoolHistory:[],
-      allDistricts:[],
       allAuthority:[],
-      schoolMetaData: {},
       schoolOrganizationTypes: [],
       schoolNeighborhoodLearningTypes: [],
       selectedSchoolHistoryId:null,
@@ -139,7 +137,7 @@ export default {
     ...mapState('institute', ['gradeCodes']),
     ...mapState('institute', ['schoolNeighborhoodLearningCodes']),
     ...mapState('institute', ['schoolOrganizationTypeCodes']),
-    ...mapState('app', ['schoolMap']),
+    ...mapState('app', ['schoolMap', 'districtMap']),
     showingFirstNumber() {
       return ((this.pageNumber - 1) * (this.schoolHistory.pageable.pageSize || 0) + ((this.schoolHistory.numberOfElements || 0) > 0 ? 1 : 0));
     },
@@ -162,7 +160,6 @@ export default {
     },
   },
   created() {
-    this.getDistricts();
     this.getAuthority();
     this.$store.dispatch('institute/getAllFacilityTypeCodes');
     this.$store.dispatch('institute/getAllSchoolCategoryTypeCodes');
@@ -301,7 +298,7 @@ export default {
       history.gradeValue = this.mapGradesOffered(history.schoolGrades);
       history.status = getStatusAuthorityOrSchool(history);
       history.updateDateTrunc = history.updateDate.length > 10 ? history.updateDate.substr(0, 10) : history.updateDate;
-      history.districtNumber = this.allDistricts.find(district => district?.districtId === history.districtId)?.districtNumber;
+      history.districtNumber = this.districtMap?.get(history.districtId)?.districtNumber;
       history.authorityNumber = this.allAuthority.find(authority => authority?.authorityID === history.independentAuthorityId)?.authorityNumber;
       history.mailingAddress = history.addresses?.find(address => address.addressTypeCode === 'MAILING');
       history.physicalAddress = history.addresses?.find(address => address.addressTypeCode === 'PHYSICAL') ?? history.addresses?.find(address => address.addressTypeCode === 'MAILING');
@@ -354,17 +351,6 @@ export default {
       onlyNumbers = onlyNumbers.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
       gradeList = onlyNumbers.concat(onlyLetters);
       return gradeList.toString().replace(/,/g, ', ');
-    },
-    getDistricts(){
-      ApiService.apiAxios.get(`${Routes.cache.DISTRICT_DATA_URL}`)
-        .then(response => {
-          this.allDistricts = response?.data;
-        }).catch(error => {
-          console.error(error);
-          this.setFailureAlert(error.response?.data?.message || error.message);
-        }).finally(() => {
-          this.loading = false;
-        });
     },
     getAuthority(){
       ApiService.apiAxios.get(`${Routes.cache.AUTHORITY_DATA_URL}`)
