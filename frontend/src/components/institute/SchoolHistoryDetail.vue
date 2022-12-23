@@ -188,9 +188,6 @@ export default {
   components: {
     FormattedAddress
   },
-  mounted() {
-    console.log(this.schoolHistory);
-  },
   methods: {
     isValueEmpty(fieldValue, fieldValueDiff) {
       return fieldValueDiff && isEmpty(fieldValue);
