@@ -479,7 +479,7 @@ const router = new VueRouter({
           },
         },
         {
-          path: '/school/:schoolID/history',
+          path: 'school/:schoolID/history',
           name: 'schoolHistory',
           props: true,
           component: SchoolHistory,

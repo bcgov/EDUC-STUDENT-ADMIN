@@ -113,7 +113,7 @@ export default {
       },
       headers: [
         {text: 'Date', sortable: false, value: 'updateDate', format: this.formatDate, tooltip: 'Activity Date'},
-        {text: 'Changed by', sortable: false, value: 'updateUser', tooltip: 'Changed By'},
+        {text: 'Changed by', sortable: false, value: 'updateDateTrunc', tooltip: 'Changed By'},
         {text: 'Status', sortable: false, value: 'status', tooltip: 'Status'},
         {text: 'District Number', sortable: false, value: 'districtNumber', tooltip: 'District Code'},
         {text: 'Authority Number', sortable: false, value: 'authorityNumber', tooltip: 'Authority Code'},
@@ -126,7 +126,7 @@ export default {
       ],
       shortHeaders: [
         {text: 'Date', sortable: false, value: 'updateDate', format: this.formatDate, tooltip: 'Activity Date'},
-        {text: 'Changed by', sortable: false, value: 'updateUser', tooltip: 'Changed By'},
+        {text: 'Changed by', sortable: false, value: 'updateDateTrunc', tooltip: 'Changed By'},
         {text: 'Status', sortable: false, value: 'status', tooltip: 'Status'},
         {text: 'Name', sortable: false, value: 'displayName', tooltip: 'Name'},
         {text: 'Contact Information', sortable: false, value: 'contactUpdatedFlag', tooltip: 'Contact Information'}
@@ -300,7 +300,7 @@ export default {
       history.schoolCategoryValue = this.mapSchoolCategoryCode(history.schoolCategoryCode);
       history.gradeValue = this.mapGradesOffered(history.schoolGrades);
       history.status = getStatusAuthorityOrSchool(history);
-      history.updateDate = history.updateDate.length > 10 ? history.updateDate.substr(0, 10) : history.updateDate;
+      history.updateDateTrunc = history.updateDate.length > 10 ? history.updateDate.substr(0, 10) : history.updateDate;
       history.districtNumber = this.allDistricts.find(district => district?.districtId === history.districtId)?.districtNumber;
       history.authorityNumber = this.allAuthority.find(authority => authority?.authorityID === history.independentAuthorityId)?.authorityNumber;
       history.mailingAddress = history.addresses?.find(address => address.addressTypeCode === 'MAILING');

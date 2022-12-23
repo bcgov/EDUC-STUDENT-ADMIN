@@ -905,7 +905,7 @@ export default {
       router.push({name: 'instituteSchoolList'});
     },
     openHistory() {
-      router.push({path: `/school/${this.schoolID}/history`});
+      router.push({name: 'schoolHistory', params: {schoolID: this.schoolID}});
     },
     async toggleEdit(){
       this.schoolDetailsCopy = this.deepCloneObject(this.school);
