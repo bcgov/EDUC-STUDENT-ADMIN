@@ -273,7 +273,7 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo', 'SCHOOL_ADMIN_ROLE', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
     ...mapState('app', ['schoolsMap']),
-    ...mapState('institute', ['facilityTypeCodes']),
+    ...mapState('institute', ['activeFacilityTypeCodes']),
     ...mapState('institute', ['activeSchoolCategoryTypeCodes']),
     getSheetWidth(){
       switch (this.$vuetify.breakpoint.name) {
@@ -287,8 +287,8 @@ export default {
   },
   created() {
     this.$store.dispatch('edx/getMinistryTeams');
-    this.$store.dispatch('institute/getAllFacilityTypeCodes').then(() => {
-      this.schoolFacilityTypes = this.facilityTypeCodes;
+    this.$store.dispatch('institute/getAllActiveFacilityTypeCodes').then(() => {
+      this.schoolFacilityTypes = this.activeFacilityTypeCodes;
     });
     this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes').then(() => {
       this.schoolCategoryTypes = this.activeSchoolCategoryTypeCodes;
