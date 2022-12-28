@@ -275,8 +275,7 @@ export default {
     ...mapGetters('auth', ['userInfo', 'SCHOOL_ADMIN_ROLE', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
     ...mapState('app', ['schoolsMap']),
     ...mapState('institute', ['facilityTypeCodes']),
-    ...mapState('institute', ['schoolCategoryTypeCodes']),
-
+    ...mapState('institute', ['activeSchoolCategoryTypeCodes']),
     getSheetWidth(){
       switch (this.$vuetify.breakpoint.name) {
       case 'xs':
@@ -292,8 +291,8 @@ export default {
     this.$store.dispatch('institute/getAllFacilityTypeCodes').then(() => {
       this.schoolFacilityTypes = this.facilityTypeCodes;
     });
-    this.$store.dispatch('institute/getAllSchoolCategoryTypeCodes').then(() => {
-      this.schoolCategoryTypes = this.schoolCategoryTypeCodes;
+    this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes').then(() => {
+      this.schoolCategoryTypes = this.activeSchoolCategoryTypeCodes;
     });
 
     this.setSchoolStatuses();
@@ -461,7 +460,7 @@ export default {
       return this.schoolFacilityTypes.find((facility) => facility.facilityTypeCode === school.facilityTypeCode).label;
     },
     getSchoolCategory(school){
-      return this.schoolCategoryTypeCodes.find((category) => category.schoolCategoryCode === school.schoolCategoryCode).label;
+      return this.activeSchoolCategoryTypeCodes.find((category) => category.schoolCategoryCode === school.schoolCategoryCode).label;
     },
     formatPhoneNumber,
     sortByNameValue,
