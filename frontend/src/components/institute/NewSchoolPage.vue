@@ -492,12 +492,15 @@ export default {
     async schoolCategoryChanged(){
       if(this.newSchool.categoryCode && this.requiredAuthoritySchoolCategories.includes(this.newSchool.categoryCode)){
         this.authorityDisabled = false;
-      } else if(this.newSchool.categoryCode && this.noGradeSchoolCategory.includes(this.newSchool.categoryCode)) {
-        this.isGradeOfferedDisabled = true;
       } else{
         this.authorityDisabled = true;
-        this.isGradeOfferedDisabled = false;
         this.newSchool.authorityName = null;
+      }
+      if(this.newSchool.categoryCode && this.noGradeSchoolCategory.includes(this.newSchool.categoryCode)) {
+        this.isGradeOfferedDisabled = true;
+      } else{
+        this.isGradeOfferedDisabled = false;
+        this.newSchool.gradesOffered = null;
       }
       await this.fireFormValidate();
     },
