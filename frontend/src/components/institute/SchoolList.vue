@@ -310,6 +310,7 @@ export default {
     },
     newSchoolAdded() {
       this.newSchoolSheet = !this.newSchoolSheet;
+      this.getSchoolDropDownItems();
       this.getSchoolList();
     },
     setSchoolStatuses() {
