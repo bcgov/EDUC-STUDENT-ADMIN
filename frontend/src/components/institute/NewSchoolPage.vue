@@ -496,8 +496,8 @@ export default {
         this.authorityDisabled = true;
         this.newSchool.authorityName = null;
       }
-      if(this.newSchool.categoryCode && this.noGradeSchoolCategory.includes(this.newSchool.categoryCode)) {
-        this.isGradeOfferedDisabled = true;     
+      if(this.newSchool.schoolCategoryCode && this.noGradeSchoolCategory.includes(this.newSchool.schoolCategoryCode)) {
+        this.isGradeOfferedDisabled = true;
         this.newSchool.gradesOffered = null;
       } else{
         this.isGradeOfferedDisabled = false;
