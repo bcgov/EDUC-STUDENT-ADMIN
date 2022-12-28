@@ -9,7 +9,7 @@
             <v-text-field
                 id='newSchoolNameInput'
                 :rules="[rules.required()]"
-                v-model="newSchool.schoolName"
+                v-model="newSchool.displayName"
                 class="pt-0"
                 :maxlength="255"
                 label="School Name"
@@ -23,7 +23,7 @@
                     item-value="districtId"
                     item-text="districtNumberName"
                     :items="districtNames"
-                    v-model="newSchool.districtName"
+                    v-model="newSchool.districtID"
                     clearable>
                 </v-autocomplete>
               </v-col>
@@ -54,7 +54,7 @@
                         id="newSchoolOpenDateTextField"
                         :rules="[rules.required()]"
                         class="pt-4 mt-0"
-                        v-model="newSchool.openDate"
+                        v-model="newSchool.openedDate"
                         label="Open Date"
                         prepend-inner-icon="mdi-calendar"
                         clearable
@@ -64,7 +64,7 @@
                     ></v-text-field>
                   </template>
                   <v-date-picker
-                      v-model="newSchool.openDate"
+                      v-model="newSchool.openedDate"
                       :active-picker.sync="newSchoolOpenDatePicker"
                       @change="saveNewSchoolOpenDate"
                   ></v-date-picker>
@@ -77,7 +77,7 @@
                 <v-select
                     id='newSchoolCategoryInput'
                     :rules="[rules.required()]"
-                    v-model="newSchool.categoryCode"
+                    v-model="newSchool.schoolCategoryCode"
                     :items="schoolCategoryTypeCodes"
                     item-value="schoolCategoryCode"
                     item-text="label"
@@ -103,7 +103,7 @@
                 <v-select
                     id='newSchoolOrganizationCodeInput'
                     :rules="[rules.required()]"
-                    v-model="newSchool.organizationCode"
+                    v-model="newSchool.schoolOrganizationCode"
                     :items="schoolOrganizationTypeCodes"
                     item-value="schoolOrganizationCode"
                     item-text="label"
@@ -128,7 +128,7 @@
               <v-col cols="4">
                 <v-select
                     id='newSchoolNLCActivityInput'
-                    v-model="newSchool.NLCActivity"
+                    v-model="newSchool.neighborhoodLearning"
                     :items="schoolNeighborhoodLearningCodes"
                     item-value="neighborhoodLearningTypeCode"
                     item-text="label"
@@ -344,14 +344,15 @@ export default {
       independentArray: ['INDEPEND', 'INDP_FNS'],
       requiredAuthoritySchoolCategories: ['INDEPEND', 'INDP_FNS', 'OFFSHORE'],
       newSchool: {
-        districtName: null,
-        authorityName: null,
-        openDate: this.calculateDefaultOpenDate(),
-        categoryCode: null,
+        districtID: null,
+        authorityID: null,
+        displayName: null,
+        openedDate: this.calculateDefaultOpenDate(),
+        schoolCategoryCode: null,
         facilityTypeCode: null,
-        organizationCode: null,
-        gradesOffered: null,
-        NLCActivity: null,
+        schoolOrganizationCode: null,
+        grades: [],
+        neighborhoodLearning: [],
         phoneNumber: null,
         faxNumber: null,
         email: null,
@@ -391,11 +392,11 @@ export default {
     ...mapState('institute', ['schoolCategoryFacilityTypesMap']),
 
     allowedFacilityTypeCodesForSchoolCategoryCode(){
-      if (!this.activeFacilityTypeCodes || !this.newSchool?.categoryCode) {
+      if (!this.activeFacilityTypeCodes || !this.newSchool?.schoolCategoryCode) {
         return [];
       }
 
-      let facilityTypes = this.schoolCategoryFacilityTypesMap[this.newSchool?.categoryCode]?.map(schoolCatFacilityTypeCode =>  this.activeFacilityTypeCodes.find(facTypCode=> facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
+      let facilityTypes = this.schoolCategoryFacilityTypesMap[this.newSchool?.schoolCategoryCode]?.map(schoolCatFacilityTypeCode =>  this.activeFacilityTypeCodes.find(facTypCode=> facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
       this.enableOrDisableFacilityType(facilityTypes);
       return facilityTypes;
     },
@@ -412,7 +413,7 @@ export default {
       return this.activeSchoolNeighborhoodLearningCodes ? this.activeSchoolNeighborhoodLearningCodes : [];
     },
     displayPhysicalAddress(){
-      return this.newSchool?.categoryCode !== 'OFFSHORE';
+      return this.newSchool?.schoolCategoryCode !== 'OFFSHORE';
     },
     gradeCodes() {
       return this.activeGradeCodes ? this.activeGradeCodes : [];
@@ -453,7 +454,7 @@ export default {
       return this.SCHOOL_INDEPENDENT_ADMIN_ROLE;
     },
     authorityRule(value) {
-      if (this.newSchool.categoryCode && this.requiredAuthoritySchoolCategories.includes(this.newSchool.categoryCode) && !value) {
+      if (this.newSchool.schoolCategoryCode && this.requiredAuthoritySchoolCategories.includes(this.newSchool.schoolCategoryCode) && !value) {
         return 'Required';
       } else {
         return true;
@@ -479,7 +480,7 @@ export default {
           this.$emit('newSchool:addNewSchool');
         })
         .catch(error => {
-          this.setFailureAlert('An error occurred while saving a school. Please try again later.');
+          this.setFailureAlert(error.response?.data?.message || error.message);
           console.log(error);
         })
         .finally(() => {
@@ -487,7 +488,7 @@ export default {
         });
     },
     async schoolCategoryChanged(){
-      if(this.newSchool.categoryCode && this.requiredAuthoritySchoolCategories.includes(this.newSchool.categoryCode)){
+      if(this.newSchool.schoolCategoryCode && this.requiredAuthoritySchoolCategories.includes(this.newSchool.schoolCategoryCode)){
         this.authorityDisabled = false;
       }else{
         this.authorityDisabled = true;

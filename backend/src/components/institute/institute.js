@@ -241,6 +241,103 @@ async function getCachedSchoolBySchoolID(req, res) {
   }
 }
 
+async function addSchool(req, res) {
+  try {
+    const token = getBackendToken(req);
+    let hasSchoolAdminRoleAuth;
+
+    if(req.body.schoolCategoryCode === 'INDEPEND' || req.body.schoolCategoryCode === 'INDP_FNS'){
+      hasSchoolAdminRoleAuth = req.session.roles.includes('SCHOOL_ADMIN') || req.session.roles.includes('SCHOOL_INDEPENDENT_ADMIN');
+    } else {
+      hasSchoolAdminRoleAuth = req.session.roles.includes('SCHOOL_ADMIN');
+    }
+
+    if (hasSchoolAdminRoleAuth) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+
+    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
+
+    const payload = {
+      createUser: utils.getUser(req).idir_username,
+      createDate: null,
+      updateUser: utils.getUser(req).idir_username,
+      updateDate: null,
+      districtId: req.body.districtID,
+      faxNumber: req.body.faxNumber,
+      phoneNumber: req.body.phoneNumber,
+      email: req.body.email,
+      website: req.body.website,
+      displayName: req.body.displayName,
+      schoolOrganizationCode: req.body.schoolOrganizationCode,
+      schoolCategoryCode: req.body.schoolCategoryCode,
+      facilityTypeCode: req.body.facilityTypeCode,
+      openedDate: req.body.openedDate ? LocalDate.parse(req.body.openedDate).atStartOfDay().format(formatter) : null,
+      closedDate: null,
+      addresses: [],
+      grades: [],
+      neighborhoodLearning: []
+    };
+
+    //set addresses, grade codes and Neighborhood Learning Codes
+    if(req.body.mailingAddrLine1 !== null){
+      let mailingAddress = {
+        'createUser': utils.getUser(req).idir_username,
+        'updateUser': utils.getUser(req).idir_username,
+        'createDate': null,
+        'updateDate': null,
+        'addressId': null,
+        'addressLine1': req.body.mailingAddrLine1,
+        'addressLine2': req.body.mailingAddrLine2,
+        'city': req.body.mailingAddrCity,
+        'postal': req.body.mailingAddrPostal,
+        'addressTypeCode': 'MAILING',
+        'provinceCode': req.body.mailingAddrProvince,
+        'countryCode': req.body.mailingAddrCountry,
+      };
+      payload.addresses.push(mailingAddress);
+    }
+
+    if(req.body.physicalAddrLine1 !== null){
+      let physicalAddress = {
+        'createUser': utils.getUser(req).idir_username,
+        'updateUser': utils.getUser(req).idir_username,
+        'createDate': null,
+        'updateDate': null,
+        'addressLine1': req.body.physicalAddrLine1,
+        'addressLine2': req.body.physicalAddrLine2,
+        'city': req.body.physicalAddrCity,
+        'postal': req.body.physicalAddrPostal,
+        'addressTypeCode': 'PHYSICAL',
+        'provinceCode': req.body.physicalAddrProvince,
+        'countryCode': req.body.physicalAddrCountry,
+      };
+      payload.addresses.push(physicalAddress);
+    }
+
+    for (const nlcCode of req.body.neighborhoodLearning) {
+      payload.neighborhoodLearning.push({
+        neighborhoodLearningTypeCode: nlcCode
+      });
+    }
+
+    for (const gradeCode of req.body.grades) {
+      payload.grades.push({
+        schoolGradeCode: gradeCode,
+      });
+    }
+
+    const data = await utils.postData(token, config.get('server:institute:instituteSchoolURL'), payload, null, utils.getUser(req).idir_username);
+    await cacheService.loadAllSchoolsToMap();
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    logApiError(e, 'addSchool', 'Error occurred while attempting to POST School entity.');
+    return errorResponse(res);
+  }
+}
+
 async function addNewSchoolNote(req, res) {
   try {
     const token = getBackendToken(req);
@@ -873,6 +970,7 @@ module.exports = {
   addNewAuthorityNote,
   getCachedSchoolCategoryFacilityTypes,
   updateSchool,
+  addSchool,
   addSchoolContact,
   getCachedInstituteData,
   updateDistrict,
