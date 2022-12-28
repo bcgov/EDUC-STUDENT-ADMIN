@@ -244,15 +244,8 @@ async function getCachedSchoolBySchoolID(req, res) {
 async function addSchool(req, res) {
   try {
     const token = getBackendToken(req);
-    let hasSchoolAdminRoleAuth;
 
-    if(req.body.schoolCategoryCode === 'INDEPEND' || req.body.schoolCategoryCode === 'INDP_FNS'){
-      hasSchoolAdminRoleAuth = req.session.roles.includes('SCHOOL_ADMIN') || req.session.roles.includes('SCHOOL_INDEPENDENT_ADMIN');
-    } else {
-      hasSchoolAdminRoleAuth = req.session.roles.includes('SCHOOL_ADMIN');
-    }
-
-    if (hasSchoolAdminRoleAuth) {
+    if(!hasSchoolAdminRole(req, req.body)){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'You do not have the required access for this function'
       });
