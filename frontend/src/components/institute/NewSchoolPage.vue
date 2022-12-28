@@ -120,6 +120,7 @@
                     :items="gradeCodes"
                     item-value="schoolGradeCode"
                     item-text="label"
+                    :disabled="isGradeOfferedDisabled"
                     class="pt-0"
                     multiple
                     label="Grades Offered"
@@ -340,9 +341,11 @@ export default {
       isFormValid: false,
       processing: false,
       isFacilityTypeDisabled: false,
+      isGradeOfferedDisabled: false,
       authorityDisabled: true,
       independentArray: ['INDEPEND', 'INDP_FNS'],
       requiredAuthoritySchoolCategories: ['INDEPEND', 'INDP_FNS', 'OFFSHORE'],
+      noGradeSchoolCategory: ['POST_SEC', 'EAR_LEARN'],
       newSchool: {
         districtName: null,
         authorityName: null,
@@ -489,9 +492,15 @@ export default {
     async schoolCategoryChanged(){
       if(this.newSchool.categoryCode && this.requiredAuthoritySchoolCategories.includes(this.newSchool.categoryCode)){
         this.authorityDisabled = false;
-      }else{
+      } else{
         this.authorityDisabled = true;
         this.newSchool.authorityName = null;
+      }
+      if(this.newSchool.categoryCode && this.noGradeSchoolCategory.includes(this.newSchool.categoryCode)) {
+        this.isGradeOfferedDisabled = true;
+      } else{
+        this.isGradeOfferedDisabled = false;
+        this.newSchool.gradesOffered = null;
       }
       await this.fireFormValidate();
     },
