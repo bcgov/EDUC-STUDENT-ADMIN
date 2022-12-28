@@ -120,6 +120,7 @@
                     :items="gradeCodes"
                     item-value="schoolGradeCode"
                     item-text="label"
+                    :disabled="isGradeOfferedDisabled"
                     class="pt-0"
                     multiple
                     label="Grades Offered"
@@ -340,9 +341,11 @@ export default {
       isFormValid: false,
       processing: false,
       isFacilityTypeDisabled: false,
+      isGradeOfferedDisabled: false,
       authorityDisabled: true,
       independentArray: ['INDEPEND', 'INDP_FNS'],
       requiredAuthoritySchoolCategories: ['INDEPEND', 'INDP_FNS', 'OFFSHORE'],
+      noGradeSchoolCategory: ['POST_SEC', 'EAR_LEARN'],
       newSchool: {
         districtID: null,
         authorityID: null,
@@ -472,7 +475,6 @@ export default {
     },
     addNewSchool() {
       this.processing = true;
-
       ApiService.apiAxios.post(`${Routes.institute.SCHOOL_DATA_URL}`, this.newSchool)
         .then(() => {
           this.setSuccessAlert('Success! The school has been created.');
@@ -490,9 +492,15 @@ export default {
     async schoolCategoryChanged(){
       if(this.newSchool.schoolCategoryCode && this.requiredAuthoritySchoolCategories.includes(this.newSchool.schoolCategoryCode)){
         this.authorityDisabled = false;
-      }else{
+      } else{
         this.authorityDisabled = true;
         this.newSchool.authorityName = null;
+      }
+      if(this.newSchool.categoryCode && this.noGradeSchoolCategory.includes(this.newSchool.categoryCode)) {
+        this.isGradeOfferedDisabled = true;     
+        this.newSchool.gradesOffered = null;
+      } else{
+        this.isGradeOfferedDisabled = false;
       }
       await this.fireFormValidate();
     },
