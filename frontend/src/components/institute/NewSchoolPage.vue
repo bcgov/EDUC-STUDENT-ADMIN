@@ -474,7 +474,6 @@ export default {
     },
     addNewSchool() {
       this.processing = true;
-
       ApiService.apiAxios.post(`${Routes.institute.SCHOOL_DATA_URL}`, this.newSchool)
         .then(() => {
           this.setSuccessAlert('Success! The school has been created.');
@@ -497,10 +496,10 @@ export default {
         this.newSchool.authorityName = null;
       }
       if(this.newSchool.categoryCode && this.noGradeSchoolCategory.includes(this.newSchool.categoryCode)) {
-        this.isGradeOfferedDisabled = true;
+        this.isGradeOfferedDisabled = true;     
+        this.newSchool.gradesOffered = null;
       } else{
         this.isGradeOfferedDisabled = false;
-        this.newSchool.gradesOffered = null;
       }
       await this.fireFormValidate();
     },
