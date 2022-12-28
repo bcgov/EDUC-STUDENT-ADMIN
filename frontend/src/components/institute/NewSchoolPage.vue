@@ -476,10 +476,10 @@ export default {
     addNewSchool() {
       this.processing = true;
       ApiService.apiAxios.post(`${Routes.institute.SCHOOL_DATA_URL}`, this.newSchool)
-        .then(() => {
+        .then((response) => {
           this.setSuccessAlert('Success! The school has been created.');
           this.resetForm();
-          this.$emit('newSchool:addNewSchool');
+          this.openSchoolDetailsPage(response.data.schoolId);
         })
         .catch(error => {
           this.setFailureAlert(error.response?.data?.message || error.message);
@@ -488,6 +488,9 @@ export default {
         .finally(() => {
           this.processing = false;
         });
+    },
+    openSchoolDetailsPage(schoolID) {
+      this.$router.push({name: 'schoolDetails', params: {schoolID: schoolID}});
     },
     async schoolCategoryChanged(){
       if(this.newSchool.schoolCategoryCode && this.requiredAuthoritySchoolCategories.includes(this.newSchool.schoolCategoryCode)){

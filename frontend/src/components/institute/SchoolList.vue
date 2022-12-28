@@ -197,7 +197,6 @@
           :districtNames="this.activeDistricts"
           :authorityNames="this.activeAuthorities"
           @newSchool:closeNewSchoolPage="newSchoolSheet = !newSchoolSheet"
-          @newSchool:addNewSchool="newSchoolAdded"
       />
     </v-bottom-sheet>
   </v-container>
@@ -307,11 +306,6 @@ export default {
   methods: {
     canAddSchool() {
       return this.SCHOOL_ADMIN_ROLE || this.SCHOOL_INDEPENDENT_ADMIN_ROLE;
-    },
-    newSchoolAdded() {
-      this.newSchoolSheet = !this.newSchoolSheet;
-      this.getSchoolDropDownItems();
-      this.getSchoolList();
     },
     setSchoolStatuses() {
       this.schoolStatus = [{name: 'Open', code: 'Open'}, {name: 'Opening', code: 'Opening'}, {name: 'Closing', code: 'Closing'}, {name: 'Closed', code: 'Closed'}, {name: 'Never Opened', code: 'NeverOpened'}];
