@@ -90,7 +90,12 @@
               <h2>Addresses</h2>
             </v-col>
           </v-row>
-          <v-row no-gutters class="d-flex justify-start">
+          <v-row v-if="!hasMailingAddress() && !editing" no-gutters class="d-flex justify-start">
+           <v-col>
+            <span>Not Provided</span>
+           </v-col>
+          </v-row>
+          <v-row v-else no-gutters class="d-flex justify-start">
             <v-col v-if="editing || hasMailingAddress()" cols="3">
               <v-row>
                 <v-col>
@@ -213,13 +218,6 @@
                       </v-text-field>
                     </v-col>
                   </v-row>
-                </v-col>
-              </v-row>
-            </v-col>
-            <v-col v-else cols="3">
-              <v-row no-gutters>
-                <v-col class="d-flex justify-start">
-                  <span>Not Provided</span>
                 </v-col>
               </v-row>
             </v-col>
