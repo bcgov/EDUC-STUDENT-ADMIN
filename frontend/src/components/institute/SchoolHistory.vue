@@ -109,7 +109,7 @@ export default {
       },
       headers: [
         {text: 'Date', sortable: false, value: 'updateDate', format: this.formatDate, tooltip: 'Activity Date'},
-        {text: 'Changed by', sortable: false, value: 'updateDateTrunc', tooltip: 'Changed By'},
+        {text: 'Changed by', sortable: false, value: 'updateUser', tooltip: 'Changed By'},
         {text: 'Status', sortable: false, value: 'status', tooltip: 'Status'},
         {text: 'District Number', sortable: false, value: 'districtNumber', tooltip: 'District Code'},
         {text: 'Authority Number', sortable: false, value: 'authorityNumber', tooltip: 'Authority Code'},
@@ -122,7 +122,7 @@ export default {
       ],
       shortHeaders: [
         {text: 'Date', sortable: false, value: 'updateDate', format: this.formatDate, tooltip: 'Activity Date'},
-        {text: 'Changed by', sortable: false, value: 'updateDateTrunc', tooltip: 'Changed By'},
+        {text: 'Changed by', sortable: false, value: 'updateUser', tooltip: 'Changed By'},
         {text: 'Status', sortable: false, value: 'status', tooltip: 'Status'},
         {text: 'Name', sortable: false, value: 'displayName', tooltip: 'Name'},
         {text: 'Contact Information', sortable: false, value: 'contactUpdatedFlag', tooltip: 'Contact Information'}
