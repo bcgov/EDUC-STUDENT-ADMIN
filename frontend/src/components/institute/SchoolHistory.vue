@@ -103,8 +103,6 @@ export default {
       nextSchoolHistory: [],
       selectedSchoolHistory:[],
       allAuthority:[],
-      schoolOrganizationTypes: [],
-      schoolNeighborhoodLearningTypes: [],
       selectedSchoolHistoryId:null,
       searchParams: {
         schoolID: '',
@@ -327,7 +325,7 @@ export default {
     mapNLCActivity(neighbourhoodLearnings) {
       let nLCActivityList = [];
       for (const nl of neighbourhoodLearnings) {
-        let schoolNeighborhoodLearningType = this.schoolNeighborhoodLearningTypes?.find((facility) => facility?.neighborhoodLearningTypeCode === nl.neighbourhoodLearningTypeCode);
+        let schoolNeighborhoodLearningType = this.schoolNeighborhoodLearningCodes?.find((facility) => facility?.neighborhoodLearningTypeCode === nl.neighbourhoodLearningTypeCode);
         if (schoolNeighborhoodLearningType) {
           nLCActivityList.push(schoolNeighborhoodLearningType?.label);
         }
@@ -335,7 +333,7 @@ export default {
       return nLCActivityList.toString().replace(/,/g, ', ');
     },
     mapSchoolOrganization(schoolOrganizationCode) {
-      return this.schoolOrganizationTypes.find((facility) => facility.schoolOrganizationCode === schoolOrganizationCode)?.label;
+      return this.schoolOrganizationTypeCodes.find((facility) => facility.schoolOrganizationCode === schoolOrganizationCode)?.label;
     },
     mapGradesOffered(grades) {
       let gradeList = [];
