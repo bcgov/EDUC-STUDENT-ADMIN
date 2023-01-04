@@ -105,7 +105,7 @@
                   mdi-web
                 </v-icon>
                 <div v-if="!editing">
-                  <a v-if="school.website" :href="sanitizeUrl(this.school.website)" target="_blank">{{ sanitizeUrl(this.school.website) }}</a>
+                  <a v-if="cleanWebsiteUrl" :href="cleanWebsiteUrl" target="_blank">{{ cleanWebsiteUrl }}</a>
                   <a v-else class="editField" @click="toggleEdit">+website</a>
                 </div>
                 <v-text-field v-if="editing" class="py-0" :rules="[rules.website()]" :maxlength="255" v-model="schoolDetailsCopy.website"/>
