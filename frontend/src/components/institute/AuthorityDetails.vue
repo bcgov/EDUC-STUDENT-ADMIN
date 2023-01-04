@@ -58,7 +58,10 @@
                 <v-icon class="mb-1 mr-1" aria-hidden="false">
                   mdi-phone-outline
                 </v-icon>
-                <span v-if="!editing">{{ formatPhoneNumber(authority.phoneNumber) }}</span>
+                <div v-if="!editing">
+                  <span v-if="authority.phoneNumber" class="ml-n1">{{ formatPhoneNumber(authority.phoneNumber) }}</span>
+                  <a v-else class="editField" @click="toggleEdit">+phone</a>
+                </div>
                 <v-text-field v-else id="phoneNumberField" class="shrink py-0" @keypress="isNumber($event)" required :maxlength="10" :rules="[rules.required(), rules.phoneNumber()]" v-model="authorityCopy.phoneNumber">
                 </v-text-field>
               </v-col>
@@ -66,7 +69,10 @@
                 <v-icon class="mb-1 mr-1" aria-hidden="false">
                   mdi-at
                 </v-icon>
-                <span v-if="!editing">{{ authority.email }}</span>
+                <div v-if="!editing">
+                  <span v-if="authority.email" class="ml-n1">{{ authority.email }}</span>
+                  <a v-else class="editField" @click="toggleEdit">+email</a>
+                </div>
                 <v-text-field v-else id="emailField" class="py-0" required :rules="[rules.email()]" :maxlength="255" v-model="authorityCopy.email">
                 </v-text-field>
               </v-col>
@@ -74,7 +80,10 @@
                 <v-icon class="mb-1 mr-1" aria-hidden="false">
                   mdi-fax
                 </v-icon>
-                <span v-if="!editing">{{ formatPhoneNumber(authority.faxNumber) }}</span>
+                <div v-if="!editing">
+                  <span v-if="authority.faxNumber" class="ml-n1">{{ formatPhoneNumber(authority.faxNumber) }}</span>
+                  <a v-else class="editField" @click="toggleEdit">+fax</a>
+                </div>
                 <v-text-field v-else id="faxNumberField" class="shrink py-0" @keypress="isNumber($event)" :rules="[rules.phoneNumber('Fax number must be valid')]" :maxlength="10" v-model="authorityCopy.faxNumber">
                 </v-text-field>
               </v-col>
@@ -902,6 +911,17 @@ export default {
     padding-right: 4em !important;
     padding-left: 4em !important;
   }
+}
+
+.editField {
+  font-style: italic;
+  font-size: 14px;
+  color: rgb(0, 51, 102);
+  vertical-align: super;
+}
+
+.editField:hover {
+  text-decoration: underline;
 }
 
 </style>

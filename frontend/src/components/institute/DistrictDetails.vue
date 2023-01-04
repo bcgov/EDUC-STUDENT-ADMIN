@@ -55,28 +55,40 @@
               <v-icon aria-hidden="false" class="mb-1 mr-1">
                 mdi-phone-outline
               </v-icon>
-              <span v-if="!editing" class="ml-n1">{{ formatPhoneNumber(district.phoneNumber) }}</span>
+              <div v-if="!editing">
+                <span v-if="district.phoneNumber" class="ml-n1">{{ formatPhoneNumber(district.phoneNumber) }}</span>
+                <a v-else class="editField" @click="toggleEdit">+phone</a>
+              </div>
               <v-text-field id="districtDetailsPhoneNumber" v-else class="shrink py-0" @keypress="isNumber($event)" required :maxlength="10" :rules="[rules.required(), rules.phoneNumber()]" v-model="districtDetailsCopy.phoneNumber"/>
             </v-col>
             <v-col class="d-flex">
               <v-icon aria-hidden="false" class="mb-1 mr-1">
                 mdi-at
               </v-icon>
-              <span v-if="!editing" class="ml-n1">{{ district.email }}</span>
+              <div v-if="!editing">
+                <span v-if="district.email" class="ml-n1">{{ district.email }}</span>
+                <a v-else class="editField" @click="toggleEdit">+email</a>
+              </div>
               <v-text-field id="districtDetailsEmail" v-else class="py-0" required :rules="[rules.email()]" :maxlength="255" v-model="districtDetailsCopy.email"/>
             </v-col>
             <v-col class="d-flex">
               <v-icon aria-hidden="false" class="mb-1 mr-1">
                 mdi-fax
               </v-icon>
-              <span v-if="!editing" class="ml-n1">{{ formatPhoneNumber(district.faxNumber) }}</span>
+              <div v-if="!editing">
+                <span v-if="district.faxNumber" class="ml-n1">{{ formatPhoneNumber(district.faxNumber) }}</span>
+                <a v-else class="editField" @click="toggleEdit">+fax</a>
+              </div>
               <v-text-field id="districtDetailsFaxNumber" v-else class="shrink py-0" @keypress="isNumber($event)" :rules="[rules.phoneNumber('Fax number must be valid')]" :maxlength="10" v-model="districtDetailsCopy.faxNumber"/>
             </v-col>
             <v-col class="d-flex">
               <v-icon class="mb-1 mr-1" aria-hidden="false">
                 mdi-web
               </v-icon>
-              <a v-if="cleanWebsiteUrl && !editing" :href="cleanWebsiteUrl" target="_blank">{{ cleanWebsiteUrl }}</a>
+              <div v-if="!editing">
+                <a v-if="cleanWebsiteUrl" :href="cleanWebsiteUrl" target="_blank">{{ cleanWebsiteUrl }}</a>
+                <a v-else class="editField" @click="toggleEdit">+website</a>
+              </div>
               <v-text-field v-if="editing" class="py-0" :rules="[rules.website()]" :maxlength="255" v-model="districtDetailsCopy.website"/>
             </v-col>
           </v-row>
@@ -741,6 +753,17 @@ export default {
     padding-right: 4em !important;
     padding-left: 4em !important;
   }
+}
+
+.editField {
+  font-style: italic;
+  font-size: 14px;
+  color: rgb(0, 51, 102);
+  vertical-align: super;
+}
+
+.editField:hover {
+  text-decoration: underline;
 }
 
 </style>
