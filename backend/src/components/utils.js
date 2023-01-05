@@ -85,6 +85,14 @@ async function deleteData(token, url) {
   }
 }
 
+function isPdf(document){
+  return (
+    'fileName' in document &&
+    typeof document.fileName === 'string' &&
+    document.fileName.toLowerCase().endsWith('.pdf')
+  );
+}
+
 async function deleteDataWithBody(token, url, data) {
   if (!data) {
     throw new ApiError(400, {message: 'Invalid request for delete with body'}, new Error('Empty body'));
@@ -536,7 +544,8 @@ const utils = {
   deleteDataWithBody,
   addSagaStatusToRecords,
   validateAccessToken,
-  forwardGet
+  forwardGet,
+  isPdf
 };
 
 module.exports = utils;

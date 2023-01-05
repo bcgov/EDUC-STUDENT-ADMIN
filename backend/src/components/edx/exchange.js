@@ -1,6 +1,6 @@
 'use strict';
 
-const {errorResponse, logApiError, logError, postData, getBackendToken} = require('../utils');
+const {errorResponse, logApiError, logError, postData, getBackendToken, isPdf} = require('../utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../../config');
 const {getData, getCodeTable, putData} = require('../utils');
@@ -696,7 +696,14 @@ function getExchangeDocumentById() {
     const token = getBackendToken(req);
     const url = `${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/documents/${req.params.documentId}`;
     getData(token, url).then(resultData => {
-      return res.status(200).send(resultData.documentData);
+      res.setHeader('Content-type', resultData.fileExtension);
+      if(!isPdf(resultData)){
+        res.setHeader('Content-disposition', 'attachment; filename=' + resultData.fileName?.replace(/ /g, '_').replace(/,/g, '_').trim());
+        return res.status(200).send(resultData.documentData);
+      }else{
+        res.setHeader('Content-disposition', 'inline; filename=' + resultData.fileName?.replace(/ /g, '_').replace(/,/g, '_').trim());
+        return res.status(200).send(Buffer.from(resultData.documentData, 'base64'));
+      }
     }).catch(error => {
       log.error('An error occurred attempting to get documents.');
       log.error(error);

@@ -1,7 +1,6 @@
 <template>
   <v-container fluid class="fill-height mb-10 px-16">
     <v-col cols="12" class="fill-height pb-0">
-      <PdfRenderer  :request-type="requestType" :dialog="pdfRenderDialog" @closeDialog="closeDialog" :request-id="requestId" :document-id="documentId"></PdfRenderer>
       <ImageRenderer  :request-type="requestType" :dialog="imageRendererDialog" @closeDialog="closeDialog" :request-id="requestId" :image-id="imageId"></ImageRenderer>
       <v-row class="flex-grow-0 pb-5">
         <v-card height="100%" width="100%" elevation=0>
@@ -119,7 +118,8 @@
                 <span>{{ item.createDate.toString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
               </template>
               <template v-slot:item.fileName="{item: document}">
-                <a @click="showDocModal(requestId, document)" v-if="document.fileSize && actionsEnabled">
+                <router-link v-if="document.fileSize && actionsEnabled && isPdf(document)" :to="{ path: documentUrl(requestId, document) }" target="_blank">{{ document.fileName }}</router-link>
+                <a @click="showDocModal(requestId, document)" v-else-if="document.fileSize && actionsEnabled">
                   {{ document.fileName }}
                 </a>
                 <span v-else>{{ document.fileName }}</span>
@@ -184,7 +184,6 @@ import PrimaryButton from './util/PrimaryButton';
 import alertMixin from '../mixins/alertMixin';
 import Mousetrap from 'mousetrap';
 import 'mousetrap/plugins/global-bind/mousetrap-global-bind';
-import PdfRenderer from '@/components/common/PdfRenderer';
 import ImageRenderer from '@/components/common/ImageRenderer';
 
 export default {
@@ -213,7 +212,6 @@ export default {
   },
   components: {
     ImageRenderer,
-    PdfRenderer,
     PrimaryButton,
     Chat
   },
@@ -246,7 +244,6 @@ export default {
       documentErrorMessage: '',
       claimErrorMessage: '',
       sagaInProgress: false,
-      pdfRenderDialog: false,
       imageRendererDialog: false,
       documentId: '',
       imageId: '',
@@ -361,18 +358,12 @@ export default {
      * @param document
      */
     showDocModal(requestId, document){
-      if (document?.fileExtension === 'application/pdf') {
-        this.documentId = document.documentID;
-        this.pdfRenderDialog = true;
-      }else {
-        this.imageId = document.documentID;
-        this.imageRendererDialog = true;
-      }
+      this.imageId = document.documentID;
+      this.imageRendererDialog = true;
     },
     async closeDialog() {
       this.documentId = '';
       this.imageId = '';
-      this.pdfRenderDialog = false;
       this.imageRendererDialog = false;
       await this.$nextTick(); //need to wait so update can me made in parent and propagated back down to child component
     },
@@ -440,6 +431,13 @@ export default {
     beforeSubmit() {
       this.disableActionButtons();
       this.switchLoading(true);
+    },
+    isPdf(document){
+      return (
+        'fileName' in document &&
+        typeof document.fileName === 'string' &&
+        document.fileName.toLowerCase().endsWith('.pdf')
+      );
     },
     submitted() {
       this.switchLoading(false);

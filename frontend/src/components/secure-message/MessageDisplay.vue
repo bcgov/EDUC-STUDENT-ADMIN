@@ -322,7 +322,8 @@
                         </v-card-title>
                         <v-row no-gutters>
                           <v-card-text class="mt-n2 pt-0 pb-0" :class="{'pb-0': activity.documentType.label !== 'Other', 'pb-3': activity.documentType.label === 'Other'}">
-                            <a @click="showDocModal(activity)" :class="disabledAnchorDocumentName">
+                            <router-link v-if="isPdf(activity)" :class="disabledAnchorDocumentName" :to="{ path: documentUrl(activity) }" target="_blank">{{ activity.fileName }}</router-link>
+                            <a v-else @click="showDocModal(activity)" :class="disabledAnchorDocumentName">
                               {{ activity.fileName }}
                             </a>
                           </v-card-text>
@@ -398,7 +399,6 @@
         </v-col>
       </v-row>
     </div>
-    <PdfRenderer :route="this.documentRoute" :dialog="pdfRenderDialog" @closeDialog="closeDialog" :request-id="this.secureExchangeID" :document-id="this.documentId"></PdfRenderer>
     <ImageRenderer :route="this.documentRoute" :dialog="imageRendererDialog" @closeDialog="closeDialog" :request-id="this.secureExchangeID" :image-id="this.imageId"></ImageRenderer>
   </v-container>
 </template>
@@ -414,7 +414,6 @@ import {ChronoUnit, DateTimeFormatter, LocalDate} from '@js-joda/core';
 import PrimaryButton from '@/components/util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
 import DocumentUpload from '@/components/common/DocumentUpload';
-import PdfRenderer from '@/components/common/PdfRenderer';
 import ImageRenderer from '@/components/common/ImageRenderer';
 import AddStudent from '@/components/common/AddStudent';
 import MacroMenu from '../common/MacroMenu';
@@ -423,7 +422,7 @@ import MacroMenu from '../common/MacroMenu';
 export default {
   name: 'MessageDisplay',
   mixins: [alertMixin],
-  components: {DocumentUpload, AddStudent, PrimaryButton, ImageRenderer, PdfRenderer, MacroMenu},
+  components: {DocumentUpload, AddStudent, PrimaryButton, ImageRenderer, MacroMenu},
   props: {
     secureExchangeID: {
       type: String,
@@ -459,7 +458,6 @@ export default {
       isOpenNoteIndex: false,
       show: false,
       isHideIndex: false,
-      pdfRenderDialog: false,
       imageRendererDialog: false,
       addStudentWarningMessage: '',
       documentId: '',
@@ -815,15 +813,9 @@ export default {
     },
     showDocModal(document){
       if(this.isEditable()){
-        if (this.isPdf(document)) {
-          this.documentId = document.documentID;
-          this.pdfRenderDialog = true;
-        }else {
-          this.imageId = document.documentID;
-          this.imageRendererDialog = true;
-        }
+        this.imageId = document.documentID;
+        this.imageRendererDialog = true;
       }
-
     },
     isPdf(document){
       return (
@@ -835,7 +827,6 @@ export default {
     async closeDialog() {
       this.documentId = '';
       this.imageId = '';
-      this.pdfRenderDialog = false;
       this.imageRendererDialog = false;
       await this.$nextTick(); //need to wait so update can be made in parent and propagated back down to child component
     },
