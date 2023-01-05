@@ -409,7 +409,7 @@ import ApiService from '../../common/apiService';
 import {EDX_SAGA_REQUEST_DELAY_MILLISECONDS, Routes} from '@/utils/constants';
 import router from '@/router';
 import {mapState, mapActions, mapGetters} from 'vuex';
-import {isPdf} from '../utils/file';
+import {isPdf} from '.../../utils/file';
 import {replaceMacro, insertMacro} from '@/utils/macro';
 import {ChronoUnit, DateTimeFormatter, LocalDate} from '@js-joda/core';
 import PrimaryButton from '@/components/util/PrimaryButton';
