@@ -75,13 +75,33 @@
               </v-col>
             </v-row>
             <v-row class="pb-0 pt-2" v-if="action === 'setCloseDate' && authorityHasOpenSchools">
-              <span>This authority cannot be closed, as there are still open schools under this authority. The schools must be closed, before the authority can be closed.</span>
+              <v-col>
+                <p>This authority cannot be closed, as there are still open schools under this authority.</p>
+                <p>The schools must be closed or moved to another authority before the authority can be closed.</p>
+                <div v-for="openSchool in listOfOpenSchools" :key="openSchool.schoolId">
+                  <ul class="school-highlight">
+                    <li>
+                      {{openSchool.mincode}} - {{openSchool.displayName}}
+                    </li>
+                  </ul>
+                </div>
+              <p>Refresh the page to see an updated list and options</p>
+              </v-col>
             </v-row>
             <v-row class="d-flex justify-start" v-if="action === 'setCloseDate' && !authorityHasOpenSchools">
               <v-col>
                 <v-alert v-if="showAlertForFutureClosureDate" color="#003366" dense text type="info">
                   <p>Some schools under this authority have closing dates in the future.</p>
                   <p>The closing date of the authority must be on or after <strong>{{dateOfLastSchoolClosureFormatted}}</strong>.</p>
+                  <p>The following schools have close dates in the future:</p>
+                  <div v-for="closingSchool in listOfClosingSchools" :key="closingSchool.schoolId">
+                    <ul class="school-highlight">
+                    <li>
+                      {{closingSchool.mincode}} - {{closingSchool.displayName}}
+                    </li>
+                  </ul>
+                  </div>
+                  <p>Refresh the page to see an updated list of schools.</p>
                 </v-alert>
                 <v-row class="d-flex justify-start">
                   <h3>Select the new closure date</h3>
@@ -205,6 +225,14 @@ export default {
     },
     dateOfLastSchoolClosure: {
       type: String,
+      required: false
+    },
+    listOfOpenSchools: {
+      type: Array,
+      required: false
+    },
+    listOfClosingSchools: {
+      type: Array,
       required: false
     }
   },
@@ -374,5 +402,9 @@ export default {
 }
 .v-alert__content p:last-child {
   margin-bottom: 0;
+}
+
+.school-highlight {
+  color: #003366;
 }
 </style>
