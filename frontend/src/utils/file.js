@@ -39,3 +39,11 @@ export function getFileNameWithMaxNameLength(fileName, nameLength=30, extensionL
 
   return name + extension;
 }
+
+export function isPdf(document){
+  return (
+    'fileName' in document &&
+    typeof document.fileName === 'string' &&
+    document.fileName.toLowerCase().endsWith('.pdf')
+  );
+}

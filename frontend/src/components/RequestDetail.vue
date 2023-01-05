@@ -178,7 +178,7 @@ import Chat from './Chat';
 import ApiService from '../common/apiService';
 import {REQUEST_TYPES, Routes, Statuses} from '../utils/constants';
 import {mapGetters, mapMutations} from 'vuex';
-import {humanFileSize} from '../utils/file';
+import {humanFileSize, isPdf} from '../utils/file';
 import router from '../router';
 import PrimaryButton from './util/PrimaryButton';
 import alertMixin from '../mixins/alertMixin';
@@ -432,13 +432,7 @@ export default {
       this.disableActionButtons();
       this.switchLoading(true);
     },
-    isPdf(document){
-      return (
-        'fileName' in document &&
-        typeof document.fileName === 'string' &&
-        document.fileName.toLowerCase().endsWith('.pdf')
-      );
-    },
+    isPdf,
     submitted() {
       this.switchLoading(false);
       this.enableActionButtons();
