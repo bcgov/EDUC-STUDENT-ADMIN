@@ -1,5 +1,5 @@
 'use strict';
-const { getBackendToken, getData, putData, logApiError, getUser } = require('./utils');
+const { getBackendToken, getData, putData, logApiError, getUser, isPdf } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../config/index');
 const file = require('./file');
@@ -46,9 +46,14 @@ function getDocumentById(requestType) {
     const token = getBackendToken(req);
     const url = `${config.get(`server:${requestType}:rootURL`)}/${req.params.id}/documents/${req.params.documentId}`;
     getData(token, url).then(resData =>{
-      res.setHeader('Content-disposition', 'attachment; filename=' + resData.fileName?.replace(/ /g, '_').replace(/,/g, '_').trim());
       res.setHeader('Content-type', resData.fileExtension);
-      return res.status(200).send(resData.documentData);
+      if(!isPdf(resData)){
+        res.setHeader('Content-disposition', 'attachment; filename=' + resData.fileName?.replace(/ /g, '_').replace(/,/g, '_').trim());
+        return res.status(200).send(resData.documentData);
+      }else{
+        res.setHeader('Content-disposition', 'inline; filename=' + resData.fileName?.replace(/ /g, '_').replace(/,/g, '_').trim());
+        return res.status(200).send(Buffer.from(resData.documentData, 'base64'));
+      }
     }).catch(error=>{
       log.error('An error occurred attempting to get documents.');
       log.error(error);
