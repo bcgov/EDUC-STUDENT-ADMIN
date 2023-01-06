@@ -530,11 +530,11 @@
         no-click-animation
         scrollable
         persistent
-        max-width="30%"
+        max-width="40%"
     >
       <AuthorityStatus v-if="openAuthorityStatusEditCard"  @updateAuthorityDates="handleUpdatesToAuthorityStatus"
                     @authorityStatus:closeEditAuthorityStatusPage="openAuthorityStatusEditCard = !openAuthorityStatusEditCard"
-                    :authority-open-date="authorityCopy.openedDate" :authority-close-date="authorityCopy.closedDate" :authority-status="authorityCopy.status" :authority-has-open-schools="authorityHasOpenSchools" :date-of-last-school-closure="closedDateOfLastClosingSchool"></AuthorityStatus>
+                    :authority-open-date="authorityCopy.openedDate" :authority-close-date="authorityCopy.closedDate" :authority-status="authorityCopy.status" :authority-has-open-schools="authorityHasOpenSchools" :date-of-last-school-closure="closedDateOfLastClosingSchool" :listOfOpenSchools="listOfOpenSchools" :listOfClosingSchools="listOfClosingSchools"></AuthorityStatus>
     </v-dialog>
   </v-form>
 </template>
@@ -585,6 +585,8 @@ export default {
       authorityTypes: [],
       provinceCodeValues: [],
       countryCodeValues: [],
+      listOfOpenSchools: [],
+      listOfClosingSchools: [],
       excludeShowingPhysicalAddressesForAuthoritiesOfType: [
         'OFFSHORE',
       ],
@@ -680,6 +682,7 @@ export default {
           }, isEmpty),
         }
       }).then(response => {
+        this.listOfOpenSchools = response.data.content;
         this.authorityHasOpenSchools = response.data.content.length > 0;
       }).catch(error => {
         console.error(error);
@@ -703,6 +706,7 @@ export default {
           }, isEmpty),
         }
       }).then(response => {
+        this.listOfClosingSchools = response.data.content;
         this.closedDateOfLastClosingSchool = response.data.content[0] ? response.data.content[0].closedDate.substring(0, 10) : null;
       }).catch(error => {
         console.error(error);
