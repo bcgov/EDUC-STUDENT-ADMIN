@@ -76,7 +76,7 @@ export function sortByNameValue(list, valueToSortBy){
 export function formatPhoneNumber(phoneNumber) {
 
   if (!phoneNumber) {
-    return 'Not provided';
+    return '';
   }
 
   if (phoneNumber?.length === 10) {
