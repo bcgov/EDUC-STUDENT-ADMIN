@@ -35,7 +35,7 @@
                              icon="mdi-account-multiple-outline" :to="`/institute/districtContacts/${districtID}`"
                              text="View District Contacts"></PrimaryButton>
               <PrimaryButton id="districtDetailsEditButton" icon-left width="6em" icon="mdi-pencil" text="Edit"
-                             :disabled="!canEditDistrictDetails()" @click.native="toggleEdit"></PrimaryButton>
+                             v-if="canEditDistrictDetails()" @click.native="toggleEdit"></PrimaryButton>
             </v-col>
             <v-col v-else cols="6" class="d-flex justify-end">
               <PrimaryButton class="mr-2" secondary id="cancelButton" icon-left width="6em" text="Cancel"
@@ -399,7 +399,7 @@
                 </v-col>
                 <v-col class="d-flex justify-end">
                   <PrimaryButton id="addNewDistrictNoteButton" width="9em" icon="mdi-plus" icon-left text="New Note"
-                    :disabled="!canEditDistrictDetails()" @click.native="newNoteSheet = !newNoteSheet"></PrimaryButton>
+                    v-if="canEditDistrictDetails()" @click.native="newNoteSheet = !newNoteSheet"></PrimaryButton>
                 </v-col>
               </v-row>
               <v-row>

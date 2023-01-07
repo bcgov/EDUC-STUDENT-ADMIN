@@ -18,7 +18,7 @@
                          width="0.5em"
                          min-width="0.5em"
                          depressed
-                         :disabled="!canEditDistrictContact"
+                         v-if="canEditDistrictContact"
                          @click="openContactEditForm(contact)"
                          small
                          class="mr-2"
