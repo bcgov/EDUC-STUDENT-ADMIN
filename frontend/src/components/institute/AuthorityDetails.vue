@@ -60,7 +60,7 @@
                 </v-icon>
                 <div v-if="!editing">
                   <span v-if="authority.phoneNumber" class="ml-n1">{{ formatPhoneNumber(authority.phoneNumber) }}</span>
-                  <a v-else class="editField" @click="toggleEdit">+phone</a>
+                  <a v-if="showEditLinks(authority.phoneNumber)" class="editField" @click="toggleEdit">+phone</a>
                 </div>
                 <v-text-field v-else id="phoneNumberField" class="shrink py-0" @keypress="isNumber($event)" required :maxlength="10" :rules="[rules.required(), rules.phoneNumber()]" v-model="authorityCopy.phoneNumber">
                 </v-text-field>
@@ -71,7 +71,7 @@
                 </v-icon>
                 <div v-if="!editing">
                   <span v-if="authority.email" class="ml-n1">{{ authority.email }}</span>
-                  <a v-else class="editField" @click="toggleEdit">+email</a>
+                  <a v-if="showEditLinks(authority.email)" class="editField" @click="toggleEdit">+email</a>
                 </div>
                 <v-text-field v-else id="emailField" class="py-0" required :rules="[rules.email()]" :maxlength="255" v-model="authorityCopy.email">
                 </v-text-field>
@@ -82,7 +82,7 @@
                 </v-icon>
                 <div v-if="!editing">
                   <span v-if="authority.faxNumber" class="ml-n1">{{ formatPhoneNumber(authority.faxNumber) }}</span>
-                  <a v-else class="editField" @click="toggleEdit">+fax</a>
+                  <a v-if="showEditLinks(authority.faxNumber)" class="editField" @click="toggleEdit">+fax</a>
                 </div>
                 <v-text-field v-else id="faxNumberField" class="shrink py-0" @keypress="isNumber($event)" :rules="[rules.phoneNumber('Fax number must be valid')]" :maxlength="10" v-model="authorityCopy.faxNumber">
                 </v-text-field>
@@ -787,6 +787,9 @@ export default {
       await this.$nextTick();
       this.$refs.authorityForm.validate();
     },
+    showEditLinks(fieldValue) {
+      return this.canEditAuthorities() && !fieldValue;
+    },
     saveAuthority() {
       this.loading = true;
 
@@ -918,7 +921,6 @@ export default {
 }
 
 .editField {
-  font-style: italic;
   font-size: 14px;
   color: rgb(0, 51, 102);
   vertical-align: super;

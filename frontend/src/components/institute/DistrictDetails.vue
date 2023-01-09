@@ -57,7 +57,7 @@
               </v-icon>
               <div v-if="!editing">
                 <span v-if="district.phoneNumber" class="ml-n1">{{ formatPhoneNumber(district.phoneNumber) }}</span>
-                <a v-else class="editField" @click="toggleEdit">+phone</a>
+                <a v-if="showEditLinks(district.phoneNumber)" class="editField" @click="toggleEdit">+phone</a>
               </div>
               <v-text-field id="districtDetailsPhoneNumber" v-else class="shrink py-0" @keypress="isNumber($event)" required :maxlength="10" :rules="[rules.required(), rules.phoneNumber()]" v-model="districtDetailsCopy.phoneNumber"/>
             </v-col>
@@ -67,7 +67,7 @@
               </v-icon>
               <div v-if="!editing">
                 <span v-if="district.email" class="ml-n1">{{ district.email }}</span>
-                <a v-else class="editField" @click="toggleEdit">+email</a>
+                <a v-if="showEditLinks(district.email)" class="editField" @click="toggleEdit">+email</a>
               </div>
               <v-text-field id="districtDetailsEmail" v-else class="py-0" required :rules="[rules.email()]" :maxlength="255" v-model="districtDetailsCopy.email"/>
             </v-col>
@@ -77,7 +77,7 @@
               </v-icon>
               <div v-if="!editing">
                 <span v-if="district.faxNumber" class="ml-n1">{{ formatPhoneNumber(district.faxNumber) }}</span>
-                <a v-else class="editField" @click="toggleEdit">+fax</a>
+                <a v-if="showEditLinks(district.faxNumber)" class="editField" @click="toggleEdit">+fax</a>
               </div>
               <v-text-field id="districtDetailsFaxNumber" v-else class="shrink py-0" @keypress="isNumber($event)" :rules="[rules.phoneNumber('Fax number must be valid')]" :maxlength="10" v-model="districtDetailsCopy.faxNumber"/>
             </v-col>
@@ -87,7 +87,7 @@
               </v-icon>
               <div v-if="!editing">
                 <a v-if="cleanWebsiteUrl" :href="cleanWebsiteUrl" target="_blank">{{ cleanWebsiteUrl }}</a>
-                <a v-else class="editField" @click="toggleEdit">+website</a>
+                <a v-if="showEditLinks(cleanWebsiteUrl)" class="editField" @click="toggleEdit">+website</a>
               </div>
               <v-text-field v-if="editing" class="py-0" :rules="[rules.website()]" :maxlength="255" v-model="districtDetailsCopy.website"/>
             </v-col>
@@ -563,6 +563,9 @@ export default {
       this.editing = false;
       this.setHasSamePhysicalFlag();
     },
+    showEditLinks(fieldValue) {
+      return this.canEditDistrictDetails() && !fieldValue;
+    },
     setHasSamePhysicalFlag(){
       this.sameAsMailingCheckbox = this.hasSamePhysicalAddress;
     },
@@ -756,7 +759,6 @@ export default {
 }
 
 .editField {
-  font-style: italic;
   font-size: 14px;
   color: rgb(0, 51, 102);
   vertical-align: super;
