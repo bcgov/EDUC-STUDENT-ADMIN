@@ -36,7 +36,7 @@
                     :items="authorityNames"
                     :disabled="authorityDisabled"
                     :rules="[authorityRule]"
-                    v-model="newSchool.authorityName"
+                    v-model="newSchool.independentAuthorityId"
                     clearable>
                 </v-autocomplete>
               </v-col>
@@ -348,7 +348,7 @@ export default {
       noGradeSchoolCategory: ['POST_SEC', 'EAR_LEARN'],
       newSchool: {
         districtID: null,
-        authorityID: null,
+        independentAuthorityId: null,
         displayName: null,
         openedDate: this.calculateDefaultOpenDate(),
         schoolCategoryCode: null,
