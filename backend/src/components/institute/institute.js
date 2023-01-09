@@ -259,6 +259,7 @@ async function addSchool(req, res) {
       updateUser: utils.getUser(req).idir_username,
       updateDate: null,
       districtId: req.body.districtID,
+      independentAuthorityId: req.body.independentAuthorityId,
       faxNumber: req.body.faxNumber,
       phoneNumber: req.body.phoneNumber,
       email: req.body.email,
