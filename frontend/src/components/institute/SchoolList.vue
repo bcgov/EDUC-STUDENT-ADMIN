@@ -8,7 +8,7 @@
         <a class="ml-1 mt-1" @click="backButtonClick">Return to Dashboard</a>
       </v-col>
       <v-col class="d-flex justify-end">
-        <PrimaryButton :disabled="!canAddSchool()" id="addSchoolBtn" icon-left width="11em" icon="mdi-plus-thick" text="New School" @click.native="newSchoolSheet = !newSchoolSheet"></PrimaryButton>
+        <PrimaryButton v-if="canAddSchool()" id="addSchoolBtn" icon-left width="11em" icon="mdi-plus-thick" text="New School" @click.native="newSchoolSheet = !newSchoolSheet"></PrimaryButton>
       </v-col>
     </v-row>
     <v-row style="background: rgb(235, 237, 239);border-radius: 8px;" class="pt-0 px-3 elevation-2">

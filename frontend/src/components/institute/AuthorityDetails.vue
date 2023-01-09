@@ -32,7 +32,7 @@
               </v-col>
               <v-col v-if="!editing" cols="4" class="d-flex justify-end">
                 <PrimaryButton id="viewAuthorityContactsButton" class="mr-2" secondary icon-left icon="mdi-account-multiple-outline" :to="`/authorityContacts/${authorityID}`" text="View Authority Contacts"></PrimaryButton>
-                <PrimaryButton id="editButton" icon-left width="6em" icon="mdi-pencil" text="Edit" :disabled="!canEditAuthorities()" @click.native="toggleEdit"></PrimaryButton>
+                <PrimaryButton id="editButton" icon-left width="6em" icon="mdi-pencil" text="Edit" v-if="canEditAuthorities()" @click.native="toggleEdit"></PrimaryButton>
               </v-col>
               <v-col v-else cols="4" class="d-flex justify-end">
                 <PrimaryButton class="mr-2" secondary id="cancelButton" icon-left width="6em" text="Cancel" @click.native="editing = !editing"></PrimaryButton>
@@ -451,7 +451,7 @@
                     <h2>Ministry Notes</h2>
                   </v-col>
                   <v-col class="d-flex justify-end">
-                    <PrimaryButton id="addNewNoteButton" width="9em" icon="mdi-plus" icon-left text="New Note" :disabled="!canEditAuthorities()" @click.native="newNoteSheet = !newNoteSheet"></PrimaryButton>
+                    <PrimaryButton id="addNewNoteButton" width="9em" icon="mdi-plus" icon-left text="New Note" v-if="canEditAuthorities()" @click.native="newNoteSheet = !newNoteSheet"></PrimaryButton>
                   </v-col>
                 </v-row>
                 <v-row>

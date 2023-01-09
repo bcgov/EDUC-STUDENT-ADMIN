@@ -36,7 +36,7 @@
         </v-col>
         <v-col class="d-flex justify-end">
           <PrimaryButton id="viewAuthorityDetailsButton" class="mr-2" secondary icon-left icon="mdi-domain" :to="`/authority/${authorityID}`" text="View Authority Details"></PrimaryButton>
-          <PrimaryButton icon-left width="11em" icon="mdi-plus-thick" text="New Contact" :disabled="!canEditAuthorityContact()"  @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
+          <PrimaryButton icon-left width="11em" icon="mdi-plus-thick" text="New Contact" v-if="canEditAuthorityContact()"  @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
         </v-col>
       </v-row>
       <div v-for="authorityContactType in authorityContactTypes" :key="authorityContactType.code">

@@ -8,7 +8,7 @@
           <a class="ml-1" @click="backButtonClick">Return to Dashboard</a>
         </v-col>
         <v-col class="d-flex justify-end">
-          <PrimaryButton :disabled="!canAddAuthority()" id="addAuthorityBtn" icon-left width="12em" icon="mdi-plus-thick" text="New Authority" @click.native="newAuthoritySheet = !newAuthoritySheet"></PrimaryButton>
+          <PrimaryButton v-if="canAddAuthority()" id="addAuthorityBtn" icon-left width="12em" icon="mdi-plus-thick" text="New Authority" @click.native="newAuthoritySheet = !newAuthoritySheet"></PrimaryButton>
         </v-col>
       </v-row>
       <v-row style="background: rgb(235, 237, 239);border-radius: 8px;" class="px-3 elevation-2">

@@ -36,7 +36,7 @@
                              icon="mdi-history" @click.native="openHistory"
                              text="Show History"></PrimaryButton>
               <PrimaryButton id="schoolDetailsEditButton" icon-left width="6em" icon="mdi-pencil" text="Edit"
-                             :disabled="!canEditSchoolDetails()" @click.native="toggleEdit"></PrimaryButton>
+                             v-if="canEditSchoolDetails()" @click.native="toggleEdit"></PrimaryButton>
             </v-col>
             <v-col v-else cols="6" class="d-flex justify-end">
               <PrimaryButton class="mr-2" secondary id="cancelButton" icon-left width="6em" text="Cancel"
@@ -551,7 +551,9 @@
                 <h2>Ministry Notes</h2>
               </v-col>
               <v-col class="d-flex justify-end">
-                <PrimaryButton id="addNewNoteButton" width="9em" icon="mdi-plus" icon-left text="New Note" :disabled="!canEditSchoolDetails()" @click.native="newNoteSheet = !newNoteSheet"></PrimaryButton>
+                <PrimaryButton id="addNewNoteButton" width="9em" icon="mdi-plus" icon-left text="New Note"
+                               v-if="canEditSchoolDetails()" @click.native="newNoteSheet = !newNoteSheet">
+                </PrimaryButton>
               </v-col>
             </v-row>
             <v-row>
