@@ -33,7 +33,7 @@
             <v-select
               id="status-select-field"
               clearable
-              :items="schoolCategoryTypes"
+              :items="activeSchoolCategoryTypes"
               v-model="schoolCategoryTypeFilter"
               item-text="label"
               item-value="schoolCategoryCode" label="School Category"></v-select>
@@ -177,7 +177,7 @@
             </v-row>
           </template>
 
-          <template v-slot:no-data>There are no schools.</template>
+          <template v-slot:no-data>-</template>
 
         </v-data-table>
       </v-col>
@@ -264,6 +264,7 @@ export default {
       schoolStatusFilter: 'Open',
       schoolFacilityTypes: [],
       schoolCategoryTypes: [],
+      activeSchoolCategoryTypes: [],
       schoolCategoryTypeFilter: '',
       schoolFacilityTypeFilter: '',
       loadingSchools: true,
@@ -275,6 +276,7 @@ export default {
     ...mapState('app', ['schoolsMap']),
     ...mapState('institute', ['activeFacilityTypeCodes']),
     ...mapState('institute', ['activeSchoolCategoryTypeCodes']),
+    ...mapState('institute', ['schoolCategoryTypeCodes']),
     getSheetWidth(){
       switch (this.$vuetify.breakpoint.name) {
       case 'xs':
@@ -290,8 +292,11 @@ export default {
     this.$store.dispatch('institute/getAllActiveFacilityTypeCodes').then(() => {
       this.schoolFacilityTypes = this.activeFacilityTypeCodes;
     });
+    this.$store.dispatch('institute/getAllSchoolCategoryTypeCodes').then(() => {
+      this.schoolCategoryTypes = this.schoolCategoryTypeCodes;
+    });
     this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes').then(() => {
-      this.schoolCategoryTypes = this.activeSchoolCategoryTypeCodes;
+      this.activeSchoolCategoryTypes = this.activeSchoolCategoryTypeCodes;
     });
 
     this.setSchoolStatuses();
@@ -300,7 +305,6 @@ export default {
     this.getActiveDistrictDropDownItems();
     this.getAuthorityDropDownItems();
     this.getActiveAuthorityDropDownItems();
-    this.getSchoolList();
   },
   methods: {
     canAddSchool() {
@@ -390,6 +394,10 @@ export default {
         this.setFailureAlert('An error occurred while getting active authorities. Please try again later.');
       });
     },
+    clearSchoolList() {
+      this.schools = [];
+      this.totalSchools = 0;
+    },
     getSchoolList() {
       this.loadingTable = true;
       this.requests = [];
@@ -455,7 +463,7 @@ export default {
       return this.schoolFacilityTypes.find((facility) => facility.facilityTypeCode === school.facilityTypeCode).label;
     },
     getSchoolCategory(school){
-      return this.activeSchoolCategoryTypeCodes.find((category) => category.schoolCategoryCode === school.schoolCategoryCode).label;
+      return this.schoolCategoryTypes.find((category) => category.schoolCategoryCode === school.schoolCategoryCode).label;
     },
     formatPhoneNumber,
     sortByNameValue,
@@ -508,7 +516,7 @@ export default {
       this.headerSearchParams.status = '';
       this.headerSearchParams.type = '';
 
-      this.getSchoolList();
+      this.clearSchoolList();
     },
     searchButtonClick() {
       this.resetPageNumber();
