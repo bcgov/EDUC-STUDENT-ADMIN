@@ -116,7 +116,7 @@
               <v-col cols="4">
                 <v-select
                     id='newSchoolGradesOfferedInput'
-                    v-model="newSchool.gradesOffered"
+                    v-model="newSchool.grades"
                     :items="gradeCodes"
                     item-value="schoolGradeCode"
                     item-text="label"
@@ -501,7 +501,7 @@ export default {
       }
       if(this.newSchool.schoolCategoryCode && this.noGradeSchoolCategory.includes(this.newSchool.schoolCategoryCode)) {
         this.isGradeOfferedDisabled = true;
-        this.newSchool.gradesOffered = null;
+        this.newSchool.grades = null;
       } else{
         this.isGradeOfferedDisabled = false;
       }
