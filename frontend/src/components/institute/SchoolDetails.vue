@@ -636,7 +636,7 @@
     >
       <SchoolStatus v-if="openSchoolStatusEditCard"  @updateSchoolDates="handleUpdatesToSchoolStatus"
                     @schoolStatus:closeEditSchoolStatusPage="openSchoolStatusEditCard = !openSchoolStatusEditCard"
-                    :school-open-date="schoolDetailsCopy.openedDate" :school-close-date="schoolDetailsCopy.closedDate" :school-status="schoolDetailsCopy.status"></SchoolStatus>
+                    :school-open-date="schoolDetailsCopy.openedDate" :school-close-date="schoolDetailsCopy.closedDate" :school-status="schoolDetailsCopy.status" :isSchoolStatusUpdateAllowed="isSchoolStatusUpdateAllowed"></SchoolStatus>
     </v-dialog>
   </v-form>
 </template>
@@ -696,6 +696,7 @@ export default {
       countryCodeValues: [],
       rules: Rules,
       openSchoolStatusEditCard: false,
+      isSchoolStatusUpdateAllowed: true
     };
   },
   computed: {
@@ -845,12 +846,19 @@ export default {
       ApiService.apiAxios.get(`${Routes.institute.AUTHORITY_DATA_URL}/${authorityId}`)
         .then(response => {
           this.authority = response.data;
+          this.populateExtraAuthorityFields(this.authority);
         }).catch(error => {
           console.error(error);
           this.setFailureAlert(error.response?.data?.message || error.message);
         }).finally(() => {
           this.loading = false;
         });
+    },
+    populateExtraAuthorityFields(authority) {
+      authority.status = getStatusAuthorityOrSchool(authority);
+      if(authority.status === 'Closed' || authority.status === 'Closing') {
+        this.isSchoolStatusUpdateAllowed = false;
+      }
     },
     populateExtraSchoolFields(school){
       school.status = getStatusAuthorityOrSchool(school);

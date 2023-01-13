@@ -1,5 +1,22 @@
 <template>
-  <v-card
+  <div>
+      <v-card v-if="!isSchoolStatusUpdateAllowed">
+        <v-card-title class="sheetHeader pt-1 pb-1">Update School Status</v-card-title>
+        <v-divider></v-divider>
+        <v-card-text>
+          <v-row class="d-flex justify-start">
+            <v-col>  
+              <p>The status of this school cannot be updated.</p>
+              <p>The school is under an Independent School Authority that is closing or closed.</p>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions class="justify-end">
+          <PrimaryButton id="newContactPostBtn" text="Okay" @click.native="cancel"></PrimaryButton>
+        </v-card-actions>
+     </v-card>
+
+    <v-card v-else
       id="schoolStatusVCard">
     <v-form ref="schoolStatusForm" v-model="isFormValid">
     <v-card-title class="sheetHeader pt-1 pb-1">Update School Status</v-card-title>
@@ -207,6 +224,7 @@
     </v-card-actions>
     </v-form>
   </v-card>
+</div>
 </template>
 
 <script>
@@ -232,12 +250,18 @@ export default {
       type: String,
       required: true
     },
+    isSchoolStatusUpdateAllowed: {
+      type: Boolean,
+      required: true
+    }
   },
   components: {
     PrimaryButton,
   },
   mounted() {
-    this.validateForm();
+    if(this.isSchoolStatusUpdateAllowed) {
+      this.validateForm();
+    }
   },
   data() {
     return {
@@ -332,7 +356,6 @@ export default {
       this.$emit('schoolStatus:closeEditSchoolStatusPage');
     },
     cancel() {
-      this.resetForm();
       this.$emit('schoolStatus:closeEditSchoolStatusPage');
     },
     updateSchoolDates() {
