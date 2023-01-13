@@ -157,7 +157,7 @@
             </v-row>
             <v-row v-if="!hasMailingAddress() && !editing" no-gutters class="d-flex justify-start">
               <v-col>
-                <span>Not Provided</span>
+                <a class="editField" @click="toggleEdit">+ address</a>
               </v-col>
             </v-row>
             <v-row v-else no-gutters class="d-flex justify-start">
