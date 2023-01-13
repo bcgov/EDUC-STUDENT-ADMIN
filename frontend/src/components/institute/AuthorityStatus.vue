@@ -78,15 +78,15 @@
               <v-col>
                 <p>This authority cannot be closed, as there are still open schools under this authority.</p>
                 <p>The schools must be closed or moved to another authority before the authority can be closed.</p>
-                <div v-for="openSchool in listOfOpenSchools" :key="openSchool.schoolId">
+                <div class="pb-2" v-for="openSchool in listOfOpenSchools" :key="openSchool.schoolId">
                   <ul class="school-highlight">
                     <li>
-                      {{openSchool.mincode}} - {{openSchool.displayName}}
+                      {{openSchool.mincode}} - <a class="details" @click="openSchoolDetailsPage(openSchool.schoolId)">{{openSchool.displayName}}</a>
                     </li>
                   </ul>
                 </div>
               <p>Refresh the page to see an updated list and options</p>
-              </v-col>
+              </v-col> 
             </v-row>
             <v-row class="d-flex justify-start" v-if="action === 'setCloseDate' && !authorityHasOpenSchools">
               <v-col>
@@ -94,12 +94,12 @@
                   <p>Some schools under this authority have closing dates in the future.</p>
                   <p>The closing date of the authority must be on or after <strong>{{dateOfLastSchoolClosureFormatted}}</strong>.</p>
                   <p>The following schools have close dates in the future:</p>
-                  <div v-for="closingSchool in listOfClosingSchools" :key="closingSchool.schoolId">
+                  <div class="pb-2" v-for="closingSchool in listOfClosingSchools" :key="closingSchool.schoolId">
                     <ul class="school-highlight">
-                    <li>
-                      {{closingSchool.mincode}} - {{closingSchool.displayName}}
-                    </li>
-                  </ul>
+                      <li>
+                        {{closingSchool.mincode}} - <a class="details" @click="openSchoolDetailsPage(closingSchool.schoolId)">{{closingSchool.displayName}}</a>
+                      </li>
+                    </ul>
                   </div>
                   <p>Refresh the page to see an updated list of schools.</p>
                 </v-alert>
@@ -362,6 +362,10 @@ export default {
       this.resetForm();
       this.$emit('authorityStatus:closeEditAuthorityStatusPage');
     },
+    openSchoolDetailsPage(schoolID) {
+      const route = this.$router.resolve({ name: 'schoolDetails', params: {schoolID: schoolID}});
+      window.open(route.href, '_blank');
+    },
     resetForm() {
       this.$refs.authorityStatusForm.reset();
     },
@@ -402,6 +406,13 @@ export default {
 }
 .v-alert__content p:last-child {
   margin-bottom: 0;
+}
+.details {
+  color: rgb(0, 51, 102);
+}
+
+.details:hover {
+  text-decoration: underline;
 }
 
 .school-highlight {
