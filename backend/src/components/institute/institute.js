@@ -311,16 +311,21 @@ async function addSchool(req, res) {
       payload.addresses.push(physicalAddress);
     }
 
-    for (const nlcCode of req.body.neighborhoodLearning) {
-      payload.neighborhoodLearning.push({
-        neighborhoodLearningTypeCode: nlcCode
-      });
+
+    if(req.body.neighborhoodLearning) {
+      for (const nlcCode of req.body.neighborhoodLearning) {
+        payload.neighborhoodLearning.push({
+          neighborhoodLearningTypeCode: nlcCode
+        });
+      }
     }
 
-    for (const gradeCode of req.body.grades) {
-      payload.grades.push({
-        schoolGradeCode: gradeCode,
-      });
+    if(req.body.grades){
+      for (const gradeCode of req.body.grades) {
+        payload.grades.push({
+          schoolGradeCode: gradeCode,
+        });
+      }
     }
 
     const data = await utils.postData(token, config.get('server:institute:instituteSchoolURL'), payload, null, utils.getUser(req).idir_username);
