@@ -244,7 +244,7 @@
                       </v-col>
                     </v-row>
                     <v-row no-gutters v-if="sameAsMailingCheckbox" class="pt-4">
-                      <v-checkbox dense id="sameAsMailingCheckbox" @click.native="fireFormValidate" v-model="sameAsMailingCheckbox"
+                      <v-checkbox dense id="sameAsMailingCheckbox" @click="fireFormValidate" v-model="sameAsMailingCheckbox"
                         label="Same as Mailing Address" class="mt-n3 pt-0"></v-checkbox>
                     </v-row>
                     <v-row no-gutters v-else>
@@ -282,7 +282,7 @@
                     </v-row>
                     <v-row no-gutters v-if="!sameAsMailingCheckbox" class="pt-4">
                       <v-col>
-                        <v-checkbox dense id="sameAsMailingCheckbox" @click.native="fireFormValidate"
+                        <v-checkbox dense id="sameAsMailingCheckbox" @click="fireFormValidate"
                           v-model="sameAsMailingCheckbox" label="Same as Mailing Address" class="mt-n3 pt-0"></v-checkbox>
                       </v-col>
                     </v-row>
@@ -498,6 +498,7 @@ export default {
       } else{
         this.authorityDisabled = true;
         this.newSchool.authorityName = null;
+        this.newSchool.independentAuthorityId = null;
       }
       if(this.newSchool.schoolCategoryCode && this.noGradeSchoolCategory.includes(this.newSchool.schoolCategoryCode)) {
         this.isGradeOfferedDisabled = true;
