@@ -1,7 +1,7 @@
 <template>
-  <v-row>
+  <v-row style="height: 100%">
     <v-col>
-      <v-card>
+      <v-card height="100%">
         <v-card-title class="pb-0">
           <v-row no-gutters>
             <v-col>
