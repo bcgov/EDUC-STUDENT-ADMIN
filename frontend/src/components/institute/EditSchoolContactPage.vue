@@ -8,7 +8,7 @@
         <v-row class="d-flex justify-center">
           <v-col>
             <v-select
-                id='schoolContactTypeDropdown'
+                id='editSchoolContactTypeDropdown'
                 :rules="[rules.required()]"
                 v-model="editContact.schoolContactTypeCode"
                 :items="schoolContactTypes"
