@@ -36,7 +36,7 @@
         </v-col>
         <v-col class="d-flex justify-end">
           <PrimaryButton id="viewSchoolDetailsButton" class="mr-2" secondary icon-left icon="mdi-domain" :to="`/institute/school/${schoolID}/details`" text="View School Details"></PrimaryButton>
-          <PrimaryButton v-if="canAddEditSchoolContact()" id="addSchoolContactBtn" icon-left width="11em" icon="mdi-plus-thick" text="New Contact" @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
+          <PrimaryButton v-if="canAddEditSchoolContact" id="addSchoolContactBtn" icon-left width="11em" icon="mdi-plus-thick" text="New Contact" @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
         </v-col>
       </v-row>
       <div v-for="schoolContactType in schoolContactTypes" :key="schoolContactType.code">
@@ -47,7 +47,7 @@
         </v-row>
         <v-row cols="2" v-if="schoolContacts.has(schoolContactType.schoolContactTypeCode)">
           <v-col cols="5" lg="4" v-for="contact in schoolContacts.get(schoolContactType.schoolContactTypeCode)" :key="contact.schoolId">
-            <SchoolContact :contact="contact" :schoolID="$route.params.schoolID" @editSchoolContact:editSchoolContactSuccess="contactEditSuccess" :canEditSchoolContact="canAddEditSchoolContact()"/>
+            <SchoolContact :contact="contact" @editSchoolContact:doShowEditSchoolContactForm="showContactEditForm(contact)" :canEditSchoolContact="canAddEditSchoolContact"/>
           </v-col>
         </v-row>
         <v-row cols="2" v-else>
@@ -73,6 +73,22 @@
           @newSchoolContact:addNewSchoolContact="newSchoolContactAdded"
       />
     </v-bottom-sheet>
+    <v-bottom-sheet
+        v-model="editContactSheet"
+        inset
+        no-click-animation
+        scrollable
+        persistent
+    >
+      <EditSchoolContactPage
+          v-if="editContactSheet"
+          :contact="editContact"
+          :schoolContactTypes="this.schoolContactTypes"
+          :schoolID="this.$route.params.schoolID"
+          @editSchoolContact:cancelEditSchoolContactPage="editContactSheet = !editContactSheet"
+          @editSchoolContact:editSchoolContactSuccess="contactEditSuccess"
+      />
+    </v-bottom-sheet>
   </v-container>
 </template>
 
@@ -83,6 +99,7 @@ import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton';
 import SchoolContact from './SchoolContact';
 import NewSchoolContactPage from './NewSchoolContactPage';
+import EditSchoolContactPage from './EditSchoolContactPage';
 import alertMixin from '@/mixins/alertMixin';
 import {mapGetters} from 'vuex';
 import {isExpired} from '@/utils/institute/status';
@@ -92,7 +109,7 @@ export default {
   name: 'SchoolContactsPage',
   mixins: [alertMixin],
   components: {
-    PrimaryButton, SchoolContact, NewSchoolContactPage
+    PrimaryButton, SchoolContact, NewSchoolContactPage, EditSchoolContactPage
   },
   props: {
     schoolID: {
@@ -107,15 +124,22 @@ export default {
       schoolContactTypes: [],
       schoolContacts: new Map(),
       school: {},
-      newContactSheet: false
+      editContact: null,
+      newContactSheet: false,
+      editContactSheet: false
     };
   },
   computed: {
     ...mapGetters('auth', ['isAuthenticated','userInfo', 'SCHOOL_INDEPENDENT_ADMIN_ROLE', 'SCHOOL_ADMIN_ROLE']),
-
     loading() {
       return this.loadingCount !== 0;
-    }
+    },
+    canAddEditSchoolContact() {
+      if(this.school.schoolCategoryCode && this.independentArray.includes(this.school.schoolCategoryCode)){
+        return this.SCHOOL_INDEPENDENT_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE;
+      }
+      return this.SCHOOL_ADMIN_ROLE;
+    },
   },
   created() {
     this.getSchoolContactTypeCodes();
@@ -139,7 +163,7 @@ export default {
       this.loadingCount += 1;
       let searchSchoolID = this.schoolID;
 
-      ApiService.apiAxios.get(`${Routes.institute.SCHOOL_DATA_URL}/` + searchSchoolID)
+      ApiService.apiAxios.get(`${Routes.institute.SCHOOL_DATA_URL}/${searchSchoolID}`)
         .then(response => {
           this.schoolContacts = new Map();
           this.school = response.data;
@@ -163,13 +187,12 @@ export default {
     backButtonClick() {
       this.$router.push({name: 'instituteSchoolList'});
     },
-    canAddEditSchoolContact() {
-      if(this.school.schoolCategoryCode && this.independentArray.includes(this.school.schoolCategoryCode)){
-        return this.SCHOOL_INDEPENDENT_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE;
-      }
-      return this.SCHOOL_ADMIN_ROLE;
+    showContactEditForm(contact) {
+      this.editContact = contact;
+      this.editContactSheet = true;
     },
     contactEditSuccess() {
+      this.editContactSheet = false;
       this.getThisSchoolsContacts();
     },
     newSchoolContactAdded() {
