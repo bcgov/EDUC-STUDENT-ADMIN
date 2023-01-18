@@ -64,27 +64,25 @@
     </v-row>
     <!--    user info -->
     <Spinner v-if="loadingUsers"/>
-    <v-row v-else>
+    <v-row class="d-flex align-stretch" v-else>
       <v-col xl="4" cols="6" class="pb-0" v-for="user in filteredUsers" :key="user.digitalID">
         <AccessUserCard @refresh="getUsersData" :userRoles="user.edxUserSchools[0].edxUserSchoolRoles" :user="user" :institute-code="schoolID" :institute-roles="schoolRoles" institute-type-code="SCHOOL" institute-type-label="School"></AccessUserCard>
       </v-col>
-      <v-col xl="4" cols="6" >
-        <v-row>
-          <v-col style="height: 184px">
+      <v-col xl="4" cols="6" class="pb-0">
+        <v-row style="height: 100%;">
+          <v-col style="min-height: 184px">
             <v-card height="100%">
-              <v-card-title>
-                <v-row no-gutters>
-                  <v-col class="d-flex justify-center mt-12">
-                    <PrimaryButton icon="mdi-plus"
-                                   :large-icon=true
-                                   id="new-user-button"
-                                   secondary
-                                   icon-left
-                                   text="Add New User"
-                                   @click.native="newUserInviteSheet = !newUserInviteSheet"/>
-                  </v-col>
-                </v-row>
-              </v-card-title>
+              <v-row style="height: 100%;" no-gutters>
+                <v-col class="d-flex align-center justify-center">
+                  <PrimaryButton icon="mdi-plus"
+                                 :large-icon=true
+                                 id="new-user-button"
+                                 secondary
+                                 icon-left
+                                 text="Add New User"
+                                 @click.native="newUserInviteSheet = !newUserInviteSheet"/>
+                </v-col>
+              </v-row>
             </v-card>
           </v-col>
         </v-row>
@@ -140,7 +138,13 @@ import ClipboardButton from '@/components/util/ClipboardButton';
 export default {
   name: 'AccessUsersPage',
   mixins: [ alertMixin ],
-  components: { ClipboardButton, InviteUserPage, PrimaryButton, AccessUserCard, Spinner },
+  components: {
+    AccessUserCard,
+    ClipboardButton,
+    InviteUserPage,
+    PrimaryButton,
+    Spinner
+  },
   props: {
     schoolID: {
       type: String,
