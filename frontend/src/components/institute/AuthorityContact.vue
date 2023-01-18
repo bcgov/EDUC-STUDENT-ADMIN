@@ -28,10 +28,14 @@
               </v-col>
             </v-row>
             <v-row no-gutters>
-              <v-col cols="12" class="pt-1">
+              <v-col v-if="!contact.email || !contact.phoneNumber" cols="12" class="pt-1">
+                <p class="missing-highlight"><v-icon size="x-large" color="#ff5252" dark>mdi-alert</v-icon> Missing contact details</p>
+                <a class="editField" @click="openContactEditForm(contact)">+ email or phone</a>
+              </v-col>
+              <v-col v-if="contact.email" cols="12" class="pt-1">
                 <span id="contactEmail"> {{ contact.email }}</span>
               </v-col>
-              <v-col cols="12" class="pt-1">
+              <v-col v-if="contact.phoneNumber" cols="12" class="pt-1">
                 <span id="contactPhoneNumber">{{ formatPhoneNumber(contact.phoneNumber) }}</span><span v-if="contact.phoneExtension"> ext. {{contact.phoneExtension}}</span>
               </v-col>
               <v-col cols="12" class="pt-1" v-if="contact.alternatePhoneNumber">
@@ -329,3 +333,20 @@ export default {
   }
 };
 </script>
+<style scoped>
+.editField {
+  font-size: 16px;
+  color: rgb(0, 51, 102);
+  vertical-align: super;
+}
+
+.editField:hover {
+  text-decoration: underline;
+}
+
+.missing-highlight {
+  color: #ff5252;
+  word-break: break-word;
+  font-size: 16px;
+}
+</style>
