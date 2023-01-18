@@ -76,7 +76,9 @@
             <PrimaryButton id="user-search-button" class="ml-2" @click.native="searchButtonClick" :disabled="searchEnabled()">Search</PrimaryButton>
           </v-col>
         </v-row>
-        <v-row class="d-flex align-stretch">
+        <!-- user info -->
+        <Spinner v-if="loadingUsers"/>
+        <v-row class="d-flex align-stretch" v-else>
           <v-col xl="4" cols="6" class="pb-0" v-for="user in filteredUsers" :key="user.digitalID">
             <AccessUserCard @refresh="getUsersData" :userRoles="user.edxUserDistricts[0].edxUserDistrictRoles" :user="user" :institute-code="districtId" :institute-roles="districtRoles" institute-type-code="DISTRICT" institute-type-label="District"></AccessUserCard>
           </v-col>
@@ -146,13 +148,20 @@ import PrimaryButton from '@/components/util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
 import InviteUserPage from '@/components/secure-message/InviteUserPage';
 import AccessUserCard from '@/components/secure-message/AccessUserCard';
+import Spinner from '@/components/common/Spinner';
 import router from '@/router';
 import ClipboardButton from '@/components/util/ClipboardButton';
 
 export default {
   name: 'AccessDistrictUsersPage',
   mixins: [ alertMixin ],
-  components: { ClipboardButton, InviteUserPage, PrimaryButton, AccessUserCard },
+  components: {
+    AccessUserCard,
+    ClipboardButton,
+    InviteUserPage,
+    PrimaryButton,
+    Spinner
+  },
   props: {
     districtId: {
       type: String,

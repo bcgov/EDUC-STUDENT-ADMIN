@@ -138,7 +138,13 @@ import ClipboardButton from '@/components/util/ClipboardButton';
 export default {
   name: 'AccessUsersPage',
   mixins: [ alertMixin ],
-  components: { ClipboardButton, InviteUserPage, PrimaryButton, AccessUserCard, Spinner },
+  components: {
+    AccessUserCard,
+    ClipboardButton,
+    InviteUserPage,
+    PrimaryButton,
+    Spinner
+  },
   props: {
     schoolID: {
       type: String,
