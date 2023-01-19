@@ -347,7 +347,7 @@ export default {
       let onlyLetters = gradeList.filter(x => !onlyNumbers.includes(x));
 
       onlyNumbers = onlyNumbers.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-      gradeList = onlyNumbers.concat(onlyLetters.sort());
+      gradeList = onlyNumbers.concat(onlyLetters);
       return gradeList.toString().replace(/,/g, ', ');
     },
     getAuthority(){
