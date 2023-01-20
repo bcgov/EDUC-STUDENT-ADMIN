@@ -30,7 +30,7 @@
             <v-row no-gutters>
               <v-col v-if="!contact.email && !contact.phoneNumber" cols="12" class="pt-1">
                 <p class="missing-highlight"><v-icon size="x-large" color="#ff5252" dark>mdi-alert</v-icon> Missing contact details</p>
-                <a class="editField" @click="openContactEditForm(contact)">+ email or phone</a>
+                <a class="editField" @click="callDoShowEditSchoolContactForm()">+ email or phone</a>
               </v-col>
               <v-col v-if="contact.email" cols="12" class="pt-1">
                 <span id="contactEmail"> {{ contact.email }}</span>
