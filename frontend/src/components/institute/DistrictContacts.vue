@@ -34,7 +34,7 @@
         </v-col>
         <v-col class="d-flex justify-end">
           <PrimaryButton id="viewDistrictDetailsButton" class="mr-2" secondary icon-left icon="mdi-domain" :to="`/district/${districtID}`" text="View District Details" ></PrimaryButton>
-          <PrimaryButton v-if="canEditDistrictContact()" icon-left width="11em" icon="mdi-plus-thick" text="New Contact" @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
+          <PrimaryButton v-if="canEditDistrictContact" icon-left width="11em" icon="mdi-plus-thick" text="New Contact" @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
         </v-col>
       </v-row>
       <div v-for="districtContactType in districtContactTypes" :key="districtContactType.code">
@@ -50,7 +50,7 @@
         </v-row>
         <v-row cols="2" v-if="districtContacts.has(districtContactType.districtContactTypeCode)">
           <v-col cols="5" lg="4" v-for="contact in districtContacts.get(districtContactType.districtContactTypeCode)" :key="contact.schoolId">
-            <DistrictContact :contact="contact" :districtID="$route.params.districtID" @editDistrictContact:editDistrictContactSuccess="contactEditSuccess" :canEditDistrictContact="canEditDistrictContact()" />
+            <DistrictContact :contact="contact" @editDistrictContact:doShowEditDistrictContactForm="showDistrictEditForm(contact)" :canEditDistrictContact="canEditDistrictContact" />
           </v-col>
         </v-row>
         <v-row cols="2" v-else>
@@ -75,6 +75,22 @@
         @newDistrictContact:addNewDistrictContact="newDistrictContactAdded"
       />
     </v-bottom-sheet>
+    <v-bottom-sheet
+        v-model="editContactSheet"
+        inset
+        no-click-animation
+        scrollable
+        persistent
+    >
+      <EditDistrictContactPage
+          v-if="editContactSheet"
+          :contact="editContact"
+          :districtContactTypes="this.districtContactTypes"
+          :districtID="this.$route.params.districtID"
+          @editDistrictContact:cancelEditDistrictContactPage="editContactSheet = !editContactSheet"
+          @editDistrictContact:editDistrictContactSuccess="contactEditSuccess"
+      />
+    </v-bottom-sheet>
   </v-container>
 </template>
 
@@ -83,18 +99,20 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton';
-import {mapGetters} from 'vuex';
-import alertMixin from '@/mixins/alertMixin';
-import {isExpired} from '@/utils/institute/status';
 import DistrictContact from '@/components/institute/DistrictContact';
-import {sortBy} from 'lodash';
 import NewDistrictContactPage from '@/components/institute/NewDistrictContactPage';
+import EditDistrictContactPage from '@/components/institute/EditDistrictContactPage';
+import alertMixin from '@/mixins/alertMixin';
+import {mapGetters} from 'vuex';
+import {sortBy} from 'lodash';
+import {isExpired} from '@/utils/institute/status';
 
 export default {
   name: 'DistrictContactsPage',
   mixins: [alertMixin],
   components: {
     NewDistrictContactPage,
+    EditDistrictContactPage,
     DistrictContact,
     PrimaryButton,
   },
@@ -110,13 +128,18 @@ export default {
       districtContactTypes: [],
       districtContacts: new Map(),
       districtDetails: '',
-      newContactSheet: false
+      editContact: null,
+      newContactSheet: false,
+      editContactSheet: false
     };
   },
   computed: {
     ...mapGetters('auth', ['isAuthenticated','userInfo', 'DISTRICT_ADMIN_ROLE']),
     loading() {
       return this.loadingCount !== 0;
+    },
+    canEditDistrictContact() {
+      return this.DISTRICT_ADMIN_ROLE;
     }
   },
   created() {
@@ -166,10 +189,12 @@ export default {
     backButtonClick() {
       this.$router.push({name: 'instituteDistrict'});
     },
-    canEditDistrictContact() {
-      return this.DISTRICT_ADMIN_ROLE;
+    showDistrictEditForm(contact) {
+      this.editContact = contact;
+      this.editContactSheet = true;
     },
     contactEditSuccess() {
+      this.editContactSheet = false;
       this.getThisDistrictsContacts();
     },
     newDistrictContactAdded() {
