@@ -48,7 +48,9 @@ Redis.init(); // call the init to initialize appropriate client, and reuse it ac
 const messagePubSub = require('./messaging/message-pub-sub');
 messagePubSub.init().then(() => {
   require('./messaging/handlers/saga-message-handler').subscribe();
+  require('./messaging/handlers/institute-update-handler').subscribe();
   require('./messaging/handlers/jetstream-subscriber').subscribe();
+  require('./messaging/handlers/institute-jetstream-subscriber').subscribe();
 }).catch((e) => log.error(e));
 //initialize app
 const app = express();

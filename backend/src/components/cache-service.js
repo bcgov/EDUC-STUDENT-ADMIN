@@ -31,21 +31,28 @@ const cacheService = {
       // if anything throws, we retry
       const data = await getApiCredentials(); // get the tokens first to make api calls.
       const schools = await getData(data.accessToken, config.get('server:institute:instituteSchoolURL'));
-      mincodeSchoolMap.clear(); // reset the value.
-      schoolMap.clear(); // reset the value.
-      mincodeSchools = []; // reset the value.
-      activeSchools = [];// reset the value.
+      let newMincodeSchoolMap = new Map();
+      let newSchoolMap = new Map();
+      let newMincodeSchools = [];
+      let newActiveSchools = [];
+
       if (schools && schools.length > 0) {
         for (const school of schools) {
           const mincodeSchool = generateSchoolObject(school);
-          mincodeSchoolMap.set(school.mincode, mincodeSchool);
-          schoolMap.set(school.schoolId, mincodeSchool);
-          mincodeSchools.push(mincodeSchool);
+          newMincodeSchoolMap.set(school.mincode, mincodeSchool);
+          newSchoolMap.set(school.schoolId, mincodeSchool);
+          newMincodeSchools.push(mincodeSchool);
           if (isSchoolActive(mincodeSchool)) {
-            activeSchools.push(mincodeSchool);
+            newActiveSchools.push(mincodeSchool);
           }
         }
       }
+
+      mincodeSchoolMap = newMincodeSchoolMap;
+      schoolMap = newSchoolMap;
+      mincodeSchools = newMincodeSchools;
+      activeSchools = newActiveSchools;
+
       log.info(`loaded ${mincodeSchoolMap.size} schools.`);
       log.info(`Loaded ${activeSchools.length} active schools.`);
     }, {
