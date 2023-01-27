@@ -750,10 +750,10 @@ export default {
       this.schoolOrganizationTypes = this.schoolOrganizationTypeCodes;
     });
     this.$store.dispatch('institute/getAllSchoolNeighborhoodLearningCodes').then(() => {
-      this.schoolNeighborhoodLearningTypes = this.schoolNeighborhoodLearningCodes;
+      this.schoolNeighborhoodLearningTypes = sortBy(this.schoolNeighborhoodLearningCodes,['neighborhoodLearningTypeCode']);
     });
     this.$store.dispatch('institute/getAllGradeCodes').then(() => {
-      this.schoolGradeTypes = this.gradeCodes;
+      this.schoolGradeTypes = sortBy(this.gradeCodes,['displayOrder']);
     });
     this.$store.dispatch('institute/getAllProvinceCodes').then(() => {
       this.provinceCodeValues = this.provinceCodes.filter(province =>  province.provinceCode === 'BC' || province.provinceCode === 'YT');
@@ -883,17 +883,14 @@ export default {
     },
     getGradesOffered(rawGrades) {
       let gradeList = [];
-      for (const grade of rawGrades) {
-        let schoolGradeType = this.schoolGradeTypes.find((facility) => facility.schoolGradeCode === grade.schoolGradeCode);
+
+      for (const grade of this.schoolGradeTypes) {
+        let schoolGradeType = rawGrades.find((rawGrade) => rawGrade.schoolGradeCode === grade.schoolGradeCode);
         if (schoolGradeType) {
-          gradeList.push(schoolGradeType.label.replaceAll('Grade ', ''));
+          gradeList.push(grade.label.replaceAll('Grade ', ''));
         }
       }
-      let onlyNumbers = gradeList.filter(Number);
-      let onlyLetters = gradeList.filter(x => !onlyNumbers.includes(x));
 
-      onlyNumbers = onlyNumbers.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-      gradeList = onlyNumbers.concat(onlyLetters);
       return gradeList.toString().replace(/,/g, ', ');
     },
     getSchoolOrganization(school) {
@@ -901,10 +898,10 @@ export default {
     },
     getNLCActivity(school) {
       let nLCActivityList = [];
-      for (const nl of school.neighborhoodLearning) {
-        let schoolNeighborhoodLearningType = this.schoolNeighborhoodLearningTypes.find((facility) => facility.neighborhoodLearningTypeCode === nl.neighborhoodLearningTypeCode);
+      for (const nl of this.schoolNeighborhoodLearningTypes) {
+        let schoolNeighborhoodLearningType = school.neighborhoodLearning.find((facility) => facility.neighborhoodLearningTypeCode === nl.neighborhoodLearningTypeCode);
         if (schoolNeighborhoodLearningType) {
-          nLCActivityList.push(schoolNeighborhoodLearningType.label);
+          nLCActivityList.push(nl.label);
         }
       }
       nLCActivityList.sort();
