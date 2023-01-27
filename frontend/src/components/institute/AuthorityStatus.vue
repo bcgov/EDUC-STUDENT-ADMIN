@@ -38,7 +38,7 @@
             <v-row class="d-flex justify-start" v-if="action === 'setOpenDate'">
               <v-col>
                 <v-row class="d-flex justify-start">
-                  <h3>Select the new open date</h3>
+                  <h3>Select the open date</h3>
                 </v-row>
                 <v-row>
                   <v-col>
@@ -104,7 +104,7 @@
                   <p>Refresh the page to see an updated list of schools.</p>
                 </v-alert>
                 <v-row class="d-flex justify-start">
-                  <h3>Select the new closure date</h3>
+                  <h3>Select the closure date</h3>
                 </v-row>
                 <v-row>
                   <v-col>
@@ -148,7 +148,7 @@
                   <p>The closing date of the authority must be on or after <strong>{{dateOfLastSchoolClosureFormatted}}</strong>.</p>
                 </v-alert>
                 <v-row class="d-flex justify-start">
-                  <h3>Select the closure date</h3>
+                  <h3>Select the new closing date</h3>
                 </v-row>
                 <v-row>
                   <v-col>
