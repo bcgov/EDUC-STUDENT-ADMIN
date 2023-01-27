@@ -3,12 +3,12 @@
     <v-row v-if="loading">
       <v-col class="d-flex justify-center">
         <v-progress-circular
-            class="mt-16"
-            :size="70"
-            :width="7"
-            color="primary"
-            indeterminate
-            :active="loading"
+          class="mt-16"
+          :size="70"
+          :width="7"
+          color="primary"
+          indeterminate
+          :active="loading"
         ></v-progress-circular>
       </v-col>
     </v-row>
@@ -36,7 +36,7 @@
         </v-col>
         <v-col class="d-flex justify-end">
           <PrimaryButton id="viewAuthorityDetailsButton" class="mr-2" secondary icon-left icon="mdi-domain" :to="`/authority/${authorityID}`" text="View Authority Details"></PrimaryButton>
-          <PrimaryButton icon-left width="11em" icon="mdi-plus-thick" text="New Contact" v-if="canEditAuthorityContact()"  @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
+          <PrimaryButton icon-left width="11em" icon="mdi-plus-thick" text="New Contact" v-if="canEditAuthorityContact"  @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
         </v-col>
       </v-row>
       <div v-for="authorityContactType in authorityContactTypes" :key="authorityContactType.code">
@@ -47,7 +47,7 @@
         </v-row>
         <v-row cols="2" v-if="authorityContacts.has(authorityContactType.authorityContactTypeCode)">
           <v-col cols="5" lg="4" v-for="contact in authorityContacts.get(authorityContactType.authorityContactTypeCode)" :key="contact.independentAuthorityId">
-            <AuthorityContact :contact="contact" :authorityID="$route.params.authorityID" @editAuthorityContact:editAuthorityContactSuccess="contactEditSuccess" :canEditAuthorityContact="canEditAuthorityContact()"/>
+            <AuthorityContact :contact="contact" @editAuthorityContact:doShowEditAuthorityContactForm="showContactEditForm(contact)" :canEditAuthorityContact="canEditAuthorityContact"/>
           </v-col>
         </v-row>
         <v-row cols="2" v-else>
@@ -73,6 +73,22 @@
           @newAuthorityContact:addNewAuthorityContact="newAuthorityContactAdded"
       />
     </v-bottom-sheet>
+      <v-bottom-sheet
+        v-model="editContactSheet"
+        inset
+        no-click-animation
+        scrollable
+        persistent
+      >
+        <EditAuthorityContactPage
+          v-if="editContactSheet"
+          :contact="editContact"
+          :authorityContactTypes="this.authorityContactTypes"
+          :authorityID="this.$route.params.authorityID"
+          @editAuthorityContact:cancelEditAuthorityContactPage="editContactSheet = !editContactSheet"
+          @editAuthorityContact:editAuthorityContactSuccess="contactEditSuccess"
+        />
+    </v-bottom-sheet>
   </v-container>
 </template>
 
@@ -87,11 +103,13 @@ import {mapGetters} from 'vuex';
 import AuthorityContact from '@/components/institute/AuthorityContact';
 import NewAuthorityContactPage from '@/components/institute/NewAuthorityContactPage';
 import {sortBy} from 'lodash';
+import EditAuthorityContactPage from '@/components/institute/EditAuthorityContactPage.vue';
 
 export default {
   name: 'AuthorityContactPage',
   mixins: [alertMixin],
   components: {
+    EditAuthorityContactPage,
     PrimaryButton,
     AuthorityContact,
     NewAuthorityContactPage
@@ -109,6 +127,7 @@ export default {
       authorityContacts: new Map(),
       authority: {},
       newContactSheet: false,
+      editContactSheet: false
     };
   },
   created() {
@@ -119,7 +138,10 @@ export default {
     ...mapGetters('auth', ['isAuthenticated','INDEPENDENT_AUTHORITY_ADMIN_ROLE']),
     loading() {
       return this.loadingCount !== 0;
-    }
+    },
+    canEditAuthorityContact() {
+      return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE;
+    },
   },
   methods: {
     getAuthorityContactTypeCodes() {
@@ -155,7 +177,7 @@ export default {
           });
         })
         .catch(error => {
-          console.log(error);
+          console.error(error);
           this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get Authority by ID. Please try again later.');
         })
         .finally(() => {
@@ -165,17 +187,19 @@ export default {
     backButtonClick() {
       this.$router.push({name: 'instituteAuthoritiesList'});
     },
-    canEditAuthorityContact() {
-      return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE;
-    },
     contactEditSuccess() {
+      this.editContactSheet = false;
       this.getThisAuthorityContacts();
     },
     newAuthorityContactAdded() {
       this.newContactSheet = !this.newContactSheet;
       this.getThisAuthorityContacts();
     },
-  }
+    showContactEditForm(contact) {
+      this.editContact = contact;
+      this.editContactSheet = true;
+    },
+  },
 };
 
 </script>
