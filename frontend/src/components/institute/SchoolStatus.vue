@@ -66,7 +66,7 @@
             <v-row class="d-flex justify-start" v-if="action === 'setOpenDate'">
               <v-col>
                 <v-row class="d-flex justify-start">
-                  <h3>Select the new open date</h3>
+                  <h3>Select the open date</h3>
                 </v-row>
                 <v-row>
                   <v-col>
@@ -142,7 +142,7 @@
             <v-row class="d-flex justify-start" v-if="action === 'setCloseDate'">
               <v-col>
                 <v-row class="d-flex justify-start">
-                  <h3>Select the new closure date</h3>
+                  <h3>Select the closure date</h3>
                 </v-row>
                 <v-row>
                   <v-col>
@@ -180,7 +180,7 @@
             <v-row class="d-flex justify-start" v-if="action === 'updateCloseDate'">
               <v-col>
                 <v-row class="d-flex justify-start">
-                  <h3>Select the closure date</h3>
+                  <h3>Select the new closing date</h3>
                 </v-row>
                 <v-row>
                   <v-col>
