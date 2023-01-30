@@ -605,14 +605,16 @@ export default {
     },
     sendNewExchangeComment() {
       this.loadingCount += 1;
-      const payload = {
+      let payload = {
         content: this.newMessage,
-        schoolID: this.secureExchange.contactIdentifier,
+        secureExchangeContactTypeCode: this.secureExchange.secureExchangeContactTypeCode,
+        contactIdentifier: this.secureExchange.contactIdentifier,
         schoolName:this.secureExchange.schoolName,
+        districtName:this.secureExchange.districtName,
         sequenceNumber: this.secureExchange.sequenceNumber,
         ministryTeamName:this.secureExchange.ministryOwnershipTeamName,
         secureExchangeId:this.secureExchangeID,
-      };
+      };    
       ApiService.apiAxios.post(this.documentRoute + `/${this.secureExchangeID}/comments`, payload)
         .then(() => {
           this.setSuccessAlert('Success! The message has been sent.');

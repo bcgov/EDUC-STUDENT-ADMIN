@@ -151,8 +151,7 @@ async function getExchange(req, res) {
     return res.status(HttpStatus.UNAUTHORIZED).json({
       message: 'No access token'
     });
-  }
-
+  } 
   return Promise.all([
     getCodeTable(token, CACHE_KEYS.EDX_SECURE_EXCHANGE_STATUS, config.get('server:edx:exchangeStatusesURL')),
     getCodeTable(token, CACHE_KEYS.EDX_MINISTRY_TEAMS, config.get('server:edx:ministryTeamURL')),
@@ -160,7 +159,13 @@ async function getExchange(req, res) {
   ])
     .then(async ([statusCodeResponse, ministryTeamCodeResponse, dataResponse]) => {
 
-      let school = cacheService.getSchoolBySchoolID(dataResponse['contactIdentifier']);
+      let school = {};
+      let district = {};
+      if(dataResponse['secureExchangeContactTypeCode'] === 'SCHOOL') {
+        school = cacheService.getSchoolBySchoolID(dataResponse['contactIdentifier']);
+      } else {
+        district = cacheService.getDistrictJSONByDistrictId(dataResponse['contactIdentifier']);
+      }
 
       if (dataResponse['secureExchangeStatusCode']) {
         let tempStatus = statusCodeResponse.find(codeStatus => codeStatus['secureExchangeStatusCode'] === dataResponse['secureExchangeStatusCode']);
@@ -174,8 +179,16 @@ async function getExchange(req, res) {
         dataResponse['ministryOwnershipGroupRoleIdentifier'] = tempMinTeam?.groupRoleIdentifier ? tempMinTeam.groupRoleIdentifier : '';
       }
 
-      dataResponse['contactName'] = dataResponse['secureExchangeContactTypeCode'] === 'SCHOOL' ? `${school.schoolName} (${school.mincode})` : 'Unknown Contact';
-      dataResponse['schoolName'] = school.schoolName;
+      if(dataResponse['secureExchangeContactTypeCode'] === 'SCHOOL') {
+        dataResponse['contactName'] = dataResponse['secureExchangeContactTypeCode'] === 'SCHOOL' ? `${school.schoolName} (${school.mincode})` : 'Unknown Contact';
+        dataResponse['schoolName'] = school.schoolName;
+      }
+
+      if(dataResponse['secureExchangeContactTypeCode'] === 'DISTRICT') {
+        dataResponse['contactName'] = district.name + '(' + district.districtNumber+ ')';
+        dataResponse['districtName'] = district.name;
+      }
+
       if (dataResponse['createDate']) {
         dataResponse['createDate'] = LocalDateTime.parse(dataResponse['createDate']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd'));
       }
@@ -187,8 +200,10 @@ async function getExchange(req, res) {
         activity['type'] = 'message';
         activity['isSchool'] = comment.edxUserID ? true : false;
         activity['timestamp'] = comment['commentTimestamp'] ? LocalDateTime.parse(comment['commentTimestamp']) : '';
-        activity['actor'] = comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
-        activity['title'] = comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+        if(dataResponse['secureExchangeContactTypeCode'] === 'SCHOOL') {
+          activity['actor'] = comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+          activity['title'] = comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+        }
         activity['displayDate'] = comment['commentTimestamp'] ? LocalDateTime.parse(comment['commentTimestamp']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : 'Unknown Date';
         activity['content'] = comment['content'];
         activity['secureExchangeID'] = comment['secureExchangeID'];
@@ -202,7 +217,9 @@ async function getExchange(req, res) {
           activity['isSchool'] = document.edxUserID ? true : false;
           activity['timestamp'] = document['createDate'] ? LocalDateTime.parse(document['createDate']) : '';
           activity['actor'] = document.edxUserID ? document.edxUserID : document.staffUserIdentifier;
-          activity['title'] = document.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+          if(dataResponse['secureExchangeContactTypeCode'] === 'SCHOOL') {
+            activity['title'] = document.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+          }
           activity['fileName'] = document.fileName;
           activity['documentType'] = cacheService.getDocumentTypeCodeLabelByCode(document.documentTypeCode);
           activity['displayDate'] = document['createDate'] ? LocalDateTime.parse(document['createDate']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : 'Unknown Date';
@@ -228,7 +245,9 @@ async function getExchange(req, res) {
           activity['studentGender'] = studentDetail.genderCode;
           activity['timestamp'] = student['createDate'] ? LocalDateTime.parse(student['createDate']) : '';
           activity['actor'] = student.edxUserID ? student.edxUserID : student.staffUserIdentifier;
-          activity['title'] = student.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+          if(dataResponse['secureExchangeContactTypeCode'] === 'SCHOOL') {
+            activity['title'] = student.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+          }
           activity['displayDate'] = student['createDate'] ? LocalDateTime.parse(student['createDate']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : 'Unknown Date';
           dataResponse['activities'].push(activity);
         }
@@ -549,14 +568,29 @@ async function createSecureExchangeComment(req, res) {
       updateUser: userInfo.idir_username
     };
 
-    const payload = {
-      secureExchangeComment,
-      schoolID: message.schoolID,
-      schoolName:message.schoolName,
-      sequenceNumber: message.sequenceNumber,
-      ministryTeamName:message.ministryTeamName,
-      secureExchangeId:message.secureExchangeId,
-    };
+    let payload = {};
+
+    if(message.secureExchangeContactTypeCode === 'SCHOOL') {
+      payload = {
+        secureExchangeComment,
+        secureExchangeContactTypeCode: message.secureExchangeContactTypeCode,
+        schoolID: message.contactIdentifier,
+        schoolName:message.schoolName,
+        sequenceNumber: message.sequenceNumber,
+        ministryTeamName:message.ministryTeamName,
+        secureExchangeId:message.secureExchangeId,
+      };
+    } else {
+      payload = {
+        secureExchangeComment,
+        secureExchangeContactTypeCode: message.secureExchangeContactTypeCode,
+        districtID: message.contactIdentifier,
+        districtName:message.districtName,
+        sequenceNumber: message.sequenceNumber,
+        ministryTeamName:message.ministryTeamName,
+        secureExchangeId:message.secureExchangeId,
+      };
+    }
 
     const result = await utils.postData(token, config.get('server:edx:secureExchangeCommentSagaURL') , payload, null, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
