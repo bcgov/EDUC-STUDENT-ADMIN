@@ -201,7 +201,7 @@ export default {
   created() {
     this.$store.dispatch('edx/getValidSchoolIDsForMessaging').then(() => {
       this.validSchoolsForMessaging = _.sortBy(Array.from(this.schoolMap.entries())
-        .filter(school => this.validSchoolIDsForMessaging.includes(school[0]) && getStatusAuthorityOrSchool(school[1]) === 'Open')
+        .filter(school => this.validSchoolIDsForMessaging.includes(school[0]) && getStatusAuthorityOrSchool(school[1]) !== 'Closed')
         .map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolID, mincode: school[1].mincode})), ['mincode']);
     });
     this.clearSecureExchangeDocuments();
