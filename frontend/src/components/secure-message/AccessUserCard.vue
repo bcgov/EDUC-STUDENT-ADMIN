@@ -7,7 +7,7 @@
             <v-col>
               <v-row no-gutters>
                 <v-col cols="10">
-                  <strong>{{ `${user.firstName} ${user.lastName}` }}</strong>
+                  <strong class="name">{{ `${user.firstName} ${user.lastName}` }}</strong>
                 </v-col>
                 <v-col cols="2" class="d-flex justify-end">
                   <v-btn :id="`user-edit-button-${user.firstName}-${user.lastName}`"
@@ -358,6 +358,10 @@ export default {
 </script>
 
 <style scoped>
+
+.name {
+  word-break: break-word;
+}
 .bounce-enter-active {
   animation: bounce-in 0.2s;
 }
