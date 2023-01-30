@@ -441,6 +441,7 @@ async function addAuthorityContact(req, res) {
       authorityContactTypeCode: req.body.authorityContactTypeCode,
       firstName: req.body.firstName,
       lastName: req.body.lastName,
+      jobTitle: req.body.jobTitle,
       email: req.body.email,
       phoneNumber: req.body.phoneNumber,
       phoneExtension: req.body.phoneExtension,
