@@ -120,9 +120,11 @@
                     :items="gradeCodes"
                     item-value="schoolGradeCode"
                     item-text="label"
+                    @input="sortGrades"
                     :disabled="isGradeOfferedDisabled"
                     class="pt-0"
                     multiple
+                    return-object
                     label="Grades Offered"
                 />
               </v-col>
@@ -135,6 +137,8 @@
                     item-text="label"
                     class="pt-0"
                     multiple
+                    @input="sortNLC"
+                    return-object
                     label="NLC Activity"
                 />
               </v-col>
@@ -312,6 +316,7 @@ import {Routes} from '@/utils/constants';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
 import {findUpcomingDate} from '@/utils/dateHelpers';
+import {sortBy} from 'lodash';
 
 export default {
   name: 'NewSchoolPage',
@@ -413,7 +418,7 @@ export default {
       return this.activeSchoolOrganizationTypeCodes ? this.activeSchoolOrganizationTypeCodes : [];
     },
     schoolNeighborhoodLearningCodes() {
-      return this.activeSchoolNeighborhoodLearningCodes ? this.activeSchoolNeighborhoodLearningCodes : [];
+      return this.activeSchoolNeighborhoodLearningCodes ?  sortBy(this.activeSchoolNeighborhoodLearningCodes,['neighborhoodLearningTypeCode']) : [];
     },
     displayPhysicalAddress(){
       return this.newSchool?.schoolCategoryCode !== 'OFFSHORE';
@@ -514,6 +519,12 @@ export default {
     },
     resetForm() {
       this.$refs.newSchoolForm.reset();
+    },
+    sortGrades() {
+      this.newSchool.grades = sortBy(this.newSchool.grades,['displayOrder']);
+    },
+    sortNLC() {
+      this.newSchool.neighborhoodLearning = sortBy(this.newSchool.neighborhoodLearning,['neighborhoodLearningTypeCode']);
     },
     validateForm() {
       this.isFormValid = this.$refs.newSchoolForm.validate();
