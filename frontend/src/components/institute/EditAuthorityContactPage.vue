@@ -32,12 +32,6 @@
                 :maxlength="255"
                 label="Last Name"
             />
-            <v-text-field id="editAuthorityContactJobTitle"
-                          v-model="editContact.jobTitle"
-                          label="Title"
-                          type="text"
-                          maxlength="255"
-            ></v-text-field>
             <v-text-field
                 id='editAuthorityContactEmailInput'
                 :rules="[rules.required(), rules.email()]"
