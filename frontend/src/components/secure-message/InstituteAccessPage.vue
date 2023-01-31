@@ -1,6 +1,6 @@
 <template>
   <v-container class="containerSetup">
-    <div v-if="institutes.length >=1">
+    <div v-if="instituteArray.length >=1">
     <v-row>
       <v-col class="mt-1 d-flex justify-start">
         <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
@@ -25,7 +25,7 @@
                  class="pt-0 mt-n1"
                  prepend-inner-icon="mdi-account-box-outline"
                  v-model="instituteCode"
-                 :items="institutes"
+                 :items="instituteArray"
                  color="#003366"
                  :label="instituteTypeLabel"
                  clearable
@@ -69,12 +69,18 @@ export default {
   },
   data() {
     return {
-      instituteCode: ''
-
+      instituteCode: '',
+      instituteArray: []
     };
   },
   async created() {
-    await this.$store.dispatch('app/getCodes');
+    await this.$store.dispatch('app/refreshEntities').then(() => {
+      if(this.instituteTypeCode === 'SCHOOL') {
+        this.instituteArray = _.sortBy(this.activeSchools.map(school => ({ text: `${school.schoolName} (${school.mincode})`, value: school.schoolID, mincode: school.mincode})), ['mincode']);
+      }else{
+        this.instituteArray = _.sortBy(this.activeDistricts.map(district => ({ text: `${district.name} - ${district.districtNumber}`, value: district.districtId, key:district.districtNumber})), ['key']);
+      }
+    });
   },
   methods:{
     backButtonClick() {
@@ -83,14 +89,6 @@ export default {
   },
   computed: {
     ...mapState('app', ['activeSchools','activeDistricts']),
-    institutes() {
-      if(this.instituteTypeCode === 'SCHOOL') {
-        return _.sortBy(this.activeSchools.map(school => ({ text: `${school.schoolName} (${school.mincode})`, value: school.schoolID, mincode: school.mincode})), ['mincode']);
-      }else{
-        return _.sortBy(this.activeDistricts.map(district => ({ text: `${district.name} - ${district.districtNumber}`, value: district.districtId, key:district.districtNumber})), ['key']);
-      }
-    },
-
   }
 };
 </script>
