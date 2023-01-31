@@ -208,7 +208,7 @@ import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton';
 import {mapGetters, mapState} from 'vuex';
-import {isEmpty, omitBy} from 'lodash';
+import {isEmpty, omitBy, sortBy} from 'lodash';
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber, sortByNameValue, formatContactName} from '@/utils/format';
 import {getStatusColorAuthorityOrSchool,getStatusAuthorityOrSchool, isContactCurrent} from '@/utils/institute/status';
@@ -290,13 +290,13 @@ export default {
   created() {
     this.$store.dispatch('edx/getMinistryTeams');
     this.$store.dispatch('institute/getAllActiveFacilityTypeCodes').then(() => {
-      this.schoolFacilityTypes = this.activeFacilityTypeCodes;
+      this.schoolFacilityTypes = sortBy(this.activeFacilityTypeCodes,['displayOrder']);
     });
     this.$store.dispatch('institute/getAllSchoolCategoryTypeCodes').then(() => {
-      this.schoolCategoryTypes = this.schoolCategoryTypeCodes;
+      this.schoolCategoryTypes = sortBy(this.schoolCategoryTypeCodes,['displayOrder']);
     });
     this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes').then(() => {
-      this.activeSchoolCategoryTypes = this.activeSchoolCategoryTypeCodes;
+      this.activeSchoolCategoryTypes = sortBy(this.activeSchoolCategoryTypeCodes,['displayOrder']);
     });
 
     this.setSchoolStatuses();

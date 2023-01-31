@@ -406,13 +406,13 @@ export default {
 
       let facilityTypes = this.schoolCategoryFacilityTypesMap[this.newSchool?.schoolCategoryCode]?.map(schoolCatFacilityTypeCode =>  this.activeFacilityTypeCodes.find(facTypCode=> facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
       this.enableOrDisableFacilityType(facilityTypes);
-      return facilityTypes;
+      return sortBy(  facilityTypes,['displayOrder']);
     },
     schoolCategoryTypeCodes() {
       if(this.isIndependentOnlyUser()){
         return this.activeSchoolCategoryTypeCodes?.filter(cat => this.independentArray.includes(cat.schoolCategoryCode));
       }
-      return this.activeSchoolCategoryTypeCodes ? this.activeSchoolCategoryTypeCodes : [];
+      return this.activeSchoolCategoryTypeCodes ? sortBy( this.activeSchoolCategoryTypeCodes,['displayOrder']) : [];
     },
     schoolOrganizationTypeCodes() {
       return this.activeSchoolOrganizationTypeCodes ? this.activeSchoolOrganizationTypeCodes : [];
@@ -441,7 +441,6 @@ export default {
     this.$store.dispatch('institute/getAllActiveFacilityTypeCodes');
     this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes');
     this.$store.dispatch('institute/getAllActiveSchoolOrganizationTypeCodes');
-    this.$store.dispatch('institute/getAllActiveSchoolNeighborhoodLearningCodes');
     this.$store.dispatch('institute/getAllActiveGradeCodes');
     this.$store.dispatch('institute/getAllActiveProvinceCodes');
     this.$store.dispatch('institute/getAllActiveCountryCodes');

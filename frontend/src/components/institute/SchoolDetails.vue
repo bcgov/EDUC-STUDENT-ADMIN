@@ -729,7 +729,7 @@ export default {
             this.resetSchoolDetailsCopyFacilityType();
           }
         }
-        return resultingFacilityTypes;
+        return  sortBy(  resultingFacilityTypes,['displayOrder']);
       }else {
         this.resetSchoolDetailsCopyFacilityType();
         return [];
@@ -738,13 +738,13 @@ export default {
   },
   created() {
     this.$store.dispatch('institute/getAllFacilityTypeCodes').then(() => {
-      this.schoolFacilityTypes = this.facilityTypeCodes;
+      this.schoolFacilityTypes = sortBy(this.facilityTypeCodes,['displayOrder']);
     });
     this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes').then(() => {
-      this.activeSchoolCategoryTypes = this.activeSchoolCategoryTypeCodes;
+      this.activeSchoolCategoryTypes = sortBy(this.activeSchoolCategoryTypeCodes,['displayOrder']);
     });
     this.$store.dispatch('institute/getAllSchoolCategoryTypeCodes').then(() => {
-      this.schoolCategoryTypes = this.schoolCategoryTypeCodes;
+      this.schoolCategoryTypes = sortBy(this.schoolCategoryTypeCodes,['displayOrder']);
     });
     this.$store.dispatch('institute/getAllSchoolOrganizationTypeCodes').then(() => {
       this.schoolOrganizationTypes = this.schoolOrganizationTypeCodes;
@@ -791,7 +791,14 @@ export default {
         });
     },
     sortGrades() {
-      this.schoolDetailsCopy.grades = sortBy(this.schoolDetailsCopy.grades,['schoolGradeCode']);
+      const gradeList = [];
+      for (const grade of this.schoolGradeTypes) {
+        let schoolGradeType = this.schoolDetailsCopy.grades.find((rawGrade) => rawGrade.schoolGradeCode === grade.schoolGradeCode);
+        if (schoolGradeType) {
+          gradeList.push(schoolGradeType);
+        }
+      }
+      this.schoolDetailsCopy.grades = gradeList;
     },
     sortNLC() {
       this.schoolDetailsCopy.neighborhoodLearning = sortBy(this.schoolDetailsCopy.neighborhoodLearning,['neighborhoodLearningTypeCode']);

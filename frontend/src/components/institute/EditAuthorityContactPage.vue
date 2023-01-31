@@ -1,7 +1,7 @@
 <template>
   <v-card
       id="editAuthorityContactCard">
-    <v-card-title class="sheetHeader pt-1 pb-1">Edit Contact</v-card-title>
+    <v-card-title class="sheetHeader pt-1 pb-1">Edit Authority Contact</v-card-title>
     <v-divider></v-divider>
     <v-card-text>
       <v-form ref="editAuthorityContactForm" v-model="isFormValid">

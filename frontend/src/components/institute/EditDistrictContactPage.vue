@@ -1,7 +1,7 @@
 <template>
   <v-card
       id="editDistrictContactCard">
-    <v-card-title class="sheetHeader pt-1 pb-1">Edit Contact</v-card-title>
+    <v-card-title class="sheetHeader pt-1 pb-1">Edit District Contact</v-card-title>
     <v-divider></v-divider>
     <v-card-text>
       <v-form ref="editDistrictContactForm" v-model="isFormValid">
