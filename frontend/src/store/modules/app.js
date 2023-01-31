@@ -133,5 +133,23 @@ export default {
         }
       }
     },
+    async refreshEntities({ commit }) {
+      if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
+        const responseMinSchool = await ApiService.getMincodeSchoolNames();
+        commit('setMincodeSchoolNameAndDistrictCodes', responseMinSchool.data);
+
+        const responseActiveSchools = await ApiService.getActiveSchools();
+        commit('setActiveSchools', responseActiveSchools.data);
+
+        const responseDistricts = await ApiService.getDistricts();
+        commit('setDistricts', responseDistricts.data);
+
+        const responseActiveDistricts = await ApiService.getActiveDistricts();
+        commit('setActiveDistricts', responseActiveDistricts.data);
+
+        const responseSchoolApiMin = await ApiService.getSchoolApiMincodeSchoolNames();
+        commit('setSchoolApiMincodeSchoolNameAndDistrictCodes', responseSchoolApiMin.data);
+      }
+    },
   },
 };
