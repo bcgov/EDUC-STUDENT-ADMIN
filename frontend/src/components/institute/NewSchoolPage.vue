@@ -442,6 +442,7 @@ export default {
     this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes');
     this.$store.dispatch('institute/getAllActiveSchoolOrganizationTypeCodes');
     this.$store.dispatch('institute/getAllActiveGradeCodes');
+    this.$store.dispatch('institute/getAllActiveSchoolNeighborhoodLearningCodes');
     this.$store.dispatch('institute/getAllActiveProvinceCodes');
     this.$store.dispatch('institute/getAllActiveCountryCodes');
     this.$store.dispatch('institute/getSchoolCategoryFacilityTypesMap');
