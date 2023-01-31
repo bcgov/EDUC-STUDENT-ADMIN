@@ -313,23 +313,14 @@ async function addSchool(req, res) {
 
 
     if(req.body.neighborhoodLearning) {
-      for (const nlcCode of req.body.neighborhoodLearning) {
-        payload.neighborhoodLearning.push({
-          neighborhoodLearningTypeCode: nlcCode
-        });
-      }
+      payload.neighborhoodLearning = req.body.neighborhoodLearning;
     }
 
     if(req.body.grades){
-      for (const gradeCode of req.body.grades) {
-        payload.grades.push({
-          schoolGradeCode: gradeCode,
-        });
-      }
+      payload.grades = req.body.grades;
     }
 
     const data = await utils.postData(token, config.get('server:institute:instituteSchoolURL'), payload, null, utils.getUser(req).idir_username);
-    await cacheService.loadAllSchoolsToMap();
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
     logApiError(e, 'addSchool', 'Error occurred while attempting to POST School entity.');
