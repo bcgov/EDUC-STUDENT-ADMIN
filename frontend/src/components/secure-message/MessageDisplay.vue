@@ -321,9 +321,23 @@
                           <div class="activityDisplayDate">{{ activity.displayDate }}</div>
                         </v-card-title>
                         <v-row no-gutters>
-                          <v-card-text class="mt-n2 pt-0 pb-0" :class="{'pb-0': activity.documentType.label !== 'Other', 'pb-3': activity.documentType.label === 'Other'}">
-                            <router-link v-if="isPdf(activity)" :class="disabledAnchorDocumentName" :to="{ path: documentUrl(activity) }" target="_blank">{{ activity.fileName }}</router-link>
-                            <a v-else @click="showDocModal(activity)" :class="disabledAnchorDocumentName">
+                          <v-card-text
+                            class="mt-n2 pt-0 pb-0"
+                            :class="{
+                              'pb-0': activity.documentType.label !== 'Other',
+                              'pb-3': activity.documentType.label === 'Other'
+                            }">
+                            <router-link
+                              v-if="isPdf(activity)"
+                              :class="disabledAnchorDocumentName"
+                              :to="{
+                                path: documentUrl(activity)
+                              }" target="_blank">
+                              {{ activity.fileName }}
+                            </router-link>
+                            <a v-else
+                              @click="showDocModal(activity)"
+                              :class="disabledAnchorDocumentName">
                               {{ activity.fileName }}
                             </a>
                           </v-card-text>
@@ -404,20 +418,20 @@
 </template>
 
 <script>
-
-import ApiService from '../../common/apiService';
+import ApiService from '@/common/apiService';
 import {EDX_SAGA_REQUEST_DELAY_MILLISECONDS, Routes} from '@/utils/constants';
 import router from '@/router';
 import {mapState, mapActions, mapGetters} from 'vuex';
 import {isPdf} from '@/utils/file';
 import {replaceMacro, insertMacro} from '@/utils/macro';
 import {ChronoUnit, DateTimeFormatter, LocalDate} from '@js-joda/core';
-import PrimaryButton from '@/components/util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
-import DocumentUpload from '@/components/common/DocumentUpload';
-import ImageRenderer from '@/components/common/ImageRenderer';
-import AddStudent from '@/components/common/AddStudent';
-import MacroMenu from '../common/MacroMenu';
+
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
+import DocumentUpload from '@/components/common/DocumentUpload.vue';
+import ImageRenderer from '@/components/common/ImageRenderer.vue';
+import AddStudent from '@/components/common/AddStudent.vue';
+import MacroMenu from '../common/MacroMenu.vue';
 
 
 export default {
@@ -489,7 +503,9 @@ export default {
       try {
         this.loadingCount += 1;
         this.items = undefined;
-        await ApiService.apiAxios.post(this.documentRoute + '/' + this.secureExchangeID + '/documents', document);
+        await ApiService.apiAxios.post(
+          this.documentRoute + '/' + this.secureExchangeID + '/documents', document
+        );
         this.setSuccessAlert('Your document was uploaded successfully.');
         this.getExchange();
       } catch (e) {
@@ -530,13 +546,15 @@ export default {
           //Always set secure exchange as read by ministry if this is the first load
           if (initialLoad && !response.data.isReadByMinistry) {
             this.toggleIsReadByMinistry();
-          } else {
-            this.secureExchange = response.data;
           }
+          this.secureExchange = response.data;
         })
         .catch(error => {
           console.error(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while getting the details of the Secure Exchange. Please try again later.');
+          this.setFailureAlert(
+            error?.response?.data?.message ||
+            'An error occurred while getting the details of the Secure Exchange. Please try again later.'
+          );
         })
         .finally(() => {
           this.loadingCount -= 1;
@@ -614,7 +632,7 @@ export default {
         sequenceNumber: this.secureExchange.sequenceNumber,
         ministryTeamName:this.secureExchange.ministryOwnershipTeamName,
         secureExchangeId:this.secureExchangeID,
-      };    
+      };
       ApiService.apiAxios.post(this.documentRoute + `/${this.secureExchangeID}/comments`, payload)
         .then(() => {
           this.setSuccessAlert('Success! The message has been sent.');
@@ -623,7 +641,10 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while adding the message to the Secure Exchange. Please try again later.');
+          this.setFailureAlert(
+            error?.response?.data?.message ||
+            'An error occurred while adding the message to the Secure Exchange. Please try again later.'
+          );
         })
         .finally(() => {
           this.resetNewMessageForm();
@@ -638,7 +659,10 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to close the Secure Exchange. Please try again later.');
+          this.setFailureAlert(
+            error?.response?.data?.message ||
+            'An error occurred while trying to close the Secure Exchange. Please try again later.'
+          );
         })
         .finally(() => {
           this.loadingReadStatus = false;
@@ -646,7 +670,8 @@ export default {
         });
     },
     isClaimable(){
-      return this.secureExchange.reviewer === '' || this.secureExchange.reviewer !== this.userInfo.userName;
+      return this.secureExchange.reviewer === '' ||
+        this.secureExchange.reviewer !== this.userInfo.userName;
     },
     clickClaimMsgButton() {
       this.loadingReadStatus = true;
@@ -668,7 +693,10 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to claim the Secure Exchange. Please try again later.');
+          this.setFailureAlert(
+            error?.response?.data?.message ||
+            'An error occurred while trying to claim the Secure Exchange. Please try again later.'
+          );
         })
         .finally(() => {
           this.loadingReadStatus = false;
@@ -745,7 +773,10 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while adding the student to the Secure Exchange. Please try again later.');
+          this.setFailureAlert(
+            error?.response?.data?.message ||
+            'An error occurred while adding the student to the Secure Exchange. Please try again later.'
+          );
         })
         .finally(() => {
           this.loadingCount -= 1;
@@ -766,7 +797,10 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to remove the attachment from the Secure Exchange. Please try again later.');
+          this.setFailureAlert(
+            error?.response?.data?.message ||
+            'An error occurred while trying to remove the attachment from the Secure Exchange. Please try again later.'
+          );
         })
         .finally(() => {
           this.loadingCount -= 1;
@@ -786,7 +820,10 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to remove the student from the Secure Exchange. Please try again later.');
+          this.setFailureAlert(
+            error?.response?.data?.message ||
+            'An error occurred while trying to remove the student from the Secure Exchange. Please try again later.'
+          );
         })
         .finally(() => {
           this.loadingCount -= 1;
@@ -795,12 +832,15 @@ export default {
     },
     removeNote(note) {
       if (note.staffUserIdentifier !== this.userInfo.userName) {
-        this.setWarningAlert(`This note was added by ${note.staffUserIdentifier}; you don't have permission to delete it.`);
+        this.setWarningAlert(
+          `This note was added by ${note.staffUserIdentifier}; you don't have permission to delete it.`
+        );
         this.closeNoteIndex();
         return;
       }
       this.loadingCount += 1;
-      ApiService.apiAxios.put(`${Routes.edx.EXCHANGE_URL}/${this.secureExchangeID}/removeNote/${note.secureExchangeNoteID}`)
+      ApiService.apiAxios
+        .put(`${Routes.edx.EXCHANGE_URL}/${this.secureExchangeID}/removeNote/${note.secureExchangeNoteID}`)
         .then(() => {
           this.getExchange();
           this.setSuccessAlert('Success! The note has been removed.');
@@ -808,7 +848,10 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to remove the note from the Secure Exchange. Please try again later.');
+          this.setFailureAlert(
+            error?.response?.data?.message ||
+            'An error occurred while trying to remove the note from the Secure Exchange. Please try again later.'
+          );
         })
         .finally(() => {
           this.loadingCount -= 1;
@@ -825,7 +868,9 @@ export default {
       this.documentId = '';
       this.imageId = '';
       this.imageRendererDialog = false;
-      await this.$nextTick(); //need to wait so update can be made in parent and propagated back down to child component
+
+      //need to wait so update can be made in parent and propagated back down to child component
+      await this.$nextTick();
     },
     displayNotePanel() {
       this.closeAllPanels();
@@ -848,7 +893,10 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while adding the note to the Secure Exchange. Please try again later.');
+          this.setFailureAlert(
+            error?.response?.data?.message ||
+            'An error occurred while adding the note to the Secure Exchange. Please try again later.'
+          );
         })
         .finally(() => {
           this.loadingCount -= 1;
@@ -871,7 +919,9 @@ export default {
       this.newMessage = replaceMacro(this.newMessage, this.messageMacros);
     },
     insertMacroMessage(macroText) {
-      this.newMessage = insertMacro(macroText, this.newMessage, this.$refs.newMessageToConvTextArea.$refs.input);
+      this.newMessage = insertMacro(
+        macroText, this.newMessage, this.$refs.newMessageToConvTextArea.$refs.input
+      );
     },
     getMincode() {
       return this.schoolMap.get(this.secureExchange?.contactIdentifier)?.mincode || '';
