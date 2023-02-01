@@ -551,9 +551,10 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          let fallback = 'An error occurred while getting the details of the Secure Exchange.' +
-            ' Please try again later.';
-          this.setFailureAlert(error?.response?.data?.message || fallback);
+          this.setFailureAlert(
+            error?.response?.data?.message ||
+            'An error occurred while getting the details of the Secure Exchange. Please try again later.'
+          );
         })
         .finally(() => {
           this.loadingCount -= 1;
@@ -640,9 +641,10 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          let fallback = 'An error occurred while adding the message to the Secure Exchange.' +
-            ' Please try again later.';
-          this.setFailureAlert(error?.response?.data?.message || fallback);
+          this.setFailureAlert(
+            error?.response?.data?.message ||
+            'An error occurred while adding the message to the Secure Exchange. Please try again later.'
+          );
         })
         .finally(() => {
           this.resetNewMessageForm();
@@ -657,9 +659,10 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          let fallback = 'An error occurred while trying to close the Secure Exchange.' +
-            ' Please try again later.';
-          this.setFailureAlert(error?.response?.data?.message || fallback);
+          this.setFailureAlert(
+            error?.response?.data?.message ||
+            'An error occurred while trying to close the Secure Exchange. Please try again later.'
+          );
         })
         .finally(() => {
           this.loadingReadStatus = false;
@@ -690,9 +693,10 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          let fallback = 'An error occurred while trying to claim the Secure Exchange.' +
-            ' Please try again later.';
-          this.setFailureAlert(error?.response?.data?.message || fallback);
+          this.setFailureAlert(
+            error?.response?.data?.message ||
+            'An error occurred while trying to claim the Secure Exchange. Please try again later.'
+          );
         })
         .finally(() => {
           this.loadingReadStatus = false;
@@ -769,9 +773,10 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          let fallback =  'An error occurred while adding the student to the Secure Exchange.' +
-            ' Please try again later.';
-          this.setFailureAlert(error?.response?.data?.message || fallback);
+          this.setFailureAlert(
+            error?.response?.data?.message ||
+            'An error occurred while adding the student to the Secure Exchange. Please try again later.'
+          );
         })
         .finally(() => {
           this.loadingCount -= 1;
@@ -792,9 +797,10 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          let fallback =  'An error occurred while trying to remove the attachment from the Secure Exchange.' +
-            ' Please try again later.';
-          this.setFailureAlert(error?.response?.data?.message || fallback);
+          this.setFailureAlert(
+            error?.response?.data?.message ||
+            'An error occurred while trying to remove the attachment from the Secure Exchange. Please try again later.'
+          );
         })
         .finally(() => {
           this.loadingCount -= 1;
@@ -814,9 +820,10 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          let fallback =  'An error occurred while trying to remove the student from the Secure Exchange.' +
-            ' Please try again later.';
-          this.setFailureAlert(error?.response?.data?.message || fallback);
+          this.setFailureAlert(
+            error?.response?.data?.message ||
+            'An error occurred while trying to remove the student from the Secure Exchange. Please try again later.'
+          );
         })
         .finally(() => {
           this.loadingCount -= 1;
