@@ -546,9 +546,8 @@ export default {
           //Always set secure exchange as read by ministry if this is the first load
           if (initialLoad && !response.data.isReadByMinistry) {
             this.toggleIsReadByMinistry();
-          } else {
-            this.secureExchange = response.data;
           }
+          this.secureExchange = response.data;
         })
         .catch(error => {
           console.error(error);
