@@ -848,9 +848,10 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          let fallback =  'An error occurred while trying to remove the note from the Secure Exchange.' +
-            ' Please try again later.';
-          this.setFailureAlert(error?.response?.data?.message || fallback);
+          this.setFailureAlert(
+            error?.response?.data?.message ||
+            'An error occurred while trying to remove the note from the Secure Exchange. Please try again later.'
+          );
         })
         .finally(() => {
           this.loadingCount -= 1;
@@ -892,9 +893,10 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          let fallback =  'An error occurred while adding the note to the Secure Exchange.' +
-            ' Please try again later.';
-          this.setFailureAlert(error?.response?.data?.message || fallback);
+          this.setFailureAlert(
+            error?.response?.data?.message ||
+            'An error occurred while adding the note to the Secure Exchange. Please try again later.'
+          );
         })
         .finally(() => {
           this.loadingCount -= 1;
