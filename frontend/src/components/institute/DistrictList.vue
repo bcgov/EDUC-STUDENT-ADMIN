@@ -20,10 +20,34 @@
             v-model="searchFilter.districtId"
             @change="searchButtonClick"
             clearable>
+            <template v-slot:item="data">
+              <v-icon :color="getStatusColor(data.item.status)">
+                mdi-circle-medium
+              </v-icon>
+              <span>{{ data.item.districtNumberName }}</span>
+            </template>
           </v-autocomplete>
         </v-col>
         <v-col cols="12" md="4">
-          <v-select id="status-select-field" clearable :items="status" v-model="searchFilter.status" item-text="label" item-value="districtStatusCode" label="Status"></v-select>
+          <v-select
+            id="status-select-field"
+            clearable
+            :items="status"
+            v-model="searchFilter.status"
+            item-text="label"
+            item-value="districtStatusCode"
+            label="Status">
+            <template v-slot:item="{ item }">
+              <v-row>
+                <v-col cols="12" class="pr-0">
+                  <v-icon :color="getStatusColor(item.districtStatusCode)">
+                    mdi-circle-medium
+                  </v-icon>
+                  <span class="body-2">{{ item.label }}</span>
+                </v-col>
+              </v-row>
+            </template>
+          </v-select>
         </v-col>
         <v-col cols="12" md="4" :class="['text-right']">
           <PrimaryButton id="district-clear-button" secondary @click.native="clearButtonClick">Clear</PrimaryButton>
@@ -46,7 +70,7 @@
             <v-col cols="6" class="d-flex justify-start">
               <strong class="largeFont">{{ `${item.districtNumber} - ${item.name}` }}</strong>
             </v-col>
-            <v-col class="mt-1">
+            <v-col class="mt-1 d-flex">
               <v-icon class="mt-n1" :color="getStatusColor(item.districtStatusCode)">
                 mdi-circle-medium
               </v-icon>
@@ -136,6 +160,7 @@ export default {
           let districtItem = {
             districtNumberName: district.districtNumber + ' - ' + district.name,
             districtId: district.districtId,
+            status: district.districtStatusCode
           };
           this.districtSearchNames.push(districtItem);
         }
