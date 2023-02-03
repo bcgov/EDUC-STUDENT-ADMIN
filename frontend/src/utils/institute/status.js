@@ -94,6 +94,7 @@ export function getStatusAuthorityOrSchool(authorityOrSchool) {
   if (!openedDate) {
     return 'Never Opened';
   }
+
   const parsedOpenDate = new LocalDateTime.parse(openedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
 
   let parsedCloseDate = null;

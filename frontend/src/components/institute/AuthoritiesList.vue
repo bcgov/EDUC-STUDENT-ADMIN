@@ -22,12 +22,36 @@
                 item-text="authorityCodeName"
                 :items="authoritySearchNames"
                 v-model="authorityCodeNameFilter"
+                @change="searchButtonClick()"
                 clearable>
+                <template v-slot:item="data">
+                  <v-icon :color="getStatusColorAuthorityOrSchool(data.item.status)">
+                    mdi-circle-medium
+                  </v-icon>
+                  <span>{{ data.item.authorityCodeName }}</span>
+                </template>
               </v-autocomplete>
             </v-col>
             <v-col class="d-flex justify-start">
-              <v-select id="status-select-field" clearable :items="authorityStatus" v-model="authorityStatusFilter" item-text="name"
-                        item-value="code" label="Status"></v-select>
+              <v-select
+                id="status-select-field"
+                clearable
+                :items="authorityStatus"
+                v-model="authorityStatusFilter"
+                item-text="name"
+                item-value="code"
+                label="Status">
+                <template v-slot:item="{ item }">
+                  <v-row>
+                    <v-col cols="12" class="pr-0">
+                      <v-icon :color="getStatusColorAuthorityOrSchool(item.name)">
+                        mdi-circle-medium
+                      </v-icon>
+                      <span class="body-2">{{ item.name }}</span>
+                    </v-col>
+                  </v-row>
+                </template>
+              </v-select>
             </v-col>
             <v-col class="d-flex justify-start">
               <v-select
@@ -228,6 +252,7 @@ export default {
             authorityCodeName: authority.authorityNumber + ' - ' + authority.name,
             authorityNumber: authority.authorityNumber,
             authorityID: authority.authorityID,
+            status: getStatusAuthorityOrSchool(authority)
           };
           this.authoritySearchNames.push(authorityItem);
         }

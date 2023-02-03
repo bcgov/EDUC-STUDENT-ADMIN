@@ -22,8 +22,8 @@ function generateAuthorityObject(authority) {
     authorityID: authority.independentAuthorityId,
     authorityNumber: authority.authorityNumber,
     name: authority.displayName,
-    effectiveDate: authority.openedDate,
-    expiryDate: authority.closedDate,
+    openedDate: authority.openedDate,
+    closedDate: authority.closedDate,
   };
 }
 
