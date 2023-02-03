@@ -18,6 +18,7 @@
             item-text="districtNumberName"
             :items="districtSearchNames"
             v-model="searchFilter.districtId"
+            @change="searchButtonClick"
             clearable>
           </v-autocomplete>
         </v-col>

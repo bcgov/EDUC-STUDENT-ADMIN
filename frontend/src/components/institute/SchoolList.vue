@@ -22,6 +22,7 @@
               item-text="schoolCodeName"
               :items="schoolSearchNames"
               v-model="schoolCodeNameFilter"
+              @change="searchButtonClick"
               clearable>
             </v-autocomplete>
           </v-col>
@@ -57,6 +58,7 @@
               item-text="districtNumberName"
               :items="districtSearchNames"
               v-model="districtCodeNameFilter"
+              @change="searchButtonClick"
               clearable>
             </v-autocomplete>
           </v-col>
@@ -68,6 +70,7 @@
               item-text="authorityCodeName"
               :items="authoritySearchNames"
               v-model="authorityCodeNameFilter"
+              @change="searchButtonClick"
               clearable>
             </v-autocomplete>
           </v-col>
@@ -261,7 +264,7 @@ export default {
       schoolCodeNameFilter: '',
       districtCodeNameFilter: '',
       authorityCodeNameFilter: '',
-      schoolStatusFilter: 'Open',
+      schoolStatusFilter: '',
       schoolFacilityTypes: [],
       schoolCategoryTypes: [],
       activeSchoolCategoryTypes: [],
