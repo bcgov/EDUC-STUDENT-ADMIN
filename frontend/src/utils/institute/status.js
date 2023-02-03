@@ -92,11 +92,7 @@ export function getStatusAuthorityOrSchool(authorityOrSchool) {
   let closedDate = authorityOrSchool.closedDate;
 
   if (!openedDate) {
-    openedDate = authorityOrSchool.effectiveDate;
-    closedDate = authorityOrSchool.expiryDate;
-    if(!openedDate){
-      return 'Never Opened';
-    }
+    return 'Never Opened';
   }
 
   const parsedOpenDate = new LocalDateTime.parse(openedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
