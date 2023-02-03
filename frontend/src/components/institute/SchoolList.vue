@@ -83,6 +83,12 @@
               v-model="districtCodeNameFilter"
               @change="searchButtonClick"
               clearable>
+              <template v-slot:item="data">
+                <v-icon :color="getDistrictStatusColor(data.item.status)">
+                  mdi-circle-medium
+                </v-icon>
+                <span>{{ data.item.districtNumberName }}</span>
+              </template>
             </v-autocomplete>
           </v-col>
           <v-col cols="12" md="4" class="d-flex justify-start">
@@ -95,6 +101,12 @@
               v-model="authorityCodeNameFilter"
               @change="searchButtonClick"
               clearable>
+              <template v-slot:item="data">
+                <v-icon :color="getStatusColorAuthorityOrSchool(data.item.status)">
+                  mdi-circle-medium
+                </v-icon>
+                <span>{{ data.item.authorityCodeName }}</span>
+              </template>
             </v-autocomplete>
           </v-col>
           <v-col class="mt-6 d-flex justify-end">
@@ -345,6 +357,7 @@ export default {
           let districtItem = {
             districtNumberName: `${district.districtNumber} - ${district.name}`,
             districtId: district.districtId,
+            status: district.districtStatusCode
           };
           this.districtSearchNames.push(districtItem);
         }
@@ -396,6 +409,7 @@ export default {
             authorityNumber: +authority.authorityNumber,
             authorityCodeName: `${authority.authorityNumber} - ${authority.name}`,
             authorityID: authority.authorityID,
+            status: getStatusAuthorityOrSchool(authority)
           };
           this.authoritySearchNames.push(authorityItem);
         }
@@ -521,6 +535,13 @@ export default {
     },
     resetPageNumber(){
       this.pageNumber = 1;
+    },
+    getDistrictStatusColor(districtStatusCode){
+      if(districtStatusCode === 'ACTIVE') {
+        return 'green';
+      } else if(districtStatusCode === 'INACTIVE') {
+        return 'red';
+      }
     },
     searchEnabled(){
       return (this.schoolCodeNameFilter !== '' && this.schoolCodeNameFilter !== null) || (this.schoolStatusFilter !== '' && this.schoolStatusFilter !== null)
