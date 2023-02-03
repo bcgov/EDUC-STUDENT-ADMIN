@@ -24,11 +24,34 @@
               v-model="schoolCodeNameFilter"
               @change="searchButtonClick"
               clearable>
+              <template v-slot:item="data">
+                <v-icon :color="getStatusColorAuthorityOrSchool(data.item.status)">
+                  mdi-circle-medium
+                </v-icon>
+                <span>{{ data.item.schoolCodeName }}</span>
+              </template>
             </v-autocomplete>
           </v-col>
           <v-col cols="12" md="2" class="d-flex justify-start">
-            <v-select id="status-select-field" clearable :items="schoolStatus" v-model="schoolStatusFilter" item-text="name"
-                      item-value="code" label="Status"></v-select>
+            <v-select
+              id="status-select-field"
+              clearable
+              :items="schoolStatus"
+              v-model="schoolStatusFilter"
+              item-text="name"
+              item-value="code"
+              label="Status">
+              <template v-slot:item="{ item }">
+                <v-row>
+                  <v-col cols="12" class="pr-0">
+                    <v-icon :color="getStatusColorAuthorityOrSchool(item.name)">
+                      mdi-circle-medium
+                    </v-icon>
+                    <span class="body-2">{{ item.name }}</span>
+                  </v-col>
+                </v-row>
+              </template>
+            </v-select>
           </v-col>
           <v-col cols="12" md="3" class="d-flex justify-start">
             <v-select
@@ -354,6 +377,7 @@ export default {
           let schoolItem = {
             schoolCodeName: school.mincode + ' - ' +school.schoolName,
             schoolID: school.schoolID,
+            status: getStatusAuthorityOrSchool(school)
           };
           this.schoolSearchNames.push(schoolItem);
         }
