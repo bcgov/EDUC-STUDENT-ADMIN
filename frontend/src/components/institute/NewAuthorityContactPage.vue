@@ -203,7 +203,7 @@ export default {
         phoneExtension: null,
         alternatePhoneNumber: null,
         alternatePhoneExtension: null,
-        effectiveDate: LocalDate.now(),
+        effectiveDate: LocalDate.now().toString(),
         expiryDate: null
       },
       rules: Rules,
