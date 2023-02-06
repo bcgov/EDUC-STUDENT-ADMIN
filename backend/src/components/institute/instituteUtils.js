@@ -29,8 +29,8 @@ function generateAuthorityObject(authority) {
 
 function isAuthorityActive(authority) {
   const currentTime = LocalDate.now();
-  const openedDate = authority?.effectiveDate;
-  const closedDate = authority?.expiryDate;
+  const openedDate = authority?.openedDate;
+  const closedDate = authority?.closedDate;
   return !(!authority || !authority.name || !openedDate || currentTime.isBefore(LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)) || (closedDate && currentTime.isAfter(LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
 }
 

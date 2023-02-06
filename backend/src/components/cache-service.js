@@ -26,7 +26,7 @@ let documentTypeCodes = [];
 const cacheService = {
 
   async loadAllSchoolsToMap() {
-    log.debug('loading all schools during start up');
+    log.debug('Loading all schools during start up');
     await retry(async () => {
       // if anything throws, we retry
       const data = await getApiCredentials(); // get the tokens first to make api calls.
@@ -53,7 +53,7 @@ const cacheService = {
       mincodeSchools = newMincodeSchools;
       activeSchools = newActiveSchools;
 
-      log.info(`loaded ${mincodeSchoolMap.size} schools.`);
+      log.info(`Loaded ${mincodeSchoolMap.size} schools.`);
       log.info(`Loaded ${activeSchools.length} active schools.`);
     }, {
       retries: 50
@@ -73,7 +73,7 @@ const cacheService = {
     return activeSchools;
   },
   async loadAllDistrictsToMap() {
-    log.debug('loading all districts during start up');
+    log.debug('Loading all districts during start up');
     await retry(async () => {
       const data = await getApiCredentials();
       const districtsResponse = await getData(data.accessToken, config.get('server:institute:instituteDistrictURL'));
@@ -91,7 +91,7 @@ const cacheService = {
           }
         }
       }
-      log.info(`loaded ${districtsMap.size} districts.`);
+      log.info(`Loaded ${districtsMap.size} districts.`);
     }, {
       retries: 50
     });
@@ -107,7 +107,7 @@ const cacheService = {
     return districtsMap.get(districtId);
   },
   async loadAllAuthoritiesToMap() {
-    log.debug('loading all authorities during start up');
+    log.debug('Loading all authorities during start up');
     await retry(async () => {
       const data = await getApiCredentials();
       const authoritiesResponse = await getData(data.accessToken, config.get('server:institute:instituteAuthorityURL'));
@@ -125,7 +125,8 @@ const cacheService = {
           }
         }
       }
-      log.info(`loaded ${authoritiesMap.size} authorities.`);
+      log.info(`Loaded ${authoritiesMap.size} authorities.`);
+      log.info(`Loaded ${activeAuthorities.length} active authorities.`);
     }, {
       retries: 50
     });
@@ -245,7 +246,7 @@ const cacheService = {
           'records':records
         };
       }
-      log.info(`loaded ${responseData.length} ${cacheKey} Types.`);
+      log.info(`Loaded ${responseData.length} ${cacheKey} Types.`);
     }, {
       retries: 50
     });
