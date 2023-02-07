@@ -545,7 +545,7 @@ async function addAuthority(req, res) {
     }
 
     const data = await utils.postData(token, url, payload, null, utils.getUser(req).idir_username);
-    await cacheService.loadAllAuthoritiesToMap();
+
     return res.status(HttpStatus.OK).json(data);
   }catch (e) {
     logApiError(e, 'addAuthority', 'Error occurred while attempting to create an authority.');
