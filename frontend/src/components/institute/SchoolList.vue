@@ -301,6 +301,7 @@ export default {
       authorityCodeNameFilter: '',
       schoolStatusFilter: '',
       schoolFacilityTypes: [],
+      allSchoolFacilityTypes: [],
       schoolCategoryTypes: [],
       activeSchoolCategoryTypes: [],
       schoolCategoryTypeFilter: '',
@@ -312,6 +313,7 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo', 'SCHOOL_ADMIN_ROLE', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
     ...mapState('app', ['schoolsMap']),
+    ...mapState('institute', ['facilityTypeCodes']),
     ...mapState('institute', ['activeFacilityTypeCodes']),
     ...mapState('institute', ['activeSchoolCategoryTypeCodes']),
     ...mapState('institute', ['schoolCategoryTypeCodes']),
@@ -329,6 +331,9 @@ export default {
     this.$store.dispatch('edx/getMinistryTeams');
     this.$store.dispatch('institute/getAllActiveFacilityTypeCodes').then(() => {
       this.schoolFacilityTypes = sortBy(this.activeFacilityTypeCodes,['displayOrder']);
+    });
+    this.$store.dispatch('institute/getAllFacilityTypeCodes').then(() => {
+      this.allSchoolFacilityTypes = sortBy(this.facilityTypeCodes,['displayOrder']);
     });
     this.$store.dispatch('institute/getAllSchoolCategoryTypeCodes').then(() => {
       this.schoolCategoryTypes = sortBy(this.schoolCategoryTypeCodes,['displayOrder']);
@@ -501,7 +506,7 @@ export default {
 
     },
     getFacilityType(school){
-      return this.schoolFacilityTypes.find((facility) => facility.facilityTypeCode === school.facilityTypeCode).label;
+      return this.allSchoolFacilityTypes.find((facility) => facility.facilityTypeCode === school.facilityTypeCode).label;
     },
     getSchoolCategory(school){
       return this.schoolCategoryTypes.find((category) => category.schoolCategoryCode === school.schoolCategoryCode).label;
