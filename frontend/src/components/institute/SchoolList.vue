@@ -245,7 +245,7 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton';
-import {mapGetters, mapState} from 'vuex';
+import {mapGetters, mapMutations, mapState} from 'vuex';
 import {isEmpty, omitBy, sortBy} from 'lodash';
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber, sortByNameValue, formatContactName} from '@/utils/format';
@@ -313,6 +313,7 @@ export default {
   computed: {
     ...mapGetters('auth', ['userInfo', 'SCHOOL_ADMIN_ROLE', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
     ...mapState('app', ['schoolsMap']),
+    ...mapState('edx', ['schoolSearchParams']),
     ...mapState('institute', ['facilityTypeCodes']),
     ...mapState('institute', ['activeFacilityTypeCodes']),
     ...mapState('institute', ['activeSchoolCategoryTypeCodes']),
@@ -348,8 +349,21 @@ export default {
     this.getActiveDistrictDropDownItems();
     this.getAuthorityDropDownItems();
     this.getActiveAuthorityDropDownItems();
+    this.setSearchValues();
+    if(this.hasSearchValue()){
+      this.getSchoolList();
+    }
   },
   methods: {
+    ...mapMutations('edx', ['setSchoolSearchParams']),
+    setSearchValues() {
+      this.schoolCodeNameFilter = this.schoolSearchParams.schoolID;
+      this.districtCodeNameFilter = this.schoolSearchParams.districtID;
+      this.authorityCodeNameFilter = this.schoolSearchParams.authorityID;
+      this.schoolStatusFilter = this.schoolSearchParams.status;
+      this.schoolFacilityTypeFilter = this.schoolSearchParams.facilityType;
+      this.schoolCategoryTypeFilter = this.schoolSearchParams.schoolCategory;
+    },
     canAddSchool() {
       return this.SCHOOL_ADMIN_ROLE || this.SCHOOL_INDEPENDENT_ADMIN_ROLE;
     },
@@ -443,6 +457,21 @@ export default {
     clearSchoolList() {
       this.schools = [];
       this.totalSchools = 0;
+      this.schoolSearchParams.schoolID = null;
+      this.schoolSearchParams.districtID = null;
+      this.schoolSearchParams.authorityID = null;
+      this.schoolSearchParams.status = null;
+      this.schoolSearchParams.facilityType = null;
+      this.schoolSearchParams.schoolCategory = null;
+      this.setSchoolSearchParams(this.schoolSearchParams);
+    },
+    hasSearchValue(){
+      return this.schoolSearchParams.schoolID
+        || this.schoolSearchParams.districtID
+        || this.schoolSearchParams.authorityID
+        || this.schoolSearchParams.status
+        || this.schoolSearchParams.facilityType
+        || this.schoolSearchParams.schoolCategory;
     },
     getSchoolList() {
       this.loadingTable = true;
@@ -488,7 +517,7 @@ export default {
           this.schools.push(school);
         }
         this.totalSchools = response.data.totalElements;
-
+        this.setSavedSearchParams();
       }).catch(error => {
         //to do add the alert framework for error or success
         console.error(error);
@@ -496,6 +525,15 @@ export default {
         this.loadingTable = false;
       });
 
+    },
+    setSavedSearchParams() {
+      this.schoolSearchParams.schoolID = this.schoolCodeNameFilter;
+      this.schoolSearchParams.districtID = this.districtCodeNameFilter;
+      this.schoolSearchParams.authorityID = this.authorityCodeNameFilter;
+      this.schoolSearchParams.status = this.schoolStatusFilter;
+      this.schoolSearchParams.facilityType = this.schoolFacilityTypeFilter;
+      this.schoolSearchParams.schoolCategory = this.schoolCategoryTypeFilter;
+      this.setSchoolSearchParams(this.schoolSearchParams);
     },
     populateExtraSchoolFields(school){
       school.status = getStatusAuthorityOrSchool(school);
