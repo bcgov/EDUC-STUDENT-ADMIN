@@ -15,7 +15,16 @@ export default {
     fileRequirements: [],
     secureExchangeDocuments: [],
     secureExchangeStudents:[],
-    messageMacros:[]
+    messageMacros:[],
+    schoolSearchParams: {
+      schoolID: null,
+      districtID: null,
+      authorityID: null,
+      status: null,
+      schoolCategory: null,
+      facilityType: null,
+      pageNumber: 1
+    },
   },
   getters: {
     getStatuses: state => state.statuses?.sort((a,b) => a.displayOrder > b.displayOrder ? 1 : -1),
@@ -58,6 +67,9 @@ export default {
     },
     setSecureExchangeStudents(state,payload){
       state.secureExchangeStudents= payload;
+    },
+    setSchoolSearchParams(state,payload){
+      state.schoolSearchParams = payload;
     },
     deleteSecureExchangeStudentsByID(state, payload) {
       state.secureExchangeStudents = state.secureExchangeStudents.filter(secureExchangeStudent => secureExchangeStudent.studentID !== payload.studentID);
