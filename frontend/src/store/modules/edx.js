@@ -22,7 +22,8 @@ export default {
       authorityID: null,
       status: null,
       schoolCategory: null,
-      facilityType: null
+      facilityType: null,
+      pageNumber: 1
     },
   },
   getters: {

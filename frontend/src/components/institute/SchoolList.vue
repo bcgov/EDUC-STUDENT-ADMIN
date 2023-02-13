@@ -363,6 +363,7 @@ export default {
       this.schoolStatusFilter = this.schoolSearchParams.status;
       this.schoolFacilityTypeFilter = this.schoolSearchParams.facilityType;
       this.schoolCategoryTypeFilter = this.schoolSearchParams.schoolCategory;
+      this.pageNumber = this.schoolSearchParams.pageNumber;
     },
     canAddSchool() {
       return this.SCHOOL_ADMIN_ROLE || this.SCHOOL_INDEPENDENT_ADMIN_ROLE;
@@ -463,6 +464,7 @@ export default {
       this.schoolSearchParams.status = null;
       this.schoolSearchParams.facilityType = null;
       this.schoolSearchParams.schoolCategory = null;
+      this.schoolSearchParams.pageNumber = null;
       this.setSchoolSearchParams(this.schoolSearchParams);
     },
     hasSearchValue(){
@@ -533,6 +535,7 @@ export default {
       this.schoolSearchParams.status = this.schoolStatusFilter;
       this.schoolSearchParams.facilityType = this.schoolFacilityTypeFilter;
       this.schoolSearchParams.schoolCategory = this.schoolCategoryTypeFilter;
+      this.schoolSearchParams.pageNumber = this.pageNumber;
       this.setSchoolSearchParams(this.schoolSearchParams);
     },
     populateExtraSchoolFields(school){
