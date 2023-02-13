@@ -157,5 +157,5 @@ export function isValidNumber(evt) {
 }
 
 export function isValidEmail(value) {
-  return !!(value && /^[\w!#$%&’*+/=?`{|}~^-]{1,64}(?:\.[\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}$/.test(value));
+  return !!(value && /^[\w!#$%&’*+/=?`.{|}~^-]{1,64}@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}$/.test(value));
 }
