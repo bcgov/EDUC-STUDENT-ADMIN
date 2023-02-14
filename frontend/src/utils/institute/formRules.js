@@ -20,6 +20,7 @@ import {LocalDate} from '@js-joda/core';
  * @returns Function
  */
 const email = (message = 'E-mail must be valid') => {
+  // NOSONAR
   return v => !v || /^(?=[A-Za-z0-9][A-Za-z0-9@._%+-]{5,253}$)[A-Za-z0-9._%+-]{1,64}@(?:(?=[A-Za-z0-9-]{1,63}\.)[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*\.){1,8}[A-Za-z]{2,63}$/.test(v) || message;
 };
 
