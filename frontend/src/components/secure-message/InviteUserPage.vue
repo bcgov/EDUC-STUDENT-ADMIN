@@ -146,6 +146,9 @@ export default {
       required:true
     }
   },
+  mounted() {
+    this.validateForm();
+  },
   data() {
 
     return {
@@ -255,6 +258,9 @@ export default {
         .finally(() => {
           this.processing = false;
         });
+    },
+    validateForm() {
+      this.isValidForm = this.$refs.newUserForm.validate();
     },
   }
 };
