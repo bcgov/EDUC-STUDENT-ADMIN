@@ -677,7 +677,7 @@ export default {
           pageNumber: 0,
           pageSize: 100,
           searchParams: omitBy({
-            isOpenOrOpening: 'isOpenOrOpening',
+            status: 'isOpenOrOpening',
             authorityID: this.authorityID,
           }, isEmpty),
         }
