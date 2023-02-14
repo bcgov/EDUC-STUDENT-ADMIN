@@ -16,15 +16,16 @@ export default {
     secureExchangeDocuments: [],
     secureExchangeStudents:[],
     messageMacros:[],
-    schoolSearchParams: {
-      schoolID: null,
-      districtID: null,
-      authorityID: null,
-      status: null,
-      schoolCategory: null,
-      facilityType: null,
-      pageNumber: 1
-    },
+    schoolSearchParams: localStorage.getItem('schoolSearchParams') != null ? JSON.parse(localStorage.getItem('schoolSearchParams')):
+      {
+        schoolID: null,
+        districtID: null,
+        authorityID: null,
+        status: null,
+        schoolCategory: null,
+        facilityType: null,
+        pageNumber: 1
+      },
   },
   getters: {
     getStatuses: state => state.statuses?.sort((a,b) => a.displayOrder > b.displayOrder ? 1 : -1),
@@ -70,6 +71,7 @@ export default {
     },
     setSchoolSearchParams(state,payload){
       state.schoolSearchParams = payload;
+      localStorage.setItem('schoolSearchParams', JSON.stringify(payload));
     },
     deleteSecureExchangeStudentsByID(state, payload) {
       state.secureExchangeStudents = state.secureExchangeStudents.filter(secureExchangeStudent => secureExchangeStudent.studentID !== payload.studentID);
