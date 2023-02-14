@@ -170,6 +170,9 @@ export default {
     DocumentUpload,
     MacroMenu
   },
+  mounted() {
+    this.validateForm();
+  },
   data() {
     return {
       newMessage: '',
@@ -314,6 +317,9 @@ export default {
     },
     getMincode() {
       return this.schoolMap.get(this.schoolID)?.mincode || '';
+    },
+    validateForm() {
+      this.isValidForm = this.$refs.newMessageForm.validate();
     },
   }
 };
