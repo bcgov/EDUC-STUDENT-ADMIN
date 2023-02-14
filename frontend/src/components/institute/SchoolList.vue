@@ -464,7 +464,7 @@ export default {
       this.schoolSearchParams.status = null;
       this.schoolSearchParams.facilityType = null;
       this.schoolSearchParams.schoolCategory = null;
-      this.schoolSearchParams.pageNumber = null;
+      this.schoolSearchParams.pageNumber = 1;
       this.setSchoolSearchParams(this.schoolSearchParams);
     },
     hasSearchValue(){
