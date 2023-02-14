@@ -725,6 +725,7 @@ async function getSchoolsPaginated(req, res){
         searchCriteriaList: JSON.stringify(schoolSearchCriteria)
       }
     };
+    
     let response = await getData(accessToken, config.get('server:institute:rootURL') + '/school/paginated', schoolSearchParam);
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
@@ -787,6 +788,10 @@ function createSchoolSearchCriteria(searchParams){
       } else if (pValue === 'NotClosed'){
         searchCriteriaList.push({key: 'closedDate', operation: FILTER_OPERATION.GREATER_THAN, value: currentDate, valueType: VALUE_TYPE.DATE_TIME, condition: CONDITION.OR});
         searchCriteriaList.push({key: 'closedDate', operation: FILTER_OPERATION.EQUAL, value: null, valueType: VALUE_TYPE.STRING, condition: CONDITION.OR});
+      } else if(pValue === 'isOpenOrOpening'){
+        searchCriteriaList.push({key: 'openedDate', operation: FILTER_OPERATION.LESS_THAN_OR_EQUAL_TO, value: currentDate, valueType: VALUE_TYPE.DATE_TIME, condition: CONDITION.AND});
+        searchCriteriaList.push({key: 'openedDate', operation: FILTER_OPERATION.GREATER_THAN, value: currentDate, valueType: VALUE_TYPE.DATE_TIME, condition: CONDITION.OR});
+        searchCriteriaList.push({key: 'closedDate', operation: FILTER_OPERATION.EQUAL, value: null, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND});
       }
     }
     if(key === 'pubEarlyLearning'){
