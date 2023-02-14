@@ -675,10 +675,10 @@ export default {
       ApiService.apiAxios.get(Routes.institute.SCHOOL_PAGINATED_DATA_URL, {
         params: {
           pageNumber: 0,
-          pageSize: 1,
+          pageSize: 100,
           searchParams: omitBy({
+            isOpenOrOpening: 'isOpenOrOpening',
             authorityID: this.authorityID,
-            status: 'Open'
           }, isEmpty),
         }
       }).then(response => {
@@ -696,7 +696,7 @@ export default {
       ApiService.apiAxios.get(Routes.institute.SCHOOL_PAGINATED_DATA_URL, {
         params: {
           pageNumber: 0,
-          pageSize: 1,
+          pageSize: 100,
           sort: {
             closedDate: 'DESC'
           },

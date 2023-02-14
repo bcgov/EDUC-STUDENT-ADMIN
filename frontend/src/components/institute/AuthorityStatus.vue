@@ -188,7 +188,7 @@
         </v-row>
     </v-card-text>
     <v-card-actions class="justify-end">
-      <PrimaryButton id="cancelNewContactBtn" secondary text="Cancel" @click.native="closeEditAuthorityStatus"></PrimaryButton>
+      <PrimaryButton v-if="listOfOpenSchools.length === 0" id="cancelNewContactBtn" secondary text="Cancel" @click.native="closeEditAuthorityStatus"></PrimaryButton>
       <PrimaryButton id="newContactPostBtn" text="Okay" width="7rem" @click.native="updateAuthorityDates" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
     </v-card-actions>
     </v-form>
