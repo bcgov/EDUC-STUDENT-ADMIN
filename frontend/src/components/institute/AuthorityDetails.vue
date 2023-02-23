@@ -530,7 +530,7 @@
         no-click-animation
         scrollable
         persistent
-        max-width="40%"
+        max-width="30%"
     >
       <AuthorityStatus v-if="openAuthorityStatusEditCard"  @updateAuthorityDates="handleUpdatesToAuthorityStatus"
                     @authorityStatus:closeEditAuthorityStatusPage="openAuthorityStatusEditCard = !openAuthorityStatusEditCard"
