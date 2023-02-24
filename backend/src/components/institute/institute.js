@@ -324,7 +324,7 @@ async function addSchool(req, res) {
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
     logApiError(e, 'addSchool', 'Error occurred while attempting to POST School entity.');
-    return errorResponse(res);
+    return errorResponse(res, e.data.message);
   }
 }
 
