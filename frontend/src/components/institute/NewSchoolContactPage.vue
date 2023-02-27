@@ -33,6 +33,13 @@
                 label="Last Name"
             />
             <v-text-field
+                id='newContactJobTitleInput'
+                v-model="newContact.jobTitle"
+                class="pt-0"
+                :maxlength="255"
+                label="Position Title"
+            />
+            <v-text-field
                 id='newContactEmailInput'
                 :rules="[rules.required(), rules.email()]"
                 v-model="newContact.email"
@@ -198,6 +205,7 @@ export default {
         schoolContactTypeCode: null,
         firstName: null,
         lastName: null,
+        jobTitle: null,
         email: null,
         phoneNumber: null,
         phoneExtension: null,
