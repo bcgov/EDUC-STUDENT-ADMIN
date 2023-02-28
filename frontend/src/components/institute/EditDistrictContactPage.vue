@@ -34,7 +34,7 @@
             />
             <v-text-field id="editDistrictContactJobTitle"
                           v-model="editContact.jobTitle"
-                          label="Title"
+                          label="Position Title"
                           type="text"
                           maxlength="255"
             ></v-text-field>
