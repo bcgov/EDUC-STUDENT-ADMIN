@@ -747,29 +747,24 @@ async function moveSchool(req, res) {
 
     const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
-    const payload = {
-      createUser: utils.getUser(req).idir_username,
-      createDate: null,
-      updateUser: utils.getUser(req).idir_username,
-      updateDate: null,
-      districtId: req.body.districtID,
-      independentAuthorityId: req.body.independentAuthorityId,
-      faxNumber: req.body.faxNumber,
-      phoneNumber: req.body.phoneNumber,
-      email: req.body.email,
-      website: req.body.website,
-      displayName: req.body.displayName,
-      schoolOrganizationCode: req.body.schoolOrganizationCode,
-      schoolCategoryCode: req.body.schoolCategoryCode,
-      facilityTypeCode: req.body.facilityTypeCode,
-      openedDate: req.body.openedDate ? LocalDate.parse(req.body.openedDate).atStartOfDay().format(formatter) : null,
-      closedDate: null,
-      addresses: [],
-      grades: req.body.grades,
-      neighborhoodLearning: req.body.neighborhoodLearning
-    };
+    const payload = req.body;
+    payload.createDate = null;
+    payload.updateDate = null;
+    payload.createUser = utils.getUser(req).idir_username;
+    payload.updateUser = utils.getUser(req).idir_username;
+    payload.addresses = [];
 
-    //set addresses, grade codes and Neighborhood Learning Codes
+    payload.notes.forEach(function(note) {
+      note.updateDate = null;
+      note.createDate = null;
+    });
+
+    payload.contacts.forEach(function(contact) {
+      contact.updateDate = null;
+      contact.createDate = null;
+    });
+
+    // set addresses, grade codes and Neighborhood Learning Codes
     if(req.body.mailingAddrLine1 !== null){
       let mailingAddress = {
         'createUser': utils.getUser(req).idir_username,
@@ -805,7 +800,44 @@ async function moveSchool(req, res) {
       payload.addresses.push(physicalAddress);
     }
 
-    const data = await utils.postData(token, config.get('server:edx:moveSchoolSagaURL'), payload, null, utils.getUser(req).idir_username);
+    const nlcObjectsArray = [];
+    const gradesObjectArray = [];
+
+    for (const nlcCode of payload.neighborhoodLearning) {
+      //when there is an update in frontend to neigborhoodlearning system adds array of codes to the payload
+      if (_.isString(nlcCode)) {
+        nlcObjectsArray.push({
+          neighborhoodLearningTypeCode: nlcCode,
+          schoolId: payload.schoolId
+        });
+      } else {
+        //if neighborhood learning was not changed as part of edit , it will be passed as an array of objects from frontend.
+        nlcObjectsArray.push({
+          neighborhoodLearningTypeCode: nlcCode.neighborhoodLearningTypeCode,
+          schoolId: payload.schoolId
+        });
+      }
+    }
+    for (const gradeCode of payload.grades) {
+      //when there is an update in frontend to grades system adds array of codes to the payload
+      if (_.isString(gradeCode)) {
+        gradesObjectArray.push({
+          schoolGradeCode: gradeCode,
+          schoolId: payload.schoolId
+        });
+      } else {
+        //if grades was not changed as part of edit , it will be passed as an array of objects from frontend.
+        gradesObjectArray.push({
+          schoolGradeCode: gradeCode.schoolGradeCode,
+          schoolId: payload.schoolId
+        });
+      }
+
+    }
+    payload.neighborhoodLearning = nlcObjectsArray;
+    payload.grades=gradesObjectArray;
+
+    const data = await utils.postData(token, config.get('server:edx:moveSchoolSagaURLLocal'), payload, null, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
     logApiError(e, 'moveSchool', 'Error occurred while attempting to POST School entity.');

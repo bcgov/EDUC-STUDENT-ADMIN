@@ -65,7 +65,7 @@
                           item-value="districtId"
                           item-text="districtNumberName"
                           :items="activeDistricts"
-                          v-model="moveSchoolObject.districtID"
+                          v-model="moveSchoolObject.districtId"
                           class="pt-0"
                           clearable>
                       </v-autocomplete>
@@ -521,7 +521,7 @@ export default {
       ApiService.apiAxios.post(`${Routes.institute.SCHOOL_MOVE_URL}`, this.moveSchoolObject)
         .then(() => {
           this.setSuccessAlert('Success! The school has been created.');
-          this.resetForm();
+          this.closeMoveSchoolPage();
         })
         .catch(error => {
           this.setFailureAlert(error.message);
