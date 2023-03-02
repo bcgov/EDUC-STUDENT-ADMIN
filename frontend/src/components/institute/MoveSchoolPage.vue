@@ -508,7 +508,7 @@ export default {
       if (this.moveSchoolObject.schoolCategoryCode && this.requiredAuthoritySchoolCategories.includes(this.moveSchoolObject.schoolCategoryCode) && !value) {
         return 'Required';
       } else {
-        return true;
+        return false;
       }
     },
     saveMoveSchoolDate(date) {
