@@ -745,8 +745,6 @@ async function moveSchool(req, res) {
       });
     }
 
-    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
-
     const payload = req.body;
     payload.createDate = null;
     payload.updateDate = null;
