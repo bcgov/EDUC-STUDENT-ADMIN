@@ -29,6 +29,9 @@
               </v-text-field>
             </v-col>
             <v-col v-if="!editing" cols="6" class="d-flex justify-end">
+              <PrimaryButton v-if="isMoveSchoolAllowed()" id="moveSchoolButton" class="mr-2" secondary icon-left
+                             icon="mdi-account-multiple-outline" @click.native="moveSchool"
+                             text="MoveSchool"></PrimaryButton>
               <PrimaryButton id="viewSchoolContactsButton" class="mr-2" secondary icon-left
                              icon="mdi-account-multiple-outline" :to="`/schoolContacts/${schoolID}`"
                              text="View School Contacts"></PrimaryButton>
@@ -622,6 +625,21 @@
         </v-card-text>
       </v-card>
     </v-bottom-sheet>
+
+    <v-bottom-sheet
+        v-model="moveSchoolSheet"
+        inset
+        no-click-animation
+        scrollable
+        persistent
+        width="50% !important"
+    >
+      <MoveSchoolPage
+          v-if="moveSchoolSheet"
+          :school="school"
+          @moveSchool:closeMoveSchoolPage="moveSchoolSheet = !moveSchoolSheet"
+      />
+    </v-bottom-sheet>
     </v-col>
     </v-row>
   </v-container>
@@ -658,13 +676,15 @@ import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
 import SchoolStatus from '@/components/institute/SchoolStatus';
 import { sortBy } from 'lodash';
+import MoveSchoolPage from './MoveSchoolPage';
 
 export default {
   name: 'SchoolDetailsPage',
   mixins: [alertMixin],
   components: {
     SchoolStatus,
-    PrimaryButton
+    PrimaryButton,
+    MoveSchoolPage
   },
   props: {
     schoolID: {
@@ -696,7 +716,8 @@ export default {
       countryCodeValues: [],
       rules: Rules,
       openSchoolStatusEditCard: false,
-      isSchoolStatusUpdateAllowed: true
+      isSchoolStatusUpdateAllowed: true,
+      moveSchoolSheet: false,
     };
   },
   computed: {
@@ -1032,6 +1053,9 @@ export default {
       }
       return this.SCHOOL_ADMIN_ROLE;
     },
+    isMoveSchoolAllowed() {
+      return this.school.status !== 'Closed' && this.SCHOOL_ADMIN_ROLE; 
+    },
     async clickSameAsAddressButton(){
       await this.$nextTick();
       this.$refs.schoolDetailsForm.validate();
@@ -1062,6 +1086,9 @@ export default {
       this.schoolDetailsCopy.facilityType = null;
       this.schoolDetailsCopy.facilityTypeCode = null;
     },
+    moveSchool() {
+      this.moveSchoolSheet = !this.moveSchoolSheet;
+    }
   },
 };
 </script>

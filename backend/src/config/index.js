@@ -116,6 +116,7 @@ nconf.defaults({
       districtUserActivationInviteURL:process.env.EDX_API_URL+ '/exchange'+ '/district-user-activation-invite-saga',
       newSecureExchangeSagaURL: process.env.EDX_API_URL + '/exchange/new-secure-exchange-saga',
       secureExchangeCommentSagaURL: process.env.EDX_API_URL + '/exchange/secure-exchange-comment-saga',
+      moveSchoolSagaURL: process.env.EDX_API_URL + '/exchange/move-school-saga',
       roleAdmin: process.env.EDX_ADMIN,
       teamRoles: {
         pen: process.env.EDX_PEN_TEAM_ROLES ? process.env.EDX_PEN_TEAM_ROLES.split(',') : '', // comma separated list

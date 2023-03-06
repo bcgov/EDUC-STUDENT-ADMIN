@@ -735,6 +735,114 @@ async function getSchoolsPaginated(req, res){
   }
 }
 
+async function moveSchool(req, res) {
+  try {
+    const token = getBackendToken(req);
+
+    if(!hasSchoolAdminRole(req, req.body)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+
+    const payload = req.body;
+    payload.createDate = null;
+    payload.updateDate = null;
+    payload.createUser = utils.getUser(req).idir_username;
+    payload.updateUser = utils.getUser(req).idir_username;
+    payload.addresses = [];
+
+    payload.notes.forEach(function(note) {
+      note.updateDate = null;
+      note.createDate = null;
+    });
+
+    payload.contacts.forEach(function(contact) {
+      contact.updateDate = null;
+      contact.createDate = null;
+    });
+
+    // set addresses, grade codes and Neighborhood Learning Codes
+    if(req.body.mailingAddrLine1 !== null){
+      let mailingAddress = {
+        'createUser': utils.getUser(req).idir_username,
+        'updateUser': utils.getUser(req).idir_username,
+        'createDate': null,
+        'updateDate': null,
+        'addressId': null,
+        'addressLine1': req.body.mailingAddrLine1,
+        'addressLine2': req.body.mailingAddrLine2,
+        'city': req.body.mailingAddrCity,
+        'postal': req.body.mailingAddrPostal,
+        'addressTypeCode': 'MAILING',
+        'provinceCode': req.body.mailingAddrProvince,
+        'countryCode': req.body.mailingAddrCountry,
+      };
+      payload.addresses.push(mailingAddress);
+    }
+
+    if(req.body.physicalAddrLine1 !== null){
+      let physicalAddress = {
+        'createUser': utils.getUser(req).idir_username,
+        'updateUser': utils.getUser(req).idir_username,
+        'createDate': null,
+        'updateDate': null,
+        'addressLine1': req.body.physicalAddrLine1,
+        'addressLine2': req.body.physicalAddrLine2,
+        'city': req.body.physicalAddrCity,
+        'postal': req.body.physicalAddrPostal,
+        'addressTypeCode': 'PHYSICAL',
+        'provinceCode': req.body.physicalAddrProvince,
+        'countryCode': req.body.physicalAddrCountry,
+      };
+      payload.addresses.push(physicalAddress);
+    }
+
+    const nlcObjectsArray = [];
+    const gradesObjectArray = [];
+
+    for (const nlcCode of payload.neighborhoodLearning) {
+      //when there is an update in frontend to neigborhoodlearning system adds array of codes to the payload
+      if (_.isString(nlcCode)) {
+        nlcObjectsArray.push({
+          neighborhoodLearningTypeCode: nlcCode,
+          schoolId: payload.schoolId
+        });
+      } else {
+        //if neighborhood learning was not changed as part of edit , it will be passed as an array of objects from frontend.
+        nlcObjectsArray.push({
+          neighborhoodLearningTypeCode: nlcCode.neighborhoodLearningTypeCode,
+          schoolId: payload.schoolId
+        });
+      }
+    }
+    for (const gradeCode of payload.grades) {
+      //when there is an update in frontend to grades system adds array of codes to the payload
+      if (_.isString(gradeCode)) {
+        gradesObjectArray.push({
+          schoolGradeCode: gradeCode,
+          schoolId: payload.schoolId
+        });
+      } else {
+        //if grades was not changed as part of edit , it will be passed as an array of objects from frontend.
+        gradesObjectArray.push({
+          schoolGradeCode: gradeCode.schoolGradeCode,
+          schoolId: payload.schoolId
+        });
+      }
+
+    }
+    payload.neighborhoodLearning = nlcObjectsArray;
+    payload.grades=gradesObjectArray;
+
+    const data = await utils.postData(token, config.get('server:edx:moveSchoolSagaURLLocal'), payload, null, utils.getUser(req).idir_username);
+    return res.status(HttpStatus.OK).json(data);
+  } catch (e) {
+    logApiError(e, 'moveSchool', 'Error occurred while attempting to POST School entity.');
+    return errorResponse(res, e.data.message);
+  }
+}
+
 async function getSchoolHistoryPaginated(req, res) {
   try {
     const accessToken = getBackendToken(req);
@@ -974,5 +1082,6 @@ module.exports = {
   addAuthority,
   addNewDistrictNote,
   addDistrictContact,
-  getSchoolHistoryPaginated
+  getSchoolHistoryPaginated,
+  moveSchool
 };
