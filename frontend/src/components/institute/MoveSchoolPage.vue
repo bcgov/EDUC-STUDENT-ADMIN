@@ -520,7 +520,7 @@ export default {
       this.processing = true;
       ApiService.apiAxios.post(`${Routes.institute.SCHOOL_MOVE_URL}`, this.moveSchoolObject)
         .then(() => {
-          this.setSuccessAlert('Success! The school has been created.');
+          this.setSuccessAlert('Success! Your request to move this school has been accepted.');
           this.closeMoveSchoolPage();
         })
         .catch(error => {
