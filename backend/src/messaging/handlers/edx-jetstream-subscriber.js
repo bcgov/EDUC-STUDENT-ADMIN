@@ -12,7 +12,7 @@ const handleJetStreamMessage = async (err, msg) => {
     return;
   }
   const data = JSON.parse(StringCodec().decode(msg.data)); // it would always be a JSON string. ii will always be choreographed event.
-  logger.info(`Received message, on ${msg.subject} , Sequence ::  [${msg.seq}], sid ::  [${msg.sid}], redelivered ::  [${msg.redelivered}] :: Data ::`, data);
+  logger.debug(`Received message, on ${msg.subject} , Sequence ::  [${msg.seq}], sid ::  [${msg.sid}], redelivered ::  [${msg.redelivered}] :: Data ::`, data);
   try {
     if (data.eventType === CONSTANTS.EVENT_TYPE.MOVE_USERS_TO_NEW_SCHOOL && data.eventOutcome === CONSTANTS.EVENT_OUTCOME.SCHOOL_MOVED) {
       await handleEdxMoveEvent(data);
@@ -24,9 +24,9 @@ const handleJetStreamMessage = async (err, msg) => {
 };
 
 async function handleEdxMoveEvent(data) {
-  logger.info('Received edx message: ' + JSON.stringify(data.eventPayload));
+  logger.debug('Received edx message: ' + JSON.stringify(data.eventPayload));
   NATS.publishMessage(CONSTANTS.WS_MOVE_SCHOOL_TOPIC, StringCodec().encode(safeStringify(data))).then(() => { // publish the message only if key was present in redis, otherwise just acknowledge to STAN.
-    logger.info(`Message published to ${CONSTANTS.WS_MOVE_SCHOOL_TOPIC}`, data);
+    logger.debug(`Message published to ${CONSTANTS.WS_MOVE_SCHOOL_TOPIC}`, data);
   });
 }
 
