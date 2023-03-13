@@ -374,6 +374,7 @@ export default {
         email: this.school.email,
         website: this.school.website,
         schoolId: this.school.schoolId,
+        openedDate: this.school.openedDate,
         mincode: this.school.mincode,
         schoolNumber: this.school.schoolNumber,
         contacts: this.school.contacts,

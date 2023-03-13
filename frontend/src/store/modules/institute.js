@@ -19,7 +19,8 @@ export default {
     activeAuthorityTypeCodes: null,
     activeGradeCodes: null,
     activeProvinceCodes: null,
-    activeCountryCodes: null
+    activeCountryCodes: null,
+    movedSchoolNumber: null
   },
   getters: {
     facilityTypeCodes: state => state.facilityTypeCodes,
@@ -91,6 +92,9 @@ export default {
     },
     setActiveCountryCodes: (state, activeCountryCodes) => {
       state.activeCountryCodes = activeCountryCodes;
+    },
+    schoolMovedNotification: (state, movedSchoolNumber) => {
+      state.movedSchoolNumber = movedSchoolNumber;
     }
   },
   actions: {

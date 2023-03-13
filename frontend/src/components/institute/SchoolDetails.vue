@@ -662,7 +662,7 @@
 <script>
 
 import PrimaryButton from '../util/PrimaryButton';
-import {mapGetters, mapState} from 'vuex';
+import {mapGetters, mapState, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
@@ -731,6 +731,7 @@ export default {
     ...mapState('institute', ['provinceCodes']),
     ...mapState('institute', ['countryCodes']),
     ...mapState('institute', ['schoolCategoryFacilityTypesMap']),
+    ...mapGetters('notifications', ['notification']),
     dataReady: function () {
       return this.userInfo;
     },
@@ -754,6 +755,23 @@ export default {
       }else {
         this.resetSchoolDetailsCopyFacilityType();
         return [];
+      }
+    },
+  },
+  watch: {
+    notification(notificationData) {
+      if (notificationData) {
+        if (notificationData.eventType === 'MOVE_USERS_TO_NEW_SCHOOL' && notificationData.eventOutcome === 'SCHOOL_MOVED' && notificationData.eventPayload) {
+          try {
+            const school = JSON.parse(notificationData.eventPayload);
+            if (school.newSchoolNumber) { 
+              const warningMessage = 'School moved successfully. Your new school number is: '+ school.newSchoolNumber + '. Please refresh the page';
+              this.setSuccessAlert(warningMessage);
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
       }
     },
   },
@@ -786,6 +804,7 @@ export default {
     this.getThisSchoolsDetails();
   },
   methods: {
+    ...mapMutations('institute', ['schoolMovedNotification']),
     isOffshoreSchoolSelected(){
       return this.schoolDetailsCopy?.schoolCategoryCode === 'OFFSHORE';
     },
