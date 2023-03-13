@@ -738,6 +738,7 @@ async function getSchoolsPaginated(req, res){
 async function moveSchool(req, res) {
   try {
     const token = getBackendToken(req);
+    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
     if(!hasSchoolAdminRole(req, req.body)){
       return res.status(HttpStatus.UNAUTHORIZED).json({
@@ -745,19 +746,19 @@ async function moveSchool(req, res) {
       });
     }
 
-    const payload = req.body;
-    payload.createDate = null;
-    payload.updateDate = null;
-    payload.createUser = utils.getUser(req).idir_username;
-    payload.updateUser = utils.getUser(req).idir_username;
-    payload.addresses = [];
+    const incomingPayload = req.body;
+    incomingPayload.createDate = null;
+    incomingPayload.updateDate = null;
+    incomingPayload.createUser = utils.getUser(req).idir_username;
+    incomingPayload.updateUser = utils.getUser(req).idir_username;
+    incomingPayload.addresses = [];
 
-    payload.notes.forEach(function(note) {
+    incomingPayload.notes.forEach(function(note) {
       note.updateDate = null;
       note.createDate = null;
     });
 
-    payload.contacts.forEach(function(contact) {
+    incomingPayload.contacts.forEach(function(contact) {
       contact.updateDate = null;
       contact.createDate = null;
     });
@@ -778,7 +779,7 @@ async function moveSchool(req, res) {
         'provinceCode': req.body.mailingAddrProvince,
         'countryCode': req.body.mailingAddrCountry,
       };
-      payload.addresses.push(mailingAddress);
+      incomingPayload.addresses.push(mailingAddress);
     }
 
     if(req.body.physicalAddrLine1 !== null){
@@ -795,45 +796,51 @@ async function moveSchool(req, res) {
         'provinceCode': req.body.physicalAddrProvince,
         'countryCode': req.body.physicalAddrCountry,
       };
-      payload.addresses.push(physicalAddress);
+      incomingPayload.addresses.push(physicalAddress);
     }
 
     const nlcObjectsArray = [];
     const gradesObjectArray = [];
 
-    for (const nlcCode of payload.neighborhoodLearning) {
+    for (const nlcCode of incomingPayload.neighborhoodLearning) {
       //when there is an update in frontend to neigborhoodlearning system adds array of codes to the payload
       if (_.isString(nlcCode)) {
         nlcObjectsArray.push({
           neighborhoodLearningTypeCode: nlcCode,
-          schoolId: payload.schoolId
+          schoolId: incomingPayload.schoolId
         });
       } else {
         //if neighborhood learning was not changed as part of edit , it will be passed as an array of objects from frontend.
         nlcObjectsArray.push({
           neighborhoodLearningTypeCode: nlcCode.neighborhoodLearningTypeCode,
-          schoolId: payload.schoolId
+          schoolId: incomingPayload.schoolId
         });
       }
     }
-    for (const gradeCode of payload.grades) {
+    for (const gradeCode of incomingPayload.grades) {
       //when there is an update in frontend to grades system adds array of codes to the payload
       if (_.isString(gradeCode)) {
         gradesObjectArray.push({
           schoolGradeCode: gradeCode,
-          schoolId: payload.schoolId
+          schoolId: incomingPayload.schoolId
         });
       } else {
         //if grades was not changed as part of edit , it will be passed as an array of objects from frontend.
         gradesObjectArray.push({
           schoolGradeCode: gradeCode.schoolGradeCode,
-          schoolId: payload.schoolId
+          schoolId: incomingPayload.schoolId
         });
       }
 
     }
-    payload.neighborhoodLearning = nlcObjectsArray;
-    payload.grades=gradesObjectArray;
+    incomingPayload.neighborhoodLearning = nlcObjectsArray;
+    incomingPayload.grades=gradesObjectArray;
+
+    const payload = {
+      school: incomingPayload,
+      moveDate: LocalDate.parse(incomingPayload.moveDate).atStartOfDay().format(formatter),
+      schoolId: null
+    }
 
     const data = await utils.postData(token, config.get('server:edx:moveSchoolSagaURLLocal'), payload, null, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(data);
