@@ -463,7 +463,7 @@ export default {
   methods: {
     getActiveDistrictDropDownItems() {
       ApiService.getActiveDistricts().then((response) => {
-        for(const district of response.data){
+        for(const district of response.data){      
           let districtItem = {
             districtNumberName: `${district.districtNumber} - ${district.name}`,
             districtId: district.districtId,
