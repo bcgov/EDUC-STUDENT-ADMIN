@@ -149,7 +149,7 @@ async function getStudentByPen(req, res) {
   try {
     const token = utils.getBackendToken(req);
     const pen = req.query.pen;
-    const result = await utils.getData(token, config.get('server:student:rootURL') + '/', {params: {pen: pen}});
+    const result = await utils.getData(token, config.get('server:student:rootURL'), {params: {pen: pen}});
     if (result && result[0] && result[0].studentID) {
       return res.status(200).json(result[0]);
     } else {
