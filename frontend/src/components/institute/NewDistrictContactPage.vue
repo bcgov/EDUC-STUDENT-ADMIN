@@ -37,7 +37,7 @@
               v-model="newContact.jobTitle"
               class="pt-0"
               :maxlength="255"
-              label="Title"
+              label="Position Title"
             />
             <v-text-field
                 id='newContactEmailInput'
