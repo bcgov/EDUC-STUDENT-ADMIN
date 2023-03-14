@@ -842,7 +842,7 @@ async function moveSchool(req, res) {
       schoolId: null
     }
 
-    const data = await utils.postData(token, config.get('server:edx:moveSchoolSagaURLLocal'), payload, null, utils.getUser(req).idir_username);
+    const data = await utils.postData(token, config.get('server:edx:moveSchoolSagaURL'), payload, null, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(data);
   } catch (e) {
     logApiError(e, 'moveSchool', 'Error occurred while attempting to POST School entity.');
