@@ -463,15 +463,12 @@ export default {
   methods: {
     getActiveDistrictDropDownItems() {
       ApiService.getActiveDistricts().then((response) => {
-        for(const district of response.data){
-          if(district.districtNumber !== '102' && district.districtNumber !== '103') {
+        for(const district of response.data){      
             let districtItem = {
               districtNumberName: `${district.districtNumber} - ${district.name}`,
               districtId: district.districtId,
             };
             this.activeDistricts.push(districtItem);
-          }
-          
         }
         this.activeDistricts = this.sortByNameValue(this.activeDistricts, 'districtNumberName');
       }).catch(error => {
