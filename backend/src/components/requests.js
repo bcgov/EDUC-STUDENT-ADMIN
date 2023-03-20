@@ -250,7 +250,7 @@ async function getStudentDemographicsById(req, res) {
 
     let statusCode;
     if(config.get('server:enablePrrStudentDemographics')) {
-      const response = await utils.getData(token, config.get('server:student:rootURL') + '/', {params: {pen: req.params.id}});
+      const response = await utils.getData(token, config.get('server:student:rootURL'), {params: {pen: req.params.id}});
       if(response.length === 0) {
         const message = `No student record was found for pen :: ${req.params.id}`;
         log.error(message);
