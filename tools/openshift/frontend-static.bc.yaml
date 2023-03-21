@@ -71,7 +71,7 @@ objects:
     runPolicy: SerialLatestOnly
     source:
       dockerfile: |-
-        FROM image-registry.openshift-image-registry.svc:5000/8878b4-tools/caddy:v2
+        FROM artifacts.developer.gov.bc.ca/docker-remote/caddy:2.4.6-alpine
         EXPOSE 2015
         COPY /tmp/src/dist /srv
         COPY /tmp/src/Caddyfile /etc/caddy/Caddyfile
