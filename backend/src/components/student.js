@@ -149,7 +149,7 @@ async function getStudentByPen(req, res) {
   try {
     const token = utils.getBackendToken(req);
     const pen = req.query.pen;
-    const result = await utils.getData(token, config.get('server:student:rootURL') + '/', {params: {pen: pen}});
+    const result = await utils.getData(token, config.get('server:student:rootURL'), {params: {pen: pen}});
     if (result && result[0] && result[0].studentID) {
       return res.status(200).json(result[0]);
     } else {
@@ -194,7 +194,7 @@ async function createNewStudent(req, res) {
     student.statusCode = student.statusCode || 'A';
     student.createDate = null;
     student.updateDate = null;
-    const result = await utils.postData(token, config.get('server:student:rootURL') + '/', student, null, utils.getUser(req).idir_username);
+    const result = await utils.postData(token, config.get('server:student:rootURL'), student, null, utils.getUser(req).idir_username);
     delete req.session.create_new_student_transactionID; // delete it when student is created successfully.
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
