@@ -194,7 +194,7 @@ async function createNewStudent(req, res) {
     student.statusCode = student.statusCode || 'A';
     student.createDate = null;
     student.updateDate = null;
-    const result = await utils.postData(token, config.get('server:student:rootURL') + '/', student, null, utils.getUser(req).idir_username);
+    const result = await utils.postData(token, config.get('server:student:rootURL'), student, null, utils.getUser(req).idir_username);
     delete req.session.create_new_student_transactionID; // delete it when student is created successfully.
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
