@@ -21,10 +21,10 @@ objects:
       local: false
     tags:
     - annotations:
-        openshift.io/imported-from: image-registry.openshift-image-registry.svc:5000/8878b4-tools/caddy:v2
+        openshift.io/imported-from: artifacts.developer.gov.bc.ca/docker-remote/caddy:2.4.6-alpine
       from:
         kind: DockerImage
-        name: image-registry.openshift-image-registry.svc:5000/8878b4-tools/caddy:v2
+        name: artifacts.developer.gov.bc.ca/docker-remote/caddy:2.4.6-alpine
       generation:
       importPolicy: {}
       name: v2
@@ -71,7 +71,7 @@ objects:
     runPolicy: SerialLatestOnly
     source:
       dockerfile: |-
-        FROM image-registry.openshift-image-registry.svc:5000/8878b4-tools/caddy:v2
+        FROM artifacts.developer.gov.bc.ca/docker-remote/caddy:2.4.6-alpine
         EXPOSE 2015
         COPY /tmp/src/dist /srv
         COPY /tmp/src/Caddyfile /etc/caddy/Caddyfile
