@@ -89,7 +89,7 @@ objects:
       dockerStrategy:
         from:
           kind: ImageStreamTag
-          name: artifacts.developer.gov.bc.ca/docker-remote/caddy:2.4.6-alpine
+          name: caddy:v2
       type: Docker
 parameters:
 - name: REPO_NAME
