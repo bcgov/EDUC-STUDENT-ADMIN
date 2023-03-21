@@ -47,7 +47,7 @@ async function createMacro(req, res) {
     stripAuditColumns(newMacro);
 
     const penMacroURL = config.get('server:macro:penMacroURL');
-    const currentMacros = await getData(token, `${penMacroURL}/?businessUseTypeCode=${newMacro.businessUseTypeCode}&macroTypeCode=${newMacro.macroTypeCode}`);
+    const currentMacros = await getData(token, `${penMacroURL}?businessUseTypeCode=${newMacro.businessUseTypeCode}&macroTypeCode=${newMacro.macroTypeCode}`);
     newMacro.macroCode = createMacroCode(currentMacros);
     
     const sagaId = await postData(token, `${penMacroURL}/create-macro`, newMacro, null, getUser(req).idir_username);
