@@ -21,10 +21,10 @@ objects:
         local: false
       tags:
         - annotations:
-            openshift.io/imported-from: image-registry.openshift-image-registry.svc:5000/8878b4-tools/caddy:v2
+            openshift.io/imported-from: image-registry.openshift-image-registry.svc:5000/d4cdde-tools/caddy:v2
           from:
             kind: DockerImage
-            name: image-registry.openshift-image-registry.svc:5000/8878b4-tools/caddy:v2
+            name: image-registry.openshift-image-registry.svc:5000/d4cdde-tools/caddy:v2
           generation:
           importPolicy: { }
           name: v2
@@ -71,7 +71,7 @@ objects:
       runPolicy: SerialLatestOnly
       source:
         dockerfile: |-
-          FROM image-registry.openshift-image-registry.svc:5000/8878b4-tools/caddy:v2
+          FROM image-registry.openshift-image-registry.svc:5000/d4cdde-tools/caddy:v2
           EXPOSE 2015
           COPY /tmp/src/dist /srv
           COPY /tmp/src/Caddyfile /etc/caddy/Caddyfile
