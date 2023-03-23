@@ -48,11 +48,15 @@ export default {
     },
     requestType: {
       type: String,
-      required: true
+      required: false
     },
     imageId: {
       type: String,
       required: true
+    },
+    route: {
+      type: String,
+      required: false
     }
   },
   methods: {
@@ -84,7 +88,10 @@ export default {
       this.isLoading = true;
       this.src = undefined;
       if (this.documentID?.length > 0) {
-        ApiService.apiAxios.get(`${Routes[this.requestType].ROOT_ENDPOINT}/${this.requestId}/documents/${this.documentID}`).then((response) => {
+        let url = (typeof this.route != 'undefined')
+          ? `${this.route}/${this.requestId}/documents/${this.imageId}`
+          : `${Routes[this.requestType].ROOT_ENDPOINT}/${this.requestId}/documents/${this.imageId}`;
+        ApiService.apiAxios.get(url).then((response) => {
           this.src = 'data:image/jpeg;base64,' + response.data;
           this.previewImgObject();
         }).catch(e => {

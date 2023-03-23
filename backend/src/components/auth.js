@@ -101,6 +101,27 @@ function isValidUser(isUserHasRole, roleType, roleNames) {
   };
 }
 
+function isValidLoggedInUser(req, res, next) {
+  try {
+    const jwtToken = utils.getBackendToken(req);
+    if (!jwtToken) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'Unauthorized user'
+      });
+    }
+    try {
+      jsonwebtoken.verify(jwtToken, config.get('oidc:publicKey'));
+    } catch (e) {
+      log.debug('error is from verify', e);
+      return res.status(HttpStatus.UNAUTHORIZED).json();
+    }
+    return next();
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.UNAUTHORIZED).json();
+  }
+}
+
 const auth = {
   // Check if JWT Access Token has expired
   // logic to add 30 seconds to the check is to avoid edge case when the token is valid here
@@ -196,13 +217,14 @@ const auth = {
     };
 
     const privateKey = config.get('tokenGenerate:privateKey');
-    const uiToken = jsonwebtoken.sign({}, privateKey, signOptions);
+    const uiToken = jsonwebtoken.sign({}, privateKey, signOptions, null);
     log.verbose('Generated JWT', uiToken);
     return uiToken;
   },
   isValidUiTokenWithRoles: partial(isValidUiToken, isUserHasRoles),
   isValidUserWithRoles: partial(isValidUser, isUserHasRoles),
   ...createRoleHelpers(userRoles),
+  isLoggedInUser: isValidLoggedInUser,
 
   async getApiCredentials() {
     try {

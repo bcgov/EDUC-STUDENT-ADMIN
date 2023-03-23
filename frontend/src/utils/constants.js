@@ -14,6 +14,8 @@ const penMatchRoot = baseRoot + '/penMatches';
 const macroRoot = baseRoot + '/macros';
 const nominalRollRoot= baseRoot+'/nominal-roll';
 const edxRoot= baseRoot+'/edx';
+const instituteRoot = baseRoot + '/institute';
+const cacheRoot = baseRoot + '/cache';
 
 let object = {
   LOGIN: authRoot + '/login',
@@ -80,6 +82,7 @@ let object = {
   student: {
     ROOT_ENDPOINT: studentRoot,
     SEARCH_URL: studentRoot + '/search',
+    SEARCH_BY_PEN_URL: studentRoot + '/',
     GENDER_CODE_URL: studentRoot + '/activeGenderCodes',
     DEMOG_CODE_URL: studentRoot + '/demogCodes',
     STATUS_CODE_URL: studentRoot + '/statusCodes',
@@ -89,6 +92,40 @@ let object = {
     DOC_TYPE_CODES_URL: studentRoot + '/document-type-codes'
   },
   SCHOOL_DATA_URL: schoolRequestRoot,
+  institute: {
+    ROOT_ENDPOINT: instituteRoot,
+    SCHOOL_DATA_URL: instituteRoot + '/school',
+    SCHOOL_NOTE_URL: instituteRoot + '/school/note',
+    SCHOOL_CONTACT_URL: instituteRoot + '/school/contact',
+    SCHOOL_PAGINATED_DATA_URL: instituteRoot + '/schoolsPaginated',
+    SCHOOL_HISTORY_PAGINATED_DATA_URL: instituteRoot + '/schoolHistoryPaginated',
+    SCHOOL_MOVE_URL: instituteRoot + '/school/moveSchool',
+    DISTRICT_DATA_URL: instituteRoot + '/district',
+    DISTRICT_CONTACT_URL: instituteRoot + '/district/contact',
+    DISTRICT_CONTACT_TYPE_CODES: instituteRoot + '/districtContactTypeCodes',
+    DISTRICT_NOTE_URL: instituteRoot + '/district/note',
+    AUTHORITY_DATA_URL: instituteRoot + '/authority',
+    AUTHORITY_CONTACT_URL: instituteRoot + '/authority/contact',
+    AUTHORITY_NOTE_URL: instituteRoot + '/authority/note',
+    AUTHORITIES_PAGINATED_DATA_URL: instituteRoot + '/authoritiesPaginated',
+  },
+  cache:{
+    ROOT_ENDPOINT: cacheRoot,
+    SCHOOL_DATA_URL: cacheRoot + '/school',
+    DISTRICT_DATA_URL: cacheRoot + '/district',
+    AUTHORITY_DATA_URL: cacheRoot + '/authority',
+    FACILITY_TYPES_URL: cacheRoot + '/facility-types',
+    SCHOOL_CATEGORY_TYPES_URL: cacheRoot + '/school-category-types',
+    SCHOOL_ORGANIZATION_TYPES_URL: cacheRoot + '/school-organization-types',
+    SCHOOL_NEIGHBORHOOD_LEARNING_TYPES_URL: cacheRoot + '/school-neighborhood-learning-types',
+    AUTHORITY_TYPES_URL: cacheRoot + '/authority-types',
+    AUTHORITY_CONTACT_TYPES_URL: cacheRoot + '/authority-contact-types',
+    GRADE_TYPES_URL: cacheRoot + '/grade-codes',
+    PROVINCES_URL: cacheRoot + '/province-codes',
+    COUNTRIES_URL: cacheRoot + '/country-codes',
+    SCHOOL_CONTACT_TYPES_URL: cacheRoot + '/school-contact-types',
+    SCHOOL_CATEGORY_FACILITY_TYPE_URL: cacheRoot + '/school-category-facility-type',
+  },
   penServices: {
     ROOT_ENDPOINT: penServicesRoot,
     VALIDATE_DEMOGRAPHICS: penServicesRoot + '/demog-validation',
@@ -109,13 +146,21 @@ let object = {
   },
   edx: {
     ROOT_ENDPOINT: edxRoot,
+    STATS_URL: edxRoot + '/exchange/stats',
     EXCHANGE_URL: edxRoot + '/exchange',
+    EXCHANGE_FILE_REQUIREMENTS_URL: edxRoot + '/exchange/file-requirements',
     STATUSES_URL: edxRoot + '/exchange/statuses',
     CLAIM_URL: edxRoot + '/exchange/claim',
+    CLAIM_ONE_URL: edxRoot + '/exchange/claimOne',
     USERS_URL: edxRoot + '/users',
+    VALID_USERS_FOR_MESSAGING: edxRoot + '/valid-schools-for-messaging',
     EXCHANGE_ACCESS_URL: edxRoot + '/users',
     EXCHANGE_ACCESS_ROLES_URL: edxRoot + '/users/roles',
-    PRIMARY_ACTIVATION_CODE_URL: edxRoot + '/users/activation-code/primary'
+    EXCHANGE_REMOVE_USER: edxRoot + '/users/remove',
+    EXCHANGE_RELINK_USER: edxRoot + '/users/relink',
+    PRIMARY_ACTIVATION_CODE_URL: edxRoot + '/users/activation-code/primary',
+    NEW_SCHOOL_USER_ACTIVATION_INVITE: edxRoot + '/school-user-activation-invite',
+    NEW_DISTRICT_USER_ACTIVATION_INVITE: edxRoot + '/district-user-activation-invite'
   }
 };
 
@@ -387,13 +432,27 @@ export const PAGE_TITLES = Object.freeze(
     STATS_DASHBOARD: 'Student and System Analytics',
     VIEW_MERGES: 'View Merges',
     ANALYTICS: 'Analytics',
-    EXCHANGE: 'Secure Exchange Messaging',
+    EXCHANGE: 'Secure Messaging Inbox',
     NEW_EXCHANGE: 'New Message',
-    VIEW_EXCHANGE: 'View Message',
-    EXCHANGE_ACCESS: 'Exchange Access',
-    EXCHANGE_USERS: 'Exchange Users'
+    VIEW_EXCHANGE: 'Secure Message',
+    EXCHANGE_ACCESS: 'EDX School Access',
+    EDX_DISTRICT_ACCESS: 'EDX District Access',
+    EXCHANGE_USERS: 'EDX School Access',
+    NEW_USER_INVITE:'New User',
+    DISTRICT_LIST: 'District List',
+    DISTRICT_CONTACTS: 'District Contacts',
+    SCHOOL_LIST: 'School List',
+    SCHOOL_DETAILS: 'School Details',
+    AUTHORITIES_LIST: 'Authority List',
+    AUTHORITY_DETAILS: 'Authority Details',
+    DISTRICT_DETAILS:'District Details',
+    AUTHORITY_CONTACTS: 'Authority Contacts',
+    SCHOOL_CONTACTS: 'School Contacts',
+    SCHOOL_HISTORY: 'School History',
   }
 );
+
+export const MINISTRY_NAME = 'Ministry of Education and Child Care';
 
 export const SEARCH_FILTER_OPERATION = Object.freeze(
   {
@@ -534,3 +593,5 @@ export const NOMINAL_ROLL_STUDENT_STATUSES = Object.freeze(
 export const NOMINAL_ROLL_STUDENT_STATUS_CODES = Object.freeze(
   Object.fromEntries(NOMINAL_ROLL_STUDENT_STATUSES.map(status => [status.value, status.value]))
 );
+
+export const EDX_SAGA_REQUEST_DELAY_MILLISECONDS = 2000;

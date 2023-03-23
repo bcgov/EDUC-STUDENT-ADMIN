@@ -11,8 +11,8 @@ jest.mock('../../../src/components/utils', () => {
     getUser: jest.fn().mockReturnValue({idir_username: 'User'})
   };
 });
-jest.mock('../../../src/components/cache-service');
-const cacheService = require('../../../src/components/cache-service');
+jest.mock('../../../src/components/school-api-cache-service');
+const cacheService = require('../../../src/components/school-api-cache-service');
 const { mockRequest, mockResponse } = require('../helpers');
 const utils = require('../../../src/components/utils');
 const { ApiError } = require('../../../src/components/error');

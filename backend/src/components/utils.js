@@ -39,6 +39,14 @@ function errorResponse(res, msg, code) {
   });
 }
 
+function validateAccessToken(token, res) {
+  if (!token) {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No access token'
+    });
+  }
+}
+
 function addTokenToHeader(params, token) {
   if (params) {
     if (params.headers) {
@@ -75,6 +83,14 @@ async function deleteData(token, url) {
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
     throw new ApiError(status, {message: 'API Delete error'}, e);
   }
+}
+
+function isPdf(document){
+  return (
+    'fileName' in document &&
+    typeof document.fileName === 'string' &&
+    document.fileName.toLowerCase().endsWith('.pdf')
+  );
 }
 
 async function deleteDataWithBody(token, url, data) {
@@ -153,10 +169,14 @@ async function logRequestData(operationType, url, data) {
 async function postData(token, url, data, params, user) {
   try {
     params = addTokenToHeader(params, token);
+    params.maxContentLength = Infinity;
+    params.maxBodyLength = Infinity;
+
     if (user && typeof user === 'string') {
       data.createUser = user;
       data.updateUser = user;
     }
+
     logRequestData('POST', url, data);
     const response = await axios.post(url, data, params);
     logResponseData(url, response, 'POST');
@@ -303,6 +323,7 @@ function forwardGet(apiName, urlKey, extraPath, handleResponse) {
   };
 }
 
+
 const utils = {
   // Returns OIDC Discovery values
   async getOidcDiscovery() {
@@ -331,7 +352,6 @@ const utils = {
   },
   saveSession(req, res, penRequest) {
     req['session'].penRequest = Object.assign({}, penRequest);
-    //req['session'].save();
   },
   formatCommentTimestamp(time) {
     const timestamp = LocalDateTime.parse(time);
@@ -448,7 +468,7 @@ const utils = {
     };
   },
   /**
-  * This function will modify the session by changing `tempSessionExtensionIdentifier`. 
+  * This function will modify the session by changing `tempSessionExtensionIdentifier`.
   * Please be CAREFUL when using this with parallel api calls from UI Side, when you want to store some data in session in one of the api calls.
   * more documentation found here https://github.com/expressjs/session#readme, look at the resave section.
   * even though our app uses `resave:false` modifying session in parallel api calls will have race condition, which will lead to undesired outcomes based on api call finish times.
@@ -523,7 +543,9 @@ const utils = {
   deleteData,
   deleteDataWithBody,
   addSagaStatusToRecords,
-  forwardGet
+  validateAccessToken,
+  forwardGet,
+  isPdf
 };
 
 module.exports = utils;

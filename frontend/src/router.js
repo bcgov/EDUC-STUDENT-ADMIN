@@ -38,8 +38,20 @@ import GUMPStatsLanding from '@/components/admin/stats/GUMPStatsLanding';
 import Merges from '@/components/admin/stats/Merges';
 import NewMessagePage from '@/components/secure-message/NewMessagePage';
 import MessageDisplay from '@/components/secure-message/MessageDisplay';
-import AccessPage from '@/components/secure-message/AccessPage';
 import AccessUsersPage from '@/components/secure-message/AccessUsersPage';
+import AccessDistrictUsersPage from '@/components/secure-message/AccessDistrictUsersPage';
+import InstituteAccessPage from '@/components/secure-message/InstituteAccessPage';
+import DistrictList from '@/components/institute/DistrictList';
+import DistrictDetailsPage from '@/components/institute/DistrictDetails';
+import DistrictContactsPage from '@/components/institute/DistrictContacts';
+import SchoolListPage from '@/components/institute/SchoolList';
+import SchoolDetails from '@/components/institute/SchoolDetails';
+import AuthoritiesListPage from '@/components/institute/AuthoritiesList';
+import AuthorityDetailsPage from '@/components/institute/AuthorityDetails';
+import AuthorityContactsPage from '@/components/institute/AuthoritiesContacts';
+import SchoolContactsPage from '@/components/institute/SchoolContacts';
+import SchoolHistory from '@/components/institute/SchoolHistory';
+
 Vue.prototype.moment = moment;
 
 Vue.use(VueRouter);
@@ -318,18 +330,35 @@ const router = new VueRouter({
       children: [
         {
           path: 'exchange',
-          name: 'exchange',
-          component: ExchangePage,
+          component: RouterView,
           meta: {
-            pageTitle: PAGE_TITLES.EXCHANGE,
             requiresAuth: true,
             role: 'EXCHANGE_ROLE'
-          }
+          },
+          children: [
+            {
+              path: 'PEN_TEAM_ROLE',
+              name: 'exchange_inbox_PEN_TEAM_ROLE',
+              component: ExchangePage,
+              props: {
+                ministryOwnershipGroupRoleID: 'PEN_TEAM_ROLE'
+              },
+              meta: {
+                pageTitle: PAGE_TITLES.EXCHANGE,
+                requiresAuth: true,
+                role: 'PEN_TEAM_ROLE'
+              }
+            }
+          ]
         },
         {
           path: 'exchange/access',
           name: 'exchangeAccess',
-          component: AccessPage,
+          component: InstituteAccessPage,
+          props: {
+            instituteTypeCode : 'SCHOOL',
+            instituteTypeLabel : 'School'
+          },
           meta: {
             pageTitle: PAGE_TITLES.EXCHANGE_ACCESS,
             requiresAuth: true,
@@ -337,12 +366,37 @@ const router = new VueRouter({
           }
         },
         {
-          path: 'exchange/access/school/:mincode',
+          path: 'exchange/access/school/:schoolID',
           name: 'exchangeAccessUsers',
           component: AccessUsersPage,
           props: true,
           meta: {
             pageTitle: PAGE_TITLES.EXCHANGE_USERS,
+            requiresAuth: true,
+            role: 'EXCHANGE_ACCESS_ROLE'
+          }
+        },
+        {
+          path: 'exchange/district/access',
+          name: 'exchangeDistrictAccess',
+          component: InstituteAccessPage,
+          props: {
+            instituteTypeLabel: 'District',
+            instituteTypeCode: 'DISTRICT'
+          },
+          meta: {
+            pageTitle: PAGE_TITLES.EDX_DISTRICT_ACCESS,
+            requiresAuth: true,
+            role: 'EXCHANGE_ACCESS_ROLE'
+          }
+        },
+        {
+          path: 'exchange/access/district/:districtId',
+          name: 'exchangeAccessDistrictUsers',
+          component: AccessDistrictUsersPage,
+          props: true,
+          meta: {
+            pageTitle: PAGE_TITLES.EDX_DISTRICT_ACCESS,
             requiresAuth: true,
             role: 'EXCHANGE_ACCESS_ROLE'
           }
@@ -367,8 +421,113 @@ const router = new VueRouter({
             requiresAuth: true,
             role: 'EXCHANGE_ROLE'
           }
-        },
+        }
       ]
+    },
+    {
+      path: '/institute',
+      component: RouterView,
+      children: [
+        {
+          path: 'district',
+          name: 'instituteDistrict',
+          component: DistrictList,
+          meta: {
+            pageTitle: PAGE_TITLES.DISTRICT_LIST,
+            requiresAuth: true,
+          },
+        },
+        {
+          path: '/district/:districtID',
+          name: 'districtDetails',
+          props: true,
+          component: DistrictDetailsPage,
+          meta: {
+            pageTitle: PAGE_TITLES.DISTRICT_DETAILS,
+            requiresAuth: true,
+            permission: 'SECURE_EXCHANGE'
+          }
+        },
+        {
+          path: 'districtContacts/:districtID',
+          name: 'districtContacts',
+          component: DistrictContactsPage,
+          props: true,
+          meta: {
+            pageTitle: PAGE_TITLES.DISTRICT_CONTACTS,
+            requiresAuth: true,
+            permission: 'SECURE_EXCHANGE'
+          }
+        },
+        {
+          path: 'school',
+          name: 'instituteSchoolList',
+          component: SchoolListPage,
+          meta: {
+            pageTitle: PAGE_TITLES.SCHOOL_LIST,
+            requiresAuth: true,
+          },
+        },
+        {
+          path: 'school/:schoolID/details',
+          name: 'schoolDetails',
+          props: true,
+          component: SchoolDetails,
+          meta: {
+            pageTitle: PAGE_TITLES.SCHOOL_DETAILS,
+            requiresAuth: true,
+          },
+        },
+        {
+          path: 'school/:schoolID/history',
+          name: 'schoolHistory',
+          props: true,
+          component: SchoolHistory,
+          meta: {
+            pageTitle: PAGE_TITLES.SCHOOL_HISTORY,
+            requiresAuth: true,
+          },
+        },
+        {
+          path: 'authority',
+          name: 'instituteAuthoritiesList',
+          component: AuthoritiesListPage,
+          meta: {
+            pageTitle: PAGE_TITLES.AUTHORITIES_LIST,
+            requiresAuth: true,
+          },
+        }
+      ]
+    },
+    {
+      path: '/authority/:authorityID',
+      name: 'authorityDetails',
+      props: true,
+      component: AuthorityDetailsPage,
+      meta: {
+        pageTitle: PAGE_TITLES.AUTHORITY_DETAILS,
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/schoolContacts/:schoolID',
+      name: 'schoolContacts',
+      component: SchoolContactsPage,
+      props: true,
+      meta: {
+        pageTitle: PAGE_TITLES.SCHOOL_CONTACTS,
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/authorityContacts/:authorityID',
+      name: 'authorityContacts',
+      props: true,
+      component: AuthorityContactsPage,
+      meta: {
+        pageTitle: PAGE_TITLES.AUTHORITY_CONTACTS,
+        requiresAuth: true,
+      }
     },
     {
       path: '/login',

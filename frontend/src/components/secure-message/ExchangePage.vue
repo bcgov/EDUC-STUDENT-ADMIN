@@ -1,12 +1,18 @@
 <template>
-  <v-container fluid>
-    <v-row class="pt-0" :class="{'mr-0 ml-0': $vuetify.breakpoint.smAndDown, 'mr-3 ml-3': $vuetify.breakpoint.mdAndUp}">
+  <v-container class="containerSetup" fluid>
+    <v-row class="pt-0">
       <v-col class="pt-0">
-        <v-row class='d-flex justify-end pb-2'>
+        <v-row no-gutters class='pt-2 d-flex justify-end'>
           <v-col class='d-flex justify-start'>
-            <h1>{{ ministryTeamName }} Inbox</h1>
+            <h1 id="ministryTeamInboxTitle">{{ ministryTeamName }} Inbox</h1>
           </v-col>
-          <v-col class='d-flex justify-end pt-6'>
+        </v-row>
+        <v-row class="pt-0">
+          <v-col class="mt-1 d-flex justify-start">
+            <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
+            <a class="pt-1 ml-1" @click="backButtonClick">Return to Dashboard</a>
+          </v-col>
+          <v-col class='d-flex justify-end'>
             <PrimaryButton
               :iconLeft=true
               :large-icon=true
@@ -97,6 +103,7 @@
                     label="Subject"
                     prepend-inner-icon="mdi-book-open-variant"
                     clearable
+                    @keyup.enter="enterPushed()"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" md="4" class="pt-0" :class="{'pl-12 pr-12': $vuetify.breakpoint.mdAndUp}">
@@ -131,7 +138,7 @@
                     ></v-date-picker>
                   </v-menu>
                 </v-col>
-                </v-row>
+              </v-row>
               <v-row>
                 <v-col cols="12" md="4" class="pt-0">
                   <v-select
@@ -141,7 +148,7 @@
                     item-text="label"
                     class="pt-0 mt-0"
                     item-value="secureExchangeStatusCode"
-                    prepend-inner-icon="mdi-alert-circle-outline"
+                    prepend-inner-icon="mdi-circle-medium"
                     label="Status"
                     single-line
                     clearable
@@ -166,6 +173,7 @@
                     label="Claimed By"
                     prepend-inner-icon="mdi-account-check-outline"
                     clearable
+                    @keyup.enter="enterPushed()"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" md="4" class="pt-0">
@@ -175,9 +183,24 @@
                     label="Message ID"
                     prepend-inner-icon="mdi-pound"
                     clearable
+                    @keyup.enter="enterPushed()"
                   ></v-text-field>
                 </v-col>
-                </v-row>
+              </v-row>
+              <v-row>
+                <v-col cols="12" md="4" class="pt-0">
+                  <v-text-field
+                    class="pt-0 mt-0"
+                    v-model="studentIDFilter"
+                    label="Student PEN"
+                    prepend-inner-icon="mdi-account"
+                    maxlength="9"
+                    counter="9"
+                    clearable
+                    @keyup.enter="enterPushed()"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
               <v-row no-gutters class="justify-end mt-n2">
                 <v-col cols="12" class="d-flex justify-end">
                   <PrimaryButton class="mr-3" id="search-clear" :secondary="true" @click.native="clearSearch"
@@ -209,46 +232,59 @@
               <template #header.data-table-select></template>
               <template v-slot:item.secureExchangeStatusCode="{ item }">
                 <v-row class="ml-n6" style="cursor: pointer;">
-                  <v-col cols="7" md="10" class="pb-0 pt-0" @click="openExchange(item.secureExchangeID)">
+                  <v-col cols="6" lg="7" xl="7" class="pb-0 pt-0" @click="openExchange(item.secureExchangeID)">
                     <v-row class="mb-n4">
                       <v-col cols="12" class="pb-2 pt-2 pr-0">
-                        <h3 class="subjectHeading" :style="{color: item.isReadByMinistry ? 'black': '#1f7cef'}">{{ getSubject(item.subject) }}</h3>
+                        <span class="subjectHeading" :style="{color: item.isReadByMinistry ? 'black': '#1f7cef'}">{{ getSubject(item.subject) }}</span><span style="color: gray"> - {{ getLatestComment(item) }}</span>
                       </v-col>
                     </v-row>
                     <v-row>
                       <v-col cols="12" class="pb-1 pr-0">
-                        <span class="ministryLine">{{ getContactLineItem(item) }}</span>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12" class="pt-0 pb-1 pr-0">
-                        <span style="color: gray">{{ getLatestComment(item) }}</span>
+                        <span class="ministryLine" >{{ getContactLineItem(item) }}</span>
                       </v-col>
                     </v-row>
                   </v-col>
-                  <v-col cols="5" md="2" style="text-align: end" class="pb-0 pt-0" @click="openExchange(item.secureExchangeID)">
-                    <v-row>
-                      <v-col cols="12" class="pb-1 pt-1">
-                        <v-icon style="margin-bottom: 0.25em" color="grey darken-3" right size="medium" dark>mdi-pound</v-icon>
-                        <span class="statusCodeLabel">{{ item.sequenceNumber }}</span>
+                  <v-col cols="6" lg="5" xl="5" style="text-align: end" class="pb-0 pt-0" @click="openExchange(item.secureExchangeID)">
+                    <v-row class="d-flex justify-end">
+                      <v-col cols="2">
+                        <v-row no-gutters>
+                          <v-col cols="6">
+                            <v-icon  color="grey darken-3" right size="medium" dark>mdi-pound</v-icon>
+                          </v-col>
+                          <v-col cols="6">
+                            <span class="statusCodeLabel">{{ item.sequenceNumber }}</span>
+                          </v-col>
+                        </v-row>
                       </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12" class="pb-1 pt-0">
-                        <v-icon class="pb-1" :color="getStatusColor(item.secureExchangeStatusCode)" right dark>mdi-circle-medium</v-icon>
-                        <span class="statusCodeLabel">{{ item.secureExchangeStatusCode }}</span>
+                      <v-col cols="2">
+                        <v-row no-gutters>
+                          <v-col cols="6">
+                            <v-icon class="pb-1" :color="getStatusColor(item.secureExchangeStatusCode)" right dark>mdi-circle-medium</v-icon>
+                          </v-col>
+                          <v-col cols="6">
+                            <span class="statusCodeLabel">{{ item.secureExchangeStatusCode }}</span>
+                          </v-col>
+                        </v-row>
                       </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12" class="pb-1 pt-0">
-                        <v-icon style="margin-bottom: 0.2em" color="grey darken-3" right dark>mdi-account-outline</v-icon>
-                        <span class="statusCodeLabel">{{ getReviewer(item.reviewer) }}</span>
+                      <v-col cols="3" class="pr-0">
+                        <v-row no-gutters>
+                          <v-col cols="6">
+                            <v-icon style="margin-bottom: 0.2em" color="grey darken-3" right dark>mdi-account-outline</v-icon>
+                          </v-col>
+                          <v-col cols="6">
+                            <span class="statusCodeLabel">{{ getReviewer(item.reviewer) }}</span>
+                          </v-col>
+                        </v-row>
                       </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12" class="pb-1 pt-0">
-                        <v-icon class="pr-1" style="margin-bottom: 0.2em" color="grey darken-3" right dark>mdi-clock-outline</v-icon>
-                        <span class="statusCodeLabel">{{ getNumberOfDays(item.createDate) }}</span>
+                      <v-col cols="4" class="pl-0 pr-0">
+                        <v-row no-gutters>
+                          <v-col cols="6">
+                            <v-icon class="pr-1" style="margin-bottom: 0.2em" color="grey darken-3" right dark>mdi-clock-outline</v-icon>
+                          </v-col>
+                          <v-col cols="4">
+                            <span class="statusCodeLabel">{{ getNumberOfDays(item.createDate) }}</span>
+                          </v-col>
+                        </v-row>
                       </v-col>
                     </v-row>
                   </v-col>
@@ -289,7 +325,7 @@
 <script>
 
 import ApiService from '../../common/apiService';
-import {Routes} from '@/utils/constants';
+import {EDX_SAGA_REQUEST_DELAY_MILLISECONDS, Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton';
 import NewMessagePage from './NewMessagePage';
 import {mapGetters, mapState} from 'vuex';
@@ -304,8 +340,7 @@ export default {
   props: {
     ministryOwnershipGroupRoleID: {
       type: String,
-      required: false,
-      default: 'PEN_TEAM_ROLE'
+      required: true
     },
   },
   components: {
@@ -323,6 +358,7 @@ export default {
       messageDate: null,
       subjectFilter: '',
       messageIDFilter: '',
+      studentIDFilter: '',
       claimedByFilter: '',
       contactNameFilter: '',
       filterText: 'More Filters',
@@ -344,7 +380,7 @@ export default {
       pageSize: 15,
       totalRequests: 0,
       itemsPerPageOptions: [15],
-      loadingTable: false,
+      loadingTableCount: 0,
       dateMenu: false,
       headerSearchParams: {
         sequenceNumber: '',
@@ -364,6 +400,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['userInfo']),
+    ...mapGetters('app', ['schoolMap', 'districtMap']),
     ...mapState('app', ['mincodeSchoolNames']),
     ...mapState('edx', ['statuses']),
     ...mapState('edx', ['ministryTeams']),
@@ -377,16 +414,20 @@ export default {
     searchEnabled(){
       return (this.claimedByFilter !== '' && this.claimedByFilter !== null)
         || (this.messageIDFilter !== '' && this.messageIDFilter !== null)
+        || (this.studentIDFilter !== '' && this.studentIDFilter !== null)
         || (this.subjectFilter !== '' && this.subjectFilter !== null)
         || (this.contactNameFilter !== '' && this.contactNameFilter !== null && this.contactNameFilter !== undefined)
         || this.messageDate !== null
         || this.secureExchangeStatusCodes.some(item => item.secureExchangeStatusCode === this.statusSelectFilter);
     },
     schools() {
-      return _.sortBy(Array.from(this.mincodeSchoolNames.entries()).map(school => ({ text: `${school[1]} (${school[0]})`, value: school[0]})), ['value']);
+      return _.sortBy(Array.from(this.schoolMap.entries()).map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolID, mincode: school[1].mincode})), ['mincode']);
     },
     myself() {
       return { name: this.userInfo.userName, id: this.userInfo.userGuid };
+    },
+    loadingTable() {
+      return this.loadingTableCount !== 0;
     },
   },
   created() {
@@ -399,9 +440,14 @@ export default {
     this.setFilterStatusAllActive();
   },
   methods: {
+    enterPushed() {
+      if (this.searchEnabled) {
+        this.filterExchanges();
+      }
+    },
     messageSent(){
       this.newMessageSheet = !this.newMessageSheet;
-      this.getExchanges();
+      setTimeout(this.getExchanges, EDX_SAGA_REQUEST_DELAY_MILLISECONDS);
     },
     getMinistryTeamNameByGroupRoleID(){
       this.ministryTeamName = this.ministryTeams.find(item => item.groupRoleIdentifier === this.ministryOwnershipGroupRoleID).teamName;
@@ -412,13 +458,15 @@ export default {
 
       return ChronoUnit.DAYS.between(start_date, end_date) + ' days';
     },
-    getSchoolName(mincode) {
-      return this.mincodeSchoolNames.get(mincode?.replace(' ', ''));
+    getSchoolName(schoolID) {
+      return this.schoolMap.get(schoolID)?.schoolName;
     },
     getContactLineItem(item){
       switch (item.secureExchangeContactTypeCode) {
       case 'SCHOOL':
-        return this.getSchoolName(item.contactIdentifier) + ' (' + item.contactIdentifier + ') - ' + item.createDate;
+        return `${this.schoolMap.get(item.contactIdentifier).schoolName} (${this.schoolMap.get(item.contactIdentifier).mincode}) - ${item.createDate}`;
+      case 'DISTRICT':
+        return `${this.districtMap.get(item.contactIdentifier).name} (${this.districtMap.get(item.contactIdentifier).districtNumber}) - ${item.createDate}`;
       }
     },
     getReviewer(reviewer){
@@ -437,7 +485,7 @@ export default {
       this.headerSearchParams.reviewer = '';
     },
     setFilterStatusActive(){
-      this.headerSearchParams.secureExchangeStatusCode = ['OPEN', 'CLOSED'];
+      this.headerSearchParams.secureExchangeStatusCode = ['OPEN'];
       this.headerSearchParams.reviewer = this.myself.name;
     },
     statusFilterActiveClicked(){
@@ -456,6 +504,7 @@ export default {
     clearSearch(runSearch = true){
       this.subjectFilter = '';
       this.messageIDFilter = '';
+      this.studentIDFilter = '';
       this.claimedByFilter = '';
       this.contactNameFilter = '';
       this.messageDate = null;
@@ -500,13 +549,13 @@ export default {
         switch (this.$vuetify.breakpoint.name) {
         case 'xs':
         case 'sm':
-          return this.getContentString(subject, 16);
+          return this.getContentString(subject, 15);
         case 'md':
-          return this.getContentString(subject, 40);
+          return this.getContentString(subject, 15);
         case 'lg':
-          return this.getContentString(subject, 75);
+          return this.getContentString(subject, 20);
         default:
-          return this.getContentString(subject, 120);
+          return this.getContentString(subject, 25);
         }
       }
       return subject;
@@ -518,18 +567,17 @@ export default {
       return content;
     },
     getLatestComment(item){
-      var content = item.commentsList.reduce((a, b) => (a.createDate > b.createDate ? a : b)).content;
+      const content = item.commentsList.reduce((a, b) => (a.createDate > b.createDate ? a : b)).content;
       if(content.length > 25){
         switch (this.$vuetify.breakpoint.name) {
         case 'xs':
         case 'sm':
-          return this.getContentString(content, 25);
+          return this.getContentString(content, 30);
         case 'md':
-          return this.getContentString(content, 100);
+          return this.getContentString(content, 40);
         case 'lg':
-          return this.getContentString(content, 130);
         case 'xl':
-          return this.getContentString(content, 220);
+          return this.getContentString(content, 45);
         default:
           return content;
         }
@@ -542,8 +590,8 @@ export default {
       this.getExchanges();
     },
     claimExchanges() {
-      this.loadingTable = true;
-      var selected = this.selectedExchanges.map(({ secureExchangeID }) => secureExchangeID);
+      this.loadingTableCount += 1;
+      const selected = this.selectedExchanges.map(({ secureExchangeID }) => secureExchangeID);
       const payload = {
         secureExchangeIDs: selected,
       };
@@ -554,15 +602,15 @@ export default {
           this.selectedExchanges = [];
         })
         .catch(error => {
+          console.error(error);
           this.setFailureAlert('An error occurred while claiming exchanges. Please try again later.');
-          console.log(error);
         })
         .finally(() => {
-          this.loadingTable = false;
+          this.loadingTableCount -= 1;
         });
     },
     getExchanges() {
-      this.loadingTable = true;
+      this.loadingTableCount += 1;
       this.exchanges = [];
       const sort = {
         createDate: 'DESC'
@@ -571,6 +619,7 @@ export default {
       this.headerSearchParams.subject = this.subjectFilter;
       this.headerSearchParams.contactIdentifier = this.contactNameFilter;
       this.headerSearchParams.sequenceNumber = this.messageIDFilter;
+      this.headerSearchParams.studentPEN = this.studentIDFilter;
       this.headerSearchParams.ministryOwnershipTeamID = this.getMinistryTeamIDByGroupRoleID(this.ministryOwnershipGroupRoleID);
       this.headerSearchParams.createDate = this.messageDate === null ? null : [this.messageDate];
 
@@ -595,14 +644,17 @@ export default {
           this.totalRequests = response.data.totalElements;
         }
       }).catch(error => {
-        //to do add the alert framework for error or success
         console.error(error);
+        this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'An error occurred while trying to get a list of Secure Exchanges. Please try again later.');
       }).finally(() => {
-        this.loadingTable = false;
+        this.loadingTableCount -= 1;
       });
     },
+    backButtonClick() {
+      router.push({name: 'home'});
+    },
     openExchange(exchangeID) {
-      router.push({name: 'viewExchange', params: {secureExchangeID: exchangeID}});
+      router.push({name: 'viewExchange', params: {secureExchangeID: exchangeID, ministryOwnershipGroupRoleID: this.ministryOwnershipGroupRoleID, ministryOwnershipTeamName: this.ministryTeamName}});
     }
   },
   watch: {
@@ -657,29 +709,31 @@ export default {
   color: #003366;
 }
 .subjectHeading{
-  font-size: x-large;
+  font-size: large;
   cursor: pointer;
+  font-weight: bold;
 }
 
 .statusCodeLabel{
-  font-size: large;
+  font-size: medium;
+  white-space: nowrap;
 }
 
 >>>.v-data-table-header{
-  height: 0px !important;
+  height: 0 !important;
 }
 
 >>>.v-data-table-header > tr{
-  height: 0px !important;
+  height: 0 !important;
 }
 
 >>>.v-data-table-header > tr > th{
-  height: 0px !important;
+  height: 0 !important;
 }
 
 .ministryLine{
   color: black;
-  font-size: large;
+  font-size: medium;
 }
 
 @media screen and (max-width: 801px){
@@ -688,11 +742,37 @@ export default {
   }
 
   .statusCodeLabel{
-    font-size: inherit;
+    font-size: medium;
   }
 
   .ministryLine{
     font-size: inherit;
+  }
+}
+
+@media screen and (max-width: 1401px){
+  .statusCodeLabel{
+    font-size: medium;
+  }
+}
+
+
+.containerSetup{
+  padding-right: 32em !important;
+  padding-left: 32em !important;
+}
+
+@media screen and (max-width: 1950px) {
+  .containerSetup{
+    padding-right: 20em !important;
+    padding-left: 20em !important;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .containerSetup{
+    padding-right: 4em !important;
+    padding-left: 4em !important;
   }
 }
 

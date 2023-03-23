@@ -25,6 +25,12 @@ export default {
     isValidGUMPAnalyticsUser: localStorage.getItem('isValidGUMPAnalyticsUser') !== null,
     isValidPenRequestBatchAnalyticsUser: localStorage.getItem('isValidPenRequestBatchAnalyticsUser') !== null,
     isValidExchangeUser: localStorage.getItem('isValidExchangeUser') !== null,
+    isValidEDXAdmin: localStorage.getItem('isValidEDXAdmin') !== null,
+    isValidPenTeamRoleUser: localStorage.getItem('isValidPenTeamRoleUser') !== null,
+    isValidDistrictAdmin: localStorage.getItem('isValidDistrictAdmin') !== null,
+    isValidSchoolAdmin: localStorage.getItem('isValidSchoolAdmin') !== null,
+    isValidIndependentAuthorityAdmin: localStorage.getItem('isValidIndependentAuthorityAdmin') !== null,
+    isValidSchoolIndependentAdmin: localStorage.getItem('isValidSchoolIndependentAdmin') !== null
   },
   getters: {
     acronyms: state => state.acronyms,
@@ -49,12 +55,17 @@ export default {
     NOMINAL_ROLL_READ_ONLY_ROLE: state => state.isValidNominalRollReadOnly,
     NOMINAL_ROLL_ROLE: state => state.isValidNominalRollReadOnly || state.isValidNominalRollUser,
     EDIT_NOMINAL_ROLL_ROLE: state => state.isValidNominalRollAdmin,
-    STAFF_ADMINISTRATION_ADMIN: state => state.isValidNominalRollAdmin || state.isValidStaffAdministrationAdmin, //gives access to admin section of navigation menu
+    STAFF_ADMINISTRATION_ADMIN: state => state.isValidNominalRollAdmin || state.isValidStaffAdministrationAdmin || state.isValidEDXAdmin, //gives access to admin section of navigation menu
     STUDENT_ANALYTICS_STUDENT_PROFILE: state => state.isValidGUMPAnalyticsUser,
     STUDENT_ANALYTICS_BATCH: state => state.isValidPenRequestBatchAnalyticsUser,
     HAS_STATS_ROLE: state => state.isValidGUMPAnalyticsUser || state.isValidPenRequestBatchAnalyticsUser,
     EXCHANGE_ROLE: state => state.isValidExchangeUser,
-    EXCHANGE_ACCESS_ROLE: state => state.isValidStaffAdministrationAdmin && state.isValidExchangeUser,
+    EXCHANGE_ACCESS_ROLE: state => state.isValidEDXAdmin,
+    PEN_TEAM_ROLE: state => state.isValidPenTeamRoleUser,
+    DISTRICT_ADMIN_ROLE: state => state.isValidDistrictAdmin,
+    SCHOOL_ADMIN_ROLE: state => state.isValidSchoolAdmin,
+    SCHOOL_INDEPENDENT_ADMIN_ROLE: state => state.isValidSchoolIndependentAdmin,
+    INDEPENDENT_AUTHORITY_ADMIN_ROLE: state => state.isValidIndependentAuthorityAdmin
   },
   mutations: {
     //sets Json web token and determines whether user is authenticated
@@ -220,6 +231,59 @@ export default {
         localStorage.removeItem(('isValidExchangeUser'));
       }
     },
+    setEDXAdmin: (state, isValidEDXAdmin) => {
+      if (isValidEDXAdmin) {
+        state.isValidEDXAdmin = true;
+        localStorage.setItem('isValidEDXAdmin', 'true');
+      } else {
+        state.isValidEDXAdmin = false;
+        localStorage.removeItem(('isValidEDXAdmin'));
+      }
+    },
+    setIsValidPenTeamRoleUser: (state, isValidPenTeamRoleUser) => {
+      if (isValidPenTeamRoleUser) {
+        state.isValidPenTeamRoleUser = true;
+        localStorage.setItem('isValidPenTeamRoleUser', 'true');
+      } else {
+        state.isValidPenTeamRoleUser = false;
+        localStorage.removeItem('isValidPenTeamRoleUser');
+      }
+    },
+    setIsValidDistrictAdmin: (state, isValidDistrictAdmin) => {
+      if (isValidDistrictAdmin) {
+        state.isValidDistrictAdmin = true;
+        localStorage.setItem('isValidDistrictAdmin', 'true');
+      } else {
+        state.isValidDistrictAdmin = false;
+        localStorage.removeItem('isValidDistrictAdmin');
+      }
+    },setIsValidSchoolAdmin: (state, isValidSchoolAdmin) => {
+      if (isValidSchoolAdmin) {
+        state.isValidSchoolAdmin = true;
+        localStorage.setItem('isValidSchoolAdmin', 'true');
+      } else {
+        state.isValidSchoolAdmin = false;
+        localStorage.removeItem('isValidSchoolAdmin');
+      }
+    },
+    setIsValidSchoolIndependentAdmin: (state, isValidSchoolIndependentAdmin) => {
+      if (isValidSchoolIndependentAdmin) {
+        state.isValidSchoolIndependentAdmin = true;
+        localStorage.setItem('isValidSchoolIndependentAdmin', 'true');
+      } else {
+        state.isValidSchoolIndependentAdmin = false;
+        localStorage.removeItem('isValidSchoolIndependentAdmin');
+      }
+    },
+    setIsValidIndependentAuthorityAdmin: (state, isValidIndependentAuthorityAdmin) => {
+      if (isValidIndependentAuthorityAdmin) {
+        state.isValidIndependentAuthorityAdmin = true;
+        localStorage.setItem('isValidIndependentAuthorityAdmin', 'true');
+      } else {
+        state.isValidIndependentAuthorityAdmin = false;
+        localStorage.removeItem('isValidIndependentAuthorityAdmin');
+      }
+    },
     setUserInfo: (state, userInf) => {
       if (userInf) {
         state.userInfo = userInf;
@@ -290,5 +354,11 @@ function setAuthorizations(context, response) {
   context.commit('setGUMPAnalytics', response.isValidGUMPAnalyticsUser);
   context.commit('setPenRequestBatchAnalytics', response.isValidPenRequestBatchAnalyticsUser);
   context.commit('setExchangeUser', response.isValidExchangeUser);
+  context.commit('setEDXAdmin', response.isValidEDXAdmin);
+  context.commit('setIsValidPenTeamRoleUser', response.isValidPenTeamRoleUser);
+  context.commit('setIsValidDistrictAdmin', response.isValidDistrictAdmin);
+  context.commit('setIsValidSchoolAdmin', response.isValidSchoolAdmin);
+  context.commit('setIsValidSchoolIndependentAdmin', response.isValidSchoolIndependentAdmin);
+  context.commit('setIsValidIndependentAuthorityAdmin', response.isValidIndependentAuthorityAdmin);
   ApiService.setAuthHeader(response.jwtFrontend);
 }

@@ -2,7 +2,17 @@ let cacheKeys;
 
 cacheKeys = {
   EDX_SECURE_EXCHANGE_STATUS: 'edx_exchangeStatuses',
-  EDX_MINISTRY_TEAMS:'edx_ministryTeams'
+  EDX_MINISTRY_TEAMS:'edx_ministryTeams',
+  SCHOOL_CATEGORY_TYPES:'school-category-types',
+  FACILITY_TYPES:'facility-types',
+  SCHOOL_ORGANIZATION_TYPES: 'school-organization-types',
+  SCHOOL_NEIGHBOURHOOD_LEARNING_TYPES :'school-neighborhood-learning-types',
+  AUTHORITY_TYPES: 'authority-types',
+  GRADE_CODES: 'grade-codes',
+  PROVINCE_CODES: 'province-codes',
+  COUNTRY_CODES: 'country-codes',
+  SCHOOL_CONTACT_TYPES: 'school-contact-types',
+  AUTHORITY_CONTACT_TYPES: 'authority-contact-types',
 };
 const CACHE_KEYS = Object.freeze(cacheKeys);
 
@@ -108,7 +118,11 @@ const VALUE_TYPE = Object.freeze(
     /**
      * Uuid value type.
      */
-    UUID: 'UUID'
+    UUID: 'UUID',
+    /**
+     * Boolean value type.
+     */
+    BOOLEAN: 'BOOLEAN'
   }
 );
 
@@ -123,13 +137,25 @@ const PEN_REQ_BATCH_STATUS_CODES = Object.freeze(
 );
 const EVENT_TYPE = Object.freeze({
   UPDATE_STUDENT: 'UPDATE_STUDENT',
-  CREATE_STUDENT: 'CREATE_STUDENT'
+  CREATE_STUDENT: 'CREATE_STUDENT',
+  UPDATE_SCHOOL: 'UPDATE_SCHOOL',
+  CREATE_SCHOOL: 'CREATE_SCHOOL',
+  UPDATE_DISTRICT: 'UPDATE_DISTRICT',
+  CREATE_DISTRICT: 'CREATE_DISTRICT',
+  UPDATE_AUTHORITY: 'UPDATE_AUTHORITY',
+  CREATE_AUTHORITY: 'CREATE_AUTHORITY',
+  MOVE_USERS_TO_NEW_SCHOOL: 'MOVE_USERS_TO_NEW_SCHOOL'
 });
 const EVENT_OUTCOME = Object.freeze({
   STUDENT_UPDATED: 'STUDENT_UPDATED',
-  STUDENT_CREATED: 'STUDENT_CREATED'
+  STUDENT_CREATED: 'STUDENT_CREATED',
+  SCHOOL_UPDATED: 'SCHOOL_UPDATED',
+  SCHOOL_CREATED: 'SCHOOL_CREATED',
+  SCHOOL_MOVED: 'SCHOOL_MOVED'
 });
 const EVENT_WS_TOPIC = 'EVENT_WS_TOPIC';
+const INSTITUTE_CACHE_REFRESH_TOPIC = 'INSTITUTE_CACHE_REFRESH_TOPIC';
+const WS_MOVE_SCHOOL_TOPIC = 'WS_MOVE_SCHOOL_TOPIC';
 module.exports = {
   FILTER_OPERATION,
   CONDITION,
@@ -138,5 +164,7 @@ module.exports = {
   EVENT_TYPE,
   EVENT_OUTCOME,
   EVENT_WS_TOPIC,
-  CACHE_KEYS
+  INSTITUTE_CACHE_REFRESH_TOPIC,
+  CACHE_KEYS,
+  WS_MOVE_SCHOOL_TOPIC
 };

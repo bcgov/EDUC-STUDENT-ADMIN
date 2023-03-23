@@ -9,6 +9,8 @@
           secondary
           :bind="attrs"
           :on="on"
+          icon-left
+          width="13em"
           :disabled="disabled"
         >
         </PrimaryButton>

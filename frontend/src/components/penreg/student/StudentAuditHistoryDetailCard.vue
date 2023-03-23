@@ -231,7 +231,7 @@ export default {
       return this.studentHistoryDetail.demogCode ? this.demogCodeObjects.filter(it => (it.demogCode === this.studentHistoryDetail.demogCode))[0].label : '';
     },
     getSchoolName(mincode) {
-      return this.$store.state['app'].mincodeSchoolNames.get(mincode?.replace(' ', ''));
+      return this.$store.state['app'].schoolApiMincodeSchoolNames.get(mincode?.replace(' ', ''));
     },
     prefixFieldName(fieldName) {
       return this.idPrefix + fieldName.charAt(0).toUpperCase() + fieldName.slice(1);

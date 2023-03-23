@@ -61,3 +61,42 @@ export function formatGrade(grade) {
 export function formatDistrictNumber(districtNumber) {
   return districtNumber.padStart(3, '0');
 }
+
+export function sortByNameValue(list, valueToSortBy){
+  return list.sort(function(a, b) {
+    if (a[valueToSortBy] > b[valueToSortBy]) {
+      return 1;
+    } else if (a[valueToSortBy] < b[valueToSortBy]) {
+      return -1;
+    }
+    return 0;
+  });
+}
+
+export function formatPhoneNumber(phoneNumber) {
+
+  if (!phoneNumber) {
+    return '';
+  }
+
+  if (phoneNumber?.length === 10) {
+    return `${phoneNumber.substring(0,3)}-${phoneNumber.substring(3,6)}-${phoneNumber.substring(6)}`;
+  }
+
+  return 'Phone number format not recognized';
+}
+
+//used in institution schools/districts/authorities date formatting
+export function formatDate(rawDate, from='uuuu-MM-dd\'T\'HH:mm:ss', to='uuuu/MM/dd'){
+  return formatDateTime(rawDate,from, to);
+}
+
+export function formatDisplayDate(date) {
+  if (!date) return null;
+  const [year, month, day] = date.split('-');
+  return `${year}/${month}/${day}`;
+}
+
+export function formatContactName(contact) {
+  return contact.firstName ? `${contact.firstName} ${contact.lastName}` : contact.lastName;
+}

@@ -46,10 +46,10 @@ describe('Archived Request Search Button', () => {
     wrapper.find('#requestsSearchBtn').trigger('click');
   };
 
-  const mincodeSchoolNames = new Map();
-  mincodeSchoolNames.set('10212345', 'School name');
-  const districtCodes = new Set();
-  districtCodes.add('102');
+  const schoolApiMincodeSchoolNames = new Map();
+  schoolApiMincodeSchoolNames.set('10212345', 'School name');
+  const schoolApiDistrictCodes = new Set();
+  schoolApiDistrictCodes.add('102');
 
   beforeEach(() => {
     routerSpy = jest.spyOn(appRouter, 'push').mockImplementation(() => {});
@@ -90,8 +90,8 @@ describe('Archived Request Search Button', () => {
         app: {
           namespaced: true,
           state: {
-            mincodeSchoolNames,
-            districtCodes
+            schoolApiMincodeSchoolNames,
+            schoolApiDistrictCodes
           },
           actions: {
             getCodes() {

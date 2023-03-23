@@ -1,5 +1,5 @@
 <template>
-  <v-hover v-slot:default="{ hover }">
+  <v-hover v-model="hover">
     <v-btn :id="id"
            :title="title||text"
            :class="[(hover && !disabled) ? secondary ? 'button-hover white--text':'button-hover':'']"
@@ -13,10 +13,11 @@
            :loading="loading"
            v-bind="bind"
            v-on="on"
+           v-on:click="hover=false"
     >
       <v-icon :class="largeIcon ? '' : 'ml-1 pr-2'" v-if="iconLeft && icon" :large="largeIcon" left>{{ icon }}</v-icon>
-      <span :class="hover ? 'text-decoration-underline': ''">{{ text }}</span>
-      <v-icon :class="largeIcon ? '' : 'ml-1 pr-2'" v-if="!iconLeft && icon" :large="largeIcon" right>{{ icon }}</v-icon>
+      <span>{{ text }}</span>
+      <v-icon :class="largeIcon ? '' : 'ml-1 pr-4'" v-if="!iconLeft && icon" :large="largeIcon" right>{{ icon }}</v-icon>
       <slot></slot>
     </v-btn>
   </v-hover>
@@ -73,18 +74,26 @@ export default {
     title:{
       type: String,
     }
+  },
+  data() {
+    return {
+      hover: false
+    };
   }
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
 .v-btn {
   text-transform: none;
 }
-.button-hover {
+
+.v-btn:hover {
   background-color: #38598A !important;
 }
+
 .theme--light.v-btn.v-btn--disabled:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
   background-color: #003366 !important;
   opacity: 0.298039215686275;

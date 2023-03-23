@@ -118,6 +118,7 @@ export default {
       gmpMacros:[],
       umpMacros:[],
       penRegMacros:[],
+      edxMacros:[],
       loading: false,
       processing: false,
       macroDialogOpen: false,
@@ -184,6 +185,17 @@ export default {
             },
           },
           children: this.penRegMacros,
+        },
+        {
+          id: 'edx',
+          name: 'EDX',
+          macroTypes: {
+            MESSAGE: {
+              name: 'Message',
+              storeMutation: 'edx/setMessageMacros'
+            }
+          },
+          children: this.edxMacros
         },
       ];
     },

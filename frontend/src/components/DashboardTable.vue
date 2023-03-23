@@ -18,6 +18,9 @@
               <strong>{{ col.data }} {{ col.name }}</strong>
             </router-link>
           </div>
+          <div v-else-if="idx === 'unreadMessages' && col.data > 0">
+              <strong>{{ col.data }} {{ col.name }}</strong>
+          </div>
           <div v-else-if="!row.error">{{ col.data }} {{ col.name }}</div>
         </v-row>
       </v-col>

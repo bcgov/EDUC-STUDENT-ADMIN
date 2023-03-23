@@ -40,13 +40,19 @@ const macroRouter = require('./routes/macro');
 const analyticsRouter = require('./routes/analytics-router');
 const nominalRollRouter = require('./routes/nominal-roll');
 const edxRouter = require('./routes/edx-router');
+const instituteRouter = require('./routes/institute');
+const cacheRouter = require('./routes/cache-router');
 const promMid = require('express-prometheus-middleware');
 const Redis = require('./util/redis/redis-client');
 Redis.init(); // call the init to initialize appropriate client, and reuse it across the app.
 const messagePubSub = require('./messaging/message-pub-sub');
 messagePubSub.init().then(() => {
   require('./messaging/handlers/saga-message-handler').subscribe();
+  require('./messaging/handlers/institute-update-handler').subscribe();
   require('./messaging/handlers/jetstream-subscriber').subscribe();
+  require('./messaging/handlers/institute-jetstream-subscriber').subscribe();
+  require('./messaging/handlers/edx-jetstream-subscriber').subscribe();
+  require('./messaging/handlers/edx-event-handler').subscribe();
 }).catch((e) => log.error(e));
 //initialize app
 const app = express();
@@ -174,7 +180,8 @@ apiRouter.use('/macros', macroRouter);
 apiRouter.use('/analytics', analyticsRouter);
 apiRouter.use('/nominal-roll', nominalRollRouter);
 apiRouter.use('/edx', edxRouter);
-
+apiRouter.use('/institute', instituteRouter);
+apiRouter.use('/cache', cacheRouter);
 // Prevent unhandled errors from crashing application
 process.on('unhandledRejection', err => {
   log.error(err.stack);
