@@ -83,7 +83,7 @@
                           label="School Category"
                       />
                     </v-col>
-
+               
                     <v-col cols="4">
                       <v-select
                           id='newSchoolFacilityTypeInput'
@@ -328,6 +328,7 @@ import * as Rules from '@/utils/institute/formRules';
 import {sortByNameValue} from '@/utils/format';
 import {isNumber} from '@/utils/institute/formInput';
 import {sortBy} from 'lodash';
+import {LocalDate} from '@js-joda/core';
   
 export default {
   name: 'MoveSchoolPage',
@@ -358,19 +359,23 @@ export default {
       independentArray: ['INDEPEND', 'INDP_FNS'],
       requiredAuthoritySchoolCategories: ['INDEPEND', 'INDP_FNS', 'OFFSHORE'],
       noGradeSchoolCategory: ['POST_SEC', 'EAR_LEARN'],
+      notAllowedDistrictCodes: ['PSI', 'OFFSHORE'],
+      resetFacilitiesForSchoolCat: [''],
       activeDistricts:[],
       activeAuthorities: [],
+      schoolGradeTypes: [],
       moveSchoolObject: {
         districtId: null,
         independentAuthorityId: null,
         displayName: this.school.displayName,
         schoolCategoryCode: this.school.schoolCategoryCode,
-        facilityTypeCode: this.school.facilityTypeCode,
         schoolOrganizationCode: this.school.schoolOrganizationCode,
         grades: this.school.grades,
         neighborhoodLearning: this.school.neighborhoodLearning,
         phoneNumber: this.school.phoneNumber,
         faxNumber: this.school.faxNumber,
+        facilityTypeCode: this.school.facilityTypeCode,
+        schoolReportingRequirementCode: this.school.schoolReportingRequirementCode,
         email: this.school.email,
         website: this.school.website,
         schoolId: this.school.schoolId,
@@ -391,7 +396,7 @@ export default {
         physicalAddrProvince: null,
         physicalAddrCountry: null,
         physicalAddrPostal: null,
-        moveDate:null,  
+        moveDate: this.calculateDefaultMoveDate(),  
       },
       rules: Rules,
       moveDatePicker: null,
@@ -457,18 +462,27 @@ export default {
     this.$store.dispatch('institute/getAllActiveProvinceCodes');
     this.$store.dispatch('institute/getAllActiveCountryCodes');
     this.$store.dispatch('institute/getSchoolCategoryFacilityTypesMap');
+    this.$store.dispatch('institute/getAllGradeCodes').then(() => {
+      this.schoolGradeTypes = sortBy(this.activeGradeCodes,['displayOrder']);
+      this.sortGrades();
+    });
+    this.sortNLC();
     this.getActiveDistrictDropDownItems();
-    this.getActiveAuthorityDropDownItems(); 
+    this.getActiveAuthorityDropDownItems();
+    this.schoolCategoryChanged();
   },
   methods: {
     getActiveDistrictDropDownItems() {
       ApiService.getActiveDistricts().then((response) => {
-        for(const district of response.data){      
-          let districtItem = {
-            districtNumberName: `${district.districtNumber} - ${district.name}`,
-            districtId: district.districtId,
-          };
-          this.activeDistricts.push(districtItem);
+        if(response.data) {
+          let districts = response.data.filter(val => !this.notAllowedDistrictCodes.includes(val.districtRegionCode));
+          for(const district of districts){      
+            let districtItem = {
+              districtNumberName: `${district.districtNumber} - ${district.name}`,
+              districtId: district.districtId,
+            };
+            this.activeDistricts.push(districtItem);
+          }
         }
         this.activeDistricts = this.sortByNameValue(this.activeDistricts, 'districtNumberName');
       }).catch(error => {
@@ -496,8 +510,6 @@ export default {
       this.isFacilityTypeDisabled = facilityTypes && facilityTypes.length === 1;
       if(this.isFacilityTypeDisabled){
         this.moveSchoolObject.facilityTypeCode = facilityTypes[0].facilityTypeCode;
-      }else{
-        this.moveSchoolObject.facilityTypeCode = null;
       }
   
       this.fireFormValidate();
@@ -532,6 +544,9 @@ export default {
           this.processing = false;
         });
     },
+    calculateDefaultMoveDate() {
+      return (LocalDate.now()).toString();
+    },
     async schoolCategoryChanged(){
       if(this.moveSchoolObject.schoolCategoryCode && this.requiredAuthoritySchoolCategories.includes(this.moveSchoolObject.schoolCategoryCode)){
         this.authorityDisabled = false;
@@ -542,10 +557,11 @@ export default {
       }
       if(this.moveSchoolObject.schoolCategoryCode && this.noGradeSchoolCategory.includes(this.moveSchoolObject.schoolCategoryCode)) {
         this.isGradeOfferedDisabled = true;
-        this.moveSchoolObject.grades = null;
+        this.moveSchoolObject.grades = [];
       } else{
         this.isGradeOfferedDisabled = false;
       }
+
       await this.fireFormValidate();
     },
     async fireFormValidate(){
@@ -556,7 +572,14 @@ export default {
       this.$refs.moveSchoolForm.reset();
     },
     sortGrades() {
-      this.moveSchoolObject.grades = sortBy(this.moveSchoolObject.grades,['displayOrder']);
+      const gradeList = [];
+      for (const grade of this.schoolGradeTypes) {
+        let schoolGradeType = this.moveSchoolObject.grades.find((rawGrade) => rawGrade.schoolGradeCode === grade.schoolGradeCode);
+        if (schoolGradeType) {
+          gradeList.push(schoolGradeType);
+        }
+      }
+      this.moveSchoolObject.grades = gradeList;
     },
     sortNLC() {
       this.moveSchoolObject.neighborhoodLearning = sortBy(this.moveSchoolObject.neighborhoodLearning,['neighborhoodLearningTypeCode']);
