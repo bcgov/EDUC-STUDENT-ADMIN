@@ -20,7 +20,7 @@
     <v-row v-else no-gutters>
       <v-col>
         <v-row class="d-flex justify-start">
-            <v-col v-if="!editing" cols="6" class="d-flex justify-start">
+            <v-col v-if="!editing" cols="5" class="d-flex justify-start">
               <h2 class="subjectHeading">{{ school.mincode }} - {{ school.displayName }}</h2>
             </v-col>
             <v-col class="d-flex" v-else>
@@ -28,10 +28,10 @@
               <v-text-field class="mt-n5 ml-3" style="font-size: x-large" :maxlength="255" :rules="[rules.required()]" required v-model="schoolDetailsCopy.displayName">
               </v-text-field>
             </v-col>
-            <v-col v-if="!editing" cols="6" class="d-flex justify-end">
+            <v-col v-if="!editing" cols="7" class="d-flex justify-end">
               <PrimaryButton v-if="isMoveSchoolAllowed()" id="moveSchoolButton" class="mr-2" secondary icon-left
                              icon="mdi-account-multiple-outline" @click.native="moveSchool"
-                             text="MoveSchool"></PrimaryButton>
+                             text="Move School"></PrimaryButton>
               <PrimaryButton id="viewSchoolContactsButton" class="mr-2" secondary icon-left
                              icon="mdi-account-multiple-outline" :to="`/schoolContacts/${schoolID}`"
                              text="View School Contacts"></PrimaryButton>
@@ -41,7 +41,7 @@
               <PrimaryButton id="schoolDetailsEditButton" icon-left width="6em" icon="mdi-pencil" text="Edit"
                              v-if="canEditSchoolDetails()" @click.native="toggleEdit"></PrimaryButton>
             </v-col>
-            <v-col v-else cols="6" class="d-flex justify-end">
+            <v-col v-else cols="7" class="d-flex justify-end">
               <PrimaryButton class="mr-2" secondary id="cancelButton" icon-left width="6em" text="Cancel"
                              @click.native="cancelClicked"></PrimaryButton>
               <PrimaryButton id="saveButton" icon-left width="6em" text="Save" :disabled="!schoolDetailsFormValid"
@@ -1073,7 +1073,7 @@ export default {
       return this.SCHOOL_ADMIN_ROLE;
     },
     isMoveSchoolAllowed() {
-      return this.school.status !== 'Closed' && this.SCHOOL_ADMIN_ROLE; 
+      return this.school.status !== 'Closed' && this.school.status !== 'Never Opened' && this.district.districtNumber !== '102' && this.district.districtNumber !== '103' && this.SCHOOL_ADMIN_ROLE; 
     },
     async clickSameAsAddressButton(){
       await this.$nextTick();
