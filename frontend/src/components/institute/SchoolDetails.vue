@@ -160,7 +160,7 @@
             <v-row>
               <v-col cols="10" class="d-flex justify-start">
                 <span v-if="!editing" class="ministryLine" style="color: black">{{ school.schoolCategory }}</span>
-                <v-select v-else :items="activeSchoolCategoryTypes"
+                <v-select v-else :items="schoolCategorySchoolEditOptions"
                           item-value="schoolCategoryCode"
                           item-text="label"
                           v-model="schoolDetailsCopy.schoolCategoryCode"
@@ -757,6 +757,13 @@ export default {
         return [];
       }
     },
+    schoolCategorySchoolEditOptions() {
+      if (['INDP_FNS', 'FED_BAND'].includes(this.school.schoolCategoryCode)) {
+        return this.activeSchoolCategoryTypes.filter(category => ['INDP_FNS', 'FED_BAND'].includes(category.schoolCategoryCode));
+      } else {
+        return this.activeSchoolCategoryTypes.filter(category => category.schoolCategoryCode === this.school.schoolCategoryCode);
+      }
+    }
   },
   watch: {
     notification(notificationData) {
@@ -1107,7 +1114,7 @@ export default {
     },
     moveSchool() {
       this.moveSchoolSheet = !this.moveSchoolSheet;
-    }
+    },
   },
 };
 </script>
