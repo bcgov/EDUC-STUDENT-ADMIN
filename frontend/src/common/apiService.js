@@ -98,6 +98,9 @@ export default {
   getFacilityTypeCodes: getCodes(Routes.cache.FACILITY_TYPES_URL),
   getSchoolCategoryTypeCodes: getCodes(Routes.cache.SCHOOL_CATEGORY_TYPES_URL),
   getSchoolOrganizationTypeCodes: getCodes(Routes.cache.SCHOOL_ORGANIZATION_TYPES_URL),
+  getSchoolReportingRequirementTypeCodes: getCodes(
+    Routes.cache.SCHOOL_REPORTING_REQUIREMENT_TYPES_URL
+  ),
   getSchoolNeighborhoodLearningCodes: getCodes(Routes.cache.SCHOOL_NEIGHBORHOOD_LEARNING_TYPES_URL),
   getAuthorityTypeCodes: getCodes(Routes.cache.AUTHORITY_TYPES_URL),
   getInstituteGradeCodes: getCodes(Routes.cache.GRADE_TYPES_URL),
