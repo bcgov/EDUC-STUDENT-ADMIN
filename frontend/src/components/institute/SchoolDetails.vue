@@ -252,6 +252,26 @@
               </v-col>
             </v-row>
           </v-col>
+          <v-col cols="4" lg="3" class="pb-0 pt-0">
+            <v-row no-gutters class="d-flex justify-start">
+              <v-col cols="10" class="d-flex justify-start">
+                <span style="color: grey">Reporting Requirement</span>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="10" class="d-flex justify-start">
+                <span v-if="!editing" class="ministryLine" style="color: black">{{ schoolReportingRequirementType.label || '' }}</span>
+                <v-select
+                  v-else
+                  :items="schoolReportingRequirementTypes"
+                  item-value="schoolReportingRequirementCode"
+                  item-text="label"
+                  v-model="schoolDetailsCopy.schoolReportingRequirementCode"
+                  single
+                  required />
+              </v-col>
+            </v-row>
+          </v-col>
         </v-row>
         <v-row class="mt-6 d-flex justify-start">
           <v-col cols="12" class="d-flex justify-start">
@@ -705,6 +725,7 @@ export default {
       activeSchoolCategoryTypes: [],
       schoolCategoryTypes:[],
       schoolOrganizationTypes: [],
+      schoolReportingRequirementTypes: [],
       schoolNeighborhoodLearningTypes: [],
       schoolGradeTypes: [],
       loading: true,
@@ -726,6 +747,7 @@ export default {
     ...mapState('institute', ['schoolCategoryTypeCodes']),
     ...mapState('institute', ['activeSchoolCategoryTypeCodes']),
     ...mapState('institute', ['schoolOrganizationTypeCodes']),
+    ...mapState('institute', ['schoolReportingRequirementTypeCodes']),
     ...mapState('institute', ['schoolNeighborhoodLearningCodes']),
     ...mapState('institute', ['gradeCodes']),
     ...mapState('institute', ['provinceCodes']),
@@ -763,6 +785,13 @@ export default {
       } else {
         return this.activeSchoolCategoryTypes.filter(category => category.schoolCategoryCode === this.school.schoolCategoryCode);
       }
+    },
+    schoolReportingRequirementType() {
+      const code = this.school.schoolReportingRequirementCode;
+      const type = this.schoolReportingRequirementTypes
+        .find(rr => rr.schoolReportingRequirementCode === code);
+      if (type === undefined) return {};
+      return type;
     }
   },
   watch: {
@@ -794,6 +823,9 @@ export default {
     });
     this.$store.dispatch('institute/getAllSchoolOrganizationTypeCodes').then(() => {
       this.schoolOrganizationTypes = this.schoolOrganizationTypeCodes;
+    });
+    this.$store.dispatch('institute/getSchoolReportingRequirementTypeCodes').then(() => {
+      this.schoolReportingRequirementTypes = this.schoolReportingRequirementTypeCodes;
     });
     this.$store.dispatch('institute/getAllSchoolNeighborhoodLearningCodes').then(() => {
       this.schoolNeighborhoodLearningTypes = sortBy(this.schoolNeighborhoodLearningCodes,['neighborhoodLearningTypeCode']);
