@@ -135,6 +135,8 @@ nconf.defaults({
       gradeCodeURL: process.env.INSTITUTE_API_URL + '/grade-codes',
       provinceCodesURL: process.env.INSTITUTE_API_URL + '/province-codes',
       countryCodesURL: process.env.INSTITUTE_API_URL + '/country-codes',
+      reportingRequirementCodesURL: process.env.INSTITUTE_API_ENDPOINT +
+        '/reporting-requirement-codes',
       schoolContactTypeCodesURL: process.env.INSTITUTE_API_URL + '/school-contact-type-codes',
       authorityContactTypeCodesURL: process.env.INSTITUTE_API_URL + '/authority-contact-type-codes',
     },

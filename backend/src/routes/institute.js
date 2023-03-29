@@ -9,7 +9,7 @@ const utils = require('../components/utils');
 const auth = require('../components/auth');
 const extendSession = utils.extendSession();
 const {getCodes} = require('../components/utils');
-const {CACHE_KEYS} = require('../components/constants');
+const {CACHE_KEYS} = require('../util/constants');
 
 router.get('/district', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getDistricts);
 
@@ -58,5 +58,17 @@ router.post('/authority/note', passport.authenticate('jwt', {session: false}, un
 router.post('/authority/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isValidIndependentAuthorityAdmin, extendSession, updateAuthority);
 
 router.get('/authority/:id', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getAuthorityByID);
+
+router.get(
+  '/reporting-requirement-codes',
+  passport.authenticate('jwt', {session: false}, undefined),
+  auth.isLoggedInUser,
+  getCodes(
+    'server:institute:rootURL',
+    CACHE_KEYS.SCHOOL_REPORTING_REQUIREMENT_CODES,
+    '/reporting-requirement-codes'
+  )
+);
+
 
 module.exports = router;
