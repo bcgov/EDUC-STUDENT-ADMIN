@@ -201,7 +201,7 @@
                 <a class="ml-1 toggle" @click="toggleAddressForm">{{addressButton.label}}</a>
               </v-col>
             </v-row>
-            
+
             <v-row v-if="showAddress">
               <v-col>
                 <v-row no-gutters class="mt-5">
@@ -239,7 +239,7 @@
                       v-model="newSchool.mailingAddrPostal" class="pt-0" :maxlength="6" label="Postal Code" />
                   </v-col>
                 </v-row>
-            
+
                 <v-row v-if="displayPhysicalAddress" no-gutters>
                   <v-col>
                     <v-row no-gutters class="mt-5">
@@ -294,8 +294,6 @@
                 </v-row>
               </v-col>
             </v-row>
-            
-            
           </v-col>
         </v-row>
       </v-form>
