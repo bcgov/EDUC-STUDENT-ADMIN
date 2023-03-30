@@ -265,6 +265,7 @@ async function addSchool(req, res) {
       email: req.body.email,
       website: req.body.website,
       displayName: req.body.displayName,
+      schoolReportingRequirementCode: req.body.schoolReportingRequirementCode,
       schoolOrganizationCode: req.body.schoolOrganizationCode,
       schoolCategoryCode: req.body.schoolCategoryCode,
       facilityTypeCode: req.body.facilityTypeCode,
