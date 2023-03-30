@@ -118,6 +118,8 @@ let object = {
     SCHOOL_CATEGORY_TYPES_URL: cacheRoot + '/school-category-types',
     SCHOOL_ORGANIZATION_TYPES_URL: cacheRoot + '/school-organization-types',
     SCHOOL_NEIGHBORHOOD_LEARNING_TYPES_URL: cacheRoot + '/school-neighborhood-learning-types',
+    SCHOOL_REPORTING_REQUIREMENT_TYPES_URL: instituteRoot +
+      '/reporting-requirement-codes',
     AUTHORITY_TYPES_URL: cacheRoot + '/authority-types',
     AUTHORITY_CONTACT_TYPES_URL: cacheRoot + '/authority-contact-types',
     GRADE_TYPES_URL: cacheRoot + '/grade-codes',

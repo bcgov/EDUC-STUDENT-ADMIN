@@ -6,6 +6,7 @@ export default {
     facilityTypeCodes: null,
     schoolCategoryTypeCodes: null,
     schoolOrganizationTypeCodes: null,
+    schoolReportingRequirementTypeCodes: null,
     schoolNeighborhoodLearningCodes: null,
     authorityTypeCodes: null,
     gradeCodes: null,
@@ -27,6 +28,7 @@ export default {
     schoolCategoryFacilityTypesMap: state => state.schoolCategoryFacilityTypesMap,
     schoolCategoryTypeCodes: state => state.schoolCategoryTypeCodes,
     schoolOrganizationTypeCodes: state => state.schoolOrganizationTypeCodes,
+    schoolReportingRequirementTypeCodesGet: state => state.schoolReportingRequirementTypeCodes,
     schoolNeighborhoodLearningCodes: state => state.schoolNeighborhoodLearningCodes,
     authorityTypeCodes: state => state.authorityTypeCodes,
     gradeCodes: state => state.gradeCodes,
@@ -50,6 +52,9 @@ export default {
     },
     setSchoolOrganizationTypeCodes: (state, schoolOrganizationTypeCodes) => {
       state.schoolOrganizationTypeCodes = schoolOrganizationTypeCodes;
+    },
+    setSchoolReportingRequirementTypeCodes: (state, schoolReportingRequirementTypeCodes) => {
+      state.schoolReportingRequirementTypeCodes = schoolReportingRequirementTypeCodes;
     },
     setSchoolNeighborhoodLearningCodes: (state, schoolNeighborhoodLearningCodes) => {
       state.schoolNeighborhoodLearningCodes = schoolNeighborhoodLearningCodes;
@@ -109,6 +114,10 @@ export default {
     async getAllSchoolOrganizationTypeCodes({commit}) {
       const response = await ApiService.getSchoolOrganizationTypeCodes();
       commit('setSchoolOrganizationTypeCodes', response.data);
+    },
+    async getSchoolReportingRequirementTypeCodes({ commit }) {
+      const { data } = await ApiService.getSchoolReportingRequirementTypeCodes();
+      commit('setSchoolReportingRequirementTypeCodes', data);
     },
     async getAllSchoolNeighborhoodLearningCodes({commit}) {
       const response = await ApiService.getSchoolNeighborhoodLearningCodes();
