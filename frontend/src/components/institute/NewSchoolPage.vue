@@ -142,6 +142,18 @@
                     label="NLC Activity"
                 />
               </v-col>
+              <v-col cols="4">
+                <v-select
+                  id='newSchoolReportingRequirementInput'
+                  :rules="[rules.required()]"
+                  v-model="newSchool.schoolReportingRequirementCode"
+                  :items="schoolReportingRequirementTypeCodes"
+                  item-value="schoolReportingRequirementCode"
+                  item-text="label"
+                  class="pt-0"
+                  label="Reporting Requirement"
+                  />
+              </v-col>
             </v-row>
             <v-row no-gutters class="mt-5">
               <v-col cols="4">
@@ -357,6 +369,7 @@ export default {
         schoolCategoryCode: null,
         facilityTypeCode: null,
         schoolOrganizationCode: null,
+        schoolReportingRequirementCode: null,
         grades: [],
         neighborhoodLearning: [],
         phoneNumber: null,
@@ -391,6 +404,7 @@ export default {
     ...mapState('institute', ['activeFacilityTypeCodes']),
     ...mapState('institute', ['activeSchoolCategoryTypeCodes']),
     ...mapState('institute', ['activeSchoolOrganizationTypeCodes']),
+    ...mapState('institute', ['schoolReportingRequirementTypeCodes']),
     ...mapState('institute', ['activeSchoolNeighborhoodLearningCodes']),
     ...mapState('institute', ['activeGradeCodes']),
     ...mapState('institute', ['activeProvinceCodes']),
@@ -444,6 +458,7 @@ export default {
     this.$store.dispatch('institute/getAllActiveProvinceCodes');
     this.$store.dispatch('institute/getAllActiveCountryCodes');
     this.$store.dispatch('institute/getSchoolCategoryFacilityTypesMap');
+    this.$store.dispatch('institute/getSchoolReportingRequirementTypeCodes');
   },
   methods: {
     enableOrDisableFacilityType(facilityTypes){
