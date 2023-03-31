@@ -146,6 +146,22 @@
 
         <v-row class="py-1">
             <v-col cols="4" lg="3" class="pb-0 pt-0 key">
+                <span :class="{
+                    'diff-value': isValueEmpty(schoolHistory.schoolReportingRequirementCode,
+                    schoolHistory.schoolReportingRequirementCode_diff)
+                }">
+                    Reporting Requirement
+                </span>
+            </v-col>
+            <v-col cols="4" lg="3" class="pb-0 pt-0">
+                <span :class="{ 'diff-value': schoolHistory.schoolReportingRequirementCode_diff }">
+                    {{ schoolHistory.schoolReportingRequirementCodeValue }}
+                </span>
+            </v-col>
+        </v-row>
+
+        <v-row class="py-1">
+            <v-col cols="4" lg="3" class="pb-0 pt-0 key">
                 <span :class="{ 'diff-value': isValueEmpty(schoolHistory.mailingAddress, schoolHistory.mailingAddress_diff) }">Mailing Address</span>
             </v-col>
             <v-col cols="4" lg="3" class="pb-0 pt-0">
@@ -170,7 +186,7 @@
         <slot></slot>
     </v-card>
 </template>
-    
+
 <script>
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber, formatDate} from '@/utils/format';
@@ -193,11 +209,11 @@ export default {
       return fieldValueDiff && isEmpty(fieldValue);
     },
     formatDate,
-    formatPhoneNumber,  
+    formatPhoneNumber,
   }
 };
 </script>
-    
+
 <style scoped>
     div.auditHistoryDetail {
   background-color: rgba(0, 0, 0, 0.06);
@@ -213,4 +229,4 @@ export default {
   color: #008000 !important;
 }
 </style>
-  
+

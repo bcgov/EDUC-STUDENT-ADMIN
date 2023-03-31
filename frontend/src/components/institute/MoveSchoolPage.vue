@@ -160,6 +160,19 @@
                           label="NLC Activity"
                       />
                     </v-col>
+                    <v-col cols="4">
+                      <v-select
+                        id='newSchoolReportingCode'
+                        :rules="[rules.required()]"
+                        v-model="moveSchoolObject.schoolReportingRequirementCode"
+                        :items="schoolReportingRequirementTypeCodes"
+                        item-value="schoolReportingRequirementCode"
+                        item-text="label"
+                        class="pt-0"
+                        @change="schoolCategoryChanged"
+                        label="Reporting Requirement"
+                        />
+                    </v-col>
                   </v-row>
                   <v-row no-gutters class="mt-5">
                     <v-col cols="4">
@@ -408,6 +421,7 @@ export default {
     ...mapGetters('auth', ['isAuthenticated','userInfo','SCHOOL_INDEPENDENT_ADMIN_ROLE']),
     ...mapState('institute', ['activeFacilityTypeCodes']),
     ...mapState('institute', ['activeSchoolCategoryTypeCodes']),
+    ...mapState('institute', ['schoolReportingRequirementTypeCodes']),
     ...mapState('institute', ['activeSchoolOrganizationTypeCodes']),
     ...mapState('institute', ['activeSchoolNeighborhoodLearningCodes']),
     ...mapState('institute', ['activeGradeCodes']),
@@ -456,6 +470,7 @@ export default {
   created() {
     this.$store.dispatch('institute/getAllActiveFacilityTypeCodes');
     this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes');
+    this.$store.dispatch('institute/getSchoolReportingRequirementTypeCodes');
     this.$store.dispatch('institute/getAllActiveSchoolOrganizationTypeCodes');
     this.$store.dispatch('institute/getAllActiveGradeCodes');
     this.$store.dispatch('institute/getAllActiveSchoolNeighborhoodLearningCodes');
