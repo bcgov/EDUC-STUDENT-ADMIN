@@ -135,6 +135,7 @@ export default {
     ...mapState('institute', ['gradeCodes']),
     ...mapState('institute', ['schoolNeighborhoodLearningCodes']),
     ...mapState('institute', ['schoolOrganizationTypeCodes']),
+    ...mapState('institute', ['schoolReportingRequirementTypeCodes']),
     ...mapState('app', ['schoolMap', 'districtMap']),
     showingFirstNumber() {
       return ((this.pageNumber - 1) * (this.schoolHistory.pageable.pageSize || 0) + ((this.schoolHistory.numberOfElements || 0) > 0 ? 1 : 0));
@@ -164,6 +165,7 @@ export default {
     this.$store.dispatch('institute/getAllGradeCodes');
     this.$store.dispatch('institute/getAllSchoolNeighborhoodLearningCodes');
     this.$store.dispatch('institute/getAllSchoolOrganizationTypeCodes');
+    this.$store.dispatch('institute/getSchoolReportingRequirementTypeCodes');
   },
   methods: {
     getPageHeading() {
@@ -293,6 +295,8 @@ export default {
     formatSchoolHistory(history) {
       history.facilityTypeValue =  this.mapFacilityCode(history.facilityTypeCode);
       history.schoolCategoryValue = this.mapSchoolCategoryCode(history.schoolCategoryCode);
+      history.schoolReportingRequirementCodeValue =
+        this.mapSchoolReportingRequirementCode(history.schoolReportingRequirementCode);
       history.gradeValue = this.mapGradesOffered(history.schoolGrades);
       history.status = getStatusAuthorityOrSchool(history);
       history.updateDateTrunc = history.updateDate.length > 10 ? history.updateDate.substr(0, 10) : history.updateDate;
@@ -318,6 +322,10 @@ export default {
     },
     mapFacilityCode(facilityCode) {
       return this.facilityTypeCodes.find(code =>code?.facilityTypeCode === facilityCode)?.description;
+    },
+    mapSchoolReportingRequirementCode(requirementCode) {
+      return this.schoolReportingRequirementTypeCodes
+        .find(c => c.schoolReportingRequirementCode === requirementCode).label;
     },
     mapSchoolCategoryCode(categoryCode) {
       return this.schoolCategoryTypeCodes.find(code =>code?.schoolCategoryCode === categoryCode)?.description;
