@@ -170,7 +170,7 @@
         <slot></slot>
     </v-card>
 </template>
-    
+
 <script>
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber, formatDate} from '@/utils/format';
@@ -193,11 +193,11 @@ export default {
       return fieldValueDiff && isEmpty(fieldValue);
     },
     formatDate,
-    formatPhoneNumber,  
+    formatPhoneNumber,
   }
 };
 </script>
-    
+
 <style scoped>
     div.auditHistoryDetail {
   background-color: rgba(0, 0, 0, 0.06);
@@ -213,4 +213,4 @@ export default {
   color: #008000 !important;
 }
 </style>
-  
+
