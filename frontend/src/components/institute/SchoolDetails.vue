@@ -48,7 +48,7 @@
                              @click.native="updateSchoolDetails"></PrimaryButton>
             </v-col>
           </v-row>
-          <v-row v-if="school.schoolCategoryCode !== 'INDEPEND'" class="d-flex justify-start">
+          <v-row v-if="!['OFFSHORE', 'INDEPEND'].includes(school.schoolCategoryCode)" class="d-flex justify-start">
               <v-col class="d-flex">
                 <div class="ministryOwnershipTeamName"  style="color: black">{{district.districtNumber}} - {{district.name}}</div>
               </v-col>
