@@ -797,11 +797,11 @@ export default {
   watch: {
     notification(notificationData) {
       if (notificationData) {
-        if (notificationData.eventType === 'MOVE_USERS_TO_NEW_SCHOOL' && notificationData.eventOutcome === 'SCHOOL_MOVED' && notificationData.eventPayload) {
+        if (notificationData.eventType === 'MOVE_USERS_TO_NEW_SCHOOL' && notificationData.eventOutcome === 'USERS_TO_NEW_SCHOOL_MOVED' && notificationData.eventPayload) {
           try {
-            const school = JSON.parse(notificationData.eventPayload);
-            if (school.newSchoolNumber) { 
-              const warningMessage = 'School moved successfully. Your new school number is: '+ school.newSchoolNumber + '. Please refresh the page';
+            const moveData = JSON.parse(notificationData.eventPayload);
+            if (moveData.toSchool.schoolNumber) {
+              const warningMessage = 'School moved successfully. Your new school number is: '+ moveData.toSchool.schoolNumber + '. Please refresh the page';
               this.setSuccessAlert(warningMessage);
             }
           } catch (e) {

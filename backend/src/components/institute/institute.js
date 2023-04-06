@@ -741,107 +741,70 @@ async function moveSchool(req, res) {
     const token = getBackendToken(req);
     const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
-    if(!hasSchoolAdminRole(req, req.body)){
+    if(!hasSchoolAdminRole(req, req.body.toSchool)){
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'You do not have the required access for this function'
       });
     }
 
     const incomingPayload = req.body;
-    incomingPayload.createDate = null;
-    incomingPayload.updateDate = null;
-    incomingPayload.createUser = utils.getUser(req).idir_username;
-    incomingPayload.updateUser = utils.getUser(req).idir_username;
-    incomingPayload.addresses = [];
+    incomingPayload.toSchool.createDate = null;
+    incomingPayload.toSchool.updateDate = null;
+    incomingPayload.toSchool.createUser = utils.getUser(req).idir_username;
+    incomingPayload.toSchool.updateUser = utils.getUser(req).idir_username;
+    incomingPayload.toSchool.addresses = [];
 
-    incomingPayload.notes.forEach(function(note) {
+    incomingPayload.toSchool.notes.forEach(function(note) {
       note.updateDate = null;
       note.createDate = null;
     });
 
-    incomingPayload.contacts.forEach(function(contact) {
+    incomingPayload.toSchool.contacts.forEach(function(contact) {
       contact.updateDate = null;
       contact.createDate = null;
     });
 
     // set addresses, grade codes and Neighborhood Learning Codes
-    if(req.body.mailingAddrLine1 !== null){
+    if(req.body.toSchool.mailingAddrLine1 !== null){
       let mailingAddress = {
         'createUser': utils.getUser(req).idir_username,
         'updateUser': utils.getUser(req).idir_username,
         'createDate': null,
         'updateDate': null,
         'addressId': null,
-        'addressLine1': req.body.mailingAddrLine1,
-        'addressLine2': req.body.mailingAddrLine2,
-        'city': req.body.mailingAddrCity,
-        'postal': req.body.mailingAddrPostal,
+        'addressLine1': req.body.toSchool.mailingAddrLine1,
+        'addressLine2': req.body.toSchool.mailingAddrLine2,
+        'city': req.body.toSchool.mailingAddrCity,
+        'postal': req.body.toSchool.mailingAddrPostal,
         'addressTypeCode': 'MAILING',
-        'provinceCode': req.body.mailingAddrProvince,
-        'countryCode': req.body.mailingAddrCountry,
+        'provinceCode': req.body.toSchool.mailingAddrProvince,
+        'countryCode': req.body.toSchool.mailingAddrCountry,
       };
-      incomingPayload.addresses.push(mailingAddress);
+      incomingPayload.toSchool.addresses.push(mailingAddress);
     }
 
-    if(req.body.physicalAddrLine1 !== null){
+    if(req.body.toSchool.physicalAddrLine1 !== null){
       let physicalAddress = {
         'createUser': utils.getUser(req).idir_username,
         'updateUser': utils.getUser(req).idir_username,
         'createDate': null,
         'updateDate': null,
-        'addressLine1': req.body.physicalAddrLine1,
-        'addressLine2': req.body.physicalAddrLine2,
-        'city': req.body.physicalAddrCity,
-        'postal': req.body.physicalAddrPostal,
+        'addressLine1': req.body.toSchool.physicalAddrLine1,
+        'addressLine2': req.body.toSchool.physicalAddrLine2,
+        'city': req.body.toSchool.physicalAddrCity,
+        'postal': req.body.toSchool.physicalAddrPostal,
         'addressTypeCode': 'PHYSICAL',
-        'provinceCode': req.body.physicalAddrProvince,
-        'countryCode': req.body.physicalAddrCountry,
+        'provinceCode': req.body.toSchool.physicalAddrProvince,
+        'countryCode': req.body.toSchool.physicalAddrCountry,
       };
-      incomingPayload.addresses.push(physicalAddress);
+      incomingPayload.toSchool.addresses.push(physicalAddress);
     }
-
-    const nlcObjectsArray = [];
-    const gradesObjectArray = [];
-
-    for (const nlcCode of incomingPayload.neighborhoodLearning) {
-      //when there is an update in frontend to neigborhoodlearning system adds array of codes to the payload
-      if (_.isString(nlcCode)) {
-        nlcObjectsArray.push({
-          neighborhoodLearningTypeCode: nlcCode,
-          schoolId: incomingPayload.schoolId
-        });
-      } else {
-        //if neighborhood learning was not changed as part of edit , it will be passed as an array of objects from frontend.
-        nlcObjectsArray.push({
-          neighborhoodLearningTypeCode: nlcCode.neighborhoodLearningTypeCode,
-          schoolId: incomingPayload.schoolId
-        });
-      }
-    }
-    for (const gradeCode of incomingPayload.grades) {
-      //when there is an update in frontend to grades system adds array of codes to the payload
-      if (_.isString(gradeCode)) {
-        gradesObjectArray.push({
-          schoolGradeCode: gradeCode,
-          schoolId: incomingPayload.schoolId
-        });
-      } else {
-        //if grades was not changed as part of edit , it will be passed as an array of objects from frontend.
-        gradesObjectArray.push({
-          schoolGradeCode: gradeCode.schoolGradeCode,
-          schoolId: incomingPayload.schoolId
-        });
-      }
-
-    }
-    incomingPayload.neighborhoodLearning = nlcObjectsArray;
-    incomingPayload.grades=gradesObjectArray;
 
     const payload = {
-      school: incomingPayload,
-      moveDate: LocalDate.parse(incomingPayload.moveDate).atStartOfDay().format(formatter),
-      schoolId: null
-    }
+      toSchool: incomingPayload.toSchool,
+      moveDate: LocalDate.parse(incomingPayload.toSchool.moveDate).atStartOfDay().format(formatter),
+      fromSchoolId: req.body.fromSchoolId
+    };
 
     const data = await utils.postData(token, config.get('server:edx:moveSchoolSagaURL'), payload, null, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(data);
