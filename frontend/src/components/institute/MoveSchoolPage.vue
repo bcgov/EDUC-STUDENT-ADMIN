@@ -383,17 +383,17 @@ export default {
         displayName: this.school.displayName,
         schoolCategoryCode: this.school.schoolCategoryCode,
         schoolOrganizationCode: this.school.schoolOrganizationCode,
-        grades: this.school.grades,
-        neighborhoodLearning: this.school.neighborhoodLearning,
+        grades: [],
+        neighborhoodLearning: [],
         phoneNumber: this.school.phoneNumber,
         faxNumber: this.school.faxNumber,
         facilityTypeCode: this.school.facilityTypeCode,
         schoolReportingRequirementCode: this.school.schoolReportingRequirementCode,
         email: this.school.email,
         website: this.school.website,
-        schoolId: this.school.schoolId,
-        openedDate: this.school.openedDate,
-        mincode: this.school.mincode,
+        schoolId: null,
+        openedDate: null,
+        mincode: null,
         schoolNumber: this.school.schoolNumber,
         contacts: this.school.contacts,
         notes: this.school.notes,
@@ -480,6 +480,7 @@ export default {
     this.$store.dispatch('institute/getAllGradeCodes').then(() => {
       this.schoolGradeTypes = sortBy(this.activeGradeCodes,['displayOrder']);
       this.sortGrades();
+      this.copyNLCandGradesFromSchool();
     });
     this.sortNLC();
     this.getActiveDistrictDropDownItems();
@@ -487,6 +488,11 @@ export default {
     this.schoolCategoryChanged();
   },
   methods: {
+    copyNLCandGradesFromSchool() {
+      //copies over the NLC and grades list from school without schoolId information.
+      this.moveSchoolObject.neighborhoodLearning = this.school.neighborhoodLearning.map(nlc => this.activeSchoolNeighborhoodLearningCodes?.find(activeNLC => nlc.neighborhoodLearningTypeCode === activeNLC.neighborhoodLearningTypeCode));
+      this.moveSchoolObject.grades = this.school.grades.map(grade => this.activeGradeCodes.find(activeGrade => grade.schoolGradeCode === activeGrade.schoolGradeCode));
+    },
     getActiveDistrictDropDownItems() {
       ApiService.getActiveDistricts().then((response) => {
         if(response.data) {
@@ -546,7 +552,11 @@ export default {
     },
     moveSchool() {
       this.processing = true;
-      ApiService.apiAxios.post(`${Routes.institute.SCHOOL_MOVE_URL}`, this.moveSchoolObject)
+      ApiService.apiAxios.post(`${Routes.institute.SCHOOL_MOVE_URL}`, {
+        toSchool: this.moveSchoolObject,
+        fromSchoolId: this.school.schoolId,
+        moveDate: this.moveSchoolObject.moveDate
+      })
         .then(() => {
           this.setSuccessAlert('Success! Your request to move this school has been accepted.');
           this.closeMoveSchoolPage();
@@ -591,7 +601,7 @@ export default {
       for (const grade of this.schoolGradeTypes) {
         let schoolGradeType = this.moveSchoolObject.grades.find((rawGrade) => rawGrade.schoolGradeCode === grade.schoolGradeCode);
         if (schoolGradeType) {
-          gradeList.push(schoolGradeType);
+          gradeList.push(grade);
         }
       }
       this.moveSchoolObject.grades = gradeList;
