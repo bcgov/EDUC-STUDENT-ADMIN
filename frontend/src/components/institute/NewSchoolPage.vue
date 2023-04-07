@@ -84,6 +84,7 @@
                     class="pt-0"
                     @change="schoolCategoryChanged"
                     label="School Category"
+                    :disabled="categoryConstrained"
                 />
               </v-col>
               <v-col cols="4">
@@ -361,6 +362,12 @@ export default {
       independentArray: ['INDEPEND', 'INDP_FNS'],
       requiredAuthoritySchoolCategories: ['INDEPEND', 'INDP_FNS', 'OFFSHORE'],
       noGradeSchoolCategory: ['POST_SEC', 'EAR_LEARN'],
+      districtCategoryConstraints: [
+        { district: '103', category: 'OFFSHORE' },
+        { district: '102', category: 'POST_SEC' },
+        { district: '098', category: 'YUKON' }
+      ],
+      categoryConstrained: false,
       newSchool: {
         districtID: null,
         independentAuthorityId: null,
@@ -471,6 +478,14 @@ export default {
 
       this.fireFormValidate();
     },
+    constrainCategoryByDistrict(num) {
+      const { category } = this.districtCategoryConstraints.find(c => c.district === num);
+      this.categoryConstrained = category !== undefined;
+      if (this.newSchool.schoolCategoryCode !== category) {
+        this.newSchool.schoolCategoryCode = category;
+        this.schoolCategoryChanged();
+      }
+    },
     isIndependentOnlyUser() {
       return this.SCHOOL_INDEPENDENT_ADMIN_ROLE;
     },
@@ -509,6 +524,11 @@ export default {
     },
     openSchoolDetailsPage(schoolID) {
       this.$router.push({name: 'schoolDetails', params: {schoolID: schoolID}});
+    },
+    schoolDistrictChanged() {
+      const { districtNumber } = this.districtNames
+        .find(d => d.districtId === this.newSchool.districtID);
+      this.constrainCategoryByDistrict(districtNumber);
     },
     async schoolCategoryChanged(){
       if(this.newSchool.schoolCategoryCode && this.requiredAuthoritySchoolCategories.includes(this.newSchool.schoolCategoryCode)){
