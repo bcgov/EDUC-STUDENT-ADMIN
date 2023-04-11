@@ -30,7 +30,7 @@
             </v-col>
             <v-col v-if="!editing" cols="7" class="d-flex justify-end">
               <PrimaryButton v-if="isMoveSchoolAllowed()" id="moveSchoolButton" class="mr-2" secondary icon-left
-                             icon="mdi-account-multiple-outline" @click.native="moveSchool"
+                             icon="mdi-arrow-left-right" @click.native="moveSchool"
                              text="Move School"></PrimaryButton>
               <PrimaryButton id="viewSchoolContactsButton" class="mr-2" secondary icon-left
                              icon="mdi-account-multiple-outline" :to="`/schoolContacts/${schoolID}`"
