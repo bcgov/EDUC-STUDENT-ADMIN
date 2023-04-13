@@ -393,7 +393,6 @@ export default {
           let districtItem = {
             districtNumberName: `${district.districtNumber} - ${district.name}`,
             districtId: district.districtId,
-            districtNumber: district.districtNumber,
             districtRegionCode: district.districtRegionCode
           };
           this.activeDistricts.push(districtItem);

@@ -364,9 +364,9 @@ export default {
       requiredAuthoritySchoolCategories: ['INDEPEND', 'INDP_FNS', 'OFFSHORE'],
       noGradeSchoolCategory: ['POST_SEC', 'EAR_LEARN'],
       districtSchoolCategoryConstraints: [
-        { districtRegionCode: 'OFFSHORE' ,districtNumber: '103', schoolCategory: 'OFFSHORE' },
-        { districtRegionCode: 'PSI', districtNumber: '102', schoolCategory: 'POST_SEC' },
-        { districtRegionCode: 'YUKON', districtNumber: '098', schoolCategory: 'YUKON' }
+        { districtRegionCode: 'OFFSHORE', schoolCategory: 'OFFSHORE' },
+        { districtRegionCode: 'PSI', schoolCategory: 'POST_SEC' },
+        { districtRegionCode: 'YUKON', schoolCategory: 'YUKON' }
       ],
       schoolCategoryDisabled: false,
       newSchool: {
