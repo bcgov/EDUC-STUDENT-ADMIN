@@ -363,7 +363,7 @@ export default {
       independentArray: ['INDEPEND', 'INDP_FNS'],
       requiredAuthoritySchoolCategories: ['INDEPEND', 'INDP_FNS', 'OFFSHORE'],
       noGradeSchoolCategory: ['POST_SEC', 'EAR_LEARN'],
-      districtCategoryConstraints: [
+      districtSchoolCategoryConstraints: [
         { districtRegionCode: 'OFFSHORE' ,districtNumber: '103', schoolCategory: 'OFFSHORE' },
         { districtRegionCode: 'PSI', districtNumber: '102', schoolCategory: 'POST_SEC' },
         { districtRegionCode: 'YUKON', districtNumber: '098', schoolCategory: 'YUKON' }
@@ -484,7 +484,7 @@ export default {
       this.fireFormValidate();
     },
     constrainSchoolCategoryByDistrict(districtRegionCode) {
-      const schoolCategory = this.districtCategoryConstraints.find(c => c.districtRegionCode === districtRegionCode)?.schoolCategory;
+      const schoolCategory = this.districtSchoolCategoryConstraints.find(c => c.districtRegionCode === districtRegionCode)?.schoolCategory;
       this.schoolCategoryDisabled = schoolCategory !== undefined;
       if (schoolCategory && this.newSchool.schoolCategoryCode !== schoolCategory) {
         this.newSchool.schoolCategoryCode = schoolCategory;
