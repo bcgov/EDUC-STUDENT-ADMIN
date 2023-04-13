@@ -483,7 +483,7 @@ export default {
 
       this.fireFormValidate();
     },
-    constrainCategoryByDistrict(districtRegionCode) {
+    constrainSchoolCategoryByDistrict(districtRegionCode) {
       const schoolCategory = this.districtCategoryConstraints.find(c => c.districtRegionCode === districtRegionCode)?.schoolCategory;
       this.schoolCategoryDisabled = schoolCategory !== undefined;
       if (schoolCategory && this.newSchool.schoolCategoryCode !== schoolCategory) {
@@ -537,7 +537,7 @@ export default {
         .find(d => d.districtId === this.newSchool.districtID)?.districtRegionCode;
 
       if (districtRegionCode) {
-        this.constrainCategoryByDistrict(districtRegionCode);
+        this.constrainSchoolCategoryByDistrict(districtRegionCode);
       }
     },
     async schoolCategoryChanged(){
