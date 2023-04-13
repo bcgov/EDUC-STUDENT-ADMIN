@@ -24,6 +24,7 @@
                     item-text="districtNumberName"
                     :items="districtNames"
                     v-model="newSchool.districtID"
+                    @change="schoolDistrictChanged"
                     clearable>
                 </v-autocomplete>
               </v-col>
@@ -84,6 +85,7 @@
                     class="pt-0"
                     @change="schoolCategoryChanged"
                     label="School Category"
+                    :disabled="schoolCategoryDisabled"
                 />
               </v-col>
               <v-col cols="4">
@@ -147,7 +149,7 @@
                   id='newSchoolReportingRequirementInput'
                   :rules="[rules.required()]"
                   v-model="newSchool.schoolReportingRequirementCode"
-                  :items="schoolReportingRequirementTypeCodes"
+                  :items="schoolReportingRequirementCodes"
                   item-value="schoolReportingRequirementCode"
                   item-text="label"
                   class="pt-0"
@@ -361,6 +363,12 @@ export default {
       independentArray: ['INDEPEND', 'INDP_FNS'],
       requiredAuthoritySchoolCategories: ['INDEPEND', 'INDP_FNS', 'OFFSHORE'],
       noGradeSchoolCategory: ['POST_SEC', 'EAR_LEARN'],
+      districtSchoolCategoryConstraints: [
+        { districtRegionCode: 'OFFSHORE', schoolCategory: 'OFFSHORE' },
+        { districtRegionCode: 'PSI', schoolCategory: 'POST_SEC' },
+        { districtRegionCode: 'YUKON', schoolCategory: 'YUKON' }
+      ],
+      schoolCategoryDisabled: false,
       newSchool: {
         districtID: null,
         independentAuthorityId: null,
@@ -410,6 +418,7 @@ export default {
     ...mapState('institute', ['activeProvinceCodes']),
     ...mapState('institute', ['activeCountryCodes']),
     ...mapState('institute', ['schoolCategoryFacilityTypesMap']),
+    ...mapState('institute', ['schoolReportingRequirementTypeCodes']),
 
     allowedFacilityTypeCodesForSchoolCategoryCode(){
       if (!this.activeFacilityTypeCodes || !this.newSchool?.schoolCategoryCode) {
@@ -447,6 +456,9 @@ export default {
     },
     countryCodes() {
       return this.activeCountryCodes ? this.activeCountryCodes : [];
+    },
+    schoolReportingRequirementCodes() {
+      return this.schoolReportingRequirementTypeCodes ? this.schoolReportingRequirementTypeCodes : [];
     }
   },
   created() {
@@ -470,6 +482,14 @@ export default {
       }
 
       this.fireFormValidate();
+    },
+    constrainSchoolCategoryByDistrict(districtRegionCode) {
+      const schoolCategory = this.districtSchoolCategoryConstraints.find(c => c.districtRegionCode === districtRegionCode)?.schoolCategory;
+      this.schoolCategoryDisabled = schoolCategory !== undefined;
+      if (schoolCategory && this.newSchool.schoolCategoryCode !== schoolCategory) {
+        this.newSchool.schoolCategoryCode = schoolCategory;
+        this.schoolCategoryChanged();
+      }
     },
     isIndependentOnlyUser() {
       return this.SCHOOL_INDEPENDENT_ADMIN_ROLE;
@@ -509,6 +529,16 @@ export default {
     },
     openSchoolDetailsPage(schoolID) {
       this.$router.push({name: 'schoolDetails', params: {schoolID: schoolID}});
+    },
+    schoolDistrictChanged() {
+      this.schoolCategoryDisabled = false;
+
+      const districtRegionCode = this.districtNames
+        .find(d => d.districtId === this.newSchool.districtID)?.districtRegionCode;
+
+      if (districtRegionCode) {
+        this.constrainSchoolCategoryByDistrict(districtRegionCode);
+      }
     },
     async schoolCategoryChanged(){
       if(this.newSchool.schoolCategoryCode && this.requiredAuthoritySchoolCategories.includes(this.newSchool.schoolCategoryCode)){
