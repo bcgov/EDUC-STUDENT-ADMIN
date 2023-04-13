@@ -169,7 +169,6 @@
                         item-value="schoolReportingRequirementCode"
                         item-text="label"
                         class="pt-0"
-                        @change="schoolCategoryChanged"
                         label="Reporting Requirement"
                         />
                     </v-col>

@@ -24,6 +24,7 @@
                     item-text="districtNumberName"
                     :items="districtNames"
                     v-model="newSchool.districtID"
+                    @change="schoolDistrictChanged"
                     clearable>
                 </v-autocomplete>
               </v-col>
@@ -84,7 +85,7 @@
                     class="pt-0"
                     @change="schoolCategoryChanged"
                     label="School Category"
-                    :disabled="categoryConstrained"
+                    :disabled="schoolCategoryDisabled"
                 />
               </v-col>
               <v-col cols="4">
@@ -148,7 +149,7 @@
                   id='newSchoolReportingRequirementInput'
                   :rules="[rules.required()]"
                   v-model="newSchool.schoolReportingRequirementCode"
-                  :items="schoolReportingRequirementTypeCodes"
+                  :items="schoolReportingRequirementCodes"
                   item-value="schoolReportingRequirementCode"
                   item-text="label"
                   class="pt-0"
@@ -363,11 +364,11 @@ export default {
       requiredAuthoritySchoolCategories: ['INDEPEND', 'INDP_FNS', 'OFFSHORE'],
       noGradeSchoolCategory: ['POST_SEC', 'EAR_LEARN'],
       districtCategoryConstraints: [
-        { district: '103', category: 'OFFSHORE' },
-        { district: '102', category: 'POST_SEC' },
-        { district: '098', category: 'YUKON' }
+        { districtRegionCode: 'OFFSHORE' ,districtNumber: '103', schoolCategory: 'OFFSHORE' },
+        { districtRegionCode: 'PSI', districtNumber: '102', schoolCategory: 'POST_SEC' },
+        { districtRegionCode: 'YUKON', districtNumber: '098', schoolCategory: 'YUKON' }
       ],
-      categoryConstrained: false,
+      schoolCategoryDisabled: false,
       newSchool: {
         districtID: null,
         independentAuthorityId: null,
@@ -417,6 +418,7 @@ export default {
     ...mapState('institute', ['activeProvinceCodes']),
     ...mapState('institute', ['activeCountryCodes']),
     ...mapState('institute', ['schoolCategoryFacilityTypesMap']),
+    ...mapState('institute', ['schoolReportingRequirementTypeCodes']),
 
     allowedFacilityTypeCodesForSchoolCategoryCode(){
       if (!this.activeFacilityTypeCodes || !this.newSchool?.schoolCategoryCode) {
@@ -454,6 +456,9 @@ export default {
     },
     countryCodes() {
       return this.activeCountryCodes ? this.activeCountryCodes : [];
+    },
+    schoolReportingRequirementCodes() {
+      return this.schoolReportingRequirementTypeCodes ? this.schoolReportingRequirementTypeCodes : [];
     }
   },
   created() {
@@ -478,11 +483,11 @@ export default {
 
       this.fireFormValidate();
     },
-    constrainCategoryByDistrict(num) {
-      const { category } = this.districtCategoryConstraints.find(c => c.district === num);
-      this.categoryConstrained = category !== undefined;
-      if (this.newSchool.schoolCategoryCode !== category) {
-        this.newSchool.schoolCategoryCode = category;
+    constrainCategoryByDistrict(districtRegionCode) {
+      const schoolCategory = this.districtCategoryConstraints.find(c => c.districtRegionCode === districtRegionCode)?.schoolCategory;
+      this.schoolCategoryDisabled = schoolCategory !== undefined;
+      if (schoolCategory && this.newSchool.schoolCategoryCode !== schoolCategory) {
+        this.newSchool.schoolCategoryCode = schoolCategory;
         this.schoolCategoryChanged();
       }
     },
@@ -526,9 +531,14 @@ export default {
       this.$router.push({name: 'schoolDetails', params: {schoolID: schoolID}});
     },
     schoolDistrictChanged() {
-      const { districtNumber } = this.districtNames
-        .find(d => d.districtId === this.newSchool.districtID);
-      this.constrainCategoryByDistrict(districtNumber);
+      this.schoolCategoryDisabled = false;
+
+      const districtRegionCode = this.districtNames
+        .find(d => d.districtId === this.newSchool.districtID)?.districtRegionCode;
+
+      if (districtRegionCode) {
+        this.constrainCategoryByDistrict(districtRegionCode);
+      }
     },
     async schoolCategoryChanged(){
       if(this.newSchool.schoolCategoryCode && this.requiredAuthoritySchoolCategories.includes(this.newSchool.schoolCategoryCode)){
