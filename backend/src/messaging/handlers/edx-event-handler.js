@@ -4,6 +4,7 @@ const webSocket = require('../../socket/web-socket');
 const CONSTANTS = require('../../util/constants');
 const NATS = require('../message-pub-sub');
 const {StringCodec} = require('nats');
+const cacheService = require('../../components/cache-service');
 const sc = StringCodec();
 
 
@@ -28,6 +29,9 @@ async function subscribeToWebSocketMessageTopic(nats) {
     const dataStr = sc.decode(msg.data);
     const data = JSON.parse(dataStr);
     log.info(`Received message, on ${msg.subject} , Subscription Id ::  [${msg.sid}], Reply to ::  [${msg.reply}] :: Data ::`, data);
+    await cacheService.loadAllSchoolsToMap();
+    await cacheService.loadAllDistrictsToMap();
+    await cacheService.loadAllAuthoritiesToMap();
     broadCastMessageToWebSocketClients(dataStr);
   }
 }
