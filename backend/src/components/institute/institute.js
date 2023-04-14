@@ -748,6 +748,7 @@ async function moveSchool(req, res) {
     }
 
     const incomingPayload = req.body;
+    incomingPayload.toSchool.openedDate = LocalDate.parse(incomingPayload.toSchool.moveDate).atStartOfDay().format(formatter);
     incomingPayload.toSchool.createDate = null;
     incomingPayload.toSchool.updateDate = null;
     incomingPayload.toSchool.createUser = utils.getUser(req).idir_username;
