@@ -37,7 +37,7 @@
                         <template v-slot:activator="{ on, attrs }">
                           <v-text-field
                               id="moveDateTextField"
-                              :rules="[rules.required()]"
+                              :rules="[rules.required(), rules.dateIsAfterOrEqualTo(moveSchoolObject.moveDate, school.openedDate, true, `The move date must occur on or after ${schoolOpenDateFormatted}.`)]"
                               class="pt-0"
                               v-model="moveSchoolObject.moveDate"
                               label="Move Date"
@@ -337,7 +337,7 @@ import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import * as Rules from '@/utils/institute/formRules';
-import {sortByNameValue} from '@/utils/format';
+import {sortByNameValue, formatDate} from '@/utils/format';
 import {isNumber} from '@/utils/institute/formInput';
 import {sortBy} from 'lodash';
 import {LocalDate} from '@js-joda/core';
@@ -437,6 +437,12 @@ export default {
       this.enableOrDisableFacilityType(facilityTypes);
       return sortBy(  facilityTypes,['displayOrder']);
     },
+    schoolOpenDateFormatted() {
+      if (!this.school.openedDate) {
+        return '';
+      }
+      return this.formatDate(this.school.openedDate);
+    },
     schoolCategoryTypeCodes() {
       if(this.isIndependentOnlyUser()){
         return this.activeSchoolCategoryTypeCodes?.filter(cat => this.independentArray.includes(cat.schoolCategoryCode));
@@ -510,6 +516,7 @@ export default {
         this.setFailureAlert('An error occurred while getting active districts. Please try again later.');
       });
     },
+    formatDate,
     getActiveAuthorityDropDownItems(){
       ApiService.getActiveAuthorities().then((response) => {
         for(const authority of response.data){
@@ -541,6 +548,7 @@ export default {
       if (this.moveSchoolObject.schoolCategoryCode && this.requiredAuthoritySchoolCategories.includes(this.moveSchoolObject.schoolCategoryCode) && !value) {
         return 'Required';
       }
+      return true;
     },
     saveMoveSchoolDate(date) {
       this.$refs.moveDateFilter.save(date);

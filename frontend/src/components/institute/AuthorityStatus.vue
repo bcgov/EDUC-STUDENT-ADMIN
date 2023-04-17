@@ -119,7 +119,9 @@
                       <template v-slot:activator="{ on, attrs }">
                         <v-text-field
                             id="newCloseDateTextField"
-                            :rules="[rules.required(), rules.dateIsAfterOrEqualTo(newCloseDate, dateOfLastSchoolClosure, true, `The closure date must occur on or after ${dateOfLastSchoolClosureFormatted}.`)]"
+                            :rules="[rules.required(),
+                             rules.dateIsAfterOrEqualTo(newCloseDate, dateOfLastSchoolClosure, true, `The closure date must occur on or after ${dateOfLastSchoolClosureFormatted}.`),
+                             rules.dateIsAfterOrEqualTo(newCloseDate, authorityOpenDate, true, `The closure date must occur on or after ${authorityOpenDateFormatted}.`)]"
                             class="pt-0 mt-0"
                             v-model="newCloseDateFormatted"
                             label="Close Date"
@@ -163,7 +165,9 @@
                       <template v-slot:activator="{ on, attrs }">
                         <v-text-field
                             id="updatedCloseDateTextField"
-                            :rules="[rules.required(), rules.dateIsAfterOrEqualTo(updatedCloseDate, dateOfLastSchoolClosure, true, `The closure date must occur on or after ${dateOfLastSchoolClosureFormatted}.`)]"
+                            :rules="[rules.required(),
+                             rules.dateIsAfterOrEqualTo(updatedCloseDate, dateOfLastSchoolClosure, true, `The closure date must occur on or after ${dateOfLastSchoolClosureFormatted}.`),
+                             rules.dateIsAfterOrEqualTo(updatedCloseDate, authorityOpenDate, true, `The closure date must occur on or after ${authorityOpenDateFormatted}.`)]"
                             class="pt-0 mt-0"
                             v-model="updatedCloseDateFormatted"
                             label="Close Date"
@@ -267,6 +271,12 @@ export default {
     },
     currentDateFormatted() {
       return this.formatDisplayDate(this.currentDate);
+    },
+    authorityOpenDateFormatted() {
+      if (!this.authorityOpenDate) {
+        return '';
+      }
+      return this.formatDate(this.authorityOpenDate);
     },
     dateOfLastSchoolClosureFormatted() {
       if (!this.dateOfLastSchoolClosure) {

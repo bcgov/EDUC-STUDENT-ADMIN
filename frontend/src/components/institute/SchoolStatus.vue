@@ -157,7 +157,7 @@
                       <template v-slot:activator="{ on, attrs }">
                         <v-text-field
                             id="newCloseDateTextField"
-                            :rules="[rules.required()]"
+                            :rules="[rules.required(), rules.dateIsAfterOrEqualTo(newCloseDate, schoolOpenDate, true, `The closure date must occur on or after ${openDateFormatted}.`)]"
                             class="pt-0 mt-0"
                             v-model="newCloseDateFormatted"
                             label="Close Date"
@@ -195,7 +195,7 @@
                       <template v-slot:activator="{ on, attrs }">
                         <v-text-field
                             id="updatedCloseDateTextField"
-                            :rules="[rules.required()]"
+                            :rules="[rules.required(), rules.dateIsAfterOrEqualTo(updatedCloseDate, schoolOpenDate, true, `The closure date must occur on or after ${openDateFormatted}.`)]"
                             class="pt-0 mt-0"
                             v-model="updatedCloseDateFormatted"
                             label="Close Date"
@@ -322,6 +322,12 @@ export default {
       set(newValue) {
         this.updatedCloseDate = this.parseDate(newValue);
       }
+    },
+    openDateFormatted() {
+      if (!this.schoolOpenDate) {
+        return '';
+      }
+      return this.formatDate(this.schoolOpenDate);
     }
   },
   methods: {
