@@ -20,6 +20,7 @@ export default {
     activeDistricts: [],
     districtMap : new Map(),
     districtCodes: new Set(),
+    independentAuthorityMap: new Map(),
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false
@@ -88,6 +89,12 @@ export default {
         state.districtMap.set(element.districtId, element);
       });
     },
+    setIndependentAuthorities(state, independentAuthorityList) {
+      state.independentAuthorityMap = new Map();
+      independentAuthorityList.forEach(element => {
+        state.independentAuthorityMap.set(element.authorityID, element);
+      });
+    },
     setAlertNotificationText: (state, alertNotificationText) => {
       state.alertNotificationText = alertNotificationText;
     },
@@ -127,6 +134,10 @@ export default {
           const response = await ApiService.getActiveDistricts();
           commit('setActiveDistricts', response.data);
         }
+        if(state.independentAuthorityMap.size === 0) {
+          const response = await ApiService.getAuthorities();
+          commit('setIndependentAuthorities', response.data);
+        }
         if(state.schoolApiMincodeSchoolNames.size === 0) {
           const response = await ApiService.getSchoolApiMincodeSchoolNames();
           commit('setSchoolApiMincodeSchoolNameAndDistrictCodes', response.data);
@@ -146,6 +157,9 @@ export default {
 
         const responseActiveDistricts = await ApiService.getActiveDistricts();
         commit('setActiveDistricts', responseActiveDistricts.data);
+
+        const response = await ApiService.getAuthorities();
+        commit('setIndependentAuthorities', response.data);
 
         const responseSchoolApiMin = await ApiService.getSchoolApiMincodeSchoolNames();
         commit('setSchoolApiMincodeSchoolNameAndDistrictCodes', responseSchoolApiMin.data);
