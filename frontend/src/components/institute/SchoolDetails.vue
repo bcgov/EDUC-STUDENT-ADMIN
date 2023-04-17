@@ -38,6 +38,8 @@
               <PrimaryButton id="viewHistoryButton" class="mr-2" secondary icon-left
                              icon="mdi-history" @click.native="openHistory"
                              text="Show History"></PrimaryButton>
+              <PrimaryButton id="schoolMoveButton" class="mr-2" secondary text="School Moves"
+                             v-if="this.school.schoolMove.length > 0" @click.native="openSchoolMove"></PrimaryButton>
               <PrimaryButton id="schoolDetailsEditButton" icon-left width="6em" icon="mdi-pencil" text="Edit"
                              v-if="canEditSchoolDetails()" @click.native="toggleEdit"></PrimaryButton>
             </v-col>
@@ -1009,6 +1011,9 @@ export default {
     },
     openHistory() {
       router.push({name: 'schoolHistory', params: {schoolID: this.schoolID}});
+    },
+    openSchoolMove() {
+      router.push({name: 'schoolMove'});
     },
     async toggleEdit(){
       this.schoolDetailsCopy = this.deepCloneObject(this.school);

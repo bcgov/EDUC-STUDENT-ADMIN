@@ -51,6 +51,7 @@ import AuthorityDetailsPage from '@/components/institute/AuthorityDetails';
 import AuthorityContactsPage from '@/components/institute/AuthoritiesContacts';
 import SchoolContactsPage from '@/components/institute/SchoolContacts';
 import SchoolHistory from '@/components/institute/SchoolHistory';
+import SchoolMove from '@/components/institute/SchoolMove';
 
 Vue.prototype.moment = moment;
 
@@ -485,6 +486,16 @@ const router = new VueRouter({
           component: SchoolHistory,
           meta: {
             pageTitle: PAGE_TITLES.SCHOOL_HISTORY,
+            requiresAuth: true,
+          },
+        },
+        {
+          path: 'school/:schoolID/schoolMove',
+          name: 'schoolMove',
+          props: true,
+          component: SchoolMove,
+          meta: {
+            pageTitle: PAGE_TITLES.SCHOOL_MOVE,
             requiresAuth: true,
           },
         },
