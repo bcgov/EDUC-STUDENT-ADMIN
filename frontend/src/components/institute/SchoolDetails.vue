@@ -20,7 +20,7 @@
     <v-row v-else no-gutters>
       <v-col>
         <v-row class="d-flex justify-start">
-            <v-col v-if="!editing" cols="5" class="d-flex justify-start">
+            <v-col v-if="!editing" class="d-flex justify-start">
               <h2 class="subjectHeading">{{ school.mincode }} - {{ school.displayName }}</h2>
             </v-col>
             <v-col class="d-flex" v-else>
@@ -28,7 +28,7 @@
               <v-text-field class="mt-n5 ml-3" style="font-size: x-large" :maxlength="255" :rules="[rules.required()]" required v-model="schoolDetailsCopy.displayName">
               </v-text-field>
             </v-col>
-            <v-col v-if="!editing" cols="7" class="d-flex justify-end">
+            <v-col v-if="!editing" class="d-flex justify-end">
               <PrimaryButton v-if="isMoveSchoolAllowed()" id="moveSchoolButton" class="mr-2" secondary icon-left
                              icon="mdi-arrow-left-right" @click.native="moveSchool"
                              text="Move School"></PrimaryButton>
