@@ -21,7 +21,7 @@ export default {
         commit('changeNotification', notificationData);
         if (notificationData && notificationData.sagaName?.startsWith('PEN_SERVICES_') && notificationData.sagaStatus === 'COMPLETED' && notificationData.studentID) {
           commit('student/resetStudentInProcessStatus', notificationData.studentID, { root: true });
-        } else if(notificationData && notificationData.eventOutcome === 'USERS_TO_NEW_SCHOOL_MOVED' && notificationData.eventPayload.toSchool.schoolNumber){
+        } else if(notificationData && notificationData.eventOutcome === 'USERS_TO_NEW_SCHOOL_COPIED' && notificationData.eventPayload.toSchool.schoolNumber){
           commit('institute/schoolMovedNotification', notificationData.eventPayload.toSchool.schoolNumber);
         }
       }catch (e) {

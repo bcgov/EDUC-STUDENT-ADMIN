@@ -799,7 +799,7 @@ export default {
   watch: {
     notification(notificationData) {
       if (notificationData) {
-        if (notificationData.eventType === 'MOVE_USERS_TO_NEW_SCHOOL' && notificationData.eventOutcome === 'USERS_TO_NEW_SCHOOL_MOVED' && notificationData.eventPayload) {
+        if (notificationData.eventType === 'COPY_USERS_TO_NEW_SCHOOL' && notificationData.eventOutcome === 'USERS_TO_NEW_SCHOOL_COPIED' && notificationData.eventPayload) {
           try {
             const moveData = JSON.parse(notificationData.eventPayload);
             if (moveData.toSchool.schoolNumber) {

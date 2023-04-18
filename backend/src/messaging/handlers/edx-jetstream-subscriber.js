@@ -14,7 +14,7 @@ const handleJetStreamMessage = async (err, msg) => {
   const data = JSON.parse(StringCodec().decode(msg.data)); // it would always be a JSON string. ii will always be choreographed event.
   logger.debug(`Received message, on ${msg.subject} , Sequence ::  [${msg.seq}], sid ::  [${msg.sid}], redelivered ::  [${msg.redelivered}] :: Data ::`, data);
   try {
-    if (data.eventType === CONSTANTS.EVENT_TYPE.MOVE_USERS_TO_NEW_SCHOOL && data.eventOutcome === CONSTANTS.EVENT_OUTCOME.USERS_TO_NEW_SCHOOL_MOVED) {
+    if (data.eventType === CONSTANTS.EVENT_TYPE.COPY_USERS_TO_NEW_SCHOOL && data.eventOutcome === CONSTANTS.EVENT_OUTCOME.USERS_TO_NEW_SCHOOL_COPIED) {
       await handleEdxMoveEvent(data);
     }
     msg.ack(); // acknowledge to JetStream
