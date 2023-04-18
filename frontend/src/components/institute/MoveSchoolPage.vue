@@ -9,7 +9,7 @@
                 <p>Any users associated with the closing school will be moved to the new school.</p>
             </v-col>
         </v-row>
-        
+
         <v-form ref="moveSchoolForm" v-model="isMoveFormValid">
               <v-row class="d-flex justify-center">
                 <v-col>
@@ -83,7 +83,7 @@
                           label="School Category"
                       />
                     </v-col>
-               
+
                     <v-col cols="4">
                       <v-select
                           id='newSchoolFacilityTypeInput'
@@ -100,7 +100,7 @@
                   </v-row>
                   <!-- -->
                   <v-row>
-                    
+
                     <v-col cols="4">
                       <v-autocomplete
                           id="authority-text-field"
@@ -115,7 +115,7 @@
                           clearable>
                       </v-autocomplete>
                     </v-col>
-                    
+
                     <v-col cols="4">
                       <v-select
                           id='newSchoolOrganizationCodeInput'
@@ -145,7 +145,7 @@
                       />
                     </v-col>
                   </v-row>
-                  <v-row>          
+                  <v-row>
                     <v-col cols="4">
                       <v-select
                           id='newSchoolNLCActivityInput'
@@ -224,7 +224,7 @@
                       />
                     </v-col>
                   </v-row>
-              
+
                   <v-row >
                     <v-col>
                       <v-row no-gutters class="mt-5">
@@ -262,7 +262,7 @@
                             v-model="moveSchoolObject.mailingAddrPostal" class="pt-0" :maxlength="6" label="Postal Code" />
                         </v-col>
                       </v-row>
-              
+
                       <v-row v-if="displayPhysicalAddress" no-gutters>
                         <v-col>
                           <v-row no-gutters class="mt-5">
@@ -317,8 +317,6 @@
                       </v-row>
                     </v-col>
                   </v-row>
-              
-              
                 </v-col>
               </v-row>
             </v-form>
@@ -329,7 +327,7 @@
       </v-card-actions>
     </v-card>
   </template>
-  
+
 <script>
 import PrimaryButton from '../util/PrimaryButton';
 import {mapGetters, mapState} from 'vuex';
@@ -341,7 +339,7 @@ import {sortByNameValue, formatDate} from '@/utils/format';
 import {isNumber} from '@/utils/institute/formInput';
 import {sortBy} from 'lodash';
 import {LocalDate} from '@js-joda/core';
-  
+
 export default {
   name: 'MoveSchoolPage',
   mixins: [alertMixin],
@@ -408,7 +406,7 @@ export default {
         physicalAddrProvince: null,
         physicalAddrCountry: null,
         physicalAddrPostal: null,
-        moveDate: this.calculateDefaultMoveDate(),  
+        moveDate: this.calculateDefaultMoveDate(),
       },
       rules: Rules,
       moveDatePicker: null,
@@ -427,12 +425,12 @@ export default {
     ...mapState('institute', ['activeProvinceCodes']),
     ...mapState('institute', ['activeCountryCodes']),
     ...mapState('institute', ['schoolCategoryFacilityTypesMap']),
-  
+
     allowedFacilityTypeCodesForSchoolCategoryCode(){
       if (!this.activeFacilityTypeCodes || !this.moveSchoolObject?.schoolCategoryCode) {
         return [];
       }
-  
+
       let facilityTypes = this.schoolCategoryFacilityTypesMap[this.moveSchoolObject?.schoolCategoryCode]?.map(schoolCatFacilityTypeCode =>  this.activeFacilityTypeCodes.find(facTypCode=> facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
       this.enableOrDisableFacilityType(facilityTypes);
       return sortBy(  facilityTypes,['displayOrder']);
@@ -502,7 +500,7 @@ export default {
       ApiService.getActiveDistricts().then((response) => {
         if(response.data) {
           let districts = response.data.filter(val => !this.notAllowedDistrictCodes.includes(val.districtRegionCode));
-          for(const district of districts){      
+          for (const district of districts) {
             let districtItem = {
               districtNumberName: `${district.districtNumber} - ${district.name}`,
               districtId: district.districtId,
@@ -538,7 +536,7 @@ export default {
       if(this.isFacilityTypeDisabled){
         this.moveSchoolObject.facilityTypeCode = facilityTypes[0].facilityTypeCode;
       }
-  
+
       this.fireFormValidate();
     },
     isIndependentOnlyUser() {
@@ -638,7 +636,7 @@ export default {
   },
 };
 </script>
-  
+
   <style scoped>
   .sheetHeader{
     background-color: #003366;
@@ -651,9 +649,8 @@ export default {
     color: black !important;
     font-size: medium !important;
   }
-  
+
   .toggle {
     font-size: 15px;
   }
   </style>
-  
