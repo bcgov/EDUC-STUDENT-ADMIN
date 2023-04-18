@@ -9,7 +9,7 @@
                 <p>Any users associated with the closing school will be moved to the new school.</p>
             </v-col>
         </v-row>
-        
+
         <v-form ref="moveSchoolForm" v-model="isMoveFormValid">
               <v-row class="d-flex justify-center">
                 <v-col>
@@ -66,6 +66,7 @@
                           item-text="districtNumberName"
                           :items="activeDistricts"
                           v-model="moveSchoolObject.districtId"
+                          @change="schoolDistrictChanged"
                           class="pt-0"
                           clearable>
                       </v-autocomplete>
@@ -81,9 +82,10 @@
                           class="pt-0"
                           @change="schoolCategoryChanged"
                           label="School Category"
+                          :disabled="schoolCategoryDisabled"
                       />
                     </v-col>
-               
+
                     <v-col cols="4">
                       <v-select
                           id='newSchoolFacilityTypeInput'
@@ -100,7 +102,7 @@
                   </v-row>
                   <!-- -->
                   <v-row>
-                    
+
                     <v-col cols="4">
                       <v-autocomplete
                           id="authority-text-field"
@@ -115,7 +117,7 @@
                           clearable>
                       </v-autocomplete>
                     </v-col>
-                    
+
                     <v-col cols="4">
                       <v-select
                           id='newSchoolOrganizationCodeInput'
@@ -145,7 +147,7 @@
                       />
                     </v-col>
                   </v-row>
-                  <v-row>          
+                  <v-row>
                     <v-col cols="4">
                       <v-select
                           id='newSchoolNLCActivityInput'
@@ -224,7 +226,7 @@
                       />
                     </v-col>
                   </v-row>
-              
+
                   <v-row >
                     <v-col>
                       <v-row no-gutters class="mt-5">
@@ -262,7 +264,7 @@
                             v-model="moveSchoolObject.mailingAddrPostal" class="pt-0" :maxlength="6" label="Postal Code" />
                         </v-col>
                       </v-row>
-              
+
                       <v-row v-if="displayPhysicalAddress" no-gutters>
                         <v-col>
                           <v-row no-gutters class="mt-5">
@@ -317,8 +319,6 @@
                       </v-row>
                     </v-col>
                   </v-row>
-              
-              
                 </v-col>
               </v-row>
             </v-form>
@@ -329,7 +329,7 @@
       </v-card-actions>
     </v-card>
   </template>
-  
+
 <script>
 import PrimaryButton from '../util/PrimaryButton';
 import {mapGetters, mapState} from 'vuex';
@@ -341,7 +341,7 @@ import {sortByNameValue, formatDate} from '@/utils/format';
 import {isNumber} from '@/utils/institute/formInput';
 import {sortBy} from 'lodash';
 import {LocalDate} from '@js-joda/core';
-  
+
 export default {
   name: 'MoveSchoolPage',
   mixins: [alertMixin],
@@ -372,6 +372,10 @@ export default {
       requiredAuthoritySchoolCategories: ['INDEPEND', 'INDP_FNS', 'OFFSHORE'],
       noGradeSchoolCategory: ['POST_SEC', 'EAR_LEARN'],
       notAllowedDistrictCodes: ['PSI', 'OFFSHORE'],
+      districtSchoolCategoryConstraints: [
+        { districtRegionCode: 'YUKON', schoolCategory: 'YUKON' }
+      ],
+      schoolCategoryDisabled: false,
       resetFacilitiesForSchoolCat: [''],
       activeDistricts:[],
       activeAuthorities: [],
@@ -408,7 +412,7 @@ export default {
         physicalAddrProvince: null,
         physicalAddrCountry: null,
         physicalAddrPostal: null,
-        moveDate: this.calculateDefaultMoveDate(),  
+        moveDate: this.calculateDefaultMoveDate(),
       },
       rules: Rules,
       moveDatePicker: null,
@@ -427,12 +431,12 @@ export default {
     ...mapState('institute', ['activeProvinceCodes']),
     ...mapState('institute', ['activeCountryCodes']),
     ...mapState('institute', ['schoolCategoryFacilityTypesMap']),
-  
+
     allowedFacilityTypeCodesForSchoolCategoryCode(){
       if (!this.activeFacilityTypeCodes || !this.moveSchoolObject?.schoolCategoryCode) {
         return [];
       }
-  
+
       let facilityTypes = this.schoolCategoryFacilityTypesMap[this.moveSchoolObject?.schoolCategoryCode]?.map(schoolCatFacilityTypeCode =>  this.activeFacilityTypeCodes.find(facTypCode=> facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
       this.enableOrDisableFacilityType(facilityTypes);
       return sortBy(  facilityTypes,['displayOrder']);
@@ -498,14 +502,26 @@ export default {
       this.moveSchoolObject.neighborhoodLearning = this.school.neighborhoodLearning.map(nlc => this.activeSchoolNeighborhoodLearningCodes?.find(activeNLC => nlc.neighborhoodLearningTypeCode === activeNLC.neighborhoodLearningTypeCode));
       this.moveSchoolObject.grades = this.school.grades.map(grade => this.activeGradeCodes.find(activeGrade => grade.schoolGradeCode === activeGrade.schoolGradeCode));
     },
+    constrainSchoolCategoryByDistrict(districtRegionCode) {
+      const { schoolCategory } = this.districtSchoolCategoryConstraints
+        .find(c => c.districtRegionCode === districtRegionCode);
+
+      this.schoolCategoryDisabled = schoolCategory !== undefined;
+
+      if (schoolCategory && this.moveSchoolObject.schoolCategoryCode !== schoolCategory) {
+        this.moveSchoolObject.schoolCategoryCode = schoolCategory;
+        this.schoolCategoryChanged();
+      }
+    },
     getActiveDistrictDropDownItems() {
       ApiService.getActiveDistricts().then((response) => {
         if(response.data) {
           let districts = response.data.filter(val => !this.notAllowedDistrictCodes.includes(val.districtRegionCode));
-          for(const district of districts){      
+          for (const district of districts) {
             let districtItem = {
               districtNumberName: `${district.districtNumber} - ${district.name}`,
               districtId: district.districtId,
+              districtRegionCode: district.districtRegionCode
             };
             this.activeDistricts.push(districtItem);
           }
@@ -538,7 +554,7 @@ export default {
       if(this.isFacilityTypeDisabled){
         this.moveSchoolObject.facilityTypeCode = facilityTypes[0].facilityTypeCode;
       }
-  
+
       this.fireFormValidate();
     },
     isIndependentOnlyUser() {
@@ -578,6 +594,16 @@ export default {
     },
     calculateDefaultMoveDate() {
       return (LocalDate.now()).toString();
+    },
+    schoolDistrictChanged() {
+      this.schoolCategoryDisabled = false;
+
+      const districtRegionCode = this.activeDistricts
+        .find(d => d.districtId === this.moveSchoolObject.districtId)?.districtRegionCode;
+
+      if (districtRegionCode) {
+        this.constrainSchoolCategoryByDistrict(districtRegionCode);
+      }
     },
     async schoolCategoryChanged(){
       if(this.moveSchoolObject.schoolCategoryCode && this.requiredAuthoritySchoolCategories.includes(this.moveSchoolObject.schoolCategoryCode)){
@@ -638,7 +664,7 @@ export default {
   },
 };
 </script>
-  
+
   <style scoped>
   .sheetHeader{
     background-color: #003366;
@@ -651,9 +677,8 @@ export default {
     color: black !important;
     font-size: medium !important;
   }
-  
+
   .toggle {
     font-size: 15px;
   }
   </style>
-  
