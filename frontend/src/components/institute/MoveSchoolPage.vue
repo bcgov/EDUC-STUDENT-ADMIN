@@ -66,6 +66,7 @@
                           item-text="districtNumberName"
                           :items="activeDistricts"
                           v-model="moveSchoolObject.districtId"
+                          @change="schoolDistrictChanged"
                           class="pt-0"
                           clearable>
                       </v-autocomplete>
@@ -81,6 +82,7 @@
                           class="pt-0"
                           @change="schoolCategoryChanged"
                           label="School Category"
+                          :disabled="schoolCategoryDisabled"
                       />
                     </v-col>
 
@@ -370,6 +372,10 @@ export default {
       requiredAuthoritySchoolCategories: ['INDEPEND', 'INDP_FNS', 'OFFSHORE'],
       noGradeSchoolCategory: ['POST_SEC', 'EAR_LEARN'],
       notAllowedDistrictCodes: ['PSI', 'OFFSHORE'],
+      districtSchoolCategoryConstraints: [
+        { districtRegionCode: 'YUKON', schoolCategory: 'YUKON' }
+      ],
+      schoolCategoryDisabled: false,
       resetFacilitiesForSchoolCat: [''],
       activeDistricts:[],
       activeAuthorities: [],
@@ -496,6 +502,17 @@ export default {
       this.moveSchoolObject.neighborhoodLearning = this.school.neighborhoodLearning.map(nlc => this.activeSchoolNeighborhoodLearningCodes?.find(activeNLC => nlc.neighborhoodLearningTypeCode === activeNLC.neighborhoodLearningTypeCode));
       this.moveSchoolObject.grades = this.school.grades.map(grade => this.activeGradeCodes.find(activeGrade => grade.schoolGradeCode === activeGrade.schoolGradeCode));
     },
+    constrainSchoolCategoryByDistrict(districtRegionCode) {
+      const { schoolCategory } = this.districtSchoolCategoryConstraints
+        .find(c => c.districtRegionCode === districtRegionCode);
+
+      this.schoolCategoryDisabled = schoolCategory !== undefined;
+
+      if (schoolCategory && this.moveSchoolObject.schoolCategoryCode !== schoolCategory) {
+        this.moveSchoolObject.schoolCategoryCode = schoolCategory;
+        this.schoolCategoryChanged();
+      }
+    },
     getActiveDistrictDropDownItems() {
       ApiService.getActiveDistricts().then((response) => {
         if(response.data) {
@@ -504,6 +521,7 @@ export default {
             let districtItem = {
               districtNumberName: `${district.districtNumber} - ${district.name}`,
               districtId: district.districtId,
+              districtRegionCode: district.districtRegionCode
             };
             this.activeDistricts.push(districtItem);
           }
@@ -576,6 +594,16 @@ export default {
     },
     calculateDefaultMoveDate() {
       return (LocalDate.now()).toString();
+    },
+    schoolDistrictChanged() {
+      this.schoolCategoryDisabled = false;
+
+      const districtRegionCode = this.activeDistricts
+        .find(d => d.districtId === this.moveSchoolObject.districtId)?.districtRegionCode;
+
+      if (districtRegionCode) {
+        this.constrainSchoolCategoryByDistrict(districtRegionCode);
+      }
     },
     async schoolCategoryChanged(){
       if(this.moveSchoolObject.schoolCategoryCode && this.requiredAuthoritySchoolCategories.includes(this.moveSchoolObject.schoolCategoryCode)){
