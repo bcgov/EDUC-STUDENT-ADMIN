@@ -503,8 +503,8 @@ export default {
       this.moveSchoolObject.grades = this.school.grades.map(grade => this.activeGradeCodes.find(activeGrade => grade.schoolGradeCode === activeGrade.schoolGradeCode));
     },
     constrainSchoolCategoryByDistrict(districtRegionCode) {
-      const { schoolCategory } = this.districtSchoolCategoryConstraints
-        .find(c => c.districtRegionCode === districtRegionCode);
+      const schoolCategory = this.districtSchoolCategoryConstraints
+        .find(c => c.districtRegionCode === districtRegionCode)?.schoolCategory;
 
       this.schoolCategoryDisabled = schoolCategory !== undefined;
 
