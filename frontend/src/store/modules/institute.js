@@ -97,9 +97,6 @@ export default {
     },
     setActiveCountryCodes: (state, activeCountryCodes) => {
       state.activeCountryCodes = activeCountryCodes;
-    },
-    schoolMovedNotification: (state, movedSchoolNumber) => {
-      state.movedSchoolNumber = movedSchoolNumber;
     }
   },
   actions: {

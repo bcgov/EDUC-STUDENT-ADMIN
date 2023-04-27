@@ -30,8 +30,6 @@ async function subscribeToWebSocketMessageTopic(nats) {
     const data = JSON.parse(dataStr);
     log.info(`Received message, on ${msg.subject} , Subscription Id ::  [${msg.sid}], Reply to ::  [${msg.reply}] :: Data ::`, data);
     await cacheService.loadAllSchoolsToMap();
-    await cacheService.loadAllDistrictsToMap();
-    await cacheService.loadAllAuthoritiesToMap();
     broadCastMessageToWebSocketClients(dataStr);
   }
 }

@@ -802,8 +802,8 @@ export default {
         if (notificationData.eventType === 'COPY_USERS_TO_NEW_SCHOOL' && notificationData.eventOutcome === 'USERS_TO_NEW_SCHOOL_COPIED' && notificationData.eventPayload) {
           try {
             const moveData = JSON.parse(notificationData.eventPayload);
-            if (moveData.toSchool.schoolNumber) {
-              const warningMessage = 'School moved successfully. Your new school number is: '+ moveData.toSchool.schoolNumber + '. Please refresh the page';
+            if (moveData.toSchool.schoolId) {
+              const warningMessage = `School moved successfully. <a style="font-weight: bold" href="/institute/school/${moveData.toSchool.schoolId}/details">Click here to go to new school</a>.`;
               this.setSuccessAlert(warningMessage);
             }
           } catch (e) {
