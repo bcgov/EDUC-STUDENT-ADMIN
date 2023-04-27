@@ -803,7 +803,7 @@ export default {
           try {
             const moveData = JSON.parse(notificationData.eventPayload);
             if (moveData.toSchool.schoolNumber) {
-              const warningMessage = 'School moved successfully. Your new school number is: '+ moveData.toSchool.schoolNumber + '. Please refresh the page';
+              const warningMessage = `School moved successfully. Your new school number is: <a style="font-weight: bold" href="/institute/school/${moveData.toSchool.schoolId}/details">${moveData.toSchool.schoolNumber}</a>. Please refresh the page`;
               this.setSuccessAlert(warningMessage);
             }
           } catch (e) {

@@ -11,7 +11,8 @@
       :color="colour"
       transition="slide-y-transition"
       class="snackbar"
-    >{{ alertNotificationText }}
+    >
+      <div v-html="alertNotificationText"></div>
       <template v-slot:action="{ attrs }">
         <v-btn
           text
