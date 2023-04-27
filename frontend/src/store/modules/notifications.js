@@ -15,14 +15,15 @@ export default {
     }
   },
   actions: {
-    setNotification: ({commit}, payload) => {
+    setNotification: ({dispatch, commit}, payload) => {
       try{
         const notificationData = JSON.parse(payload);
+        console.log(notificationData);
         commit('changeNotification', notificationData);
         if (notificationData && notificationData.sagaName?.startsWith('PEN_SERVICES_') && notificationData.sagaStatus === 'COMPLETED' && notificationData.studentID) {
           commit('student/resetStudentInProcessStatus', notificationData.studentID, { root: true });
-        } else if(notificationData && notificationData.eventOutcome === 'USERS_TO_NEW_SCHOOL_COPIED' && notificationData.eventPayload.toSchool.schoolNumber){
-          commit('institute/schoolMovedNotification', notificationData.eventPayload.toSchool.schoolNumber);
+        } else if(notificationData && notificationData.eventType === 'COPY_USERS_TO_NEW_SCHOOL' && notificationData.eventOutcome === 'USERS_TO_NEW_SCHOOL_COPIED'){
+          dispatch('app/refreshEntities', null, {root: true});
         }
       }catch (e) {
         console.error(e);
