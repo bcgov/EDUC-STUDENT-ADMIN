@@ -18,7 +18,6 @@ export default {
     setNotification: ({dispatch, commit}, payload) => {
       try{
         const notificationData = JSON.parse(payload);
-        console.log(notificationData);
         commit('changeNotification', notificationData);
         if (notificationData && notificationData.sagaName?.startsWith('PEN_SERVICES_') && notificationData.sagaStatus === 'COMPLETED' && notificationData.studentID) {
           commit('student/resetStudentInProcessStatus', notificationData.studentID, { root: true });
