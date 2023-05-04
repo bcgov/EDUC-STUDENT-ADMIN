@@ -94,7 +94,7 @@
                   <p>Some schools under this authority have closing dates in the future.</p>
                   <p>The closing date of the authority must be on or after <strong>{{dateOfLastSchoolClosureFormatted}}</strong>.</p>
                   <p>The following schools have close dates in the future:</p>
-                  <div class="pb-2" v-for="closingSchool in listOfClosingSchools" :key="closingSchool.schoolId">
+                  <div class="pb-2" v-for="closingSchool in listOfClosingSchoolsByMincode" :key="closingSchool.schoolId">
                     <ul class="school-highlight">
                       <li>
                         {{closingSchool.mincode}} - <a class="details" @click="openSchoolDetailsPage(closingSchool.schoolId)">{{closingSchool.displayName}}</a>
@@ -148,6 +148,15 @@
                 <v-alert v-if="showAlertForFutureClosureDate" color="#003366" dense text type="info">
                   <p>Some schools under this authority have closing dates in the future.</p>
                   <p>The closing date of the authority must be on or after <strong>{{dateOfLastSchoolClosureFormatted}}</strong>.</p>
+                  <p>The following schools have close dates in the future:</p>
+                  <div class="pb-2" v-for="closingSchool in listOfClosingSchoolsByMincode" :key="closingSchool.schoolId">
+                    <ul class="school-highlight">
+                      <li>
+                        {{closingSchool.mincode}} - <a class="details" @click="openSchoolDetailsPage(closingSchool.schoolId)">{{closingSchool.displayName}}</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <p>Refresh the page to see an updated list of schools.</p>
                 </v-alert>
                 <v-row class="d-flex justify-start">
                   <h3>Select the new closing date</h3>
@@ -313,7 +322,12 @@ export default {
       set(newValue) {
         this.updatedCloseDate = this.parseDate(newValue);
       }
-    }
+    },
+    listOfClosingSchoolsByMincode() {
+      return [...this.listOfClosingSchools].sort((schoolA, schoolB) => {
+        return schoolA.mincode.localeCompare(schoolB.mincode);
+      });
+    },
   },
   methods: {
     defaultUpdateActionForAuthority() {
