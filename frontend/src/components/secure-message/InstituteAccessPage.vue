@@ -69,26 +69,29 @@ export default {
   },
   data() {
     return {
-      instituteCode: '',
-      instituteArray: []
+      instituteCode: ''
     };
   },
-  async created() {
-    await this.$store.dispatch('app/refreshEntities').then(() => {
-      if(this.instituteTypeCode === 'SCHOOL') {
-        this.instituteArray = _.sortBy(this.activeSchools.map(school => ({ text: `${school.schoolName} (${school.mincode})`, value: school.schoolID, mincode: school.mincode})), ['mincode']);
-      }else{
-        this.instituteArray = _.sortBy(this.activeDistricts.map(district => ({ text: `${district.name} - ${district.districtNumber}`, value: district.districtId, key:district.districtNumber})), ['key']);
+  computed: {
+    ...mapState('app', ['activeSchools','activeDistricts']),
+    instituteArray() {
+      switch (this.instituteTypeCode) {
+      case 'SCHOOL':
+        return _.sortBy(this.activeSchools.map(school => ({ text: `${school.schoolName} (${school.mincode})`, value: school.schoolID, mincode: school.mincode})), ['mincode']);
+      case 'DISTRICT':
+        return _.sortBy(this.activeDistricts.map(district => ({ text: `${district.name} - ${district.districtNumber}`, value: district.districtId, key:district.districtNumber})), ['key']);
+      default:
+        return [];
       }
-    });
+    }
+  },
+  async created() {
+    await this.$store.dispatch('app/refreshEntities');
   },
   methods:{
     backButtonClick() {
       router.push({name: 'home'});
     },
-  },
-  computed: {
-    ...mapState('app', ['activeSchools','activeDistricts']),
   }
 };
 </script>
