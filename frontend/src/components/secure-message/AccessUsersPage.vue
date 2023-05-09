@@ -79,6 +79,7 @@
                                  id="new-user-button"
                                  secondary
                                  icon-left
+                                 :disabled="!primaryEdxActivationCode"
                                  text="Add New User"
                                  @click.native="newUserInviteSheet = !newUserInviteSheet"/>
                 </v-col>
