@@ -467,6 +467,14 @@ async function generateOrRegeneratePrimaryEdxActivationCode(req, res) {
   }
 }
 
+async function checkIfPrimaryCodeExists(req,res, token, instituteType, instituteIdentifier){
+  try {
+    await getData(token, `${config.get('server:edx:activationCodeUrl')}/primary/${instituteType}/${instituteIdentifier}`);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
 
 async function districtUserActivationInvite(req, res) {
   const token = utils.getBackendToken(req);
@@ -475,6 +483,13 @@ async function districtUserActivationInvite(req, res) {
       message: 'No access token'
     });
   }
+
+  if(!await checkIfPrimaryCodeExists(req,res,token,'DISTRICT', req.body.districtID)){
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No primary code exists for this district'
+    });
+  }
+
   const payload = {
     ...req.body
   };
@@ -494,6 +509,13 @@ async function schoolUserActivationInvite(req, res) {
       message: 'No access token'
     });
   }
+
+  if(!await checkIfPrimaryCodeExists(req,res,token,'SCHOOL', req.body.schoolID)){
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: 'No primary code exists for this school'
+    });
+  }
+
   const payload = {
     ...req.body
   };

@@ -92,6 +92,7 @@
                                      :large-icon=true
                                      id="new-user-button"
                                      secondary
+                                     :disabled="!primaryEdxActivationCode"
                                      icon-left
                                      text="Add New User"
                                      @click.native="newUserInviteSheet = !newUserInviteSheet"/>
