@@ -85,10 +85,10 @@
           <v-col xl="4" cols="6" class="pb-0">
             <v-row style="height: 100%;">
               <v-col style="min-height: 184px">
-                <v-card height="100%">
-                  <v-row style="height: 100%;" no-gutters>
-                    <v-col class="d-flex align-center justify-center">
-                      <PrimaryButton icon="mdi-plus"
+                <v-card class="h-100 add-new-user">
+                  <v-row class="add-new-user" align="center" justify="center">
+                    <v-col class="d-flex justify-center">
+                    <PrimaryButton icon="mdi-plus"
                                      :large-icon=true
                                      id="new-user-button"
                                      secondary
@@ -96,6 +96,20 @@
                                      icon-left
                                      text="Add New User"
                                      @click.native="newUserInviteSheet = !newUserInviteSheet"/>
+                    </v-col>
+                  </v-row>
+                  <v-row v-if="!primaryEdxActivationCode">
+                    <v-col class="mx-3">
+                      <v-alert
+                        dense
+                        style="background-color: #E9EBEF !important;"
+                        color="#003366"
+                        outlined
+                        type="info"
+                        class="pa-2"
+                      >
+                        <span style="color: #003366">Before adding users, a Primary Activation Code must be generated.</span>
+                      </v-alert>
                     </v-col>
                   </v-row>
                 </v-card>
@@ -362,6 +376,10 @@ export default {
   .v-dialog__content /deep/ .v-bottom-sheet {
     width: 60% !important;
   }
+}
+
+.add-new-user {
+  min-height: 184px;
 }
 
 .containerSetup{
