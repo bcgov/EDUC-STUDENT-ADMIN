@@ -113,8 +113,8 @@ const dateIsAfterOrEqualTo = (inputDate, baseDate, allowNullBaseDate = false, me
  * @param {String} message
  * @returns Function
  */
-const website = (message = 'Website must be valid') => {
-  return v => !v || /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&/=]*)$/.test(v) || message;
+const website = (message = 'Website must be valid and secure (i.e., https)') => {
+  return v => !v || /^https:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&/=]*)$/.test(v) || message;
 };
 
 export {
