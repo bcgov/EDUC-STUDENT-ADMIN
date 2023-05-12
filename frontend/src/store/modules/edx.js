@@ -24,6 +24,7 @@ export default {
         status: null,
         schoolCategory: null,
         facilityType: null,
+        schoolReportingRequirementCode: null,
         pageNumber: 1
       },
   },

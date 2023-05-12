@@ -893,6 +893,9 @@ function createSchoolSearchCriteria(searchParams){
     if(key === 'category'){
       searchCriteriaList.push({key: 'schoolCategoryCode', operation: FILTER_OPERATION.EQUAL, value: pValue, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND});
     }
+    if(key === 'schoolReportingRequirementCode'){
+      searchCriteriaList.push({key: 'schoolReportingRequirementCode', operation: FILTER_OPERATION.EQUAL, value: pValue, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND});
+    }
   });
 
   return searchCriteriaList;

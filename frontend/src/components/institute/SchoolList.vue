@@ -109,7 +109,19 @@
               </template>
             </v-autocomplete>
           </v-col>
-          <v-col class="mt-6 d-flex justify-end">
+          <v-col cols="12" md="4" class="d-flex justify-start">
+            <v-autocomplete
+                id="reporting-requirement-text-field"
+                label="Reporting Requirement"
+                item-value="schoolReportingRequirementCode"
+                item-text="label"
+                :items="schoolReportingRequirementTypeCodes"
+                v-model="schoolReportingRequirementCodeFilter"
+                @change="searchButtonClick"
+                clearable>
+            </v-autocomplete>
+          </v-col>
+          <v-col class="d-flex justify-end">
             <PrimaryButton id="user-search-button" text="Clear" secondary @click.native="clearButtonClick"/>
             <PrimaryButton class="ml-3" width="8em" id="user-clear-button" text="Search" @click.native="searchButtonClick"
                            :disabled="!searchEnabled()"/>
@@ -299,6 +311,7 @@ export default {
       schoolCodeNameFilter: '',
       districtCodeNameFilter: '',
       authorityCodeNameFilter: '',
+      schoolReportingRequirementCodeFilter: '',
       schoolStatusFilter: '',
       schoolFacilityTypes: [],
       allSchoolFacilityTypes: [],
@@ -314,10 +327,7 @@ export default {
     ...mapGetters('auth', ['userInfo', 'SCHOOL_ADMIN_ROLE', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
     ...mapState('app', ['schoolsMap']),
     ...mapState('edx', ['schoolSearchParams']),
-    ...mapState('institute', ['facilityTypeCodes']),
-    ...mapState('institute', ['activeFacilityTypeCodes']),
-    ...mapState('institute', ['activeSchoolCategoryTypeCodes']),
-    ...mapState('institute', ['schoolCategoryTypeCodes']),
+    ...mapState('institute', ['facilityTypeCodes', 'activeFacilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes']),
     getSheetWidth(){
       switch (this.$vuetify.breakpoint.name) {
       case 'xs':
@@ -342,6 +352,7 @@ export default {
     this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes').then(() => {
       this.activeSchoolCategoryTypes = sortBy(this.activeSchoolCategoryTypeCodes,['displayOrder']);
     });
+    this.$store.dispatch('institute/getSchoolReportingRequirementTypeCodes');
 
     this.setSchoolStatuses();
     this.getSchoolDropDownItems();
@@ -363,6 +374,7 @@ export default {
       this.schoolStatusFilter = this.schoolSearchParams.status;
       this.schoolFacilityTypeFilter = this.schoolSearchParams.facilityType;
       this.schoolCategoryTypeFilter = this.schoolSearchParams.schoolCategory;
+      this.schoolReportingRequirementCodeFilter = this.schoolSearchParams.schoolReportingRequirementCode;
       this.pageNumber = this.schoolSearchParams.pageNumber;
     },
     canAddSchool() {
@@ -465,6 +477,7 @@ export default {
       this.schoolSearchParams.status = null;
       this.schoolSearchParams.facilityType = null;
       this.schoolSearchParams.schoolCategory = null;
+      this.schoolSearchParams.schoolReportingRequirementCode = null;
       this.schoolSearchParams.pageNumber = 1;
       this.setSchoolSearchParams(this.schoolSearchParams);
     },
@@ -474,7 +487,8 @@ export default {
         || this.schoolSearchParams.authorityID
         || this.schoolSearchParams.status
         || this.schoolSearchParams.facilityType
-        || this.schoolSearchParams.schoolCategory;
+        || this.schoolSearchParams.schoolCategory
+        || this.schoolSearchParams.schoolReportingRequirementCode;
     },
     getSchoolList() {
       this.loadingTable = true;
@@ -502,6 +516,7 @@ export default {
       this.headerSearchParams.status = this.schoolStatusFilter;
       this.headerSearchParams.category = this.schoolCategoryTypeFilter;
       this.headerSearchParams.type = this.schoolFacilityTypeFilter;
+      this.headerSearchParams.schoolReportingRequirementCode = this.schoolReportingRequirementCodeFilter;
 
       ApiService.apiAxios.get(Routes.institute.SCHOOL_PAGINATED_DATA_URL, {
         params: {
@@ -536,6 +551,7 @@ export default {
       this.schoolSearchParams.status = this.schoolStatusFilter;
       this.schoolSearchParams.facilityType = this.schoolFacilityTypeFilter;
       this.schoolSearchParams.schoolCategory = this.schoolCategoryTypeFilter;
+      this.schoolSearchParams.schoolReportingRequirementCode = this.schoolReportingRequirementCodeFilter;
       this.schoolSearchParams.pageNumber = this.pageNumber;
       this.setSchoolSearchParams(this.schoolSearchParams);
     },
@@ -606,6 +622,7 @@ export default {
       this.schoolStatusFilter = '';
       this.schoolFacilityTypeFilter = '';
       this.schoolCategoryTypeFilter = '';
+      this.schoolReportingRequirementCodeFilter = '';
 
       this.headerSearchParams.schoolNumber = '';
       this.headerSearchParams.status = '';
