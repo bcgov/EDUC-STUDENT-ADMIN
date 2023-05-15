@@ -73,11 +73,11 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['activeSchools','activeDistricts']),
+    ...mapState('app', ['notClosedSchools','activeDistricts']),
     instituteArray() {
       switch (this.instituteTypeCode) {
       case 'SCHOOL':
-        return _.sortBy(this.activeSchools.map(school => ({ text: `${school.schoolName} (${school.mincode})`, value: school.schoolID, mincode: school.mincode})), ['mincode']);
+        return _.sortBy(this.notClosedSchools.map(school => ({ text: `${school.schoolName} (${school.mincode})`, value: school.schoolID, mincode: school.mincode})), ['mincode']);
       case 'DISTRICT':
         return _.sortBy(this.activeDistricts.map(district => ({ text: `${district.name} - ${district.districtNumber}`, value: district.districtId, key:district.districtNumber})), ['key']);
       default:
