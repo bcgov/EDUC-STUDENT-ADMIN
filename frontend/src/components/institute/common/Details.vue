@@ -675,7 +675,6 @@ export default {
       rules: Rules,
       openSchoolStatusEditCard: false,
       isSchoolStatusUpdateAllowed: true,
-      moveSchoolSheet: false,
       tab: null,
       items: [
         'Details', 'Contacts', 'Ministry Notes', 'History', 'Moves', 'Funding'
@@ -951,9 +950,6 @@ export default {
     openHistory() {
       router.push({name: 'schoolHistory', params: {schoolID: this.schoolID}});
     },
-    openSchoolMove() {
-      router.push({name: 'schoolMove'});
-    },
     async toggleEdit(){
       this.schoolDetailsCopy = this.deepCloneObject(this.school);
       this.addAddressesIfRequired(this.schoolDetailsCopy);
@@ -1044,9 +1040,7 @@ export default {
       }
       return this.SCHOOL_ADMIN_ROLE;
     },
-    isMoveSchoolAllowed() {
-      return this.school.status !== 'Closed' && this.school.status !== 'Never Opened' && this.district.districtNumber !== '102' && this.district.districtNumber !== '103' && this.SCHOOL_ADMIN_ROLE; 
-    },
+
     async clickSameAsAddressButton(){
       await this.$nextTick();
       this.$refs.schoolDetailsForm.validate();
@@ -1076,9 +1070,6 @@ export default {
     resetSchoolDetailsCopyFacilityType(){
       this.schoolDetailsCopy.facilityType = null;
       this.schoolDetailsCopy.facilityTypeCode = null;
-    },
-    moveSchool() {
-      this.moveSchoolSheet = !this.moveSchoolSheet;
     },
   },
 };
