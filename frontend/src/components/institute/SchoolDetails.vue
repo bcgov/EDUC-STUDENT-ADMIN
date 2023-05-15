@@ -48,7 +48,7 @@
         </v-row>
         <v-row>
             <v-tabs active-class="active-display" v-model="tab">
-              <v-tab v-for="item in items" :key="item"> <!--:disabled="shouldDisableTab(item)"-->
+              <v-tab v-for="item in items" :key="item">
               {{ item }}
               </v-tab>
             </v-tabs>
@@ -88,11 +88,11 @@ import {getStatusAuthorityOrSchool, getStatusColorAuthorityOrSchool,} from '@/ut
 import router from '@/router';
 import { sanitizeUrl } from '@braintree/sanitize-url';
 import {deepCloneObject} from '@/utils/common';
-import Details from '../common/institute/Details.vue';
-import MinistryNotes from '../common/institute/MinistryNotes.vue';
-import SchoolHistory from '../common/institute/SchoolHistory.vue';
-import SchoolContacts from '../common/institute/SchoolContacts.vue';
-import SchoolMove from '../common/institute/SchoolMove.vue';
+import Details from './common/Details.vue';
+import MinistryNotes from './common/MinistryNotes.vue';
+import SchoolHistory from './common/SchoolHistory.vue';
+import SchoolContacts from './common/SchoolContacts.vue';
+import SchoolMove from './common/SchoolMove.vue';
 
 export default {
   name: 'SchoolDetailsPage',

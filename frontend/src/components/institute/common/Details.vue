@@ -931,7 +931,7 @@ export default {
           nLCActivityList.push(nl.label);
         }
       }
-      nLCActivityList.sort();
+      nLCActivityList.sort((a,b) => a.localeCompare(b));
       return nLCActivityList.toString().replace(/,/g, ', ');
     },
     getFacilityType(school) {

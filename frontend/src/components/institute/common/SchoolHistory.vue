@@ -318,7 +318,7 @@ export default {
           nLCActivityList.push(schoolNeighborhoodLearningType?.label);
         }
       }
-      nLCActivityList.sort();
+      nLCActivityList.sort((a,b) => a.localeCompare(b));
       return nLCActivityList.toString().replace(/,/g, ', ');
     },
     mapSchoolOrganization(schoolOrganizationCode) {
@@ -334,7 +334,7 @@ export default {
       }
       let onlyNumbers = gradeList.filter(Number);
       let onlyLetters = gradeList.filter(x => !onlyNumbers.includes(x));
-      onlyLetters.sort();
+      onlyLetters.sort((a,b) => a.localeCompare(b));
 
       onlyNumbers = onlyNumbers.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
       gradeList = onlyNumbers.concat(onlyLetters);
