@@ -79,8 +79,6 @@ export default {
         state.schoolMap.set(element.schoolID, {...element});
         if(isSchoolActive(element)){
           state.notClosedSchools.push(element);
-        }else{
-          console.log('False: ' + JSON.stringify(element));
         }
         state.districtCodes.add(element.mincode?.substring(0, 3));
       });
