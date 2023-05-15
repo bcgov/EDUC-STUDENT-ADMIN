@@ -675,10 +675,6 @@ export default {
       rules: Rules,
       openSchoolStatusEditCard: false,
       isSchoolStatusUpdateAllowed: true,
-      tab: null,
-      items: [
-        'Details', 'Contacts', 'Ministry Notes', 'History', 'Moves', 'Funding'
-      ],
     };
   },
   computed: {
