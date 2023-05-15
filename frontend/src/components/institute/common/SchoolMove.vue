@@ -1,24 +1,14 @@
 <template>
   <div id="schoolMove" class="px-0 pt-3 ma-0" style="width: 100%;">
-    <v-row class="d-flex justify-start">
-      <v-col cols="6" class="d-flex justify-start">
-        <h2 class="subjectHeading">{{ getPageHeading() }}</h2>
-      </v-col>
-    </v-row>
     <v-row>
-      <v-col id="schoolMoveReturnToSchoolDetails" class="mt-1 d-flex justify-start">
-        <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
-        <a class="ml-1" @click="back">Return to School Details</a>
+      <v-col class="d-flex justify-end">
+      <PrimaryButton v-if="isMoveSchoolAllowed()" id="moveSchoolButton" class="mr-2" secondary icon-left
+                               icon="mdi-arrow-left-right" @click.native="moveSchool"
+                               text="Move School"></PrimaryButton>
       </v-col>
     </v-row>
 
-    <v-row>
-      <v-col>
-        <v-divider class="divider"></v-divider>
-      </v-col>
-    </v-row>
-
-    <v-data-table
+        <v-data-table
         :headers="headers"
         :items="schoolMoveDataFormatted"
         :loading="loading"
@@ -27,23 +17,47 @@
         hide-default-footer
     >
     </v-data-table>
-
+    <v-bottom-sheet
+          v-model="moveSchoolSheet"
+          inset
+          no-click-animation
+          scrollable
+          persistent
+          width="50% !important"
+      >
+        <MoveSchoolPage
+            v-if="moveSchoolSheet"
+            :school="school"
+            @moveSchool:closeMoveSchoolPage="moveSchoolSheet = !moveSchoolSheet"
+        />
+     </v-bottom-sheet>
   </div>
 </template>
   
 <script>
 import { Routes } from '@/utils/constants';
-import ApiService from '../../common/apiService';
+import ApiService from '../../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import router from '@/router';
 import {formatDob} from '@/utils/format';
-import {mapState} from 'vuex';
+import {mapState, mapMutations} from 'vuex';
+import MoveSchoolPage from '../../institute/MoveSchoolPage.vue';
+import PrimaryButton from '../../util/PrimaryButton';
+
 export default {
   name: 'SchoolMove',
   mixins: [alertMixin],
+  components: {
+    MoveSchoolPage,
+    PrimaryButton
+  },
   props: {
     schoolID: {
       type: String,
+      required: true
+    },
+    hasAccess: {
+      type: Boolean,
       required: true
     }
   },
@@ -51,6 +65,9 @@ export default {
     return {
       schoolMoveDataFormatted: [],
       loading: true,
+      moveSchoolSheet: false,
+      school: '',
+      district: '',
       headers: [
         {text: 'Date', sortable: false, value: 'moveDate'},
         {text: 'Moved By', sortable: false, value: 'createUser'},
@@ -69,7 +86,25 @@ export default {
   created() {
     this.$store.dispatch('app/getCodes').then(() => this.getSchoolDetails());
   },
+  watch: {
+    notification(notificationData) {
+      if (notificationData) {
+        if (notificationData.eventType === 'COPY_USERS_TO_NEW_SCHOOL' && notificationData.eventOutcome === 'USERS_TO_NEW_SCHOOL_COPIED' && notificationData.eventPayload) {
+          try {
+            const moveData = JSON.parse(notificationData.eventPayload);
+            if (moveData.toSchool.schoolId) {
+              const warningMessage = `School moved successfully. <a style="font-weight: bold" href="/institute/school/${moveData.toSchool.schoolId}/details">Click here to go to new school</a>.`;
+              this.setSuccessAlert(warningMessage);
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      }
+    },
+  },
   methods: {
+    ...mapMutations('institute', ['schoolMovedNotification']),
     getPageHeading() {
       let school = this.schoolMap?.get(this.schoolID);
       if(school) {
@@ -77,9 +112,12 @@ export default {
       }
     },
     getSchoolDetails() {
+      this.school = '';
       ApiService.apiAxios.get(`${Routes.institute.SCHOOL_DATA_URL}/${this.schoolID}`)
         .then(response => {
+          this.school = response.data;
           this.schoolMoveDataFormatted = this.formatSchoolMoveData(response.data.schoolMove);
+          this.getDistrictDetails(this.school.districtId);
         }).catch(error => {
           console.error(error);
           this.setFailureAlert(error.response?.data?.message || error.message);
@@ -125,6 +163,24 @@ export default {
     },
     formatDate(datetime) {
       return formatDob(datetime.substring(0, 10), 'uuuu-MM-dd');
+    },
+    isMoveSchoolAllowed() {
+      return this.school.status !== 'Closed' && this.school.status !== 'Never Opened' && this.district.districtNumber !== '102' && this.district.districtNumber !== '103' && this.hasAccess; 
+    },
+    moveSchool() {
+      this.moveSchoolSheet = !this.moveSchoolSheet;
+    },
+    getDistrictDetails(districtId){
+      this.district = '';
+      ApiService.apiAxios.get(`${Routes.cache.DISTRICT_DATA_URL}/${districtId}`)
+        .then(response => {
+          this.district = response.data;
+        }).catch(error => {
+          console.error(error);
+          this.setFailureAlert(error.response?.data?.message || error.message);
+        }).finally(() => {
+          this.loading = false;
+        });
     },
   },
 };

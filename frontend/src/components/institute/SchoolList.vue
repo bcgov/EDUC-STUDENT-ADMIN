@@ -166,7 +166,7 @@
                   </v-col>
                   <v-col>
                     <v-row>
-                      <v-col cols="4">
+                      <v-col>
                         <v-row no-gutters>
                           <v-col>
                             <v-icon class="mb-1" :color="getStatusColorAuthorityOrSchool(item.status)" dark>
@@ -184,30 +184,13 @@
                           </v-col>
                         </v-row>
                       </v-col>
-                      <v-col cols="7">
+                      <v-col>
                         <v-row no-gutters>
                           <v-col>
                             <v-icon class="mb-1">
                               mdi-account-outline
                             </v-icon>
                             <span class="statusCodeLabel" style="color: black">{{item.principalsName}}</span>
-                          </v-col>
-                          <v-col class="d-flex justify-end">
-                            <v-tooltip bottom>
-                              <template v-slot:activator="{ on, attrs }">
-                                <v-btn id="schoolContacts"
-                                       color="#003366"
-                                       outlined
-                                       @click.native.stop="openSchoolContacts(item.schoolId)"
-                                       class="mt-0 pt-0 filterButton ml-2"
-                                       style="text-transform: initial"
-                                       v-on="on"
-                                >
-                                  <v-icon color="#003366" style="margin-top: 0.07em" dark>mdi-account-multiple-outline</v-icon>
-                                </v-btn>
-                              </template>
-                              <span>View Contacts</span>
-                            </v-tooltip>
                           </v-col>
                         </v-row>
                         <v-row class="mt-1" no-gutters>
@@ -592,9 +575,6 @@ export default {
     },
     openSchool(schoolId){
       this.$router.push({name: 'schoolDetails', params: {schoolID: schoolId}});
-    },
-    openSchoolContacts(schoolId){
-      this.$router.push({name: 'schoolContacts', params: {schoolID: schoolId}});
     },
     resetPageNumber(){
       this.pageNumber = 1;

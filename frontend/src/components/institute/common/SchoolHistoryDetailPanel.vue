@@ -19,9 +19,9 @@
   
 <script>
   
-import PrimaryButton from '../util/PrimaryButton';
+import PrimaryButton from '../../util/PrimaryButton';
 import alertMixin from '@/mixins/alertMixin';
-import HistoryDetailHeader from '../common/HistoryDetailHeader.vue';
+import HistoryDetailHeader from './HistoryDetailHeader.vue';
 import SchoolHistoryDetail from './SchoolHistoryDetail.vue';
 export default {
   name: 'SchoolHistoryDetailPanel',

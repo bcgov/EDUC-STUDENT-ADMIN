@@ -1,23 +1,4 @@
 <template>
-  <div id="auditHistory" class="px-0 pt-3 ma-0" style="width: 100%;">
-    <v-row class="d-flex justify-start">
-      <v-col cols="6" class="d-flex justify-start">
-        <h2 class="subjectHeading">{{ getPageHeading() }}</h2>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col class="mt-1 d-flex justify-start">
-        <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
-        <a class="ml-1" @click="back">Return to School Details</a>
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col>
-        <v-divider class="divider"></v-divider>
-      </v-col>
-    </v-row>
-
     <v-row>
       <v-col :cols="showRecordDetail ? 6 : 12">
         <v-data-table id="schoolHistoryTable"
@@ -63,12 +44,11 @@
         </SchoolHistoryDetailPanel>
       </v-col>
     </v-row>
-  </div>
 </template>
   
 <script>
 import { Routes } from '@/utils/constants';
-import ApiService from '../../common/apiService';
+import ApiService from '../../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import router from '@/router';
 import {formatDob} from '@/utils/format';
@@ -338,7 +318,7 @@ export default {
           nLCActivityList.push(schoolNeighborhoodLearningType?.label);
         }
       }
-      nLCActivityList.sort();
+      nLCActivityList.sort((a,b) => a.localeCompare(b));
       return nLCActivityList.toString().replace(/,/g, ', ');
     },
     mapSchoolOrganization(schoolOrganizationCode) {
@@ -354,7 +334,7 @@ export default {
       }
       let onlyNumbers = gradeList.filter(Number);
       let onlyLetters = gradeList.filter(x => !onlyNumbers.includes(x));
-      onlyLetters.sort();
+      onlyLetters.sort((a,b) => a.localeCompare(b));
 
       onlyNumbers = onlyNumbers.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
       gradeList = onlyNumbers.concat(onlyLetters);

@@ -49,9 +49,6 @@ import SchoolDetails from '@/components/institute/SchoolDetails';
 import AuthoritiesListPage from '@/components/institute/AuthoritiesList';
 import AuthorityDetailsPage from '@/components/institute/AuthorityDetails';
 import AuthorityContactsPage from '@/components/institute/AuthoritiesContacts';
-import SchoolContactsPage from '@/components/institute/SchoolContacts';
-import SchoolHistory from '@/components/institute/SchoolHistory';
-import SchoolMove from '@/components/institute/SchoolMove';
 
 Vue.prototype.moment = moment;
 
@@ -480,26 +477,6 @@ const router = new VueRouter({
           },
         },
         {
-          path: 'school/:schoolID/history',
-          name: 'schoolHistory',
-          props: true,
-          component: SchoolHistory,
-          meta: {
-            pageTitle: PAGE_TITLES.SCHOOL_HISTORY,
-            requiresAuth: true,
-          },
-        },
-        {
-          path: 'school/:schoolID/schoolMove',
-          name: 'schoolMove',
-          props: true,
-          component: SchoolMove,
-          meta: {
-            pageTitle: PAGE_TITLES.SCHOOL_MOVE,
-            requiresAuth: true,
-          },
-        },
-        {
           path: 'authority',
           name: 'instituteAuthoritiesList',
           component: AuthoritiesListPage,
@@ -517,16 +494,6 @@ const router = new VueRouter({
       component: AuthorityDetailsPage,
       meta: {
         pageTitle: PAGE_TITLES.AUTHORITY_DETAILS,
-        requiresAuth: true
-      }
-    },
-    {
-      path: '/schoolContacts/:schoolID',
-      name: 'schoolContacts',
-      component: SchoolContactsPage,
-      props: true,
-      meta: {
-        pageTitle: PAGE_TITLES.SCHOOL_CONTACTS,
         requiresAuth: true
       }
     },

@@ -190,7 +190,7 @@
 <script>
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber, formatDate} from '@/utils/format';
-import FormattedAddress from '../common/FormattedAddress.vue';
+import FormattedAddress from '../../common/FormattedAddress.vue';
 import {isEmpty} from 'lodash';
 export default {
   name: 'SchoolHistoryDetail',

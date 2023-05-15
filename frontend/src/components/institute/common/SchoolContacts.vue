@@ -1,5 +1,5 @@
 <template>
-  <v-container class="containerSetup" fluid>
+  <v-container fluid>
     <v-row v-if="loading">
       <v-col class="d-flex justify-center">
         <v-progress-circular
@@ -13,21 +13,6 @@
       </v-col>
     </v-row>
     <template v-if="!loading">
-      <v-row>
-        <v-col class="mt-1 d-flex justify-start">
-          <v-icon class="mt-1" small color="#1976d2">mdi-arrow-left</v-icon>
-          <a class="ml-1 mt-1" @click="backButtonClick">Return to School List</a>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12" class="d-flex justify-start">
-          <v-row no-gutters>
-            <v-col cols="12">
-              <h2 class="subjectHeading">{{school.mincode}} - {{school.displayName}}</h2>
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
       <v-row cols="2">
         <v-col class="d-flex justify-start">
           <v-chip class="mr-3" color="#A9D18E">Active</v-chip>
@@ -35,7 +20,6 @@
           <v-chip color="#F4B183">Pending End Date</v-chip>
         </v-col>
         <v-col class="d-flex justify-end">
-          <PrimaryButton id="viewSchoolDetailsButton" class="mr-2" secondary icon-left icon="mdi-domain" :to="`/institute/school/${schoolID}/details`" text="View School Details"></PrimaryButton>
           <PrimaryButton v-if="canAddEditSchoolContact" id="addSchoolContactBtn" icon-left width="11em" icon="mdi-plus-thick" text="New Contact" @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
         </v-col>
       </v-row>
@@ -94,9 +78,9 @@
 
 <script>
 
-import ApiService from '../../common/apiService';
+import ApiService from '../../../common/apiService';
 import {Routes} from '@/utils/constants';
-import PrimaryButton from '../util/PrimaryButton';
+import PrimaryButton from '../../util/PrimaryButton';
 import SchoolContact from './SchoolContact';
 import NewSchoolContactPage from './NewSchoolContactPage';
 import EditSchoolContactPage from './EditSchoolContactPage';
@@ -106,7 +90,7 @@ import {isExpired} from '@/utils/institute/status';
 import { sortBy } from 'lodash';
 
 export default {
-  name: 'SchoolContactsPage',
+  name: 'SchoolContacts',
   mixins: [alertMixin],
   components: {
     PrimaryButton, SchoolContact, NewSchoolContactPage, EditSchoolContactPage
