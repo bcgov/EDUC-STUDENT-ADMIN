@@ -1,39 +1,63 @@
 <template>
   <div id="schoolMove" class="px-0 pt-3 ma-0" style="width: 100%;">
-    <v-row>
-      <v-col class="d-flex justify-end">
-      <PrimaryButton v-if="isMoveSchoolAllowed()" id="moveSchoolButton" class="mr-2" secondary icon-left
-                               icon="mdi-arrow-left-right" @click.native="moveSchool"
-                               text="Move School"></PrimaryButton>
+    <v-row v-if="loading">
+      <v-col class="d-flex justify-center">
+        <v-progress-circular
+          class="mt-16"
+          :size="70"
+          :width="7"
+          color="primary"
+          indeterminate
+          :active="loading"
+        ></v-progress-circular>
+      </v-col>
+    </v-row>
+    <v-row v-else no-gutters>
+      <v-col>
+        <v-row>
+          <v-col class="d-flex justify-end">
+            <PrimaryButton
+              v-if="isMoveSchoolAllowed()"
+              id="moveSchoolButton"
+              class="mr-2"
+              secondary
+              icon-left
+              icon="mdi-arrow-left-right"
+              @click.native="moveSchool"
+              text="Move School">
+            </PrimaryButton>
+          </v-col>
+        </v-row>
+
+        <v-data-table
+          :headers="headers"
+          :items="schoolMoveDataFormatted"
+          :loading="loading"
+          class="elevation-1"
+          item-key="schoolMoveId"
+          hide-default-footer
+        >
+        </v-data-table>
       </v-col>
     </v-row>
 
-        <v-data-table
-        :headers="headers"
-        :items="schoolMoveDataFormatted"
-        :loading="loading"
-        class="elevation-1"
-        item-key="schoolMoveId"
-        hide-default-footer
-    >
-    </v-data-table>
     <v-bottom-sheet
-          v-model="moveSchoolSheet"
-          inset
-          no-click-animation
-          scrollable
-          persistent
-          width="50% !important"
-      >
-        <MoveSchoolPage
-            v-if="moveSchoolSheet"
-            :school="school"
-            @moveSchool:closeMoveSchoolPage="moveSchoolSheet = !moveSchoolSheet"
-        />
-     </v-bottom-sheet>
+      v-model="moveSchoolSheet"
+      inset
+      no-click-animation
+      scrollable
+      persistent
+      width="50% !important"
+    >
+      <MoveSchoolPage
+        v-if="moveSchoolSheet"
+        :school="school"
+        @moveSchool:closeMoveSchoolPage="moveSchoolSheet = !moveSchoolSheet"
+      />
+    </v-bottom-sheet>
   </div>
 </template>
-  
+
 <script>
 import { Routes } from '@/utils/constants';
 import ApiService from '../../../common/apiService';
@@ -43,6 +67,7 @@ import {formatDob} from '@/utils/format';
 import {mapState, mapMutations} from 'vuex';
 import MoveSchoolPage from '../../institute/MoveSchoolPage.vue';
 import PrimaryButton from '../../util/PrimaryButton';
+import {getStatusAuthorityOrSchool} from '@/utils/institute/status';
 
 export default {
   name: 'SchoolMove',
@@ -118,6 +143,7 @@ export default {
           this.school = response.data;
           this.schoolMoveDataFormatted = this.formatSchoolMoveData(response.data.schoolMove);
           this.getDistrictDetails(this.school.districtId);
+          this.school.status = getStatusAuthorityOrSchool(this.school);
         }).catch(error => {
           console.error(error);
           this.setFailureAlert(error.response?.data?.message || error.message);
@@ -185,7 +211,7 @@ export default {
   },
 };
 </script>
-  
+
 <style scoped>
 
 .divider {
@@ -193,4 +219,4 @@ export default {
   border-width: unset;
 }
 </style>
-  
+

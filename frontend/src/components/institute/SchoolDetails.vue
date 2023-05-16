@@ -48,7 +48,7 @@
         </v-row>
         <v-row>
             <v-tabs active-class="active-display" v-model="tab">
-              <v-tab v-for="item in items" :key="item">
+              <v-tab class="tab-divider" v-for="item in items" :key="item">
               {{ item }}
               </v-tab>
             </v-tabs>
@@ -220,9 +220,6 @@ export default {
       }
       return this.SCHOOL_ADMIN_ROLE;
     },
-
-
-
   },
 };
 </script>
@@ -269,5 +266,14 @@ export default {
     font-size: 16px;
     font-weight: bold;
   }
+
+  .tab-divider {
+    border-right: 1px solid lightgray;
+    border-radius: 0px;
+  }
+
+  .tab-divider:last-child  { 
+    border-right: 0
+   }
 
 </style>
