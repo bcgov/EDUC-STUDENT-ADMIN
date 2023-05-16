@@ -153,6 +153,7 @@
                             item-text="label"
                             v-model="schoolDetailsCopy.grades"
                             @input="sortGrades"
+                            :disabled="isGradeOfferedUpdateAllowed"
                             return-object
                             multiple
                             required
@@ -717,6 +718,9 @@ export default {
       } else {
         return this.activeSchoolCategoryTypes.filter(category => category.schoolCategoryCode === this.school.schoolCategoryCode);
       }
+    },
+    isGradeOfferedUpdateAllowed() {
+      return this.school.schoolCategoryCode === 'POST_SEC' || this.school.schoolCategoryCode === 'EAR_LEARN';
     },
     schoolReportingRequirementType() {
       const code = this.school.schoolReportingRequirementCode;
