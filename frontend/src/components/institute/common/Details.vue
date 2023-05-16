@@ -245,7 +245,7 @@
                     <span v-if="school.phoneNumber" class="ministryLine">{{ formatPhoneNumber(school.phoneNumber) }}</span>
                     <a v-if="showEditLinks(school.phoneNumber)" class="editField" @click="toggleEdit">+Phone</a>
                   </div>
-                  <v-text-field id="schoolDetailsPhoneNumber" v-else class="ministryLine" @keypress="isNumber($event)" required :maxlength="10" :rules="[rules.required(), rules.phoneNumber()]" v-model="schoolDetailsCopy.phoneNumber"/>
+                  <v-text-field id="schoolDetailsPhoneNumber" v-else class="ministryLine" @keypress="isNumber($event)" required :maxlength="10" :rules="[rules.phoneNumber()]" v-model="schoolDetailsCopy.phoneNumber"/>
                 </v-col>
               </v-row>
                 </v-col>
@@ -262,7 +262,7 @@
                     <span v-if="school.email" class="ministryLine">{{ school.email }}</span>
                     <a v-if="showEditLinks(school.email)" class="editField" @click="toggleEdit">+Email</a>
                   </div>
-                  <v-text-field id="schoolDetailsEmail" v-else class="ministryLine" required :rules="[rules.required(), rules.email()]" :maxlength="255" v-model="schoolDetailsCopy.email"/>
+                  <v-text-field id="schoolDetailsEmail" v-else class="ministryLine" required :rules="[rules.email()]" :maxlength="255" v-model="schoolDetailsCopy.email"/>
                 </v-col>
               </v-row>
                 </v-col>
@@ -358,7 +358,7 @@
                   </v-row>
                   <v-row class="ml-9" no-gutters>
                     <v-col cols="8">
-                      <v-text-field id="mailAddressLine1" required :rules="[rules.required()]" :maxlength="255" class="shrink mt-n5 mb-3" v-model="getMailingAddressCopy()[0].addressLine1">
+                      <v-text-field id="mailAddressLine1" required :maxlength="255" class="shrink mt-n5 mb-3" v-model="getMailingAddressCopy()[0].addressLine1">
                       </v-text-field>
                     </v-col>
                   </v-row>
@@ -380,7 +380,7 @@
                   </v-row>
                   <v-row class="ml-9" no-gutters>
                     <v-col cols="8">
-                      <v-text-field id="mailAddressCity" required :rules="[rules.required()]" class="shrink mt-n5 mb-3" :maxlength="255" v-model="getMailingAddressCopy()[0].city">
+                      <v-text-field id="mailAddressCity" required class="shrink mt-n5 mb-3" :maxlength="255" v-model="getMailingAddressCopy()[0].city">
                       </v-text-field>
                     </v-col>
                   </v-row>
@@ -399,7 +399,6 @@
                           v-model="getMailingAddressCopy()[0].provinceCode"
                           dense
                           outlined
-                          :rules="[rules.required()]"
                           required
                           class="mt-2"
                           style="color: black">
@@ -418,7 +417,6 @@
                           :items="this.countryCodeValues"
                           item-text="label"
                           item-value="countryCode"
-                          :rules="[rules.required()]"
                           v-model="getMailingAddressCopy()[0].countryCode"
                           dense
                           outlined
@@ -434,7 +432,7 @@
                   </v-row>
                   <v-row class="ml-9" no-gutters>
                     <v-col cols="8">
-                      <v-text-field :maxlength="6" required :rules="[rules.required(), rules.postalCode()]"  id="mailAddressPostal" class="shrink mt-n5 mb-3" v-model="getMailingAddressCopy()[0].postal">
+                      <v-text-field :maxlength="6" required :rules="[rules.postalCode()]" id="mailAddressPostal" class="shrink mt-n5 mb-3" v-model="getMailingAddressCopy()[0].postal">
                       </v-text-field>
                     </v-col>
                   </v-row>
@@ -494,7 +492,7 @@
                                   </v-row>
                                   <v-row no-gutters>
                                     <v-col cols="8">
-                                      <v-text-field id="physicalAddressLine1" required :rules="[rules.required()]" :maxlength="255" class="shrink mt-n5 mb-3" v-model="getPhysicalAddressCopy()[0].addressLine1">
+                                      <v-text-field id="physicalAddressLine1" required :maxlength="255" class="shrink mt-n5 mb-3" v-model="getPhysicalAddressCopy()[0].addressLine1">
                                       </v-text-field>
                                     </v-col>
                                   </v-row>
@@ -516,7 +514,7 @@
                                   </v-row>
                                   <v-row no-gutters>
                                     <v-col cols="8">
-                                      <v-text-field id="physicalAddressCity" required :rules="[rules.required()]" :maxlength="255" class="shrink mt-n5 mb-3" v-model="getPhysicalAddressCopy()[0].city">
+                                      <v-text-field id="physicalAddressCity" required :maxlength="255" class="shrink mt-n5 mb-3" v-model="getPhysicalAddressCopy()[0].city">
                                       </v-text-field>
                                     </v-col>
                                   </v-row>
@@ -535,7 +533,6 @@
                                           v-model="getPhysicalAddressCopy()[0].provinceCode"
                                           dense
                                           required
-                                          :rules="[rules.required()]"
                                           outlined
                                           class="mt-2"
                                           style="color: black">
@@ -556,7 +553,6 @@
                                           item-value="countryCode"
                                           v-model="getPhysicalAddressCopy()[0].countryCode"
                                           dense
-                                          :rules="[rules.required()]"
                                           required
                                           outlined
                                           class="mt-2 mb-2"
@@ -571,7 +567,7 @@
                                   </v-row>
                                   <v-row no-gutters>
                                     <v-col cols="8">
-                                      <v-text-field id="physicalAddressPostal" required :rules="[rules.required(), rules.postalCode()]" :maxlength="6" class="shrink mt-n5 mb-3" v-model="getPhysicalAddressCopy()[0].postal">
+                                      <v-text-field id="physicalAddressPostal" required :rules="[rules.postalCode()]" :maxlength="6" class="shrink mt-n5 mb-3" v-model="getPhysicalAddressCopy()[0].postal">
                                       </v-text-field>
                                     </v-col>
                                   </v-row>
