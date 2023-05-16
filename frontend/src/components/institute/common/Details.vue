@@ -41,7 +41,7 @@
                   </v-row>
                     </v-col>
             </v-row>
-              
+
               <v-row class="d-flex justify-start">
                 <v-col cols="4" lg="3" class="pb-0 pt-0">
                         <v-row no-gutters class="d-flex justify-start">
@@ -245,7 +245,7 @@
                     <span v-if="school.phoneNumber" class="ministryLine">{{ formatPhoneNumber(school.phoneNumber) }}</span>
                     <a v-if="showEditLinks(school.phoneNumber)" class="editField" @click="toggleEdit">+Phone</a>
                   </div>
-                  <v-text-field id="schoolDetailsPhoneNumber" v-else class="ministryLine" @keypress="isNumber($event)" required :maxlength="10" :rules="[rules.required(), rules.phoneNumber()]" v-model="schoolDetailsCopy.phoneNumber"/>
+                  <v-text-field id="schoolDetailsPhoneNumber" v-else class="ministryLine" @keypress="isNumber($event)" required :maxlength="10" :rules="[rules.phoneNumber()]" v-model="schoolDetailsCopy.phoneNumber"/>
                 </v-col>
               </v-row>
                 </v-col>
@@ -262,7 +262,7 @@
                     <span v-if="school.email" class="ministryLine">{{ school.email }}</span>
                     <a v-if="showEditLinks(school.email)" class="editField" @click="toggleEdit">+Email</a>
                   </div>
-                  <v-text-field id="schoolDetailsEmail" v-else class="ministryLine" required :rules="[rules.required(), rules.email()]" :maxlength="255" v-model="schoolDetailsCopy.email"/>
+                  <v-text-field id="schoolDetailsEmail" v-else class="ministryLine" required :rules="[rules.email()]" :maxlength="255" v-model="schoolDetailsCopy.email"/>
                 </v-col>
               </v-row>
                 </v-col>
@@ -358,7 +358,7 @@
                   </v-row>
                   <v-row class="ml-9" no-gutters>
                     <v-col cols="8">
-                      <v-text-field id="mailAddressLine1" required :rules="[rules.required()]" :maxlength="255" class="shrink mt-n5 mb-3" v-model="getMailingAddressCopy()[0].addressLine1">
+                      <v-text-field id="mailAddressLine1" required :maxlength="255" class="shrink mt-n5 mb-3" v-model="getMailingAddressCopy()[0].addressLine1">
                       </v-text-field>
                     </v-col>
                   </v-row>
@@ -380,7 +380,7 @@
                   </v-row>
                   <v-row class="ml-9" no-gutters>
                     <v-col cols="8">
-                      <v-text-field id="mailAddressCity" required :rules="[rules.required()]" class="shrink mt-n5 mb-3" :maxlength="255" v-model="getMailingAddressCopy()[0].city">
+                      <v-text-field id="mailAddressCity" required class="shrink mt-n5 mb-3" :maxlength="255" v-model="getMailingAddressCopy()[0].city">
                       </v-text-field>
                     </v-col>
                   </v-row>
@@ -399,7 +399,6 @@
                           v-model="getMailingAddressCopy()[0].provinceCode"
                           dense
                           outlined
-                          :rules="[rules.required()]"
                           required
                           class="mt-2"
                           style="color: black">
@@ -418,7 +417,6 @@
                           :items="this.countryCodeValues"
                           item-text="label"
                           item-value="countryCode"
-                          :rules="[rules.required()]"
                           v-model="getMailingAddressCopy()[0].countryCode"
                           dense
                           outlined
@@ -434,7 +432,7 @@
                   </v-row>
                   <v-row class="ml-9" no-gutters>
                     <v-col cols="8">
-                      <v-text-field :maxlength="6" required :rules="[rules.required(), rules.postalCode()]"  id="mailAddressPostal" class="shrink mt-n5 mb-3" v-model="getMailingAddressCopy()[0].postal">
+                      <v-text-field :maxlength="6" required :rules="[rules.postalCode()]" id="mailAddressPostal" class="shrink mt-n5 mb-3" v-model="getMailingAddressCopy()[0].postal">
                       </v-text-field>
                     </v-col>
                   </v-row>
@@ -494,7 +492,7 @@
                                   </v-row>
                                   <v-row no-gutters>
                                     <v-col cols="8">
-                                      <v-text-field id="physicalAddressLine1" required :rules="[rules.required()]" :maxlength="255" class="shrink mt-n5 mb-3" v-model="getPhysicalAddressCopy()[0].addressLine1">
+                                      <v-text-field id="physicalAddressLine1" required :maxlength="255" class="shrink mt-n5 mb-3" v-model="getPhysicalAddressCopy()[0].addressLine1">
                                       </v-text-field>
                                     </v-col>
                                   </v-row>
@@ -516,7 +514,7 @@
                                   </v-row>
                                   <v-row no-gutters>
                                     <v-col cols="8">
-                                      <v-text-field id="physicalAddressCity" required :rules="[rules.required()]" :maxlength="255" class="shrink mt-n5 mb-3" v-model="getPhysicalAddressCopy()[0].city">
+                                      <v-text-field id="physicalAddressCity" required :maxlength="255" class="shrink mt-n5 mb-3" v-model="getPhysicalAddressCopy()[0].city">
                                       </v-text-field>
                                     </v-col>
                                   </v-row>
@@ -535,7 +533,6 @@
                                           v-model="getPhysicalAddressCopy()[0].provinceCode"
                                           dense
                                           required
-                                          :rules="[rules.required()]"
                                           outlined
                                           class="mt-2"
                                           style="color: black">
@@ -556,7 +553,6 @@
                                           item-value="countryCode"
                                           v-model="getPhysicalAddressCopy()[0].countryCode"
                                           dense
-                                          :rules="[rules.required()]"
                                           required
                                           outlined
                                           class="mt-2 mb-2"
@@ -571,7 +567,7 @@
                                   </v-row>
                                   <v-row no-gutters>
                                     <v-col cols="8">
-                                      <v-text-field id="physicalAddressPostal" required :rules="[rules.required(), rules.postalCode()]" :maxlength="6" class="shrink mt-n5 mb-3" v-model="getPhysicalAddressCopy()[0].postal">
+                                      <v-text-field id="physicalAddressPostal" required :rules="[rules.postalCode()]" :maxlength="6" class="shrink mt-n5 mb-3" v-model="getPhysicalAddressCopy()[0].postal">
                                       </v-text-field>
                                     </v-col>
                                   </v-row>
@@ -617,9 +613,9 @@
       </v-dialog>
     </v-form>
   </template>
-  
+
 <script>
-  
+
 import PrimaryButton from '../../util/PrimaryButton';
 import {mapGetters, mapState, mapMutations} from 'vuex';
 import alertMixin from '@/mixins/alertMixin';
@@ -635,7 +631,7 @@ import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
 import SchoolStatus from '@/components/institute/SchoolStatus';
 import { sortBy } from 'lodash';
-  
+
 export default {
   name: 'Details',
   mixins: [alertMixin],
@@ -702,7 +698,7 @@ export default {
     allowedFacilityTypeCodesForSchoolCategoryCode(){
       if(this.schoolDetailsCopy?.schoolCategoryCode) {
         let resultingFacilityTypes = this.schoolCategoryFacilityTypesMap[this.schoolDetailsCopy?.schoolCategoryCode]?.map(schoolCatFacilityTypeCode => this.facilityTypeCodes.find(facTypCode => facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
-  
+
         if (resultingFacilityTypes !== undefined) {
           let result = Array.from(resultingFacilityTypes.values()).filter(facType => facType.facilityTypeCode === this.schoolDetailsCopy.facilityTypeCode);
           if(result.length === 0){
@@ -786,7 +782,7 @@ export default {
     getThisSchoolsDetails(){
       this.loading = true;
       this.school = '';
-  
+
       ApiService.apiAxios.get(`${Routes.institute.SCHOOL_DATA_URL}/${this.schoolID}`)
         .then(response => {
           this.school = response.data;
@@ -905,14 +901,14 @@ export default {
     },
     getGradesOffered(rawGrades) {
       let gradeList = [];
-  
+
       for (const grade of this.schoolGradeTypes) {
         let schoolGradeType = rawGrades.find((rawGrade) => rawGrade.schoolGradeCode === grade.schoolGradeCode);
         if (schoolGradeType) {
           gradeList.push(grade.label.replaceAll('Grade ', ''));
         }
       }
-  
+
       return gradeList.toString().replace(/,/g, ', ');
     },
     getSchoolOrganization(school) {
@@ -966,7 +962,7 @@ export default {
       this.sameAsMailingCheckbox = this.hasSamePhysicalAddress;
     },
     async updateSchoolDetails() {
-      
+
       if(this.sameAsMailingCheckbox){
         this.schoolDetailsCopy.addresses = this.schoolDetailsCopy.addresses.filter(address => address.addressTypeCode === 'MAILING');
       }
@@ -1056,7 +1052,7 @@ export default {
       }else{
         this.schoolDetailsCopy.closedDate = null;
       }
-  
+
       this.schoolDetailsCopy.status = getStatusAuthorityOrSchool(this.schoolDetailsCopy);
       this.$refs.schoolDetailsForm.validate();
     },
@@ -1070,55 +1066,55 @@ export default {
   },
 };
 </script>
-  
+
   <style scoped>
-  
+
   .fontItalic{
     font-style: italic;
   }
-  
+
   .sheetHeader{
     background-color: #003366;
     color: white;
     font-size: medium !important;
     font-weight: bolder !important;
   }
-  
+
   .activityDisplayDate{
     font-size: smaller;
   }
-  
+
   .activityContent {
     white-space: pre-wrap;
     word-wrap: break-word;
     max-width: 100%;
     font-size: medium;
   }
-  
+
   .divider {
     border-color: #FCBA19;
     border-width: unset;
   }
-  
+
   .containerSetup{
     padding-right: 24em !important;
     padding-left: 24em !important;
   }
-  
+
   @media screen and (max-width: 1950px) {
     .containerSetup{
       padding-right: 20em !important;
       padding-left: 20em !important;
     }
   }
-  
+
   @media screen and (max-width: 1200px) {
     .containerSetup{
       padding-right: 4em !important;
       padding-left: 4em !important;
     }
   }
-  
+
   .v-dialog__content /deep/ .v-bottom-sheet {
     width: 30% !important;
   }
@@ -1127,19 +1123,18 @@ export default {
       width: 60% !important;
     }
   }
-  
+
   .editField {
     font-size: 14px;
     color: rgb(0, 51, 102);
     vertical-align: super;
   }
-  
+
   .editField:hover {
     text-decoration: underline;
   }
-  
+
   .subHeading {
     color: #38598a;
   }
   </style>
-  
