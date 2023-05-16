@@ -16,9 +16,16 @@
         <v-col>
           <v-row>
             <v-col class="d-flex justify-end">
-            <PrimaryButton v-if="isMoveSchoolAllowed()" id="moveSchoolButton" class="mr-2" secondary icon-left
-                                    icon="mdi-arrow-left-right" @click.native="moveSchool"
-                                    text="Move School"></PrimaryButton>
+            <PrimaryButton 
+              v-if="isMoveSchoolAllowed()" 
+              id="moveSchoolButton" 
+              class="mr-2" 
+              secondary 
+              icon-left
+              icon="mdi-arrow-left-right"
+              @click.native="moveSchool"
+              text="Move School">
+          </PrimaryButton>
       </v-col>
     </v-row>
 
