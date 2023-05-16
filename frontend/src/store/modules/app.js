@@ -1,5 +1,6 @@
 import { REQUEST_TYPES } from '@/utils/constants';
 import ApiService from '@/common/apiService';
+import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 
 export default {
   namespaced: true,
@@ -16,6 +17,7 @@ export default {
     schoolApiDistrictCodes: new Set(),
     mincodeSchoolNames: new Map(),
     schoolMap: new Map(),
+    notClosedSchools: [],
     activeSchools: [],
     activeDistricts: [],
     districtMap : new Map(),
@@ -39,6 +41,7 @@ export default {
     requestTypeLabel: state => state.requestTypeLabel,
     schoolMap: state => state.schoolMap,
     districtMap: state => state.districtMap,
+    notClosedSchools: state => state.notClosedSchools,
     activeSchools: state => state.activeSchools,
     activeDistricts: state => state.activeDistricts,
   },
@@ -74,6 +77,9 @@ export default {
       mincodeSchoolNameList.forEach(element => {
         state.mincodeSchoolNames.set(element.mincode, element.schoolName);
         state.schoolMap.set(element.schoolID, {...element});
+        if(isSchoolActive(element)){
+          state.notClosedSchools.push(element);
+        }
         state.districtCodes.add(element.mincode?.substring(0, 3));
       });
     },
@@ -167,3 +173,11 @@ export default {
     },
   },
 };
+
+function isSchoolActive(school) {
+  const currentTime = LocalDate.now();
+  const openedDate = school?.openedDate;
+  const closedDate = school?.closedDate;
+  return school?.schoolName && !!openedDate && (!closedDate || currentTime.isBefore(LocalDate.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)));
+}
+
