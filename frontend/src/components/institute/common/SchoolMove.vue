@@ -16,28 +16,28 @@
         <v-col>
           <v-row>
             <v-col class="d-flex justify-end">
-            <PrimaryButton 
-              v-if="isMoveSchoolAllowed()" 
-              id="moveSchoolButton" 
-              class="mr-2" 
-              secondary 
-              icon-left
-              icon="mdi-arrow-left-right"
-              @click.native="moveSchool"
-              text="Move School">
-          </PrimaryButton>
-      </v-col>
-    </v-row>
+                <PrimaryButton 
+                  v-if="isMoveSchoolAllowed()" 
+                  id="moveSchoolButton" 
+                  class="mr-2" 
+                  secondary 
+                  icon-left
+                  icon="mdi-arrow-left-right"
+                  @click.native="moveSchool"
+                  text="Move School">
+              </PrimaryButton>
+            </v-col>
+          </v-row>
 
-        <v-data-table
-            :headers="headers"
-            :items="schoolMoveDataFormatted"
-            :loading="loading"
-            class="elevation-1"
-            item-key="schoolMoveId"
-            hide-default-footer
-        >
-        </v-data-table>
+          <v-data-table
+              :headers="headers"
+              :items="schoolMoveDataFormatted"
+              :loading="loading"
+              class="elevation-1"
+              item-key="schoolMoveId"
+              hide-default-footer
+          >
+          </v-data-table>
         </v-col>
       </v-row>
 
@@ -50,9 +50,9 @@
           width="50% !important"
       >
         <MoveSchoolPage
-            v-if="moveSchoolSheet"
-            :school="school"
-            @moveSchool:closeMoveSchoolPage="moveSchoolSheet = !moveSchoolSheet"
+                v-if="moveSchoolSheet"
+                :school="school"
+                @moveSchool:closeMoveSchoolPage="moveSchoolSheet = !moveSchoolSheet"
         />
      </v-bottom-sheet>
   </div>
