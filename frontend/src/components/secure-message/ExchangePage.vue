@@ -100,7 +100,7 @@
                         <v-icon v-if="data.item.districtNumber">mdi-domain</v-icon>
                       </v-list-item-avatar>
                       <v-list-item-content>
-                        <v-list-item-title v-html="data.item.text"></v-list-item-title>
+                        {{ data.item.text }}
                       </v-list-item-content>
                     </template>         
                 </v-autocomplete>
