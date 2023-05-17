@@ -3,7 +3,7 @@ const redis = require('../util/redis/redis-client');
 const redisUtil = require('../util/redis/redis-utils');
 const HttpStatus = require('http-status-codes');
 const utils = require('../components/utils');
-const safeStringify = require('fast-safe-stringify');
+const safeStringify = require('fast-safe-stringify').default;
 const config = require('../config/index');
 /**
  *  <b> The main aim here is to restrict multiple actions updating the same student. </b>

@@ -7,7 +7,7 @@ const { inspect } = require('util');
 const { omit, pickBy } = require('lodash');
 const hasAnsi = require('has-ansi');
 const stripAnsi = require('strip-ansi');
-const safeStringify = require('fast-safe-stringify');
+const safeStringify = require('fast-safe-stringify').default;
 
 
 function isPrimitive(val) {

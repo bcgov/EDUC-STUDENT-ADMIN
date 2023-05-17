@@ -4,7 +4,7 @@ const logger = require('../../components/logger');
 const CONSTANTS = require('../../util/constants');
 const NATS = require('../../messaging/message-pub-sub');
 const {AckPolicy, DeliverPolicy, StringCodec} = require('nats');
-const safeStringify = require('fast-safe-stringify');
+const safeStringify = require('fast-safe-stringify').default;
 
 const handleJetStreamMessage = async (err, msg) => {
   if (err) {

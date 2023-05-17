@@ -1,7 +1,7 @@
 'use strict';
 
 const HttpStatus = require('http-status-codes');
-const axios = require('axios');
+const axios = require('axios').default;
 const config = require('../config/index');
 const jsonwebtoken = require('jsonwebtoken');
 const lodash = require('lodash');
@@ -11,7 +11,7 @@ const {ServiceError, ApiError} = require('./error');
 const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
 const {Locale} = require('@js-joda/locale_en');
 const {FILTER_OPERATION, VALUE_TYPE} = require('../util/constants');
-const fsStringify = require('fast-safe-stringify');
+const fsStringify = require('fast-safe-stringify').default;
 
 axios.interceptors.request.use((axiosRequestConfig) => {
   axiosRequestConfig.headers['X-Client-Name'] = 'PEN-STUDENT-ADMIN';
