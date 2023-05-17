@@ -68,6 +68,7 @@
     "@babel/preset-env": "^7.14.2",
     "@babel/preset-stage-2": "^7.8.3",
     "core-js": "^3.13.0",
+    "@types/jest": "^29.5.1",
     "axios-mock-adapter": "^1.19.0",
     "@babel/eslint-parser": "^7.14.3",
     "babel-jest": "^27.0.1",
