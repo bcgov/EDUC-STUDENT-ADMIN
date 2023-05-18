@@ -324,7 +324,9 @@ async function createExchange(req, res) {
       secureExchangeCreate,
       ministryTeamName : message.ministryTeamName,
       schoolID: message.schoolID,
-      schoolName: message.schoolName
+      schoolName: message.schoolName,
+      districtID: message.districtID,
+      districtName: message.districtName,
     };
 
     const result = await utils.postData(token, config.get('server:edx:newSecureExchangeSagaURL'), payload, null, userInfo.idir_username);

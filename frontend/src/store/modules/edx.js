@@ -8,6 +8,7 @@ export default {
     ministryTeams: [],
     statuses: [],
     validSchoolIDsForMessaging: [],
+    validDistrictIDsForMessaging: [],
     schoolRoles: [],
     schoolRolesCopy: [],
     districtRoles: [],
@@ -43,6 +44,9 @@ export default {
     },
     setValidSchoolIDsForMessaging(state, payload) {
       state.validSchoolIDsForMessaging = payload;
+    },
+    setValidDistrictIDsForMessaging(state, payload) {
+      state.validDistrictIDsForMessaging = payload;
     },
     setFileRequirements(state, payload) {
       state.fileRequirements = payload;
@@ -119,7 +123,7 @@ export default {
         }
       }
     },
-    async getValidSchoolIDsForMessaging({ commit, state}) {
+    async getValidIDsForMessaging({ commit, state}) {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
         if(state.validSchoolIDsForMessaging.length === 0) {
           const query = {
@@ -131,6 +135,18 @@ export default {
           const response = await ApiService.getValidSchoolIDsForMessaging(query);
           commit('setValidSchoolIDsForMessaging', response.data);
         }
+
+        if(state.validDistrictIDsForMessaging.length === 0) {
+          const query = {
+            params: {
+              permissionCode : 'SECURE_EXCHANGE',
+            }
+          };
+    
+          const response = await ApiService.getValidDistrictIDsForMessaging(query);
+          commit('setValidDistrictIDsForMessaging', response.data);
+        }
+
       }
     },
     async getSchoolExchangeRoles({ commit, state}) {
