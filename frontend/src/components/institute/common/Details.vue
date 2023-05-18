@@ -970,7 +970,7 @@ export default {
       }
 
       let mailing = this.schoolDetailsCopy.addresses.filter(address => address.addressTypeCode === 'MAILING');
-      if(!mailing?.city){
+      if(!mailing[0]?.city){
         this.schoolDetailsCopy.addresses = null;
       }
 
