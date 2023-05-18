@@ -225,16 +225,34 @@
                 </v-row>
                 <v-row>
                   <v-col cols="4">
-                    <v-text-field id='newSchoolMailingAddressLine1Input' :rules="[rules.required()]"
-                      v-model="newSchool.mailingAddrLine1" class="pt-0" :maxlength="255" label="Line 1" />
+                    <v-text-field
+                      id='newSchoolMailingAddressLine1Input'
+                      class="pt-0"
+                      :rules="[rules.required(), rules.noSpecialCharacters()]"
+                      v-model="newSchool.mailingAddrLine1"
+                      :maxlength="255"
+                      label="Line 1"
+                    />
                   </v-col>
                   <v-col cols="4">
-                    <v-text-field id='newSchoolMailingAddressLine2Input' v-model="newSchool.mailingAddrLine2" class="pt-0"
-                      :maxlength="255" label="Line 2" />
+                    <v-text-field
+                      id='newSchoolMailingAddressLine2Input'
+                      class="pt-0"
+                      :rules="[rules.noSpecialCharacters()]"
+                      v-model="newSchool.mailingAddrLine2"
+                      :maxlength="255"
+                      label="Line 2"
+                    />
                   </v-col>
                   <v-col cols="4">
-                    <v-text-field id='newContactMailingAddressCityInput' :rules="[rules.required()]"
-                      v-model="newSchool.mailingAddrCity" class="pt-0" :maxlength="255" label="City" />
+                    <v-text-field
+                      id='newContactMailingAddressCityInput'
+                      class="pt-0"
+                      label="City"
+                      :rules="[rules.required(), rules.noSpecialCharacters()]"
+                      v-model="newSchool.mailingAddrCity"
+                      :maxlength="255"
+                    />
                   </v-col>
                 </v-row>
                 <v-row>
@@ -268,8 +286,12 @@
                     <v-row no-gutters v-else>
                       <v-row>
                         <v-col cols="4">
-                          <v-text-field id='newSchoolPhysicalAddressLine1Input' :rules="[rules.required()]"
-                            v-model="newSchool.physicalAddrLine1" class="pt-0" :maxlength="255" label="Line 1" />
+                          <v-text-field id='newSchoolPhysicalAddressLine1Input'
+                            :rules="[rules.required(), rules.noSpecialCharacters()]"
+                            v-model="newSchool.physicalAddrLine1" class="pt-0"
+                            :maxlength="255"
+                            label="Line 1"
+                          />
                         </v-col>
                         <v-col cols="4">
                           <v-text-field id='newSchoolPhysicalAddressLine2Input' v-model="newSchool.physicalAddrLine2" class="pt-0"
