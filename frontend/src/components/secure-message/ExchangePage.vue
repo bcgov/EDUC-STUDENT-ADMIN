@@ -89,11 +89,22 @@
                     class="pt-0 mt-0"
                     prepend-inner-icon="mdi-account-box-outline"
                     v-model="contactNameFilter"
-                    :items="schools"
+                    :items="contacts"
                     color="#003366"
                     label="Contact"
                     clearable
-                  ></v-autocomplete>
+                  >
+                    <template v-slot:item="data">
+                      <v-list-item-avatar>
+                        <v-icon v-if="data.item.mincode">mdi-school</v-icon>
+                        <v-icon v-if="data.item.districtNumber">mdi-domain</v-icon>
+                      </v-list-item-avatar>
+                      <v-list-item-content>
+                        {{ data.item.text }}
+                      </v-list-item-content>
+                    </template>         
+                </v-autocomplete>
+
                 </v-col>
                 <v-col cols="12" md="4" class="pt-0">
                   <v-text-field
@@ -420,8 +431,10 @@ export default {
         || this.messageDate !== null
         || this.secureExchangeStatusCodes.some(item => item.secureExchangeStatusCode === this.statusSelectFilter);
     },
-    schools() {
-      return _.sortBy(Array.from(this.schoolMap.entries()).map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolID, mincode: school[1].mincode})), ['mincode']);
+    contacts() {
+      let school = _.sortBy(Array.from(this.schoolMap.entries()).map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolID, mincode: school[1].mincode})), ['mincode']);
+      let district = _.sortBy(Array.from(this.districtMap.entries()).map(district => ({ text: `${district[1]?.name} (${district[1]?.districtNumber})`, value: district[1]?.districtId, districtNumber: district[1].districtNumber})), ['districtNumber']);
+      return [...district, ...school];
     },
     myself() {
       return { name: this.userInfo.userName, id: this.userInfo.userGuid };
