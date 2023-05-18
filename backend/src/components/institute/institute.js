@@ -639,17 +639,17 @@ async function updateSchool(req, res) {
     }
     const payload = req.body;
 
-    payload.addresses.forEach(function(addy) {
+    payload.addresses?.forEach(function(addy) {
       addy.updateDate = null;
       addy.createDate = null;
     });
 
-    payload.notes.forEach(function(note) {
+    payload.notes?.forEach(function(note) {
       note.updateDate = null;
       note.createDate = null;
     });
 
-    payload.contacts.forEach(function(contact) {
+    payload.contacts?.forEach(function(contact) {
       contact.updateDate = null;
       contact.createDate = null;
     });
