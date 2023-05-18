@@ -11,7 +11,7 @@
                 v-model="newAuthority.authorityName"
                 class="pt-0"
                 :maxlength="255"
-                :rules="[rules.required()]"
+                :rules="[rules.required(), rules.noSpecialCharacters()]"
                 label="Authority Name"
             />
             <v-row>

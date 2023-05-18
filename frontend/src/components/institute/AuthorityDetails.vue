@@ -27,8 +27,14 @@
               </v-col>
               <v-col class="d-flex" v-else>
                 <h2 id="authorityName">{{ authority.authorityNumber }} - </h2>
-                <v-text-field class="mt-n5 ml-3" style="font-size: x-large" :maxlength="255" :rules="[rules.required()]" required v-model="authorityCopy.displayName">
-                </v-text-field>
+              <v-text-field
+                class="mt-n5 ml-3"
+                required
+                :rules="[rules.required(), rules.noSpecialCharacters()]"
+                :maxlength="255"
+                style="font-size: x-large"
+                v-model="authorityCopy.displayName">
+              </v-text-field>
               </v-col>
               <v-col v-if="!editing" cols="4" class="d-flex justify-end">
                 <PrimaryButton id="viewAuthorityContactsButton" class="mr-2" secondary icon-left icon="mdi-account-multiple-outline" :to="`/authorityContacts/${authorityID}`" text="View Authority Contacts"></PrimaryButton>
