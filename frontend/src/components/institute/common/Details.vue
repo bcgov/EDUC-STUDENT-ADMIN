@@ -969,6 +969,11 @@ export default {
         this.schoolDetailsCopy.addresses = this.schoolDetailsCopy.addresses.filter(address => address.addressTypeCode === 'MAILING');
       }
 
+      let mailing = this.schoolDetailsCopy.addresses.filter(address => address.addressTypeCode === 'MAILING');
+      if(!mailing?.city){
+        this.schoolDetailsCopy.addresses = null;
+      }
+
       this.$emit('updateSchool', this.schoolDetailsCopy);
     },
     hasMailingAddress() {
