@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const { getDistricts, getSchools, getSchoolsPaginated, getAuthoritiesPaginated,
   getAuthorityByID, getSchoolByID, getDistrictByDistrictID, addNewSchoolNote, updateSchoolContact, updateAuthority, addAuthorityContact, updateAuthorityContact,
-  addNewAuthorityNote, updateSchool, addSchool, addSchoolContact, updateDistrict, updateDistrictContact, addAuthority, addDistrictContact, addNewDistrictNote, moveSchool, getSchoolHistoryPaginated
+  addNewAuthorityNote, updateSchool, addSchool, addSchoolContact, deleteSchoolContact, updateDistrict, updateDistrictContact, addAuthority, addDistrictContact, addNewDistrictNote, moveSchool, getSchoolHistoryPaginated
 } = require('../components/institute/institute');
 const utils = require('../components/utils');
 const auth = require('../components/auth');
@@ -36,6 +36,8 @@ router.get('/school', passport.authenticate('jwt', {session: false}, undefined),
 router.post('/school', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, addSchool);
 
 router.post('/school/note', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, addNewSchoolNote);
+
+router.delete('/school/contact/:schoolId/:contactId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, deleteSchoolContact);
 
 router.put('/school/contact/:contactId', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, updateSchoolContact);
 

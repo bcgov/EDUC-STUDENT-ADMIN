@@ -416,6 +416,40 @@ async function updateSchoolContact(req, res) {
   }
 }
 
+async function deleteSchoolContact(req, res) {
+  try {
+    const token = getBackendToken(req);
+    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
+
+    const contact =  await utils.getData(token, `${config.get('server:institute:instituteSchoolURL')}/${req.params.schoolId}/contact/${req.params.contactId}`);
+
+    if (!contact) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'Contact not found'
+      });
+    }
+
+    let school = cacheService.getSchoolBySchoolID(req.params.schoolId);
+    if(!school || !hasSchoolAdminRole(req, school)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+
+    contact.createDate = null;
+    contact.updateDate = null;
+    contact.updateUser = utils.getUser(req).idir_username;
+    contact.expiryDate = LocalDateTime.now().format(formatter);
+
+    await utils.putData(token, config.get('server:institute:instituteSchoolURL') + '/' + req.params.schoolId + '/contact/'+ req.params.contactId , contact, utils.getUser(req).idir_username);
+
+    return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
+  } catch (e) {
+    logApiError(e, 'removeSchoolContact', 'Error occurred while attempting to remove a school contact.');
+    return errorResponse(res);
+  }
+}
+
 async function addAuthorityContact(req, res) {
   try {
     const token = getBackendToken(req);
@@ -1052,6 +1086,7 @@ module.exports = {
   updateSchool,
   addSchool,
   addSchoolContact,
+  deleteSchoolContact,
   getCachedInstituteData,
   updateDistrict,
   addAuthority,
