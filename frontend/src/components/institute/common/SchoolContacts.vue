@@ -31,7 +31,7 @@
         </v-row>
         <v-row cols="2" v-if="schoolContacts.has(schoolContactType.schoolContactTypeCode)">
           <v-col cols="5" lg="4" v-for="contact in schoolContacts.get(schoolContactType.schoolContactTypeCode)" :key="contact.schoolId">
-            <SchoolContact :contact="contact" @editSchoolContact:doShowEditSchoolContactForm="showContactEditForm(contact)" :canEditSchoolContact="canAddEditSchoolContact"/>
+            <SchoolContact :contact="contact" @editSchoolContact:doShowEditSchoolContactForm="showContactEditForm(contact)" @removeSchoolContact:contactRemoved="getThisSchoolsContacts" :canEditSchoolContact="canAddEditSchoolContact"/>
           </v-col>
         </v-row>
         <v-row cols="2" v-else>

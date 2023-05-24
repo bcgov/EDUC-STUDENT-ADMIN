@@ -25,6 +25,19 @@
                   >
                     <v-icon size="x-large" color="#003366" dark>mdi-pencil</v-icon>
                   </v-btn>
+                  <v-btn id="removeContactButton"
+                         title="Remove"
+                         color="white"
+                         width="0.5em"
+                         min-width="0.5em"
+                         depressed
+                         v-if="canEditSchoolContact"
+                         @click="toggleShowRemoveContact()"
+                         small
+                         class="mr-2"
+                  >
+                    <v-icon size="x-large" color="#003366" dark>mdi-trash-can-outline</v-icon>
+                  </v-btn>
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -64,6 +77,23 @@
           </v-col>
         </v-row>
       </v-card-text>
+      <v-slide-y-transition hide-on-leave>
+          <v-card-text v-show="showRemoveContact" class="remove-contact-background">
+            <v-row>
+              <v-col>
+                <strong>
+                  Are you sure you want to remove this contact?
+                </strong>
+              </v-col>
+            </v-row>
+            <v-row class="text-end">
+              <v-col>
+                <PrimaryButton id="removeContactCancelButton" class="mr-2" @click.native="toggleShowRemoveContact()" secondary>Cancel</PrimaryButton>
+                <PrimaryButton id="removeContactSubmitButton" :loading="loading" @click.native="removeContact">Remove</PrimaryButton>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-slide-y-transition>
     </v-card>
   </span>
 </template>
@@ -72,9 +102,15 @@
 
 import {formatPhoneNumber, formatDate, formatContactName} from '@/utils/format';
 import {getStatusColor} from '@/utils/institute/status';
+import PrimaryButton from '@/components/util/PrimaryButton';
+import alertMixin from '@/mixins/alertMixin';
+import ApiService from '@/common/apiService';
+import {Routes} from '@/utils/constants';
 
 export default {
   name: 'SchoolContact',
+  components: {PrimaryButton},
+  mixins: [alertMixin],
   props: {
     contact: {
       type: Object,
@@ -85,9 +121,30 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      showRemoveContact: false,
+      loading: false
+    };
+  },
   methods: {
     callDoShowEditSchoolContactForm() {
       this.$emit('editSchoolContact:doShowEditSchoolContactForm');
+    },
+    toggleShowRemoveContact() {
+      this.showRemoveContact = !this.showRemoveContact;
+    },
+    removeContact() {
+      this.loading = true;
+      ApiService.apiAxios.delete(`${Routes.institute.SCHOOL_CONTACT_URL}/${this.contact.schoolId}/${this.contact.schoolContactId}`).then(() => {
+        this.setSuccessAlert('Contact removed successfully');
+        this.$emit('removeSchoolContact:contactRemoved');
+      }).catch(error => {
+        console.log(error);
+        this.setFailureAlert('Error removing contact. Please try again later');
+      }).finally(() => {
+        this.loading = false;
+      });
     },
     formatDate,
     formatPhoneNumber,
@@ -111,5 +168,9 @@ export default {
   color: #ff5252;
   word-break: break-word;
   font-size: 16px;
+}
+
+.remove-contact-background {
+  background-color: #F5F5F5;
 }
 </style>
