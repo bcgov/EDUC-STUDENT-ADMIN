@@ -445,7 +445,7 @@ async function deleteSchoolContact(req, res) {
 
     return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
   } catch (e) {
-    logApiError(e, 'removeSchoolContact', 'Error occurred while attempting to remove a school contact.');
+    await logApiError(e, 'removeSchoolContact', 'Error occurred while attempting to remove a school contact.');
     return errorResponse(res);
   }
 }
