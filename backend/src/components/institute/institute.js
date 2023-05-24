@@ -421,18 +421,18 @@ async function deleteSchoolContact(req, res) {
     const token = getBackendToken(req);
     const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
 
+    let school = cacheService.getSchoolBySchoolID(req.params.schoolId);
+    if(!school || !hasSchoolAdminRole(req, school)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+
     const contact =  await utils.getData(token, `${config.get('server:institute:instituteSchoolURL')}/${req.params.schoolId}/contact/${req.params.contactId}`);
 
     if (!contact) {
       return res.status(HttpStatus.NOT_FOUND).json({
         message: 'Contact not found'
-      });
-    }
-
-    let school = cacheService.getSchoolBySchoolID(req.params.schoolId);
-    if(!school || !hasSchoolAdminRole(req, school)){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'You do not have the required access for this function'
       });
     }
 
