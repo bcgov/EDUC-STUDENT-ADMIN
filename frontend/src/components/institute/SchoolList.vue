@@ -57,10 +57,14 @@
             <v-select
               id="status-select-field"
               clearable
+              :rules="[rules.required()]"
               :items="activeSchoolCategoryTypes"
               v-model="schoolCategoryTypeFilter"
               item-text="label"
-              item-value="schoolCategoryCode" label="School Category"></v-select>
+              item-value="schoolCategoryCode"
+              @change="schoolCategoryChanged"
+              label="School Category">
+            </v-select>
           </v-col>
           <v-col cols="12" md="3" class="d-flex justify-start">
             <v-select
@@ -248,6 +252,8 @@ import {getStatusColorAuthorityOrSchool,getStatusAuthorityOrSchool, isContactCur
 import router from '@/router';
 import Spinner from '@/components/common/Spinner';
 import NewSchoolPage from './NewSchoolPage';
+//EDX-903
+import * as Rules from '@/utils/institute/formRules';
 
 export default {
   name: 'SchoolListPage',
@@ -304,6 +310,9 @@ export default {
       schoolFacilityTypeFilter: '',
       loadingSchools: true,
       newSchoolSheet: false,
+      //EDX-903
+      rules: Rules,
+      facilityTypeCode: null,
     };
   },
   computed: {
@@ -609,6 +618,76 @@ export default {
       this.headerSearchParams.type = '';
 
       this.clearSchoolList();
+    },
+    //EDX-903 - Function to set facility types basing on selected school category asynchronously - mchintha
+    async schoolCategoryChanged() {
+      const schoolCategoryFacilitiesMap = this.getSchoolCategoryAllowedFacilityMap();
+      this.schoolFacilityTypes = schoolCategoryFacilitiesMap[this.schoolCategoryTypeFilter] || [];
+      this.schoolFacilityTypeFilter = '';
+    },
+    // Defining facility type arrays for each school category.
+    getSchoolCategoryAllowedFacilityMap(){
+      const CONT_ED = 'Continuing Education';
+      const ALT_PROGS = 'Alternate Programs';
+      const YOUTH = 'Youth Custody/Residential';
+      const SHORT_PRP = 'Short term PRP';
+      const LONG_PRP = 'Long term PRP';
+      const DIST_LEARN = 'Provincial Online Learning';
+      const DISTONLINE = 'District Online Learning';
+      const SUMMER = 'Summer';
+      const STANDARD = 'Standard';
+      const POST_SEC = 'Post Secondary';
+      const STRONG_CEN = 'StrongStart Center';
+      const STRONG_OUT = 'StrongStart Outreach';
+      const JUSTB4PRO = 'JustB4 Program';
+
+
+      const publicSCAllowedFacilityTypeCodes = [];
+      publicSCAllowedFacilityTypeCodes.push(CONT_ED);
+      publicSCAllowedFacilityTypeCodes.push(ALT_PROGS);
+      publicSCAllowedFacilityTypeCodes.push(YOUTH);
+      publicSCAllowedFacilityTypeCodes.push(SHORT_PRP);
+      publicSCAllowedFacilityTypeCodes.push(LONG_PRP);
+      publicSCAllowedFacilityTypeCodes.push(DIST_LEARN);
+      publicSCAllowedFacilityTypeCodes.push(DISTONLINE);
+      publicSCAllowedFacilityTypeCodes.push(SUMMER);
+      publicSCAllowedFacilityTypeCodes.push(STANDARD);
+
+      const independentSchoolSCFacilityTypeCodes=[];
+      independentSchoolSCFacilityTypeCodes.push(STANDARD);
+      independentSchoolSCFacilityTypeCodes.push(DIST_LEARN);
+
+      const offshoreLearningSCFacilityTypeCodes=[];
+      offshoreLearningSCFacilityTypeCodes.push(STANDARD);
+
+      const yukonSCFacilityTypeCodes=[];
+      yukonSCFacilityTypeCodes.push(STANDARD);
+      yukonSCFacilityTypeCodes.push(DIST_LEARN);
+      yukonSCFacilityTypeCodes.push(SUMMER);
+
+      const postSecondarySCFacilityTypeCodes=[];
+      postSecondarySCFacilityTypeCodes.push(POST_SEC);
+
+      const earlyLearningSCFacilityTypeCodes=[];
+      earlyLearningSCFacilityTypeCodes.push(STRONG_CEN);
+      earlyLearningSCFacilityTypeCodes.push(STRONG_OUT);
+      earlyLearningSCFacilityTypeCodes.push(JUSTB4PRO);
+
+      const independentFNSFacilityTypeCodes=[];
+      independentFNSFacilityTypeCodes.push(STANDARD);
+
+      const nonIndependentFNSFacilityTypeCodes=[];
+      nonIndependentFNSFacilityTypeCodes.push(STANDARD);
+      return {
+        'PUBLIC':publicSCAllowedFacilityTypeCodes,
+        'INDEPEND':independentSchoolSCFacilityTypeCodes,
+        'OFFSHORE':offshoreLearningSCFacilityTypeCodes,
+        'FED_BAND':nonIndependentFNSFacilityTypeCodes,
+        'YUKON':yukonSCFacilityTypeCodes,
+        'POST_SEC':postSecondarySCFacilityTypeCodes,
+        'EAR_LEARN':earlyLearningSCFacilityTypeCodes,
+        'INDP_FNS':independentFNSFacilityTypeCodes,
+      };
     },
     searchButtonClick() {
       this.resetPageNumber();
