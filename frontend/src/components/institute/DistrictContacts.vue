@@ -50,7 +50,7 @@
         </v-row>
         <v-row cols="2" v-if="districtContacts.has(districtContactType.districtContactTypeCode)">
           <v-col cols="5" lg="4" v-for="contact in districtContacts.get(districtContactType.districtContactTypeCode)" :key="contact.schoolId">
-            <DistrictContact :contact="contact" @editDistrictContact:doShowEditDistrictContactForm="showDistrictEditForm(contact)" :canEditDistrictContact="canEditDistrictContact" />
+            <DistrictContact :contact="contact" @editDistrictContact:doShowEditDistrictContactForm="showDistrictEditForm(contact)" @removeDistrictContact:contactRemoved="getThisDistrictsContacts" :canEditDistrictContact="canEditDistrictContact" />
           </v-col>
         </v-row>
         <v-row cols="2" v-else>
