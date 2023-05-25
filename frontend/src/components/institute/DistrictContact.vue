@@ -1,6 +1,6 @@
 <template>
   <span>
-    <v-card height="100%"  v-show="!expandEdit">
+    <v-card height="100%">
       <v-card-title class="pb-0">
         <v-row no-gutters>
           <v-col>
@@ -103,7 +103,6 @@
 import {formatPhoneNumber, formatDate, formatContactName} from '@/utils/format';
 import PrimaryButton from '@/components/util/PrimaryButton';
 import {getStatusColor} from '@/utils/institute/status';
-import * as Rules from '@/utils/institute/formRules';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
@@ -124,27 +123,6 @@ export default {
   components: {PrimaryButton},
   data() {
     return {
-      processing: false,
-      district: {},
-      expandEdit: false,
-      saveEnabled: true,
-      ecFormValid: false,
-      effDateMenu: false,
-      expDateMenu: false,
-      contactEdit: {
-        firstName: '',
-        lastName: '',
-        email: '',
-        phoneNumber:'',
-        phoneExtension:'',
-        alternatePhoneNumber:'',
-        alternatePhoneExtension:'',
-        effectiveDate:'',
-        expiryDate:''
-      },
-      rules: Rules,
-      editContactExpiryDatePicker: null,
-      editContactEffectiveDatePicker: null,
       showRemoveContact: false,
       loading: false
     };
