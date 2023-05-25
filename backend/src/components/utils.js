@@ -1,5 +1,3 @@
-'use strict';
-
 const HttpStatus = require('http-status-codes');
 const axios = require('axios').default;
 const config = require('../config/index');
@@ -13,25 +11,59 @@ const {Locale} = require('@js-joda/locale_en');
 const {FILTER_OPERATION, VALUE_TYPE} = require('../util/constants');
 const fsStringify = require('fast-safe-stringify').default;
 
+/**
+ * @typedef {import('express').Request} ExpressRequest
+ * @typedef {import('express').Response} ExpressResponse
+ * @typedef {import('express').Handler} ExpressHandler
+ * @typedef {import('qs').ParsedQs} ParsedQs
+ *
+ * @typedef {import('axios').Method} Method
+ * @typedef {import('axios').AxiosRequestConfig} RequestConfig
+ * @typedef {import('axios').AxiosResponse} AxiosResponse
+ * @typedef {import('axios').AxiosError} AxiosError
+ *
+ * @typedef {import('../../@types/api').RequestConfigWithToken} RequestConfigWithToken
+ * @typedef {import('../../@types/api').StatusCode} StatusCode
+ * @typedef {import('../../@types/api').EdxDocument} EdxDocument
+ * @typedef {import('../../@types/api').CacheKey} CacheKey
+ * @typedef {import('../../@types/api').CacheMiddleware} CacheMiddleware
+ */
+
 axios.interceptors.request.use((axiosRequestConfig) => {
-  axiosRequestConfig.headers['X-Client-Name'] = 'PEN-STUDENT-ADMIN';
+  axiosRequestConfig.headers = {
+    ...axiosRequestConfig.headers,
+    ['X-Client-Name']: 'PEN-STUDENT-ADMIN'
+  };
   return axiosRequestConfig;
 });
 
 let discovery = null;
 let memCache = new cache.Cache();
 
+/**
+ * @param {ExpressRequest} req
+ * @return {string|undefined} jwt token
+ */
 function getBackendToken(req) {
   const thisSession = req.session;
   return thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt;
 }
 
+/**
+ * @param {ExpressResponse} res
+ * @returns {ExpressResponse}
+ */
 function unauthorizedError(res) {
   return res.status(HttpStatus.UNAUTHORIZED).json({
     message: 'No access token'
   });
 }
 
+/**
+ * @param {ExpressResponse} res
+ * @param {string} [msg]
+ * @param {number} [code]
+ * @returns {ExpressResponse} */
 function errorResponse(res, msg, code) {
   return res.status(code || HttpStatus.INTERNAL_SERVER_ERROR).json({
     message: msg || 'INTERNAL SERVER ERROR',
@@ -39,6 +71,11 @@ function errorResponse(res, msg, code) {
   });
 }
 
+/**
+ * @param {string|undefined} token
+ * @param {ExpressResponse} res
+ * @returns {ExpressResponse|undefined}
+ */
 function validateAccessToken(token, res) {
   if (!token) {
     return res.status(HttpStatus.UNAUTHORIZED).json({
@@ -47,25 +84,26 @@ function validateAccessToken(token, res) {
   }
 }
 
+/**
+ * @param {RequestConfig|undefined} params
+ * @param {string} token
+ * @returns {RequestConfigWithToken} request config with token header
+ */
 function addTokenToHeader(params, token) {
-  if (params) {
-    if (params.headers) {
-      params.headers.Authorization = `Bearer ${token}`;
-    } else {
-      params.headers = {
-        Authorization: `Bearer ${token}`,
-      };
+  const p = params || {};
+  return {
+    ...p,
+    headers: {
+      ...p.headers,
+      Authorization: `Bearer ${token}`
     }
-  } else {
-    params = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
-    };
-  }
-  return params;
+  };
 }
 
+/**
+ * @param {string} token
+ * @param {string} url
+ */
 async function deleteData(token, url) {
   try {
     const delConfig = {
@@ -85,6 +123,10 @@ async function deleteData(token, url) {
   }
 }
 
+/**
+ * @param {EdxDocument} document
+ * @returns {boolean}
+ */
 function isPdf(document){
   return (
     'fileName' in document &&
@@ -93,11 +135,17 @@ function isPdf(document){
   );
 }
 
+/**
+ * @param {string} token
+ * @param {string} url
+ * @param {object} data
+ */
 async function deleteDataWithBody(token, url, data) {
   if (!data) {
     throw new ApiError(400, {message: 'Invalid request for delete with body'}, new Error('Empty body'));
   }
   try {
+    /** @type {RequestConfigWithToken} */
     const delConfig = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -116,11 +164,16 @@ async function deleteDataWithBody(token, url, data) {
   }
 }
 
+/**
+ * @param {string} token
+ * @param {string} url
+ * @param {RequestConfig} [params]
+ */
 async function getData(token, url, params) {
   try {
-    params = addTokenToHeader(params, token);
+    const paramsWithToken = addTokenToHeader(params, token);
     logRequestData('GET', url);
-    const response = await axios.get(url, params);
+    const response = await axios.get(url, paramsWithToken);
     logResponseData(url, response, 'GET');
     return response.data;
   } catch (e) {
@@ -128,6 +181,11 @@ async function getData(token, url, params) {
   }
 }
 
+/**
+ * @param {AxiosError} e
+ * @param {string} functionName
+ * @param {string} message
+ */
 async function logApiError(e, functionName, message) {
   if (e?.response?.status === 404) {
     log.info('Entity not found', e);
@@ -141,11 +199,21 @@ async function logApiError(e, functionName, message) {
   }
 }
 
+/**
+ * @param {object} obj
+ * @param {(keyof obj)[]} [keys] to minify
+ * @returns {object} a minified object
+ */
 function minify(obj, keys = ['documentData']) {
   return lodash.transform(obj, (result, value, key) =>
     result[key] = keys.includes(key) && lodash.isString(value) ? value.substring(0, 1) + ' ...' : value);
 }
 
+/**
+ * @param {string} url
+ * @param {AxiosResponse} response
+ * @param {Method} operationType
+ */
 async function logResponseData(url, response, operationType) {
   log.info(`${operationType} Data Status for url ${url} :: is :: `, response.status);
   log.info(`${operationType} Data StatusText for url ${url}  :: is :: `, response.statusText);
@@ -153,10 +221,9 @@ async function logResponseData(url, response, operationType) {
 }
 
 /**
- *
- * @param operationType the type of Operation {POST, PUT, GET, DELETE}
- * @param url the url being hit
- * @param data the data passed onto the http request.
+ * @param {Method} operationType the type of Operation {POST, PUT, GET, DELETE}
+ * @param {string} url the url being hit
+ * @param {object} [data] the data passed onto the http request.
  * @returns {Promise<void>}
  */
 async function logRequestData(operationType, url, data) {
@@ -166,6 +233,13 @@ async function logRequestData(operationType, url, data) {
   }
 }
 
+/**
+ * @param {string} token
+ * @param {string} url
+ * @param {object} data
+ * @param {RequestConfig} params
+ * @param {string} user
+ */
 async function postData(token, url, data, params, user) {
   try {
     params = addTokenToHeader(params, token);
@@ -186,6 +260,11 @@ async function postData(token, url, data, params, user) {
   }
 }
 
+/**
+ * @param {AxiosError} e
+ * @param {string} url
+ * @param {Method} operationType
+ */
 function throwError(e, url, operationType) {
   logApiError(e, operationType, `Error during ${operationType} on ${url}`);
   const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
@@ -198,6 +277,12 @@ function throwError(e, url, operationType) {
   throw new ApiError(status, data, e);
 }
 
+/**
+ * @param {string} token
+ * @param {string} url
+ * @param {object} data
+ * @param {string} user
+ */
 async function putData(token, url, data, user) {
   try {
     const putDataConfig = {
@@ -217,8 +302,14 @@ async function putData(token, url, data, user) {
   }
 }
 
-//keys = ['identityTypeCodes', 'penStatusCodes', 'genderCodes']
-function getCodeTable(token, key, url, useCache = true) {
+/**
+ * @param {string} token
+ * @param {CacheKey} key
+ * @param {string} url
+ * @param {boolean} [useCache]
+ * @returns {Promise<StatusCode[]>} an array of status codes.
+ */
+async function getCodeTable(token, key, url, useCache = true) {
   try {
     let cacheContent = useCache && memCache.get(key);
     if (cacheContent) {
@@ -229,7 +320,7 @@ function getCodeTable(token, key, url, useCache = true) {
           Authorization: `Bearer ${token}`,
         }
       };
-      return axios.get(url, getDataConfig)
+      return await axios.get(url, getDataConfig)
         .then(response => {
           useCache && memCache.put(key, response.data);
           return response.data;
@@ -245,6 +336,20 @@ function getCodeTable(token, key, url, useCache = true) {
   }
 }
 
+/**
+ * @param {string | String[] | ParsedQs | ParsedQs[]} [arr]
+ * @returns {arr is string[]} arr is string array
+ */
+function queryParamIsStringArray(arr) {
+  return Array.isArray(arr) && typeof arr[0] == 'string';
+}
+
+/**
+ * @param {string} apiName
+ * @param {string} url
+ * @param {(data: any) => Promise<void>} handleResponse
+ * @returns {ExpressHandler}
+ */
 function getPaginatedListForSCGroups(apiName, url, handleResponse) {
   return async function getPaginatedListForSCGroupsHandler(req, res) {
     try {
@@ -256,16 +361,17 @@ function getPaginatedListForSCGroups(apiName, url, handleResponse) {
       }
 
       let pageSize = req.query.pageSize;
-      if(!req.query.pageSizeOverride && pageSize > 20) {
-        pageSize = 20;
+      if(!req.query.pageSizeOverride && typeof pageSize == 'string' && parseInt(pageSize) > 20) {
+        pageSize = '20';
       }
 
+      const searchQueries = queryParamIsStringArray(req.query.searchQueries) ? req.query.searchQueries : [];
       const params = {
         params: {
           pageNumber: req.query.pageNumber,
           pageSize,
           sort: req.query.sort,
-          searchCriteriaList: JSON.stringify(req.query.searchQueries.map((query) => JSON.parse(query)))
+          searchCriteriaList: JSON.stringify(searchQueries.map((query) => JSON.parse(query)))
         }
       };
 
@@ -284,9 +390,17 @@ function getPaginatedListForSCGroups(apiName, url, handleResponse) {
   };
 }
 
+/**
+ * @param {SagaRecord[]} records
+ * @param {string} recordIdName
+ * @param {() => Promise<string[]>} getSagaEvents
+ */
 async function addSagaStatusToRecords(records, recordIdName, getSagaEvents) {
-  let eventsArrayFromRedis = await getSagaEvents() || [];
-  eventsArrayFromRedis = eventsArrayFromRedis.map(event => JSON.parse(event));
+  const eventsStringArrayFromRedis = await getSagaEvents() || [];
+
+  /** @type {SagaRecord[]} */
+  const eventsArrayFromRedis = eventsStringArrayFromRedis.map(event => JSON.parse(event));
+
   records && records.forEach(record => {
     if (record[recordIdName]) {
       const sagaInProgress = eventsArrayFromRedis.filter(event =>
@@ -301,9 +415,16 @@ async function addSagaStatusToRecords(records, recordIdName, getSagaEvents) {
   });
 }
 
+/**
+ * @param {string} apiName
+ * @param {string} urlKey
+ * @param {string} extraPath
+ * @param {(data: any) => Promise<void>} handleResponse
+ * @returns {ExpressHandler}
+ */
 function forwardGet(apiName, urlKey, extraPath, handleResponse) {
   return async function forwardGetHandler(req, res) {
-    const token = getBackendToken(req);
+    const token = getBackendToken(req) || '';
     try {
       const params = {
         params: req.query
@@ -311,7 +432,7 @@ function forwardGet(apiName, urlKey, extraPath, handleResponse) {
 
       const url = config.get(urlKey);
       const data = await getData(token, extraPath ? `${url}${extraPath}` : url, params);
-      if(handleResponse && data) {
+      if (handleResponse && data) {
         await handleResponse(data);
       }
 
@@ -337,6 +458,7 @@ const utils = {
     }
     return discovery;
   },
+  /** @param {ExpressRequest} req */
   getUser(req) {
     const thisSession = req.session;
     if (thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt) {
@@ -350,13 +472,20 @@ const utils = {
       return false;
     }
   },
-  saveSession(req, res, penRequest) {
+  /**
+   * @param {ExpressRequest} req
+   * @param {ExpressResponse} _res
+   * @param {object} penRequest
+   */
+  saveSession(req, _res, penRequest) {
     req['session'].penRequest = Object.assign({}, penRequest);
   },
+  /** @param {string} time */
   formatCommentTimestamp(time) {
     const timestamp = LocalDateTime.parse(time);
     return timestamp.format(DateTimeFormatter.ofPattern('yyy/MM/dd h:mma').withLocale(Locale.CANADA));
   },
+  /** @param {string} date */
   formatDate(date) {
     if (date && (date.length === 8)) {
       const year = date.substring(0, 4);
@@ -369,6 +498,7 @@ const utils = {
       return null;
     }
   },
+  /** @param {object} data */
   stripAuditColumns(data) {
     delete data.createUser;
     delete data.updateUser;
@@ -376,7 +506,11 @@ const utils = {
     delete data.updateDate;
     return data;
   },
-  //keys = ['identityTypeCodes', 'penStatusCodes', 'studentRequestStatusCodes']
+  /**
+   * @param {string} urlKey
+   * @param {CacheKey} cacheKey
+   * @returns {ExpressHandler}
+   */
   getActiveCodes(urlKey, cacheKey) {
     return async function getActiveCodesHandler(req, res) {
       try {
@@ -397,6 +531,12 @@ const utils = {
       }
     };
   },
+  /**
+   * @param {string} urlKey
+   * @param {CacheKey} cacheKey
+   * @param {string} extraPath
+   * @returns {ExpressHandler}
+   */
   getCodes(urlKey, cacheKey, extraPath, useCache = true) {
     return async function getCodesHandler(req, res) {
       try {
@@ -415,6 +555,7 @@ const utils = {
       }
     };
   },
+  /** @returns {CacheMiddleware} */
   cacheMiddleware() {
     return (req, res, next) => {
       let key = '__express__' + req.originalUrl || req.url;
@@ -433,6 +574,11 @@ const utils = {
       }
     };
   },
+  /**
+   * @param {StatusCode[]} codes
+   * @param {string} codeKey
+   * @param {string|number} codeValue
+   */
   getCodeLabel(codes, codeKey, codeValue) {
     let label = null;
     codes.some(function (item) {
@@ -443,6 +589,11 @@ const utils = {
     });
     return label;
   },
+  /**
+   * @param {StatusCode[]} codes
+   * @param {string} codeKey
+   * @param {string} label
+   */
   getCodeFromLabel(codes, codeKey, label) {
     let code = null;
     codes.some(function (item) {
@@ -453,6 +604,10 @@ const utils = {
     });
     return code;
   },
+  /**
+   * @param {string} requestType
+   * @returns {ExpressHandler}
+   */
   verifyRequestInSession(requestType) {
     const requestIDName = `${requestType}ID`;
     return function verifyRequestInSessionHandler(req, res, next) {
@@ -472,9 +627,10 @@ const utils = {
   * Please be CAREFUL when using this with parallel api calls from UI Side, when you want to store some data in session in one of the api calls.
   * more documentation found here https://github.com/expressjs/session#readme, look at the resave section.
   * even though our app uses `resave:false` modifying session in parallel api calls will have race condition, which will lead to undesired outcomes based on api call finish times.
+  * @returns {ExpressHandler}
   */
   extendSession() {
-    return function (req, res, next) {
+    return function (req, _res, next) {
       if (req && req.session) {
         log.debug('req.session.cookie.maxAge before is ::', req.session.cookie.maxAge);
         req['session'].touch();
@@ -489,8 +645,8 @@ const utils = {
   },
   /**
    * This function will call student api paginated endpoint and get the list of students based on their ids.
-   * @param {String} token the token to call api with.
-   * @param {String} studentIDs the comma separated ids of student
+   * @param {string} token the token to call api with.
+   * @param {string} studentIDs the comma separated ids of student
    * @returns {Promise<undefined>}
    */
   async getStudentsFromStudentAPIByTheirIds(token, studentIDs) {
@@ -516,18 +672,38 @@ const utils = {
 
     return utils.getData(token, config.get('server:student:rootURL') + '/paginated', params);
   },
+  /**
+   * @param {string} message
+   * @param {object} data
+   */
   async logDebug(message, data) {
     log.debug(message, data ?? '');
   },
+  /**
+   * @param {string} message
+   * @param {object} data
+   */
   async logInfo(message, data) {
     log.info(message, data ?? '');
   },
+  /**
+   * @param {string} message
+   * @param {object} data
+   */
   async logError(message, data) {
     log.error(message, data ?? '');
   },
+  /**
+   * @param {string} message
+   * @param {object} data
+   */
   async logSilly(message, data) {
     log.silly(message, data ?? '');
   },
+  /**
+   * @param {string} message
+   * @param {object} data
+   */
   async logVerbose(message, data) {
     log.verbose(message, data ?? '');
   },
