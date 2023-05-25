@@ -47,7 +47,7 @@
         </v-row>
         <v-row cols="2" v-if="authorityContacts.has(authorityContactType.authorityContactTypeCode)">
           <v-col cols="5" lg="4" v-for="contact in authorityContacts.get(authorityContactType.authorityContactTypeCode)" :key="contact.independentAuthorityId">
-            <AuthorityContact :contact="contact" @editAuthorityContact:doShowEditAuthorityContactForm="showContactEditForm(contact)" :canEditAuthorityContact="canEditAuthorityContact"/>
+            <AuthorityContact :contact="contact" @editAuthorityContact:doShowEditAuthorityContactForm="showContactEditForm(contact)" @removeAuthorityContact:contactRemoved="getThisAuthorityContacts" :canEditAuthorityContact="canEditAuthorityContact"/>
           </v-col>
         </v-row>
         <v-row cols="2" v-else>
