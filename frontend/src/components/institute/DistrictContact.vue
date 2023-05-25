@@ -12,19 +12,19 @@
                 <strong style="word-break: break-word;">{{ formatContactName(contact) }}</strong>
               </v-col>
               <v-col cols="4" class="d-flex justify-end">
-                  <v-btn id="editContactButton"
-                         title="Edit"
-                         color="white"
-                         width="0.5em"
-                         min-width="0.5em"
-                         depressed
-                         v-if="canEditDistrictContact"
-                         @click="callDoShowEditDistrictContactForm()"
-                         small
-                         class="mr-2"
-                  >
-                    <v-icon size="x-large" color="#003366" dark>mdi-pencil</v-icon>
-                  </v-btn>
+                <v-btn id="editContactButton"
+                       title="Edit"
+                       color="white"
+                       width="0.5em"
+                       min-width="0.5em"
+                       depressed
+                       v-if="canEditDistrictContact"
+                       @click="callDoShowEditDistrictContactForm()"
+                       small
+                       class="mr-2"
+                >
+                  <v-icon size="x-large" color="#003366" dark>mdi-pencil</v-icon>
+                </v-btn>
                 <v-btn id="removeContactButton"
                        title="Remove"
                        color="white"
@@ -142,7 +142,7 @@ export default {
           this.$emit('removeDistrictContact:contactRemoved');
         }).catch(error => {
           console.log(error);
-          this.setFailureAlert('Error removing district contact. Please try again later');
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'Error removing district contact. Please try again later');
         }).finally(() => {
           this.loading = false;
         });
