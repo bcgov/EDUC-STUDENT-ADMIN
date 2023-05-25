@@ -12,19 +12,32 @@
                 <strong style="word-break: break-word;" id="authorityContactName">{{ formatContactName(contact) }}</strong>
               </v-col>
               <v-col cols="4" class="d-flex justify-end">
-                  <v-btn id="editContactButton"
-                         title="Edit"
-                         color="white"
-                         width="0.5em"
-                         min-width="0.5em"
-                         depressed
-                         v-if="canEditAuthorityContact"
-                         @click="callDoShowEditAuthorityContactForm()"
-                         small
-                         class="mr-2"
-                  >
-                    <v-icon size="x-large" color="#003366" dark>mdi-pencil</v-icon>
-                  </v-btn>
+                <v-btn id="editContactButton"
+                       title="Edit"
+                       color="white"
+                       width="0.5em"
+                       min-width="0.5em"
+                       depressed
+                       v-if="canEditAuthorityContact"
+                       @click="callDoShowEditAuthorityContactForm()"
+                       small
+                       class="mr-2"
+                >
+                  <v-icon size="x-large" color="#003366" dark>mdi-pencil</v-icon>
+                </v-btn>
+                <v-btn id="removeContactButton"
+                       title="Remove"
+                       color="white"
+                       width="0.5em"
+                       min-width="0.5em"
+                       depressed
+                       v-if="canEditAuthorityContact"
+                       @click="toggleShowRemoveContact()"
+                       small
+                       class="mr-2"
+                >
+                  <v-icon size="x-large" color="#003366" dark>mdi-trash-can-outline</v-icon>
+                </v-btn>
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -61,6 +74,23 @@
           </v-col>
         </v-row>
       </v-card-text>
+      <v-slide-y-transition hide-on-leave>
+          <v-card-text v-show="showRemoveContact" class="remove-contact-background">
+            <v-row>
+              <v-col>
+                <strong>
+                  Are you sure you want to remove this contact?
+                </strong>
+              </v-col>
+            </v-row>
+            <v-row class="text-end">
+              <v-col>
+                <PrimaryButton id="removeContactCancelButton" class="mr-2" @click.native="toggleShowRemoveContact()" secondary>Cancel</PrimaryButton>
+                <PrimaryButton id="removeContactSubmitButton" :loading="loading" @click.native="removeContact">Remove</PrimaryButton>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-slide-y-transition>
     </v-card>
   </span>
 </template>
@@ -69,6 +99,10 @@
 
 import {formatPhoneNumber, formatDate, formatContactName} from '@/utils/format';
 import {getStatusColor} from '@/utils/institute/status';
+import ApiService from '@/common/apiService';
+import {Routes} from '@/utils/constants';
+import alertMixin from '@/mixins/alertMixin';
+import PrimaryButton from '@/components/util/PrimaryButton';
 
 export default {
   name: 'AuthorityContact',
@@ -82,9 +116,33 @@ export default {
       required: true
     }
   },
+  mixins: [alertMixin],
+  components: {PrimaryButton},
+  data() {
+    return {
+      showRemoveContact: false,
+      loading: false
+    };
+  },
   methods: {
     callDoShowEditAuthorityContactForm() {
       this.$emit('editAuthorityContact:doShowEditAuthorityContactForm');
+    },
+    toggleShowRemoveContact() {
+      this.showRemoveContact = !this.showRemoveContact;
+    },
+    removeContact() {
+      this.loading = true;
+      ApiService.apiAxios.delete(`${Routes.institute.AUTHORITY_CONTACT_URL}/${this.contact.independentAuthorityId}/${this.contact.authorityContactId}`)
+        .then(() => {
+          this.setSuccessAlert('Authority contact removed successfully');
+          this.$emit('removeAuthorityContact:contactRemoved');
+        }).catch(error => {
+          console.log(error);
+          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'Error removing authority contact. Please try again later');
+        }).finally(() => {
+          this.loading = false;
+        });
     },
     formatDate,
     formatPhoneNumber,
@@ -108,5 +166,9 @@ export default {
   color: #ff5252;
   word-break: break-word;
   font-size: 16px;
+}
+
+.remove-contact-background {
+  background-color: #F5F5F5;
 }
 </style>
