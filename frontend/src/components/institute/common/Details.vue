@@ -549,7 +549,7 @@
                                                 <v-col cols="4">
                                                     <v-text-field id='newContactPhysicalAddressPostalCodeInput'
                                                                   :rules="[rules.required(), rules.postalCode()]"
-                                                                  v-model="getPhysicalAddressCopy()[0].physicalAddrPostal"
+                                                                  v-model="getPhysicalAddressCopy()[0].postal"
                                                                   class="pt-0"
                                                                   :maxlength="6" label="Postal Code"/>
                                                 </v-col>
