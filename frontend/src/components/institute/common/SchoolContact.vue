@@ -141,7 +141,7 @@ export default {
         this.$emit('removeSchoolContact:contactRemoved');
       }).catch(error => {
         console.log(error);
-        this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'Error removing contact. Please try again later');
+        this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'Error removing school contact. Please try again later');
       }).finally(() => {
         this.loading = false;
       });
