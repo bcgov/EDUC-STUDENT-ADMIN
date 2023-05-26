@@ -47,7 +47,7 @@
         </v-row>
         <v-row cols="2" v-if="authorityContacts.has(authorityContactType.authorityContactTypeCode)">
           <v-col cols="5" lg="4" v-for="contact in authorityContacts.get(authorityContactType.authorityContactTypeCode)" :key="contact.independentAuthorityId">
-            <AuthorityContact :contact="contact" @editAuthorityContact:doShowEditAuthorityContactForm="showContactEditForm(contact)" @removeAuthorityContact:contactRemoved="getThisAuthorityContacts" :canEditAuthorityContact="canEditAuthorityContact"/>
+            <AuthorityContact :contact="contact" @editAuthorityContact:doShowEditAuthorityContactForm="showContactEditForm(contact)" @removeAuthorityContact:showConfirmationPrompt="removeContact" :canEditAuthorityContact="canEditAuthorityContact"/>
           </v-col>
         </v-row>
         <v-row cols="2" v-else>
@@ -89,6 +89,7 @@
           @editAuthorityContact:editAuthorityContactSuccess="contactEditSuccess"
         />
     </v-bottom-sheet>
+    <ConfirmationDialog ref="confirmationDialog"/>
   </v-container>
 </template>
 
@@ -104,6 +105,7 @@ import AuthorityContact from '@/components/institute/AuthorityContact';
 import NewAuthorityContactPage from '@/components/institute/NewAuthorityContactPage';
 import {sortBy} from 'lodash';
 import EditAuthorityContactPage from '@/components/institute/EditAuthorityContactPage.vue';
+import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 
 export default {
   name: 'AuthorityContactPage',
@@ -112,7 +114,8 @@ export default {
     EditAuthorityContactPage,
     PrimaryButton,
     AuthorityContact,
-    NewAuthorityContactPage
+    NewAuthorityContactPage,
+    ConfirmationDialog
   },
   props: {
     authorityID: {
@@ -198,6 +201,29 @@ export default {
     showContactEditForm(contact) {
       this.editContact = contact;
       this.editContactSheet = true;
+    },
+    removeContact(independentAuthorityId, authorityContactId) {
+      const opts = {
+        color: '#003366',
+        dense: false,
+        titleBold: true,
+        resolveText: 'Remove'
+      };
+      this.$refs.confirmationDialog.open('Please Confirm', 'Are you sure you want to remove this contact?',opts)
+        .then((result) => {
+          if (result) { // the component returns true only when user confirms the dialog.
+            this.loadingCount += 1;
+            ApiService.apiAxios.delete(`${Routes.institute.AUTHORITY_CONTACT_URL}/${independentAuthorityId}/${authorityContactId}`).then(() => {
+              this.setSuccessAlert('Authority contact removed successfully');
+              this.getThisAuthorityContacts();
+            }).catch(error => {
+              console.log(error);
+              this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'Error removing authority contact. Please try again later');
+            }).finally(() => {
+              this.loadingCount -= 1;
+            });
+          }
+        });
     },
   },
 };
