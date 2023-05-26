@@ -32,7 +32,7 @@
                        min-width="0.5em"
                        depressed
                        v-if="canEditDistrictContact"
-                       @click="toggleShowRemoveContact()"
+                       @click="callShowRemoveContactConfirmation"
                        small
                        class="mr-2"
                 >
@@ -77,23 +77,6 @@
           </v-col>
         </v-row>
       </v-card-text>
-      <v-slide-y-transition hide-on-leave>
-          <v-card-text v-show="showRemoveContact" class="remove-contact-background">
-            <v-row>
-              <v-col>
-                <strong>
-                  Are you sure you want to remove this contact?
-                </strong>
-              </v-col>
-            </v-row>
-            <v-row class="text-end">
-              <v-col>
-                <PrimaryButton id="removeContactCancelButton" class="mr-2" @click.native="toggleShowRemoveContact()" secondary>Cancel</PrimaryButton>
-                <PrimaryButton id="removeContactSubmitButton" :loading="loading" @click.native="removeContact">Remove</PrimaryButton>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-slide-y-transition>
     </v-card>
   </span>
 </template>
@@ -101,11 +84,7 @@
 <script>
 
 import {formatPhoneNumber, formatDate, formatContactName} from '@/utils/format';
-import PrimaryButton from '@/components/util/PrimaryButton';
 import {getStatusColor} from '@/utils/institute/status';
-import ApiService from '@/common/apiService';
-import {Routes} from '@/utils/constants';
-import alertMixin from '@/mixins/alertMixin';
 
 export default {
   name: 'DistrictContact',
@@ -119,33 +98,12 @@ export default {
       required: true
     }
   },
-  mixins: [alertMixin],
-  components: {PrimaryButton},
-  data() {
-    return {
-      showRemoveContact: false,
-      loading: false
-    };
-  },
   methods: {
     callDoShowEditDistrictContactForm() {
       this.$emit('editDistrictContact:doShowEditDistrictContactForm');
     },
-    toggleShowRemoveContact() {
-      this.showRemoveContact = !this.showRemoveContact;
-    },
-    removeContact() {
-      this.loading = true;
-      ApiService.apiAxios.delete(`${Routes.institute.DISTRICT_CONTACT_URL}/${this.contact.districtId}/${this.contact.districtContactId}`)
-        .then(() => {
-          this.setSuccessAlert('District contact removed successfully');
-          this.$emit('removeDistrictContact:contactRemoved');
-        }).catch(error => {
-          console.log(error);
-          this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'Error removing district contact. Please try again later');
-        }).finally(() => {
-          this.loading = false;
-        });
+    callShowRemoveContactConfirmation() {
+      this.$emit('removeSchoolContact:showConfirmationPrompt', this.contact.districtId, this.contact.districtContactId);
     },
     formatDate,
     formatPhoneNumber,
@@ -169,9 +127,5 @@ export default {
   color: #ff5252;
   word-break: break-word;
   font-size: 16px;
-}
-
-.remove-contact-background {
-  background-color: #F5F5F5;
 }
 </style>
