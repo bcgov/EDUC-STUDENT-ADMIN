@@ -44,55 +44,55 @@
                              @click.native="updateDistrictDetails"></PrimaryButton>
             </v-col>
           </v-row>
-          <v-row class="d-flex justify-start">
-            <v-col  lg="2" sm="4">
+          <v-row cols="1">
+            <v-col lg="2" sm="4" class="mt-1">
               <v-icon class="pb-1" :color="getStatusColor()" right dark>
                 mdi-circle-medium
               </v-icon>
               <span>{{getStatusText()}}</span>
             </v-col>
-            <v-col class="d-flex">
-              <v-icon aria-hidden="false" class="mb-1 mr-1">
-                mdi-phone-outline
-              </v-icon>
-              <div v-if="!editing">
+            <v-col cols="2" class="pt-0 pb-0">
+              <div v-if="!editing" class="mt-4">
+                <v-icon class="mb-1 mr-1" :class="showEditLinks(district.phoneNumber) ? 'mt-n2' : ''">
+                  mdi-phone-outline
+                </v-icon>
                 <span v-if="district.phoneNumber" class="ml-n1">{{ formatPhoneNumber(district.phoneNumber) }}</span>
                 <a v-if="showEditLinks(district.phoneNumber)" class="editField" @click="toggleEdit">+Phone</a>
               </div>
-              <v-text-field id="districtDetailsPhoneNumber" v-else class="shrink py-0" @keypress="isNumber($event)" required :maxlength="10" :rules="[rules.required(), rules.phoneNumber()]" v-model="districtDetailsCopy.phoneNumber"/>
+              <v-text-field prepend-inner-icon="mdi-phone-outline" id="districtDetailsPhoneNumber" v-else class="shrink py-0" @keypress="isNumber($event)" required :maxlength="10" :rules="[rules.required(), rules.phoneNumber()]" v-model="districtDetailsCopy.phoneNumber"/>
             </v-col>
-            <v-col class="d-flex">
-              <v-icon aria-hidden="false" class="mb-1 mr-1">
-                mdi-at
-              </v-icon>
-              <div v-if="!editing">
-                <span v-if="district.email" class="ml-n1">{{ district.email }}</span>
-                <a v-if="showEditLinks(district.email)" class="editField" @click="toggleEdit">+Email</a>
-              </div>
-              <v-text-field id="districtDetailsEmail" v-else class="py-0" required :rules="[rules.email()]" :maxlength="255" v-model="districtDetailsCopy.email"/>
-            </v-col>
-            <v-col class="d-flex">
-              <v-icon aria-hidden="false" class="mb-1 mr-1">
-                mdi-fax
-              </v-icon>
-              <div v-if="!editing">
+            <v-col cols="2" class="pt-0 pb-0">
+              <div v-if="!editing" class="mt-4">
+                <v-icon class="mb-1 mr-1" :class="showEditLinks(district.faxNumber) ? 'mt-n2' : ''">
+                  mdi-fax
+                </v-icon>
                 <span v-if="district.faxNumber" class="ml-n1">{{ formatPhoneNumber(district.faxNumber) }}</span>
                 <a v-if="showEditLinks(district.faxNumber)" class="editField" @click="toggleEdit">+Fax</a>
               </div>
-              <v-text-field id="districtDetailsFaxNumber" v-else class="shrink py-0" @keypress="isNumber($event)" :rules="[rules.phoneNumber('Fax number must be valid')]" :maxlength="10" v-model="districtDetailsCopy.faxNumber"/>
+              <v-text-field prepend-inner-icon="mdi-fax" id="districtDetailsFaxNumber" v-else class="shrink py-0" @keypress="isNumber($event)" :rules="[rules.phoneNumber('Fax number must be valid')]" :maxlength="10" v-model="districtDetailsCopy.faxNumber"/>
             </v-col>
-            <v-col class="d-flex">
-              <v-icon class="mb-1 mr-1" aria-hidden="false">
-                mdi-web
-              </v-icon>
-              <div v-if="!editing">
-                <a v-if="cleanWebsiteUrl" :href="cleanWebsiteUrl" target="_blank">{{ cleanWebsiteUrl }}</a>
+            <v-col cols="3" class="pt-0 pb-0">
+              <div v-if="!editing" class="mt-4">
+                <v-icon class="mb-1 mr-1" :class="showEditLinks(district.email) ? 'mt-n2' : ''">
+                  mdi-at
+                </v-icon>
+                <span v-if="district.email" style="word-break: break-all;" class="ml-n1">{{ district.email }}</span>
+                <a v-if="showEditLinks(district.email)" class="editField" @click="toggleEdit">+Email</a>
+              </div>
+              <v-text-field id="districtDetailsEmail" v-else class="py-0" prepend-inner-icon="mdi-at" required :rules="[rules.email()]" :maxlength="255" v-model="districtDetailsCopy.email"/>
+            </v-col>
+            <v-col cols="3" class="pt-0 pb-0">
+              <div v-if="!editing" class="mt-4">
+                <v-icon class="mb-1 mr-1" :class="showEditLinks(cleanWebsiteUrl) ? 'mt-n2' : ''">
+                  mdi-web
+                </v-icon>
+                <a style="word-break: break-all;" v-if="cleanWebsiteUrl" :href="cleanWebsiteUrl" target="_blank">{{ cleanWebsiteUrl }}</a>
                 <a v-if="showEditLinks(cleanWebsiteUrl)" class="editField" @click="toggleEdit">+Website</a>
               </div>
-              <v-text-field v-if="editing" class="py-0" :rules="[rules.website()]" :maxlength="255" v-model="districtDetailsCopy.website"/>
+              <v-text-field v-if="editing" prepend-inner-icon="mdi-web" class="py-0" :rules="[rules.website()]" :maxlength="255" v-model="districtDetailsCopy.website"/>
             </v-col>
           </v-row>
-          <v-row>
+          <v-row no-gutters>
             <v-col>
               <v-divider class="divider"></v-divider>
             </v-col>
@@ -740,6 +740,7 @@ export default {
   border-color: #FCBA19;
   border-width: medium;
 }
+
 .sheetHeader{
   background-color: #003366;
   color: white;
@@ -756,10 +757,6 @@ export default {
   word-wrap: break-word;
   max-width: 100%;
   font-size: medium;
-}
-
-.fontBolder{
-  font-weight: bolder;
 }
 
 .fontItalic{
