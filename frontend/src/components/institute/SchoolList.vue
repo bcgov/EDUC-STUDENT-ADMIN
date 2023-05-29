@@ -248,6 +248,7 @@ import {getStatusColorAuthorityOrSchool,getStatusAuthorityOrSchool, isContactCur
 import router from '@/router';
 import Spinner from '@/components/common/Spinner';
 import NewSchoolPage from './NewSchoolPage';
+import {isOpenNotClosingAuthority} from '@/utils/common';
 
 export default {
   name: 'SchoolListPage',
@@ -363,6 +364,7 @@ export default {
     canAddSchool() {
       return this.SCHOOL_ADMIN_ROLE || this.SCHOOL_INDEPENDENT_ADMIN_ROLE;
     },
+    isOpenNotClosingAuthority,
     setSchoolStatuses() {
       this.schoolStatus = [{name: 'Open', code: 'Open'}, {name: 'Opening', code: 'Opening'}, {name: 'Closing', code: 'Closing'}, {name: 'Closed', code: 'Closed'}, {name: 'Never Opened', code: 'NeverOpened'}];
     },
@@ -438,12 +440,14 @@ export default {
     getActiveAuthorityDropDownItems(){
       ApiService.getActiveAuthorities().then((response) => {
         for(const authority of response.data){
-          let authorityItem = {
-            authorityNumber: +authority.authorityNumber,
-            authorityCodeName: `${authority.authorityNumber} - ${authority.name}`,
-            authorityID: authority.authorityID,
-          };
-          this.activeAuthorities.push(authorityItem);
+          if(this.isOpenNotClosingAuthority(authority)){
+            let authorityItem = {
+              authorityNumber: +authority.authorityNumber,
+              authorityCodeName: `${authority.authorityNumber} - ${authority.name}`,
+              authorityID: authority.authorityID,
+            };
+            this.activeAuthorities.push(authorityItem);
+          }
         }
         this.activeAuthorities = this.activeAuthorities.sort(function(a, b){return a.authorityNumber-b.authorityNumber;});
       }).catch(error => {
@@ -629,37 +633,6 @@ export default {
 
 <style scoped>
 
-.sheetHeader{
-  background-color: #003366;
-  color: white;
-  font-size: medium !important;
-  font-weight: bolder !important;
-}
-
-.tableRow {
-  cursor: pointer;
-}
-
-.unread {
-  font-weight: bold;
-}
-
-.v-data-table >>> .v-data-table__wrapper {
-  overflow-x: hidden;
-}
-
-.filterButton.v-btn--outlined {
-  border: thin solid #003366 !important;
-}
-
-.v-radio >>> .v-icon {
-  color: #003366;
-}
-
-.activeRadio {
-  color: #003366;
-}
-
 .subjectHeading {
   font-size: large;
   cursor: pointer;
@@ -675,14 +648,6 @@ export default {
   font-size: medium;
 }
 
-.v-dialog__content >>> .v-bottom-sheet {
-  width: 30% !important;
-}
-
-.v-expansion-panel-header:not(.v-expansion-panel-header--mousedown):focus::before {
-  display: none;
-}
-
 @media screen and (max-width: 801px){
   .subjectHeading {
     font-size: medium;
@@ -694,11 +659,6 @@ export default {
 
   .ministryLine{
     font-size: inherit;
-  }
-}
-@media screen and (max-width: 950px){
-  .v-dialog__content /deep/ .v-bottom-sheet {
-    width: 60% !important;
   }
 }
 
