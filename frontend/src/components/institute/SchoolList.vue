@@ -1,5 +1,6 @@
 <template>
   <v-container class="containerSetup" fluid>
+    <v-form ref="schoolForm" v-model="isFormValid">
     <Spinner flat v-if="loadingSchools"/>
     <div v-else>
     <v-row>
@@ -220,6 +221,7 @@
       </v-col>
     </v-row>
     </div>
+    </v-form>
     <!--    new school sheet -->
     <v-bottom-sheet
         v-model="newSchoolSheet"
@@ -237,6 +239,7 @@
       />
     </v-bottom-sheet>
   </v-container>
+
 </template>
 
 <script>
@@ -296,6 +299,7 @@ export default {
       districtSearchNames: [],
       activeDistricts: [],
       authoritySearchNames: [],
+      activeSchoolCategoryTypes: [],
       activeAuthorities: [],
       schoolStatus: [],
       schoolCodeNameFilter: '',
@@ -303,24 +307,34 @@ export default {
       authorityCodeNameFilter: '',
       schoolReportingRequirementCodeFilter: '',
       schoolStatusFilter: '',
-      schoolFacilityTypes: [],
-      allSchoolFacilityTypes: [],
       schoolCategoryTypes: [],
-      activeSchoolCategoryTypes: [],
       schoolCategoryTypeFilter: '',
       schoolFacilityTypeFilter: '',
       loadingSchools: true,
       newSchoolSheet: false,
       //EDX-903
+      isFormValid: false,
       rules: Rules,
       facilityTypeCode: null,
+      schoolCategoryCode: null,
+      independentArray: ['INDEPEND', 'INDP_FNS'],
     };
   },
   computed: {
     ...mapGetters('auth', ['userInfo', 'SCHOOL_ADMIN_ROLE', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
     ...mapState('app', ['schoolsMap']),
     ...mapState('edx', ['schoolSearchParams']),
-    ...mapState('institute', ['facilityTypeCodes', 'activeFacilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes']),
+    ...mapState('institute', ['facilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes']),
+    //EDX-903 filtering the facility types basing the selected school category. - mchintha
+    ...mapState('institute', ['schoolCategoryFacilityTypesMap']),
+    ...mapState('institute', ['activeFacilityTypeCodes']),
+    schoolFacilityTypes(){
+      if (!this.activeFacilityTypeCodes || !this.schoolCategoryTypeFilter) {
+        return [];
+      }
+      let facilityTypes = this.schoolCategoryFacilityTypesMap[this.schoolCategoryTypeFilter]?.map(schoolCatFacilityTypeCode =>  this.activeFacilityTypeCodes.find(facTypCode=> facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
+      return sortBy(  facilityTypes,['displayOrder']);
+    },
     getSheetWidth(){
       switch (this.$vuetify.breakpoint.name) {
       case 'xs':
@@ -333,19 +347,18 @@ export default {
   },
   created() {
     this.$store.dispatch('edx/getMinistryTeams');
-    this.$store.dispatch('institute/getAllActiveFacilityTypeCodes').then(() => {
-      this.schoolFacilityTypes = sortBy(this.activeFacilityTypeCodes,['displayOrder']);
-    });
     this.$store.dispatch('institute/getAllFacilityTypeCodes').then(() => {
       this.allSchoolFacilityTypes = sortBy(this.facilityTypeCodes,['displayOrder']);
     });
     this.$store.dispatch('institute/getAllSchoolCategoryTypeCodes').then(() => {
       this.schoolCategoryTypes = sortBy(this.schoolCategoryTypeCodes,['displayOrder']);
     });
-    this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes').then(() => {
-      this.activeSchoolCategoryTypes = sortBy(this.activeSchoolCategoryTypeCodes,['displayOrder']);
-    });
     this.$store.dispatch('institute/getSchoolReportingRequirementTypeCodes');
+    //EDX-903
+    this.$store.dispatch('institute/getAllActiveFacilityTypeCodes');
+    this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes').then(() => {
+      this.activeSchoolCategoryTypes = sortBy(this.activeSchoolCategoryTypeCodes,['displayOrder']);});
+    this.$store.dispatch('institute/getSchoolCategoryFacilityTypesMap');
 
     this.setSchoolStatuses();
     this.getSchoolDropDownItems();
@@ -373,6 +386,7 @@ export default {
     canAddSchool() {
       return this.SCHOOL_ADMIN_ROLE || this.SCHOOL_INDEPENDENT_ADMIN_ROLE;
     },
+    isOpenNotClosingAuthority,
     setSchoolStatuses() {
       this.schoolStatus = [{name: 'Open', code: 'Open'}, {name: 'Opening', code: 'Opening'}, {name: 'Closing', code: 'Closing'}, {name: 'Closed', code: 'Closed'}, {name: 'Never Opened', code: 'NeverOpened'}];
     },
@@ -622,75 +636,18 @@ export default {
 
       this.clearSchoolList();
     },
-    //EDX-903 - Function to set facility types basing on selected school category asynchronously - mchintha
+    //EDX-903 - Function to invoke when a school category changed - mchintha.
+
     async schoolCategoryChanged() {
-      const schoolCategoryFacilitiesMap = this.getSchoolCategoryAllowedFacilityMap();
-      this.schoolFacilityTypes = schoolCategoryFacilitiesMap[this.schoolCategoryTypeFilter] || [];
-      this.schoolFacilityTypeFilter = '';
+      await this.fireFormValidate();
     },
-    // Defining facility type arrays for each school category.
-    getSchoolCategoryAllowedFacilityMap(){
-      const CONT_ED = 'Continuing Education';
-      const ALT_PROGS = 'Alternate Programs';
-      const YOUTH = 'Youth Custody/Residential';
-      const SHORT_PRP = 'Short term PRP';
-      const LONG_PRP = 'Long term PRP';
-      const DIST_LEARN = 'Provincial Online Learning';
-      const DISTONLINE = 'District Online Learning';
-      const SUMMER = 'Summer';
-      const STANDARD = 'Standard';
-      const POST_SEC = 'Post Secondary';
-      const STRONG_CEN = 'StrongStart Center';
-      const STRONG_OUT = 'StrongStart Outreach';
-      const JUSTB4PRO = 'JustB4 Program';
+    async fireFormValidate(){
 
-
-      const publicSCAllowedFacilityTypeCodes = [];
-      publicSCAllowedFacilityTypeCodes.push(CONT_ED);
-      publicSCAllowedFacilityTypeCodes.push(ALT_PROGS);
-      publicSCAllowedFacilityTypeCodes.push(YOUTH);
-      publicSCAllowedFacilityTypeCodes.push(SHORT_PRP);
-      publicSCAllowedFacilityTypeCodes.push(LONG_PRP);
-      publicSCAllowedFacilityTypeCodes.push(DIST_LEARN);
-      publicSCAllowedFacilityTypeCodes.push(DISTONLINE);
-      publicSCAllowedFacilityTypeCodes.push(SUMMER);
-      publicSCAllowedFacilityTypeCodes.push(STANDARD);
-
-      const independentSchoolSCFacilityTypeCodes=[];
-      independentSchoolSCFacilityTypeCodes.push(STANDARD);
-      independentSchoolSCFacilityTypeCodes.push(DIST_LEARN);
-
-      const offshoreLearningSCFacilityTypeCodes=[];
-      offshoreLearningSCFacilityTypeCodes.push(STANDARD);
-
-      const yukonSCFacilityTypeCodes=[];
-      yukonSCFacilityTypeCodes.push(STANDARD);
-      yukonSCFacilityTypeCodes.push(DIST_LEARN);
-      yukonSCFacilityTypeCodes.push(SUMMER);
-
-      const postSecondarySCFacilityTypeCodes=[];
-      postSecondarySCFacilityTypeCodes.push(POST_SEC);
-
-      const earlyLearningSCFacilityTypeCodes=[];
-      earlyLearningSCFacilityTypeCodes.push(STRONG_CEN);
-      earlyLearningSCFacilityTypeCodes.push(STRONG_OUT);
-      earlyLearningSCFacilityTypeCodes.push(JUSTB4PRO);
-
-      const independentFNSFacilityTypeCodes=[];
-      independentFNSFacilityTypeCodes.push(STANDARD);
-
-      const nonIndependentFNSFacilityTypeCodes=[];
-      nonIndependentFNSFacilityTypeCodes.push(STANDARD);
-      return {
-        'PUBLIC':publicSCAllowedFacilityTypeCodes,
-        'INDEPEND':independentSchoolSCFacilityTypeCodes,
-        'OFFSHORE':offshoreLearningSCFacilityTypeCodes,
-        'FED_BAND':nonIndependentFNSFacilityTypeCodes,
-        'YUKON':yukonSCFacilityTypeCodes,
-        'POST_SEC':postSecondarySCFacilityTypeCodes,
-        'EAR_LEARN':earlyLearningSCFacilityTypeCodes,
-        'INDP_FNS':independentFNSFacilityTypeCodes,
-      };
+      await this.$nextTick();
+      this.validateForm();
+    },
+    validateForm() {
+      this.isFormValid = this.$refs.schoolForm.validate();
     },
     searchButtonClick() {
       this.resetPageNumber();
