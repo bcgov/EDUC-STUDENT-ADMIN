@@ -152,18 +152,14 @@ export default {
         });
     },
     formatSchoolMoveData(schoolMoveData) {
-
-      let result = schoolMoveData.map((schoolMoveItem => {
-        let schoolMove = {
+      return schoolMoveData.map((schoolMoveItem => {
+        return {
           moveDate: this.formatDate(schoolMoveItem.moveDate),
           createUser: schoolMoveItem.createUser,
           ...this.formatSchoolData(schoolMoveItem.fromSchoolId, 'from'),
           ...this.formatSchoolData(schoolMoveItem.toSchoolId, 'to'),
         };
-        return schoolMove;
       }));
-
-      return result;
     },
     formatSchoolData(schoolUUID, moveDirection) {
       let school = this.schoolMap.get(schoolUUID);
@@ -191,7 +187,7 @@ export default {
       return formatDob(datetime.substring(0, 10), 'uuuu-MM-dd');
     },
     isMoveSchoolAllowed() {
-      return this.school.status !== 'Closed' && this.school.status !== 'Never Opened' && this.district.districtNumber !== '102' && this.district.districtNumber !== '103' && this.hasAccess; 
+      return this.school.status !== 'Closed' && this.school.status !== 'Never Opened' && this.school.schoolCategoryCode !== 'POST_SEC' && this.hasAccess;
     },
     moveSchool() {
       this.moveSchoolSheet = !this.moveSchoolSheet;
@@ -211,12 +207,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-
-.divider {
-  border-color: #FCBA19;
-  border-width: unset;
-}
-</style>
-

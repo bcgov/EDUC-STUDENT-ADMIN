@@ -73,17 +73,6 @@
               </v-col>
               <v-col class="d-flex">
                 <v-icon class="mb-1 mr-1" aria-hidden="false">
-                  mdi-at
-                </v-icon>
-                <div v-if="!editing">
-                  <span v-if="authority.email" class="ml-n1">{{ authority.email }}</span>
-                  <a v-if="showEditLinks(authority.email)" class="editField" @click="toggleEdit">+Email</a>
-                </div>
-                <v-text-field v-else id="emailField" class="py-0" required :rules="[rules.email()]" :maxlength="255" v-model="authorityCopy.email">
-                </v-text-field>
-              </v-col>
-              <v-col class="d-flex">
-                <v-icon class="mb-1 mr-1" aria-hidden="false">
                   mdi-fax
                 </v-icon>
                 <div v-if="!editing">
@@ -91,6 +80,17 @@
                   <a v-if="showEditLinks(authority.faxNumber)" class="editField" @click="toggleEdit">+Fax</a>
                 </div>
                 <v-text-field v-else id="faxNumberField" class="shrink py-0" @keypress="isNumber($event)" :rules="[rules.phoneNumber('Fax number must be valid')]" :maxlength="10" v-model="authorityCopy.faxNumber">
+                </v-text-field>
+              </v-col>
+              <v-col class="d-flex">
+                <v-icon class="mb-1 mr-1" aria-hidden="false">
+                  mdi-at
+                </v-icon>
+                <div v-if="!editing">
+                  <span v-if="authority.email" class="ml-n1">{{ authority.email }}</span>
+                  <a v-if="showEditLinks(authority.email)" class="editField" @click="toggleEdit">+Email</a>
+                </div>
+                <v-text-field v-else id="emailField" class="py-0" required :rules="[rules.email()]" :maxlength="255" v-model="authorityCopy.email">
                 </v-text-field>
               </v-col>
             </v-row>
