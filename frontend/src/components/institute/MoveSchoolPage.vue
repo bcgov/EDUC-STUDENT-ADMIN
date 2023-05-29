@@ -349,6 +349,7 @@ import {sortByNameValue, formatDate} from '@/utils/format';
 import {isNumber} from '@/utils/institute/formInput';
 import {sortBy} from 'lodash';
 import {LocalDate} from '@js-joda/core';
+import {isOpenNotClosingAuthority} from '@/utils/common';
 
 export default {
   name: 'MoveSchoolPage',
@@ -544,12 +545,14 @@ export default {
     getActiveAuthorityDropDownItems(){
       ApiService.getActiveAuthorities().then((response) => {
         for(const authority of response.data){
-          let authorityItem = {
-            authorityNumber: +authority.authorityNumber,
-            authorityCodeName: `${authority.authorityNumber} - ${authority.name}`,
-            authorityID: authority.authorityID,
-          };
-          this.activeAuthorities.push(authorityItem);
+          if(this.isOpenNotClosingAuthority(authority)) {
+            let authorityItem = {
+              authorityNumber: +authority.authorityNumber,
+              authorityCodeName: `${authority.authorityNumber} - ${authority.name}`,
+              authorityID: authority.authorityID,
+            };
+            this.activeAuthorities.push(authorityItem);
+          }
         }
         this.activeAuthorities = this.activeAuthorities.sort(function(a, b){return a.authorityNumber-b.authorityNumber;});
       }).catch(error => {
@@ -557,6 +560,7 @@ export default {
         this.setFailureAlert('An error occurred while getting active authorities. Please try again later.');
       });
     },
+    isOpenNotClosingAuthority,
     enableOrDisableFacilityType(facilityTypes){
       this.isFacilityTypeDisabled = facilityTypes && facilityTypes.length === 1;
       if(this.isFacilityTypeDisabled){
@@ -673,20 +677,16 @@ export default {
 };
 </script>
 
-  <style scoped>
-  .sheetHeader{
-    background-color: #003366;
-    color: white;
-    font-size: medium !important;
-    font-weight: bolder !important;
-  }
+<style scoped>
+.sheetHeader{
+  background-color: #003366;
+  color: white;
+  font-size: medium !important;
+  font-weight: bolder !important;
+}
 
-  .move-description {
-    color: black !important;
-    font-size: medium !important;
-  }
-
-  .toggle {
-    font-size: 15px;
-  }
-  </style>
+.move-description {
+  color: black !important;
+  font-size: medium !important;
+}
+</style>

@@ -4,7 +4,7 @@ import {PEN_REQ_BATCH_STUDENT_REQUEST_CODES, Routes} from '@/utils/constants';
 import {filter, isPlainObject, sortBy} from 'lodash';
 import {getDateFormatter} from '@/utils/format';
 import ApiService from '../common/apiService';
-import {LocalDate} from '@js-joda/core';
+import {DateTimeFormatter, LocalDate} from '@js-joda/core';
 
 const clone = require('rfdc')();
 
@@ -261,3 +261,9 @@ export function abbreviateCamelCase(string) {
   return string.replace(/([A-Z])/g,' $1').match(/\b(\w)/g).join('').toLowerCase();
 }
 
+export function isOpenNotClosingAuthority(authority) {
+  const currentTime = LocalDate.now();
+  const openedDate = authority?.openedDate;
+  const closedDate = authority?.closedDate;
+  return authority?.name && openedDate && currentTime.isAfter(LocalDate.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)) && !closedDate;
+}
