@@ -256,7 +256,6 @@ import router from '@/router';
 import Spinner from '@/components/common/Spinner';
 import NewSchoolPage from './NewSchoolPage';
 import {isOpenNotClosingAuthority} from '@/utils/common';
-//EDX-903
 import * as Rules from '@/utils/institute/formRules';
 
 export default {
@@ -312,7 +311,6 @@ export default {
       schoolFacilityTypeFilter: '',
       loadingSchools: true,
       newSchoolSheet: false,
-      //EDX-903
       isFormValid: false,
       rules: Rules,
       facilityTypeCode: null,
@@ -325,7 +323,6 @@ export default {
     ...mapState('app', ['schoolsMap']),
     ...mapState('edx', ['schoolSearchParams']),
     ...mapState('institute', ['facilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes']),
-    //EDX-903 filtering the facility types basing the selected school category. - mchintha
     ...mapState('institute', ['schoolCategoryFacilityTypesMap']),
     ...mapState('institute', ['activeFacilityTypeCodes']),
     schoolFacilityTypes(){
@@ -354,7 +351,6 @@ export default {
       this.schoolCategoryTypes = sortBy(this.schoolCategoryTypeCodes,['displayOrder']);
     });
     this.$store.dispatch('institute/getSchoolReportingRequirementTypeCodes');
-    //EDX-903
     this.$store.dispatch('institute/getAllActiveFacilityTypeCodes');
     this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes').then(() => {
       this.activeSchoolCategoryTypes = sortBy(this.activeSchoolCategoryTypeCodes,['displayOrder']);});
@@ -636,8 +632,6 @@ export default {
 
       this.clearSchoolList();
     },
-    //EDX-903 - Function to invoke when a school category changed - mchintha.
-
     async schoolCategoryChanged() {
       await this.fireFormValidate();
     },
