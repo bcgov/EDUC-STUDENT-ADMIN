@@ -453,17 +453,20 @@
                                 </v-row>
                                 <v-row>
                                     <v-col cols="4">
-                                        <v-text-field id='newSchoolMailingAddressLine1Input' :rules="[rules.required()]"
+                                        <v-text-field id='newSchoolMailingAddressLine1Input'
+                                                      :rules="[rules.required(), rules.noSpecialCharacters()]"
                                                       v-model="getMailingAddressCopy()[0].addressLine1" class="pt-0"
                                                       :maxlength="255" label="Line 1"/>
                                     </v-col>
                                     <v-col cols="4">
                                         <v-text-field id='newSchoolMailingAddressLine2Input'
+                                                      :rules="[rules.noSpecialCharacters()]"
                                                       v-model="getMailingAddressCopy()[0].addressLine2" class="pt-0"
                                                       :maxlength="255" label="Line 2"/>
                                     </v-col>
                                     <v-col cols="4">
-                                        <v-text-field id='newContactMailingAddressCityInput' :rules="[rules.required()]"
+                                        <v-text-field id='newContactMailingAddressCityInput'
+                                                      :rules="[rules.required(), rules.noSpecialCharacters()]"
                                                       v-model="getMailingAddressCopy()[0].city" class="pt-0"
                                                       :maxlength="255" label="City"/>
                                     </v-col>
@@ -508,19 +511,20 @@
                                             <v-row>
                                                 <v-col cols="4">
                                                     <v-text-field id='newSchoolPhysicalAddressLine1Input'
-                                                                  :rules="[rules.required()]"
+                                                                  :rules="[rules.required(), rules.noSpecialCharacters()]"
                                                                   v-model="getPhysicalAddressCopy()[0].addressLine1"
                                                                   class="pt-0" :maxlength="255" label="Line 1"/>
                                                 </v-col>
                                                 <v-col cols="4">
                                                     <v-text-field id='newSchoolPhysicalAddressLine2Input'
+                                                                  :rules="[rules.noSpecialCharacters()]"
                                                                   v-model="getPhysicalAddressCopy()[0].addressLine2"
                                                                   class="pt-0"
                                                                   :maxlength="255" label="Line 2"/>
                                                 </v-col>
                                                 <v-col cols="4">
                                                     <v-text-field id='newContactPhysicalAddressCityInput'
-                                                                  :rules="[rules.required()]"
+                                                                  :rules="[rules.required(), rules.noSpecialCharacters()]"
                                                                   v-model="getPhysicalAddressCopy()[0].city"
                                                                   class="pt-0" :maxlength="255" label="City"/>
                                                 </v-col>
@@ -545,7 +549,7 @@
                                                 <v-col cols="4">
                                                     <v-text-field id='newContactPhysicalAddressPostalCodeInput'
                                                                   :rules="[rules.required(), rules.postalCode()]"
-                                                                  v-model="getPhysicalAddressCopy()[0].physicalAddrPostal"
+                                                                  v-model="getPhysicalAddressCopy()[0].postal"
                                                                   class="pt-0"
                                                                   :maxlength="6" label="Postal Code"/>
                                                 </v-col>
@@ -963,6 +967,11 @@ export default {
     async updateSchoolDetails() {
       if (this.sameAsMailingCheckbox) {
         this.schoolDetailsCopy.addresses = this.schoolDetailsCopy.addresses.filter(address => address.addressTypeCode === 'MAILING');
+      }
+
+      let mailing = this.schoolDetailsCopy.addresses.filter(address => address.addressTypeCode === 'MAILING');
+      if(!mailing[0]?.city){
+        this.schoolDetailsCopy.addresses = null;
       }
 
       this.$emit('updateSchool', this.schoolDetailsCopy);

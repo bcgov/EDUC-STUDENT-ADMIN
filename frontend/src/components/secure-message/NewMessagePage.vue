@@ -20,14 +20,24 @@
                           id='schoolNameTxtField'
                           label="To"
                           class="pt-0"
-                          v-model="schoolID"
-                          :items="validSchoolsForMessaging"
-                          :rules="requiredRules"
+                          v-model="selectedContact"
+                          :items="validContactsForMessaging"
+                          :rules="requiredToRule"
                           @change="onSchoolSelected"
+                          return-object
                         >
                           <template v-slot:selection="{ item }">
                             <span> {{ item.text }} </span>
                           </template>
+                          <template v-slot:item="data">
+                            <v-list-item-avatar>
+                              <v-icon v-if="data.item.mincode">mdi-school</v-icon>
+                              <v-icon v-if="data.item.districtNumber">mdi-domain</v-icon>
+                            </v-list-item-avatar>
+                            <v-list-item-content>
+                              {{ data.item.text }}
+                            </v-list-item-content>
+                          </template> 
                         </v-autocomplete>
                         <v-text-field
                           v-model="subject"
@@ -176,10 +186,11 @@ export default {
   data() {
     return {
       newMessage: '',
-      schoolID: '',
-      validSchoolsForMessaging: [],
+      selectedContact: {},
+      validContactsForMessaging: [],
       subject: '',
       requiredRules: [v => !!v?.trim() || 'Required'],
+      requiredToRule: [v => !!v?.value?.trim() || 'Required'],
       isValidForm: false,
       processing: false,
       pen: null,
@@ -194,18 +205,24 @@ export default {
   },
   computed: {
     ...mapState('auth', ['userInfo']),
-    ...mapState('edx', ['ministryTeams', 'validSchoolIDsForMessaging', 'secureExchangeDocuments','secureExchangeStudents']),
-    ...mapGetters('app', ['schoolMap']),
+    ...mapState('edx', ['ministryTeams', 'validSchoolIDsForMessaging', 'secureExchangeDocuments','secureExchangeStudents', 'validDistrictIDsForMessaging']),
+    ...mapGetters('app', ['schoolMap', 'districtMap']),
     ...mapGetters('edx', ['messageMacros']),
     myTeam() {
       return this.ministryTeams.find(team => this.userInfo.userRoles.some(role => team.groupRoleIdentifier === role)) || {};
     },
   },
   created() {
-    this.$store.dispatch('edx/getValidSchoolIDsForMessaging').then(() => {
-      this.validSchoolsForMessaging = _.sortBy(Array.from(this.schoolMap.entries())
+    this.$store.dispatch('edx/getValidIDsForMessaging').then(() => {
+      let validSchoolsForMessaging = _.sortBy(Array.from(this.schoolMap.entries())
         .filter(school => this.validSchoolIDsForMessaging.includes(school[0]) && getStatusAuthorityOrSchool(school[1]) !== 'Closed')
         .map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolID, mincode: school[1].mincode})), ['mincode']);
+
+      let validDistrictsForMessaging = _.sortBy(Array.from(this.districtMap.entries())
+        .filter(district => this.validDistrictIDsForMessaging.includes(district[0]) && district[1].districtStatusCode === 'ACTIVE')
+        .map(district => ({ text: `${district[1]?.name} (${district[1]?.districtNumber})`, value: district[1]?.districtId, districtNumber: district[1].districtNumber})), ['districtNumber']);
+    
+      this.validContactsForMessaging = [...validDistrictsForMessaging, ...validSchoolsForMessaging];
     });
     this.clearSecureExchangeDocuments();
     this.clearSecureExchangeStudents();
@@ -218,7 +235,7 @@ export default {
     },
     messageSent(){
       this.subject = '';
-      this.schoolID = null;
+      this.selectedContact = {};
       this.newMessage = '';
       this.requiredRules = [v => !!v?.trim() || 'Required'];
       this.penRules = [v => (!v || isValidPEN(v)) || this.penHint];
@@ -236,18 +253,35 @@ export default {
     },
     sendNewMessage() {
       this.processing = true;
-      const payload = {
-        secureExchangeContactTypeCode: 'SCHOOL',
-        contactIdentifier: this.schoolID,
-        ministryOwnershipTeamID: this.myTeam.ministryOwnershipTeamId,
-        subject: this.subject,
-        content: this.newMessage,
-        secureExchangeDocuments: this.secureExchangeDocuments,
-        ministryTeamName : this.myTeam.teamName,
-        schoolID: this.schoolID,
-        schoolName: this.schoolMap.get(this.schoolID).schoolName,
-        secureExchangeStudents: this.secureExchangeStudents
-      };
+      let payload = {};
+      if(this.selectedContact.mincode) {
+        payload = {
+          secureExchangeContactTypeCode: 'SCHOOL',
+          contactIdentifier: this.selectedContact.value,
+          ministryOwnershipTeamID: this.myTeam.ministryOwnershipTeamId,
+          subject: this.subject,
+          content: this.newMessage,
+          secureExchangeDocuments: this.secureExchangeDocuments,
+          ministryTeamName : this.myTeam.teamName,
+          schoolID: this.selectedContact.value,
+          schoolName: this.schoolMap.get(this.selectedContact.value).schoolName,
+          secureExchangeStudents: this.secureExchangeStudents
+        };
+      } else if(this.selectedContact.districtNumber) {
+        payload = {
+          secureExchangeContactTypeCode: 'DISTRICT',
+          contactIdentifier: this.selectedContact.value,
+          ministryOwnershipTeamID: this.myTeam.ministryOwnershipTeamId,
+          subject: this.subject,
+          content: this.newMessage,
+          secureExchangeDocuments: this.secureExchangeDocuments,
+          ministryTeamName : this.myTeam.teamName,
+          districtID: this.selectedContact.value,
+          districtName: this.districtMap.get(this.selectedContact.value).name,
+          secureExchangeStudents: this.secureExchangeStudents
+        };
+      }
+      
       ApiService.apiAxios.post(`${Routes['edx'].EXCHANGE_URL}`, payload)
         .then(() => {
           this.setSuccessAlert('Success! The message has been sent.');
@@ -303,7 +337,7 @@ export default {
       this.$store.commit('edx/setSecureExchangeStudents', []);
     },
     onSchoolSelected(){
-      if(this.schoolID){
+      if(this.selectedContact.value){
         this.disableAddStudent = false;
       }else{
         this.disableAddStudent = true;
@@ -316,7 +350,7 @@ export default {
       this.newMessage = insertMacro(macroText, this.newMessage, this.$refs.newMessageTextArea.$refs.input);
     },
     getMincode() {
-      return this.schoolMap.get(this.schoolID)?.mincode || '';
+      return this.selectedContact.mincode ? this.schoolMap.get(this.selectedContact.value)?.mincode : '';
     },
     validateForm() {
       this.isValidForm = this.$refs.newMessageForm.validate();

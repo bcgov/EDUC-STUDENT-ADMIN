@@ -31,7 +31,7 @@
         </v-row>
         <v-row cols="2" v-if="schoolContacts.has(schoolContactType.schoolContactTypeCode)">
           <v-col cols="5" lg="4" v-for="contact in schoolContacts.get(schoolContactType.schoolContactTypeCode)" :key="contact.schoolId">
-            <SchoolContact :contact="contact" @editSchoolContact:doShowEditSchoolContactForm="showContactEditForm(contact)" :canEditSchoolContact="canAddEditSchoolContact"/>
+            <SchoolContact :contact="contact" @editSchoolContact:doShowEditSchoolContactForm="showContactEditForm(contact)" @removeSchoolContact:showConfirmationPrompt="removeContact" :canEditSchoolContact="canAddEditSchoolContact"/>
           </v-col>
         </v-row>
         <v-row cols="2" v-else>
@@ -73,6 +73,7 @@
           @editSchoolContact:editSchoolContactSuccess="contactEditSuccess"
       />
     </v-bottom-sheet>
+    <ConfirmationDialog ref="confirmationDialog"/>
   </v-container>
 </template>
 
@@ -84,6 +85,7 @@ import PrimaryButton from '../../util/PrimaryButton';
 import SchoolContact from './SchoolContact';
 import NewSchoolContactPage from './NewSchoolContactPage';
 import EditSchoolContactPage from './EditSchoolContactPage';
+import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import alertMixin from '@/mixins/alertMixin';
 import {mapGetters} from 'vuex';
 import {isExpired} from '@/utils/institute/status';
@@ -93,7 +95,7 @@ export default {
   name: 'SchoolContacts',
   mixins: [alertMixin],
   components: {
-    PrimaryButton, SchoolContact, NewSchoolContactPage, EditSchoolContactPage
+    PrimaryButton, SchoolContact, NewSchoolContactPage, EditSchoolContactPage, ConfirmationDialog
   },
   props: {
     schoolID: {
@@ -182,6 +184,29 @@ export default {
     newSchoolContactAdded() {
       this.newContactSheet = !this.newContactSheet;
       this.getThisSchoolsContacts();
+    },
+    removeContact(schoolId, schoolContactId) {
+      const opts = {
+        color: '#003366',
+        dense: false,
+        titleBold: true,
+        resolveText: 'Remove'
+      };
+      this.$refs.confirmationDialog.open('Please Confirm', 'Are you sure you want to remove this contact?',opts)
+        .then((result) => {
+          if (result) { // the component returns true only when user confirms the dialog.
+            this.loadingCount += 1;
+            ApiService.apiAxios.delete(`${Routes.institute.SCHOOL_CONTACT_URL}/${schoolId}/${schoolContactId}`).then(() => {
+              this.setSuccessAlert('School contact removed successfully');
+              this.getThisSchoolsContacts();
+            }).catch(error => {
+              console.log(error);
+              this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'Error removing school contact. Please try again later');
+            }).finally(() => {
+              this.loadingCount -= 1;
+            });
+          }
+        });
     },
   },
 };

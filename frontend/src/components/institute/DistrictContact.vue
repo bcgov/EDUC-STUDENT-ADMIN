@@ -1,6 +1,6 @@
 <template>
   <span>
-    <v-card height="100%"  v-show="!expandEdit">
+    <v-card height="100%">
       <v-card-title class="pb-0">
         <v-row no-gutters>
           <v-col>
@@ -12,19 +12,32 @@
                 <strong style="word-break: break-word;">{{ formatContactName(contact) }}</strong>
               </v-col>
               <v-col cols="4" class="d-flex justify-end">
-                  <v-btn id="editContactButton"
-                         title="Edit"
-                         color="white"
-                         width="0.5em"
-                         min-width="0.5em"
-                         depressed
-                         v-if="canEditDistrictContact"
-                         @click="callDoShowEditDistrictContactForm()"
-                         small
-                         class="mr-2"
-                  >
-                    <v-icon size="x-large" color="#003366" dark>mdi-pencil</v-icon>
-                  </v-btn>
+                <v-btn id="editContactButton"
+                       title="Edit"
+                       color="white"
+                       width="0.5em"
+                       min-width="0.5em"
+                       depressed
+                       v-if="canEditDistrictContact"
+                       @click="callDoShowEditDistrictContactForm()"
+                       small
+                       class="mr-2"
+                >
+                  <v-icon size="x-large" color="#003366" dark>mdi-pencil</v-icon>
+                </v-btn>
+                <v-btn id="removeContactButton"
+                       title="Remove"
+                       color="white"
+                       width="0.5em"
+                       min-width="0.5em"
+                       depressed
+                       v-if="canEditDistrictContact"
+                       @click="callShowRemoveContactConfirmation"
+                       small
+                       class="mr-2"
+                >
+                  <v-icon size="x-large" color="#003366" dark>mdi-trash-can-outline</v-icon>
+                </v-btn>
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -72,7 +85,6 @@
 
 import {formatPhoneNumber, formatDate, formatContactName} from '@/utils/format';
 import {getStatusColor} from '@/utils/institute/status';
-import * as Rules from '@/utils/institute/formRules';
 
 export default {
   name: 'DistrictContact',
@@ -86,34 +98,12 @@ export default {
       required: true
     }
   },
-  data() {
-    return {
-      processing: false,
-      district: {},
-      expandEdit: false,
-      saveEnabled: true,
-      ecFormValid: false,
-      effDateMenu: false,
-      expDateMenu: false,
-      contactEdit: {
-        firstName: '',
-        lastName: '',
-        email: '',
-        phoneNumber:'',
-        phoneExtension:'',
-        alternatePhoneNumber:'',
-        alternatePhoneExtension:'',
-        effectiveDate:'',
-        expiryDate:''
-      },
-      rules: Rules,
-      editContactExpiryDatePicker: null,
-      editContactEffectiveDatePicker: null,
-    };
-  },
   methods: {
     callDoShowEditDistrictContactForm() {
       this.$emit('editDistrictContact:doShowEditDistrictContactForm');
+    },
+    callShowRemoveContactConfirmation() {
+      this.$emit('removeSchoolContact:showConfirmationPrompt', this.contact.districtId, this.contact.districtContactId);
     },
     formatDate,
     formatPhoneNumber,

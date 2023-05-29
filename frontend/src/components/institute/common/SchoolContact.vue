@@ -12,19 +12,32 @@
                 <strong style="word-break: break-word;">{{ formatContactName(contact) }}</strong>
               </v-col>
               <v-col cols="4" class="d-flex justify-end">
-                  <v-btn id="editContactButton"
-                         title="Edit"
-                         color="white"
-                         width="0.5em"
-                         min-width="0.5em"
-                         depressed
-                         v-if="canEditSchoolContact"
-                         @click="callDoShowEditSchoolContactForm()"
-                         small
-                         class="mr-2"
-                  >
-                    <v-icon size="x-large" color="#003366" dark>mdi-pencil</v-icon>
-                  </v-btn>
+                <v-btn id="editContactButton"
+                       title="Edit"
+                       color="white"
+                       width="0.5em"
+                       min-width="0.5em"
+                       depressed
+                       v-if="canEditSchoolContact"
+                       @click="callDoShowEditSchoolContactForm()"
+                       small
+                       class="mr-2"
+                >
+                  <v-icon size="x-large" color="#003366" dark>mdi-pencil</v-icon>
+                </v-btn>
+                <v-btn id="removeContactButton"
+                       title="Remove"
+                       color="white"
+                       width="0.5em"
+                       min-width="0.5em"
+                       depressed
+                       v-if="canEditSchoolContact"
+                       @click="callShowRemoveContactConfirmation"
+                       small
+                       class="mr-2"
+                >
+                  <v-icon size="x-large" color="#003366" dark>mdi-trash-can-outline</v-icon>
+                </v-btn>
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -89,6 +102,9 @@ export default {
     callDoShowEditSchoolContactForm() {
       this.$emit('editSchoolContact:doShowEditSchoolContactForm');
     },
+    callShowRemoveContactConfirmation() {
+      this.$emit('removeSchoolContact:showConfirmationPrompt', this.contact.schoolId, this.contact.schoolContactId);
+    },
     formatDate,
     formatPhoneNumber,
     getStatusColor,
@@ -112,4 +128,5 @@ export default {
   word-break: break-word;
   font-size: 16px;
 }
+
 </style>

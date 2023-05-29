@@ -93,6 +93,7 @@ export default {
   getExchangeStatuses: getCodes(`${Routes.edx.STATUSES_URL}`),
   getMinistryTeams: getCodes(`${Routes.edx.USERS_URL}/ministryTeams`),
   getValidSchoolIDsForMessaging: getCodes(Routes.edx.VALID_USERS_FOR_MESSAGING),
+  getValidDistrictIDsForMessaging: getCodes(Routes.edx.VALID_DISTRICT_USERS_FOR_MESSAGING),
   getEdxRoles: getCodes(`${Routes.edx.USERS_URL}/roles`),
   getFileRequirements: getCodes(Routes.edx.EXCHANGE_FILE_REQUIREMENTS_URL),
   getFacilityTypeCodes: getCodes(Routes.cache.FACILITY_TYPES_URL),

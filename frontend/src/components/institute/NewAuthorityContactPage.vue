@@ -20,13 +20,14 @@
             <v-text-field
                 id='newContactFirstNameInput'
                 v-model="newContact.firstName"
+                :rules="[rules.noSpecialCharacters()]"
                 class="pt-0"
                 :maxlength="255"
                 label="First Name"
             />
             <v-text-field
                 id='newContactLastNameInput'
-                :rules="[rules.required()]"
+                :rules="[rules.required(), rules.noSpecialCharacters()]"
                 v-model="newContact.lastName"
                 class="pt-0"
                 :maxlength="255"

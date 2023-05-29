@@ -21,18 +21,20 @@
                 id='editDistrictContactFirstNameInput'
                 v-model="editContact.firstName"
                 class="pt-0"
+                :rules="[rules.noSpecialCharacters()]"
                 :maxlength="255"
                 label="First Name"
             />
             <v-text-field
                 id='editDistrictContactLastNameInput'
-                :rules="[rules.required()]"
+                :rules="[rules.required(), rules.noSpecialCharacters()]"
                 v-model="editContact.lastName"
                 class="pt-0"
                 :maxlength="255"
                 label="Last Name"
             />
             <v-text-field id="editDistrictContactJobTitle"
+                          :rules="[rules.noSpecialCharacters()]"
                           v-model="editContact.jobTitle"
                           label="Position Title"
                           type="text"

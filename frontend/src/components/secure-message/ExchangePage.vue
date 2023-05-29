@@ -90,7 +90,6 @@
                     prepend-inner-icon="mdi-account-box-outline"
                     v-model="contactNameFilter"
                     :items="contacts"
-                    color="#003366"
                     label="Contact"
                     clearable
                   >

@@ -12,19 +12,32 @@
                 <strong style="word-break: break-word;" id="authorityContactName">{{ formatContactName(contact) }}</strong>
               </v-col>
               <v-col cols="4" class="d-flex justify-end">
-                  <v-btn id="editContactButton"
-                         title="Edit"
-                         color="white"
-                         width="0.5em"
-                         min-width="0.5em"
-                         depressed
-                         v-if="canEditAuthorityContact"
-                         @click="callDoShowEditAuthorityContactForm()"
-                         small
-                         class="mr-2"
-                  >
-                    <v-icon size="x-large" color="#003366" dark>mdi-pencil</v-icon>
-                  </v-btn>
+                <v-btn id="editContactButton"
+                       title="Edit"
+                       color="white"
+                       width="0.5em"
+                       min-width="0.5em"
+                       depressed
+                       v-if="canEditAuthorityContact"
+                       @click="callDoShowEditAuthorityContactForm()"
+                       small
+                       class="mr-2"
+                >
+                  <v-icon size="x-large" color="#003366" dark>mdi-pencil</v-icon>
+                </v-btn>
+                <v-btn id="removeContactButton"
+                       title="Remove"
+                       color="white"
+                       width="0.5em"
+                       min-width="0.5em"
+                       depressed
+                       v-if="canEditAuthorityContact"
+                       @click="callShowRemoveContactConfirmation"
+                       small
+                       class="mr-2"
+                >
+                  <v-icon size="x-large" color="#003366" dark>mdi-trash-can-outline</v-icon>
+                </v-btn>
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -85,6 +98,9 @@ export default {
   methods: {
     callDoShowEditAuthorityContactForm() {
       this.$emit('editAuthorityContact:doShowEditAuthorityContactForm');
+    },
+    callShowRemoveContactConfirmation() {
+      this.$emit('removeAuthorityContact:showConfirmationPrompt', this.contact.independentAuthorityId, this.contact.authorityContactId);
     },
     formatDate,
     formatPhoneNumber,

@@ -50,7 +50,7 @@
         </v-row>
         <v-row cols="2" v-if="districtContacts.has(districtContactType.districtContactTypeCode)">
           <v-col cols="5" lg="4" v-for="contact in districtContacts.get(districtContactType.districtContactTypeCode)" :key="contact.schoolId">
-            <DistrictContact :contact="contact" @editDistrictContact:doShowEditDistrictContactForm="showDistrictEditForm(contact)" :canEditDistrictContact="canEditDistrictContact" />
+            <DistrictContact :contact="contact" @editDistrictContact:doShowEditDistrictContactForm="showDistrictEditForm(contact)" @removeSchoolContact:showConfirmationPrompt="removeContact" :canEditDistrictContact="canEditDistrictContact" />
           </v-col>
         </v-row>
         <v-row cols="2" v-else>
@@ -91,6 +91,7 @@
           @editDistrictContact:editDistrictContactSuccess="contactEditSuccess"
       />
     </v-bottom-sheet>
+    <ConfirmationDialog ref="confirmationDialog"/>
   </v-container>
 </template>
 
@@ -102,6 +103,7 @@ import PrimaryButton from '../util/PrimaryButton';
 import DistrictContact from '@/components/institute/DistrictContact';
 import NewDistrictContactPage from '@/components/institute/NewDistrictContactPage';
 import EditDistrictContactPage from '@/components/institute/EditDistrictContactPage';
+import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import alertMixin from '@/mixins/alertMixin';
 import {mapGetters} from 'vuex';
 import {sortBy} from 'lodash';
@@ -115,6 +117,7 @@ export default {
     EditDistrictContactPage,
     DistrictContact,
     PrimaryButton,
+    ConfirmationDialog,
   },
   props: {
     districtID: {
@@ -200,6 +203,29 @@ export default {
     newDistrictContactAdded() {
       this.newContactSheet = !this.newContactSheet;
       this.getThisDistrictsContacts();
+    },
+    removeContact(districtId, districtContactId) {
+      const opts = {
+        color: '#003366',
+        dense: false,
+        titleBold: true,
+        resolveText: 'Remove'
+      };
+      this.$refs.confirmationDialog.open('Please Confirm', 'Are you sure you want to remove this contact?',opts)
+        .then((result) => {
+          if (result) { // the component returns true only when user confirms the dialog.
+            this.loadingCount += 1;
+            ApiService.apiAxios.delete(`${Routes.institute.DISTRICT_CONTACT_URL}/${districtId}/${districtContactId}`).then(() => {
+              this.setSuccessAlert('District contact removed successfully');
+              this.getThisDistrictsContacts();
+            }).catch(error => {
+              console.log(error);
+              this.setFailureAlert(error?.response?.data?.message ? error?.response?.data?.message : 'Error removing district contact. Please try again later');
+            }).finally(() => {
+              this.loadingCount -= 1;
+            });
+          }
+        });
     },
   }
 };

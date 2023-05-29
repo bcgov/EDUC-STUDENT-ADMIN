@@ -183,6 +183,40 @@ async function updateDistrictContact(req, res) {
   }
 }
 
+async function deleteDistrictContact(req, res) {
+  try {
+    const token = getBackendToken(req);
+    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
+
+    let district = cacheService.getDistrictJSONByDistrictId(req.params.districtId);
+    if(!district || !hasDistrictAdminRole(req)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+
+    const contact =  await utils.getData(token, `${config.get('server:institute:instituteDistrictURL')}/${req.params.districtId}/contact/${req.params.contactId}`);
+
+    if (!contact) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'District contact not found'
+      });
+    }
+
+    contact.createDate = null;
+    contact.updateDate = null;
+    contact.updateUser = utils.getUser(req).idir_username;
+    contact.expiryDate = LocalDateTime.now().format(formatter);
+
+    await utils.putData(token, config.get('server:institute:instituteDistrictURL') + '/' + req.params.districtId + '/contact/'+ req.params.contactId , contact, utils.getUser(req).idir_username);
+
+    return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
+  } catch (e) {
+    await logApiError(e, 'removeDistrictContact', 'Error occurred while attempting to remove a district contact.');
+    return errorResponse(res);
+  }
+}
+
 async function addNewDistrictNote(req, res) {
   try {
     const token = getBackendToken(req);
@@ -416,6 +450,40 @@ async function updateSchoolContact(req, res) {
   }
 }
 
+async function deleteSchoolContact(req, res) {
+  try {
+    const token = getBackendToken(req);
+    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
+
+    let school = cacheService.getSchoolBySchoolID(req.params.schoolId);
+    if(!school || !hasSchoolAdminRole(req, school)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+
+    const contact =  await utils.getData(token, `${config.get('server:institute:instituteSchoolURL')}/${req.params.schoolId}/contact/${req.params.contactId}`);
+
+    if (!contact) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'School contact not found'
+      });
+    }
+
+    contact.createDate = null;
+    contact.updateDate = null;
+    contact.updateUser = utils.getUser(req).idir_username;
+    contact.expiryDate = LocalDateTime.now().format(formatter);
+
+    await utils.putData(token, config.get('server:institute:instituteSchoolURL') + '/' + req.params.schoolId + '/contact/'+ req.params.contactId , contact, utils.getUser(req).idir_username);
+
+    return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
+  } catch (e) {
+    await logApiError(e, 'removeSchoolContact', 'Error occurred while attempting to remove a school contact.');
+    return errorResponse(res);
+  }
+}
+
 async function addAuthorityContact(req, res) {
   try {
     const token = getBackendToken(req);
@@ -476,6 +544,40 @@ async function updateAuthorityContact(req, res) {
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'updateAuthorityContact', 'Error occurred while attempting to update an authority contact.');
+    return errorResponse(res);
+  }
+}
+
+async function deleteAuthorityContact(req, res) {
+  try {
+    const token = getBackendToken(req);
+    const formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd\'T\'HH:mm:ss');
+
+    let authority = cacheService.getAuthorityJSONByAuthorityId(req.params.independentAuthorityId);
+    if(!authority || !hasAuthorityAdminRole(req)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+
+    const contact =  await utils.getData(token, `${config.get('server:institute:instituteAuthorityURL')}/${req.params.independentAuthorityId}/contact/${req.params.contactId}`);
+
+    if (!contact) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'Independent authority contact not found'
+      });
+    }
+
+    contact.createDate = null;
+    contact.updateDate = null;
+    contact.updateUser = utils.getUser(req).idir_username;
+    contact.expiryDate = LocalDateTime.now().format(formatter);
+
+    await utils.putData(token, config.get('server:institute:instituteAuthorityURL') + '/' + req.params.independentAuthorityId + '/contact/'+ req.params.contactId , contact, utils.getUser(req).idir_username);
+
+    return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
+  } catch (e) {
+    await logApiError(e, 'removeAuthorityContact', 'Error occurred while attempting to remove an authority contact.');
     return errorResponse(res);
   }
 }
@@ -639,17 +741,17 @@ async function updateSchool(req, res) {
     }
     const payload = req.body;
 
-    payload.addresses.forEach(function(addy) {
+    payload.addresses?.forEach(function(addy) {
       addy.updateDate = null;
       addy.createDate = null;
     });
 
-    payload.notes.forEach(function(note) {
+    payload.notes?.forEach(function(note) {
       note.updateDate = null;
       note.createDate = null;
     });
 
-    payload.contacts.forEach(function(contact) {
+    payload.contacts?.forEach(function(contact) {
       contact.updateDate = null;
       contact.createDate = null;
     });
@@ -1046,17 +1148,20 @@ module.exports = {
   updateSchoolContact,
   updateAuthority,
   addAuthorityContact,
+  deleteAuthorityContact,
   updateAuthorityContact,
   addNewAuthorityNote,
   getCachedSchoolCategoryFacilityTypes,
   updateSchool,
   addSchool,
   addSchoolContact,
+  deleteSchoolContact,
   getCachedInstituteData,
   updateDistrict,
   addAuthority,
   addNewDistrictNote,
   addDistrictContact,
+  deleteDistrictContact,
   getSchoolHistoryPaginated,
   moveSchool
 };
