@@ -329,8 +329,6 @@ async function createExchange(req, res) {
       districtName: message.districtName,
     };
 
-    console.log('User: ' + JSON.stringify(userInfo));
-    console.log('Payload: ' + JSON.stringify(payload));
     const result = await utils.postData(token, config.get('server:edx:newSecureExchangeSagaURL'), payload, null, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
