@@ -149,73 +149,36 @@
             hide-default-header
             mobile-breakpoint="0"
         >
-
-          <template v-slot:item.secureExchangeStatusCode="{ item }">
-            <v-row style="cursor: pointer;" @click="openSchool(item.schoolId)">
-              <v-col class="pb-0 pt-0">
-                <v-row no-gutters>
-                  <v-col class="pr-3" cols="6">
-                    <v-row class="mt-2" no-gutters>
-                      <v-col>
-                        <span class="subjectHeading">{{ item.mincode }} - {{ item.displayName }}</span>
-                      </v-col>
-                    </v-row>
-                    <v-row no-gutters>
-                      <v-col>
-                        <span class="ministryLine mt-n5" style="color: black">{{
-                            item.schoolCategory
-                          }} | {{ item.facilityType }}</span>
-                      </v-col>
-                    </v-row>
+              <template v-slot:item.secureExchangeStatusCode="{ item }">
+                <v-row class="schoolResult" style="cursor: pointer;" @click="openSchool(item.schoolId)">
+                  <v-col md="4" lg="5">
+                    <ul>
+                      <li class="subjectHeading">{{ item.mincode }} - {{ item.displayName }}</li>
+                      <li class="ministryLine"> {{ item.schoolCategory }} | {{ item.facilityType }} </li>
+                    </ul>
                   </v-col>
-                  <v-col>
-                    <v-row>
-                      <v-col>
-                        <v-row no-gutters>
-                          <v-col>
-                            <v-icon class="mb-1" :color="getStatusColorAuthorityOrSchool(item.status)" dark>
-                              mdi-circle-medium
-                            </v-icon>
-                            <span class="statusCodeLabel">{{ item.status }}</span>
-                          </v-col>
-                        </v-row>
-                        <v-row class="mt-3" no-gutters>
-                          <v-col>
-                            <v-icon class="mb-1">
-                              mdi-phone-outline
-                            </v-icon>
-                            <span class="statusCodeLabel">{{ formatPhoneNumber(item.phoneNumber) }}</span>
-                          </v-col>
-                        </v-row>
-                      </v-col>
-                      <v-col>
-                        <v-row no-gutters>
-                          <v-col>
-                            <v-icon class="mb-1">
-                              mdi-account-outline
-                            </v-icon>
-                            <span class="statusCodeLabel" style="color: black">{{item.principalsName}}</span>
-                          </v-col>
-                        </v-row>
-                        <v-row class="mt-1" no-gutters>
-                          <v-col>
-                            <v-icon class="mb-1">
-                              mdi-at
-                            </v-icon>
-                            <span class="statusCodeLabel">{{ item.email }}</span>
-                          </v-col>
-                        </v-row>
-                      </v-col>
-
-                    </v-row>
+                  <v-col md="4" lg="3">
+                    <ul>
+                      <li class="statusCodeLabel">
+                        <v-icon class="mb-1" :color="getStatusColorAuthorityOrSchool(item.status)" dark>
+                          mdi-circle-medium
+                        </v-icon>
+                        {{ item.status }}
+                      </li>
+                      <li class="statusCodeLabel">
+                        <v-icon class="mb-1">mdi-phone-outline</v-icon>{{ formatPhoneNumber(item.phoneNumber) }}
+                      </li>
+                    </ul>
+                  </v-col>
+                  <v-col md="4" lg="4">
+                    <ul>
+                      <li class="statusCodeLabel"><v-icon>mdi-account-outline</v-icon> {{item.principalsName}}</li>
+                      <li class="statusCodeLabel"><v-icon>mdi-at</v-icon> {{ item.email }}</li>
+                    </ul>
                   </v-col>
                 </v-row>
-              </v-col>
-            </v-row>
-          </template>
-
+              </template>
           <template v-slot:no-data>-</template>
-
         </v-data-table>
       </v-col>
     </v-row>
@@ -660,6 +623,11 @@ export default {
 </script>
 
 <style scoped>
+
+.schoolResult ul {
+  list-style-type: none;
+  padding: 0;
+}
 
 .subjectHeading {
   font-size: large;
