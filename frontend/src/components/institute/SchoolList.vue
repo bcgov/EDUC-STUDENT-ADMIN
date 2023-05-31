@@ -58,7 +58,6 @@
             <v-select
               id="status-select-field"
               clearable
-              :rules="[rules.required()]"
               :items="activeSchoolCategoryTypes"
               v-model="schoolCategoryTypeFilter"
               item-text="label"
