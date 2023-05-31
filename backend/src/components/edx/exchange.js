@@ -311,7 +311,7 @@ async function createExchange(req, res) {
       commentsList: [
         {
           staffUserIdentifier: userInfo.idir_username,
-          commentUserName: userInfo.name,
+          commentUserName: userInfo.display_name,
           content: message.content,
           createUser: userInfo.idir_username,
           updateUser: userInfo.idir_username
@@ -587,7 +587,7 @@ async function createSecureExchangeComment(req, res) {
     const secureExchangeComment = {
       secureExchangeID: req.params.secureExchangeID,
       staffUserIdentifier: userInfo.idir_username,
-      commentUserName: userInfo.name,
+      commentUserName: userInfo.display_name,
       content: message.content,
       commentTimestamp: LocalDateTime.now().toJSON(),
       createUser: userInfo.idir_username,
