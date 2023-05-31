@@ -45,14 +45,14 @@
                 <PrimaryButton id="saveButton" icon-left width="6em" text="Save" :disabled="!authorityFormValid" @click.native="saveAuthority"></PrimaryButton>
               </v-col>
             </v-row>
-            <v-row class="d-flex justify-start">
-              <v-col v-if="!editing" class="d-flex">
+            <v-row>
+              <v-col v-if="!editing" cols="2">
                 <v-icon class="pb-1" :color="getStatusColorAuthorityOrSchool(this.authority.status)" right dark>
                   mdi-circle-medium
                 </v-icon>
                 <span>{{ this.authority.status }}</span>
               </v-col>
-              <v-col v-else class="d-flex justify-start pt-6">
+              <v-col v-else cols="2" class="mt-3">
                 <PrimaryButton id="editAuthorityStatusButton" @click.native="openAuthorityStatusEdit" :secondary="true" >
                   <v-icon class="ml-n1 pr-3" :color="getStatusColorAuthorityOrSchool(this.authorityCopy.status)" dark>
                     mdi-circle-medium
@@ -60,37 +60,37 @@
                   <span>{{ this.authorityCopy.status }}</span>
                 </PrimaryButton>
               </v-col>
-              <v-col class="d-flex">
-                <v-icon class="mb-1 mr-1" aria-hidden="false">
-                  mdi-phone-outline
-                </v-icon>
+              <v-col cols="3">
                 <div v-if="!editing">
+                  <v-icon class="mb-1 mr-1">
+                    mdi-phone-outline
+                  </v-icon>
                   <span v-if="authority.phoneNumber" class="ml-n1">{{ formatPhoneNumber(authority.phoneNumber) }}</span>
                   <a v-if="showEditLinks(authority.phoneNumber)" class="editField" @click="toggleEdit">+Phone</a>
                 </div>
-                <v-text-field v-else id="phoneNumberField" class="shrink py-0" @keypress="isNumber($event)" required :maxlength="10" :rules="[rules.required(), rules.phoneNumber()]" v-model="authorityCopy.phoneNumber">
+                <v-text-field prepend-inner-icon="mdi-phone-outline" v-else id="phoneNumberField" class="shrink py-0" @keypress="isNumber($event)" required :maxlength="10" :rules="[rules.required(), rules.phoneNumber()]" v-model="authorityCopy.phoneNumber">
                 </v-text-field>
               </v-col>
-              <v-col class="d-flex">
-                <v-icon class="mb-1 mr-1" aria-hidden="false">
-                  mdi-fax
-                </v-icon>
+              <v-col cols="3">
                 <div v-if="!editing">
+                  <v-icon class="mb-1 mr-1">
+                    mdi-fax
+                  </v-icon>
                   <span v-if="authority.faxNumber" class="ml-n1">{{ formatPhoneNumber(authority.faxNumber) }}</span>
                   <a v-if="showEditLinks(authority.faxNumber)" class="editField" @click="toggleEdit">+Fax</a>
                 </div>
-                <v-text-field v-else id="faxNumberField" class="shrink py-0" @keypress="isNumber($event)" :rules="[rules.phoneNumber('Fax number must be valid')]" :maxlength="10" v-model="authorityCopy.faxNumber">
+                <v-text-field prepend-inner-icon="mdi-fax" v-else id="faxNumberField" class="shrink py-0" @keypress="isNumber($event)" :rules="[rules.phoneNumber('Fax number must be valid')]" :maxlength="10" v-model="authorityCopy.faxNumber">
                 </v-text-field>
               </v-col>
-              <v-col class="d-flex">
-                <v-icon class="mb-1 mr-1" aria-hidden="false">
-                  mdi-at
-                </v-icon>
+              <v-col cols="4">
                 <div v-if="!editing">
-                  <span v-if="authority.email" class="ml-n1">{{ authority.email }}</span>
+                  <v-icon class="mr-1">
+                    mdi-at
+                  </v-icon>
+                  <span style="word-break: break-all;" v-if="authority.email" class="ml-n1">{{ authority.email }}</span>
                   <a v-if="showEditLinks(authority.email)" class="editField" @click="toggleEdit">+Email</a>
                 </div>
-                <v-text-field v-else id="emailField" class="py-0" required :rules="[rules.email()]" :maxlength="255" v-model="authorityCopy.email">
+                <v-text-field prepend-inner-icon="mdi-at" v-else id="emailField" class="py-0" required :rules="[rules.email()]" :maxlength="255" v-model="authorityCopy.email">
                 </v-text-field>
               </v-col>
             </v-row>
