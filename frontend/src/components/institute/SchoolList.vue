@@ -641,6 +641,7 @@ export default {
 }
 
 .statusCodeLabel {
+  word-break: break-word;
   font-size: medium;
 }
 
