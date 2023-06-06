@@ -264,7 +264,7 @@
                         </v-col>
                     </v-row>
                     <v-row class="d-flex justify-start">
-                        <v-col cols="3" lg="3" class="pb-0 pt-0">
+                        <v-col cols="2" lg="2" class="pb-0 pt-0">
                             <v-row v-if="!editing" no-gutters class="d-flex justify-start">
                                 <v-col cols="10" class="d-flex justify-start">
                                     <span style="color: grey">Phone</span>
@@ -285,25 +285,7 @@
                                 </v-col>
                             </v-row>
                         </v-col>
-                        <v-col cols="3" lg="3" class="pb-0 pt-0">
-                            <v-row v-if="!editing" no-gutters class="d-flex justify-start">
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <span style="color: grey">Email</span>
-                                </v-col>
-                            </v-row>
-                            <v-row no-gutters :class="editing ? 'mt-n4' : ''">
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <div v-if="!editing">
-                                        <span v-if="school.email" class="ministryLine">{{ school.email }}</span>
-                                        <a v-if="showEditLinks(school.email)" class="editField" @click="toggleEdit">+Email</a>
-                                    </div>
-                                    <v-text-field id="schoolDetailsEmail" label="Email" v-else class="ministryLine"
-                                                  required :rules="[rules.email()]" :maxlength="255"
-                                                  v-model="schoolDetailsCopy.email"/>
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                        <v-col cols="3" lg="3" class="pb-0 pt-0">
+                        <v-col cols="2" lg="2" class="pb-0 pt-0">
                             <v-row v-if="!editing" no-gutters class="d-flex justify-start">
                                 <v-col cols="10" class="d-flex justify-start">
                                     <span style="color: grey">Fax</span>
@@ -323,7 +305,25 @@
                                 </v-col>
                             </v-row>
                         </v-col>
-                        <v-col cols="3" lg="3" class="pb-0 pt-0">
+                        <v-col cols="4" lg="4" class="pb-0 pt-0">
+                            <v-row v-if="!editing" no-gutters class="d-flex justify-start">
+                                <v-col cols="10" class="d-flex justify-start">
+                                    <span style="color: grey">Email</span>
+                                </v-col>
+                            </v-row>
+                            <v-row no-gutters :class="editing ? 'mt-n4' : ''">
+                                <v-col cols="10" class="d-flex justify-start">
+                                    <div v-if="!editing">
+                                        <span style="word-break: break-all;" v-if="school.email" class="ministryLine">{{ school.email }}</span>
+                                        <a v-if="showEditLinks(school.email)" class="editField" @click="toggleEdit">+Email</a>
+                                    </div>
+                                    <v-text-field id="schoolDetailsEmail" label="Email" v-else class="ministryLine"
+                                                  required :rules="[rules.email()]" :maxlength="255"
+                                                  v-model="schoolDetailsCopy.email"/>
+                                </v-col>
+                            </v-row>
+                        </v-col>
+                        <v-col cols="4" lg="4" class="pb-0 pt-0">
                             <v-row v-if="!editing" no-gutters class="d-flex justify-start">
                                 <v-col cols="10" class="d-flex justify-start">
                                     <span style="color: grey">Website</span>
@@ -332,8 +332,7 @@
                             <v-row no-gutters :class="editing ? 'mt-n4' : ''">
                                 <v-col cols="10" class="d-flex justify-start">
                                     <div v-if="!editing">
-                                        <a v-if="cleanWebsiteUrl" :href="cleanWebsiteUrl"
-                                           target="_blank">{{ cleanWebsiteUrl }}</a>
+                                        <a style="word-break: break-all;" v-if="cleanWebsiteUrl" :href="cleanWebsiteUrl" target="_blank">{{ cleanWebsiteUrl }}</a>
                                         <a v-if="showEditLinks(cleanWebsiteUrl)" class="editField" @click="toggleEdit">+Website</a>
                                     </div>
                                     <v-text-field v-if="editing" label="Website" :rules="[rules.website()]"
@@ -561,7 +560,7 @@
                                                 <v-col cols="4">
                                                     <v-text-field id='newContactPhysicalAddressPostalCodeInput'
                                                                   :rules="[rules.required(), rules.postalCode()]"
-                                                                  v-model="getPhysicalAddressCopy()[0].physicalAddrPostal"
+                                                                  v-model="getPhysicalAddressCopy()[0].postal"
                                                                   class="pt-0"
                                                                   :maxlength="6" label="Postal Code"/>
                                                 </v-col>

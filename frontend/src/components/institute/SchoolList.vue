@@ -1,5 +1,6 @@
 <template>
   <v-container class="containerSetup" fluid>
+    <v-form ref="schoolForm" v-model="isFormValid">
     <Spinner flat v-if="loadingSchools"/>
     <div v-else>
     <v-row>
@@ -60,7 +61,10 @@
               :items="activeSchoolCategoryTypes"
               v-model="schoolCategoryTypeFilter"
               item-text="label"
-              item-value="schoolCategoryCode" label="School Category"></v-select>
+              item-value="schoolCategoryCode"
+              @change="schoolCategoryChanged"
+              label="School Category">
+            </v-select>
           </v-col>
           <v-col cols="12" md="3" class="d-flex justify-start">
             <v-select
@@ -216,6 +220,7 @@
       </v-col>
     </v-row>
     </div>
+    </v-form>
     <!--    new school sheet -->
     <v-bottom-sheet
         v-model="newSchoolSheet"
@@ -233,6 +238,7 @@
       />
     </v-bottom-sheet>
   </v-container>
+
 </template>
 
 <script>
@@ -248,6 +254,8 @@ import {getStatusColorAuthorityOrSchool,getStatusAuthorityOrSchool, isContactCur
 import router from '@/router';
 import Spinner from '@/components/common/Spinner';
 import NewSchoolPage from './NewSchoolPage';
+import {isOpenNotClosingAuthority} from '@/utils/common';
+import * as Rules from '@/utils/institute/formRules';
 
 export default {
   name: 'SchoolListPage',
@@ -289,6 +297,7 @@ export default {
       districtSearchNames: [],
       activeDistricts: [],
       authoritySearchNames: [],
+      activeSchoolCategoryTypes: [],
       activeAuthorities: [],
       schoolStatus: [],
       schoolCodeNameFilter: '',
@@ -296,21 +305,32 @@ export default {
       authorityCodeNameFilter: '',
       schoolReportingRequirementCodeFilter: '',
       schoolStatusFilter: '',
-      schoolFacilityTypes: [],
-      allSchoolFacilityTypes: [],
       schoolCategoryTypes: [],
-      activeSchoolCategoryTypes: [],
       schoolCategoryTypeFilter: '',
       schoolFacilityTypeFilter: '',
       loadingSchools: true,
       newSchoolSheet: false,
+      isFormValid: false,
+      rules: Rules,
+      facilityTypeCode: null,
+      schoolCategoryCode: null,
+      independentArray: ['INDEPEND', 'INDP_FNS'],
     };
   },
   computed: {
     ...mapGetters('auth', ['userInfo', 'SCHOOL_ADMIN_ROLE', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
     ...mapState('app', ['schoolsMap']),
     ...mapState('edx', ['schoolSearchParams']),
-    ...mapState('institute', ['facilityTypeCodes', 'activeFacilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes']),
+    ...mapState('institute', ['facilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes']),
+    ...mapState('institute', ['schoolCategoryFacilityTypesMap']),
+    ...mapState('institute', ['activeFacilityTypeCodes']),
+    schoolFacilityTypes(){
+      if (!this.activeFacilityTypeCodes || !this.schoolCategoryTypeFilter) {
+        return [];
+      }
+      let facilityTypes = this.schoolCategoryFacilityTypesMap[this.schoolCategoryTypeFilter]?.map(schoolCatFacilityTypeCode =>  this.activeFacilityTypeCodes.find(facTypCode=> facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
+      return sortBy(  facilityTypes,['displayOrder']);
+    },
     getSheetWidth(){
       switch (this.$vuetify.breakpoint.name) {
       case 'xs':
@@ -323,19 +343,17 @@ export default {
   },
   created() {
     this.$store.dispatch('edx/getMinistryTeams');
-    this.$store.dispatch('institute/getAllActiveFacilityTypeCodes').then(() => {
-      this.schoolFacilityTypes = sortBy(this.activeFacilityTypeCodes,['displayOrder']);
-    });
     this.$store.dispatch('institute/getAllFacilityTypeCodes').then(() => {
       this.allSchoolFacilityTypes = sortBy(this.facilityTypeCodes,['displayOrder']);
     });
     this.$store.dispatch('institute/getAllSchoolCategoryTypeCodes').then(() => {
       this.schoolCategoryTypes = sortBy(this.schoolCategoryTypeCodes,['displayOrder']);
     });
-    this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes').then(() => {
-      this.activeSchoolCategoryTypes = sortBy(this.activeSchoolCategoryTypeCodes,['displayOrder']);
-    });
     this.$store.dispatch('institute/getSchoolReportingRequirementTypeCodes');
+    this.$store.dispatch('institute/getAllActiveFacilityTypeCodes');
+    this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes').then(() => {
+      this.activeSchoolCategoryTypes = sortBy(this.activeSchoolCategoryTypeCodes,['displayOrder']);});
+    this.$store.dispatch('institute/getSchoolCategoryFacilityTypesMap');
 
     this.setSchoolStatuses();
     this.getSchoolDropDownItems();
@@ -363,6 +381,7 @@ export default {
     canAddSchool() {
       return this.SCHOOL_ADMIN_ROLE || this.SCHOOL_INDEPENDENT_ADMIN_ROLE;
     },
+    isOpenNotClosingAuthority,
     setSchoolStatuses() {
       this.schoolStatus = [{name: 'Open', code: 'Open'}, {name: 'Opening', code: 'Opening'}, {name: 'Closing', code: 'Closing'}, {name: 'Closed', code: 'Closed'}, {name: 'Never Opened', code: 'NeverOpened'}];
     },
@@ -438,12 +457,14 @@ export default {
     getActiveAuthorityDropDownItems(){
       ApiService.getActiveAuthorities().then((response) => {
         for(const authority of response.data){
-          let authorityItem = {
-            authorityNumber: +authority.authorityNumber,
-            authorityCodeName: `${authority.authorityNumber} - ${authority.name}`,
-            authorityID: authority.authorityID,
-          };
-          this.activeAuthorities.push(authorityItem);
+          if(this.isOpenNotClosingAuthority(authority)){
+            let authorityItem = {
+              authorityNumber: +authority.authorityNumber,
+              authorityCodeName: `${authority.authorityNumber} - ${authority.name}`,
+              authorityID: authority.authorityID,
+            };
+            this.activeAuthorities.push(authorityItem);
+          }
         }
         this.activeAuthorities = this.activeAuthorities.sort(function(a, b){return a.authorityNumber-b.authorityNumber;});
       }).catch(error => {
@@ -610,6 +631,17 @@ export default {
 
       this.clearSchoolList();
     },
+    async schoolCategoryChanged() {
+      await this.fireFormValidate();
+    },
+    async fireFormValidate(){
+
+      await this.$nextTick();
+      this.validateForm();
+    },
+    validateForm() {
+      this.isFormValid = this.$refs.schoolForm.validate();
+    },
     searchButtonClick() {
       this.resetPageNumber();
       this.getSchoolList();
@@ -629,37 +661,6 @@ export default {
 
 <style scoped>
 
-.sheetHeader{
-  background-color: #003366;
-  color: white;
-  font-size: medium !important;
-  font-weight: bolder !important;
-}
-
-.tableRow {
-  cursor: pointer;
-}
-
-.unread {
-  font-weight: bold;
-}
-
-.v-data-table >>> .v-data-table__wrapper {
-  overflow-x: hidden;
-}
-
-.filterButton.v-btn--outlined {
-  border: thin solid #003366 !important;
-}
-
-.v-radio >>> .v-icon {
-  color: #003366;
-}
-
-.activeRadio {
-  color: #003366;
-}
-
 .subjectHeading {
   font-size: large;
   cursor: pointer;
@@ -672,15 +673,8 @@ export default {
 }
 
 .statusCodeLabel {
+  word-break: break-word;
   font-size: medium;
-}
-
-.v-dialog__content >>> .v-bottom-sheet {
-  width: 30% !important;
-}
-
-.v-expansion-panel-header:not(.v-expansion-panel-header--mousedown):focus::before {
-  display: none;
 }
 
 @media screen and (max-width: 801px){
@@ -694,11 +688,6 @@ export default {
 
   .ministryLine{
     font-size: inherit;
-  }
-}
-@media screen and (max-width: 950px){
-  .v-dialog__content /deep/ .v-bottom-sheet {
-    width: 60% !important;
   }
 }
 
