@@ -47,6 +47,15 @@
 
         <v-row class="py-1">
             <v-col cols="4" lg="3" class="pb-0 pt-0 key">
+                <span :class="{ 'diff-value': isValueEmpty(schoolHistory.displayNameNoSpecialChars, schoolHistory.displayNameNoSpecialChars_diff) }">Legacy School Name</span>
+            </v-col>
+            <v-col cols="4" lg="3" class="pb-0 pt-0">
+                <span :class="{ 'diff-value': schoolHistory.displayNameNoSpecialChars_diff }">{{ schoolHistory.displayNameNoSpecialChars }}</span>
+            </v-col>
+        </v-row>
+
+        <v-row class="py-1">
+            <v-col cols="4" lg="3" class="pb-0 pt-0 key">
                 <span :class="{ 'diff-value': isValueEmpty(schoolHistory.phoneNumber, schoolHistory.phoneNumber_diff) }">Phone</span>
             </v-col>
             <v-col cols="4" lg="3" class="pb-0 pt-0">

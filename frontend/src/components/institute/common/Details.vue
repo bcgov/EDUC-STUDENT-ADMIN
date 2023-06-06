@@ -42,6 +42,18 @@
                                 </v-text-field>
                             </v-row>
                         </v-col>
+                        <v-col cols="4" lg="3" class="pb-0 pt-0">
+                          <v-row no-gutters class="d-flex justify-start">
+                              <v-col cols="10" class="d-flex justify-start">
+                                  <span style="color: grey">Legacy Safe School Name</span>
+                              </v-col>
+                          </v-row>
+                          <v-row>
+                                <v-text-field class="mt-n5 ml-3" :maxlength="255" :rules="[rules.noSpecialCharacters()]" required
+                                              v-model="schoolDetailsCopy.displayNameNoSpecialChars">
+                                </v-text-field>
+                            </v-row>
+                        </v-col>
                     </v-row>
                     <v-row class="d-flex justify-start">
                         <v-col cols="4" lg="3" class="pb-0 pt-0">
