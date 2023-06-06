@@ -49,7 +49,7 @@
                               </v-col>
                           </v-row>
                           <v-row>
-                                <v-text-field class="mt-n5 ml-3" :maxlength="255" :rules="[rules.noSpecialCharacters()]" required
+                                <v-text-field class="mt-n5 ml-3" :maxlength="255" :rules="[rules.noSpecialCharacters()]"
                                               v-model="schoolDetailsCopy.displayNameNoSpecialChars">
                                 </v-text-field>
                             </v-row>
