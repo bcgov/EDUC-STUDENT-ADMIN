@@ -24,7 +24,7 @@
               <h2 class="pl-1 pr-1">-</h2>
               <div>
                 <div>
-                  <h2>{{ school.displayName }}</h2>
+                  <h2 id="displayName">{{ school.displayName }}</h2>
                 </div>
                 <div class="safe-name" v-if="school.displayNameNoSpecialChars">{{ school.displayNameNoSpecialChars }}</div>
               </div>
