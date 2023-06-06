@@ -20,7 +20,15 @@
       <v-col>
         <v-row class="d-flex justify-start">
             <v-col class="d-flex justify-start">
-              <h2 class="subjectHeading">{{ school.mincode }} - {{ school.displayName }}</h2>
+              <h2>{{ school.mincode }}</h2>
+              <h2 class="pl-1 pr-1">-</h2>
+              <div>
+                <div>
+                  <h2 id="displayName">{{ school.displayName }}</h2>
+                </div>
+                <div class="safe-name" v-if="school.displayNameNoSpecialChars">{{ school.displayNameNoSpecialChars }}</div>
+              </div>
+              
             </v-col>
           </v-row>
           <v-row v-if="!['OFFSHORE', 'INDEPEND'].includes(school.schoolCategoryCode)" class="d-flex justify-start">
@@ -274,6 +282,11 @@ export default {
 
   .tab-divider:last-child  { 
     border-right: 0
+   }
+
+   .safe-name {
+    color: grey;
+    font-style: italic;
    }
 
 </style>

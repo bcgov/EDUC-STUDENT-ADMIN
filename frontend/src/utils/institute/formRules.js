@@ -39,7 +39,7 @@ const number = (message = 'Must be a number') => {
  * @returns {(value: string) => true|string}
  */
 const noSpecialCharacters = (message = 'Remove or replace any special characters in this field.') =>
-  v => !v || !/[^\w\s-',.#]/.test(v) || message;
+  v => !v || !/[^\w\s-',.#&]/.test(v) || message;
 
 /**
  * Rule for phone numbers also works for fax numbers too
