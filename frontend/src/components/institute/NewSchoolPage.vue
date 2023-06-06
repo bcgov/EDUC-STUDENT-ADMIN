@@ -21,7 +21,7 @@
                 <v-text-field
                     id='legacySafeSchoolNameInput'
                     :rules="[rules.noSpecialCharacters()]"
-                    v-model="newSchool.legacySafeSchoolName"
+                    v-model="newSchool.displayNameNoSpecialChars"
                     class="pt-0"
                     :maxlength="255"
                     label="Legacy Safe School Name"
@@ -421,7 +421,7 @@ export default {
         districtID: null,
         independentAuthorityId: null,
         displayName: null,
-        legacySafeSchoolName: null,
+        displayNameNoSpecialChars: null,
         openedDate: this.calculateDefaultOpenDate(),
         schoolCategoryCode: null,
         facilityTypeCode: null,
