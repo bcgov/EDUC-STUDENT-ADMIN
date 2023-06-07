@@ -14,7 +14,7 @@
               <v-row class="d-flex justify-center">
                 <v-col>
                 <v-row>
-                    <v-col cols="8">
+                    <v-col cols="6">
                         <v-text-field
                       id='newSchoolNameInput'
                       :rules="[rules.required()]"
@@ -24,8 +24,20 @@
                       label="School Name"
                   />
                     </v-col>
+                    <v-col cols="6">
+                        <v-text-field
+                      id='newSchoolSafeNameInput'
+                      :rules="[rules.noSpecialCharacters()]"
+                      v-model="moveSchoolObject.displayNameNoSpecialChars"
+                      class="pt-0"
+                      :maxlength="255"
+                      label="Legacy Safe School Name"
+                  />
+                    </v-col>
 
-                    <v-col cols="4">
+                </v-row>
+                <v-row>
+                  <v-col cols="4">
                       <v-menu
                           id="moveDatePicker"
                           ref="moveDateFilter"
@@ -55,8 +67,6 @@
                         ></v-date-picker>
                       </v-menu>
                     </v-col>
-                </v-row>
-                <v-row>
                     <v-col cols="4">
                       <v-autocomplete
                           id="district-text-field"
@@ -85,7 +95,9 @@
                           :disabled="schoolCategoryDisabled"
                       />
                     </v-col>
-
+                  </v-row>
+                  <!-- -->
+                  <v-row>
                     <v-col cols="4">
                       <v-select
                           id='newSchoolFacilityTypeInput'
@@ -99,9 +111,6 @@
                           label="Facility Type"
                       />
                     </v-col>
-                  </v-row>
-                  <!-- -->
-                  <v-row>
 
                     <v-col cols="4">
                       <v-autocomplete
@@ -130,7 +139,8 @@
                           label="School Organization"
                       />
                     </v-col>
-
+                  </v-row>
+                  <v-row>
                     <v-col cols="4">
                       <v-select
                           id='newSchoolGradesOfferedInput'
@@ -146,8 +156,6 @@
                           label="Grades Offered"
                       />
                     </v-col>
-                  </v-row>
-                  <v-row>
                     <v-col cols="4">
                       <v-select
                           id='newSchoolNLCActivityInput'
@@ -393,6 +401,7 @@ export default {
         districtId: null,
         independentAuthorityId: null,
         displayName: this.school.displayName,
+        displayNameNoSpecialChars: this.school.displayNameNoSpecialChars,
         schoolCategoryCode: this.school.schoolCategoryCode,
         schoolOrganizationCode: this.school.schoolOrganizationCode,
         grades: [],
