@@ -57,7 +57,7 @@ jobs:
 
     steps:
     - name: Check for required secrets
-      uses: actions/github-script@v4
+      uses: actions/github-script@v6
       with:
         script: |
           const secrets = {
@@ -95,7 +95,7 @@ jobs:
           }
 
     - name: Check out repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Determine app name
       if: env.APP_NAME_BACKEND == ''
@@ -166,7 +166,7 @@ jobs:
         oc: 4
 
       # https://github.com/redhat-actions/oc-login#readme
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Deploy to DEV
       run: |
         set -eux
@@ -205,7 +205,7 @@ jobs:
         oc rollout status dc/${{ env.IMAGE_NAME }}
 
     - name: ZAP Scan
-      uses: zaproxy/action-full-scan@v0.3.0
+      uses: zaproxy/action-full-scan@v0.4.0
       with:
         target: 'https://${{ env.HOST_ROUTE }}'
 
@@ -221,7 +221,7 @@ jobs:
 
     steps:
       - name: Check for required secrets
-        uses: actions/github-script@v4
+        uses: actions/github-script@v6
         with:
           script: |
             const secrets = {
@@ -259,7 +259,7 @@ jobs:
             }
 
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install oc
         uses: redhat-actions/openshift-tools-installer@v1
@@ -267,7 +267,7 @@ jobs:
           oc: 4
 
         # https://github.com/redhat-actions/oc-login#readme
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Deploy
         run: |
           set -eux
@@ -302,6 +302,6 @@ jobs:
           oc rollout status dc/${{ env.IMAGE_NAME }}
 
       - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.3.0
+        uses: zaproxy/action-full-scan@v0.4.0
         with:
           target: 'https://${{ env.HOST_ROUTE }}'
