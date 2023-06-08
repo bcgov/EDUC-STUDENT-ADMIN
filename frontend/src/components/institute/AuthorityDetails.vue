@@ -211,7 +211,7 @@
                       <v-col cols="8">
                       <v-text-field id="mailAddressLine1"
                         required
-                        :rules="[rules.required(), rules.noSpecialCharacters()]"
+                        :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                         :maxlength="255"
                         class="shrink mt-n5 mb-3"
                         v-model="getMailingAddressCopy()[0].addressLine1">
@@ -227,7 +227,7 @@
                       <v-col cols="8">
                       <v-text-field id="mailAddressLine2"
                         class="shrink mt-n5 mb-3"
-                        :rules="[rules.noSpecialCharacters()]"
+                        :rules="[rules.noSpecialCharactersAddress()]"
                         :maxlength="255"
                         v-model="getMailingAddressCopy()[0].addressLine2">
                       </v-text-field>
@@ -242,7 +242,7 @@
                       <v-col cols="8">
                       <v-text-field id="mailAddressCity"
                         required
-                        :rules="[rules.required(), rules.noSpecialCharacters()]"
+                        :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                         class="shrink mt-n5 mb-3"
                         :maxlength="255"
                         v-model="getMailingAddressCopy()[0].city">
@@ -361,7 +361,7 @@
                                       <v-col cols="8">
                                       <v-text-field id="physicalAddressLine1"
                                         required
-                                        :rules="[rules.required(), rules.noSpecialCharacters()]"
+                                        :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                                         :maxlength="255"
                                         class="shrink mt-n5 mb-3"
                                         v-model="getPhysicalAddressCopy()[0].addressLine1">
@@ -377,7 +377,7 @@
                                       <v-col cols="8">
                                       <v-text-field id="physicalAddressLine2"
                                         :maxlength="255"
-                                        :rules="[rules.noSpecialCharacters()]"
+                                        :rules="[rules.noSpecialCharactersAddress()]"
                                         class="shrink mt-n5 mb-3"
                                         v-model="getPhysicalAddressCopy()[0].addressLine2">
                                       </v-text-field>
@@ -392,7 +392,7 @@
                                       <v-col cols="8">
                                       <v-text-field id="physicalAddressCity"
                                         required
-                                        :rules="[rules.required(), rules.noSpecialCharacters()]"
+                                        :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                                         :maxlength="255"
                                         class="shrink mt-n5 mb-3"
                                         v-model="getPhysicalAddressCopy()[0].city">

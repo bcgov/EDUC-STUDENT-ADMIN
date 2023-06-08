@@ -465,19 +465,19 @@
                                 <v-row>
                                     <v-col cols="4">
                                         <v-text-field id='newSchoolMailingAddressLine1Input'
-                                                      :rules="[rules.required(), rules.noSpecialCharacters()]"
+                                                      :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                                                       v-model="getMailingAddressCopy()[0].addressLine1" class="pt-0"
                                                       :maxlength="255" label="Line 1"/>
                                     </v-col>
                                     <v-col cols="4">
                                         <v-text-field id='newSchoolMailingAddressLine2Input'
-                                                      :rules="[rules.noSpecialCharacters()]"
+                                                      :rules="[rules.noSpecialCharactersAddress()]"
                                                       v-model="getMailingAddressCopy()[0].addressLine2" class="pt-0"
                                                       :maxlength="255" label="Line 2"/>
                                     </v-col>
                                     <v-col cols="4">
                                         <v-text-field id='newContactMailingAddressCityInput'
-                                                      :rules="[rules.required(), rules.noSpecialCharacters()]"
+                                                      :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                                                       v-model="getMailingAddressCopy()[0].city" class="pt-0"
                                                       :maxlength="255" label="City"/>
                                     </v-col>
@@ -522,20 +522,20 @@
                                             <v-row>
                                                 <v-col cols="4">
                                                     <v-text-field id='newSchoolPhysicalAddressLine1Input'
-                                                                  :rules="[rules.required(), rules.noSpecialCharacters()]"
+                                                                  :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                                                                   v-model="getPhysicalAddressCopy()[0].addressLine1"
                                                                   class="pt-0" :maxlength="255" label="Line 1"/>
                                                 </v-col>
                                                 <v-col cols="4">
                                                     <v-text-field id='newSchoolPhysicalAddressLine2Input'
-                                                                  :rules="[rules.noSpecialCharacters()]"
+                                                                  :rules="[rules.noSpecialCharactersAddress()]"
                                                                   v-model="getPhysicalAddressCopy()[0].addressLine2"
                                                                   class="pt-0"
                                                                   :maxlength="255" label="Line 2"/>
                                                 </v-col>
                                                 <v-col cols="4">
                                                     <v-text-field id='newContactPhysicalAddressCityInput'
-                                                                  :rules="[rules.required(), rules.noSpecialCharacters()]"
+                                                                  :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                                                                   v-model="getPhysicalAddressCopy()[0].city"
                                                                   class="pt-0" :maxlength="255" label="City"/>
                                                 </v-col>
