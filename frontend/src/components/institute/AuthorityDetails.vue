@@ -30,7 +30,7 @@
               <v-text-field
                 class="mt-n5 ml-3"
                 required
-                :rules="[rules.required(), rules.noSpecialCharacters()]"
+                :rules="[rules.required(), rules.noSpecialCharactersSchDisAuthName()]"
                 :maxlength="255"
                 style="font-size: x-large"
                 v-model="authorityCopy.displayName">

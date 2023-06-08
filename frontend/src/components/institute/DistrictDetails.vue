@@ -27,7 +27,7 @@
             </v-col>
             <v-col class="d-flex" v-else>
               <h2 id="districtNumber">{{ district.districtNumber }} - </h2>
-              <v-text-field class="mt-n5 ml-3" style="font-size: x-large" :maxlength="255" :rules="[rules.required()]" required v-model="districtDetailsCopy.displayName">
+              <v-text-field class="mt-n5 ml-3" style="font-size: x-large" :maxlength="255" :rules="[rules.required(), rules.noSpecialCharactersSchDisAuthName()]" required v-model="districtDetailsCopy.displayName">
               </v-text-field>
             </v-col>
             <v-col v-if="!editing" cols="6" class="d-flex justify-end">

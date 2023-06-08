@@ -37,7 +37,7 @@
                                 </v-col>
                             </v-row>
                             <v-row>
-                                <v-text-field class="mt-n5 ml-3" :maxlength="255" :rules="[rules.required()]" required
+                                <v-text-field class="mt-n5 ml-3" :maxlength="255" :rules="[rules.required(), rules.noSpecialCharactersSchDisAuthName()]" required
                                               v-model="schoolDetailsCopy.displayName">
                                 </v-text-field>
                             </v-row>
@@ -49,7 +49,7 @@
                               </v-col>
                           </v-row>
                           <v-row>
-                                <v-text-field class="mt-n5 ml-3" :maxlength="255" :rules="[rules.noSpecialCharacters()]"
+                                <v-text-field class="mt-n5 ml-3" :maxlength="255" :rules="[rules.noSpecialCharactersSchDisAuthName()]"
                                               v-model="schoolDetailsCopy.displayNameNoSpecialChars">
                                 </v-text-field>
                             </v-row>

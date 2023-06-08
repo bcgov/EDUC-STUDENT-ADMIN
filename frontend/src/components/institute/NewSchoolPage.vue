@@ -10,7 +10,7 @@
               <v-col cols="6">
                 <v-text-field
                     id='newSchoolNameInput'
-                    :rules="[rules.required()]"
+                    :rules="[rules.required(), rules.noSpecialCharactersSchDisAuthName()]"
                     v-model="newSchool.displayName"
                     class="pt-0"
                     :maxlength="255"
@@ -20,7 +20,7 @@
               <v-col cols="6">
                 <v-text-field
                     id='legacySafeSchoolNameInput'
-                    :rules="[rules.noSpecialCharacters()]"
+                    :rules="[rules.noSpecialCharactersSchDisAuthName()]"
                     v-model="newSchool.displayNameNoSpecialChars"
                     class="pt-0"
                     :maxlength="255"
