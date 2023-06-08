@@ -181,14 +181,18 @@ export default {
       this.selectedSchoolHistoryId = schoolHistoryId;
     },
     compareAddress(preAddress, address) {
-      if(preAddress && address) {
-        return preAddress.addressLine1 === address.addressLine1 && 
-        preAddress.addressLine2 === address.addressLine2 && 
-        preAddress.city === address.city && 
-        preAddress.countryCode === address.countryCode && 
-        preAddress.postal === address.postal && 
+      if (!preAddress && !address) {
+        return true;
+      }
+      if ((!preAddress && address) || (preAddress && !address)) {
+        return false;
+      }
+      return preAddress.addressLine1 === address.addressLine1 &&
+        preAddress.addressLine2 === address.addressLine2 &&
+        preAddress.city === address.city &&
+        preAddress.countryCode === address.countryCode &&
+        preAddress.postal === address.postal &&
         preAddress.provinceCode === address.provinceCode;
-      }    
     },
     getSchoolHistory() {
       this.loading = true;
