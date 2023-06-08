@@ -34,7 +34,7 @@
                 label="Last Name"
             />
             <v-text-field id="editDistrictContactJobTitle"
-                          :rules="[rules.noSpecialCharacters()]"
+                          :rules="[rules.noSpecialCharactersContactTitle()]"
                           v-model="editContact.jobTitle"
                           label="Position Title"
                           type="text"

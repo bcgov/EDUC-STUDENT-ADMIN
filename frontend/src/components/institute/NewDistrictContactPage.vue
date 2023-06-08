@@ -35,7 +35,7 @@
             />
             <v-text-field
               id='newContactJobTitleInput'
-              :rules="[rules.noSpecialCharacters()]"
+              :rules="[rules.noSpecialCharactersContactTitle()]"
               v-model="newContact.jobTitle"
               class="pt-0"
               :maxlength="255"

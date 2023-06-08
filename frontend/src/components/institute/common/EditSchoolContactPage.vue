@@ -37,7 +37,7 @@
                           v-model="editContact.jobTitle"
                           label="Position Title"
                           type="text"
-                          :rules="[rules.noSpecialCharacters()]"
+                          :rules="[rules.noSpecialCharactersContactTitle()]"
                           maxlength="255"
             ></v-text-field>
             <v-text-field

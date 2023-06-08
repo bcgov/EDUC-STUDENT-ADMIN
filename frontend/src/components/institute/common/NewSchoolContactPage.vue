@@ -37,7 +37,7 @@
                 id='newContactJobTitleInput'
                 v-model="newContact.jobTitle"
                 class="pt-0"
-                :rules="[rules.noSpecialCharacters()]"
+                :rules="[rules.noSpecialCharactersContactTitle()]"
                 :maxlength="255"
                 label="Position Title"
             />
