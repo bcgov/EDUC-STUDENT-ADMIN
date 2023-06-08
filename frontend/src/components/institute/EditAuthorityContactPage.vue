@@ -21,13 +21,13 @@
                 id='editAuthorityContactFirstNameInput'
                 v-model="editContact.firstName"
                 class="pt-0"
-                :rules="[rules.noSpecialCharacters()]"
+                :rules="[rules.noSpecialCharactersContactName()]"
                 :maxlength="255"
                 label="First Name"
             />
             <v-text-field
                 id='editAuthorityContactLastNameInput'
-                :rules="[rules.required(), rules.noSpecialCharacters()]"
+                :rules="[rules.required(), rules.noSpecialCharactersContactName()]"
                 v-model="editContact.lastName"
                 class="pt-0"
                 :maxlength="255"

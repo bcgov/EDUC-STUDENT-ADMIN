@@ -17,7 +17,7 @@
                     <v-col cols="6">
                         <v-text-field
                       id='newSchoolNameInput'
-                      :rules="[rules.required()]"
+                      :rules="[rules.required(), rules.noSpecialCharactersSchDisAuthName()]"
                       v-model="moveSchoolObject.displayName"
                       class="pt-0"
                       :maxlength="255"
@@ -27,7 +27,7 @@
                     <v-col cols="6">
                         <v-text-field
                       id='newSchoolSafeNameInput'
-                      :rules="[rules.noSpecialCharacters()]"
+                      :rules="[rules.noSpecialCharactersSchDisAuthName()]"
                       v-model="moveSchoolObject.displayNameNoSpecialChars"
                       class="pt-0"
                       :maxlength="255"
@@ -245,18 +245,18 @@
                       <v-row>
                         <v-col cols="4">
                           <v-text-field id='newSchoolMailingAddressLine1Input'
-                            :rules="[rules.required(), rules.noSpecialCharacters()]"
+                            :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                             v-model="moveSchoolObject.mailingAddrLine1" class="pt-0" :maxlength="255" label="Line 1" />
                         </v-col>
                         <v-col cols="4">
                           <v-text-field id='newSchoolMailingAddressLine2Input'
-                            :rules="[rules.noSpecialCharacters()]"
+                            :rules="[rules.noSpecialCharactersAddress()]"
                             v-model="moveSchoolObject.mailingAddrLine2" class="pt-0"
                             :maxlength="255" label="Line 2" />
                         </v-col>
                         <v-col cols="4">
                           <v-text-field id='newContactMailingAddressCityInput'
-                            :rules="[rules.required(), rules.noSpecialCharacters()]"
+                            :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                             v-model="moveSchoolObject.mailingAddrCity" class="pt-0" :maxlength="255" label="City" />
                         </v-col>
                       </v-row>
@@ -292,18 +292,18 @@
                             <v-row>
                               <v-col cols="4">
                                 <v-text-field id='newSchoolPhysicalAddressLine1Input'
-                                  :rules="[rules.required(), rules.noSpecialCharacters()]"
+                                  :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                                   v-model="moveSchoolObject.physicalAddrLine1" class="pt-0" :maxlength="255" label="Line 1" />
                               </v-col>
                               <v-col cols="4">
                                 <v-text-field id='newSchoolPhysicalAddressLine2Input'
-                                  :rules="[rules.required(), rules.noSpecialCharacters()]"
+                                  :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                                   v-model="moveSchoolObject.physicalAddrLine2" class="pt-0"
                                   :maxlength="255" label="Line 2" />
                               </v-col>
                               <v-col cols="4">
                                 <v-text-field id='newContactPhysicalAddressCityInput'
-                                  :rules="[rules.required(), rules.noSpecialCharacters()]"
+                                  :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                                   v-model="moveSchoolObject.physicalAddrCity" class="pt-0" :maxlength="255" label="City" />
                               </v-col>
                             </v-row>

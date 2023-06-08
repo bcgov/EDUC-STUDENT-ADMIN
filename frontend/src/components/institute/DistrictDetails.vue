@@ -27,7 +27,7 @@
             </v-col>
             <v-col class="d-flex" v-else>
               <h2 id="districtNumber">{{ district.districtNumber }} - </h2>
-              <v-text-field class="mt-n5 ml-3" style="font-size: x-large" :maxlength="255" :rules="[rules.required()]" required v-model="districtDetailsCopy.displayName">
+              <v-text-field class="mt-n5 ml-3" style="font-size: x-large" :maxlength="255" :rules="[rules.required(), rules.noSpecialCharactersSchDisAuthName()]" required v-model="districtDetailsCopy.displayName">
               </v-text-field>
             </v-col>
             <v-col v-if="!editing" cols="6" class="d-flex justify-end">
@@ -152,7 +152,7 @@
                     <v-col cols="8">
                       <v-text-field id="mailAddressLine1"
                         required
-                        :rules="[rules.required(), rules.noSpecialCharacters()]"
+                        :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                         :maxlength="255"
                         class="shrink mt-n5 mb-3"
                         v-model="getMailingAddressCopy()[0].addressLine1">
@@ -168,7 +168,7 @@
                     <v-col cols="8">
                       <v-text-field id="mailAddressLine2"
                         class="shrink mt-n5 mb-3"
-                        :rules="[rules.noSpecialCharacters()]"
+                        :rules="[rules.noSpecialCharactersAddress()]"
                         :maxlength="255"
                         v-model="getMailingAddressCopy()[0].addressLine2">
                       </v-text-field>
@@ -183,7 +183,7 @@
                     <v-col cols="8">
                       <v-text-field id="mailAddressCity"
                         required
-                        :rules="[rules.required(), rules.noSpecialCharacters()]"
+                        :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                         :maxlength="255"
                         class="shrink mt-n5 mb-3"
                         v-model="getMailingAddressCopy()[0].city">
@@ -302,7 +302,7 @@
                                     <v-col cols="8">
                                       <v-text-field id="physicalAddressLine1"
                                         required
-                                        :rules="[rules.required(), rules.noSpecialCharacters()]"
+                                        :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                                         :maxlength="255"
                                         class="shrink mt-n5 mb-3"
                                         v-model="getPhysicalAddressCopy()[0].addressLine1">
@@ -317,7 +317,7 @@
                                   <v-row no-gutters>
                                     <v-col cols="8">
                                       <v-text-field id="physicalAddressLine2"
-                                        :rules="[rules.noSpecialCharacters()]"
+                                        :rules="[rules.noSpecialCharactersAddress()]"
                                         :maxlength="255"
                                         class="shrink mt-n5 mb-3"
                                         v-model="getPhysicalAddressCopy()[0].addressLine2">
@@ -332,7 +332,7 @@
                                   <v-row no-gutters>
                                     <v-col cols="8">
                                       <v-text-field id="physicalAddressCity"
-                                        required :rules="[rules.required(), rules.noSpecialCharacters()]"
+                                        required :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                                         :maxlength="255"
                                         class="shrink mt-n5 mb-3"
                                         v-model="getPhysicalAddressCopy()[0].city">
