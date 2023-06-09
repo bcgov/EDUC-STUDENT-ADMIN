@@ -6,7 +6,7 @@
           clipped
           app
           color="#E9EBEF"
-          :style="`margin-top: ${$vuetify.application.top + $vuetify.application.bar}px`"
+          :style="`padding-top: ${$vuetify.application.top + $vuetify.application.bar}px`"
           width="15%"
           temporary>
     <v-list>
