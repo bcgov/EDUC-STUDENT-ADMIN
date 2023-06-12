@@ -130,7 +130,7 @@
                           v-show="expandAddStudent"
                           @close:form="showOptions"
                           @addStudent="addSecureExchangeStudent"
-                          :mincode="getMincode()"
+                          :instituteTypeValue="getInstituteValue()"
                           :additionalStudentAddWarning="additionalStudentAddWarningMessage"
                           @updateAdditionalStudentAddWarning="updateAdditionalStudentAddWarning"
                       >
@@ -216,11 +216,11 @@ export default {
     this.$store.dispatch('edx/getValidIDsForMessaging').then(() => {
       let validSchoolsForMessaging = _.sortBy(Array.from(this.schoolMap.entries())
         .filter(school => this.validSchoolIDsForMessaging.includes(school[0]) && getStatusAuthorityOrSchool(school[1]) !== 'Closed')
-        .map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolID, mincode: school[1].mincode})), ['mincode']);
+        .map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolID, mincode: school[1].mincode, type: 'school'})), ['mincode']);
 
       let validDistrictsForMessaging = _.sortBy(Array.from(this.districtMap.entries())
         .filter(district => this.validDistrictIDsForMessaging.includes(district[0]) && district[1].districtStatusCode === 'ACTIVE')
-        .map(district => ({ text: `${district[1]?.name} (${district[1]?.districtNumber})`, value: district[1]?.districtId, districtNumber: district[1].districtNumber})), ['districtNumber']);
+        .map(district => ({ text: `${district[1]?.name} (${district[1]?.districtNumber})`, value: district[1]?.districtId, districtNumber: district[1].districtNumber, type: 'district'})), ['districtNumber']);
     
       this.validContactsForMessaging = [...validDistrictsForMessaging, ...validSchoolsForMessaging];
     });
@@ -349,8 +349,18 @@ export default {
     insertMacroMessage(macroText) {
       this.newMessage = insertMacro(macroText, this.newMessage, this.$refs.newMessageTextArea.$refs.input);
     },
-    getMincode() {
-      return this.selectedContact.mincode ? this.schoolMap.get(this.selectedContact.value)?.mincode : '';
+    getInstituteValue() {
+      if(this.selectedContact?.type === 'school') {
+        return {
+          'type': 'SCHOOL',
+          'value':this.selectedContact?.mincode
+        };
+      } else {
+        return  {
+          'type': 'DISTRICT',
+          'value': this.selectedContact?.value
+        };
+      }
     },
     validateForm() {
       this.isValidForm = this.$refs.newMessageForm.validate();
