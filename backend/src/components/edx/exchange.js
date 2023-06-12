@@ -396,8 +396,8 @@ async function markExchangeStatusAs(req, res) {
 
         return getExchange(req, res);
       }
-    }).catch(e => {
-      logApiError(e, 'markExchangeStatusAs', `Error setting current secure exchange status to ${req.params.status}.`);
+    }).catch(async e => {
+      await logApiError(e, 'markExchangeStatusAs', `Error setting current secure exchange status to ${req.params.status}.`);
       return errorResponse(res);
     });
 }
