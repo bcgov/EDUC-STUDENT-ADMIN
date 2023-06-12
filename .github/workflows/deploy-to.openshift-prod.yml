@@ -39,6 +39,7 @@ env:
 on:
   workflow_dispatch:
 
+jobs:
   deploy-prod:
     name: Deploy to PROD
     runs-on: ubuntu-22.04
