@@ -359,11 +359,17 @@ async function markAs(req, res) {
   }
 }
 
-async function markAsClosed(req, res) {
+async function markExchangeStatusAs(req, res) {
   const token = utils.getBackendToken(req);
   if (!token) {
     return res.status(HttpStatus.UNAUTHORIZED).json({
       message: 'No access token'
+    });
+  }
+
+  if (!['open', 'closed'].includes(req.params.status)) {
+    return res.status(HttpStatus.BAD_REQUEST).json({
+      message: `Trying to mark exchange with an invalid status ${req.params.status}`
     });
   }
   return Promise.all([
@@ -383,15 +389,15 @@ async function markAsClosed(req, res) {
           });
         }
 
-        exchange.secureExchangeStatusCode = 'CLOSED';
+        exchange.secureExchangeStatusCode = req.params.status.toUpperCase();
         exchange.createDate = null;
         exchange.updateDate = null;
         await putData(token, `${config.get('server:edx:exchangeURL')}`, exchange);
 
         return getExchange(req, res);
       }
-    }).catch(e => {
-      logApiError(e, 'markAsClosed', 'Error getting current secure exchange to close.');
+    }).catch(async e => {
+      await logApiError(e, 'markExchangeStatusAs', `Error setting current secure exchange status to ${req.params.status}.`);
       return errorResponse(res);
     });
 }
@@ -1029,7 +1035,7 @@ module.exports = {
   createSecureExchangeComment,
   uploadDocumentToExchange,
   getExchangeDocumentById,
-  markAsClosed,
+  markExchangeStatusAs,
   claimExchange,
   removeDocumentFromExchange,
   removeUserSchoolOrDistrictAccess,
