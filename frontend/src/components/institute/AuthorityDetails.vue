@@ -88,9 +88,8 @@
                     mdi-at
                   </v-icon>
                   <span style="word-break: break-all;" v-if="authority.email" class="ml-n1">{{ authority.email }}</span>
-                  <a v-if="showEditLinks(authority.email)" class="editField" @click="toggleEdit">+Email</a>
                 </div>
-                <v-text-field prepend-inner-icon="mdi-at" v-else id="emailField" class="py-0" required :rules="[rules.email()]" :maxlength="255" v-model="authorityCopy.email">
+                <v-text-field prepend-inner-icon="mdi-at" v-else id="emailField" class="py-0" required :rules="[rules.email(), rules.required()]" :maxlength="255" v-model="authorityCopy.email">
                 </v-text-field>
               </v-col>
             </v-row>

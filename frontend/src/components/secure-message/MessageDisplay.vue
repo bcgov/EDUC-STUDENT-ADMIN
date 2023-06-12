@@ -77,12 +77,12 @@
                   <v-icon v-else>mdi-email-open-outline</v-icon>
                   <span class="ml-1 markAsSpan">{{`Mark As ${secureExchange.isReadByMinistry ? 'Unread' : 'Read'}` }}</span>
                 </v-btn>
-                <v-btn id="claimAsButton" class="mx-2" v-on:click="clickClaimMsgButton" :disabled="!isEditable()">
+                <v-btn id="claimAsButton" class="mx-2" v-on:click="clickClaimMsgButton" :disabled="!isEditable()" :loading="loadingReadStatus">
                   <v-icon>{{ !isClaimable() ? 'mdi-account-off-outline' : 'mdi-account-check-outline' }}</v-icon>
                   <span class="ml-1">{{ isClaimable() ? 'Claim' : 'Unclaim' }}</span>
                 </v-btn>
-                <v-btn id="changeStatusButton" v-on:click="clickMarkAsClosedButton" :disabled="!isEditable()">
-                  <span>Close</span>
+                <v-btn id="changeStatusButton" v-on:click="clickMarkAsStatus(secureExchange.secureExchangeStatusCode === 'Closed' ? 'open' : 'closed')" :loading="loadingReadStatus">
+                  <span>{{ secureExchange.secureExchangeStatusCode === 'Closed' ? 'OPEN' : 'CLOSE' }}</span>
                 </v-btn>
               </v-col>
             </v-row>
@@ -667,22 +667,23 @@ export default {
           setTimeout(() => { this.loadingCount -= 1; }, EDX_SAGA_REQUEST_DELAY_MILLISECONDS);
         });
     },
-    clickMarkAsClosedButton() {
+    clickMarkAsStatus(status) {
       this.loadingReadStatus = true;
-      ApiService.apiAxios.put(this.documentRoute + `/${this.secureExchangeID}/markAsClosed`)
+      ApiService.apiAxios.put(this.documentRoute + `/${this.secureExchangeID}/markExchangeStatusAs/${status}`)
         .then((response) => {
           this.secureExchange = response.data;
+          this.setSuccessAlert('Secure Exchange status changed successfully');
+          router.push({name: `exchange_inbox_${this.secureExchange.ministryOwnershipGroupRoleIdentifier}`});
         })
         .catch(error => {
           console.error(error);
           this.setFailureAlert(
             error?.response?.data?.message ||
-            'An error occurred while trying to close the Secure Exchange. Please try again later.'
+            `An error occurred while trying to set Secure Exchange status to ${status}. Please try again later.`
           );
         })
         .finally(() => {
           this.loadingReadStatus = false;
-          router.push({name: `exchange_inbox_${this.secureExchange.ministryOwnershipGroupRoleIdentifier}`});
         });
     },
     isClaimable(){
