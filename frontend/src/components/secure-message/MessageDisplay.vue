@@ -184,7 +184,7 @@
               <v-row v-if="isNewStudentDisplayed">
                 <v-col class="d-flex justify-center">
 
-                    <AddStudent @addStudent="sendNewSecureExchangeStudent" @close:form="hideStudentPanel" :mincode="getMincode()" :additionalStudentAddWarning="addStudentWarningMessage" @updateAdditionalStudentAddWarning="updateAddStudentWarningMessage">
+                    <AddStudent @addStudent="sendNewSecureExchangeStudent" @close:form="hideStudentPanel" :instituteTypeValue="getInstituteValue()" :additionalStudentAddWarning="addStudentWarningMessage" @updateAdditionalStudentAddWarning="updateAddStudentWarningMessage">
                     </AddStudent>
 
                 </v-col>
@@ -280,6 +280,19 @@
                               </v-alert>
                             </v-col>
                           </v-row>
+                          <v-row v-if="shouldShowDistrictWarning(activity)">
+                            <v-col class="pt-0" cols="12">
+                              <v-alert
+                                  id="studentNotFromMincode"
+                                  dense
+                                  outlined
+                                  class="mb-3 bootstrap-info"
+                              >
+                                Student's mincode is not a part of the district. As such, the district cannot see the student details.
+                              </v-alert>
+                            </v-col>
+                          </v-row>
+                          
                         </v-card-text>
                           <v-row>
                             <v-btn class="mb-1 mr-1 ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveStudent(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="!isEditable()">
@@ -524,7 +537,10 @@ export default {
       this.isNewMessageDisplayed = true;
     },
     shouldShowMincodeWarning(studentActivity){
-      return this.secureExchange.contactIdentifier !== studentActivity.schoolID;
+      return this.secureExchange?.secureExchangeContactTypeCode === 'SCHOOL' && this.secureExchange.contactIdentifier !== studentActivity.schoolID;
+    },
+    shouldShowDistrictWarning(studentActivity){
+      return this.secureExchange?.secureExchangeContactTypeCode === 'DISTRICT' && this.secureExchange.contactIdentifier !== this.schoolMap.get(studentActivity.schoolID)?.districtID;
     },
     hideNewMessagePanel(){
       this.isNewMessageDisplayed = false;
@@ -923,8 +939,18 @@ export default {
         macroText, this.newMessage, this.$refs.newMessageToConvTextArea.$refs.input
       );
     },
-    getMincode() {
-      return this.schoolMap.get(this.secureExchange?.contactIdentifier)?.mincode || '';
+    getInstituteValue() {
+      if(this.secureExchange?.secureExchangeContactTypeCode === 'SCHOOL') {
+        return {
+          'type': 'SCHOOL',
+          'value': this.schoolMap.get(this.secureExchange?.contactIdentifier)?.mincode
+        };
+      } else {
+        return  {
+          'type': 'DISTRICT',
+          'value': this.secureExchange?.contactIdentifier
+        };
+      }
     },
   }
 };

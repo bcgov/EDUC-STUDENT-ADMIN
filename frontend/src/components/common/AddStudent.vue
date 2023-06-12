@@ -48,6 +48,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import PrimaryButton from '@/components/util/PrimaryButton';
@@ -62,8 +63,8 @@ export default {
       type: Boolean,
       default: false
     },
-    mincode: {
-      type: String,
+    instituteTypeValue: {
+      type: Object,
       required: true
     },
     additionalStudentAddWarning:{
@@ -86,6 +87,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('app', ['schoolMap']),
     enableSearchButton() {
       return !(isValidPEN(this.penNumber));
     }
@@ -151,8 +153,13 @@ export default {
       this.student['studentLocalID'] = data.localID;
       this.student['studentGender'] = data.genderCode;
       this.student['studentDoB'] = data.dob;
-      if (data.mincode !== this.mincode) {
+      this.mismatchCheck(data);
+    },
+    mismatchCheck(data) {
+      if(this.instituteTypeValue?.type === 'SCHOOL' && this.instituteTypeValue?.value !== data.mincode) {
         this.setInfoAlert('This student\'s mincode does not match the school which you are sending the message.');
+      } else if(this.instituteTypeValue?.type === 'DISTRICT' && this.instituteTypeValue?.value !== this.getSchoolByMincode(data.mincode)[1].districtID) {
+        this.setInfoAlert('This student\'s mincode does not belong to the district to which you are sending the message.');
       } else{
         this.alert = false;
       }
@@ -175,6 +182,13 @@ export default {
       this.resetFields();
       this.$emit('close:form');
     },
+    getSchoolByMincode(mincode) {
+      for(const [key,val] of this.schoolMap) {
+        if(val.mincode === mincode) {
+          return [key, val];
+        }
+      }
+    }
   },
 };
 </script>

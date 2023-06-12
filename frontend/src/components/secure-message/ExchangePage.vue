@@ -476,9 +476,9 @@ export default {
     getContactLineItem(item){
       switch (item.secureExchangeContactTypeCode) {
       case 'SCHOOL':
-        return `${this.schoolMap.get(item.contactIdentifier).schoolName} (${this.schoolMap.get(item.contactIdentifier).mincode}) - ${item.createDate}`;
+        return `${this.schoolMap.get(item?.contactIdentifier)?.schoolName} (${this.schoolMap.get(item?.contactIdentifier)?.mincode}) - ${item?.createDate}`;
       case 'DISTRICT':
-        return `${this.districtMap.get(item.contactIdentifier).name} (${this.districtMap.get(item.contactIdentifier).districtNumber}) - ${item.createDate}`;
+        return `${this.districtMap.get(item?.contactIdentifier)?.name} (${this.districtMap.get(item?.contactIdentifier)?.districtNumber}) - ${item?.createDate}`;
       }
     },
     getReviewer(reviewer){
