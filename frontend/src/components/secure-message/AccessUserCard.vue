@@ -309,12 +309,15 @@ export default {
           selectedRoles: this.selectedRoles
         }
       };
+      let url = Routes.edx.EXCHANGE_ACCESS_ROLES_URL;
       if (this.instituteTypeCode === 'SCHOOL') {
         payload.params.schoolID = this.instituteCode;
+        url = `${url}/school`;
       } else {
         payload.params.districtId = this.instituteCode;
+        url = `${url}/district`;
       }
-      ApiService.apiAxios.post(Routes.edx.EXCHANGE_ACCESS_ROLES_URL, payload)
+      ApiService.apiAxios.post(url, payload)
         .then(() => {
           this.setSuccessAlert('User roles have been updated.');
         }).catch(error => {

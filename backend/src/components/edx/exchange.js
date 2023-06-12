@@ -537,48 +537,84 @@ async function schoolUserActivationInvite(req, res) {
 
 }
 
-async function updateEdxUserRoles(req, res) {
+async function updateEdxUserSchoolRoles(req, res) {
   try {
     const token = utils.getBackendToken(req);
     const userInfo = utils.getUser(req);
-    let response = await getData(token, config.get('server:edx:edxUsersURL') + '/' + req.body.params.edxUserID);
 
-    let selectedUserSchool = response.edxUserSchools.filter(school => school.schoolID === req.body.params.schoolID);
+    let edxUser = await getData(token, `${config.get('server:edx:edxUsersURL')}/${req.body.params.edxUserID}`);
+    let selectedUserSchools = edxUser.edxUserSchools.filter(school => school.schoolID === req.body.params.schoolID);
+    if (!selectedUserSchools[0]) {
+      return errorResponse(res, 'A user school entry was not found for the selected user.', HttpStatus.NOT_FOUND);
+    }
+    if (selectedUserSchools.length > 1) {
+      return errorResponse(res, 'Too many user school entries have been found for the selected user.', HttpStatus.CONFLICT);
+    }
+    let selectedUserSchool = selectedUserSchools[0];
+    let existingUserSchoolRoles = new Map(selectedUserSchool.edxUserSchoolRoles.map(edxUserSchoolRole => [edxUserSchoolRole.edxRoleCode, edxUserSchoolRole]));
 
-    let rolesToBeRemoved = [];
-
-    //Determine schoolRoles to be removed
-    selectedUserSchool[0].edxUserSchoolRoles.forEach(function (userSchoolRole) {
-      if (!req.body.params.selectedRoles.filter(value => userSchoolRole.edxRoleCode === value).length > 0) {
-        rolesToBeRemoved.push(userSchoolRole.edxRoleCode);
-      }
-    });
-
-    selectedUserSchool[0].edxUserSchoolRoles = selectedUserSchool[0].edxUserSchoolRoles.filter(value => !rolesToBeRemoved.includes(value.edxRoleCode));
-
-    //Roles to be added
+    selectedUserSchool.edxUserSchoolRoles = [];
     req.body.params.selectedRoles.forEach(function (role) {
-      if (!selectedUserSchool[0].edxUserSchoolRoles.filter(value => role === value.edxRoleCode).length > 0) {
-        let newRole = {};
-        newRole.createUser = userInfo.idir_username;
-        newRole.updateUser = userInfo.idir_username;
-        newRole.edxUserSchoolID = selectedUserSchool[0].edxUserSchoolID;
-        newRole.edxRoleCode = role;
-        selectedUserSchool[0].edxUserSchoolRoles.push(newRole);
+      if (existingUserSchoolRoles.has(role)) {
+        selectedUserSchool.edxUserSchoolRoles.push(existingUserSchoolRoles.get(role));
+        return;
       }
+      let newRole = {};
+      newRole.edxUserSchoolID = selectedUserSchool.edxUserSchoolID;
+      newRole.edxRoleCode = role;
+      newRole.createUser = userInfo.idir_username;
+      newRole.updateUser = userInfo.idir_username;
+      selectedUserSchool.edxUserSchoolRoles.push(newRole);
     });
 
-    selectedUserSchool[0].updateDate = null;
-    selectedUserSchool[0].createDate = null;
+    selectedUserSchool.updateDate = null;
+    selectedUserSchool.createDate = null;
 
-    const payload = {
-      ...selectedUserSchool[0]
-    };
-
-    const result = await utils.putData(token, config.get('server:edx:edxUsersURL') + '/' + selectedUserSchool[0].edxUserID + '/school', payload, userInfo.idir_username);
+    const result = await utils.putData(token, `${config.get('server:edx:edxUsersURL')}/${selectedUserSchool.edxUserID}/school`, selectedUserSchool, userInfo.idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
-    await logApiError(e, 'updateEdxUserRoles', 'Error occurred while attempting to update user roles.');
+    await logApiError(e, 'updateEdxUserSchoolRoles', 'Error occurred while attempting to update user roles.');
+    return errorResponse(res);
+  }
+}
+
+async function updateEdxUserDistrictRoles(req, res) {
+  try {
+    const token = utils.getBackendToken(req);
+    const userInfo = utils.getUser(req);
+
+    let edxUser = await getData(token, `${config.get('server:edx:edxUsersURL')}/${req.body.params.edxUserID}`);
+    let selectedUserDistricts = edxUser.edxUserDistricts.filter(district => district.districtID === req.body.params.districtId);
+    if (!selectedUserDistricts[0]) {
+      return errorResponse(res, 'A user district entry was not found for the selected user.', HttpStatus.NOT_FOUND);
+    }
+    if (selectedUserDistricts.length > 1) {
+      return errorResponse(res, 'Too many user district entries have been found for the selected user.', HttpStatus.CONFLICT);
+    }
+    let selectedUserDistrict = selectedUserDistricts[0];
+    let existingUserDistrictRoles = new Map(selectedUserDistrict.edxUserDistrictRoles.map(edxUserDistrictRole => [edxUserDistrictRole.edxRoleCode, edxUserDistrictRole]));
+
+    selectedUserDistrict.edxUserDistrictRoles = [];
+    req.body.params.selectedRoles.forEach(function (role) {
+      if (existingUserDistrictRoles.has(role)) {
+        selectedUserDistrict.edxUserDistrictRoles.push(existingUserDistrictRoles.get(role));
+        return;
+      }
+      let newRole = {};
+      newRole.edxUserDistrictID = selectedUserDistrict.edxUserDistrictID;
+      newRole.edxRoleCode = role;
+      newRole.createUser = userInfo.idir_username;
+      newRole.updateUser = userInfo.idir_username;
+      selectedUserDistrict.edxUserDistrictRoles.push(newRole);
+    });
+
+    selectedUserDistrict.updateDate = null;
+    selectedUserDistrict.createDate = null;
+
+    const result = await utils.putData(token, `${config.get('server:edx:edxUsersURL')}/${selectedUserDistrict.edxUserID}/district`, selectedUserDistrict, userInfo.idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    await logApiError(e, 'updateEdxUserDistrictRoles', 'Error occurred while attempting to update user roles.');
     return errorResponse(res);
   }
 }
@@ -1030,7 +1066,8 @@ module.exports = {
   getEdxUsers,
   findPrimaryEdxActivationCode,
   generateOrRegeneratePrimaryEdxActivationCode,
-  updateEdxUserRoles,
+  updateEdxUserSchoolRoles,
+  updateEdxUserDistrictRoles,
   schoolUserActivationInvite,
   createSecureExchangeComment,
   uploadDocumentToExchange,
