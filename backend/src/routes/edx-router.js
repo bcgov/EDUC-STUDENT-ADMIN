@@ -5,7 +5,7 @@ const router = express.Router();
 const auth = require('../components/auth');
 const utils = require('../components/utils');
 const { getExchanges, createExchange, getExchange, claimAllExchanges, markAs, getEdxUsers, findPrimaryEdxActivationCode, generateOrRegeneratePrimaryEdxActivationCode, updateEdxUserRoles,
-  schoolUserActivationInvite, createSecureExchangeComment, uploadDocumentToExchange, getExchangeDocumentById, markAsClosed, claimExchange, removeDocumentFromExchange,
+  schoolUserActivationInvite, createSecureExchangeComment, uploadDocumentToExchange, getExchangeDocumentById, markExchangeStatusAs, claimExchange, removeDocumentFromExchange,
   removeUserSchoolOrDistrictAccess, relinkUserSchoolOrDistrictAccess, createSecureExchangeStudent, removeSecureExchangeStudent, createSecureExchangeNote, removeSecureExchangeNote, getExchangeStats,districtUserActivationInvite
 } = require('../components/edx/exchange');
 
@@ -33,7 +33,7 @@ router.post('/exchange/claimOne', passport.authenticate('jwt', {session: false},
 router.get('/exchange/statuses', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, utils.cacheMiddleware(), utils.getCodes('server:edx:exchangeStatusesURL', 'exchangeStatuses'));
 router.get('/exchange/file-requirements', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, utils.cacheMiddleware(), utils.getCodes('server:edx:fileRequirementsURL', 'fileRequirements'));
 router.put('/exchange/:secureExchangeID/markAs', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, markAs);
-router.put('/exchange/:secureExchangeID/markAsClosed', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, markAsClosed);
+router.put('/exchange/:secureExchangeID/markExchangeStatusAs/:status', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, markExchangeStatusAs);
 router.put('/exchange/:secureExchangeID/removeDoc/:documentID', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, removeDocumentFromExchange);
 router.put('/exchange/:secureExchangeID/removeStudent/:studentID', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, removeSecureExchangeStudent);
 router.put('/exchange/:secureExchangeID/removeNote/:noteID', passport.authenticate('jwt', {session: false}, undefined), auth.isValidExchangeUserToken, extendSession, removeSecureExchangeNote);
