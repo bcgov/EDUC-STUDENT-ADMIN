@@ -39,10 +39,10 @@ const number = (message = 'Must be a number') => {
  * @returns {(value: string) => true|string}
  */
 const noSpecialCharactersSchDisAuthName = (message = 'Remove or replace any special characters in this field.') =>
-  v => !v || !/[^\w\s-'.#():?&/@]/.test(v) || message;
+  v => !v || !/[^A-Za-z0-9\s-'.#():?&/@]/.test(v) || message;
 
 const noSpecialCharactersAddress = (message = 'Remove or replace any special characters in this field.') =>
-  v => !v || !/[^\w\s-.#/]/.test(v) || message;
+  v => !v || !/[^A-Za-z0-9\s-.#/]/.test(v) || message;
 
 const noSpecialCharactersContactTitle = (message = 'Remove or replace any special characters in this field.') =>
   v => !v || !/[^A-Za-z.'\s-&()]/.test(v) || message;
