@@ -24,6 +24,10 @@ router.get('/school-category-facility-type', passport.authenticate('jwt', {sessi
 
 router.get('/facility-types', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedInstituteData(constants.CACHE_KEYS.FACILITY_TYPES,'server:institute:facilityTypeURL'));
 
+router.get('/district-contact-types', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedInstituteData(constants.CACHE_KEYS.DISTRICT_CONTACT_TYPE_CODES,'server:institute:facilityTypeURL'));
+
+router.get('/facility-types', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedInstituteData(constants.CACHE_KEYS.FACILITY_TYPES,'server:institute:facilityTypeURL'));
+
 router.get('/school-category-types', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession, getCachedInstituteData(constants.CACHE_KEYS.SCHOOL_CATEGORY_TYPES,'server:institute:categoryCodesURL'));
 
 router.get('/school-organization-types', passport.authenticate('jwt', {session: false}, undefined), auth.isLoggedInUser, extendSession,getCachedInstituteData(constants.CACHE_KEYS.SCHOOL_ORGANIZATION_TYPES,'server:institute:organizationCodeURL'));
