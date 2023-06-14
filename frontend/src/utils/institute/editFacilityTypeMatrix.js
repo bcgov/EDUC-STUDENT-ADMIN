@@ -56,7 +56,7 @@ const CATEGORY_FACILITY_TYPE_MATRIX = Object.freeze([
   },
 ]);
 
-export const fetchAllowedFacilityTypes = (categoryCode, facilityType) => {
+export const getAllowedFacilityTypes = (categoryCode, facilityType) => {
   let matchedRecord = CATEGORY_FACILITY_TYPE_MATRIX.find(val => val.selectedSchoolCategory.includes(categoryCode) && val.selectedFacilityType.includes(facilityType));
   return matchedRecord.allowedFacilityTypes;
 };
