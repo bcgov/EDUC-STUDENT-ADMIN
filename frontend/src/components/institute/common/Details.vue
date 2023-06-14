@@ -618,6 +618,7 @@ import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
 import SchoolStatus from '@/components/institute/SchoolStatus';
 import {sortBy} from 'lodash';
+import {getAllowedFacilityTypes} from '@/utils/institute/editFacilityTypeMatrix';
 
 export default {
   name: 'Details',
@@ -689,10 +690,11 @@ export default {
     },
     allowedFacilityTypeCodesForSchoolCategoryCode() {
       if (this.schoolDetailsCopy?.schoolCategoryCode) {
-        let resultingFacilityTypes = this.schoolCategoryFacilityTypesMap[this.schoolDetailsCopy?.schoolCategoryCode]?.map(schoolCatFacilityTypeCode => this.facilityTypeCodes.find(facTypCode => facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
+        let resultingFacilityTypes = getAllowedFacilityTypes(this.schoolDetailsCopy?.schoolCategoryCode, this.schoolDetailsCopy?.facilityTypeCode)?.
+          map(schoolCatFacilityTypeCode => this.facilityTypeCodes.find(facTypCode => facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
 
         if (resultingFacilityTypes !== undefined) {
-          let result = Array.from(resultingFacilityTypes.values()).filter(facType => facType.facilityTypeCode === this.schoolDetailsCopy.facilityTypeCode);
+          let result = resultingFacilityTypes.filter(facType => facType.facilityTypeCode === this.schoolDetailsCopy.facilityTypeCode);
           if (result.length === 0) {
             this.resetSchoolDetailsCopyFacilityType();
           }

@@ -42,6 +42,11 @@ cacheService.loadAllDistrictsToMap().then(() => {
 }).catch((e) => {
   log.error('Error loading districts data codes during boot .', e);
 });
+cacheService.loadDataToCache( constants.CACHE_KEYS.DISTRICT_CONTACT_TYPE_CODES, 'server:institute:districtContactTypesURL').then(() => {
+  log.info('Loaded DISTRICT_CONTACT_TYPE_CODES data to memory');
+}).catch((e) => {
+  log.error('Error loading DISTRICT_CONTACT_TYPE_CODES data during boot .', e);
+});
 cacheService.loadDataToCache( constants.CACHE_KEYS.FACILITY_TYPES, 'server:institute:facilityTypeURL').then(() => {
   log.info('Loaded FACILITY_TYPES data to memory');
 }).catch((e) => {
