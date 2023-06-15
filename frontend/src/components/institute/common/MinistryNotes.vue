@@ -43,7 +43,7 @@
 
                 <v-col cols="2" class="d-flex justify-end">
                   <PrimaryButton id="addNewNoteButton" width="9em" icon="mdi-plus" icon-left text="New Note"
-                                 v-if="hasAccess" @click.native="newNoteSheet = !newNoteSheet">
+                                 v-if="hasAccess" @click.native="openNoteSheet">
                   </PrimaryButton>
                 </v-col>
           </v-row>
@@ -157,6 +157,10 @@ export default {
         }
         return 0;
       });
+    },
+    openNoteSheet(){
+      this.newNoteText = '';
+      this.newNoteSheet = !this.newNoteSheet;
     },
     saveNewSchoolNote() {
       this.loading = true;

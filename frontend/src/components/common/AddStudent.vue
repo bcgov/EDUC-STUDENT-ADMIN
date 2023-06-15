@@ -1,5 +1,5 @@
 <template>
-  <v-card class="add-student" min-width="490px">
+  <v-card class="add-student">
 
     <v-alert
       id="addStudentAlert"
