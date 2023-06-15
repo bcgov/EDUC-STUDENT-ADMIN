@@ -175,6 +175,7 @@
                       :check-file-rules="true"
                       v-show="isNewAttachmentDisplayed"
                       @close:form="hideAttachmentPanel"
+                      class="mt-4"
                       @upload="upload">
                   </DocumentUpload>
                 </v-expand-transition>
