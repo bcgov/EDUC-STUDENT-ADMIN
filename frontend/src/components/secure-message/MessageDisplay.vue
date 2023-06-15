@@ -184,10 +184,14 @@
             <v-expand-transition>
               <v-row v-if="isNewStudentDisplayed">
                 <v-col class="d-flex justify-center">
-
-                    <AddStudent @addStudent="sendNewSecureExchangeStudent" @close:form="hideStudentPanel" :instituteTypeValue="getInstituteValue()" :additionalStudentAddWarning="addStudentWarningMessage" @updateAdditionalStudentAddWarning="updateAddStudentWarningMessage">
+                    <AddStudent
+                        style="min-width: 35em"
+                        @addStudent="sendNewSecureExchangeStudent"
+                        @close:form="hideStudentPanel"
+                        :instituteTypeValue="getInstituteValue()"
+                        :additionalStudentAddWarning="addStudentWarningMessage"
+                        @updateAdditionalStudentAddWarning="updateAddStudentWarningMessage">
                     </AddStudent>
-
                 </v-col>
               </v-row>
             </v-expand-transition>
