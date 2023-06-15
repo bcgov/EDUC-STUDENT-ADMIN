@@ -339,9 +339,7 @@ async function createExchange(req, res) {
       districtName: message.districtName,
     };
 
-    console.time('postSaga');
     const result = await utils.postData(token, config.get('server:edx:newSecureExchangeSagaURL'), payload, null, userInfo.idir_username);
-    console.timeEnd('postSaga');
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'createExchange', 'Error occurred while attempting to create a new exchange.');
