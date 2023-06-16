@@ -123,6 +123,7 @@
                           v-show="expandAttachFile"
                           @close:form="showOptions"
                           @upload="uploadDocument"
+                          :allowed-file-format="formatMessage"
                       ></DocumentUpload>
                     </v-expand-transition>
                     <v-expand-transition>
@@ -201,6 +202,7 @@ export default {
       shouldShowOptions: true,
       additionalStudentAddWarningMessage:'',
       disableAddStudent: true,
+      formatMessage: 'JPEG, PNG, PDF, CSV, MS-WORD, MS-EXCEL, .STD, .VER'
     };
   },
   computed: {

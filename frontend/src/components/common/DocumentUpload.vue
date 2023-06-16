@@ -60,6 +60,10 @@ export default {
       type: Boolean,
       default: false
     },
+    allowedFileFormat: {
+      type: String,
+      default: null
+    }
   },
   data() {
     return {
@@ -87,7 +91,10 @@ export default {
       if(this.checkFileRules){
         this.fileRules = [
           value => !value || value.size < maxSize || `File size should not be larger than ${humanFileSize(maxSize)}!`,
-          value => !value || fileRequirements.extensions.includes(value.type) || `File formats should be ${this.fileFormats}.`,
+          value => {
+            const extension = `.${value?.name.split('.').slice(-1)}`;
+            return !value || fileRequirements.extensions.includes(extension) || fileRequirements.extensions.includes(value?.type) || `File formats should be ${this.fileFormats}.`;
+          },
         ];
         this.fileAccept = fileRequirements.extensions.join();
       }else{
@@ -96,7 +103,7 @@ export default {
         ];
       }
 
-      this.fileFormats = this.makefileFormatList(fileRequirements.extensions);
+      this.fileFormats = this.allowedFileFormat ? this.allowedFileFormat : this.makefileFormatList(fileRequirements.extensions);
     }).catch(e => {
       console.log(e);
       this.setErrorAlert('Sorry, an unexpected error seems to have occurred. You can upload files later.');
@@ -190,7 +197,7 @@ export default {
       if(this.smallFileExtension){
         fileExtensionValue = getFileExtensionWithDot(this.file.name);
       }else{
-        fileExtensionValue = this.file.type;
+        fileExtensionValue = this.file.type ? this.file.type : getFileExtensionWithDot(this.file.name);
       }
 
       let document = {

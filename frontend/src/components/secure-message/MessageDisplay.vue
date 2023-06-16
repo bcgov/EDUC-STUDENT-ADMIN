@@ -173,6 +173,7 @@
                       style="min-width: 40em"
                       :small-file-extension="false"
                       :check-file-rules="true"
+                      :allowed-file-format="formatMessage"
                       v-show="isNewAttachmentDisplayed"
                       @close:form="hideAttachmentPanel"
                       class="mt-4"
@@ -498,6 +499,7 @@ export default {
       documentRoute: Routes.edx.EXCHANGE_URL,
       newNote: '',
       disableAnchorTagDocumentName: true,
+      formatMessage: 'JPEG, PNG, PDF, CSV, MS-WORD, MS-EXCEL, .STD, .VER'
     };
   },
   computed: {
