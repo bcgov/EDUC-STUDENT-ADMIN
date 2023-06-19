@@ -195,6 +195,7 @@ export default {
       this.$refs.confirmationDialog.open('Please Confirm', 'Are you sure you want to remove this contact?',opts)
         .then((result) => {
           if (result) { // the component returns true only when user confirms the dialog.
+
             this.loadingCount += 1;
             ApiService.apiAxios.delete(`${Routes.institute.SCHOOL_CONTACT_URL}/${schoolId}/${schoolContactId}`).then(() => {
               this.setSuccessAlert('School contact removed successfully');
@@ -205,6 +206,7 @@ export default {
             }).finally(() => {
               this.loadingCount -= 1;
             });
+
           }
         });
     },

@@ -387,6 +387,50 @@ async function addNewSchoolNote(req, res) {
   }
 }
 
+async function updateSchoolNote(req, res) {
+  if (req.params.noteId !== req.body.noteId) {
+    return res.status(HttpStatus.BAD_REQUEST).json({
+      message: 'The noteId in the URL didn\'t match the noteId in the request body.'
+    });
+  }
+  try {
+    const token = getBackendToken(req);
+    let school = cacheService.getSchoolBySchoolID(req.body.schoolId);
+    if (!school || !hasSchoolAdminRole(req, school)) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+    const payload = {
+      noteId: req.body.noteId,
+      schoolId: req.body.schoolId,
+      content: req.body.content
+    };
+    const result = await utils.putData(token, `${config.get('server:institute:instituteSchoolURL')}/${req.body.schoolId}/note/${req.params.noteId}`, payload, utils.getUser(req).idir_username);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (e) {
+    logApiError(e, 'updateSchoolNote', 'Error occurred while attempting to save the changes to the school note.');
+    return errorResponse(res);
+  }
+}
+
+async function deleteSchoolNote(req, res) {
+  try {
+    const token = getBackendToken(req);
+    let school = cacheService.getSchoolBySchoolID(req.params.schoolId);
+    if(!school || !hasSchoolAdminRole(req, school)){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'You do not have the required access for this function'
+      });
+    }
+    await utils.deleteData(token, `${config.get('server:institute:instituteSchoolURL')}/${req.params.schoolId}/note/${req.params.noteId}`);
+    return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
+  } catch (e) {
+    await logApiError(e, 'deleteSchoolNote', 'An error occurred while attempting to remove a school note.');
+    return errorResponse(res);
+  }
+}
+
 async function addSchoolContact(req, res) {
   try {
     const token = getBackendToken(req);
@@ -1146,6 +1190,8 @@ module.exports = {
   getCachedAuthorityByAuthorityID,
   getCachedAuthorities,
   addNewSchoolNote,
+  updateSchoolNote,
+  deleteSchoolNote,
   updateSchoolContact,
   updateAuthority,
   addAuthorityContact,
