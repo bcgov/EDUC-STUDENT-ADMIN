@@ -204,6 +204,10 @@ async function getExchange(req, res) {
           activity['actor'] = comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
           activity['title'] = comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
         }
+        if(dataResponse['secureExchangeContactTypeCode'] === 'DISTRICT') {
+          activity['actor'] = comment.edxUserID ? district.name : dataResponse['ministryOwnershipTeamName'];
+          activity['title'] = comment.edxUserID ? district.name : dataResponse['ministryOwnershipTeamName'];
+        }
         activity['displayDate'] = comment['commentTimestamp'] ? LocalDateTime.parse(comment['commentTimestamp']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : 'Unknown Date';
         activity['content'] = comment['content'];
         activity['secureExchangeID'] = comment['secureExchangeID'];
@@ -219,6 +223,9 @@ async function getExchange(req, res) {
           activity['actor'] = document.edxUserID ? document.edxUserID : document.staffUserIdentifier;
           if(dataResponse['secureExchangeContactTypeCode'] === 'SCHOOL') {
             activity['title'] = document.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+          }
+          if(dataResponse['secureExchangeContactTypeCode'] === 'DISTRICT') {
+            activity['title'] = document.edxUserID ? district.name : dataResponse['ministryOwnershipTeamName'];
           }
           activity['fileName'] = document.fileName;
           activity['documentType'] = cacheService.getDocumentTypeCodeLabelByCode(document.documentTypeCode);
@@ -247,6 +254,9 @@ async function getExchange(req, res) {
           activity['actor'] = student.edxUserID ? student.edxUserID : student.staffUserIdentifier;
           if(dataResponse['secureExchangeContactTypeCode'] === 'SCHOOL') {
             activity['title'] = student.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+          }
+          if(dataResponse['secureExchangeContactTypeCode'] === 'DISTRICT') {
+            activity['title'] = student.edxUserID ? district.name : dataResponse['ministryOwnershipTeamName'];
           }
           activity['displayDate'] = student['createDate'] ? LocalDateTime.parse(student['createDate']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : 'Unknown Date';
           dataResponse['activities'].push(activity);

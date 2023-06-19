@@ -261,8 +261,8 @@
                           <v-col cols="6">
                             <v-icon  color="grey darken-3" right size="medium" dark>mdi-pound</v-icon>
                           </v-col>
-                          <v-col cols="6">
-                            <span class="statusCodeLabel">{{ item.sequenceNumber }}</span>
+                          <v-col class="statusCodeLabel" cols="6">
+                            <span>{{ item.sequenceNumber }}</span>
                           </v-col>
                         </v-row>
                       </v-col>
@@ -271,8 +271,8 @@
                           <v-col cols="6">
                             <v-icon class="pb-1" :color="getStatusColor(item.secureExchangeStatusCode)" right dark>mdi-circle-medium</v-icon>
                           </v-col>
-                          <v-col cols="6">
-                            <span class="statusCodeLabel">{{ item.secureExchangeStatusCode }}</span>
+                          <v-col class="statusCodeLabel" cols="6">
+                            <span>{{ item.secureExchangeStatusCode }}</span>
                           </v-col>
                         </v-row>
                       </v-col>
@@ -281,8 +281,8 @@
                           <v-col cols="6">
                             <v-icon style="margin-bottom: 0.2em" color="grey darken-3" right dark>mdi-account-outline</v-icon>
                           </v-col>
-                          <v-col cols="6">
-                            <span class="statusCodeLabel">{{ getReviewer(item.reviewer) }}</span>
+                          <v-col class="statusCodeLabel" cols="6">
+                            <span>{{ getReviewer(item.reviewer) }}</span>
                           </v-col>
                         </v-row>
                       </v-col>
@@ -291,8 +291,8 @@
                           <v-col cols="6">
                             <v-icon class="pr-1" style="margin-bottom: 0.2em" color="grey darken-3" right dark>mdi-clock-outline</v-icon>
                           </v-col>
-                          <v-col cols="4">
-                            <span class="statusCodeLabel">{{ getNumberOfDays(item.createDate) }}</span>
+                          <v-col class="statusCodeLabel" cols="4">
+                            <span>{{ getNumberOfDays(item.createDate) }}</span>
                           </v-col>
                         </v-row>
                       </v-col>
@@ -729,6 +729,7 @@ export default {
 .statusCodeLabel{
   font-size: medium;
   white-space: nowrap;
+  text-align: left;
 }
 
 >>>.v-data-table-header{

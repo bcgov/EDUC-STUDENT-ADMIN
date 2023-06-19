@@ -175,6 +175,7 @@
                       :check-file-rules="true"
                       v-show="isNewAttachmentDisplayed"
                       @close:form="hideAttachmentPanel"
+                      class="mt-4"
                       @upload="upload">
                   </DocumentUpload>
                 </v-expand-transition>
@@ -183,10 +184,14 @@
             <v-expand-transition>
               <v-row v-if="isNewStudentDisplayed">
                 <v-col class="d-flex justify-center">
-
-                    <AddStudent @addStudent="sendNewSecureExchangeStudent" @close:form="hideStudentPanel" :instituteTypeValue="getInstituteValue()" :additionalStudentAddWarning="addStudentWarningMessage" @updateAdditionalStudentAddWarning="updateAddStudentWarningMessage">
+                    <AddStudent
+                        style="min-width: 35em"
+                        @addStudent="sendNewSecureExchangeStudent"
+                        @close:form="hideStudentPanel"
+                        :instituteTypeValue="getInstituteValue()"
+                        :additionalStudentAddWarning="addStudentWarningMessage"
+                        @updateAdditionalStudentAddWarning="updateAddStudentWarningMessage">
                     </AddStudent>
-
                 </v-col>
               </v-row>
             </v-expand-transition>
@@ -296,7 +301,7 @@
                         </v-card-text>
                           <v-row>
                             <v-btn class="mb-1 mr-1 ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveStudent(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="!isEditable()">
-                              <v-icon>mdi-delete-forever-outline</v-icon>
+                              <v-icon color="#003366">mdi-delete</v-icon>
                             </v-btn>
                           </v-row>
                           <v-expand-transition>
@@ -356,7 +361,7 @@
                           </v-card-text>
                           <v-card-text v-if="activity.documentType.label !== 'Other'" class="pt-0 pb-3">{{ activity.documentType.label }}</v-card-text>
                           <v-btn class="mb-1 mr-1 ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveDoc(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="!isEditable()">
-                            <v-icon>mdi-delete-forever-outline</v-icon>
+                            <v-icon color="#003366">mdi-delete</v-icon>
                           </v-btn>
                         </v-row>
                         <v-expand-transition>
@@ -391,7 +396,7 @@
                         </v-card-title>
                         <v-card-text class="activityContent">{{ activity.content }}</v-card-text>
                         <v-btn class="mb-1 mr-1 ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveNote(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="(!isEditable()) || (activity.staffUserIdentifier !== userInfo.userName)">
-                          <v-icon>mdi-delete-forever-outline</v-icon>
+                          <v-icon color="#003366">mdi-delete</v-icon>
                         </v-btn>
                         <v-expand-transition>
                           <div v-show="isOpenNoteIndex === index" class="greyBackground">

@@ -484,7 +484,7 @@
                     <h2>Ministry Notes</h2>
                   </v-col>
                   <v-col class="d-flex justify-end">
-                    <PrimaryButton id="addNewNoteButton" width="9em" icon="mdi-plus" icon-left text="New Note" v-if="canEditAuthorities()" @click.native="newNoteSheet = !newNoteSheet"></PrimaryButton>
+                    <PrimaryButton id="addNewNoteButton" width="9em" icon="mdi-plus" icon-left text="New Note" v-if="canEditAuthorities()" @click.native="openNoteSheet"></PrimaryButton>
                   </v-col>
                 </v-row>
                 <v-row>
@@ -853,6 +853,10 @@ export default {
     },
     getAuthorityType(authority){
       return this.authorityTypes.find((autorityType) => autorityType.authorityTypeCode === authority.authorityTypeCode).label;
+    },
+    openNoteSheet(){
+      this.newNoteText = '';
+      this.newNoteSheet = !this.newNoteSheet;
     },
     hasMailingAddress(){
       return this.authority.addresses.filter(address => address.addressTypeCode === 'MAILING').length > 0;

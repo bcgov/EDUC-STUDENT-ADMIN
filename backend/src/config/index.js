@@ -127,6 +127,7 @@ nconf.defaults({
       instituteDistrictURL: process.env.INSTITUTE_API_URL + '/district',
       instituteSchoolURL: process.env.INSTITUTE_API_URL + '/school',
       instituteAuthorityURL: process.env.INSTITUTE_API_URL + '/authority',
+      districtContactTypesURL: process.env.INSTITUTE_API_URL + '/district-contact-type-codes',
       facilityTypeURL: process.env.INSTITUTE_API_URL + '/facility-codes',
       categoryCodesURL: process.env.INSTITUTE_API_URL + '/category-codes',
       organizationCodeURL: process.env.INSTITUTE_API_URL + '/organization-codes',
