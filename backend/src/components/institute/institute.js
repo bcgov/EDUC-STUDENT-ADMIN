@@ -409,7 +409,7 @@ async function updateSchoolNote(req, res) {
     const result = await utils.putData(token, `${config.get('server:institute:instituteSchoolURL')}/${req.body.schoolId}/note/${req.params.noteId}`, payload, utils.getUser(req).idir_username);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
-    logApiError(e, 'addNewSchoolNote', 'Error occurred while attempting to save the changes to the school note.');
+    logApiError(e, 'updateSchoolNote', 'Error occurred while attempting to save the changes to the school note.');
     return errorResponse(res);
   }
 }
