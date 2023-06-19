@@ -426,7 +426,7 @@ async function deleteSchoolNote(req, res) {
     await utils.deleteData(token, `${config.get('server:institute:instituteSchoolURL')}/${req.params.schoolId}/note/${req.params.noteId}`);
     return res.status(HttpStatus.OK).json(HttpStatus.NO_CONTENT);
   } catch (e) {
-    await logApiError(e, 'removeSchoolContact', 'An error occurred while attempting to remove a school note.');
+    await logApiError(e, 'deleteSchoolNote', 'An error occurred while attempting to remove a school note.');
     return errorResponse(res);
   }
 }
