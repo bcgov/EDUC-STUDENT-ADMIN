@@ -144,7 +144,7 @@
           </v-col>
         </v-row>
         <v-alert v-model="fileSizeAlert" dense transition="slide" type="error">
-          {{`Total files must be less than ${humanFileSize(fileRequirements.maxSize)}.Please remove some uploads.You may upload additional files later.`}}
+          {{`Total files must be less than ${humanFileSize(fileRequirements.maxSize)}. Please remove some uploads.You may upload additional files later.`}}
         </v-alert>
         <v-row class="py-4 justify-end">
           <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2" @click.native="navigateToList"></PrimaryButton>
