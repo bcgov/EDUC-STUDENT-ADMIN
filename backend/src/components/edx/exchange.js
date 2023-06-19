@@ -1,6 +1,6 @@
 'use strict';
 
-const {errorResponse, logApiError, logError, postData, getBackendToken, isPdf} = require('../utils');
+const {errorResponse, logApiError, logError, postData, getBackendToken, isPdf, isImage} = require('../utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../../config');
 const {getData, getCodeTable, putData} = require('../utils');
@@ -807,11 +807,14 @@ function getExchangeDocumentById() {
     const url = `${config.get('server:edx:exchangeURL')}/${req.params.secureExchangeID}/documents/${req.params.documentId}`;
     getData(token, url).then(resultData => {
       res.setHeader('Content-type', resultData.fileExtension);
-      if(!isPdf(resultData)){
+      if(isImage(resultData)){
         res.setHeader('Content-disposition', 'attachment; filename=' + resultData.fileName?.replace(/ /g, '_').replace(/,/g, '_').trim());
         return res.status(200).send(resultData.documentData);
-      }else{
+      } else if(isPdf(resultData)){
         res.setHeader('Content-disposition', 'inline; filename=' + resultData.fileName?.replace(/ /g, '_').replace(/,/g, '_').trim());
+        return res.status(200).send(Buffer.from(resultData.documentData, 'base64'));
+      } else {
+        res.setHeader('Content-disposition', 'attachment; filename=' + resultData.fileName?.replace(/ /g, '_').replace(/,/g, '_').trim());
         return res.status(200).send(Buffer.from(resultData.documentData, 'base64'));
       }
     }).catch(error => {

@@ -346,19 +346,19 @@
                               'pb-0': activity.documentType.label !== 'Other',
                               'pb-3': activity.documentType.label === 'Other'
                             }">
+                            <a v-if="isImage(activity)"
+                              @click="showDocModal(activity)"
+                              :class="disabledAnchorDocumentName">
+                              {{ activity.fileName }}
+                            </a>
                             <router-link
-                              v-if="isPdf(activity)"
+                              v-else
                               :class="disabledAnchorDocumentName"
                               :to="{
                                 path: documentUrl(activity)
                               }" target="_blank">
                               {{ activity.fileName }}
                             </router-link>
-                            <a v-else
-                              @click="showDocModal(activity)"
-                              :class="disabledAnchorDocumentName">
-                              {{ activity.fileName }}
-                            </a>
                           </v-card-text>
                           <v-card-text v-if="activity.documentType.label !== 'Other'" class="pt-0 pb-3">{{ activity.documentType.label }}</v-card-text>
                           <v-btn class="mb-1 mr-1 ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveDoc(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="!isEditable()">
@@ -441,7 +441,7 @@ import ApiService from '@/common/apiService';
 import {EDX_SAGA_REQUEST_DELAY_MILLISECONDS, Routes} from '@/utils/constants';
 import router from '@/router';
 import {mapState, mapActions, mapGetters} from 'vuex';
-import {isPdf} from '@/utils/file';
+import {isPdf, isImage} from '@/utils/file';
 import {replaceMacro, insertMacro} from '@/utils/macro';
 import {ChronoUnit, DateTimeFormatter, LocalDate} from '@js-joda/core';
 import alertMixin from '@/mixins/alertMixin';
@@ -888,6 +888,7 @@ export default {
       }
     },
     isPdf,
+    isImage,
     async closeDialog() {
       this.documentId = '';
       this.imageId = '';
