@@ -144,9 +144,12 @@
             </v-col></v-row>
           </v-col>
         </v-row>
+        <v-alert v-model="fileSizeAlert" dense transition="slide" type="error">
+          {{`Total files must be less than ${humanFileSize(fileRequirements.maxSize)}. Please remove some uploads.You may upload additional files later.`}}
+        </v-alert>
         <v-row class="py-4 justify-end">
           <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2" @click.native="navigateToList"></PrimaryButton>
-          <PrimaryButton id="newMessagePostBtn" text="Send" width="8rem" :disabled="!isValidForm" :loading="processing" @click.native="sendNewMessage"></PrimaryButton>
+          <PrimaryButton id="newMessagePostBtn" text="Send" width="8rem" :disabled="!isValidForm || fileSizeAlert" :loading="processing" @click.native="sendNewMessage"></PrimaryButton>
         </v-row>
       </v-col>
     </v-row>
@@ -158,6 +161,7 @@
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
 import {replaceMacro, insertMacro} from '../../utils/macro';
+import {humanFileSize} from '@/utils/file';
 import ApiService from '@/common/apiService';
 import {
   Routes,
@@ -183,6 +187,7 @@ export default {
   },
   mounted() {
     this.validateForm();
+    this.$store.dispatch('edx/getFileRequirements');
   },
   data() {
     return {
@@ -202,12 +207,13 @@ export default {
       shouldShowOptions: true,
       additionalStudentAddWarningMessage:'',
       disableAddStudent: true,
-      formatMessage: 'JPEG, PNG, PDF, CSV, MS-WORD, MS-EXCEL, .STD, .VER'
+      formatMessage: 'JPEG, PNG, PDF, CSV, MS-WORD, MS-EXCEL, .STD, .VER',
+      fileSizeAlert: false,
     };
   },
   computed: {
     ...mapState('auth', ['userInfo']),
-    ...mapState('edx', ['ministryTeams', 'validSchoolIDsForMessaging', 'secureExchangeDocuments','secureExchangeStudents', 'validDistrictIDsForMessaging']),
+    ...mapState('edx', ['ministryTeams', 'validSchoolIDsForMessaging', 'secureExchangeDocuments','secureExchangeStudents', 'validDistrictIDsForMessaging', 'fileRequirements']),
     ...mapGetters('app', ['schoolMap', 'districtMap']),
     ...mapGetters('edx', ['messageMacros']),
     myTeam() {
@@ -234,6 +240,13 @@ export default {
     ...mapActions('edx', ['getMacros']),
     navigateToList() {
       this.$emit('secure-exchange:cancelMessage');
+    },
+    checkTotalFileSize() {
+      let totalFileSize = 0;
+      for (let each of this.secureExchangeDocuments) {
+        totalFileSize += each.fileSize;
+      }
+      this.fileSizeAlert = totalFileSize > this.fileRequirements.maxSize;
     },
     messageSent(){
       this.subject = '';
@@ -300,10 +313,12 @@ export default {
     },
     async uploadDocument(document) {
       this.$store.commit('edx/setSecureExchangeDocuments', [...this.secureExchangeDocuments, document]);
+      this.checkTotalFileSize();
     },
     removeDocumentByIndex(index) {
       //since we don't have a unique UUID to identify the document to remove, we will use the index
       this.$store.commit('edx/deleteSecureExchangeDocumentByIndex', index);
+      this.checkTotalFileSize();
     },
     clearSecureExchangeDocuments() {
       this.$store.commit('edx/setSecureExchangeDocuments', []);
@@ -367,6 +382,7 @@ export default {
     validateForm() {
       this.isValidForm = this.$refs.newMessageForm.validate();
     },
+    humanFileSize
   }
 };
 </script>
