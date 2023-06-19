@@ -202,11 +202,11 @@ async function getExchange(req, res) {
         activity['timestamp'] = comment['commentTimestamp'] ? LocalDateTime.parse(comment['commentTimestamp']) : '';
         if(dataResponse['secureExchangeContactTypeCode'] === 'SCHOOL') {
           activity['actor'] = comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
-          activity['title'] = comment.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+          activity['title'] = comment.edxUserID ? school.schoolName : comment.staffUserIdentifier;
         }
         if(dataResponse['secureExchangeContactTypeCode'] === 'DISTRICT') {
           activity['actor'] = comment.edxUserID ? district.name : dataResponse['ministryOwnershipTeamName'];
-          activity['title'] = comment.edxUserID ? district.name : dataResponse['ministryOwnershipTeamName'];
+          activity['title'] = comment.edxUserID ? district.name : comment.staffUserIdentifier;
         }
         activity['displayDate'] = comment['commentTimestamp'] ? LocalDateTime.parse(comment['commentTimestamp']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : 'Unknown Date';
         activity['content'] = comment['content'];
@@ -222,10 +222,10 @@ async function getExchange(req, res) {
           activity['timestamp'] = document['createDate'] ? LocalDateTime.parse(document['createDate']) : '';
           activity['actor'] = document.edxUserID ? document.edxUserID : document.staffUserIdentifier;
           if(dataResponse['secureExchangeContactTypeCode'] === 'SCHOOL') {
-            activity['title'] = document.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+            activity['title'] = document.edxUserID ? school.schoolName : document.staffUserIdentifier;
           }
           if(dataResponse['secureExchangeContactTypeCode'] === 'DISTRICT') {
-            activity['title'] = document.edxUserID ? district.name : dataResponse['ministryOwnershipTeamName'];
+            activity['title'] = document.edxUserID ? district.name : document.staffUserIdentifier;
           }
           activity['fileName'] = document.fileName;
           activity['documentType'] = cacheService.getDocumentTypeCodeLabelByCode(document.documentTypeCode);
@@ -253,10 +253,10 @@ async function getExchange(req, res) {
           activity['timestamp'] = student['createDate'] ? LocalDateTime.parse(student['createDate']) : '';
           activity['actor'] = student.edxUserID ? student.edxUserID : student.staffUserIdentifier;
           if(dataResponse['secureExchangeContactTypeCode'] === 'SCHOOL') {
-            activity['title'] = student.edxUserID ? school.schoolName : dataResponse['ministryOwnershipTeamName'];
+            activity['title'] = student.edxUserID ? school.schoolName : student.staffUserIdentifier;
           }
           if(dataResponse['secureExchangeContactTypeCode'] === 'DISTRICT') {
-            activity['title'] = student.edxUserID ? district.name : dataResponse['ministryOwnershipTeamName'];
+            activity['title'] = student.edxUserID ? district.name : student.staffUserIdentifier;
           }
           activity['displayDate'] = student['createDate'] ? LocalDateTime.parse(student['createDate']).format(DateTimeFormatter.ofPattern('uuuu/MM/dd HH:mm')) : 'Unknown Date';
           dataResponse['activities'].push(activity);
