@@ -1,16 +1,14 @@
-const getDefaultState = () => {
-  return {
+import {defineStore} from 'pinia';
+
+export const navigationStore = defineStore('navigation', {
+  namespaced: true,
+  state: () => ({
     selectedIDs: [],
     currentRequest: 0,
     archived: false,
     requestType: 'penRequestBatch',
     multiFiles: true,
-  };
-};
-
-export default {
-  namespaced: true,
-  state: getDefaultState,
+  }),
   getters: {
     title: state => {
       let files = '';
@@ -21,27 +19,31 @@ export default {
       return `Record ${state.currentRequest + 1} of ${Object.keys(state.selectedIDs)?.length} ${files}`;
     },
   },
-  mutations: {
+  actions: {
     /**
      * call the clearNavigation in the beforeDestroy method of a component to hide SetNavigation component
      */
-    clearNavigation: (state) => {
-      Object.assign(state, getDefaultState());
+    async clearNavigation() {
+      this.selectedIDs = [];
+      this.currentRequest = 0;
+      this.archived = false;
+      this.requestType = 'penRequestBatch';
+      this.multiFiles = true;
     },
-    setSelectedIDs: (state, selectedIDs) => {
-      state.selectedIDs = selectedIDs;
+    async setSelectedIDs(selectedIDs) {
+      this.selectedIDs = selectedIDs;
     },
-    setCurrentRequest: (state, currentRequest) => {
-      state.currentRequest = currentRequest;
+    async setCurrentRequest(currentRequest) {
+      this.currentRequest = currentRequest;
     },
-    setArchived: (state, archived) => {
-      state.archived = archived;
+    async setArchived(archived) {
+      this.archived = archived;
     },
-    setRequestType: (state, requestType) => {
-      state.requestType = requestType;
+    async setRequestType(requestType) {
+      this.requestType = requestType;
     },
-    setMultiFiles: (state, multiFiles) => {
-      state.multiFiles = multiFiles;
+    async setMultiFiles(multiFiles) {
+      this.multiFiles = multiFiles;
     }
   },
-};
+});

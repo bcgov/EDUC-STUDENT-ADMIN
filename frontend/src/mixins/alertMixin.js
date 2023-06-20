@@ -1,5 +1,6 @@
 import {ALERT_NOTIFICATION_TYPES} from '../utils/constants/AlertNotificationTypes';
-import {mapMutations} from 'vuex';
+import {mapActions} from 'pinia';
+import {appStore} from '@/store/modules/app';
 
 export default {
   data() {
@@ -8,7 +9,7 @@ export default {
     };
   },
   methods: {
-    ...mapMutations('app', ['addAlertNotification']),
+    ...mapActions(appStore, ['addAlertNotification']),
     setSuccessAlert(message) {
       this.addAlertNotification({text: message, alertType: ALERT_NOTIFICATION_TYPES.SUCCESS});
     },

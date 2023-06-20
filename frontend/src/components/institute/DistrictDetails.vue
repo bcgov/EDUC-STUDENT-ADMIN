@@ -490,15 +490,17 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
-import PrimaryButton from '@/components/util/PrimaryButton';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import {formatPhoneNumber, formatDate} from '@/utils/format';
 import router from '@/router';
 import { sanitizeUrl } from '@braintree/sanitize-url';
-import {mapGetters, mapState} from 'vuex';
+import { mapState } from 'pinia';
 import {deepCloneObject} from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
 import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
+import {authStore} from '@/store/modules/auth';
+import {instituteStore} from '@/store/modules/institute';
 
 export default {
   name: 'DistrictDetails',
@@ -529,9 +531,8 @@ export default {
     };
   },
   computed:{
-    ...mapGetters('auth', ['DISTRICT_ADMIN_ROLE']),
-    ...mapState('institute', ['provinceCodes']),
-    ...mapState('institute', ['countryCodes']),
+    ...mapState(authStore(), ['DISTRICT_ADMIN_ROLE']),
+    ...mapState(instituteStore, ['provinceCodes', 'countryCodes']),
     hasSamePhysicalAddress(){
       return !this.district.addresses.filter(address => address.addressTypeCode === 'PHYSICAL').length > 0;
     },

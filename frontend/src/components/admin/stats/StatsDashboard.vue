@@ -53,7 +53,8 @@ import DoughnutChartContainer from './DoughnutChartContainer';
 import {CHART_TYPES, CHART_STAT_URLS, COMPLETION_STATES} from '../../../utils/constants/ChartConstants';
 import ApiService from '../../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
-import {mapGetters} from 'vuex';
+import { mapState } from 'pinia';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'StatsDashboard',
@@ -95,7 +96,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('auth', ['STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH']),
+    ...mapState(authStore, ['STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH']),
   },
   methods: {
     fillNewPenData() {

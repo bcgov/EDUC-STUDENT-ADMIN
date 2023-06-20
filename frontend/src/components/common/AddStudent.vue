@@ -48,12 +48,13 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 import ApiService from '@/common/apiService';
 import alertMixin from '@/mixins/alertMixin';
-import PrimaryButton from '@/components/util/PrimaryButton';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import {isValidPEN} from '@/utils/validation';
 import {Routes} from '@/utils/constants';
+import {appStore} from '@/store/modules/app';
 
 export default {
   components: {PrimaryButton},
@@ -87,7 +88,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('app', ['schoolMap']),
+    ...mapState(appStore, ['schoolMap']),
     enableSearchButton() {
       return !(isValidPEN(this.penNumber));
     }

@@ -1,32 +1,34 @@
-export default {
+import {defineStore} from 'pinia';
+import { studentStore } from '@/store/modules/student';
+import { appStore } from '@/store/modules/app';
+
+export const notificationsStore = defineStore('notifications', {
   namespaced: true,
-  state: {
+  state: () => ({
     notification: null,
     notifications:[]
-  },
+  }),
   getters: {
     notification: state => state.notification,
     notifications: state => state.notifications
   },
-  mutations: {
-    changeNotification: (state, payload) => {
-      state.notification = payload;
-      state.notifications.push(payload);
-    }
-  },
   actions: {
-    setNotification: ({dispatch, commit}, payload) => {
+    async changeNotification(payload){
+      this.notification = payload;
+      this.notifications.push(payload);
+    },
+    async setNotification(payload){
       try{
         const notificationData = JSON.parse(payload);
-        commit('changeNotification', notificationData);
+        await this.changeNotification(notificationData);
         if (notificationData && notificationData.sagaName?.startsWith('PEN_SERVICES_') && notificationData.sagaStatus === 'COMPLETED' && notificationData.studentID) {
-          commit('student/resetStudentInProcessStatus', notificationData.studentID, { root: true });
+          await studentStore().resetStudentInProcessStatus(notificationData.studentID);
         } else if(notificationData && notificationData.eventType === 'COPY_USERS_TO_NEW_SCHOOL' && notificationData.eventOutcome === 'USERS_TO_NEW_SCHOOL_COPIED'){
-          dispatch('app/refreshEntities', null, {root: true});
+          await appStore().refreshEntities();
         }
       }catch (e) {
         console.error(e);
       }
     }
   }
-};
+});

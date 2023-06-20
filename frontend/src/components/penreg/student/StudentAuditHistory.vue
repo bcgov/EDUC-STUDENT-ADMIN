@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import {mapActions, mapGetters, mapState} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import {REQUEST_TYPES, Routes} from '@/utils/constants';
 import StudentAuditHistoryDetail from '../student/StudentAuditHistoryDetailPanel';
 import ApiService from '../../../common/apiService';
@@ -87,6 +87,8 @@ import {formatDob, formatPen} from '@/utils/format';
 import {groupBy, mapValues} from 'lodash';
 import router from '@/router';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
+import {studentStore} from '@/store/modules/student';
+import {notificationsStore} from '@/store/modules/notifications';
 
 export default {
   name: 'StudentAuditHistory',
@@ -144,9 +146,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('student', ['historyActivityCodes']),
-    ...mapGetters('notifications', ['notification']),
-    ...mapState('student', ['studentsInProcess']),
+    ...mapState(studentStore, ['historyActivityCodes', 'studentsInProcess']),
+    ...mapState(notificationsStore, ['notification']),
     showingFirstNumber() {
       return ((this.pageNumber - 1) * (this.studentHistoryResp.pageable.pageSize || 0) + ((this.studentHistoryResp.numberOfElements || 0) > 0 ? 1 : 0));
     },
@@ -193,7 +194,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('student', ['getHistoryActivityCodes']),
+    ...mapActions(studentStore, ['getHistoryActivityCodes']),
     formatPen,
     selectItem(props) {
       this.updateSelectedStudentHistoryId(props.item.studentHistoryID);

@@ -95,14 +95,15 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex';
+import { mapState } from 'pinia';
 import {Routes} from '@/utils/constants';
-import PrimaryButton from '../util/PrimaryButton';
+import PrimaryButton from '../util/PrimaryButton.vue';
 import ApiService from '../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import {deepCloneObject} from '@/utils/common';
 import ConfirmationDialog from '../util/ConfirmationDialog';
 import MacroEditor from './MacroEditor';
+import {notificationsStore} from '@/store/modules/notifications';
 
 export default {
   name: 'MacrosDisplay',
@@ -130,7 +131,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('notifications', ['notification']),
+    ...mapState(notificationsStore, ['notification']),
     items () {
       return [
         {

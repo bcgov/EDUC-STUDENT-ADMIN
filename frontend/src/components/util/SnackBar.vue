@@ -29,8 +29,9 @@
 
 <script>
 
-import {mapMutations, mapState} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import {ALERT_NOTIFICATION_TYPES} from '../../utils/constants/AlertNotificationTypes';
+import {appStore} from '@/store/modules/app';
 
 export default {
   name: 'SnackBar',
@@ -43,7 +44,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['alertNotificationText', 'alertNotificationQueue', 'alertNotification']),
+    ...mapState(appStore, ['alertNotificationText', 'alertNotificationQueue', 'alertNotification']),
     hasNotificationsPending() {
       return this.alertNotificationQueue.length > 0;
     },
@@ -69,7 +70,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('app', ['setAlertNotificationText', 'setAlertNotification']),
+    ...mapActions(appStore, ['setAlertNotificationText', 'setAlertNotification']),
     setAlertType(alertType) {
       if(!alertType) {
         alertType = '';

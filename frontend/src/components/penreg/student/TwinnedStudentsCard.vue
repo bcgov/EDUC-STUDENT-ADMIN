@@ -76,7 +76,7 @@
 
 <script>
 import TertiaryButton from '../../util/TertiaryButton';
-import {mapActions, mapGetters} from 'vuex';
+import {mapState, mapActions} from 'pinia';
 import moment from 'moment';
 import {sortBy} from 'lodash';
 import ApiService from '../../../common/apiService';
@@ -84,6 +84,8 @@ import {REQUEST_TYPES, Routes} from '@/utils/constants';
 import {formatPen} from '@/utils/format';
 import router from '@/router';
 import alertMixin from '@/mixins/alertMixin';
+import {studentStore} from '@/store/modules/student';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'TwinnedStudentsCard',
@@ -118,8 +120,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('student', ['possibleMatchReasons']),
-    ...mapGetters('auth', ['ADVANCED_SEARCH_ROLE']),
+    ...mapState(studentStore, ['possibleMatchReasons']),
+    ...mapActions(authStore, ['ADVANCED_SEARCH_ROLE']),
     topTableHeaders() {
       return this.headers.filter(header => header.topTable);
     },
@@ -154,7 +156,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('student', ['getPossibleMatchReasonCodes']),
+    ...mapActions(studentStore, ['getPossibleMatchReasonCodes']),
     formatDateTime(date) {
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY/MM/DD');
     },

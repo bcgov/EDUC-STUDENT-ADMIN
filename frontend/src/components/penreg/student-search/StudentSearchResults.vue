@@ -83,7 +83,7 @@
 
 <script>
 import {formatDob} from '@/utils/format';
-import {mapGetters, mapMutations, mapState} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import ApiService from '@/common/apiService';
 import {REQUEST_TYPES, Routes, STUDENT_CODES} from '@/utils/constants';
 import router from '@/router';
@@ -91,6 +91,9 @@ import CompareDemographicModal from '../../common/CompareDemographicModal';
 import ClipboardButton from '../../util/ClipboardButton';
 import alertMixin from '@/mixins/alertMixin';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
+import {authStore} from '@/store/modules/auth';
+import {notificationsStore} from '@/store/modules/notifications';
+import {studentSearchStore} from '@/store/modules/studentSearch';
 
 export default {
   name: 'SearchResults',
@@ -223,10 +226,9 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('studentSearch', ['useNameVariants', 'isAuditHistorySearch', 'statusCode']),  // For advanced search criteria
-    ...mapState('studentSearch', ['headerSortParams', 'studentSearchResponse']),
-    ...mapState('notifications', ['notification']),
-    ...mapGetters('auth', ['EDIT_STUDENT_RECORDS_ROLE']),
+    ...mapState(studentSearchStore, ['headerSortParams', 'studentSearchResponse', 'useNameVariants', 'isAuditHistorySearch', 'statusCode']),
+    ...mapState(notificationsStore, ['notification']),
+    ...mapState(authStore, ['EDIT_STUDENT_RECORDS_ROLE']),
     pageNumber: {
       get() {
         return this.$store.state['studentSearch'].pageNumber;
@@ -251,7 +253,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('studentSearch', ['updateSortParams', 'setStudentSearchResponse']),
+    ...mapActions(studentSearchStore, ['updateSortParams', 'setStudentSearchResponse']),
     viewStudentDetails(studentID) {
       const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: studentID}});
       window.open(route.href, '_blank');

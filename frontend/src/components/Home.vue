@@ -138,14 +138,16 @@
 </template>
 
 <script>
-import {mapState, mapGetters} from 'vuex';
+import { mapState } from 'pinia';
 import {REQUEST_TYPES, Routes} from '@/utils/constants';
-import DashboardTable from './DashboardTable';
-import ApiService from '../common/apiService';
-import PrimaryButton from './util/PrimaryButton';
-import router from '../router';
+import DashboardTable from '@/components/DashboardTable';
+import ApiService from '@/common/apiService';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
+import router from '@/router';
 import {isPresentDateAndAfter1900, isValidMincode, isValidPEN} from '@/utils/validation';
-import alertMixin from '../mixins/alertMixin';
+import alertMixin from '@/mixins/alertMixin';
+import {appStore} from '@/store/modules/app';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'home',
@@ -256,8 +258,8 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('auth', ['VIEW_GMP_REQUESTS_ROLE','VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ROLE', 'PEN_TEAM_ROLE']),
-    ...mapState('app', ['schoolApiMincodeSchoolNames', 'schoolApiDistrictCodes']),
+    ...mapState(appStore, ['schoolApiMincodeSchoolNames', 'schoolApiDistrictCodes']),
+    ...mapState(authStore, ['VIEW_GMP_REQUESTS_ROLE','VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ROLE', 'PEN_TEAM_ROLE']),
     requestTypes() {
       return REQUEST_TYPES;
     },

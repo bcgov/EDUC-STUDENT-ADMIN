@@ -141,14 +141,16 @@ import ApiService from '../../common/apiService';
 import {setEmptyInputParams} from '@/utils/common';
 import {isNotEmptyInputParams} from '@/utils/validation';
 import {Routes} from '@/utils/constants';
-import {mapState} from 'vuex';
-import PrimaryButton from '@/components/util/PrimaryButton';
-import AccessUserCard from './AccessUserCard';
+import {mapState} from 'pinia';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
+import AccessUserCard from './AccessUserCard.vue';
 import alertMixin from '@/mixins/alertMixin';
-import Spinner from '@/components/common/Spinner';
-import InviteUserPage from '@/components/secure-message/InviteUserPage';
+import Spinner from '@/components/common/Spinner.vue';
+import InviteUserPage from '@/components/secure-message/InviteUserPage.vue';
 import router from '@/router';
-import ClipboardButton from '@/components/util/ClipboardButton';
+import ClipboardButton from '@/components/util/ClipboardButton.vue';
+import {appStore} from '@/store/modules/app';
+import {edxStore} from '@/store/modules/edx';
 
 export default {
   name: 'AccessUsersPage',
@@ -302,8 +304,8 @@ export default {
     }
   },
   computed: {
-    ...mapState('app', ['schoolMap']),
-    ...mapState('edx', ['schoolRoles','schoolRolesCopy']),
+    ...mapState(appStore, ['schoolMap']),
+    ...mapState(edxStore, ['schoolRoles','schoolRolesCopy']),
   }
 };
 </script>

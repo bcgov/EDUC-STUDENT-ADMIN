@@ -163,14 +163,15 @@
 </template>
 
 <script>
-import PrimaryButton from '../util/PrimaryButton';
-import {mapGetters} from 'vuex';
+import PrimaryButton from '../util/PrimaryButton.vue';
+import { mapState } from 'pinia';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
 import {LocalDate} from '@js-joda/core';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'NewAuthorityContactPage',
@@ -215,7 +216,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo']),
+    ...mapState(authStore, ['isAuthenticated','userInfo']),
   },
   methods: {
     saveNewContactEffectiveDate(date) {

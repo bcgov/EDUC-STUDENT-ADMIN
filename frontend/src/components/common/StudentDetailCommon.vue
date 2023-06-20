@@ -612,7 +612,7 @@
 </template>
 
 <script>
-import {mapGetters, mapState} from 'vuex';
+import { mapState } from 'pinia';
 import moment from 'moment';
 import ApiService from '../../common/apiService';
 import {REQUEST_TYPES, Routes, STUDENT_CODES, STUDENT_DEMOG_CODES, STUDENT_DETAILS_FIELDS} from '@/utils/constants';
@@ -632,9 +632,14 @@ import CompareDemographicModal from './CompareDemographicModal';
 import {isValidDob, isValidMincode} from '@/utils/validation';
 import FormattedTextField from '@/components/util/FormattedTextField';
 import TertiaryButton from '@/components/util/TertiaryButton';
-import PrimaryButton from '@/components/util/PrimaryButton';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 import {deepCloneObject, getDemogValidationResults} from '@/utils/common';
+import {authStore} from '@/store/modules/auth';
+import {notificationsStore} from '@/store/modules/notifications';
+import {studentStore} from '@/store/modules/student';
+import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
+import {studentSearchStore} from '@/store/modules/studentSearch';
 
 const JSJoda = require('@js-joda/core');
 export default {
@@ -754,11 +759,11 @@ export default {
     this.genderLabels = this.genders ? this.genders.map(a => a.label) : [];
   },
   computed: {
-    ...mapState('penRequestBatch', ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
-    ...mapGetters('student', ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects', 'documentTypeCodes']),
-    ...mapState('studentSearch', ['isAdvancedSearch']),
-    ...mapGetters('notifications', ['notification']),
-    ...mapGetters('auth', ['userInfo', 'PROCESS_STUDENT_ROLE']),
+    ...mapState(penRequestBatchStore, ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
+    ...mapState(studentStore, ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects', 'documentTypeCodes']),
+    ...mapState(studentSearchStore, ['isAdvancedSearch']),
+    ...mapState(notificationsStore, ['notification']),
+    ...mapState(authStore, ['userInfo', 'PROCESS_STUDENT_ROLE']),
     mergedTo() {
       return this.merges.find(merge => merge.studentMergeDirectionCode === 'TO');
     },

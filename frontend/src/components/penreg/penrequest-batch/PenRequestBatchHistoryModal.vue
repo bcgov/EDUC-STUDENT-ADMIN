@@ -52,13 +52,14 @@
 </template>
 
 <script>
-import PrimaryButton from '@/components/util/PrimaryButton';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
 import DataListItem from '@/components/util/DataListItem';
 import ApiService from '@/common/apiService';
 import { Routes } from '@/utils/constants';
 import { formatTableColumn, formatDateTime } from '@/utils/format';
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
+import {notificationsStore} from '@/store/modules/notifications';
 
 export default {
   name: 'PenRequestBatchHistoryModal',
@@ -95,7 +96,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('notifications', ['notification']),
+    ...mapState(notificationsStore, ['notification']),
     fileItems() {
       return [
         { name: 'district', label: this.districtFieldLabel, value: this.districtName },

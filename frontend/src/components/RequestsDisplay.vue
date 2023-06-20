@@ -191,13 +191,15 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import ApiService from '../common/apiService';
 import {REQUEST_TYPES, Routes} from '@/utils/constants';
 import router from '../router';
-import PrimaryButton from './util/PrimaryButton';
+import PrimaryButton from './util/PrimaryButton.vue';
 import ClipboardButton from './util/ClipboardButton';
 import FilterTag from './util/FilterTag';
+import {notificationsStore} from '@/store/modules/notifications';
+import {appStore} from '@/store/modules/app';
 
 export default {
   name: 'requestsDisplay',
@@ -239,7 +241,7 @@ export default {
     this.runInit();
   },
   computed: {
-    ...mapGetters('notifications', ['notification']),
+    ...mapState(notificationsStore, ['notification']),
     filteredResults() {
       if (
         !Array.isArray(this.selectedStatuses) ||
@@ -383,7 +385,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('app', ['setSelectedRequest', 'setRequest']),
+    ...mapActions(appStore, ['setSelectedRequest', 'setRequest']),
     remove(item) {
       this.selectedStatuses.splice(this.selectedStatuses.indexOf(item), 1);
       this.selectedStatuses = [...this.selectedStatuses];

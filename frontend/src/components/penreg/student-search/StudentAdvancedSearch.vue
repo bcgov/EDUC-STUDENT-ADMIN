@@ -267,9 +267,10 @@
 </template>
 
 <script>
-import {mapMutations, mapState} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import {LocalDate} from '@js-joda/core';
 import {STUDENT_CODES} from '@/utils/constants';
+import {studentSearchStore} from '@/store/modules/studentSearch';
 
 export default {
   name: 'SearchAdvancedSearch',
@@ -371,7 +372,7 @@ export default {
         this.$emit('update:useDOB', value);
       }
     },
-    ...mapState('studentSearch', ['pageNumber', 'headerSortParams', 'studentSearchResponse', 'isAdvancedSearch', 'studentSearchParams', 'advancedSearchCriteria']),
+    ...mapState(studentSearchStore, ['pageNumber', 'headerSortParams', 'studentSearchResponse', 'isAdvancedSearch', 'studentSearchParams', 'advancedSearchCriteria']),
     formattedStartDOB() {
       if(this.advancedSearchCriteria.startDate && this.advancedSearchCriteria.startDate.year) {
         const formattedDate = {
@@ -410,7 +411,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('studentSearch', ['setIsAdvancedSearch']),
+    ...mapActions(studentSearchStore, ['setIsAdvancedSearch']),
     validateDOBPast(year, month, day) {
       if(year || month || day) {
         if(!!year && month && day) {

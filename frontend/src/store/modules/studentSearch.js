@@ -1,3 +1,5 @@
+import {defineStore} from 'pinia';
+
 const getDefaultAdvancedSearchCriteria = () => {
   return {
     startDate: {
@@ -17,7 +19,7 @@ const getDefaultAdvancedSearchCriteria = () => {
   };
 };
 
-export default {
+export const studentSearchStore = defineStore('studentSearch', {
   namespaced: true,
   state: {
     isAdvancedSearch: false,
@@ -54,36 +56,36 @@ export default {
     isAuditHistorySearch: state => state.isAdvancedSearch && state.advancedSearchCriteria.isAuditHistorySearch,
     statusCode: state => state.isAdvancedSearch? state.advancedSearchCriteria.statusCode : [],
   },
-  mutations: {
-    setIsAdvancedSearch: (state, isAdvancedSearch) => {
-      state.isAdvancedSearch = isAdvancedSearch;
+  actions: {
+    async setIsAdvancedSearch(isAdvancedSearch) {
+      this.isAdvancedSearch = isAdvancedSearch;
     },
-    setPageNumber: (state, pageNumber) => {
-      state.pageNumber = pageNumber;
+    async setPageNumber(pageNumber) {
+      this.pageNumber = pageNumber;
     },
-    setSelectedRecords: (state, selectedRecords) => {
-      state.selectedRecords = selectedRecords || [];
+    async setSelectedRecords(selectedRecords) {
+      this.selectedRecords = selectedRecords || [];
     },
-    setStudentSearchResponse: (state, studentSearchResponse) => {
-      state.studentSearchResponse = studentSearchResponse;
+    async setStudentSearchResponse(studentSearchResponse){
+      this.studentSearchResponse = studentSearchResponse;
     },
-    setAdvancedSearchCriteria: (state, advancedSearchCriteria) => {
-      state.advancedSearchCriteria = advancedSearchCriteria;
+    async setAdvancedSearchCriteria(advancedSearchCriteria) {
+      this.advancedSearchCriteria = advancedSearchCriteria;
     },
-    setStudentSearchParams: (state, studentSearchParams) => {
-      state.studentSearchParams = studentSearchParams;
+    async setStudentSearchParams(studentSearchParams) {
+      this.studentSearchParams = studentSearchParams;
     },
-    updateSortParams: (state, sortHeader) => {
-      if (sortHeader === state.headerSortParams.currentSort) {
-        state.headerSortParams.currentSortAsc = !state.headerSortParams.currentSortAsc;
-        state.pageNumber = 1;
+    async updateSortParams(sortHeader){
+      if (sortHeader === this.headerSortParams.currentSort) {
+        this.headerSortParams.currentSortAsc = !this.headerSortParams.currentSortAsc;
+        this.pageNumber = 1;
       } else {
-        state.headerSortParams.currentSort = sortHeader;
+        this.headerSortParams.currentSort = sortHeader;
       }
     },
-    clearStudentSearchParams: (state) => {
-      state.advancedSearchCriteria = getDefaultAdvancedSearchCriteria();
-      state.studentSearchParams = {
+    async clearStudentSearchParams() {
+      this.advancedSearchCriteria = getDefaultAdvancedSearchCriteria();
+      this.studentSearchParams = {
         pen: null,
         legalLastName: null,
         legalFirstName: null,
@@ -103,9 +105,9 @@ export default {
         gradeCode: null
       };
     },
-    clearStudentSearchResults: (state) => {
-      state.selectedRecords = [];
-      state.studentSearchResponse = null;
+    async clearStudentSearchResults() {
+      this.selectedRecords = [];
+      this.studentSearchResponse = null;
     }
   }
-};
+});

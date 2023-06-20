@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import PrimaryButton from '../util/PrimaryButton';
+import PrimaryButton from '../util/PrimaryButton.vue';
 
 export default {
   name: 'MacroEditor',

@@ -1,7 +1,9 @@
 import {mapValues} from 'lodash';
+import {defineStore} from 'pinia';
 
-const getDefaultState = () => {
-  return {
+export const penRequestBatchStudentSearchStore = defineStore('penRequestBatchStudentSearch', {
+  namespaced: true,
+  state: () => ({
     pageNumber: 1,
     selectedRecords: [],
     showSamePENAssigned: null,
@@ -26,42 +28,60 @@ const getDefaultState = () => {
     selectedStudentStatus: null,
     currentPrbStudentSearchParams: null,
     prbStudentSearchCriteria: null,
-  };
-};
-
-export default {
-  namespaced: true,
-  state: getDefaultState,
-  mutations: {
-    setPageNumber: (state, pageNumber) => {
-      state.pageNumber = pageNumber;
+  }),
+  actions: {
+    async setPageNumber(pageNumber){
+      this.pageNumber = pageNumber;
     },
-    setSelectedRecords: (state, selectedRecords) => {
-      state.selectedRecords = selectedRecords || [];
+    async setSelectedRecords(selectedRecords){
+      this.selectedRecords = selectedRecords || [];
     },
-    setShowSamePENAssigned: (state, showSamePENAssigned) => {
-      state.showSamePENAssigned = showSamePENAssigned;
+    async setShowSamePENAssigned(showSamePENAssigned){
+      this.showSamePENAssigned = showSamePENAssigned;
     },
-    setPrbStudentSearchResponse: (state, prbStudentSearchResponse) => {
-      state.prbStudentSearchResponse = prbStudentSearchResponse;
+    async setPrbStudentSearchResponse(prbStudentSearchResponse){
+      this.prbStudentSearchResponse = prbStudentSearchResponse;
     },
-    setPrbStudentSearchParams: (state, prbStudentSearchParams) => {
-      state.prbStudentSearchParams = prbStudentSearchParams;
+    async setPrbStudentSearchParams(prbStudentSearchParams){
+      this.prbStudentSearchParams = prbStudentSearchParams;
     },
-    clearPrbStudentSearchParams: (state) => {
-      state.prbStudentSearchParams = mapValues(state.prbStudentSearchParams, () => null);
+    async clearPrbStudentSearchParams(){
+      this.prbStudentSearchParams = mapValues(this.prbStudentSearchParams, () => null);
     },
-    setSelectedStudentStatus: (state, selectedStudentStatus) => {
-      state.selectedStudentStatus = selectedStudentStatus;
+    async setSelectedStudentStatus(selectedStudentStatus){
+      this.selectedStudentStatus = selectedStudentStatus;
     },
-    clearPrbStudentSearchState: (state) => {
-      Object.assign(state, getDefaultState());
+    async clearPrbStudentSearchState(){
+      this.pageNumber = 1;
+      this.selectedRecords = [];
+      this.showSamePENAssigned = null;
+      this.prbStudentSearchParams = {
+        bestMatchPEN: null,
+        submittedPen: null,
+        submissionNumber: null,
+        legalLastName: null,
+        legalFirstName: null,
+        legalMiddleNames: null,
+        postalCode: null,
+        genderCode: null,
+        dob: null,
+        mincode: null,
+        usualLastName: null,
+        usualFirstName: null,
+        usualMiddleNames: null,
+        localID: null,
+        gradeCode: null
+      },
+      this.prbStudentSearchResponse = null;
+      this.selectedStudentStatus = null;
+      this.currentPrbStudentSearchParams = null;
+      this.prbStudentSearchCriteria = null;
     },
-    setCurrentPrbStudentSearchParams: (state, currentPrbStudentSearchParams) => {
-      state.currentPrbStudentSearchParams = currentPrbStudentSearchParams;
+    async setCurrentPrbStudentSearchParams(currentPrbStudentSearchParams){
+      this.currentPrbStudentSearchParams = currentPrbStudentSearchParams;
     },
-    setPrbStudentSearchCriteria: (state, prbStudentSearchCriteria) => {
-      state.prbStudentSearchCriteria = prbStudentSearchCriteria;
+    async setPrbStudentSearchCriteria(prbStudentSearchCriteria){
+      this.prbStudentSearchCriteria = prbStudentSearchCriteria;
     },
   },
-};
+});

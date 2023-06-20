@@ -347,8 +347,8 @@
   </template>
 
 <script>
-import PrimaryButton from '../util/PrimaryButton';
-import {mapGetters, mapState} from 'vuex';
+import PrimaryButton from '../util/PrimaryButton.vue';
+import { mapState } from 'pinia';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
@@ -358,6 +358,8 @@ import {isNumber} from '@/utils/institute/formInput';
 import {sortBy} from 'lodash';
 import {LocalDate} from '@js-joda/core';
 import {isOpenNotClosingAuthority} from '@/utils/common';
+import {authStore} from '@/store/modules/auth';
+import {instituteStore} from '@/store/modules/institute';
 
 export default {
   name: 'MoveSchoolPage',
@@ -439,16 +441,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo','SCHOOL_INDEPENDENT_ADMIN_ROLE']),
-    ...mapState('institute', ['activeFacilityTypeCodes']),
-    ...mapState('institute', ['activeSchoolCategoryTypeCodes']),
-    ...mapState('institute', ['schoolReportingRequirementTypeCodes']),
-    ...mapState('institute', ['activeSchoolOrganizationTypeCodes']),
-    ...mapState('institute', ['activeSchoolNeighborhoodLearningCodes']),
-    ...mapState('institute', ['activeGradeCodes']),
-    ...mapState('institute', ['activeProvinceCodes']),
-    ...mapState('institute', ['activeCountryCodes']),
-    ...mapState('institute', ['schoolCategoryFacilityTypesMap']),
+    ...mapState(authStore, ['isAuthenticated','userInfo','SCHOOL_INDEPENDENT_ADMIN_ROLE']),
+    ...mapState(instituteStore, ['activeFacilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes', 'activeSchoolOrganizationTypeCodes', 'activeSchoolNeighborhoodLearningCodes', 'activeGradeCodes', 'activeProvinceCodes', 'activeCountryCodes', 'schoolCategoryFacilityTypesMap']),
 
     allowedFacilityTypeCodesForSchoolCategoryCode(){
       if (!this.activeFacilityTypeCodes || !this.moveSchoolObject?.schoolCategoryCode) {

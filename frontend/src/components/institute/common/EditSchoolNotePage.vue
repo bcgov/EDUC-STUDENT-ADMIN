@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import PrimaryButton from '../../util/PrimaryButton';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';

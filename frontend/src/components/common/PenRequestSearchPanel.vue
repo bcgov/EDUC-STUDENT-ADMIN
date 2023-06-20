@@ -220,9 +220,10 @@
             
 </template>
 <script>
-import {mapGetters, mapState} from 'vuex';
-import PrimaryButton from '@/components/util/PrimaryButton';
+import { mapState } from 'pinia';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import {isValidAlphanumericValue, isValidDob, isValidMincode, isValidPEN} from '@/utils/validation';
+import {studentStore} from '@/store/modules/student';
 
 export default {
   name: 'PenRequestSearchPanel',
@@ -259,8 +260,7 @@ export default {
     };
   },
   computed:{
-    ...mapGetters('student', ['gradeCodeObjects']),
-    ...mapState('student', ['genders']),
+    ...mapState(studentStore, ['gradeCodeObjects', 'genders']),
     genderCodes() {
       return this.genders ? this.genders.map(a => a.genderCode):[];
     },

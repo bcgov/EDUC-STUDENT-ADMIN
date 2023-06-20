@@ -46,10 +46,11 @@
 
 <script>
 
-import {mapState} from 'vuex';
-import PrimaryButton from '../util/PrimaryButton';
+import {mapState} from 'pinia';
+import PrimaryButton from '../util/PrimaryButton.vue';
 import router from '@/router';
-import Spinner from '@/components/common/Spinner';
+import Spinner from '@/components/common/Spinner.vue';
+import {appStore} from '@/store/modules/app';
 
 export default {
   name: 'InstituteAccessPage',
@@ -73,7 +74,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['notClosedSchools','activeDistricts']),
+    ...mapState(appStore, ['notClosedSchools','activeDistricts']),
     instituteArray() {
       switch (this.instituteTypeCode) {
       case 'SCHOOL':

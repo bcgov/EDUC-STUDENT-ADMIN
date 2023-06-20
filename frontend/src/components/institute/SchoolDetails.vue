@@ -88,7 +88,7 @@
 
 <script>
 
-import {mapGetters,} from 'vuex';
+import { mapState } from 'pinia';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
@@ -101,6 +101,8 @@ import MinistryNotes from './common/MinistryNotes.vue';
 import SchoolHistory from './common/SchoolHistory.vue';
 import SchoolContacts from './common/SchoolContacts.vue';
 import SchoolMove from './common/SchoolMove.vue';
+import {authStore} from '@/store/modules/auth';
+import {notificationsStore} from '@/store/modules/notifications';
 
 export default {
   name: 'SchoolDetailsPage',
@@ -133,8 +135,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo','SCHOOL_ADMIN_ROLE','SCHOOL_INDEPENDENT_ADMIN_ROLE']),
-    ...mapGetters('notifications', ['notification']),
+    ...mapState(authStore, ['isAuthenticated','userInfo','SCHOOL_ADMIN_ROLE','SCHOOL_INDEPENDENT_ADMIN_ROLE']),
+    ...mapState(notificationsStore, ['notification']),
     dataReady: function () {
       return this.userInfo;
     },

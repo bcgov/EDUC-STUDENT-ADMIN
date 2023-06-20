@@ -136,8 +136,8 @@
 
 <script>
 import {Routes} from '@/utils/constants';
-import {mapState, mapGetters} from 'vuex';
-import PrimaryButton from '../../util/PrimaryButton';
+import { mapState } from 'pinia';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import TertiaryButton from '../../util/TertiaryButton';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
 import Pagination from '@/components/util/Pagination';
@@ -149,6 +149,8 @@ import {
   isValidEmail,
 } from '@/utils/validation';
 import {deepCloneObject, setEmptyInputParams} from '@/utils/common';
+import {authStore} from '@/store/modules/auth';
+import {appStore} from '@/store/modules/app';
 
 export default {
   name: 'PenCoordinatorsDisplay',
@@ -192,8 +194,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['schoolApiMincodeSchoolNames']),
-    ...mapGetters('auth', ['EDIT_PEN_COORDINATOR_INFO_ROLE']),
+    ...mapState(appStore, ['schoolApiMincodeSchoolNames']),
+    ...mapState(authStore, ['EDIT_PEN_COORDINATOR_INFO_ROLE']),
     schools() {
       return _.sortedUniq([...this.schoolApiMincodeSchoolNames.values()].sort());
     },

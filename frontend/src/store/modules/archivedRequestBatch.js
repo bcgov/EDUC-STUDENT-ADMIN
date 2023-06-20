@@ -1,5 +1,8 @@
-const getDefaultState = () => {
-  return {
+import {defineStore} from 'pinia';
+
+export const archivedRequestBatchStore = defineStore('archivedRequestBatch', {
+  namespaced: true,
+  state: () => ({
     pageNumber: 1,
     selectedFiles: [],
     penRequestBatchResponse: {
@@ -23,27 +26,44 @@ const getDefaultState = () => {
         endDate: null
       },
     },
-  };
-};
-
-export default {
-  namespaced: true,
-  state: getDefaultState,
-  mutations: {
-    setPageNumber: (state, pageNumber) => {
-      state.pageNumber = pageNumber;
+  }),
+  actions: {
+    async setPageNumber(pageNumber){
+      this.pageNumber = pageNumber;
     },
-    setSelectedFiles: (state, selectedFiles) => {
-      state.selectedFiles = selectedFiles || [];
+    async setSelectedFiles(selectedFiles) {
+      this.selectedFiles = selectedFiles || [];
     },
-    setPenRequestBatchResponse: (state, penRequestBatchResponse) => {
-      state.penRequestBatchResponse = penRequestBatchResponse;
+    async setPenRequestBatchResponse(penRequestBatchResponse){
+      this.penRequestBatchResponse = penRequestBatchResponse;
     },
-    clearPenRequestBatchState: (state) => {
-      Object.assign(state, {...getDefaultState()});
+    async clearPenRequestBatchState() {
+      this.pageNumber = 1;
+      this.selectedFiles = [];
+      this.currentBatchFileSearchParams = {
+        prbStudent: {
+          assignedPEN: null,
+          legalLastName: null,
+          legalFirstName: null,
+          legalMiddleNames: null,
+          genderCode: null,
+          dob: null,
+        },
+        mincode: null,
+        schoolName: null,
+        load: {
+          startDate: null,
+          endDate: null
+        },
+      };
+      this.refinedSearch = false;
+      this.penRequestBatchResponse = {
+        content: [],
+        pageable: {}
+      };
     },
-    setCurrentBatchFileSearchParams: (state, batchFileSearchParams) => {
-      state.currentBatchFileSearchParams = batchFileSearchParams;
+    async setCurrentBatchFileSearchParams(batchFileSearchParams) {
+      this.currentBatchFileSearchParams = batchFileSearchParams;
     }
   },
-};
+});

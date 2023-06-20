@@ -158,14 +158,15 @@ import ApiService from '../../common/apiService';
 import {setEmptyInputParams} from '@/utils/common';
 import {isNotEmptyInputParams} from '@/utils/validation';
 import {Routes} from '@/utils/constants';
-import {mapState} from 'vuex';
-import PrimaryButton from '@/components/util/PrimaryButton';
+import {mapState} from 'pinia';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
 import InviteUserPage from '@/components/secure-message/InviteUserPage';
 import AccessUserCard from '@/components/secure-message/AccessUserCard';
-import Spinner from '@/components/common/Spinner';
+import Spinner from '@/components/common/Spinner.vue';
 import router from '@/router';
 import ClipboardButton from '@/components/util/ClipboardButton';
+import {edxStore} from '@/store/modules/edx';
 
 export default {
   name: 'AccessDistrictUsersPage',
@@ -332,7 +333,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('edx', ['districtRoles','districtRolesCopy']),
+    ...mapState(edxStore, ['districtRoles','districtRolesCopy']),
   }
 };
 </script>

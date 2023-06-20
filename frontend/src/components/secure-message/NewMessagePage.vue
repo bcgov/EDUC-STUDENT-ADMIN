@@ -158,7 +158,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 import {replaceMacro, insertMacro} from '../../utils/macro';
 import {humanFileSize} from '@/utils/file';
 import ApiService from '@/common/apiService';
@@ -167,12 +167,15 @@ import {
 } from '@/utils/constants';
 import {isValidPEN} from '@/utils/validation';
 import alertMixin from '@/mixins/alertMixin';
-import PrimaryButton from '@/components/util/PrimaryButton';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import DocumentUpload from '@/components/common/DocumentUpload';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import AddStudent from '@/components/common/AddStudent';
 import MacroMenu from '../common/MacroMenu';
 import {getStatusAuthorityOrSchool} from '@/utils/institute/status';
+import {edxStore} from '@/store/modules/edx';
+import {authStore} from '@/store/modules/auth';
+import {appStore} from '@/store/modules/app';
 
 export default {
   name: 'NewMessagePage',
@@ -210,10 +213,9 @@ export default {
     };
   },
   computed: {
-    ...mapState('auth', ['userInfo']),
-    ...mapState('edx', ['ministryTeams', 'validSchoolIDsForMessaging', 'secureExchangeDocuments','secureExchangeStudents', 'validDistrictIDsForMessaging', 'fileRequirements']),
-    ...mapGetters('app', ['schoolMap', 'districtMap']),
-    ...mapGetters('edx', ['messageMacros']),
+    ...mapState(authStore, ['userInfo']),
+    ...mapState(edxStore, ['messageMacros', 'ministryTeams', 'validSchoolIDsForMessaging', 'secureExchangeDocuments','secureExchangeStudents', 'validDistrictIDsForMessaging', 'fileRequirements']),
+    ...mapState(appStore, ['schoolMap', 'districtMap']),
     myTeam() {
       return this.ministryTeams.find(team => this.userInfo.userRoles.some(role => team.groupRoleIdentifier === role)) || {};
     },
@@ -235,7 +237,7 @@ export default {
     this.getMacros();
   },
   methods: {
-    ...mapActions('edx', ['getMacros']),
+    ...mapState(edxStore, ['getMacros']),
     navigateToList() {
       this.$emit('secure-exchange:cancelMessage');
     },

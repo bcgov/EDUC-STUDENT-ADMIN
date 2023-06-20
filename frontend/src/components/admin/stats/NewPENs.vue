@@ -180,14 +180,16 @@
 import {LocalDate, LocalDateTime} from '@js-joda/core';
 import ApiService from '../../../common/apiService';
 import {Routes} from '@/utils/constants';
-import {mapMutations, mapState} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import StudentSearchResults from '@/components/penreg/student-search/StudentSearchResults';
 import alertMixin from '@/mixins/alertMixin';
-import PrimaryButton from '@/components/util/PrimaryButton';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import {isValidNumber} from '@/utils/validation';
 import BarChartContainer from '@/components/admin/stats/BarChartContainer';
 import {CHART_STAT_URLS} from '@/utils/constants/ChartConstants';
-import Spinner from '@/components/common/Spinner';
+import Spinner from '@/components/common/Spinner.vue';
+import {studentSearchStore} from '@/store/modules/studentSearch';
+import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
 
 export default {
   name: 'newpens',
@@ -228,8 +230,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('studentSearch', ['pageNumber', 'headerSortParams', 'studentSearchResponse']),
-    ...mapState('penRequestBatch', ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
+    ...mapState(studentSearchStore, ['pageNumber', 'headerSortParams', 'studentSearchResponse']),
+    ...mapState(penRequestBatchStore, ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
     genderCodes() {
       return this.genders ? this.genders.map(a => a.genderCode) : [];
     },
@@ -270,7 +272,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('studentSearch', ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse']),
+    ...mapActions(studentSearchStore, ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse']),
     isValidNumber,
     clearSearch() {
       this.penSearch = null;

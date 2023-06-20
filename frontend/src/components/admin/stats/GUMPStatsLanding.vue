@@ -84,7 +84,7 @@
 
 <script>
 import DoughnutChartContainer from './DoughnutChartContainer';
-import Spinner from '../../common/Spinner';
+import Spinner from '../../common/Spinner.vue';
 import PercentileInfoCard from '../../common/PercentileInfoCard';
 import BarChartContainer from './BarChartContainer';
 import {CHART_STAT_URLS, CHART_TYPES, COMPLETION_STATES} from '@/utils/constants/ChartConstants';

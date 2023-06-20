@@ -72,14 +72,18 @@
 import {LocalDate} from '@js-joda/core';
 import ApiService from '../../../common/apiService';
 import {REQUEST_TYPES, Routes, STUDENT_DETAILS_FIELDS} from '@/utils/constants';
-import {mapGetters, mapMutations, mapState} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import StudentSearchResults from './StudentSearchResults';
 import StudentAdvancedSearch from './StudentAdvancedSearch';
-import PrimaryButton from '../../util/PrimaryButton';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import {checkDigit, isValidMincode, isValidPEN, isValidPostalCode} from '@/utils/validation';
 import alertMixin from '@/mixins/alertMixin';
 import CreateNewPenModal from '@/components/common/CreateNewPenModal';
 import {cloneDeep, pick} from 'lodash';
+import {studentStore} from '@/store/modules/student';
+import {studentSearchStore} from '@/store/modules/studentSearch';
+import {authStore} from '@/store/modules/auth';
+import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
 
 export default {
   components: {
@@ -123,11 +127,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo', 'CREATE_NEW_PEN_ROLE']),
-    ...mapGetters('student', ['gradeCodeObjects']),
-    ...mapState('student', ['genders']),
-    ...mapState('studentSearch', ['pageNumber', 'headerSortParams', 'advancedSearchCriteria', 'studentSearchResponse']),
-    ...mapState('penRequestBatch', ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
+    ...mapState(authStore, ['userInfo', 'CREATE_NEW_PEN_ROLE']),
+    ...mapState(studentStore, ['gradeCodeObjects', 'genders']),
+    ...mapState(studentSearchStore, ['pageNumber', 'headerSortParams', 'advancedSearchCriteria', 'studentSearchResponse']),
+    ...mapState(penRequestBatchStore, ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
     isAdvancedSearch() {
       return this.searchType === REQUEST_TYPES.studentSearch.type.advanced;
     },
@@ -189,7 +192,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('studentSearch', ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse', 'clearStudentSearchParams', 'clearStudentSearchResults']),
+    ...mapActions(studentSearchStore, ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse', 'clearStudentSearchParams', 'clearStudentSearchResults']),
     setCurrentSearchObject(searchParams) {
       this.currentStudentSearchParams = JSON.parse(JSON.stringify(searchParams));
     },

@@ -220,8 +220,8 @@
 </template>
 
 <script>
-import {mapGetters, mapMutations, mapState} from 'vuex';
-import PrimaryButton from '../util/PrimaryButton';
+import {mapActions, mapState} from 'pinia';
+import PrimaryButton from '../util/PrimaryButton.vue';
 import NomRollStudentStatusChip from './NomRollStudentStatusChip';
 import {uniqBy, values, partialRight} from 'lodash';
 import router from '../../router';
@@ -238,6 +238,13 @@ import alertMixin from '@/mixins/alertMixin';
 import MapSchoolCodeModal from './MapSchoolCodeModal';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import {LocalDate} from '@js-joda/core';
+import {notificationsStore} from '@/store/modules/notifications';
+import {nominalRollStore} from '@/store/modules/nominalRoll';
+import {authStore} from '@/store/modules/auth';
+import {appStore} from '@/store/modules/app';
+import {studentStore} from '@/store/modules/student';
+import {nominalRollStudentSearchStore} from '@/store/modules/nomRollStudentSearch';
+import {navigationStore} from '@/store/modules/setNavigation';
 
 export default {
   name: 'NomRollStudentSearchResults',
@@ -324,13 +331,12 @@ export default {
     }
   },
   computed: {
-    ...mapState('nomRollStudentSearch', ['nomRollStudentSearchResponse', 'nomRollStudentSearchCriteria', 'currentNomRollStudentSearchParams']),
-    ...mapGetters('student', ['genders','gradeCodeObjects']),
-    ...mapState('app', ['schoolApiMincodeSchoolNames', 'schoolApiDistrictCodes']),
-    ...mapGetters('app', ['schoolApiMincodeSchoolNamesObjectSorted', 'schoolApiDistrictCodesObjectSorted']),
-    ...mapGetters('auth', ['EDIT_NOMINAL_ROLL_ROLE','NOMINAL_ROLL_READ_ONLY_ROLE']),
-    ...mapState('nominalRoll', ['fedProvSchoolCodes']),
-    ...mapGetters('notifications', ['notification']),
+    ...mapState(nominalRollStudentSearchStore, ['nomRollStudentSearchResponse', 'nomRollStudentSearchCriteria', 'currentNomRollStudentSearchParams']),
+    ...mapState(studentStore, ['genders','gradeCodeObjects']),
+    ...mapState(appStore, ['schoolApiMincodeSchoolNames', 'schoolApiDistrictCodes', 'schoolApiMincodeSchoolNamesObjectSorted', 'schoolApiDistrictCodesObjectSorted']),
+    ...mapState(authStore, ['EDIT_NOMINAL_ROLL_ROLE','NOMINAL_ROLL_READ_ONLY_ROLE']),
+    ...mapState(nominalRollStore, ['fedProvSchoolCodes']),
+    ...mapState(notificationsStore, ['notification']),
     pageNumber: {
       get(){
         return this.$store.state['nomRollStudentSearch'].pageNumber;
@@ -384,8 +390,8 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('nomRollStudentSearch', ['setSelectedRecords']),
-    ...mapMutations('setNavigation', ['setSelectedIDs', 'setRequestType', 'setMultiFiles']),
+    ...mapActions(nominalRollStudentSearchStore, ['setSelectedRecords']),
+    ...mapActions(navigationStore, ['setSelectedIDs', 'setRequestType', 'setMultiFiles']),
     formatTableColumn(format, column) {
       return (format && column) ? format(column) : (column || ' ');
     },

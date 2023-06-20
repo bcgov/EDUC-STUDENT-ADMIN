@@ -101,13 +101,14 @@
 </template>
 
 <script>
-import PrimaryButton from '@/components/util/PrimaryButton';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
-
 import {Routes} from '@/utils/constants';
-import {mapGetters, mapState} from 'vuex';
+import { mapState } from 'pinia';
+import {authStore} from '@/store/modules/auth';
+import {appStore} from '@/store/modules/app';
 
 export default {
   name: 'InviteUserPage',
@@ -167,8 +168,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo']),
-    ...mapState('app', ['schoolMap']),
+    ...mapState(authStore, ['userInfo']),
+    ...mapState(appStore, ['schoolMap']),
     emailRules() {
       return [
         v => !!v || this.emailHint,

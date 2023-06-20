@@ -9,7 +9,8 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
+import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
 
 export default {
   name: 'PrbStudentStatusChip',
@@ -35,7 +36,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('penRequestBatch', ['prbStudentStatuses']),
+    ...mapState(penRequestBatchStore, ['prbStudentStatuses']),
     statusLabel() {
       const statusLabel = this.prbStudentStatuses.find(status => status.penRequestBatchStudentStatusCode === this.prbStudent.penRequestBatchStudentStatusCode)?.label;
       if(this.prbStudent?.penRequestBatchStudentStatusCode === 'DUPLICATE'){

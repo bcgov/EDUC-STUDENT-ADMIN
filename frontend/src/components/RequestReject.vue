@@ -37,11 +37,14 @@
 import ApiService from '../common/apiService';
 import {REQUEST_TYPES, Routes, Statuses} from '../utils/constants';
 import { replaceMacro, insertMacro } from '../utils/macro';
-import {mapGetters, mapMutations} from 'vuex';
-import PrimaryButton from './util/PrimaryButton';
+import {mapActions, mapState} from 'pinia';
+import PrimaryButton from './util/PrimaryButton.vue';
 import alertMixin from '../mixins/alertMixin';
 import {isValidLength} from '../utils/validation';
 import MacroMenu from './common/MacroMenu';
+import {notificationsStore} from '@/store/modules/notifications';
+import {appStore} from '@/store/modules/app';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'requestReject',
@@ -81,9 +84,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo', 'ACTION_GMP_REQUESTS_ROLE', 'ACTION_UMP_REQUESTS_ROLE']),
-    ...mapGetters('app', ['selectedRequest', 'requestType', 'requestTypeLabel']),
-    ...mapGetters('notifications', ['notification']),
+    ...mapState(authStore, ['userInfo', 'ACTION_GMP_REQUESTS_ROLE', 'ACTION_UMP_REQUESTS_ROLE']),
+    ...mapState(appStore, ['selectedRequest', 'requestType', 'requestTypeLabel']),
+    ...mapState(notificationsStore, ['notification']),
     requestStatusCodeName() {
       return `${this.requestType}StatusCode`;
     },
@@ -129,7 +132,7 @@ export default {
     this.rejectComment = this.request.failureReason;
   },
   methods: {
-    ...mapMutations('app', ['setRequest']),
+    ...mapActions(appStore, ['setRequest']),
     replaceRejectMacro() {
       this.rejectComment = replaceMacro(this.rejectComment, this.rejectMacros);
     },

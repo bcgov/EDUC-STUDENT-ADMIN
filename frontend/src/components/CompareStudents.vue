@@ -12,7 +12,7 @@
 
 <script>
 import CompareDemographicsCommon from './common/CompareDemographicsCommon';
-import PrimaryButton from './util/PrimaryButton';
+import PrimaryButton from './util/PrimaryButton.vue';
 
 export default {
   name: 'Compare',

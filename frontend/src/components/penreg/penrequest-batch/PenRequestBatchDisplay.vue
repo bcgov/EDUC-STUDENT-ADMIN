@@ -128,9 +128,9 @@
 
 <script>
 import { PEN_REQ_BATCH_STUDENT_REQUEST_CODES, Routes } from '@/utils/constants';
-import { mapState, mapMutations } from 'vuex';
+import { mapState, mapActions } from 'pinia';
 import PenRequestBatchList from './PenRequestBatchList';
-import PrimaryButton from '../../util/PrimaryButton';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import router from '../../../router';
 import alertMixin from '../../../mixins/alertMixin';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
@@ -139,6 +139,10 @@ import ApiService from '@/common/apiService';
 import Mousetrap from 'mousetrap';
 import {deepCloneObject} from '@/utils/common';
 import searchMixin from '@/mixins/searchMixin';
+import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
+import {appStore} from '@/store/modules/app';
+import {penRequestBatchStudentSearchStore} from '@/store/modules/prbStudentSearch';
+import {navigationStore} from '@/store/modules/setNavigation';
 
 export default {
   name: 'PenRequestBatchDisplay',
@@ -166,8 +170,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('penRequestBatch', ['selectedFiles', 'prbStudentStatusFilters', 'currentBatchFileSearchParams']),
-    ...mapState('app', ['schoolApiMincodeSchoolNames']),
+    ...mapState(penRequestBatchStore, ['selectedFiles', 'prbStudentStatusFilters', 'currentBatchFileSearchParams']),
+    ...mapState(appStore, ['schoolApiMincodeSchoolNames']),
     selectedSchoolGroup: {
       get(){
         return this.$store.state['penRequestBatch'].selectedSchoolGroup;
@@ -205,9 +209,9 @@ export default {
     Mousetrap.reset();
   },
   methods: {
-    ...mapMutations('prbStudentSearch', ['clearPrbStudentSearchState']),
-    ...mapMutations('penRequestBatch', ['setSelectedFiles']),
-    ...mapMutations('setNavigation', ['setSelectedIDs', 'setCurrentRequest']),
+    ...mapActions(penRequestBatchStudentSearchStore, ['clearPrbStudentSearchState']),
+    ...mapActions(penRequestBatchStore, ['setSelectedFiles']),
+    ...mapActions(navigationStore, ['setSelectedIDs', 'setCurrentRequest']),
     removeFilter(index) {
       this.filters.splice(index, 1);
     },

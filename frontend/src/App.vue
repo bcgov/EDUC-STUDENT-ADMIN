@@ -38,14 +38,16 @@
 </template>
 
 <script>
-import {mapActions, mapGetters, mapState} from 'vuex';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import ModalIdle from './components/ModalIdle';
-import NavBar from './components/util/NavBar';
-import SnackBar from './components/util/SnackBar';
-import StaticConfig from './common/staticConfig';
+import { mapState } from 'pinia';
+import Header from '@/components/Header.vue';
+import Footer from '@/components/Footer.vue';
+import ModalIdle from '@/components/ModalIdle.vue';
+import NavBar from '@/components/util/NavBar.vue';
+import SnackBar from '@/components/util/SnackBar.vue';
+import StaticConfig from '@/common/staticConfig';
 import {activateMultipleDraggableDialog} from '@/utils/draggable';
+import {appStore} from '@/store/modules/app';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'app',
@@ -65,16 +67,15 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['jwtToken', 'isAuthenticated', 'userInfo']),
-    ...mapState('auth', ['isValidGMPUser', 'isValidUMPUser', 'isValidPenRequestBatchUser']),
-    ...mapState('app', ['pageTitle']),
+    ...mapState(authStore, ['jwtToken', 'isAuthenticated', 'userInfo', 'isValidGMPUser', 'isValidUMPUser', 'isValidPenRequestBatchUser']),
+    ...mapState(appStore, ['pageTitle']),
   },
   watch: {
     isAuthenticated()  {
       this.handleWebSocket();
     }
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.deactivateMultipleDraggableDialog && this.deactivateMultipleDraggableDialog();
   },
   mounted() {
@@ -82,7 +83,6 @@ export default {
     this.handleWebSocket();
   },
   methods:{
-    ...mapActions('student', ['getCodes']),
     handleWebSocket() {
       if(this.isAuthenticated && (this.isValidPenRequestBatchUser || this.isValidGMPUser || this.isValidUMPUser)) {
         this.$webSocketsConnect();

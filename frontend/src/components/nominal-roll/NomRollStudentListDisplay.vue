@@ -45,7 +45,7 @@ import {
   SEARCH_FILTER_OPERATION,
   SEARCH_VALUE_TYPE
 } from '@/utils/constants';
-import {mapMutations, mapState} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import NomRollStudentSearchResults from './NomRollStudentSearchResults';
 import alertMixin from '../../mixins/alertMixin';
 import Mousetrap from 'mousetrap';
@@ -53,6 +53,8 @@ import router from '@/router';
 import PenRequestSearchPanel from '@/components/common/PenRequestSearchPanel';
 import {LocalDate} from '@js-joda/core';
 import {formatDob} from '@/utils/format';
+import {nominalRollStudentSearchStore} from '@/store/modules/nomRollStudentSearch';
+import {nominalRollStore} from '@/store/modules/nominalRoll';
 
 export default {
   name: 'NomRollStudentListDisplay',
@@ -108,8 +110,8 @@ export default {
     };
   },
   computed:{
-    ...mapState('nomRollStudentSearch', ['pageNumber', 'selectedRecords', 'nomRollStudentSearchResponse', 'selectedStudentStatus', 'currentNomRollStudentSearchParams', 'nomRollStudentSearchCriteria']),
-    ...mapState('nominalRoll', ['fedProvSchoolCodes']),
+    ...mapState(nominalRollStudentSearchStore, ['pageNumber', 'selectedRecords', 'nomRollStudentSearchResponse', 'selectedStudentStatus', 'currentNomRollStudentSearchParams', 'nomRollStudentSearchCriteria']),
+    ...mapState(nominalRollStore, ['fedProvSchoolCodes']),
     nomRollStudentSearchParams: {
       get(){
         return this.$store.state['nomRollStudentSearch'].nomRollStudentSearchParams;
@@ -167,8 +169,8 @@ export default {
     this.initialSearch();
   },
   methods: {
-    ...mapMutations('nomRollStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setNomRollStudentSearchResponse', 'clearNomRollStudentSearchParams', 'setCurrentNomRollStudentSearchParams', 'setNomRollStudentSearchCriteria']),
-    ...mapMutations('nominalRoll', ['setFedProvSchoolCodes']),
+    ...mapActions(nominalRollStudentSearchStore, ['setPageNumber', 'setSelectedRecords', 'setNomRollStudentSearchResponse', 'clearNomRollStudentSearchParams', 'setCurrentNomRollStudentSearchParams', 'setNomRollStudentSearchCriteria']),
+    ...mapActions(nominalRollStore, ['setFedProvSchoolCodes']),
     searchPenRequestsByPen([field, pen]){
       this.clearNomRollStudentSearchParams();
       this.nomRollStudentSearchParams[field] = pen;

@@ -43,7 +43,7 @@ import {
   SEARCH_VALUE_TYPE,
   PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER
 } from '@/utils/constants';
-import {mapMutations, mapState} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import PrbStudentSearchResults from './PrbStudentSearchResults';
 import {formatPrbStudents} from '@/utils/penrequest-batch/format';
 import alertMixin from '../../../mixins/alertMixin';
@@ -51,6 +51,7 @@ import _, {difference} from 'lodash';
 import Mousetrap from 'mousetrap';
 import router from '@/router';
 import PenRequestSearchPanel from '@/components/common/PenRequestSearchPanel';
+import {penRequestBatchStudentSearchStore} from '@/store/modules/prbStudentSearch';
 
 export default {
   components: {
@@ -82,7 +83,7 @@ export default {
     };
   },
   computed:{
-    ...mapState('prbStudentSearch', ['pageNumber', 'selectedRecords', 'prbStudentSearchResponse', 'selectedStudentStatus', 'currentPrbStudentSearchParams', 'prbStudentSearchCriteria', 'showSamePENAssigned']),
+    ...mapState(penRequestBatchStudentSearchStore, ['pageNumber', 'selectedRecords', 'prbStudentSearchResponse', 'selectedStudentStatus', 'currentPrbStudentSearchParams', 'prbStudentSearchCriteria', 'showSamePENAssigned']),
     prbStudentSearchParams: {
       get(){
         return this.$store.state['prbStudentSearch'].prbStudentSearchParams;
@@ -145,7 +146,7 @@ export default {
     this.initialSearch();
   },
   methods: {
-    ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse', 'clearPrbStudentSearchParams', 'setCurrentPrbStudentSearchParams', 'setPrbStudentSearchCriteria']),
+    ...mapActions(penRequestBatchStudentSearchStore, ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse', 'clearPrbStudentSearchParams', 'setCurrentPrbStudentSearchParams', 'setPrbStudentSearchCriteria']),
     searchPenRequestsByPen([field, pen]){
       this.clearPrbStudentSearchParams();
       this.prbStudentSearchParams[field] = pen;

@@ -75,7 +75,7 @@
 
 <script>
 import {Routes, PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
-import PrimaryButton from '../../util/PrimaryButton';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import alertMixin from '../../../mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import moment from 'moment';

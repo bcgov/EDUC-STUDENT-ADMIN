@@ -177,14 +177,17 @@
 import Chat from './Chat';
 import ApiService from '../common/apiService';
 import {REQUEST_TYPES, Routes, Statuses} from '../utils/constants';
-import {mapGetters, mapMutations} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import {humanFileSize, isPdf} from '../utils/file';
 import router from '../router';
-import PrimaryButton from './util/PrimaryButton';
+import PrimaryButton from './util/PrimaryButton.vue';
 import alertMixin from '../mixins/alertMixin';
 import Mousetrap from 'mousetrap';
 import 'mousetrap/plugins/global-bind/mousetrap-global-bind';
 import ImageRenderer from '@/components/common/ImageRenderer';
+import {notificationsStore} from '@/store/modules/notifications';
+import {appStore} from '@/store/modules/app';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'requestDetail',
@@ -250,10 +253,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo', 'ACTION_GMP_REQUESTS_ROLE', 'ACTION_UMP_REQUESTS_ROLE']),
-    ...mapGetters('app', ['requestTypeLabel']),
-    ...mapGetters('app', ['request']),
-    ...mapGetters('notifications', ['notification']),
+    ...mapState(authStore, ['userInfo', 'ACTION_GMP_REQUESTS_ROLE', 'ACTION_UMP_REQUESTS_ROLE']),
+    ...mapState(appStore, ['requestTypeLabel', 'request']),
+    ...mapState(notificationsStore, ['notification']),
     isRequestCompleted() {
       return this.requestCompleted(this.request, this.statusCodes);
     },
@@ -346,9 +348,7 @@ export default {
       });
   },
   methods: {
-    ...mapMutations('app', ['setRequest']),
-    ...mapMutations('app', ['setMessages']),
-    ...mapMutations('app', ['setParticipants']),
+    ...mapActions(appStore, ['setRequest','setMessages','setParticipants']),
     documentUrl(requestId, document) {
       return `${Routes[this.requestType].ROOT_ENDPOINT}/${requestId}/documents/${document.documentID}`;
     },

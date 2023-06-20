@@ -23,8 +23,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 import { Routes } from '@/utils/constants';
+import {authStore} from '@/store/modules/auth';
 export default {
   name: 'Login',
   data() {
@@ -33,7 +34,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated']),
+    ...mapState(authStore, ['isAuthenticated']),
   },
   methods: {
     clearStorage() {

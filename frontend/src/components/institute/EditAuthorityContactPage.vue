@@ -163,8 +163,8 @@
 </template>
 
 <script>
-import PrimaryButton from '../util/PrimaryButton';
-import {mapGetters} from 'vuex';
+import PrimaryButton from '../util/PrimaryButton.vue';
+import { mapState } from 'pinia';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
@@ -172,6 +172,7 @@ import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
 import {formatDate, formatDisplayDate} from '@/utils/format';
 import {parseDate} from '@/utils/dateHelpers';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'EditAuthorityContactPage',
@@ -210,7 +211,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo']),
+    ...mapState(authStore, ['isAuthenticated','userInfo']),
     authorityContactEffectiveDateFormatted: {
       get() {
         return this.formatDisplayDate(this.editContact.effectiveDate);

@@ -245,17 +245,21 @@
 
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
-import PrimaryButton from '../util/PrimaryButton';
-import {mapGetters, mapMutations, mapState} from 'vuex';
+import PrimaryButton from '../util/PrimaryButton.vue';
+import {mapActions, mapState} from 'pinia';
 import {isEmpty, omitBy, sortBy} from 'lodash';
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber, sortByNameValue, formatContactName} from '@/utils/format';
 import {getStatusColorAuthorityOrSchool,getStatusAuthorityOrSchool, isContactCurrent} from '@/utils/institute/status';
 import router from '@/router';
-import Spinner from '@/components/common/Spinner';
-import NewSchoolPage from './NewSchoolPage';
+import Spinner from '@/components/common/Spinner.vue';
+import NewSchoolPage from './NewSchoolPage.vue';
 import {isOpenNotClosingAuthority} from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
+import {authStore} from '@/store/modules/auth';
+import {appStore} from '@/store/modules/app';
+import {edxStore} from '@/store/modules/edx';
+import {instituteStore} from '@/store/modules/institute';
 
 export default {
   name: 'SchoolListPage',
@@ -318,12 +322,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo', 'SCHOOL_ADMIN_ROLE', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
-    ...mapState('app', ['schoolsMap']),
-    ...mapState('edx', ['schoolSearchParams']),
-    ...mapState('institute', ['facilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes']),
-    ...mapState('institute', ['schoolCategoryFacilityTypesMap']),
-    ...mapState('institute', ['activeFacilityTypeCodes']),
+    ...mapState(authStore, ['userInfo', 'SCHOOL_ADMIN_ROLE', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
+    ...mapState(appStore, ['schoolsMap']),
+    ...mapState(edxStore, ['schoolSearchParams']),
+    ...mapState(instituteStore, ['facilityTypeCodes','activeFacilityTypeCodes', 'schoolCategoryFacilityTypesMap', 'activeSchoolCategoryTypeCodes', 'schoolCategoryTypeCodes', 'schoolReportingRequirementTypeCodes']),
     schoolFacilityTypes(){
       if (!this.activeFacilityTypeCodes || !this.schoolCategoryTypeFilter) {
         return [];
@@ -367,7 +369,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('edx', ['setSchoolSearchParams']),
+    ...mapActions(edxStore, ['setSchoolSearchParams']),
     setSearchValues() {
       this.schoolCodeNameFilter = this.schoolSearchParams.schoolID;
       this.districtCodeNameFilter = this.schoolSearchParams.districtID;

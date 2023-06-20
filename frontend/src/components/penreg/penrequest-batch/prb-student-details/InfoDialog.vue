@@ -50,12 +50,13 @@
 </template>
 
 <script>
-import PrimaryButton from '../../../util/PrimaryButton';
+import PrimaryButton from '../../../util/PrimaryButton.vue';
 import { replaceMacro, insertMacro } from '../../../../utils/macro';
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 import ConfirmationDialog from '../../../util/ConfirmationDialog';
 import alertMixin from '@/mixins/alertMixin';
 import MacroMenu from '@/components/common/MacroMenu';
+import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
 
 export default {
   name: 'InfoDialog',
@@ -87,7 +88,7 @@ export default {
     this.requestInfoDialogText = this.text;
   },
   computed: {
-    ...mapState('penRequestBatch', ['studentInfoMacros'])
+    ...mapState(penRequestBatchStore, ['studentInfoMacros'])
   },
   methods: {
     async closeRequestInfoDialog() {

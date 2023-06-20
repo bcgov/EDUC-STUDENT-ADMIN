@@ -44,7 +44,7 @@
 
 <script>
 import StudentDetailCommon from '../../common/StudentDetailCommon';
-import PrimaryButton from '../../util/PrimaryButton';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import router from '../../../router';
 import {REQUEST_TYPES} from '@/utils/constants';
 import alertMixin from '../../../mixins/alertMixin';

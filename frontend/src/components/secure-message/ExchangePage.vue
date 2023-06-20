@@ -336,13 +336,16 @@
 
 import ApiService from '../../common/apiService';
 import {EDX_SAGA_REQUEST_DELAY_MILLISECONDS, Routes} from '@/utils/constants';
-import PrimaryButton from '../util/PrimaryButton';
+import PrimaryButton from '../util/PrimaryButton.vue';
 import NewMessagePage from './NewMessagePage';
-import {mapGetters, mapState} from 'vuex';
+import {mapState} from 'pinia';
 import router from '@/router';
 import {isEmpty, omitBy} from 'lodash';
 import {LocalDate, ChronoUnit, DateTimeFormatter} from '@js-joda/core';
 import alertMixin from '@/mixins/alertMixin';
+import {edxStore} from '@/store/modules/edx';
+import {appStore} from '@/store/modules/app';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'ExchangeInbox',
@@ -409,11 +412,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo']),
-    ...mapGetters('app', ['schoolMap', 'districtMap']),
-    ...mapState('app', ['mincodeSchoolNames']),
-    ...mapState('edx', ['statuses']),
-    ...mapState('edx', ['ministryTeams']),
+    ...mapState(authStore, ['userInfo']),
+    ...mapState(appStore, ['schoolMap', 'districtMap', 'mincodeSchoolNames']),
+    ...mapState(edxStore, ['statuses', 'ministryTeams']),
     secureExchangeStatusCodes(){
       return this.statuses;
     },

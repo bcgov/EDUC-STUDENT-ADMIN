@@ -41,7 +41,7 @@
 </template>
 <script>
 import omit from 'lodash/omit';
-import PrimaryButton from './util/PrimaryButton';
+import PrimaryButton from './util/PrimaryButton.vue';
 
 export default {
   name: 'DashboardTable.vue',

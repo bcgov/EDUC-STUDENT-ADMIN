@@ -116,8 +116,8 @@ import ApiService from '@/common/apiService';
 import {setEmptyInputParams} from '@/utils/common';
 
 import alertMixin from '@/mixins/alertMixin';
-import PrimaryButton from '@/components/util/PrimaryButton';
-import Spinner from '@/components/common/Spinner';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
+import Spinner from '@/components/common/Spinner.vue';
 
 
 export default {

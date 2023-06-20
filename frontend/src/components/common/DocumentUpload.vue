@@ -42,8 +42,10 @@
 
 <script>
 import {humanFileSize, getFileExtensionWithDot, getFileNameWithMaxNameLength} from '@/utils/file';
-import {mapGetters, mapState} from 'vuex';
-import PrimaryButton from '../util/PrimaryButton';
+import { mapState } from 'pinia';
+import PrimaryButton from '../util/PrimaryButton.vue';
+import {authStore} from '@/store/modules/auth';
+import {edxStore} from '@/store/modules/edx';
 
 export default {
   components: {PrimaryButton},
@@ -109,8 +111,8 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('auth', ['NOMINAL_ROLL_READ_ONLY_ROLE']),
-    ...mapState('edx', ['fileRequirements']),
+    ...mapState(authStore, ['NOMINAL_ROLL_READ_ONLY_ROLE']),
+    ...mapState(edxStore, ['fileRequirements']),
     dataReady () {
       return this.validForm && this.file;
     },

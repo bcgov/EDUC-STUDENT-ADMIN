@@ -7,7 +7,8 @@
 <script>
 import {Routes} from '@/utils/constants';
 import ApiService from '@/common/apiService';
-import {mapGetters} from 'vuex';
+import { mapState } from 'pinia';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   data() {
@@ -20,7 +21,7 @@ export default {
 
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated']),
+    ...mapState(authStore, ['isAuthenticated']),
   },
   methods: {
 

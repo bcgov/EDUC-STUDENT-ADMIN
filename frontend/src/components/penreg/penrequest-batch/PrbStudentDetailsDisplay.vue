@@ -157,8 +157,8 @@
 </template>
 
 <script>
-import {mapGetters, mapMutations, mapState} from 'vuex';
-import PrimaryButton from '../../util/PrimaryButton';
+import {mapActions, mapState} from 'pinia';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import PrbStudentStatusChip from './PrbStudentStatusChip';
 import InfoDialog from './prb-student-details/InfoDialog';
 import ApiService from '../../../common/apiService';
@@ -186,6 +186,10 @@ import {formatPen} from '@/utils/format';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
 import router from '../../../router';
 import Mousetrap from 'mousetrap';
+import {navigationStore} from '@/store/modules/setNavigation';
+import {notificationsStore} from '@/store/modules/notifications';
+import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
+import {penRequestBatchStudentSearchStore} from '@/store/modules/prbStudentSearch';
 
 export default {
   name: 'PrbStudentDetailsDisplay',
@@ -264,10 +268,9 @@ export default {
     }
   },
   computed: {
-    ...mapState('setNavigation', ['selectedIDs', 'currentRequest', 'requestType']),
-    ...mapGetters('setNavigation', ['title']),
-    ...mapState('notifications', ['notification']),
-    ...mapState('penRequestBatch', ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
+    ...mapState(navigationStore, ['selectedIDs', 'currentRequest', 'requestType', 'title']),
+    ...mapState(notificationsStore, ['notification']),
+    ...mapState(penRequestBatchStore, ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
     nextRoute() {
       return this.currentRequest >= this.total - 1 ? this.currentRequest : this.currentRequest + 1;
     },
@@ -369,9 +372,8 @@ export default {
     });
   },
   methods: {
-    ...mapMutations('setNavigation', ['clearNavigation']),
-    ...mapMutations('prbStudentSearch', ['setSelectedRecords']),
-    ...mapMutations('setNavigation', ['setCurrentRequest']),
+    ...mapActions(navigationStore, ['clearNavigation', 'setCurrentRequest']),
+    ...mapActions(penRequestBatchStudentSearchStore, ['setSelectedRecords']),
     clickNextBtn() {
       let route = this.nextRoute;
       this.setCurrentRequest(route);

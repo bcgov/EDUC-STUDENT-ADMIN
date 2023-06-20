@@ -90,8 +90,8 @@
 </template>
 
 <script>
-import {mapMutations, mapState} from 'vuex';
-import PrimaryButton from '../../util/PrimaryButton';
+import {mapActions, mapState} from 'pinia';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import PrbStudentStatusChip from './PrbStudentStatusChip';
 import {sortBy, uniqBy, values} from 'lodash';
 import router from '../../../router';
@@ -100,6 +100,9 @@ import {
   Routes
 } from '../../../utils/constants';
 import ApiService from '@/common/apiService';
+import {penRequestBatchStudentSearchStore} from '@/store/modules/prbStudentSearch';
+import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
+import {navigationStore} from '@/store/modules/setNavigation';
 
 export default {
   name: 'PrbStudentSearchResults',
@@ -138,8 +141,8 @@ export default {
     await this.$store.dispatch('app/getCodes');
   },
   computed: {
-    ...mapState('prbStudentSearch', ['prbStudentSearchResponse', 'prbStudentSearchCriteria', 'currentPrbStudentSearchParams']),
-    ...mapState('penRequestBatch', ['prbStudentStatuses']),
+    ...mapState(penRequestBatchStudentSearchStore, ['prbStudentSearchResponse', 'prbStudentSearchCriteria', 'currentPrbStudentSearchParams']),
+    ...mapState(penRequestBatchStore, ['prbStudentStatuses']),
     pageNumber: {
       get(){
         return this.$store.state['prbStudentSearch'].pageNumber;
@@ -196,8 +199,8 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse']),
-    ...mapMutations('setNavigation', ['setSelectedIDs', 'setArchived']),
+    ...mapActions(penRequestBatchStudentSearchStore, ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse']),
+    ...mapActions(navigationStore, ['setSelectedIDs', 'setArchived']),
     getSchoolName(request) {
       return this.$store.state['app'].schoolApiMincodeSchoolNames.get(request?.mincode?.replace(' ',''));
     },

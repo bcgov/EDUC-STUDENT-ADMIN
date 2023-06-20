@@ -46,11 +46,13 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import { REQUEST_TYPES } from '../utils/constants';
 import RequestsDisplay from './RequestsDisplay';
 import StudentSearchDisplay from './penreg/student-search/StudentSearchDisplay';
 import PenRequestBatchDisplay from './penreg/penrequest-batch/PenRequestBatchDisplay';
+import {authStore} from '@/store/modules/auth';
+import {appStore} from '@/store/modules/app';
 export default {
   name: 'requestsPage',
   components: {
@@ -78,8 +80,8 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('app', ['requestType']),
-    ...mapGetters('auth', ['isValidGMPUser','isValidUMPUser','isValidStudentSearchUser']),
+    ...mapState(appStore, ['requestType']),
+    ...mapState(authStore, ['isValidGMPUser','isValidUMPUser','isValidStudentSearchUser']),
     requestTypes() {
       return REQUEST_TYPES;
     }
@@ -93,7 +95,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('app', ['setRequestType']),
+    ...mapActions(appStore, ['setRequestType']),
   }
 };
 </script>

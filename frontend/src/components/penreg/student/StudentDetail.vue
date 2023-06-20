@@ -67,13 +67,15 @@
 <script>
 import StudentDetailCommon from '../../common/StudentDetailCommon';
 import StudentAuditHistory from './StudentAuditHistory';
-import PrimaryButton from '../../util/PrimaryButton';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import {Routes} from '@/utils/constants';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
 import StudentSLDHistory from '@/components/penreg/student/StudentSLDHistory';
-import {mapState, mapGetters} from 'vuex';
+import {mapState} from 'pinia';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
+import {studentStore} from '@/store/modules/student';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'studentDetail',
@@ -101,8 +103,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('student', ['studentsInProcess']),
-    ...mapGetters('auth', ['VIEW_AUDIT_HISTORY_ROLE', 'VIEW_SLD_HISTORY_ROLE', 'EDIT_STUDENT_RECORDS_ROLE', 'VIEW_TRANSCRIPT_ROLE']),
+    ...mapState(studentStore, ['studentsInProcess']),
+    ...mapState(authStore, ['VIEW_AUDIT_HISTORY_ROLE', 'VIEW_SLD_HISTORY_ROLE', 'EDIT_STUDENT_RECORDS_ROLE', 'VIEW_TRANSCRIPT_ROLE']),
     hasSagaInProgress() {
       return this.studentDetails && (this.studentDetails.sagaInProgress || this.studentsInProcess.has(this.studentDetails.studentID));
     },

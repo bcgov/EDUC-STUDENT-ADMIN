@@ -577,16 +577,18 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
-import PrimaryButton from '@/components/util/PrimaryButton';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import {formatPhoneNumber, formatDate} from '@/utils/format';
 import {getStatusColorAuthorityOrSchool,getStatusAuthorityOrSchool} from '@/utils/institute/status';
-import {mapGetters, mapState} from 'vuex';
+import { mapState } from 'pinia';
 import router from '@/router';
 import {deepCloneObject} from '@/utils/common';
 import * as Rules from '@/utils/institute/formRules';
 import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
 import AuthorityStatus from '@/components/institute/AuthorityStatus.vue';
 import {isEmpty, omitBy} from 'lodash';
+import {authStore} from '@/store/modules/auth';
+import {instituteStore} from '@/store/modules/institute';
 
 export default {
   name: 'AuthorityDetailsPage',
@@ -626,8 +628,8 @@ export default {
     };
   },
   computed:{
-    ...mapState('institute', ['authorityTypeCodes', 'provinceCodes', 'countryCodes']),
-    ...mapGetters('auth', ['INDEPENDENT_AUTHORITY_ADMIN_ROLE']),
+    ...mapState(instituteStore, ['authorityTypeCodes', 'provinceCodes', 'countryCodes']),
+    ...mapState(authStore, ['INDEPENDENT_AUTHORITY_ADMIN_ROLE']),
     hasSamePhysicalAddress() {
       return !this.authority.addresses.filter(address => address.addressTypeCode === 'PHYSICAL').length > 0;
     },

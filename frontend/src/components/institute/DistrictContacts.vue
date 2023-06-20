@@ -99,15 +99,16 @@
 
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
-import PrimaryButton from '../util/PrimaryButton';
+import PrimaryButton from '../util/PrimaryButton.vue';
 import DistrictContact from '@/components/institute/DistrictContact';
 import NewDistrictContactPage from '@/components/institute/NewDistrictContactPage';
 import EditDistrictContactPage from '@/components/institute/EditDistrictContactPage';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import alertMixin from '@/mixins/alertMixin';
-import {mapGetters} from 'vuex';
+import { mapState } from 'pinia';
 import {sortBy} from 'lodash';
 import {isExpired} from '@/utils/institute/status';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'DistrictContactsPage',
@@ -137,7 +138,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo', 'DISTRICT_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated','userInfo', 'DISTRICT_ADMIN_ROLE']),
     loading() {
       return this.loadingCount !== 0;
     },

@@ -64,10 +64,12 @@ import ApiService from '../../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import router from '@/router';
 import {formatDob} from '@/utils/format';
-import {mapState, mapMutations} from 'vuex';
+import {mapState, mapActions} from 'pinia';
 import MoveSchoolPage from '../../institute/MoveSchoolPage.vue';
-import PrimaryButton from '../../util/PrimaryButton';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import {getStatusAuthorityOrSchool} from '@/utils/institute/status';
+import {appStore} from '@/store/modules/app';
+import {instituteStore} from '@/store/modules/institute';
 
 export default {
   name: 'SchoolMove',
@@ -106,7 +108,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['schoolMap', 'districtMap', 'independentAuthorityMap']),
+    ...mapState(appStore, ['schoolMap', 'districtMap', 'independentAuthorityMap']),
   },
   created() {
     this.$store.dispatch('app/getCodes').then(() => this.getSchoolDetails());
@@ -129,7 +131,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('institute', ['schoolMovedNotification']),
+    ...mapActions(instituteStore, ['schoolMovedNotification']),
     getPageHeading() {
       let school = this.schoolMap?.get(this.schoolID);
       if(school) {

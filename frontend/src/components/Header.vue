@@ -43,8 +43,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 import { Routes } from '@/utils/constants';
+import {authStore} from '@/store/modules/auth';
 export default {
   data(){
     return {
@@ -54,8 +55,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated']),
-    ...mapGetters('auth', ['userInfo']),
+    ...mapState(authStore, ['userInfo', 'isAuthenticated']),
     dataReady: function() {
       return this.userInfo;
     }

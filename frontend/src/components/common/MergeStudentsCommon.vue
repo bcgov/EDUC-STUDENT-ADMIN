@@ -380,7 +380,7 @@
 
 <script>
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
-import {mapGetters, mapState} from 'vuex';
+import { mapState } from 'pinia';
 import {
   REQUEST_TYPES,
   Routes,
@@ -390,7 +390,7 @@ import {
 } from '@/utils/constants';
 import FormattedTextField from '@/components/util/FormattedTextField';
 import StudentDetailsCheckBoxWithOutputText from '@/components/penreg/student/StudentDetailsCheckBoxWithOutputText';
-import PrimaryButton from '@/components/util/PrimaryButton';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import {isValidDob, isValidMincode, isValidPostalCode} from '@/utils/validation';
 import alertMixin from '@/mixins/alertMixin';
 import schoolMixin from '@/mixins/schoolMixin';
@@ -402,6 +402,8 @@ import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 import {deepCloneObject} from '@/utils/common';
 import MacroMenu from '@/components/common/MacroMenu';
 import {replaceMacro, insertMacro} from '@/utils/macro';
+import {notificationsStore} from '@/store/modules/notifications';
+import {studentStore} from '@/store/modules/student';
 
 export default {
   name: 'MergeStudentsCommon',
@@ -494,9 +496,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('student', ['genders']),
-    ...mapGetters('notifications', ['notification']),
-    ...mapState('student', ['mergeMacros']),
+    ...mapState(notificationsStore, ['notification']),
+    ...mapState(studentStore, ['mergeMacros', 'genders']),
     legalName() {
       return `${this.student.legalLastName || ''}, ${this.student.legalFirstName || ''}, ${this.student.legalMiddleNames || ''}`.replace(/(, )+$/g, ',');
     }

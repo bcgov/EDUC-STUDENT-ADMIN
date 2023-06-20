@@ -81,15 +81,16 @@
 
 import ApiService from '../../../common/apiService';
 import {Routes} from '@/utils/constants';
-import PrimaryButton from '../../util/PrimaryButton';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import SchoolContact from './SchoolContact';
 import NewSchoolContactPage from './NewSchoolContactPage';
 import EditSchoolContactPage from './EditSchoolContactPage';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
 import alertMixin from '@/mixins/alertMixin';
-import {mapGetters} from 'vuex';
+import { mapState } from 'pinia';
 import {isExpired} from '@/utils/institute/status';
 import { sortBy } from 'lodash';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'SchoolContacts',
@@ -116,7 +117,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo', 'SCHOOL_INDEPENDENT_ADMIN_ROLE', 'SCHOOL_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated','userInfo', 'SCHOOL_INDEPENDENT_ADMIN_ROLE', 'SCHOOL_ADMIN_ROLE']),
     loading() {
       return this.loadingCount !== 0;
     },

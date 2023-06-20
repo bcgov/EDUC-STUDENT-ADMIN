@@ -1,10 +1,11 @@
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import {groupBy} from 'lodash';
+import {defineStore} from 'pinia';
 
-export default {
+export const edxStore = defineStore('edx', {
   namespaced: true,
-  state: {
+  state: () => ({
     ministryTeams: [],
     statuses: [],
     validSchoolIDsForMessaging: [],
@@ -28,104 +29,99 @@ export default {
         schoolReportingRequirementCode: null,
         pageNumber: 1
       },
-  },
+  }),
   getters: {
     getStatuses: state => state.statuses?.sort((a,b) => a.displayOrder > b.displayOrder ? 1 : -1),
     secureExchangeDocuments: state => state.secureExchangeDocuments,
     secureExchangeStudents: state => state.secureExchangeStudents,
     messageMacros: state => state.messageMacros
   },
-  mutations: {
-    setMinistryTeams(state, ministryTeamList) {
-      state.ministryTeams = ministryTeamList;
+  actions: {
+    async setMinistryTeams(ministryTeamList) {
+      this.ministryTeams = ministryTeamList;
     },
-    setStatuses: (state, statuses) => {
-      state.statuses = statuses;
+    async setStatuses(statuses) {
+      this.statuses = statuses;
     },
-    setValidSchoolIDsForMessaging(state, payload) {
-      state.validSchoolIDsForMessaging = payload;
+    async setValidSchoolIDsForMessaging(payload) {
+      this.validSchoolIDsForMessaging = payload;
     },
-    setValidDistrictIDsForMessaging(state, payload) {
-      state.validDistrictIDsForMessaging = payload;
+    async setValidDistrictIDsForMessaging(payload) {
+      this.validDistrictIDsForMessaging = payload;
     },
-    setFileRequirements(state, payload) {
-      state.fileRequirements = payload;
+    async setFileRequirements(payload) {
+      this.fileRequirements = payload;
     },
-    setSchoolRoles(state, payload) {
-      state.schoolRoles = JSON.parse(JSON.stringify(payload));
+    async setSchoolRoles(payload) {
+      this.schoolRoles = JSON.parse(JSON.stringify(payload));
     },
-    setSchoolRolesCopy(state, payload) {
-      state.schoolRolesCopy = JSON.parse(JSON.stringify(payload));
+    async setSchoolRolesCopy(payload) {
+      this.schoolRolesCopy = JSON.parse(JSON.stringify(payload));
     },
-    setDistrictRoles(state, payload) {
-      state.districtRoles = JSON.parse(JSON.stringify(payload));
+    async setDistrictRoles(payload) {
+      this.districtRoles = JSON.parse(JSON.stringify(payload));
     },
-    setDistrictRolesCopy(state, payload) {
-      state.districtRolesCopy = JSON.parse(JSON.stringify(payload));
+    async setDistrictRolesCopy(payload) {
+      this.districtRolesCopy = JSON.parse(JSON.stringify(payload));
     },
-    setSecureExchangeDocuments(state, payload) {
-      state.secureExchangeDocuments = payload;
+    async setSecureExchangeDocuments(payload) {
+      this.secureExchangeDocuments = payload;
     },
-    deleteSecureExchangeDocumentByIndex(state, index) {
-      if (index < state.secureExchangeDocuments.length) {
-        state.secureExchangeDocuments.splice(index, 1);
+    async deleteSecureExchangeDocumentByIndex(index) {
+      if (index < this.secureExchangeDocuments.length) {
+        this.secureExchangeDocuments.splice(index, 1);
       }
     },
-    setSecureExchangeStudents(state,payload){
-      state.secureExchangeStudents= payload;
+    async setSecureExchangeStudents(state,payload){
+      this.secureExchangeStudents= payload;
     },
-    setSchoolSearchParams(state,payload){
-      state.schoolSearchParams = payload;
+    async setSchoolSearchParams(state,payload){
+      this.schoolSearchParams = payload;
       localStorage.setItem('schoolSearchParams', JSON.stringify(payload));
     },
-    deleteSecureExchangeStudentsByID(state, payload) {
-      state.secureExchangeStudents = state.secureExchangeStudents.filter(secureExchangeStudent => secureExchangeStudent.studentID !== payload.studentID);
+    async deleteSecureExchangeStudentsByID(payload) {
+      this.secureExchangeStudents = this.secureExchangeStudents.filter(secureExchangeStudent => secureExchangeStudent.studentID !== payload.studentID);
     },
-    setMessageMacros(state, macros) {
-      state.messageMacros = macros;
-    }
-  },
-  actions: {
-    async getMinistryTeams({ commit, state}) {
+    async setMessageMacros(macros) {
+      this.messageMacros = macros;
+    },
+    async getMinistryTeams() {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        if(state.ministryTeams.length === 0) {
+        if(this.ministryTeams.length === 0) {
           const response = await ApiService.getMinistryTeams();
-          commit('setMinistryTeams', response.data);
+          await this.setMinistryTeams(response.data);
         }
       }
     },
-    async getFileRequirements({ commit, state}) {
+    async getFileRequirements() {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        if(state.fileRequirements.length === 0) {
+        if(this.fileRequirements.length === 0) {
           const response = await ApiService.getFileRequirements();
-          commit('setFileRequirements', response.data);
+          await this.setFileRequirements(response.data);
         }
       }
     },
-    async getCodes({commit, state}) {
+    async getCodes() {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        if(state.ministryTeams.length === 0) {
-          ApiService.getMinistryTeams().then(response => {
-            commit('setMinistryTeams', response.data);
-          });
+        if(this.ministryTeams.length === 0) {
+          const response = await ApiService.getMinistryTeams();
+          await this.setMinistryTeams(response.data);
         }
 
-        if (state.statuses.length === 0) {
-          ApiService.getExchangeStatuses().then(response => {
-            commit('setStatuses', response.data);
-          });
+        if (this.statuses.length === 0) {
+          const response = await ApiService.getExchangeStatuses();
+          await this.setStatuses(response.data);
         }
 
-        if (state.fileRequirements.length === 0) {
-          ApiService.getFileRequirements().then(response => {
-            commit('setFileRequirements', response.data);
-          });
+        if (this.fileRequirements.length === 0) {
+          const response = await ApiService.getFileRequirements();
+          await this.setFileRequirements(response.data);
         }
       }
     },
-    async getValidIDsForMessaging({ commit, state}) {
+    async getValidIDsForMessaging() {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        if(state.validSchoolIDsForMessaging.length === 0) {
+        if(this.validSchoolIDsForMessaging.length === 0) {
           const query = {
             params: {
               permissionCode : 'SECURE_EXCHANGE',
@@ -133,10 +129,10 @@ export default {
           };
     
           const response = await ApiService.getValidSchoolIDsForMessaging(query);
-          commit('setValidSchoolIDsForMessaging', response.data);
+          await this.setValidSchoolIDsForMessaging(response.data);
         }
 
-        if(state.validDistrictIDsForMessaging.length === 0) {
+        if(this.validDistrictIDsForMessaging.length === 0) {
           const query = {
             params: {
               permissionCode : 'SECURE_EXCHANGE',
@@ -144,54 +140,46 @@ export default {
           };
     
           const response = await ApiService.getValidDistrictIDsForMessaging(query);
-          commit('setValidDistrictIDsForMessaging', response.data);
+          await this.setValidDistrictIDsForMessaging(response.data);
         }
 
       }
     },
-    async getSchoolExchangeRoles({ commit, state}) {
+    async getSchoolExchangeRoles() {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        if (state.schoolRoles.length === 0) {
+        if (this.schoolRoles.length === 0) {
           const params = {
             params: {
               instituteType:'SCHOOL'
             }
           };
           const response = await ApiService.getEdxRoles(params);
-          commit('setSchoolRoles', response.data);
-          commit('setSchoolRolesCopy', response.data);
-
+          await this.setSchoolRoles(response.data);
+          await this.setSchoolRolesCopy(response.data);
         }
       }
     },
-    async getEdxDistrictRoles({ commit, state}) {
+    async getEdxDistrictRoles() {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        if (state.districtRoles.length === 0) {
+        if (this.districtRoles.length === 0) {
           const params = {
             params: {
               instituteType:'DISTRICT'
             }
           };
           const response = await ApiService.getEdxRoles(params);
-          commit('setDistrictRoles', response.data);
-          commit('setDistrictRolesCopy', response.data);
-
+          await this.setDistrictRoles(response.data);
+          await this.setDistrictRolesCopy(response.data);
         }
       }
     },
-    async getMacros({commit}) {
+    async getMacros() {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
         const params = {params: {businessUseTypeCode: 'EDX'}};
-        ApiService.apiAxios
-          .get(Routes.MACRO_URL, params)
-          .then(response => {
-            const macros = groupBy(response.data, 'macroTypeCode');
-            commit('setMessageMacros', macros.MESSAGE);
-          })
-          .catch(error => {
-            console.log(error);
-          });
+        const response = await ApiService.apiAxios.get(Routes.MACRO_URL, params);
+        const macros = groupBy(response.data, 'macroTypeCode');
+        await this.setMessageMacros(macros.MESSAGE);
       }
     }
   },
-};
+});

@@ -102,8 +102,9 @@
 
 <script>
 import router from '@/router';
-import PrimaryButton from '@/components/util/PrimaryButton';
-import {mapState} from 'vuex';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
+import {mapState} from 'pinia';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'penRequestCard',
@@ -117,7 +118,7 @@ export default {
     },
   },
   computed: {
-    ...mapState('auth', ['isValidStudentSearchUser']),
+    ...mapState(authStore, ['isValidStudentSearchUser']),
     disableSearchBtn() {
       return !this.request.legalLastName && !this.request.legalFirstName
           && !this.request.genderCode && !this.request.dob;

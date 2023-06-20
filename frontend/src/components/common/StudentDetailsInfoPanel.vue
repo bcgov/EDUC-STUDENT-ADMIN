@@ -116,11 +116,12 @@
 import SearchDemographicModal from './SearchDemographicModal';
 import {deepCloneObject} from '@/utils/common';
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
-import {mapMutations, mapState} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import StudentValidationWarningHint from './StudentValidationWarningHint';
-import PrimaryButton from '../util/PrimaryButton';
+import PrimaryButton from '../util/PrimaryButton.vue';
 import {partialRight} from 'lodash';
 import router from '@/router';
+import {appStore} from '@/store/modules/app';
 
 export default {
   name: 'StudentDetailsInfoPanel',
@@ -196,7 +197,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('app', ['stickyInfoPanelHeight']),
+    ...mapState(appStore, ['stickyInfoPanelHeight']),
     studentDetails: {
       get: function() {
         return this.student;
@@ -207,7 +208,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('app', ['setStickyInfoPanelHeight']),
+    ...mapActions(appStore, ['setStickyInfoPanelHeight']),
     formatTableColumn(format, column) {
       return (format && column) ? format(column) : (column || ' ');
     },

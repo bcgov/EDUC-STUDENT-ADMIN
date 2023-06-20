@@ -177,11 +177,12 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex';
+import {mapState} from 'pinia';
 import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly';
 import {formatDob, formatPen, formatPostalCode} from '@/utils/format';
 import moment from 'moment';
+import {studentStore} from '@/store/modules/student';
 
 export default {
   name: 'StudentAuditHistoryDetailCard',
@@ -215,7 +216,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('student', ['demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects','documentTypeCodes']),
+    ...mapState(studentStore, ['demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects','documentTypeCodes']),
   },
   methods: {
     formatPen,

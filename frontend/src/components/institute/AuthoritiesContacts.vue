@@ -97,15 +97,16 @@
 
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
-import PrimaryButton from '../util/PrimaryButton';
+import PrimaryButton from '../util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
 import {isExpired} from '@/utils/institute/status';
-import {mapGetters} from 'vuex';
+import { mapState } from 'pinia';
 import AuthorityContact from '@/components/institute/AuthorityContact';
 import NewAuthorityContactPage from '@/components/institute/NewAuthorityContactPage';
 import {sortBy} from 'lodash';
 import EditAuthorityContactPage from '@/components/institute/EditAuthorityContactPage.vue';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'AuthorityContactPage',
@@ -138,7 +139,7 @@ export default {
     this.getAuthorityContactTypeCodes();
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','INDEPENDENT_AUTHORITY_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated','INDEPENDENT_AUTHORITY_ADMIN_ROLE']),
     loading() {
       return this.loadingCount !== 0;
     },

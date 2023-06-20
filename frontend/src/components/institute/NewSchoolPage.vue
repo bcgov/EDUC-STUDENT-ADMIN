@@ -369,8 +369,8 @@
 </template>
 
 <script>
-import PrimaryButton from '../util/PrimaryButton';
-import {mapGetters, mapState} from 'vuex';
+import PrimaryButton from '../util/PrimaryButton.vue';
+import { mapState } from 'pinia';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
@@ -378,6 +378,8 @@ import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
 import {findUpcomingDate} from '@/utils/dateHelpers';
 import {sortBy} from 'lodash';
+import {authStore} from '@/store/modules/auth';
+import {instituteStore} from '@/store/modules/institute';
 
 export default {
   name: 'NewSchoolPage',
@@ -458,17 +460,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated', 'userInfo', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
-    ...mapState('institute', ['activeFacilityTypeCodes']),
-    ...mapState('institute', ['activeSchoolCategoryTypeCodes']),
-    ...mapState('institute', ['activeSchoolOrganizationTypeCodes']),
-    ...mapState('institute', ['schoolReportingRequirementTypeCodes']),
-    ...mapState('institute', ['activeSchoolNeighborhoodLearningCodes']),
-    ...mapState('institute', ['activeGradeCodes']),
-    ...mapState('institute', ['activeProvinceCodes']),
-    ...mapState('institute', ['activeCountryCodes']),
-    ...mapState('institute', ['schoolCategoryFacilityTypesMap']),
-    ...mapState('institute', ['schoolReportingRequirementTypeCodes']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
+    ...mapState(instituteStore, ['activeFacilityTypeCodes','activeSchoolCategoryTypeCodes','activeSchoolOrganizationTypeCodes','schoolReportingRequirementTypeCodes', 'activeSchoolNeighborhoodLearningCodes','activeGradeCodes', 'activeProvinceCodes', 'activeCountryCodes', 'schoolCategoryFacilityTypesMap', 'schoolReportingRequirementTypeCodes']),
 
     allowedFacilityTypeCodesForSchoolCategoryCode() {
       if (!this.activeFacilityTypeCodes || !this.newSchool?.schoolCategoryCode) {

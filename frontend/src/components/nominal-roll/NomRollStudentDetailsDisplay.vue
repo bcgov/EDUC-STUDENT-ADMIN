@@ -126,8 +126,8 @@
 </template>
 
 <script>
-import {mapMutations, mapState} from 'vuex';
-import PrimaryButton from '../util/PrimaryButton';
+import {mapActions, mapState} from 'pinia';
+import PrimaryButton from '../util/PrimaryButton.vue';
 import NomRollStudentStatusChip from './NomRollStudentStatusChip';
 import ApiService from '../../common/apiService';
 import StudentDetailsInfoPanel from '../common/StudentDetailsInfoPanel';
@@ -152,6 +152,9 @@ import {formatPen, formatDob, formatGrade} from '@/utils/format';
 import ConfirmationDialog from '../util/ConfirmationDialog';
 import router from '../../router';
 import Mousetrap from 'mousetrap';
+import {navigationStore} from '@/store/modules/setNavigation';
+import {notificationsStore} from '@/store/modules/notifications';
+import {nominalRollStore} from '@/store/modules/nominalRoll';
 
 export default {
   name: 'NomRollStudentDetailsDisplay',
@@ -239,9 +242,9 @@ export default {
     }
   },
   computed: {
-    ...mapState('setNavigation', ['selectedIDs']),
-    ...mapState('notifications', ['notification']),
-    ...mapState('nominalRoll', ['fedProvSchoolCodes']),
+    ...mapState(navigationStore, ['selectedIDs']),
+    ...mapState(notificationsStore, ['notification']),
+    ...mapState(nominalRollStore, ['fedProvSchoolCodes']),
     disableRefresh() {
       return this.isMatchingToStudentRecord
           || NOMINAL_ROLL_STUDENT_STATUS_CODES.FIXABLE !== this.nomRollStudent?.status;
@@ -289,7 +292,7 @@ export default {
       router.push({name: 'nominal-roll-list'});
     }
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.clearNavigation();
   },
   mounted() {
@@ -299,8 +302,8 @@ export default {
     });
   },
   methods: {
-    ...mapMutations('setNavigation', ['clearNavigation']),
-    ...mapMutations('nominalRoll', ['setFedProvSchoolCodes']),
+    ...mapActions(navigationStore, ['clearNavigation']),
+    ...mapActions(nominalRollStore, ['setFedProvSchoolCodes']),
     formatPen,
     async initializeDetails() {
       this.resetValidationResult(); // reset the validation results, on clicking next or previous

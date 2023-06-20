@@ -187,8 +187,9 @@
 
 <script>
 
-import { mapState, mapMutations } from 'vuex';
+import { mapState, mapActions } from 'pinia';
 import { isValidDob } from '../../../utils/validation';
+import {studentSearchStore} from '@/store/modules/studentSearch';
 
 export default {
   props: {
@@ -249,10 +250,10 @@ export default {
     this.setIsAdvancedSearch(false);
   },
   computed: {
-    ...mapState('studentSearch', ['studentSearchParams']),
+    ...mapState(studentSearchStore, ['studentSearchParams']),
   },
   methods: {
-    ...mapMutations('studentSearch', ['setIsAdvancedSearch']),
+    ...mapActions(studentSearchStore, ['setIsAdvancedSearch']),
     validateDOB(){
       if(this.studentSearchParams) {
         if(!this.studentSearchParams.dob.startDate || isValidDob(this.studentSearchParams.dob.startDate)){

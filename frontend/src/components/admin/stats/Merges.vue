@@ -108,9 +108,6 @@
                       <PrimaryButton id="search-clear" :secondary="true" @click.native="clearSearch"
                                      text="Clear"></PrimaryButton>
                     </v-col>
-<!--                    <v-col cols="4" class="ml-2">
-                      <PrimaryButton :disabled="!searchEnabled" :loading="searchLoading" text="Refine"></PrimaryButton>
-                    </v-col>-->
                   </v-row>
                 </v-expansion-panel-content>
               </v-expansion-panel>
@@ -138,10 +135,10 @@
 import {LocalDate} from '@js-joda/core';
 import ApiService from '../../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
-import PrimaryButton from '@/components/util/PrimaryButton';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import BarChartContainer from '@/components/admin/stats/BarChartContainer';
 import {CHART_STAT_URLS} from '@/utils/constants/ChartConstants';
-import Spinner from '@/components/common/Spinner';
+import Spinner from '@/components/common/Spinner.vue';
 import MergedStudentsDataTable from '@/components/admin/stats/MergedStudentsStatsDataTable';
 
 export default {

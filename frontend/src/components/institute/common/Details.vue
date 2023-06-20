@@ -603,8 +603,8 @@
 
 <script>
 
-import PrimaryButton from '../../util/PrimaryButton';
-import {mapGetters, mapState, mapMutations} from 'vuex';
+import PrimaryButton from '../../util/PrimaryButton.vue';
+import {mapActions, mapState} from 'pinia';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
@@ -619,6 +619,9 @@ import {isNumber} from '@/utils/institute/formInput';
 import SchoolStatus from '@/components/institute/SchoolStatus';
 import {sortBy} from 'lodash';
 import {getAllowedFacilityTypes} from '@/utils/institute/editFacilityTypeMatrix';
+import {authStore} from '@/store/modules/auth';
+import {instituteStore} from '@/store/modules/institute';
+import {notificationsStore} from '@/store/modules/notifications';
 
 export default {
   name: 'Details',
@@ -667,18 +670,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated', 'userInfo', 'SCHOOL_ADMIN_ROLE', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
-    ...mapState('institute', ['facilityTypeCodes']),
-    ...mapState('institute', ['schoolCategoryTypeCodes']),
-    ...mapState('institute', ['activeSchoolCategoryTypeCodes']),
-    ...mapState('institute', ['schoolOrganizationTypeCodes']),
-    ...mapState('institute', ['schoolReportingRequirementTypeCodes']),
-    ...mapState('institute', ['schoolNeighborhoodLearningCodes']),
-    ...mapState('institute', ['gradeCodes']),
-    ...mapState('institute', ['provinceCodes']),
-    ...mapState('institute', ['countryCodes']),
-    ...mapState('institute', ['schoolCategoryFacilityTypesMap']),
-    ...mapGetters('notifications', ['notification']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'SCHOOL_ADMIN_ROLE', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
+    ...mapState(instituteStore, ['facilityTypeCodes', 'schoolCategoryTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolOrganizationTypeCodes', 'schoolReportingRequirementTypeCodes', 'schoolNeighborhoodLearningCodes', 'gradeCodes', 'provinceCodes','countryCodes', 'schoolCategoryFacilityTypesMap']),
+    ...mapState(notificationsStore, ['notification']),
     dataReady: function () {
       return this.userInfo;
     },
@@ -772,7 +766,7 @@ export default {
     this.getThisSchoolsDetails();
   },
   methods: {
-    ...mapMutations('institute', ['schoolMovedNotification']),
+    ...mapActions(instituteStore, ['schoolMovedNotification']),
     isOffshoreSchoolSelected() {
       return this.schoolDetailsCopy?.schoolCategoryCode === 'OFFSHORE';
     },

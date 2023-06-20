@@ -60,16 +60,17 @@
 </template>
 
 <script>
-import {mapGetters, mapState} from 'vuex';
+import {mapState} from 'pinia';
 import moment from 'moment';
 import {STUDENT_CODES, STUDENT_DEMOG_CODES, STUDENT_DETAILS_FIELDS} from '@/utils/constants';
-import PrimaryButton from '../../util/PrimaryButton';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import {formatPen, formatPostalCode} from '@/utils/format';
 import alertMixin from '../../../mixins/alertMixin';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
 import SplitPenModal from './SplitPenModal';
 import StudentAuditHistoryDetailCard from './StudentAuditHistoryDetailCard';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
+import {studentStore} from '@/store/modules/student';
 
 export default {
   name: 'StudentAuditHistoryDetailPanel',
@@ -132,8 +133,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('student', ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects']),
-    ...mapState('student', ['studentsInProcess']),
+    ...mapState(studentStore, ['studentsInProcess', 'genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects']),
     previousDisabled() {
       return this.rowNumber <= 0;
     },

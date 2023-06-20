@@ -12,21 +12,21 @@ module.exports = {
     }
   },
   devServer: {
-
-    proxy: {
-      ...['/api'].reduce(
-        (acc, ctx) => ({
-          ...acc,
-          [ctx]: {
-            target: process.env.VUE_APP_API_ROOT,
-            changeOrigin: true,
-            ws: false
-          }
-        }),
-        {}
-      ),
-    }
+    proxy:
+      {
+        ...['/api'].reduce(
+          (acc, ctx) => ({
+            ...acc,
+            [ctx]: {
+              target: import.meta.env.VUE_APP_API_ROOT,
+              changeOrigin: true,
+              ws: false
+            }
+          }),
+          {}
+        ),
+      }
   },
-  transpileDependencies: ['vuetify'],
+  transpileDependencies: ['vuetify', 'vue-meta'],
   publicPath: '/'
 };

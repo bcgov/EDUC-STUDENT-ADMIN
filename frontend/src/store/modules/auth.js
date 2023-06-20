@@ -1,10 +1,11 @@
-import ApiService from '../../common/apiService';
-import AuthService from '../../common/authService';
-import { Routes } from '../../utils/constants';
+import ApiService from '@/common/apiService';
+import AuthService from '@/common/authService';
+import { Routes } from '@/utils/constants';
+import {defineStore} from 'pinia';
 
-export default {
+export const authStore = defineStore('auth', {
   namespaced: true,
-  state: {
+  state: () => ({
     acronyms: [],
     isAuthenticated: localStorage.getItem('jwtToken') !== null,
     isAuthorizedUser: localStorage.getItem('isAuthorizedUser') !== null,
@@ -31,7 +32,7 @@ export default {
     isValidSchoolAdmin: localStorage.getItem('isValidSchoolAdmin') !== null,
     isValidIndependentAuthorityAdmin: localStorage.getItem('isValidIndependentAuthorityAdmin') !== null,
     isValidSchoolIndependentAdmin: localStorage.getItem('isValidSchoolIndependentAdmin') !== null
-  },
+  }),
   getters: {
     acronyms: state => state.acronyms,
     isAuthenticated: state => state.isAuthenticated,
@@ -67,240 +68,237 @@ export default {
     SCHOOL_INDEPENDENT_ADMIN_ROLE: state => state.isValidSchoolIndependentAdmin,
     INDEPENDENT_AUTHORITY_ADMIN_ROLE: state => state.isValidIndependentAuthorityAdmin
   },
-  mutations: {
+  actions: {
     //sets Json web token and determines whether user is authenticated
-    setJwtToken: (state, token = null) => {
+    async setJwtToken(token = null) {
       if (token) {
-        state.isAuthenticated = true;
+        this.isAuthenticated = true;
         localStorage.setItem('jwtToken', token);
       } else {
-        state.isAuthenticated = false;
+        this.isAuthenticated = false;
         localStorage.removeItem('jwtToken');
       }
     },
-    setAuthorizedUser: (state, isAdminUser) => {
+    async setAuthorizedUser(isAdminUser){
       if (isAdminUser) {
-        state.isAuthorizedUser = true;
+        this.isAuthorizedUser = true;
         localStorage.setItem('isAuthorizedUser', 'true');
       } else {
-        state.isAuthorizedUser = false;
+        this.isAuthorizedUser = false;
         localStorage.removeItem(('isAuthorizedUser'));
       }
     },
-    setGMPUser: (state, isValidGMPUser) => {
+    async setGMPUser(isValidGMPUser) {
       if (isValidGMPUser) {
-        state.isValidGMPUser = true;
+        this.isValidGMPUser = true;
         localStorage.setItem('isValidGMPUser', 'true');
       } else {
-        state.isValidGMPUser = false;
+        this.isValidGMPUser = false;
         localStorage.removeItem(('isValidGMPUser'));
       }
     },
-    setGMPAdmin: (state, isValidGMPAdmin) => {
+    async setGMPAdmin(isValidGMPAdmin) {
       if (isValidGMPAdmin) {
-        state.isValidGMPAdmin = true;
+        this.isValidGMPAdmin = true;
         localStorage.setItem('isValidGMPAdmin', 'true');
       } else {
-        state.isValidGMPAdmin = false;
+        this.isValidGMPAdmin = false;
         localStorage.removeItem(('isValidGMPAdmin'));
       }
     },
-    setUMPUser: (state, isValidUMPUser) => {
+    async setUMPUser(isValidUMPUser) {
       if (isValidUMPUser) {
-        state.isValidUMPUser = true;
+        this.isValidUMPUser = true;
         localStorage.setItem('isValidUMPUser', 'true');
       } else {
-        state.isValidUMPUser = false;
+        this.isValidUMPUser = false;
         localStorage.removeItem(('isValidUMPUser'));
       }
     },
-    setUMPAdmin: (state, isValidUMPAdmin) => {
+    async setUMPAdmin(isValidUMPAdmin) {
       if (isValidUMPAdmin) {
-        state.isValidUMPAdmin = true;
+        this.isValidUMPAdmin = true;
         localStorage.setItem('isValidUMPAdmin', 'true');
       } else {
-        state.isValidUMPAdmin = false;
+        this.isValidUMPAdmin = false;
         localStorage.removeItem(('isValidUMPAdmin'));
       }
     },
-    setStudentSearchUser: (state, isValidStudentSearchUser) => {
+    async setStudentSearchUser(isValidStudentSearchUser) {
       if (isValidStudentSearchUser) {
-        state.isValidStudentSearchUser = true;
+        this.isValidStudentSearchUser = true;
         localStorage.setItem('isValidStudentSearchUser', 'true');
       } else {
-        state.isValidStudentSearchUser = false;
+        this.isValidStudentSearchUser = false;
         localStorage.removeItem(('isValidStudentSearchUser'));
       }
     },
-    setStudentSearchAdmin: (state, isValidStudentSearchAdmin) => {
+    async setStudentSearchAdmin(isValidStudentSearchAdmin) {
       if (isValidStudentSearchAdmin) {
-        state.isValidStudentSearchAdmin = true;
+        this.isValidStudentSearchAdmin = true;
         localStorage.setItem('isValidStudentSearchAdmin', 'true');
       } else {
-        state.isValidStudentSearchAdmin = false;
+        this.isValidStudentSearchAdmin = false;
         localStorage.removeItem(('isValidStudentSearchAdmin'));
       }
     },
-    setStaffAdministrationUser: (state, isValidStaffAdministrationUser) => {
+    async setStaffAdministrationUser(isValidStaffAdministrationUser) {
       if (isValidStaffAdministrationUser) {
-        state.isValidStaffAdministrationUser = true;
+        this.isValidStaffAdministrationUser = true;
         localStorage.setItem('isValidStaffAdministrationUser', 'true');
       } else {
-        state.isValidStaffAdministrationUser = false;
+        this.isValidStaffAdministrationUser = false;
         localStorage.removeItem(('isValidStaffAdministrationUser'));
       }
     },
-    setStaffAdministrationAdmin: (state, isValidStaffAdministrationAdmin) => {
+    async setStaffAdministrationAdmin(isValidStaffAdministrationAdmin) {
       if (isValidStaffAdministrationAdmin) {
-        state.isValidStaffAdministrationAdmin = true;
+        this.isValidStaffAdministrationAdmin = true;
         localStorage.setItem('isValidStaffAdministrationAdmin', 'true');
       } else {
-        state.isValidStaffAdministrationAdmin = false;
+        this.isValidStaffAdministrationAdmin = false;
         localStorage.removeItem(('isValidStaffAdministrationAdmin'));
       }
     },
-    penRequestBatchUser: (state, isValidPenRequestBatchUser) => {
+    async setPenRequestBatchUser(isValidPenRequestBatchUser) {
       if (isValidPenRequestBatchUser) {
-        state.isValidPenRequestBatchUser = true;
+        this.isValidPenRequestBatchUser = true;
         localStorage.setItem('isValidPenRequestBatchUser', 'true');
       } else {
-        state.isValidPenRequestBatchUser = false;
+        this.isValidPenRequestBatchUser = false;
         localStorage.removeItem(('isValidPenRequestBatchUser'));
       }
     },
-    penRequestBatchAdmin: (state, isValidPenRequestBatchAdmin) => {
+    async setPenRequestBatchAdmin(isValidPenRequestBatchAdmin) {
       if (isValidPenRequestBatchAdmin) {
-        state.isValidPenRequestBatchAdmin = true;
+        this.isValidPenRequestBatchAdmin = true;
         localStorage.setItem('isValidPenRequestBatchAdmin', 'true');
       } else {
-        state.isValidPenRequestBatchAdmin = false;
+        this.isValidPenRequestBatchAdmin = false;
         localStorage.removeItem(('isValidPenRequestBatchAdmin'));
       }
     },
-    setValidNominalRollReadOnly: (state, isValidNominalRollReadOnly) => {
+    async setValidNominalRollReadOnly(isValidNominalRollReadOnly) {
       if (isValidNominalRollReadOnly) {
-        state.isValidNominalRollReadOnly = true;
+        this.isValidNominalRollReadOnly = true;
         localStorage.setItem('isValidNominalRollReadOnly', 'true');
       } else {
-        state.isValidNominalRollReadOnly = false;
+        this.isValidNominalRollReadOnly = false;
         localStorage.removeItem(('isValidNominalRollReadOnly'));
       }
     },
-    setValidNominalRollAdmin: (state, isValidNominalRollAdmin) => {
+    async setValidNominalRollAdmin(isValidNominalRollAdmin) {
       if (isValidNominalRollAdmin) {
-        state.isValidNominalRollAdmin = true;
+        this.isValidNominalRollAdmin = true;
         localStorage.setItem('isValidNominalRollAdmin', 'true');
       } else {
-        state.isValidNominalRollAdmin = false;
+        this.isValidNominalRollAdmin = false;
         localStorage.removeItem(('isValidNominalRollAdmin'));
       }
     },
-    setValidNominalRollUser: (state, isValidNominalRollUser) => {
+    async setValidNominalRollUser(isValidNominalRollUser) {
       if (isValidNominalRollUser) {
-        state.isValidNominalRollUser = true;
+        this.isValidNominalRollUser = true;
         localStorage.setItem('isValidNominalRollUser', 'true');
       } else {
-        state.isValidNominalRollUser = false;
+        this.isValidNominalRollUser = false;
         localStorage.removeItem(('isValidNominalRollUser'));
       }
     },
-    setGUMPAnalytics: (state, isValidGUMPAnalyticsUser) => {
+    async setGUMPAnalytics(isValidGUMPAnalyticsUser) {
       if (isValidGUMPAnalyticsUser) {
-        state.isValidGUMPAnalyticsUser = true;
+        this.isValidGUMPAnalyticsUser = true;
         localStorage.setItem('isValidGUMPAnalyticsUser', 'true');
       } else {
-        state.isValidGUMPAnalyticsUser = false;
+        this.isValidGUMPAnalyticsUser = false;
         localStorage.removeItem(('isValidGUMPAnalyticsUser'));
       }
     },
-    setPenRequestBatchAnalytics: (state, isValidPenRequestBatchAnalyticsUser) => {
+    async setPenRequestBatchAnalytics(isValidPenRequestBatchAnalyticsUser) {
       if (isValidPenRequestBatchAnalyticsUser) {
-        state.isValidPenRequestBatchAnalyticsUser = true;
+        this.isValidPenRequestBatchAnalyticsUser = true;
         localStorage.setItem('isValidPenRequestBatchAnalyticsUser', 'true');
       } else {
-        state.isValidPenRequestBatchAnalyticsUser = false;
+        this.isValidPenRequestBatchAnalyticsUser = false;
         localStorage.removeItem(('isValidPenRequestBatchAnalyticsUser'));
       }
     },
-    setExchangeUser: (state, isValidExchangeUser) => {
+    async setExchangeUser(isValidExchangeUser) {
       if (isValidExchangeUser) {
-        state.isValidExchangeUser = true;
+        this.isValidExchangeUser = true;
         localStorage.setItem('isValidExchangeUser', 'true');
       } else {
-        state.isValidExchangeUser = false;
+        this.isValidExchangeUser = false;
         localStorage.removeItem(('isValidExchangeUser'));
       }
     },
-    setEDXAdmin: (state, isValidEDXAdmin) => {
+    async setEDXAdmin(isValidEDXAdmin) {
       if (isValidEDXAdmin) {
-        state.isValidEDXAdmin = true;
+        this.isValidEDXAdmin = true;
         localStorage.setItem('isValidEDXAdmin', 'true');
       } else {
-        state.isValidEDXAdmin = false;
+        this.isValidEDXAdmin = false;
         localStorage.removeItem(('isValidEDXAdmin'));
       }
     },
-    setIsValidPenTeamRoleUser: (state, isValidPenTeamRoleUser) => {
+    async setIsValidPenTeamRoleUser(isValidPenTeamRoleUser) {
       if (isValidPenTeamRoleUser) {
-        state.isValidPenTeamRoleUser = true;
+        this.isValidPenTeamRoleUser = true;
         localStorage.setItem('isValidPenTeamRoleUser', 'true');
       } else {
-        state.isValidPenTeamRoleUser = false;
+        this.isValidPenTeamRoleUser = false;
         localStorage.removeItem('isValidPenTeamRoleUser');
       }
     },
-    setIsValidDistrictAdmin: (state, isValidDistrictAdmin) => {
+    async setIsValidDistrictAdmin(isValidDistrictAdmin) {
       if (isValidDistrictAdmin) {
-        state.isValidDistrictAdmin = true;
+        this.isValidDistrictAdmin = true;
         localStorage.setItem('isValidDistrictAdmin', 'true');
       } else {
-        state.isValidDistrictAdmin = false;
+        this.isValidDistrictAdmin = false;
         localStorage.removeItem('isValidDistrictAdmin');
       }
-    },setIsValidSchoolAdmin: (state, isValidSchoolAdmin) => {
+    },
+    async setIsValidSchoolAdmin(isValidSchoolAdmin) {
       if (isValidSchoolAdmin) {
-        state.isValidSchoolAdmin = true;
+        this.isValidSchoolAdmin = true;
         localStorage.setItem('isValidSchoolAdmin', 'true');
       } else {
-        state.isValidSchoolAdmin = false;
+        this.isValidSchoolAdmin = false;
         localStorage.removeItem('isValidSchoolAdmin');
       }
     },
-    setIsValidSchoolIndependentAdmin: (state, isValidSchoolIndependentAdmin) => {
+    async setIsValidSchoolIndependentAdmin(isValidSchoolIndependentAdmin) {
       if (isValidSchoolIndependentAdmin) {
-        state.isValidSchoolIndependentAdmin = true;
+        this.isValidSchoolIndependentAdmin = true;
         localStorage.setItem('isValidSchoolIndependentAdmin', 'true');
       } else {
-        state.isValidSchoolIndependentAdmin = false;
+        this.isValidSchoolIndependentAdmin = false;
         localStorage.removeItem('isValidSchoolIndependentAdmin');
       }
     },
-    setIsValidIndependentAuthorityAdmin: (state, isValidIndependentAuthorityAdmin) => {
+    async setIsValidIndependentAuthorityAdmin(isValidIndependentAuthorityAdmin) {
       if (isValidIndependentAuthorityAdmin) {
-        state.isValidIndependentAuthorityAdmin = true;
+        this.isValidIndependentAuthorityAdmin = true;
         localStorage.setItem('isValidIndependentAuthorityAdmin', 'true');
       } else {
-        state.isValidIndependentAuthorityAdmin = false;
+        this.isValidIndependentAuthorityAdmin = false;
         localStorage.removeItem('isValidIndependentAuthorityAdmin');
       }
     },
-    setUserInfo: (state, userInf) => {
+    async setUserInfo(userInf) {
       if (userInf) {
-        state.userInfo = userInf;
+        this.userInfo = userInf;
       } else {
-        state.userInfo = null;
+        this.userInfo = null;
       }
     },
-
     //sets the token required for refreshing expired json web tokens
-    logoutState: (state) => {
+    async logoutState() {
       localStorage.removeItem('jwtToken');
-      state.userInfo = false;
-      state.isAuthenticated = false;
-    }
-  },
-  actions: {
-
+      this.userInfo = false;
+      this.isAuthenticated = false;
+    },
     async getUserInfo(context) {
       if(localStorage.getItem('jwtToken')) {
         await ApiService.apiAxios
@@ -313,52 +311,53 @@ export default {
           });
       }
     },
-
     //retrieves the json web token from local storage. If not in local storage, retrieves it from API
     async getJwtToken(context) {
       try {
         if (context.getters.isAuthenticated && !!context.getters.jwtToken) {
           const response = await AuthService.refreshAuthToken(context.getters.jwtToken);
-          setAuthorizations(context, response);
+          await this.setAuthorizations(context, response);
         } else {
           const response = await AuthService.getAuthToken();
-          setAuthorizations(context, response);
+          await this.setAuthorizations(context, response);
         }
       } catch (e) {
         // Remove tokens from localStorage and update state
-        context.commit('setJwtToken');
+        await this.setJwtToken(null);
         throw e;
       }
     },
-  }
-};
+    async setAuthorizations(response) {
+      if (response.jwtFrontend) {
+        await this.setJwtToken(response.jwtFrontend);
+      }
+      await this.setAuthorizedUser(response.isAuthorizedUser);
+      await this.setGMPUser(response.isValidGMPUser);
+      await this.setGMPAdmin(response.isValidGMPAdmin);
+      await this.setUMPUser(response.isValidUMPUser);
+      await this.setUMPAdmin(response.isValidUMPAdmin);
+      await this.setStudentSearchUser(response.isValidStudentSearchUser);
+      await this.setStudentSearchAdmin(response.isValidStudentSearchAdmin);
+      await this.setPenRequestBatchUser(response.isValidPenRequestBatchUser);
+      await this.setPenRequestBatchAdmin(response.isValidPenRequestBatchAdmin);
+      await this.setStaffAdministrationUser(response.isValidStaffAdministrationUser);
+      await this.setStaffAdministrationAdmin(response.isValidStaffAdministrationAdmin);
+      await this.setValidNominalRollReadOnly(response.isValidNominalRollReadOnly);
+      await this.setValidNominalRollUser(response.isValidNominalRollUser);
+      await this.setValidNominalRollAdmin(response.isValidNominalRollAdmin);
+      await this.setGUMPAnalytics(response.isValidGUMPAnalyticsUser);
+      await this.setPenRequestBatchAnalytics(response.isValidPenRequestBatchAnalyticsUser);
+      await this.setExchangeUser(response.isValidExchangeUser);
+      await this.setEDXAdmin(response.isValidEDXAdmin);
+      await this.setIsValidPenTeamRoleUser(response.isValidPenTeamRoleUser);
+      await this.setIsValidDistrictAdmin(response.isValidDistrictAdmin);
+      await this.setIsValidSchoolAdmin(response.isValidSchoolAdmin);
+      await this.setIsValidSchoolIndependentAdmin(response.isValidSchoolIndependentAdmin);
+      await this.setIsValidIndependentAuthorityAdmin(response.isValidIndependentAuthorityAdmin);
 
-function setAuthorizations(context, response) {
-  if (response.jwtFrontend) {
-    context.commit('setJwtToken', response.jwtFrontend);
+      ApiService.setAuthHeader(response.jwtFrontend);
+    }
   }
-  context.commit('setAuthorizedUser', response.isAuthorizedUser);
-  context.commit('setGMPUser', response.isValidGMPUser);
-  context.commit('setGMPAdmin', response.isValidGMPAdmin);
-  context.commit('setUMPUser', response.isValidUMPUser);
-  context.commit('setUMPAdmin', response.isValidUMPAdmin);
-  context.commit('setStudentSearchUser', response.isValidStudentSearchUser);
-  context.commit('setStudentSearchAdmin', response.isValidStudentSearchAdmin);
-  context.commit('penRequestBatchUser', response.isValidPenRequestBatchUser);
-  context.commit('penRequestBatchAdmin', response.isValidPenRequestBatchAdmin);
-  context.commit('setStaffAdministrationUser', response.isValidStaffAdministrationUser);
-  context.commit('setStaffAdministrationAdmin', response.isValidStaffAdministrationAdmin);
-  context.commit('setValidNominalRollReadOnly', response.isValidNominalRollReadOnlyUser);
-  context.commit('setValidNominalRollUser', response.isValidNominalRollUser);
-  context.commit('setValidNominalRollAdmin', response.isValidNominalRollAdmin);
-  context.commit('setGUMPAnalytics', response.isValidGUMPAnalyticsUser);
-  context.commit('setPenRequestBatchAnalytics', response.isValidPenRequestBatchAnalyticsUser);
-  context.commit('setExchangeUser', response.isValidExchangeUser);
-  context.commit('setEDXAdmin', response.isValidEDXAdmin);
-  context.commit('setIsValidPenTeamRoleUser', response.isValidPenTeamRoleUser);
-  context.commit('setIsValidDistrictAdmin', response.isValidDistrictAdmin);
-  context.commit('setIsValidSchoolAdmin', response.isValidSchoolAdmin);
-  context.commit('setIsValidSchoolIndependentAdmin', response.isValidSchoolIndependentAdmin);
-  context.commit('setIsValidIndependentAuthorityAdmin', response.isValidIndependentAuthorityAdmin);
-  ApiService.setAuthHeader(response.jwtFrontend);
-}
+});
+
+

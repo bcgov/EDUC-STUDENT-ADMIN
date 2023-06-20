@@ -1,14 +1,15 @@
-import {mapMutations, mapState} from 'vuex';
+import {mapActions, mapState} from 'pinia';
+import {studentStore} from '@/store/modules/student';
 
 export default {
   data() {
     return {};
   },
   computed: {
-    ...mapState('student', ['staleStudentRecordsMap'])
+    ...mapState(studentStore, ['staleStudentRecordsMap'])
   },
   methods: {
-    ...mapMutations('student', ['clearStaleData', 'addStaleDataToMap']),
+    ...mapActions(studentStore, ['clearStaleData', 'addStaleDataToMap']),
     getMessageForStudent(studentID) {
       return this.staleStudentRecordsMap.get(studentID);
     }

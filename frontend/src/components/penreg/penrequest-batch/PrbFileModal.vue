@@ -35,7 +35,7 @@ import alertMixin from '@/mixins/alertMixin';
 import LinedTextArea from '../../util/LinedTextArea';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
-import PrimaryButton from '@/components/util/PrimaryButton';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
 export default {
   name: 'PrbFileModal',
   components: {

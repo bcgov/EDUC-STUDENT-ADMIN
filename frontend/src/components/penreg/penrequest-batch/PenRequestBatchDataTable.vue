@@ -124,10 +124,11 @@ import {uniqBy} from 'lodash';
 import router from '../../../router';
 import Pagination from '@/components/util/Pagination';
 import {PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
-import PrimaryButton from '@/components/util/PrimaryButton';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import PenRequestBatchHistoryModal from './PenRequestBatchHistoryModal';
-import {mapState} from 'vuex';
+import {mapState} from 'pinia';
 import alertMixin from '../../../mixins/alertMixin';
+import {notificationsStore} from '@/store/modules/notifications';
 
 export default {
   name: 'PenRequestBatchDataTable',
@@ -176,7 +177,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('notifications', ['notification']),
+    ...mapState(notificationsStore, ['notification']),
     pageNumber: {
       get(){
         return this.batchPageNumber;

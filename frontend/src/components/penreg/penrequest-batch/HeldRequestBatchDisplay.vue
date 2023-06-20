@@ -70,7 +70,7 @@
 <script>
 import HeldRequestBatchList from './HeldRequestBatchList';
 import FilterTag from '../../util/FilterTag';
-import PrimaryButton from '../../util/PrimaryButton';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import alertMixin from '../../../mixins/alertMixin';
 import ConfirmationDialog from '../../util/ConfirmationDialog';
 import ApiService from '@/common/apiService';

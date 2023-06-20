@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import {mapGetters, mapMutations, mapState} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import PenRequestBatchDataTable from './PenRequestBatchDataTable';
 import ApiService from '../../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
@@ -23,6 +23,8 @@ import {deepCloneObject} from '@/utils/common';
 import Mousetrap from 'mousetrap';
 import router from '@/router';
 import {getSearchParam} from '@/utils/penrequest-batch/search';
+import {notificationsStore} from '@/store/modules/notifications';
+import {archivedRequestBatchStore} from '@/store/modules/archivedRequestBatch';
 
 export default {
   name: 'ArchivedRequestBatchList',
@@ -107,8 +109,8 @@ export default {
     },
   },
   computed: {
-    ...mapState('archivedRequestBatch', ['selectedFiles', 'penRequestBatchResponse']),
-    ...mapGetters('notifications', ['notification']),
+    ...mapState(archivedRequestBatchStore, ['selectedFiles', 'penRequestBatchResponse']),
+    ...mapState(notificationsStore, ['notification']),
     pageNumber: {
       get(){
         return this.$store.state['archivedRequestBatch'].pageNumber;
@@ -145,7 +147,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('archivedRequestBatch', ['setSelectedFiles', 'setPenRequestBatchResponse', 'setCurrentBatchFileSearchParams']),
+    ...mapActions(archivedRequestBatchStore, ['setSelectedFiles', 'setPenRequestBatchResponse', 'setCurrentBatchFileSearchParams']),
     initializeFiles(files) {
       if (this.isFilterOperation) {
         // reset

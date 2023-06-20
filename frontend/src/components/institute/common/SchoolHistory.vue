@@ -52,9 +52,11 @@ import ApiService from '../../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import router from '@/router';
 import {formatDob} from '@/utils/format';
-import {mapState} from 'vuex';
+import { mapState } from 'pinia';
 import {getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import SchoolHistoryDetailPanel from './SchoolHistoryDetailPanel.vue';
+import {instituteStore} from '@/store/modules/institute';
+import {appStore} from '@/store/modules/app';
 export default {
   name: 'SchoolHistory',
   mixins: [alertMixin],
@@ -110,13 +112,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('institute', ['facilityTypeCodes']),
-    ...mapState('institute', ['schoolCategoryTypeCodes']),
-    ...mapState('institute', ['gradeCodes']),
-    ...mapState('institute', ['schoolNeighborhoodLearningCodes']),
-    ...mapState('institute', ['schoolOrganizationTypeCodes']),
-    ...mapState('institute', ['schoolReportingRequirementTypeCodes']),
-    ...mapState('app', ['schoolMap', 'districtMap']),
+    ...mapState(instituteStore, ['facilityTypeCodes', 'schoolCategoryTypeCodes', 'gradeCodes', 'schoolNeighborhoodLearningCodes', 'schoolOrganizationTypeCodes', 'schoolReportingRequirementTypeCodes']),
+    ...mapState(appStore, ['schoolMap', 'districtMap']),
     showingFirstNumber() {
       return ((this.pageNumber - 1) * (this.schoolHistory.pageable.pageSize || 0) + ((this.schoolHistory.numberOfElements || 0) > 0 ? 1 : 0));
     },

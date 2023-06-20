@@ -137,8 +137,9 @@ import CompareDemographicModal from './CompareDemographicModal';
 import TertiaryButton from '../util/TertiaryButton';
 import StudentDetailModal from '../penreg/student/StudentDetailModal';
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
-import {mapState} from 'vuex';
-import PrimaryButton from '@/components/util/PrimaryButton';
+import {mapState} from 'pinia';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
+import {appStore} from '@/store/modules/app';
 
 export default {
   name: 'PenMatchResultsTable',
@@ -281,7 +282,7 @@ export default {
     },
   },
   computed: {
-    ...mapState('app', ['stickyInfoPanelHeight']),
+    ...mapState(appStore, ['stickyInfoPanelHeight']),
     isMatchedToStudent(){
       return item => !!item?.matchedToStudent;
     },

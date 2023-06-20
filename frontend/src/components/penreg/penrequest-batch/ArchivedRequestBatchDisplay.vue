@@ -213,9 +213,9 @@
 
 <script>
 import {Routes,PEN_REQ_BATCH_STUDENT_REQUEST_CODES} from '@/utils/constants';
-import {mapMutations, mapState} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import ArchivedRequestBatchList from './ArchivedRequestBatchList';
-import PrimaryButton from '../../util/PrimaryButton';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import router from '@/router';
 import alertMixin from '@/mixins/alertMixin';
 import {
@@ -231,6 +231,11 @@ import {formatDob} from '@/utils/format';
 import FormattedTextField from '@/components/util/FormattedTextField';
 import Mousetrap from 'mousetrap';
 import searchMixin from '@/mixins/searchMixin';
+import {archivedRequestBatchStore} from '@/store/modules/archivedRequestBatch';
+import {studentSearchStore} from '@/store/modules/studentSearch';
+import {studentStore} from '@/store/modules/student';
+import {navigationStore} from '@/store/modules/setNavigation';
+import {penRequestBatchStudentSearchStore} from '@/store/modules/prbStudentSearch';
 
 export default {
   name: 'ArchivedRequestBatchDisplay',
@@ -263,8 +268,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('archivedRequestBatch', ['selectedFiles', 'currentBatchFileSearchParams', 'refinedSearch', 'penRequestBatchResponse']),
-    ...mapState('student', ['genders']),
+    ...mapState(archivedRequestBatchStore, ['selectedFiles', 'currentBatchFileSearchParams', 'refinedSearch', 'penRequestBatchResponse']),
+    ...mapState(studentStore, ['genders']),
     filesSelected() {
       return this.selectedFiles?.length > 0;
     },
@@ -289,9 +294,9 @@ export default {
     Mousetrap.reset();
   },
   methods: {
-    ...mapMutations('prbStudentSearch', ['clearPrbStudentSearchState']),
-    ...mapMutations('archivedRequestBatch', ['setRefinedSearch', 'setSelectedFiles']),
-    ...mapMutations('setNavigation', ['setSelectedIDs', 'setCurrentRequest', 'setArchived']),
+    ...mapActions(penRequestBatchStudentSearchStore, ['clearPrbStudentSearchState']),
+    ...mapActions(archivedRequestBatchStore, ['setRefinedSearch', 'setSelectedFiles']),
+    ...mapActions(navigationStore, ['setSelectedIDs', 'setCurrentRequest', 'setArchived']),
     clickViewList() {
       const batchIDs = this.selectedFileBatchIDs;
       this.clearPrbStudentSearchState();

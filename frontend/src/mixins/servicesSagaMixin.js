@@ -1,7 +1,8 @@
 import ApiService from '@/common/apiService';
 import {REQUEST_TYPES, Routes} from '@/utils/constants';
 import router from '@/router';
-import {mapMutations, mapState} from 'vuex';
+import {mapActions, mapState} from 'pinia';
+import {studentStore} from '@/store/modules/student';
 
 export default {
   data() {
@@ -15,10 +16,10 @@ export default {
     };
   },
   computed: {
-    ...mapState('student', ['studentsInProcess'])
+    ...mapState(studentStore, ['studentsInProcess'])
   },
   methods: {
-    ...mapMutations('student', ['setStudentInProcessStatus', 'resetStudentInProcessStatus']),
+    ...mapActions(studentStore, ['setStudentInProcessStatus', 'resetStudentInProcessStatus']),
     notifyMergeSagaCompleteMessage() {
       this.setSuccessAlert('Success! Your request to merge is completed.');
       this.isProcessing = false;

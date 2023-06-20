@@ -24,8 +24,10 @@
 <script>
 import SingleComment from './Single-comment.vue';
 import ApiService from '../common/apiService';
-import {mapGetters, mapMutations} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import {Routes} from '../utils/constants';
+import {authStore} from '@/store/modules/auth';
+import {appStore} from '@/store/modules/app';
 
 export default {
   props: {
@@ -48,8 +50,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo']),
-    ...mapGetters('app', ['messages']),
+    ...mapState(authStore, ['userInfo']),
+    ...mapState(appStore, ['messages']),
     myself() {
       return { name: this.userInfo.userName, id: this.userInfo.userGuid };
     },
@@ -75,8 +77,7 @@ export default {
       });
   },
   methods: {
-    ...mapMutations('app', ['setMessages']),
-    ...mapMutations('app', ['setParticipants'])
+    ...mapActions(appStore, ['setMessages', 'setParticipants'])
   }
 };
 </script>

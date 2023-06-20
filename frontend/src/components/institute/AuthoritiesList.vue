@@ -161,15 +161,17 @@
 
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
-import PrimaryButton from '../util/PrimaryButton';
-import Spinner from '@/components/common/Spinner';
-import {mapGetters, mapState} from 'vuex';
+import PrimaryButton from '../util/PrimaryButton.vue';
+import Spinner from '@/components/common/Spinner.vue';
+import { mapState } from 'pinia';
 import {isEmpty, omitBy} from 'lodash';
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber} from '@/utils/format';
 import {getStatusColorAuthorityOrSchool,getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import router from '@/router';
-import NewAuthorityPage from './NewAuthorityPage';
+import NewAuthorityPage from './NewAuthorityPage.vue';
+import {authStore} from '@/store/modules/auth';
+import {instituteStore} from '@/store/modules/institute';
 
 export default {
   name: 'AuthoritiesListPage',
@@ -217,8 +219,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo', 'INDEPENDENT_AUTHORITY_ADMIN_ROLE']),
-    ...mapState('institute', ['authorityTypeCodes']),
+    ...mapState(authStore, ['userInfo', 'INDEPENDENT_AUTHORITY_ADMIN_ROLE']),
+    ...mapState(instituteStore, ['authorityTypeCodes']),
 
     getSheetWidth(){
       switch (this.$vuetify.breakpoint.name) {

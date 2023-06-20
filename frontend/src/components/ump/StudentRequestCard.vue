@@ -91,7 +91,7 @@
 </template>
 
 <script>
-import PrimaryButton from '../util/PrimaryButton';
+import PrimaryButton from '../util/PrimaryButton.vue';
 import router from '@/router';
 import {Routes, REQUEST_TYPES} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';

@@ -167,7 +167,8 @@ import {STUDENT_DETAILS_FIELDS, Routes} from '@/utils/constants';
 import {formatDob, formatPostalCode} from '@/utils/format';
 import {getDemogValidationResults} from '@/utils/common';
 import alertMixin from '@/mixins/alertMixin';
-import {mapState} from 'vuex';
+import {mapState} from 'pinia';
+import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
 export default {
   name: 'CreateNewPenModal',
   mixins: [alertMixin],
@@ -199,7 +200,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('penRequestBatch', ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
+    ...mapState(penRequestBatchStore, ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
   },
   data() {
     return {

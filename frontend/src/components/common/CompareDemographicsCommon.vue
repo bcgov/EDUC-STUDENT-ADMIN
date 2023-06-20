@@ -186,7 +186,7 @@
 
 <script>
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
-import PrimaryButton from '../util/PrimaryButton';
+import PrimaryButton from '../util/PrimaryButton.vue';
 import ApiService from '../../common/apiService';
 import {REQUEST_TYPES, Routes, STUDENT_CODES} from '@/utils/constants';
 import {isValidPEN} from '@/utils/validation';
@@ -196,9 +196,11 @@ import router from '../../router';
 import TertiaryButton from '../util/TertiaryButton';
 import {equalsIgnoreCase, getMatchedRecordsByStudent, sortArrayByDate} from '@/utils/common';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog';
-import {mapMutations, mapGetters} from 'vuex';
+import { mapState } from 'pinia';
 import MergeStudentsModal from '@/components/common/MergeStudentsModal';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
+import {notificationsStore} from '@/store/modules/notifications';
+import {studentStore} from '@/store/modules/student';
 
 export default {
   name: 'CompareDemographicsCommon',
@@ -300,7 +302,7 @@ export default {
     this.checkedStudents = [];
   },
   computed: {
-    ...mapGetters('notifications', ['notification']),
+    ...mapState(notificationsStore, ['notification']),
     studentRecords: {
       get: function() {
         return this.sortStudents(this.selectedRecords);
@@ -314,7 +316,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('student', ['setStudentInProcessStatus', 'clearStudentInProcessStatus']),
+    ...mapState(studentStore, ['setStudentInProcessStatus', 'clearStudentInProcessStatus']),
     equalsIgnoreCase,
     sortStudents(array){
       return array.sort(this.sortStudentRecordsForCompare);

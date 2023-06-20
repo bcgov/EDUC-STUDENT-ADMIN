@@ -439,17 +439,20 @@
 import ApiService from '@/common/apiService';
 import {EDX_SAGA_REQUEST_DELAY_MILLISECONDS, Routes} from '@/utils/constants';
 import router from '@/router';
-import {mapState, mapActions, mapGetters} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import {isPdf} from '@/utils/file';
 import {replaceMacro, insertMacro} from '@/utils/macro';
 import {ChronoUnit, DateTimeFormatter, LocalDate} from '@js-joda/core';
 import alertMixin from '@/mixins/alertMixin';
 
-import PrimaryButton from '@/components/util/PrimaryButton.vue';
+import PrimaryButton from '@/components/util/PrimaryButton.vue.vue';
 import DocumentUpload from '@/components/common/DocumentUpload.vue';
 import ImageRenderer from '@/components/common/ImageRenderer.vue';
 import AddStudent from '@/components/common/AddStudent.vue';
 import MacroMenu from '../common/MacroMenu.vue';
+import {appStore} from '@/store/modules/app';
+import {edxStore} from '@/store/modules/edx';
+import {authStore} from '@/store/modules/auth';
 
 
 export default {
@@ -501,9 +504,9 @@ export default {
     };
   },
   computed: {
-    ...mapState('auth', ['userInfo']),
-    ...mapGetters('edx', ['messageMacros']),
-    ...mapGetters('app', ['schoolMap']),
+    ...mapState(authStore, ['userInfo']),
+    ...mapState(edxStore, ['messageMacros']),
+    ...mapState(appStore, ['schoolMap']),
     loading() {
       return this.loadingCount !== 0;
     },
@@ -516,7 +519,7 @@ export default {
     this.getMacros();
   },
   methods: {
-    ...mapActions('edx', ['getMacros']),
+    ...mapActions(edxStore, ['getMacros']),
     async upload(document) {
       try {
         this.loadingCount += 1;

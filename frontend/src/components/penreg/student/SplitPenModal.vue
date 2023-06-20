@@ -71,14 +71,16 @@
 </template>
 
 <script>
-import PrimaryButton from '../../util/PrimaryButton';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import StudentAuditHistoryDetailCard from './StudentAuditHistoryDetailCard';
 import router from '../../../router';
 import {Routes} from '@/utils/constants';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
-import {mapGetters, mapMutations, mapState} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
+import {notificationsStore} from '@/store/modules/notifications';
+import {studentStore} from '@/store/modules/student';
 
 export default {
   name: 'SplitPenModal',
@@ -118,8 +120,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('student', ['studentsInProcess']),
-    ...mapGetters('notifications', ['notification']),
+    ...mapState(studentStore, ['studentsInProcess']),
+    ...mapState(notificationsStore, ['notification']),
     hasSagaInProgress() {
       return this.studentDetail && (this.studentDetail.sagaInProgress || this.studentsInProcess.has(this.studentDetail.studentID));
     },
@@ -156,7 +158,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('student', ['setStudentInProcessStatus', 'resetStudentInProcessStatus']),
+    ...mapActions(studentStore, ['setStudentInProcessStatus', 'resetStudentInProcessStatus']),
     openModal() {
       this.modalOpen = true;
     },

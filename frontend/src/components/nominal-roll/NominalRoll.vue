@@ -56,9 +56,9 @@ import {
   NOMINAL_ROLL_STUDENT_STATUS_CODES
 } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
-import Spinner from '@/components/common/Spinner';
+import Spinner from '@/components/common/Spinner.vue';
 import {LocalDate} from '@js-joda/core';
-import PrimaryButton from '@/components/util/PrimaryButton';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import router from '../../router';
 
 export default {

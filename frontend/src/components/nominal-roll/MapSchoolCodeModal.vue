@@ -82,12 +82,14 @@
 </template>
 
 <script>
-import {mapState} from 'vuex';
+import {mapState} from 'pinia';
 import TertiaryButton from '../util/TertiaryButton';
-import PrimaryButton from '../util/PrimaryButton';
+import PrimaryButton from '../util/PrimaryButton.vue';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
+import {appStore} from '@/store/modules/app';
+import {nominalRollStore} from '@/store/modules/nominalRoll';
 
 export default {
   name: 'MapSchoolCodeModal',
@@ -113,8 +115,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['schoolApiMincodeSchoolNames']),
-    ...mapState('nominalRoll', ['fedProvSchoolCodes']),
+    ...mapState(appStore, ['schoolApiMincodeSchoolNames']),
+    ...mapState(nominalRollStore, ['fedProvSchoolCodes']),
     schools() {
       return _.sortBy(Array.from(this.schoolApiMincodeSchoolNames.entries()).map(school => ({ text: `${school[0]} - ${school[1]}`, value: school[0]})), ['value']);
     },
