@@ -26,12 +26,12 @@
             item-key="studentHistoryID"
             @page-count="studentHistoryResp.pageable.pageNumber = $event"
         >
-          <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
+          <template v-for="h in headers" #[`header.${h.value}`]="{ header }">
               <span :title="header.tooltip" :key="h.id" :class="{'file-column' : !header.countable}">
                 {{ header.text }}
               </span>
           </template>
-          <template v-slot:item="props">
+          <template #item="props">
             <tr :class="tableRowClass(props.item)" @click="selectItem(props)">
               <td v-for="header in props.headers" :key="header.id" :class="header.id">
                 <div class="table-cell">

@@ -180,7 +180,7 @@ export default {
     };
   },
   async beforeMount() {
-    await this.$store.dispatch('app/getCodes');
+    await appStore().getCodes();
   },
   mounted() {
     if (this.VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE) {

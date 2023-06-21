@@ -42,7 +42,7 @@
               <v-expansion-panels focusable>
                 <v-expansion-panel>
                   <v-expansion-panel-header style="border-bottom-left-radius: 4px;border-bottom-right-radius: 4px;color: #FFFFFF;background-color: rgb(0, 51, 102);border-color: rgb(0, 51, 102);">
-                    <template v-slot:actions>
+                    <template #actions>
                       <v-icon color="white">
                         $expand
                       </v-icon>

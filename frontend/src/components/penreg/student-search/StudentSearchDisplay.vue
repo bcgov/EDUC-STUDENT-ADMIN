@@ -2,7 +2,7 @@
   <v-container fluid class="full-height px-0">
     <CreateNewPenModal @closeDialog="closeDialog" :dialog="createNewPenDialog"
                        :student-data="student">
-      <template v-slot:actions="{ isFormValid, isValidForm, createNewPenLoading }">
+      <template #actions="{ isFormValid, isValidForm, createNewPenLoading }">
         <PrimaryButton id="cancel" :secondary="true" text="Cancel"
                        @click.native="closeDialog"
         >
@@ -136,11 +136,11 @@ export default {
     },
     studentSearchParams: {
       get() {
-        this.setCurrentSearchObject(this.$store.state['studentSearch'].studentSearchParams);
-        return this.$store.state['studentSearch'].studentSearchParams;
+        this.setCurrentSearchObject(studentSearchStore().studentSearchParams);
+        return studentSearchStore().studentSearchParams;
       },
       set(newPage) {
-        return this.$store.state['studentSearch'].studentSearchParams = newPage;
+        return studentSearchStore().setStudentSearchParams(newPage);
       }
     },
     genderCodes() {
@@ -165,8 +165,8 @@ export default {
     }
   },
   mounted() {
-    this.$store.dispatch('student/getCodes');
-    this.$store.dispatch('penRequestBatch/getCodes');
+    studentStore().getCodes();
+    penRequestBatchStore().getCodes();
     this.studentSearchParams = {...this.studentSearchParams, ..._.omit(this.searchParams, ['dob'])};
     if (this.searchParams.dob) {
       this.studentSearchParams.dob.startDate = this.searchParams.dob;

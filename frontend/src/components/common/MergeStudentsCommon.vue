@@ -353,7 +353,7 @@
         </v-row>
       </v-container>
       <ConfirmationDialog ref="confirmationDialog">
-        <template v-slot:message>
+        <template #message>
           <v-col class="my-n6">
             <v-row class="mb-5">
               Merging these records will break any twinned connections.
@@ -449,8 +449,8 @@ export default {
   },
   created() {
     this.genderCodes = this.genders ? this.genders.map(a => a.genderCode) : [];
-    this.$store.dispatch('student/getCodes');
-    this.$store.dispatch('student/getMacros');
+    studentStore().getCodes();
+    studentStore().getMacros();
   },
   async mounted() {
 

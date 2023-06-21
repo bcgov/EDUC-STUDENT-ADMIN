@@ -12,7 +12,7 @@
       :loading="loadingTable"
       @page-count="penRequestBatchResponse.pageable.pageNumber = $event"
     >
-      <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
+      <template v-for="h in headers" #[`header.${h.value}`]="{ header }">
         <span :title="header.tooltip"  :key="h.id" :class="{'file-column' : !header.countable}">
           {{ header.text }}
         </span>
@@ -29,7 +29,7 @@
           </span>
         </template>
       </template>
-      <template v-slot:item="props">
+      <template #item="props">
         <tr :class="{'selected-file': props.item.isSelected}" @click="clickItem(props.item)">
           <td v-for="header in props.headers" :key="header.id" :class="{[header.value]: true, 'select-column': header.type}">
             <v-checkbox v-if="header.type" class="file-checkbox" color="#606060" v-model="props.item.isSelected" @click.stop="selectFile(props.item)"></v-checkbox>

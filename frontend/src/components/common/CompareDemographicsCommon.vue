@@ -48,7 +48,7 @@
     </v-card-title>
     <v-divider></v-divider>
     <v-simple-table class="sldTable pb-2">
-      <template v-slot:default>
+      <template v-slot>
         <thead>
         <tr>
           <th :title="header.tooltip" v-for="(header, index) in headers" :key="index" :id="`${header.text}Header`">
@@ -71,9 +71,9 @@
             {{ formatPen(students.pen) }}
           </a>
           <v-tooltip bottom v-if="students['statusCode']==='M'">
-            <template v-slot:activator="{ on, attrs }">
+            <template #activator="{ on, attrs }">
               <v-chip color="deep-purple" text-color="white" small v-if="students['statusCode']==='M'" class="px-2" v-bind="attrs"
-                      v-on="on">M</v-chip>
+                      >M</v-chip>
             </template>
             <span>Merged to {{students.truePen}}</span>
           </v-tooltip>
@@ -110,7 +110,7 @@
               :items-per-page="sldDataTablesNumberOfRows[students.pen]"
               hide-default-header
               hide-default-footer>
-        <template v-slot:item="props">
+        <template #item="props">
           <tr>
             <td v-for="header in props.headers" :key="header.id" :class="[header.id, existSldUsualName(props.item)? 'two-rows-column' : 'one-row-column']">
               <v-checkbox v-if="header.type === 'select'" dense class="studentCheckbox pa-0 ma-0" color="#606060"
@@ -164,7 +164,7 @@
       </v-card-actions>
     </div>
     <ConfirmationDialog ref="confirmationDialog">
-      <template v-slot:message>
+      <template #message>
         <v-col class="mt-n6">
           <v-row class="mb-3">
             <span>Are you sure you want to demerge PENs <strong>{{getMergedFromPen()}}</strong> and <strong>{{getMergedToPen()}}</strong>?</span>
@@ -173,7 +173,7 @@
       </template>
     </ConfirmationDialog>
     <ConfirmationDialog ref="moveSldConfirmationDialog">
-      <template v-slot:message>
+      <template #message>
         <v-col class="mt-n6">
           <v-row>
             <span>Are you sure you want to move the selected SLD records from <strong>{{movedFromStudent.pen}}</strong> to <strong>{{movedToStudent.pen}}</strong></span>?

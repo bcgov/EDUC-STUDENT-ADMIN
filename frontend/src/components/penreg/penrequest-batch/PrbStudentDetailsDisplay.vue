@@ -24,7 +24,7 @@
                   :isFixableOrErrorStatus="isFixableOrErrorStatus"
                   @modifySearchParams="modifySearchParams"
               >
-                <template v-slot:headerPanel="{ openSearchDemographicsModal }">
+                <template #headerPanel="{ openSearchDemographicsModal }">
                   <v-row no-gutters
                          class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center"
                          style="background-color:white;">
@@ -73,7 +73,7 @@
                     </span>
                   </v-row>
                 </template>
-                <template v-slot:footerPanel>
+                <template #footerPanel>
                   <v-row v-if="prbStudent.infoRequest" no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
                          style="background-color:white;">
                     <v-col cols="12">
@@ -124,7 +124,7 @@
         </v-row>
       </div>
       <ConfirmationDialog ref="confirmedStudentUnlinkConfirmationDialog">
-        <template v-slot:message>
+        <template #message>
           <v-col class="mt-n6">
             <v-row class="mb-3">
               This PEN must be merged to another PEN. Are you sure you want to unmatch this student?
@@ -133,7 +133,7 @@
         </template>
       </ConfirmationDialog>
       <ConfirmationDialog ref="confirmationDialog" contentClass="match-confirmation-dialog">
-        <template v-slot:message>
+        <template #message>
           <v-col class="pt-0">
             <v-row class="mb-3">There is <strong class="mx-1">{{ demogValidationResult.length }}</strong> questionable
               {{ `error${demogValidationResult.length > 1 ? 's' : ''}` }} with this PEN request:
@@ -349,7 +349,7 @@ export default {
   created() {
     //Go back to Files page if refresh button is pressed
     if(Object.keys(this.selectedIDs).length > 0) {
-      this.$store.dispatch('penRequestBatch/getCodes');
+      penRequestBatchStore().getCodes();
       this.initializeDetails();
     } else if(this.archived) {
       router.push({name: 'archivedRequestBatch'});
@@ -428,11 +428,11 @@ export default {
       }
     },
     async retrieveBatchFile() {
-      const selectedFiles = this.$store.state[this.penRequestBatchStore].selectedFiles;
+      const selectedFiles = penRequestBatchStore().selectedFiles;
       if (!selectedFiles || selectedFiles.length === 0) {
         await this.retrieveSelectedFiles();
       }
-      this.batchFile = this.$store.state[this.penRequestBatchStore].selectedFiles.find(file => file.penRequestBatchID === this.prbStudent.penRequestBatchID);
+      this.batchFile = penRequestBatchStore().selectedFiles.find(file => file.penRequestBatchID === this.prbStudent.penRequestBatchID);
     },
     retrieveSelectedFiles() {
       const searchQueries = [

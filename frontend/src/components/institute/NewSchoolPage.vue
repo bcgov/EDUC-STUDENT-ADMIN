@@ -64,7 +64,7 @@
                     offset-y
                     min-width="auto"
                 >
-                  <template v-slot:activator="{ on, attrs }">
+                  <template #activator="{ on, attrs }">
                     <v-text-field
                         id="newSchoolOpenDateTextField"
                         :rules="[rules.required()]"
@@ -75,7 +75,6 @@
                         clearable
                         readonly
                         v-bind="attrs"
-                        v-on="on"
                     ></v-text-field>
                   </template>
                   <v-date-picker
@@ -505,15 +504,16 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('institute/getAllActiveFacilityTypeCodes');
-    this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes');
-    this.$store.dispatch('institute/getAllActiveSchoolOrganizationTypeCodes');
-    this.$store.dispatch('institute/getAllActiveGradeCodes');
-    this.$store.dispatch('institute/getAllActiveSchoolNeighborhoodLearningCodes');
-    this.$store.dispatch('institute/getAllActiveProvinceCodes');
-    this.$store.dispatch('institute/getAllActiveCountryCodes');
-    this.$store.dispatch('institute/getSchoolCategoryFacilityTypesMap');
-    this.$store.dispatch('institute/getSchoolReportingRequirementTypeCodes');
+    const instStore = instituteStore();
+    instStore.getAllActiveFacilityTypeCodes();
+    instStore.getAllActiveSchoolCategoryTypeCodes();
+    instStore.getAllActiveSchoolOrganizationTypeCodes();
+    instStore.getAllActiveGradeCodes();
+    instStore.getAllActiveSchoolNeighborhoodLearningCodes();
+    instStore.getAllActiveProvinceCodes();
+    instStore.getAllActiveCountryCodes();
+    instStore.getSchoolCategoryFacilityTypesMap();
+    instStore.getSchoolReportingRequirementTypeCodes();
   },
   methods: {
     enableOrDisableFacilityType(facilityTypes) {

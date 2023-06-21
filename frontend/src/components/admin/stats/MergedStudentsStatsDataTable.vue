@@ -11,7 +11,7 @@
   }"
     :items-per-page="12"
   >
-    <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
+    <template v-for="h in headers" #[`header.${h.value}`]="{ header }">
         <span :key="h.id" class="top-column-item" :title="header.topTooltip">
           {{ header.topText }}
         </span>
@@ -22,7 +22,7 @@
       <br :key="h.id"/>
       <span :key="h.id" class="bottom-column-item" :title="header.bottomTooltip">{{ header.bottomText }}</span>
     </template>
-    <template v-slot:item="props">
+    <template #item="props">
       <tr :class="itemRowBackground(props.item)">
         <td :class="isAPair(props.item)?'even-row':'odd-row'" v-for="header in props.headers" :key="header.id">
           <div @click="viewStudentDetails(props.item.studentID)" class="tableCell">
@@ -34,8 +34,8 @@
             <br>
             <!-- if top and bottom value are the same, do not display the bottom value -->
             <v-tooltip v-if="header.bottomValue === 'memo'" bottom>
-              <template v-slot:activator="{ on }">
-                  <span v-on="on" class="bottom-column-item">{{
+              <template #activator="{ on }">
+                  <span class="bottom-column-item">{{
                       firstMemoChars(props.item[header.bottomValue])
                     }}</span>
               </template>

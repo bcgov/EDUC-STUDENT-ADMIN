@@ -27,24 +27,6 @@ export const appStore = defineStore('app', {
     alertNotificationQueue: [],
     alertNotification: false
   }),
-  getters: {
-    request: state => state.request,
-    selectedRequest: state => state.selectedRequest,
-    schoolApiDistrictCodesObjectSorted: state => Array.from(state.schoolApiDistrictCodes).sort(),
-    schoolApiMincodeSchoolNamesObjectSorted: state => Object.values(Object.fromEntries(state.schoolApiMincodeSchoolNames)).map(v => v.toUpperCase()).sort(),
-    districtCodesObjectSorted: state => Array.from(state.districtCodes).sort(),
-    mincodeSchoolNamesObjectSorted: state => Object.values(Object.fromEntries(state.mincodeSchoolNames)).map(v => v.toUpperCase()).sort(),
-    districtsObjectSorted: state => Object.values(Object.fromEntries(state.districts)).map(v => v.toUpperCase()).sort(),
-    messages: state => state.messages,
-    participants: state => state.participants,
-    requestType: state => state.requestType,
-    requestTypeLabel: state => state.requestTypeLabel,
-    schoolMap: state => state.schoolMap,
-    districtMap: state => state.districtMap,
-    notClosedSchools: state => state.notClosedSchools,
-    activeSchools: state => state.activeSchools,
-    activeDistricts: state => state.activeDistricts,
-  },
   actions: {
     async setRequest(request) {
       this.request = request || {};
@@ -71,7 +53,7 @@ export const appStore = defineStore('app', {
     async setStickyInfoPanelHeight(stickyInfoPanelHeight) {
       this.stickyInfoPanelHeight = stickyInfoPanelHeight;
     },
-    async setMincodeSchoolNameAndDistrictCodes(state, mincodeSchoolNameList) {
+    async setMincodeSchoolNameAndDistrictCodes(mincodeSchoolNameList) {
       this.mincodeSchoolNames = new Map();
       this.schoolMap = new Map();
       mincodeSchoolNameList.forEach(element => {
@@ -83,19 +65,19 @@ export const appStore = defineStore('app', {
         this.districtCodes.add(element.mincode?.substring(0, 3));
       });
     },
-    async setActiveSchools(state, activeSchools) {
+    async setActiveSchools(activeSchools) {
       this.activeSchools = activeSchools;
     },
-    async setActiveDistricts(state, activeDistricts) {
+    async setActiveDistricts(activeDistricts) {
       this.activeDistricts = activeDistricts;
     },
-    async setDistricts(state, districtList) {
+    async setDistricts(districtList) {
       this.districtMap = new Map();
       districtList.forEach(element => {
         this.districtMap.set(element.districtId, element);
       });
     },
-    async setIndependentAuthorities(state, independentAuthorityList) {
+    async setIndependentAuthorities(independentAuthorityList) {
       this.independentAuthorityMap = new Map();
       independentAuthorityList.forEach(element => {
         this.independentAuthorityMap.set(element.authorityID, element);
@@ -107,13 +89,13 @@ export const appStore = defineStore('app', {
     async setAlertNotification(alertNotification) {
       this.alertNotification = alertNotification;
     },
-    async addAlertNotification(state, text) {
+    async addAlertNotification(text) {
       this.alertNotificationQueue.push(text);
       if (!this.alertNotification) {
         this.alertNotification = true;
       }
     },
-    async setSchoolApiMincodeSchoolNameAndDistrictCodes(state, schoolApiMincodeSchoolNameList) {
+    async setSchoolApiMincodeSchoolNameAndDistrictCodes(schoolApiMincodeSchoolNameList) {
       this.schoolApiMincodeSchoolNames = new Map();
       schoolApiMincodeSchoolNameList.forEach(element => {
         this.schoolApiMincodeSchoolNames.set(element.mincode, element.schoolName);

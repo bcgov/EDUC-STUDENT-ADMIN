@@ -20,7 +20,7 @@
             v-model="searchFilter.districtId"
             @change="searchButtonClick"
             clearable>
-            <template v-slot:item="data">
+            <template #item="data">
               <v-icon :color="getStatusColor(data.item.status)">
                 mdi-circle-medium
               </v-icon>
@@ -37,7 +37,7 @@
             item-text="label"
             item-value="districtStatusCode"
             label="Status">
-            <template v-slot:item="{ item }">
+            <template #item="{ item }">
               <v-row>
                 <v-col cols="12" class="pr-0">
                   <v-icon :color="getStatusColor(item.districtStatusCode)">
@@ -65,7 +65,7 @@
         mobile-breakpoint="0"
       >
 
-        <template v-slot:item.secureExchangeStatusCode="{ item }">
+        <template #item.secureExchangeStatusCode="{ item }">
           <v-row style="cursor: pointer;" @click="openDistrict(item.districtId)">
             <v-col cols="6" class="d-flex justify-start">
               <strong class="largeFont">{{ `${item.districtNumber} - ${item.name}` }}</strong>
@@ -84,14 +84,13 @@
             </v-col>
             <v-col class="d-flex justify-end">
               <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
+                <template #activator="{ on, attrs }">
                   <v-btn id="districtContacts"
                          color="#003366"
                          outlined
                          @click.native.stop="openDistrictContacts(item.districtId)"
                          class="mt-0 pt-0 filterButton ml-2"
                          style="text-transform: initial"
-                         v-on="on"
                   >
                     <v-icon color="#003366" style="margin-top: 0.07em" dark>mdi-account-multiple-outline</v-icon>
                   </v-btn>
@@ -102,7 +101,7 @@
           </v-row>
         </template>
 
-        <template v-slot:no-data>There are no districts.</template>
+        <template #no-data>There are no districts.</template>
 
       </v-data-table>
     </div>

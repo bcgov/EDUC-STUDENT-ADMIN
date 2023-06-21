@@ -75,7 +75,7 @@
           >
             <v-list-item :disabled="roleDisabled(newrole)" v-for="newrole in instituteRoles" :key="newrole.edxRoleCode"
                          :value="newrole.edxRoleCode">
-              <template v-slot:default="{ active, }">
+              <template v-slot="{ active, }">
                 <v-list-item-action class="mt-0 mb-2 mr-3">
                   <v-checkbox
                       :disabled="roleDisabled(newrole)"
@@ -84,10 +84,10 @@
                   ></v-checkbox>
                 </v-list-item-action>
 
-                <v-list-item-content>
+                <v-list-item>
                   <v-list-item-title>{{ newrole.label }}</v-list-item-title>
                   <div style="color: black; font-weight: bold" v-if="isEDXInstituteAdminSelected && newrole.edxRoleCode === edxInstituteAdminRole">EDX {{ instituteTypeLabel }} Admin users will be set up with all {{ instituteTypeLabel.toLowerCase() }} roles.</div>
-                </v-list-item-content>
+                </v-list-item>
               </template>
             </v-list-item>
           </v-list-item-group>
@@ -214,16 +214,7 @@ export default {
       this.selectedRoles = [this.edxInstituteAdminRole];
     },
     getButtonWidth() {
-      switch (this.$vuetify.breakpoint.name) {
-      case 'xs':
-      case 'sm':
-      case 'md':
-        return '2em';
-      case 'lg':
-      case 'xl':
-      default:
-        return '7em';
-      }
+      return '7em';
     },
     getRoleLabel(curRole) {
       if (this.instituteRoles.length > 0) {

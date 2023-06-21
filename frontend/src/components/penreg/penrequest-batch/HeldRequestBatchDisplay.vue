@@ -55,7 +55,7 @@
     >
     </PrbFileModal>
     <ConfirmationDialog ref="confirmationDialog">
-      <template v-slot:message>
+      <template #message>
         <v-col class="mt-n6">
           <v-row class="mt-n2 mb-3">
             <span>Are you sure you want

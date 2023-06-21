@@ -26,17 +26,17 @@
                           @change="onSchoolSelected"
                           return-object
                         >
-                          <template v-slot:selection="{ item }">
+                          <template #selection="{ item }">
                             <span> {{ item.text }} </span>
                           </template>
-                          <template v-slot:item="data">
+                          <template #item="data">
                             <v-list-item-avatar>
                               <v-icon v-if="data.item.mincode">mdi-school</v-icon>
                               <v-icon v-if="data.item.districtNumber">mdi-domain</v-icon>
                             </v-list-item-avatar>
-                            <v-list-item-content>
+                            <v-list-item>
                               {{ data.item.text }}
-                            </v-list-item-content>
+                            </v-list-item>
                           </template> 
                         </v-autocomplete>
                         <v-text-field
@@ -189,7 +189,7 @@ export default {
   },
   mounted() {
     this.validateForm();
-    this.$store.dispatch('edx/getFileRequirements');
+    edxStore().getFileRequirements();
   },
   data() {
     return {
@@ -221,7 +221,7 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('edx/getValidIDsForMessaging').then(() => {
+    edxStore().getValidIDsForMessaging().then(() => {
       let validSchoolsForMessaging = _.sortBy(Array.from(this.schoolMap.entries())
         .filter(school => this.validSchoolIDsForMessaging.includes(school[0]) && getStatusAuthorityOrSchool(school[1]) !== 'Closed')
         .map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolID, mincode: school[1].mincode, type: 'school'})), ['mincode']);

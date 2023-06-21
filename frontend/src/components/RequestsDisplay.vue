@@ -17,7 +17,7 @@
           :loading="loadingSelect"
           class="mx-6 mt-6 pa-0"
         >
-          <template v-slot:selection="{ attrs, item, select, selected }">
+          <template #selection="{ attrs, item, select, selected }">
             <FilterTag :id="item + 'tag'" :text="item" :close="remove" :item="item"></FilterTag>
           </template>
         </v-combobox>
@@ -34,7 +34,7 @@
           @click:row="viewRequestDetails"
           class="fill-height"
         >
-          <template v-slot:[requestStatusHeaderSlotName]="{ header }">
+          <template #[requestStatusHeaderSlotName]="{ header }">
             <th
               id="status-header"
               :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
@@ -46,7 +46,7 @@
               ></em>
             </th>
           </template>
-          <template v-slot:header.initialSubmitDate="{ header }">
+          <template #header.initialSubmitDate="{ header }">
             <th
               id="submit-date-header"
               :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
@@ -66,14 +66,13 @@
               offset-y
               min-width="290px"
             >
-              <template v-slot:activator="{ on }">
+              <template #activator="{ on }">
                 <v-text-field
                   id="date-picker-text-field"
                   :value="headerSearchParams.initialSubmitDate? headerSearchParams.initialSubmitDate.join(): ''"
                   outlined
                   dense
                   readonly
-                  v-on="on"
                   @click:clear="headerSearchParams.initialSubmitDate = []"
                   clearable
                   class="header-text"
@@ -90,7 +89,7 @@
               </v-date-picker>
             </v-menu>
           </template>
-          <template v-slot:[penSlotName]="{ header }">
+          <template #[penSlotName]="{ header }">
             <th
               id="pen-header"
               :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
@@ -110,7 +109,7 @@
               clearable
             ></v-text-field>
           </template>
-          <template v-slot:header.legalLastName="{ header }">
+          <template #header.legalLastName="{ header }">
             <th
               id="last-name-header"
               :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
@@ -130,7 +129,7 @@
               clearable
             ></v-text-field>
           </template>
-          <template v-slot:header.legalFirstName="{ header }">
+          <template #header.legalFirstName="{ header }">
             <th
               id="first-name-header"
               :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
@@ -150,7 +149,7 @@
               clearable
             ></v-text-field>
           </template>
-          <template v-slot:header.reviewer="{ header }">
+          <template #header.reviewer="{ header }">
             <th
               id="reviewer-header"
               :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
@@ -170,8 +169,8 @@
               clearable
             ></v-text-field>
           </template>
-          <template v-slot:no-data>There are no requests with the selected statuses.</template>
-          <template v-slot:item="{ item }">
+          <template #no-data>There are no requests with the selected statuses.</template>
+          <template #item="{ item }">
             <tr :class="item.sagaInProgress? 'blue-grey lighten-3 tableRow' :'tableRow'" @click="viewRequestDetails(item)">
               <td>{{item[`${requestType}StatusCode`].label}}</td>
               <td>{{item.initialSubmitDate?moment(item.initialSubmitDate).format('YYYY/MM/DD LT'):'' }}</td>
@@ -200,6 +199,7 @@ import ClipboardButton from './util/ClipboardButton.vue';
 import FilterTag from './util/FilterTag.vue';
 import {notificationsStore} from '@/store/modules/notifications';
 import {appStore} from '@/store/modules/app';
+import {requestStore} from '@/store/modules/request';
 
 export default {
   name: 'requestsDisplay',
@@ -299,7 +299,7 @@ export default {
     },
     pageNumber: {
       handler() {
-        this.$store.state[this.requestType].pageNumber = this.pageNumber;
+        requestStore().pageNumber = this.pageNumber;
         if (!this.initialLoad) {
           //stop watch from sending multiple getPenRequests calls on initial page load
           this.getRequests();
@@ -308,7 +308,7 @@ export default {
     },
     pageSize: {
       handler() {
-        this.$store.state[this.requestType].pageSize = this.pageSize;
+        requestStore().pageSize = this.pageSize;
         if (!this.initialLoad) {
           //stop watch from sending multiple getPenRequests calls on initial page load
           this.getRequests();
@@ -326,9 +326,7 @@ export default {
     },
     selectedStatuses: {
       handler() {
-        this.$store.state[
-          this.requestType
-        ].selectedStatuses = this.selectedStatuses;
+        requestStore().setSelectedStatuses(this.selectedStatuses);
         if (!this.initialLoad) {
           //stop watch from sending multiple getRequests calls on initial page load
           this.getRequests();
@@ -393,14 +391,10 @@ export default {
     runInit() {
       this.requests = [];
       this.initialLoad = true; //stop watch from sending multiple getRequests calls on initial page load
-      this.headerSearchParams = this.$store.state[
-        this.requestType
-      ].headerSearchParams;
-      this.headerSortParams = this.$store.state[
-        this.requestType
-      ].headerSortParams;
-      this.pageSize = this.$store.state[this.requestType].pageSize;
-      this.pageNumber = this.$store.state[this.requestType].pageNumber;
+      this.headerSearchParams = requestStore().headerSearchParams;
+      this.headerSortParams = requestStore().headerSortParams;
+      this.pageSize = requestStore().pageSize;
+      this.pageNumber = requestStore().pageNumber;
       ApiService.apiAxios
         .get(Routes[this.requestType].STATUSES_URL)
         .then(response => {
@@ -408,9 +402,7 @@ export default {
             status => status[`${this.requestType}StatusCode`] !== 'AUTO'
           );
           this.statusCodes = this.getStatusCodes();
-          this.selectedStatuses = this.$store.state[
-            this.requestType
-          ].selectedStatuses;
+          this.selectedStatuses = requestStore().selectedStatuses;
           this.comboboxKey += 1; //force component to re-render
         })
         .catch(error => {
@@ -487,7 +479,7 @@ export default {
         .get(Routes[this.requestType].DOCUMENT_TYPES_URL)
         .then(response => {
           if (response && response.data) {
-            this.$store.state[this.requestType].documentTypes = response.data;
+            requestStore().documentTypes = response.data;
           }
         })
         .catch(error => {

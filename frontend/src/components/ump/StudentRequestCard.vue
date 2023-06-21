@@ -7,7 +7,7 @@
       <v-col cols="12" xl="9" lg="9" md="9" sm="9" class="d-flex">
         <p id="penContainer" class="mb-2"><strong>{{ this.request.recordedPen || ''}}</strong></p>
         <v-tooltip class="mb-2" v-model="clipboard" right v-if="request.recordedPen">
-          <template v-slot:activator="{ }">
+          <template #activator="{ }">
             <PrimaryButton id="copy-pen" class="ml-2" text="Copy" :short="true" @click.native="copyPen"></PrimaryButton>
           </template>
           <span>PEN Copied to Clipboard!</span>

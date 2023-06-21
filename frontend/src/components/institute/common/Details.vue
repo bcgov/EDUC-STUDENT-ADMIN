@@ -735,34 +735,35 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('institute/getAllFacilityTypeCodes').then(() => {
+    const instStore = instituteStore();
+    instStore.getAllFacilityTypeCodes().then(() => {
       this.schoolFacilityTypes = sortBy(this.facilityTypeCodes, ['displayOrder']);
     });
-    this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes').then(() => {
+    instStore.getAllActiveSchoolCategoryTypeCodes().then(() => {
       this.activeSchoolCategoryTypes = sortBy(this.activeSchoolCategoryTypeCodes, ['displayOrder']);
     });
-    this.$store.dispatch('institute/getAllSchoolCategoryTypeCodes').then(() => {
+    instStore.getAllSchoolCategoryTypeCodes().then(() => {
       this.schoolCategoryTypes = sortBy(this.schoolCategoryTypeCodes, ['displayOrder']);
     });
-    this.$store.dispatch('institute/getAllSchoolOrganizationTypeCodes').then(() => {
+    instStore.getAllSchoolOrganizationTypeCodes().then(() => {
       this.schoolOrganizationTypes = this.schoolOrganizationTypeCodes;
     });
-    this.$store.dispatch('institute/getSchoolReportingRequirementTypeCodes').then(() => {
+    instStore.getSchoolReportingRequirementTypeCodes().then(() => {
       this.schoolReportingRequirementTypes = this.schoolReportingRequirementTypeCodes;
     });
-    this.$store.dispatch('institute/getAllSchoolNeighborhoodLearningCodes').then(() => {
+    instStore.getAllSchoolNeighborhoodLearningCodes().then(() => {
       this.schoolNeighborhoodLearningTypes = sortBy(this.schoolNeighborhoodLearningCodes, ['neighborhoodLearningTypeCode']);
     });
-    this.$store.dispatch('institute/getAllGradeCodes').then(() => {
+    instStore.getAllGradeCodes().then(() => {
       this.schoolGradeTypes = sortBy(this.gradeCodes, ['displayOrder']);
     });
-    this.$store.dispatch('institute/getAllProvinceCodes').then(() => {
+    instStore.getAllProvinceCodes().then(() => {
       this.provinceCodeValues = this.provinceCodes.filter(province => province.provinceCode === 'BC' || province.provinceCode === 'YT');
     });
-    this.$store.dispatch('institute/getAllCountryCodes').then(() => {
+    instStore.getAllCountryCodes().then(() => {
       this.countryCodeValues = this.countryCodes;
     });
-    this.$store.dispatch('institute/getSchoolCategoryFacilityTypesMap');
+    instStore.getSchoolCategoryFacilityTypesMap();
     this.getThisSchoolsDetails();
   },
   methods: {

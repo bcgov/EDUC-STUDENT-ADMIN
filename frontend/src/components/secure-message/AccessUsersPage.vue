@@ -184,10 +184,10 @@ export default {
   },
   async beforeMount() {
     if (this.schoolRoles.length === 0) {
-      await this.$store.dispatch('edx/getSchoolExchangeRoles');
+      await edxStore().getSchoolExchangeRoles();
     }
     if (this.schoolMap.size === 0) {
-      await this.$store.dispatch('app/getCodes');
+      await appStore().getCodes();
     }
   },
   created() {

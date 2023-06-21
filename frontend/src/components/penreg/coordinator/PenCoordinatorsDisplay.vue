@@ -61,7 +61,7 @@
               @page-count="pageCount = $event"
               @current-items="setCurrentItems"
             >
-              <template v-slot:item="props">
+              <template #item="props">
                 <tr @mouseover="enableActions(props.item)" @mouseleave="disableActions()" @click="clickCoordinatorText(props.item)">
                   <td v-for="header in props.headers" :key="header.id" @mouseover="enableEdit(header)" @mouseleave="disableEdit()">
                     <v-row
@@ -123,7 +123,7 @@
         </div>
       </v-row>
       <ConfirmationDialog ref="confirmationDialog">
-        <template v-slot:message>
+        <template #message>
           <v-col class="mt-n6">
             <v-row class="mt-n2 mb-0">
               You have unsaved changes. Do you wish to proceed and cancel changes?
@@ -214,7 +214,7 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('app/getCodes');
+    appStore().getCodes();
   },
   mounted() {
     this.loadPenCoords();

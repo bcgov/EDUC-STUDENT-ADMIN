@@ -23,7 +23,7 @@
                   :isFixableOrErrorStatus="isFixableOrErrorStatus"
                   @modifySearchParams="modifySearchParams"
               >                  
-                <template v-slot:headerPanel="{ openSearchDemographicsModal }">
+                <template #headerPanel="{ openSearchDemographicsModal }">
                   <v-row no-gutters
                          class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center"
                          style="background-color:white;">
@@ -98,7 +98,7 @@
         </v-row>
       </div>
       <ConfirmationDialog ref="confirmationDialog">
-        <template v-slot:message>
+        <template #message>
           <v-col class="pt-0">
             <v-row class="mb-3">There is <strong class="mx-1">{{ demogValidationResult.length }}</strong> questionable
               {{ `error${demogValidationResult.length > 1 ? 's' : ''}` }} with this PEN request:
@@ -118,7 +118,7 @@
         </template>
       </ConfirmationDialog>
       <ConfirmationDialog ref="confirmationDialogIgnore">
-        <template v-slot:message>
+        <template #message>
         </template>
       </ConfirmationDialog>
     </div>
@@ -155,6 +155,7 @@ import Mousetrap from 'mousetrap';
 import {navigationStore} from '@/store/modules/setNavigation';
 import {notificationsStore} from '@/store/modules/notifications';
 import {nominalRollStore} from '@/store/modules/nominalRoll';
+import {studentStore} from '@/store/modules/student';
 
 export default {
   name: 'NomRollStudentDetailsDisplay',
@@ -286,7 +287,7 @@ export default {
   created() {
     //Go back to Files page if refresh button is pressed
     if(Object.keys(this.selectedIDs).length > 0) {
-      this.$store.dispatch('student/getCodes');
+      studentStore().getCodes();
       this.initializeDetails();
     } else {
       router.push({name: 'nominal-roll-list'});

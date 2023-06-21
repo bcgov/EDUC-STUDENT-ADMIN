@@ -1,6 +1,6 @@
 <template>
   <v-menu id="chooseMessageMenu" max-height="30%" offset-y :max-width="menuMaxWidth">
-    <template v-slot:activator="{ on, attrs }">
+    <template #activator="{ on, attrs }">
       <div :class="[margin, padding]">
         <PrimaryButton
           :id="id"

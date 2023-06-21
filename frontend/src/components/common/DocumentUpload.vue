@@ -82,7 +82,7 @@ export default {
     };
   },
   created() {
-    this.$store.dispatch('edx/getFileRequirements').then(() => {
+    edxStore().getFileRequirements().then(() => {
       const fileRequirements = this.fileRequirements;
       const maxSize = fileRequirements.maxSize;
 

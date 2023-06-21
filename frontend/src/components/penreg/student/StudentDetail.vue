@@ -6,7 +6,7 @@
 
         <v-col cols="12" class="fill-height ma-0 pa-0">
           <v-row>
-            <v-tabs active-class="active-display" class="pa-0 ma-0 " v-model="tab">
+            <v-tabs selected-class="active-display" class="pa-0 ma-0 " :model-value="tab">
               <v-tab key="Demographics" class="student-details-tabs-style"><strong>Demographics</strong></v-tab>
               <v-tab key="SLD" v-if="VIEW_SLD_HISTORY_ROLE" class="student-details-tabs-style"><strong>SLD History</strong></v-tab>
               <v-tab key="Audit" v-if="VIEW_AUDIT_HISTORY_ROLE" class="student-details-tabs-style"><strong>Audit History</strong></v-tab>
@@ -24,7 +24,7 @@
                 @refresh="refreshStudent"
                 v-if="tab===0"
             >
-              <template v-slot:buttonbar="{ isAdvancedSearch, hasAnyEdits, saveStudent, REQUEST_TYPES, disableDemerge, demerge, saveStudentLoading }">
+              <template #buttonbar="{ isAdvancedSearch, hasAnyEdits, saveStudent, REQUEST_TYPES, disableDemerge, demerge, saveStudentLoading }">
                 <v-row>
                   <v-col cols="12">
                     <v-card-actions style="float: right;">
@@ -110,7 +110,7 @@ export default {
     },
   },
   mounted() {
-    this.$store.dispatch('student/getCodes');
+    studentStore().getCodes();
     this.refreshStudent();
   },
   watch: {

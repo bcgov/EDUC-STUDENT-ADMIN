@@ -2,8 +2,8 @@
 <template>
   <v-container fluid class="my-10 px-16">
     <v-tabs
-      active-class="active-display"
-      v-model="tab"
+      selected-class="active-display"
+      :model-value="tab"
     >
       <v-tab  :disabled="!isValidGMPUser" :href="`#${requestTypes.penRequest.name}`">PEN Retrieval Requests</v-tab>
       <v-tab :disabled="!isValidUMPUser" :href="`#${requestTypes.studentRequest.name}`">UMP Requests</v-tab>
@@ -11,7 +11,7 @@
       <v-tab :disabled="!isValidStudentSearchUser" :href="`#${requestTypes.penRequestBatch.name}`">PEN Request Files</v-tab>
 
       <v-tab-item
-        :value="requestTypes.penRequest.name"
+        :model-value="requestTypes.penRequest.name"
       >
         <RequestsDisplay
           :requestType="requestTypes.penRequest.name"
@@ -28,7 +28,7 @@
         ></RequestsDisplay>
       </v-tab-item>
       <v-tab-item
-        :value="requestTypes.studentSearch.name"
+        :model-value="requestTypes.studentSearch.name"
       >
         <StudentSearchDisplay
           :requestType="requestTypes.studentSearch.name"
@@ -36,7 +36,7 @@
         ></StudentSearchDisplay>
       </v-tab-item>
       <v-tab-item
-        :value="requestTypes.penRequestBatch.name"
+        :model-value="requestTypes.penRequestBatch.name"
       >
         <PenRequestBatchDisplay
         ></PenRequestBatchDisplay>

@@ -540,10 +540,10 @@ export default {
   created() {
     this.getDistrict();
 
-    this.$store.dispatch('institute/getAllProvinceCodes').then(() => {
+    instituteStore().getAllProvinceCodes().then(() => {
       this.provinceCodeValues = this.provinceCodes.filter(province =>  province.provinceCode === 'BC' || province.provinceCode === 'YT');
     });
-    this.$store.dispatch('institute/getAllCountryCodes').then(() => {
+    instituteStore().getAllCountryCodes().then(() => {
       this.countryCodeValues = this.countryCodes;
     });
   },

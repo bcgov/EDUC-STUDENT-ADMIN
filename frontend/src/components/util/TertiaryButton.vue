@@ -1,5 +1,5 @@
 <template>
-  <v-hover v-slot:default="{ hover }">
+  <v-hover v-slot="{ hover }">
     <v-btn :id="id"
            :class="[hover ? 'button-hover':'']"
            color="#38598A"
@@ -11,7 +11,6 @@
            :text="true"
            :min-width="minWidth"
            v-bind="bind"
-           v-on="on"
     >
       <v-icon v-if="icon" :class="[iconStyle, 'mr-1']" left>{{ icon }}</v-icon>
       <strong>{{ text }}</strong>

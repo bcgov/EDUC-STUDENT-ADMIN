@@ -12,7 +12,7 @@
       :loading="loadingTable"
       @page-count="penRequestBatchResponse.pageable.pageNumber = $event"
     >
-      <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
+      <template v-for="h in headers" #[`header.${h.value}`]="{ header }">
         <v-checkbox 
           v-if="header.type === 'select'" 
           :key="h.id" 
@@ -38,7 +38,7 @@
           </span>
         </template>
       </template>
-      <template v-slot:item="props">
+      <template #item="props">
         <tr :class="tableRowClass(props.item)"
           @click="selectItem(props.item)"
           @mouseover="enableActions(props.item)"
@@ -55,12 +55,11 @@
                   @click.stop="handleFileCheckBoxClicked(props.item)"
                 ></v-checkbox>
                 <v-tooltip bottom v-if="props.item.sagaInProgress">
-                  <template v-slot:activator="{ on, attrs }">
+                  <template #activator="{ on, attrs }">
                     <v-icon
                       color="warning"
                       dark
                       v-bind="attrs"
-                      v-on="on"
                       class="pl-2"
                     >
                       info
@@ -86,16 +85,16 @@
               ></PrimaryButton>
               <span v-else>{{formatTableColumn(header.format, props.item[header.value]) }}</span>
               <v-tooltip v-if="header.value==='mincode' && isUnarchived(props.item)" right>
-                <template v-slot:activator="{ on }">
-                  <v-icon small color="#2E8540" v-on="on" class="ml-1">
+                <template #activator="{ on }">
+                  <v-icon small color="#2E8540" class="ml-1">
                     {{isUnarchivedBatchChanged(props.item) ? 'fa-sync-alt' : 'fa-unlock'}}
                   </v-icon>
                 </template>
                 <span>{{getUpdateUser(props.item)}}</span>
               </v-tooltip>
               <v-tooltip v-if="header.value==='mincode' && isRearchived(props.item)" right>
-                <template v-slot:activator="{ on }">
-                  <v-icon color="#2E8540" v-on="on" class="ml-1">
+                <template #activator="{ on }">
+                  <v-icon color="#2E8540" class="ml-1">
                     {{'preview'}}
                   </v-icon>
                 </template>
@@ -194,7 +193,7 @@ export default {
       return this.archived ? 'archivedRequestBatch' : 'penRequestBatch';
     },
     selectedFiles() {
-      return this.$store.state[this.penRequestBatchStore].selectedFiles;
+      return penRequestBatchStore().selectedFiles;
     }
   },
   watch: {

@@ -24,7 +24,7 @@
                 v-model="authorityCodeNameFilter"
                 @change="searchButtonClick()"
                 clearable>
-                <template v-slot:item="data">
+                <template #item="data">
                   <v-icon :color="getStatusColorAuthorityOrSchool(data.item.status)">
                     mdi-circle-medium
                   </v-icon>
@@ -41,7 +41,7 @@
                 item-text="name"
                 item-value="code"
                 label="Status">
-                <template v-slot:item="{ item }">
+                <template #item="{ item }">
                   <v-row>
                     <v-col cols="12" class="pr-0">
                       <v-icon :color="getStatusColorAuthorityOrSchool(item.name)">
@@ -87,7 +87,7 @@
               mobile-breakpoint="0"
           >
 
-            <template v-slot:item.secureExchangeStatusCode="{ item }">
+            <template #item.secureExchangeStatusCode="{ item }">
                 <v-row align="center" justify="center" id="authorityDetailsSelect" style="cursor: pointer;" @click="openAuthority(item.independentAuthorityId)">
                   <v-col cols="7" class="pb-0 pt-0">
                     <v-row class="mb-n4">
@@ -115,14 +115,13 @@
                   </v-col>
                   <v-col class="d-flex justify-end">
                     <v-tooltip bottom>
-                      <template v-slot:activator="{ on, attrs }">
+                      <template #activator="{ on, attrs }">
                         <v-btn id="authorityContacts"
                                color="#003366"
                                outlined
                                @click.native.stop="openAuthorityContacts(item.independentAuthorityId)"
                                class="mt-0 pt-0 filterButton ml-2"
                                style="text-transform: initial"
-                               v-on="on"
                         >
                           <v-icon color="#003366" style="margin-top: 0.07em" dark>mdi-account-multiple-outline</v-icon>
                         </v-btn>
@@ -133,7 +132,7 @@
                 </v-row>
             </template>
 
-            <template v-slot:no-data>There are no authorities.</template>
+            <template #no-data>There are no authorities.</template>
 
           </v-data-table>
         </v-col>
@@ -223,17 +222,11 @@ export default {
     ...mapState(instituteStore, ['authorityTypeCodes']),
 
     getSheetWidth(){
-      switch (this.$vuetify.breakpoint.name) {
-      case 'xs':
-      case 'sm':
-        return 60;
-      default:
-        return 30;
-      }
+      return 30;
     },
   },
   created() {
-    this.$store.dispatch('institute/getAllAuthorityTypeCodes').then(() => {
+    instituteStore().getAllAuthorityTypeCodes().then(() => {
       this.authorityTypes = this.authorityTypeCodes;
     });
 

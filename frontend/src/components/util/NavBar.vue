@@ -1,73 +1,130 @@
 <template>
-<div class="mb-1">
-
-  <v-navigation-drawer
-          v-model="drawer"
-          clipped
-          app
-          color="#E9EBEF"
-          :style="`padding-top: ${$vuetify.application.top + $vuetify.application.bar}px`"
-          width="15%"
-          temporary>
-    <v-list>
-      <div v-for="(item) in items.filter(obj => obj.authorized)" v-bind:key="item.title">
-      <v-list-item v-if="!item.items"
+  <div class="mb-1">
+    <v-navigation-drawer
+      v-model="drawer"
+      clipped
+      app
+      color="#E9EBEF"
+      width="15%"
+      temporary
+    >
+      <v-list>
+        <div
+          v-for="(item) in items.filter(obj => obj.authorized)"
+          :key="item.title"
+        >
+          <v-list-item
+            v-if="!item.items"
+            :id="stripWhitespace(item.title + `MenuBtn`)"
             :key="item.title+`1`"
             class="menuRow"
-            :id="stripWhitespace(item.title + `MenuBtn`)">
-          <router-link :to="{ name: item.link }"  :target="item.newTab ? '_blank' : '_self'" class="router">
-            <v-list-item-content>
-              <v-list-item-title v-if="item.link === $route.name" class="menuItem"><strong>{{item.title}}</strong></v-list-item-title>
-              <v-list-item-title v-else class="menuItem">{{item.title}}</v-list-item-title>
-            </v-list-item-content>
-          </router-link>
-      </v-list-item>
-      <v-list-group
-              v-else
-              :key="item.title"
-              no-action
-              active-class="active"
-              class="groupMenu"
-              :id="stripWhitespace(item.title) + `MenuBtn`"
-              append-icon=""
-              @click="setActive(item)"
-      >
-        <template v-slot:activator>
-          <v-list-item-content>
-            <v-list-item-title v-text="item.title" class="menuItem"></v-list-item-title>
-          </v-list-item-content>
-          <v-icon color="#003366" v-if="!item.active">$plus</v-icon>
-          <v-icon color="#003366" v-else>$minus</v-icon>
-        </template>
-
-        <v-list-item
+          >
+            <router-link
+              :to="{ name: item.link }"
+              :target="item.newTab ? '_blank' : '_self'"
+              class="router"
+            >
+              <v-list-item>
+                <v-list-item-title
+                  v-if="item.link === $route.name"
+                  class="menuItem"
+                >
+                  <strong>{{ item.title }}</strong>
+                </v-list-item-title>
+                <v-list-item-title
+                  v-else
+                  class="menuItem"
+                >
+                  {{ item.title }}
+                </v-list-item-title>
+              </v-list-item>
+            </router-link>
+          </v-list-item>
+          <v-list-group
+            v-else
+            :id="stripWhitespace(item.title) + `MenuBtn`"
+            :key="item.title"
+            no-action
+            active-class="active"
+            class="groupMenu"
+            append-icon=""
+            @click="setActive(item)"
+          >
+            <template #activator>
+              <v-list-item>
+                <v-list-item-title
+                  class="menuItem ml-4"
+                  v-text="item.title"
+                />
+              </v-list-item>
+              <v-list-item
                 v-for="subItem in item.items.filter(obj => obj.authorized)"
+                :id="stripWhitespace(subItem.title) + `MenuBtn`"
                 :key="subItem.title"
                 class="subMenuRow pl-9"
-                :id="stripWhitespace(subItem.title) + `MenuBtn`"
-        >
-          <router-link :to="{ name: subItem.link }" :target="subItem.newTab ? '_blank' : '_self'" class="router">
-            <v-list-item-content>
-              <v-list-item-title v-if="subItem.link === $route.name" class="menuItem"><strong>{{ subItem.title }}</strong></v-list-item-title>
-              <v-list-item-title v-else v-text="subItem.title" class="menuItem"></v-list-item-title>
-            </v-list-item-content>
-          </router-link>
-        </v-list-item>
-      </v-list-group>
+              >
+                <router-link
+                  :to="{ name: subItem.link }"
+                  :target="subItem.newTab ? '_blank' : '_self'"
+                  class="router"
+                >
+                  <v-list-item>
+                    <v-list-item-title
+                      v-if="subItem.link === $route.name"
+                      class="menuItem"
+                    >
+                      <strong>{{ subItem.title }}</strong>
+                    </v-list-item-title>
+                    <v-list-item-title
+                      v-else
+                      class="menuItem"
+                      v-text="subItem.title"
+                    />
+                  </v-list-item>
+                </router-link>
+              </v-list-item>
+            </template>
+          </v-list-group>
+        </div>
+      </v-list>
+    </v-navigation-drawer>
+    <v-app-bar
+      absolute
+      elevation="0"
+      color="#38598A"
+      style="z-index: 1001;"
+      :dark="true"
+      id="navBar"
+      class="pl-12 pr-8"
+    >
+      <v-app-bar-nav-icon
+        style="color: white"
+        id="menuBtn"
+        @click="drawer=true"
+      >
+        <v-icon v-if="!drawer">$menu</v-icon>
+        <v-icon v-else>$close</v-icon>
+        <p class="ma-0 pl-3 pr-2">Menu</p>
+      </v-app-bar-nav-icon>
+      <v-toolbar-title class="ml-4 nav-title pl-6">{{ title }}</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <SetNavigation/>
+    </v-app-bar>
+
+    <v-app-bar
+      v-if="bannerColor !== ''"
+      style="color: white; z-index: 1000;"
+      :color="bannerColor"
+      absolute
+      density="compact"
+    >
+      <div>
+        <h3 class="envBanner pl-5">
+          {{ bannerEnvironment }} Environment
+        </h3>
       </div>
-    </v-list>
-  </v-navigation-drawer>
-  <v-app-bar app absolute elevation="0" color="#38598A" :dark="true" id="navBar" class="pl-16 pr-8">
-    <v-app-bar-nav-icon id="menuBtn" @click="drawer=true">
-      <v-icon v-if="!drawer">$menu</v-icon>
-      <v-icon v-else>$close</v-icon>
-      <p class="ma-0 pl-4 pr-2">Menu</p>
-    </v-app-bar-nav-icon>
-    <v-toolbar-title class="ml-4 nav-title">{{ title }}</v-toolbar-title>
-    <v-spacer></v-spacer>
-    <SetNavigation/>
-  </v-app-bar>
-</div>
+    </v-app-bar>
+  </div>
 </template>
 
 <script>
@@ -89,7 +146,9 @@ export default {
   data() {
     return {
       drawer: null,
-      items: []
+      items: [],
+      bannerEnvironment: import.meta.env.VITE_BANNER_ENVIRONMENT,
+      bannerColor: import.meta.env.VITE_BANNER_COLOR
     };
   },
   mounted() {
@@ -286,7 +345,16 @@ export default {
     background-color: #E9EBEF;
   }
 
+  :deep(.subMenuRow > div.v-list-item__append > i){
+    display: none;
+  }
+
+  :deep(.subMenuRow > div.v-list-item__content > a > div > div.v-list-item__append > i){
+    display: none;
+  }
+
   .nav-title {
     font-size: 1.4rem;
+    color: white;
   }
 </style>

@@ -114,20 +114,20 @@
               :items-per-page="15"
               :sort-by="['createDate']"
               class="fill-height">
-              <template v-slot:item.createDate="{ item }">
+              <template #item.createDate="{ item }">
                 <span>{{ item.createDate.toString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
               </template>
-              <template v-slot:item.fileName="{item: document}">
+              <template #item.fileName="{item: document}">
                 <router-link v-if="document.fileSize && actionsEnabled && isPdf(document)" :to="{ path: documentUrl(requestId, document) }" target="_blank">{{ document.fileName }}</router-link>
                 <a @click="showDocModal(requestId, document)" v-else-if="document.fileSize && actionsEnabled">
                   {{ document.fileName }}
                 </a>
                 <span v-else>{{ document.fileName }}</span>
               </template>
-              <template v-slot:item.fileSize="{ item }">
+              <template #item.fileSize="{ item }">
                 <span v-if="item.fileSize">{{ item.fileSize }}</span>
               </template>
-              <template v-if="actionsEnabled" v-slot:item.documentTypeLabel="{item: document}">
+              <template v-if="actionsEnabled" #item.documentTypeLabel="{item: document}">
                 <v-edit-dialog
                   :return-value.sync="document.documentTypeCode"
                   large
@@ -136,7 +136,7 @@
                   @save="saveDocumentType(document)"
                 >
                   <div>{{ document.documentTypeLabel }}</div>
-                  <template v-slot:input>
+                  <template #input>
                     <v-select
                       v-model="document.documentTypeCode"
                       style="max-width: 20em;"
@@ -188,6 +188,7 @@ import ImageRenderer from '@/components/common/ImageRenderer.vue';
 import {notificationsStore} from '@/store/modules/notifications';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
+import {requestStore} from '@/store/modules/request';
 
 export default {
   name: 'requestDetail',
@@ -311,9 +312,9 @@ export default {
     this.myself.name = this.userInfo.userName;
     this.myself.id = this.userInfo.userGuid;
     if(!this.returnMacros || ! this.rejectMacros) {
-      this.$store.dispatch(`${this.requestType}/getMacros`, this.requestType);
+      requestStore().getMacros(this.requestType);
     }
-    this.documentTypes = this.$store.state[this.requestType].documentTypes
+    this.documentTypes = requestStore().documentTypes
       .sort((a, b) => a.displayOrder - b.displayOrder)
       .map(code => ({text: code.label, value: code.documentTypeCode}));
 
@@ -407,7 +408,7 @@ export default {
       this.setFailureAlert(this.documentErrorMessage);
     },
     setDocumentTypeLabel(document) {
-      const documentTypeInfo = this.$store.state[this.requestType].documentTypes.find(typeInfo =>
+      const documentTypeInfo = requestStore().documentTypes.find(typeInfo =>
         typeInfo.documentTypeCode === document.documentTypeCode
       );
       document.documentTypeLabel = documentTypeInfo ? documentTypeInfo.label : document.documentTypeCode;

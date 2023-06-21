@@ -30,12 +30,6 @@ export const edxStore = defineStore('edx', {
         pageNumber: 1
       },
   }),
-  getters: {
-    getStatuses: state => state.statuses?.sort((a,b) => a.displayOrder > b.displayOrder ? 1 : -1),
-    secureExchangeDocuments: state => state.secureExchangeDocuments,
-    secureExchangeStudents: state => state.secureExchangeStudents,
-    messageMacros: state => state.messageMacros
-  },
   actions: {
     async setMinistryTeams(ministryTeamList) {
       this.ministryTeams = ministryTeamList;
@@ -72,10 +66,10 @@ export const edxStore = defineStore('edx', {
         this.secureExchangeDocuments.splice(index, 1);
       }
     },
-    async setSecureExchangeStudents(state,payload){
+    async setSecureExchangeStudents(payload){
       this.secureExchangeStudents= payload;
     },
-    async setSchoolSearchParams(state,payload){
+    async setSchoolSearchParams(payload){
       this.schoolSearchParams = payload;
       localStorage.setItem('schoolSearchParams', JSON.stringify(payload));
     },

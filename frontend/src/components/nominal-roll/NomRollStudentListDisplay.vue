@@ -55,6 +55,7 @@ import {LocalDate} from '@js-joda/core';
 import {formatDob} from '@/utils/format';
 import {nominalRollStudentSearchStore} from '@/store/modules/nomRollStudentSearch';
 import {nominalRollStore} from '@/store/modules/nominalRoll';
+import {studentStore} from '@/store/modules/student';
 
 export default {
   name: 'NomRollStudentListDisplay',
@@ -114,10 +115,10 @@ export default {
     ...mapState(nominalRollStore, ['fedProvSchoolCodes']),
     nomRollStudentSearchParams: {
       get(){
-        return this.$store.state['nomRollStudentSearch'].nomRollStudentSearchParams;
+        return nominalRollStudentSearchStore().nomRollStudentSearchParams;
       },
       set(newPage){
-        this.$store.state['nomRollStudentSearch'].nomRollStudentSearchParams = newPage;
+        nominalRollStudentSearchStore().setNomRollStudentSearchParams(newPage);
       }
     },
     nomRollStudentStatusSearchCriteria() {
@@ -164,7 +165,7 @@ export default {
       router.push({name: 'nominal-roll'});
       return false;
     });
-    this.$store.dispatch('student/getCodes');
+    studentStore().getCodes();
     this.setSelectedRecords();
     this.initialSearch();
   },

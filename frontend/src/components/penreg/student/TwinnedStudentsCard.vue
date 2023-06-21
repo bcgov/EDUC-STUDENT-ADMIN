@@ -2,9 +2,9 @@
   <v-card height="100%">
     <v-card-title class="px-0 pb-0 pt-5">
       <v-list-item>
-        <v-list-item-content class="pt-0">
+        <v-list-item class="pt-0">
           <v-list-item-title class="headline">Twinned Students</v-list-item-title>
-        </v-list-item-content>
+        </v-list-item>
         <v-list-item-icon class="my-0">
           <v-btn text icon @click="$emit('close')">
             <v-icon color="#38598A" class="px-0">mdi-close</v-icon>
@@ -47,15 +47,15 @@
           item-key="possibleMatchID"
           v-model="selectedTwins"
       >
-        <template v-slot:[`item.pen`]="props">
+        <template #[`item.pen`]="props">
           <a @click="viewStudentDetails(props.item.matchedStudentID)">
             {{ props.value }}
           </a>
         </template>
-        <template v-slot:[`item.matchedReason`]="props">
+        <template #[`item.matchedReason`]="props">
           <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <span v-on="on">{{ props.value }}</span>
+            <template #activator="{ on }">
+              <span>{{ props.value }}</span>
             </template>
             <span>{{ matchReasonLabel(props.value) }}</span>
           </v-tooltip>

@@ -636,11 +636,11 @@ const router = createRouter({
 router.beforeEach((to, _from, next) => {
   // this section is to set page title in vue store
   if (to && to.meta) {
-    const appStore = appStore();
-    appStore.setPageTitle(to.meta.pageTitle);
+    const apStore = appStore();
+    apStore.setPageTitle(to.meta.pageTitle);
   } else {
-    const appStore = appStore();
-    appStore.setPageTitle('');
+    const apStore = appStore();
+    apStore.setPageTitle('');
   }
 
   // This section is to clear the search results when users are not on a search page
@@ -650,8 +650,9 @@ router.beforeEach((to, _from, next) => {
     studSearchStore.clearStudentSearchResults();
   }
 
+  const aStore = authStore();
   // this section is to handle the backend session expiry, where frontend vue session is still valid.
-  if (to.meta.requiresAuth && authStore.isAuthenticated) {
+  if (to.meta.requiresAuth && aStore.isAuthenticated) {
     validateAndExecute('/token-expired');
   }else if (to.meta.requiresAuth) {
     validateAndExecute('login');

@@ -37,7 +37,7 @@
       :loading="loading"
       @page-count="prbStudentSearchResponse.pageable.pageNumber = $event"
     >
-      <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
+      <template v-for="h in headers" #[`header.${h.value}`]="{ header }">
         <span :title="header.topTooltip" :key="h.id" class="top-column-item">
           {{ header.topText }}
         </span>
@@ -45,7 +45,7 @@
         <br :key="h.id" />
         <span :title="header.bottomTooltip" :key="h.id" class="bottom-column-item">{{ header.bottomText }}</span>
       </template>
-      <template v-slot:item="props">
+      <template #item="props">
         <tr :class="{'selected-record' : props.item.isSelected}" @click="selectItem(props.item)">
           <td v-for="header in props.headers" :key="header.id" :class="header.id">
             <v-checkbox v-if="header.type" class="record-checkbox header-checkbox" color="#606060" v-model="props.item.isSelected" @click.stop="handleRecordCheckBoxClicked(props.item)"></v-checkbox>
@@ -53,8 +53,8 @@
               <span class="top-column-item">
                 <a v-if="header.topValue === 'submissionNumber'" class="submission" @click.stop="handleSubmissionNumberClicked(props.item[header.topValue])">{{props.item[header.topValue] }}</a>
                 <v-tooltip v-else-if="header.topValue === 'mincode'" right>
-                  <template v-slot:activator="{ on }">
-                    <span v-on="on">{{ props.item[header.topValue] }}</span>
+                  <template #activator="{ on }">
+                    <span>{{ props.item[header.topValue] }}</span>
                   </template>
                   <span>{{getSchoolName(props.item) }}</span>
                 </v-tooltip>
@@ -103,6 +103,8 @@ import ApiService from '@/common/apiService';
 import {penRequestBatchStudentSearchStore} from '@/store/modules/prbStudentSearch';
 import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
 import {navigationStore} from '@/store/modules/setNavigation';
+import {appStore} from '@/store/modules/app';
+import {archivedRequestBatchStore} from '@/store/modules/archivedRequestBatch';
 
 export default {
   name: 'PrbStudentSearchResults',
@@ -138,25 +140,25 @@ export default {
     };
   },
   async beforeMount() {
-    await this.$store.dispatch('app/getCodes');
+    await appStore().getCodes();
   },
   computed: {
     ...mapState(penRequestBatchStudentSearchStore, ['prbStudentSearchResponse', 'prbStudentSearchCriteria', 'currentPrbStudentSearchParams']),
     ...mapState(penRequestBatchStore, ['prbStudentStatuses']),
     pageNumber: {
       get(){
-        return this.$store.state['prbStudentSearch'].pageNumber;
+        return penRequestBatchStudentSearchStore().pageNumber;
       },
       set(newPage){
-        return this.$store.state['prbStudentSearch'].pageNumber = newPage;
+        return penRequestBatchStudentSearchStore().setPageNumber(newPage);
       }
     },
     selectedRecords: {
       get(){
-        return this.$store.state['prbStudentSearch'].selectedRecords;
+        return penRequestBatchStudentSearchStore().selectedRecords;
       },
       set(newRecords){
-        return this.$store.state['prbStudentSearch'].selectedRecords = newRecords;
+        return penRequestBatchStudentSearchStore().setSelectedRecords(newRecords);
       }
     },
     showingFirstNumber() {
@@ -173,18 +175,18 @@ export default {
     },
     selectedStudentStatus: {
       get(){
-        return this.$store.state['prbStudentSearch'].selectedStudentStatus;
+        return penRequestBatchStudentSearchStore().selectedStudentStatus;
       },
       set(status){
-        return this.$store.state['prbStudentSearch'].selectedStudentStatus = status;
+        return penRequestBatchStudentSearchStore().setSelectedStudentStatus(status);
       }
     },
     showSamePENAssigned: {
       get(){
-        return this.$store.state['prbStudentSearch'].showSamePENAssigned;
+        return penRequestBatchStudentSearchStore().showSamePENAssigned;
       },
       set(status){
-        return this.$store.state['prbStudentSearch'].showSamePENAssigned = status;
+        return penRequestBatchStudentSearchStore().setShowSamePENAssigned(status);
       }
     },
     selected() {
@@ -194,15 +196,18 @@ export default {
       return this.prbStudentSearchResponse.totalElements > 0 && !this.loading;
     },
     selectedFiles() {
-      const store = this.archived ? 'archivedRequestBatch' : 'penRequestBatch';
-      return this.$store.state[store].selectedFiles;
+      if(this.archived){
+        return archivedRequestBatchStore().selectedFiles;
+      }else{
+        return penRequestBatchStore().selectedFiles;
+      }
     }
   },
   methods: {
     ...mapActions(penRequestBatchStudentSearchStore, ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse']),
     ...mapActions(navigationStore, ['setSelectedIDs', 'setArchived']),
     getSchoolName(request) {
-      return this.$store.state['app'].schoolApiMincodeSchoolNames.get(request?.mincode?.replace(' ',''));
+      return appStore().schoolApiMincodeSchoolNames.get(request?.mincode?.replace(' ',''));
     },
     clickViewSelected() {
       if(this.selectedRecords?.length > 0) {

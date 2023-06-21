@@ -35,7 +35,7 @@
               disable-pagination
               item-key="studentID"
               :items="studentPossibleMatches">
-            <template v-slot:item="props">
+            <template #item="props">
               <tr :key="props.index"
                   @mouseover="enableMatchOrUnMatch(props.item)"
                   @mouseleave="disableMatchOrUnMatch(props.item)"
@@ -73,8 +73,8 @@
                           {{ formatPen(props.item[header.topValue]) }}
                         </span>
                         <v-tooltip top max-width="40vw" v-if="props.item['memo']">
-                          <template v-slot:activator="{ on }">
-                            <v-icon class="mx-1" v-on="on">
+                          <template #activator="{ on }">
+                            <v-icon class="mx-1">
                               sticky_note_2
                             </v-icon>
                           </template>

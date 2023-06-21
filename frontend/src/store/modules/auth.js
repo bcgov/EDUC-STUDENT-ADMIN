@@ -34,10 +34,10 @@ export const authStore = defineStore('auth', {
     isValidSchoolIndependentAdmin: localStorage.getItem('isValidSchoolIndependentAdmin') !== null
   }),
   getters: {
-    acronyms: state => state.acronyms,
-    isAuthenticated: state => state.isAuthenticated,
-    jwtToken: () => localStorage.getItem('jwtToken'),
-    userInfo: state => state.userInfo,
+    acronymsGet: state => state.acronyms,
+    isAuthenticatedGet: state => state.isAuthenticated,
+    jwtTokenGet: () => localStorage.getItem('jwtToken'),
+    userInfoGet: state => state.userInfo,
     ADVANCED_SEARCH_ROLE: state => state.isValidStudentSearchUser,
     VIEW_SLD_HISTORY_ROLE: state => state.isValidStudentSearchUser,
     VIEW_AUDIT_HISTORY_ROLE: state => state.isValidStudentSearchAdmin,
@@ -65,7 +65,7 @@ export const authStore = defineStore('auth', {
     PEN_TEAM_ROLE: state => state.isValidPenTeamRoleUser,
     DISTRICT_ADMIN_ROLE: state => state.isValidDistrictAdmin,
     SCHOOL_ADMIN_ROLE: state => state.isValidSchoolAdmin,
-    SCHOOL_INDEPENDENT_ADMIN_ROLE: state => state.isValidSchoolIndependentAdmin,
+    SCHOOL_INDEPENDENT_OFFSHORE_ADMIN: state => state.isValidSchoolIndependentOffshoreAdmin,
     INDEPENDENT_AUTHORITY_ADMIN_ROLE: state => state.isValidIndependentAuthorityAdmin
   },
   actions: {

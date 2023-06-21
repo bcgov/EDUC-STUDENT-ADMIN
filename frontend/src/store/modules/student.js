@@ -4,7 +4,7 @@ import {defineStore} from 'pinia';
 
 export const studentStore = defineStore('student', {
   namespaced: true,
-  state: {
+  state: () => ({
     genders: null,
     demogCodeObjects: null,
     statusCodeObjects: null,
@@ -15,19 +15,7 @@ export const studentStore = defineStore('student', {
     staleStudentRecordsMap: new Map(),// this stores the studentID as key and the message as value
     mergeMacros: [],
     documentTypeCodes: []
-  },
-  getters: {
-    selectedStudent: state => state.selectedStudent,
-    genders: state => state.genders?.sort((a,b) => a.displayOrder > b.displayOrder ? 1 : -1),
-    demogCodeObjects: state => state.demogCodeObjects,
-    statusCodeObjects: state => state.statusCodeObjects,
-    gradeCodeObjects: state => state.gradeCodeObjects?.sort((a,b) => a.displayOrder > b.displayOrder ? 1 : -1),
-    possibleMatchReasons: state => state.possibleMatchReasons,
-    historyActivityCodes: state => state.historyActivityCodes,
-    studentsInProcess: state => state.studentsInProcess,
-    staleStudentRecordsMap: (state) => state.staleStudentRecordsMap,
-    documentTypeCodes: state => state.documentTypeCodes
-  },
+  }),
   actions: {
     async setGenders(genders){
       this.genders = genders;

@@ -8,10 +8,6 @@ export const notificationsStore = defineStore('notifications', {
     notification: null,
     notifications:[]
   }),
-  getters: {
-    notification: state => state.notification,
-    notifications: state => state.notifications
-  },
   actions: {
     async changeNotification(payload){
       this.notification = payload;

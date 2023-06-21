@@ -183,7 +183,7 @@
 
           <v-col cols="3" xl="4" class="pa-0 d-flex justify-end align-end">
             <v-menu offset-y>
-              <template v-slot:activator="{ on }">
+              <template #activator="{ on }">
                 <PrimaryButton id="view-action" :loading="loadingRequestIDs" :disabled="!filesSelected" :on="on" text="View" icon="mdi-chevron-down" largeIcon></PrimaryButton>
               </template>
               <v-list>
@@ -235,6 +235,7 @@ import {archivedRequestBatchStore} from '@/store/modules/archivedRequestBatch';
 import {studentStore} from '@/store/modules/student';
 import {navigationStore} from '@/store/modules/setNavigation';
 import {penRequestBatchStudentSearchStore} from '@/store/modules/prbStudentSearch';
+import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
 
 export default {
   name: 'ArchivedRequestBatchDisplay',
@@ -280,7 +281,7 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('penRequestBatch/getCodes');
+    penRequestBatchStore().getCodes();
     this.searchInputParams = deepCloneObject(this.currentBatchFileSearchParams);
     this.searchHasValues();
   },

@@ -6,8 +6,8 @@ import {appStore} from '@/store/modules/app';
 
 export default {
   mounted() {
-    this.$store.dispatch('app/getCodes');
-    this.$store.dispatch('edx/getCodes');
+    appStore().getCodes();
+    edxStore().getCodes();
   },
   computed: {
     ...mapState(edxStore, ['ministryTeams']),

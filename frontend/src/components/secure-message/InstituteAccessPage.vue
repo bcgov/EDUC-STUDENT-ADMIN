@@ -87,7 +87,7 @@ export default {
     }
   },
   async created() {
-    await this.$store.dispatch('app/refreshEntities');
+    await appStore().refreshEntities();
   },
   methods:{
     backButtonClick() {

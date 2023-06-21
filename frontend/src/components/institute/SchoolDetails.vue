@@ -19,70 +19,70 @@
     <v-row v-else no-gutters>
       <v-col>
         <v-row class="d-flex justify-start">
-            <v-col class="d-flex justify-start">
-              <h2>{{ school.mincode }}</h2>
-              <h2 class="pl-1 pr-1">-</h2>
+          <v-col class="d-flex justify-start">
+            <h2>{{ school.mincode }}</h2>
+            <h2 class="pl-1 pr-1">-</h2>
+            <div>
               <div>
-                <div>
-                  <h2 id="displayName">{{ school.displayName }}</h2>
-                </div>
-                <div class="safe-name" v-if="school.displayNameNoSpecialChars">{{ school.displayNameNoSpecialChars }}</div>
+                <h2 id="displayName">{{ school.displayName }}</h2>
               </div>
+              <div class="safe-name" v-if="school.displayNameNoSpecialChars">{{ school.displayNameNoSpecialChars }}</div>
+            </div>
               
-            </v-col>
-          </v-row>
-          <v-row v-if="!['OFFSHORE', 'INDEPEND'].includes(school.schoolCategoryCode)" class="d-flex justify-start">
-              <v-col class="d-flex">
-                <div class="ministryOwnershipTeamName"  style="color: black">{{district.districtNumber}} - {{district.name}}</div>
-              </v-col>
-            </v-row>
-            <v-row v-else class="d-flex justify-start">
-              <v-col class="d-flex">
-                <div class="ministryOwnershipTeamName"  style="color: black">{{authority.authorityNumber}} - {{authority.displayName}}</div>
-              </v-col>
-            </v-row>
-            <v-row class="d-flex justify-start">
-              <v-col class="d-flex">
-                <v-icon class="ml-n1 pr-3" :color="getStatusColorAuthorityOrSchool(school.status)" dark>
-                  mdi-circle-medium
-                </v-icon>
-                <span>{{ school.status }}</span>
-              </v-col>
-            </v-row>
+          </v-col>
+        </v-row>
+        <v-row v-if="!['OFFSHORE', 'INDEPEND'].includes(school.schoolCategoryCode)" class="d-flex justify-start">
+          <v-col class="d-flex">
+            <div class="ministryOwnershipTeamName"  style="color: black">{{district.districtNumber}} - {{district.name}}</div>
+          </v-col>
+        </v-row>
+        <v-row v-else class="d-flex justify-start">
+          <v-col class="d-flex">
+            <div class="ministryOwnershipTeamName"  style="color: black">{{authority.authorityNumber}} - {{authority.displayName}}</div>
+          </v-col>
+        </v-row>
+        <v-row class="d-flex justify-start">
+          <v-col class="d-flex">
+            <v-icon class="ml-n1 pr-3" :color="getStatusColorAuthorityOrSchool(school.status)" dark>
+              mdi-circle-medium
+            </v-icon>
+            <span>{{ school.status }}</span>
+          </v-col>
+        </v-row>
         <v-row>
           <v-col>
             <v-divider class="divider"></v-divider>
           </v-col>
         </v-row>
         <v-row>
-            <v-tabs active-class="active-display" v-model="tab">
-              <v-tab class="tab-divider" v-for="item in items" :key="item">
+          <v-tabs selected-class="active-display" :model-value="tab">
+            <v-tab class="tab-divider" v-for="item in items" :key="item">
               {{ item }}
-              </v-tab>
-            </v-tabs>
-            <v-tabs-items v-model="tab" style="width: 100%">
-                <v-tab-item :value="0">
-                  <Details @updateSchool="updateSchoolDetails" :schoolID="schoolID"></Details>
-                </v-tab-item>
-                <v-tab-item :value="1">
-                  <SchoolContacts :schoolID="schoolID"></SchoolContacts>
-                </v-tab-item>
-                <v-tab-item :value="2">
-                  <MinistryNotes :schoolID="schoolID" :hasAccess="canEditSchoolDetails()"></MinistryNotes>
-                </v-tab-item>
-                <v-tab-item :value="3">
-                  <SchoolHistory :schoolID="schoolID"></SchoolHistory>
-                </v-tab-item>
-                <v-tab-item :value="4">
-                  <SchoolMove :schoolID="schoolID" :hasAccess="canEditSchoolDetails()"></SchoolMove>
-                </v-tab-item>
-                <v-tab-item :value="5">
-                  <p>Funding Tab</p>
-                </v-tab-item>
-              </v-tabs-items>
-          </v-row>
-        </v-col>
+            </v-tab>
+          </v-tabs>
+          <v-tabs-items :model-value="tab" style="width: 100%">
+            <v-tab-item :value="0">
+              <Details @updateSchool="updateSchoolDetails" :schoolID="schoolID"></Details>
+            </v-tab-item>
+            <v-tab-item :value="1">
+              <SchoolContacts :schoolID="schoolID"></SchoolContacts>
+            </v-tab-item>
+            <v-tab-item :value="2">
+              <MinistryNotes :schoolID="schoolID" :hasAccess="canEditSchoolDetails()"></MinistryNotes>
+            </v-tab-item>
+            <v-tab-item :value="3">
+              <SchoolHistory :schoolID="schoolID"></SchoolHistory>
+            </v-tab-item>
+            <v-tab-item :value="4">
+              <SchoolMove :schoolID="schoolID" :hasAccess="canEditSchoolDetails()"></SchoolMove>
+            </v-tab-item>
+            <v-tab-item :value="5">
+              <p>Funding Tab</p>
+            </v-tab-item>
+          </v-tabs-items>
         </v-row>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 

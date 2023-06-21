@@ -36,7 +36,7 @@
                     offset-y
                     min-width="auto"
                 >
-                  <template v-slot:activator="{ on, attrs }">
+                  <template #activator="{ on, attrs }">
                     <v-text-field
                         id="newAuthorityOpenDateTextField"
                         :rules="[rules.required()]"
@@ -47,7 +47,6 @@
                         clearable
                         readonly
                         v-bind="attrs"
-                        v-on="on"
                     ></v-text-field>
                   </template>
                   <v-date-picker
@@ -303,13 +302,14 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('institute/getAllAuthorityTypeCodes').then(() => {
+    const instStore = instituteStore();
+    instStore.getAllAuthorityTypeCodes().then(() => {
       this.authorityTypes = this.authorityTypeCodes;
     });
-    this.$store.dispatch('institute/getAllProvinceCodes').then(() => {
+    instStore.getAllProvinceCodes().then(() => {
       this.provinceCodeValues = this.provinceCodes.filter(province =>  province.provinceCode === 'BC' || province.provinceCode === 'YT');
     });
-    this.$store.dispatch('institute/getAllCountryCodes').then(() => {
+    instStore.getAllCountryCodes().then(() => {
       this.countryCodeValues = this.countryCodes;
     });
   },

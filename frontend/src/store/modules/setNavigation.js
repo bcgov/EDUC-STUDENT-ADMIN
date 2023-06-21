@@ -10,13 +10,13 @@ export const navigationStore = defineStore('navigation', {
     multiFiles: true,
   }),
   getters: {
-    title: state => {
+    title: () => {
       let files = '';
-      if(state.multiFiles) {
-        let numberOfSelectedFiles = [...new Set(state.selectedIDs?.map(item => item[`${state.requestType}ID`]))]?.length;
+      if(this.multiFiles) {
+        let numberOfSelectedFiles = [...new Set(this.selectedIDs?.map(item => item[`${this.requestType}ID`]))]?.length;
         files = `(${numberOfSelectedFiles} ${numberOfSelectedFiles > 1 ? 'files' : 'file'} selected)`;
       }
-      return `Record ${state.currentRequest + 1} of ${Object.keys(state.selectedIDs)?.length} ${files}`;
+      return `Record ${this.currentRequest + 1} of ${Object.keys(this.selectedIDs)?.length} ${files}`;
     },
   },
   actions: {

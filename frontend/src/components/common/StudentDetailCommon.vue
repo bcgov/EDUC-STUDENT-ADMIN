@@ -577,7 +577,7 @@
     </v-dialog>
     <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>
     <ConfirmationDialog ref="confirmedStudentUnlinkConfirmationDialog">
-      <template v-slot:message>
+      <template #message>
         <v-col class="mt-n6">
           <v-row class="mb-3">
             Are you sure you want to unlink this student?
@@ -586,7 +586,7 @@
       </template>
     </ConfirmationDialog>
     <ConfirmationDialog ref="confirmedStudentUpdateConfirmationDialog">
-      <template v-slot:message>
+      <template #message>
         <v-col class="mt-n6">
           <v-row class="mb-3">
            <span>Are you sure you want to edit this <strong>Confirmed</strong> student?</span>
@@ -595,7 +595,7 @@
       </template>
     </ConfirmationDialog>
     <ConfirmationDialog ref="demergeConfirmationDialog">
-      <template v-slot:message>
+      <template #message>
         <v-col class="mt-n6">
           <v-row v-if="isConfirmedStudent" class="mb-3">
              <span>Are you sure you want to de-merge this <strong>Confirmed</strong> student?</span>
@@ -781,8 +781,8 @@ export default {
     }
   },
   mounted() {
-    this.$store.dispatch('student/getCodes');
-    this.$store.dispatch('penRequestBatch/getCodes');
+    studentStore().getCodes();
+    penRequestBatchStore().getCodes();
     this.refreshStudent();
     //reset errors
     Object.keys(this.err).forEach(key => {

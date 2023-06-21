@@ -19,12 +19,12 @@
                 :loading="loadingTable"
                 @page-count="prbResponse.pageable.pageNumber = $event"
             >
-              <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
+              <template v-for="h in headers" #[`header.${h.value}`]="{ header }">
                 <span :title="header.tooltip" :key="h.id" :class="{'file-column' : !header.countable}">
                   {{ header.text }}
                 </span>
               </template>
-              <template v-slot:item="props">
+              <template #item="props">
                 <tr @click="showFile(props.item)">
                   <td v-for="header in props.headers" :key="header.id" :class="{[header.value]: true, 'select-column': header.type}">
                     <v-checkbox v-if="header.type" class="file-checkbox" color="#606060" v-model="props.item.isChecked" @click.stop="handleFileCheckBoxClicked(props.item)"></v-checkbox>
@@ -62,7 +62,7 @@
       >
       </PrbFileModal>
       <ConfirmationDialog ref="confirmationDialog">
-        <template v-slot:message>
+        <template #message>
           <v-col class="mt-n6">
             <v-row class="mt-n2 mb-3">
               <span>Are you sure you want to <strong>Delete</strong> submission <strong>{{submissionNumber}}</strong>?</span>

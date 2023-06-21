@@ -25,7 +25,7 @@
               v-model="schoolCodeNameFilter"
               @change="searchButtonClick"
               clearable>
-              <template v-slot:item="data">
+              <template #item="data">
                 <v-icon :color="getStatusColorAuthorityOrSchool(data.item.status)">
                   mdi-circle-medium
                 </v-icon>
@@ -42,7 +42,7 @@
               item-text="name"
               item-value="code"
               label="Status">
-              <template v-slot:item="{ item }">
+              <template #item="{ item }">
                 <v-row>
                   <v-col cols="12" class="pr-0">
                     <v-icon :color="getStatusColorAuthorityOrSchool(item.name)">
@@ -87,7 +87,7 @@
               v-model="districtCodeNameFilter"
               @change="searchButtonClick"
               clearable>
-              <template v-slot:item="data">
+              <template #item="data">
                 <v-icon :color="getDistrictStatusColor(data.item.status)">
                   mdi-circle-medium
                 </v-icon>
@@ -105,7 +105,7 @@
               v-model="authorityCodeNameFilter"
               @change="searchButtonClick"
               clearable>
-              <template v-slot:item="data">
+              <template #item="data">
                 <v-icon :color="getStatusColorAuthorityOrSchool(data.item.status)">
                   mdi-circle-medium
                 </v-icon>
@@ -150,7 +150,7 @@
             mobile-breakpoint="0"
         >
 
-          <template v-slot:item.secureExchangeStatusCode="{ item }">
+          <template #item.secureExchangeStatusCode="{ item }">
             <v-row style="cursor: pointer;" @click="openSchool(item.schoolId)">
               <v-col class="pb-0 pt-0">
                 <v-row no-gutters>
@@ -214,7 +214,7 @@
             </v-row>
           </template>
 
-          <template v-slot:no-data>-</template>
+          <template #no-data>-</template>
 
         </v-data-table>
       </v-col>
@@ -334,28 +334,23 @@ export default {
       return sortBy(  facilityTypes,['displayOrder']);
     },
     getSheetWidth(){
-      switch (this.$vuetify.breakpoint.name) {
-      case 'xs':
-      case 'sm':
-        return 60;
-      default:
-        return 30;
-      }
+      return 30;
     },
   },
   created() {
-    this.$store.dispatch('edx/getMinistryTeams');
-    this.$store.dispatch('institute/getAllFacilityTypeCodes').then(() => {
+    const instStore = instituteStore();
+    edxStore().getMinistryTeams();
+    instStore.getAllFacilityTypeCodes().then(() => {
       this.allSchoolFacilityTypes = sortBy(this.facilityTypeCodes,['displayOrder']);
     });
-    this.$store.dispatch('institute/getAllSchoolCategoryTypeCodes').then(() => {
+    instStore.getAllSchoolCategoryTypeCodes().then(() => {
       this.schoolCategoryTypes = sortBy(this.schoolCategoryTypeCodes,['displayOrder']);
     });
-    this.$store.dispatch('institute/getSchoolReportingRequirementTypeCodes');
-    this.$store.dispatch('institute/getAllActiveFacilityTypeCodes');
-    this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes').then(() => {
+    instStore.getSchoolReportingRequirementTypeCodes();
+    instStore.getAllActiveFacilityTypeCodes();
+    instStore.getAllActiveSchoolCategoryTypeCodes().then(() => {
       this.activeSchoolCategoryTypes = sortBy(this.activeSchoolCategoryTypeCodes,['displayOrder']);});
-    this.$store.dispatch('institute/getSchoolCategoryFacilityTypesMap');
+    instStore.getSchoolCategoryFacilityTypesMap();
 
     this.setSchoolStatuses();
     this.getSchoolDropDownItems();

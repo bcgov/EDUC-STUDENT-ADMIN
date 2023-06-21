@@ -113,10 +113,10 @@ export default {
     ...mapState(notificationsStore, ['notification']),
     pageNumber: {
       get(){
-        return this.$store.state['archivedRequestBatch'].pageNumber;
+        return archivedRequestBatchStore().pageNumber;
       },
       set(newPage){
-        return this.$store.state['archivedRequestBatch'].pageNumber = newPage;
+        return archivedRequestBatchStore().setPageNumber(newPage);
       }
     },
     countableHeaders() {

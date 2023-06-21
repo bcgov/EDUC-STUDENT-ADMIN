@@ -36,7 +36,7 @@
       >
         <v-scroll-y-transition mode="out-in">
           <v-simple-table class="macro-list">
-            <template v-slot:default>
+            <template v-slot>
               <tbody>
                 <tr v-for="macro in macros" :key="macro.macroCode">
                   <td class="py-3">{{ macro.macroCode }}</td>
@@ -83,7 +83,7 @@
       </v-card>
     </v-dialog>
     <ConfirmationDialog ref="confirmationDialog">
-      <template v-slot:message>
+      <template #message>
         <v-col class="mt-n6">
           <v-row class="mt-n2 mb-0">
             You have unsaved changes. Do you wish to proceed and cancel changes?

@@ -99,7 +99,7 @@
                     offset-y
                     min-width="auto"
                 >
-                  <template v-slot:activator="{ on, attrs }">
+                  <template #activator="{ on, attrs }">
                     <v-text-field
                         id="editAuthorityContactEffectiveDateTextField"
                         :rules="[rules.required()]"
@@ -110,7 +110,6 @@
                         clearable
                         readonly
                         v-bind="attrs"
-                        v-on="on"
                     ></v-text-field>
                   </template>
                   <v-date-picker
@@ -129,7 +128,7 @@
                     offset-y
                     min-width="auto"
                 >
-                  <template v-slot:activator="{ on, attrs }">
+                  <template #activator="{ on, attrs }">
                     <v-text-field
                         id="editAuthorityContactExpiryDateTextField"
                         :rules="[rules.endDateRule(editContact.effectiveDate, editContact.expiryDate)]"
@@ -140,7 +139,6 @@
                         clearable
                         readonly
                         v-bind="attrs"
-                        v-on="on"
                     ></v-text-field>
                   </template>
                   <v-date-picker

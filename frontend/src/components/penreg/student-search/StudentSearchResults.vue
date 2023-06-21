@@ -24,7 +24,7 @@
             item-key="studentID"
             :loading="searchLoading || loading"
             @page-count="studentSearchResponse.pageable.pageNumber = $event">
-      <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
+      <template v-for="h in headers" #[`header.${h.value}`]="{ header }">
         <span @click="updateSortParams(header.topValue)" :key="h.id" class="top-column-item" :title="header.topTooltip">
           {{ header.topText }}
         </span>
@@ -36,7 +36,7 @@
         <br :key="h.id" />
         <span @click="updateSortParams(header.topValue)" :key="h.id" class="bottom-column-item" :title="header.bottomTooltip">{{ header.bottomText }}</span>
       </template>
-      <template v-slot:item="props">
+      <template #item="props">
         <tr>
           <td v-for="header in props.headers" :key="header.id" :class="{'table-checkbox' :header.id, 'row-hightlight': isMergedOrDeceased(props.item) }">
             <v-checkbox v-if="header.type" :input-value="props.isSelected" color="#606060" @change="props.select($event)"></v-checkbox>
@@ -53,8 +53,8 @@
               <br>
               <!-- if top and bottom value are the same, do not display the bottom value -->
               <v-tooltip v-if="header.bottomValue === 'memo'" bottom>
-                <template v-slot:activator="{ on }">
-                  <span v-on="on" class="bottom-column-item">{{
+                <template #activator="{ on }">
+                  <span class="bottom-column-item">{{
                       firstMemoChars(props.item[header.bottomValue])
                     }}</span>
                 </template>
@@ -231,18 +231,18 @@ export default {
     ...mapState(authStore, ['EDIT_STUDENT_RECORDS_ROLE']),
     pageNumber: {
       get() {
-        return this.$store.state['studentSearch'].pageNumber;
+        return studentSearchStore().pageNumber;
       },
       set(newPage) {
-        return this.$store.state['studentSearch'].pageNumber = newPage;
+        return studentSearchStore().setPageNumber(newPage);
       }
     },
     selectedRecords: {
       get() {
-        return this.$store.state['studentSearch'].selectedRecords;
+        return studentSearchStore().selectedRecords;
       },
       set(newRecord){
-        return this.$store.state['studentSearch'].selectedRecords = newRecord;
+        return studentSearchStore().setSelectedRecords(newRecord);
       }
     },
     showingFirstNumber() {

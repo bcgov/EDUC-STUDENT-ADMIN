@@ -46,7 +46,7 @@
                           offset-y
                           min-width="auto"
                       >
-                        <template v-slot:activator="{ on, attrs }">
+                        <template #activator="{ on, attrs }">
                           <v-text-field
                               id="moveDateTextField"
                               :rules="[rules.required(), rules.dateIsAfterOrEqualTo(moveSchoolObject.moveDate, school.openedDate, true, `The move date must occur on or after ${schoolOpenDateFormatted}.`)]"
@@ -57,7 +57,6 @@
                               clearable
                               readonly
                               v-bind="attrs"
-                              v-on="on"
                           ></v-text-field>
                         </template>
                         <v-date-picker
@@ -489,16 +488,17 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('institute/getAllActiveFacilityTypeCodes');
-    this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes');
-    this.$store.dispatch('institute/getSchoolReportingRequirementTypeCodes');
-    this.$store.dispatch('institute/getAllActiveSchoolOrganizationTypeCodes');
-    this.$store.dispatch('institute/getAllActiveGradeCodes');
-    this.$store.dispatch('institute/getAllActiveSchoolNeighborhoodLearningCodes');
-    this.$store.dispatch('institute/getAllActiveProvinceCodes');
-    this.$store.dispatch('institute/getAllActiveCountryCodes');
-    this.$store.dispatch('institute/getSchoolCategoryFacilityTypesMap');
-    this.$store.dispatch('institute/getAllGradeCodes').then(() => {
+    const instStore = instituteStore();
+    instStore.getAllActiveFacilityTypeCodes();
+    instStore.getAllActiveSchoolCategoryTypeCodes();
+    instStore.getSchoolReportingRequirementTypeCodes();
+    instStore.getAllActiveSchoolOrganizationTypeCodes();
+    instStore.getAllActiveGradeCodes();
+    instStore.getAllActiveSchoolNeighborhoodLearningCodes();
+    instStore.getAllActiveProvinceCodes();
+    instStore.getAllActiveCountryCodes();
+    instStore.getSchoolCategoryFacilityTypesMap();
+    instStore.getAllGradeCodes().then(() => {
       this.schoolGradeTypes = sortBy(this.activeGradeCodes,['displayOrder']);
       this.sortGrades();
       this.copyNLCandGradesFromSchool();

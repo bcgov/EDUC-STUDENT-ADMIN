@@ -1,5 +1,5 @@
 <template>
-  <v-tabs vertical :value="activeTab">
+  <v-tabs direction="vertical" :model-value="activeTab">
     <v-tab id="complete-tab">Send Update</v-tab>
     <v-tab id="return-tab">Request Info</v-tab>
     <v-tab id="reject-tab">Reject</v-tab>

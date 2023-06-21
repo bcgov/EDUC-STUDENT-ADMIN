@@ -1,6 +1,6 @@
 <template>
   <CompareDemographicsCommon :selectedRecords.sync="selectedRecords">
-    <template v-slot:actions="{clearError, validateAction, disableMerge, disableDemerge, disableMoveSld, twin, merge, demerge, moveSldRecords}">
+    <template #actions="{clearError, validateAction, disableMerge, disableDemerge, disableMoveSld, twin, merge, demerge, moveSldRecords}">
       <PrimaryButton id="compareClearBtn" text="Clear" secondary @click.native="[cancel(), clearError()]"></PrimaryButton>
       <PrimaryButton id="moveSldBtn" text="Move Sld Record" primary :disabled="disableMoveSld()" @click.native="moveSldRecords()"></PrimaryButton>
       <PrimaryButton id="twinBtn" text="Twin" primary :disabled="validateAction()" @click.native="twin()"></PrimaryButton>

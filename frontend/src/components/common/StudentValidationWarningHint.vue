@@ -1,7 +1,7 @@
 <template>
   <v-tooltip right>
-    <template v-slot:activator="{ on }">
-      <v-icon small color="#FCBA19" :class="[hasDoubleText ? 'mx-1' : 'ml-2']" v-on="on">
+    <template #activator="{ on }">
+      <v-icon small color="#FCBA19" :class="[hasDoubleText ? 'mx-1' : 'ml-2']">
         fa-exclamation-circle
       </v-icon>
     </template>

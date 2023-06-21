@@ -641,13 +641,14 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('institute/getAllProvinceCodes').then(() => {
+    const instStore = instituteStore();
+    instStore.getAllProvinceCodes().then(() => {
       this.provinceCodeValues = this.provinceCodes.filter(province =>  province.provinceCode === 'BC' || province.provinceCode === 'YT');
     });
-    this.$store.dispatch('institute/getAllCountryCodes').then(() => {
+    instStore.getAllCountryCodes().then(() => {
       this.countryCodeValues = this.countryCodes;
     });
-    this.$store.dispatch('institute/getAllAuthorityTypeCodes').then(() => {
+    instStore.getAllAuthorityTypeCodes().then(() => {
       this.authorityTypes = this.authorityTypeCodes;
     });
     this.getAuthority();

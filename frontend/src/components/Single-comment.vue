@@ -35,14 +35,7 @@ export default {
   },
   computed: {
     iconSize() {
-      switch (this.$vuetify.breakpoint.name) {
-      case 'xs': return '22px';
-      case 'sm': return '25px';
-      case 'md': return '25px';
-      case 'lg': return '28px';
-      case 'xl': return '28px';
-      default: return '25px';
-      }
+      return '25px';
     }
   },
 };

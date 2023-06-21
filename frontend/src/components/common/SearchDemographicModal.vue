@@ -7,14 +7,14 @@
       <v-card>
         <v-card-title class="px-0 pb-0 pt-5">
           <v-list-item>
-            <v-list-item-content class="pt-0 pl-2">
+            <v-list-item class="pt-0 pl-2">
               <slot name="headLine">
                 <v-list-item-title class="headline">
                   Modify Query
                 </v-list-item-title>
                 <v-list-item-subtitle><em>Modifying the search parameters will not change the request.</em></v-list-item-subtitle>
               </slot>
-            </v-list-item-content>
+            </v-list-item>
             <v-list-item-icon class="my-0">
               <v-btn id="closeSearchDemographicModalBtn" text icon @click="searchDemographicDialog=false">
                 <v-icon large color="#38598A">mdi-close</v-icon>

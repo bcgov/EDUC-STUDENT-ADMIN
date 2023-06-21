@@ -5,7 +5,7 @@
           max-width="50%"
           :disabled="disabled"
   >
-    <template v-slot:activator="{ on, attrs }">
+    <template #activator="{ on, attrs }">
       <PrimaryButton
             id="requestInfoBtn"
             text="Request info"
@@ -84,7 +84,7 @@ export default {
     };
   },
   mounted() {
-    this.$store.dispatch('penRequestBatch/getMacros');
+    penRequestBatchStore().getMacros();
     this.requestInfoDialogText = this.text;
   },
   computed: {

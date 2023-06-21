@@ -11,12 +11,12 @@
       >
         <v-icon color="white" large>{{ icon }}</v-icon>
       </v-list-item-avatar>
-      <v-list-item-content>
+      <v-list-item>
         <v-list-item-subtitle>{{ subTitle }}</v-list-item-subtitle>
         <v-list-item-title class="text-h5 mb-1">
           {{ title }}
         </v-list-item-title>
-      </v-list-item-content>
+      </v-list-item>
     </v-list-item>
     <v-card-text class="pt-0">
       <v-divider class="mb-2"></v-divider>

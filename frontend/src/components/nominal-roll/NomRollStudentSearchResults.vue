@@ -40,20 +40,20 @@
       @page-count="nomRollStudentSearchResponse.pageable.pageNumber = $event"
       :expanded="expanded"
     >
-      <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
+      <template v-for="h in headers" #[`header.${h.value}`]="{ header }">
         <span :title="header.tooltip" :key="h.id" class="column-item">
           {{ header.text }}
         </span>
       </template>
-      <template v-slot:item="props">
+      <template #item="props">
         <tr :class="{'selected-record' : props.item.isSelected}" @click="selectItem(props.item)">
           <td v-for="header in props.headers" :key="header.id" :class="header.id">
             <v-checkbox v-if="header.type && !hasReadOnlyRoleAccess()" class="record-checkbox header-checkbox" color="#606060" v-model="props.item.isSelected" @click.stop="handleRecordCheckBoxClicked(props.item)"></v-checkbox>
             <div v-else class="table-cell">
               <span class="column-item" style="text-align: left;">
                 <v-tooltip v-if="header.value === 'mincode'" right>
-                  <template v-slot:activator="{ on }">
-                    <span v-on="on">{{ props.item[header.value] }}</span>
+                  <template #activator="{ on }">
+                    <span>{{ props.item[header.value] }}</span>
                   </template>
                   <span>{{getSchoolName(props.item) }}</span>
                 </v-tooltip>
@@ -69,12 +69,11 @@
                 <span v-else-if="props.item.validationErrors[header.text] && props.item.status !== 'IGNORED'" style="color: red">
                   {{ formatTableColumn(header.format, props.item[header.value]) }}
                   <v-tooltip bottom>
-                    <template v-slot:activator="{ on, attrs }">
+                    <template #activator="{ on, attrs }">
                       <v-icon
                         color="red"
                         small
                         v-bind="attrs"
-                        v-on="on"
                       >mdi-alert</v-icon>
                     </template>
                     {{props.item.validationErrors[header.text]}}
@@ -86,7 +85,7 @@
           </td>
         </tr>
       </template>
-      <template v-slot:expanded-item="{ headers, item }">
+      <template #expanded-item="{ headers, item }">
         <td style="border-bottom: 1px solid #ececec;" :colspan="headers.length">
           <v-form v-model="validForm" ref="form" lazy-validation>
             <v-row class="px-4">
@@ -164,14 +163,13 @@
                   transition="scale-transition"
                   offset-y
                 >
-                  <template v-slot:activator="{ on }">
+                  <template #activator="{ on }">
                     <v-text-field
                       id="date-picker-text-field"
                       :value="editedRecord.birthDate"
                       outlined
                       dense
                       readonly
-                      v-on="on"
                       :disabled="!item.validationErrors['Birth Date'] && !validationErrors['Birth Date'] || hasNoEditRoleAccess()"
                       :rules="[!validationErrors['Birth Date'] || validationErrors['Birth Date']]"
                     ></v-text-field>
@@ -213,7 +211,7 @@
       </v-col>
     </v-row>
     <ConfirmationDialog ref="confirmationDialogIgnore">
-      <template v-slot:message>
+      <template #message>
       </template>
     </ConfirmationDialog>
   </div>
@@ -324,10 +322,10 @@ export default {
   },
   async beforeMount() {
     if(!this.gradeCodeObjects || !this.genders) {
-      this.$store.dispatch('student/getCodes');
+      studentStore().getCodes();
     }
     if(this.isEmpty(this.schoolApiMincodeSchoolNamesObjectSorted) || this.isEmpty(this.schoolApiDistrictCodesObjectSorted)) {
-      this.$store.dispatch('app/getCodes');
+      appStore().getCodes();
     }
   },
   computed: {
@@ -339,18 +337,18 @@ export default {
     ...mapState(notificationsStore, ['notification']),
     pageNumber: {
       get(){
-        return this.$store.state['nomRollStudentSearch'].pageNumber;
+        return nominalRollStudentSearchStore().pageNumber;
       },
       set(newPage){
-        this.$store.state['nomRollStudentSearch'].pageNumber = newPage;
+        nominalRollStudentSearchStore().setPageNumber(newPage);
       }
     },
     selectedRecords: {
       get(){
-        return this.$store.state['nomRollStudentSearch'].selectedRecords;
+        return nominalRollStudentSearchStore().selectedRecords;
       },
       set(newRecords){
-        this.$store.state['nomRollStudentSearch'].selectedRecords = newRecords;
+        nominalRollStudentSearchStore().setSelectedRecords(newRecords);
       }
     },
     showingFirstNumber() {
@@ -364,10 +362,10 @@ export default {
     },
     selectedStudentStatus: {
       get(){
-        return this.$store.state['nomRollStudentSearch'].selectedStudentStatus;
+        return nominalRollStudentSearchStore().selectedStudentStatus;
       },
       set(status){
-        this.$store.state['nomRollStudentSearch'].selectedStudentStatus = status;
+        nominalRollStudentSearchStore().setSelectedStudentStatus(status);
       }
     },
     selected() {
@@ -396,7 +394,7 @@ export default {
       return (format && column) ? format(column) : (column || ' ');
     },
     getSchoolName(request) {
-      return this.$store.state['app'].schoolApiMincodeSchoolNames.get(request?.mincode?.replace(' ',''));
+      return appStore().schoolApiMincodeSchoolNames.get(request?.mincode?.replace(' ',''));
     },
     hasNoEditRoleAccess() {
       return this.EDIT_NOMINAL_ROLL_ROLE === false || this.hasReadOnlyRoleAccess();

@@ -1,36 +1,29 @@
 <template>
-
   <v-app id="app">
     <Header/>
-    <SnackBar></SnackBar>
-    <NavBar v-if="pageTitle && isAuthenticated" :title="pageTitle"></NavBar>
+    <SnackBar/>
+    <NavBar v-if="pageTitle && authStore().isAuthenticated" :title="pageTitle"></NavBar>
     <v-btn
-            v-scroll="onScroll"
-            id="toTopBtn"
-            v-show="showToTopBtn"
-            fab
-            tile
-            x-small
-            dark
-            fixed
-            bottom
-            right
-            color="#606060"
-            class="rounded"
-            @click="toTop"
+      v-scroll="onScroll"
+      id="toTopBtn"
+      v-show="showToTopBtn"
+      fab
+      tile
+      x-small
+      dark
+      fixed
+      bottom
+      right
+      color="#606060"
+      class="rounded"
+      @click="toTop"
     >
       <v-icon>
         mdi-format-vertical-align-top
       </v-icon>
     </v-btn>
     <v-main fluid class="align-start">
-      <v-app-bar v-if="bannerColor !== ''"
-          style="color:white;"
-          :color="bannerColor"
-          sticky
-          dense
-      ><div><h3>{{ bannerEnvironment }} Environment</h3></div></v-app-bar>
-      <ModalIdle class="align-start px-8 mb-0" v-if="isAuthenticated"/>
+      <ModalIdle class="align-start px-8 mb-0" v-if="authStore().isAuthenticated"/>
       <router-view class="align-start px-8 mb-0"/>
     </v-main>
     <Footer/>
@@ -60,8 +53,6 @@ export default {
   data() {
     return {
       showToTopBtn: false,
-      bannerEnvironment: import.meta.env.VITE_BANNER_ENVIRONMENT,
-      bannerColor: import.meta.env.VITE_BANNER_COLOR,
       deactivateMultipleDraggableDialog: null,
     };
   },
@@ -82,11 +73,12 @@ export default {
     this.handleWebSocket();
   },
   methods:{
+    authStore,
     handleWebSocket() {
       if(this.isAuthenticated && (this.isValidPenRequestBatchUser || this.isValidGMPUser || this.isValidUMPUser)) {
-        this.$webSocketsConnect();
+        //this.$webSocketsConnect();
       } else {
-        this.$webSocketsDisconnect();
+        //this.$webSocketsDisconnect();
       }
     },
     onScroll(e) {

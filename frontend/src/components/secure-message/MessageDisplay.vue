@@ -13,8 +13,7 @@
       </v-col>
     </v-row>
     <div style="width: 100%;" :overlay=false>
-      <v-row class="pt-0"
-             :class="{'mr-0 ml-0': $vuetify.breakpoint.smAndDown, 'mr-3 ml-3': $vuetify.breakpoint.mdAndUp}">
+      <v-row class="pt-0 mr-3 ml-3">
         <v-col cols="12 pt-0">
           <div v-if="!loading && secureExchange">
             <v-row>
@@ -93,7 +92,7 @@
             </v-row>
             <v-row>
               <v-speed-dial id="editOptionsMenu" v-if="isEditable() && shouldDisplaySpeedDial" v-model="editOptionsOpen" top left direction="right">
-                <template v-slot:activator>
+                <template #activator>
                   <v-btn id="editOptionsMenuBtn" class="ml-4" fab dark color="#003366">
                     <v-icon v-if="editOptionsOpen" dark large>mdi-close</v-icon>
                     <v-icon v-else dark large>mdi-plus</v-icon>

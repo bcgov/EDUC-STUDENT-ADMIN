@@ -87,10 +87,10 @@ export default {
     ...mapState(penRequestBatchStudentSearchStore, ['pageNumber', 'selectedRecords', 'prbStudentSearchResponse', 'selectedStudentStatus', 'currentPrbStudentSearchParams', 'prbStudentSearchCriteria', 'showSamePENAssigned']),
     prbStudentSearchParams: {
       get(){
-        return this.$store.state['prbStudentSearch'].prbStudentSearchParams;
+        return penRequestBatchStudentSearchStore().prbStudentSearchParams;
       },
       set(newPage){
-        return this.$store.state['prbStudentSearch'].prbStudentSearchParams = newPage;
+        return penRequestBatchStudentSearchStore().setPrbStudentSearchParams(newPage);
       }
     },
     prbStudentStatusSearchCriteria() {
@@ -142,7 +142,7 @@ export default {
       }
       return false;
     });
-    this.$store.dispatch('penRequestBatch/getCodes');
+    penRequestBatchStore().getCodes();
     this.setSelectedRecords();
     this.initialSearch();
   },
@@ -201,7 +201,7 @@ export default {
             this.disablePageHandler = false;
           });
 
-        const selectedFiles = this.$store.state[this.penRequestBatchStore].selectedFiles;
+        const selectedFiles = penRequestBatchStore().selectedFiles;
         if(!selectedFiles || difference(this.batchIDs.split(','), selectedFiles.map(file => file.penRequestBatchID)).length > 0) {
           this.retrieveSelectedFiles();
         }

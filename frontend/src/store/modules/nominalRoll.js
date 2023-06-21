@@ -3,9 +3,9 @@ import {defineStore} from 'pinia';
 
 export const nominalRollStore = defineStore('nominalRoll', {
   namespaced: true,
-  state: {
+  state: () => ({
     fedProvSchoolCodes: [],
-  },
+  }),
   actions: {
     async setFedProvSchoolCodes(payload) {
       this.fedProvSchoolCodes = payload;

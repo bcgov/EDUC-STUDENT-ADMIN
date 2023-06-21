@@ -82,7 +82,7 @@
                          @click.native="clickViewDetails"
                          text="View Details"></PrimaryButton>
           <v-menu offset-y>
-            <template v-slot:activator="{ on }">
+            <template #activator="{ on }">
               <PrimaryButton id="archive-action" class="mt-1" :disabled="!filesSelected || loadingFiles" :on="on" text="Finish Submission" icon="mdi-chevron-down" largeIcon>
               </PrimaryButton>
             </template>
@@ -110,7 +110,7 @@
           ></PenRequestBatchList>
         </v-row>
       <ConfirmationDialog ref="fixableConfirmationDialog">
-          <template v-slot:title="{cancel}">
+          <template #title="{cancel}">
             <v-row justify="space-between" no-gutters>
               <v-col class="pl-4 pt-4">
                 {{ archiveAndReturnMessage }}<br><br>
@@ -174,10 +174,10 @@ export default {
     ...mapState(appStore, ['schoolApiMincodeSchoolNames']),
     selectedSchoolGroup: {
       get(){
-        return this.$store.state['penRequestBatch'].selectedSchoolGroup;
+        return penRequestBatchStore().selectedSchoolGroup;
       },
       set(newSchoolGroup){
-        return this.$store.state['penRequestBatch'].selectedSchoolGroup = newSchoolGroup;
+        return penRequestBatchStore().setSelectedSchoolGroup(newSchoolGroup);
       }
     },
     filesSelected() {

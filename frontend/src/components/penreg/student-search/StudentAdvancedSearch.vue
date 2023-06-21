@@ -171,8 +171,8 @@
           </v-col>
           <v-col cols="2">
             <v-tooltip left>
-              <template v-slot:activator="{ on }">
-                <v-icon small color="#FCBA19" style="margin-top: 0.9em" v-on="on">
+              <template #activator="{ on }">
+                <v-icon small color="#FCBA19" style="margin-top: 0.9em">
                   fa-exclamation-circle
                 </v-icon>
               </template>
@@ -349,12 +349,12 @@ export default {
   watch: {
     formattedStartDOB: {
       handler() {
-        this.$store.state['studentSearch'].studentSearchParams.dob.startDate = this.formattedStartDOB;
+        studentSearchStore().studentSearchParams.dob.startDate = this.formattedStartDOB;
       }
     },
     formattedEndDOB: {
       handler() {
-        this.$store.state['studentSearch'].studentSearchParams.dob.endDate = this.formattedEndDOB;
+        studentSearchStore().studentSearchParams.dob.endDate = this.formattedEndDOB;
       }
     },
     initialSearch: {

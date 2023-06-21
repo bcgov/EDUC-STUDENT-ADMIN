@@ -78,7 +78,7 @@
                         offset-y
                         min-width="auto"
                     >
-                      <template v-slot:activator="{ on, attrs }">
+                      <template #activator="{ on, attrs }">
                         <v-text-field
                             id="newOpenDateTextField"
                             :rules="[rules.required()]"
@@ -89,7 +89,6 @@
                             clearable
                             readonly
                             v-bind="attrs"
-                            v-on="on"
                         ></v-text-field>
                       </template>
                       <v-date-picker
@@ -116,7 +115,7 @@
                         offset-y
                         min-width="auto"
                     >
-                      <template v-slot:activator="{ on, attrs }">
+                      <template #activator="{ on, attrs }">
                         <v-text-field
                             id="updatedOpenDateTextField"
                             :rules="[rules.required()]"
@@ -127,7 +126,6 @@
                             clearable
                             readonly
                             v-bind="attrs"
-                            v-on="on"
                         ></v-text-field>
                       </template>
                       <v-date-picker
@@ -154,7 +152,7 @@
                         offset-y
                         min-width="auto"
                     >
-                      <template v-slot:activator="{ on, attrs }">
+                      <template #activator="{ on, attrs }">
                         <v-text-field
                             id="newCloseDateTextField"
                             :rules="[rules.required(), rules.dateIsAfterOrEqualTo(newCloseDate, schoolOpenDate, true, `The closure date must occur on or after ${openDateFormatted}.`)]"
@@ -165,7 +163,6 @@
                             clearable
                             readonly
                             v-bind="attrs"
-                            v-on="on"
                         ></v-text-field>
                       </template>
                       <v-date-picker
@@ -192,7 +189,7 @@
                         offset-y
                         min-width="auto"
                     >
-                      <template v-slot:activator="{ on, attrs }">
+                      <template #activator="{ on, attrs }">
                         <v-text-field
                             id="updatedCloseDateTextField"
                             :rules="[rules.required(), rules.dateIsAfterOrEqualTo(updatedCloseDate, schoolOpenDate, true, `The closure date must occur on or after ${openDateFormatted}.`)]"
@@ -203,7 +200,6 @@
                             clearable
                             readonly
                             v-bind="attrs"
-                            v-on="on"
                         ></v-text-field>
                       </template>
                       <v-date-picker

@@ -3,7 +3,7 @@
     <v-dialog v-model="mapSchoolCodeDialog"
               max-width="60%"
     >
-      <template v-slot:activator="{ on, attrs }">
+      <template #activator="{ on, attrs }">
         <TertiaryButton id="add-school-code"
                         icon="$plus"
                         short
@@ -60,7 +60,7 @@
                       outlined
                       dense
                     >
-                      <template v-slot:selection="{ item }">
+                      <template #selection="{ item }">
                         <span> {{ item.value }} </span>
                       </template>
                     </v-autocomplete>

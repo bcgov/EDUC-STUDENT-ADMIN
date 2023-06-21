@@ -203,7 +203,7 @@ export default {
   },
   async beforeMount() {
     if (this.districtRoles.length === 0) {
-      await this.$store.dispatch('edx/getEdxDistrictRoles');
+      await edxStore().getEdxDistrictRoles();
     }
   },
   created() {

@@ -21,7 +21,7 @@ const getDefaultAdvancedSearchCriteria = () => {
 
 export const studentSearchStore = defineStore('studentSearch', {
   namespaced: true,
-  state: {
+  state: () => ({
     isAdvancedSearch: false,
     pageNumber: 1,
     headerSortParams: {
@@ -50,7 +50,7 @@ export const studentSearchStore = defineStore('studentSearch', {
       gradeCode: null
     },
     studentSearchResponse: null
-  },
+  }),
   getters: {
     useNameVariants: state => state.isAdvancedSearch && state.advancedSearchCriteria.useNameVariants,
     isAuditHistorySearch: state => state.isAdvancedSearch && state.advancedSearchCriteria.isAuditHistorySearch,

@@ -13,7 +13,7 @@
       class="snackbar"
     >
       <div v-html="alertNotificationText"></div>
-      <template v-slot:action="{ attrs }">
+      <template #action="{ attrs }">
         <v-btn
           text
           color="white"

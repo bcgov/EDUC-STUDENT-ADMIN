@@ -49,7 +49,7 @@
                          color="#003366"
                          value="statusFilterActive"
                          @click.native="statusFilterActiveClicked"
-                ><template v-slot:label>
+                ><template #label>
                   <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">My Active Messages</span>
                 </template></v-radio>
                 <v-radio class="mt-2 radio-blue-text"
@@ -57,7 +57,7 @@
                          color="#003366"
                          value="statusFilterAllActive"
                          @click.native="statusFilterAllActiveClicked"
-                ><template v-slot:label>
+                ><template #label>
                   <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">All Active Messages</span>
                 </template></v-radio>
                 <v-radio class="mt-2 radio-blue-text"
@@ -65,11 +65,11 @@
                          color="#003366"
                          value="statusFilterAll"
                          @click.native="filterExchanges"
-                ><template v-slot:label>
+                ><template #label>
                   <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">All Messages</span>
                 </template></v-radio>
               </v-radio-group>
-              <template v-slot:actions>
+              <template #actions>
                 <v-btn id="filterid"
                        title="filter"
                        color="#003366"
@@ -77,7 +77,7 @@
                        class="mt-0 pt-0 filterButton"
                 >
                   <v-icon color="#003366" class="ml-n1" :nudge-down="4" right dark>mdi-filter-outline</v-icon>
-                  <span v-if="$vuetify.breakpoint.mdAndUp" class="ml-1">{{ filterText }}</span>
+                  <span class="ml-1">{{ filterText }}</span>
                 </v-btn>
               </template>
             </v-expansion-panel-header>
@@ -93,14 +93,14 @@
                     label="Contact"
                     clearable
                   >
-                    <template v-slot:item="data">
+                    <template #item="data">
                       <v-list-item-avatar>
                         <v-icon v-if="data.item.mincode">mdi-school</v-icon>
                         <v-icon v-if="data.item.districtNumber">mdi-domain</v-icon>
                       </v-list-item-avatar>
-                      <v-list-item-content>
+                      <v-list-item>
                         {{ data.item.text }}
-                      </v-list-item-content>
+                      </v-list-item>
                     </template>         
                 </v-autocomplete>
 
@@ -116,7 +116,7 @@
                     @keyup.enter="enterPushed()"
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12" md="4" class="pt-0" :class="{'pl-12 pr-12': $vuetify.breakpoint.mdAndUp}">
+                <v-col cols="12" md="4" class="pt-0 pl-12 pr-12">
                   <v-menu
                     id="messageDate"
                     ref="messageDateFilter"
@@ -126,7 +126,7 @@
                     offset-y
                     min-width="auto"
                   >
-                    <template v-slot:activator="{ on, attrs }">
+                    <template #activator="{ on, attrs }">
                       <v-text-field
                         id="messageDateTextField"
                         class="pt-0 mt-0"
@@ -136,7 +136,6 @@
                         clearable
                         readonly
                         v-bind="attrs"
-                        v-on="on"
                       ></v-text-field>
                     </template>
                     <v-date-picker
@@ -163,7 +162,7 @@
                     single-line
                     clearable
                   >
-                    <template v-slot:item="{ item }">
+                    <template #item="{ item }">
                       <v-row>
                         <v-col cols="12" class="pr-0">
                           <v-icon :color="getStatusColor(item.label)">
@@ -240,7 +239,7 @@
               v-model="selectedExchanges"
             >
               <template #header.data-table-select></template>
-              <template v-slot:item.secureExchangeStatusCode="{ item }">
+              <template #item.secureExchangeStatusCode="{ item }">
                 <v-row class="ml-n6" style="cursor: pointer;">
                   <v-col cols="6" lg="7" xl="7" class="pb-0 pt-0" @click="openExchange(item.secureExchangeID)">
                     <v-row class="mb-n4">
@@ -300,7 +299,7 @@
                   </v-col>
                 </v-row>
               </template>
-              <template v-slot:no-data>There are no messages.</template>
+              <template #no-data>There are no messages.</template>
             </v-data-table>
           </v-col>
         </v-row>
@@ -444,9 +443,9 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('app/getCodes');
-    this.$store.dispatch('edx/getCodes');
-    this.$store.dispatch('edx/getMinistryTeams').then(() => {
+    appStore().getCodes();
+    edxStore().getCodes();
+    edxStore().getMinistryTeams().then(() => {
       this.getExchanges();
       this.getMinistryTeamNameByGroupRoleID();
     });
@@ -559,17 +558,7 @@ export default {
     },
     getSubject(subject){
       if(subject.length > 16){
-        switch (this.$vuetify.breakpoint.name) {
-        case 'xs':
-        case 'sm':
-          return this.getContentString(subject, 15);
-        case 'md':
-          return this.getContentString(subject, 15);
-        case 'lg':
-          return this.getContentString(subject, 20);
-        default:
-          return this.getContentString(subject, 25);
-        }
+        return this.getContentString(subject, 20);
       }
       return subject;
     },
@@ -582,18 +571,7 @@ export default {
     getLatestComment(item){
       const content = item.commentsList.reduce((a, b) => (a.createDate > b.createDate ? a : b)).content;
       if(content.length > 25){
-        switch (this.$vuetify.breakpoint.name) {
-        case 'xs':
-        case 'sm':
-          return this.getContentString(content, 30);
-        case 'md':
-          return this.getContentString(content, 40);
-        case 'lg':
-        case 'xl':
-          return this.getContentString(content, 45);
-        default:
-          return content;
-        }
+        return this.getContentString(content, 40);
       }
       return content;
     },

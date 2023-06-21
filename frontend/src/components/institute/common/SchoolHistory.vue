@@ -13,7 +13,7 @@
           @page-count="schoolHistory.pageable.pageNumber = $event" 
           class="batch-file-table"
           hide-default-footer>
-          <template v-slot:item="props">
+          <template #item="props">
             <tr :class="tableRowClass(props.item)" @click="selectHistoryItem(props)">
               <td v-for="header in props.headers" :key="header.id" :class="header.id">
                 <div class="table-cell">
@@ -122,7 +122,7 @@ export default {
     },
   },
   async beforeMount() {
-    await this.$store.dispatch('app/getCodes');
+    await appStore().getCodes();
   },
   mounted() {
     this.getSchoolHistory();
@@ -137,12 +137,13 @@ export default {
   },
   created() {
     this.getAuthority();
-    this.$store.dispatch('institute/getAllFacilityTypeCodes');
-    this.$store.dispatch('institute/getAllSchoolCategoryTypeCodes');
-    this.$store.dispatch('institute/getAllGradeCodes');
-    this.$store.dispatch('institute/getAllSchoolNeighborhoodLearningCodes');
-    this.$store.dispatch('institute/getAllSchoolOrganizationTypeCodes');
-    this.$store.dispatch('institute/getSchoolReportingRequirementTypeCodes');
+    const instStore = instituteStore();
+    instStore.getAllFacilityTypeCodes();
+    instStore.getAllSchoolCategoryTypeCodes();
+    instStore.getAllGradeCodes();
+    instStore.getAllSchoolNeighborhoodLearningCodes();
+    instStore.getAllSchoolOrganizationTypeCodes();
+    instStore.getSchoolReportingRequirementTypeCodes();
   },
   methods: {
     getPageHeading() {

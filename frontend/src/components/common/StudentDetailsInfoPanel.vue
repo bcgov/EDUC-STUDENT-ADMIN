@@ -5,7 +5,7 @@
                   :is-field-read-only="() => {return false}"
                   :hidden-fields="hiddenSearchFields"
                   :student-data="modalStudent">
-      <template v-slot:actions="{ isFormValid }">
+      <template #actions="{ isFormValid }">
         <PrimaryButton id="cancel" :secondary="true" text="Cancel"
                        @click.native="closeDialog"
         >
@@ -35,7 +35,7 @@
                 hide-default-footer
                 dense
         >
-          <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
+          <template v-for="h in headers" #[`header.${h.value}`]="{ header }">
             <span :title="header.topTooltip" :key="h.id || h.topText" class="top-column-item" :class="{'header-half-width': header.doubleText && !isFieldValueWarned(header.topValue)}">
               {{ header.topText }}
             </span>
@@ -53,7 +53,7 @@
               :validationWarnings="getValidationWarnings(header.doubleValue)"
             />
           </template>
-          <template v-slot:item="props">
+          <template #item="props">
             <tr>
               <td v-for="header in props.headers" :key="header.id || header.topValue" :class="header.id">
                 <div class="table-cell" :class="[props.item[header.doubleValue] ? 'value-half-width':'']">
@@ -74,7 +74,7 @@
                 hide-default-footer
                 dense
         >
-          <template v-for="h in bottomTableHeaders" v-slot:[`header.${h.value}`]="{ header }">
+          <template v-for="h in bottomTableHeaders" #[`header.${h.value}`]="{ header }">
             <span :title="header.tooltip" :key="h.id || h.text">
               {{ header.text }}
             </span>
@@ -84,7 +84,7 @@
               :validationWarnings="getValidationWarnings(header.value)"
             />
           </template>
-          <template v-slot:item="props">
+          <template #item="props">
             <tr>
               <td v-for="header in props.headers" :key="header.id || header.value" :class="header.id">
                 <div class="table-cell">

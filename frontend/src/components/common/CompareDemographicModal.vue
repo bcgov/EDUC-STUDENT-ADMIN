@@ -5,7 +5,7 @@
           max-width="80%"
           :disabled="disabled"
   >
-    <template v-slot:activator="{ on, attrs }">
+    <template #activator="{ on, attrs }">
       <TertiaryButton
               id="studentSearchCompareButton"
               class="ma-0"
@@ -23,7 +23,7 @@
         :selectedRecords.sync="studentRecords"
         title="Compare/View"
         :closeCompareModal="closeCompareModal">
-        <template v-slot:actions="{clearError, validateAction, disableMerge, disableDemerge, disableMoveSld, twin, merge, demerge, moveSldRecords}">
+        <template #actions="{clearError, validateAction, disableMerge, disableDemerge, disableMoveSld, twin, merge, demerge, moveSldRecords}">
           <PrimaryButton id="compareModalCancelBtn" text="Cancel" secondary @click.native="[closeCompareModal(), clearError()]"></PrimaryButton>
           <PrimaryButton id="moveSldBtn" text="Move Sld Record" primary :disabled="disableMoveSld()" @click.native="moveSldRecords()"></PrimaryButton>
           <PrimaryButton id="twinBtn" text="Twin" primary :disabled="validateAction()" @click.native="twin()"></PrimaryButton>

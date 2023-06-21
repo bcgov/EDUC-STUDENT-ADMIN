@@ -6,19 +6,19 @@
     :requestId="requestId"
     :requestType="requestType"
   >
-    <template v-slot:demographics="{ request }">
+    <template #demographics="{ request }">
       <PenDemographicsCard
         :request="request"
       >
       </PenDemographicsCard>
     </template>
-    <template v-slot:request="{ request }">
+    <template #request="{ request }">
       <PenRequestCard
         :request="request"
       >
       </PenRequestCard>
     </template>
-    <template v-slot:actions="{ activeTab, request, enableActions, beforeSubmit, submitted, switchLoading}">
+    <template #actions="{ activeTab, request, enableActions, beforeSubmit, submitted, switchLoading}">
       <PenRequestActions
         :active-tab="activeTab"
         :request="request"

@@ -111,7 +111,7 @@ export default {
     ...mapState(appStore, ['schoolMap', 'districtMap', 'independentAuthorityMap']),
   },
   created() {
-    this.$store.dispatch('app/getCodes').then(() => this.getSchoolDetails());
+    appStore().getCodes().then(() => this.getSchoolDetails());
   },
   watch: {
     notification(notificationData) {

@@ -5,7 +5,7 @@
     max-width="80%"
     :disabled="disabled"
   >
-    <template v-slot:activator="{ on, attrs }">
+    <template #activator="{ on, attrs }">
       <PrimaryButton
         id="splitPen"
         class="mx-1"

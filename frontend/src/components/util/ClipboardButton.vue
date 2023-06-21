@@ -1,6 +1,6 @@
 <template>
   <v-tooltip v-model="showTooltip" right>
-    <template v-slot:activator="{ on, attrs }">
+    <template #activator="{ on, attrs }">
       <v-btn
           :id="id"
           color="#38598A"

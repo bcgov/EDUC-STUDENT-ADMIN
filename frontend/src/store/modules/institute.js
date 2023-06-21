@@ -24,26 +24,6 @@ export const instituteStore = defineStore('institute', {
     activeCountryCodes: null,
     movedSchoolNumber: null
   }),
-  getters: {
-    facilityTypeCodes: state => state.facilityTypeCodes,
-    schoolCategoryFacilityTypesMap: state => state.schoolCategoryFacilityTypesMap,
-    schoolCategoryTypeCodes: state => state.schoolCategoryTypeCodes,
-    schoolOrganizationTypeCodes: state => state.schoolOrganizationTypeCodes,
-    schoolReportingRequirementTypeCodesGet: state => state.schoolReportingRequirementTypeCodes,
-    schoolNeighborhoodLearningCodes: state => state.schoolNeighborhoodLearningCodes,
-    authorityTypeCodes: state => state.authorityTypeCodes,
-    gradeCodes: state => state.gradeCodes,
-    provinceCodes: state => state.provinceCodes,
-    countryCodes: state => state.countryCodes,
-    activeFacilityTypeCodes: state => state.activeFacilityTypeCodes,
-    activeSchoolCategoryTypeCodes: state => state.activeSchoolCategoryTypeCodes,
-    activeSchoolOrganizationTypeCodes: state => state.activeSchoolOrganizationTypeCodes,
-    activeSchoolNeighborhoodLearningCodes: state => state.activeSchoolNeighborhoodLearningCodes,
-    activeAuthorityTypeCodes: state => state.activeAuthorityTypeCodes,
-    activeGradeCodes: state => state.activeGradeCodes,
-    activeProvinceCodes: state => state.activeProvinceCodes,
-    activeCountryCodes: state => state.activeCountryCodes
-  },
   actions: {
     async setFacilityTypeCodes(facilityTypeCodes) {
       this.facilityTypeCodes = facilityTypeCodes;
