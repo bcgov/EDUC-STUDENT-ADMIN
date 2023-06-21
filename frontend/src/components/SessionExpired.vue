@@ -22,6 +22,7 @@
 
 <script>
 import {Routes} from '../utils/constants';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'SessionExpired',
@@ -32,11 +33,13 @@ export default {
     };
   },
   mounted() {
-    this.$store.commit('auth/setJwtToken');
+    const auStore = authStore();
+    auStore.setJwtToken();
   },
   methods: {
     clearStorage() {
-      this.$store.commit('auth/setJwtToken');
+      const auStore = authStore();
+      auStore.setJwtToken();
     }
   }
 };

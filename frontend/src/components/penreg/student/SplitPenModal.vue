@@ -72,7 +72,7 @@
 
 <script>
 import PrimaryButton from '../../util/PrimaryButton.vue';
-import StudentAuditHistoryDetailCard from './StudentAuditHistoryDetailCard';
+import StudentAuditHistoryDetailCard from './StudentAuditHistoryDetailCard.vue';
 import router from '../../../router';
 import {Routes} from '@/utils/constants';
 import ApiService from '../../../common/apiService';

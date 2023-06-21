@@ -65,13 +65,13 @@
 </template>
 
 <script>
-import StudentDetailCommon from '../../common/StudentDetailCommon';
-import StudentAuditHistory from './StudentAuditHistory';
+import StudentDetailCommon from '../../common/StudentDetailCommon.vue';
+import StudentAuditHistory from './StudentAuditHistory.vue';
 import PrimaryButton from '../../util/PrimaryButton.vue';
 import {Routes} from '@/utils/constants';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
-import StudentSLDHistory from '@/components/penreg/student/StudentSLDHistory';
+import StudentSLDHistory from '@/components/penreg/student/StudentSLDHistory.vue';
 import {mapState} from 'pinia';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 import {studentStore} from '@/store/modules/student';

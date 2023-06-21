@@ -35,9 +35,9 @@
 </template>
 
 <script>
-import PenRequestComplete from './PenRequestComplete';
-import RequestReject from '../RequestReject';
-import RequestReturn  from '../RequestReturn';
+import PenRequestComplete from './PenRequestComplete.vue';
+import RequestReject from '../RequestReject.vue';
+import RequestReturn  from '../RequestReturn.vue';
 
 export default {
   name: 'penRequestActions',

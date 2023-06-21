@@ -388,19 +388,19 @@ import {
   STUDENT_DETAILS_FIELDS,
   STUDENT_MERGE_DETAILS_FIELDS
 } from '@/utils/constants';
-import FormattedTextField from '@/components/util/FormattedTextField';
-import StudentDetailsCheckBoxWithOutputText from '@/components/penreg/student/StudentDetailsCheckBoxWithOutputText';
+import FormattedTextField from '@/components/util/FormattedTextField.vue';
+import StudentDetailsCheckBoxWithOutputText from '@/components/penreg/student/StudentDetailsCheckBoxWithOutputText.vue';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import {isValidDob, isValidMincode, isValidPostalCode} from '@/utils/validation';
 import alertMixin from '@/mixins/alertMixin';
 import schoolMixin from '@/mixins/schoolMixin';
 import servicesSagaMixin from '@/mixins/servicesSagaMixin';
-import ConfirmationDialog from '@/components/util/ConfirmationDialog';
+import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import router from '@/router';
 import ApiService from '@/common/apiService';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 import {deepCloneObject} from '@/utils/common';
-import MacroMenu from '@/components/common/MacroMenu';
+import MacroMenu from '@/components/common/MacroMenu.vue';
 import {replaceMacro, insertMacro} from '@/utils/macro';
 import {notificationsStore} from '@/store/modules/notifications';
 import {studentStore} from '@/store/modules/student';

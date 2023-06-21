@@ -159,10 +159,10 @@
 <script>
 import {mapActions, mapState} from 'pinia';
 import PrimaryButton from '../../util/PrimaryButton.vue';
-import PrbStudentStatusChip from './PrbStudentStatusChip';
-import InfoDialog from './prb-student-details/InfoDialog';
+import PrbStudentStatusChip from './PrbStudentStatusChip.vue';
+import InfoDialog from './prb-student-details/InfoDialog.vue';
 import ApiService from '../../../common/apiService';
-import StudentDetailsInfoPanel from '../../common/StudentDetailsInfoPanel';
+import StudentDetailsInfoPanel from '../../common/StudentDetailsInfoPanel.vue';
 import {
   PEN_REQ_BATCH_STUDENT_REQUEST_CODES,
   PRB_SAGA_NAMES,
@@ -174,7 +174,7 @@ import {
   PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER
 } from '@/utils/constants';
 import alertMixin from '../../../mixins/alertMixin';
-import PenMatchResultsTable from '@/components/common/PenMatchResultsTable';
+import PenMatchResultsTable from '@/components/common/PenMatchResultsTable.vue';
 import {
   constructPenMatchObjectFromStudent,
   deepCloneObject,
@@ -183,7 +183,7 @@ import {
   getDemogValidationResults, abbreviateCamelCase
 } from '@/utils/common';
 import {formatPen} from '@/utils/format';
-import ConfirmationDialog from '../../util/ConfirmationDialog';
+import ConfirmationDialog from '../../util/ConfirmationDialog.vue';
 import router from '../../../router';
 import Mousetrap from 'mousetrap';
 import {navigationStore} from '@/store/modules/setNavigation';
@@ -455,7 +455,8 @@ export default {
       };
       return ApiService.apiAxios.get(Routes['penRequestBatch'].FILES_URL, params)
         .then(response => {
-          response.data && this.$store.commit(`${this.penRequestBatchStore}/setSelectedFiles`, response.data.content);
+          const auStore = penRequestBatchStore();
+          response.data && auStore.setSelectedFiles(response.data.content);
         });
     },
     updateInfoRequested(infoRequest) {

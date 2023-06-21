@@ -1,8 +1,5 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-
+import {createRouter, createWebHistory} from 'vue-router';
 import Home from '@/components/Home.vue';
-import moment from 'moment';
 import Login from '@/components/Login.vue';
 import Logout from '@/components/Logout.vue';
 import SessionExpired from '@/components/SessionExpired.vue';
@@ -20,9 +17,12 @@ import HeldRequestBatchDisplay from '@/components/penreg/penrequest-batch/HeldRe
 import ExchangePage from '@/components/secure-message/ExchangePage.vue';
 import UnAuthorized from '@/components/UnAuthorized.vue';
 import { REQUEST_TYPES, PAGE_TITLES } from '@/utils/constants';
-import authStore from '@/store/modules/auth';
+import {authStore} from './store/modules/auth';
+import {studentSearchStore} from './store/modules/studentSearch';
+import {appStore} from './store/modules/app';
+import {penRequestBatchStore} from './store/modules/penRequestBatch';
+import {archivedRequestBatchStore} from './store/modules/archivedRequestBatch';
 import ErrorPage from '@/components/ErrorPage.vue';
-import store from '@/store/index';
 import RouterView from '@/components/RouterView.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired.vue';
 import UnAuthorizedPage from '@/components/UnAuthorizedPage.vue';
@@ -50,13 +50,9 @@ import AuthoritiesListPage from '@/components/institute/AuthoritiesList.vue';
 import AuthorityDetailsPage from '@/components/institute/AuthorityDetails.vue';
 import AuthorityContactsPage from '@/components/institute/AuthoritiesContacts.vue';
 
-Vue.prototype.moment = moment;
-
-Vue.use(VueRouter);
-
-const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
+const router = createRouter({
+  history: createWebHistory(),
+  base: import.meta.env.BASE_URL,
   routes: [
     {
       path: '/',
@@ -108,7 +104,8 @@ const router = new VueRouter({
         },
       ],
       beforeEnter(_to, _from, next) {
-        store.commit('app/setRequestType',REQUEST_TYPES.penRequest.name);
+        const apStore = appStore();
+        apStore.setRequestType(REQUEST_TYPES.penRequest.name);
         next();
       }
     },
@@ -144,7 +141,8 @@ const router = new VueRouter({
         }
       ],
       beforeEnter(_to, _from, next) {
-        store.commit('app/setRequestType',REQUEST_TYPES.studentRequest.name);
+        const apStore = appStore();
+        apStore.setRequestType(REQUEST_TYPES.studentRequest.name);
         next();
       }
     },
@@ -184,7 +182,8 @@ const router = new VueRouter({
       },
       beforeEnter(_to, from, next) {
         if(!from.path.includes('/prb')) {
-          store.commit('penRequestBatch/clearPenRequestBatchState');
+          const batchStore = penRequestBatchStore();
+          batchStore.clearPenRequestBatchState();
         }
         next();
       }
@@ -226,7 +225,8 @@ const router = new VueRouter({
       },
       beforeEnter(_to, from, next) {
         if(!from.path.includes('/archivedPrb') && !from.path.includes('/prb')) {
-          store.commit('archivedRequestBatch/clearPenRequestBatchState');
+          const batchStore = archivedRequestBatchStore();
+          batchStore.clearPenRequestBatchState();
         }
         next();
       }
@@ -556,12 +556,12 @@ const router = new VueRouter({
       }
     },
     {
-      path: '*',
+      path: '/:catchAll(.*)',
       name: 'notfound',
       redirect: '/',
       meta: {
         requiresAuth: true
-      },
+      }
     },
     {
       path: '/token-expired',
@@ -634,15 +634,42 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, _from, next) => {
+  // this section is to set page title in vue store
+  if (to && to.meta) {
+    const appStore = appStore();
+    appStore.setPageTitle(to.meta.pageTitle);
+  } else {
+    const appStore = appStore();
+    appStore.setPageTitle('');
+  }
+
+  // This section is to clear the search results when users are not on a search page
+  if (!to.meta.saveSearch){
+    const studSearchStore = studentSearchStore();
+    studSearchStore.clearStudentSearchParams();
+    studSearchStore.clearStudentSearchResults();
+  }
+
+  // this section is to handle the backend session expiry, where frontend vue session is still valid.
+  if (to.meta.requiresAuth && authStore.isAuthenticated) {
+    validateAndExecute('/token-expired');
+  }else if (to.meta.requiresAuth) {
+    validateAndExecute('login');
+  }
+  else{
+    next();
+  }
+
   function validateAndExecute(nextRouteInError) {
-    store.dispatch('auth/getJwtToken').then(() => {
-      if (!authStore.state.isAuthenticated) {
+    const aStore = authStore();
+    aStore.getJwtToken().then(() => {
+      if (!aStore.isAuthenticated) {
         next(nextRouteInError);
       } else {
-        store.dispatch('auth/getUserInfo').then(() => {
-          if (!authStore.state.isAuthorizedUser) {
+        aStore.getUserInfo().then(() => {
+          if (!aStore.isAuthorizedUser) {
             next('unauthorized');
-          } else if (to.meta.role && !store.getters[`auth/${to.meta.role}`]) {
+          } else if (to.meta.role && !aStore[`${to.meta.role}`]()) {
             next('unauthorized-page');
           } else {
             next();
@@ -656,28 +683,6 @@ router.beforeEach((to, _from, next) => {
       console.log('Unable to get token');
       next(nextRouteInError);
     });
-  }
-  // this section is to set page title in vue store
-  if (to && to.meta) {
-    store.commit('app/setPageTitle',to.meta.pageTitle);
-  } else {
-    store.commit('app/setPageTitle','');
-  }
-
-  // This section is to clear the search results when users are not on a search page
-  if (!to.meta.saveSearch){
-    store.commit('studentSearch/clearStudentSearchParams');
-    store.commit('studentSearch/clearStudentSearchResults');
-  }
-
-  // this section is to handle the backend session expiry, where frontend vue session is still valid.
-  if (to.meta.requiresAuth && authStore.state.isAuthenticated) {
-    validateAndExecute('/token-expired');
-  }else if (to.meta.requiresAuth) {
-    validateAndExecute('login');
-  }
-  else{
-    next();
   }
 });
 

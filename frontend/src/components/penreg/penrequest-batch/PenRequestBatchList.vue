@@ -12,7 +12,7 @@
 
 <script>
 import { mapActions, mapState } from 'pinia';
-import PenRequestBatchDataTable from './PenRequestBatchDataTable';
+import PenRequestBatchDataTable from './PenRequestBatchDataTable.vue';
 import ApiService from '../../../common/apiService';
 import {Routes, PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
 import filtersMixin from '@/mixins/filtersMixin';

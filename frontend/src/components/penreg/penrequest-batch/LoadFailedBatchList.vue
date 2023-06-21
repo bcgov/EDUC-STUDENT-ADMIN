@@ -79,9 +79,9 @@ import PrimaryButton from '../../util/PrimaryButton.vue';
 import alertMixin from '../../../mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import moment from 'moment';
-import PrbFileModal from '@/components/penreg/penrequest-batch/PrbFileModal';
+import PrbFileModal from '@/components/penreg/penrequest-batch/PrbFileModal.vue';
 import pluralize from 'pluralize';
-import ConfirmationDialog from '@/components/util/ConfirmationDialog';
+import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 
 export default {
   name: 'LoadFailedBatchList',

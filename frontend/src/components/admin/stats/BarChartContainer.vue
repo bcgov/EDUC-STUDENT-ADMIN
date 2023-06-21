@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import BarChart from '../../util/charts/BarChart';
+import BarChart from '../../util/charts/BarChart.vue';
 export default {
   name: 'BarChartContainer',
   components: {

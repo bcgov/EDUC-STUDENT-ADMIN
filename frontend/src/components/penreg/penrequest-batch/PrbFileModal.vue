@@ -32,7 +32,7 @@
 </template>
 <script>
 import alertMixin from '@/mixins/alertMixin';
-import LinedTextArea from '../../util/LinedTextArea';
+import LinedTextArea from '../../util/LinedTextArea.vue';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';

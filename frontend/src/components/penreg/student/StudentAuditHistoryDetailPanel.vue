@@ -66,9 +66,9 @@ import {STUDENT_CODES, STUDENT_DEMOG_CODES, STUDENT_DETAILS_FIELDS} from '@/util
 import PrimaryButton from '../../util/PrimaryButton.vue';
 import {formatPen, formatPostalCode} from '@/utils/format';
 import alertMixin from '../../../mixins/alertMixin';
-import ConfirmationDialog from '../../util/ConfirmationDialog';
-import SplitPenModal from './SplitPenModal';
-import StudentAuditHistoryDetailCard from './StudentAuditHistoryDetailCard';
+import ConfirmationDialog from '../../util/ConfirmationDialog.vue';
+import SplitPenModal from './SplitPenModal.vue';
+import StudentAuditHistoryDetailCard from './StudentAuditHistoryDetailCard.vue';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 import {studentStore} from '@/store/modules/student';
 

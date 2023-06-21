@@ -214,7 +214,7 @@
 <script>
 import {Routes,PEN_REQ_BATCH_STUDENT_REQUEST_CODES} from '@/utils/constants';
 import {mapActions, mapState} from 'pinia';
-import ArchivedRequestBatchList from './ArchivedRequestBatchList';
+import ArchivedRequestBatchList from './ArchivedRequestBatchList.vue';
 import PrimaryButton from '../../util/PrimaryButton.vue';
 import router from '@/router';
 import alertMixin from '@/mixins/alertMixin';
@@ -228,11 +228,10 @@ import {deepCloneObject} from '@/utils/common';
 import pluralize from 'pluralize';
 import ApiService from '@/common/apiService';
 import {formatDob} from '@/utils/format';
-import FormattedTextField from '@/components/util/FormattedTextField';
+import FormattedTextField from '@/components/util/FormattedTextField.vue';
 import Mousetrap from 'mousetrap';
 import searchMixin from '@/mixins/searchMixin';
 import {archivedRequestBatchStore} from '@/store/modules/archivedRequestBatch';
-import {studentSearchStore} from '@/store/modules/studentSearch';
 import {studentStore} from '@/store/modules/student';
 import {navigationStore} from '@/store/modules/setNavigation';
 import {penRequestBatchStudentSearchStore} from '@/store/modules/prbStudentSearch';

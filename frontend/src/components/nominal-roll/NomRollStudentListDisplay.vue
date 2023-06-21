@@ -46,11 +46,11 @@ import {
   SEARCH_VALUE_TYPE
 } from '@/utils/constants';
 import {mapActions, mapState} from 'pinia';
-import NomRollStudentSearchResults from './NomRollStudentSearchResults';
+import NomRollStudentSearchResults from './NomRollStudentSearchResults.vue';
 import alertMixin from '../../mixins/alertMixin';
 import Mousetrap from 'mousetrap';
 import router from '@/router';
-import PenRequestSearchPanel from '@/components/common/PenRequestSearchPanel';
+import PenRequestSearchPanel from '@/components/common/PenRequestSearchPanel.vue';
 import {LocalDate} from '@js-joda/core';
 import {formatDob} from '@/utils/format';
 import {nominalRollStudentSearchStore} from '@/store/modules/nomRollStudentSearch';

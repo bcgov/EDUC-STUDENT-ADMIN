@@ -48,8 +48,8 @@
 </template>
 
 <script>
-import BarChartContainer from './BarChartContainer';
-import DoughnutChartContainer from './DoughnutChartContainer';
+import BarChartContainer from './BarChartContainer.vue';
+import DoughnutChartContainer from './DoughnutChartContainer.vue';
 import {CHART_TYPES, CHART_STAT_URLS, COMPLETION_STATES} from '../../../utils/constants/ChartConstants';
 import ApiService from '../../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';

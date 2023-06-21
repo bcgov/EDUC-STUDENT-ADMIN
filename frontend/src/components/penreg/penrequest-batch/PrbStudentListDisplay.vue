@@ -44,14 +44,15 @@ import {
   PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER
 } from '@/utils/constants';
 import {mapActions, mapState} from 'pinia';
-import PrbStudentSearchResults from './PrbStudentSearchResults';
+import PrbStudentSearchResults from './PrbStudentSearchResults.vue';
 import {formatPrbStudents} from '@/utils/penrequest-batch/format';
 import alertMixin from '../../../mixins/alertMixin';
 import _, {difference} from 'lodash';
 import Mousetrap from 'mousetrap';
 import router from '@/router';
-import PenRequestSearchPanel from '@/components/common/PenRequestSearchPanel';
+import PenRequestSearchPanel from '@/components/common/PenRequestSearchPanel.vue';
 import {penRequestBatchStudentSearchStore} from '@/store/modules/prbStudentSearch';
+import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
 
 export default {
   components: {
@@ -356,7 +357,8 @@ export default {
 
       return ApiService.apiAxios.get(Routes['penRequestBatch'].FILES_URL, params)
         .then(response => {
-          response.data && this.$store.commit(`${this.penRequestBatchStore}/setSelectedFiles`, response.data.content);
+          const auStore = penRequestBatchStore();
+          response.data && auStore.setSelectedFiles(response.data.content);
         });
     },
   }

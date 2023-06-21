@@ -128,9 +128,9 @@
 <script>
 import {mapActions, mapState} from 'pinia';
 import PrimaryButton from '../util/PrimaryButton.vue';
-import NomRollStudentStatusChip from './NomRollStudentStatusChip';
+import NomRollStudentStatusChip from './NomRollStudentStatusChip.vue';
 import ApiService from '../../common/apiService';
-import StudentDetailsInfoPanel from '../common/StudentDetailsInfoPanel';
+import StudentDetailsInfoPanel from '../common/StudentDetailsInfoPanel.vue';
 import {
   NOMINAL_ROLL_STUDENT_STATUS_CODES,
   Routes,
@@ -141,7 +141,7 @@ import {
   STUDENT_DETAILS_FIELDS
 } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
-import PenMatchResultsTable from '@/components/common/PenMatchResultsTable';
+import PenMatchResultsTable from '@/components/common/PenMatchResultsTable.vue';
 import {
   constructPenMatchObjectFromStudent,
   deepCloneObject,
@@ -149,7 +149,7 @@ import {
   getPossibleMatches,
 } from '@/utils/common';
 import {formatPen, formatDob, formatGrade} from '@/utils/format';
-import ConfirmationDialog from '../util/ConfirmationDialog';
+import ConfirmationDialog from '../util/ConfirmationDialog.vue';
 import router from '../../router';
 import Mousetrap from 'mousetrap';
 import {navigationStore} from '@/store/modules/setNavigation';

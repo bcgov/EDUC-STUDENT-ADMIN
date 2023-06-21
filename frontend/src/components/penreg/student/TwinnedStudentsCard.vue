@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import TertiaryButton from '../../util/TertiaryButton';
+import TertiaryButton from '../../util/TertiaryButton.vue';
 import {mapState, mapActions} from 'pinia';
 import moment from 'moment';
 import {sortBy} from 'lodash';

@@ -138,9 +138,9 @@
 import {Routes} from '@/utils/constants';
 import { mapState } from 'pinia';
 import PrimaryButton from '../../util/PrimaryButton.vue';
-import TertiaryButton from '../../util/TertiaryButton';
-import ConfirmationDialog from '../../util/ConfirmationDialog';
-import Pagination from '@/components/util/Pagination';
+import TertiaryButton from '../../util/TertiaryButton.vue';
+import ConfirmationDialog from '../../util/ConfirmationDialog.vue';
+import Pagination from '@/components/util/Pagination.vue';
 import ApiService from '../../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import {

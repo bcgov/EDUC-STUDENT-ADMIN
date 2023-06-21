@@ -101,11 +101,11 @@ import PrimaryButton from '../util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
 import {isExpired} from '@/utils/institute/status';
 import { mapState } from 'pinia';
-import AuthorityContact from '@/components/institute/AuthorityContact';
-import NewAuthorityContactPage from '@/components/institute/NewAuthorityContactPage';
+import AuthorityContact from '@/components/institute/AuthorityContact.vue';
+import NewAuthorityContactPage from '@/components/institute/NewAuthorityContactPage.vue';
 import {sortBy} from 'lodash';
 import EditAuthorityContactPage from '@/components/institute/EditAuthorityContactPage.vue';
-import ConfirmationDialog from '@/components/util/ConfirmationDialog';
+import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import {authStore} from '@/store/modules/auth';
 
 export default {

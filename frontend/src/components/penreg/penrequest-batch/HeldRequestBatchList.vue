@@ -52,7 +52,7 @@
 import ApiService from '../../../common/apiService';
 import {Routes, PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
 import filtersMixin from '@/mixins/filtersMixin';
-import Pagination from '@/components/util/Pagination';
+import Pagination from '@/components/util/Pagination.vue';
 import alertMixin from '../../../mixins/alertMixin';
 
 export default {

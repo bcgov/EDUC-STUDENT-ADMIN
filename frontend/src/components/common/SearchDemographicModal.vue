@@ -224,7 +224,7 @@
 import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import {isValidMincode, isValidPostalCode, isValidDOBAndAfter1900} from '@/utils/validation';
 import { mapState } from 'pinia';
-import FormattedTextField from '../util/FormattedTextField';
+import FormattedTextField from '../util/FormattedTextField.vue';
 import {formatPostalCode, formatDob, formatMincode} from '@/utils/format';
 import schoolMixin from '../../mixins/schoolMixin';
 import {studentStore} from '@/store/modules/student';

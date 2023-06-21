@@ -174,7 +174,7 @@
   </v-container>
 </template>
 <script>
-import Chat from './Chat';
+import Chat from './Chat.vue';
 import ApiService from '../common/apiService';
 import {REQUEST_TYPES, Routes, Statuses} from '../utils/constants';
 import {mapActions, mapState} from 'pinia';
@@ -184,7 +184,7 @@ import PrimaryButton from './util/PrimaryButton.vue';
 import alertMixin from '../mixins/alertMixin';
 import Mousetrap from 'mousetrap';
 import 'mousetrap/plugins/global-bind/mousetrap-global-bind';
-import ImageRenderer from '@/components/common/ImageRenderer';
+import ImageRenderer from '@/components/common/ImageRenderer.vue';
 import {notificationsStore} from '@/store/modules/notifications';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';

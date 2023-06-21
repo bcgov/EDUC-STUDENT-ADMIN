@@ -616,22 +616,22 @@ import { mapState } from 'pinia';
 import moment from 'moment';
 import ApiService from '../../common/apiService';
 import {REQUEST_TYPES, Routes, STUDENT_CODES, STUDENT_DEMOG_CODES, STUDENT_DETAILS_FIELDS} from '@/utils/constants';
-import StudentDetailsTextField from '@/components/penreg/student/StudentDetailsTextField';
-import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly';
-import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsComboBox';
-import StudentDetailsTextFieldSideCardReadOnly from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly';
-import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField';
+import StudentDetailsTextField from '@/components/penreg/student/StudentDetailsTextField.vue';
+import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly.vue';
+import StudentDetailsComboBox from '@/components/penreg/student/StudentDetailsComboBox.vue';
+import StudentDetailsTextFieldSideCardReadOnly from '@/components/penreg/student/StudentDetailsTextFieldSideCardReadOnly.vue';
+import StudentDetailsTemplateTextField from '@/components/penreg/student/StudentDetailsTemplateTextField.vue';
 import {formatDateTime, formatDob, formatMincode, formatPen} from '@/utils/format';
 import {cloneDeep, pick, sortBy, debounce} from 'lodash';
 import alertMixin from '../../mixins/alertMixin';
 import schoolMixin from '../../mixins/schoolMixin';
 import servicesSagaMixin from '../../mixins/servicesSagaMixin';
-import ConfirmationDialog from '../util/ConfirmationDialog';
-import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard';
-import CompareDemographicModal from './CompareDemographicModal';
+import ConfirmationDialog from '../util/ConfirmationDialog.vue';
+import TwinnedStudentsCard from '@/components/penreg/student/TwinnedStudentsCard.vue';
+import CompareDemographicModal from './CompareDemographicModal.vue';
 import {isValidDob, isValidMincode} from '@/utils/validation';
-import FormattedTextField from '@/components/util/FormattedTextField';
-import TertiaryButton from '@/components/util/TertiaryButton';
+import FormattedTextField from '@/components/util/FormattedTextField.vue';
+import TertiaryButton from '@/components/util/TertiaryButton.vue';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 import {deepCloneObject, getDemogValidationResults} from '@/utils/common';
@@ -640,8 +640,8 @@ import {notificationsStore} from '@/store/modules/notifications';
 import {studentStore} from '@/store/modules/student';
 import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
 import {studentSearchStore} from '@/store/modules/studentSearch';
+import {LocalDate, DateTimeFormatterBuilder, ResolverStyle} from '@js-joda/core';
 
-const JSJoda = require('@js-joda/core');
 export default {
   name: 'studentDetailCommon',
   mixins: [alertMixin, schoolMixin, servicesSagaMixin, staleStudentRecordMixin],
@@ -908,9 +908,9 @@ export default {
       }
     },
     getDateFormatter(pattern = 'uuuu/MM/dd') {
-      return (new JSJoda.DateTimeFormatterBuilder)
+      return (new DateTimeFormatterBuilder)
         .appendPattern(pattern)
-        .toFormatter(JSJoda.ResolverStyle.STRICT);
+        .toFormatter(ResolverStyle.STRICT);
     },
     validateDOB() {
       if (this.studentCopy) {
@@ -1082,8 +1082,8 @@ export default {
         }
         const formatterLong = this.getDateFormatter();
         try {
-          const dateLong = JSJoda.LocalDate.parse(this.origStudent.dob, formatterLong);
-          const dateShort = JSJoda.LocalDate.parse(this.studentCopy.dob, formatterLong);
+          const dateLong = LocalDate.parse(this.origStudent.dob, formatterLong);
+          const dateShort = LocalDate.parse(this.studentCopy.dob, formatterLong);
           if (dateLong.equals(dateShort)) {
             return false;
           }

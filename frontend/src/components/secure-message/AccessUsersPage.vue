@@ -293,10 +293,12 @@ export default {
       return !isNotEmptyInputParams(this.searchFilter);
     },
     updateUserRoles(newValue){
-      this.$store.commit('edx/setSchoolRoles', newValue);
+      const eStore = edxStore();
+      eStore.setSchoolRoles(newValue);
     },
     closeNewUserModal(){
-      this.$store.commit('edx/setSchoolRoles', JSON.parse(JSON.stringify(this.schoolRolesCopy)));
+      const eStore = edxStore();
+      eStore.setSchoolRoles(JSON.parse(JSON.stringify(this.schoolRolesCopy)));
       this.newUserInviteSheet = false; // close the modal window.
     },
     getSchoolNameForUserInvite(){

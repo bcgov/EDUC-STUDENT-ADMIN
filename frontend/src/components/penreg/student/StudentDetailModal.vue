@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import StudentDetailCommon from '../../common/StudentDetailCommon';
+import StudentDetailCommon from '../../common/StudentDetailCommon.vue';
 import PrimaryButton from '../../util/PrimaryButton.vue';
 import router from '../../../router';
 import {REQUEST_TYPES} from '@/utils/constants';

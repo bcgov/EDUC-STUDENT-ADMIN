@@ -133,9 +133,9 @@
 
 <script>
 
-import CompareDemographicModal from './CompareDemographicModal';
-import TertiaryButton from '../util/TertiaryButton';
-import StudentDetailModal from '../penreg/student/StudentDetailModal';
+import CompareDemographicModal from './CompareDemographicsCommon.vue';
+import TertiaryButton from '../util/TertiaryButton.vue';
+import StudentDetailModal from '../penreg/student/StudentDetailModal.vue';
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
 import {mapState} from 'pinia';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';

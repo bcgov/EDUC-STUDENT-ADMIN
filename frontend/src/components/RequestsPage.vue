@@ -48,9 +48,9 @@
 <script>
 import {mapActions, mapState} from 'pinia';
 import { REQUEST_TYPES } from '../utils/constants';
-import RequestsDisplay from './RequestsDisplay';
-import StudentSearchDisplay from './penreg/student-search/StudentSearchDisplay';
-import PenRequestBatchDisplay from './penreg/penrequest-batch/PenRequestBatchDisplay';
+import RequestsDisplay from './RequestsDisplay.vue';
+import StudentSearchDisplay from './penreg/student-search/StudentSearchDisplay.vue';
+import PenRequestBatchDisplay from './penreg/penrequest-batch/PenRequestBatchDisplay.vue';
 import {authStore} from '@/store/modules/auth';
 import {appStore} from '@/store/modules/app';
 export default {

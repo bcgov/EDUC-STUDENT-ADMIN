@@ -53,9 +53,9 @@
 import PrimaryButton from '../../../util/PrimaryButton.vue';
 import { replaceMacro, insertMacro } from '../../../../utils/macro';
 import { mapState } from 'pinia';
-import ConfirmationDialog from '../../../util/ConfirmationDialog';
+import ConfirmationDialog from '../../../util/ConfirmationDialog.vue';
 import alertMixin from '@/mixins/alertMixin';
-import MacroMenu from '@/components/common/MacroMenu';
+import MacroMenu from '@/components/common/MacroMenu.vue';
 import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
 
 export default {

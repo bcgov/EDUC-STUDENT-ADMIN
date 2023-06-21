@@ -82,10 +82,10 @@
 import ApiService from '../../../common/apiService';
 import {Routes} from '@/utils/constants';
 import PrimaryButton from '../../util/PrimaryButton.vue';
-import SchoolContact from './SchoolContact';
-import NewSchoolContactPage from './NewSchoolContactPage';
-import EditSchoolContactPage from './EditSchoolContactPage';
-import ConfirmationDialog from '@/components/util/ConfirmationDialog';
+import SchoolContact from './SchoolContact.vue';
+import NewSchoolContactPage from './NewSchoolContactPage.vue';
+import EditSchoolContactPage from './EditSchoolContactPage.vue';
+import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import alertMixin from '@/mixins/alertMixin';
 import { mapState } from 'pinia';
 import {isExpired} from '@/utils/institute/status';

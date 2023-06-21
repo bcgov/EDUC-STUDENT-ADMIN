@@ -10,7 +10,7 @@
 
 <script>
 import {mapActions, mapState} from 'pinia';
-import PenRequestBatchDataTable from './PenRequestBatchDataTable';
+import PenRequestBatchDataTable from './PenRequestBatchDataTable.vue';
 import ApiService from '../../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import {

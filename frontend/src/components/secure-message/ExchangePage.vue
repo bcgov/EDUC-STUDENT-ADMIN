@@ -337,7 +337,7 @@
 import ApiService from '../../common/apiService';
 import {EDX_SAGA_REQUEST_DELAY_MILLISECONDS, Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton.vue';
-import NewMessagePage from './NewMessagePage';
+import NewMessagePage from './NewMessagePage.vue';
 import {mapState} from 'pinia';
 import router from '@/router';
 import {isEmpty, omitBy} from 'lodash';

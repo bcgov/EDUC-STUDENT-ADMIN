@@ -168,10 +168,10 @@ import {
 import {isValidPEN} from '@/utils/validation';
 import alertMixin from '@/mixins/alertMixin';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
-import DocumentUpload from '@/components/common/DocumentUpload';
-import ConfirmationDialog from '@/components/util/ConfirmationDialog';
-import AddStudent from '@/components/common/AddStudent';
-import MacroMenu from '../common/MacroMenu';
+import DocumentUpload from '@/components/common/DocumentUpload.vue';
+import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
+import AddStudent from '@/components/common/AddStudent.vue';
+import MacroMenu from '../common/MacroMenu.vue';
 import {getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import {edxStore} from '@/store/modules/edx';
 import {authStore} from '@/store/modules/auth';
@@ -312,16 +312,19 @@ export default {
         });
     },
     async uploadDocument(document) {
-      this.$store.commit('edx/setSecureExchangeDocuments', [...this.secureExchangeDocuments, document]);
+      const edStore = edxStore();
+      await edStore.setSecureExchangeDocuments([...this.secureExchangeDocuments, document]);
       this.checkTotalFileSize();
     },
     removeDocumentByIndex(index) {
       //since we don't have a unique UUID to identify the document to remove, we will use the index
-      this.$store.commit('edx/deleteSecureExchangeDocumentByIndex', index);
+      const edStore = edxStore();
+      edStore.deleteSecureExchangeDocumentByIndex(index);
       this.checkTotalFileSize();
     },
     clearSecureExchangeDocuments() {
-      this.$store.commit('edx/setSecureExchangeDocuments', []);
+      const edStore = edxStore();
+      edStore.setSecureExchangeDocuments([]);
     },
     showOptions() {
       this.expandAttachFile = false;
@@ -344,14 +347,17 @@ export default {
     async addSecureExchangeStudent(secureExchangeStudent) {
       const found =this.secureExchangeStudents.some(el =>el.studentID === secureExchangeStudent.studentID);
       if(!found){
-        this.$store.commit('edx/setSecureExchangeStudents', [...this.secureExchangeStudents, secureExchangeStudent]);
+        const edStore = edxStore();
+        await edStore.setSecureExchangeStudents([...this.secureExchangeStudents, secureExchangeStudent]);
       }
     },
     removeSecureExchangeStudentByID(secureExchangeStudent) {
-      this.$store.commit('edx/deleteSecureExchangeStudentsByID', secureExchangeStudent);
+      const edStore = edxStore();
+      edStore.deleteSecureExchangeStudentsByID(secureExchangeStudent);
     },
     clearSecureExchangeStudents() {
-      this.$store.commit('edx/setSecureExchangeStudents', []);
+      const edStore = edxStore();
+      edStore.setSecureExchangeStudents([]);
     },
     onSchoolSelected(){
       if(this.selectedContact.value){

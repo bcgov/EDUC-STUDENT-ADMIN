@@ -129,11 +129,11 @@
 <script>
 import { PEN_REQ_BATCH_STUDENT_REQUEST_CODES, Routes } from '@/utils/constants';
 import { mapState, mapActions } from 'pinia';
-import PenRequestBatchList from './PenRequestBatchList';
+import PenRequestBatchList from './PenRequestBatchList.vue';
 import PrimaryButton from '../../util/PrimaryButton.vue';
 import router from '../../../router';
 import alertMixin from '../../../mixins/alertMixin';
-import ConfirmationDialog from '../../util/ConfirmationDialog';
+import ConfirmationDialog from '../../util/ConfirmationDialog.vue';
 import pluralize from 'pluralize';
 import ApiService from '@/common/apiService';
 import Mousetrap from 'mousetrap';

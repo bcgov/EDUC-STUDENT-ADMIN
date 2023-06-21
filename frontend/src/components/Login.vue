@@ -38,7 +38,8 @@ export default {
   },
   methods: {
     clearStorage() {
-      this.$store.commit('auth/setJwtToken');
+      const auStore = authStore();
+      auStore.setJwtToken();
     }
   }
 };

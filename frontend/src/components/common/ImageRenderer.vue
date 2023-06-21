@@ -14,18 +14,10 @@
 </template>
 
 <script>
-import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
-import alertMixin from '@/mixins/alertMixin';
 import 'viewerjs/dist/viewer.css';
-import Viewer from 'v-viewer';
-import Vue from 'vue';
-Vue.use(Viewer, {
-  debug: true,
-  defaultOptions: {
-    zIndex: 9999
-  }
-});
+import ApiService from '../../common/apiService';
+import alertMixin from '../../mixins/alertMixin';
 
 export default {
   name: 'ImageRenderer',

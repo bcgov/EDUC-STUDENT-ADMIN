@@ -18,7 +18,7 @@
 
 <script>
 
-import MergeStudentsCommon from '@/components/common/MergeStudentsCommon';
+import MergeStudentsCommon from '@/components/common/MergeStudentsCommon.vue';
 import { PAGE_TITLES } from '../../utils/constants';
 
 export default {

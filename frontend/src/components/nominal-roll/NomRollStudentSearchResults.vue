@@ -222,7 +222,7 @@
 <script>
 import {mapActions, mapState} from 'pinia';
 import PrimaryButton from '../util/PrimaryButton.vue';
-import NomRollStudentStatusChip from './NomRollStudentStatusChip';
+import NomRollStudentStatusChip from './NomRollStudentStatusChip.vue';
 import {uniqBy, values, partialRight} from 'lodash';
 import router from '../../router';
 import {
@@ -235,8 +235,8 @@ import ApiService from '@/common/apiService';
 import {formatDob, formatPen, formatGrade, formatDistrictNumber} from '@/utils/format';
 import {constructPenMatchObjectFromNominalRollStudent, deepCloneObject, getPossibleMatches} from '../../utils/common';
 import alertMixin from '@/mixins/alertMixin';
-import MapSchoolCodeModal from './MapSchoolCodeModal';
-import ConfirmationDialog from '@/components/util/ConfirmationDialog';
+import MapSchoolCodeModal from './MapSchoolCodeModal.vue';
+import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import {LocalDate} from '@js-joda/core';
 import {notificationsStore} from '@/store/modules/notifications';
 import {nominalRollStore} from '@/store/modules/nominalRoll';

@@ -140,7 +140,7 @@
 <script>
 import { mapState } from 'pinia';
 import {REQUEST_TYPES, Routes} from '@/utils/constants';
-import DashboardTable from '@/components/DashboardTable';
+import DashboardTable from '@/components/DashboardTable.vue';
 import ApiService from '@/common/apiService';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import router from '@/router';

@@ -83,7 +83,7 @@
 
 <script>
 import {mapState} from 'pinia';
-import TertiaryButton from '../util/TertiaryButton';
+import TertiaryButton from '../util/TertiaryButton.vue';
 import PrimaryButton from '../util/PrimaryButton.vue';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';

@@ -179,7 +179,7 @@
 <script>
 import {mapState} from 'pinia';
 import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
-import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly';
+import StudentDetailsTextFieldReadOnly from '@/components/penreg/student/StudentDetailsTextFieldReadOnly.vue';
 import {formatDob, formatPen, formatPostalCode} from '@/utils/format';
 import moment from 'moment';
 import {studentStore} from '@/store/modules/student';

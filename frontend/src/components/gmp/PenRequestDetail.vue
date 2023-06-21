@@ -34,10 +34,10 @@
 </template>
 
 <script>
-import RequestDetail from '../RequestDetail';
-import PenDemographicsCard from './PenDemographicsCard';
-import PenRequestCard from './PenRequestCard';
-import PenRequestActions from './PenRequestActions';
+import RequestDetail from '../RequestDetail.vue';
+import PenDemographicsCard from './PenDemographicsCard.vue';
+import PenRequestCard from './PenRequestCard.vue';
+import PenRequestActions from './PenRequestActions.vue';
 import { REQUEST_TYPES } from '../../utils/constants';
 
 export default {

@@ -92,7 +92,7 @@
 <script>
 import {mapActions, mapState} from 'pinia';
 import PrimaryButton from '../../util/PrimaryButton.vue';
-import PrbStudentStatusChip from './PrbStudentStatusChip';
+import PrbStudentStatusChip from './PrbStudentStatusChip.vue';
 import {sortBy, uniqBy, values} from 'lodash';
 import router from '../../../router';
 import {

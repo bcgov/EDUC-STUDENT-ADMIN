@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import CompareDemographicsCommon from './common/CompareDemographicsCommon';
+import CompareDemographicsCommon from './common/CompareDemographicsCommon.vue';
 import PrimaryButton from './util/PrimaryButton.vue';
 
 export default {

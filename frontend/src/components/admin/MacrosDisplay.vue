@@ -101,8 +101,8 @@ import PrimaryButton from '../util/PrimaryButton.vue';
 import ApiService from '../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import {deepCloneObject} from '@/utils/common';
-import ConfirmationDialog from '../util/ConfirmationDialog';
-import MacroEditor from './MacroEditor';
+import ConfirmationDialog from '../util/ConfirmationDialog.vue';
+import MacroEditor from './MacroEditor.vue';
 import {notificationsStore} from '@/store/modules/notifications';
 
 export default {

@@ -14,8 +14,6 @@ import * as directives from 'vuetify/directives';
 import '@mdi/font/css/materialdesignicons.css';
 import 'viewerjs/dist/viewer.css';
 import component from 'v-viewer';
-import webSocketService from './services/web-socket-service';
-import StaticConfig from './common/staticConfig';
 import VueClipboard from 'vue-clipboard2';
 
 const myCustomLightTheme = {
@@ -48,9 +46,11 @@ const pinia = createPinia();
 const newApp = createApp(App);
 VueClipboard.config.autoSetContainer = true; // add this line
 
+// .use(webSocketService, {
+//   newApp,
+//   url: import.meta.env.VITE_WEB_SOCKET_URL || 'wss://'+window.location.hostname+'/api/socket'
+// })
+
 newApp.provide('$moment', moment);
-newApp.use(router).use(webSocketService, {
-  store,
-  url: StaticConfig?.WEB_SOCKET_URL || 'wss://'+window.location.hostname+'/api/socket'
-}).use(VueClipboard).use(createMetaManager()).use(pinia).use(vuetify).use(component).mount('#app');
+newApp.use(router).use(VueClipboard).use(createMetaManager()).use(pinia).use(vuetify).use(component).mount('#app');
 

@@ -44,7 +44,6 @@ import Footer from '@/components/Footer.vue';
 import ModalIdle from '@/components/ModalIdle.vue';
 import NavBar from '@/components/util/NavBar.vue';
 import SnackBar from '@/components/util/SnackBar.vue';
-import StaticConfig from '@/common/staticConfig';
 import {activateMultipleDraggableDialog} from '@/utils/draggable';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
@@ -61,8 +60,8 @@ export default {
   data() {
     return {
       showToTopBtn: false,
-      bannerEnvironment: StaticConfig.BANNER_ENVIRONMENT,
-      bannerColor: StaticConfig.BANNER_COLOR,
+      bannerEnvironment: import.meta.env.VITE_BANNER_ENVIRONMENT,
+      bannerColor: import.meta.env.VITE_BANNER_COLOR,
       deactivateMultipleDraggableDialog: null,
     };
   },

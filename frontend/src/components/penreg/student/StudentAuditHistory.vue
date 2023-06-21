@@ -80,7 +80,7 @@
 <script>
 import {mapActions, mapState} from 'pinia';
 import {REQUEST_TYPES, Routes} from '@/utils/constants';
-import StudentAuditHistoryDetail from '../student/StudentAuditHistoryDetailPanel';
+import StudentAuditHistoryDetail from '../student/StudentAuditHistoryDetailPanel.vue';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
 import {formatDob, formatPen} from '@/utils/format';

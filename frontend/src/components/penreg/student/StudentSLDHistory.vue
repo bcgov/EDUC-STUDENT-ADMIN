@@ -68,7 +68,7 @@ import {Routes} from '@/utils/constants';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
-import CompareDemographicModal from '@/components/common/CompareDemographicModal';
+import CompareDemographicModal from '@/components/common/CompareDemographicModal.vue';
 import {mapState} from 'pinia';
 import {sortArrayByDate} from '@/utils/common';
 import {notificationsStore} from '@/store/modules/notifications';

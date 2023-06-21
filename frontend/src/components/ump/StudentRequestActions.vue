@@ -35,9 +35,9 @@
 </template>
 
 <script>
-import StudentRequestComplete from './StudentRequestComplete';
-import RequestReject from '../RequestReject';
-import RequestReturn  from '../RequestReturn';
+import StudentRequestComplete from './StudentRequestComplete.vue';
+import RequestReject from '../RequestReject.vue';
+import RequestReturn  from '../RequestReturn.vue';
 
 export default {
   name: 'studentRequestActions',

@@ -114,7 +114,6 @@ import {formatPhoneNumber, sortByNameValue} from '@/utils/format';
 import router from '@/router';
 import ApiService from '@/common/apiService';
 import {setEmptyInputParams} from '@/utils/common';
-
 import alertMixin from '@/mixins/alertMixin';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import Spinner from '@/components/common/Spinner.vue';

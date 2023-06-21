@@ -99,7 +99,7 @@ import PrimaryButton from '../util/PrimaryButton.vue';
 import {checkDigit, isValidLength} from '@/utils/validation';
 import demographicsMixin from '@/mixins/demographicsMixin';
 import alertMixin from '@/mixins/alertMixin';
-import MacroMenu from '../common/MacroMenu';
+import MacroMenu from '../common/MacroMenu.vue';
 import {notificationsStore} from '@/store/modules/notifications';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';

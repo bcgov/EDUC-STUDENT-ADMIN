@@ -161,11 +161,11 @@ import {Routes} from '@/utils/constants';
 import {mapState} from 'pinia';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
-import InviteUserPage from '@/components/secure-message/InviteUserPage';
-import AccessUserCard from '@/components/secure-message/AccessUserCard';
+import InviteUserPage from '@/components/secure-message/InviteUserPage.vue';
+import AccessUserCard from '@/components/secure-message/AccessUserCard.vue';
 import Spinner from '@/components/common/Spinner.vue';
 import router from '@/router';
-import ClipboardButton from '@/components/util/ClipboardButton';
+import ClipboardButton from '@/components/util/ClipboardButton.vue';
 import {edxStore} from '@/store/modules/edx';
 
 export default {
@@ -313,7 +313,8 @@ export default {
       this.newUserInviteSheet = !this.newUserInviteSheet;
     },
     updateUserRoles(newValue){
-      this.$store.commit('edx/setDistrictRoles', newValue);
+      const eStore = edxStore();
+      eStore.setDistrictRoles(newValue);
     },
     backButtonClick() {
       router.push({name: 'exchangeDistrictAccess'});
@@ -325,7 +326,8 @@ export default {
       return 'secondary';
     },
     closeNewUserModal(){
-      this.$store.commit('edx/setDistrictRoles', JSON.parse(JSON.stringify(this.districtRolesCopy)));
+      const eStore = edxStore();
+      eStore.setDistrictRoles(JSON.parse(JSON.stringify(this.districtRolesCopy)));
       this.newUserInviteSheet = false; // close the modal window.
     },
     getDistrictNameForUserInvite(){

@@ -122,13 +122,14 @@
 <script>
 import {uniqBy} from 'lodash';
 import router from '../../../router';
-import Pagination from '@/components/util/Pagination';
+import Pagination from '@/components/util/Pagination.vue';
 import {PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
-import PenRequestBatchHistoryModal from './PenRequestBatchHistoryModal';
+import PenRequestBatchHistoryModal from './PenRequestBatchHistoryModal.vue';
 import {mapState} from 'pinia';
 import alertMixin from '../../../mixins/alertMixin';
 import {notificationsStore} from '@/store/modules/notifications';
+import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
 
 export default {
   name: 'PenRequestBatchDataTable',
@@ -269,7 +270,8 @@ export default {
       } else {
         newSelectedFiles = this.selectedFiles.filter(file => file.submissionNumber !== item.submissionNumber);
       }
-      this.$store.commit(`${this.penRequestBatchStore}/setSelectedFiles`, newSelectedFiles);
+      const auStore = penRequestBatchStore();
+      auStore.setSelectedFiles(newSelectedFiles);
     },
     selectItem(item) {
       if(!item.sagaInProgress) {
@@ -294,7 +296,8 @@ export default {
           newSelectedFiles = newSelectedFiles.filter(item => item.submissionNumber !== file.submissionNumber);
         });
       }
-      this.$store.commit(`${this.penRequestBatchStore}/setSelectedFiles`, newSelectedFiles);
+      const auStore = penRequestBatchStore();
+      auStore.setSelectedFiles(newSelectedFiles);
     },
     selectFilter(header) {
       this.$emit('select-filter', header);

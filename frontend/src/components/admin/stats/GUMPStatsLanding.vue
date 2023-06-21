@@ -83,10 +83,10 @@
 </template>
 
 <script>
-import DoughnutChartContainer from './DoughnutChartContainer';
+import DoughnutChartContainer from './DoughnutChartContainer.vue';
 import Spinner from '../../common/Spinner.vue';
-import PercentileInfoCard from '../../common/PercentileInfoCard';
-import BarChartContainer from './BarChartContainer';
+import PercentileInfoCard from '../../common/PercentileInfoCard.vue';
+import BarChartContainer from './BarChartContainer.vue';
 import {CHART_STAT_URLS, CHART_TYPES, COMPLETION_STATES} from '@/utils/constants/ChartConstants';
 import {capitalizeFirstLetter} from '@/utils/common';
 import ApiService from '@/common/apiService';

@@ -102,7 +102,7 @@
 
 <script>
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
-import ConfirmationDialog from '@/components/util/ConfirmationDialog';
+import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';

@@ -41,7 +41,7 @@ import {mapActions, mapState} from 'pinia';
 import PrimaryButton from './util/PrimaryButton.vue';
 import alertMixin from '../mixins/alertMixin';
 import {isValidLength} from '../utils/validation';
-import MacroMenu from './common/MacroMenu';
+import MacroMenu from './common/MacroMenu.vue';
 import {notificationsStore} from '@/store/modules/notifications';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';

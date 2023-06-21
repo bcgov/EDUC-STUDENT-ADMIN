@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import DocumentUpload from '../common/DocumentUpload';
+import DocumentUpload from '../common/DocumentUpload.vue';
 import ApiService from '@/common/apiService';
 import {
   Routes,

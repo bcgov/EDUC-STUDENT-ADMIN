@@ -196,8 +196,8 @@ import ApiService from '../common/apiService';
 import {REQUEST_TYPES, Routes} from '@/utils/constants';
 import router from '../router';
 import PrimaryButton from './util/PrimaryButton.vue';
-import ClipboardButton from './util/ClipboardButton';
-import FilterTag from './util/FilterTag';
+import ClipboardButton from './util/ClipboardButton.vue';
+import FilterTag from './util/FilterTag.vue';
 import {notificationsStore} from '@/store/modules/notifications';
 import {appStore} from '@/store/modules/app';
 

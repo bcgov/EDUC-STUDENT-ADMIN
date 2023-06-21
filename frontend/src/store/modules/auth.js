@@ -299,27 +299,21 @@ export const authStore = defineStore('auth', {
       this.userInfo = false;
       this.isAuthenticated = false;
     },
-    async getUserInfo(context) {
+    async getUserInfo() {
       if(localStorage.getItem('jwtToken')) {
-        await ApiService.apiAxios
-          .get(Routes.USER)
-          .then(response => {
-            context.commit('setUserInfo', response.data);
-          })
-          .catch((e) => {
-            throw e;
-          });
+        const response = await ApiService.apiAxios.get(Routes.USER);
+        await this.setUserInfo(response.data);
       }
     },
     //retrieves the json web token from local storage. If not in local storage, retrieves it from API
-    async getJwtToken(context) {
+    async getJwtToken() {
       try {
-        if (context.getters.isAuthenticated && !!context.getters.jwtToken) {
-          const response = await AuthService.refreshAuthToken(context.getters.jwtToken);
-          await this.setAuthorizations(context, response);
+        if (this.isAuthenticated && !!this.jwtToken) {
+          const response = await AuthService.refreshAuthToken(this.jwtToken);
+          await this.setAuthorizations(response);
         } else {
           const response = await AuthService.getAuthToken();
-          await this.setAuthorizations(context, response);
+          await this.setAuthorizations(response);
         }
       } catch (e) {
         // Remove tokens from localStorage and update state

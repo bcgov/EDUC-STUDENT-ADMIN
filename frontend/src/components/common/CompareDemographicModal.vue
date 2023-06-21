@@ -37,8 +37,8 @@
 
 <script>
 import PrimaryButton from '../util/PrimaryButton.vue';
-import TertiaryButton from '../util/TertiaryButton';
-import CompareDemographicsCommon from './CompareDemographicsCommon';
+import TertiaryButton from '../util/TertiaryButton.vue';
+import CompareDemographicsCommon from './CompareDemographicsCommon.vue';
 import {deepCloneObject} from '@/utils/common';
 import alertMixin from '@/mixins/alertMixin';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';

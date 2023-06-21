@@ -113,11 +113,11 @@
 </template>
 
 <script>
-import SearchDemographicModal from './SearchDemographicModal';
+import SearchDemographicModal from './SearchDemographicModal.vue';
 import {deepCloneObject} from '@/utils/common';
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
 import {mapActions, mapState} from 'pinia';
-import StudentValidationWarningHint from './StudentValidationWarningHint';
+import StudentValidationWarningHint from './StudentValidationWarningHint.vue';
 import PrimaryButton from '../util/PrimaryButton.vue';
 import {partialRight} from 'lodash';
 import router from '@/router';

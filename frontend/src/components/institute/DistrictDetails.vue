@@ -531,7 +531,7 @@ export default {
     };
   },
   computed:{
-    ...mapState(authStore(), ['DISTRICT_ADMIN_ROLE']),
+    ...mapState(authStore, ['DISTRICT_ADMIN_ROLE']),
     ...mapState(instituteStore, ['provinceCodes', 'countryCodes']),
     hasSamePhysicalAddress(){
       return !this.district.addresses.filter(address => address.addressTypeCode === 'PHYSICAL').length > 0;
@@ -539,6 +539,7 @@ export default {
   },
   created() {
     this.getDistrict();
+
     this.$store.dispatch('institute/getAllProvinceCodes').then(() => {
       this.provinceCodeValues = this.provinceCodes.filter(province =>  province.provinceCode === 'BC' || province.provinceCode === 'YT');
     });

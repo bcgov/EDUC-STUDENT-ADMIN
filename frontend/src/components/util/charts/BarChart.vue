@@ -1,9 +1,8 @@
 <script>
-import { Bar, mixins } from 'vue-chartjs';
+import { Bar } from 'vue-chartjs';
 import ChartJsPluginDataLabels from 'chartjs-plugin-datalabels';
 export default {
   extends: Bar,
-  mixins: [mixins.reactiveProp],
   props: ['chartData', 'options'],
   components: {ChartJsPluginDataLabels},
   mounted () {

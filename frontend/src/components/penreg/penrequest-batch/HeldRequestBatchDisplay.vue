@@ -68,14 +68,14 @@
 </template>
 
 <script>
-import HeldRequestBatchList from './HeldRequestBatchList';
-import FilterTag from '../../util/FilterTag';
+import HeldRequestBatchList from './HeldRequestBatchList.vue';
+import FilterTag from '../../util/FilterTag.vue';
 import PrimaryButton from '../../util/PrimaryButton.vue';
 import alertMixin from '../../../mixins/alertMixin';
-import ConfirmationDialog from '../../util/ConfirmationDialog';
+import ConfirmationDialog from '../../util/ConfirmationDialog.vue';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
-import PrbFileModal from '@/components/penreg/penrequest-batch/PrbFileModal';
+import PrbFileModal from '@/components/penreg/penrequest-batch/PrbFileModal.vue';
 
 export default {
   name: 'HeldRequestBatchDisplay',

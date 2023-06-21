@@ -34,10 +34,10 @@
 </template>
 
 <script>
-import RequestDetail from '../RequestDetail';
-import StudentDemographicsCard from './StudentDemographicsCard';
-import StudentRequestCard from './StudentRequestCard';
-import StudentRequestActions from './StudentRequestActions';
+import RequestDetail from '../RequestDetail.vue';
+import StudentDemographicsCard from './StudentDemographicsCard.vue';
+import StudentRequestCard from './StudentRequestCard.vue';
+import StudentRequestActions from './StudentRequestActions.vue';
 import { REQUEST_TYPES } from '../../utils/constants';
 
 export default {

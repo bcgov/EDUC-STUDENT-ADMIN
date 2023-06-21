@@ -100,10 +100,10 @@
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton.vue';
-import DistrictContact from '@/components/institute/DistrictContact';
-import NewDistrictContactPage from '@/components/institute/NewDistrictContactPage';
-import EditDistrictContactPage from '@/components/institute/EditDistrictContactPage';
-import ConfirmationDialog from '@/components/util/ConfirmationDialog';
+import DistrictContact from '@/components/institute/DistrictContact.vue';
+import NewDistrictContactPage from '@/components/institute/NewDistrictContactPage.vue';
+import EditDistrictContactPage from '@/components/institute/EditDistrictContactPage.vue';
+import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import alertMixin from '@/mixins/alertMixin';
 import { mapState } from 'pinia';
 import {sortBy} from 'lodash';

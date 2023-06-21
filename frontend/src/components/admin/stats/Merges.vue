@@ -136,10 +136,10 @@ import {LocalDate} from '@js-joda/core';
 import ApiService from '../../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
-import BarChartContainer from '@/components/admin/stats/BarChartContainer';
+import BarChartContainer from '@/components/admin/stats/BarChartContainer.vue';
 import {CHART_STAT_URLS} from '@/utils/constants/ChartConstants';
 import Spinner from '@/components/common/Spinner.vue';
-import MergedStudentsDataTable from '@/components/admin/stats/MergedStudentsStatsDataTable';
+import MergedStudentsDataTable from '@/components/admin/stats/MergedStudentsStatsDataTable.vue';
 
 export default {
   name: 'merges',

@@ -445,7 +445,7 @@ import {replaceMacro, insertMacro} from '@/utils/macro';
 import {ChronoUnit, DateTimeFormatter, LocalDate} from '@js-joda/core';
 import alertMixin from '@/mixins/alertMixin';
 
-import PrimaryButton from '@/components/util/PrimaryButton.vue.vue';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import DocumentUpload from '@/components/common/DocumentUpload.vue';
 import ImageRenderer from '@/components/common/ImageRenderer.vue';
 import AddStudent from '@/components/common/AddStudent.vue';

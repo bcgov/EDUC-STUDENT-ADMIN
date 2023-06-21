@@ -616,7 +616,7 @@ import {deepCloneObject} from '@/utils/common';
 import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
-import SchoolStatus from '@/components/institute/SchoolStatus';
+import SchoolStatus from '@/components/institute/SchoolStatus.vue';
 import {sortBy} from 'lodash';
 import {getAllowedFacilityTypes} from '@/utils/institute/editFacilityTypeMatrix';
 import {authStore} from '@/store/modules/auth';

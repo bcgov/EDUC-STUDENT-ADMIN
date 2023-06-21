@@ -1,3 +1,5 @@
+import {notificationsStore} from '@/store/modules/notifications';
+
 let webSocketsService = {};
 
 webSocketsService.install = function (Vue, options) {
@@ -59,7 +61,8 @@ webSocketsService.install = function (Vue, options) {
     Here we write our custom functions to not make a mess in one function
   */
   function handleNotification (params) {
-    options.store.dispatch('notifications/setNotification', params.data);
+    const noteStore = notificationsStore();
+    noteStore.setNotification(params.data);
   }
 };
 
