@@ -35,13 +35,13 @@
                              icon="mdi-account-multiple-outline" :to="`/institute/districtContacts/${districtID}`"
                              text="View District Contacts"></PrimaryButton>
               <PrimaryButton id="districtDetailsEditButton" icon-left width="6em" icon="mdi-pencil" text="Edit"
-                             v-if="canEditDistrictDetails()" @click.native="toggleEdit"></PrimaryButton>
+                             v-if="canEditDistrictDetails()" :click-action="toggleEdit"></PrimaryButton>
             </v-col>
             <v-col v-else cols="6" class="d-flex justify-end">
               <PrimaryButton class="mr-2" secondary id="cancelButton" icon-left width="6em" text="Cancel"
-                             @click.native="cancelClicked"></PrimaryButton>
+                             :click-action="cancelClicked"></PrimaryButton>
               <PrimaryButton id="saveButton" icon-left width="6em" text="Save" :disabled="!districtDetailsFormValid"
-                             @click.native="updateDistrictDetails"></PrimaryButton>
+                             :click-action="updateDistrictDetails"></PrimaryButton>
             </v-col>
           </v-row>
           <v-row cols="1">
@@ -204,7 +204,7 @@
                         item-value="provinceCode"
                         v-model="getMailingAddressCopy()[0].provinceCode"
                         dense
-                        outlined
+                        variant="outlined"
                         :rules="[rules.required()]"
                         required
                         class="mt-2"
@@ -227,7 +227,7 @@
                         :rules="[rules.required()]"
                         v-model="getMailingAddressCopy()[0].countryCode"
                         dense
-                        outlined
+                        variant="outlined"
                         class="mt-2 mb-2"
                         style="color: black">
                       </v-select>
@@ -355,7 +355,7 @@
                                         dense
                                         required
                                         :rules="[rules.required()]"
-                                        outlined
+                                        variant="outlined"
                                         class="mt-2"
                                         style="color: black">
                                       </v-select>
@@ -377,7 +377,7 @@
                                         dense
                                         :rules="[rules.required()]"
                                         required
-                                        outlined
+                                        variant="outlined"
                                         class="mt-2 mb-2"
                                         style="color: black">
                                       </v-select>
@@ -401,7 +401,7 @@
                                   <v-checkbox
                                     dense
                                     id="sameAsMailingCheckbox"
-                                    @click.native="clickSameAsAddressButton"
+                                    :click-action="clickSameAsAddressButton"
                                     v-model="sameAsMailingCheckbox"
                                     label="Same as Mailing Address"
                                     class="mt-n3 pt-0"
@@ -426,7 +426,7 @@
                 </v-col>
                 <v-col class="d-flex justify-end">
                   <PrimaryButton id="addNewDistrictNoteButton" width="9em" icon="mdi-plus" icon-left text="New Note"
-                    v-if="canEditDistrictDetails()" @click.native="newNoteSheet = !newNoteSheet"></PrimaryButton>
+                    v-if="canEditDistrictDetails()" :click-action="newNoteSheet = !newNoteSheet"></PrimaryButton>
                 </v-col>
               </v-row>
               <v-row>
@@ -472,8 +472,8 @@
                 </v-row>
                 <v-row class="py-4 pr-2 justify-end">
                   <PrimaryButton id="cancelNote" secondary text="Cancel" class="mr-2"
-                    @click.native="newNoteSheet = !newNoteSheet; newNoteText = ''"></PrimaryButton>
-                  <PrimaryButton id="saveNote" text="Save" width="7rem" :disabled="newNoteText === ''" :loading="loading" @click.native="saveNewDistrictNote"></PrimaryButton>
+                    :click-action="flipNoteSheet"></PrimaryButton>
+                  <PrimaryButton id="saveNote" text="Save" width="7rem" :disabled="newNoteText === ''" :loading="loading" :click-action="saveNewDistrictNote"></PrimaryButton>
                 </v-row>
               </v-card-text>
             </v-card>
@@ -587,6 +587,10 @@ export default {
     async clickSameAsAddressButton(){
       await this.$nextTick();
       this.$refs.districtDetailsForm.validate();
+    },
+    flipNoteSheet(){
+      this.newNoteSheet = !this.newNoteSheet;
+      this.newNoteText = ''
     },
     cancelClicked(){
       this.editing = false;

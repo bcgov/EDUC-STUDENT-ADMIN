@@ -38,10 +38,10 @@
           ></v-autocomplete>
         </v-col>
         <v-col class="d-flex justify-end align-end">
-          <PrimaryButton id="clear-action" class="mr-2" secondary text="Clear" @click.native="clearSearchParams"></PrimaryButton>
+          <PrimaryButton id="clear-action" class="mr-2" secondary text="Clear" :click-action="clearSearchParams"></PrimaryButton>
           <PrimaryButton id="search-action" :disabled="!isValidSearchForm || !searchEnabled"
                         class="mr-0" text="Search"
-                        @click.native="searchPenCoordinators"></PrimaryButton>
+                        :click-action="searchPenCoordinators"></PrimaryButton>
         </v-col>
       </v-sheet>
     </v-form>
@@ -84,7 +84,7 @@
                           :class="[{'revert-action': !hasEdits(header.value) || dataLoading}, 'ml-3', 'mt-2']"
                           short
                           text="Revert"
-                          @click.native="revertField(header.value)"
+                          :click-action="revertField(header.value)"
                         ></TertiaryButton>
                       </v-col>
                     </v-row>
@@ -96,7 +96,7 @@
                         secondary
                         text="Cancel"
                         :disabled="!hasAnyEdits() || dataLoading"
-                        @click.native="clickCancel"
+                        :click-action="clickCancel"
                         v-if="hoveredOveredRowID === props.item.mincode"
                       ></PrimaryButton>
                       <PrimaryButton
@@ -105,7 +105,7 @@
                         text="Save"
                         :disabled="!hasAnyEdits() || !isValidPenCoordForm || dataLoading"
                         :loading="dataLoading"
-                        @click.native="clickSave"
+                        :click-action="clickSave"
                         v-if="hoveredOveredRowID === props.item.mincode"
                       ></PrimaryButton>
                     </div>

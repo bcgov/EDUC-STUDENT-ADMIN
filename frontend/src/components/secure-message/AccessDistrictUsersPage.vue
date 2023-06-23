@@ -36,7 +36,7 @@
               {{ this.primaryEdxActivationCode ? this.primaryEdxActivationCode.activationCode : `Code Not Found` }}
             </v-chip>
             <ClipboardButton id="copyPrimaryEdxActivationCodeButton" v-if="this.primaryEdxActivationCode" :copyText="this.primaryEdxActivationCode.activationCode" icon="$copy"></ClipboardButton>
-            <PrimaryButton id="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibilityButton" short secondary icon="mdi-sync" style="margin-top: 0.2em" class="ml-2 pl-2 pr-2" @click.native="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibility">Generate</PrimaryButton>
+            <PrimaryButton id="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibilityButton" short secondary icon="mdi-sync" style="margin-top: 0.2em" class="ml-2 pl-2 pr-2" :click-action="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibility">Generate</PrimaryButton>
           </v-col>
         </v-row>
         <v-expand-transition>
@@ -54,8 +54,8 @@
               </v-row>
               <v-row no-gutters>
                 <v-col class="d-flex justify-end">
-                  <PrimaryButton id="closeGenerateNewPrimaryEdxActivationCodeDialogButton" secondary class="ml-2" @click.native="closeGenerateNewPrimaryEdxActivationCodeDialog">No</PrimaryButton>
-                  <PrimaryButton id="doGeneratePrimaryEdxActivationCodeButton" class="ml-2" @click.native="doGeneratePrimaryEdxActivationCode">Yes</PrimaryButton>
+                  <PrimaryButton id="closeGenerateNewPrimaryEdxActivationCodeDialogButton" secondary class="ml-2" :click-action="closeGenerateNewPrimaryEdxActivationCodeDialog">No</PrimaryButton>
+                  <PrimaryButton id="doGeneratePrimaryEdxActivationCodeButton" class="ml-2" :click-action="doGeneratePrimaryEdxActivationCode">Yes</PrimaryButton>
                 </v-col>
               </v-row>
             </v-col>
@@ -69,11 +69,11 @@
             <v-text-field id="name-text-field" label="Name" v-model="searchFilter.name" clearable @keyup.enter="enterPushed()"></v-text-field>
           </v-col>
           <v-col cols="12" md="4">
-            <v-select id="roleName-select-field" clearable :items="districtRoles" v-model="searchFilter.roleName" item-text="label" item-value="edxRoleCode" label="Role"></v-select>
+            <v-select id="roleName-select-field" variant="underlined" clearable :items="districtRoles" v-model="searchFilter.roleName" item-text="label" item-value="edxRoleCode" label="Role"></v-select>
           </v-col>
           <v-col cols="12" md="4" :class="['text-right']">
-            <PrimaryButton id="user-clear-button" secondary @click.native="clearButtonClick">Clear</PrimaryButton>
-            <PrimaryButton id="user-search-button" class="ml-2" @click.native="searchButtonClick" :disabled="searchEnabled()">Search</PrimaryButton>
+            <PrimaryButton id="user-clear-button" secondary :click-action="clearButtonClick">Clear</PrimaryButton>
+            <PrimaryButton id="user-search-button" class="ml-2" :click-action="searchButtonClick" :disabled="searchEnabled()">Search</PrimaryButton>
           </v-col>
         </v-row>
         <!-- user info -->
@@ -95,13 +95,13 @@
                                      :disabled="!primaryEdxActivationCode"
                                      icon-left
                                      text="Add New User"
-                                     @click.native="newUserInviteSheet = !newUserInviteSheet"/>
+                                     :click-action="newUserInviteSheet = !newUserInviteSheet"/>
                     </v-col>
                   </v-row>
                   <v-row v-if="!primaryEdxActivationCode">
                     <v-col class="mx-3">
                       <v-alert
-                        dense
+                        density="compact"
                         style="background-color: #E9EBEF !important;"
                         color="#003366"
                         outlined

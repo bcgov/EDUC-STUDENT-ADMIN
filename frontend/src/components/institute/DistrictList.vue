@@ -18,7 +18,7 @@
             item-text="districtNumberName"
             :items="districtSearchNames"
             v-model="searchFilter.districtId"
-            @change="searchButtonClick"
+            @update:model-value="searchButtonClick"
             clearable>
             <template #item="data">
               <v-icon :color="getStatusColor(data.item.status)">
@@ -35,6 +35,7 @@
             :items="status"
             v-model="searchFilter.status"
             item-text="label"
+            variant="underlined"
             item-value="districtStatusCode"
             label="Status">
             <template #item="{ item }">
@@ -50,8 +51,8 @@
           </v-select>
         </v-col>
         <v-col cols="12" md="4" :class="['text-right']">
-          <PrimaryButton id="district-clear-button" secondary @click.native="clearButtonClick">Clear</PrimaryButton>
-          <PrimaryButton id="district-search-button" class="ml-2" @click.native="searchButtonClick">Search</PrimaryButton>
+          <PrimaryButton id="district-clear-button" secondary :click-action="clearButtonClick">Clear</PrimaryButton>
+          <PrimaryButton id="district-search-button" class="ml-2" :click-action="searchButtonClick">Search</PrimaryButton>
         </v-col>
       </v-row>
 
@@ -88,7 +89,7 @@
                   <v-btn id="districtContacts"
                          color="#003366"
                          outlined
-                         @click.native.stop="openDistrictContacts(item.districtId)"
+                         :click-action.stop="openDistrictContacts(item.districtId)"
                          class="mt-0 pt-0 filterButton ml-2"
                          style="text-transform: initial"
                   >

@@ -69,7 +69,7 @@
           </v-chip-group>
           <v-list-item-group
               v-model="selectedRoles"
-              @change="selectedRolesChanged"
+              @update:model-value="selectedRolesChanged"
               v-else
               multiple
           >
@@ -106,7 +106,7 @@
                 <PrimaryButton width="5em" :id="`user-cancel-remove-button-${user.firstName}-${user.lastName}`"
                                text="Cancel" class="mr-2" secondary :on="{click: clickDeleteButton}"></PrimaryButton>
                 <PrimaryButton :id="`user-remove-action-button-${user.firstName}-${user.lastName}`" text="Remove"
-                               @click.native="clickRemoveButton(user)"></PrimaryButton>
+                               :click-action="clickRemoveButton(user)"></PrimaryButton>
               </v-col>
             </v-row>
           </v-card-text>
@@ -128,7 +128,7 @@
                 <PrimaryButton width="5em" :id="`user-cancel-relink-button-${user.firstName}-${user.lastName}`"
                                text="Cancel" class="mr-2" secondary :on="{click: clickRelinkButton}" :disabled="isRelinking"></PrimaryButton>
                 <PrimaryButton :id="`user-relink-action-button-${user.firstName}-${user.lastName}`" text="Re-Link"
-                               @click.native="clickActionRelinkButton(user)" :disabled="isRelinking" :loading="isRelinking"></PrimaryButton>
+                               :click-action="clickActionRelinkButton(user)" :disabled="isRelinking" :loading="isRelinking"></PrimaryButton>
               </v-col>
             </v-row>
           </v-card-text>

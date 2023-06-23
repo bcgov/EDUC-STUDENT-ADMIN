@@ -12,7 +12,7 @@
               text="Compare"
               icon="mdi-content-copy"
               :disabled="disabled"
-              @click.native="compare"
+              :click-action="compare"
               :bind="attrs"
               :on="on">
       </TertiaryButton>
@@ -24,11 +24,11 @@
         title="Compare/View"
         :closeCompareModal="closeCompareModal">
         <template #actions="{clearError, validateAction, disableMerge, disableDemerge, disableMoveSld, twin, merge, demerge, moveSldRecords}">
-          <PrimaryButton id="compareModalCancelBtn" text="Cancel" secondary @click.native="[closeCompareModal(), clearError()]"></PrimaryButton>
-          <PrimaryButton id="moveSldBtn" text="Move Sld Record" primary :disabled="disableMoveSld()" @click.native="moveSldRecords()"></PrimaryButton>
-          <PrimaryButton id="twinBtn" text="Twin" primary :disabled="validateAction()" @click.native="twin()"></PrimaryButton>
-          <PrimaryButton id="demergeBtn" text="Demerge" primary :disabled="disableDemerge()" @click.native="demerge()"></PrimaryButton>
-          <PrimaryButton id="mergeBtn" text="Merge PENs" primary :disabled="disableMerge()" @click.native="merge()"></PrimaryButton>
+          <PrimaryButton id="compareModalCancelBtn" text="Cancel" secondary :click-action="[closeCompareModal(), clearError()]"></PrimaryButton>
+          <PrimaryButton id="moveSldBtn" text="Move Sld Record" primary :disabled="disableMoveSld()" :click-action="moveSldRecords()"></PrimaryButton>
+          <PrimaryButton id="twinBtn" text="Twin" primary :disabled="validateAction()" :click-action="twin()"></PrimaryButton>
+          <PrimaryButton id="demergeBtn" text="Demerge" primary :disabled="disableDemerge()" :click-action="demerge()"></PrimaryButton>
+          <PrimaryButton id="mergeBtn" text="Merge PENs" primary :disabled="disableMerge()" :click-action="merge()"></PrimaryButton>
         </template>
       </CompareDemographicsCommon>
     </v-card>

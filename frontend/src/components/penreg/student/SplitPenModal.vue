@@ -11,7 +11,7 @@
         class="mx-1"
         text="Split PEN"
         :disabled="disabled"
-        @click.native="openModal"
+        :click-action="openModal"
         :bind="attrs"
         :on="on"
       ></PrimaryButton>
@@ -61,10 +61,10 @@
       </v-row>
       <v-card-actions class="pt-0 pr-0">
         <v-spacer></v-spacer>
-        <PrimaryButton id="closeSplitPenModal" class="mx-1" text="Cancel" secondary @click.native="closeModal"></PrimaryButton>
+        <PrimaryButton id="closeSplitPenModal" class="mx-1" text="Cancel" secondary :click-action="closeModal"></PrimaryButton>
         <PrimaryButton id="acceptSplitPen" :disabled="hasSagaInProgress" :loading="isProcessing" class="mx-1"
-                       text="Accept" @click.native="splitPen"></PrimaryButton>
-        <PrimaryButton id="searchPen" class="ml-1" text="Search" @click.native="searchPen"></PrimaryButton>
+                       text="Accept" :click-action="splitPen"></PrimaryButton>
+        <PrimaryButton id="searchPen" class="ml-1" text="Search" :click-action="searchPen"></PrimaryButton>
       </v-card-actions>
     </v-card>
   </v-dialog>

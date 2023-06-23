@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-row dense>
+    <v-row density="compact">
       <v-col
         key="completionsLast13Months"
         cols="6"
@@ -14,7 +14,7 @@
         key="percentileStatsRequestLastMonth"
         cols="6"
       >
-        <v-row dense style="min-height: 10rem;" class="mt-3">
+        <v-row density="compact" style="min-height: 10rem;" class="mt-3">
           <v-col cols="6">
             <percentile-info-card v-if="completionsCurrentMonth!==null && percentCompletedRequestToLastMonth !== null"
                                   :percentile="percentCompletedRequestToLastMonth" :title="completionsCurrentMonth"
@@ -29,7 +29,7 @@
             <Spinner v-else/>
           </v-col>
         </v-row>
-        <v-row dense style="min-height: 10rem;" class="mt-4">
+        <v-row density="compact" style="min-height: 10rem;" class="mt-4">
           <v-col cols="6">
             <percentile-info-card v-if="abandonedCurrentMonth!==null && percentAbandonedRequestToLastMonth !== null"
                                   :percentile="percentAbandonedRequestToLastMonth" :title="abandonedCurrentMonth"
@@ -65,7 +65,7 @@
                                 :url="CHART_STAT_URLS[`${requestTypeWithAllUpperCase}_ALL_STATUS_LAST_12_MONTH`]"></DoughnutChartContainer>
       </v-col>
     </v-row>
-    <v-row dense>
+    <v-row density="compact">
       <v-col
         key="completionsLast12months"
         cols="12"

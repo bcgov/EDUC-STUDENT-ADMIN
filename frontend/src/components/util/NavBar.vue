@@ -106,7 +106,7 @@
         <v-icon v-else>$close</v-icon>
         <p class="ma-0 pl-3 pr-2">Menu</p>
       </v-app-bar-nav-icon>
-      <v-toolbar-title class="ml-4 nav-title pl-6">{{ title }}</v-toolbar-title>
+      <v-toolbar-title class="ml-4 nav-title pl-4">{{ title }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <SetNavigation/>
     </v-app-bar>

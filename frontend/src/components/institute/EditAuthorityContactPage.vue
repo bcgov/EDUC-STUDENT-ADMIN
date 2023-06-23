@@ -13,6 +13,7 @@
                 v-model="editContact.authorityContactTypeCode"
                 :items="authorityContactTypes"
                 item-text="label"
+                variant="underlined"
                 class="pt-0"
                 item-value="authorityContactTypeCode"
                 label="Authority Contact Type"
@@ -115,7 +116,7 @@
                   <v-date-picker
                       v-model="editContact.effectiveDate"
                       :active-picker.sync="editAuthorityContactEffectiveDatePicker"
-                      @change="saveEditAuthorityContactEffectiveDate"
+                      @update:model-value="saveEditAuthorityContactEffectiveDate"
                   ></v-date-picker>
                 </v-menu>
               </v-col>
@@ -144,7 +145,7 @@
                   <v-date-picker
                       v-model="editContact.expiryDate"
                       :active-picker.sync="editAuthorityContactExpiryDatePicker"
-                      @change="saveEditAuthorityContactExpiryDate"
+                      @update:model-value="saveEditAuthorityContactExpiryDate"
                   ></v-date-picker>
                 </v-menu>
               </v-col>
@@ -154,8 +155,8 @@
       </v-form>
     </v-card-text>
     <v-card-actions class="justify-end">
-      <PrimaryButton id="cancelChangesToAuthorityContactButton" secondary text="Cancel" @click.native="cancelEditAuthorityContactPage"></PrimaryButton>
-      <PrimaryButton id="saveChangesToAuthorityContactButton" text="Save" width="7rem" @click.native="saveChangesToAuthorityContact" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
+      <PrimaryButton id="cancelChangesToAuthorityContactButton" secondary text="Cancel" :click-action="cancelEditAuthorityContactPage"></PrimaryButton>
+      <PrimaryButton id="saveChangesToAuthorityContactButton" text="Save" width="7rem" :click-action="saveChangesToAuthorityContact" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
     </v-card-actions>
   </v-card>
 </template>

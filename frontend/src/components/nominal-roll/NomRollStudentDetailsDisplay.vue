@@ -39,14 +39,14 @@
                     <PrimaryButton v-if="isIgnoredStatus" id="recover-item-action" class="mx-2"
                                    :disabled="!isIgnoredStatus"
                                    text="Recover Record"
-                                   @click.native="recoverStudent"></PrimaryButton>
+                                   :click-action="recoverStudent"></PrimaryButton>
                     <PrimaryButton v-else id="ignore-item-action" class="mx-2"
                                    :disabled="disableActionButtons"
                                    text="Ignore Record"
-                                   @click.native="ignoreStudent"></PrimaryButton>
+                                   :click-action="ignoreStudent"></PrimaryButton>
                     <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2"
                                    :disabled="disableActionButtons" text="Modify search"
-                                   @click.native="openSearchDemographicsModal"></PrimaryButton>
+                                   :click-action="openSearchDemographicsModal"></PrimaryButton>
                   </v-row>
                   <v-row no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
                     <span>

@@ -11,6 +11,7 @@
       :dark="!disabled"
       :to="to"
       :width="width"
+      :min-height="minheight"
       :loading="loading"
       v-bind="bind"
       @click="clickAction"
@@ -68,6 +69,10 @@ export default {
       default: null
     },
     width: {
+      type: String,
+      default: null
+    },
+    minheight: {
       type: String,
       default: null
     },

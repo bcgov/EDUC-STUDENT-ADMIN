@@ -29,9 +29,9 @@
                 </v-col>
                 <v-col cols="12">
                   <v-card-actions style="float: right;">
-                    <PrimaryButton @click.native="$emit('closeDialog')" :secondary="true" class="mx-1" text="Cancel"></PrimaryButton>
-                    <PrimaryButton class="mx-1" text="Go to Record" @click.native="viewStudentDetails"></PrimaryButton>
-                    <PrimaryButton class="mx-1" text="Open in new window" @click.native="openStudentDetails"></PrimaryButton>
+                    <PrimaryButton :click-action="$emit('closeDialog')" :secondary="true" class="mx-1" text="Cancel"></PrimaryButton>
+                    <PrimaryButton class="mx-1" text="Go to Record" :click-action="viewStudentDetails"></PrimaryButton>
+                    <PrimaryButton class="mx-1" text="Open in new window" :click-action="openStudentDetails"></PrimaryButton>
                   </v-card-actions>
                 </v-col>
               </v-row>

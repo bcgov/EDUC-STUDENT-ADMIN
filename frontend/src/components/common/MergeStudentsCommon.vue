@@ -52,7 +52,7 @@
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
               <v-col cols="3">
-                <v-text-field outlined dense maxlength="25"
+                <v-text-field outlined density="compact" maxlength="25"
                               :id="STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME"
                               class="true-pen-data"
                               :disabled="mergeSagaComplete"
@@ -74,7 +74,7 @@
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
               <v-col cols="3">
-                <v-text-field outlined dense maxlength="25"
+                <v-text-field outlined density="compact" maxlength="25"
                               :id="STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME"
                               class="true-pen-data"
                               :disabled="mergeSagaComplete"
@@ -96,7 +96,7 @@
                 ></StudentDetailsCheckBoxWithOutputText>
               </v-col>
               <v-col cols="3">
-                <v-text-field outlined dense maxlength="25"
+                <v-text-field outlined density="compact" maxlength="25"
                               :id="STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES"
                               class="true-pen-data"
                               :disabled="mergeSagaComplete"
@@ -344,10 +344,10 @@
         <v-row>
           <v-col cols="12">
             <v-card-actions style="float: right;">
-              <PrimaryButton id="compareModalCancelBtn" text="Cancel" secondary @click.native=closeStudentsMergeModal></PrimaryButton>
+              <PrimaryButton id="compareModalCancelBtn" text="Cancel" secondary :click-action=closeStudentsMergeModal></PrimaryButton>
               <PrimaryButton
                 :disabled="!hasAnyEdits() || !validForm || isProcessing || mergeSagaComplete || isAMergedStudent"
-                @click.native="performMerge()" text="Merge"></PrimaryButton>
+                :click-action="performMerge()" text="Merge"></PrimaryButton>
             </v-card-actions>
           </v-col>
         </v-row>

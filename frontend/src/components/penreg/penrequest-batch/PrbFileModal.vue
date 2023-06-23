@@ -24,7 +24,7 @@
         <PrimaryButton
             id="closeFileViewer"
             text="Close"
-            @click.native="isFileViewerOpen=false">
+            :click-action="isFileViewerOpen=false">
         </PrimaryButton>
       </div>
     </v-card>

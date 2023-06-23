@@ -24,7 +24,7 @@
               @select="insertMacroText"
             />
             <v-col cols="12" xl="3" lg="5" md="5" class="py-0" justify="end" align-content="end">
-              <PrimaryButton id="reject-request" text="Reject" :disabled="isRejectDisabled || !isRejectEnabledForUser" width="100%" @click.native="submitReject"></PrimaryButton>
+              <PrimaryButton id="reject-request" text="Reject" :disabled="isRejectDisabled || !isRejectEnabledForUser" width="100%" :click-action="submitReject"></PrimaryButton>
             </v-col>
           </v-row>
         </v-card-text>

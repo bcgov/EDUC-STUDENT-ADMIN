@@ -3,7 +3,7 @@
 
     <v-alert
       id="addStudentAlert"
-      dense
+      density="compact"
       outlined
       dismissible
       v-model="alert"
@@ -26,7 +26,7 @@
       </v-text-field>
       <PrimaryButton width="6rem" :disabled="enableSearchButton" id="searchPenBtn" text="Search"
                      :loading="isSearchingStudent"
-                     @click.native="searchStudentForGivenPEN"/>
+                     :click-action="searchStudentForGivenPEN"/>
     </v-row>
 
     <v-row no-gutters v-if="showStudentDetails">
@@ -40,9 +40,9 @@
     </v-row>
     <v-row class="justify-end pr-2 pt-2" >
       <PrimaryButton id="cancelAddStudentBtn" secondary text="Cancel" class="mr-2"
-                     @click.native="closeForm"></PrimaryButton>
+                     :click-action="closeForm"></PrimaryButton>
       <PrimaryButton :disabled="!studentExist" id="addStudentToNewMessageBtn"
-                     text="Add" width="5rem" @click.native="addStudentToMessage"></PrimaryButton>
+                     text="Add" width="5rem" :click-action="addStudentToMessage"></PrimaryButton>
     </v-row>
   </v-card>
 </template>

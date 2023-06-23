@@ -7,19 +7,19 @@
                   :student-data="modalStudent">
       <template #actions="{ isFormValid }">
         <PrimaryButton id="cancel" :secondary="true" text="Cancel"
-                       @click.native="closeDialog"
+                       :click-action="closeDialog"
         >
         </PrimaryButton>
 
         <PrimaryButton width="15%" text="Modify Request"
                        id="searchDemogModalSearchBtn"
-                       @click.native="isFormValid()"
+                       :click-action="isFormValid()"
         >
         </PrimaryButton>
         <PrimaryButton width="15%"
                        text="Advanced Search"
                        id="runAdvancedSearch"
-                       @click.native="searchStudent()"
+                       :click-action="searchStudent()"
         >
         </PrimaryButton>
       </template>

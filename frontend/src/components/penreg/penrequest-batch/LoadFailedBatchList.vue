@@ -2,8 +2,8 @@
     <v-container fluid class="fill-height px-0 mb-4">
         <v-row no-gutters class="list-actions py-2 px-4 d-flex justify-end" style="background-color:white;">
           <v-col class="d-flex justify-end">
-            <PrimaryButton id="review-file-action" class="ml-2" :disabled="!fileChecked()" text="Review" :loading="isProcessing" @click.native="reviewFile"></PrimaryButton>
-            <PrimaryButton id="delete-file-action" class="ml-2" :disabled="!fileChecked()" text="Delete" :loading="isDeleting" @click.native="deleteFile"></PrimaryButton>
+            <PrimaryButton id="review-file-action" class="ml-2" :disabled="!fileChecked()" text="Review" :loading="isProcessing" :click-action="reviewFile"></PrimaryButton>
+            <PrimaryButton id="delete-file-action" class="ml-2" :disabled="!fileChecked()" text="Delete" :loading="isDeleting" :click-action="deleteFile"></PrimaryButton>
           </v-col>
         </v-row>
         <v-row no-gutters class="py-1" style="background-color:white;">

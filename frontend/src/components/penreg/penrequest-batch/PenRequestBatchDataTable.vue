@@ -20,7 +20,7 @@
           color="#606060"
           v-model="allSelected" 
           :indeterminate="partialSelected" 
-          @change="selectAllFiles"
+          @update:model-value="selectAllFiles"
         ></v-checkbox>
         <span v-else :key="h.id" :class="{'file-column' : !header.countable}" :title="header.tooltip">
           {{ header.text }}
@@ -33,7 +33,7 @@
               class="file-checkbox filter-checkbox" 
               color="#606060"
               v-model="header.isFiltered" 
-              @change="selectFilter(header)"
+              @update:model-value="selectFilter(header)"
             ></v-checkbox>
           </span>
         </template>
@@ -81,7 +81,7 @@
                 short 
                 text="More Info"
                 :disabled="props.item.sagaInProgress"
-                @click.native="clickMoreInfo"
+                :click-action="clickMoreInfo"
               ></PrimaryButton>
               <span v-else>{{formatTableColumn(header.format, props.item[header.value]) }}</span>
               <v-tooltip v-if="header.value==='mincode' && isUnarchived(props.item)" right>

@@ -14,7 +14,8 @@
               id="mergeTimeframe"
               :items="timeframes"
               v-model="timeframe"
-              dense
+              variant="underlined"
+              density="compact"
               outlined
               color="#38598a"
               append-icon="mdi-chevron-down"
@@ -40,7 +41,7 @@
                     <v-col class="mt-2" cols="2">PEN:</v-col>
                     <v-col cols="4" class="mr-15">
                       <v-text-field
-                        dense
+                        density="compact"
                         filled
                         outlined
                         id='pen'
@@ -56,7 +57,7 @@
                     <v-col class="mt-2" cols="3">Mincode:</v-col>
                     <v-col cols="3" class="mr-15">
                       <v-text-field
-                        dense
+                        density="compact"
                         filled
                         outlined
                         id='mincode'
@@ -70,7 +71,7 @@
                   <v-row no-gutters class="mt-n4">
                     <v-col class="mt-2" cols="4">Legal Surname:</v-col>
                     <v-col cols="6">
-                      <v-text-field dense filled outlined
+                      <v-text-field density="compact" filled outlined
                                     id='legalLastName'
                                     v-model="legalSurnameSearch"
                                     maxlength="255"
@@ -82,7 +83,7 @@
                   <v-row no-gutters class="mt-n4">
                     <v-col class="mt-2" cols="4">Legal Given:</v-col>
                     <v-col cols="6">
-                      <v-text-field dense filled outlined
+                      <v-text-field density="compact" filled outlined
                                     id='legalFirstName'
                                     v-model="legalGivenNameSearch"
                                     maxlength="255"
@@ -105,7 +106,7 @@
                   </v-row>
                   <v-row no-gutters class="justify-end mt-n2">
                     <v-col cols="4" style="text-align: -webkit-right;">
-                      <PrimaryButton id="search-clear" :secondary="true" @click.native="clearSearch"
+                      <PrimaryButton id="search-clear" :secondary="true" :click-action="clearSearch"
                                      text="Clear"></PrimaryButton>
                     </v-col>
                   </v-row>

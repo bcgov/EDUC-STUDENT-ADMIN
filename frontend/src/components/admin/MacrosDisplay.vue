@@ -1,9 +1,9 @@
 <template>
   <v-container fluid class="px-0 mb-4">
-    <v-toolbar flat dense>
+    <v-toolbar flat density="compact">
       <v-toolbar-title><strong>{{title}}</strong></v-toolbar-title>
       <v-spacer/>
-      <PrimaryButton id="add-macro" text="Add Macro" short :disabled="!this.selected || loading || processing" @click.native="clickAddBtn"></PrimaryButton>
+      <PrimaryButton id="add-macro" text="Add Macro" short :disabled="!this.selected || loading || processing" :click-action="clickAddBtn"></PrimaryButton>
     </v-toolbar>
     <v-divider></v-divider>
     <v-progress-linear
@@ -22,7 +22,7 @@
             transition
             activatable
             return-object
-            @click.native="clickTreeView"
+            :click-action="clickTreeView"
           >
           </v-treeview>
         </v-card-text>
@@ -66,7 +66,7 @@
       max-width="50%"
     >
       <v-card>
-        <v-toolbar dense flat>
+        <v-toolbar density="compact" flat>
           <v-spacer/>
           <v-btn id="closeMacroDialog" text icon @click.stop="macroDialogOpen=false">
             <v-icon color="#38598A">mdi-close</v-icon>

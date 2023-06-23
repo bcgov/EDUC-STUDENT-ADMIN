@@ -73,8 +73,8 @@
 
         <v-card-actions class="mr-4 pb-6">
           <v-spacer/>
-          <PrimaryButton id="mapSchoolCodeDialogCancelBtn" text="Cancel" secondary @click.native="mapSchoolCodeDialog = false"></PrimaryButton>
-          <PrimaryButton id="mapSchoolCodeDialogAddBtn" text="Add" :disabled="!isValidForm" :loading="processing" @click.native="createFedProvSchoolCode"></PrimaryButton>
+          <PrimaryButton id="mapSchoolCodeDialogCancelBtn" text="Cancel" secondary :click-action="mapSchoolCodeDialog = false"></PrimaryButton>
+          <PrimaryButton id="mapSchoolCodeDialogAddBtn" text="Add" :disabled="!isValidForm" :loading="processing" :click-action="createFedProvSchoolCode"></PrimaryButton>
         </v-card-actions>
       </v-card>
     </v-dialog>

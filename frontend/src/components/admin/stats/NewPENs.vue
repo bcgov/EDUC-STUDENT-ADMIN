@@ -15,8 +15,8 @@
                     id="k12PSIselector"
                     :items="schoolGroups"
                     v-model="selectedSchoolGroup"
-                    outlined
-                    dense
+                    variant="outlined"
+                    density="compact"
                     class="mr-2"
                     placeholder="K-12/PSI Filter"
                     color="#38598a"
@@ -29,8 +29,8 @@
                     id="newPENTimeframe"
                     :items="timeframes"
                     v-model="timeframe"
-                    dense
-                    outlined
+                    density="compact"
+                    variant="outlined"
                     color="#38598a"
                     append-icon="mdi-chevron-down"
                     :menu-props="{ offsetY: true }"
@@ -126,10 +126,10 @@
                     </v-row>
                     <v-row no-gutters class="justify-end mt-n2">
                       <v-col cols="4" style="text-align: -webkit-right">
-                        <PrimaryButton id="search-clear" :secondary="true" @click.native="clearSearch" text="Clear"></PrimaryButton>
+                        <PrimaryButton id="search-clear" :secondary="true" :click-action="clearSearch" text="Clear"></PrimaryButton>
                       </v-col>
                       <v-col cols="4" class="ml-2">
-                        <PrimaryButton :disabled="!searchEnabled" :loading="searchLoading" @click.native="getNewPENs(true)" text="Refine"></PrimaryButton>
+                        <PrimaryButton :disabled="!searchEnabled" :loading="searchLoading" :click-action="getNewPENs(true)" text="Refine"></PrimaryButton>
                       </v-col>
                     </v-row>
                   </v-expansion-panel-content>

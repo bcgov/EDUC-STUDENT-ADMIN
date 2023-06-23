@@ -1,11 +1,11 @@
 <template>
   <v-card flat :color="colour" class="mt-2" height="100%">
-    <v-row class="pt-4 px-8">
+    <v-row class="pt-6 px-8">
       <v-col class="pa-0" cols="2">
         <h3 class="dashboard-title mr-4">{{ title }}
         </h3>
       </v-col>
-      <v-col v-for="(row, index) in tableData" :key="index" class="py-0" cols="3">
+      <v-col v-for="(row, index) in tableData" :key="index" class="pa-4" cols="3">
         <v-row class="pa-0">
           <h3>{{ row.title }}</h3>
         </v-row>

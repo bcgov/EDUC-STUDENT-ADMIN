@@ -18,7 +18,7 @@
           <TertiaryButton v-if="isRefreshRequired" id="refreshButton" :disabled="disableRefresh" class="ma-0"
                           icon="mdi-cached"
                           iconStyle="mdi-flip-h" text="Refresh"
-                          @click.native="$emit('refresh-match-results')"></TertiaryButton>
+                          :click-action="$emit('refresh-match-results')"></TertiaryButton>
         </v-row>
       </v-col>
     </v-row>
@@ -51,8 +51,8 @@
                               :class="['checkbox', 'pl-3']"
                               color="#606060"
                               :input-value="props.isSelected"
-                              dense
-                              @change="props.select($event)"></v-checkbox>
+                              density="compact"
+                              @update:model-value="props.select($event)"></v-checkbox>
                       <v-icon
                               :class="['checkboxIcon', 'pl-3', ]"
                               v-if="header.bottomValue==='icon' && props.item['iconValue']"
@@ -104,7 +104,7 @@
                         <PrimaryButton :short="true" id="matchUnMatchButton" :text="matchUnMatchButtonText"
                                        :width="'6.5em'"
                                        :disabled="disableMatchUnmatch"
-                                       @click.native="$emit('match-unmatch-student', props.item, matchUnMatchButtonText)"></PrimaryButton>
+                                       :click-action="$emit('match-unmatch-student', props.item, matchUnMatchButtonText)"></PrimaryButton>
                       </span>
                       <span v-else-if="header.bottomValue==='postalCode'"
                             :class="['bottom-column-item', props.item[header.bottomValue] && demogValuesMatch(header.bottomValue, props.item[header.bottomValue])? 'font-weight-bold':'']">

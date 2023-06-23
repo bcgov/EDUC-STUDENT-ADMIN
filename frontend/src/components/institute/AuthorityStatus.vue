@@ -66,7 +66,7 @@
                       <v-date-picker
                           v-model="newOpenDate"
                           :max="currentDate"
-                          @change="saveNewOpenDate"
+                          @update:model-value="saveNewOpenDate"
                       ></v-date-picker>
                     </v-menu>
                   </v-col>
@@ -87,7 +87,7 @@
             </v-row>
             <v-row class="d-flex justify-start" v-if="action === 'setCloseDate' && !authorityHasOpenSchools">
               <v-col>
-                <v-alert v-if="showAlertForFutureClosureDate" color="#003366" dense text type="info">
+                <v-alert v-if="showAlertForFutureClosureDate" color="#003366" density="compact" text type="info">
                   <p>Some schools under this authority have closing dates in the future.</p>
                   <p>The closing date of the authority must be on or after <strong>{{dateOfLastSchoolClosureFormatted}}</strong>.</p>
                   <p>The following schools have close dates in the future:</p>
@@ -130,7 +130,7 @@
                           v-model="newCloseDate"
                           :min="dateOfLastSchoolClosure"
                           :show-current="dateOfLastSchoolClosure"
-                          @change="saveNewCloseDate"
+                          @update:model-value="saveNewCloseDate"
                       ></v-date-picker>
                     </v-menu>
                   </v-col>
@@ -139,7 +139,7 @@
             </v-row>
             <v-row class="d-flex justify-start" v-if="action === 'updateCloseDate'">
               <v-col>
-                <v-alert v-if="showAlertForFutureClosureDate" color="#003366" dense text type="info">
+                <v-alert v-if="showAlertForFutureClosureDate" color="#003366" density="compact" text type="info">
                   <p>Some schools under this authority have closing dates in the future.</p>
                   <p>The closing date of the authority must be on or after <strong>{{dateOfLastSchoolClosureFormatted}}</strong>.</p>
                   <p>The following schools have close dates in the future:</p>
@@ -181,7 +181,7 @@
                       <v-date-picker
                           v-model="updatedCloseDate"
                           :min="dateOfLastSchoolClosure"
-                          @change="saveUpdatedCloseDate"
+                          @update:model-value="saveUpdatedCloseDate"
                       ></v-date-picker>
                     </v-menu>
                   </v-col>
@@ -192,8 +192,8 @@
         </v-row>
     </v-card-text>
     <v-card-actions class="justify-end">
-      <PrimaryButton id="cancelNewContactBtn" secondary text="Cancel" @click.native="closeEditAuthorityStatus"></PrimaryButton>
-      <PrimaryButton id="newContactPostBtn" text="Okay" width="7rem" @click.native="updateAuthorityDates" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
+      <PrimaryButton id="cancelNewContactBtn" secondary text="Cancel" :click-action="closeEditAuthorityStatus"></PrimaryButton>
+      <PrimaryButton id="newContactPostBtn" text="Okay" width="7rem" :click-action="updateAuthorityDates" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
     </v-card-actions>
     </v-form>
   </v-card>

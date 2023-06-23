@@ -71,7 +71,7 @@
                   id="date-picker-text-field"
                   :value="headerSearchParams.initialSubmitDate? headerSearchParams.initialSubmitDate.join(): ''"
                   outlined
-                  dense
+                  density="compact"
                   readonly
                   @click:clear="headerSearchParams.initialSubmitDate = []"
                   clearable
@@ -85,7 +85,7 @@
                 range
               >
                 <v-spacer></v-spacer>
-                <PrimaryButton id="date-picker-ok-button" text="OK" @click.native="dateMenu=false"> </PrimaryButton>
+                <PrimaryButton id="date-picker-ok-button" text="OK" :click-action="dateMenu=false"> </PrimaryButton>
               </v-date-picker>
             </v-menu>
           </template>
@@ -105,7 +105,7 @@
               v-model.trim="headerSearchParams[penName]"
               class="header-text"
               outlined
-              dense
+              density="compact"
               clearable
             ></v-text-field>
           </template>
@@ -125,7 +125,7 @@
               v-model.trim="headerSearchParams.legalLastName"
               class="header-text"
               outlined
-              dense
+              density="compact"
               clearable
             ></v-text-field>
           </template>
@@ -145,7 +145,7 @@
               v-model.trim="headerSearchParams.legalFirstName"
               class="header-text"
               outlined
-              dense
+              density="compact"
               clearable
             ></v-text-field>
           </template>
@@ -165,7 +165,7 @@
               v-model.trim="headerSearchParams.reviewer"
               class="header-text"
               outlined
-              dense
+              density="compact"
               clearable
             ></v-text-field>
           </template>

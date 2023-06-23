@@ -23,7 +23,7 @@
               secondary
               icon-left
               icon="mdi-arrow-left-right"
-              @click.native="moveSchool"
+              :click-action="moveSchool"
               text="Move School">
             </PrimaryButton>
           </v-col>

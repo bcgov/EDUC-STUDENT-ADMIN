@@ -4,7 +4,7 @@
                        :student-data="student">
       <template #actions="{ isFormValid, isValidForm, createNewPenLoading }">
         <PrimaryButton id="cancel" :secondary="true" text="Cancel"
-                       @click.native="closeDialog"
+                       :click-action="closeDialog"
         >
         </PrimaryButton>
 
@@ -13,7 +13,7 @@
                        id="createNewPENSubmitButton"
                        :loading="createNewPenLoading"
                        :disabled="isValidForm"
-                       @click.native="isFormValid()"
+                       :click-action="isFormValid()"
         >
         </PrimaryButton>
       </template>
@@ -44,12 +44,12 @@
             <v-row justify="end" no-gutters class="py-3 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
                    style="background-color:white;">
               <PrimaryButton v-if="createNewPenButtonAvailableForUser" id="create-new-pen" class="mr-2"
-                             :disabled="createNewPenDisabled" @click.native="openCreatePenModal"
+                             :disabled="createNewPenDisabled" :click-action="openCreatePenModal"
                              text="Create PEN"></PrimaryButton>
-              <PrimaryButton id="search-clear" :secondary="true" class="mr-2" @click.native="clearSearch"
+              <PrimaryButton id="search-clear" :secondary="true" class="mr-2" :click-action="clearSearch"
                              text="Clear"></PrimaryButton>
               <PrimaryButton id="perform-search" :disabled="!searchEnabled" :loading="searchLoading"
-                             @click.native="searchStudent(true)" text="Search"></PrimaryButton>
+                             :click-action="searchStudent(true)" text="Search"></PrimaryButton>
             </v-row>
             <v-row v-if="this.studentSearchResponse" no-gutters class="pt-3" style="background-color:white;">
               <v-divider class="mx-3"/>

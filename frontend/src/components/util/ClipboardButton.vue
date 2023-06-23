@@ -8,7 +8,7 @@
           :dark="!disabled"
           icon
           v-bind="attrs"
-          @click.native.stop="copy(copyText)"
+          :click-action.stop="copy(copyText)"
           :title="`copy ${copyText} to clipboard`"
       >
         <v-icon v-if="icon" :class="iconStyle" small>

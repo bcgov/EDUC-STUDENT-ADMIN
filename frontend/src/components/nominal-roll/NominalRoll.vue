@@ -18,7 +18,7 @@
             Nominal Roll - {{ currentYear }} - Sanity Check
             <v-spacer></v-spacer>
             <PrimaryButton v-if="items" title="process nominal roll file" text="Process" :loading="processStudentsLoading" :disabled="processing"
-                           @click.native="processNominalRollStudents()"></PrimaryButton>
+                           :click-action="processNominalRollStudents()"></PrimaryButton>
           </v-card-title>
           <v-progress-linear
             v-model="progress"

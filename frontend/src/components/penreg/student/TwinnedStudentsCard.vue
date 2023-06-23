@@ -32,7 +32,7 @@
         <v-col class="mt-2">
           <v-row justify="end" class="mx-3">
             <TertiaryButton :disabled="selectedTwins.length < 1 || !ADVANCED_SEARCH_ROLE" id="deleteButton" class="ma-0" text="Delete"
-                            icon="mdi-delete" @click.native="deleteTwinStudent"></TertiaryButton>
+                            icon="mdi-delete" :click-action="deleteTwinStudent"></TertiaryButton>
           </v-row>
         </v-col>
       </v-row>

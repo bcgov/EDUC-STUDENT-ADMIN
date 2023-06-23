@@ -1,6 +1,7 @@
 <template>
   <v-card
-      id="editDistrictContactCard">
+    id="editDistrictContactCard"
+  >
     <v-card-title class="sheetHeader pt-1 pb-1">Edit District Contact</v-card-title>
     <v-divider></v-divider>
     <v-card-text>
@@ -8,30 +9,31 @@
         <v-row class="d-flex justify-center">
           <v-col>
             <v-select
-                id='editDistrictContactTypeDropdown'
-                :rules="[rules.required()]"
-                v-model="editContact.districtContactTypeCode"
-                :items="districtContactTypes"
-                item-text="label"
-                class="pt-0"
-                item-value="districtContactTypeCode"
-                label="District Contact Type"
+              id="editDistrictContactTypeDropdown"
+              :rules="[rules.required()]"
+              v-model="editContact.districtContactTypeCode"
+              :items="districtContactTypes"
+              variant="underlined"
+              item-text="label"
+              class="pt-0"
+              item-value="districtContactTypeCode"
+              label="District Contact Type"
             />
             <v-text-field
-                id='editDistrictContactFirstNameInput'
-                v-model="editContact.firstName"
-                class="pt-0"
-                :rules="[rules.noSpecialCharactersContactName()]"
-                :maxlength="255"
-                label="First Name"
+              id="editDistrictContactFirstNameInput"
+              v-model="editContact.firstName"
+              class="pt-0"
+              :rules="[rules.noSpecialCharactersContactName()]"
+              :maxlength="255"
+              label="First Name"
             />
             <v-text-field
-                id='editDistrictContactLastNameInput'
-                :rules="[rules.required(), rules.noSpecialCharactersContactName()]"
-                v-model="editContact.lastName"
-                class="pt-0"
-                :maxlength="255"
-                label="Last Name"
+              id="editDistrictContactLastNameInput"
+              :rules="[rules.required(), rules.noSpecialCharactersContactName()]"
+              v-model="editContact.lastName"
+              class="pt-0"
+              :maxlength="255"
+              label="Last Name"
             />
             <v-text-field id="editDistrictContactJobTitle"
                           :rules="[rules.noSpecialCharactersContactTitle()]"
@@ -41,117 +43,117 @@
                           maxlength="255"
             ></v-text-field>
             <v-text-field
-                id='editDistrictContactEmailInput'
-                :rules="[rules.required(), rules.email()]"
-                v-model="editContact.email"
-                class="pt-0"
-                :maxlength="255"
-                label="Email"
+              id="editDistrictContactEmailInput"
+              :rules="[rules.required(), rules.email()]"
+              v-model="editContact.email"
+              class="pt-0"
+              :maxlength="255"
+              label="Email"
             />
             <v-row>
               <v-col cols="6">
                 <v-text-field
-                    id='editDistrictContactPhoneNumberInput'
-                    :rules="[rules.required(), rules.phoneNumber()]"
-                    v-model="editContact.phoneNumber"
-                    class="pt-0"
-                    :maxlength="10"
-                    label="Phone Number"
-                    @keypress="isNumber($event)"
+                  id="editDistrictContactPhoneNumberInput"
+                  :rules="[rules.required(), rules.phoneNumber()]"
+                  v-model="editContact.phoneNumber"
+                  class="pt-0"
+                  :maxlength="10"
+                  label="Phone Number"
+                  @keypress="isNumber($event)"
                 />
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                    id='editDistrictContactPhoneExtensionInput'
-                    :rules="[rules.number()]"
-                    v-model="editContact.phoneExtension"
-                    :maxlength="10"
-                    class="pt-0"
-                    label="Ext."
-                    @keypress="isNumber($event)"
+                  id="editDistrictContactPhoneExtensionInput"
+                  :rules="[rules.number()]"
+                  v-model="editContact.phoneExtension"
+                  :maxlength="10"
+                  class="pt-0"
+                  label="Ext."
+                  @keypress="isNumber($event)"
                 />
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="6">
                 <v-text-field
-                    id='editDistrictContactAltPhoneNumberInput'
-                    :rules="[rules.phoneNumber()]"
-                    v-model="editContact.alternatePhoneNumber"
-                    class="pt-0"
-                    :maxlength="10"
-                    label="Alt. Phone Number"
-                    @keypress="isNumber($event)"
+                  id="editDistrictContactAltPhoneNumberInput"
+                  :rules="[rules.phoneNumber()]"
+                  v-model="editContact.alternatePhoneNumber"
+                  class="pt-0"
+                  :maxlength="10"
+                  label="Alt. Phone Number"
+                  @keypress="isNumber($event)"
                 />
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                    id='editDistrictContactAltPhoneExtensionInput'
-                    :rules="[rules.number()]"
-                    v-model="editContact.alternatePhoneExtension"
-                    class="pt-0"
-                    :maxlength="10"
-                    label="Alt. Phone Ext."
-                    @keypress="isNumber($event)"
+                  id="editDistrictContactAltPhoneExtensionInput"
+                  :rules="[rules.number()]"
+                  v-model="editContact.alternatePhoneExtension"
+                  class="pt-0"
+                  :maxlength="10"
+                  label="Alt. Phone Ext."
+                  @keypress="isNumber($event)"
                 />
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="6">
                 <v-menu
-                    id="editDistrictContactEffectiveDatePicker"
-                    ref="editDistrictContactEffectiveDateFilter"
-                    :close-on-content-click="false"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
+                  id="editDistrictContactEffectiveDatePicker"
+                  ref="editDistrictContactEffectiveDateFilter"
+                  :close-on-content-click="false"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="auto"
                 >
                   <template #activator="{ on, attrs }">
                     <v-text-field
-                        id="editDistrictContactEffectiveDateTextField"
-                        :rules="[rules.required()]"
-                        class="pt-0 mt-0"
-                        v-model="districtContactEffectiveDateFormatted"
-                        label="Start Date"
-                        prepend-inner-icon="mdi-calendar"
-                        clearable
-                        readonly
-                        v-bind="attrs"
+                      id="editDistrictContactEffectiveDateTextField"
+                      :rules="[rules.required()]"
+                      class="pt-0 mt-0"
+                      v-model="districtContactEffectiveDateFormatted"
+                      label="Start Date"
+                      prepend-inner-icon="mdi-calendar"
+                      clearable
+                      readonly
+                      v-bind="attrs"
                     ></v-text-field>
                   </template>
                   <v-date-picker
-                      v-model="editContact.effectiveDate"
-                      :active-picker.sync="editDistrictContactEffectiveDatePicker"
-                      @change="saveEditDistrictContactEffectiveDate"
+                    v-model="editContact.effectiveDate"
+                    :active-picker.sync="editDistrictContactEffectiveDatePicker"
+                    @update:model-value="saveEditDistrictContactEffectiveDate"
                   ></v-date-picker>
                 </v-menu>
               </v-col>
               <v-col cols="6">
                 <v-menu
-                    id="editDistrictContactExpiryDatePicker"
-                    ref="editDistrictContactExpiryDateFilter"
-                    :close-on-content-click="false"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
+                  id="editDistrictContactExpiryDatePicker"
+                  ref="editDistrictContactExpiryDateFilter"
+                  :close-on-content-click="false"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="auto"
                 >
                   <template #activator="{ on, attrs }">
                     <v-text-field
-                        id="editDistrictContactExpiryDateTextField"
-                        :rules="[rules.endDateRule(editContact.effectiveDate, editContact.expiryDate)]"
-                        class="pt-0 mt-0"
-                        v-model="districtContactExpiryDateFormatted"
-                        label="End Date"
-                        prepend-inner-icon="mdi-calendar"
-                        clearable
-                        readonly
-                        v-bind="attrs"
+                      id="editDistrictContactExpiryDateTextField"
+                      :rules="[rules.endDateRule(editContact.effectiveDate, editContact.expiryDate)]"
+                      class="pt-0 mt-0"
+                      v-model="districtContactExpiryDateFormatted"
+                      label="End Date"
+                      prepend-inner-icon="mdi-calendar"
+                      clearable
+                      readonly
+                      v-bind="attrs"
                     ></v-text-field>
                   </template>
                   <v-date-picker
-                      v-model="editContact.expiryDate"
-                      :active-picker.sync="editDistrictContactExpiryDatePicker"
-                      @change="saveEditDistrictContactExpiryDate"
+                    v-model="editContact.expiryDate"
+                    :active-picker.sync="editDistrictContactExpiryDatePicker"
+                    @update:model-value="saveEditDistrictContactExpiryDate"
                   ></v-date-picker>
                 </v-menu>
               </v-col>
@@ -161,15 +163,19 @@
       </v-form>
     </v-card-text>
     <v-card-actions class="justify-end">
-      <PrimaryButton id="cancelChangesToDistrictContactButton" secondary text="Cancel" @click.native="cancelEditDistrictContactPage"></PrimaryButton>
-      <PrimaryButton id="saveChangesToDistrictContactButton" text="Save" width="7rem" @click.native="saveChangesToDistrictContact" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
+      <PrimaryButton id="cancelChangesToDistrictContactButton" secondary text="Cancel"
+                     :click-action="cancelEditDistrictContactPage"
+      ></PrimaryButton>
+      <PrimaryButton id="saveChangesToDistrictContactButton" text="Save" width="7rem"
+                     :click-action="saveChangesToDistrictContact" :disabled="!isFormValid" :loading="processing"
+      ></PrimaryButton>
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
 import PrimaryButton from '../util/PrimaryButton.vue';
-import { mapState } from 'pinia';
+import {mapState} from 'pinia';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
@@ -216,7 +222,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated','userInfo']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo']),
     districtContactEffectiveDateFormatted: {
       get() {
         return this.formatDisplayDate(this.editContact.effectiveDate);
@@ -289,9 +295,9 @@ export default {
 
 <style scoped>
 .sheetHeader {
-  background-color: #003366;
-  color: white;
-  font-size: medium !important;
-  font-weight: bolder !important;
+    background-color: #003366;
+    color: white;
+    font-size: medium !important;
+    font-weight: bolder !important;
 }
 </style>

@@ -34,7 +34,7 @@
         </v-col>
         <v-col class="d-flex justify-end">
           <PrimaryButton id="viewDistrictDetailsButton" class="mr-2" secondary icon-left icon="mdi-domain" :to="`/district/${districtID}`" text="View District Details" ></PrimaryButton>
-          <PrimaryButton v-if="canEditDistrictContact" icon-left width="11em" icon="mdi-plus-thick" text="New Contact" @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
+          <PrimaryButton v-if="canEditDistrictContact" icon-left width="11em" icon="mdi-plus-thick" text="New Contact" :click-action="newContactSheet = !newContactSheet"></PrimaryButton>
         </v-col>
       </v-row>
       <div v-for="districtContactType in districtContactTypes" :key="districtContactType.code">
@@ -45,7 +45,7 @@
         </v-row>
         <v-row v-if="!districtContactType.publiclyAvailable">
           <v-col>
-            <v-alert color="#003366" dense text type="info">Contacts of this type are only available to the ministry and not available to public.</v-alert>
+            <v-alert color="#003366" density="compact" text type="info">Contacts of this type are only available to the ministry and not available to public.</v-alert>
           </v-col>
         </v-row>
         <v-row cols="2" v-if="districtContacts.has(districtContactType.districtContactTypeCode)">

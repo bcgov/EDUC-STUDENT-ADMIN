@@ -13,6 +13,7 @@
                 v-model="editContact.schoolContactTypeCode"
                 :items="schoolContactTypes"
                 item-text="label"
+                variant="underlined"
                 class="pt-0"
                 item-value="schoolContactTypeCode"
                 label="School Contact Type"
@@ -122,7 +123,7 @@
                   <v-date-picker
                       v-model="editContact.effectiveDate"
                       :active-picker.sync="editSchoolContactEffectiveDatePicker"
-                      @change="saveEditSchoolContactEffectiveDate"
+                      @update:model-value="saveEditSchoolContactEffectiveDate"
                   ></v-date-picker>
                 </v-menu>
               </v-col>
@@ -151,7 +152,7 @@
                   <v-date-picker
                       v-model="editContact.expiryDate"
                       :active-picker.sync="editSchoolContactExpiryDatePicker"
-                      @change="saveEditSchoolContactExpiryDate"
+                      @update:model-value="saveEditSchoolContactExpiryDate"
                   ></v-date-picker>
                 </v-menu>
               </v-col>
@@ -161,8 +162,8 @@
       </v-form>
     </v-card-text>
     <v-card-actions class="justify-end">
-      <PrimaryButton id="cancelChangesToSchoolContactButton" secondary text="Cancel" @click.native="cancelEditSchoolContactPage"></PrimaryButton>
-      <PrimaryButton id="saveChangesToSchoolContactButton" text="Save" width="7rem" @click.native="saveChangesToSchoolContact" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
+      <PrimaryButton id="cancelChangesToSchoolContactButton" secondary text="Cancel" :click-action="cancelEditSchoolContactPage"></PrimaryButton>
+      <PrimaryButton id="saveChangesToSchoolContactButton" text="Save" width="7rem" :click-action="saveChangesToSchoolContact" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
     </v-card-actions>
   </v-card>
 </template>

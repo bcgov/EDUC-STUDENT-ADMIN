@@ -653,30 +653,32 @@ router.beforeEach((to, _from, next) => {
   const aStore = authStore();
   // this section is to handle the backend session expiry, where frontend vue session is still valid.
   if (to.meta.requiresAuth && aStore.isAuthenticated) {
-    validateAndExecute('/token-expired');
+    validateAndExecute('/token-expired', to);
   }else if (to.meta.requiresAuth) {
-    validateAndExecute('login');
+    validateAndExecute('login', to);
   }
   else{
     next();
   }
 
-  function validateAndExecute(nextRouteInError) {
+  function validateAndExecute(nextRouteInError, to) {
     const aStore = authStore();
     aStore.getJwtToken().then(() => {
       if (!aStore.isAuthenticated) {
         next(nextRouteInError);
       } else {
         aStore.getUserInfo().then(() => {
+          console.log('Role: ' + to.meta.role);
+          console.log('Cur Roles: ' + JSON.stringify(aStore.$state));
           if (!aStore.isAuthorizedUser) {
             next('unauthorized');
-          } else if (to.meta.role && !aStore[`${to.meta.role}`]()) {
+          } else if (to.meta.role && !aStore.$state.userInfo.userRoles.includes(to.meta.role)) {
             next('unauthorized-page');
           } else {
             next();
           }
-        }).catch(() => {
-          console.log('Unable to get user info');
+        }).catch((e) => {
+          console.log('Unable to get user info: ' + e);
           next('error');
         });
       }

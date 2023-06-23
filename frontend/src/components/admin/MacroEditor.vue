@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-textarea
-      dense
+      density="compact"
       outlined
       v-model="macro.macroText"
       :disabled="loading || disabled"
@@ -17,7 +17,7 @@
         secondary
         text="Cancel"
         :disabled="loading || disabled"
-        @click.native="$emit('cancel')"
+        :click-action="$emit('cancel')"
       ></PrimaryButton>
       <PrimaryButton
         id="save-action"
@@ -25,7 +25,7 @@
         text="Save"
         :disabled="!isValidForm || loading || disabled"
         :loading="loading"
-        @click.native="$emit('save', macro)"
+        :click-action="$emit('save', macro)"
       ></PrimaryButton>
     </v-card-actions>
   </div>

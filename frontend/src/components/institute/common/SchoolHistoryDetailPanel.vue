@@ -9,7 +9,7 @@
         <SchoolHistoryDetail :schoolHistory="currentSelectedHistory">
           <v-card-actions class="pb-2">
             <v-spacer></v-spacer>
-            <PrimaryButton id="closePanel" class="mx-1" text="Close" @click.native="$emit('close')"></PrimaryButton>
+            <PrimaryButton id="closePanel" class="mx-1" text="Close" :click-action="$emit('close')"></PrimaryButton>
           </v-card-actions>
         </SchoolHistoryDetail>
       </v-col>

@@ -38,11 +38,11 @@
               </v-col>
               <v-col v-if="!editing" cols="4" class="d-flex justify-end">
                 <PrimaryButton id="viewAuthorityContactsButton" class="mr-2" secondary icon-left icon="mdi-account-multiple-outline" :to="`/authorityContacts/${authorityID}`" text="View Authority Contacts"></PrimaryButton>
-                <PrimaryButton id="editButton" icon-left width="6em" icon="mdi-pencil" text="Edit" v-if="canEditAuthorities()" @click.native="toggleEdit"></PrimaryButton>
+                <PrimaryButton id="editButton" icon-left width="6em" icon="mdi-pencil" text="Edit" v-if="canEditAuthorities()" :click-action="toggleEdit"></PrimaryButton>
               </v-col>
               <v-col v-else cols="4" class="d-flex justify-end">
-                <PrimaryButton class="mr-2" secondary id="cancelButton" icon-left width="6em" text="Cancel" @click.native="editing = !editing"></PrimaryButton>
-                <PrimaryButton id="saveButton" icon-left width="6em" text="Save" :disabled="!authorityFormValid" @click.native="saveAuthority"></PrimaryButton>
+                <PrimaryButton class="mr-2" secondary id="cancelButton" icon-left width="6em" text="Cancel" :click-action="editing = !editing"></PrimaryButton>
+                <PrimaryButton id="saveButton" icon-left width="6em" text="Save" :disabled="!authorityFormValid" :click-action="saveAuthority"></PrimaryButton>
               </v-col>
             </v-row>
             <v-row>
@@ -53,7 +53,7 @@
                 <span>{{ this.authority.status }}</span>
               </v-col>
               <v-col v-else cols="2" class="mt-3">
-                <PrimaryButton id="editAuthorityStatusButton" @click.native="openAuthorityStatusEdit" :secondary="true" >
+                <PrimaryButton id="editAuthorityStatusButton" :click-action="openAuthorityStatusEdit" :secondary="true" >
                   <v-icon class="ml-n1 pr-3" :color="getStatusColorAuthorityOrSchool(this.authorityCopy.status)" dark>
                     mdi-circle-medium
                   </v-icon>
@@ -147,7 +147,7 @@
                       item-value="authorityTypeCode"
                       v-model="authorityCopy.authorityTypeCode"
                       dense
-                      outlined
+                      variant="outlined"
                       class="ministryLine mt-n1"
                       style="color: black">
                     </v-select>
@@ -262,7 +262,7 @@
                           item-value="provinceCode"
                           v-model="getMailingAddressCopy()[0].provinceCode"
                           dense
-                          outlined
+                          variant="outlined"
                           :rules="[rules.required()]"
                           required
                           class="mt-2"
@@ -285,7 +285,7 @@
                           :rules="[rules.required()]"
                           v-model="getMailingAddressCopy()[0].countryCode"
                           dense
-                          outlined
+                          variant="outlined"
                           class="mt-2 mb-2"
                           style="color: black">
                         </v-select>
@@ -414,7 +414,7 @@
                                           dense
                                           required
                                           :rules="[rules.required()]"
-                                          outlined
+                                          variant="outlined"
                                           class="mt-2"
                                           style="color: black">
                                         </v-select>
@@ -436,7 +436,7 @@
                                           dense
                                           :rules="[rules.required()]"
                                           required
-                                          outlined
+                                          variant="outlined"
                                           class="mt-2 mb-2"
                                           style="color: black">
                                         </v-select>
@@ -460,7 +460,7 @@
                                     <v-checkbox
                                       dense
                                       id="sameAsMailingCheckbox"
-                                      @click.native="clickSameAsAddressButton"
+                                      :click-action="clickSameAsAddressButton"
                                       v-model="sameAsMailingCheckbox"
                                       label="Same as Mailing Address"
                                       class="mt-n3 pt-0"
@@ -484,7 +484,7 @@
                     <h2>Ministry Notes</h2>
                   </v-col>
                   <v-col class="d-flex justify-end">
-                    <PrimaryButton id="addNewNoteButton" width="9em" icon="mdi-plus" icon-left text="New Note" v-if="canEditAuthorities()" @click.native="openNoteSheet"></PrimaryButton>
+                    <PrimaryButton id="addNewNoteButton" width="9em" icon="mdi-plus" icon-left text="New Note" v-if="canEditAuthorities()" :click-action="openNoteSheet"></PrimaryButton>
                   </v-col>
                 </v-row>
                 <v-row>
@@ -550,8 +550,8 @@
               </v-col>
             </v-row>
             <v-row class="py-4 pr-2 justify-end">
-              <PrimaryButton id="cancelNote" secondary text="Cancel" class="mr-2" @click.native="newNoteSheet = !newNoteSheet"></PrimaryButton>
-              <PrimaryButton id="saveNote" text="Save" width="7rem" :loading="loading" @click.native="saveNewAuthorityNote" :disabled="newNoteText === ''"></PrimaryButton>
+              <PrimaryButton id="cancelNote" secondary text="Cancel" class="mr-2" :click-action="newNoteSheet = !newNoteSheet"></PrimaryButton>
+              <PrimaryButton id="saveNote" text="Save" width="7rem" :loading="loading" :click-action="saveNewAuthorityNote" :disabled="newNoteText === ''"></PrimaryButton>
             </v-row>
           </v-card-text>
         </v-card>

@@ -16,7 +16,7 @@
                 class="onhoverEdit bolder customNoBorder"
                 :id='STUDENT_DETAILS_FIELDS.PEN'
                 color="#000000"
-                dense
+                density="compact"
               ></v-text-field>
             </v-col>
             <v-col cols="1">
@@ -28,7 +28,7 @@
                 v-clipboard:copy="copyTxt"
                 v-clipboard:error="onError"
                 :model="copyTxt"
-                @click.native="copyPen"
+                :click-action="copyPen"
               >
               </PrimaryButton>
             </v-col>
@@ -76,7 +76,7 @@
                     :short="true"
                     class="mt-1 ml-3"
                     :loading="saveStudentLoading"
-                    @click.native="updateDOC()"
+                    :click-action="updateDOC()"
                     title="Set Date Of Confirmation to Current Date."
                     :disabled="fullReadOnly"
                   >
@@ -178,7 +178,7 @@
 
 
           <!-- some fields cant be ported to child component, left as is-->
-          <v-row no-gutters dense class="py-1" style="max-height: 3em;">
+          <v-row no-gutters density="compact" class="py-1" style="max-height: 3em;">
             <v-col cols="2">
               <p class="labelField">Gender</p>
             </v-col>
@@ -194,7 +194,7 @@
                 v-model="studentCopy.genderCode"
                 :items="genderCodes"
                 :outlined="hoveringGender || editingGender || hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
-                dense
+                density="compact"
                 :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)"/>
             </v-col>
             <v-col cols="3" class="textFieldColumn gradeLabelColumn">
@@ -503,7 +503,7 @@
           v-clipboard:copy="copyTxt"
           v-clipboard:error="onError"
           :model="copyTxt"
-          @click.native="copyInfo"
+          :click-action="copyInfo"
         >
         </TertiaryButton>
       </v-col>

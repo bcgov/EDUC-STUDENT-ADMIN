@@ -80,8 +80,8 @@
       <v-row class="px-3 d-flex justify-end">
         <div class="d-flex">
           <v-checkbox v-model="request.demogChanged" true-value="Y" false-value="N" class="pa-0" cols="12" label="Student demographics changed"></v-checkbox>
-          <PrimaryButton id="unlink-button" class="mt-3 mx-3" text="Unlink" :disabled="isUnlinkDisabled || !isProvidePenEnabledForUser" @click.native="unlinkRequest"></PrimaryButton>
-          <PrimaryButton id="provide-pen-to-student" class="mt-3 mx-3" text="Provide PEN to Student" :disabled="isCompleteDisabled || !isProvidePenEnabledForUser" @click.native="completeRequest"></PrimaryButton>
+          <PrimaryButton id="unlink-button" class="mt-3 mx-3" text="Unlink" :disabled="isUnlinkDisabled || !isProvidePenEnabledForUser" :click-action="unlinkRequest"></PrimaryButton>
+          <PrimaryButton id="provide-pen-to-student" class="mt-3 mx-3" text="Provide PEN to Student" :disabled="isCompleteDisabled || !isProvidePenEnabledForUser" :click-action="completeRequest"></PrimaryButton>
         </div>
       </v-row>
     </v-card>

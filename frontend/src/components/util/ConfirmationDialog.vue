@@ -2,12 +2,12 @@
   <v-dialog v-model="dialog" :content-class="contentClass" :max-width="options.width" :style="{ zIndex: options.zIndex }" @keydown.esc="cancel">
     <v-card>
       <slot name="title" :cancel="cancel">
-        <v-toolbar :dark="options.dark" :color="options.color" :dense="options.dense" flat>
+        <v-toolbar :dark="options.dark" :color="options.color" density="compact" flat>
             <v-toolbar-title :class="{'white--text': options.dark, 'align-self-end': options.closeIcon, 'font-weight-bold': options.titleBold, 'dialog-subtitle':  options.subtitle}">
               {{ title }}
             </v-toolbar-title>
           <v-spacer/>
-          <v-btn id="closeBtn" v-if="options.closeIcon" text icon @click.native="cancel">
+          <v-btn id="closeBtn" v-if="options.closeIcon" text icon :click-action="cancel">
             <v-icon color="#38598A">mdi-close</v-icon>
           </v-btn>
         </v-toolbar>
@@ -19,8 +19,8 @@
       </v-card-text>
       <v-card-actions class="pt-0">
         <v-spacer></v-spacer>
-        <PrimaryButton id="rejectBtn" secondary :text="options.rejectText || 'Cancel'" @click.native="cancel"></PrimaryButton>
-        <PrimaryButton id="resolveBtn" :text="options.resolveText || 'Yes'" :disabled="options.resolveDisabled" @click.native="agree"></PrimaryButton>
+        <PrimaryButton id="rejectBtn" secondary :text="options.rejectText || 'Cancel'" :click-action="cancel"></PrimaryButton>
+        <PrimaryButton id="resolveBtn" :text="options.resolveText || 'Yes'" :disabled="options.resolveDisabled" :click-action="agree"></PrimaryButton>
       </v-card-actions>
     </v-card>
   </v-dialog>

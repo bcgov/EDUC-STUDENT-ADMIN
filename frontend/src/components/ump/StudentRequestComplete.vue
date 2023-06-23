@@ -16,7 +16,7 @@
             </v-col>
             <v-col class="my-0 mr-0 pr-0 py-0">
               <v-row justify="end" class="ma-0 pt-3">
-                <PrimaryButton id="refresh-student-info" text="Refresh Student Info" :disabled="isRefreshStudInfoDisabled || !isProvidePenEnabledForUser" @click.native="refreshStudentInfo"></PrimaryButton>
+                <PrimaryButton id="refresh-student-info" text="Refresh Student Info" :disabled="isRefreshStudInfoDisabled || !isProvidePenEnabledForUser" :click-action="refreshStudentInfo"></PrimaryButton>
               </v-row>
             </v-col>
           </v-row>
@@ -63,7 +63,7 @@
               :macros="completeMacros"
               @select="insertMacroText"
             />
-            <PrimaryButton id="send-changes-to-student" text="Send Changes to Student" :disabled="isCompleteDisabled || !isProvidePenEnabledForUser" @click.native="sendChanges"></PrimaryButton>
+            <PrimaryButton id="send-changes-to-student" text="Send Changes to Student" :disabled="isCompleteDisabled || !isProvidePenEnabledForUser" :click-action="sendChanges"></PrimaryButton>
           </v-row>
           <v-form ref="completeForm">
             <v-textarea
@@ -96,8 +96,8 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <PrimaryButton id="confirm-request-changes" text="Confirm" @click.native="confirmChanges"></PrimaryButton>
-          <PrimaryButton id="confirm-request-changes" text="Cancel" @click.native="dialog = false"></PrimaryButton>
+          <PrimaryButton id="confirm-request-changes" text="Confirm" :click-action="confirmChanges"></PrimaryButton>
+          <PrimaryButton id="confirm-request-changes" text="Cancel" :click-action="dialog = false"></PrimaryButton>
         </v-card-actions>
       </v-card>
     </v-dialog>

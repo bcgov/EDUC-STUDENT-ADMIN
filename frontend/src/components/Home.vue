@@ -3,15 +3,16 @@
     <v-row class="pb-6">
       <v-col cols="8" v-if="VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE">
         <DashboardTable v-if="!isLoadingBatch" title="School Requests" colour="#CED6E2"
-                        :tableData="penRequestData"></DashboardTable>
+                        :tableData="penRequestData"
+        ></DashboardTable>
         <v-container v-else-if="isLoadingBatch" class="full-height" fluid>
           <article id="pen-display-container" class="top-banner full-height">
             <v-row align="center" justify="center">
               <v-progress-circular
-                  :size="70"
-                  :width="7"
-                  color="primary"
-                  indeterminate
+                :size="70"
+                :width="7"
+                color="primary"
+                indeterminate
               ></v-progress-circular>
             </v-row>
           </article>
@@ -20,30 +21,32 @@
       <v-col cols="4" v-if="ADVANCED_SEARCH_ROLE || VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE">
         <v-card flat color="#F2F2F2" class="mt-2" height="100%">
           <template v-if="VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE">
-            <v-row class="pt-4 px-8" >
+            <v-row class="pt-6 px-8">
               <v-card-title class="pa-0"><h3>Archived Requests Search</h3></v-card-title>
             </v-row>
             <v-row class="pt-4 px-8">
               <v-col cols="5" class="pa-0">
                 <v-text-field
-                    id="requestsMincodeField"
-                    background-color="white"
-                    dense
-                    label="Enter district or mincode"
-                    maxlength="8"
-                    v-model="mincode"
-                    outlined
-                    :rules="mincodeRules"
-                    @keyup.enter="enterPushedForRequests()"
+                  id="requestsMincodeField"
+                  background-color="white"
+                  density="compact"
+                  label="Enter district or mincode"
+                  maxlength="8"
+                  v-model="mincode"
+                  variant="outlined"
+                  :rules="mincodeRules"
+                  @keyup.enter="enterPushedForRequests()"
                 ></v-text-field>
               </v-col>
               <v-col cols="2" class="py-0 px-2">
                 <PrimaryButton id="requestsSearchBtn" :disabled="!isValidRequestsSearchInput" text="Search" width="100%"
-                               @click.native="searchRequests"></PrimaryButton>
+                               :click-action="searchRequests" minheight="40px"
+                ></PrimaryButton>
               </v-col>
               <v-col class="py-0 px-2" cols="5">
                 <PrimaryButton class="advanceSearchButtonStyle" id="advanceSearchBtn" text="Advanced Archive Search"
-                               @click.native="archiveSearch"></PrimaryButton>
+                               :click-action="archiveSearch" minheight="40px"
+                ></PrimaryButton>
               </v-col>
             </v-row>
           </template>
@@ -54,39 +57,43 @@
             <v-row class="pt-4 px-8">
               <v-col cols="5" class="pa-0">
                 <v-text-field
-                    id="penTextField"
-                    v-model="pen"
-                    :rules="penRules"
-                    background-color="white"
-                    dense
-                    label="Enter PEN"
-                    maxlength="9"
-                    outlined
-                    @keyup.enter="enterPushed()">
+                  id="penTextField"
+                  v-model="pen"
+                  :rules="penRules"
+                  background-color="white"
+                  density="compact"
+                  label="Enter PEN"
+                  maxlength="9"
+                  variant="outlined"
+                  @keyup.enter="enterPushed()"
+                >
                 </v-text-field>
               </v-col>
               <v-col cols="2" class="py-0 px-2">
-                <PrimaryButton id="quickSearchBtn" :disabled="!isValidPEN" text="Search" width="100%"
-                               @click.native="quickSearch"></PrimaryButton>
+                <PrimaryButton id="quickSearchBtn" :disabled="!isValidPEN" text="Search" width="100%" minheight="40px"
+                               :click-action="quickSearch"
+                ></PrimaryButton>
               </v-col>
               <v-col class="py-0 px-2" cols="5">
                 <PrimaryButton id="advanceSearchBtn" text="Advanced Student Search"
-                               @click.native="advanceSearch"></PrimaryButton>
+                               :click-action="advanceSearch" minheight="40px"
+                ></PrimaryButton>
               </v-col>
             </v-row>
           </template>
         </v-card>
       </v-col>
       <v-col cols="8" v-if="(VIEW_GMP_REQUESTS_ROLE || VIEW_UMP_REQUESTS_ROLE)">
-        <DashboardTable v-if="!isLoadingGmpUmp" title="Student Requests" colour="#F2F2F2" :tableData="studentData"></DashboardTable>
+        <DashboardTable v-if="!isLoadingGmpUmp" title="Student Requests" colour="#F2F2F2" :tableData="studentData"
+        ></DashboardTable>
         <v-container fluid class="full-height" v-else-if="isLoadingGmpUmp">
           <article id="pen-display-container" class="top-banner full-height">
             <v-row align="center" justify="center">
               <v-progress-circular
-                  :size="70"
-                  :width="7"
-                  color="primary"
-                  indeterminate
+                :size="70"
+                :width="7"
+                color="primary"
+                indeterminate
               ></v-progress-circular>
             </v-row>
           </article>
@@ -119,15 +126,16 @@
       </v-col>
       <v-col cols="8" v-if="EXCHANGE_ROLE && hasAuthorizedExchangeData">
         <DashboardTable v-if="!isLoadingExchange" title="Secure Messaging Inbox" colour="#CED6E2"
-                        :tableData="authorizedExchangeData"></DashboardTable>
+                        :tableData="authorizedExchangeData"
+        ></DashboardTable>
         <v-container v-else-if="isLoadingExchange" class="full-height" fluid>
           <article class="top-banner full-height">
             <v-row align="center" justify="center">
               <v-progress-circular
-                  :size="70"
-                  :width="7"
-                  color="primary"
-                  indeterminate
+                :size="70"
+                :width="7"
+                color="primary"
+                indeterminate
               ></v-progress-circular>
             </v-row>
           </article>
@@ -138,7 +146,7 @@
 </template>
 
 <script>
-import { mapState } from 'pinia';
+import {mapState} from 'pinia';
 import {REQUEST_TYPES, Routes} from '@/utils/constants';
 import DashboardTable from '@/components/DashboardTable.vue';
 import ApiService from '@/common/apiService';
@@ -156,7 +164,7 @@ export default {
     DashboardTable
   },
   mixins: [alertMixin],
-  data () {
+  data() {
     return {
       REQUEST_TYPES: REQUEST_TYPES,
       penRequestData: [],
@@ -169,14 +177,14 @@ export default {
       isLoadingGmpUmp: true,
       isLoadingExchange: true,
       searchDropDownItems: [
-        { title: 'Archived' },
-        { title: 'Active' }
+        {title: 'Archived'},
+        {title: 'Active'}
       ],
       searchErrorMessage: 'PEN not found in Student table',
-      penRules: [ v => (!v || isValidPEN(v)) || this.penHint],
+      penRules: [v => (!v || isValidPEN(v)) || this.penHint],
       penHint: 'Fails check-digit test',
-      mincodeRules: [ v => (!v || this.isValidDistrictOrMincode(v)) || 'Invalid district or mincode'],
-      loadDateRules: [ v => (!v || isPresentDateAndAfter1900(v)) || 'Invalid date'],
+      mincodeRules: [v => (!v || this.isValidDistrictOrMincode(v)) || 'Invalid district or mincode'],
+      loadDateRules: [v => (!v || isPresentDateAndAfter1900(v)) || 'Invalid date'],
     };
   },
   async beforeMount() {
@@ -212,21 +220,24 @@ export default {
       });
     }
     let gumpiPromises = [];
-    if(this.VIEW_GMP_REQUESTS_ROLE) {
+    if (this.VIEW_GMP_REQUESTS_ROLE) {
       gumpiPromises.push(ApiService.apiAxios.get(Routes.penRequest.STATS_URL));
     }
-    if(this.VIEW_UMP_REQUESTS_ROLE) {
+    if (this.VIEW_UMP_REQUESTS_ROLE) {
       gumpiPromises.push(ApiService.apiAxios.get(Routes.studentRequest.STATS_URL));
     }
-    Promise.allSettled(gumpiPromises).then((responses)=> {
-      responses.forEach((response)=>{
+    Promise.allSettled(gumpiPromises).then((responses) => {
+      responses.forEach((response) => {
         let titleAndButtonRoute;
-        if(response.value.config.url === Routes.penRequest.STATS_URL) {
+        if (response.value.config.url === Routes.penRequest.STATS_URL) {
           titleAndButtonRoute = {title: 'Get My PEN', button: {route: REQUEST_TYPES.penRequest.path, text: 'View GMP'}};
         } else {
-          titleAndButtonRoute = {title: 'Update My PEN', button: {route: REQUEST_TYPES.studentRequest.path, text: 'View UMP'}};
+          titleAndButtonRoute = {
+            title: 'Update My PEN',
+            button: {route: REQUEST_TYPES.studentRequest.path, text: 'View UMP'}
+          };
         }
-        if(response.status === 'fulfilled') {
+        if (response.status === 'fulfilled') {
           this.studentData.push({
             ...titleAndButtonRoute,
             initial: {data: response.value.data.numInitRev, name: 'initial review'},
@@ -240,7 +251,7 @@ export default {
           });
         }
       });
-    }).finally(()=>{
+    }).finally(() => {
       this.isLoadingGmpUmp = false;
     });
     if (this.EXCHANGE_ROLE) {
@@ -259,7 +270,7 @@ export default {
   },
   computed: {
     ...mapState(appStore, ['schoolApiMincodeSchoolNames', 'schoolApiDistrictCodes']),
-    ...mapState(authStore, ['VIEW_GMP_REQUESTS_ROLE','VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ROLE', 'PEN_TEAM_ROLE']),
+    ...mapState(authStore, ['VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ROLE', 'PEN_TEAM_ROLE']),
     requestTypes() {
       return REQUEST_TYPES;
     },
@@ -267,11 +278,11 @@ export default {
       return isValidPEN(this.pen);
     },
     isValidRequestsSearchInput() {
-      if(!this.mincode && !this.loadDate) {
+      if (!this.mincode && !this.loadDate) {
         return false;
       }
       return (!this.mincode || this.isValidDistrictOrMincode(this.mincode)) &&
-          (!this.loadDate || isPresentDateAndAfter1900(this.loadDate));
+        (!this.loadDate || isPresentDateAndAfter1900(this.loadDate));
     },
     authorizedExchangeData() {
       return this.exchangeData.filter(exchangeInbox => exchangeInbox.authorized);
@@ -309,8 +320,8 @@ export default {
       }
     },
     isValidDistrictOrMincode(v) {
-      if(isValidMincode(v) && (v.length === 3 || v.length === 8)) {
-        if(v.length === 3) {
+      if (isValidMincode(v) && (v.length === 3 || v.length === 8)) {
+        if (v.length === 3) {
           return this.schoolApiDistrictCodes.size === 0 || this.schoolApiDistrictCodes.has(v);
         } else {
           return this.schoolApiMincodeSchoolNames.size === 0 || this.schoolApiMincodeSchoolNames.has(v);
@@ -319,22 +330,22 @@ export default {
       return false;
     },
     searchRequests() {
-      router.push({ name: 'archivedRequestBatch', query: {mincode: this.mincode, loadDate: this.loadDate}});
+      router.push({name: 'archivedRequestBatch', query: {mincode: this.mincode, loadDate: this.loadDate}});
     },
   }
 };
 </script>
 <style scoped>
 #requestsSearchBtn, #quickSearchBtn, #advanceSearchBtn {
-  height: 2.858em;
+    height: 2.858em;
 }
 
-.advanceSearchButtonStyle{
-  padding-left: 0.9em !important;
-  padding-right: 0.9em !important;
+.advanceSearchButtonStyle {
+    padding-left: 0.9em !important;
+    padding-right: 0.9em !important;
 }
 
 .full-height {
-  height: 100%;
+    height: 100%;
 }
 </style>

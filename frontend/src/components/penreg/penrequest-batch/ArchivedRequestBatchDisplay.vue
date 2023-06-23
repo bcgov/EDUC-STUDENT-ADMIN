@@ -174,10 +174,10 @@
                 </v-row>
               </v-col>
 
-              <PrimaryButton id="refine-action" class="mr-2 mb-3" secondary text="Clear" @click.native="clearSearchParams"></PrimaryButton>
+              <PrimaryButton id="refine-action" class="mr-2 mb-3" secondary text="Clear" :click-action="clearSearchParams"></PrimaryButton>
               <PrimaryButton id="search-action" :disabled="!isValidSearchForm || !searchEnabled"
                              :loading="searchLoading && searchEnabled" class="mr-0 mb-3" text="Search"
-                             @click.native="search"></PrimaryButton>
+                             :click-action="search"></PrimaryButton>
             </v-sheet>
           </v-col>
 
@@ -187,16 +187,16 @@
                 <PrimaryButton id="view-action" :loading="loadingRequestIDs" :disabled="!filesSelected" :on="on" text="View" icon="mdi-chevron-down" largeIcon></PrimaryButton>
               </template>
               <v-list>
-                <v-list-item id="view-list-action" @click.native="clickViewList" link>
+                <v-list-item id="view-list-action" :click-action="clickViewList" link>
                   <v-list-item-title>View List</v-list-item-title>
                 </v-list-item>
-                <v-list-item id="view-details-action" @click.native="clickViewDetails" link>
+                <v-list-item id="view-details-action" :click-action="clickViewDetails" link>
                   <v-list-item-title>View Details</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
             <PrimaryButton id="view-list-action" class="ml-2" :disabled="!filesSelected" text="Unarchive"
-                           :loading="unarchiving" @click.native="unarchive"></PrimaryButton>
+                           :loading="unarchiving" :click-action="unarchive"></PrimaryButton>
           </v-col>
 
         </v-row>

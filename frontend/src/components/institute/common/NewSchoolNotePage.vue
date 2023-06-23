@@ -23,8 +23,8 @@
           </v-col>
         </v-row>
         <v-row class="py-4 pr-2 justify-end">
-          <PrimaryButton id="cancelNote" secondary text="Cancel" @click.native="closeNewSchoolNotePage"></PrimaryButton>
-          <PrimaryButton id="saveNote" text="Save" width="7rem" @click.native="addNewSchoolNote" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
+          <PrimaryButton id="cancelNote" secondary text="Cancel" :click-action="closeNewSchoolNotePage"></PrimaryButton>
+          <PrimaryButton id="saveNote" text="Save" width="7rem" :click-action="addNewSchoolNote" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
         </v-row>
       </v-form>
     </v-card-text>

@@ -10,7 +10,7 @@
         <v-row class="pt-0">
           <v-col class="mt-1 d-flex justify-start">
             <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
-            <a class="pt-1 ml-1" @click="backButtonClick">Return to Dashboard</a>
+            <a class="ml-1" @click="backButtonClick">Return to Dashboard</a>
           </v-col>
           <v-col class='d-flex justify-end'>
             <PrimaryButton
@@ -21,7 +21,7 @@
               text="Claim"
               class="mr-2"
               :disabled="isClaimDisabled"
-              @click.native="claimExchanges"
+              :click-action="claimExchanges"
             ></PrimaryButton>
             <PrimaryButton
               :iconLeft=true
@@ -29,15 +29,15 @@
               icon="mdi-plus"
               id="newMessageBtn"
               text="New Message"
-              @click.native="newMessageSheet = !newMessageSheet"
+              :click-action="openNewMessageSheet"
             ></PrimaryButton>
           </v-col>
         </v-row>
         <v-expansion-panels flat style="border-radius: 6px">
           <v-expansion-panel @click="onExpansionPanelClick" style="background: #ebedef">
-            <v-expansion-panel-header color="#ebedef" class="pt-0 pb-0" disable-icon-rotate>
+            <v-expansion-panel-title color="#ebedef" class="pt-0 pb-0" disable-icon-rotate>
               <v-radio-group
-                @click.native.stop
+                @click.stop.prevent
                 color="#003366"
                 v-model="statusRadioGroup"
                 :disabled="!statusRadioGroupEnabled"
@@ -48,7 +48,7 @@
                          label="My Active Messages"
                          color="#003366"
                          value="statusFilterActive"
-                         @click.native="statusFilterActiveClicked"
+                         :click-action="statusFilterActiveClicked"
                 ><template #label>
                   <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">My Active Messages</span>
                 </template></v-radio>
@@ -56,7 +56,7 @@
                          label="All Active Messages"
                          color="#003366"
                          value="statusFilterAllActive"
-                         @click.native="statusFilterAllActiveClicked"
+                         :click-action="statusFilterAllActiveClicked"
                 ><template #label>
                   <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">All Active Messages</span>
                 </template></v-radio>
@@ -64,7 +64,7 @@
                          label="All Active Messages"
                          color="#003366"
                          value="statusFilterAll"
-                         @click.native="filterExchanges"
+                         :click-action="filterExchanges"
                 ><template #label>
                   <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">All Messages</span>
                 </template></v-radio>
@@ -80,8 +80,8 @@
                   <span class="ml-1">{{ filterText }}</span>
                 </v-btn>
               </template>
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
               <v-row>
                 <v-col cols="12" md="4" class="pt-0">
                   <v-autocomplete
@@ -94,10 +94,10 @@
                     clearable
                   >
                     <template #item="data">
-                      <v-list-item-avatar>
+                      <v-list-item-title>
                         <v-icon v-if="data.item.mincode">mdi-school</v-icon>
                         <v-icon v-if="data.item.districtNumber">mdi-domain</v-icon>
-                      </v-list-item-avatar>
+                      </v-list-item-title>
                       <v-list-item>
                         {{ data.item.text }}
                       </v-list-item>
@@ -129,23 +129,27 @@
                     <template #activator="{ on, attrs }">
                       <v-text-field
                         id="messageDateTextField"
+                        v-model="messageDateMoment"
+                        density="compact"
                         class="pt-0 mt-0"
-                        v-model="messageDate"
+                        variant="underlined"
                         label="Message Date"
-                        prepend-inner-icon="mdi-calendar"
+                        @keyup.enter="filterRequests()"
+                        prepend-icon="mdi-calendar"
                         clearable
                         readonly
                         v-bind="attrs"
-                      ></v-text-field>
+                        @click="openMessageDatePicker"
+                      />
                     </template>
-                    <v-date-picker
-                      v-model="messageDate"
-                      :active-picker.sync="activeMessageDatePicker"
-                      :max="(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10)"
-                      min="2022-01-01"
-                      @change="saveMessageDate"
-                    ></v-date-picker>
                   </v-menu>
+                  <VueDatePicker
+                    ref="messageDatePicker"
+                    v-model="messageDate"
+                    :enable-time-picker="false"
+                    format="yyyy-MM-dd"
+                    @update:model-value="saveMessageDate"
+                  />
                 </v-col>
               </v-row>
               <v-row>
@@ -155,6 +159,7 @@
                     :items="secureExchangeStatusCodes"
                     id="statusSelector"
                     item-text="label"
+                    variant="underlined"
                     class="pt-0 mt-0"
                     item-value="secureExchangeStatusCode"
                     prepend-inner-icon="mdi-circle-medium"
@@ -212,48 +217,52 @@
               </v-row>
               <v-row no-gutters class="justify-end mt-n2">
                 <v-col cols="12" class="d-flex justify-end">
-                  <PrimaryButton class="mr-3" id="search-clear" :secondary="true" @click.native="clearSearch"
+                  <PrimaryButton class="mr-3" id="search-clear" :secondary="true" :click-action="clearSearch()"
                                  text="Clear"></PrimaryButton>
-                  <PrimaryButton @click.native="filterExchanges" id="searchButton" :loading="loadingTable" :disabled="!searchEnabled" text="Search"></PrimaryButton>
+                  <PrimaryButton :click-action="filterExchanges()" id="searchButton" :loading="loadingTable" :disabled="!searchEnabled" text="Search"></PrimaryButton>
                 </v-col>
               </v-row>
-            </v-expansion-panel-content>
+            </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>
         <v-row>
           <v-col>
-            <v-data-table
-              :items-per-page.sync="pageSize"
-              :page.sync="pageNumber"
-              :headers="headers"
-              :footer-props="{
-                      'items-per-page-options': itemsPerPageOptions
-                    }"
-              :items="exchanges"
-              :loading="loadingTable"
-              :server-items-length="totalRequests"
-              class="elevation-1"
-              show-select
-              item-key="secureExchangeID"
-              mobile-breakpoint="0"
+            <v-data-table-server
+              v-model:items-per-page="pageSize"
+              v-model:page="pageNumber"
+              v-model:items="exchanges"
               v-model="selectedExchanges"
+              v-model:items-length="totalRequests"
+              :footer-props="{
+                'items-per-page-options': itemsPerPageOptions
+              }"
+              :loading="loadingTable"
+              class="elevation-1"
+              hide-default-header
+              mobile-breakpoint="0"
             >
-              <template #header.data-table-select></template>
-              <template #item.secureExchangeStatusCode="{ item }">
+              <template #no-data>
+                <v-row no-gutters>
+                  <v-col class="d-flex justify-center">
+                    There are no messages.
+                  </v-col>
+                </v-row>
+              </template>
+              <template #item="{ item, index }">
                 <v-row class="ml-n6" style="cursor: pointer;">
                   <v-col cols="6" lg="7" xl="7" class="pb-0 pt-0" @click="openExchange(item.secureExchangeID)">
                     <v-row class="mb-n4">
                       <v-col cols="12" class="pb-2 pt-2 pr-0">
-                        <span class="subjectHeading" :style="{color: item.isReadByMinistry ? 'black': '#1f7cef'}">{{ getSubject(item.subject) }}</span><span style="color: gray"> - {{ getLatestComment(item) }}</span>
+                        <span class="subjectHeading" :style="{color: item.raw.isReadByMinistry ? 'black': '#1f7cef'}">{{ getSubject(item.raw.subject) }}</span><span style="color: gray"> - {{ getLatestComment(item.raw) }}</span>
                       </v-col>
                     </v-row>
                     <v-row>
                       <v-col cols="12" class="pb-1 pr-0">
-                        <span class="ministryLine" >{{ getContactLineItem(item) }}</span>
+                        <span class="ministryLine" >{{ getContactLineItem(item.raw) }}</span>
                       </v-col>
                     </v-row>
                   </v-col>
-                  <v-col cols="6" lg="5" xl="5" style="text-align: end" class="pb-0 pt-0" @click="openExchange(item.secureExchangeID)">
+                  <v-col cols="6" lg="5" xl="5" style="text-align: end" class="pb-0 pt-0" @click="openExchange(item.raw.secureExchangeID)">
                     <v-row class="d-flex justify-end">
                       <v-col cols="2">
                         <v-row no-gutters>
@@ -261,17 +270,17 @@
                             <v-icon  color="grey darken-3" right size="medium" dark>mdi-pound</v-icon>
                           </v-col>
                           <v-col class="statusCodeLabel" cols="6">
-                            <span>{{ item.sequenceNumber }}</span>
+                            <span>{{ item.raw.sequenceNumber }}</span>
                           </v-col>
                         </v-row>
                       </v-col>
                       <v-col cols="2">
                         <v-row no-gutters>
                           <v-col cols="6">
-                            <v-icon class="pb-1" :color="getStatusColor(item.secureExchangeStatusCode)" right dark>mdi-circle-medium</v-icon>
+                            <v-icon class="pb-1" :color="getStatusColor(item.raw.secureExchangeStatusCode)" right dark>mdi-circle-medium</v-icon>
                           </v-col>
                           <v-col class="statusCodeLabel" cols="6">
-                            <span>{{ item.secureExchangeStatusCode }}</span>
+                            <span>{{ item.raw.secureExchangeStatusCode }}</span>
                           </v-col>
                         </v-row>
                       </v-col>
@@ -281,7 +290,7 @@
                             <v-icon style="margin-bottom: 0.2em" color="grey darken-3" right dark>mdi-account-outline</v-icon>
                           </v-col>
                           <v-col class="statusCodeLabel" cols="6">
-                            <span>{{ getReviewer(item.reviewer) }}</span>
+                            <span>{{ getReviewer(item.raw.reviewer) }}</span>
                           </v-col>
                         </v-row>
                       </v-col>
@@ -291,7 +300,7 @@
                             <v-icon class="pr-1" style="margin-bottom: 0.2em" color="grey darken-3" right dark>mdi-clock-outline</v-icon>
                           </v-col>
                           <v-col class="statusCodeLabel" cols="4">
-                            <span>{{ getNumberOfDays(item.createDate) }}</span>
+                            <span>{{ getNumberOfDays(item.raw.createDate) }}</span>
                           </v-col>
                         </v-row>
                       </v-col>
@@ -299,8 +308,7 @@
                   </v-col>
                 </v-row>
               </template>
-              <template #no-data>There are no messages.</template>
-            </v-data-table>
+            </v-data-table-server>
           </v-col>
         </v-row>
       </v-col>
@@ -339,12 +347,13 @@ import PrimaryButton from '../util/PrimaryButton.vue';
 import NewMessagePage from './NewMessagePage.vue';
 import {mapState} from 'pinia';
 import router from '@/router';
-import {isEmpty, omitBy} from 'lodash';
+import _, {isEmpty, omitBy} from 'lodash';
 import {LocalDate, ChronoUnit, DateTimeFormatter} from '@js-joda/core';
 import alertMixin from '@/mixins/alertMixin';
 import {edxStore} from '@/store/modules/edx';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
+import VueDatePicker from '@vuepic/vue-datepicker';
 
 export default {
   name: 'ExchangeInbox',
@@ -357,7 +366,8 @@ export default {
   },
   components: {
     PrimaryButton,
-    NewMessagePage
+    NewMessagePage,
+    VueDatePicker
   },
   data() {
     return {
@@ -457,6 +467,9 @@ export default {
         this.filterExchanges();
       }
     },
+    openMessageDatePicker(){
+      this.$refs.messageDatePicker.openMenu();
+    },
     messageSent(){
       this.newMessageSheet = !this.newMessageSheet;
       setTimeout(this.getExchanges, EDX_SAGA_REQUEST_DELAY_MILLISECONDS);
@@ -512,6 +525,9 @@ export default {
     },
     resetPageNumber(){
       this.pageNumber = 1;
+    },
+    openNewMessageSheet(){
+      this.newMessageSheet = !this.newMessageSheet;
     },
     clearSearch(runSearch = true){
       this.subjectFilter = '';
@@ -627,7 +643,7 @@ export default {
           pageNumber: this.pageNumber - 1,
           pageSize: this.pageSize,
           sort,
-          searchParams: omitBy(this.headerSearchParams, isEmpty),
+          searchParams: JSON.stringify(omitBy(this.headerSearchParams, isEmpty)),
         }
       }).then(response => {
         this.exchanges = response.data.content;

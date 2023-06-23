@@ -21,6 +21,7 @@
                     label="Authority Type"
                     item-value="authorityTypeCode"
                     item-text="label"
+                    variant="underlined"
                     :items="authorityTypes"
                     :rules="[rules.required()]"
                     v-model="newAuthority.authorityTypeCode"
@@ -52,7 +53,7 @@
                   <v-date-picker
                       v-model="newAuthority.openDate"
                       :active-picker.sync="newAuthorityOpenDatePicker"
-                      @change="saveNewAuthorityOpenDate"
+                      @update:model-value="saveNewAuthorityOpenDate"
                       :max="new Date(this.localDate.now().toString()).toISOString().substr(0, 10)"
                   ></v-date-picker>
                 </v-menu>
@@ -213,7 +214,7 @@
                   <v-checkbox
                       dense
                       id="sameAsMailingCheckbox"
-                      @click.native="clickSameAsAddressButton"
+                      :click-action="clickSameAsAddressButton"
                       v-model="sameAsMailingCheckbox"
                       label="Same as Mailing Address"
                       class="mt-n3 pt-0"
@@ -226,8 +227,8 @@
       </v-form>
     </v-card-text>
     <v-card-actions class="justify-end">
-      <PrimaryButton id="cancelNewAuthorityBtn" secondary text="Cancel" @click.native="closeNewAuthorityPage"></PrimaryButton>
-      <PrimaryButton id="newAuthorityPostBtn" text="Save" width="7rem" @click.native="addNewAuthority" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
+      <PrimaryButton id="cancelNewAuthorityBtn" secondary text="Cancel" :click-action="closeNewAuthorityPage"></PrimaryButton>
+      <PrimaryButton id="newAuthorityPostBtn" text="Save" width="7rem" :click-action="addNewAuthority" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
     </v-card-actions>
   </v-card>
 </template>

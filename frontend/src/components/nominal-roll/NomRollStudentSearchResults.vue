@@ -9,7 +9,7 @@
           :items="studentStatuses"
           v-model="selectedStudentStatus"
           dense
-          outlined
+          variant="outlined"
           placeholder="Filter by status"
           color="#38598a"
           append-icon="mdi-chevron-down"
@@ -18,12 +18,12 @@
         ></v-select>
       </v-flex>
       <div v-if="!hasReadOnlyRoleAccess()">
-        <PrimaryButton id="unignoreRecord" v-if="!canIgnore" :disabled="!canRecover || isPosted" @click.native="clickRecover" text="Recover Record"></PrimaryButton>
-        <PrimaryButton id="ignoreRecord" v-else :disabled="!canIgnore || isPosted" @click.native="clickIgnore" text="Ignore Record"></PrimaryButton>
-        <PrimaryButton id="viewSelected" class="ml-1" v-if="selected" :disabled="!viewSelectionEnabled || isPosted" @click.native="clickViewSelected" text="View Selected"></PrimaryButton>
-        <PrimaryButton id="viewDetails" class="ml-1" v-else :loading="loadingRequestIDs" :disabled="!viewDetailsEnabled || hasReadOnlyRoleAccess() || isPosted" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
-        <PrimaryButton id="postRecords" class="ml-1" :loading="processing" :disabled="isPosted || hasReadOnlyRoleAccess()" @click.native="clickPostRecords" text="Post"></PrimaryButton>
-        <PrimaryButton id="exportIgnored" class="ml-1" :loading="processing" :disabled="hasReadOnlyRoleAccess() || !hasFilterOnlyIgnored()" @click.native="retrieveAndDownloadIgnoredPenRequests" text="Export Ignored"></PrimaryButton>
+        <PrimaryButton id="unignoreRecord" v-if="!canIgnore" :disabled="!canRecover || isPosted" :click-action="clickRecover" text="Recover Record"></PrimaryButton>
+        <PrimaryButton id="ignoreRecord" v-else :disabled="!canIgnore || isPosted" :click-action="clickIgnore" text="Ignore Record"></PrimaryButton>
+        <PrimaryButton id="viewSelected" class="ml-1" v-if="selected" :disabled="!viewSelectionEnabled || isPosted" :click-action="clickViewSelected" text="View Selected"></PrimaryButton>
+        <PrimaryButton id="viewDetails" class="ml-1" v-else :loading="loadingRequestIDs" :disabled="!viewDetailsEnabled || hasReadOnlyRoleAccess() || isPosted" :click-action="clickViewDetails" text="View Details"></PrimaryButton>
+        <PrimaryButton id="postRecords" class="ml-1" :loading="processing" :disabled="isPosted || hasReadOnlyRoleAccess()" :click-action="clickPostRecords" text="Post"></PrimaryButton>
+        <PrimaryButton id="exportIgnored" class="ml-1" :loading="processing" :disabled="hasReadOnlyRoleAccess() || !hasFilterOnlyIgnored()" :click-action="retrieveAndDownloadIgnoredPenRequests" text="Export Ignored"></PrimaryButton>
       </div>
     </v-row>
     <v-divider class="mb-1 subheader-divider"/>
@@ -63,7 +63,7 @@
                   ></NomRollStudentStatusChip>
                   <v-icon
                     v-if="!isEmpty(props.item.validationErrors) && props.item.status !== 'IGNORED' && !hasReadOnlyRoleAccess()"
-                    @click.native="toggleRow(props.item)"
+                    :click-action="toggleRow(props.item)"
                   >{{ rowExpandedIcon }}</v-icon>
                 </span>
                 <span v-else-if="props.item.validationErrors[header.text] && props.item.status !== 'IGNORED'" style="color: red">
@@ -180,7 +180,7 @@
                     no-title
                   >
                     <v-spacer></v-spacer>
-                    <PrimaryButton id="date-picker-ok-button" text="OK" @click.native="dateMenu=false"> </PrimaryButton>
+                    <PrimaryButton id="date-picker-ok-button" text="OK" :click-action="dateMenu=false"> </PrimaryButton>
                   </v-date-picker>
                 </v-menu>
               </v-col>
@@ -195,7 +195,7 @@
                 ></v-autocomplete>
               </v-col>
               <v-col class="pb-0 pt-7">
-                <PrimaryButton width="100%" text="Save" :disabled="!validForm" @click.native="updateRequest(item)" :loading="updating"></PrimaryButton>
+                <PrimaryButton width="100%" text="Save" :disabled="!validForm" :click-action="updateRequest(item)" :loading="updating"></PrimaryButton>
               </v-col>
             </v-row>
           </v-form>

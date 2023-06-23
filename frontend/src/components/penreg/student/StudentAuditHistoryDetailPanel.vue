@@ -37,7 +37,7 @@
         <StudentAuditHistoryDetailCard :studentHistoryDetail="studentHistoryDetail">
           <v-card-actions class="pb-2">
             <v-spacer></v-spacer>
-            <PrimaryButton id="closePanel" :secondary="true" class="mx-1" text="Close" @click.native="$emit('close')"></PrimaryButton>
+            <PrimaryButton id="closePanel" :secondary="true" class="mx-1" text="Close" :click-action="$emit('close')"></PrimaryButton>
             <SplitPenModal
               :disabled="isSplitPenDisabled"
               :currentStudentDetail="student"
@@ -48,7 +48,7 @@
             ></SplitPenModal>
             <PrimaryButton id="revertData" :disabled="isRevertDisabled" :loading="isRevertingStudent" class="mx-1"
                            text="Revert"
-                           @click.native="revertStudentDataFromStudentHistory()"></PrimaryButton>
+                           :click-action="revertStudentDataFromStudentHistory()"></PrimaryButton>
           </v-card-actions>
 
         </StudentAuditHistoryDetailCard>

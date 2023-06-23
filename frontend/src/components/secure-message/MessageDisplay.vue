@@ -138,8 +138,8 @@
                 <v-row class="py-4 justify-end pt-0 pr-16 mr-10 ml-7 pl-16">
                   <MacroMenu id="newMessageMacroSelector"  small :macros="messageMacros" menuMaxWidth="25%" @select="insertMacroMessage" />
                   <v-spacer></v-spacer>
-                  <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2" @click.native="hideNewMessagePanel"></PrimaryButton>
-                  <PrimaryButton id="newMessagePostBtn" text="Send" width="8rem" :disabled="!newMessage" :loading="loading" @click.native="sendNewExchangeComment"></PrimaryButton>
+                  <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2" :click-action="hideNewMessagePanel"></PrimaryButton>
+                  <PrimaryButton id="newMessagePostBtn" text="Send" width="8rem" :disabled="!newMessage" :loading="loading" :click-action="sendNewExchangeComment"></PrimaryButton>
                 </v-row>
               </v-row>
             </v-expand-transition>
@@ -160,8 +160,8 @@
                   </v-textarea>
                 </v-card-text>
                 <v-row class="py-4 justify-end pt-0 pr-16 mr-10">
-                  <PrimaryButton id="cancelNote" secondary text="Cancel" class="mr-2" @click.native="hideNewNotePanel"></PrimaryButton>
-                  <PrimaryButton id="newNotePostBtn" text="Save" width="8rem" :disabled="!newNote" :loading="loading" @click.native="sendNewExchangeNote"></PrimaryButton>
+                  <PrimaryButton id="cancelNote" secondary text="Cancel" class="mr-2" :click-action="hideNewNotePanel"></PrimaryButton>
+                  <PrimaryButton id="newNotePostBtn" text="Save" width="8rem" :disabled="!newNote" :loading="loading" :click-action="sendNewExchangeNote"></PrimaryButton>
                 </v-row>
               </v-row>
             </v-expand-transition>

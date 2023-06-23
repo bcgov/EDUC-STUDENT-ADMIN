@@ -25,7 +25,7 @@
           <v-form ref="createNewPenForm" v-model="isValidForm">
             <v-row>
               <v-col cols="12">
-                <v-row dense no-gutters>
+                <v-row density="compact" no-gutters>
                   <v-col cols="3"><Strong>Legal Surname</Strong></v-col>
                   <v-spacer/>
                   <v-col cols="3"><strong>Legal Given</strong></v-col>
@@ -33,9 +33,9 @@
                   <v-col cols="3"><strong>Legal Middle</strong></v-col>
                   <v-spacer/>
                 </v-row>
-                <v-row dense>
+                <v-row density="compact">
                   <v-col cols="3">
-                    <v-text-field id="createNewPenFormLegalLastName" outlined dense filled readonly required
+                    <v-text-field id="createNewPenFormLegalLastName" outlined density="compact" filled readonly required
                                   tabindex="1" maxlength="25"
                                   :rules="validateNameFields(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
                                   :error-messages="err.legalLastNameError"
@@ -43,7 +43,7 @@
                   </v-col>
                   <v-spacer/>
                   <v-col cols="3">
-                    <v-text-field outlined dense filled
+                    <v-text-field outlined density="compact" filled
                                   id="createNewPenFormLegalFirstName"
                                   readonly required tabindex="2" maxlength="25"
                                   :rules="validateNameFields(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
@@ -52,7 +52,7 @@
                   </v-col>
                   <v-spacer/>
                   <v-col cols="3">
-                    <v-text-field outlined dense filled
+                    <v-text-field outlined density="compact" filled
                                   id="createNewPenFormLegalMiddleNames"
                                   tabindex="3" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
                                   :rules="validateNameFields(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
@@ -63,7 +63,7 @@
                   </v-col>
                   <v-spacer/>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row density="compact" no-gutters>
                   <v-col cols="3"><Strong>Usual Surname </Strong></v-col>
                   <v-spacer/>
                   <v-col cols="3"><strong>Usual Given</strong></v-col>
@@ -71,9 +71,9 @@
                   <v-col cols="3"><strong>Usual Middle</strong></v-col>
                   <v-spacer/>
                 </v-row>
-                <v-row dense>
+                <v-row density="compact">
                   <v-col cols="3">
-                    <v-text-field outlined dense filled
+                    <v-text-field outlined density="compact" filled
                                   id="createNewPenFormUsualLastName"
                                   tabindex="4" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
                                   :rules="validateNameFields(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
@@ -84,7 +84,7 @@
                   </v-col>
                   <v-spacer/>
                   <v-col cols="3">
-                    <v-text-field outlined dense filled
+                    <v-text-field outlined density="compact" filled
                                   id="createNewPenFormUsualFirstName"
                                   tabindex="5" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
                                   :rules="validateNameFields(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
@@ -95,7 +95,7 @@
                   </v-col>
                   <v-spacer/>
                   <v-col cols="3">
-                    <v-text-field outlined dense filled
+                    <v-text-field outlined density="compact" filled
                                   id="createNewPenFormUsualMiddleNames"
                                   tabindex="6" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
                                   :rules="validateNameFields(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
@@ -106,7 +106,7 @@
                   </v-col>
                   <v-spacer/>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row density="compact" no-gutters>
                   <v-col cols="3"><Strong>Gender</Strong></v-col>
                   <v-spacer/>
                   <v-col cols="3"><strong>Birth Date
@@ -120,9 +120,9 @@
                   <v-col cols="3"><strong>Local ID</strong></v-col>
                   <v-spacer/>
                 </v-row>
-                <v-row dense>
+                <v-row density="compact">
                   <v-col cols="3">
-                    <v-text-field outlined dense filled readonly
+                    <v-text-field outlined density="compact" filled readonly
                                   id="createNewPenFormGender"
                                   maxlength="1"
                                   tabindex="7"
@@ -131,13 +131,13 @@
                   <v-spacer/>
                   <v-col cols="3">
                     <v-text-field
-                      id="createNewPenFormDOB" readonly outlined dense filled
+                      id="createNewPenFormDOB" readonly outlined density="compact" filled
                       :error-messages="err.birthDateError"  tabindex="8"
                       v-model="student.dob"></v-text-field>
                   </v-col>
                   <v-spacer/>
                   <v-col cols="3">
-                    <v-text-field outlined dense filled
+                    <v-text-field outlined density="compact" filled
                                   id="createNewPenFormLocalID"
                                   tabindex="9"
                                   clearable maxlength="12"

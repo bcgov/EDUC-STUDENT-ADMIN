@@ -14,7 +14,7 @@
             :short="true"
             :disabled="disableSearchBtn"
             class="mt-1 ml-n3"
-            @click.native="searchStudent"
+            :click-action="searchStudent"
         >
         </PrimaryButton>
       </v-col>

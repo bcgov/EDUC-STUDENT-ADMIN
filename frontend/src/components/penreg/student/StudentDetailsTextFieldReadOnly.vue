@@ -9,7 +9,7 @@
           :class="['onhoverEdit', 'customNoBorder', 'onhoverPad', highlighted? 'diff-value' : 'plain-value']"
           :id="name"
           v-if="displayValue"
-          dense
+          density="compact"
           readonly
           :disabled="fieldDisabled"
       ></v-text-field>

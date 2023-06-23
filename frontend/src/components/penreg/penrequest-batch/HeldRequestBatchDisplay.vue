@@ -31,11 +31,11 @@
         </FilterTag>
       </v-sheet>
       <v-spacer v-else></v-spacer>
-      <PrimaryButton id="review-action" class="mr-2" :disabled="!filesSelected || isActioned" text="Review" @click.native="clickReview"></PrimaryButton>
+      <PrimaryButton id="review-action" class="mr-2" :disabled="!filesSelected || isActioned" text="Review" :click-action="clickReview"></PrimaryButton>
       <PrimaryButton id="process-action" class="mx-2" :disabled="!filesSelected || isActioned" text="Process" :loading="isProcessing"
-                     @click.native="markRecordForProcessing"></PrimaryButton>
+                     :click-action="markRecordForProcessing"></PrimaryButton>
       <PrimaryButton id="delete-action" class="mx-2" :disabled="!filesSelected || isActioned" text="Delete" :loading="isDeleting"
-                     @click.native="deleteFile"></PrimaryButton>
+                     :click-action="deleteFile"></PrimaryButton>
     </v-row>
     <v-row no-gutters class="py-2" style="background-color:white;">
       <HeldRequestBatchList

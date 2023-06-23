@@ -19,14 +19,14 @@
                         <v-col v-if="!editing" class="d-flex justify-end">
                             <PrimaryButton id="schoolDetailsEditButton" icon-left width="6em" icon="mdi-pencil"
                                            text="Edit"
-                                           v-if="canEditSchoolDetails()" @click.native="toggleEdit"></PrimaryButton>
+                                           v-if="canEditSchoolDetails()" :click-action="toggleEdit"></PrimaryButton>
                         </v-col>
                         <v-col v-else class="d-flex justify-end">
                             <PrimaryButton class="mr-2" secondary id="cancelButton" icon-left width="6em" text="Cancel"
-                                           @click.native="cancelClicked"></PrimaryButton>
+                                           :click-action="cancelClicked"></PrimaryButton>
                             <PrimaryButton id="saveButton" icon-left width="6em" text="Save"
                                            :disabled="!schoolDetailsFormValid"
-                                           @click.native="updateSchoolDetails"></PrimaryButton>
+                                           :click-action="updateSchoolDetails"></PrimaryButton>
                         </v-col>
                     </v-row>
                     <v-row v-if="editing" class="d-flex justify-start">
@@ -70,7 +70,7 @@
                       </v-icon>
                       {{ school.status }}</span>
                                     <v-col v-else class="ministryLine mt-n4 pl-0">
-                                        <PrimaryButton id="editSchoolStatusButton" @click.native="openSchoolStatusEdit"
+                                        <PrimaryButton id="editSchoolStatusButton" :click-action="openSchoolStatusEdit"
                                                        :secondary="true">
                                             <v-icon class="ml-n1 pr-3"
                                                     :color="getStatusColorAuthorityOrSchool(schoolDetailsCopy.status)"
@@ -130,6 +130,7 @@
                                     <v-select v-else :items="schoolCategorySchoolEditOptions"
                                               item-value="schoolCategoryCode"
                                               item-text="label"
+                                              variant="underlined"
                                               label="School Category"
                                               v-model="schoolDetailsCopy.schoolCategoryCode"
                                               class="mt-n5"
@@ -152,6 +153,7 @@
                                     <v-select v-else :items="allowedFacilityTypeCodesForSchoolCategoryCode"
                                               item-value="facilityTypeCode"
                                               item-text="label"
+                                              variant="underlined"
                                               label="Facility Type"
                                               v-model="schoolDetailsCopy.facilityTypeCode"
                                               single
@@ -178,6 +180,7 @@
                                               label="Grades Offered"
                                               v-model="schoolDetailsCopy.grades"
                                               @input="sortGrades"
+                                              variant="underlined"
                                               :disabled="isGradeOfferedUpdateAllowed"
                                               return-object
                                               class="mt-n5"
@@ -203,6 +206,7 @@
                                               item-value="schoolOrganizationCode"
                                               item-text="label"
                                               class="mt-n5"
+                                              variant="underlined"
                                               label="School Organization Code"
                                               v-model="schoolDetailsCopy.schoolOrganizationCode"
                                               single
@@ -227,6 +231,7 @@
                                             item-value="schoolReportingRequirementCode"
                                             item-text="label"
                                             class="mt-n5"
+                                            variant="underlined"
                                             label="Reporting Requirement"
                                             v-model="schoolDetailsCopy.schoolReportingRequirementCode"
                                             single
@@ -249,6 +254,7 @@
                                               item-text="label"
                                               @input="sortNLC"
                                               class="mt-n5"
+                                              variant="underlined"
                                               label="NLC Activity"
                                               return-object
                                               v-model="schoolDetailsCopy.neighborhoodLearning"

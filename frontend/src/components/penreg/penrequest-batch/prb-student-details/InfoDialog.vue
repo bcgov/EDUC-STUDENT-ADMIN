@@ -41,8 +41,8 @@
             menuMaxWidth="46.8%"
           />
         </v-col>
-        <PrimaryButton id="requestInfoDialogCancelBtn" text="Cancel" secondary @click.native="closeRequestInfoDialog"></PrimaryButton>
-        <PrimaryButton id="requestInfoDialogPostBtn" text="Post" :disabled="requestInfoDialogText===null" @click.native="$emit('updateInfoRequested', requestInfoDialogText)"></PrimaryButton>
+        <PrimaryButton id="requestInfoDialogCancelBtn" text="Cancel" secondary :click-action="closeRequestInfoDialog"></PrimaryButton>
+        <PrimaryButton id="requestInfoDialogPostBtn" text="Post" :disabled="requestInfoDialogText===null" :click-action="$emit('updateInfoRequested', requestInfoDialogText)"></PrimaryButton>
       </v-card-actions>
     </v-card>
     <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>

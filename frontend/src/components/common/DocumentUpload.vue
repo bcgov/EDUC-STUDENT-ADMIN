@@ -15,12 +15,12 @@
             placeholder="Select your file"
             :error-messages="fileInputError"
             class="pt-0"
-            @change="selectFile"
+            @update:model-value="selectFile"
             id="selectFileInput"
         ></v-file-input>
       </v-form>
       <v-alert
-          dense
+          density="compact"
           outlined
           dismissible
           color="#712024"
@@ -34,8 +34,8 @@
     </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <PrimaryButton id="cancelUploadButton" secondary text="Cancel" @click.native="closeForm"></PrimaryButton>
-        <PrimaryButton :key="buttonKey" :loading="active" :disabled="!dataReady" id="upload_form" text="Upload" width="7rem" @click.native="submitRequest"></PrimaryButton>
+        <PrimaryButton id="cancelUploadButton" secondary text="Cancel" :click-action="closeForm"></PrimaryButton>
+        <PrimaryButton :key="buttonKey" :loading="active" :disabled="!dataReady" id="upload_form" text="Upload" width="7rem" :click-action="submitRequest"></PrimaryButton>
       </v-card-actions>
   </v-card>
 </template>

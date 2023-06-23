@@ -42,10 +42,10 @@
                     <v-spacer></v-spacer>
                     <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2"
                                    :disabled="disableModifySearch" text="Modify search"
-                                   @click.native="modifySearchDialog = true; openSearchDemographicsModal()"></PrimaryButton>
+                                   :click-action="clickOpenSearch"></PrimaryButton>
                     <PrimaryButton id="issue-pen-action" class="mr-2" :disabled="disableIssueNewPen"
                                    :loading="isIssuingNewPen" text="Issue new PEN"
-                                   @click.native="issueNewPen"></PrimaryButton>
+                                   :click-action="issueNewPen"></PrimaryButton>
                     <InfoDialog
                         :disabled="disableInfoReqBtn"
                         @updateInfoRequested="updateInfoRequested"
@@ -358,7 +358,7 @@ export default {
     }
 
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.clearNavigation();
   },
   mounted() {
@@ -458,6 +458,10 @@ export default {
           const auStore = penRequestBatchStore();
           response.data && auStore.setSelectedFiles(response.data.content);
         });
+    },
+    clickOpenSearch(){
+      this.modifySearchDialog = true;
+      this.openSearchDemographicsModal();
     },
     updateInfoRequested(infoRequest) {
       this.loading = true;

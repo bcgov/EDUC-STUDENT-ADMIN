@@ -19,7 +19,7 @@
           ></DataListItem>
         </div>
         <div class="pt-0 d-flex justify-end">
-          <PrimaryButton id="repostBtn" class="mr-5" text="Repost Reports" @click.native="repostReports" :disabled="batchFile.sagaInProgress" :loading="isProcessing"></PrimaryButton>
+          <PrimaryButton id="repostBtn" class="mr-5" text="Repost Reports" :click-action="repostReports" :disabled="batchFile.sagaInProgress" :loading="isProcessing"></PrimaryButton>
           <v-btn id="closeModalBtn" text icon @click="modalOpen=false">
             <v-icon large color="#38598A">mdi-close</v-icon>
           </v-btn>

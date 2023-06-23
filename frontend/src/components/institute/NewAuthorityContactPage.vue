@@ -13,6 +13,7 @@
                 v-model="newContact.authorityContactTypeCode"
                 :items="authorityContactTypes"
                 item-text="label"
+                variant="underlined"
                 class="pt-0"
                 item-value="authorityContactTypeCode"
                 label="Authority Contact Type"
@@ -115,7 +116,7 @@
                   <v-date-picker
                       v-model="newContact.effectiveDate"
                       :active-picker.sync="newContactEffectiveDatePicker"
-                      @change="saveNewContactEffectiveDate"
+                      @update:model-value="saveNewContactEffectiveDate"
                   ></v-date-picker>
                 </v-menu>
               </v-col>
@@ -144,7 +145,7 @@
                   <v-date-picker
                       v-model="newContact.expiryDate"
                       :active-picker.sync="newContactExpiryDatePicker"
-                      @change="saveNewContactExpiryDate"
+                      @update:model-value="saveNewContactExpiryDate"
                   ></v-date-picker>
                 </v-menu>
               </v-col>
@@ -154,8 +155,8 @@
       </v-form>
     </v-card-text>
     <v-card-actions class="justify-end">
-      <PrimaryButton id="cancelNewContactBtn" secondary text="Cancel" @click.native="closeNewContactPage"></PrimaryButton>
-      <PrimaryButton id="newContactPostBtn" text="Save" width="7rem" @click.native="addNewAuthorityContact" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
+      <PrimaryButton id="cancelNewContactBtn" secondary text="Cancel" :click-action="closeNewContactPage"></PrimaryButton>
+      <PrimaryButton id="newContactPostBtn" text="Save" width="7rem" :click-action="addNewAuthorityContact" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
     </v-card-actions>
   </v-card>
 </template>

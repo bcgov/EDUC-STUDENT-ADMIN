@@ -24,7 +24,7 @@
               class="file-checkbox filter-checkbox"
               color="#606060"
               v-model="header.isFiltered"
-              @change="selectFilter(header)"
+              @update:model-value="selectFilter(header)"
             ></v-checkbox>
           </span>
         </template>

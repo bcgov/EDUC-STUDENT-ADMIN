@@ -7,7 +7,7 @@
           dense
           color="#606060"
           v-model="checkedFieldModel"
-          @change="handleOnChange"
+          @update:model-value="handleOnChange"
       ></v-checkbox>
     </v-col>
     <v-col class="textFieldColumn" :cols="colspan">

@@ -20,7 +20,7 @@
           <v-chip color="#F4B183">Pending End Date</v-chip>
         </v-col>
         <v-col class="d-flex justify-end">
-          <PrimaryButton v-if="canAddEditSchoolContact" id="addSchoolContactBtn" icon-left width="11em" icon="mdi-plus-thick" text="New Contact" @click.native="newContactSheet = !newContactSheet"></PrimaryButton>
+          <PrimaryButton v-if="canAddEditSchoolContact" id="addSchoolContactBtn" icon-left width="11em" icon="mdi-plus-thick" text="New Contact" :click-action="newContactSheet = !newContactSheet"></PrimaryButton>
         </v-col>
       </v-row>
       <div v-for="schoolContactType in schoolContactTypes" :key="schoolContactType.code">

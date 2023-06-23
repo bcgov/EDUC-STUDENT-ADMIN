@@ -8,7 +8,7 @@
         <p id="penContainer" class="mb-2"><strong>{{ this.request.recordedPen || ''}}</strong></p>
         <v-tooltip class="mb-2" v-model="clipboard" right v-if="request.recordedPen">
           <template #activator="{ }">
-            <PrimaryButton id="copy-pen" class="ml-2" text="Copy" :short="true" @click.native="copyPen"></PrimaryButton>
+            <PrimaryButton id="copy-pen" class="ml-2" text="Copy" :short="true" :click-action="copyPen"></PrimaryButton>
           </template>
           <span>PEN Copied to Clipboard!</span>
         </v-tooltip>
@@ -18,7 +18,7 @@
       <v-col cols="12" xl="6" lg="6" md="6" sm="6">
         <v-row no-gutters class="request-title justify-center pb-4">
           <strong>Current</strong>
-          <PrimaryButton id="search" class="request-title-btn ml-4" text="Open Details" :short="true" :disabled="!this.request.recordedPen" :loading="loading" @click.native="searchStudent"></PrimaryButton>
+          <PrimaryButton id="search" class="request-title-btn ml-4" text="Open Details" :short="true" :disabled="!this.request.recordedPen" :loading="loading" :click-action="searchStudent"></PrimaryButton>
         </v-row>
         <v-row no-gutters>
           <v-col cols="12" xl="3" lg="3" md="3" sm="3">

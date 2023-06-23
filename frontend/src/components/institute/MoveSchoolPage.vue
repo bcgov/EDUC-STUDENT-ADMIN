@@ -62,7 +62,7 @@
                         <v-date-picker
                             v-model="moveSchoolObject.moveDate"
                             :active-picker.sync="moveDatePicker"
-                            @change="saveMoveSchoolDate"
+                            @update:model-value="saveMoveSchoolDate"
                         ></v-date-picker>
                       </v-menu>
                     </v-col>
@@ -75,7 +75,7 @@
                           item-text="districtNumberName"
                           :items="activeDistricts"
                           v-model="moveSchoolObject.districtId"
-                          @change="schoolDistrictChanged"
+                          @update:model-value="schoolDistrictChanged"
                           class="pt-0"
                           clearable>
                       </v-autocomplete>
@@ -87,9 +87,10 @@
                           v-model="moveSchoolObject.schoolCategoryCode"
                           :items="schoolCategoryTypeCodes"
                           item-value="schoolCategoryCode"
+                          variant="underlined"
                           item-text="label"
                           class="pt-0"
-                          @change="schoolCategoryChanged"
+                          @update:model-value="schoolCategoryChanged"
                           label="School Category"
                           :disabled="schoolCategoryDisabled"
                       />
@@ -104,6 +105,7 @@
                           v-model="moveSchoolObject.facilityTypeCode"
                           :items="allowedFacilityTypeCodesForSchoolCategoryCode"
                           item-value="facilityTypeCode"
+                          variant="underlined"
                           item-text="label"
                           :disabled="isFacilityTypeDisabled"
                           class="pt-0"
@@ -132,6 +134,7 @@
                           :rules="[rules.required()]"
                           v-model="moveSchoolObject.schoolOrganizationCode"
                           :items="schoolOrganizationTypeCodes"
+                          variant="underlined"
                           item-value="schoolOrganizationCode"
                           item-text="label"
                           class="pt-0"
@@ -147,6 +150,7 @@
                           :items="gradeCodes"
                           item-value="schoolGradeCode"
                           item-text="label"
+                          variant="underlined"
                           @input="sortGrades"
                           :disabled="isGradeOfferedDisabled"
                           class="pt-0"
@@ -163,6 +167,7 @@
                           item-value="neighborhoodLearningTypeCode"
                           item-text="label"
                           class="pt-0"
+                          variant="underlined"
                           multiple
                           @input="sortNLC"
                           return-object
@@ -176,6 +181,7 @@
                         v-model="moveSchoolObject.schoolReportingRequirementCode"
                         :items="schoolReportingRequirementTypeCodes"
                         item-value="schoolReportingRequirementCode"
+                        variant="underlined"
                         item-text="label"
                         class="pt-0"
                         label="Reporting Requirement"
@@ -284,7 +290,7 @@
                             </v-col>
                           </v-row>
                           <v-row no-gutters v-if="sameAsMailingCheckbox" class="pt-4">
-                            <v-checkbox dense id="sameAsMailingCheckbox" @click="fireFormValidate" v-model="sameAsMailingCheckbox"
+                            <v-checkbox density="compact" id="sameAsMailingCheckbox" @click="fireFormValidate" v-model="sameAsMailingCheckbox"
                               label="Same as Mailing Address" class="mt-n3 pt-0"></v-checkbox>
                           </v-row>
                           <v-row no-gutters v-else>
@@ -326,7 +332,7 @@
                           </v-row>
                           <v-row no-gutters v-if="!sameAsMailingCheckbox" class="pt-4">
                             <v-col>
-                              <v-checkbox dense id="sameAsMailingCheckbox" @click="fireFormValidate"
+                              <v-checkbox density="compact" id="sameAsMailingCheckbox" @click="fireFormValidate"
                                 v-model="sameAsMailingCheckbox" label="Same as Mailing Address" class="mt-n3 pt-0"></v-checkbox>
                             </v-col>
                           </v-row>
@@ -339,8 +345,8 @@
             </v-form>
       </v-card-text>
       <v-card-actions class="justify-end">
-        <PrimaryButton id="cancelNewSchoolBtn" secondary text="Cancel" @click.native="closeMoveSchoolPage"></PrimaryButton>
-        <PrimaryButton id="newSchoolPostBtn" text="Move" width="7rem" @click.native="moveSchool" :disabled="!isMoveFormValid" :loading="processing"></PrimaryButton>
+        <PrimaryButton id="cancelNewSchoolBtn" secondary text="Cancel" :click-action="closeMoveSchoolPage"></PrimaryButton>
+        <PrimaryButton id="newSchoolPostBtn" text="Move" width="7rem" :click-action="moveSchool" :disabled="!isMoveFormValid" :loading="processing"></PrimaryButton>
       </v-card-actions>
     </v-card>
   </template>

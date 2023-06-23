@@ -25,14 +25,14 @@
         <v-spacer/>
         <v-card-text>
           <v-form ref="searchDemographicModalForm" v-model="isValidForm">
-            <v-row dense no-gutters class="py-3">
+            <v-row density="compact" no-gutters class="py-3">
               <v-col cols="4">
-                <v-row dense no-gutters>
+                <v-row density="compact" no-gutters>
                   <strong>Legal Surname</strong>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row density="compact" no-gutters>
                   <v-col cols="11">
-                    <v-text-field id="searchDemogModalLegalLastNameTxtField" outlined dense filled
+                    <v-text-field id="searchDemogModalLegalLastNameTxtField" outlined density="compact" filled
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
                                   :rules="validateLegalLastName()"
                                   :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
@@ -43,12 +43,12 @@
                 </v-row>
               </v-col>
               <v-col cols="4">
-                <v-row dense no-gutters>
+                <v-row density="compact" no-gutters>
                   <strong>Legal Given</strong>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row density="compact" no-gutters>
                   <v-col cols="11">
-                    <v-text-field outlined dense filled
+                    <v-text-field outlined density="compact" filled
                                   id="searchDemogModalLegalFirstNameTxtField"
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
                                   :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
@@ -59,12 +59,12 @@
                 </v-row>
               </v-col>
               <v-col v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)" cols="4">
-                <v-row dense no-gutters>
+                <v-row density="compact" no-gutters>
                   <strong>Legal Middle</strong>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row density="compact" no-gutters>
                   <v-col cols="11">
-                    <v-text-field outlined dense filled
+                    <v-text-field outlined density="compact" filled
                                   id="searchDemogModalLegalMiddleNameTxtField"
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
                                   tabindex="3" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
@@ -74,12 +74,12 @@
                 </v-row>
               </v-col>
               <v-col v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)" cols="4">
-                <v-row dense no-gutters>
+                <v-row density="compact" no-gutters>
                   <strong>Usual Surname</strong>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row density="compact" no-gutters>
                   <v-col cols="11">
-                    <v-text-field outlined dense filled
+                    <v-text-field outlined density="compact" filled
                                   id="searchDemogModalUsualLastNameTxtField"
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
                                   tabindex="4" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
@@ -89,12 +89,12 @@
                 </v-row>
               </v-col>
               <v-col v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)" cols="4">
-                <v-row dense no-gutters>
+                <v-row density="compact" no-gutters>
                   <strong>Usual Given</strong>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row density="compact" no-gutters>
                   <v-col cols="11">
-                    <v-text-field outlined dense filled
+                    <v-text-field outlined density="compact" filled
                                   id="searchDemogModalUsualFirstNameTxtField"
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
                                   tabindex="5" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
@@ -104,12 +104,12 @@
                 </v-row>
               </v-col>
               <v-col v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)" cols="4">
-                <v-row dense no-gutters>
+                <v-row density="compact" no-gutters>
                   <strong>Usual Middle</strong>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row density="compact" no-gutters>
                   <v-col cols="11">
-                    <v-text-field outlined dense filled
+                    <v-text-field outlined density="compact" filled
                                   id="searchDemogModalUsualMiddleNameTxtField"
                                   :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
                                   tabindex="6" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"

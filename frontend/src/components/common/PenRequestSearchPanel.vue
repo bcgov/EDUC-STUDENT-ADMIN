@@ -12,7 +12,7 @@
         @keyup.enter="enterPushed()"
         v-on:input="searchHasValues"
         :rules="validateField(searchParams.mincode, isValidMincode, mincodeHint)"
-        dense
+        density="compact"
         autofocus
       ></v-text-field>
     </v-col>
@@ -26,7 +26,7 @@
         v-on:input="[searchHasValues(),upperCaseInput('legalLastName')]"
         maxlength="255"
         tabindex="2"
-        dense
+        density="compact"
       ></v-text-field>
     </v-col>
     <v-col order="1" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
@@ -39,7 +39,7 @@
         @keyup.enter="enterPushed()"
         v-on:input="[searchHasValues(),upperCaseInput('legalFirstName')]"
         maxlength="255"
-        dense
+        density="compact"
       ></v-text-field>
     </v-col>
     <v-col order="1" v-if="!(fields.legalMiddleNames && fields.legalMiddleNames.hidden)" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
@@ -52,7 +52,7 @@
         @keyup.enter="enterPushed()"
         tabindex="4"
         maxlength="255"
-        dense
+        density="compact"
       ></v-text-field>
     </v-col>
     <v-col order="1" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
@@ -66,7 +66,7 @@
         @keyup.enter="enterPushed()"
         v-on:input="[searchHasValues(),upperCaseInput('genderCode')]"
         :rules="validateField(searchParams.genderCode, isValidGender, genderHint)"
-        dense
+        density="compact"
       ></v-text-field>
     </v-col>
     <v-col order="1" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
@@ -81,7 +81,7 @@
         minLength="10"
         @keyup.enter="enterPushed()"
         v-on:input="searchHasValues"
-        dense
+        density="compact"
       ></v-text-field>
     </v-col>
     <v-col order="1" v-if="!(fields.bestMatchPEN && fields.bestMatchPEN.hidden)" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
@@ -95,7 +95,7 @@
         @keyup.enter="enterPushed()"
         v-on:input="[searchHasValues(),runPENSearchIfPossible('bestMatchPEN')]"
         tabindex="7"
-        dense
+        density="compact"
         :rules="validatePen(searchParams.bestMatchPEN)"
       ></v-text-field>
     </v-col>
@@ -110,7 +110,7 @@
         @keyup.enter="enterPushed()"
         v-on:input="searchHasValues"
         :tabindex="fields.assignedPEN && fields.assignedPEN.tabindex || 8"
-        dense
+        density="compact"
         :rules="validatePen(searchParams.assignedPEN)"
       ></v-text-field>
     </v-col>
@@ -125,7 +125,7 @@
         @keyup.enter="enterPushed()"
         v-on:input="searchHasValues"
         :rules="validateField(searchParams.localID)"
-        dense
+        density="compact"
       ></v-text-field>
     </v-col>
     <v-col order="2" v-if="!(fields.usualLastName && fields.usualLastName.hidden)" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
@@ -138,7 +138,7 @@
         v-on:input="[searchHasValues(),upperCaseInput('usualLastName')]"
         tabindex="10"
         maxlength="255"
-        dense
+        density="compact"
       ></v-text-field>
     </v-col>
     <v-col order="2" v-if="!(fields.usualFirstName && fields.usualFirstName.hidden)" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
@@ -151,7 +151,7 @@
         v-on:input="[searchHasValues(),upperCaseInput('usualFirstName')]"
         tabindex="11"
         maxlength="255"
-        dense
+        density="compact"
         ></v-text-field>
     </v-col>
     <v-col order="2" v-if="!(fields.usualMiddleNames && fields.usualMiddleNames.hidden)" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
@@ -164,7 +164,7 @@
         v-on:input="[searchHasValues(),upperCaseInput('usualMiddleNames')]"
         tabindex="12"
         maxlength="255"
-        dense
+        density="compact"
       ></v-text-field>
     </v-col>
     <v-col order="2" v-if="!(fields.postalCode && fields.postalCode.hidden)" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
@@ -177,7 +177,7 @@
         v-on:input="[searchHasValues(),upperCaseInput('postalCode')]"
         maxlength="7"
         @keyup.enter="enterPushed()"
-        dense
+        density="compact"
       ></v-text-field>
     </v-col>
     <v-col order="2" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
@@ -192,7 +192,7 @@
         v-on:input="[searchHasValues(), upperCaseInput('gradeCode')]"
         :rules="validateField(searchParams.gradeCode, isValidGradeCode, gradeHint)"
         minLength="1"
-        dense
+        density="compact"
       ></v-text-field>
     </v-col>
     <v-col order="2" v-if="!(fields.submittedPen && fields.submittedPen.hidden)" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
@@ -206,14 +206,14 @@
         @keyup.enter="enterPushed()"
         v-on:input="[searchHasValues(),runPENSearchIfPossible('submittedPen')]"
         tabindex="15"
-        dense
+        density="compact"
         :rules="validatePen(searchParams.submittedPen)"
       ></v-text-field>
     </v-col>
     <v-col cols="2" order="4" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
       <div class="d-flex justify-end pt-2">
-        <PrimaryButton id="clear-search" class="mr-2" :secondary="true" @click.native="clearSearch" text="Clear"></PrimaryButton>
-        <PrimaryButton id="perform-search" :disabled="!searchEnabled" :loading="loading && searchEnabled" @click.native="searchPenRequests" text="Search"></PrimaryButton>
+        <PrimaryButton id="clear-search" class="mr-2" :secondary="true" :click-action="clearSearch" text="Clear"></PrimaryButton>
+        <PrimaryButton id="perform-search" :disabled="!searchEnabled" :loading="loading && searchEnabled" :click-action="searchPenRequests" text="Search"></PrimaryButton>
       </div>
     </v-col>
   </v-row>

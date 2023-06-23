@@ -13,7 +13,7 @@
           </v-card-text>
           <v-card-actions>
             <v-row align="center" justify="center">
-              <v-btn id="login-button" @click="clearStorage" :href="routes.LOGIN" class="ma-2" dark color="#003366">Log
+              <v-btn id="login-button" @click="clearStorage" :href="routes.LOGIN" class="ma-2 px-3" dark color="white" style="background-color: #003366">Log
                 In
                 <v-icon>mdi-login</v-icon>
               </v-btn>

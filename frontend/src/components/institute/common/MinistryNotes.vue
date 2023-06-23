@@ -16,7 +16,7 @@
       <v-col>
         <v-row cols="2" class="d-flex justify-end">
           <v-spacer/>
-          <PrimaryButton id="addNewNoteButton" width="9em" icon="mdi-plus" icon-left text="New Note" v-if="hasAccess" @click.native="addNewSchoolNoteSheet = !addNewSchoolNoteSheet"/>
+          <PrimaryButton id="addNewNoteButton" width="9em" icon="mdi-plus" icon-left text="New Note" v-if="hasAccess" :click-action="addNewSchoolNoteSheet = !addNewSchoolNoteSheet"/>
         </v-row>
         <v-row align="stretch">
           <v-col>

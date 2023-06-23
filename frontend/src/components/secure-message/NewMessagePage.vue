@@ -23,7 +23,7 @@
                           v-model="selectedContact"
                           :items="validContactsForMessaging"
                           :rules="requiredToRule"
-                          @change="onSchoolSelected"
+                          @update:model-value="onSchoolSelected"
                           return-object
                         >
                           <template #selection="{ item }">
@@ -147,8 +147,8 @@
           {{`Total files must be less than ${humanFileSize(fileRequirements.maxSize)}. Please remove some uploads.You may upload additional files later.`}}
         </v-alert>
         <v-row class="py-4 justify-end">
-          <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2" @click.native="navigateToList"></PrimaryButton>
-          <PrimaryButton id="newMessagePostBtn" text="Send" width="8rem" :disabled="!isValidForm || fileSizeAlert" :loading="processing" @click.native="sendNewMessage"></PrimaryButton>
+          <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2" :click-action="navigateToList"></PrimaryButton>
+          <PrimaryButton id="newMessagePostBtn" text="Send" width="8rem" :disabled="!isValidForm || fileSizeAlert" :loading="processing" :click-action="sendNewMessage"></PrimaryButton>
         </v-row>
       </v-col>
     </v-row>
@@ -167,6 +167,7 @@ import {
 } from '@/utils/constants';
 import {isValidPEN} from '@/utils/validation';
 import alertMixin from '@/mixins/alertMixin';
+import _ from 'lodash';
 import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import DocumentUpload from '@/components/common/DocumentUpload.vue';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';

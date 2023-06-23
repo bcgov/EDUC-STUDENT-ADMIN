@@ -8,7 +8,7 @@
           <a class="ml-1" @click="backButtonClick">Return to Dashboard</a>
         </v-col>
         <v-col class="d-flex justify-end">
-          <PrimaryButton v-if="canAddAuthority()" id="addAuthorityBtn" icon-left width="12em" icon="mdi-plus-thick" text="New Authority" @click.native="newAuthoritySheet = !newAuthoritySheet"></PrimaryButton>
+          <PrimaryButton v-if="canAddAuthority()" id="addAuthorityBtn" icon-left width="12em" icon="mdi-plus-thick" text="New Authority" :click-action="newAuthoritySheet = !newAuthoritySheet"></PrimaryButton>
         </v-col>
       </v-row>
       <v-row style="background: rgb(235, 237, 239);border-radius: 8px;" class="px-3 elevation-2">
@@ -22,7 +22,7 @@
                 item-text="authorityCodeName"
                 :items="authoritySearchNames"
                 v-model="authorityCodeNameFilter"
-                @change="searchButtonClick()"
+                @update:model-value="searchButtonClick()"
                 clearable>
                 <template #item="data">
                   <v-icon :color="getStatusColorAuthorityOrSchool(data.item.status)">
@@ -36,6 +36,7 @@
               <v-select
                 id="status-select-field"
                 clearable
+                variant="underlined"
                 :items="authorityStatus"
                 v-model="authorityStatusFilter"
                 item-text="name"
@@ -57,14 +58,15 @@
               <v-select
                 id="authoritytype-select-field"
                 clearable
+                variant="underlined"
                 :items="authorityTypes"
                 v-model="authorityTypeFilter"
                 item-text="label"
                 item-value="authorityTypeCode" label="Authority Type"></v-select>
             </v-col>
             <v-col class="d-flex justify-end mt-6">
-              <PrimaryButton id="user-clear-button" text="Clear" secondary @click.native="clearButtonClick"/>
-              <PrimaryButton class="ml-3"  id="user-search-button" text="Search" @click.native="searchButtonClick"
+              <PrimaryButton id="user-clear-button" text="Clear" secondary :click-action="clearButtonClick"/>
+              <PrimaryButton class="ml-3"  id="user-search-button" text="Search" :click-action="searchButtonClick"
                              :disabled="!searchEnabled()"/>
             </v-col>
           </v-row>
@@ -119,7 +121,7 @@
                         <v-btn id="authorityContacts"
                                color="#003366"
                                outlined
-                               @click.native.stop="openAuthorityContacts(item.independentAuthorityId)"
+                               :click-action.stop="openAuthorityContacts(item.independentAuthorityId)"
                                class="mt-0 pt-0 filterButton ml-2"
                                style="text-transform: initial"
                         >

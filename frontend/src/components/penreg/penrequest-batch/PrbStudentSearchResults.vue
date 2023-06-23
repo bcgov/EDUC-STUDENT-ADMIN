@@ -13,7 +13,7 @@
           :items="studentStatuses"
           v-model="selectedStudentStatus"
           dense
-          outlined
+          variant="outlined"
           placeholder="Filter by status"
           color="#38598a"
           append-icon="mdi-chevron-down"
@@ -21,8 +21,8 @@
           clearable
         ></v-select>
       </v-flex>
-      <PrimaryButton id="viewSelected" v-if="selected" :disabled="!viewEnabled" @click.native="clickViewSelected" text="View Selected"></PrimaryButton>
-      <PrimaryButton id="viewDetails" v-else :loading="loadingRequestIDs" :disabled="!viewEnabled" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
+      <PrimaryButton id="viewSelected" v-if="selected" :disabled="!viewEnabled" :click-action="clickViewSelected" text="View Selected"></PrimaryButton>
+      <PrimaryButton id="viewDetails" v-else :loading="loadingRequestIDs" :disabled="!viewEnabled" :click-action="clickViewDetails" text="View Details"></PrimaryButton>
     </v-row>
     <v-divider class="mb-1 subheader-divider"/>
     <v-data-table

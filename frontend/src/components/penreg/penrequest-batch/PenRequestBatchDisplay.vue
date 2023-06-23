@@ -6,7 +6,7 @@
               id="select-school-group"
               :items="schoolGroups"
               v-model="selectedSchoolGroup"
-              outlined
+              variant="outlined"
               dense
               color="#38598a"
               append-icon="mdi-chevron-down"
@@ -66,20 +66,20 @@
                     </v-row>
                   </v-col>
   
-                  <PrimaryButton id="refine-action" class="mr-2 mb-3" secondary text="Clear" @click.native="clearSearchParams"></PrimaryButton>
+                  <PrimaryButton id="refine-action" class="mr-2 mb-3" secondary text="Clear" :click-action="clearSearchParams"></PrimaryButton>
                   <PrimaryButton id="search-action" :disabled="!isValidSearchForm || !searchEnabled"
                                  :loading="searchLoading && searchEnabled" class="mr-0 mb-3" text="Search"
-                                 @click.native="search"></PrimaryButton>
+                                 :click-action="search"></PrimaryButton>
               </v-sheet> 
             </v-form>
           </v-col>
           
-          <PrimaryButton id="view-list-action" class="mr-2 mt-1" :disabled="!filesSelected" @click.native="clickViewList" text="View List"></PrimaryButton>
+          <PrimaryButton id="view-list-action" class="mr-2 mt-1" :disabled="!filesSelected" :click-action="clickViewList" text="View List"></PrimaryButton>
           <PrimaryButton id="view-details-action"
                          class="mx-2 mt-1"
                          :disabled="!filesSelected"
                          :loading="loadingRequestIDs"
-                         @click.native="clickViewDetails"
+                         :click-action="clickViewDetails"
                          text="View Details"></PrimaryButton>
           <v-menu offset-y>
             <template #activator="{ on }">
@@ -116,7 +116,7 @@
                 {{ archiveAndReturnMessage }}<br><br>
                 {{ archiveAndReturnSubtext }}
               </v-col>
-              <v-btn id="closeBtn" text icon @click.native="cancel">
+              <v-btn id="closeBtn" text icon :click-action="cancel">
                 <v-icon color="#38598A">mdi-close</v-icon>
               </v-btn>
             </v-row>

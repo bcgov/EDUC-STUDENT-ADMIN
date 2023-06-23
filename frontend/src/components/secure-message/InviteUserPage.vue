@@ -46,6 +46,7 @@
                               :items="userRoles"
                               item-value='edxRoleCode'
                               item-text='label'
+                              variant="underlined"
                               item-disabled="disabled"
                               v-model='edxActivationRoleCodes'
                               :menu-props="{ maxHeight: '400' }"
@@ -86,10 +87,10 @@
               </v-row>
               <v-row class="py-4 justify-end">
                 <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2"
-                               @click.native="navigateToList"></PrimaryButton>
+                               :click-action="navigateToList"></PrimaryButton>
                 <PrimaryButton id="newUserInvitePostBtn" text="Invite" width="8rem" :disabled="!isValidForm"
                                :loading="processing"
-                               @click.native="sendNewUserInvite"></PrimaryButton>
+                               :click-action="sendNewUserInvite"></PrimaryButton>
               </v-row>
             </v-col>
           </v-row>

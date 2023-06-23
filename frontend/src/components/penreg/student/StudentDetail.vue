@@ -34,9 +34,9 @@
                       </router-link>
                       <PrimaryButton v-if="studentDetails.student.statusCode === 'M'"
                                      :disabled="disableDemerge()" text="Demerge"
-                                     @click.native="demerge()"></PrimaryButton>
+                                     :click-action="demerge()"></PrimaryButton>
                       <PrimaryButton :disabled="!hasAnyEdits() || !validForm" text="Save" :loading="saveStudentLoading"
-                                     @click.native="saveStudent()"></PrimaryButton>
+                                     :click-action="saveStudent()"></PrimaryButton>
                     </v-card-actions>
                   </v-col>
                 </v-row>

@@ -20,7 +20,7 @@
       <v-list-item
         v-for="(item, index) in macros"
         :key="index"
-        dense
+        density="compact"
         class="macroListItem"
         @click="clickMacroItem(item.macroText)"
       >

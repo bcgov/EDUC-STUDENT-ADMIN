@@ -55,17 +55,17 @@
             <v-row v-if="this.request.reviewer === this.myself.name" no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
               <p v-if="this.isRequestCompleted" class="grey--text text--darken-1"><strong>{{ this.request.reviewer }} completed this request</strong></p>
               <p v-if="!this.isRequestCompleted" class="green--text"><strong>You are working on this request</strong></p>
-              <PrimaryButton id="release-request" class="ml-2" :disabled="isReleaseDisabled" :short="true" @click.native="claimRequest" text="Release"></PrimaryButton>
+              <PrimaryButton id="release-request" class="ml-2" :disabled="isReleaseDisabled" :short="true" :click-action="claimRequest" text="Release"></PrimaryButton>
             </v-row>
             <v-row v-else no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
               <p v-if="!this.request.reviewer && this.isRequestCompleted" class="grey--text text--darken-1"><strong>This request has been completed</strong></p>
               <p v-if="this.request.reviewer && this.isRequestCompleted" class="grey--text text--darken-1"><strong>{{ this.request.reviewer }} completed this request</strong></p>
               <p v-if="!this.request.reviewer && !this.isRequestCompleted" class="blue--text"><strong>No one is working on this request</strong></p>
               <p v-if="this.request.reviewer && !this.isRequestCompleted" class="orange--text"><strong>{{ this.request.reviewer }} is working on this request</strong></p>
-              <PrimaryButton id="claim-pen-request" class="ml-2" :disabled="isClaimDisabled" :short="true" @click.native="claimRequest" text="Claim"></PrimaryButton>
+              <PrimaryButton id="claim-pen-request" class="ml-2" :disabled="isClaimDisabled" :short="true" :click-action="claimRequest" text="Claim"></PrimaryButton>
             </v-row>
             <v-row no-gutters justify="end" class="pb-5">
-              <PrimaryButton id="back-to-list" class="ml-2" :short="true" @click.native="backToList" text="Back to List"></PrimaryButton>
+              <PrimaryButton id="back-to-list" class="ml-2" :short="true" :click-action="backToList" text="Back to List"></PrimaryButton>
             </v-row>
           </v-card>
         </v-col>
@@ -139,6 +139,7 @@
                   <template #input>
                     <v-select
                       v-model="document.documentTypeCode"
+                      variant="underlined"
                       style="max-width: 20em;"
                       :items="documentTypes"
                     ></v-select>

@@ -86,7 +86,7 @@
             item-text="genderCode"
             item-value="genderCode"
             style="max-width: 7em"
-            outlined
+            variant="outlined"
             filled
             dense
             clearable
@@ -103,7 +103,7 @@
               item-text="gradeCode"
               item-value="gradeCode"
               style="max-width: 7em"
-              outlined
+              variant="outlined"
               filled
               dense
               clearable

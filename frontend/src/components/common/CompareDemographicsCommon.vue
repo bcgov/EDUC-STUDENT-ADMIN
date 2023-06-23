@@ -16,7 +16,7 @@
               id="enterAPenTxtField"
               v-model="penToAdd"
               outlined
-              dense
+              density="compact"
               label="Enter a PEN"
               @keyup.enter="enterPushed()"
               @input="checkStudentStatusForValidPen()"
@@ -28,7 +28,7 @@
         <v-col class="py-0" cols="5">
           <PrimaryButton id="addPenBtn"
                          :disabled=" isLoadingStudent || !isValidPEN(penToAdd) || studentRecords.length >= 3"
-                         :loading="isLoadingStudent" text="Add PEN" @click.native="addPEN"></PrimaryButton>
+                         :loading="isLoadingStudent" text="Add PEN" :click-action="addPEN"></PrimaryButton>
           <span v-if="isSearchedPENMerged" id="truePenMessage" class="pl-1" style="font-size: 1rem;">{{
               truePenMessage
             }} <a
@@ -61,7 +61,7 @@
     <div v-for="(students, index) in studentRecords" :key="index" class="pb-2">
       <v-row id="studentDemographicsTableTopRow" class="studentDemographicsTable" no-gutters>
         <span class="pl-2 pr-0 flexBox">
-          <v-checkbox dense class="studentCheckbox pa-0 ma-0" color="#606060"
+          <v-checkbox density="compact" class="studentCheckbox pa-0 ma-0" color="#606060"
                       v-model="checkedStudents[index]"
                       @change.native="validateAction"></v-checkbox>
           <a @click="updateSldRowDisplay(students.pen, !sldDataTablesToDisplay[students.pen])" class="ml-2">
@@ -113,7 +113,7 @@
         <template #item="props">
           <tr>
             <td v-for="header in props.headers" :key="header.id" :class="[header.id, existSldUsualName(props.item)? 'two-rows-column' : 'one-row-column']">
-              <v-checkbox v-if="header.type === 'select'" dense class="studentCheckbox pa-0 ma-0" color="#606060"
+              <v-checkbox v-if="header.type === 'select'" density="compact" class="studentCheckbox pa-0 ma-0" color="#606060"
                 v-model="props.item.selected"
                 :disabled="sldSelectDisabled(students.pen)"
               ></v-checkbox>
@@ -147,8 +147,8 @@
         </template>
       </v-data-table>
       <v-row class="pl-4" v-show="sldDataTablesToDisplay[students.pen]">
-        <TertiaryButton text="More" icon="$plus" @click.native="updateSldTableRows(students.pen, sldDataTablesNumberOfRows[students.pen] + 10)"></TertiaryButton>
-        <TertiaryButton text="Less" icon="$minus" @click.native="updateSldTableRows(students.pen, sldDataTablesNumberOfRows[students.pen] - 10)"></TertiaryButton>
+        <TertiaryButton text="More" icon="$plus" :click-action="updateSldTableRows(students.pen, sldDataTablesNumberOfRows[students.pen] + 10)"></TertiaryButton>
+        <TertiaryButton text="Less" icon="$minus" :click-action="updateSldTableRows(students.pen, sldDataTablesNumberOfRows[students.pen] - 10)"></TertiaryButton>
       </v-row>
     </div>
     <v-progress-linear
