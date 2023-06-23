@@ -666,23 +666,27 @@ router.beforeEach((to, _from, next) => {
     aStore.getJwtToken().then(() => {
       if (!aStore.isAuthenticated) {
         next(nextRouteInError);
-      } else {
-        aStore.getUserInfo().then(() => {
-          console.log('Role: ' + to.meta.role);
-          console.log('Cur Roles: ' + JSON.stringify(aStore.$state));
-          console.log('Val: ' + Object.prototype.hasOwnProperty.call(aStore, to.meta.role));
-          if (!aStore.isAuthorizedUser) {
-            next('unauthorized');
-          } else if (to.meta.role && !Object.prototype.hasOwnProperty.call(aStore, to.meta.role)) {
-            next('unauthorized-page');
-          } else {
-            next();
-          }
-        }).catch((e) => {
-          console.log('Unable to get user info: ' + e);
-          next('error');
-        });
+        return;
       }
+      if (!to.meta.role) {
+        next();
+        return;
+      }
+      aStore.getUserInfo().then(() => {
+        if (!aStore.isAuthorizedUser) {
+          next('unauthorized');
+          return;
+        }
+        const hasRole = Object.prototype.hasOwnProperty.call(aStore, to.meta.role) && aStore[to.meta.role];
+        if (!hasRole) {
+          next('unauthorized-page');
+          return;
+        }
+        next();
+      }).catch((e) => {
+        console.log('Unable to get user info: ' + e);
+        next('error');
+      });
     }).catch(() => {
       console.log('Unable to get token');
       next(nextRouteInError);
