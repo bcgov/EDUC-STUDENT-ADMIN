@@ -858,7 +858,7 @@ async function getSchoolsPaginated(req, res){
 
     let parsedParams = '';
     if (req.query.searchParams) {
-      parsedParams = JSON.parse(req.query.searchParams);
+      parsedParams = req.query.searchParams;
     }
 
     const schoolSearchCriteria = [{
@@ -1125,7 +1125,7 @@ async function getAuthoritiesPaginated(req, res){
 
   let parsedParams = '';
   if (req.query.searchParams) {
-    parsedParams = JSON.parse(req.query.searchParams);
+    parsedParams = req.query.searchParams;
   }
 
   const authoritySearchCriteria = [{

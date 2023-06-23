@@ -25,7 +25,6 @@
                   item-title="schoolCodeName"
                   variant="underlined"
                   :items="schoolSearchNames"
-                  return-object
                   v-model="schoolCodeNameFilter"
                   :menu-props="{closeOnContentClick:true}"
                   @update:model-value="searchButtonClick"
@@ -40,7 +39,7 @@
                       prepend-icon="mdi-circle-medium"
                       :base-color="getStatusColorAuthorityOrSchool(item.raw.status)"
                       title=""
-                      @click="selectSchoolFilter(item)">
+                      >
                       <v-list-item-title style="color: black !important;">
                         {{ item.raw.schoolCodeName }}
                       </v-list-item-title>
@@ -63,12 +62,16 @@
                   <template #selection="{ item, index }">
                     {{ item.raw.name }}
                   </template>
-                  <template #item="{ item }">
-                    <v-list-item @click="selectStatusFilter(item)">
-                      <v-icon :color="getStatusColorAuthorityOrSchool(item.raw.name)">
-                        mdi-circle-medium
-                      </v-icon>
-                      <span class="body-2">{{ item.raw.name }}</span>
+                  <template #item="{ props, item }">
+                    <v-list-item
+                      v-bind="props"
+                      prepend-icon="mdi-circle-medium"
+                      :base-color="getStatusColorAuthorityOrSchool(item.raw.code)"
+                      title=""
+                      >
+                      <v-list-item-title style="color: black !important;">
+                        {{ item.raw.name }}
+                      </v-list-item-title>
                     </v-list-item>
                   </template>
                 </v-select>
@@ -110,7 +113,6 @@
                   item-title="districtNumberName"
                   variant="underlined"
                   item-value="districtId"
-                  return-object
                   :menu-props="{closeOnContentClick:true}"
                   @update:model-value="searchButtonClick"
                   label="District Number & Name"
@@ -124,7 +126,7 @@
                       prepend-icon="mdi-circle-medium"
                       :base-color="getDistrictStatusColor(item.raw.status)"
                       title=""
-                      @click="selectDistrictFilter(item)">
+                      >
                       <v-list-item-title style="color: black !important;">
                         {{ item.raw.districtNumberName }}
                       </v-list-item-title>
@@ -139,7 +141,6 @@
                   item-value="authorityID"
                   item-title="authorityCodeName"
                   variant="underlined"
-                  return-object
                   :items="authoritySearchNames"
                   v-model="authorityCodeNameFilter"
                   :menu-props="{closeOnContentClick:true}"
@@ -155,7 +156,7 @@
                       prepend-icon="mdi-circle-medium"
                       :base-color="getStatusColorAuthorityOrSchool(item.raw.status)"
                       title=""
-                      @click="selectAuthorityFilter(item)">
+                      >
                       <v-list-item-title style="color: black !important;">
                         {{ item.raw.authorityCodeName }}
                       </v-list-item-title>
@@ -445,22 +446,6 @@ export default {
       this.schoolReportingRequirementCodeFilter = this.schoolSearchParams.schoolReportingRequirementCode;
       this.pageNumber = this.schoolSearchParams.pageNumber;
     },
-    selectSchoolFilter(item){
-      this.schoolCodeNameFilter = [];
-      this.schoolCodeNameFilter.push(item.raw);
-    },
-    selectDistrictFilter(item){
-      this.districtCodeNameFilter = [];
-      this.districtCodeNameFilter.push(item.raw);
-    },
-    selectAuthorityFilter(item){
-      this.authorityCodeNameFilter = [];
-      this.authorityCodeNameFilter.push(item.raw);
-    },
-    selectStatusFilter(item){
-      this.schoolStatusFilter = [];
-      this.schoolStatusFilter.push(item.raw);
-    },
     canAddSchool() {
       return this.SCHOOL_ADMIN_ROLE || this.SCHOOL_INDEPENDENT_ADMIN_ROLE;
     },
@@ -589,12 +574,14 @@ export default {
       this.requests = [];
       this.schools = [];
 
+
       if (this.schoolCodeNameFilter !== null && this.schoolCodeNameFilter !== '') {
         this.headerSearchParams.schoolID = this.schoolCodeNameFilter;
       } else {
         this.headerSearchParams.schoolID = '';
       }
 
+      console.log(this.districtCodeNameFilter);
       if (this.districtCodeNameFilter !== null && this.districtCodeNameFilter !== '') {
         this.headerSearchParams.districtID = this.districtCodeNameFilter;
       } else {
@@ -619,7 +606,7 @@ export default {
           sort: {
             schoolNumber: 'ASC'
           },
-          searchParams: JSON.stringify(omitBy(this.headerSearchParams, isEmpty)),
+          searchParams: omitBy(this.headerSearchParams, isEmpty),
         }
       }).then(response => {
         this.schools = [];
@@ -728,12 +715,12 @@ export default {
       await this.fireFormValidate();
     },
     async fireFormValidate() {
-
       await this.$nextTick();
-      this.validateForm();
+      await this.validateForm();
     },
-    validateForm() {
-      this.isFormValid = this.$refs.schoolForm.validate();
+    async validateForm() {
+      const validate = this.$refs.schoolForm.validate();
+      this.isFormValid = validate.valid;
     },
     searchButtonClick() {
       console.log('Here');

@@ -12,19 +12,31 @@
       <v-row :class="['d-sm-flex', 'align-center', 'searchBox', 'elevation-2']" @keydown.enter="searchButtonClick">
         <v-col cols="12" md="4">
           <v-autocomplete
-            id="name-text-field"
-            label="District Number and Name"
-            item-value="districtId"
-            item-text="districtNumberName"
+            id="district-text-field"
+            clearable
             :items="districtSearchNames"
             v-model="searchFilter.districtId"
+            item-title="districtNumberName"
+            variant="underlined"
+            item-value="districtId"
+            :menu-props="{closeOnContentClick:true}"
             @update:model-value="searchButtonClick"
-            clearable>
-            <template #item="data">
-              <v-icon :color="getStatusColor(data.item.status)">
-                mdi-circle-medium
-              </v-icon>
-              <span>{{ data.item.districtNumberName }}</span>
+            label="District Number & Name"
+          >
+            <template #selection="{ item, index }">
+              {{ item.raw.districtNumberName }}
+            </template>
+            <template #item="{ props, item }">
+              <v-list-item
+                v-bind="props"
+                prepend-icon="mdi-circle-medium"
+                :base-color="getStatusColor(item.raw.status)"
+                title=""
+              >
+                <v-list-item-title style="color: black !important;">
+                  {{ item.raw.districtNumberName }}
+                </v-list-item-title>
+              </v-list-item>
             </template>
           </v-autocomplete>
         </v-col>
@@ -34,54 +46,59 @@
             clearable
             :items="status"
             v-model="searchFilter.status"
-            item-text="label"
+            item-title="label"
             variant="underlined"
             item-value="districtStatusCode"
-            label="Status">
-            <template #item="{ item }">
-              <v-row>
-                <v-col cols="12" class="pr-0">
-                  <v-icon :color="getStatusColor(item.districtStatusCode)">
-                    mdi-circle-medium
-                  </v-icon>
-                  <span class="body-2">{{ item.label }}</span>
-                </v-col>
-              </v-row>
+            :menu-props="{closeOnContentClick:true}"
+            label="Status"
+          >
+            <template #selection="{ item, index }">
+              {{ item.raw.label }}
+            </template>
+            <template #item="{ props, item }">
+              <v-list-item
+                v-bind="props"
+                prepend-icon="mdi-circle-medium"
+                :base-color="getStatusColor(item.raw.districtStatusCode)"
+                title=""
+              >
+                <v-list-item-title style="color: black !important;">
+                  {{ item.raw.label }}
+                </v-list-item-title>
+              </v-list-item>
             </template>
           </v-select>
         </v-col>
         <v-col cols="12" md="4" :class="['text-right']">
-          <PrimaryButton id="district-clear-button" secondary :click-action="clearButtonClick">Clear</PrimaryButton>
-          <PrimaryButton id="district-search-button" class="ml-2" :click-action="searchButtonClick">Search</PrimaryButton>
+          <PrimaryButton id="district-clear-button" secondary text="Clear" :click-action="clearButtonClick"></PrimaryButton>
+          <PrimaryButton id="district-search-button" class="ml-2" text="Search" width="7rem" :click-action="searchButtonClick"
+          ></PrimaryButton>
         </v-col>
       </v-row>
-
-      <v-data-table
+      <v-data-table-server
         :headers="headers"
         :items="filteredDistrictList"
         :items-per-page=1000
-        class="elevation-2 mt-4"
-        hide-default-header
-        hide-default-footer
+        class="elevation-1 mt-5"
         mobile-breakpoint="0"
       >
 
-        <template #item.secureExchangeStatusCode="{ item }">
-          <v-row style="cursor: pointer;" @click="openDistrict(item.districtId)">
+        <template #item="{ item }">
+          <v-row no-gutters class="pa-2 hoverTable" style="cursor: pointer;" @click="openDistrict(item.raw.districtId)">
             <v-col cols="6" class="d-flex justify-start">
-              <strong class="largeFont">{{ `${item.districtNumber} - ${item.name}` }}</strong>
+              <strong class="largeFont">{{ `${item.raw.districtNumber} - ${item.raw.name}` }}</strong>
             </v-col>
-            <v-col class="mt-1 d-flex">
-              <v-icon class="mt-n1" :color="getStatusColor(item.districtStatusCode)">
+            <v-col class="d-flex">
+              <v-icon :color="getStatusColor(item.raw.districtStatusCode)">
                 mdi-circle-medium
               </v-icon>
-              <span class="largeFont">{{ getStatusText(item.districtStatusCode) }}</span>
+              <span class="largeFont">{{ getStatusText(item.raw.districtStatusCode) }}</span>
             </v-col>
-            <v-col  class="mt-1" cols="3">
+            <v-col cols="3">
               <v-icon>
                 mdi-phone-outline
               </v-icon>
-              <span class="largeFont">{{ getPhoneNumber(item.phoneNumber) }}</span>
+              <span class="largeFont">{{ getPhoneNumber(item.raw.phoneNumber) }}</span>
             </v-col>
             <v-col class="d-flex justify-end">
               <v-tooltip bottom>
@@ -89,11 +106,11 @@
                   <v-btn id="districtContacts"
                          color="#003366"
                          outlined
-                         :click-action.stop="openDistrictContacts(item.districtId)"
+                         @click.stop.prevent="openDistrictContacts(item.raw.districtId)"
                          class="mt-0 pt-0 filterButton ml-2"
                          style="text-transform: initial"
                   >
-                    <v-icon color="#003366" style="margin-top: 0.07em" dark>mdi-account-multiple-outline</v-icon>
+                    <v-icon color="white" style="margin-top: 0.07em" dark>mdi-account-multiple-outline</v-icon>
                   </v-btn>
                 </template>
                 <span>View Contacts</span>
@@ -104,7 +121,7 @@
 
         <template #no-data>There are no districts.</template>
 
-      </v-data-table>
+      </v-data-table-server>
     </div>
   </v-container>
 </template>
@@ -155,7 +172,7 @@ export default {
       this.loadingDistricts = true;
       ApiService.getDistricts({params: {refreshCache: true}}).then((response) => {
         this.districtList = response.data;
-        for(const district of this.districtList){
+        for (const district of this.districtList) {
           let districtItem = {
             districtNumberName: district.districtNumber + ' - ' + district.name,
             districtId: district.districtId,
@@ -174,10 +191,10 @@ export default {
       });
     },
     sortByNameValue,
-    getStatusColor(districtStatusCode){
-      if(districtStatusCode === 'ACTIVE') {
+    getStatusColor(districtStatusCode) {
+      if (districtStatusCode === 'ACTIVE') {
         return 'green';
-      } else if(districtStatusCode === 'INACTIVE') {
+      } else if (districtStatusCode === 'INACTIVE') {
         return 'red';
       }
     },
@@ -218,10 +235,10 @@ export default {
     backButtonClick() {
       router.push({name: 'home'});
     },
-    openDistrict(districtId){
+    openDistrict(districtId) {
       this.$router.push({name: 'districtDetails', params: {districtID: districtId}});
     },
-    openDistrictContacts(districtId){
+    openDistrictContacts(districtId) {
       this.$router.push({name: 'districtContacts', params: {districtID: districtId}});
     },
   },
@@ -232,35 +249,46 @@ export default {
 <style scoped>
 
 .searchBox {
-  padding-left: 1em;
-  padding-right: 1em;
-  margin-left: 0;
-  margin-right: 0;
-  border-radius: 5px;
-  background-color: #F2F2F2;
+    padding-left: 1em;
+    padding-right: 1em;
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: 5px;
+    background-color: #F2F2F2;
 }
 
 .largeFont {
-  font-size: large;
+    font-size: large;
 }
 
-.containerSetup{
-  padding-right: 40em !important;
-  padding-left: 40em !important;
+.containerSetup {
+    padding-right: 40em !important;
+    padding-left: 40em !important;
 }
 
-@media screen and (max-width: 1950px) {
-  .containerSetup{
-    padding-right: 30em !important;
-    padding-left: 30em !important;
-  }
+.hoverTable {
+  border-bottom-style: groove;
+  border-left-style: groove;
+  border-right-style: groove;
+  border-color: rgb(255 255 255 / 45%);
 }
 
-@media screen and (max-width: 1200px) {
-  .containerSetup{
-    padding-right: 4em !important;
-    padding-left: 4em !important;
-  }
+.hoverTable:nth-child(1) {
+  border-top-style: groove;
 }
+
+.hoverTable:hover{
+  background-color: #e8e8e8;
+  cursor: pointer;
+}
+
+:deep(.v-data-table-footer) {
+  display: none;
+}
+
+:deep(.v-data-table__thead) {
+  display: none;
+}
+
 </style>
 

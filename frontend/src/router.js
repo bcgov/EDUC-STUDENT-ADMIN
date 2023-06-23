@@ -670,9 +670,10 @@ router.beforeEach((to, _from, next) => {
         aStore.getUserInfo().then(() => {
           console.log('Role: ' + to.meta.role);
           console.log('Cur Roles: ' + JSON.stringify(aStore.$state));
+          console.log('Val: ' + Object.prototype.hasOwnProperty.call(aStore, to.meta.role));
           if (!aStore.isAuthorizedUser) {
             next('unauthorized');
-          } else if (to.meta.role && !aStore.$state.userInfo.userRoles.includes(to.meta.role)) {
+          } else if (to.meta.role && !Object.prototype.hasOwnProperty.call(aStore, to.meta.role)) {
             next('unauthorized-page');
           } else {
             next();
