@@ -15,7 +15,7 @@
             </h1>
           </v-col>
         </v-row>
-        <v-row class="pt-0">
+        <v-row class="pt-0 mb-0">
           <v-col class="mt-1 d-flex justify-start">
             <v-icon
               small
@@ -54,20 +54,22 @@
           style="border-radius: 6px"
         >
           <v-expansion-panel
-            style="background: #ebedef"
-            @click="onExpansionPanelClick"
+            style="background: #ebedef;border-radius: 6px"
+            flat
           >
             <v-expansion-panel-title
               color="#ebedef"
               class="pt-0 pb-0"
               disable-icon-rotate
+              @click="onExpansionPanelClick"
             >
               <v-radio-group
                 v-model="statusRadioGroup"
                 color="#003366"
                 :disabled="!statusRadioGroupEnabled"
-                row
-                class="pt-0 pb-0 mt-0 mb-0"
+                direction="horizontal"
+                inline
+                class="pt-0 pb-0 mt-2 mb-0"
                 @click.stop.prevent
               >
                 <v-radio
@@ -109,7 +111,7 @@
                   id="filterid"
                   title="filter"
                   color="#003366"
-                  outlined
+                  variant="text"
                   class="mt-0 pt-0 filterButton"
                 >
                   <v-icon
@@ -153,7 +155,7 @@
                       <v-list-item>
                         {{ data.item.text }}
                       </v-list-item>
-                    </template>         
+                    </template>
                   </v-autocomplete>
                 </v-col>
                 <v-col
@@ -320,20 +322,23 @@
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>
-        <v-row>
+        <v-row no-gutters>
           <v-col>
-            <v-data-table-server
+            <v-data-table
               v-model:items-per-page="pageSize"
               v-model:page="pageNumber"
               v-model:items="exchanges"
               v-model="selectedExchanges"
               v-model:items-length="totalRequests"
+              :headers="headers"
+              show-select
+              item-value="secureExchangeID"
+              select-strategy="page"
               :footer-props="{
                 'items-per-page-options': itemsPerPageOptions
               }"
               :loading="loadingTable"
               class="elevation-1"
-              hide-default-header
               mobile-breakpoint="0"
             >
               <template #no-data>
@@ -343,47 +348,45 @@
                   </v-col>
                 </v-row>
               </template>
+              <template #headers>
+              </template>
               <template #item="{ item, index }">
                 <v-row
-                  class="ml-n6"
+                  class="hoverTable pa-2"
                   style="cursor: pointer;"
+                  no-gutters
                 >
                   <v-col
                     cols="6"
                     lg="7"
                     xl="7"
-                    class="pb-0 pt-0"
                     @click="openExchange(item.secureExchangeID)"
                   >
-                    <v-row class="mb-n4">
+                    <v-row no-gutters>
                       <v-col
                         cols="12"
-                        class="pb-2 pt-2 pr-0"
                       >
                         <span
                           class="subjectHeading"
                           :style="{color: item.raw.isReadByMinistry ? 'black': '#1f7cef'}"
-                        >{{ getSubject(item.raw.subject) }}</span><span style="color: gray"> - {{ getLatestComment(item.raw) }}</span>
+                        >{{ getSubject(item.raw.subject)
+                          }}</span><span style="color: gray"> - {{ getLatestComment(item.raw) }}</span>
                       </v-col>
                     </v-row>
-                    <v-row>
+                    <v-row no-gutters>
                       <v-col
                         cols="12"
-                        class="pb-1 pr-0"
                       >
                         <span class="ministryLine">{{ getContactLineItem(item.raw) }}</span>
                       </v-col>
                     </v-row>
                   </v-col>
                   <v-col
-                    cols="6"
-                    lg="5"
-                    xl="5"
+                    cols="5"
                     style="text-align: end"
-                    class="pb-0 pt-0"
                     @click="openExchange(item.raw.secureExchangeID)"
                   >
-                    <v-row class="d-flex justify-end">
+                    <v-row no-gutters class="d-flex justify-end">
                       <v-col cols="2">
                         <v-row no-gutters>
                           <v-col cols="6">
@@ -475,7 +478,7 @@
                   </v-col>
                 </v-row>
               </template>
-            </v-data-table-server>
+            </v-data-table>
           </v-col>
         </v-row>
       </v-col>
@@ -495,7 +498,7 @@
         <v-card-title class="sheetHeader pt-1 pb-1">
           New Message
         </v-card-title>
-        <v-divider />
+        <v-divider/>
         <v-card-text>
           <NewMessagePage
             @secure-exchange:messageSent="messageSent"
@@ -593,14 +596,14 @@ export default {
     ...mapState(authStore, ['userInfo']),
     ...mapState(appStore, ['schoolMap', 'districtMap', 'mincodeSchoolNames']),
     ...mapState(edxStore, ['statuses', 'ministryTeams']),
-    secureExchangeStatusCodes(){
+    secureExchangeStatusCodes() {
       return this.statuses;
     },
-    isClaimDisabled(){
+    isClaimDisabled() {
       let closedExchanges = this.selectedExchanges.find(exchange => exchange.secureExchangeStatusCode.toUpperCase() === 'CLOSED');
       return this.selectedExchanges.length === 0 || closedExchanges !== undefined;
     },
-    searchEnabled(){
+    searchEnabled() {
       return (this.claimedByFilter !== '' && this.claimedByFilter !== null)
         || (this.messageIDFilter !== '' && this.messageIDFilter !== null)
         || (this.studentIDFilter !== '' && this.studentIDFilter !== null)
@@ -610,12 +613,20 @@ export default {
         || this.secureExchangeStatusCodes.some(item => item.secureExchangeStatusCode === this.statusSelectFilter);
     },
     contacts() {
-      let school = _.sortBy(Array.from(this.schoolMap.entries()).map(school => ({ text: `${school[1]?.schoolName} (${school[1]?.mincode})`, value: school[1]?.schoolID, mincode: school[1].mincode})), ['mincode']);
-      let district = _.sortBy(Array.from(this.districtMap.entries()).map(district => ({ text: `${district[1]?.name} (${district[1]?.districtNumber})`, value: district[1]?.districtId, districtNumber: district[1].districtNumber})), ['districtNumber']);
+      let school = _.sortBy(Array.from(this.schoolMap.entries()).map(school => ({
+        text: `${school[1]?.schoolName} (${school[1]?.mincode})`,
+        value: school[1]?.schoolID,
+        mincode: school[1].mincode
+      })), ['mincode']);
+      let district = _.sortBy(Array.from(this.districtMap.entries()).map(district => ({
+        text: `${district[1]?.name} (${district[1]?.districtNumber})`,
+        value: district[1]?.districtId,
+        districtNumber: district[1].districtNumber
+      })), ['districtNumber']);
       return [...district, ...school];
     },
     myself() {
-      return { name: this.userInfo.userName, id: this.userInfo.userGuid };
+      return {name: this.userInfo.userName, id: this.userInfo.userGuid};
     },
     loadingTable() {
       return this.loadingTableCount !== 0;
@@ -644,14 +655,14 @@ export default {
         this.filterExchanges();
       }
     },
-    openMessageDatePicker(){
+    openMessageDatePicker() {
       this.$refs.messageDatePicker.openMenu();
     },
-    messageSent(){
+    messageSent() {
       this.newMessageSheet = !this.newMessageSheet;
       setTimeout(this.getExchanges, EDX_SAGA_REQUEST_DELAY_MILLISECONDS);
     },
-    getMinistryTeamNameByGroupRoleID(){
+    getMinistryTeamNameByGroupRoleID() {
       this.ministryTeamName = this.ministryTeams.find(item => item.groupRoleIdentifier === this.ministryOwnershipGroupRoleID).teamName;
     },
     getNumberOfDays(start) {
@@ -663,7 +674,7 @@ export default {
     getSchoolName(schoolID) {
       return this.schoolMap.get(schoolID)?.schoolName;
     },
-    getContactLineItem(item){
+    getContactLineItem(item) {
       switch (item.secureExchangeContactTypeCode) {
       case 'SCHOOL':
         return `${this.schoolMap.get(item?.contactIdentifier)?.schoolName} (${this.schoolMap.get(item?.contactIdentifier)?.mincode}) - ${item?.createDate}`;
@@ -671,42 +682,42 @@ export default {
         return `${this.districtMap.get(item?.contactIdentifier)?.name} (${this.districtMap.get(item?.contactIdentifier)?.districtNumber}) - ${item?.createDate}`;
       }
     },
-    getReviewer(reviewer){
-      if(!reviewer) return 'Unclaimed';
+    getReviewer(reviewer) {
+      if (!reviewer) return 'Unclaimed';
       return reviewer;
     },
     getMinistryTeamIDByGroupRoleID(groupRoleID) {
       return this.ministryTeams.find(item => item.groupRoleIdentifier === groupRoleID).ministryOwnershipTeamId;
     },
-    setFilterStatusAllActive(){
+    setFilterStatusAllActive() {
       this.headerSearchParams.secureExchangeStatusCode = ['OPEN'];
       this.headerSearchParams.reviewer = '';
     },
-    setFilterStatusAll(){
+    setFilterStatusAll() {
       this.headerSearchParams.secureExchangeStatusCode = ['OPEN', 'CLOSED'];
       this.headerSearchParams.reviewer = '';
     },
-    setFilterStatusActive(){
+    setFilterStatusActive() {
       this.headerSearchParams.secureExchangeStatusCode = ['OPEN'];
       this.headerSearchParams.reviewer = this.myself.name;
     },
-    statusFilterActiveClicked(){
+    statusFilterActiveClicked() {
       this.setFilterStatusActive();
       this.resetPageNumber();
       this.getExchanges();
     },
-    statusFilterAllActiveClicked(){
+    statusFilterAllActiveClicked() {
       this.setFilterStatusAllActive();
       this.resetPageNumber();
       this.getExchanges();
     },
-    resetPageNumber(){
+    resetPageNumber() {
       this.pageNumber = 1;
     },
-    openNewMessageSheet(){
+    openNewMessageSheet() {
       this.newMessageSheet = !this.newMessageSheet;
     },
-    clearSearch(runSearch = true){
+    clearSearch(runSearch = true) {
       this.subjectFilter = '';
       this.messageIDFilter = '';
       this.studentIDFilter = '';
@@ -715,14 +726,14 @@ export default {
       this.messageDate = null;
       this.messageDateFilter = null;
       this.statusSelectFilter = '';
-      if(runSearch){
+      if (runSearch) {
         this.resetPageNumber();
         this.setFilterStatusAll();
         this.getExchanges();
       }
     },
     onExpansionPanelClick(event) {
-      if(event.currentTarget.classList.contains('v-expansion-panel-header--active')) {
+      if (event.currentTarget.classList.contains('v-expansion-panel-header--active')) {
         this.filterText = 'More Filters';
         this.statusRadioGroupEnabled = true;
         this.statusRadioGroup = 'statusFilterAllActive';
@@ -742,40 +753,40 @@ export default {
     saveMessageDate(date) {
       this.$refs.messageDateFilter.save(date);
     },
-    getStatusColor(status){
-      if(status === 'Open') {
+    getStatusColor(status) {
+      if (status === 'Open') {
         return 'green';
-      } else if(status === 'Closed') {
+      } else if (status === 'Closed') {
         return 'red';
       }
     },
-    getSubject(subject){
-      if(subject.length > 16){
+    getSubject(subject) {
+      if (subject.length > 16) {
         return this.getContentString(subject, 20);
       }
       return subject;
     },
-    getContentString(content, length){
-      if(content.length > length) {
+    getContentString(content, length) {
+      if (content.length > length) {
         return content.substring(0, length) + '...';
       }
       return content;
     },
-    getLatestComment(item){
+    getLatestComment(item) {
       const content = item.commentsList.reduce((a, b) => (a.createDate > b.createDate ? a : b)).content;
-      if(content.length > 25){
+      if (content.length > 25) {
         return this.getContentString(content, 40);
       }
       return content;
     },
-    filterExchanges(){
+    filterExchanges() {
       this.setFilterStatusAll();
       this.resetPageNumber();
       this.getExchanges();
     },
     claimExchanges() {
       this.loadingTableCount += 1;
-      const selected = this.selectedExchanges.map(({ secureExchangeID }) => secureExchangeID);
+      const selected = this.selectedExchanges.map(({secureExchangeID}) => secureExchangeID);
       const payload = {
         secureExchangeIDs: selected,
       };
@@ -807,11 +818,11 @@ export default {
       this.headerSearchParams.ministryOwnershipTeamID = this.getMinistryTeamIDByGroupRoleID(this.ministryOwnershipGroupRoleID);
       this.headerSearchParams.createDate = this.messageDate === null ? null : [this.messageDate];
 
-      if(this.claimedByFilter !== '') {
+      if (this.claimedByFilter !== '') {
         this.headerSearchParams.reviewer = this.claimedByFilter;
       }
 
-      if(this.statusSelectFilter !== null && this.statusSelectFilter !== '' && this.statusSelectFilter !== undefined) {
+      if (this.statusSelectFilter !== null && this.statusSelectFilter !== '' && this.statusSelectFilter !== undefined) {
         this.headerSearchParams.secureExchangeStatusCode = [this.statusSelectFilter];
       }
 
@@ -824,7 +835,7 @@ export default {
         }
       }).then(response => {
         this.exchanges = response.data.content;
-        if(this.isActiveMessagesTabEnabled){
+        if (this.isActiveMessagesTabEnabled) {
           this.totalRequests = response.data.totalElements;
         }
       }).catch(error => {
@@ -838,7 +849,14 @@ export default {
       router.push({name: 'home'});
     },
     openExchange(exchangeID) {
-      router.push({name: 'viewExchange', params: {secureExchangeID: exchangeID, ministryOwnershipGroupRoleID: this.ministryOwnershipGroupRoleID, ministryOwnershipTeamName: this.ministryTeamName}});
+      router.push({
+        name: 'viewExchange',
+        params: {
+          secureExchangeID: exchangeID,
+          ministryOwnershipGroupRoleID: this.ministryOwnershipGroupRoleID,
+          ministryOwnershipTeamName: this.ministryTeamName
+        }
+      });
     }
   }
 };
@@ -847,110 +865,94 @@ export default {
 <style scoped>
 
 .tableRow {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .v-expansion-panel-header:not(.v-expansion-panel-header--mousedown):focus::before {
-  display: none;
+    display: none;
 }
 
-.sheetHeader{
-  background-color: #003366;
-  color: white;
-  font-size: medium !important;
-  font-weight: bolder !important;
+.sheetHeader {
+    background-color: #003366;
+    color: white;
+    font-size: medium !important;
+    font-weight: bolder !important;
 }
 
 .unread {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .v-data-table >>> .v-data-table__wrapper {
-  overflow-x: hidden;
+    overflow-x: hidden;
 }
 
 .v-btn {
-  text-transform: none;
+    text-transform: none;
 }
 
 .filterButton.v-btn--outlined {
-  border: thin solid #ebedef;
+    border: thin solid #ebedef;
 }
 
 .v-radio >>> .v-icon {
-  color: #003366;
+    color: #003366;
 }
 
 .activeRadio {
-  color: #003366;
-}
-.subjectHeading{
-  font-size: large;
-  cursor: pointer;
-  font-weight: bold;
+    color: #003366;
 }
 
-.statusCodeLabel{
-  font-size: medium;
-  white-space: nowrap;
-  text-align: left;
+.subjectHeading {
+    font-size: large;
+    cursor: pointer;
+    font-weight: bold;
 }
 
->>>.v-data-table-header{
-  height: 0 !important;
-}
-
->>>.v-data-table-header > tr{
-  height: 0 !important;
-}
-
->>>.v-data-table-header > tr > th{
-  height: 0 !important;
-}
-
-.ministryLine{
-  color: black;
-  font-size: medium;
-}
-
-@media screen and (max-width: 801px){
-  .subjectHeading {
-    font-size: larger;
-  }
-
-  .statusCodeLabel{
+.statusCodeLabel {
     font-size: medium;
-  }
-
-  .ministryLine{
-    font-size: inherit;
-  }
+    white-space: nowrap;
+    text-align: left;
 }
 
-@media screen and (max-width: 1401px){
-  .statusCodeLabel{
+>>> .v-data-table-header {
+    height: 0 !important;
+}
+
+>>> .v-data-table-header > tr {
+    height: 0 !important;
+}
+
+>>> .v-data-table-header > tr > th {
+    height: 0 !important;
+}
+
+.ministryLine {
+    color: black;
     font-size: medium;
-  }
+}
+
+.hoverTable {
+    border-bottom-style: groove;
+    border-left-style: groove;
+    border-right-style: groove;
+    border-color: rgb(255 255 255 / 45%);
+}
+
+.hoverTable:nth-child(1) {
+    border-top-style: groove;
+}
+
+.hoverTable:hover {
+    background-color: #e8e8e8;
+    cursor: pointer;
 }
 
 
-.containerSetup{
-  padding-right: 32em !important;
-  padding-left: 32em !important;
+.containerSetup {
+    padding-right: 32em !important;
+    padding-left: 32em !important;
 }
 
-@media screen and (max-width: 1950px) {
-  .containerSetup{
-    padding-right: 20em !important;
-    padding-left: 20em !important;
-  }
-}
-
-@media screen and (max-width: 1200px) {
-  .containerSetup{
-    padding-right: 4em !important;
-    padding-left: 4em !important;
-  }
-}
 
 </style>
