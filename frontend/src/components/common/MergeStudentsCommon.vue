@@ -1,353 +1,530 @@
 <template>
-  <v-card fluid class="px-4" elevation="0">
+  <v-card
+    fluid
+    class="px-4"
+    elevation="0"
+  >
     <v-card-title class="px-0 pb-0 pt-5">
       <v-row>
-        <v-col v-if="title" cols="10" class="pr-0 pt-0 ml-2">
+        <v-col
+          v-if="title"
+          cols="10"
+          class="pr-0 pt-0 ml-2"
+        >
           {{ title }}
         </v-col>
 
         <v-col class="pt-0 d-flex justify-end">
-          <v-btn id="closeStudentsMergeModalBtn" text icon
-                 @click=closeStudentsMergeModal>
-            <v-icon large color="#38598A">mdi-close</v-icon>
+          <v-btn
+            id="closeStudentsMergeModalBtn"
+            text
+            icon
+            @click="closeStudentsMergeModal"
+          >
+            <v-icon
+              large
+              color="#38598A"
+            >
+              mdi-close
+            </v-icon>
           </v-btn>
         </v-col>
       </v-row>
     </v-card-title>
-    <v-form id="mergeStudentForm"
-            v-model="validForm" class="fill-height">
-      <v-container fluid class="fill-height ma-0 pa-2 pt-0 studentDetail">
+    <v-form
+      id="mergeStudentForm"
+      v-model="validForm"
+      class="fill-height"
+    >
+      <v-container
+        fluid
+        class="fill-height ma-0 pa-2 pt-0 studentDetail"
+      >
         <v-row class="mt-0 pt-0">
           <v-col cols="12">
-            <v-row no-gutters class="mb-2">
-              <v-col offset="2" cols="3">
+            <v-row
+              no-gutters
+              class="mb-2"
+            >
+              <v-col
+                offset="2"
+                cols="3"
+              >
                 <span class="penLabel">FROM:</span>
-                <p class="penLinkLabel"><a @click="openStudentDetails(mergedStudent.studentID)">
-                  {{ formatPen(mergedStudent.pen) }}
-                </a></p>
+                <p class="penLinkLabel">
+                  <a @click="openStudentDetails(mergedStudent.studentID)">
+                    {{ formatPen(mergedStudent.pen) }}
+                  </a>
+                </p>
               </v-col>
-              <v-col offset="2" cols="3">
+              <v-col
+                offset="2"
+                cols="3"
+              >
                 <span class="penLabel">TO:</span>
-                <p class="penLinkLabel"><a @click="openStudentDetails(student.studentID)">
-                  {{ formatPen(student.pen) }}
-                </a></p>
+                <p class="penLinkLabel">
+                  <a @click="openStudentDetails(student.studentID)">
+                    {{ formatPen(student.pen) }}
+                  </a>
+                </p>
               </v-col>
             </v-row>
-            <v-divider/>
+            <v-divider />
             <v-progress-linear
-                indeterminate
-                color="blue"
-                :active="isProcessing || isLoading"
-            ></v-progress-linear>
-            <v-row no-gutters class="mb-n1 mt-4 py-1">
+              indeterminate
+              color="blue"
+              :active="isProcessing || isLoading"
+            />
+            <v-row
+              no-gutters
+              class="mb-n1 mt-4 py-1"
+            >
               <v-col cols="2">
-                <p class="labelField">Legal Surname</p>
+                <p class="labelField">
+                  Legal Surname
+                </p>
               </v-col>
               <v-col cols="5">
-                <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.LEGAL_LAST_NAME" tab-index="21"
-                                                      :model="mergedStudent.legalLastName?mergedStudent.legalLastName:''"
-                                                      colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="fieldDisabled('legalLastName')"
-                                                      v-if="!!mergedStudent.legalLastName"
-                ></StudentDetailsCheckBoxWithOutputText>
+                <StudentDetailsCheckBoxWithOutputText
+                  v-if="!!mergedStudent.legalLastName"
+                  :name="STUDENT_MERGE_DETAILS_FIELDS.LEGAL_LAST_NAME"
+                  tab-index="21"
+                  :model="mergedStudent.legalLastName?mergedStudent.legalLastName:''"
+                  colspan="11"
+                  :disabled="fieldDisabled('legalLastName')"
+                  @update="handleCheckBoxChanged"
+                />
               </v-col>
               <v-col cols="3">
-                <v-text-field outlined density="compact" maxlength="25"
-                              :id="STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME"
-                              class="true-pen-data"
-                              :disabled="mergeSagaComplete"
-                              tabindex="1" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
-                              :rules="validateLegalLastName()"
-                              v-model="student.legalLastName"></v-text-field>
+                <v-text-field
+                  :id="STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME"
+                  v-model="student.legalLastName"
+                  outlined
+                  density="compact"
+                  maxlength="25"
+                  class="true-pen-data"
+                  :disabled="mergeSagaComplete"
+                  tabindex="1"
+                  :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
+                  :rules="validateLegalLastName()"
+                />
               </v-col>
             </v-row>
-            <v-row no-gutters class="mb-n1">
+            <v-row
+              no-gutters
+              class="mb-n1"
+            >
               <v-col cols="2">
-                <p class="labelField">Legal Given</p>
+                <p class="labelField">
+                  Legal Given
+                </p>
               </v-col>
               <v-col cols="5">
-                <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.LEGAL_FIRST_NAME" tab-index="22"
-                                                      :model="mergedStudent.legalFirstName?mergedStudent.legalFirstName:''"
-                                                      colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="fieldDisabled('legalFirstName')"
-                                                      v-if="!!mergedStudent.legalFirstName"
-                ></StudentDetailsCheckBoxWithOutputText>
+                <StudentDetailsCheckBoxWithOutputText
+                  v-if="!!mergedStudent.legalFirstName"
+                  :name="STUDENT_MERGE_DETAILS_FIELDS.LEGAL_FIRST_NAME"
+                  tab-index="22"
+                  :model="mergedStudent.legalFirstName?mergedStudent.legalFirstName:''"
+                  colspan="11"
+                  :disabled="fieldDisabled('legalFirstName')"
+                  @update="handleCheckBoxChanged"
+                />
               </v-col>
               <v-col cols="3">
-                <v-text-field outlined density="compact" maxlength="25"
-                              :id="STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME"
-                              class="true-pen-data"
-                              :disabled="mergeSagaComplete"
-                              tabindex="2" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
-                              v-model="student.legalFirstName"></v-text-field>
+                <v-text-field
+                  :id="STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME"
+                  v-model="student.legalFirstName"
+                  outlined
+                  density="compact"
+                  maxlength="25"
+                  class="true-pen-data"
+                  :disabled="mergeSagaComplete"
+                  tabindex="2"
+                  :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
+                />
               </v-col>
-
             </v-row>
-            <v-row no-gutters class="mb-n1">
+            <v-row
+              no-gutters
+              class="mb-n1"
+            >
               <v-col cols="2">
-                <p class="labelField">Legal Middle</p>
+                <p class="labelField">
+                  Legal Middle
+                </p>
               </v-col>
               <v-col cols="5">
-                <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES" tab-index="23"
-                                                      :model="mergedStudent.legalMiddleNames?mergedStudent.legalMiddleNames:''"
-                                                      colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="fieldDisabled('legalMiddleNames')"
-                                                      v-if="!!mergedStudent.legalMiddleNames"
-                ></StudentDetailsCheckBoxWithOutputText>
+                <StudentDetailsCheckBoxWithOutputText
+                  v-if="!!mergedStudent.legalMiddleNames"
+                  :name="STUDENT_MERGE_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES"
+                  tab-index="23"
+                  :model="mergedStudent.legalMiddleNames?mergedStudent.legalMiddleNames:''"
+                  colspan="11"
+                  :disabled="fieldDisabled('legalMiddleNames')"
+                  @update="handleCheckBoxChanged"
+                />
               </v-col>
               <v-col cols="3">
-                <v-text-field outlined density="compact" maxlength="25"
-                              :id="STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES"
-                              class="true-pen-data"
-                              :disabled="mergeSagaComplete"
-                              tabindex="3" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
-                              v-model="student.legalMiddleNames"></v-text-field>
+                <v-text-field
+                  :id="STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES"
+                  v-model="student.legalMiddleNames"
+                  outlined
+                  density="compact"
+                  maxlength="25"
+                  class="true-pen-data"
+                  :disabled="mergeSagaComplete"
+                  tabindex="3"
+                  :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
+                />
               </v-col>
-
             </v-row>
-            <v-row no-gutters class="mb-n1">
+            <v-row
+              no-gutters
+              class="mb-n1"
+            >
               <v-col cols="2">
-                <p class="labelField">Usual Surname</p>
+                <p class="labelField">
+                  Usual Surname
+                </p>
               </v-col>
               <v-col cols="5">
-                <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.USUAL_LAST_NAME" tab-index="24"
-                                                      :model="mergedStudent.usualLastName?mergedStudent.usualLastName:''"
-                                                      colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="fieldDisabled('usualLastName')"
-                                                      v-if="!!mergedStudent.usualLastName"
-                ></StudentDetailsCheckBoxWithOutputText>
+                <StudentDetailsCheckBoxWithOutputText
+                  v-if="!!mergedStudent.usualLastName"
+                  :name="STUDENT_MERGE_DETAILS_FIELDS.USUAL_LAST_NAME"
+                  tab-index="24"
+                  :model="mergedStudent.usualLastName?mergedStudent.usualLastName:''"
+                  colspan="11"
+                  :disabled="fieldDisabled('usualLastName')"
+                  @update="handleCheckBoxChanged"
+                />
               </v-col>
               <v-col cols="3">
-                <v-text-field outlined dense maxlength="25"
-                              :id="STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME"
-                              class="true-pen-data"
-                              :disabled="mergeSagaComplete"
-                              tabindex="4" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
-                              v-model="student.usualLastName"></v-text-field>
+                <v-text-field
+                  :id="STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME"
+                  v-model="student.usualLastName"
+                  outlined
+                  dense
+                  maxlength="25"
+                  class="true-pen-data"
+                  :disabled="mergeSagaComplete"
+                  tabindex="4"
+                  :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
+                />
               </v-col>
-
             </v-row>
-            <v-row no-gutters class="mb-n1">
+            <v-row
+              no-gutters
+              class="mb-n1"
+            >
               <v-col cols="2">
-                <p class="labelField">Usual Given</p>
+                <p class="labelField">
+                  Usual Given
+                </p>
               </v-col>
               <v-col cols="5">
-                <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.USUAL_FIRST_NAME" tab-index="25"
-                                                      :model="mergedStudent.usualFirstName?mergedStudent.usualFirstName:''"
-                                                      colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="fieldDisabled('usualFirstName')"
-                                                      v-if="!!mergedStudent.usualFirstName"
-                ></StudentDetailsCheckBoxWithOutputText>
+                <StudentDetailsCheckBoxWithOutputText
+                  v-if="!!mergedStudent.usualFirstName"
+                  :name="STUDENT_MERGE_DETAILS_FIELDS.USUAL_FIRST_NAME"
+                  tab-index="25"
+                  :model="mergedStudent.usualFirstName?mergedStudent.usualFirstName:''"
+                  colspan="11"
+                  :disabled="fieldDisabled('usualFirstName')"
+                  @update="handleCheckBoxChanged"
+                />
               </v-col>
               <v-col cols="3">
-                <v-text-field outlined dense maxlength="25"
-                              :id="STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME"
-                              class="true-pen-data"
-                              :disabled="mergeSagaComplete"
-                              tabindex="5" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
-                              v-model="student.usualFirstName"></v-text-field>
+                <v-text-field
+                  :id="STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME"
+                  v-model="student.usualFirstName"
+                  outlined
+                  dense
+                  maxlength="25"
+                  class="true-pen-data"
+                  :disabled="mergeSagaComplete"
+                  tabindex="5"
+                  :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
+                />
               </v-col>
             </v-row>
-            <v-row no-gutters class="mb-n1">
+            <v-row
+              no-gutters
+              class="mb-n1"
+            >
               <v-col cols="2">
-                <p class="labelField">Usual Middle</p>
+                <p class="labelField">
+                  Usual Middle
+                </p>
               </v-col>
               <v-col cols="5">
-                <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.USUAL_MIDDLE_NAMES" tab-index="26"
-                                                      :model="mergedStudent.usualMiddleNames?mergedStudent.usualMiddleNames:''"
-                                                      colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="fieldDisabled('usualMiddleNames')"
-                                                      v-if="!!mergedStudent.usualMiddleNames"
-                ></StudentDetailsCheckBoxWithOutputText>
+                <StudentDetailsCheckBoxWithOutputText
+                  v-if="!!mergedStudent.usualMiddleNames"
+                  :name="STUDENT_MERGE_DETAILS_FIELDS.USUAL_MIDDLE_NAMES"
+                  tab-index="26"
+                  :model="mergedStudent.usualMiddleNames?mergedStudent.usualMiddleNames:''"
+                  colspan="11"
+                  :disabled="fieldDisabled('usualMiddleNames')"
+                  @update="handleCheckBoxChanged"
+                />
               </v-col>
               <v-col cols="3">
-                <v-text-field outlined dense maxlength="25"
-                              :id="STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES"
-                              class="true-pen-data"
-                              :disabled="mergeSagaComplete"
-                              tabindex="6" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
-                              v-model="student.usualMiddleNames"></v-text-field>
+                <v-text-field
+                  :id="STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES"
+                  v-model="student.usualMiddleNames"
+                  outlined
+                  dense
+                  maxlength="25"
+                  class="true-pen-data"
+                  :disabled="mergeSagaComplete"
+                  tabindex="6"
+                  :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
+                />
               </v-col>
             </v-row>
-            <v-row no-gutters class="mb-n1">
+            <v-row
+              no-gutters
+              class="mb-n1"
+            >
               <v-col cols="2">
-                <p class="labelField">Gender</p>
+                <p class="labelField">
+                  Gender
+                </p>
               </v-col>
               <v-col cols="5">
-                <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.GENDER_CODE" tab-index="27"
-                                                      :model="mergedStudent.genderCode?mergedStudent.genderCode:''"
-                                                      colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="fieldDisabled('genderCode')"
-                                                      v-if="!!mergedStudent.genderCode"
-                ></StudentDetailsCheckBoxWithOutputText>
+                <StudentDetailsCheckBoxWithOutputText
+                  v-if="!!mergedStudent.genderCode"
+                  :name="STUDENT_MERGE_DETAILS_FIELDS.GENDER_CODE"
+                  tab-index="27"
+                  :model="mergedStudent.genderCode?mergedStudent.genderCode:''"
+                  colspan="11"
+                  :disabled="fieldDisabled('genderCode')"
+                  @update="handleCheckBoxChanged"
+                />
               </v-col>
               <v-col cols="1">
-                <v-text-field outlined dense maxlength="1"
-                              :id="STUDENT_DETAILS_FIELDS.GENDER_CODE"
-                              class="true-pen-data"
-                              :disabled="mergeSagaComplete"
-                              tabindex="7"
-                              :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
-                              :rules="validateGender()"
-                              v-model="student.genderCode"/>
+                <v-text-field
+                  :id="STUDENT_DETAILS_FIELDS.GENDER_CODE"
+                  v-model="student.genderCode"
+                  outlined
+                  dense
+                  maxlength="1"
+                  class="true-pen-data"
+                  :disabled="mergeSagaComplete"
+                  tabindex="7"
+                  :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
+                  :rules="validateGender()"
+                />
               </v-col>
             </v-row>
-            <v-row no-gutters class="mb-n1">
+            <v-row
+              no-gutters
+              class="mb-n1"
+            >
               <v-col cols="2">
-                <p class="labelField">Date of Birth</p>
+                <p class="labelField">
+                  Date of Birth
+                </p>
               </v-col>
               <v-col cols="5">
-                <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.DOB" tab-index="28"
-                                                      :model="mergedStudent.dob?formatDob(mergedStudent.dob, 'uuuu-MM-dd', 'uuuu/MM/dd'):''"
-                                                      colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="fieldDisabled('dob', isSameDate)"
-                                                      v-if="!!mergedStudent.dob"
-                ></StudentDetailsCheckBoxWithOutputText>
+                <StudentDetailsCheckBoxWithOutputText
+                  v-if="!!mergedStudent.dob"
+                  :name="STUDENT_MERGE_DETAILS_FIELDS.DOB"
+                  tab-index="28"
+                  :model="mergedStudent.dob?formatDob(mergedStudent.dob, 'uuuu-MM-dd', 'uuuu/MM/dd'):''"
+                  colspan="11"
+                  :disabled="fieldDisabled('dob', isSameDate)"
+                  @update="handleCheckBoxChanged"
+                />
               </v-col>
               <v-col cols="2">
                 <FormattedTextField
-                    tabindex="8"
-                    v-model="shortDOB"
-                    :id='STUDENT_DETAILS_FIELDS.DOB'
-                    class="true-pen-data"
-                    :disabled="mergeSagaComplete"
-                    :filled="false"
-                    :clearable="false"
-                    :rules="validateDOB()"
-                    :format="formatDob"
-                    maxlength="8"
-                ></FormattedTextField>
+                  :id="STUDENT_DETAILS_FIELDS.DOB"
+                  v-model="shortDOB"
+                  tabindex="8"
+                  class="true-pen-data"
+                  :disabled="mergeSagaComplete"
+                  :filled="false"
+                  :clearable="false"
+                  :rules="validateDOB()"
+                  :format="formatDob"
+                  maxlength="8"
+                />
               </v-col>
             </v-row>
-            <v-row no-gutters class="mb-n1">
+            <v-row
+              no-gutters
+              class="mb-n1"
+            >
               <v-col cols="2">
-                <p class="labelField">Mincode</p>
+                <p class="labelField">
+                  Mincode
+                </p>
               </v-col>
               <v-col cols="5">
-                <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.MINCODE" tab-index="29"
-                                                      :model="mergedStudent.mincode?mergedStudent.mincode:''"
-                                                      colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="fieldDisabled('mincode')"
-                                                      v-if="!!mergedStudent.mincode"
-                ></StudentDetailsCheckBoxWithOutputText>
+                <StudentDetailsCheckBoxWithOutputText
+                  v-if="!!mergedStudent.mincode"
+                  :name="STUDENT_MERGE_DETAILS_FIELDS.MINCODE"
+                  tab-index="29"
+                  :model="mergedStudent.mincode?mergedStudent.mincode:''"
+                  colspan="11"
+                  :disabled="fieldDisabled('mincode')"
+                  @update="handleCheckBoxChanged"
+                />
               </v-col>
               <v-col cols="2">
                 <FormattedTextField
-                    tabindex="9"
-                    v-model="student.mincode"
-                    :id='STUDENT_DETAILS_FIELDS.MINCODE'
-                    class="true-pen-data"
-                    :disabled="mergeSagaComplete"
-                    :filled="false"
-                    :clearable="false"
-                    :async-messages="mincodeErrors"
-                    :format="formatMincode"
-                    :rules="validateMincode()"
-                    maxlength="8"
-                ></FormattedTextField>
+                  :id="STUDENT_DETAILS_FIELDS.MINCODE"
+                  v-model="student.mincode"
+                  tabindex="9"
+                  class="true-pen-data"
+                  :disabled="mergeSagaComplete"
+                  :filled="false"
+                  :clearable="false"
+                  :async-messages="mincodeErrors"
+                  :format="formatMincode"
+                  :rules="validateMincode()"
+                  maxlength="8"
+                />
               </v-col>
             </v-row>
-            <v-row no-gutters class="mb-n1">
+            <v-row
+              no-gutters
+              class="mb-n1"
+            >
               <v-col cols="2">
-                <p class="labelField">Local ID</p>
+                <p class="labelField">
+                  Local ID
+                </p>
               </v-col>
               <v-col cols="5">
-                <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.LOCAL_ID" tab-index="30"
-                                                      :model="mergedStudent.localID?mergedStudent.localID:''"
-                                                      colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="fieldDisabled('localID')"
-                                                      v-if="!!mergedStudent.localID"
-                ></StudentDetailsCheckBoxWithOutputText>
+                <StudentDetailsCheckBoxWithOutputText
+                  v-if="!!mergedStudent.localID"
+                  :name="STUDENT_MERGE_DETAILS_FIELDS.LOCAL_ID"
+                  tab-index="30"
+                  :model="mergedStudent.localID?mergedStudent.localID:''"
+                  colspan="11"
+                  :disabled="fieldDisabled('localID')"
+                  @update="handleCheckBoxChanged"
+                />
               </v-col>
               <v-col cols="2">
-                <v-text-field outlined dense maxlength="10"
-                              :id="STUDENT_DETAILS_FIELDS.LOCAL_ID"
-                              class="true-pen-data"
-                              :disabled="mergeSagaComplete"
-                              tabindex="10"
-                              v-model="student.localID"/>
+                <v-text-field
+                  :id="STUDENT_DETAILS_FIELDS.LOCAL_ID"
+                  v-model="student.localID"
+                  outlined
+                  dense
+                  maxlength="10"
+                  class="true-pen-data"
+                  :disabled="mergeSagaComplete"
+                  tabindex="10"
+                />
               </v-col>
-
             </v-row>
-            <v-row no-gutters class="mb-n1">
+            <v-row
+              no-gutters
+              class="mb-n1"
+            >
               <v-col cols="2">
-                <p class="labelField">Postal Code</p>
+                <p class="labelField">
+                  Postal Code
+                </p>
               </v-col>
               <v-col cols="5">
-                <StudentDetailsCheckBoxWithOutputText :name="STUDENT_MERGE_DETAILS_FIELDS.POSTAL_CODE" tab-index="31"
-                                                      :model="mergedStudent.postalCode?formatPostalCode(mergedStudent.postalCode):''"
-                                                      colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="fieldDisabled('postalCode')"
-                                                      v-if="!!mergedStudent.postalCode"
-                ></StudentDetailsCheckBoxWithOutputText>
+                <StudentDetailsCheckBoxWithOutputText
+                  v-if="!!mergedStudent.postalCode"
+                  :name="STUDENT_MERGE_DETAILS_FIELDS.POSTAL_CODE"
+                  tab-index="31"
+                  :model="mergedStudent.postalCode?formatPostalCode(mergedStudent.postalCode):''"
+                  colspan="11"
+                  :disabled="fieldDisabled('postalCode')"
+                  @update="handleCheckBoxChanged"
+                />
               </v-col>
               <v-col cols="2">
                 <FormattedTextField
-                    tabindex="11"
-                    :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
-                    v-model="student.postalCode"
-                    :id='STUDENT_DETAILS_FIELDS.POSTAL_CODE'
-                    class="true-pen-data"
-                    :disabled="mergeSagaComplete"
-                    :filled="false"
-                    :clearable="false"
-                    :format="formatPostalCode"
-                    maxlength="7"
-                ></FormattedTextField>
+                  :id="STUDENT_DETAILS_FIELDS.POSTAL_CODE"
+                  v-model="student.postalCode"
+                  tabindex="11"
+                  :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
+                  class="true-pen-data"
+                  :disabled="mergeSagaComplete"
+                  :filled="false"
+                  :clearable="false"
+                  :format="formatPostalCode"
+                  maxlength="7"
+                />
               </v-col>
-
             </v-row>
-            <v-row no-gutters class="mb-n1">
+            <v-row
+              no-gutters
+              class="mb-n1"
+            >
               <v-col cols="2">
-                <p class="labelField">Memo</p>
+                <p class="labelField">
+                  Memo
+                </p>
               </v-col>
-              <v-col cols="4" class="mt-n1">
-                <StudentDetailsCheckBoxWithOutputText maxlength="4000" :name="STUDENT_DETAILS_FIELDS.MEMO"
-                                                      tab-index="32"
-                                                      :model="mergedStudent.memo?mergedStudent.memo:''"
-                                                      colspan="11" @update="handleCheckBoxChanged"
-                                                      :disabled="fieldDisabled('memo')"
-                                                      v-if="!!mergedStudent.memo"
-                                                      :is-text-area="true"
-                ></StudentDetailsCheckBoxWithOutputText>
+              <v-col
+                cols="4"
+                class="mt-n1"
+              >
+                <StudentDetailsCheckBoxWithOutputText
+                  v-if="!!mergedStudent.memo"
+                  maxlength="4000"
+                  :name="STUDENT_DETAILS_FIELDS.MEMO"
+                  tab-index="32"
+                  :model="mergedStudent.memo?mergedStudent.memo:''"
+                  colspan="11"
+                  :disabled="fieldDisabled('memo')"
+                  :is-text-area="true"
+                  @update="handleCheckBoxChanged"
+                />
               </v-col>
-              <v-col offset="1" cols="4">
+              <v-col
+                offset="1"
+                cols="4"
+              >
                 <v-textarea
-                    tabindex="12"
-                    v-model="student.memo"
-                    :id='STUDENT_DETAILS_FIELDS.MEMO'
-                    :disabled="mergeSagaComplete"
-                    class="memoscroll true-pen-data"
-                    color="#000000"
-                    maxlength="4000"
-                    dense
-                    rows="3"
-                    no-resize
-                    outlined
-                    ref="memoTextarea"
-                    @input="replaceMemoMacro"
-                ></v-textarea>
+                  :id="STUDENT_DETAILS_FIELDS.MEMO"
+                  v-model="student.memo"
+                  ref="memoTextarea"
+                  tabindex="12"
+                  :disabled="mergeSagaComplete"
+                  class="memoscroll true-pen-data"
+                  color="#000000"
+                  maxlength="4000"
+                  dense
+                  rows="3"
+                  no-resize
+                  outlined
+                  @input="replaceMemoMacro"
+                />
                 <MacroMenu
                   padding="pt-1"
                   margin="ml-0"
                   :macros="mergeMacros"
                   small
-                  @select="insertMacroText"
                   :disabled="mergeSagaComplete"
+                  @select="insertMacroText"
                 />
               </v-col>
-
             </v-row>
           </v-col>
         </v-row>
-        <v-divider/>
+        <v-divider />
         <v-row>
           <v-col cols="12">
             <v-card-actions style="float: right;">
-              <PrimaryButton id="compareModalCancelBtn" text="Cancel" secondary :click-action=closeStudentsMergeModal></PrimaryButton>
+              <PrimaryButton
+                id="compareModalCancelBtn"
+                text="Cancel"
+                secondary
+                :click-action="closeStudentsMergeModal"
+              />
               <PrimaryButton
                 :disabled="!hasAnyEdits() || !validForm || isProcessing || mergeSagaComplete || isAMergedStudent"
-                :click-action="performMerge()" text="Merge"></PrimaryButton>
+                :click-action="performMerge()"
+                text="Merge"
+              />
             </v-card-actions>
           </v-col>
         </v-row>
@@ -363,13 +540,13 @@
               Merged To Demographics:
             </v-row>
             <v-row class="demographics-data">
-              <strong>{{legalName}}</strong>
+              <strong>{{ legalName }}</strong>
             </v-row>
             <v-row class="demographics-data">
-              <strong>{{formatDob(shortDOB)}}</strong>
+              <strong>{{ formatDob(shortDOB) }}</strong>
             </v-row>
             <v-row class="demographics-data">
-              <strong>{{student.genderCode}}</strong>
+              <strong>{{ student.genderCode }}</strong>
             </v-row>
           </v-col>
         </template>
@@ -397,6 +574,7 @@ import schoolMixin from '@/mixins/schoolMixin';
 import servicesSagaMixin from '@/mixins/servicesSagaMixin';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import router from '@/router';
+import _ from 'lodash';
 import ApiService from '@/common/apiService';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 import {deepCloneObject} from '@/utils/common';
@@ -407,6 +585,13 @@ import {studentStore} from '@/store/modules/student';
 
 export default {
   name: 'MergeStudentsCommon',
+  components: {
+    PrimaryButton,
+    FormattedTextField,
+    StudentDetailsCheckBoxWithOutputText,
+    ConfirmationDialog,
+    MacroMenu
+  },
   mixins: [alertMixin, schoolMixin, servicesSagaMixin, staleStudentRecordMixin],
   props: {
     mergeStudentsModalOpen: {
@@ -426,12 +611,24 @@ export default {
       required: true
     },
   },
-  components: {
-    PrimaryButton,
-    FormattedTextField,
-    StudentDetailsCheckBoxWithOutputText,
-    ConfirmationDialog,
-    MacroMenu
+  data() {
+    return {
+      validForm: false,
+      studentForm: null,
+      student: {},
+      studentBackup: null,
+      mergedStudent: {},
+      shortDOB: null,
+      REQUEST_TYPES: REQUEST_TYPES,
+      STUDENT_DETAILS_FIELDS: STUDENT_DETAILS_FIELDS,
+      STUDENT_MERGE_DETAILS_FIELDS,
+      STUDENT_CODES: STUDENT_CODES,
+      genderCodes: [],
+      isStudentUpdated: false,
+      isLoading: false,
+      isAMergedStudent: false,
+      checkedFields: {},
+    };
   },
   watch: {
     notification(val) {
@@ -475,25 +672,6 @@ export default {
       this.isLoading = false;
     }
 
-  },
-  data() {
-    return {
-      validForm: false,
-      studentForm: null,
-      student: {},
-      studentBackup: null,
-      mergedStudent: {},
-      shortDOB: null,
-      REQUEST_TYPES: REQUEST_TYPES,
-      STUDENT_DETAILS_FIELDS: STUDENT_DETAILS_FIELDS,
-      STUDENT_MERGE_DETAILS_FIELDS,
-      STUDENT_CODES: STUDENT_CODES,
-      genderCodes: [],
-      isStudentUpdated: false,
-      isLoading: false,
-      isAMergedStudent: false,
-      checkedFields: {},
-    };
   },
   computed: {
     ...mapState(notificationsStore, ['notification']),

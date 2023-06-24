@@ -1,30 +1,49 @@
 <template>
   <div class="full-width">
     <v-row>
-      <v-col cols="11" class="ml-10">
-        <HistoryDetailHeader :schoolHistory="currentSelectedHistory" :rowNumber="rowNumber"
-          :previousDisabled="previousDisabled" :nextDisabled="nextDisabled" @next="clickNext" @previous="clickPrevious">
-        </HistoryDetailHeader>
-  
-        <SchoolHistoryDetail :schoolHistory="currentSelectedHistory">
+      <v-col
+        cols="11"
+        class="ml-10"
+      >
+        <HistoryDetailHeader
+          :school-history="currentSelectedHistory"
+          :row-number="rowNumber"
+          :previous-disabled="previousDisabled"
+          :next-disabled="nextDisabled"
+          @next="clickNext"
+          @previous="clickPrevious"
+        />
+
+        <SchoolHistoryDetail :school-history="currentSelectedHistory">
           <v-card-actions class="pb-2">
-            <v-spacer></v-spacer>
-            <PrimaryButton id="closePanel" class="mx-1" text="Close" :click-action="$emit('close')"></PrimaryButton>
+            <v-spacer />
+            <PrimaryButton
+              id="closePanel"
+              class="mx-1"
+              text="Close"
+              :click-action="$emit('close')"
+            />
           </v-card-actions>
         </SchoolHistoryDetail>
       </v-col>
     </v-row>
   </div>
 </template>
-  
+
 <script>
-  
+
 import PrimaryButton from '../../util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
 import HistoryDetailHeader from './HistoryDetailHeader.vue';
 import SchoolHistoryDetail from './SchoolHistoryDetail.vue';
+
 export default {
   name: 'SchoolHistoryDetailPanel',
+  components: {
+    HistoryDetailHeader,
+    PrimaryButton,
+    SchoolHistoryDetail
+  },
   mixins: [alertMixin],
   props: {
     nextSchoolHistory: {
@@ -40,24 +59,19 @@ export default {
       required: true
     },
   },
-  components: {
-    HistoryDetailHeader,
-    PrimaryButton,
-    SchoolHistoryDetail
-  },
   data() {
     return {
       currentSelectedHistory: null,
       rowNumber: 0,
     };
   },
-  created() {
-    this.schoolHistory.content.forEach((item, idx) => {
-      if (item.schoolHistoryId === this.schoolHistoryId) {
-        this.currentSelectedHistory = item;
-        this.rowNumber = idx;
-      }
-    });
+  computed: {
+    previousDisabled() {
+      return this.rowNumber <= 0;
+    },
+    nextDisabled() {
+      return this.rowNumber >= this.schoolHistory?.content?.length - 1;
+    },
   },
   watch: {
     schoolHistoryId(newValue) {
@@ -69,13 +83,13 @@ export default {
       });
     }
   },
-  computed: {
-    previousDisabled() {
-      return this.rowNumber <= 0;
-    },
-    nextDisabled() {
-      return this.rowNumber >= this.schoolHistory?.content?.length - 1;
-    },
+  created() {
+    this.schoolHistory.content.forEach((item, idx) => {
+      if (item.schoolHistoryId === this.schoolHistoryId) {
+        this.currentSelectedHistory = item;
+        this.rowNumber = idx;
+      }
+    });
   },
   methods: {
     clickPrevious() {
@@ -95,43 +109,43 @@ export default {
   }
 };
 </script>
-  
+
 <style scoped>
-  
-  div#auditHistoryDetailHeader {
+
+div#auditHistoryDetailHeader {
     background-color: rgb(56, 89, 138);
     color: white;
     height: 50px;
-  }
-  
-  span#headerLabel {
+}
+
+span#headerLabel {
     margin-top: 5px;
     margin-left: 5px;
     font-weight: bold;
-  }
-  
-  span#headerUser {
+}
+
+span#headerUser {
     margin-top: 10px;
     margin-left: 5px;
-  }
-  
-  span#headerUpdateDate {
+}
+
+span#headerUpdateDate {
     margin-top: 10px;
     margin-left: 8px;
     font-size: 14px;
-  }
-  
-  span#headerUpdateTime {
+}
+
+span#headerUpdateTime {
     margin-top: 10px;
     margin-left: 6px;
     font-size: 14px;
-  }
-  
-  #previousHistoryDetail.v-btn--disabled .v-icon,
-  #nextHistoryDetail.v-btn--disabled .v-icon {
+}
+
+#previousHistoryDetail.v-btn--disabled .v-icon,
+#nextHistoryDetail.v-btn--disabled .v-icon {
     background-color: rgba(255, 255, 255, 0.80) !important;
     color: white !important;
     border-radius: 50%;
-  }
-  
-  </style>
+}
+
+</style>

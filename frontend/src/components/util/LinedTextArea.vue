@@ -1,49 +1,50 @@
 <template>
   <div class="lined-textarea">
-    <div class="lined-textarea__lines"
-         v-if="!disabled"
-         :style="{ 'padding-right': longestWidth + 'px'}">
-      <div class="lined-textarea__lines__inner"
-           ref="lines">
-        <p v-for="(line, index) in lines"
-           :key="index"
-           class="lined-textarea__lines__line"
-           v-html="line"></p>
+    <div
+      v-if="!disabled"
+      class="lined-textarea__lines"
+      :style="{ 'padding-right': longestWidth + 'px'}"
+    >
+      <div
+        ref="lines"
+        class="lined-textarea__lines__inner"
+      >
+        <p
+          v-for="(line, index) in lines"
+          :key="index"
+          class="lined-textarea__lines__line"
+          v-html="line"
+        />
       </div>
     </div>
     <div class="lined-textarea__box">
       <label>
-        <textarea :disabled="disabled"
-                  :placeholder="placeholder"
-                  class="lined-textarea__content"
-                  :class="{'lined-textarea__content--wrap': !nowrap,
-                           'lined-textarea__content--nowrap': nowrap }"
-                  v-model="content"
-                  v-on:scroll="scrollLines"
-                  v-on:input="onInput"
-                  v-resize="recalculate"
-                  readonly
-                  :style="styles"
-                  ref="textarea"
-        ></textarea>
+        <textarea
+          v-model="content"
+          v-resize="recalculate"
+          :disabled="disabled"
+          :placeholder="placeholder"
+          class="lined-textarea__content"
+          ref="textarea"
+          :class="{'lined-textarea__content--wrap': !nowrap,
+                   'lined-textarea__content--nowrap': nowrap }"
+          readonly
+          :style="styles"
+          @scroll="scrollLines"
+          @input="onInput"
+        />
       </label>
     </div>
-    <div class="count-helper" ref="helper"></div>
+    <div
+      ref="helper"
+      class="count-helper"
+    />
   </div>
 </template>
 
 <script>
 export default {
   name: 'LinedTextarea',
-  data() {
-    return {
-      content: '',
-      widthPerChar: 8, // Hard coded, adjust when necessary
-      numPerLine: 1,
-      previousWidth: 0,
-      scrolledLength: 0
-    };
-  },
   props: {
     disabled: {
       type: Boolean,
@@ -74,10 +75,14 @@ export default {
       default: () => true
     }
   },
-  mounted() {
-    this.content = this.value;
-    this.syncScroll();
-    this.calculateCharactersPerLine();
+  data() {
+    return {
+      content: '',
+      widthPerChar: 8, // Hard coded, adjust when necessary
+      numPerLine: 1,
+      previousWidth: 0,
+      scrolledLength: 0
+    };
   },
   computed: {
     lines() {
@@ -123,6 +128,11 @@ export default {
         this.recalculate();
       }
     }
+  },
+  mounted() {
+    this.content = this.value;
+    this.syncScroll();
+    this.calculateCharactersPerLine();
   },
   methods: {
     getWrapTimes(sentence, width) { // Number of lines extended. Seems to work with pre-wrap (has problem with dash)

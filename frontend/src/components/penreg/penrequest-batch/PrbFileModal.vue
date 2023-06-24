@@ -1,31 +1,36 @@
 <template>
   <v-dialog
-      id="prbFileModal"
-      v-model="isFileViewerOpen"
-      max-width="85%"
+    id="prbFileModal"
+    v-model="isFileViewerOpen"
+    max-width="85%"
   >
     <v-card class="studentDetailDialogCard fill-height ma-0 px-4 pb-4">
-      <v-card-title class="px-0 pb-0 pt-5">
-      </v-card-title>
-      <div v-if="!loading" class="file-header-box">
-        <span>{{`File: ${penWebBlob.fileName}`}}</span>
-        <span>{{`Mincode: ${penWebBlob.mincode}`}}</span>
-        <span>{{`Submission #: ${penWebBlob.submissionNumber}`}}</span>
+      <v-card-title class="px-0 pb-0 pt-5" />
+      <div
+        v-if="!loading"
+        class="file-header-box"
+      >
+        <span>{{ `File: ${penWebBlob.fileName}` }}</span>
+        <span>{{ `Mincode: ${penWebBlob.mincode}` }}</span>
+        <span>{{ `Submission #: ${penWebBlob.submissionNumber}` }}</span>
       </div>
       <v-progress-linear
-          indeterminate
-          color="blue"
-          :active="loading"
-      ></v-progress-linear>
+        indeterminate
+        color="blue"
+        :active="loading"
+      />
       <div class="text-area-box">
-        <LinedTextArea v-if="!loading" :value="penWebBlob.fileContents"></LinedTextArea>
+        <LinedTextArea
+          v-if="!loading"
+          :value="penWebBlob.fileContents"
+        />
       </div>
       <div class="action-buttons-box">
         <PrimaryButton
-            id="closeFileViewer"
-            text="Close"
-            :click-action="isFileViewerOpen=false">
-        </PrimaryButton>
+          id="closeFileViewer"
+          text="Close"
+          :click-action="isFileViewerOpen=false"
+        />
       </div>
     </v-card>
   </v-dialog>
@@ -53,9 +58,12 @@ export default {
       default: true,
     }
   },
-  mounted() {
-    this.isFileViewerOpen = this.openDialog;
-    this.loadPenWebBlob();
+  data() {
+    return {
+      isFileViewerOpen: this.openDialog,
+      loading: false,
+      penWebBlob: {},
+    };
   },
   watch: {
     openDialog(val) {
@@ -71,12 +79,9 @@ export default {
       this.loadPenWebBlob();
     },
   },
-  data() {
-    return {
-      isFileViewerOpen: this.openDialog,
-      loading: false,
-      penWebBlob: {},
-    };
+  mounted() {
+    this.isFileViewerOpen = this.openDialog;
+    this.loadPenWebBlob();
   },
   methods: {
     loadPenWebBlob() {

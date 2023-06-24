@@ -1,68 +1,98 @@
 <template>
-    <v-row>
-      <v-col :cols="showRecordDetail ? 6 : 12">
-        <v-data-table id="schoolHistoryTable"
-          :headers="getHeaders()"
-          :items="schoolHistory.content"
-          :items-per-page="schoolHistory.pageable.pageSize"
-          :page.sync="pageNumber"
-          :loading="loading"
-          :key="selectedSchoolHistoryId"
-          v-model="selectedSchoolHistory" 
-          item-key="schoolHistoryId"
-          @page-count="schoolHistory.pageable.pageNumber = $event" 
-          class="batch-file-table"
-          hide-default-footer>
-          <template #item="props">
-            <tr :class="tableRowClass(props.item)" @click="selectHistoryItem(props)">
-              <td v-for="header in props.headers" :key="header.id" :class="header.id">
-                <div class="table-cell">
-                  <span :class="{ 'diff-value': props.item[`${header.value}_diff`] }">{{
-                      formatTableColumn(header.format, props.item[header.value])
-                  }}</span>
-                </div>
-              </td>
-            </tr>
-          </template>
-        </v-data-table>
-        <v-row class="pt-2" justify="end">
-          <v-col cols="4">
-            <v-pagination color="#38598A" v-model="pageNumber" :length="schoolHistory.totalPages"></v-pagination>
-          </v-col>
-          <v-col cols="4" id="currentItemsDisplay">
-            Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ schoolHistory.totalElements || 0 }}
-          </v-col>
-        </v-row>
-      </v-col>
-      <v-col v-if="showRecordDetail">
-        <SchoolHistoryDetailPanel 
-          :nextSchoolHistory="nextSchoolHistory" 
-          :schoolHistory="schoolHistory"
-          :schoolHistoryId="selectedSchoolHistoryId" 
-          @close="showRecordDetail = false" 
-          @update="setSelectedSchoolHistoryId">
-        </SchoolHistoryDetailPanel>
-      </v-col>
-    </v-row>
+  <v-row>
+    <v-col :cols="showRecordDetail ? 6 : 12">
+      <v-data-table
+        id="schoolHistoryTable"
+        v-model:items-per-page="schoolHistory.pageable.pageSize"
+        v-model:page="pageNumber"
+        v-model:items="schoolHistory.content"
+        v-model="selectedSchoolHistory"
+        :items-length="5"
+        :headers="getHeaders()"
+        :footer-props="{
+          'items-per-page-options': itemsPerPageOptions
+        }"
+        :loading="loading"
+        class="elevation-1 batch-file-table"
+        mobile-breakpoint="0"
+      >
+        <template #no-data>
+          <v-row no-gutters>
+            <v-col class="d-flex justify-center">
+              There is no history.
+            </v-col>
+          </v-row>
+        </template>
+        <!--        <template #item="{ item, index }">-->
+        <!--          <tr :class="tableRowClass(item.raw)" @click="selectHistoryItem(item.raw)">-->
+        <!--            {{-->
+        <!--              item-->
+        <!--            }}-->
+        <!--            <td v-for="header in item.raw.headers" :key="header.id" :class="header.id">-->
+        <!--              <div class="table-cell">-->
+        <!--                  <span :class="{ 'diff-value': item.raw[`${header.value}_diff`] }">{{-->
+        <!--                      formatTableColumn(header.format, item.raw[header.value])-->
+        <!--                    }}</span>-->
+        <!--              </div>-->
+        <!--            </td>-->
+        <!--          </tr>-->
+        <!--        </template>-->
+      </v-data-table>
+      <v-row
+        class="pt-2"
+        justify="end"
+      >
+        <v-col cols="4">
+          <v-pagination
+            v-model="pageNumber"
+            color="#38598A"
+            :length="schoolHistory.totalPages"
+          />
+        </v-col>
+        <v-col
+          id="currentItemsDisplay"
+          cols="4"
+        >
+          Showing {{
+            showingFirstNumber
+          }} to {{
+            showingEndNumber
+          }} of {{
+            schoolHistory.totalElements || 0
+          }}
+        </v-col>
+      </v-row>
+    </v-col>
+    <v-col v-if="showRecordDetail">
+      <SchoolHistoryDetailPanel
+        :next-school-history="nextSchoolHistory"
+        :school-history="schoolHistory"
+        :school-history-id="selectedSchoolHistoryId"
+        @close="showRecordDetail = false"
+        @update="setSelectedSchoolHistoryId"
+      />
+    </v-col>
+  </v-row>
 </template>
-  
+
 <script>
-import { Routes } from '@/utils/constants';
+import {Routes} from '@/utils/constants';
 import ApiService from '../../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import router from '@/router';
 import {formatDob} from '@/utils/format';
-import { mapState } from 'pinia';
+import {mapState} from 'pinia';
 import {getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import SchoolHistoryDetailPanel from './SchoolHistoryDetailPanel.vue';
 import {instituteStore} from '@/store/modules/institute';
 import {appStore} from '@/store/modules/app';
+
 export default {
   name: 'SchoolHistory',
-  mixins: [alertMixin],
   components: {
     SchoolHistoryDetailPanel
   },
+  mixins: [alertMixin],
   props: {
     schoolID: {
       type: String,
@@ -82,10 +112,11 @@ export default {
       loading: true,
       pageNumber: 1,
       pageSize: 15,
+      itemsPerPageOptions: [15],
       nextSchoolHistory: [],
-      selectedSchoolHistory:[],
-      allAuthority:[],
-      selectedSchoolHistoryId:null,
+      selectedSchoolHistory: [],
+      allAuthority: [],
+      selectedSchoolHistoryId: null,
       searchParams: {
         schoolID: '',
       },
@@ -121,19 +152,19 @@ export default {
       return ((this.pageNumber - 1) * (this.schoolHistory.pageable.pageSize || 0) + (this.schoolHistory.numberOfElements || 0));
     },
   },
-  async beforeMount() {
-    await appStore().getCodes();
-  },
-  mounted() {
-    this.getSchoolHistory();
-    this.showRecordDetail = false;
-  },
   watch: {
     pageNumber: {
       handler() {
         this.getSchoolHistory();
       }
     },
+  },
+  async beforeMount() {
+    await appStore().getCodes();
+  },
+  mounted() {
+    this.getSchoolHistory();
+    this.showRecordDetail = false;
   },
   created() {
     this.getAuthority();
@@ -148,7 +179,7 @@ export default {
   methods: {
     getPageHeading() {
       let school = this.schoolMap?.get(this.schoolID);
-      if(school) {
+      if (school) {
         return school?.mincode + ' - ' + school?.schoolName;
       }
     },
@@ -229,10 +260,10 @@ export default {
         .finally(() => this.loading = false);
     },
     checkForDifferences(preHistory, history, key) {
-      if(key === 'mailingAddress') {
+      if (key === 'mailingAddress') {
         history['mailingAddress_diff'] = !this.compareAddress(preHistory.mailingAddress, history.mailingAddress);
         return history;
-      } else if(key === 'physicalAddress') {
+      } else if (key === 'physicalAddress') {
         history['physicalAddress_diff'] = !this.compareAddress(preHistory.physicalAddress, history.physicalAddress);
         return history;
       } else if (history[key] !== preHistory[key] && !['createDate', 'createUser', 'addresses'].includes(key)) {
@@ -275,7 +306,7 @@ export default {
       this.nextSchoolHistory = nextPageData.content;
     },
     formatSchoolHistory(history) {
-      history.facilityTypeValue =  this.mapFacilityCode(history.facilityTypeCode);
+      history.facilityTypeValue = this.mapFacilityCode(history.facilityTypeCode);
       history.schoolCategoryValue = this.mapSchoolCategoryCode(history.schoolCategoryCode);
       history.schoolReportingRequirementCodeValue =
         this.mapSchoolReportingRequirementCode(history.schoolReportingRequirementCode);
@@ -293,9 +324,9 @@ export default {
     checkContactUpdates(currentPageData, nextPageData) {
       [...currentPageData.content, ...nextPageData.content].forEach(history => {
         if (history) {
-          if(history.phoneNumber_diff || history.email_diff || history.faxNumber_diff || history.website_diff || history.mailingAddress_diff || history.physicalAddress_diff) {
-            history.contactUpdatedFlag =  'Changed';
-            history.contactUpdatedFlag_diff=true;
+          if (history.phoneNumber_diff || history.email_diff || history.faxNumber_diff || history.website_diff || history.mailingAddress_diff || history.physicalAddress_diff) {
+            history.contactUpdatedFlag = 'Changed';
+            history.contactUpdatedFlag_diff = true;
           } else {
             history.contactUpdatedFlag = 'Unchanged';
           }
@@ -303,14 +334,14 @@ export default {
       });
     },
     mapFacilityCode(facilityCode) {
-      return this.facilityTypeCodes.find(code =>code?.facilityTypeCode === facilityCode)?.description;
+      return this.facilityTypeCodes.find(code => code?.facilityTypeCode === facilityCode)?.description;
     },
     mapSchoolReportingRequirementCode(requirementCode) {
       return this.schoolReportingRequirementTypeCodes
         .find(c => c.schoolReportingRequirementCode === requirementCode).label;
     },
     mapSchoolCategoryCode(categoryCode) {
-      return this.schoolCategoryTypeCodes.find(code =>code?.schoolCategoryCode === categoryCode)?.description;
+      return this.schoolCategoryTypeCodes.find(code => code?.schoolCategoryCode === categoryCode)?.description;
     },
     mapNLCActivity(neighbourhoodLearnings) {
       let nLCActivityList = [];
@@ -320,7 +351,7 @@ export default {
           nLCActivityList.push(schoolNeighborhoodLearningType?.label);
         }
       }
-      nLCActivityList.sort((a,b) => a.localeCompare(b));
+      nLCActivityList.sort((a, b) => a.localeCompare(b));
       return nLCActivityList.toString().replace(/,/g, ', ');
     },
     mapSchoolOrganization(schoolOrganizationCode) {
@@ -336,13 +367,13 @@ export default {
       }
       let onlyNumbers = gradeList.filter(Number);
       let onlyLetters = gradeList.filter(x => !onlyNumbers.includes(x));
-      onlyLetters.sort((a,b) => a.localeCompare(b));
+      onlyLetters.sort((a, b) => a.localeCompare(b));
 
-      onlyNumbers = onlyNumbers.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+      onlyNumbers = onlyNumbers.sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
       gradeList = onlyNumbers.concat(onlyLetters);
       return gradeList.toString().replace(/,/g, ', ');
     },
-    getAuthority(){
+    getAuthority() {
       ApiService.apiAxios.get(`${Routes.cache.AUTHORITY_DATA_URL}`)
         .then(response => {
           this.allAuthority = response?.data;
@@ -356,36 +387,37 @@ export default {
   },
 };
 </script>
-  
+
 <style scoped>
 #auditHistory /deep/ .v-pagination__navigation > i {
-  padding-left: 0;
+    padding-left: 0;
 }
 
 #schoolHistoryTable /deep/ table {
-  border-spacing: 0 0.25rem;
-  border-bottom: thin solid #d7d7d7;
+    border-spacing: 0 0.25rem;
+    border-bottom: thin solid #d7d7d7;
 }
 
 #schoolHistoryTable /deep/ table th {
-  font-size: 0.875rem;
+    font-size: 0.875rem;
 }
 
 #schoolHistoryTable /deep/ table td {
-  border-bottom: none !important;
+    border-bottom: none !important;
 }
 
 #schoolHistoryTable /deep/ table tr.selected-record,
 #schoolHistoryTable /deep/ table tbody tr:hover {
-  background-color: #E1F5FE !important;
+    background-color: #E1F5FE !important;
 }
+
 .diff-value {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .divider {
-  border-color: #FCBA19;
-  border-width: unset;
+    border-color: #FCBA19;
+    border-width: unset;
 }
 </style>
   

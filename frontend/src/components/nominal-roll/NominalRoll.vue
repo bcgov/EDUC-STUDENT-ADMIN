@@ -1,24 +1,44 @@
 <template>
-  <v-container fluid class="full-height px-0">
+  <v-container
+    fluid
+    class="full-height px-0"
+  >
     <v-dialog
+      v-model="dialog"
       max-width="30rem"
       max-height="50rem"
-      v-model="dialog"
-      xl="2" lg="2" md="2" xs="2" sm="2"
+      xl="2"
+      lg="2"
+      md="2"
+      xs="2"
+      sm="2"
     >
       <DocumentUpload
         @upload="upload"
         @close:form="() => dialog = false"
-      ></DocumentUpload>
+      />
     </v-dialog>
-    <v-row dense no-gutters>
+    <v-row
+      dense
+      no-gutters
+    >
       <v-col cols="12">
-        <v-card flat v-if="items || processing" class="ma-2">
+        <v-card
+          v-if="items || processing"
+          flat
+          class="ma-2"
+        >
           <v-card-title>
             Nominal Roll - {{ currentYear }} - Sanity Check
-            <v-spacer></v-spacer>
-            <PrimaryButton v-if="items" title="process nominal roll file" text="Process" :loading="processStudentsLoading" :disabled="processing"
-                           :click-action="processNominalRollStudents()"></PrimaryButton>
+            <v-spacer />
+            <PrimaryButton
+              v-if="items"
+              title="process nominal roll file"
+              text="Process"
+              :loading="processStudentsLoading"
+              :disabled="processing"
+              :click-action="processNominalRollStudents()"
+            />
           </v-card-title>
           <v-progress-linear
             v-model="progress"
@@ -26,23 +46,27 @@
             buffer-value="0"
             query
             stream
-          >
-          </v-progress-linear>
-          <v-data-table dense v-if="items"
-                        :headers="headers"
-                        :items="items"
+          />
+          <v-data-table
+            v-if="items"
+            dense
+            :headers="headers"
+            :items="items"
 
-                        class="fill-height mt-4"
-                        :items-per-page="10"
-                        :footer-props="{
-                      'items-per-page-options': [10]
-                      }"
+            class="fill-height mt-4"
+            :items-per-page="10"
+            :footer-props="{
+              'items-per-page-options': [10]
+            }"
           >
-            <v-card-actions></v-card-actions>
-
+            <v-card-actions />
           </v-data-table>
         </v-card>
-        <spinner flat class="ma-2" v-if="loading"/>
+        <spinner
+          v-if="loading"
+          flat
+          class="ma-2"
+        />
       </v-col>
     </v-row>
   </v-container>
@@ -63,12 +87,12 @@ import router from '../../router';
 
 export default {
   name: 'NominalRoll',
-  mixins: [alertMixin],
   components: {
     PrimaryButton,
     Spinner,
     DocumentUpload
   },
+  mixins: [alertMixin],
   data() {
     return {
       currentYear: LocalDate.now().year(),
@@ -114,7 +138,7 @@ export default {
       this.loading = false;
     }
   },
-  beforeDestroy () {
+  beforeUnmount () {
     if(this.interval) {
       clearInterval(this.interval);
     }

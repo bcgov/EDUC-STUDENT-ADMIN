@@ -1,21 +1,28 @@
 <template>
-  <v-row no-gutters class="py-1">
+  <v-row
+    no-gutters
+    class="py-1"
+  >
     <v-col :cols="labelSpan">
-      <p :class="['labelField', highlighted && !fieldModel? 'diff-value' : 'plain-value']">{{ this.fieldLabel }}</p>
+      <p :class="['labelField', highlighted && !fieldModel? 'diff-value' : 'plain-value']">
+        {{ fieldLabel }}
+      </p>
     </v-col>
-    <v-col class="textFieldColumn" :cols="colspan">
+    <v-col
+      class="textFieldColumn"
+      :cols="colspan"
+    >
       <v-text-field
-          :value="fieldModel"
-          :class="['onhoverEdit', 'customNoBorder', 'onhoverPad', highlighted? 'diff-value' : 'plain-value']"
-          :id="name"
-          v-if="displayValue"
-          density="compact"
-          readonly
-          :disabled="fieldDisabled"
-      ></v-text-field>
+        v-if="displayValue"
+        :id="name"
+        :value="fieldModel"
+        :class="['onhoverEdit', 'customNoBorder', 'onhoverPad', highlighted? 'diff-value' : 'plain-value']"
+        density="compact"
+        readonly
+        :disabled="fieldDisabled"
+      />
     </v-col>
-    <slot>
-    </slot>
+    <slot />
   </v-row>
 </template>
 
@@ -68,13 +75,6 @@ export default {
       highlighted: false
     };
   },
-  beforeMount() {
-    this.fieldModel = this.model;
-    this.fieldLabel = this.label;
-    this.gradeLevelCode = this.gradeLevel;
-    this.fieldDisabled = this.disabled;
-    this.highlighted = this.highlight;
-  },
   watch: {
     model(newValue) {
       this.fieldModel = newValue;
@@ -88,6 +88,13 @@ export default {
     highlight(newValue){
       this.highlighted = newValue;
     }
+  },
+  beforeMount() {
+    this.fieldModel = this.model;
+    this.fieldLabel = this.label;
+    this.gradeLevelCode = this.gradeLevel;
+    this.fieldDisabled = this.disabled;
+    this.highlighted = this.highlight;
   },
 };
 </script>

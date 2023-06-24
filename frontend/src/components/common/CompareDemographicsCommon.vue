@@ -1,173 +1,328 @@
 <template>
-  <v-card fluid class="px-4" elevation="0">
-    <MergeStudentsModal v-if=mergeStudentsModalOpen
-                        :mergeStudentsModalOpen=mergeStudentsModalOpen
-                        :mergedToStudentID=mergedToStudentID
-                        :mergedFromStudentID=mergedFromStudentID
-                        @mergeStudentsModalOpenEmit=mergeStudentsModalOpenEmit
+  <v-card
+    fluid
+    class="px-4"
+    elevation="0"
+  >
+    <MergeStudentsModal
+      v-if="mergeStudentsModalOpen"
+      :merge-students-modal-open="mergeStudentsModalOpen"
+      :merged-to-student-i-d="mergedToStudentID"
+      :merged-from-student-i-d="mergedFromStudentID"
+      @mergeStudentsModalOpenEmit="mergeStudentsModalOpenEmit"
     />
     <v-card-title class="px-0 pb-0 pt-5">
       <v-row>
-        <v-col v-if="title" cols="2" class="pr-0 pt-0">
+        <v-col
+          v-if="title"
+          cols="2"
+          class="pr-0 pt-0"
+        >
           {{ title }}
         </v-col>
-        <v-col cols="2" class="py-0 pr-0">
+        <v-col
+          cols="2"
+          class="py-0 pr-0"
+        >
           <v-text-field
-              id="enterAPenTxtField"
-              v-model="penToAdd"
-              outlined
-              density="compact"
-              label="Enter a PEN"
-              @keyup.enter="enterPushed()"
-              @input="checkStudentStatusForValidPen()"
-              maxlength="9"
-              :disabled="studentRecords.length > 2"
-              :rules="penRules"
-          ></v-text-field>
+            id="enterAPenTxtField"
+            v-model="penToAdd"
+            outlined
+            density="compact"
+            label="Enter a PEN"
+            maxlength="9"
+            :disabled="studentRecords.length > 2"
+            :rules="penRules"
+            @keyup.enter="enterPushed()"
+            @input="checkStudentStatusForValidPen()"
+          />
         </v-col>
-        <v-col class="py-0" cols="5">
-          <PrimaryButton id="addPenBtn"
-                         :disabled=" isLoadingStudent || !isValidPEN(penToAdd) || studentRecords.length >= 3"
-                         :loading="isLoadingStudent" text="Add PEN" :click-action="addPEN"></PrimaryButton>
-          <span v-if="isSearchedPENMerged" id="truePenMessage" class="pl-1" style="font-size: 1rem;">{{
-              truePenMessage
-            }} <a
-                :tabindex="0"
-                @click="updateAddPen()"
-                @keyup.enter="updateAddPen()"> {{
-                truePen
-              }}</a></span>
+        <v-col
+          class="py-0"
+          cols="5"
+        >
+          <PrimaryButton
+            id="addPenBtn"
+            :disabled=" isLoadingStudent || !isValidPEN(penToAdd) || studentRecords.length >= 3"
+            :loading="isLoadingStudent"
+            text="Add PEN"
+            :click-action="addPEN"
+          />
+          <span
+            v-if="isSearchedPENMerged"
+            id="truePenMessage"
+            class="pl-1"
+            style="font-size: 1rem;"
+          >{{
+            truePenMessage
+          }} <a
+            :tabindex="0"
+            @click="updateAddPen()"
+            @keyup.enter="updateAddPen()"
+          > {{
+            truePen
+          }}</a></span>
         </v-col>
         <v-col class="pt-0">
-          <v-btn v-if="closeCompareModal" id="closeCompareModalBtn" text icon
-                 @click="[closeCompareModal(), clearError()]">
-            <v-icon large color="#38598A">mdi-close</v-icon>
+          <v-btn
+            v-if="closeCompareModal"
+            id="closeCompareModalBtn"
+            text
+            icon
+            @click="[closeCompareModal(), clearError()]"
+          >
+            <v-icon
+              large
+              color="#38598A"
+            >
+              mdi-close
+            </v-icon>
           </v-btn>
         </v-col>
       </v-row>
     </v-card-title>
-    <v-divider></v-divider>
+    <v-divider />
     <v-simple-table class="sldTable pb-2">
-      <template v-slot>
+      <template #default>
         <thead>
-        <tr>
-          <th :title="header.tooltip" v-for="(header, index) in headers" :key="index" :id="`${header.text}Header`">
-            {{ header.text }}
-          </th>
-        </tr>
+          <tr>
+            <th
+              v-for="(header, index) in headers"
+              :id="`${header.text}Header`"
+              :key="index"
+              :title="header.tooltip"
+            >
+              {{ header.text }}
+            </th>
+          </tr>
         </thead>
       </template>
     </v-simple-table>
-    <div v-for="(students, index) in studentRecords" :key="index" class="pb-2">
-      <v-row id="studentDemographicsTableTopRow" class="studentDemographicsTable" no-gutters>
+    <div
+      v-for="(students, index) in studentRecords"
+      :key="index"
+      class="pb-2"
+    >
+      <v-row
+        id="studentDemographicsTableTopRow"
+        class="studentDemographicsTable"
+        no-gutters
+      >
         <span class="pl-2 pr-0 flexBox">
-          <v-checkbox density="compact" class="studentCheckbox pa-0 ma-0" color="#606060"
-                      v-model="checkedStudents[index]"
-                      @change.native="validateAction"></v-checkbox>
-          <a @click="updateSldRowDisplay(students.pen, !sldDataTablesToDisplay[students.pen])" class="ml-2">
-            <v-icon small color="#1A5A96">{{sldDataTablesToDisplay[students.pen]?'fa-angle-down':'fa-angle-up'}}</v-icon>
+          <v-checkbox
+            v-model="checkedStudents[index]"
+            density="compact"
+            class="studentCheckbox pa-0 ma-0"
+            color="#606060"
+            @change.native="validateAction"
+          />
+          <a
+            class="ml-2"
+            @click="updateSldRowDisplay(students.pen, !sldDataTablesToDisplay[students.pen])"
+          >
+            <v-icon
+              small
+              color="#1A5A96"
+            >{{ sldDataTablesToDisplay[students.pen]?'fa-angle-down':'fa-angle-up' }}</v-icon>
           </a>
-          <a @click="openStudentDetails(students.studentID)" class="ml-1 pr-1">
+          <a
+            class="ml-1 pr-1"
+            @click="openStudentDetails(students.studentID)"
+          >
             {{ formatPen(students.pen) }}
           </a>
-          <v-tooltip bottom v-if="students['statusCode']==='M'">
+          <v-tooltip
+            v-if="students['statusCode']==='M'"
+            bottom
+          >
             <template #activator="{ on, attrs }">
-              <v-chip color="deep-purple" text-color="white" small v-if="students['statusCode']==='M'" class="px-2" v-bind="attrs"
-                      >M</v-chip>
+              <v-chip
+                v-if="students['statusCode']==='M'"
+                color="deep-purple"
+                text-color="white"
+                small
+                class="px-2"
+                v-bind="attrs"
+              >M</v-chip>
             </template>
-            <span>Merged to {{students.truePen}}</span>
+            <span>Merged to {{ students.truePen }}</span>
           </v-tooltip>
         </span>
-        <span v-for="(key, index) in studentDataHeaders" :key="index" class="pl-4 pr-3" :ref="key+`Col`">
-                <span v-if="key==='dob'" ref="dobText">
-                  {{ formatDob(students[key],'uuuu-MM-dd','uuuu/MM/dd') }}
-                </span>
+        <span
+          v-for="(key, index) in studentDataHeaders"
+          :key="index"
+          :ref="key+`Col`"
+          class="pl-4 pr-3"
+        >
+          <span
+            v-if="key==='dob'"
+            ref="dobText"
+          >
+            {{ formatDob(students[key],'uuuu-MM-dd','uuuu/MM/dd') }}
+          </span>
           <span v-else-if="key==='mincode'">{{ formatMincode(students[key]) }}</span>
           <span v-else-if="key==='postalCode'">{{ formatPostalCode(students[key]) }}</span>
           <span v-else>{{ students[key] }}</span>
         </span>
       </v-row>
-      <v-row id="studentDemographicsTableBottomRow" class="studentDemographicsTable pb-2" no-gutters>
+      <v-row
+        id="studentDemographicsTableBottomRow"
+        class="studentDemographicsTable pb-2"
+        no-gutters
+      >
         <span class="pl-11">
           Demog Code: {{ students.demogCode }}
         </span>
-        <span class="pl-4 pr-3"></span>
-        <span class="pl-4 pr-3 bottom-field-item">{{equalsIgnoreCase(students.legalLastName,students.usualLastName)? '' : students.usualLastName}}</span>
-        <span class="pl-4 pr-3 bottom-field-item">{{equalsIgnoreCase(students.legalFirstName, students.usualFirstName)? '' : students.usualFirstName}}</span>
-        <span class="pl-4 pr-3 bottom-field-item">{{equalsIgnoreCase(students.legalMiddleNames, students.usualMiddleNames)? '' : students.usualMiddleNames}}</span>
-        <span class="pl-4 pr-3"></span>
-        <span class="pl-4 pr-3"></span>
-        <v-spacer></v-spacer>
-        <a class="removePenLink pr-3" @click="removeRecord(students.studentID, index)">
-            <v-icon small color="#38598A">mdi-close</v-icon>
-            Remove Student
+        <span class="pl-4 pr-3" />
+        <span class="pl-4 pr-3 bottom-field-item">{{ equalsIgnoreCase(students.legalLastName,students.usualLastName)? '' : students.usualLastName }}</span>
+        <span class="pl-4 pr-3 bottom-field-item">{{ equalsIgnoreCase(students.legalFirstName, students.usualFirstName)? '' : students.usualFirstName }}</span>
+        <span class="pl-4 pr-3 bottom-field-item">{{ equalsIgnoreCase(students.legalMiddleNames, students.usualMiddleNames)? '' : students.usualMiddleNames }}</span>
+        <span class="pl-4 pr-3" />
+        <span class="pl-4 pr-3" />
+        <v-spacer />
+        <a
+          class="removePenLink pr-3"
+          @click="removeRecord(students.studentID, index)"
+        >
+          <v-icon
+            small
+            color="#38598A"
+          >mdi-close</v-icon>
+          Remove Student
         </a>
       </v-row>
-      <v-data-table v-show="sldDataTablesToDisplay[students.pen]"
-              class="sldTable"
-              :headers="headers"
-              :items="sldData[students.pen]"
-              :items-per-page="sldDataTablesNumberOfRows[students.pen]"
-              hide-default-header
-              hide-default-footer>
+      <v-data-table
+        v-show="sldDataTablesToDisplay[students.pen]"
+        class="sldTable"
+        :headers="headers"
+        :items="sldData[students.pen]"
+        :items-per-page="sldDataTablesNumberOfRows[students.pen]"
+        hide-default-header
+        hide-default-footer
+      >
         <template #item="props">
           <tr>
-            <td v-for="header in props.headers" :key="header.id" :class="[header.id, existSldUsualName(props.item)? 'two-rows-column' : 'one-row-column']">
-              <v-checkbox v-if="header.type === 'select'" density="compact" class="studentCheckbox pa-0 ma-0" color="#606060"
+            <td
+              v-for="header in props.headers"
+              :key="header.id"
+              :class="[header.id, existSldUsualName(props.item)? 'two-rows-column' : 'one-row-column']"
+            >
+              <v-checkbox
+                v-if="header.type === 'select'"
                 v-model="props.item.selected"
+                density="compact"
+                class="studentCheckbox pa-0 ma-0"
+                color="#606060"
                 :disabled="sldSelectDisabled(students.pen)"
-              ></v-checkbox>
-              <div v-else-if="header.value === 'mincode'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+              />
+              <div
+                v-else-if="header.value === 'mincode'"
+                :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+              >
                 <span class="top-field-item">{{ props.item.distNo + props.item.schlNo }}</span>
-                <span v-if="existSldUsualName(props.item)" class="bottom-field-item"></span>
+                <span
+                  v-if="existSldUsualName(props.item)"
+                  class="bottom-field-item"
+                />
               </div>
-              <div v-else-if="header.value === 'legalSurname'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+              <div
+                v-else-if="header.value === 'legalSurname'"
+                :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+              >
                 <span class="top-field-item">{{ props.item[header.value] }}</span>
-                <span v-if="existSldUsualName(props.item)" class="bottom-field-item">{{ props.item['usualSurname']}}</span>
+                <span
+                  v-if="existSldUsualName(props.item)"
+                  class="bottom-field-item"
+                >{{ props.item['usualSurname'] }}</span>
               </div>
-              <div v-else-if="header.value === 'legalGivenName'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+              <div
+                v-else-if="header.value === 'legalGivenName'"
+                :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+              >
                 <span class="top-field-item">{{ props.item[header.value] }}</span>
-                <span v-if="existSldUsualName(props.item)" class="bottom-field-item">{{ props.item['usualGivenName']}}</span>
+                <span
+                  v-if="existSldUsualName(props.item)"
+                  class="bottom-field-item"
+                >{{ props.item['usualGivenName'] }}</span>
               </div>
-              <div v-else-if="header.value === 'legalMiddleName'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+              <div
+                v-else-if="header.value === 'legalMiddleName'"
+                :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+              >
                 <span class="top-field-item">{{ props.item[header.value] }}</span>
-                <span v-if="existSldUsualName(props.item)" class="bottom-field-item">{{ props.item['usualMiddleName']}}</span>
+                <span
+                  v-if="existSldUsualName(props.item)"
+                  class="bottom-field-item"
+                >{{ props.item['usualMiddleName'] }}</span>
               </div>
-              <div v-else-if="header.value === 'birthDate'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+              <div
+                v-else-if="header.value === 'birthDate'"
+                :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+              >
                 <span class="top-field-item">{{ formatDob(props.item[header.value],'uuuuMMdd','uuuu/MM/dd') }}</span>
-                <span v-if="existSldUsualName(props.item)" class="bottom-field-item"></span>
+                <span
+                  v-if="existSldUsualName(props.item)"
+                  class="bottom-field-item"
+                />
               </div>
-              <div v-else :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+              <div
+                v-else
+                :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+              >
                 <span class="top-field-item">{{ props.item[header.value] }}</span>
-                <span v-if="existSldUsualName(props.item)" class="bottom-field-item"></span>
+                <span
+                  v-if="existSldUsualName(props.item)"
+                  class="bottom-field-item"
+                />
               </div>
-
             </td>
           </tr>
         </template>
       </v-data-table>
-      <v-row class="pl-4" v-show="sldDataTablesToDisplay[students.pen]">
-        <TertiaryButton text="More" icon="$plus" :click-action="updateSldTableRows(students.pen, sldDataTablesNumberOfRows[students.pen] + 10)"></TertiaryButton>
-        <TertiaryButton text="Less" icon="$minus" :click-action="updateSldTableRows(students.pen, sldDataTablesNumberOfRows[students.pen] - 10)"></TertiaryButton>
+      <v-row
+        v-show="sldDataTablesToDisplay[students.pen]"
+        class="pl-4"
+      >
+        <TertiaryButton
+          text="More"
+          icon="$plus"
+          :click-action="updateSldTableRows(students.pen, sldDataTablesNumberOfRows[students.pen] + 10)"
+        />
+        <TertiaryButton
+          text="Less"
+          icon="$minus"
+          :click-action="updateSldTableRows(students.pen, sldDataTablesNumberOfRows[students.pen] - 10)"
+        />
       </v-row>
     </div>
     <v-progress-linear
-        indeterminate
-        color="blue"
-        :active="isProcessing"
-    ></v-progress-linear>
+      indeterminate
+      color="blue"
+      :active="isProcessing"
+    />
     <div v-if="selectedRecords && selectedRecords.length">
-      <v-divider></v-divider>
+      <v-divider />
       <v-card-actions class="px-0">
-        <v-spacer></v-spacer>
-        <slot name="actions" :clearError="clearError" :validateAction="validateAction" :disableMerge="disableMerge" :disableDemerge="disableDemerge" :disableMoveSld="disableMoveSld" :merge="merge"  :demerge="demerge" :twin="twin" :moveSldRecords="moveSldRecords"></slot>
+        <v-spacer />
+        <slot
+          name="actions"
+          :clear-error="clearError"
+          :validate-action="validateAction"
+          :disable-merge="disableMerge"
+          :disable-demerge="disableDemerge"
+          :disable-move-sld="disableMoveSld"
+          :merge="merge"
+          :demerge="demerge"
+          :twin="twin"
+          :move-sld-records="moveSldRecords"
+        />
       </v-card-actions>
     </div>
     <ConfirmationDialog ref="confirmationDialog">
       <template #message>
         <v-col class="mt-n6">
           <v-row class="mb-3">
-            <span>Are you sure you want to demerge PENs <strong>{{getMergedFromPen()}}</strong> and <strong>{{getMergedToPen()}}</strong>?</span>
+            <span>Are you sure you want to demerge PENs <strong>{{ getMergedFromPen() }}</strong> and <strong>{{ getMergedToPen() }}</strong>?</span>
           </v-row>
         </v-col>
       </template>
@@ -176,7 +331,7 @@
       <template #message>
         <v-col class="mt-n6">
           <v-row>
-            <span>Are you sure you want to move the selected SLD records from <strong>{{movedFromStudent.pen}}</strong> to <strong>{{movedToStudent.pen}}</strong></span>?
+            <span>Are you sure you want to move the selected SLD records from <strong>{{ movedFromStudent.pen }}</strong> to <strong>{{ movedToStudent.pen }}</strong></span>?
           </v-row>
         </v-col>
       </template>
@@ -201,16 +356,17 @@ import MergeStudentsModal from '@/components/common/MergeStudentsModal.vue';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 import {notificationsStore} from '@/store/modules/notifications';
 import {studentStore} from '@/store/modules/student';
+import _ from 'lodash';
 
 export default {
   name: 'CompareDemographicsCommon',
-  mixins: [alertMixin, servicesSagaMixin, staleStudentRecordMixin],
   components: {
     TertiaryButton,
     PrimaryButton,
     ConfirmationDialog,
     MergeStudentsModal
   },
+  mixins: [alertMixin, servicesSagaMixin, staleStudentRecordMixin],
   props: {
     selectedRecords: {
       type: Array,
@@ -223,27 +379,6 @@ export default {
       type: Function,
       default: null
     }
-  },
-  watch: {
-    notification(val) {
-      if (val) {
-        const notificationData = val;
-        if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_DEMERGE_COMPLETE_SAGA' && this.sagaId === notificationData.sagaId && notificationData.studentID === this.mergedFromStudent?.studentID && notificationData.sagaStatus === 'COMPLETED') {
-          this.notifyDemergeSagaCompleteMessage();
-          // Open students in new tabs
-          setTimeout(() => {
-            this.openStudentDetails(this.mergedToStudent.studentID);
-          }, 1000);
-          setTimeout(() => {
-            this.openStudentDetails(this.mergedFromStudent.studentID);
-          }, 500);
-        } else if (notificationData.sagaName === 'PEN_SERVICES_MOVE_SLD_SAGA' && notificationData.sagaStatus === 'COMPLETED') {
-          this.handleMoveSldSagaCompleteMessage(notificationData);
-        } else if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
-          this.showWarningAndDisableActionIfUpdatedStudentMatched(notificationData);
-        }
-      }
-    },
   },
   data() {
     return {
@@ -291,6 +426,27 @@ export default {
       movedFromStudent: {},
       movedToStudent: {},
     };
+  },
+  watch: {
+    notification(val) {
+      if (val) {
+        const notificationData = val;
+        if (notificationData.sagaName === 'PEN_SERVICES_STUDENT_DEMERGE_COMPLETE_SAGA' && this.sagaId === notificationData.sagaId && notificationData.studentID === this.mergedFromStudent?.studentID && notificationData.sagaStatus === 'COMPLETED') {
+          this.notifyDemergeSagaCompleteMessage();
+          // Open students in new tabs
+          setTimeout(() => {
+            this.openStudentDetails(this.mergedToStudent.studentID);
+          }, 1000);
+          setTimeout(() => {
+            this.openStudentDetails(this.mergedFromStudent.studentID);
+          }, 500);
+        } else if (notificationData.sagaName === 'PEN_SERVICES_MOVE_SLD_SAGA' && notificationData.sagaStatus === 'COMPLETED') {
+          this.handleMoveSldSagaCompleteMessage(notificationData);
+        } else if (notificationData.eventType === 'UPDATE_STUDENT' && notificationData.eventOutcome === 'STUDENT_UPDATED' && notificationData.eventPayload) {
+          this.showWarningAndDisableActionIfUpdatedStudentMatched(notificationData);
+        }
+      }
+    },
   },
   mounted() {
     this.studentRecords.forEach(student => {

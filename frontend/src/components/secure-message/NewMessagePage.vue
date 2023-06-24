@@ -1,159 +1,250 @@
 <template>
-  <v-container fluid class="full-height px-0 pt-0">
+  <v-container
+    fluid
+    class="full-height px-0 pt-0"
+  >
     <v-row class="d-flex justify-center">
-      <v-col class="pt-0" cols="11">
+      <v-col
+        class="pt-0"
+        cols="11"
+      >
         <v-row>
           <v-col class="pr-0 pb-0">
-            <v-row><v-col>
-              <v-card id="newMessageCard" flat outlined>
-                <v-row>
-                  <v-col class="pb-0">
-                    <v-card-text id="newMessageCardText" class="pb-0 pt-0">
-                      <v-form ref="newMessageForm" v-model="isValidForm">
-                        <v-text-field
-                          :value="myTeam.teamName"
-                          label="From"
-                          class="pt-0"
-                          readonly
-                        ></v-text-field>
-                        <v-autocomplete
-                          id='schoolNameTxtField'
-                          label="To"
-                          class="pt-0"
-                          v-model="selectedContact"
-                          :items="validContactsForMessaging"
-                          :rules="requiredToRule"
-                          @update:model-value="onSchoolSelected"
-                          return-object
+            <v-row>
+              <v-col>
+                <v-card
+                  id="newMessageCard"
+                  flat
+                  outlined
+                >
+                  <v-row>
+                    <v-col class="pb-0">
+                      <v-card-text
+                        id="newMessageCardText"
+                        class="pb-0 pt-0"
+                      >
+                        <v-form
+                          ref="newMessageForm"
+                          v-model="isValidForm"
                         >
-                          <template #selection="{ item }">
-                            <span> {{ item.text }} </span>
-                          </template>
-                          <template #item="data">
-                            <v-list-item-avatar>
-                              <v-icon v-if="data.item.mincode">mdi-school</v-icon>
-                              <v-icon v-if="data.item.districtNumber">mdi-domain</v-icon>
-                            </v-list-item-avatar>
-                            <v-list-item>
-                              {{ data.item.text }}
-                            </v-list-item>
-                          </template> 
-                        </v-autocomplete>
-                        <v-text-field
-                          v-model="subject"
-                          id='subjectTxtField'
-                          label="Subject"
-                          :rules="requiredRules"
-                          maxlength="255"
-                          class="pt-0"
-                        ></v-text-field>
-                        <v-textarea
-                          id="newMessageTextArea"
-                          v-model="newMessage"
-                          :rules="requiredRules"
-                          rows="8"
-                          label="Message"
-                          no-resize
-                          maxlength="4000"
-                          class="pt-0"
-                          ref="newMessageTextArea"
-                          hide-details="auto"
-                          @input="replaceMessageMacro">
-                        </v-textarea>
-                      </v-form>
-                    </v-card-text>
-                    <div class="text-right">
-                      <MacroMenu margin="my-2 mr-3" id="newMessageMacroSelector" :macros="messageMacros" @select="insertMacroMessage" menuMaxWidth="25%" small/>
-                    </div>
-                    <v-divider />
-                  </v-col>
-                </v-row>
-                <v-row class="ml-6" no-gutters>
-                  <v-col cols="4" v-for="(document, index) in secureExchangeDocuments" :key="index" class="d-flex px-0 pb-2">
-                    <v-chip :id="`documentChip-${index}`" :class="['ma-1']"   close @click:close="removeDocumentByIndex(index)">
-                      <v-avatar left>
-                        <v-icon>mdi-paperclip</v-icon>
-                      </v-avatar>
-                      {{abbreviateFileName(document.fileName)}}</v-chip>
-                  </v-col>
-                  <v-col cols="4" v-for="(secureExchangeStudent, index) in secureExchangeStudents" :key="secureExchangeStudent.studentID" class="d-flex px-0 pb-2">
-                    <v-chip :id="`studentChip-${index}`" :class="['ma-1']"  close @click:close="removeSecureExchangeStudentByID(secureExchangeStudent)">
-                      <v-avatar left>
-                        <v-icon>mdi-account-circle</v-icon>
-                      </v-avatar>
-                      {{secureExchangeStudent.pen}}</v-chip>
-                  </v-col>
-                </v-row>
-                <v-row v-if="shouldShowOptions">
-                  <v-col class="d-flex justify-end mr-3 pt-0">
-                    <v-btn id="attachFileID"
-                           title="Attach File"
-                           color="#1A5A96"
-                           outlined
-                           class="addButton pl-0 pr-2"
-                           @click="showAttachFilePanel"
+                          <v-text-field
+                            :value="myTeam.teamName"
+                            label="From"
+                            class="pt-0"
+                            readonly
+                          />
+                          <v-autocomplete
+                            id="schoolNameTxtField"
+                            v-model="selectedContact"
+                            label="To"
+                            class="pt-0"
+                            :items="validContactsForMessaging"
+                            :rules="requiredToRule"
+                            return-object
+                            @update:model-value="onSchoolSelected"
+                          >
+                            <template #selection="{ item }">
+                              <span> {{ item.text }} </span>
+                            </template>
+                            <template #item="data">
+                              <v-list-item-avatar>
+                                <v-icon v-if="data.item.mincode">
+                                  mdi-school
+                                </v-icon>
+                                <v-icon v-if="data.item.districtNumber">
+                                  mdi-domain
+                                </v-icon>
+                              </v-list-item-avatar>
+                              <v-list-item>
+                                {{ data.item.text }}
+                              </v-list-item>
+                            </template> 
+                          </v-autocomplete>
+                          <v-text-field
+                            id="subjectTxtField"
+                            v-model="subject"
+                            label="Subject"
+                            :rules="requiredRules"
+                            maxlength="255"
+                            class="pt-0"
+                          />
+                          <v-textarea
+                            id="newMessageTextArea"
+                            ref="newMessageTextArea"
+                            v-model="newMessage"
+                            :rules="requiredRules"
+                            rows="8"
+                            label="Message"
+                            no-resize
+                            maxlength="4000"
+                            class="pt-0"
+                            hide-details="auto"
+                            @input="replaceMessageMacro"
+                          />
+                        </v-form>
+                      </v-card-text>
+                      <div class="text-right">
+                        <MacroMenu
+                          id="newMessageMacroSelector"
+                          margin="my-2 mr-3"
+                          :macros="messageMacros"
+                          menu-max-width="25%"
+                          small
+                          @select="insertMacroMessage"
+                        />
+                      </div>
+                      <v-divider />
+                    </v-col>
+                  </v-row>
+                  <v-row
+                    class="ml-6"
+                    no-gutters
+                  >
+                    <v-col
+                      v-for="(document, index) in secureExchangeDocuments"
+                      :key="index"
+                      cols="4"
+                      class="d-flex px-0 pb-2"
                     >
-                      <v-icon color="#1A5A96" class="mr-0" right dark>mdi-paperclip</v-icon>
-                      <span class="ml-1">Attach File</span>
-                    </v-btn>
-                    <v-btn id="addStudentID"
-                           title="Add Student"
-                           color="#1A5A96"
-                           outlined
-                           class="addButton pl-0 pr-2 ml-1"
-                           @click="showAddStudentPanel"
-                           :disabled="disableAddStudent"
+                      <v-chip
+                        :id="`documentChip-${index}`"
+                        :class="['ma-1']"
+                        close
+                        @click:close="removeDocumentByIndex(index)"
+                      >
+                        <v-avatar left>
+                          <v-icon>mdi-paperclip</v-icon>
+                        </v-avatar>
+                        {{ abbreviateFileName(document.fileName) }}
+                      </v-chip>
+                    </v-col>
+                    <v-col
+                      v-for="(secureExchangeStudent, index) in secureExchangeStudents"
+                      :key="secureExchangeStudent.studentID"
+                      cols="4"
+                      class="d-flex px-0 pb-2"
                     >
-                      <v-icon color="#1A5A96" class="mr-0" right dark>mdi-account-multiple-plus-outline</v-icon>
-                      <span class="ml-1">Add Student</span>
-                    </v-btn>
-                  </v-col>
-                </v-row>
-                <!--pop out for attaching files-->
-                <v-row no-gutters>
-                  <v-col>
-                    <v-expand-transition
+                      <v-chip
+                        :id="`studentChip-${index}`"
+                        :class="['ma-1']"
+                        close
+                        @click:close="removeSecureExchangeStudentByID(secureExchangeStudent)"
+                      >
+                        <v-avatar left>
+                          <v-icon>mdi-account-circle</v-icon>
+                        </v-avatar>
+                        {{ secureExchangeStudent.pen }}
+                      </v-chip>
+                    </v-col>
+                  </v-row>
+                  <v-row v-if="shouldShowOptions">
+                    <v-col class="d-flex justify-end mr-3 pt-0">
+                      <v-btn
+                        id="attachFileID"
+                        title="Attach File"
+                        color="#1A5A96"
+                        outlined
+                        class="addButton pl-0 pr-2"
+                        @click="showAttachFilePanel"
+                      >
+                        <v-icon
+                          color="#1A5A96"
+                          class="mr-0"
+                          right
+                          dark
+                        >
+                          mdi-paperclip
+                        </v-icon>
+                        <span class="ml-1">Attach File</span>
+                      </v-btn>
+                      <v-btn
+                        id="addStudentID"
+                        title="Add Student"
+                        color="#1A5A96"
+                        outlined
+                        class="addButton pl-0 pr-2 ml-1"
+                        :disabled="disableAddStudent"
+                        @click="showAddStudentPanel"
+                      >
+                        <v-icon
+                          color="#1A5A96"
+                          class="mr-0"
+                          right
+                          dark
+                        >
+                          mdi-account-multiple-plus-outline
+                        </v-icon>
+                        <span class="ml-1">Add Student</span>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                  <!--pop out for attaching files-->
+                  <v-row no-gutters>
+                    <v-col>
+                      <v-expand-transition
                         max-width="30rem"
                         max-height="50rem"
-                        xl="2" lg="2" md="2" xs="2" sm="2"
-                    >
-                      <DocumentUpload
+                        xl="2"
+                        lg="2"
+                        md="2"
+                        xs="2"
+                        sm="2"
+                      >
+                        <DocumentUpload
+                          v-show="expandAttachFile"
                           :small-file-extension="false"
                           :check-file-rules="true"
-                          v-show="expandAttachFile"
                           @close:form="showOptions"
                           @upload="uploadDocument"
-                      ></DocumentUpload>
-                    </v-expand-transition>
-                    <v-expand-transition>
-                      <AddStudent
+                        />
+                      </v-expand-transition>
+                      <v-expand-transition>
+                        <AddStudent
                           v-show="expandAddStudent"
+                          :institute-type-value="getInstituteValue()"
+                          :additional-student-add-warning="additionalStudentAddWarningMessage"
                           @close:form="showOptions"
                           @addStudent="addSecureExchangeStudent"
-                          :instituteTypeValue="getInstituteValue()"
-                          :additionalStudentAddWarning="additionalStudentAddWarningMessage"
                           @updateAdditionalStudentAddWarning="updateAdditionalStudentAddWarning"
-                      >
-                      </AddStudent>
-                    </v-expand-transition>
-                  </v-col>
-                </v-row>
+                        />
+                      </v-expand-transition>
+                    </v-col>
+                  </v-row>
                 <!--end pop out for attaching files-->
-              </v-card>
-            </v-col></v-row>
+                </v-card>
+              </v-col>
+            </v-row>
           </v-col>
         </v-row>
-        <v-alert v-model="fileSizeAlert" dense transition="slide" type="error">
-          {{`Total files must be less than ${humanFileSize(fileRequirements.maxSize)}. Please remove some uploads.You may upload additional files later.`}}
+        <v-alert
+          v-model="fileSizeAlert"
+          dense
+          transition="slide"
+          type="error"
+        >
+          {{ `Total files must be less than ${humanFileSize(fileRequirements.maxSize)}. Please remove some uploads.You may upload additional files later.` }}
         </v-alert>
         <v-row class="py-4 justify-end">
-          <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2" :click-action="navigateToList"></PrimaryButton>
-          <PrimaryButton id="newMessagePostBtn" text="Send" width="8rem" :disabled="!isValidForm || fileSizeAlert" :loading="processing" :click-action="sendNewMessage"></PrimaryButton>
+          <PrimaryButton
+            id="cancelMessage"
+            secondary
+            text="Cancel"
+            class="mr-2"
+            :click-action="navigateToList"
+          />
+          <PrimaryButton
+            id="newMessagePostBtn"
+            text="Send"
+            width="8rem"
+            :disabled="!isValidForm || fileSizeAlert"
+            :loading="processing"
+            :click-action="sendNewMessage"
+          />
         </v-row>
       </v-col>
     </v-row>
 
-    <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>
+    <ConfirmationDialog ref="confirmationDialog" />
   </v-container>
 </template>
 
@@ -180,7 +271,6 @@ import {appStore} from '@/store/modules/app';
 
 export default {
   name: 'NewMessagePage',
-  mixins: [alertMixin],
   components: {
     AddStudent,
     PrimaryButton,
@@ -188,10 +278,7 @@ export default {
     DocumentUpload,
     MacroMenu
   },
-  mounted() {
-    this.validateForm();
-    edxStore().getFileRequirements();
-  },
+  mixins: [alertMixin],
   data() {
     return {
       newMessage: '',
@@ -212,6 +299,10 @@ export default {
       disableAddStudent: true,
       fileSizeAlert: false,
     };
+  },
+  mounted() {
+    this.validateForm();
+    edxStore().getFileRequirements();
   },
   computed: {
     ...mapState(authStore, ['userInfo']),
@@ -387,7 +478,8 @@ export default {
       }
     },
     validateForm() {
-      this.isValidForm = this.$refs.newMessageForm.validate();
+      const isValid = this.$refs.newMessageForm.validate();
+      this.isValidForm = isValid.valid;
     },
     humanFileSize
   }

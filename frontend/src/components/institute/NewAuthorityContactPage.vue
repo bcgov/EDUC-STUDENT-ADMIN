@@ -1,152 +1,167 @@
 <template>
   <v-card
-      id="newContactVCard">
-    <v-card-title class="sheetHeader pt-1 pb-1">New Authority Contact</v-card-title>
-    <v-divider></v-divider>
+    id="newContactVCard"
+  >
+    <v-card-title class="sheetHeader pt-1 pb-1">
+      New Authority Contact
+    </v-card-title>
+    <v-divider />
     <v-card-text>
-      <v-form ref="newContactForm" v-model="isFormValid">
+      <v-form
+        ref="newContactForm"
+        v-model="isFormValid"
+      >
         <v-row class="d-flex justify-center">
           <v-col>
             <v-select
-                id='newContactDropdown'
-                :rules="[rules.required()]"
-                v-model="newContact.authorityContactTypeCode"
-                :items="authorityContactTypes"
-                item-text="label"
-                variant="underlined"
-                class="pt-0"
-                item-value="authorityContactTypeCode"
-                label="Authority Contact Type"
+              id="newContactDropdown"
+              v-model="newContact.authorityContactTypeCode"
+              :rules="[rules.required()]"
+              :items="authorityContactTypes"
+              item-title="label"
+              variant="underlined"
+              class="pt-0"
+              item-value="authorityContactTypeCode"
+              label="Authority Contact Type"
             />
             <v-text-field
-                id='newContactFirstNameInput'
-                v-model="newContact.firstName"
-                :rules="[rules.noSpecialCharactersContactName()]"
-                class="pt-0"
-                :maxlength="255"
-                label="First Name"
+              id="newContactFirstNameInput"
+              v-model="newContact.firstName"
+              :rules="[rules.noSpecialCharactersContactName()]"
+              variant="underlined"
+              class="pt-0"
+              :maxlength="255"
+              label="First Name"
             />
             <v-text-field
-                id='newContactLastNameInput'
-                :rules="[rules.required(), rules.noSpecialCharactersContactName()]"
-                v-model="newContact.lastName"
-                class="pt-0"
-                :maxlength="255"
-                label="Last Name"
+              id="newContactLastNameInput"
+              v-model="newContact.lastName"
+              :rules="[rules.required(), rules.noSpecialCharactersContactName()]"
+              variant="underlined"
+              class="pt-0"
+              :maxlength="255"
+              label="Last Name"
             />
             <v-text-field
-                id='newContactEmailInput'
-                :rules="[rules.required(), rules.email()]"
-                v-model="newContact.email"
-                class="pt-0"
-                :maxlength="255"
-                label="Email"
+              id="newContactEmailInput"
+              v-model="newContact.email"
+              :rules="[rules.required(), rules.email()]"
+              variant="underlined"
+              class="pt-0"
+              :maxlength="255"
+              label="Email"
             />
             <v-row>
               <v-col cols="6">
                 <v-text-field
-                    id='newContactPhoneNumberInput'
-                    :rules="[rules.required(), rules.phoneNumber()]"
-                    v-model="newContact.phoneNumber"
-                    class="pt-0"
-                    :maxlength="10"
-                    label="Phone Number"
-                    @keypress="isNumber($event)"
+                  id="newContactPhoneNumberInput"
+                  v-model="newContact.phoneNumber"
+                  :rules="[rules.required(), rules.phoneNumber()]"
+                  class="pt-0"
+                  variant="underlined"
+                  :maxlength="10"
+                  label="Phone Number"
+                  @keypress="isNumber($event)"
                 />
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                    id='newContactPhoneExtensionInput'
-                    :rules="[rules.number()]"
-                    v-model="newContact.phoneExtension"
-                    :maxlength="10"
-                    class="pt-0"
-                    label="Ext."
-                    @keypress="isNumber($event)"
+                  id="newContactPhoneExtensionInput"
+                  v-model="newContact.phoneExtension"
+                  :rules="[rules.number()]"
+                  :maxlength="10"
+                  variant="underlined"
+                  class="pt-0"
+                  label="Ext."
+                  @keypress="isNumber($event)"
                 />
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="6">
                 <v-text-field
-                    id='newContactAltPhoneNumberInput'
-                    :rules="[rules.phoneNumber()]"
-                    v-model="newContact.alternatePhoneNumber"
-                    class="pt-0"
-                    :maxlength="10"
-                    label="Alt. Phone Number"
-                    @keypress="isNumber($event)"
+                  id="newContactAltPhoneNumberInput"
+                  v-model="newContact.alternatePhoneNumber"
+                  :rules="[rules.phoneNumber()]"
+                  class="pt-0"
+                  variant="underlined"
+                  :maxlength="10"
+                  label="Alt. Phone Number"
+                  @keypress="isNumber($event)"
                 />
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                    id='newContactAltPhoneExtensionInput'
-                    :rules="[rules.number()]"
-                    v-model="newContact.alternatePhoneExtension"
-                    class="pt-0"
-                    :maxlength="10"
-                    label="Alt. Phone Ext."
-                    @keypress="isNumber($event)"
+                  id="newContactAltPhoneExtensionInput"
+                  v-model="newContact.alternatePhoneExtension"
+                  :rules="[rules.number()]"
+                  class="pt-0"
+                  variant="underlined"
+                  :maxlength="10"
+                  label="Alt. Phone Ext."
+                  @keypress="isNumber($event)"
                 />
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="6">
                 <v-menu
-                    id="newContactEffectiveDatePicker"
-                    ref="newContactEffectiveDateFilter"
-                    :close-on-content-click="false"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
+                  id="newContactEffectiveDatePicker"
+                  ref="newContactEffectiveDateFilter"
+                  :close-on-content-click="false"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="auto"
                 >
                   <template #activator="{ on, attrs }">
                     <v-text-field
-                        id="newContactEffectiveDateTextField"
-                        :rules="[rules.required()]"
-                        class="pt-0 mt-0"
-                        v-model="newContact.effectiveDate"
-                        label="Start Date"
-                        prepend-inner-icon="mdi-calendar"
-                        clearable
-                        readonly
-                        v-bind="attrs"
-                    ></v-text-field>
+                      id="newContactEffectiveDateTextField"
+                      v-model="newContact.effectiveDate"
+                      :rules="[rules.required()]"
+                      class="pt-0 mt-0"
+                      variant="underlined"
+                      label="Start Date"
+                      prepend-inner-icon="mdi-calendar"
+                      clearable
+                      readonly
+                      v-bind="attrs"
+                    />
                   </template>
                   <v-date-picker
-                      v-model="newContact.effectiveDate"
-                      :active-picker.sync="newContactEffectiveDatePicker"
-                      @update:model-value="saveNewContactEffectiveDate"
-                  ></v-date-picker>
+                    v-model="newContact.effectiveDate"
+                    v-model:active-picker="newContactEffectiveDatePicker"
+                    @update:model-value="saveNewContactEffectiveDate"
+                  />
                 </v-menu>
               </v-col>
               <v-col cols="6">
                 <v-menu
-                    id="newContactExpiryDatePicker"
-                    ref="newContactExpiryDateFilter"
-                    :close-on-content-click="false"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
+                  id="newContactExpiryDatePicker"
+                  ref="newContactExpiryDateFilter"
+                  :close-on-content-click="false"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="auto"
                 >
                   <template #activator="{ on, attrs }">
                     <v-text-field
-                        id="newContactExpiryDateTextField"
-                        :rules="[rules.endDateRule(newContact.effectiveDate, newContact.expiryDate)]"
-                        class="pt-0 mt-0"
-                        v-model="newContact.expiryDate"
-                        label="End Date"
-                        prepend-inner-icon="mdi-calendar"
-                        clearable
-                        readonly
-                        v-bind="attrs"
-                    ></v-text-field>
+                      id="newContactExpiryDateTextField"
+                      v-model="newContact.expiryDate"
+                      :rules="[rules.endDateRule(newContact.effectiveDate, newContact.expiryDate)]"
+                      class="pt-0 mt-0"
+                      variant="underlined"
+                      label="End Date"
+                      prepend-inner-icon="mdi-calendar"
+                      clearable
+                      readonly
+                      v-bind="attrs"
+                    />
                   </template>
                   <v-date-picker
-                      v-model="newContact.expiryDate"
-                      :active-picker.sync="newContactExpiryDatePicker"
-                      @update:model-value="saveNewContactExpiryDate"
-                  ></v-date-picker>
+                    v-model="newContact.expiryDate"
+                    v-model:active-picker="newContactExpiryDatePicker"
+                    @update:model-value="saveNewContactExpiryDate"
+                  />
                 </v-menu>
               </v-col>
             </v-row>
@@ -155,15 +170,27 @@
       </v-form>
     </v-card-text>
     <v-card-actions class="justify-end">
-      <PrimaryButton id="cancelNewContactBtn" secondary text="Cancel" :click-action="closeNewContactPage"></PrimaryButton>
-      <PrimaryButton id="newContactPostBtn" text="Save" width="7rem" :click-action="addNewAuthorityContact" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
+      <PrimaryButton
+        id="cancelNewContactBtn"
+        secondary
+        text="Cancel"
+        :click-action="closeNewContactPage"
+      />
+      <PrimaryButton
+        id="newContactPostBtn"
+        text="Save"
+        width="7rem"
+        :click-action="addNewAuthorityContact"
+        :disabled="!isFormValid"
+        :loading="processing"
+      />
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
 import PrimaryButton from '../util/PrimaryButton.vue';
-import { mapState } from 'pinia';
+import {mapState} from 'pinia';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
@@ -174,6 +201,9 @@ import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'NewAuthorityContactPage',
+  components: {
+    PrimaryButton,
+  },
   mixins: [alertMixin],
   props: {
     authorityContactTypes: {
@@ -184,12 +214,6 @@ export default {
       type: String,
       required: true
     }
-  },
-  components: {
-    PrimaryButton,
-  },
-  mounted() {
-    this.validateForm();
   },
   data() {
     return {
@@ -214,8 +238,11 @@ export default {
       newContactExpiryDatePicker: null
     };
   },
+  mounted() {
+    this.validateForm();
+  },
   computed: {
-    ...mapState(authStore, ['isAuthenticated','userInfo']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo']),
   },
   methods: {
     saveNewContactEffectiveDate(date) {
@@ -250,7 +277,8 @@ export default {
       this.$refs.newContactForm.reset();
     },
     validateForm() {
-      this.isFormValid = this.$refs.newContactForm.validate();
+      const isValid = this.$refs.newContactForm.validate();
+      this.isFormValid = isValid.valid;
     },
     isNumber,
   },
@@ -266,10 +294,10 @@ export default {
 </script>
 
 <style scoped>
-.sheetHeader{
-  background-color: #003366;
-  color: white;
-  font-size: medium !important;
-  font-weight: bolder !important;
+.sheetHeader {
+    background-color: #003366;
+    color: white;
+    font-size: medium !important;
+    font-weight: bolder !important;
 }
 </style>

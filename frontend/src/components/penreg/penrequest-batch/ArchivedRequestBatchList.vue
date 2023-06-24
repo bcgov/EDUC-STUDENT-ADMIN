@@ -1,11 +1,11 @@
 <template>
   <PenRequestBatchDataTable
+    v-model:batch-page-number="pageNumber"
     :headers="headers"
-    :penRequestBatchResponse="penRequestBatchResponse"
-    :batchPageNumber.sync="pageNumber"
-    :loadingTable="loadingTable"
+    :pen-request-batch-response="penRequestBatchResponse"
+    :loading-table="loadingTable"
     archived
-  ></PenRequestBatchDataTable>
+  />
 </template>
 
 <script>
@@ -28,10 +28,10 @@ import {archivedRequestBatchStore} from '@/store/modules/archivedRequestBatch';
 
 export default {
   name: 'ArchivedRequestBatchList',
-  mixins: [alertMixin],
   components: {
     PenRequestBatchDataTable,
   },
+  mixins: [alertMixin],
   props: {
     searchParams: {
       type: Object,
@@ -70,12 +70,6 @@ export default {
       isFilterOperation: false,
     };
   },
-  mounted() {
-    Mousetrap.bind('ctrl+b', () => {
-      router.push({name: 'archivedRequestBatch'});
-      return false;
-    });
-  },
   watch: {
     pageNumber: {
       handler() {
@@ -107,6 +101,12 @@ export default {
         }
       }
     },
+  },
+  mounted() {
+    Mousetrap.bind('ctrl+b', () => {
+      router.push({name: 'archivedRequestBatch'});
+      return false;
+    });
   },
   computed: {
     ...mapState(archivedRequestBatchStore, ['selectedFiles', 'penRequestBatchResponse']),

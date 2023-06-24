@@ -1,7 +1,15 @@
 <template>  
-  <v-row class="pt-2" justify="end">
+  <v-row
+    class="pt-2"
+    justify="end"
+  >
     <v-col cols="4">
-      <v-btn id="page-commands" text color="#38598a" v-if="pageCommands">
+      <v-btn
+        v-if="pageCommands"
+        id="page-commands"
+        text
+        color="#38598a"
+      >
         Showing page commands
         <v-icon>
           mdi-chevron-down
@@ -9,9 +17,17 @@
       </v-btn>
     </v-col>
     <v-col cols="4">
-      <v-pagination color="#38598A" :value="value" :length="dataResponse.totalPages" @input="handlePageNumberInput"></v-pagination>
+      <v-pagination
+        color="#38598A"
+        :value="value"
+        :length="dataResponse.totalPages"
+        @input="handlePageNumberInput"
+      />
     </v-col>
-    <v-col cols="4" id="currentItemsDisplay">
+    <v-col
+      id="currentItemsDisplay"
+      cols="4"
+    >
       Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ (dataResponse.totalElements || 0) }}
     </v-col>
   </v-row>

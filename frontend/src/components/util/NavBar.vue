@@ -89,26 +89,34 @@
       </v-list>
     </v-navigation-drawer>
     <v-app-bar
+      id="navBar"
       absolute
       elevation="0"
       color="#38598A"
       style="z-index: 1001;"
       :dark="true"
-      id="navBar"
       class="pl-12 pr-8"
     >
       <v-app-bar-nav-icon
-        style="color: white"
         id="menuBtn"
+        style="color: white"
         @click="drawer=true"
       >
-        <v-icon v-if="!drawer">$menu</v-icon>
-        <v-icon v-else>$close</v-icon>
-        <p class="ma-0 pl-3 pr-2">Menu</p>
+        <v-icon v-if="!drawer">
+          $menu
+        </v-icon>
+        <v-icon v-else>
+          $close
+        </v-icon>
+        <p class="ma-0 pl-3 pr-2">
+          Menu
+        </p>
       </v-app-bar-nav-icon>
-      <v-toolbar-title class="ml-4 nav-title pl-4">{{ title }}</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <SetNavigation/>
+      <v-toolbar-title class="ml-4 nav-title pl-4">
+        {{ title }}
+      </v-toolbar-title>
+      <v-spacer />
+      <SetNavigation />
     </v-app-bar>
 
     <v-app-bar
@@ -133,7 +141,7 @@ import { mapState } from 'pinia';
 import SetNavigation from './SetNavigation.vue';
 import {authStore} from '@/store/modules/auth';
 export default {
-  name: 'navBar',
+  name: 'NavBar',
   components: {
     SetNavigation,
   },

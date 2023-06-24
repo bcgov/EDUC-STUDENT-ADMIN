@@ -1,36 +1,64 @@
 <template>
-  <v-container class="containerSetup" fluid>
-    <Spinner flat v-if="loadingAuthorities"/>
+  <v-container
+    class="containerSetup"
+    fluid
+  >
+    <Spinner
+      v-if="loadingAuthorities"
+      flat
+    />
     <div v-else>
       <v-row>
         <v-col class="mt-1 d-flex justify-start">
-          <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
-          <a class="ml-1" @click="backButtonClick">Return to Dashboard</a>
+          <v-icon
+            small
+            color="#1976d2"
+          >
+            mdi-arrow-left
+          </v-icon>
+          <a
+            class="ml-1"
+            @click="backButtonClick"
+          >Return to Dashboard</a>
         </v-col>
         <v-col class="d-flex justify-end">
-          <PrimaryButton v-if="canAddAuthority()" id="addAuthorityBtn" icon-left width="12em" icon="mdi-plus-thick"
-                         text="New Authority" :click-action="openNewAuthoritySheet"
-          ></PrimaryButton>
+          <PrimaryButton
+            v-if="canAddAuthority()"
+            id="addAuthorityBtn"
+            icon-left
+            width="12em"
+            icon="mdi-plus-thick"
+            text="New Authority"
+            :click-action="openNewAuthoritySheet"
+          />
         </v-col>
       </v-row>
-      <v-row style="background: rgb(235, 237, 239);border-radius: 8px;" class="px-3 elevation-2">
+      <v-row
+        style="background: rgb(235, 237, 239);border-radius: 8px;"
+        class="px-3 elevation-2"
+      >
         <v-col>
           <v-row>
-            <v-col cols="5" class="d-flex justify-start">
+            <v-col
+              cols="5"
+              class="d-flex justify-start"
+            >
               <v-autocomplete
                 id="authority-text-field"
+                v-model="authorityCodeNameFilter"
                 label="Authority Code & Name"
                 item-value="authorityID"
                 item-title="authorityCodeName"
                 variant="underlined"
                 :items="authoritySearchNames"
-                v-model="authorityCodeNameFilter"
                 :menu-props="{closeOnContentClick:true}"
-                @update:model-value="searchButtonClick"
                 clearable
+                @update:model-value="searchButtonClick"
               >
                 <template #selection="{ item, index }">
-                  {{ item.raw.authorityCodeName }}
+                  {{
+                    item.raw.authorityCodeName
+                  }}
                 </template>
                 <template #item="{ props, item }">
                   <v-list-item
@@ -40,7 +68,9 @@
                     title=""
                   >
                     <v-list-item-title style="color: black !important;">
-                      {{ item.raw.authorityCodeName }}
+                      {{
+                        item.raw.authorityCodeName
+                      }}
                     </v-list-item-title>
                   </v-list-item>
                 </template>
@@ -49,9 +79,9 @@
             <v-col class="d-flex justify-start">
               <v-select
                 id="status-select-field"
+                v-model="authorityStatusFilter"
                 clearable
                 :items="authorityStatus"
-                v-model="authorityStatusFilter"
                 item-title="name"
                 variant="underlined"
                 item-value="code"
@@ -59,7 +89,9 @@
                 label="Status"
               >
                 <template #selection="{ item, index }">
-                  {{ item.raw.name }}
+                  {{
+                    item.raw.name
+                  }}
                 </template>
                 <template #item="{ props, item }">
                   <v-list-item
@@ -69,7 +101,9 @@
                     title=""
                   >
                     <v-list-item-title style="color: black !important;">
-                      {{ item.raw.name }}
+                      {{
+                        item.raw.name
+                      }}
                     </v-list-item-title>
                   </v-list-item>
                 </template>
@@ -78,18 +112,28 @@
             <v-col class="d-flex justify-start">
               <v-select
                 id="authoritytype-select-field"
+                v-model="authorityTypeFilter"
                 clearable
                 variant="underlined"
                 :items="authorityTypes"
-                v-model="authorityTypeFilter"
                 item-title="label"
-                item-value="authorityTypeCode" label="Authority Type"
-              ></v-select>
+                item-value="authorityTypeCode"
+                label="Authority Type"
+              />
             </v-col>
             <v-col class="d-flex justify-end mt-5">
-              <PrimaryButton id="user-clear-button" text="Clear" secondary :click-action="clearButtonClick"/>
-              <PrimaryButton class="ml-3" id="user-search-button" text="Search" :click-action="searchButtonClick"
-                             :disabled="!searchEnabled()"
+              <PrimaryButton
+                id="user-clear-button"
+                text="Clear"
+                secondary
+                :click-action="clearButtonClick"
+              />
+              <PrimaryButton
+                id="user-search-button"
+                class="ml-3"
+                text="Search"
+                :click-action="searchButtonClick"
+                :disabled="!searchEnabled()"
               />
             </v-col>
           </v-row>
@@ -112,44 +156,81 @@
             mobile-breakpoint="0"
           >
             <template #item="{ item }">
-              <v-row no-gutters align="center" class="hoverTable px-2" justify="center" id="authorityDetailsSelect" style="cursor: pointer;"
-                     @click="openAuthority(item.raw.independentAuthorityId)"
+              <v-row
+                id="authorityDetailsSelect"
+                no-gutters
+                align="center"
+                class="hoverTable px-2"
+                justify="center"
+                style="cursor: pointer;"
+                @click="openAuthority(item.raw.independentAuthorityId)"
               >
-                <v-col cols="7" class="pb-0 pt-0">
+                <v-col
+                  cols="7"
+                  class="pb-0 pt-0"
+                >
                   <v-row no-gutters>
                     <v-col class="pt-2 pr-0">
-                      <span class="subjectHeading">{{ item.raw.authorityNumber }} - {{ item.raw.displayName }}</span>
+                      <span class="subjectHeading">{{
+                        item.raw.authorityNumber
+                      }} - {{
+                        item.raw.displayName
+                      }}</span>
                     </v-col>
                   </v-row>
                   <v-row no-gutters>
                     <v-col class="pb-2 pr-0">
-                      <span class="ministryLine" style="color: black">{{ item.raw.type }}</span>
+                      <span
+                        class="ministryLine"
+                        style="color: black"
+                      >{{
+                        item.raw.type
+                      }}</span>
                     </v-col>
                   </v-row>
                 </v-col>
                 <v-col class="d-flex justify-start">
-                  <v-icon class="ml-0" :color="getStatusColorAuthorityOrSchool(item.raw.status)" right dark>
+                  <v-icon
+                    class="ml-0"
+                    :color="getStatusColorAuthorityOrSchool(item.raw.status)"
+                    right
+                    dark
+                  >
                     mdi-circle-medium
                   </v-icon>
-                  <span class="ml-0 statusCodeLabel">{{ item.raw.status }}</span>
+                  <span class="ml-0 statusCodeLabel">{{
+                    item.raw.status
+                  }}</span>
                 </v-col>
-                <v-col cols="2" class="d-flex justify-start">
+                <v-col
+                  cols="2"
+                  class="d-flex justify-start"
+                >
                   <v-icon aria-hidden="false">
                     mdi-phone-outline
                   </v-icon>
-                  <span class="statusCodeLabel"> {{ formatPhoneNumber(item.raw.phoneNumber) }}</span>
+                  <span class="statusCodeLabel"> {{
+                    formatPhoneNumber(item.raw.phoneNumber)
+                  }}</span>
                 </v-col>
                 <v-col class="d-flex justify-end">
                   <v-tooltip bottom>
                     <template #activator="{ on, attrs }">
-                      <v-btn id="authorityContacts"
-                             color="#003366"
-                             outlined
-                             @click.stop.prevent="openAuthorityContacts(item.raw.independentAuthorityId)"
-                             class="mt-0 pt-0 filterButton ml-2"
-                             style="text-transform: initial"
+                      <v-btn
+                        id="authorityContacts"
+                        color="#003366"
+                        outlined
+                        class="mt-0 pt-0 filterButton ml-2"
+                        style="text-transform: initial"
+                        @click.stop.prevent="openAuthorityContacts(item.raw.independentAuthorityId)"
                       >
-                        <v-icon color="white" style="margin-top: 0.07em" dark>mdi-account-multiple-outline</v-icon>
+                        <v-icon
+                          color="white"
+                          style="margin-top: 0.07em"
+                          dark
+                        >
+                          mdi-account-multiple-outline
+                        </v-icon>
                       </v-btn>
                     </template>
                     <span>View Contacts</span>
@@ -158,8 +239,9 @@
               </v-row>
             </template>
 
-            <template #no-data>There are no authorities.</template>
-
+            <template #no-data>
+              There are no authorities.
+            </template>
           </v-data-table-server>
         </v-col>
       </v-row>
@@ -199,10 +281,10 @@ import {instituteStore} from '@/store/modules/institute';
 
 export default {
   name: 'AuthoritiesListPage',
-  mixins: [alertMixin],
   components: {
     PrimaryButton, Spinner, NewAuthorityPage
   },
+  mixins: [alertMixin],
   data() {
     return {
       statusSelectFilter: null,
@@ -234,9 +316,9 @@ export default {
       authorities: [],
       authoritySearchNames: [],
       authorityStatus: [],
-      authorityCodeNameFilter: '',
+      authorityCodeNameFilter: null,
       authorityStatusFilter: 'Open',
-      authorityTypeFilter: '',
+      authorityTypeFilter: null,
       authorityTypes: [],
       loadingAuthorities: true,
       newAuthoritySheet: false,
@@ -249,6 +331,14 @@ export default {
     getSheetWidth() {
       return 30;
     },
+  },
+  watch: {
+    pageSize() {
+      this.getAuthorityList();
+    },
+    pageNumber() {
+      this.getAuthorityList();
+    }
   },
   created() {
     instituteStore().getAllAuthorityTypeCodes().then(() => {
@@ -386,14 +476,6 @@ export default {
       this.newAuthoritySheet = !this.newAuthoritySheet;
       this.getAuthorityList();
     },
-  },
-  watch: {
-    pageSize() {
-      this.getAuthorityList();
-    },
-    pageNumber() {
-      this.getAuthorityList();
-    }
   }
 };
 </script>
@@ -455,19 +537,19 @@ export default {
 }
 
 .hoverTable {
-  border-bottom-style: groove;
-  border-left-style: groove;
-  border-right-style: groove;
-  border-color: rgb(255 255 255 / 45%);
+    border-bottom-style: groove;
+    border-left-style: groove;
+    border-right-style: groove;
+    border-color: rgb(255 255 255 / 45%);
 }
 
 .hoverTable:nth-child(1) {
-  border-top-style: groove;
+    border-top-style: groove;
 }
 
-.hoverTable:hover{
-  background-color: #e8e8e8;
-  cursor: pointer;
+.hoverTable:hover {
+    background-color: #e8e8e8;
+    cursor: pointer;
 }
 
 .containerSetup {

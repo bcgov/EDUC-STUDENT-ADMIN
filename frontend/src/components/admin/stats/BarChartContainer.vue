@@ -1,12 +1,20 @@
 <template>
   <div>
-    <v-card v-if="chartData && labels" class="mx-auto px-4 pt-4">
-      <bar-chart ref='chart' :chartData="data" :options="options" :styles="styles"></bar-chart>
+    <v-card
+      v-if="chartData && labels"
+      class="mx-auto px-4 pt-4"
+    >
+      <bar-chart
+        ref="chart"
+        :chart-data="data"
+        :options="options"
+        :styles="styles"
+      />
       <v-card-text class="v-card-text--offset pt-0">
         <div class="text-h6 font-weight-light mb-2">
           {{ title }}
         </div>
-        <v-divider class="my-2"></v-divider>
+        <v-divider class="my-2" />
         <v-icon
           class="mr-2"
           small
@@ -104,15 +112,6 @@ export default {
       return desc;
     }
   },
-  methods: {
-    setHeightAndScale() {
-      this.styles.height = this.heightValue;
-      this.styles.position = 'relative';
-      let max = Math.max(...this.chartData);
-      this.options.scales.yAxes[0].ticks.max = max + (max * 0.2);
-      this.options.scales.yAxes[0].display = this.displayYAxis;
-    }
-  },
   mounted() {
     this.data = {
       labels: this.labels,
@@ -136,6 +135,15 @@ export default {
       ]
     };
     this.setHeightAndScale();
+  },
+  methods: {
+    setHeightAndScale() {
+      this.styles.height = this.heightValue;
+      this.styles.position = 'relative';
+      let max = Math.max(...this.chartData);
+      this.options.scales.yAxes[0].ticks.max = max + (max * 0.2);
+      this.options.scales.yAxes[0].display = this.displayYAxis;
+    }
   }
 };
 </script>

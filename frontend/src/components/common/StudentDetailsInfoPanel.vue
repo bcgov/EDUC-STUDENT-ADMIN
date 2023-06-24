@@ -1,96 +1,145 @@
 <template>
-  <v-container ref="stickyInfoPanel" class="sticky default-container pt-5 px-8">
-    <slot name="headerPanel" :openSearchDemographicsModal="openSearchDemographicsModal"></slot>
-    <SearchDemographicModal @closeDialog="closeDialog" @updateStudent="updateStudent" :dialog="dialog"
-                  :is-field-read-only="() => {return false}"
-                  :hidden-fields="hiddenSearchFields"
-                  :student-data="modalStudent">
+  <v-container
+    ref="stickyInfoPanel"
+    class="sticky default-container pt-5 px-8"
+  >
+    <slot
+      name="headerPanel"
+      :open-search-demographics-modal="openSearchDemographicsModal"
+    />
+    <SearchDemographicModal
+      :dialog="dialog"
+      :is-field-read-only="() => {return false}"
+      :hidden-fields="hiddenSearchFields"
+      :student-data="modalStudent"
+      @closeDialog="closeDialog"
+      @updateStudent="updateStudent"
+    >
       <template #actions="{ isFormValid }">
-        <PrimaryButton id="cancel" :secondary="true" text="Cancel"
-                       :click-action="closeDialog"
-        >
-        </PrimaryButton>
+        <PrimaryButton
+          id="cancel"
+          :secondary="true"
+          text="Cancel"
+          :click-action="closeDialog"
+        />
 
-        <PrimaryButton width="15%" text="Modify Request"
-                       id="searchDemogModalSearchBtn"
-                       :click-action="isFormValid()"
-        >
-        </PrimaryButton>
-        <PrimaryButton width="15%"
-                       text="Advanced Search"
-                       id="runAdvancedSearch"
-                       :click-action="searchStudent()"
-        >
-        </PrimaryButton>
+        <PrimaryButton
+          id="searchDemogModalSearchBtn"
+          width="15%"
+          text="Modify Request"
+          :click-action="isFormValid()"
+        />
+        <PrimaryButton
+          id="runAdvancedSearch"
+          width="15%"
+          text="Advanced Search"
+          :click-action="searchStudent()"
+        />
       </template>
     </SearchDemographicModal>
-    <v-divider class="mb-1 subheader-divider"/>
-    <v-row no-gutters class="py-2 full-width" style="background-color:white;">
-      <div style="width: 100%;" :overlay="false">
+    <v-divider class="mb-1 subheader-divider" />
+    <v-row
+      no-gutters
+      class="py-2 full-width"
+      style="background-color:white;"
+    >
+      <div
+        style="width: 100%;"
+        :overlay="false"
+      >
         <v-data-table
-                id="top-table"
-                class="details-table mb-3"
-                :headers="headers"
-                :items="[studentDetails]"
-                hide-default-footer
-                dense
+          id="top-table"
+          class="details-table mb-3"
+          :headers="headers"
+          :items="[studentDetails]"
+          hide-default-footer
+          dense
         >
-          <template v-for="h in headers" #[`header.${h.value}`]="{ header }">
-            <span :title="header.topTooltip" :key="h.id || h.topText" class="top-column-item" :class="{'header-half-width': header.doubleText && !isFieldValueWarned(header.topValue)}">
+          <template
+            v-for="h in headers"
+            #[`header.${h.value}`]="{ header }"
+          >
+            <span
+              :key="h.id || h.topText"
+              :title="header.topTooltip"
+              class="top-column-item"
+              :class="{'header-half-width': header.doubleText && !isFieldValueWarned(header.topValue)}"
+            >
               {{ header.topText }}
             </span>
             <StudentValidationWarningHint
               v-if="header.topValue && isFieldValueWarned(header.topValue)"
               :key="h.topValue"
-              :hasDoubleText="!!header.doubleText"
-              :validationWarnings="getValidationWarnings(header.topValue)"
+              :has-double-text="!!header.doubleText"
+              :validation-warnings="getValidationWarnings(header.topValue)"
             />
-            <span :title="header.doubleTooltip" :key="h.id || h.doubleValue" class="double-column-item">{{header.doubleText}}</span>
+            <span
+              :key="h.id || h.doubleValue"
+              :title="header.doubleTooltip"
+              class="double-column-item"
+            >{{ header.doubleText }}</span>
             <StudentValidationWarningHint
               v-if="header.doubleValue && isFieldValueWarned(header.doubleValue)"
               :key="h.doubleValue"
-              :hasDoubleText="!!header.doubleText"
-              :validationWarnings="getValidationWarnings(header.doubleValue)"
+              :has-double-text="!!header.doubleText"
+              :validation-warnings="getValidationWarnings(header.doubleValue)"
             />
           </template>
           <template #item="props">
             <tr>
-              <td v-for="header in props.headers" :key="header.id || header.topValue" :class="header.id">
-                <div class="table-cell" :class="[props.item[header.doubleValue] ? 'value-half-width':'']">
+              <td
+                v-for="header in props.headers"
+                :key="header.id || header.topValue"
+                :class="header.id"
+              >
+                <div
+                  class="table-cell"
+                  :class="[props.item[header.doubleValue] ? 'value-half-width':'']"
+                >
                   <span :class="['top-column-item',{'mark-field-value-changed':isFieldValueUpdated(header.topValue)}, {'mark-field-value-errored':isFieldValueErrored(header.topValue)}]">
                     <span><strong>{{ formatTableColumn(header.format, props.item[header.topValue]) }}</strong></span>
                   </span>
-                  <span :class="['double-column-item-value',{'mark-field-value-changed':isFieldValueUpdated(header.doubleValue)}, {'mark-field-value-errored':isFieldValueErrored(header.doubleValue)}]"><strong>{{props.item[header.doubleValue]}}</strong></span>
+                  <span :class="['double-column-item-value',{'mark-field-value-changed':isFieldValueUpdated(header.doubleValue)}, {'mark-field-value-errored':isFieldValueErrored(header.doubleValue)}]"><strong>{{ props.item[header.doubleValue] }}</strong></span>
                 </div>
               </td>
             </tr>
           </template>
         </v-data-table>
         <v-data-table
-                id="bottom-table"
-                class="details-table"
-                :headers="bottomTableHeaders"
-                :items="[studentDetails]"
-                hide-default-footer
-                dense
+          id="bottom-table"
+          class="details-table"
+          :headers="bottomTableHeaders"
+          :items="[studentDetails]"
+          hide-default-footer
+          dense
         >
-          <template v-for="h in bottomTableHeaders" #[`header.${h.value}`]="{ header }">
-            <span :title="header.tooltip" :key="h.id || h.text">
+          <template
+            v-for="h in bottomTableHeaders"
+            #[`header.${h.value}`]="{ header }"
+          >
+            <span
+              :key="h.id || h.text"
+              :title="header.tooltip"
+            >
               {{ header.text }}
             </span>
             <StudentValidationWarningHint
               v-if="header.value && isFieldValueWarned(header.value)"
               :key="h.id || h.value"
-              :validationWarnings="getValidationWarnings(header.value)"
+              :validation-warnings="getValidationWarnings(header.value)"
             />
           </template>
           <template #item="props">
             <tr>
-              <td v-for="header in props.headers" :key="header.id || header.value" :class="header.id">
+              <td
+                v-for="header in props.headers"
+                :key="header.id || header.value"
+                :class="header.id"
+              >
                 <div class="table-cell">
-                    <span  :class="['top-column-item',{'mark-field-value-changed':studentDetailsCopy && isFieldValueUpdated(header.value)}, {'mark-field-value-errored':isFieldValueErrored(header.value)}]">
-                      <span><strong>{{ formatTableColumn(header.format, props.item[header.value]) }}</strong></span>
-                    </span>
+                  <span :class="['top-column-item',{'mark-field-value-changed':studentDetailsCopy && isFieldValueUpdated(header.value)}, {'mark-field-value-errored':isFieldValueErrored(header.value)}]">
+                    <span><strong>{{ formatTableColumn(header.format, props.item[header.value]) }}</strong></span>
+                  </span>
                 </div>
               </td>
             </tr>
@@ -98,17 +147,25 @@
         </v-data-table>
       </div>
     </v-row>
-    <v-row v-if="validationErrorFields && validationErrorFields.length" class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
-      <v-card elevation="0" width="33%">
-        <v-card-title class="pb-0">Error Details</v-card-title>
+    <v-row
+      v-if="validationErrorFields && validationErrorFields.length"
+      class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
+    >
+      <v-card
+        elevation="0"
+        width="33%"
+      >
+        <v-card-title class="pb-0">
+          Error Details
+        </v-card-title>
         <v-data-table
-                :headers="validationErrorFieldHeaders"
-                :items="validationErrorFields"
-                hide-default-footer
-        ></v-data-table>
+          :headers="validationErrorFieldHeaders"
+          :items="validationErrorFields"
+          hide-default-footer
+        />
       </v-card>
     </v-row>
-    <slot name="footerPanel"></slot>
+    <slot name="footerPanel" />
   </v-container>
 </template>
 
@@ -119,7 +176,7 @@ import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/for
 import {mapActions, mapState} from 'pinia';
 import StudentValidationWarningHint from './StudentValidationWarningHint.vue';
 import PrimaryButton from '../util/PrimaryButton.vue';
-import {partialRight} from 'lodash';
+import _, {partialRight} from 'lodash';
 import router from '@/router';
 import {appStore} from '@/store/modules/app';
 

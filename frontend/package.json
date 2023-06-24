@@ -45,7 +45,7 @@
     "vue-meta": "^3.0.0-alpha.10",
     "vue-quick-chat": "^1.2.8",
     "vue-router": "^4.2.2",
-    "vuetify": "3.3.3"
+    "vuetify": "3.3.5"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.22.5",

@@ -3,20 +3,18 @@
     title="GetMyPen Request Details"
     :prep-put="prepPut"
     :request-completed="requestCompleted"
-    :requestId="requestId"
-    :requestType="requestType"
+    :request-id="requestId"
+    :request-type="requestType"
   >
     <template #demographics="{ request }">
       <PenDemographicsCard
         :request="request"
-      >
-      </PenDemographicsCard>
+      />
     </template>
     <template #request="{ request }">
       <PenRequestCard
         :request="request"
-      >
-      </PenRequestCard>
+      />
     </template>
     <template #actions="{ activeTab, request, enableActions, beforeSubmit, submitted, switchLoading}">
       <PenRequestActions
@@ -27,8 +25,7 @@
         :before-submit="beforeSubmit"
         :submitted="submitted"
         :switch-loading="switchLoading"
-      >
-      </PenRequestActions>
+      />
     </template>
   </RequestDetail>
 </template>
@@ -41,18 +38,18 @@ import PenRequestActions from './PenRequestActions.vue';
 import { REQUEST_TYPES } from '../../utils/constants';
 
 export default {
-  name: 'penRequestDetail',
-  props: {
-    requestId: {
-      type: String,
-      required: true
-    }
-  },
+  name: 'PenRequestDetail',
   components: {
     RequestDetail,
     PenDemographicsCard,
     PenRequestCard,
     PenRequestActions,
+  },
+  props: {
+    requestId: {
+      type: String,
+      required: true
+    }
   },
   data () {
     return {

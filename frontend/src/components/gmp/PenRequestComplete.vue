@@ -1,91 +1,210 @@
 <template>
   <div>
-    <v-card flat :disabled="!isProvidePenEnabledForUser">
+    <v-card
+      flat
+      :disabled="!isProvidePenEnabledForUser"
+    >
       <v-row>
-        <v-col class="pt-0" cols="6" height="100%">
+        <v-col
+          class="pt-0"
+          cols="6"
+          height="100%"
+        >
           <v-row class="mx-0">
-            <v-col cols="12" xl="3" lg="3" md="3" class="py-0">
-                <v-text-field
-                        id="pen-search-text-field"
-                        v-model="penSearchId"
-                        :disabled="isProvidePenDisabled"
-                        maxlength="9"
-                        label="PEN:"
-                        clearable
-                        class="pt-0"
-                        @input="validatePen"
-                ></v-text-field>
+            <v-col
+              cols="12"
+              xl="3"
+              lg="3"
+              md="3"
+              class="py-0"
+            >
+              <v-text-field
+                id="pen-search-text-field"
+                v-model="penSearchId"
+                :disabled="isProvidePenDisabled"
+                maxlength="9"
+                label="PEN:"
+                clearable
+                class="pt-0"
+                @input="validatePen"
+              />
             </v-col>
-            <v-col cols="12" xl="2" lg="2" md="2" class="py-0" align-self="center">
-                <span class="pt-4 pr-1" id="prior-pen-count" v-if="this.numberOfDuplicatePenRequests > 0"><span
-                        class="red--text font-weight-bold">{{this.numberOfDuplicatePenRequests}}</span><span
-                        class="red--text"> prior PEN Requests</span></span>
+            <v-col
+              cols="12"
+              xl="2"
+              lg="2"
+              md="2"
+              class="py-0"
+              align-self="center"
+            >
+              <span
+                v-if="numberOfDuplicatePenRequests > 0"
+                id="prior-pen-count"
+                class="pt-4 pr-1"
+              ><span
+                class="red--text font-weight-bold"
+              >{{ numberOfDuplicatePenRequests }}</span><span
+                class="red--text"
+              > prior PEN Requests</span></span>
             </v-col>
           </v-row>
 
           <v-card class="ml-3">
-            <v-row no-gutters class="pt-2 px-2">
-              <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                <p class="mb-2">Legal:</p>
+            <v-row
+              no-gutters
+              class="pt-2 px-2"
+            >
+              <v-col
+                cols="12"
+                xl="3"
+                lg="3"
+                md="3"
+                sm="3"
+              >
+                <p class="mb-2">
+                  Legal:
+                </p>
               </v-col>
-              <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                <p v-if="!this.demographics.legalLast && !this.demographics.legalFirst && !this.demographics.legalMiddle" class="mb-2"></p>
-                <p v-else class="mb-2"><strong>{{ this.demographics.legalLast ? this.demographics.legalLast: '(none)'}}, {{ this.demographics.legalFirst ? this.demographics.legalFirst: '(none)'}}, {{ this.demographics.legalMiddle ? this.demographics.legalMiddle: '(none)'}}</strong></p>
+              <v-col
+                cols="12"
+                xl="9"
+                lg="9"
+                md="9"
+                sm="9"
+              >
+                <p
+                  v-if="!demographics.legalLast && !demographics.legalFirst && !demographics.legalMiddle"
+                  class="mb-2"
+                />
+                <p
+                  v-else
+                  class="mb-2"
+                >
+                  <strong>{{ demographics.legalLast ? demographics.legalLast: '(none)' }}, {{ demographics.legalFirst ? demographics.legalFirst: '(none)' }}, {{ demographics.legalMiddle ? demographics.legalMiddle: '(none)' }}</strong>
+                </p>
               </v-col>
             </v-row>
-            <v-row no-gutters class="pt-2 px-2">
-              <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                <p class="mb-2">Usual:</p>
+            <v-row
+              no-gutters
+              class="pt-2 px-2"
+            >
+              <v-col
+                cols="12"
+                xl="3"
+                lg="3"
+                md="3"
+                sm="3"
+              >
+                <p class="mb-2">
+                  Usual:
+                </p>
               </v-col>
-              <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                <p v-if="!this.demographics.usualLast && !this.demographics.usualFirst && !this.demographics.usualMiddle" class="mb-2"></p>
-                <p v-else class="mb-2"><strong>{{ this.demographics.usualLast ? this.demographics.usualLast: '(none)'}}, {{ this.demographics.usualFirst ? this.demographics.usualFirst: '(none)'}}, {{ this.demographics.usualMiddle ? this.demographics.usualMiddle: '(none)'}}</strong></p>
+              <v-col
+                cols="12"
+                xl="9"
+                lg="9"
+                md="9"
+                sm="9"
+              >
+                <p
+                  v-if="!demographics.usualLast && !demographics.usualFirst && !demographics.usualMiddle"
+                  class="mb-2"
+                />
+                <p
+                  v-else
+                  class="mb-2"
+                >
+                  <strong>{{ demographics.usualLast ? demographics.usualLast: '(none)' }}, {{ demographics.usualFirst ? demographics.usualFirst: '(none)' }}, {{ demographics.usualMiddle ? demographics.usualMiddle: '(none)' }}</strong>
+                </p>
               </v-col>
             </v-row>
-            <v-row no-gutters class="pt-2 px-2">
-              <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                <p class="mb-2">DOB:</p>
+            <v-row
+              no-gutters
+              class="pt-2 px-2"
+            >
+              <v-col
+                cols="12"
+                xl="3"
+                lg="3"
+                md="3"
+                sm="3"
+              >
+                <p class="mb-2">
+                  DOB:
+                </p>
               </v-col>
-              <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                <p class="mb-2"><strong>{{ formatDob(this.demographics.dob,'uuuu-MM-dd', 'uuuu/MM/dd') }}</strong></p>
+              <v-col
+                cols="12"
+                xl="9"
+                lg="9"
+                md="9"
+                sm="9"
+              >
+                <p class="mb-2">
+                  <strong>{{ formatDob(demographics.dob,'uuuu-MM-dd', 'uuuu/MM/dd') }}</strong>
+                </p>
               </v-col>
             </v-row>
           </v-card>
         </v-col>
-        <v-col class="pa-0 pr-6" cols="6">
+        <v-col
+          class="pa-0 pr-6"
+          cols="6"
+        >
           <MacroMenu
             padding="pt-3"
             margin="ml-0"
             :macros="completeMacros"
-            @select="insertMacroText"
             :disabled="isCompleteCommentDisabled"
+            @select="insertMacroText"
           />
-          <v-form ref="completeForm" class="pt-4">
+          <v-form
+            ref="completeForm"
+            class="pt-4"
+          >
             <v-textarea
               id="complete-comment-textarea"
+              ref="completeCommentTextarea"
+              v-model="request.completeComment"
               name="description"
               label="Enter comment"
-              v-model="request.completeComment"
               :rules="completedRules"
               :disabled="isCompleteCommentDisabled"
               filled
               clearable
-              @input="replaceCompleteMacro"
               class="pa-0 ma-0"
-              ref="completeCommentTextarea"
-            ></v-textarea>
+              @input="replaceCompleteMacro"
+            />
           </v-form>
         </v-col>
       </v-row>
       <v-row class="px-3 d-flex justify-end">
         <div class="d-flex">
-          <v-checkbox v-model="request.demogChanged" true-value="Y" false-value="N" class="pa-0" cols="12" label="Student demographics changed"></v-checkbox>
-          <PrimaryButton id="unlink-button" class="mt-3 mx-3" text="Unlink" :disabled="isUnlinkDisabled || !isProvidePenEnabledForUser" :click-action="unlinkRequest"></PrimaryButton>
-          <PrimaryButton id="provide-pen-to-student" class="mt-3 mx-3" text="Provide PEN to Student" :disabled="isCompleteDisabled || !isProvidePenEnabledForUser" :click-action="completeRequest"></PrimaryButton>
+          <v-checkbox
+            v-model="request.demogChanged"
+            true-value="Y"
+            false-value="N"
+            class="pa-0"
+            cols="12"
+            label="Student demographics changed"
+          />
+          <PrimaryButton
+            id="unlink-button"
+            class="mt-3 mx-3"
+            text="Unlink"
+            :disabled="isUnlinkDisabled || !isProvidePenEnabledForUser"
+            :click-action="unlinkRequest"
+          />
+          <PrimaryButton
+            id="provide-pen-to-student"
+            class="mt-3 mx-3"
+            text="Provide PEN to Student"
+            :disabled="isCompleteDisabled || !isProvidePenEnabledForUser"
+            :click-action="completeRequest"
+          />
         </div>
       </v-row>
     </v-card>
-
   </div>
 </template>
 
@@ -105,7 +224,7 @@ import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
 
 export default {
-  name: 'penRequestComplete',
+  name: 'PenRequestComplete',
   components: {
     PrimaryButton,
     MacroMenu

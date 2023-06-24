@@ -1,13 +1,13 @@
 <template>
   <PenRequestBatchDataTable
+    v-model:batch-page-number="pageNumber"
     :headers="headers"
-    :penRequestBatchResponse="penRequestBatchResponse"
-    :batchPageNumber.sync="pageNumber"
-    :loadingTable="loadingTable || loadingFiles"
-    pageCommands
+    :pen-request-batch-response="penRequestBatchResponse"
+    :loading-table="loadingTable || loadingFiles"
+    page-commands
+    :in-progress-saga-i-ds="inProgressSagaIDs"
     @select-filter="selectFilter"
-    :inProgressSagaIDs="inProgressSagaIDs"
-  ></PenRequestBatchDataTable>
+  />
 </template>
 
 <script>
@@ -21,13 +21,14 @@ import {getSearchParam} from '@/utils/penrequest-batch/search';
 import {deepCloneObject} from '@/utils/common';
 import {formatDateTime} from '@/utils/format';
 import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
+import _ from 'lodash';
 
 export default {
   name: 'PenRequestBatchList',
-  mixins: [alertMixin, filtersMixin],
   components: {
     PenRequestBatchDataTable,
   },
+  mixins: [alertMixin, filtersMixin],
   props: {
     schoolGroup: {
       type: String,

@@ -1,34 +1,37 @@
 <template>
   <v-dialog
-          id="requestInfoDialog"
-          v-model="requestInfoDialogOpen"
-          max-width="50%"
-          :disabled="disabled"
+    id="requestInfoDialog"
+    v-model="requestInfoDialogOpen"
+    max-width="50%"
+    :disabled="disabled"
   >
     <template #activator="{ on, attrs }">
       <PrimaryButton
-            id="requestInfoBtn"
-            text="Request info"
-            :disabled="disabled"
-            :bind="attrs"
-            :on="on">
-      </PrimaryButton>
+        id="requestInfoBtn"
+        text="Request info"
+        :disabled="disabled"
+        :bind="attrs"
+        :on="on"
+      />
     </template>
     <v-card id="requestInfoDialogCard">
       <v-card-title class="headline">
         Request Info
       </v-card-title>
-      <v-card-text id="requestInfoDialogCardText" class="pb-0">
+      <v-card-text
+        id="requestInfoDialogCardText"
+        class="pb-0"
+      >
         <v-textarea
-                id="requestInfoDialogTextArea"
-                v-model="requestInfoDialogText"
-                outlined
-                clearable
-                rows="10"
-                maxlength="4000"
-                @input="macroHotKey"
-                ref="requestInfoDialogTextArea">
-        </v-textarea>
+          id="requestInfoDialogTextArea"
+          ref="requestInfoDialogTextArea"
+          v-model="requestInfoDialogText"
+          outlined
+          clearable
+          rows="10"
+          maxlength="4000"
+          @input="macroHotKey"
+        />
       </v-card-text>
       <v-card-actions class="pt-0 px-6 pb-4">
         <v-col class="pl-0 pa-0">
@@ -36,16 +39,26 @@
             id="requestInfoDialogChooseMessageBtn"
             :macros="studentInfoMacros"
             text="Choose Message"
-            @select="insertMacroText"
             margin="ml-0"
-            menuMaxWidth="46.8%"
+            menu-max-width="46.8%"
+            @select="insertMacroText"
           />
         </v-col>
-        <PrimaryButton id="requestInfoDialogCancelBtn" text="Cancel" secondary :click-action="closeRequestInfoDialog"></PrimaryButton>
-        <PrimaryButton id="requestInfoDialogPostBtn" text="Post" :disabled="requestInfoDialogText===null" :click-action="$emit('updateInfoRequested', requestInfoDialogText)"></PrimaryButton>
+        <PrimaryButton
+          id="requestInfoDialogCancelBtn"
+          text="Cancel"
+          secondary
+          :click-action="closeRequestInfoDialog"
+        />
+        <PrimaryButton
+          id="requestInfoDialogPostBtn"
+          text="Post"
+          :disabled="requestInfoDialogText===null"
+          :click-action="$emit('updateInfoRequested', requestInfoDialogText)"
+        />
       </v-card-actions>
     </v-card>
-    <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>
+    <ConfirmationDialog ref="confirmationDialog" />
   </v-dialog>
 </template>
 
@@ -60,12 +73,12 @@ import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
 
 export default {
   name: 'InfoDialog',
-  mixins: [alertMixin],
   components: {
     PrimaryButton,
     ConfirmationDialog,
     MacroMenu
   },
+  mixins: [alertMixin],
   props: {
     text: {
       type: String,

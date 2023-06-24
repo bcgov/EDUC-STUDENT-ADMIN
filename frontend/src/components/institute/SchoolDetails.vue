@@ -1,85 +1,181 @@
 <template>
-  <v-container class="containerSetup" fluid>
-      <v-col class="mt-1 d-flex justify-start">
-        <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
-        <a class="ml-1" @click="backButtonClick">Return to School List</a>
-      </v-col>
+  <v-container
+    class="containerSetup"
+    fluid
+  >
+    <v-col class="mt-1 d-flex justify-start">
+      <v-icon
+        small
+        color="#1976d2"
+      >
+        mdi-arrow-left
+      </v-icon>
+      <a
+        class="ml-1"
+        @click="backButtonClick"
+      >Return to School List</a>
+    </v-col>
     <v-row v-if="loading">
       <v-col class="d-flex justify-center">
         <v-progress-circular
-            class="mt-16"
-            :size="70"
-            :width="7"
-            color="primary"
-            indeterminate
-            :active="loading"
-        ></v-progress-circular>
+          class="mt-16"
+          :size="70"
+          :width="7"
+          color="primary"
+          indeterminate
+          :active="loading"
+        />
       </v-col>
     </v-row>
-    <v-row v-else no-gutters>
+    <v-row
+      v-else
+      no-gutters
+    >
       <v-col>
         <v-row class="d-flex justify-start">
           <v-col class="d-flex justify-start">
-            <h2>{{ school.mincode }}</h2>
-            <h2 class="pl-1 pr-1">-</h2>
+            <h2>
+              {{
+                school.mincode
+              }}
+            </h2>
+            <h2 class="pl-1 pr-1">
+              -
+            </h2>
             <div>
               <div>
-                <h2 id="displayName">{{ school.displayName }}</h2>
+                <h2 id="displayName">
+                  {{
+                    school.displayName
+                  }}
+                </h2>
               </div>
-              <div class="safe-name" v-if="school.displayNameNoSpecialChars">{{ school.displayNameNoSpecialChars }}</div>
+              <div
+                v-if="school.displayNameNoSpecialChars"
+                class="safe-name"
+              >
+                {{
+                  school.displayNameNoSpecialChars
+                }}
+              </div>
             </div>
-              
           </v-col>
         </v-row>
-        <v-row v-if="!['OFFSHORE', 'INDEPEND'].includes(school.schoolCategoryCode)" class="d-flex justify-start">
+        <v-row
+          no-gutters
+          v-if="!['OFFSHORE', 'INDEPEND'].includes(school.schoolCategoryCode)"
+          class="d-flex justify-start"
+        >
           <v-col class="d-flex">
-            <div class="ministryOwnershipTeamName"  style="color: black">{{district.districtNumber}} - {{district.name}}</div>
+            <div
+              class="ministryOwnershipTeamName"
+              style="color: black"
+            >
+              {{
+                district.districtNumber
+              }} -
+              {{
+                district.name
+              }}
+            </div>
           </v-col>
         </v-row>
-        <v-row v-else class="d-flex justify-start">
+        <v-row
+          no-gutters
+          v-else
+          class="d-flex justify-start"
+        >
           <v-col class="d-flex">
-            <div class="ministryOwnershipTeamName"  style="color: black">{{authority.authorityNumber}} - {{authority.displayName}}</div>
+            <div
+              class="ministryOwnershipTeamName"
+              style="color: black"
+            >
+              {{
+                authority.authorityNumber
+              }} -
+              {{
+                authority.displayName
+              }}
+            </div>
           </v-col>
         </v-row>
-        <v-row class="d-flex justify-start">
+        <v-row no-gutters class="mt-1 d-flex justify-start">
           <v-col class="d-flex">
-            <v-icon class="ml-n1 pr-3" :color="getStatusColorAuthorityOrSchool(school.status)" dark>
+            <v-icon
+              class="ml-n1 pr-3"
+              :color="getStatusColorAuthorityOrSchool(school.status)"
+              dark
+            >
               mdi-circle-medium
             </v-icon>
-            <span>{{ school.status }}</span>
+            <span>{{
+              school.status
+            }}</span>
           </v-col>
         </v-row>
         <v-row>
           <v-col>
-            <v-divider class="divider"></v-divider>
+            <v-divider class="divider" />
+          </v-col>
+        </v-row>
+        <v-row no-gutters>
+          <v-col>
+            <v-tabs v-model="tab">
+              <v-tab value="details">
+                Details
+              </v-tab>
+              <v-tab value="contacts">
+                Contacts
+              </v-tab>
+              <v-tab value="notes">
+                Ministry Notes
+              </v-tab>
+              <v-tab value="history">
+                History
+              </v-tab>
+              <v-tab value="moves">
+                Moves
+              </v-tab>
+              <v-tab value="funding">
+                Funding
+              </v-tab>
+            </v-tabs>
           </v-col>
         </v-row>
         <v-row>
-          <v-tabs selected-class="active-display" :model-value="tab">
-            <v-tab class="tab-divider" v-for="item in items" :key="item">
-              {{ item }}
-            </v-tab>
-          </v-tabs>
-          <v-tabs-items :model-value="tab" style="width: 100%">
-            <v-tab-item :value="0">
-              <Details @updateSchool="updateSchoolDetails" :schoolID="schoolID"></Details>
-            </v-tab-item>
-            <v-tab-item :value="1">
-              <SchoolContacts :schoolID="schoolID"></SchoolContacts>
-            </v-tab-item>
-            <v-tab-item :value="2">
-              <MinistryNotes :schoolID="schoolID" :hasAccess="canEditSchoolDetails()"></MinistryNotes>
-            </v-tab-item>
-            <v-tab-item :value="3">
-              <SchoolHistory :schoolID="schoolID"></SchoolHistory>
-            </v-tab-item>
-            <v-tab-item :value="4">
-              <SchoolMove :schoolID="schoolID" :hasAccess="canEditSchoolDetails()"></SchoolMove>
-            </v-tab-item>
-            <v-tab-item :value="5">
-              <p>Funding Tab</p>
-            </v-tab-item>
-          </v-tabs-items>
+          <v-col>
+            <v-card-text>
+              <v-window v-model="tab">
+                <v-window-item value="details">
+                  <Details
+                    :school-i-d="schoolID"
+                    @updateSchool="updateSchoolDetails"
+                  />
+                </v-window-item>
+                <v-window-item value="contacts">
+                  <SchoolContacts :school-i-d="schoolID" />
+                </v-window-item>
+                <v-window-item value="notes">
+                  <MinistryNotes
+                    :school-i-d="schoolID"
+                    :has-access="canEditSchoolDetails()"
+                  />
+                </v-window-item>
+                <v-window-item value="history">
+                  <SchoolHistory :school-i-d="schoolID" />
+                </v-window-item>
+                <v-window-item value="moves">
+                  <SchoolMove
+                    :school-i-d="schoolID"
+                    :has-access="canEditSchoolDetails()"
+                  />
+                </v-window-item>
+                <v-window-item value="funding">
+                  <p>Funding Tab</p>
+                </v-window-item>
+              </v-window>
+            </v-card-text>
+          </v-col>
         </v-row>
       </v-col>
     </v-row>
@@ -88,13 +184,13 @@
 
 <script>
 
-import { mapState } from 'pinia';
+import {mapState} from 'pinia';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import {getStatusAuthorityOrSchool, getStatusColorAuthorityOrSchool,} from '@/utils/institute/status';
 import router from '@/router';
-import { sanitizeUrl } from '@braintree/sanitize-url';
+import {sanitizeUrl} from '@braintree/sanitize-url';
 import {deepCloneObject} from '@/utils/common';
 import Details from './common/Details.vue';
 import MinistryNotes from './common/MinistryNotes.vue';
@@ -106,7 +202,6 @@ import {notificationsStore} from '@/store/modules/notifications';
 
 export default {
   name: 'SchoolDetailsPage',
-  mixins: [alertMixin],
   components: {
     Details,
     MinistryNotes,
@@ -114,6 +209,7 @@ export default {
     SchoolContacts,
     SchoolMove
   },
+  mixins: [alertMixin],
   props: {
     schoolID: {
       type: String,
@@ -135,15 +231,13 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated','userInfo','SCHOOL_ADMIN_ROLE','SCHOOL_INDEPENDENT_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'SCHOOL_ADMIN_ROLE', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
     ...mapState(notificationsStore, ['notification']),
     dataReady: function () {
       return this.userInfo;
     },
   },
-  watch: {
-
-  },
+  watch: {},
   created() {
     this.getThisSchoolsDetails();
   },
@@ -151,7 +245,7 @@ export default {
     shouldDisableTab(tabName) {
       return tabName === 'Moves' && this.school.schoolMove.length === 0;
     },
-    getThisSchoolsDetails(){
+    getThisSchoolsDetails() {
       this.loading = true;
       this.school = '';
 
@@ -161,7 +255,7 @@ export default {
           this.cleanWebsiteUrl = this.school.website ? sanitizeUrl(this.school.website) : '';
           this.populateExtraSchoolFields(this.school);
           this.getDistrictDetails(this.school.districtId);
-          if(this.school.independentAuthorityId){
+          if (this.school.independentAuthorityId) {
             this.getAuthorityDetails(this.school.independentAuthorityId);
           }
         }).catch(error => {
@@ -171,7 +265,7 @@ export default {
           this.loading = false;
         });
     },
-    getDistrictDetails(districtId){
+    getDistrictDetails(districtId) {
       this.district = '';
       ApiService.apiAxios.get(`${Routes.cache.DISTRICT_DATA_URL}/${districtId}`)
         .then(response => {
@@ -183,7 +277,7 @@ export default {
           this.loading = false;
         });
     },
-    getAuthorityDetails(authorityId){
+    getAuthorityDetails(authorityId) {
       this.authority = '';
       ApiService.apiAxios.get(`${Routes.institute.AUTHORITY_DATA_URL}/${authorityId}`)
         .then(response => {
@@ -198,7 +292,7 @@ export default {
     },
     populateExtraAuthorityFields(authority) {
       authority.status = getStatusAuthorityOrSchool(authority);
-      if(authority.status === 'Closed' || authority.status === 'Closing') {
+      if (authority.status === 'Closed' || authority.status === 'Closing') {
         this.isSchoolStatusUpdateAllowed = false;
       }
     },
@@ -207,7 +301,7 @@ export default {
     backButtonClick() {
       router.push({name: 'instituteSchoolList'});
     },
-    populateExtraSchoolFields(school){
+    populateExtraSchoolFields(school) {
       school.status = getStatusAuthorityOrSchool(school);
     },
     async updateSchoolDetails(schoolDetailsCopy) {
@@ -224,8 +318,8 @@ export default {
           this.getThisSchoolsDetails();
         });
     },
-    canEditSchoolDetails(){
-      if(this.school.schoolCategoryCode && this.independentArray.includes(this.school.schoolCategoryCode)){
+    canEditSchoolDetails() {
+      if (this.school.schoolCategoryCode && this.independentArray.includes(this.school.schoolCategoryCode)) {
         return this.SCHOOL_INDEPENDENT_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE;
       }
       return this.SCHOOL_ADMIN_ROLE;
@@ -236,59 +330,46 @@ export default {
 
 <style scoped>
 .divider {
-  border: 2px solid #FCBA19;
+    border-color: #FCBA19;
+    border-width: 3px;
+    opacity: unset;
 }
 
-.containerSetup{
-  padding-right: 24em !important;
-  padding-left: 24em !important;
-}
-
-@media screen and (max-width: 1950px) {
-  .containerSetup{
-    padding-right: 20em !important;
-    padding-left: 20em !important;
-  }
-}
-
-@media screen and (max-width: 1200px) {
-  .containerSetup{
-    padding-right: 4em !important;
-    padding-left: 4em !important;
-  }
+.containerSetup {
+    padding-right: 24em !important;
+    padding-left: 24em !important;
 }
 
 .v-dialog__content /deep/ .v-bottom-sheet {
-  width: 30% !important;
-}
-@media screen and (max-width: 950px){
-  .v-dialog__content /deep/ .v-bottom-sheet {
-    width: 60% !important;
-  }
+    width: 30% !important;
 }
 
-  .active-display {
+.active-display {
     color: #38598a;
-  }
+}
 
-  .v-tab {
+.v-tab {
     text-transform: none !important;
     font-size: 16px;
     font-weight: bold;
-  }
+}
 
-  .tab-divider {
+.tab-divider {
     border-right: 1px solid lightgray;
     border-radius: 0px;
-  }
+}
 
-  .tab-divider:last-child  { 
+.tab-divider:last-child {
     border-right: 0
-   }
+}
 
-   .safe-name {
+.safe-name {
     color: grey;
     font-style: italic;
-   }
+}
+
+:deep(.v-btn--variant-text) {
+    color: #003366
+}
 
 </style>

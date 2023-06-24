@@ -2,13 +2,15 @@
   <div>
     <v-overlay :value="isLoading">
       <v-progress-circular
-          indeterminate
-          size="64"
-      ></v-progress-circular>
+        indeterminate
+        size="64"
+      />
     </v-overlay>
-    <v-row justify="center" v-if="!isLoading">
-      <div class="control">
-      </div>
+    <v-row
+      v-if="!isLoading"
+      justify="center"
+    >
+      <div class="control" />
     </v-row>
   </div>
 </template>
@@ -22,13 +24,6 @@ import alertMixin from '../../mixins/alertMixin';
 export default {
   name: 'ImageRenderer',
   mixins: [alertMixin],
-  data() {
-    return {
-      src: undefined,
-      isLoading: false,
-      documentID: ''
-    };
-  },
   props: {
     dialog: {
       type: Boolean,
@@ -51,25 +46,12 @@ export default {
       required: false
     }
   },
-  methods: {
-    previewImgObject () {
-      let image = [{'src': this.src,'data-source': this.src}];
-      this.$viewerApi({
-        options: {
-          toolbar: true,
-          url: 'data-source',
-          navbar: false,
-          title: false,
-          scalable: false,
-          hide: this.closeDialog(),
-          initialViewIndex: 0
-        },
-        images: image
-      });
-    },
-    closeDialog(){
-      this.$emit('closeDialog');
-    }
+  data() {
+    return {
+      src: undefined,
+      isLoading: false,
+      documentID: ''
+    };
   },
   watch: {
     dialog(newValue) {
@@ -93,6 +75,26 @@ export default {
           this.isLoading = false;
         });
       }
+    }
+  },
+  methods: {
+    previewImgObject () {
+      let image = [{'src': this.src,'data-source': this.src}];
+      this.$viewerApi({
+        options: {
+          toolbar: true,
+          url: 'data-source',
+          navbar: false,
+          title: false,
+          scalable: false,
+          hide: this.closeDialog(),
+          initialViewIndex: 0
+        },
+        images: image
+      });
+    },
+    closeDialog(){
+      this.$emit('closeDialog');
     }
   },
 };

@@ -13,7 +13,7 @@
 
 <script>
 export default {
-  name: 'filterTag',
+  name: 'FilterTag',
   props: {
     id: {
       type: String,

@@ -1,30 +1,52 @@
 <template>
-  <v-container class="containerSetup" fluid>
-    <Spinner flat v-if="loadingDistricts"/>
+  <v-container
+    class="containerSetup"
+    fluid
+  >
+    <Spinner
+      v-if="loadingDistricts"
+      flat
+    />
     <div v-else>
       <v-row>
         <v-col class="mt-1 d-flex justify-start">
-          <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
-          <a class="ml-1" @click="backButtonClick">Return to Dashboard</a>
+          <v-icon
+            small
+            color="#1976d2"
+          >
+            mdi-arrow-left
+          </v-icon>
+          <a
+            class="ml-1"
+            @click="backButtonClick"
+          >Return to Dashboard</a>
         </v-col>
       </v-row>
       <!--    search filter -->
-      <v-row :class="['d-sm-flex', 'align-center', 'searchBox', 'elevation-2']" @keydown.enter="searchButtonClick">
-        <v-col cols="12" md="4">
+      <v-row
+        :class="['d-sm-flex', 'align-center', 'searchBox', 'elevation-2']"
+        @keydown.enter="searchButtonClick"
+      >
+        <v-col
+          cols="12"
+          md="4"
+        >
           <v-autocomplete
             id="district-text-field"
+            v-model="searchFilter.districtId"
             clearable
             :items="districtSearchNames"
-            v-model="searchFilter.districtId"
             item-title="districtNumberName"
             variant="underlined"
             item-value="districtId"
             :menu-props="{closeOnContentClick:true}"
-            @update:model-value="searchButtonClick"
             label="District Number & Name"
+            @update:model-value="searchButtonClick"
           >
             <template #selection="{ item, index }">
-              {{ item.raw.districtNumberName }}
+              {{
+                item.raw.districtNumberName
+              }}
             </template>
             <template #item="{ props, item }">
               <v-list-item
@@ -34,18 +56,23 @@
                 title=""
               >
                 <v-list-item-title style="color: black !important;">
-                  {{ item.raw.districtNumberName }}
+                  {{
+                    item.raw.districtNumberName
+                  }}
                 </v-list-item-title>
               </v-list-item>
             </template>
           </v-autocomplete>
         </v-col>
-        <v-col cols="12" md="4">
+        <v-col
+          cols="12"
+          md="4"
+        >
           <v-select
             id="status-select-field"
+            v-model="searchFilter.status"
             clearable
             :items="status"
-            v-model="searchFilter.status"
             item-title="label"
             variant="underlined"
             item-value="districtStatusCode"
@@ -53,7 +80,9 @@
             label="Status"
           >
             <template #selection="{ item, index }">
-              {{ item.raw.label }}
+              {{
+                item.raw.label
+              }}
             </template>
             <template #item="{ props, item }">
               <v-list-item
@@ -63,54 +92,90 @@
                 title=""
               >
                 <v-list-item-title style="color: black !important;">
-                  {{ item.raw.label }}
+                  {{
+                    item.raw.label
+                  }}
                 </v-list-item-title>
               </v-list-item>
             </template>
           </v-select>
         </v-col>
-        <v-col cols="12" md="4" :class="['text-right']">
-          <PrimaryButton id="district-clear-button" secondary text="Clear" :click-action="clearButtonClick"></PrimaryButton>
-          <PrimaryButton id="district-search-button" class="ml-2" text="Search" width="7rem" :click-action="searchButtonClick"
-          ></PrimaryButton>
+        <v-col
+          cols="12"
+          md="4"
+          :class="['text-right']"
+        >
+          <PrimaryButton
+            id="district-clear-button"
+            secondary
+            text="Clear"
+            :click-action="clearButtonClick"
+          />
+          <PrimaryButton
+            id="district-search-button"
+            class="ml-2"
+            text="Search"
+            width="7rem"
+            :click-action="searchButtonClick"
+          />
         </v-col>
       </v-row>
-      <v-data-table-server
+      <v-data-table
         :headers="headers"
         :items="filteredDistrictList"
-        :items-per-page=1000
+        items-per-page="-1"
         class="elevation-1 mt-5"
         mobile-breakpoint="0"
       >
-
         <template #item="{ item }">
-          <v-row no-gutters class="pa-2 hoverTable" style="cursor: pointer;" @click="openDistrict(item.raw.districtId)">
-            <v-col cols="6" class="d-flex justify-start">
-              <strong class="largeFont">{{ `${item.raw.districtNumber} - ${item.raw.name}` }}</strong>
+          <v-row
+            no-gutters
+            class="pa-2 hoverTable"
+            style="cursor: pointer;"
+            @click="openDistrict(item.raw.districtId)"
+          >
+            <v-col
+              cols="6"
+              class="d-flex justify-start"
+            >
+              <strong class="largeFont">{{
+                `${item.raw.districtNumber} - ${item.raw.name}`
+              }}</strong>
             </v-col>
             <v-col class="d-flex">
               <v-icon :color="getStatusColor(item.raw.districtStatusCode)">
                 mdi-circle-medium
               </v-icon>
-              <span class="largeFont">{{ getStatusText(item.raw.districtStatusCode) }}</span>
+              <span class="largeFont">{{
+                getStatusText(item.raw.districtStatusCode)
+              }}</span>
             </v-col>
             <v-col cols="3">
               <v-icon>
                 mdi-phone-outline
               </v-icon>
-              <span class="largeFont">{{ getPhoneNumber(item.raw.phoneNumber) }}</span>
+              <span class="largeFont">{{
+                getPhoneNumber(item.raw.phoneNumber)
+              }}</span>
             </v-col>
             <v-col class="d-flex justify-end">
               <v-tooltip bottom>
                 <template #activator="{ on, attrs }">
-                  <v-btn id="districtContacts"
-                         color="#003366"
-                         outlined
-                         @click.stop.prevent="openDistrictContacts(item.raw.districtId)"
-                         class="mt-0 pt-0 filterButton ml-2"
-                         style="text-transform: initial"
+                  <v-btn
+                    id="districtContacts"
+                    color="#003366"
+                    outlined
+                    class="mt-0 pt-0 filterButton ml-2"
+                    style="text-transform: initial"
+                    @click.stop.prevent="openDistrictContacts(item.raw.districtId)"
                   >
-                    <v-icon color="white" style="margin-top: 0.07em" dark>mdi-account-multiple-outline</v-icon>
+                    <v-icon
+                      color="white"
+                      style="margin-top: 0.07em"
+                      dark
+                    >
+                      mdi-account-multiple-outline
+                    </v-icon>
                   </v-btn>
                 </template>
                 <span>View Contacts</span>
@@ -119,9 +184,10 @@
           </v-row>
         </template>
 
-        <template #no-data>There are no districts.</template>
-
-      </v-data-table-server>
+        <template #no-data>
+          There are no districts.
+        </template>
+      </v-data-table>
     </div>
   </v-container>
 </template>
@@ -137,12 +203,9 @@ import Spinner from '@/components/common/Spinner.vue';
 
 
 export default {
-  name: 'instituteDistrict',
+  name: 'InstituteDistrict',
   components: {PrimaryButton, Spinner},
   mixins: [alertMixin],
-  async beforeMount() {
-    this.getDistricts();
-  },
   data() {
     return {
       headers: [
@@ -166,6 +229,9 @@ export default {
       filteredDistrictList: [],
       loadingDistricts: true
     };
+  },
+  async beforeMount() {
+    this.getDistricts();
   },
   methods: {
     getDistricts() {
@@ -267,27 +333,27 @@ export default {
 }
 
 .hoverTable {
-  border-bottom-style: groove;
-  border-left-style: groove;
-  border-right-style: groove;
-  border-color: rgb(255 255 255 / 45%);
+    border-bottom-style: groove;
+    border-left-style: groove;
+    border-right-style: groove;
+    border-color: rgb(255 255 255 / 45%);
 }
 
 .hoverTable:nth-child(1) {
-  border-top-style: groove;
+    border-top-style: groove;
 }
 
-.hoverTable:hover{
-  background-color: #e8e8e8;
-  cursor: pointer;
+.hoverTable:hover {
+    background-color: #e8e8e8;
+    cursor: pointer;
 }
 
 :deep(.v-data-table-footer) {
-  display: none;
+    display: none;
 }
 
-:deep(.v-data-table__thead) {
-  display: none;
+:deep(.v-data-table__th) {
+    display: none;
 }
 
 </style>

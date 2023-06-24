@@ -6,7 +6,10 @@
     style="z-index: 1002;"
   >
     <!-- Navbar content -->
-    <a tabindex="-1" href="/">
+    <a
+      tabindex="-1"
+      href="/"
+    >
       <img
         tabindex="-1"
         src="@/assets/images/bc-gov-logo.svg"
@@ -15,14 +18,22 @@
         alt="B.C. Government Logo"
       >
     </a>
-    <a tabindex="-1" v-if="authStore().isAuthenticated" href="/">
+    <a
+      v-if="authStore().isAuthenticated"
+      tabindex="-1"
+      href="/"
+    >
       <v-toolbar-title><h3 style="color:white">{{ secureAppTitle }}</h3></v-toolbar-title>
     </a>
-    <a tabindex="-1" v-else href="/">
+    <a
+      v-else
+      tabindex="-1"
+      href="/"
+    >
       <v-toolbar-title><h3 style="color:white">{{ appTitle }}</h3></v-toolbar-title>
     </a>
 
-    <v-spacer></v-spacer>
+    <v-spacer />
 
     <div v-if="authStore().isAuthenticated && dataReady">
       <v-menu
@@ -75,6 +86,9 @@ export default {
       secureAppTitle: import.meta.env.VITE_VUE_APP_SECURED_TITLE,
       routes: Routes
     };
+  },
+  created() {
+    authStore().getUserInfo();
   },
   computed: {
     ...mapState(authStore, ['userInfo', 'isAuthenticated']),

@@ -1,44 +1,67 @@
 <template>
-  <v-container fluid class="full-height px-0">
-    <v-form ref="studentSearchForm" id="searchStudentForm"
-            v-model="validForm"
+  <v-container
+    fluid
+    class="full-height px-0"
+  >
+    <v-form
+      id="searchStudentForm"
+      ref="studentSearchForm"
+      v-model="validForm"
     >
       <v-row>
         <v-col cols="9">
-          <BarChartContainer v-if="labels && chartData" :displayYAxis="displayYAxis" :heightValue="heightValue" :labels="labels" :chart-data="chartData" title="New PENs by Month" data-type="New PENs" annualTotal></BarChartContainer>
-          <spinner v-else></spinner>
+          <BarChartContainer
+            v-if="labels && chartData"
+            :display-y-axis="displayYAxis"
+            :height-value="heightValue"
+            :labels="labels"
+            :chart-data="chartData"
+            title="New PENs by Month"
+            data-type="New PENs"
+            annual-total
+          />
+          <spinner v-else />
         </v-col>
         <v-col cols="3">
-          <v-row no-gutters class="d-flex justify-end">
-              <v-col style="text-align: -webkit-right">
-                <v-select
-                    id="k12PSIselector"
-                    :items="schoolGroups"
-                    v-model="selectedSchoolGroup"
-                    variant="outlined"
-                    density="compact"
-                    class="mr-2"
-                    placeholder="K-12/PSI Filter"
-                    color="#38598a"
-                    append-icon="mdi-chevron-down"
-                    clearable
-                ></v-select>
-              </v-col>
-              <v-col>
-                <v-select
-                    id="newPENTimeframe"
-                    :items="timeframes"
-                    v-model="timeframe"
-                    density="compact"
-                    variant="outlined"
-                    color="#38598a"
-                    append-icon="mdi-chevron-down"
-                    :menu-props="{ offsetY: true }"
-                ></v-select>
-              </v-col>
+          <v-row
+            no-gutters
+            class="d-flex justify-end"
+          >
+            <v-col style="text-align: -webkit-right">
+              <v-select
+                id="k12PSIselector"
+                v-model="selectedSchoolGroup"
+                :items="schoolGroups"
+                variant="outlined"
+                density="compact"
+                class="mr-2"
+                placeholder="K-12/PSI Filter"
+                color="#38598a"
+                append-icon="mdi-chevron-down"
+                clearable
+              />
+            </v-col>
+            <v-col>
+              <v-select
+                id="newPENTimeframe"
+                v-model="timeframe"
+                :items="timeframes"
+                density="compact"
+                variant="outlined"
+                color="#38598a"
+                append-icon="mdi-chevron-down"
+                :menu-props="{ offsetY: true }"
+              />
+            </v-col>
           </v-row>
-          <v-row class="justify-end mt-n3" no-gutters>
-            <v-col cols="12" no-gutters>
+          <v-row
+            class="justify-end mt-n3"
+            no-gutters
+          >
+            <v-col
+              cols="12"
+              no-gutters
+            >
               <v-expansion-panels focusable>
                 <v-expansion-panel>
                   <v-expansion-panel-header style="border-bottom-left-radius: 4px;border-bottom-right-radius: 4px;color: #FFFFFF;background-color: rgb(0, 51, 102);border-color: rgb(0, 51, 102);">
@@ -50,86 +73,157 @@
                     Refine Results
                   </v-expansion-panel-header>
                   <v-expansion-panel-content>
-                    <v-row no-gutters class="mt-4">
-                      <v-col class="mt-2" cols="2">PEN:</v-col>
-                      <v-col cols="4" class="mr-15">
+                    <v-row
+                      no-gutters
+                      class="mt-4"
+                    >
+                      <v-col
+                        class="mt-2"
+                        cols="2"
+                      >
+                        PEN:
+                      </v-col>
+                      <v-col
+                        cols="4"
+                        class="mr-15"
+                      >
                         <v-text-field
-                            dense
-                            filled
-                            outlined
-                            id='pen'
-                            v-model="penSearch"
-                            @keyup.enter="getNewPENs(true)"
-                            maxlength="9"
-                            minlength="9"
-                            @keypress="isValidNumber($event)"
-                            v-on:input="[refineHasValues()]"
-                            autofocus>
-                        </v-text-field>
+                          id="pen"
+                          v-model="penSearch"
+                          dense
+                          filled
+                          outlined
+                          maxlength="9"
+                          minlength="9"
+                          autofocus
+                          @keyup.enter="getNewPENs(true)"
+                          @keypress="isValidNumber($event)"
+                          @input="[refineHasValues()]"
+                        />
                       </v-col>
                     </v-row>
-                    <v-row no-gutters class="mt-n4">
-                      <v-col class="mt-2" cols="3">Mincode:</v-col>
-                      <v-col cols="3" class="mr-15">
+                    <v-row
+                      no-gutters
+                      class="mt-n4"
+                    >
+                      <v-col
+                        class="mt-2"
+                        cols="3"
+                      >
+                        Mincode:
+                      </v-col>
+                      <v-col
+                        cols="3"
+                        class="mr-15"
+                      >
                         <v-text-field
-                            dense
-                            filled
-                            outlined
-                            id='mincode'
-                            v-model="mincodeSearch"
-                            maxlength="8"
-                            minlength="8"
-                            @keypress="isValidNumber($event)"
-                            @keyup.enter="getNewPENs(true)"
-                            v-on:input="[refineHasValues()]">
-                        </v-text-field>
+                          id="mincode"
+                          v-model="mincodeSearch"
+                          dense
+                          filled
+                          outlined
+                          maxlength="8"
+                          minlength="8"
+                          @keypress="isValidNumber($event)"
+                          @keyup.enter="getNewPENs(true)"
+                          @input="[refineHasValues()]"
+                        />
                       </v-col>
                     </v-row>
-                    <v-row no-gutters class="mt-n4">
-                      <v-col class="mt-2" cols="4">Legal Surname:</v-col>
+                    <v-row
+                      no-gutters
+                      class="mt-n4"
+                    >
+                      <v-col
+                        class="mt-2"
+                        cols="4"
+                      >
+                        Legal Surname:
+                      </v-col>
                       <v-col cols="6">
-                        <v-text-field dense filled outlined
-                                      id='legalLastName'
-                                      v-model="legalSurnameSearch"
-                                      maxlength="255"
-                                      @keyup.enter="getNewPENs(true)"
-                                      v-on:input="[refineHasValues()]"
-                        >
-                        </v-text-field>
+                        <v-text-field
+                          id="legalLastName"
+                          v-model="legalSurnameSearch"
+                          dense
+                          filled
+                          outlined
+                          maxlength="255"
+                          @keyup.enter="getNewPENs(true)"
+                          @input="[refineHasValues()]"
+                        />
                       </v-col>
                     </v-row>
-                    <v-row no-gutters class="mt-n4">
-                      <v-col class="mt-2" cols="4">Legal Given:</v-col>
+                    <v-row
+                      no-gutters
+                      class="mt-n4"
+                    >
+                      <v-col
+                        class="mt-2"
+                        cols="4"
+                      >
+                        Legal Given:
+                      </v-col>
                       <v-col cols="6">
-                        <v-text-field dense filled outlined
-                                      id='legalFirstName'
-                                      v-model="legalGivenNameSearch"
-                                      maxlength="255"
-                                      @keyup.enter="getNewPENs(true)"
-                                      v-on:input="[refineHasValues()]"
-                        >
-                        </v-text-field>
+                        <v-text-field
+                          id="legalFirstName"
+                          v-model="legalGivenNameSearch"
+                          dense
+                          filled
+                          outlined
+                          maxlength="255"
+                          @keyup.enter="getNewPENs(true)"
+                          @input="[refineHasValues()]"
+                        />
                       </v-col>
                     </v-row>
-                    <v-row no-gutters class="mt-n4">
-                      <v-col class="mt-2" cols="4">Legal Middle:</v-col>
+                    <v-row
+                      no-gutters
+                      class="mt-n4"
+                    >
+                      <v-col
+                        class="mt-2"
+                        cols="4"
+                      >
+                        Legal Middle:
+                      </v-col>
                       <v-col cols="6">
-                        <v-text-field dense filled outlined
-                                      id='legalMiddleNames'
-                                      v-model="legalMiddleNameSearch"
-                                      maxlength="255"
-                                      @keyup.enter="getNewPENs(true)"
-                                      v-on:input="[refineHasValues()]"
-                        >
-                        </v-text-field>
+                        <v-text-field
+                          id="legalMiddleNames"
+                          v-model="legalMiddleNameSearch"
+                          dense
+                          filled
+                          outlined
+                          maxlength="255"
+                          @keyup.enter="getNewPENs(true)"
+                          @input="[refineHasValues()]"
+                        />
                       </v-col>
                     </v-row>
-                    <v-row no-gutters class="justify-end mt-n2">
-                      <v-col cols="4" style="text-align: -webkit-right">
-                        <PrimaryButton id="search-clear" :secondary="true" :click-action="clearSearch" text="Clear"></PrimaryButton>
+                    <v-row
+                      no-gutters
+                      class="justify-end mt-n2"
+                    >
+                      <v-col
+                        cols="4"
+                        style="text-align: -webkit-right"
+                      >
+                        <PrimaryButton
+                          id="search-clear"
+                          :secondary="true"
+                          :click-action="clearSearch"
+                          text="Clear"
+                        />
                       </v-col>
-                      <v-col cols="4" class="ml-2">
-                        <PrimaryButton :disabled="!searchEnabled" :loading="searchLoading" :click-action="getNewPENs(true)" text="Refine"></PrimaryButton>
+                      <v-col
+                        cols="4"
+                        class="ml-2"
+                      >
+                        <PrimaryButton
+                          :disabled="!searchEnabled"
+                          :loading="searchLoading"
+                          :click-action="getNewPENs(true)"
+                          text="Refine"
+                        />
                       </v-col>
                     </v-row>
                   </v-expansion-panel-content>
@@ -139,36 +233,68 @@
           </v-row>
         </v-col>
       </v-row>
-      <v-container v-if="searchLoading" fluid class="fill-height px-0">
+      <v-container
+        v-if="searchLoading"
+        fluid
+        class="fill-height px-0"
+      >
         <v-row>
-          <v-container fluid class="full-height">
-            <article id="match-results-container" class="top-banner full-height">
-              <v-row align="center" justify="center">
+          <v-container
+            fluid
+            class="full-height"
+          >
+            <article
+              id="match-results-container"
+              class="top-banner full-height"
+            >
+              <v-row
+                align="center"
+                justify="center"
+              >
                 <v-progress-circular
-                    :size="70"
-                    :width="7"
-                    color="primary"
-                    indeterminate
-                ></v-progress-circular>
+                  :size="70"
+                  :width="7"
+                  color="primary"
+                  indeterminate
+                />
               </v-row>
             </article>
           </v-container>
         </v-row>
       </v-container>
-      <v-container v-else fluid class="fill-height px-0">
+      <v-container
+        v-else
+        fluid
+        class="fill-height px-0"
+      >
         <v-row no-gutters>
-          <v-card elevation="0" height="100%" width="100%" style="background-color:#d7d7d7;">
-            <v-row v-if="this.studentSearchResponse" no-gutters class="pt-3 mb-n1" style="background-color:white;">
-              <v-divider class="mx-3"/>
+          <v-card
+            elevation="0"
+            height="100%"
+            width="100%"
+            style="background-color:#d7d7d7;"
+          >
+            <v-row
+              v-if="studentSearchResponse"
+              no-gutters
+              class="pt-3 mb-n1"
+              style="background-color:white;"
+            >
+              <v-divider class="mx-3" />
             </v-row>
-            <v-row v-if="this.studentSearchResponse" id="resultsRow" no-gutters class="py-2"
-                   style="background-color:white;">
+            <v-row
+              v-if="studentSearchResponse"
+              id="resultsRow"
+              no-gutters
+              class="py-2"
+              style="background-color:white;"
+            >
               <StudentSearchResults
-                  :searchCriteria="this.currentStudentSearchParams"
-                  :prepPut="prepRefineFilter"
-                  :showCompare="false"
-                  :searchLoading="searchLoading"
-              ></StudentSearchResults>
+                :search-criteria="currentStudentSearchParams"
+                :prep-put="prepRefineFilter"
+                :show-compare="false"
+                :search-loading="searchLoading"
+              />
             </v-row>
           </v-card>
         </v-row>
@@ -192,7 +318,7 @@ import {studentSearchStore} from '@/store/modules/studentSearch';
 import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
 
 export default {
-  name: 'newpens',
+  name: 'Newpens',
   components: {
     Spinner,
     PrimaryButton,
@@ -244,13 +370,6 @@ export default {
       ];
     }
   },
-  mounted() {
-    this.studentSearchParams = {...this.studentSearchParams};
-    this.studentSearchParams.createDate = {};
-    this.headerSortParams.currentSort = 'pen';
-    this.getNewPENs(true, true);
-    this.fillNewPenData();
-  },
   watch: {
     studentSearchResponse: {
       async handler() {
@@ -270,6 +389,13 @@ export default {
         this.getNewPENs();
       }
     }
+  },
+  mounted() {
+    this.studentSearchParams = {...this.studentSearchParams};
+    this.studentSearchParams.createDate = {};
+    this.headerSortParams.currentSort = 'pen';
+    this.getNewPENs(true, true);
+    this.fillNewPenData();
   },
   methods: {
     ...mapActions(studentSearchStore, ['setPageNumber', 'setSelectedRecords', 'setStudentSearchResponse']),

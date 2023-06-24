@@ -1,66 +1,112 @@
 <template>
-  <v-container fluid class="full-height px-0">
-    <CreateNewPenModal @closeDialog="closeDialog" :dialog="createNewPenDialog"
-                       :student-data="student">
+  <v-container
+    fluid
+    class="full-height px-0"
+  >
+    <CreateNewPenModal
+      :dialog="createNewPenDialog"
+      :student-data="student"
+      @closeDialog="closeDialog"
+    >
       <template #actions="{ isFormValid, isValidForm, createNewPenLoading }">
-        <PrimaryButton id="cancel" :secondary="true" text="Cancel"
-                       :click-action="closeDialog"
-        >
-        </PrimaryButton>
+        <PrimaryButton
+          id="cancel"
+          :secondary="true"
+          text="Cancel"
+          :click-action="closeDialog"
+        />
 
-        <PrimaryButton width="15%"
-                       text="Create PEN"
-                       id="createNewPENSubmitButton"
-                       :loading="createNewPenLoading"
-                       :disabled="isValidForm"
-                       :click-action="isFormValid()"
-        >
-        </PrimaryButton>
+        <PrimaryButton
+          id="createNewPENSubmitButton"
+          width="15%"
+          text="Create PEN"
+          :loading="createNewPenLoading"
+          :disabled="isValidForm"
+          :click-action="isFormValid()"
+        />
       </template>
     </CreateNewPenModal>
-    <v-form ref="studentSearchForm" id="searchStudentForm"
-            v-model="validForm"
+    <v-form
+      id="searchStudentForm"
+      ref="studentSearchForm"
+      v-model="validForm"
     >
-      <v-container fluid class="fill-height px-0">
+      <v-container
+        fluid
+        class="fill-height px-0"
+      >
         <v-row no-gutters>
-          <v-card elevation="0" height="100%" width="100%" style="background-color:#d7d7d7;">
+          <v-card
+            elevation="0"
+            height="100%"
+            width="100%"
+            style="background-color:#d7d7d7;"
+          >
             <StudentAdvancedSearch
-              :enterPushed="enterPushed"
-              :runPENSearchIfPossible="runPENSearchIfPossible"
-              :searchHasValues="searchHasValues"
-              :validatePen="validatePen"
-              :uppercaseGender="uppercaseGender"
+              :enter-pushed="enterPushed"
+              :run-p-e-n-search-if-possible="runPENSearchIfPossible"
+              v-model:use-d-o-b="useDOB"
+              :search-has-values="searchHasValues"
+              :validate-pen="validatePen"
+              :uppercase-gender="uppercaseGender"
               :genders="genderMap"
-              :gradeCodes="gradesMap"
-              :validateMincode="validateMincode"
-              :uppercasePostal="uppercasePostal"
-              :uppercaseGrade="uppercaseGrade"
-              :useDOB.sync="useDOB"
-              :validatePostal="validatePostal"
-              :initialSearch="initialSearch"
+              :grade-codes="gradesMap"
+              :validate-mincode="validateMincode"
+              :uppercase-postal="uppercasePostal"
+              :uppercase-grade="uppercaseGrade"
+              :validate-postal="validatePostal"
+              :initial-search="initialSearch"
               @valueChange="handleValueChange"
+            />
+            <v-row
+              justify="end"
+              no-gutters
+              class="py-3 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
+              style="background-color:white;"
             >
-            </StudentAdvancedSearch>
-            <v-row justify="end" no-gutters class="py-3 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
-                   style="background-color:white;">
-              <PrimaryButton v-if="createNewPenButtonAvailableForUser" id="create-new-pen" class="mr-2"
-                             :disabled="createNewPenDisabled" :click-action="openCreatePenModal"
-                             text="Create PEN"></PrimaryButton>
-              <PrimaryButton id="search-clear" :secondary="true" class="mr-2" :click-action="clearSearch"
-                             text="Clear"></PrimaryButton>
-              <PrimaryButton id="perform-search" :disabled="!searchEnabled" :loading="searchLoading"
-                             :click-action="searchStudent(true)" text="Search"></PrimaryButton>
+              <PrimaryButton
+                v-if="createNewPenButtonAvailableForUser"
+                id="create-new-pen"
+                class="mr-2"
+                :disabled="createNewPenDisabled"
+                :click-action="openCreatePenModal"
+                text="Create PEN"
+              />
+              <PrimaryButton
+                id="search-clear"
+                :secondary="true"
+                class="mr-2"
+                :click-action="clearSearch"
+                text="Clear"
+              />
+              <PrimaryButton
+                id="perform-search"
+                :disabled="!searchEnabled"
+                :loading="searchLoading"
+                :click-action="searchStudent(true)"
+                text="Search"
+              />
             </v-row>
-            <v-row v-if="this.studentSearchResponse" no-gutters class="pt-3" style="background-color:white;">
-              <v-divider class="mx-3"/>
+            <v-row
+              v-if="studentSearchResponse"
+              no-gutters
+              class="pt-3"
+              style="background-color:white;"
+            >
+              <v-divider class="mx-3" />
             </v-row>
-            <v-row v-if="this.studentSearchResponse" id="resultsRow" no-gutters class="py-2"
-                   style="background-color:white;">
+            <v-row
+              v-if="studentSearchResponse"
+              id="resultsRow"
+              no-gutters
+              class="py-2"
+              style="background-color:white;"
+            >
               <StudentSearchResults
-                :searchCriteria="this.currentStudentSearchParams"
-                :prepPut="prepPut"
-                :searchLoading="searchLoading"
-              ></StudentSearchResults>
+                :search-criteria="currentStudentSearchParams"
+                :prep-put="prepPut"
+                :search-loading="searchLoading"
+              />
             </v-row>
           </v-card>
         </v-row>
@@ -84,6 +130,7 @@ import {studentStore} from '@/store/modules/student';
 import {studentSearchStore} from '@/store/modules/studentSearch';
 import {authStore} from '@/store/modules/auth';
 import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
+import _ from 'lodash';
 
 export default {
   components: {
@@ -164,6 +211,14 @@ export default {
       return this.CREATE_NEW_PEN_ROLE;
     }
   },
+  watch: {
+    studentSearchResponse: {
+      async handler() {
+        await this.$nextTick();
+        document.getElementById('resultsRow')?.scrollIntoView({behavior: 'smooth'});
+      }
+    }
+  },
   mounted() {
     studentStore().getCodes();
     penRequestBatchStore().getCodes();
@@ -181,14 +236,6 @@ export default {
       (this.searchParams.legalLastName || this.searchParams.legalFirstName
         || this.searchParams.genderCode || this.searchParams.dob)) {
       this.enterPushed();
-    }
-  },
-  watch: {
-    studentSearchResponse: {
-      async handler() {
-        await this.$nextTick();
-        document.getElementById('resultsRow')?.scrollIntoView({behavior: 'smooth'});
-      }
     }
   },
   methods: {

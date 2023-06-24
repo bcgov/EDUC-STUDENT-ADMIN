@@ -5,43 +5,72 @@
         key="completionsLast13Months"
         cols="6"
       >
-        <bar-chart-container v-if="completionsLast13Month && completionsLast13MonthLabels" :displayYAxis="false"
-                             :labels="completionsLast13MonthLabels" :chart-data="completionsLast13Month"
-                             title="Completions Last 13 months" data-type="Completions" annualTotal></bar-chart-container>
-        <Spinner v-else/>
+        <bar-chart-container
+          v-if="completionsLast13Month && completionsLast13MonthLabels"
+          :display-y-axis="false"
+          :labels="completionsLast13MonthLabels"
+          :chart-data="completionsLast13Month"
+          title="Completions Last 13 months"
+          data-type="Completions"
+          annual-total
+        />
+        <Spinner v-else />
       </v-col>
       <v-col
         key="percentileStatsRequestLastMonth"
         cols="6"
       >
-        <v-row density="compact" style="min-height: 10rem;" class="mt-3">
+        <v-row
+          density="compact"
+          style="min-height: 10rem;"
+          class="mt-3"
+        >
           <v-col cols="6">
-            <percentile-info-card v-if="completionsCurrentMonth!==null && percentCompletedRequestToLastMonth !== null"
-                                  :percentile="percentCompletedRequestToLastMonth" :title="completionsCurrentMonth"
-                                  sub-title="Completions" icon="mdi-checkbox-multiple-marked-circle"/>
-            <Spinner v-else/>
+            <percentile-info-card
+              v-if="completionsCurrentMonth!==null && percentCompletedRequestToLastMonth !== null"
+              :percentile="percentCompletedRequestToLastMonth"
+              :title="completionsCurrentMonth"
+              sub-title="Completions"
+              icon="mdi-checkbox-multiple-marked-circle"
+            />
+            <Spinner v-else />
           </v-col>
 
           <v-col cols="6">
-            <percentile-info-card v-if="rejectionsCurrentMonth!==null && percentRejectedRequestToLastMonth !== null"
-                                  :percentile="percentRejectedRequestToLastMonth" :title="rejectionsCurrentMonth"
-                                  sub-title="Rejections" icon="mdi-checkbox-multiple-marked-circle"/>
-            <Spinner v-else/>
+            <percentile-info-card
+              v-if="rejectionsCurrentMonth!==null && percentRejectedRequestToLastMonth !== null"
+              :percentile="percentRejectedRequestToLastMonth"
+              :title="rejectionsCurrentMonth"
+              sub-title="Rejections"
+              icon="mdi-checkbox-multiple-marked-circle"
+            />
+            <Spinner v-else />
           </v-col>
         </v-row>
-        <v-row density="compact" style="min-height: 10rem;" class="mt-4">
+        <v-row
+          density="compact"
+          style="min-height: 10rem;"
+          class="mt-4"
+        >
           <v-col cols="6">
-            <percentile-info-card v-if="abandonedCurrentMonth!==null && percentAbandonedRequestToLastMonth !== null"
-                                  :percentile="percentAbandonedRequestToLastMonth" :title="abandonedCurrentMonth"
-                                  sub-title="Abandoned" icon="mdi-checkbox-multiple-marked-circle"/>
-            <Spinner v-else/>
+            <percentile-info-card
+              v-if="abandonedCurrentMonth!==null && percentAbandonedRequestToLastMonth !== null"
+              :percentile="percentAbandonedRequestToLastMonth"
+              :title="abandonedCurrentMonth"
+              sub-title="Abandoned"
+              icon="mdi-checkbox-multiple-marked-circle"
+            />
+            <Spinner v-else />
           </v-col>
           <v-col cols="6">
             <percentile-info-card
               v-if="completionsWithDocCurrentMonth!==null && percentCompletedRequestWithDocToLastMonth !== null"
-              :percentile="percentCompletedRequestWithDocToLastMonth" :title="completionsWithDocCurrentMonth"
-              sub-title="Completions With Document" icon="mdi-checkbox-multiple-marked-circle"/>
-            <Spinner v-else/>
+              :percentile="percentCompletedRequestWithDocToLastMonth"
+              :title="completionsWithDocCurrentMonth"
+              sub-title="Completions With Document"
+              icon="mdi-checkbox-multiple-marked-circle"
+            />
+            <Spinner v-else />
           </v-col>
         </v-row>
       </v-col>
@@ -49,20 +78,27 @@
         key="completionsLastWeek"
         cols="6"
       >
-        <bar-chart-container v-if="completionsLastWeek && completionsLastWeekLabels" :displayYAxis="false"
-                             :labels="completionsLastWeekLabels" :chart-data="completionsLastWeek"
-                             title="Completions Last week"></bar-chart-container>
-        <Spinner v-else/>
+        <bar-chart-container
+          v-if="completionsLastWeek && completionsLastWeekLabels"
+          :display-y-axis="false"
+          :labels="completionsLastWeekLabels"
+          :chart-data="completionsLastWeek"
+          title="Completions Last week"
+        />
+        <Spinner v-else />
       </v-col>
       <v-col
         key="summaryLast12months"
         cols="6"
       >
-        <DoughnutChartContainer v-if="CHART_STAT_URLS[`${requestTypeWithAllUpperCase}_ALL_STATUS_LAST_12_MONTH`]"
-                                :key="refreshIdx"
-                                data-type="All Statuses Last 12 months" span-content="All statuses last 12 months"
-                                :completion-states="COMPLETION_STATES[requestTypeWithAllUpperCase]"
-                                :url="CHART_STAT_URLS[`${requestTypeWithAllUpperCase}_ALL_STATUS_LAST_12_MONTH`]"></DoughnutChartContainer>
+        <DoughnutChartContainer
+          v-if="CHART_STAT_URLS[`${requestTypeWithAllUpperCase}_ALL_STATUS_LAST_12_MONTH`]"
+          :key="refreshIdx"
+          data-type="All Statuses Last 12 months"
+          span-content="All statuses last 12 months"
+          :completion-states="COMPLETION_STATES[requestTypeWithAllUpperCase]"
+          :url="CHART_STAT_URLS[`${requestTypeWithAllUpperCase}_ALL_STATUS_LAST_12_MONTH`]"
+        />
       </v-col>
     </v-row>
     <v-row density="compact">
@@ -75,10 +111,9 @@
             Average time to complete request: {{ averageTimeToCompleteRequest.toFixed(1) }} days
           </v-card-text>
         </v-card>
-        <Spinner v-else/>
+        <Spinner v-else />
       </v-col>
     </v-row>
-
   </v-container>
 </template>
 
@@ -94,8 +129,8 @@ import alertMixin from '@/mixins/alertMixin';
 
 export default {
   name: 'GMPStatsLanding',
-  mixins: [alertMixin],
   components: {DoughnutChartContainer, BarChartContainer, Spinner, PercentileInfoCard},
+  mixins: [alertMixin],
   props: {
     requestType: {
       type: String,

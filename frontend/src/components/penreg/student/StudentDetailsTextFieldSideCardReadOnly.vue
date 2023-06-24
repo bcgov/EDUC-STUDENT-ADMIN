@@ -1,36 +1,48 @@
 <template>
   <div>
-    <v-row cols="1" no-gutters>
+    <v-row
+      cols="1"
+      no-gutters
+    >
       <v-col>
-        <p class="ma-0">{{ this.fieldLabel }}</p>
+        <p class="ma-0">
+          {{ fieldLabel }}
+        </p>
       </v-col>
     </v-row>
-    <v-row :cols="colspan" no-gutters>
+    <v-row
+      :cols="colspan"
+      no-gutters
+    >
       <v-col class="sideCardField">
         <v-progress-circular
           v-if="loading"
           color="primary"
           indeterminate
           class="ml-3"
-        ></v-progress-circular>
+        />
         <v-text-field
-            :id='name'
-            class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
-            color="#000000"
-            :value="fieldModel"
-            readonly
-            dense
-            tabindex="-1"
-            :disabled="fieldDisabled"
-            v-else-if="!multiLine"
-        ></v-text-field>
-        <span v-for="v in fieldModel" v-else :key="v" class="bolder">
-          {{v}} <br/>
+          v-else-if="!multiLine"
+          :id="name"
+          class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
+          color="#000000"
+          :value="fieldModel"
+          readonly
+          dense
+          tabindex="-1"
+          :disabled="fieldDisabled"
+        />
+        <span
+          v-for="v in fieldModel"
+          v-else
+          :key="v"
+          class="bolder"
+        >
+          {{ v }} <br>
         </span>
       </v-col>
     </v-row>
   </div>
-
 </template>
 
 <script>
@@ -73,11 +85,6 @@ export default {
       fieldDisabled: false
     };
   },
-  beforeMount() {
-    this.fieldModel = this.model;
-    this.fieldLabel = this.label;
-    this.fieldDisabled = this.disabled;
-  },
   watch: {
     model(newValue) {
       this.fieldModel = newValue;
@@ -85,6 +92,11 @@ export default {
     disabled(newValue){
       this.fieldDisabled = newValue;
     }
+  },
+  beforeMount() {
+    this.fieldModel = this.model;
+    this.fieldLabel = this.label;
+    this.fieldDisabled = this.disabled;
   },
 };
 </script>

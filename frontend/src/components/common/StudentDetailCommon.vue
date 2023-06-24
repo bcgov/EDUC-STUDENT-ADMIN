@@ -1,426 +1,640 @@
 <template>
   <div>
     <v-row v-if="!isLoading">
-      <v-col cols="3" class="px-6 ma-0">
-        <v-card class="pa-2 ma-0" color="#D7D7D7" width="100%" elevation=0>
-          <v-row no-gutters colspan="1">
+      <v-col
+        cols="3"
+        class="px-6 ma-0"
+      >
+        <v-card
+          class="pa-2 ma-0"
+          color="#D7D7D7"
+          width="100%"
+          elevation="0"
+        >
+          <v-row
+            no-gutters
+            colspan="1"
+          >
             <v-col cols="1">
-              <p class="labelField">PEN</p>
+              <p class="labelField">
+                PEN
+              </p>
             </v-col>
           </v-row>
           <v-row no-gutters>
             <v-col cols="5">
               <v-text-field
+                :id="STUDENT_DETAILS_FIELDS.PEN"
                 v-model="studentCopy.pen"
                 readonly
                 class="onhoverEdit bolder customNoBorder"
-                :id='STUDENT_DETAILS_FIELDS.PEN'
                 color="#000000"
                 density="compact"
-              ></v-text-field>
+              />
             </v-col>
             <v-col cols="1">
               <PrimaryButton
+                v-clipboard:copy="copyTxt"
+                v-clipboard:error="onError"
                 color="#38598A"
                 text="Copy"
                 :short="true"
                 class="mt-1"
-                v-clipboard:copy="copyTxt"
-                v-clipboard:error="onError"
                 :model="copyTxt"
                 :click-action="copyPen"
-              >
-              </PrimaryButton>
+              />
             </v-col>
           </v-row>
 
-          <StudentDetailsComboBox label="Demog Code" colspan="1"
-                                  :name="STUDENT_DETAILS_FIELDS.DEMOG_CODE"
-                                  @changeStudentObjectValue="changeStudentObjectValue"
-                                  :model="studentCopy.demogCode?studentCopy.demogCode:''"
-                                  :has-edits="hasEdits" tab-index="14" :revert-field="revertField"
-                                  :items="getDemogCodeComboBox()" revert-id="revertDemogCode"
-                                  :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DEMOG_CODE)"></StudentDetailsComboBox>
-          <StudentDetailsComboBox label="Document Type Code" colspan="1"
-                                  :name="STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE"
-                                  @changeStudentObjectValue="changeStudentObjectValue"
-                                  :model="studentCopy.documentTypeCode?studentCopy.documentTypeCode:''"
-                                  :rules="validateDemogCode()"
-                                  :has-edits="hasEdits" tab-index="15" :revert-field="revertField"
-                                  :items="getDocumentTypes()" revert-id="revertDocumentTypeCode"
-                                  :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE)"></StudentDetailsComboBox>
-          <div class="mb-5" v-if="studentCopy.statusCode === STUDENT_CODES.MERGED">
-            <v-row cols="1" no-gutters>
+          <StudentDetailsComboBox
+            label="Demog Code"
+            colspan="1"
+            :name="STUDENT_DETAILS_FIELDS.DEMOG_CODE"
+            :model="studentCopy.demogCode?studentCopy.demogCode:''"
+            :has-edits="hasEdits"
+            tab-index="14"
+            :revert-field="revertField"
+            :items="getDemogCodeComboBox()"
+            revert-id="revertDemogCode"
+            :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DEMOG_CODE)"
+            @changeStudentObjectValue="changeStudentObjectValue"
+          />
+          <StudentDetailsComboBox
+            label="Document Type Code"
+            colspan="1"
+            :name="STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE"
+            :model="studentCopy.documentTypeCode?studentCopy.documentTypeCode:''"
+            :rules="validateDemogCode()"
+            :has-edits="hasEdits"
+            tab-index="15"
+            :revert-field="revertField"
+            :items="getDocumentTypes()"
+            revert-id="revertDocumentTypeCode"
+            :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DOC_TYPE_CODE)"
+            @changeStudentObjectValue="changeStudentObjectValue"
+          />
+          <div
+            v-if="studentCopy.statusCode === STUDENT_CODES.MERGED"
+            class="mb-5"
+          >
+            <v-row
+              cols="1"
+              no-gutters
+            >
               <v-col>
-                <p class="mb-0">Status</p>
+                <p class="mb-0">
+                  Status
+                </p>
               </v-col>
             </v-row>
-            <v-chip color="#003366"
-                    small
-                    dark>
+            <v-chip
+              color="#003366"
+              small
+              dark
+            >
               <Strong>{{ statusCodeObjects.filter(obj => obj.statusCode === studentCopy.statusCode)[0].label }}</Strong>
             </v-chip>
           </div>
-          <StudentDetailsComboBox v-else label="Status" colspan="1" name="statusCode"
-                                  @changeStudentObjectValue="changeStudentObjectValue"
-                                  :model="studentCopy.statusCode?studentCopy.statusCode:''"
-                                  :has-edits="hasEdits" tab-index="16" :revert-field="revertField"
-                                  :items="getStatusLevels()" revert-id="revertStatusCode"
-                                  :disabled="isFieldDisabledWithReadOnly('statusCode')"></StudentDetailsComboBox>
-            <v-row no-gutters v-if="dateOfConfirmation" class="mb-2 pb-2">
-              <v-col>
-                <div><span class="ma-0">Date Of Confirmation:</span> <span class="bolder mb-0 customNoBorder py-0 my-0"> {{dateOfConfirmation}}</span>
-                  <PrimaryButton
-                    color="#38598A"
-                    text="Update"
-                    :short="true"
-                    class="mt-1 ml-3"
-                    :loading="saveStudentLoading"
-                    :click-action="updateDOC()"
-                    title="Set Date Of Confirmation to Current Date."
-                    :disabled="fullReadOnly"
-                  >
-                  </PrimaryButton>
-                </div>
-              </v-col>
-            </v-row>
-
-          <StudentDetailsTextFieldSideCardReadOnly :model="traxStatus" :name="STUDENT_DETAILS_FIELDS.TRAX_STATUS"
-                                                   colspan="1" label="TRAX Status"
-                                                   :loading="loadingTraxData"
-                                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.TRAX_STATUS)"></StudentDetailsTextFieldSideCardReadOnly>
-
-          <StudentDetailsTextFieldSideCardReadOnly :model="gradDateAndMincode" :name="STUDENT_DETAILS_FIELDS.GRAD_DATE"
-                                                   colspan="1" label="Grad Date & Mincode"
-                                                   multi-line
-                                                   :loading="loadingTraxData"
-                                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GRAD_DATE)"></StudentDetailsTextFieldSideCardReadOnly>
-
-          <StudentDetailsTextFieldSideCardReadOnly :model="getCreatedDateTime()"
-                                                   :name="STUDENT_DETAILS_FIELDS.CREATED_DATE" colspan="1"
-                                                   label="Created"
-                                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.CREATED_DATE)"></StudentDetailsTextFieldSideCardReadOnly>
-
-          <StudentDetailsTextFieldSideCardReadOnly :model="getUpdatedDateTime()"
-                                                   :name="STUDENT_DETAILS_FIELDS.UPDATED_DATE" colspan="1"
-                                                   label="Updated"
-                                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.UPDATED_DATE)"></StudentDetailsTextFieldSideCardReadOnly>
-
-          <v-row no-gutters class="mb-2 pb-2">
+          <StudentDetailsComboBox
+            v-else
+            label="Status"
+            colspan="1"
+            name="statusCode"
+            :model="studentCopy.statusCode?studentCopy.statusCode:''"
+            :has-edits="hasEdits"
+            tab-index="16"
+            :revert-field="revertField"
+            :items="getStatusLevels()"
+            revert-id="revertStatusCode"
+            :disabled="isFieldDisabledWithReadOnly('statusCode')"
+            @changeStudentObjectValue="changeStudentObjectValue"
+          />
+          <v-row
+            v-if="dateOfConfirmation"
+            no-gutters
+            class="mb-2 pb-2"
+          >
             <v-col>
-              <StudentDetailsTextFieldSideCardReadOnly :model="digitalIDType" name="CREDENTIAL_TYPE"
-                                                       colspan="1" label="Credential Type"
-                                                       :loading="loadingDigitalIDData"
-                                                       :disabled="fullReadOnly"></StudentDetailsTextFieldSideCardReadOnly>
-              <div v-if="this.getAutoMatchedDate !== null" style="font-size: small" class="mt-n5">
-                (Auto-matched {{ this.getAutoMatchedDate }})
+              <div>
+                <span class="ma-0">Date Of Confirmation:</span> <span class="bolder mb-0 customNoBorder py-0 my-0"> {{ dateOfConfirmation }}</span>
+                <PrimaryButton
+                  color="#38598A"
+                  text="Update"
+                  :short="true"
+                  class="mt-1 ml-3"
+                  :loading="saveStudentLoading"
+                  :click-action="updateDOC()"
+                  title="Set Date Of Confirmation to Current Date."
+                  :disabled="fullReadOnly"
+                />
               </div>
             </v-col>
-            <v-col v-if="!fullReadOnly && this.digitalIDType !== 'None'">
-                <a style="float: right;font-weight: bold" class="mr-4 mt-6" @click="unlinkStudent">
-                  Unlink Credential
-                </a>
+          </v-row>
+
+          <StudentDetailsTextFieldSideCardReadOnly
+            :model="traxStatus"
+            :name="STUDENT_DETAILS_FIELDS.TRAX_STATUS"
+            colspan="1"
+            label="TRAX Status"
+            :loading="loadingTraxData"
+            :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.TRAX_STATUS)"
+          />
+
+          <StudentDetailsTextFieldSideCardReadOnly
+            :model="gradDateAndMincode"
+            :name="STUDENT_DETAILS_FIELDS.GRAD_DATE"
+            colspan="1"
+            label="Grad Date & Mincode"
+            multi-line
+            :loading="loadingTraxData"
+            :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GRAD_DATE)"
+          />
+
+          <StudentDetailsTextFieldSideCardReadOnly
+            :model="getCreatedDateTime()"
+            :name="STUDENT_DETAILS_FIELDS.CREATED_DATE"
+            colspan="1"
+            label="Created"
+            :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.CREATED_DATE)"
+          />
+
+          <StudentDetailsTextFieldSideCardReadOnly
+            :model="getUpdatedDateTime()"
+            :name="STUDENT_DETAILS_FIELDS.UPDATED_DATE"
+            colspan="1"
+            label="Updated"
+            :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.UPDATED_DATE)"
+          />
+
+          <v-row
+            no-gutters
+            class="mb-2 pb-2"
+          >
+            <v-col>
+              <StudentDetailsTextFieldSideCardReadOnly
+                :model="digitalIDType"
+                name="CREDENTIAL_TYPE"
+                colspan="1"
+                label="Credential Type"
+                :loading="loadingDigitalIDData"
+                :disabled="fullReadOnly"
+              />
+              <div
+                v-if="getAutoMatchedDate !== null"
+                style="font-size: small"
+                class="mt-n5"
+              >
+                (Auto-matched {{ getAutoMatchedDate }})
+              </div>
+            </v-col>
+            <v-col v-if="!fullReadOnly && digitalIDType !== 'None'">
+              <a
+                style="float: right;font-weight: bold"
+                class="mr-4 mt-6"
+                @click="unlinkStudent"
+              >
+                Unlink Credential
+              </a>
             </v-col>
           </v-row>
         </v-card>
       </v-col>
-      <v-col cols="7" class="py-0 pl-0">
-        <v-card class="pa-0" height="100%" width="100%" elevation=0>
+      <v-col
+        cols="7"
+        class="py-0 pl-0"
+      >
+        <v-card
+          class="pa-0"
+          height="100%"
+          width="100%"
+          elevation="0"
+        >
+          <StudentDetailsTextField
+            max-length="25"
+            :name="STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME"
+            tab-index="1"
+            :model="studentCopy.legalLastName?studentCopy.legalLastName:''"
+            :has-edits="hasEdits"
+            revert-id="revertLegalLastName"
+            :field-validation-required="true"
+            :validation-rules="validateLegalLastName"
+            :revert-field="revertField"
+            label="Legal Surname"
+            colspan="5"
+            :async-messages="err.legalLastNameError"
+            @changeStudentObjectValue="changeStudentObjectValue"
+            :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
+          />
 
-          <StudentDetailsTextField max-length="25" :name="STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME" tab-index="1"
-                                   @changeStudentObjectValue="changeStudentObjectValue"
-                                   :model="studentCopy.legalLastName?studentCopy.legalLastName:''"
-                                   :has-edits="hasEdits" revert-id="revertLegalLastName"
-                                   :fieldValidationRequired=true :validation-rules="validateLegalLastName"
-                                   :revert-field="revertField" label="Legal Surname" colspan="5"
-                                   :async-messages="err.legalLastNameError"
-                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"></StudentDetailsTextField>
+          <StudentDetailsTextField
+            max-length="25"
+            :name="STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME"
+            tab-index="2"
+            :model="studentCopy.legalFirstName?studentCopy.legalFirstName:''"
+            :has-edits="hasEdits"
+            revert-id="revertLegalFirstName"
+            :revert-field="revertField"
+            label="Legal Given"
+            colspan="5"
+            :async-messages="err.legalFirstNameError"
+            :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
+            @changeStudentObjectValue="changeStudentObjectValue"
+          />
 
-          <StudentDetailsTextField max-length="25" :name="STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME" tab-index="2"
-                                   @changeStudentObjectValue="changeStudentObjectValue"
-                                   :model="studentCopy.legalFirstName?studentCopy.legalFirstName:''"
-                                   :has-edits="hasEdits" revert-id="revertLegalFirstName"
-                                   :revert-field="revertField" label="Legal Given" colspan="5"
-                                   :async-messages="err.legalFirstNameError"
-                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"></StudentDetailsTextField>
+          <StudentDetailsTextField
+            max-length="25"
+            :name="STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES"
+            tab-index="3"
+            :model="studentCopy.legalMiddleNames?studentCopy.legalMiddleNames:''"
+            :has-edits="hasEdits"
+            revert-id="revertLegalMiddleNames"
+            :revert-field="revertField"
+            label="Legal Middle"
+            colspan="5"
+            :async-messages="err.legalMiddleNamesError"
+            :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
+            @changeStudentObjectValue="changeStudentObjectValue"
+          />
 
-          <StudentDetailsTextField max-length="25" :name="STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES" tab-index="3"
-                                   @changeStudentObjectValue="changeStudentObjectValue"
-                                   :model="studentCopy.legalMiddleNames?studentCopy.legalMiddleNames:''"
-                                   :has-edits="hasEdits" revert-id="revertLegalMiddleNames"
-                                   :revert-field="revertField" label="Legal Middle" colspan="5"
-                                   :async-messages="err.legalMiddleNamesError"
-                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"></StudentDetailsTextField>
+          <StudentDetailsTextField
+            max-length="25"
+            :name="STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME"
+            tab-index="4"
+            :model="studentCopy.usualLastName?studentCopy.usualLastName:''"
+            :has-edits="hasEdits"
+            revert-id="revertUsualLastName"
+            :revert-field="revertField"
+            label="Usual Surname"
+            colspan="5"
+            :async-messages="err.usualLastNameError"
+            :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
+            @changeStudentObjectValue="changeStudentObjectValue"
+          />
 
-          <StudentDetailsTextField max-length="25" :name="STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME" tab-index="4"
-                                   @changeStudentObjectValue="changeStudentObjectValue"
-                                   :model="studentCopy.usualLastName?studentCopy.usualLastName:''"
-                                   :has-edits="hasEdits" revert-id="revertUsualLastName"
-                                   :revert-field="revertField" label="Usual Surname" colspan="5"
-                                   :async-messages="err.usualLastNameError"
-                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"></StudentDetailsTextField>
+          <StudentDetailsTextField
+            max-length="25"
+            :name="STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME"
+            tab-index="5"
+            :model="studentCopy.usualFirstName?studentCopy.usualFirstName:''"
+            :has-edits="hasEdits"
+            revert-id="revertUsualFirstName"
+            :revert-field="revertField"
+            label="Usual Given"
+            colspan="5"
+            :async-messages="err.usualFirstNameError"
+            :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
+            @changeStudentObjectValue="changeStudentObjectValue"
+          />
 
-          <StudentDetailsTextField max-length="25" :name="STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME" tab-index="5"
-                                   @changeStudentObjectValue="changeStudentObjectValue"
-                                   :model="studentCopy.usualFirstName?studentCopy.usualFirstName:''"
-                                   :has-edits="hasEdits" revert-id="revertUsualFirstName"
-                                   :revert-field="revertField" label="Usual Given" colspan="5"
-                                   :async-messages="err.usualFirstNameError"
-                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"></StudentDetailsTextField>
-
-          <StudentDetailsTextField max-length="25" :name="STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES" tab-index="6"
-                                   @changeStudentObjectValue="changeStudentObjectValue"
-                                   :model="studentCopy.usualMiddleNames?studentCopy.usualMiddleNames:''"
-                                   :has-edits="hasEdits" revert-id="revertUsualMiddleNames"
-                                   :revert-field="revertField" label="Usual Middle" colspan="5"
-                                   :async-messages="err.usualMiddleNamesError"
-                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"></StudentDetailsTextField>
+          <StudentDetailsTextField
+            max-length="25"
+            :name="STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES"
+            tab-index="6"
+            :model="studentCopy.usualMiddleNames?studentCopy.usualMiddleNames:''"
+            :has-edits="hasEdits"
+            revert-id="revertUsualMiddleNames"
+            :revert-field="revertField"
+            label="Usual Middle"
+            colspan="5"
+            :async-messages="err.usualMiddleNamesError"
+            :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
+            @changeStudentObjectValue="changeStudentObjectValue"
+          />
 
 
           <!-- some fields cant be ported to child component, left as is-->
-          <v-row no-gutters density="compact" class="py-1" style="max-height: 3em;">
+          <v-row
+            no-gutters
+            density="compact"
+            class="py-1"
+            style="max-height: 3em;"
+          >
             <v-col cols="2">
-              <p class="labelField">Gender</p>
+              <p class="labelField">
+                Gender
+              </p>
             </v-col>
-            <v-col cols="1" v-on:mouseover="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)?hoveringGender=false:hoveringGender = true"
-                   v-on:mouseout="editingGender ? hoveringGender = true : hoveringGender = false">
+            <v-col
+              cols="1"
+              @mouseover="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)?hoveringGender=false:hoveringGender = true"
+              @mouseout="editingGender ? hoveringGender = true : hoveringGender = false"
+            >
               <v-select
                 id="Gender"
+                v-model="studentCopy.genderCode"
                 tabindex="7"
-                v-on:keyup.tab="[hoveringGender = true, editingGender = true]"
-                v-on:change="[editingGender = false, hoveringGender = false, setGenderLabel()]"
                 class="onhoverEdit bolder mb-0 customNoBorder py-0 "
                 :class="{darkBackgound: hoveringGender || hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE), 'gender-drop-down-fixed': !hoveringGender&&!editingGender}"
-                v-model="studentCopy.genderCode"
                 :items="genderCodes"
                 :outlined="hoveringGender || editingGender || hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
                 density="compact"
-                :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)"/>
+                :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
+                @keyup.tab="[hoveringGender = true, editingGender = true]"
+                @change="[editingGender = false, hoveringGender = false, setGenderLabel()]"
+              />
             </v-col>
-            <v-col cols="3" class="textFieldColumn gradeLabelColumn">
+            <v-col
+              cols="3"
+              class="textFieldColumn gradeLabelColumn"
+            >
               <v-text-field
+                id="genderLabel"
                 class="onhoverEdit customNoBorder onhoverPad"
                 :value="genderLabel"
-                id='genderLabel'
                 color="#000000"
                 dense
                 readonly
                 tabindex="-1"
                 :disabled="true"
-              ></v-text-field>
+              />
             </v-col>
-            <v-col class="textFieldColumn" cols="2">
+            <v-col
+              class="textFieldColumn"
+              cols="2"
+            >
               <v-text-field
-                id='revertGender'
-                v-on:click="revertField(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
+                v-if="hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
+                id="revertGender"
                 class="onhoverEdit revert customNoBorder ml-3"
                 readonly
-                v-if="hasEdits(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
                 value="Revert"
                 dense
                 tabindex="-1"
-              ></v-text-field>
+                @click="revertField(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
+              />
             </v-col>
           </v-row>
 
-          <v-row no-gutters dense class="py-1 mb-1">
+          <v-row
+            no-gutters
+            dense
+            class="py-1 mb-1"
+          >
             <v-col cols="2">
               <div class="labelField">
                 <div style="display: inline-block;">
                   Date of Birth
                 </div>
                 <div style="display: inline-block">
-                  <img title="YYYYMMDD"
-                       :class="{'ml-3': true, 'dob-disabled': isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DOB)}"
-                       src="@/assets/images/information.svg"
-                       alt="YYYYMMDD"
+                  <img
+                    title="YYYYMMDD"
+                    :class="{'ml-3': true, 'dob-disabled': isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DOB)}"
+                    src="@/assets/images/information.svg"
+                    alt="YYYYMMDD"
                   >
                 </div>
               </div>
             </v-col>
-            <v-col cols="2" :class="{textFieldColumn: !dobError}">
+            <v-col
+              cols="2"
+              :class="{textFieldColumn: !dobError}"
+            >
               <FormattedTextField
-                tabindex="8"
-                @keyup.tab.native="[editingDOB = true, hoveringDOB = true]"
-                @mouseover.native="isFieldDisabledWithReadOnly('dob')? hoveringDOB = false : hoveringDOB = true"
-                @mouseout.native="editingDOB ? hoveringDOB = true : hoveringDOB = false"
-                @blur="[editingDOB = false, hoveringDOB = false]"
-                @focus="[editingDOB = true, hoveringDOB = true]"
-                @input="clearDOBRuleErrors"
-                :classes="['onhoverEdit', 'bolder', 'customNoBorder', {onhoverPad: !hoveringDOB && !dobHasChanged(), darkBackgound: hoveringDOB || dobHasChanged()}]"
                 v-model="shortDOB"
-                :id='STUDENT_DETAILS_FIELDS.DOB'
+                :id="STUDENT_DETAILS_FIELDS.DOB"
+                tabindex="8"
+                :classes="['onhoverEdit', 'bolder', 'customNoBorder', {onhoverPad: !hoveringDOB && !dobHasChanged(), darkBackgound: hoveringDOB || dobHasChanged()}]"
                 :filled="false"
                 :clearable="false"
+                @keyup.tab.native="[editingDOB = true, hoveringDOB = true]"
                 :format="formatDob"
+                @mouseover.native="isFieldDisabledWithReadOnly('dob')? hoveringDOB = false : hoveringDOB = true"
                 :async-messages="err.birthDateError"
+                @mouseout.native="editingDOB ? hoveringDOB = true : hoveringDOB = false"
                 :rules="validateDOB()"
+                @blur="[editingDOB = false, hoveringDOB = false]"
                 maxlength="8"
+                @focus="[editingDOB = true, hoveringDOB = true]"
                 :readonly="!hoveringDOB || !editingDOB"
+                @input="clearDOBRuleErrors"
                 :outlined="hoveringDOB || editingDOB || dobHasChanged()"
                 :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.DOB)"
-              ></FormattedTextField>
+              />
             </v-col>
-            <v-col cols="3" class="textFieldColumn">
+            <v-col
+              cols="3"
+              class="textFieldColumn"
+            >
               <v-text-field
-                class="onhoverEdit bolder customNoBorder onhoverPad"
-                v-model="longDOB"
                 v-if="hoveringDOB && !editingDOB"
-                id='dobFull'
+                id="dobFull"
+                v-model="longDOB"
+                class="onhoverEdit bolder customNoBorder onhoverPad"
                 color="#000000"
                 dense
                 readonly
                 tabindex="-1"
-              ></v-text-field>
+              />
             </v-col>
-            <v-col class="textFieldColumn" cols="2">
+            <v-col
+              class="textFieldColumn"
+              cols="2"
+            >
               <v-text-field
-                id='revertDOB'
-                v-on:click="revertDOBField(STUDENT_DETAILS_FIELDS.DOB)"
+                v-show="dobHasChanged()"
+                id="revertDOB"
                 class="onhoverEdit revert customNoBorder ml-3"
                 readonly
-                v-show="dobHasChanged()"
                 value="Revert"
                 style="padding-top: 2px;"
                 dense
                 tabindex="-1"
-              ></v-text-field>
+                @click="revertDOBField(STUDENT_DETAILS_FIELDS.DOB)"
+              />
             </v-col>
           </v-row>
-          <v-row no-gutters dense class="py-1" style="max-height: 3em;">
+          <v-row
+            no-gutters
+            dense
+            class="py-1"
+            style="max-height: 3em;"
+          >
             <v-col cols="2">
-              <p class="labelField">Grade</p>
+              <p class="labelField">
+                Grade
+              </p>
             </v-col>
-            <v-col cols="1" v-on:mouseover="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GRADE_CODE)?hovering=false:hovering = true"
-                   v-on:mouseout="editing ? hovering = true : hovering = false">
+            <v-col
+              cols="1"
+              @mouseover="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GRADE_CODE)?hovering=false:hovering = true"
+              @mouseout="editing ? hovering = true : hovering = false"
+            >
               <v-select
                 id="GradeCombo"
+                v-model="studentCopy.gradeCode"
                 tabindex="9"
-                v-on:keyup.tab="[editing = true, hovering = true]"
-                v-on:change="[editing = false, hovering = false, setGradeLabel()]"
                 class="onhoverEdit bolder mb-0 customNoBorder py-0 "
                 :class="{darkBackgound: hovering || hasEdits(STUDENT_DETAILS_FIELDS.GRADE_CODE), 'grade-drop-down-fixed': !hovering&&!editing}"
-                v-model="studentCopy.gradeCode"
                 :items="gradeCodes"
                 :outlined="hovering || editing || hasEdits(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
                 dense
-                :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GRADE_CODE)"/>
+                :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
+                @keyup.tab="[editing = true, hovering = true]"
+                @change="[editing = false, hovering = false, setGradeLabel()]"
+              />
             </v-col>
-            <v-col cols="3" class="textFieldColumn gradeLabelColumn">
+            <v-col
+              cols="3"
+              class="textFieldColumn gradeLabelColumn"
+            >
               <v-text-field
+                id="gradeLabel"
                 class="onhoverEdit customNoBorder onhoverPad"
                 :value="gradeLabel"
-                id='gradeLabel'
                 color="#000000"
                 dense
                 readonly
                 tabindex="-1"
                 :disabled="true"
-              ></v-text-field>
+              />
             </v-col>
-            <v-col >
+            <v-col>
               <v-text-field
+                v-if="hasEdits(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
                 id="revertGradeCode"
-                v-on:click="revertField(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
                 class="onhoverEdit revert customNoBorder ml-3"
                 readonly
-                v-if="hasEdits(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
                 value="Revert"
                 dense
                 tabindex="-1"
-              ></v-text-field>
+                @click="revertField(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
+              />
             </v-col>
           </v-row>
 
-          <StudentDetailsTextFieldReadOnly :model="studentCopy.gradeYear?studentCopy.gradeYear:''"
-                                           :name="STUDENT_DETAILS_FIELDS.GRADE_YEAR" colspan="1"
-                                           label="Grade School Year"
-                                           :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GRADE_YEAR)"></StudentDetailsTextFieldReadOnly>
+          <StudentDetailsTextFieldReadOnly
+            :model="studentCopy.gradeYear?studentCopy.gradeYear:''"
+            :name="STUDENT_DETAILS_FIELDS.GRADE_YEAR"
+            colspan="1"
+            label="Grade School Year"
+            :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.GRADE_YEAR)"
+          />
 
-          <StudentDetailsTextField :model="studentCopy.postalCode?studentCopy.postalCode:''" @changeStudentObjectValue="changeStudentObjectValue"
-                                   :name="STUDENT_DETAILS_FIELDS.POSTAL_CODE"
-                                    colspan="2" label="Postal Code"
-                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
-                                   :has-edits="hasEdits" max-length="7" :revert-field="revertField" :async-messages="[]"
-                                   revert-id="revertPostalCode" tab-index="10"></StudentDetailsTextField>
+          <StudentDetailsTextField
+            :model="studentCopy.postalCode?studentCopy.postalCode:''"
+            :name="STUDENT_DETAILS_FIELDS.POSTAL_CODE"
+            colspan="2"
+            label="Postal Code"
+            :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
+            :has-edits="hasEdits"
+            max-length="7"
+            :revert-field="revertField"
+            :async-messages="[]"
+            @changeStudentObjectValue="changeStudentObjectValue"
+            revert-id="revertPostalCode"
+            tab-index="10"
+          />
 
-          <v-row no-gutters class="py-1">
+          <v-row
+            no-gutters
+            class="py-1"
+          >
             <v-col cols="2">
-              <p class="labelField">Mincode</p>
+              <p class="labelField">
+                Mincode
+              </p>
             </v-col>
-            <v-col cols="2" :class="{textFieldColumn: !mincodeError}">
+            <v-col
+              cols="2"
+              :class="{textFieldColumn: !mincodeError}"
+            >
               <FormattedTextField
+                v-model="studentCopy.mincode"
                 tabindex="11"
-                @keyup.tab.native="[editingMincode = true, hoveringMincode = true]"
-                @mouseover.native="isFieldDisabledWithReadOnly('mincode')? hoveringMincode = false : hoveringMincode = true"
-                @mouseout.native="editingMincode ? hoveringMincode = true : hoveringMincode = false"
-                @blur="[editingMincode = false, hoveringMincode = false]"
-                @focus="[editingMincode = true, hoveringMincode = true]"
+                :id="STUDENT_DETAILS_FIELDS.MINCODE"
                 :classes="['onhoverEdit', 'bolder', 'customNoBorder', {onhoverPad: !hoveringMincode && !mincodeHasChanged(), darkBackgound: hoveringMincode || mincodeHasChanged()}]"
                 :async-messages="mincodeErrors"
-                v-model="studentCopy.mincode"
-                :id='STUDENT_DETAILS_FIELDS.MINCODE'
                 :filled="false"
                 :clearable="false"
+                @keyup.tab.native="[editingMincode = true, hoveringMincode = true]"
                 :format="formatMincode"
+                @mouseover.native="isFieldDisabledWithReadOnly('mincode')? hoveringMincode = false : hoveringMincode = true"
                 :rules="validateMincode()"
+                @mouseout.native="editingMincode ? hoveringMincode = true : hoveringMincode = false"
                 maxlength="8"
+                @blur="[editingMincode = false, hoveringMincode = false]"
                 :readonly="!hoveringMincode || !editingMincode"
+                @focus="[editingMincode = true, hoveringMincode = true]"
                 :outlined="hoveringMincode || editingMincode || mincodeHasChanged() || false"
                 :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.MINCODE)"
-              ></FormattedTextField>
+              />
             </v-col>
-            <v-col cols="5" class="textFieldColumn">
+            <v-col
+              cols="5"
+              class="textFieldColumn"
+            >
               <v-progress-circular
                 v-if="loadingSchoolData"
                 color="primary"
                 indeterminate
                 class="ml-3"
-              ></v-progress-circular>
+              />
               <v-text-field
                 v-else
-                class="onhoverEdit customNoBorder onhoverPad"
+                id="schoolFill"
                 v-model="schoolLabel"
-                id='schoolFill'
+                class="onhoverEdit customNoBorder onhoverPad"
                 color="#000000"
                 dense
                 readonly
                 tabindex="-1"
-              ></v-text-field>
+              />
             </v-col>
-            <v-col class="textFieldColumn" cols="2">
+            <v-col
+              class="textFieldColumn"
+              cols="2"
+            >
               <v-text-field
-                id='revertMincode'
-                v-on:click="revertMincodeField()"
+                v-if="hasEdits(STUDENT_DETAILS_FIELDS.MINCODE)"
+                id="revertMincode"
                 class="onhoverEdit revert customNoBorder ml-3"
                 readonly
-                v-if="hasEdits(STUDENT_DETAILS_FIELDS.MINCODE)"
                 value="Revert"
                 style="padding-top: 2px;"
                 dense
                 tabindex="-1"
-              ></v-text-field>
+                @click="revertMincodeField()"
+              />
             </v-col>
           </v-row>
-          <StudentDetailsTextField :model="studentCopy.localID?studentCopy.localID:''" @changeStudentObjectValue="changeStudentObjectValue"
-                                   :name="STUDENT_DETAILS_FIELDS.LOCAL_ID"
-                                   colspan="2" label="Local ID"
-                                   :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.LOCAL_ID)"
-                                   :has-edits="hasEdits" max-length="12" :revert-field="revertField" :async-messages="[]"
-                                   revert-id="revertLocalID" tab-index="12"> </StudentDetailsTextField>
+          <StudentDetailsTextField
+            :model="studentCopy.localID?studentCopy.localID:''"
+            :name="STUDENT_DETAILS_FIELDS.LOCAL_ID"
+            colspan="2"
+            label="Local ID"
+            :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.LOCAL_ID)"
+            :has-edits="hasEdits"
+            max-length="12"
+            :revert-field="revertField"
+            :async-messages="[]"
+            @changeStudentObjectValue="changeStudentObjectValue"
+            revert-id="revertLocalID"
+            tab-index="12"
+          />
 
 
-          <StudentDetailsTemplateTextField v-if="possibleMatches.length > 0" colspan="2" label="Twin(s)?"
-                                           :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.TWINS)">
+          <StudentDetailsTemplateTextField
+            v-if="possibleMatches.length > 0"
+            colspan="2"
+            label="Twin(s)?"
+            :disabled="isFieldDisabled(STUDENT_DETAILS_FIELDS.TWINS)"
+          >
             <a @click="twinsDialog=true">
               Yes
             </a>
           </StudentDetailsTemplateTextField>
 
-          <StudentDetailsTemplateTextField v-if="mergedTo" colspan="8" label="Merged To"
-                                           :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.MERGED_TO)">
+          <StudentDetailsTemplateTextField
+            v-if="mergedTo"
+            colspan="8"
+            label="Merged To"
+            :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.MERGED_TO)"
+          >
             <div>
-              <router-link :to="{params: {studentID: mergedTo.mergeStudentID}}" class="pr-4">
+              <router-link
+                :to="{params: {studentID: mergedTo.mergeStudentID}}"
+                class="pr-4"
+              >
                 {{ formatPen(mergedTo.mergeStudent.pen) }}
               </router-link>
               <span class="pr-4">{{ formatUpdateTime(mergedTo.updateDate) }}</span>
@@ -429,8 +643,12 @@
             </div>
           </StudentDetailsTemplateTextField>
 
-          <StudentDetailsTemplateTextField v-if="mergedFrom.length > 0" colspan="8" label="Merged From"
-                                           :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.MERGED_FROM)">
+          <StudentDetailsTemplateTextField
+            v-if="mergedFrom.length > 0"
+            colspan="8"
+            label="Merged From"
+            :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.MERGED_FROM)"
+          >
             <div class="d-flex flex-wrap">
               <router-link
                 v-for="merge in mergedFrom"
@@ -443,92 +661,112 @@
             </div>
           </StudentDetailsTemplateTextField>
 
-          <v-row no-gutters dense style="min-height: 7em;">
+          <v-row
+            no-gutters
+            dense
+            style="min-height: 7em;"
+          >
             <v-col cols="2">
-              <p class="labelField">Memo</p>
+              <p class="labelField">
+                Memo
+              </p>
             </v-col>
             <v-col class="textAreaColumn memo-style">
               <v-textarea
                 tabindex="13"
-                v-on:keyup.tab="[editingMemo = true, hoveringMemo = true]"
-                v-on:mouseover="isFieldDisabledWithReadOnly('memo')?hoveringMemo = false:hoveringMemo = true"
-                v-on:mouseout="editingMemo ? hoveringMemo = true : hoveringMemo = false"
-                v-on:blur="[editingMemo = false, hoveringMemo = false]"
-                v-on:click="[editingMemo = true, hoveringMemo = true]"
-                class="onhoverEdit bolder customNoBorder"
-                :class="{onhoverPad: !hoveringMemo && !hasEdits('memo'), darkBackgound: hoveringMemo || hasEdits('memo')}"
                 v-model="studentCopy.memo"
-                :id='STUDENT_DETAILS_FIELDS.MEMO'
+                class="onhoverEdit bolder customNoBorder"
+                :id="STUDENT_DETAILS_FIELDS.MEMO"
+                :class="{onhoverPad: !hoveringMemo && !hasEdits('memo'), darkBackgound: hoveringMemo || hasEdits('memo')}"
                 color="#000000"
+                @keyup.tab="[editingMemo = true, hoveringMemo = true]"
                 maxlength="4000"
+                @mouseover="isFieldDisabledWithReadOnly('memo')?hoveringMemo = false:hoveringMemo = true"
                 dense
+                @mouseout="editingMemo ? hoveringMemo = true : hoveringMemo = false"
                 rows="3"
+                @blur="[editingMemo = false, hoveringMemo = false]"
                 no-resize
+                @click="[editingMemo = true, hoveringMemo = true]"
                 :readonly="!hoveringMemo || !editingMemo"
                 :outlined="hoveringMemo || editingMemo || hasEdits(STUDENT_DETAILS_FIELDS.MEMO)"
                 :disabled="isFieldDisabledWithReadOnly(STUDENT_DETAILS_FIELDS.MEMO)"
-              ></v-textarea>
+              />
             </v-col>
-            <v-col class="textFieldColumn" cols="2">
+            <v-col
+              class="textFieldColumn"
+              cols="2"
+            >
               <v-text-field
-                id='revertMemo'
-                v-on:click="revertField(STUDENT_DETAILS_FIELDS.MEMO)"
+                v-if="hasEdits(STUDENT_DETAILS_FIELDS.MEMO)"
+                id="revertMemo"
                 class="onhoverEdit revert customNoBorder ml-3"
                 readonly
-                v-if="hasEdits(STUDENT_DETAILS_FIELDS.MEMO)"
                 value="Revert"
                 dense
                 tabindex="-1"
-              ></v-text-field>
+                @click="revertField(STUDENT_DETAILS_FIELDS.MEMO)"
+              />
             </v-col>
           </v-row>
-          <v-divider/>
+          <v-divider />
           <v-progress-linear
             indeterminate
             color="blue"
-            :active="isProcessing || hasSagaInProgress(this.origStudent)"
-          ></v-progress-linear>
+            :active="isProcessing || hasSagaInProgress(origStudent)"
+          />
         </v-card>
       </v-col>
       <v-col cols="1">
-        <CompareDemographicModal :clearOnExit="false"
-                                 :disabled="hasSagaInProgress(this.origStudent) || !PROCESS_STUDENT_ROLE"
-                                 :selectedRecords.sync="compareStudent"></CompareDemographicModal>
+        <CompareDemographicModal
+          v-model:selected-records="compareStudent"
+          :clear-on-exit="false"
+          :disabled="hasSagaInProgress(origStudent) || !PROCESS_STUDENT_ROLE"
+        />
       </v-col>
       <v-col cols="1">
         <TertiaryButton
+          v-clipboard:copy="copyTxt"
+          v-clipboard:error="onError"
           class="ma-0"
           color="#38598A"
           text="Copy"
-          v-clipboard:copy="copyTxt"
-          v-clipboard:error="onError"
           :model="copyTxt"
           :click-action="copyInfo"
-        >
-        </TertiaryButton>
+        />
       </v-col>
     </v-row>
     <slot
       v-if="!isLoading"
       name="buttonbar"
-      :isAdvancedSearch="isAdvancedSearch"
-      :hasAnyEdits="hasAnyEdits"
-      :saveStudent="saveStudent"
+      :is-advanced-search="isAdvancedSearch"
+      :has-any-edits="hasAnyEdits"
+      :save-student="saveStudent"
       :REQUEST_TYPES="REQUEST_TYPES"
-      :disableDemerge="disableDemerge"
-      :isStudentUpdated="isStudentUpdated"
-      :saveStudentLoading="saveStudentLoading"
-      :demerge="demerge">
-    </slot>
-    <v-row fluid class="full-height align-center justify-center" v-if="isLoading">
-      <article id="pen-display-container" class="top-banner full-height">
-        <v-row align="center" justify="center">
+      :disable-demerge="disableDemerge"
+      :is-student-updated="isStudentUpdated"
+      :save-student-loading="saveStudentLoading"
+      :demerge="demerge"
+    />
+    <v-row
+      v-if="isLoading"
+      fluid
+      class="full-height align-center justify-center"
+    >
+      <article
+        id="pen-display-container"
+        class="top-banner full-height"
+      >
+        <v-row
+          align="center"
+          justify="center"
+        >
           <v-progress-circular
             :size="70"
             :width="7"
             color="primary"
             indeterminate
-          ></v-progress-circular>
+          />
         </v-row>
       </article>
     </v-row>
@@ -541,9 +779,9 @@
         <v-card-text class="px-5 py-5">
           Change Student Status to Deceased?
         </v-card-text>
-        <v-divider></v-divider>
+        <v-divider />
         <v-card-actions>
-          <v-spacer></v-spacer>
+          <v-spacer />
           <v-btn
             outlined
             tabindex="-1"
@@ -571,11 +809,11 @@
     >
       <TwinnedStudentsCard
         :student="studentCopy"
-        :possibleMatches="possibleMatches"
+        :possible-matches="possibleMatches"
         @close="twinsDialog=false"
-      ></TwinnedStudentsCard>
+      />
     </v-dialog>
-    <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>
+    <ConfirmationDialog ref="confirmationDialog" />
     <ConfirmationDialog ref="confirmedStudentUnlinkConfirmationDialog">
       <template #message>
         <v-col class="mt-n6">
@@ -589,7 +827,7 @@
       <template #message>
         <v-col class="mt-n6">
           <v-row class="mb-3">
-           <span>Are you sure you want to edit this <strong>Confirmed</strong> student?</span>
+            <span>Are you sure you want to edit this <strong>Confirmed</strong> student?</span>
           </v-row>
         </v-col>
       </template>
@@ -597,10 +835,16 @@
     <ConfirmationDialog ref="demergeConfirmationDialog">
       <template #message>
         <v-col class="mt-n6">
-          <v-row v-if="isConfirmedStudent" class="mb-3">
-             <span>Are you sure you want to de-merge this <strong>Confirmed</strong> student?</span>
+          <v-row
+            v-if="isConfirmedStudent"
+            class="mb-3"
+          >
+            <span>Are you sure you want to de-merge this <strong>Confirmed</strong> student?</span>
           </v-row>
-          <v-row v-else class="mb-3">
+          <v-row
+            v-else
+            class="mb-3"
+          >
             <span>Are you sure you want to demerge PENs <strong>{{ getMergedFromPen() }}</strong> and <strong>{{
               getMergedToPen()
             }}</strong>?</span>
@@ -643,7 +887,20 @@ import {studentSearchStore} from '@/store/modules/studentSearch';
 import {LocalDate, DateTimeFormatterBuilder, ResolverStyle} from '@js-joda/core';
 
 export default {
-  name: 'studentDetailCommon',
+  name: 'StudentDetailCommon',
+  components: {
+    FormattedTextField,
+    CompareDemographicModal,
+    ConfirmationDialog,
+    TwinnedStudentsCard,
+    StudentDetailsTextFieldSideCardReadOnly,
+    StudentDetailsComboBox,
+    StudentDetailsTextFieldReadOnly,
+    StudentDetailsTextField,
+    StudentDetailsTemplateTextField,
+    TertiaryButton,
+    PrimaryButton
+  },
   mixins: [alertMixin, schoolMixin, servicesSagaMixin, staleStudentRecordMixin],
   props: {
     studentID: {
@@ -668,19 +925,6 @@ export default {
       type: Boolean,
       required: true
     }
-  },
-  components: {
-    FormattedTextField,
-    CompareDemographicModal,
-    ConfirmationDialog,
-    TwinnedStudentsCard,
-    StudentDetailsTextFieldSideCardReadOnly,
-    StudentDetailsComboBox,
-    StudentDetailsTextFieldReadOnly,
-    StudentDetailsTextField,
-    StudentDetailsTemplateTextField,
-    TertiaryButton,
-    PrimaryButton
   },
   data() {
     return {
@@ -780,15 +1024,6 @@ export default {
       return this.origStudent?.demogCode === STUDENT_DEMOG_CODES.CONFIRMED;
     }
   },
-  mounted() {
-    studentStore().getCodes();
-    penRequestBatchStore().getCodes();
-    this.refreshStudent();
-    //reset errors
-    Object.keys(this.err).forEach(key => {
-      this.err[key] = [];
-    });
-  },
   watch: {
     studentID() {
       this.refreshStudent();
@@ -815,6 +1050,15 @@ export default {
         }
       }
     }
+  },
+  mounted() {
+    studentStore().getCodes();
+    penRequestBatchStore().getCodes();
+    this.refreshStudent();
+    //reset errors
+    Object.keys(this.err).forEach(key => {
+      this.err[key] = [];
+    });
   },
   beforeRouteLeave(to, from, next) {
     if (this.hasAnyEdits()) {

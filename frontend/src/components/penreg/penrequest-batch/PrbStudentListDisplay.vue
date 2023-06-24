@@ -1,31 +1,55 @@
 <template>
-  <v-container fluid class="full-height px-0 mb-4">
-    <v-form ref="prbStudentSearchForm" id="prbStudentSearchForm"
+  <v-container
+    fluid
+    class="full-height px-0 mb-4"
+  >
+    <v-form
+      id="prbStudentSearchForm"
+      ref="prbStudentSearchForm"
       v-model="validForm"
     >
-      <v-container fluid class="fill-height px-0">
+      <v-container
+        fluid
+        class="fill-height px-0"
+      >
         <v-row no-gutters>
-          <v-card elevation="0" height="100%" width="100%" style="background-color:white;">
+          <v-card
+            elevation="0"
+            height="100%"
+            width="100%"
+            style="background-color:white;"
+          >
             <PenRequestSearchPanel
-              :searchParams="prbStudentSearchParams"
+              :search-params="prbStudentSearchParams"
               :loading="searchLoading"
               :disabled="!searchEnabled"
               @searchByPen="searchPenRequestsByPen"
               @search="searchPenRequests"
-            ></PenRequestSearchPanel>
+            />
             <v-progress-linear
               indeterminate
               color="blue"
               :active="searchLoading && !prbStudentSearchResponse"
-            ></v-progress-linear>
-            <v-row v-if="prbStudentSearchResponse" no-gutters class="py-2" style="background-color:white;">
-              <v-divider class="mx-3 header-divider"/>
+            />
+            <v-row
+              v-if="prbStudentSearchResponse"
+              no-gutters
+              class="py-2"
+              style="background-color:white;"
+            >
+              <v-divider class="mx-3 header-divider" />
             </v-row>
-            <v-row v-if="prbStudentSearchResponse" id="resultsRow" no-gutters class="py-2" style="background-color:white;">
+            <v-row
+              v-if="prbStudentSearchResponse"
+              id="resultsRow"
+              no-gutters
+              class="py-2"
+              style="background-color:white;"
+            >
               <PrbStudentSearchResults
                 :loading="searchLoading"
                 :archived="archived"
-              ></PrbStudentSearchResults>
+              />
             </v-row>
           </v-card>
         </v-row>

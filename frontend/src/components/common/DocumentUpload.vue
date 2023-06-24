@@ -1,42 +1,57 @@
 <template>
-  <v-card class="document-upload" max-width="640px">
-
+  <v-card
+    class="document-upload"
+    max-width="640px"
+  >
     <v-card-title><h3>Document Upload</h3></v-card-title>
     <v-card-text>
       <v-form
-          ref="form"
-          v-model="validForm"
+        ref="form"
+        v-model="validForm"
       >
         <v-file-input
-            color="#003366"
-            :accept="fileAccept"
-            :rules="fileRules"
-            :disabled="hasReadOnlyRoleAccess()"
-            placeholder="Select your file"
-            :error-messages="fileInputError"
-            class="pt-0"
-            @update:model-value="selectFile"
-            id="selectFileInput"
-        ></v-file-input>
+          id="selectFileInput"
+          color="#003366"
+          :accept="fileAccept"
+          :rules="fileRules"
+          :disabled="hasReadOnlyRoleAccess()"
+          placeholder="Select your file"
+          :error-messages="fileInputError"
+          class="pt-0"
+          @update:model-value="selectFile"
+        />
       </v-form>
       <v-alert
-          density="compact"
-          outlined
-          dismissible
-          color="#712024"
-          style="background-color: #f7d8da !important;"
-          v-model="alert"
-          :class="alertType"
-          class="mb-3"
+        v-model="alert"
+        density="compact"
+        outlined
+        dismissible
+        color="#712024"
+        style="background-color: #f7d8da !important;"
+        :class="alertType"
+        class="mb-3"
       >
         {{ alertMessage }}
       </v-alert>
     </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <PrimaryButton id="cancelUploadButton" secondary text="Cancel" :click-action="closeForm"></PrimaryButton>
-        <PrimaryButton :key="buttonKey" :loading="active" :disabled="!dataReady" id="upload_form" text="Upload" width="7rem" :click-action="submitRequest"></PrimaryButton>
-      </v-card-actions>
+    <v-card-actions>
+      <v-spacer />
+      <PrimaryButton
+        id="cancelUploadButton"
+        secondary
+        text="Cancel"
+        :click-action="closeForm"
+      />
+      <PrimaryButton
+        id="upload_form"
+        :key="buttonKey"
+        :loading="active"
+        :disabled="!dataReady"
+        text="Upload"
+        width="7rem"
+        :click-action="submitRequest"
+      />
+    </v-card-actions>
   </v-card>
 </template>
 
@@ -81,6 +96,12 @@ export default {
 
     };
   },
+  watch: {
+    dataReady() {
+      //force re-renders of the button to solve the color issue
+      this.buttonKey += 1;
+    },
+  },
   created() {
     edxStore().getFileRequirements().then(() => {
       const fileRequirements = this.fileRequirements;
@@ -103,12 +124,6 @@ export default {
       console.log(e);
       this.setErrorAlert('Sorry, an unexpected error seems to have occurred. You can upload files later.');
     });
-  },
-  watch: {
-    dataReady() {
-      //force re-renders of the button to solve the color issue
-      this.buttonKey += 1;
-    },
   },
   computed: {
     ...mapState(authStore, ['NOMINAL_ROLL_READ_ONLY_ROLE']),

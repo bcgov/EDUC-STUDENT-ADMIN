@@ -1,265 +1,523 @@
 <template>
-  <v-row no-gutters style="background-color:white;" class="px-3 pt-3">
+  <v-row
+    no-gutters
+    style="background-color:white;"
+    class="px-3 pt-3"
+  >
     <v-col cols="6">
-      <v-row no-gutters class="textFieldRow">
-        <v-col class="mr-n8 mt-2" cols="3">PEN</v-col>
+      <v-row
+        no-gutters
+        class="textFieldRow"
+      >
+        <v-col
+          class="mr-n8 mt-2"
+          cols="3"
+        >
+          PEN
+        </v-col>
         <v-col cols="3">
           <v-text-field
+            id="pen"
+            v-model.trim="studentSearchParams.pen"
             dense
             filled
             outlined
-            id='pen'
-            v-model.trim="studentSearchParams.pen"
             maxlength="9"
             minlength="9"
-            @keyup.enter="enterPushed()"
-            v-on:input="[searchHasValues(),runPENSearchIfPossible()]"
             autofocus
-            :rules="validatePen()">
-          </v-text-field>
+            :rules="validatePen()"
+            @keyup.enter="enterPushed()"
+            @input="[searchHasValues(),runPENSearchIfPossible()]"
+          />
         </v-col>
       </v-row>
-      <v-row no-gutters class="textFieldRow">
-        <v-col cols="2" class="mt-2">Birth Date</v-col>
-        <v-col cols="1" class="mr-n8" >
-          <v-checkbox id="useDOBCheckbox" v-on:change="searchHasValues" class="ma-0 pa-0" height="100%" label="" color="#606060" v-model="useDOBValue"></v-checkbox>
+      <v-row
+        no-gutters
+        class="textFieldRow"
+      >
+        <v-col
+          cols="2"
+          class="mt-2"
+        >
+          Birth Date
+        </v-col>
+        <v-col
+          cols="1"
+          class="mr-n8"
+        >
+          <v-checkbox
+            id="useDOBCheckbox"
+            class="ma-0 pa-0"
+            height="100%"
+            label=""
+            v-model="useDOBValue"
+            color="#606060"
+            @change="searchHasValues"
+          />
         </v-col>
         <v-col cols="3">
           <v-row no-gutters>
             <v-col cols="4">
-              <v-text-field id="start-dob-year" class="doubleWidthInput" v-model="advancedSearchCriteria.startDate.year" dense filled outlined maxlength="4" placeholder="YYYY"
+              <v-text-field
+                id="start-dob-year"
+                v-model="advancedSearchCriteria.startDate.year"
+                class="doubleWidthInput"
+                dense
+                filled
+                outlined
+                maxlength="4"
+                placeholder="YYYY"
                 :rules="validateStartDOBYear()"
                 @keyup.enter="enterPushed()"
-                v-on:input="[searchHasValues(), $emit('valueChange')]"></v-text-field>
+                @input="[searchHasValues(), $emit('valueChange')]"
+              />
             </v-col>
-            <v-col cols="3" class="mx-2">
-              <v-text-field id="start-dob-month" v-model="advancedSearchCriteria.startDate.month" dense filled outlined maxlength="2" placeholder="MM"
+            <v-col
+              cols="3"
+              class="mx-2"
+            >
+              <v-text-field
+                id="start-dob-month"
+                v-model="advancedSearchCriteria.startDate.month"
+                dense
+                filled
+                outlined
+                maxlength="2"
+                placeholder="MM"
                 :disabled="!isValidStartDOB.year"
                 :rules="validateStartDOBMonth()"
                 @keyup.enter="enterPushed()"
-               v-on:input="[searchHasValues(), $emit('valueChange')]"></v-text-field>
+                @input="[searchHasValues(), $emit('valueChange')]"
+              />
             </v-col>
             <v-col cols="3">
-              <v-text-field id="start-dob-day" v-model="advancedSearchCriteria.startDate.day" dense filled outlined maxlength="2" placeholder="DD"
+              <v-text-field
+                id="start-dob-day"
+                v-model="advancedSearchCriteria.startDate.day"
+                dense
+                filled
+                outlined
+                maxlength="2"
+                placeholder="DD"
                 :disabled="!isValidStartDOB.month || !isValidStartDOB.year"
                 :rules="validateStartDOBDay()"
                 @keyup.enter="enterPushed()"
-                v-on:input="[searchHasValues(), $emit('valueChange')]"></v-text-field>
+                @input="[searchHasValues(), $emit('valueChange')]"
+              />
             </v-col>
           </v-row>
         </v-col>
-        <v-col cols="2"  class="mr-n3">
-          <v-checkbox v-on:change="[searchHasValues(), $emit('valueChange')]" id="useDOBRangeCheckbox" class="ma-0 pa-0" height="100%" label="Use range" color="#606060" v-model="advancedSearchCriteria.useDOBRange"></v-checkbox>
+        <v-col
+          cols="2"
+          class="mr-n3"
+        >
+          <v-checkbox
+            id="useDOBRangeCheckbox"
+            class="ma-0 pa-0"
+            height="100%"
+            label="Use range"
+            v-model="advancedSearchCriteria.useDOBRange"
+            color="#606060"
+            @change="[searchHasValues(), $emit('valueChange')]"
+          />
         </v-col>
         <v-col cols="3">
-          <v-row no-gutters v-if="advancedSearchCriteria.useDOBRange">
-            <v-col cols="4" class="ml-3">
-              <v-text-field id="end-dob-year" dense filled outlined placeholder="YYYY" maxlength="4" v-model="advancedSearchCriteria.endDate.year"
+          <v-row
+            v-if="advancedSearchCriteria.useDOBRange"
+            no-gutters
+          >
+            <v-col
+              cols="4"
+              class="ml-3"
+            >
+              <v-text-field
+                id="end-dob-year"
+                v-model="advancedSearchCriteria.endDate.year"
+                dense
+                filled
+                outlined
+                placeholder="YYYY"
+                maxlength="4"
                 :rules="validateEndDOBYear()"
                 @keyup.enter="enterPushed()"
-                v-on:input="[searchHasValues(), $emit('valueChange')]"
-              ></v-text-field>
+                @input="[searchHasValues(), $emit('valueChange')]"
+              />
             </v-col>
-            <v-col cols="3" class="mx-2">
-              <v-text-field id="end-dob-month" dense filled outlined placeholder="MM" minLength="2" maxlength="2" v-model="advancedSearchCriteria.endDate.month"
+            <v-col
+              cols="3"
+              class="mx-2"
+            >
+              <v-text-field
+                id="end-dob-month"
+                v-model="advancedSearchCriteria.endDate.month"
+                dense
+                filled
+                outlined
+                placeholder="MM"
+                min-length="2"
+                maxlength="2"
                 :rules="validateEndDOBMonth()"
                 :disabled="!isValidEndDOB.year"
                 @keyup.enter="enterPushed()"
-                v-on:input="[searchHasValues(), $emit('valueChange')]"></v-text-field>
+                @input="[searchHasValues(), $emit('valueChange')]"
+              />
             </v-col>
             <v-col cols="3">
-              <v-text-field id="end-dob-day" dense filled outlined placeholder="DD" minLength="2" maxlength="2" v-model="advancedSearchCriteria.endDate.day"
+              <v-text-field
+                id="end-dob-day"
+                v-model="advancedSearchCriteria.endDate.day"
+                dense
+                filled
+                outlined
+                placeholder="DD"
+                min-length="2"
+                maxlength="2"
                 :rules="validateEndDOBDay()"
                 :disabled="!isValidEndDOB.month || !isValidEndDOB.year"
                 @keyup.enter="enterPushed()"
-                v-on:input="[searchHasValues(), $emit('valueChange')]"></v-text-field>
+                @input="[searchHasValues(), $emit('valueChange')]"
+              />
             </v-col>
           </v-row>
         </v-col>
       </v-row>
-      <v-row dense no-gutters class="textFieldRow">
-        <v-col class="mr-n8 mt-2" cols="3">Gender</v-col>
-        <v-col cols="2" id="genderCol">
+      <v-row
+        dense
+        no-gutters
+        class="textFieldRow"
+      >
+        <v-col
+          class="mr-n8 mt-2"
+          cols="3"
+        >
+          Gender
+        </v-col>
+        <v-col
+          id="genderCol"
+          cols="2"
+        >
           <v-select
             v-model="studentSearchParams.genderCode"
             :items="genders"
-            item-text="genderCode"
+            item-title="genderCode"
             item-value="genderCode"
             style="max-width: 7em"
             variant="outlined"
             filled
             dense
             clearable
-            v-on:change="[searchHasValues(),$emit('valueChange')]">
-          </v-select>
+            @change="[searchHasValues(),$emit('valueChange')]"
+          />
         </v-col>
       </v-row>
-      <v-row no-gutters class="textFieldRow">
-        <v-col class="mr-n8 mt-2" cols="3">Grade</v-col>
+      <v-row
+        no-gutters
+        class="textFieldRow"
+      >
+        <v-col
+          class="mr-n8 mt-2"
+          cols="3"
+        >
+          Grade
+        </v-col>
         <v-col cols="2">
           <v-select
-              v-model="studentSearchParams.gradeCode"
-              :items="gradeCodes"
-              item-text="gradeCode"
-              item-value="gradeCode"
-              style="max-width: 7em"
-              variant="outlined"
-              filled
-              dense
-              clearable
-              v-on:change="[searchHasValues(),$emit('valueChange')]">
-          </v-select>
+            v-model="studentSearchParams.gradeCode"
+            :items="gradeCodes"
+            item-title="gradeCode"
+            item-value="gradeCode"
+            style="max-width: 7em"
+            variant="outlined"
+            filled
+            dense
+            clearable
+            @change="[searchHasValues(),$emit('valueChange')]"
+          />
         </v-col>
       </v-row>
-      <v-row no-gutters class="textFieldRow">
-        <v-col class="mr-n8 mt-2" cols="3">Mincode</v-col>
+      <v-row
+        no-gutters
+        class="textFieldRow"
+      >
+        <v-col
+          class="mr-n8 mt-2"
+          cols="3"
+        >
+          Mincode
+        </v-col>
         <v-col cols="2">
-          <v-text-field dense filled outlined
-            id='mincode'
+          <v-text-field
+            id="mincode"
             v-model.trim="studentSearchParams.mincode"
-            @keyup.enter="enterPushed()"
-            v-on:input="[searchHasValues(), $emit('valueChange')]"
+            dense
+            filled
+            outlined
             maxlength="8"
-            minLength="8"
-            :rules="validateMincode()">
-          </v-text-field>
+            min-length="8"
+            :rules="validateMincode()"
+            @keyup.enter="enterPushed()"
+            @input="[searchHasValues(), $emit('valueChange')]"
+          />
         </v-col>
       </v-row>
-      <v-row no-gutters class="textFieldRow">
-        <v-col class="mr-n8 mt-2" cols="3">Local ID</v-col>
+      <v-row
+        no-gutters
+        class="textFieldRow"
+      >
+        <v-col
+          class="mr-n8 mt-2"
+          cols="3"
+        >
+          Local ID
+        </v-col>
         <v-col cols="2">
-          <v-text-field dense filled outlined
-            id='localID'
+          <v-text-field
+            id="localID"
             v-model.trim="studentSearchParams.localID"
+            dense
+            filled
+            outlined
+            maxlength="12"
             @keyup.enter="enterPushed()"
-            v-on:input="[searchHasValues(), $emit('valueChange')]"
-            maxlength="12">
-          </v-text-field>
+            @input="[searchHasValues(), $emit('valueChange')]"
+          />
         </v-col>
       </v-row>
-      <v-row no-gutters class="textFieldRow">
-        <v-col class="mr-n8 mt-2" cols="3">Postal Code</v-col>
+      <v-row
+        no-gutters
+        class="textFieldRow"
+      >
+        <v-col
+          class="mr-n8 mt-2"
+          cols="3"
+        >
+          Postal Code
+        </v-col>
         <v-col cols="2">
-          <v-text-field dense filled outlined
-            id='postalCode'
+          <v-text-field
+            id="postalCode"
             v-model.trim="studentSearchParams.postalCode"
-            v-on:input="[searchHasValues(),uppercasePostal(), $emit('valueChange')]"
-            @keyup.enter="enterPushed()"
+            dense
+            filled
+            outlined
             maxlength="7"
-            :rules="validatePostal()">
-          </v-text-field>
+            :rules="validatePostal()"
+            @input="[searchHasValues(),uppercasePostal(), $emit('valueChange')]"
+            @keyup.enter="enterPushed()"
+          />
         </v-col>
       </v-row>
-      <v-row no-gutters class="textFieldRow">
-        <v-col class="mr-n8 mt-2" cols="3">Memo</v-col>
+      <v-row
+        no-gutters
+        class="textFieldRow"
+      >
+        <v-col
+          class="mr-n8 mt-2"
+          cols="3"
+        >
+          Memo
+        </v-col>
         <v-col cols="8">
-          <v-text-field dense filled outlined
-            id='memo'
+          <v-text-field
+            id="memo"
             v-model="studentSearchParams.memo"
+            dense
+            filled
+            outlined
+            maxlength="25"
             @keyup.enter="enterPushed()"
-            v-on:input="[searchHasValues(), $emit('valueChange')]"
-            maxlength="25">
-          </v-text-field>
+            @input="[searchHasValues(), $emit('valueChange')]"
+          />
         </v-col>
       </v-row>
     </v-col>
     <v-col>
       <v-card class="pa-4">
-        <v-row no-gutters class="textFieldRow mb-4" justify="space-between">
+        <v-row
+          no-gutters
+          class="textFieldRow mb-4"
+          justify="space-between"
+        >
           <v-col cols="3">
-            <v-checkbox  id="searchNameVariantsCheckbox" label="Search name variants" color="#606060" class="ma-0 pa-0" v-model="advancedSearchCriteria.useNameVariants"></v-checkbox>
+            <v-checkbox
+              id="searchNameVariantsCheckbox"
+              v-model="advancedSearchCriteria.useNameVariants"
+              label="Search name variants"
+              color="#606060"
+              class="ma-0 pa-0"
+            />
           </v-col>
           <v-col cols="2">
             <v-tooltip left>
               <template #activator="{ on }">
-                <v-icon small color="#FCBA19" style="margin-top: 0.9em">
+                <v-icon
+                  small
+                  color="#FCBA19"
+                  style="margin-top: 0.9em"
+                >
                   fa-exclamation-circle
                 </v-icon>
               </template>
               <span>
-                Searching by name variant cannot be used in conjunction with wildcards on Legal and Usual Given names<br/>
+                Searching by name variant cannot be used in conjunction with wildcards on Legal and Usual Given names<br>
               </span>
             </v-tooltip>
           </v-col>
           <v-col>
-              <v-checkbox  id="searchAuditHistoryCheckbox" label="Search audit history" color="#606060" class="ma-0 pa-0" v-model="advancedSearchCriteria.isAuditHistorySearch"></v-checkbox>
+            <v-checkbox
+              id="searchAuditHistoryCheckbox"
+              v-model="advancedSearchCriteria.isAuditHistorySearch"
+              label="Search audit history"
+              color="#606060"
+              class="ma-0 pa-0"
+            />
           </v-col>
         </v-row>
-        <v-row no-gutters class="textFieldRow">
-          <v-col cols="3" class="mt-2">Legal Surname</v-col>
-          <v-text-field dense filled outlined
-            id='legalLastName'
+        <v-row
+          no-gutters
+          class="textFieldRow"
+        >
+          <v-col
+            cols="3"
+            class="mt-2"
+          >
+            Legal Surname
+          </v-col>
+          <v-text-field
+            id="legalLastName"
             v-model.trim="studentSearchParams.legalLastName"
-            @keyup.enter="enterPushed()"
-            v-on:input="[searchHasValues(), $emit('valueChange')]"
+            dense
+            filled
+            outlined
             maxlength="255"
-            >
-          </v-text-field>
+            @keyup.enter="enterPushed()"
+            @input="[searchHasValues(), $emit('valueChange')]"
+          />
         </v-row>
-        <v-row no-gutters class="textFieldRow">
-          <v-col cols="3" class="mt-2">Legal Given</v-col>
-          <v-text-field dense filled outlined
-            id='legalFirstName'
+        <v-row
+          no-gutters
+          class="textFieldRow"
+        >
+          <v-col
+            cols="3"
+            class="mt-2"
+          >
+            Legal Given
+          </v-col>
+          <v-text-field
+            id="legalFirstName"
             v-model.trim="studentSearchParams.legalFirstName"
-            @keyup.enter="enterPushed()"
-            v-on:input="[searchHasValues(), $emit('valueChange')]"
+            dense
+            filled
+            outlined
             maxlength="255"
-            >
-          </v-text-field>
+            @keyup.enter="enterPushed()"
+            @input="[searchHasValues(), $emit('valueChange')]"
+          />
         </v-row>
-        <v-row no-gutters class="textFieldRow">
-          <v-col cols="3" class="mt-2">Legal Middle</v-col>
-          <v-text-field dense filled outlined
-            id='legalMiddleNames'
+        <v-row
+          no-gutters
+          class="textFieldRow"
+        >
+          <v-col
+            cols="3"
+            class="mt-2"
+          >
+            Legal Middle
+          </v-col>
+          <v-text-field
+            id="legalMiddleNames"
             v-model.trim="studentSearchParams.legalMiddleNames"
-            v-on:input="[searchHasValues(), $emit('valueChange')]"
-            @keyup.enter="enterPushed()"
+            dense
+            filled
+            outlined
             maxlength="255"
-            >
-          </v-text-field>
+            @input="[searchHasValues(), $emit('valueChange')]"
+            @keyup.enter="enterPushed()"
+          />
         </v-row>
-        <v-row no-gutters class="textFieldRow">
-          <v-col cols="3" class="mt-2">Usual Surname</v-col>
-          <v-text-field dense filled outlined
-            id='usualLastName'
+        <v-row
+          no-gutters
+          class="textFieldRow"
+        >
+          <v-col
+            cols="3"
+            class="mt-2"
+          >
+            Usual Surname
+          </v-col>
+          <v-text-field
+            id="usualLastName"
             v-model.trim="studentSearchParams.usualLastName"
-            @keyup.enter="enterPushed()"
-            v-on:input="[searchHasValues(), $emit('valueChange')]"
+            dense
+            filled
+            outlined
             maxlength="255"
-            >
-          </v-text-field>
+            @keyup.enter="enterPushed()"
+            @input="[searchHasValues(), $emit('valueChange')]"
+          />
         </v-row>
-        <v-row no-gutters class="textFieldRow">
-          <v-col cols="3" class="mt-2">Usual Given</v-col>
-          <v-text-field dense filled outlined
-            id='usualFirstName'
+        <v-row
+          no-gutters
+          class="textFieldRow"
+        >
+          <v-col
+            cols="3"
+            class="mt-2"
+          >
+            Usual Given
+          </v-col>
+          <v-text-field
+            id="usualFirstName"
             v-model.trim="studentSearchParams.usualFirstName"
-            @keyup.enter="enterPushed()"
-            v-on:input="[searchHasValues(), $emit('valueChange')]"
+            dense
+            filled
+            outlined
             maxlength="255"
-            ></v-text-field>
+            @keyup.enter="enterPushed()"
+            @input="[searchHasValues(), $emit('valueChange')]"
+          />
         </v-row>
-        <v-row no-gutters class="textFieldRow">
-          <v-col cols="3" class="mt-2">Usual Middle</v-col>
-          <v-text-field dense filled outlined
-            id='usualMiddleNames'
+        <v-row
+          no-gutters
+          class="textFieldRow"
+        >
+          <v-col
+            cols="3"
+            class="mt-2"
+          >
+            Usual Middle
+          </v-col>
+          <v-text-field
+            id="usualMiddleNames"
             v-model.trim="studentSearchParams.usualMiddleNames"
-            @keyup.enter="enterPushed()"
-            v-on:input="[searchHasValues(), $emit('valueChange')]"
+            dense
+            filled
+            outlined
             maxlength="255"
-            ></v-text-field>
+            @keyup.enter="enterPushed()"
+            @input="[searchHasValues(), $emit('valueChange')]"
+          />
         </v-row>
-        <v-row no-gutters class="textFieldRow" >
-          <v-col cols="3" class="mt-2">Status</v-col>
+        <v-row
+          no-gutters
+          class="textFieldRow"
+        >
+          <v-col
+            cols="3"
+            class="mt-2"
+          >
+            Status
+          </v-col>
           <v-checkbox
             v-for="status in statusCodes"
             :key="status.label"
+            v-model="advancedSearchCriteria.statusCode"
             :label="status.label"
             color="#606060"
             class="ma-0 mr-5 pa-0"
-            v-model="advancedSearchCriteria.statusCode"
             :value="status.value"
-          ></v-checkbox>
+          />
         </v-row>
       </v-card>
     </v-col>
@@ -342,10 +600,6 @@ export default {
       }
     };
   },
-  mounted() {
-    this.setStartDateInAdvancedSearchCriteria();
-    this.setIsAdvancedSearch(true);
-  },
   watch: {
     formattedStartDOB: {
       handler() {
@@ -362,6 +616,10 @@ export default {
         this.setStartDateInAdvancedSearchCriteria();
       }
     }
+  },
+  mounted() {
+    this.setStartDateInAdvancedSearchCriteria();
+    this.setIsAdvancedSearch(true);
   },
   computed: {
     useDOBValue: {

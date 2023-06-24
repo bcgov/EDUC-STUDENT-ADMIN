@@ -1,610 +1,1133 @@
 <template>
-    <v-form ref="schoolDetailsForm" v-model="schoolDetailsFormValid">
-        <v-container fluid>
-            <v-row v-if="loading">
-                <v-col class="d-flex justify-center">
-                    <v-progress-circular
-                            class="mt-16"
-                            :size="70"
-                            :width="7"
-                            color="primary"
-                            indeterminate
-                            :active="loading"
-                    ></v-progress-circular>
+  <v-form
+    ref="schoolDetailsForm"
+    v-model="schoolDetailsFormValid"
+  >
+    <v-container fluid>
+      <v-row v-if="loading">
+        <v-col class="d-flex justify-center">
+          <v-progress-circular
+            class="mt-16"
+            :size="70"
+            :width="7"
+            color="primary"
+            indeterminate
+            :active="loading"
+          />
+        </v-col>
+      </v-row>
+      <v-row
+        v-else
+        no-gutters
+      >
+        <v-col>
+          <v-row class="d-flex justify-start">
+            <v-col
+              v-if="!editing"
+              class="d-flex justify-end"
+            >
+              <PrimaryButton
+                v-if="canEditSchoolDetails()"
+                id="schoolDetailsEditButton"
+                icon-left
+                width="6em"
+                icon="mdi-pencil"
+                text="Edit"
+                :click-action="toggleEdit"
+              />
+            </v-col>
+            <v-col
+              v-else
+              class="d-flex justify-end"
+            >
+              <PrimaryButton
+                id="cancelButton"
+                class="mr-2"
+                secondary
+                icon-left
+                width="6em"
+                text="Cancel"
+                :click-action="cancelClicked"
+              />
+              <PrimaryButton
+                id="saveButton"
+                icon-left
+                width="6em"
+                text="Save"
+                :disabled="!schoolDetailsFormValid"
+                :click-action="updateSchoolDetails"
+              />
+            </v-col>
+          </v-row>
+          <v-row
+            v-if="editing"
+            class="d-flex justify-start"
+          >
+            <v-col
+              cols="4"
+              lg="3"
+              class="pb-0 pt-0"
+            >
+              <v-text-field
+                v-model="schoolDetailsCopy.displayName"
+                label="School Name"
+                :maxlength="255"
+                variant="underlined"
+                class="pr-13"
+                :rules="[rules.required(), rules.noSpecialCharactersSchDisAuthName()]"
+                required
+              />
+            </v-col>
+            <v-col
+              cols="4"
+              lg="3"
+              class="pb-0 pt-0"
+            >
+              <v-text-field
+                v-model="schoolDetailsCopy.displayNameNoSpecialChars"
+                label="Legacy Safe School Name"
+                variant="underlined"
+                class="pr-13"
+                :maxlength="255"
+                :rules="[rules.noSpecialCharactersSchDisAuthName()]"
+              />
+            </v-col>
+          </v-row>
+          <v-row class="d-flex justify-start mb-2">
+            <v-col
+              cols="4"
+              lg="3"
+              class="pb-0 pt-0"
+            >
+              <v-row
+                no-gutters
+                class="d-flex justify-start"
+              >
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span style="color: grey">Status</span>
                 </v-col>
-            </v-row>
-            <v-row v-else no-gutters>
-                <v-col>
-                    <v-row class="d-flex justify-start">
-                        <v-col v-if="!editing" class="d-flex justify-end">
-                            <PrimaryButton id="schoolDetailsEditButton" icon-left width="6em" icon="mdi-pencil"
-                                           text="Edit"
-                                           v-if="canEditSchoolDetails()" :click-action="toggleEdit"></PrimaryButton>
-                        </v-col>
-                        <v-col v-else class="d-flex justify-end">
-                            <PrimaryButton class="mr-2" secondary id="cancelButton" icon-left width="6em" text="Cancel"
-                                           :click-action="cancelClicked"></PrimaryButton>
-                            <PrimaryButton id="saveButton" icon-left width="6em" text="Save"
-                                           :disabled="!schoolDetailsFormValid"
-                                           :click-action="updateSchoolDetails"></PrimaryButton>
-                        </v-col>
-                    </v-row>
-                    <v-row v-if="editing" class="d-flex justify-start">
-                        <v-col cols="4" lg="3" class="pb-0 pt-0">
-                            <v-row no-gutters class="d-flex justify-start">
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <span style="color: grey">School Name</span>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-text-field class="mt-n5 ml-3" :maxlength="255" :rules="[rules.required(), rules.noSpecialCharactersSchDisAuthName()]" required
-                                              v-model="schoolDetailsCopy.displayName">
-                                </v-text-field>
-                            </v-row>
-                        </v-col>
-                        <v-col cols="4" lg="3" class="pb-0 pt-0">
-                          <v-row no-gutters class="d-flex justify-start">
-                              <v-col cols="10" class="d-flex justify-start">
-                                  <span style="color: grey">Legacy Safe School Name</span>
-                              </v-col>
-                          </v-row>
-                          <v-row>
-                                <v-text-field class="mt-n5 ml-3" :maxlength="255" :rules="[rules.noSpecialCharactersSchDisAuthName()]"
-                                              v-model="schoolDetailsCopy.displayNameNoSpecialChars">
-                                </v-text-field>
-                            </v-row>
-                        </v-col>
-                    </v-row>
-                    <v-row class="d-flex justify-start">
-                        <v-col cols="4" lg="3" class="pb-0 pt-0">
-                            <v-row no-gutters class="d-flex justify-start">
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <span style="color: grey">Status</span>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="10" class="d-flex justify-start">
-                        <span v-if="!editing" class="ministryLine mt-n2">
-                      <v-icon class="ml-n1 pr-1" :color="getStatusColorAuthorityOrSchool(school.status)" dark>
+              </v-row>
+              <v-row no-gutters>
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span
+                    v-if="!editing"
+                    class="ministryLine"
+                  >
+                    <v-icon
+                      class="ml-n1 pr-1"
+                      :color="getStatusColorAuthorityOrSchool(school.status)"
+                      dark
+                    >
+                      mdi-circle-medium
+                    </v-icon>
+                    {{ school.status }}</span>
+                  <v-col
+                    v-else
+                    class="ministryLine mt-n4 pl-0"
+                  >
+                    <v-btn
+                      id="editSchoolStatusButton"
+                      variant="outlined"
+                      density="compact"
+                      class="mt-1 mb-1"
+                      :click-action="openSchoolStatusEdit"
+                      :secondary="true"
+                    >
+                      <v-icon
+                        class="ml-n1 pr-3"
+                        :color="getStatusColorAuthorityOrSchool(schoolDetailsCopy.status)"
+                        dark
+                      >
                         mdi-circle-medium
                       </v-icon>
-                      {{ school.status }}</span>
-                                    <v-col v-else class="ministryLine mt-n4 pl-0">
-                                        <PrimaryButton id="editSchoolStatusButton" :click-action="openSchoolStatusEdit"
-                                                       :secondary="true">
-                                            <v-icon class="ml-n1 pr-3"
-                                                    :color="getStatusColorAuthorityOrSchool(schoolDetailsCopy.status)"
-                                                    dark>
-                                                mdi-circle-medium
-                                            </v-icon>
-                                            <span>{{ schoolDetailsCopy.status }}</span>
-                                        </PrimaryButton>
-                                    </v-col>
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                        <v-col cols="4" lg="3" class="pb-0 pt-0">
-                            <v-row no-gutters class="d-flex justify-start">
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <span style="color: grey">Open Date</span>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <span v-if="!editing" class="ministryLine mt-n2"
-                                          style="color: black">{{ formatDate(school.openedDate) || '-' }}</span>
-                                    <span v-else class="ministryLine mt-n2" style="color: black">{{
-                                        formatDate(schoolDetailsCopy.openedDate) || '-'
-                                        }}</span>
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                        <v-col cols="4" lg="3" class="pb-0 pt-0">
-                            <v-row no-gutters class="d-flex justify-start">
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <span style="color: grey">Close Date</span>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <span v-if="!editing" class="ministryLine mt-n2"
-                                          style="color: black">{{ formatDate(school.closedDate) || '-' }}</span>
-                                    <span v-else class="ministryLine mt-n2" style="color: black">{{
-                                        formatDate(schoolDetailsCopy.closedDate) || '-'
-                                        }}</span>
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                    </v-row>
-                    <v-row class="d-flex justify-start mt-3">
-                        <v-col cols="4" lg="3" class="pb-0 pt-0">
-                            <v-row v-if="!editing" no-gutters class="d-flex justify-start">
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <span style="color: grey">School Category</span>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="10" class="d-flex justify-start mt-n2">
-                                    <span v-if="!editing" class="ministryLine"
-                                          style="color: black">{{ school.schoolCategory }}</span>
-                                    <v-select v-else :items="schoolCategorySchoolEditOptions"
-                                              item-value="schoolCategoryCode"
-                                              item-text="label"
-                                              variant="underlined"
-                                              label="School Category"
-                                              v-model="schoolDetailsCopy.schoolCategoryCode"
-                                              class="mt-n5"
-                                              single
-                                              required
-                                    ></v-select>
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                        <v-col cols="4" lg="3" class="pb-0 pt-0">
-                            <v-row v-if="!editing" no-gutters class="d-flex justify-start">
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <span style="color: grey">Facility Type</span>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="10" class="d-flex justify-start mt-n2">
-                                    <span v-if="!editing" class="ministryLine"
-                                          style="color: black">{{ school.facilityType }}</span>
-                                    <v-select v-else :items="allowedFacilityTypeCodesForSchoolCategoryCode"
-                                              item-value="facilityTypeCode"
-                                              item-text="label"
-                                              variant="underlined"
-                                              label="Facility Type"
-                                              v-model="schoolDetailsCopy.facilityTypeCode"
-                                              single
-                                              class="mt-n5"
-                                              required
-                                              :rules="[rules.required()]"
-                                    ></v-select>
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                        <v-col cols="4" lg="3" class="pb-0 pt-0">
-                            <v-row v-if="!editing" no-gutters class="d-flex justify-start">
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <span style="color: grey">Grades Offered</span>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="10" class="d-flex justify-start mt-n2">
-                                    <span v-if="!editing" class="ministryLine"
-                                          style="color: black">{{ getGradesOffered(school.grades) }}</span>
-                                    <v-select v-else :items="gradeCodes"
-                                              item-value="schoolGradeCode"
-                                              item-text="label"
-                                              label="Grades Offered"
-                                              v-model="schoolDetailsCopy.grades"
-                                              @input="sortGrades"
-                                              variant="underlined"
-                                              :disabled="isGradeOfferedUpdateAllowed"
-                                              return-object
-                                              class="mt-n5"
-                                              multiple
-                                              required
-                                    ></v-select>
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                    </v-row>
-                    <v-row class="d-flex justify-start mt-3">
-                        <v-col cols="4" lg="3" class="pb-0 pt-0">
-                            <v-row v-if="!editing" no-gutters class="d-flex justify-start">
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <span style="color: grey">School Organization</span>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="10" class="d-flex justify-start mt-n2">
-                                    <span v-if="!editing" class="ministryLine"
-                                          style="color: black">{{ getSchoolOrganization(school) }}</span>
-                                    <v-select v-else :items="schoolOrganizationTypeCodes"
-                                              item-value="schoolOrganizationCode"
-                                              item-text="label"
-                                              class="mt-n5"
-                                              variant="underlined"
-                                              label="School Organization Code"
-                                              v-model="schoolDetailsCopy.schoolOrganizationCode"
-                                              single
-                                              required
-                                    ></v-select>
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                        <v-col cols="4" lg="3" class="pb-0 pt-0">
-                            <v-row v-if="!editing" no-gutters class="d-flex justify-start">
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <span style="color: grey">Reporting Requirement</span>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="10" class="d-flex justify-start mt-n2">
-                                    <span v-if="!editing" class="ministryLine"
-                                          style="color: black">{{ schoolReportingRequirementType.label || '' }}</span>
-                                    <v-select
-                                            v-else
-                                            :items="schoolReportingRequirementTypes"
-                                            item-value="schoolReportingRequirementCode"
-                                            item-text="label"
-                                            class="mt-n5"
-                                            variant="underlined"
-                                            label="Reporting Requirement"
-                                            v-model="schoolDetailsCopy.schoolReportingRequirementCode"
-                                            single
-                                            required/>
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                        <v-col cols="4" lg="3" class="pb-0 pt-0">
-                            <v-row v-if="!editing" no-gutters class="d-flex justify-start">
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <span style="color: grey">NLC Activity</span>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="10" class="pb-1 pr-0 mt-n2">
-                                    <span v-if="!editing" class="ministryLine"
-                                          style="color: black">{{ getNLCActivity(school) }}</span>
-                                    <v-select v-else :items="schoolNeighborhoodLearningTypes"
-                                              item-value="neighborhoodLearningTypeCode"
-                                              item-text="label"
-                                              @input="sortNLC"
-                                              class="mt-n5"
-                                              variant="underlined"
-                                              label="NLC Activity"
-                                              return-object
-                                              v-model="schoolDetailsCopy.neighborhoodLearning"
-                                              multiple
-                                    ></v-select>
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                    </v-row>
-                    <v-row class="mt-6 d-flex justify-start">
-                        <v-col cols="12" class="d-flex justify-start">
-                            <h3 class="subHeading pt-4">Contact Information</h3>
-                        </v-col>
-                    </v-row>
-                    <v-row class="d-flex justify-start">
-                        <v-col cols="2" lg="2" class="pb-0 pt-0">
-                            <v-row v-if="!editing" no-gutters class="d-flex justify-start">
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <span style="color: grey">Phone</span>
-                                </v-col>
-                            </v-row>
-                            <v-row no-gutters :class="editing ? 'mt-n4' : ''">
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <div v-if="!editing">
-                                        <span v-if="school.phoneNumber"
-                                              class="ministryLine">{{ formatPhoneNumber(school.phoneNumber) }}</span>
-                                        <a v-if="showEditLinks(school.phoneNumber)" class="editField"
-                                           @click="toggleEdit">+Phone</a>
-                                    </div>
-                                    <v-text-field id="schoolDetailsPhoneNumber" label="Phone" v-else
-                                                  class="ministryLine" @keypress="isNumber($event)" required
-                                                  :maxlength="10" :rules="[rules.phoneNumber()]"
-                                                  v-model="schoolDetailsCopy.phoneNumber"/>
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                        <v-col cols="2" lg="2" class="pb-0 pt-0">
-                            <v-row v-if="!editing" no-gutters class="d-flex justify-start">
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <span style="color: grey">Fax</span>
-                                </v-col>
-                            </v-row>
-                            <v-row no-gutters :class="editing ? 'mt-n4' : ''">
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <div v-if="!editing">
-                                        <span v-if="school.faxNumber"
-                                              class="ministryLine">{{ formatPhoneNumber(school.faxNumber) }}</span>
-                                        <a v-if="showEditLinks(school.faxNumber)" class="editField" @click="toggleEdit">+Fax</a>
-                                    </div>
-                                    <v-text-field id="schoolDetailsFaxNumber" label="Fax Number" v-else
-                                                  class="ministryLine" @keypress="isNumber($event)"
-                                                  :rules="[rules.phoneNumber('Fax number must be valid')]"
-                                                  :maxlength="10" v-model="schoolDetailsCopy.faxNumber"/>
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                        <v-col cols="4" lg="4" class="pb-0 pt-0">
-                            <v-row v-if="!editing" no-gutters class="d-flex justify-start">
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <span style="color: grey">Email</span>
-                                </v-col>
-                            </v-row>
-                            <v-row no-gutters :class="editing ? 'mt-n4' : ''">
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <div v-if="!editing">
-                                        <span style="word-break: break-all;" v-if="school.email" class="ministryLine">{{ school.email }}</span>
-                                        <a v-if="showEditLinks(school.email)" class="editField" @click="toggleEdit">+Email</a>
-                                    </div>
-                                    <v-text-field id="schoolDetailsEmail" label="Email" v-else class="ministryLine"
-                                                  required :rules="[rules.email()]" :maxlength="255"
-                                                  v-model="schoolDetailsCopy.email"/>
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                        <v-col cols="4" lg="4" class="pb-0 pt-0">
-                            <v-row v-if="!editing" no-gutters class="d-flex justify-start">
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <span style="color: grey">Website</span>
-                                </v-col>
-                            </v-row>
-                            <v-row no-gutters :class="editing ? 'mt-n4' : ''">
-                                <v-col cols="10" class="d-flex justify-start">
-                                    <div v-if="!editing">
-                                        <a style="word-break: break-all;" v-if="cleanWebsiteUrl" :href="cleanWebsiteUrl" target="_blank">{{ cleanWebsiteUrl }}</a>
-                                        <a v-if="showEditLinks(cleanWebsiteUrl)" class="editField" @click="toggleEdit">+Website</a>
-                                    </div>
-                                    <v-text-field v-if="editing" label="Website" :rules="[rules.website()]"
-                                                  :maxlength="255" v-model="schoolDetailsCopy.website"/>
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                    </v-row>
-                    <v-row no-gutters class="mt-6 d-flex justify-start">
-                        <v-col cols="12" class="d-flex justify-start">
-                            <h3 class="subHeading pt-4">Addresses</h3>
-                        </v-col>
-                    </v-row>
-                    <div v-if="!editing">
-                        <v-row v-if="!hasMailingAddress() && !editing" no-gutters class="d-flex justify-start">
-                            <v-col class="mt-2">
-                                <a class="editField" v-if="canEditSchoolDetails()" @click="toggleEditWithAddress">+Address</a>
-                            </v-col>
-                        </v-row>
-                        <v-row v-else no-gutters class="d-flex justify-start">
-                            <v-col v-if="editing || hasMailingAddress()" cols="3">
-                                <v-row>
-                                    <v-col>
-                                        <v-icon class="pb-1 mr-1" right>
-                                            mdi-email-outline
-                                        </v-icon>
-                                        <span>Mailing Address</span>
-                                    </v-col>
-                                </v-row>
-                                <v-row v-if="!editing" no-gutters>
-                                    <v-col>
-                                        <v-row class="ml-9" no-gutters>
-                                            <v-col>
-                                                <span style="word-break: break-all;">{{
-                                                    getMailingAddressItem('addressLine1')
-                                                    }}</span>
-                                            </v-col>
-                                        </v-row>
-                                        <v-row no-gutters>
-                                            <v-col class="ml-9">
-                                                <span style="word-break: break-all;">{{
-                                                    getMailingAddressItem('addressLine2')
-                                                    }}</span>
-                                            </v-col>
-                                        </v-row>
-                                        <v-row no-gutters>
-                                            <v-col class="ml-9">
-                                                <span style="word-break: break-all;">{{
-                                                    getMailingAddressItem('city') + ', ' + getMailingAddressItem('provinceCode') + ', ' + getMailingAddressItem('countryCode')
-                                                    }}</span>
-                                            </v-col>
-                                        </v-row>
-                                        <v-row no-gutters>
-                                            <v-col class="ml-9">
-                                                <span style="word-break: break-all;">{{
-                                                    getMailingAddressItem('postal')
-                                                    }}</span>
-                                            </v-col>
-                                        </v-row>
-                                    </v-col>
-                                </v-row>
-                            </v-col>
-                            <v-col v-if="displayPhysicalAddress()" cols="3">
-                                <v-row>
-                                    <v-col>
-                                        <v-icon class="pb-1 mr-1" right>
-                                            mdi-home-outline
-                                        </v-icon>
-                                        <span>Physical Address</span>
-                                    </v-col>
-                                </v-row>
-                                <v-row v-if="!hasSamePhysicalAddress && !editing" no-gutters>
-                                    <v-col>
-                                        <v-row no-gutters>
-                                            <v-col class="ml-9">
-                                                <span style="word-break: break-all;">{{
-                                                    getPhysicalAddressItem('addressLine1')
-                                                    }}</span>
-                                            </v-col>
-                                        </v-row>
-                                        <v-row no-gutters>
-                                            <v-col class="ml-9">
-                                                <span style="word-break: break-all;">{{
-                                                    getPhysicalAddressItem('addressLine2')
-                                                    }}</span>
-                                            </v-col>
-                                        </v-row>
-                                        <v-row no-gutters>
-                                            <v-col class="ml-9">
-                                                <span style="word-break: break-all;">{{
-                                                    getPhysicalAddressItem('city') + ', ' + getPhysicalAddressItem('provinceCode') + ', ' + getPhysicalAddressItem('countryCode')
-                                                    }}</span>
-                                            </v-col>
-                                        </v-row>
-                                        <v-row no-gutters>
-                                            <v-col class="ml-9">
-                                                <span style="word-break: break-all;">{{
-                                                    getPhysicalAddressItem('postal')
-                                                    }}</span>
-                                            </v-col>
-                                        </v-row>
-                                    </v-col>
-                                </v-row>
-                                <v-row v-else no-gutters>
-                                    <v-col>
-                                        <v-row class="ml-9" no-gutters>
-                                            <v-col v-if="sameAsMailingCheckbox && !editing" class="fontItalic">
-                                                <span>Same as Mailing Address</span>
-                                            </v-col>
-                                        </v-row>
-                                    </v-col>
-                                </v-row>
-                            </v-col>
-                        </v-row>
-                    </div>
-                    <div v-else>
-                        <v-row no-gutters class="mt-5" v-if="!showAddress">
-                            <v-col class="mt-1 d-flex justify-start">
-                                <v-icon color="#1976d2">{{ addressButton.icon }}</v-icon>
-                                <a class="ml-1 toggle" @click="toggleAddressForm">{{ addressButton.label }}</a>
-                            </v-col>
-                        </v-row>
-                        <v-row v-if="showAddress">
-                            <v-col>
-                                <v-row no-gutters class="mt-5">
-                                    <v-col cols="4">
-                                        <h3>Mailing Address</h3>
-                                    </v-col>
-                                </v-row>
-                                <v-row>
-                                    <v-col cols="4">
-                                        <v-text-field id='newSchoolMailingAddressLine1Input'
-                                                      :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                                                      v-model="getMailingAddressCopy()[0].addressLine1" class="pt-0"
-                                                      :maxlength="255" label="Line 1"/>
-                                    </v-col>
-                                    <v-col cols="4">
-                                        <v-text-field id='newSchoolMailingAddressLine2Input'
-                                                      :rules="[rules.noSpecialCharactersAddress()]"
-                                                      v-model="getMailingAddressCopy()[0].addressLine2" class="pt-0"
-                                                      :maxlength="255" label="Line 2"/>
-                                    </v-col>
-                                    <v-col cols="4">
-                                        <v-text-field id='newContactMailingAddressCityInput'
-                                                      :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                                                      v-model="getMailingAddressCopy()[0].city" class="pt-0"
-                                                      :maxlength="255" label="City"/>
-                                    </v-col>
-                                </v-row>
-                                <v-row>
-                                    <v-col cols="4">
-                                        <v-autocomplete id='newSchoolMailingAddressProvinceInput'
-                                                        :rules="[rules.required()]"
-                                                        v-model="getMailingAddressCopy()[0].provinceCode" class="pt-0"
-                                                        label="Province" :items="this.provinceCodeValues"
-                                                        item-text="label" item-value="provinceCode"/>
-                                    </v-col>
-                                    <v-col cols="4">
-                                        <v-autocomplete id='newSchoolMailingAddressCountryInput'
-                                                        :rules="[rules.required()]"
-                                                        v-model="getMailingAddressCopy()[0].countryCode" class="pt-0"
-                                                        label="Country" :items="this.countryCodeValues"
-                                                        item-text="label"
-                                                        item-value="countryCode"/>
-                                    </v-col>
-                                    <v-col cols="4">
-                                        <v-text-field id='newContactMailingAddressPostalCodeInput'
-                                                      :rules="[rules.required(), rules.postalCode()]"
-                                                      v-model="getMailingAddressCopy()[0].postal" class="pt-0"
-                                                      :maxlength="6" label="Postal Code"/>
-                                    </v-col>
-                                </v-row>
-                                <v-row v-if="displayPhysicalAddress" no-gutters>
-                                    <v-col>
-                                        <v-row no-gutters class="mt-5">
-                                            <v-col cols="4">
-                                                <h3>Physical Address</h3>
-                                            </v-col>
-                                        </v-row>
-                                        <v-row no-gutters v-if="sameAsMailingCheckbox" class="pt-4">
-                                            <v-checkbox dense id="sameAsMailingCheckbox"
-                                                        @click="clickSameAsAddressButton"
-                                                        v-model="sameAsMailingCheckbox"
-                                                        label="Same as Mailing Address" class="mt-n3 pt-0"></v-checkbox>
-                                        </v-row>
-                                        <v-row no-gutters v-else>
-                                            <v-row>
-                                                <v-col cols="4">
-                                                    <v-text-field id='newSchoolPhysicalAddressLine1Input'
-                                                                  :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                                                                  v-model="getPhysicalAddressCopy()[0].addressLine1"
-                                                                  class="pt-0" :maxlength="255" label="Line 1"/>
-                                                </v-col>
-                                                <v-col cols="4">
-                                                    <v-text-field id='newSchoolPhysicalAddressLine2Input'
-                                                                  :rules="[rules.noSpecialCharactersAddress()]"
-                                                                  v-model="getPhysicalAddressCopy()[0].addressLine2"
-                                                                  class="pt-0"
-                                                                  :maxlength="255" label="Line 2"/>
-                                                </v-col>
-                                                <v-col cols="4">
-                                                    <v-text-field id='newContactPhysicalAddressCityInput'
-                                                                  :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                                                                  v-model="getPhysicalAddressCopy()[0].city"
-                                                                  class="pt-0" :maxlength="255" label="City"/>
-                                                </v-col>
-                                            </v-row>
-                                            <v-row>
-                                                <v-col cols="4">
-                                                    <v-autocomplete id='newSchoolPhysicalAddressProvinceInput'
-                                                                    :rules="[rules.required()]"
-                                                                    v-model="getPhysicalAddressCopy()[0].provinceCode"
-                                                                    class="pt-0" label="Province"
-                                                                    :items="this.provinceCodeValues"
-                                                                    item-text="label" item-value="provinceCode"/>
-                                                </v-col>
-                                                <v-col cols="4">
-                                                    <v-autocomplete id='newSchoolPhysicalAddressCountryInput'
-                                                                    :rules="[rules.required()]"
-                                                                    v-model="getPhysicalAddressCopy()[0].countryCode"
-                                                                    class="pt-0" label="Country"
-                                                                    :items="this.countryCodeValues"
-                                                                    item-text="label" item-value="countryCode"/>
-                                                </v-col>
-                                                <v-col cols="4">
-                                                    <v-text-field id='newContactPhysicalAddressPostalCodeInput'
-                                                                  :rules="[rules.required(), rules.postalCode()]"
-                                                                  v-model="getPhysicalAddressCopy()[0].postal"
-                                                                  class="pt-0"
-                                                                  :maxlength="6" label="Postal Code"/>
-                                                </v-col>
-                                            </v-row>
-                                        </v-row>
-                                        <v-row no-gutters v-if="!sameAsMailingCheckbox" class="pt-4">
-                                            <v-col>
-                                                <v-checkbox dense id="sameAsMailingCheckbox"
-                                                            @click="clickSameAsAddressButton"
-                                                            v-model="sameAsMailingCheckbox"
-                                                            label="Same as Mailing Address"
-                                                            class="mt-n3 pt-0"></v-checkbox>
-                                            </v-col>
-                                        </v-row>
-                                    </v-col>
-                                </v-row>
-                            </v-col>
-                        </v-row>
-                    </div>
+                      <span>{{
+                          schoolDetailsCopy.status
+                        }}</span>
+                    </v-btn>
+                  </v-col>
                 </v-col>
+              </v-row>
+            </v-col>
+            <v-col
+              cols="4"
+              lg="3"
+              class="pb-0 pt-0"
+            >
+              <v-row
+                no-gutters
+                class="d-flex justify-start"
+              >
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span style="color: grey">Open Date</span>
+                </v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span
+                    v-if="!editing"
+                    class="ministryLine"
+                    style="color: black"
+                  >{{ formatDate(school.openedDate) || '-' }}</span>
+                  <span
+                    v-else
+                    class="ministryLine"
+                    style="color: black"
+                  >{{ formatDate(schoolDetailsCopy.openedDate) || '-' }}</span>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col
+              cols="4"
+              lg="3"
+              class="pb-0 pt-0"
+            >
+              <v-row
+                no-gutters
+                class="d-flex justify-start"
+              >
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span style="color: grey">Close Date</span>
+                </v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span
+                    v-if="!editing"
+                    class="ministryLine"
+                    style="color: black"
+                  >{{
+                      formatDate(school.closedDate) || '-'
+                    }}</span>
+                  <span
+                    v-else
+                    class="ministryLine"
+                    style="color: black"
+                  >{{
+                      formatDate(schoolDetailsCopy.closedDate) || '-'
+                    }}</span>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+          <v-row class="d-flex justify-start mb-3">
+            <v-col
+              cols="4"
+              lg="3"
+              class="pb-0 pt-0"
+            >
+              <v-row
+                v-if="!editing"
+                no-gutters
+                class="d-flex justify-start"
+              >
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span style="color: grey">School Category</span>
+                </v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span
+                    v-if="!editing"
+                    class="ministryLine"
+                    style="color: black"
+                  >{{
+                      school.schoolCategory
+                    }}</span>
+                  <v-select
+                    v-else
+                    v-model="schoolDetailsCopy.schoolCategoryCode"
+                    :items="schoolCategorySchoolEditOptions"
+                    item-value="schoolCategoryCode"
+                    item-title="label"
+                    variant="underlined"
+                    label="School Category"
+                    class="mt-n5"
+                    single
+                    required
+                  />
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col
+              cols="4"
+              lg="3"
+              class="pb-0 pt-0"
+            >
+              <v-row
+                v-if="!editing"
+                no-gutters
+                class="d-flex justify-start"
+              >
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span style="color: grey">Facility Type</span>
+                </v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span
+                    v-if="!editing"
+                    class="ministryLine"
+                    style="color: black"
+                  >{{
+                      school.facilityType
+                    }}</span>
+                  <v-select
+                    v-else
+                    v-model="schoolDetailsCopy.facilityTypeCode"
+                    :items="allowedFacilityTypeCodesForSchoolCategoryCode"
+                    item-value="facilityTypeCode"
+                    item-title="label"
+                    variant="underlined"
+                    label="Facility Type"
+                    single
+                    class="mt-n5"
+                    required
+                    :rules="[rules.required()]"
+                  />
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col
+              cols="4"
+              lg="3"
+              class="pb-0 pt-0"
+            >
+              <v-row
+                v-if="!editing"
+                no-gutters
+                class="d-flex justify-start"
+              >
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span style="color: grey">Grades Offered</span>
+                </v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span
+                    v-if="!editing"
+                    class="ministryLine"
+                    style="color: black"
+                  >{{
+                      getGradesOffered(school.grades)
+                    }}</span>
+                  <v-select
+                    v-else
+                    v-model="schoolDetailsCopy.grades"
+                    :items="gradeCodes"
+                    item-value="schoolGradeCode"
+                    item-title="label"
+                    label="Grades Offered"
+                    variant="underlined"
+                    :disabled="isGradeOfferedUpdateAllowed"
+                    class="mt-n5"
+                    multiple
+                    required
+                    @input="sortGrades"
+                  />
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+          <v-row class="d-flex justify-start mt-3">
+            <v-col
+              cols="4"
+              lg="3"
+              class="pb-0 pt-0"
+            >
+              <v-row
+                v-if="!editing"
+                no-gutters
+                class="d-flex justify-start"
+              >
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span style="color: grey">School Organization</span>
+                </v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span
+                    v-if="!editing"
+                    class="ministryLine"
+                    style="color: black"
+                  >{{
+                      getSchoolOrganization(school)
+                    }}</span>
+                  <v-select
+                    v-else
+                    v-model="schoolDetailsCopy.schoolOrganizationCode"
+                    :items="schoolOrganizationTypeCodes"
+                    item-value="schoolOrganizationCode"
+                    item-title="label"
+                    class="mt-n5"
+                    variant="underlined"
+                    label="School Organization Code"
+                    single
+                    required
+                  />
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col
+              cols="4"
+              lg="3"
+              class="pb-0 pt-0"
+            >
+              <v-row
+                v-if="!editing"
+                no-gutters
+                class="d-flex justify-start"
+              >
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span style="color: grey">Reporting Requirement</span>
+                </v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span
+                    v-if="!editing"
+                    class="ministryLine"
+                    style="color: black"
+                  >{{
+                      schoolReportingRequirementType.label || ''
+                    }}</span>
+                  <v-select
+                    v-else
+                    v-model="schoolDetailsCopy.schoolReportingRequirementCode"
+                    :items="schoolReportingRequirementTypes"
+                    item-value="schoolReportingRequirementCode"
+                    item-title="label"
+                    class="mt-n5"
+                    variant="underlined"
+                    label="Reporting Requirement"
+                    single
+                    required
+                  />
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col
+              cols="4"
+              lg="3"
+              class="pb-0 pt-0"
+            >
+              <v-row
+                v-if="!editing"
+                no-gutters
+                class="d-flex justify-start"
+              >
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span style="color: grey">NLC Activity</span>
+                </v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col
+                  cols="10"
+                  class="pb-1 pr-0"
+                >
+                  <span
+                    v-if="!editing"
+                    class="ministryLine"
+                    style="color: black"
+                  >{{
+                      getNLCActivity(school)
+                    }}</span>
+                  <v-select
+                    v-else
+                    v-model="schoolDetailsCopy.neighborhoodLearning"
+                    :items="schoolNeighborhoodLearningTypes"
+                    item-value="neighborhoodLearningTypeCode"
+                    item-title="label"
+                    class="mt-n5"
+                    variant="underlined"
+                    label="NLC Activity"
+                    multiple
+                    @input="sortNLC"
+                  />
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+          <v-row no-gutters class="mt-6 d-flex justify-start">
+            <v-col
+              cols="12"
+              class="d-flex justify-start"
+            >
+              <h3 class="subHeading pt-4">
+                Contact Information
+              </h3>
+            </v-col>
+          </v-row>
+          <v-row class="d-flex justify-start">
+            <v-col
+              cols="2"
+              lg="2"
+              class="pb-0 pt-0"
+            >
+              <v-row
+                v-if="!editing"
+                no-gutters
+                class="d-flex justify-start"
+              >
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span style="color: grey">Phone</span>
+                </v-col>
+              </v-row>
+              <v-row
+                no-gutters
+              >
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <div v-if="!editing">
+                    <span
+                      v-if="school.phoneNumber"
+                      class="ministryLine"
+                    >{{
+                        formatPhoneNumber(school.phoneNumber)
+                      }}</span>
+                    <a
+                      v-if="showEditLinks(school.phoneNumber)"
+                      class="editField"
+                      @click="toggleEdit"
+                    >+Phone</a>
+                  </div>
+                  <v-text-field
+                    v-else
+                    id="schoolDetailsPhoneNumber"
+                    v-model="schoolDetailsCopy.phoneNumber"
+                    label="Phone"
+                    class="ministryLine"
+                    variant="underlined"
+                    required
+                    :maxlength="10"
+                    :rules="[rules.phoneNumber()]"
+                    @keypress="isNumber($event)"
+                  />
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col
+              cols="2"
+              lg="2"
+              class="pb-0 pt-0"
+            >
+              <v-row
+                v-if="!editing"
+                no-gutters
+                class="d-flex justify-start"
+              >
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span style="color: grey">Fax</span>
+                </v-col>
+              </v-row>
+              <v-row
+                no-gutters
+              >
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <div v-if="!editing">
+                    <span
+                      v-if="school.faxNumber"
+                      class="ministryLine"
+                    >{{
+                        formatPhoneNumber(school.faxNumber)
+                      }}</span>
+                    <a
+                      v-if="showEditLinks(school.faxNumber)"
+                      class="editField"
+                      @click="toggleEdit"
+                    >+Fax</a>
+                  </div>
+                  <v-text-field
+                    v-else
+                    id="schoolDetailsFaxNumber"
+                    v-model="schoolDetailsCopy.faxNumber"
+                    label="Fax Number"
+                    class="ministryLine"
+                    variant="underlined"
+                    :rules="[rules.phoneNumber('Fax number must be valid')]"
+                    :maxlength="10"
+                    @keypress="isNumber($event)"
+                  />
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col
+              cols="4"
+              lg="4"
+              class="pb-0 pt-0"
+            >
+              <v-row
+                v-if="!editing"
+                no-gutters
+                class="d-flex justify-start"
+              >
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span style="color: grey">Email</span>
+                </v-col>
+              </v-row>
+              <v-row
+                no-gutters
+              >
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <div v-if="!editing">
+                    <span
+                      v-if="school.email"
+                      style="word-break: break-all;"
+                      class="ministryLine"
+                    >{{
+                        school.email
+                      }}</span>
+                    <a
+                      v-if="showEditLinks(school.email)"
+                      class="editField"
+                      @click="toggleEdit"
+                    >+Email</a>
+                  </div>
+                  <v-text-field
+                    v-else
+                    id="schoolDetailsEmail"
+                    v-model="schoolDetailsCopy.email"
+                    label="Email"
+                    class="ministryLine"
+                    variant="underlined"
+                    required
+                    :rules="[rules.email()]"
+                    :maxlength="255"
+                  />
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col
+              cols="4"
+              lg="4"
+              class="pb-0 pt-0"
+            >
+              <v-row
+                v-if="!editing"
+                no-gutters
+                class="d-flex justify-start"
+              >
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <span style="color: grey">Website</span>
+                </v-col>
+              </v-row>
+              <v-row
+                no-gutters
+              >
+                <v-col
+                  cols="10"
+                  class="d-flex justify-start"
+                >
+                  <div v-if="!editing">
+                    <a
+                      v-if="cleanWebsiteUrl"
+                      style="word-break: break-all;"
+                      :href="cleanWebsiteUrl"
+                      target="_blank"
+                    >{{
+                        cleanWebsiteUrl
+                      }}</a>
+                    <a
+                      v-if="showEditLinks(cleanWebsiteUrl)"
+                      class="editField"
+                      @click="toggleEdit"
+                    >+Website</a>
+                  </div>
+                  <v-text-field
+                    v-if="editing"
+                    v-model="schoolDetailsCopy.website"
+                    label="Website"
+                    :rules="[rules.website()]"
+                    variant="underlined"
+                    :maxlength="255"
+                  />
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+          <v-row
+            no-gutters
+            class="mt-6 d-flex justify-start"
+          >
+            <v-col
+              cols="12"
+              class="d-flex justify-start"
+            >
+              <h3 class="subHeading pt-4">
+                Addresses
+              </h3>
+            </v-col>
+          </v-row>
+          <div v-if="!editing">
+            <v-row
+              v-if="!hasMailingAddress() && !editing"
+              no-gutters
+              class="d-flex justify-start"
+            >
+              <v-col class="mt-2">
+                <a
+                  v-if="canEditSchoolDetails()"
+                  class="editField"
+                  @click="toggleEditWithAddress"
+                >+Address</a>
+              </v-col>
             </v-row>
-        </v-container>
-        <!--    new contact sheet -->
-        <v-dialog
-                v-model="openSchoolStatusEditCard"
-                inset
-                no-click-animation
-                scrollable
-                persistent
-                max-width="30%"
-        >
-            <SchoolStatus v-if="openSchoolStatusEditCard" @updateSchoolDates="handleUpdatesToSchoolStatus"
-                          @schoolStatus:closeEditSchoolStatusPage="openSchoolStatusEditCard = !openSchoolStatusEditCard"
-                          :school-open-date="schoolDetailsCopy.openedDate"
-                          :school-close-date="schoolDetailsCopy.closedDate" :school-status="schoolDetailsCopy.status"
-                          :isSchoolStatusUpdateAllowed="isSchoolStatusUpdateAllowed"></SchoolStatus>
-        </v-dialog>
-    </v-form>
+            <v-row
+              v-else
+              no-gutters
+              class="d-flex justify-start mt-2"
+            >
+              <v-col
+                v-if="editing || hasMailingAddress()"
+                cols="3"
+              >
+                <v-row no-gutters>
+                  <v-col>
+                    <v-icon
+                      class="pb-1 mr-1"
+                      right
+                    >
+                      mdi-email-outline
+                    </v-icon>
+                    <span>Mailing Address</span>
+                  </v-col>
+                </v-row>
+                <v-row
+                  v-if="!editing"
+                  no-gutters
+                >
+                  <v-col>
+                    <v-row
+                      class="ml-9"
+                      no-gutters
+                    >
+                      <v-col>
+                        <span style="word-break: break-all;">{{
+                            getMailingAddressItem('addressLine1')
+                          }}</span>
+                      </v-col>
+                    </v-row>
+                    <v-row no-gutters>
+                      <v-col class="ml-9">
+                        <span style="word-break: break-all;">{{
+                            getMailingAddressItem('addressLine2')
+                          }}</span>
+                      </v-col>
+                    </v-row>
+                    <v-row no-gutters>
+                      <v-col class="ml-9">
+                        <span style="word-break: break-all;">{{
+                            getMailingAddressItem('city') + ', ' + getMailingAddressItem('provinceCode') + ', ' + getMailingAddressItem('countryCode')
+                          }}</span>
+                      </v-col>
+                    </v-row>
+                    <v-row no-gutters>
+                      <v-col class="ml-9">
+                        <span style="word-break: break-all;">{{
+                            getMailingAddressItem('postal')
+                          }}</span>
+                      </v-col>
+                    </v-row>
+                  </v-col>
+                </v-row>
+              </v-col>
+              <v-col
+                v-if="displayPhysicalAddress()"
+                cols="3"
+              >
+                <v-row>
+                  <v-col>
+                    <v-icon
+                      class="pb-1 mr-1"
+                      right
+                    >
+                      mdi-home-outline
+                    </v-icon>
+                    <span>Physical Address</span>
+                  </v-col>
+                </v-row>
+                <v-row
+                  v-if="!hasSamePhysicalAddress && !editing"
+                  no-gutters
+                >
+                  <v-col>
+                    <v-row no-gutters>
+                      <v-col class="ml-9">
+                        <span style="word-break: break-all;">{{
+                            getPhysicalAddressItem('addressLine1')
+                          }}</span>
+                      </v-col>
+                    </v-row>
+                    <v-row no-gutters>
+                      <v-col class="ml-9">
+                        <span style="word-break: break-all;">{{
+                            getPhysicalAddressItem('addressLine2')
+                          }}</span>
+                      </v-col>
+                    </v-row>
+                    <v-row no-gutters>
+                      <v-col class="ml-9">
+                        <span style="word-break: break-all;">{{
+                            getPhysicalAddressItem('city') + ', ' + getPhysicalAddressItem('provinceCode') + ', ' + getPhysicalAddressItem('countryCode')
+                          }}</span>
+                      </v-col>
+                    </v-row>
+                    <v-row no-gutters>
+                      <v-col class="ml-9">
+                        <span style="word-break: break-all;">{{
+                            getPhysicalAddressItem('postal')
+                          }}</span>
+                      </v-col>
+                    </v-row>
+                  </v-col>
+                </v-row>
+                <v-row
+                  v-else
+                  no-gutters
+                >
+                  <v-col>
+                    <v-row
+                      class="ml-9"
+                      no-gutters
+                    >
+                      <v-col
+                        v-if="sameAsMailingCheckbox && !editing"
+                        class="fontItalic"
+                      >
+                        <span>Same as Mailing Address</span>
+                      </v-col>
+                    </v-row>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+          </div>
+          <div v-else>
+            <v-row
+              v-if="!showAddress"
+              no-gutters
+              class="mt-5"
+            >
+              <v-col class="mt-1 d-flex justify-start">
+                <v-icon color="#1976d2">
+                  {{
+                    addressButton.icon
+                  }}
+                </v-icon>
+                <a
+                  class="ml-1 toggle"
+                  @click="toggleAddressForm"
+                >{{
+                    addressButton.label
+                  }}</a>
+              </v-col>
+            </v-row>
+            <v-row v-if="showAddress">
+              <v-col>
+                <v-row
+                  no-gutters
+                  class="mt-3"
+                >
+                  <v-col cols="4">
+                    <h3>Mailing Address</h3>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="4">
+                    <v-text-field
+                      id="newSchoolMailingAddressLine1Input"
+                      v-model="getMailingAddressCopy()[0].addressLine1"
+                      :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
+                      class="pt-0"
+                      variant="underlined"
+                      :maxlength="255"
+                      label="Line 1"
+                    />
+                  </v-col>
+                  <v-col cols="4">
+                    <v-text-field
+                      id="newSchoolMailingAddressLine2Input"
+                      v-model="getMailingAddressCopy()[0].addressLine2"
+                      :rules="[rules.noSpecialCharactersAddress()]"
+                      class="pt-0"
+                      variant="underlined"
+                      :maxlength="255"
+                      label="Line 2"
+                    />
+                  </v-col>
+                  <v-col cols="4">
+                    <v-text-field
+                      id="newContactMailingAddressCityInput"
+                      v-model="getMailingAddressCopy()[0].city"
+                      :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
+                      class="pt-0"
+                      variant="underlined"
+                      :maxlength="255"
+                      label="City"
+                    />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="4">
+                    <v-autocomplete
+                      id="newSchoolMailingAddressProvinceInput"
+                      v-model="getMailingAddressCopy()[0].provinceCode"
+                      :rules="[rules.required()]"
+                      class="pt-0"
+                      label="Province"
+                      variant="underlined"
+                      :items="provinceCodeValues"
+                      item-title="label"
+                      item-value="provinceCode"
+                    />
+                  </v-col>
+                  <v-col cols="4">
+                    <v-autocomplete
+                      id="newSchoolMailingAddressCountryInput"
+                      v-model="getMailingAddressCopy()[0].countryCode"
+                      :rules="[rules.required()]"
+                      class="pt-0"
+                      label="Country"
+                      variant="underlined"
+                      :items="countryCodeValues"
+                      item-title="label"
+                      item-value="countryCode"
+                    />
+                  </v-col>
+                  <v-col cols="4">
+                    <v-text-field
+                      id="newContactMailingAddressPostalCodeInput"
+                      v-model="getMailingAddressCopy()[0].postal"
+                      :rules="[rules.required(), rules.postalCode()]"
+                      variant="underlined"
+                      class="pt-0"
+                      :maxlength="6"
+                      label="Postal Code"
+                    />
+                  </v-col>
+                </v-row>
+                <v-row
+                  v-if="displayPhysicalAddress"
+                  no-gutters
+                >
+                  <v-col>
+                    <v-row
+                      no-gutters
+                      class="mt-5"
+                    >
+                      <v-col cols="4">
+                        <h3>Physical Address</h3>
+                      </v-col>
+                    </v-row>
+                    <v-row
+                      v-if="sameAsMailingCheckbox"
+                      no-gutters
+                      class="pt-4"
+                    >
+                      <v-checkbox
+                        id="sameAsMailingCheckbox"
+                        v-model="sameAsMailingCheckbox"
+                        dense
+                        label="Same as Mailing Address"
+                        class="mt-n3 pt-0"
+                        @update:model-value="clickSameAsAddressButton"
+                      />
+                    </v-row>
+                    <v-row
+                      v-else
+                      no-gutters
+                    >
+                      <v-col>
+                        <v-row>
+                          <v-col cols="4">
+                            <v-text-field
+                              id="newSchoolPhysicalAddressLine1Input"
+                              v-model="getPhysicalAddressCopy()[0].addressLine1"
+                              :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
+                              class="pt-0"
+                              variant="underlined"
+                              :maxlength="255"
+                              label="Line 1"
+                            />
+                          </v-col>
+                          <v-col cols="4">
+                            <v-text-field
+                              id="newSchoolPhysicalAddressLine2Input"
+                              v-model="getPhysicalAddressCopy()[0].addressLine2"
+                              :rules="[rules.noSpecialCharactersAddress()]"
+                              class="pt-0"
+                              variant="underlined"
+                              :maxlength="255"
+                              label="Line 2"
+                            />
+                          </v-col>
+                          <v-col cols="4">
+                            <v-text-field
+                              id="newContactPhysicalAddressCityInput"
+                              v-model="getPhysicalAddressCopy()[0].city"
+                              :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
+                              class="pt-0"
+                              variant="underlined"
+                              :maxlength="255"
+                              label="City"
+                            />
+                          </v-col>
+                        </v-row>
+                        <v-row>
+                          <v-col cols="4">
+                            <v-autocomplete
+                              id="newSchoolPhysicalAddressProvinceInput"
+                              v-model="getPhysicalAddressCopy()[0].provinceCode"
+                              :rules="[rules.required()]"
+                              class="pt-0"
+                              label="Province"
+                              variant="underlined"
+                              :items="provinceCodeValues"
+                              item-title="label"
+                              item-value="provinceCode"
+                            />
+                          </v-col>
+                          <v-col cols="4">
+                            <v-autocomplete
+                              id="newSchoolPhysicalAddressCountryInput"
+                              v-model="getPhysicalAddressCopy()[0].countryCode"
+                              :rules="[rules.required()]"
+                              class="pt-0"
+                              variant="underlined"
+                              label="Country"
+                              :items="countryCodeValues"
+                              item-title="label"
+                              item-value="countryCode"
+                            />
+                          </v-col>
+                          <v-col cols="4">
+                            <v-text-field
+                              id="newContactPhysicalAddressPostalCodeInput"
+                              v-model="getPhysicalAddressCopy()[0].postal"
+                              :rules="[rules.required(), rules.postalCode()]"
+                              class="pt-0"
+                              variant="underlined"
+                              :maxlength="6"
+                              label="Postal Code"
+                            />
+                          </v-col>
+                        </v-row>
+                      </v-col>
+                    </v-row>
+                    <v-row
+                      v-if="!sameAsMailingCheckbox"
+                      no-gutters
+                      class="pt-4"
+                    >
+                      <v-col>
+                        <v-checkbox
+                          id="sameAsMailingCheckbox"
+                          v-model="sameAsMailingCheckbox"
+                          dense
+                          label="Same as Mailing Address"
+                          class="mt-n3 pt-0"
+                          @update:model-value="clickSameAsAddressButton"
+                        />
+                      </v-col>
+                    </v-row>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+          </div>
+        </v-col>
+      </v-row>
+    </v-container>
+    <!--    new contact sheet -->
+    <v-dialog
+      v-model="openSchoolStatusEditCard"
+      inset
+      no-click-animation
+      scrollable
+      persistent
+      max-width="30%"
+    >
+      <SchoolStatus
+        v-if="openSchoolStatusEditCard"
+        :school-open-date="schoolDetailsCopy.openedDate"
+        :school-close-date="schoolDetailsCopy.closedDate"
+        :school-status="schoolDetailsCopy.status"
+        :is-school-status-update-allowed="isSchoolStatusUpdateAllowed"
+        @updateSchoolDates="handleUpdatesToSchoolStatus"
+        @schoolStatus:closeEditSchoolStatusPage="openSchoolStatusEditCard = !openSchoolStatusEditCard"
+      />
+    </v-dialog>
+  </v-form>
 </template>
 
 <script>
@@ -631,11 +1154,11 @@ import {notificationsStore} from '@/store/modules/notifications';
 
 export default {
   name: 'Details',
-  mixins: [alertMixin],
   components: {
     SchoolStatus,
     PrimaryButton
   },
+  mixins: [alertMixin],
   props: {
     schoolID: {
       type: String,
@@ -677,7 +1200,7 @@ export default {
   },
   computed: {
     ...mapState(authStore, ['isAuthenticated', 'userInfo', 'SCHOOL_ADMIN_ROLE', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
-    ...mapState(instituteStore, ['facilityTypeCodes', 'schoolCategoryTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolOrganizationTypeCodes', 'schoolReportingRequirementTypeCodes', 'schoolNeighborhoodLearningCodes', 'gradeCodes', 'provinceCodes','countryCodes', 'schoolCategoryFacilityTypesMap']),
+    ...mapState(instituteStore, ['facilityTypeCodes', 'schoolCategoryTypeCodes', 'activeSchoolCategoryTypeCodes', 'schoolOrganizationTypeCodes', 'schoolReportingRequirementTypeCodes', 'schoolNeighborhoodLearningCodes', 'gradeCodes', 'provinceCodes', 'countryCodes', 'schoolCategoryFacilityTypesMap']),
     ...mapState(notificationsStore, ['notification']),
     dataReady: function () {
       return this.userInfo;
@@ -690,8 +1213,7 @@ export default {
     },
     allowedFacilityTypeCodesForSchoolCategoryCode() {
       if (this.schoolDetailsCopy?.schoolCategoryCode) {
-        let resultingFacilityTypes = getAllowedFacilityTypes(this.schoolDetailsCopy?.schoolCategoryCode, this.schoolDetailsCopy?.facilityTypeCode)?.
-          map(schoolCatFacilityTypeCode => this.facilityTypeCodes.find(facTypCode => facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
+        let resultingFacilityTypes = getAllowedFacilityTypes(this.schoolDetailsCopy?.schoolCategoryCode, this.schoolDetailsCopy?.facilityTypeCode)?.map(schoolCatFacilityTypeCode => this.facilityTypeCodes.find(facTypCode => facTypCode.facilityTypeCode === schoolCatFacilityTypeCode));
 
         if (resultingFacilityTypes !== undefined) {
           let result = resultingFacilityTypes.filter(facType => facType.facilityTypeCode === this.schoolDetailsCopy.facilityTypeCode);
@@ -801,11 +1323,11 @@ export default {
           this.sortNotes();
           this.setHasSamePhysicalFlag();
         }).catch(error => {
-          console.error(error);
-          this.setFailureAlert(error.response?.data?.message || error.message);
-        }).finally(() => {
-          this.loading = false;
-        });
+        console.error(error);
+        this.setFailureAlert(error.response?.data?.message || error.message);
+      }).finally(() => {
+        this.loading = false;
+      });
     },
     sortGrades() {
       const gradeList = [];
@@ -859,11 +1381,11 @@ export default {
         .then(response => {
           this.district = response.data;
         }).catch(error => {
-          console.error(error);
-          this.setFailureAlert(error.response?.data?.message || error.message);
-        }).finally(() => {
-          this.loading = false;
-        });
+        console.error(error);
+        this.setFailureAlert(error.response?.data?.message || error.message);
+      }).finally(() => {
+        this.loading = false;
+      });
     },
     getAuthorityDetails(authorityId) {
       this.authority = '';
@@ -872,11 +1394,11 @@ export default {
           this.authority = response.data;
           this.populateExtraAuthorityFields(this.authority);
         }).catch(error => {
-          console.error(error);
-          this.setFailureAlert(error.response?.data?.message || error.message);
-        }).finally(() => {
-          this.loading = false;
-        });
+        console.error(error);
+        this.setFailureAlert(error.response?.data?.message || error.message);
+      }).finally(() => {
+        this.loading = false;
+      });
     },
     populateExtraAuthorityFields(authority) {
       authority.status = getStatusAuthorityOrSchool(authority);
@@ -984,7 +1506,7 @@ export default {
       }
 
       let mailing = this.schoolDetailsCopy.addresses.filter(address => address.addressTypeCode === 'MAILING');
-      if(!mailing[0]?.city){
+      if (!mailing[0]?.city) {
         this.schoolDetailsCopy.addresses = null;
       }
 
@@ -1056,7 +1578,7 @@ export default {
 
     async clickSameAsAddressButton() {
       await this.$nextTick();
-      this.$refs.schoolDetailsForm.validate();
+      await this.$refs.schoolDetailsForm.validate();
     },
     displayPhysicalAddress() {
       return (this.editing && !this.isOffshoreSchoolSelected()) || (!this.editing && !this.isOffshoreSchool);

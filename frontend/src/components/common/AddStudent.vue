@@ -1,48 +1,79 @@
 <template>
   <v-card class="add-student">
-
     <v-alert
       id="addStudentAlert"
+      v-model="alert"
       density="compact"
       outlined
       dismissible
-      v-model="alert"
       :class="alertType"
       class="mb-3"
     >
       {{ alertMessage }}
     </v-alert>
 
-    <v-row row d-flex nowrap align="center" justify="center" class="px-2">
-      <v-text-field class="pr-5"
-                    clearable
-                    v-model="penNumber"
-                    placeholder="Enter a Student's PEN"
-                    :rules="penRules"
-                    maxlength="9"
-                    counter="9"
-                    id="studentPenTextField"
-                    @keyup.enter="enterPushed()">
-      </v-text-field>
-      <PrimaryButton width="6rem" :disabled="enableSearchButton" id="searchPenBtn" text="Search"
-                     :loading="isSearchingStudent"
-                     :click-action="searchStudentForGivenPEN"/>
+    <v-row
+      row
+      d-flex
+      nowrap
+      align="center"
+      justify="center"
+      class="px-2"
+    >
+      <v-text-field
+        id="studentPenTextField"
+        v-model="penNumber"
+        class="pr-5"
+        clearable
+        placeholder="Enter a Student's PEN"
+        :rules="penRules"
+        maxlength="9"
+        counter="9"
+        @keyup.enter="enterPushed()"
+      />
+      <PrimaryButton
+        id="searchPenBtn"
+        width="6rem"
+        :disabled="enableSearchButton"
+        text="Search"
+        :loading="isSearchingStudent"
+        :click-action="searchStudentForGivenPEN"
+      />
     </v-row>
 
-    <v-row no-gutters v-if="showStudentDetails">
-      <v-icon x-large v-if="showStudentDetails" class="pr-2">mdi-account-box-outline</v-icon>
+    <v-row
+      v-if="showStudentDetails"
+      no-gutters
+    >
+      <v-icon
+        v-if="showStudentDetails"
+        x-large
+        class="pr-2"
+      >
+        mdi-account-box-outline
+      </v-icon>
       <div :class="['d-flex', 'flex-column']">
-        <strong>{{ this.student['studentName'] }}</strong>
-        <span>{{ this.student['studentLocalID'] }}</span>
-        <span>{{ this.student['studentDoB'] }}</span>
-        <span>{{ this.student['studentGender'] }}</span>
+        <strong>{{ student['studentName'] }}</strong>
+        <span>{{ student['studentLocalID'] }}</span>
+        <span>{{ student['studentDoB'] }}</span>
+        <span>{{ student['studentGender'] }}</span>
       </div>
     </v-row>
-    <v-row class="justify-end pr-2 pt-2" >
-      <PrimaryButton id="cancelAddStudentBtn" secondary text="Cancel" class="mr-2"
-                     :click-action="closeForm"></PrimaryButton>
-      <PrimaryButton :disabled="!studentExist" id="addStudentToNewMessageBtn"
-                     text="Add" width="5rem" :click-action="addStudentToMessage"></PrimaryButton>
+    <v-row class="justify-end pr-2 pt-2">
+      <PrimaryButton
+        id="cancelAddStudentBtn"
+        secondary
+        text="Cancel"
+        class="mr-2"
+        :click-action="closeForm"
+      />
+      <PrimaryButton
+        id="addStudentToNewMessageBtn"
+        :disabled="!studentExist"
+        text="Add"
+        width="5rem"
+        :click-action="addStudentToMessage"
+      />
     </v-row>
   </v-card>
 </template>

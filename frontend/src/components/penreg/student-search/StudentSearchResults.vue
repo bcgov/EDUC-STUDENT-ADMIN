@@ -1,80 +1,164 @@
 <template>
-  <div id="searchResults" class="px-3" style="width: 100%" :overlay=false>
-    <v-row no-gutters v-if="showCompare">
+  <div
+    id="searchResults"
+    class="px-3"
+    style="width: 100%"
+    :overlay="false"
+  >
+    <v-row
+      v-if="showCompare"
+      no-gutters
+    >
       <v-col>
-        <span id="numberResults" class="px-4 pb-2">{{ studentSearchResponse.totalElements }} Results</span>
+        <span
+          id="numberResults"
+          class="px-4 pb-2"
+        >{{ studentSearchResponse.totalElements }} Results</span>
       </v-col>
-      <v-col>
-      </v-col>
+      <v-col />
       <v-col>
         <CompareDemographicModal
+          v-model:selected-records="selectedRecords"
           :disabled="selectedRecords.length<2 || selectedRecords.length>3 || !EDIT_STUDENT_RECORDS_ROLE"
-          :selectedRecords.sync="selectedRecords"></CompareDemographicModal>
+        />
       </v-col>
     </v-row>
     <v-data-table
-        id="dataTable"
-            v-model="selectedRecords"
-            :headers="headers"
-            :items="studentSearchResponse.content"
-            :page.sync="pageNumber"
-            :items-per-page="studentSearchResponse.pageable.pageSize"
-            hide-default-footer
-            :header-props="{ sortIcon: null }"
-            item-key="studentID"
-            :loading="searchLoading || loading"
-            @page-count="studentSearchResponse.pageable.pageNumber = $event">
-      <template v-for="h in headers" #[`header.${h.value}`]="{ header }">
-        <span @click="updateSortParams(header.topValue)" :key="h.id" class="top-column-item" :title="header.topTooltip">
+      id="dataTable"
+      v-model="selectedRecords"
+      v-model:page="pageNumber"
+      :headers="headers"
+      :items="studentSearchResponse.content"
+      :items-per-page="studentSearchResponse.pageable.pageSize"
+      hide-default-footer
+      :header-props="{ sortIcon: null }"
+      item-key="studentID"
+      :loading="searchLoading || loading"
+      @page-count="studentSearchResponse.pageable.pageNumber = $event"
+    >
+      <template
+        v-for="h in headers"
+        #[`header.${h.value}`]="{ header }"
+      >
+        <span
+          :key="h.id"
+          class="top-column-item"
+          :title="header.topTooltip"
+          @click="updateSortParams(header.topValue)"
+        >
           {{ header.topText }}
         </span>
-        <span :key="h.id" @click="updateSortParams(header.topValue)">
-          <em :key="h.id"  v-if="header.sortable && headerSortParams.currentSort === header.topValue"
-              :class="['sort-header mt-1 pl-2 v-icon fas active', headerSortParams.currentSortAsc ? 'fa-sort-up' : 'fa-sort-down']"/>
+        <span
+          :key="h.id"
+          @click="updateSortParams(header.topValue)"
+        >
+          <em
+            v-if="header.sortable && headerSortParams.currentSort === header.topValue"
+            :key="h.id"
+            :class="['sort-header mt-1 pl-2 v-icon fas active', headerSortParams.currentSortAsc ? 'fa-sort-up' : 'fa-sort-down']"
+          />
         </span>
-        <span @click="updateSortParams(header.topValue)" :key="h.id" class="double-column-item" :title="header.doubleTooltip">{{header.doubleText}}</span>
-        <br :key="h.id" />
-        <span @click="updateSortParams(header.topValue)" :key="h.id" class="bottom-column-item" :title="header.bottomTooltip">{{ header.bottomText }}</span>
+        <span
+          :key="h.id"
+          class="double-column-item"
+          :title="header.doubleTooltip"
+          @click="updateSortParams(header.topValue)"
+        >{{ header.doubleText }}</span>
+        <br :key="h.id">
+        <span
+          :key="h.id"
+          class="bottom-column-item"
+          :title="header.bottomTooltip"
+          @click="updateSortParams(header.topValue)"
+        >{{ header.bottomText }}</span>
       </template>
       <template #item="props">
         <tr>
-          <td v-for="header in props.headers" :key="header.id" :class="{'table-checkbox' :header.id, 'row-hightlight': isMergedOrDeceased(props.item) }">
-            <v-checkbox v-if="header.type" :input-value="props.isSelected" color="#606060" @update:model-value="props.select($event)"></v-checkbox>
-            <div v-else @click="viewStudentDetails(props.item.studentID)" class="tableCell">
-              <span v-if="header.topValue === 'dob'" class="top-column-item">{{
-                  formatDob(props.item[header.topValue], 'uuuu-MM-dd', 'uuuu/MM/dd')
-                }}</span>
-              <span v-else-if="header.topValue === 'pen'" class="top-column-item">
+          <td
+            v-for="header in props.headers"
+            :key="header.id"
+            :class="{'table-checkbox' :header.id, 'row-hightlight': isMergedOrDeceased(props.item) }"
+          >
+            <v-checkbox
+              v-if="header.type"
+              :input-value="props.isSelected"
+              color="#606060"
+              @update:model-value="props.select($event)"
+            />
+            <div
+              v-else
+              class="tableCell"
+              @click="viewStudentDetails(props.item.studentID)"
+            >
+              <span
+                v-if="header.topValue === 'dob'"
+                class="top-column-item"
+              >{{
+                formatDob(props.item[header.topValue], 'uuuu-MM-dd', 'uuuu/MM/dd')
+              }}</span>
+              <span
+                v-else-if="header.topValue === 'pen'"
+                class="top-column-item"
+              >
                 {{ props.item[header.topValue] }}
-                <ClipboardButton v-if="props.item[header.topValue]" :copyText="props.item[header.topValue]" icon='$copy'/>
+                <ClipboardButton
+                  v-if="props.item[header.topValue]"
+                  :copy-text="props.item[header.topValue]"
+                  icon="$copy"
+                />
               </span>
-              <span v-else class="top-column-item">{{ props.item[header.topValue] }}</span>
-              <span class="double-column-item">{{props.item[header.doubleValue]}}</span>
+              <span
+                v-else
+                class="top-column-item"
+              >{{ props.item[header.topValue] }}</span>
+              <span class="double-column-item">{{ props.item[header.doubleValue] }}</span>
               <br>
               <!-- if top and bottom value are the same, do not display the bottom value -->
-              <v-tooltip v-if="header.bottomValue === 'memo'" bottom>
+              <v-tooltip
+                v-if="header.bottomValue === 'memo'"
+                bottom
+              >
                 <template #activator="{ on }">
                   <span class="bottom-column-item">{{
-                      firstMemoChars(props.item[header.bottomValue])
-                    }}</span>
+                    firstMemoChars(props.item[header.bottomValue])
+                  }}</span>
                 </template>
-                <span>{{props.item[header.bottomValue]}}</span>
+                <span>{{ props.item[header.bottomValue] }}</span>
               </v-tooltip>
-              <span v-else-if="['usualLastName','usualFirstName','usualMiddleNames'].includes(header.bottomValue)" class="bottom-column-item" >{{getUsualName(props.item[header.bottomValue], props.item[header.topValue] )}}</span>
-              <span v-else class="bottom-column-item" >{{props.item[header.bottomValue]}}</span>
+              <span
+                v-else-if="['usualLastName','usualFirstName','usualMiddleNames'].includes(header.bottomValue)"
+                class="bottom-column-item"
+              >{{ getUsualName(props.item[header.bottomValue], props.item[header.topValue] ) }}</span>
+              <span
+                v-else
+                class="bottom-column-item"
+              >{{ props.item[header.bottomValue] }}</span>
             </div>
           </td>
         </tr>
       </template>
     </v-data-table>
-    <v-row class="pt-2" justify="end">
-      <v-col cols="4" v-if="!showCompare">
+    <v-row
+      class="pt-2"
+      justify="end"
+    >
+      <v-col
+        v-if="!showCompare"
+        cols="4"
+      >
         <span id="numberResultsSecond">{{ studentSearchResponse.totalElements }} Results</span>
       </v-col>
       <v-col cols="4">
-        <v-pagination color="#38598A" v-model="pageNumber" :length="studentSearchResponse.totalPages"></v-pagination>
+        <v-pagination
+          v-model="pageNumber"
+          color="#38598A"
+          :length="studentSearchResponse.totalPages"
+        />
       </v-col>
-      <v-col cols="4" id="currentItemsDisplay">
+      <v-col
+        id="currentItemsDisplay"
+        cols="4"
+      >
         Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ studentSearchResponse.totalElements || 0 }}
       </v-col>
     </v-row>
@@ -184,12 +268,6 @@ export default {
       ],
     };
   },
-  mounted() {
-    this.clearStaleData();
-    if(!this.showCompare){
-      this.headers.splice(0,1);
-    }
-  },
   watch: {
     pageNumber: {
       handler() {
@@ -224,6 +302,12 @@ export default {
         }
       }
     },
+  },
+  mounted() {
+    this.clearStaleData();
+    if(!this.showCompare){
+      this.headers.splice(0,1);
+    }
   },
   computed: {
     ...mapState(studentSearchStore, ['headerSortParams', 'studentSearchResponse', 'useNameVariants', 'isAuditHistorySearch', 'statusCode']),

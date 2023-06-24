@@ -1,60 +1,84 @@
 <template>
-  <div id="file-list" class="px-3" style="width: 100%" :overlay="false">
+  <div
+    id="file-list"
+    class="px-3"
+    style="width: 100%"
+    :overlay="false"
+  >
     <v-data-table
       id="dataTable"
+      v-model:page="pageNumber"
       :class="[{'filterable-table': hasFilterHeader}, 'batch-file-table']"
       :headers="headers"
       :items="penRequestBatchResponse.content"
-      :page.sync="pageNumber"
       :items-per-page="penRequestBatchResponse.pageable.pageSize"
       hide-default-footer
       item-key="penRequestBatchID"
       :loading="loadingTable"
       @page-count="penRequestBatchResponse.pageable.pageNumber = $event"
     >
-      <template v-for="h in headers" #[`header.${h.value}`]="{ header }">
+      <template
+        v-for="h in headers"
+        #[`header.${h.value}`]="{ header }"
+      >
         <v-checkbox 
           v-if="header.type === 'select'" 
           :key="h.id" 
-          :class="['file-checkbox', {'header-checkbox': hasFilterHeader}]" 
-          color="#606060"
           v-model="allSelected" 
+          :class="['file-checkbox', {'header-checkbox': hasFilterHeader}]"
+          color="#606060" 
           :indeterminate="partialSelected" 
           @update:model-value="selectAllFiles"
-        ></v-checkbox>
-        <span v-else :key="h.id" :class="{'file-column' : !header.countable}" :title="header.tooltip">
+        />
+        <span
+          v-else
+          :key="h.id"
+          :class="{'file-column' : !header.countable}"
+          :title="header.tooltip"
+        >
           {{ header.text }}
         </span>
         <template v-if="hasFilterHeader">
-          <br :key="h.id" />
-          <span :key="h.id" :class="header.countable ? 'countable-column-header' : 'file-column'">
+          <br :key="h.id">
+          <span
+            :key="h.id"
+            :class="header.countable ? 'countable-column-header' : 'file-column'"
+          >
             <v-checkbox 
               v-if="header.filterName" 
-              class="file-checkbox filter-checkbox" 
-              color="#606060"
               v-model="header.isFiltered" 
+              class="file-checkbox filter-checkbox"
+              color="#606060" 
               @update:model-value="selectFilter(header)"
-            ></v-checkbox>
+            />
           </span>
         </template>
       </template>
       <template #item="props">
-        <tr :class="tableRowClass(props.item)"
+        <tr
+          :class="tableRowClass(props.item)"
           @click="selectItem(props.item)"
           @mouseover="enableActions(props.item)"
           @mouseleave="disableActions(props.item)"
         >
-          <td v-for="header in props.headers" :key="header.id" :class="{[header.value]: true, 'select-column': header.type}">
+          <td
+            v-for="header in props.headers"
+            :key="header.id"
+            :class="{[header.value]: true, 'select-column': header.type}"
+          >
             <div v-if="header.type === 'select'">
               <v-row no-gutters>
                 <v-checkbox
+                  v-model="props.item.isSelected"
                   class="file-checkbox"
                   color="#606060"
-                  v-model="props.item.isSelected"
                   :disabled="props.item.sagaInProgress"
                   @click.stop="handleFileCheckBoxClicked(props.item)"
-                ></v-checkbox>
-                <v-tooltip bottom v-if="props.item.sagaInProgress">
+                />
+                <v-tooltip
+                  v-if="props.item.sagaInProgress"
+                  bottom
+                >
                   <template #activator="{ on, attrs }">
                     <v-icon
                       color="warning"
@@ -69,36 +93,63 @@
                 </v-tooltip>
               </v-row>
             </div>
-            <div v-else :class="{'countable-column-div': header.countable}">
-              <span v-if="header.countable" class="countable-column-data">{{ props.item[header.value] || '' }}</span>
+            <div
+              v-else
+              :class="{'countable-column-div': header.countable}"
+            >
+              <span
+                v-if="header.countable"
+                class="countable-column-data"
+              >{{ props.item[header.value] || '' }}</span>
               <span v-else-if="header.value==='submissionNumber'">
-                <a v-if="!props.item.sagaInProgress" class="submission" @click.stop="handleSubmissionNumberClicked(props.item[header.value])">{{props.item[header.value] }}</a>
-                <span v-else class="submission">{{props.item[header.value] }}</span>
+                <a
+                  v-if="!props.item.sagaInProgress"
+                  class="submission"
+                  @click.stop="handleSubmissionNumberClicked(props.item[header.value])"
+                >{{ props.item[header.value] }}</a>
+                <span
+                  v-else
+                  class="submission"
+                >{{ props.item[header.value] }}</span>
               </span>
-              <PrimaryButton v-else-if="header.value === 'actions'" 
+              <PrimaryButton
+                v-else-if="header.value === 'actions'" 
                 :id="hoveredOveredRowBatchID === props.item.penRequestBatchID ? 'more-info-action': ''"
                 :class="{'file-action': hoveredOveredRowBatchID != props.item.penRequestBatchID}"
                 short 
                 text="More Info"
                 :disabled="props.item.sagaInProgress"
                 :click-action="clickMoreInfo"
-              ></PrimaryButton>
-              <span v-else>{{formatTableColumn(header.format, props.item[header.value]) }}</span>
-              <v-tooltip v-if="header.value==='mincode' && isUnarchived(props.item)" right>
+              />
+              <span v-else>{{ formatTableColumn(header.format, props.item[header.value]) }}</span>
+              <v-tooltip
+                v-if="header.value==='mincode' && isUnarchived(props.item)"
+                right
+              >
                 <template #activator="{ on }">
-                  <v-icon small color="#2E8540" class="ml-1">
-                    {{isUnarchivedBatchChanged(props.item) ? 'fa-sync-alt' : 'fa-unlock'}}
+                  <v-icon
+                    small
+                    color="#2E8540"
+                    class="ml-1"
+                  >
+                    {{ isUnarchivedBatchChanged(props.item) ? 'fa-sync-alt' : 'fa-unlock' }}
                   </v-icon>
                 </template>
-                <span>{{getUpdateUser(props.item)}}</span>
+                <span>{{ getUpdateUser(props.item) }}</span>
               </v-tooltip>
-              <v-tooltip v-if="header.value==='mincode' && isRearchived(props.item)" right>
+              <v-tooltip
+                v-if="header.value==='mincode' && isRearchived(props.item)"
+                right
+              >
                 <template #activator="{ on }">
-                  <v-icon color="#2E8540" class="ml-1">
-                    {{'preview'}}
+                  <v-icon
+                    color="#2E8540"
+                    class="ml-1"
+                  >
+                    {{ 'preview' }}
                   </v-icon>
                 </template>
-                <span>{{getUpdateUser(props.item)}}</span>
+                <span>{{ getUpdateUser(props.item) }}</span>
               </v-tooltip>
             </div>
           </td>
@@ -107,13 +158,13 @@
     </v-data-table>
     <Pagination
       v-model="pageNumber"
-      :dataResponse="penRequestBatchResponse"
-      :pageCommands="pageCommands"
+      :data-response="penRequestBatchResponse"
+      :page-commands="pageCommands"
     />
     <PenRequestBatchHistoryModal
       v-if="historyModalOpen"
       v-model="historyModalOpen"
-      :batchFile="hoveredOveredRow"
+      :batch-file="hoveredOveredRow"
     />
   </div>
 </template>
@@ -132,12 +183,12 @@ import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
 
 export default {
   name: 'PenRequestBatchDataTable',
-  mixins: [alertMixin],
   components: {
     Pagination,
     PrimaryButton,
     PenRequestBatchHistoryModal
   },
+  mixins: [alertMixin],
   props: {
     headers: {
       type: Array,

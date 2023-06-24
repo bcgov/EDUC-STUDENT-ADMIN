@@ -1,58 +1,117 @@
 <template>
-  <div id="sldHistory" class="px-0 pt-3 ma-0" style="width: 100%;">
+  <div
+    id="sldHistory"
+    class="px-0 pt-3 ma-0"
+    style="width: 100%;"
+  >
     <v-row no-gutters>
       <v-col cols="11">
-      <div id="studentInfo" class="px-1 pt-2 pb-5"><strong class="pr-3">{{ formatPen(student.pen) }}</strong>
-        {{ getStudentName(student) }}
-      </div>
+        <div
+          id="studentInfo"
+          class="px-1 pt-2 pb-5"
+        >
+          <strong class="pr-3">{{ formatPen(student.pen) }}</strong>
+          {{ getStudentName(student) }}
+        </div>
       </v-col>
       <v-col cols="1">
-        <CompareDemographicModal :clearOnExit="false" :disabled="isStudentUpdated || !PROCESS_STUDENT_ROLE" :selectedRecords.sync="compareStudent"></CompareDemographicModal>
+        <CompareDemographicModal
+          v-model:selected-records="compareStudent"
+          :clear-on-exit="false"
+          :disabled="isStudentUpdated || !PROCESS_STUDENT_ROLE"
+        />
       </v-col>
     </v-row>
     <v-row>
       <v-col cols="12">
         <v-data-table
-            class="sldTable"
-            id="sldHistoryDataTable"
-            :headers="headers"
-            :items="sldData"
-            :items-per-page="10"
-            :loading="loading"
-            no-data-text="No SLD history found"
-            :hide-default-footer="sldData.length===0"
+          id="sldHistoryDataTable"
+          class="sldTable"
+          :headers="headers"
+          :items="sldData"
+          :items-per-page="10"
+          :loading="loading"
+          no-data-text="No SLD history found"
+          :hide-default-footer="sldData.length===0"
         >
-          <template v-for="h in headers" #[`header.${h.value}`]="{ header }">
-              <span :title="header.tooltip" :key="h.id" :class="{'file-column' : !header.countable}">
-                {{ header.text }}
-              </span>
+          <template
+            v-for="h in headers"
+            #[`header.${h.value}`]="{ header }"
+          >
+            <span
+              :key="h.id"
+              :title="header.tooltip"
+              :class="{'file-column' : !header.countable}"
+            >
+              {{ header.text }}
+            </span>
           </template>
           <template #item="props">
             <tr>
-              <td v-for="header in props.headers" :key="header.id" :class="[header.id, existSldUsualName(props.item)? 'two-rows-column' : 'one-row-column']">
-                <div v-if="header.value === 'mincode'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+              <td
+                v-for="header in props.headers"
+                :key="header.id"
+                :class="[header.id, existSldUsualName(props.item)? 'two-rows-column' : 'one-row-column']"
+              >
+                <div
+                  v-if="header.value === 'mincode'"
+                  :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+                >
                   <span class="top-field-item">{{ props.item.distNo + props.item.schlNo }}</span>
-                  <span v-if="existSldUsualName(props.item)" class="bottom-field-item"></span>
+                  <span
+                    v-if="existSldUsualName(props.item)"
+                    class="bottom-field-item"
+                  />
                 </div>
-                <div v-else-if="header.value === 'legalSurname'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+                <div
+                  v-else-if="header.value === 'legalSurname'"
+                  :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+                >
                   <span class="top-field-item">{{ props.item[header.value] }}</span>
-                  <span v-if="existSldUsualName(props.item)" class="bottom-field-item">{{ props.item['usualSurname']}}</span>
+                  <span
+                    v-if="existSldUsualName(props.item)"
+                    class="bottom-field-item"
+                  >{{ props.item['usualSurname'] }}</span>
                 </div>
-                <div v-else-if="header.value === 'legalGivenName'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+                <div
+                  v-else-if="header.value === 'legalGivenName'"
+                  :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+                >
                   <span class="top-field-item">{{ props.item[header.value] }}</span>
-                  <span v-if="existSldUsualName(props.item)" class="bottom-field-item">{{ props.item['usualGivenName']}}</span>
+                  <span
+                    v-if="existSldUsualName(props.item)"
+                    class="bottom-field-item"
+                  >{{ props.item['usualGivenName'] }}</span>
                 </div>
-                <div v-else-if="header.value === 'legalMiddleName'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+                <div
+                  v-else-if="header.value === 'legalMiddleName'"
+                  :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+                >
                   <span class="top-field-item">{{ props.item[header.value] }}</span>
-                  <span v-if="existSldUsualName(props.item)" class="bottom-field-item">{{ props.item['usualMiddleName']}}</span>
+                  <span
+                    v-if="existSldUsualName(props.item)"
+                    class="bottom-field-item"
+                  >{{ props.item['usualMiddleName'] }}</span>
                 </div>
-                <div v-else-if="header.value === 'birthDate'" :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+                <div
+                  v-else-if="header.value === 'birthDate'"
+                  :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+                >
                   <span class="top-field-item">{{ formatDob(props.item[header.value],'uuuuMMdd','uuuu/MM/dd') }}</span>
-                  <span v-if="existSldUsualName(props.item)" class="bottom-field-item"></span>
+                  <span
+                    v-if="existSldUsualName(props.item)"
+                    class="bottom-field-item"
+                  />
                 </div>
-                <div v-else :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'">
+                <div
+                  v-else
+                  :class="existSldUsualName(props.item)? 'flex-column-div' : 'flex-row-div'"
+                >
                   <span class="top-field-item">{{ props.item[header.value] }}</span>
-                  <span v-if="existSldUsualName(props.item)" class="bottom-field-item"></span>
+                  <span
+                    v-if="existSldUsualName(props.item)"
+                    class="bottom-field-item"
+                  />
                 </div>
               </td>
             </tr>
@@ -76,15 +135,15 @@ import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'StudentSLDHistory',
+  components: {
+    CompareDemographicModal
+  },
   mixins: [alertMixin],
   props: {
     student: {
       type: Object,
       required: true
     }
-  },
-  components: {
-    CompareDemographicModal
   },
   data() {
     return {

@@ -1,214 +1,302 @@
 <template>
-    <v-container fluid class="fill-height px-0 mb-4">
-      <v-form v-model="isValidSearchForm">
-        <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
-               style="background-color:white;">
+  <v-container
+    fluid
+    class="fill-height px-0 mb-4"
+  >
+    <v-form v-model="isValidSearchForm">
+      <v-row
+        no-gutters
+        class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
+        style="background-color:white;"
+      >
+        <v-col
+          cols="9"
+          xl="8"
+          class="pa-0"
+        >
+          <v-sheet
+            class="mx-0 px-2 py-1 d-flex align-end align-self-start"
+            color="rgba(0, 0, 0, 0.06)"
+            outlined
+            rounded
+          >
+            <v-col class="pa-0">
+              <v-row
+                no-gutters
+                class="pa-0"
+              >
+                <v-col
+                  cols="2"
+                  class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3"
+                >
+                  <v-text-field
+                    id="submissionNumber"
+                    v-model="searchInputParams.submissionNumber"
+                    tabindex="1"
+                    color="#003366"
+                    label="Submission #"
+                    maxlength="8"
+                    dense
+                    autofocus
+                    @keyup.enter="enterPushed()"
+                    @input="searchHasValues"
+                  />
+                </v-col>
+                <v-col
+                  cols="2"
+                  class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3"
+                >
+                  <v-text-field
+                    id="minCode"
+                    v-model="searchInputParams.mincode"
+                    tabindex="2"
+                    color="#003366"
+                    label="Mincode"
+                    maxlength="8"
+                    :rules="validateField(searchInputParams.minCode, isValidMincode, minCodeHint)"
+                    dense
+                    autofocus
+                    @keyup.enter="enterPushed()"
+                    @input="searchHasValues"
+                  />
+                </v-col>
+                <v-col
+                  cols="3"
+                  class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3"
+                >
+                  <v-text-field
+                    id="schoolName"
+                    v-model="searchInputParams.schoolName"
+                    tabindex="3"
+                    color="#003366"
+                    label="School Name"
+                    dense
+                    @keyup.enter="enterPushed()"
+                    @input="searchHasValues"
+                  />
+                </v-col>
+                <v-col
+                  cols="2"
+                  class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3"
+                >
+                  <FormattedTextField
+                    :id="'loadDateFrom'"
+                    v-model="searchInputParams.load.startDate"
+                    :clearable="false"
+                    :filled="false"
+                    :format="formatDob"
+                    :label="'Date From'"
+                    :outlined="false"
+                    :rules="[validateStartDate,validateEndDate]"
+                    :tabindex="'4'"
+                    maxlength="8"
+                    @input="searchHasValues"
+                    @keyup.enter.native="enterPushed()"
+                  />
+                </v-col>
+                <v-col
+                  cols="2"
+                  class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3"
+                >
+                  <FormattedTextField
+                    :id="'loadDateTo'"
+                    v-model="searchInputParams.load.endDate"
+                    :clearable="false"
+                    :filled="false"
+                    :format="formatDob"
+                    :label="'Date To'"
+                    :outlined="false"
+                    :rules="[validateEndDate]"
+                    :tabindex="'5'"
+                    maxlength="8"
+                    @input="searchHasValues"
+                    @keyup.enter.native="enterPushed()"
+                  />
+                </v-col>
+              </v-row>
+              <v-row
+                no-gutters
+                class="pa-0"
+              >
+                <v-col
+                  cols="2"
+                  class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3"
+                >
+                  <v-text-field
+                    id="legalLastName"
+                    v-model="searchInputParams.prbStudent.legalLastName"
+                    tabindex="6"
+                    color="#003366"
+                    label="Legal Surname"
+                    maxlength="255"
+                    dense
+                    @keyup.enter="enterPushed()"
+                    @input="[searchHasValues(), upperCaseInput(searchInputParams.prbStudent, 'legalLastName')]"
+                  />
+                </v-col>
+                <v-col
+                  cols="2"
+                  class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3"
+                >
+                  <v-text-field
+                    id="legalFirstName"
+                    v-model="searchInputParams.prbStudent.legalFirstName"
+                    tabindex="7"
+                    color="#003366"
+                    label="Legal Given"
+                    maxlength="255"
+                    dense
+                    @keyup.enter="enterPushed()"
+                    @input="[searchHasValues(), upperCaseInput(searchInputParams.prbStudent, 'legalFirstName')]"
+                  />
+                </v-col>
+                <v-col
+                  cols="2"
+                  class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3"
+                >
+                  <v-text-field
+                    id="legalMiddleNames"
+                    v-model="searchInputParams.prbStudent.legalMiddleNames"
+                    tabindex="8"
+                    color="#003366"
+                    label="Legal Middle"
+                    maxlength="255"
+                    dense
+                    @keyup.enter="enterPushed()"
+                    @input="[searchHasValues(), upperCaseInput(searchInputParams.prbStudent, 'legalMiddleNames')]"
+                  />
+                </v-col>
+                <v-col
+                  cols="1"
+                  class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3"
+                >
+                  <v-text-field
+                    id="genderCode"
+                    v-model="searchInputParams.prbStudent.genderCode"
+                    tabindex="9"
+                    color="#003366"
+                    label="Gender"
+                    maxlength="1"
+                    :rules="validateField(searchInputParams.prbStudent.genderCode, isValidGender, genderHint)"
+                    dense
+                    @keyup.enter="enterPushed()"
+                    @input="[searchHasValues(), upperCaseInput(searchInputParams.prbStudent, 'genderCode')]"
+                  />
+                </v-col>
+                <v-col
+                  cols="2"
+                  class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3"
+                >
+                  <FormattedTextField
+                    :id="'dob'"
+                    v-model="searchInputParams.prbStudent.dob"
+                    :clearable="false"
+                    :filled="false"
+                    :format="formatDob"
+                    :label="'Birth Date'"
+                    :outlined="false"
+                    :rules="[validateDOB]"
+                    :tabindex="'10'"
+                    maxlength="8"
+                    @input="searchHasValues"
+                    @keyup.enter.native="enterPushed()"
+                  />
+                </v-col>
+                <v-col
+                  cols="2"
+                  class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3"
+                >
+                  <v-text-field
+                    id="assignedPEN"
+                    v-model="searchInputParams.prbStudent.assignedPEN"
+                    tabindex="11"
+                    color="#003366"
+                    label="PEN"
+                    maxlength="9"
+                    :rules="validateField(searchInputParams.prbStudent.assignedPEN, isValidPEN, penHint)"
+                    dense
+                    @keyup.enter="enterPushed()"
+                    @input="searchHasValues"
+                  />
+                </v-col>
+              </v-row>
+            </v-col>
 
-          <v-col cols="9" xl="8" class="pa-0">
-            <v-sheet
-                class="mx-0 px-2 py-1 d-flex align-end align-self-start"
-                color="rgba(0, 0, 0, 0.06)"
-                outlined
-                rounded
-            >
-              <v-col class="pa-0">
-                <v-row no-gutters class="pa-0">
-                  <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                    <v-text-field
-                        id='submissionNumber'
-                        v-model="searchInputParams.submissionNumber"
-                        tabindex="1"
-                        color="#003366"
-                        label="Submission #"
-                        maxlength="8"
-                        @keyup.enter="enterPushed()"
-                        v-on:input="searchHasValues"
-                        dense
-                        autofocus
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                    <v-text-field
-                        id='minCode'
-                        v-model="searchInputParams.mincode"
-                        tabindex="2"
-                        color="#003366"
-                        label="Mincode"
-                        maxlength="8"
-                        @keyup.enter="enterPushed()"
-                        v-on:input="searchHasValues"
-                        :rules="validateField(searchInputParams.minCode, isValidMincode, minCodeHint)"
-                        dense
-                        autofocus
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="3" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                    <v-text-field
-                        id='schoolName'
-                        v-model="searchInputParams.schoolName"
-                        tabindex="3"
-                        color="#003366"
-                        label="School Name"
-                        @keyup.enter="enterPushed()"
-                        v-on:input="searchHasValues"
-                        dense
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                    <FormattedTextField
-                        :id="'loadDateFrom'"
-                        v-model="searchInputParams.load.startDate"
-                        :clearable="false"
-                        :filled="false"
-                        :format="formatDob"
-                        :label="'Date From'"
-                        :outlined="false"
-                        :rules="[validateStartDate,validateEndDate]"
-                        :tabindex="'4'"
-                        maxlength="8"
-                        @input="searchHasValues"
-                        @keyup.enter.native="enterPushed()"
-                    ></FormattedTextField>
-                  </v-col>
-                  <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                    <FormattedTextField
-                        :id="'loadDateTo'"
-                        v-model="searchInputParams.load.endDate"
-                        :clearable="false"
-                        :filled="false"
-                        :format="formatDob"
-                        :label="'Date To'"
-                        :outlined="false"
-                        :rules="[validateEndDate]"
-                        :tabindex="'5'"
-                        maxlength="8"
-                        @input="searchHasValues"
-                        @keyup.enter.native="enterPushed()"
-                    ></FormattedTextField>
-                  </v-col>
-                </v-row>
-                <v-row no-gutters class="pa-0">
-                  <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                    <v-text-field
-                        id='legalLastName'
-                        v-model="searchInputParams.prbStudent.legalLastName"
-                        tabindex="6"
-                        color="#003366"
-                        label="Legal Surname"
-                        maxlength="255"
-                        @keyup.enter="enterPushed()"
-                        v-on:input="[searchHasValues(), upperCaseInput(searchInputParams.prbStudent, 'legalLastName')]"
-                        dense
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                    <v-text-field
-                        id='legalFirstName'
-                        v-model="searchInputParams.prbStudent.legalFirstName"
-                        tabindex="7"
-                        color="#003366"
-                        label="Legal Given"
-                        maxlength="255"
-                        @keyup.enter="enterPushed()"
-                        v-on:input="[searchHasValues(), upperCaseInput(searchInputParams.prbStudent, 'legalFirstName')]"
-                        dense
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                    <v-text-field
-                        id='legalMiddleNames'
-                        v-model="searchInputParams.prbStudent.legalMiddleNames"
-                        tabindex="8"
-                        color="#003366"
-                        label="Legal Middle"
-                        maxlength="255"
-                        @keyup.enter="enterPushed()"
-                        v-on:input="[searchHasValues(), upperCaseInput(searchInputParams.prbStudent, 'legalMiddleNames')]"
-                        dense
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="1" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                    <v-text-field
-                        id='genderCode'
-                        v-model="searchInputParams.prbStudent.genderCode"
-                        tabindex="9"
-                        color="#003366"
-                        label="Gender"
-                        maxlength="1"
-                        @keyup.enter="enterPushed()"
-                        v-on:input="[searchHasValues(), upperCaseInput(searchInputParams.prbStudent, 'genderCode')]"
-                        :rules="validateField(searchInputParams.prbStudent.genderCode, isValidGender, genderHint)"
-                        dense
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                    <FormattedTextField
-                      :id="'dob'"
-                      v-model="searchInputParams.prbStudent.dob"
-                      :clearable="false"
-                      :filled="false"
-                      :format="formatDob"
-                      :label="'Birth Date'"
-                      :outlined="false"
-                      :rules="[validateDOB]"
-                      :tabindex="'10'"
-                      maxlength="8"
-                      @input="searchHasValues"
-                      @keyup.enter.native="enterPushed()"
-                    ></FormattedTextField>
-                  </v-col>
-                  <v-col cols="2" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                    <v-text-field
-                        id='assignedPEN'
-                        v-model="searchInputParams.prbStudent.assignedPEN"
-                        tabindex="11"
-                        color="#003366"
-                        label="PEN"
-                        maxlength="9"
-                        @keyup.enter="enterPushed()"
-                        v-on:input="searchHasValues"
-                        :rules="validateField(searchInputParams.prbStudent.assignedPEN, isValidPEN, penHint)"
-                        dense
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-              </v-col>
+            <PrimaryButton
+              id="refine-action"
+              class="mr-2 mb-3"
+              secondary
+              text="Clear"
+              :click-action="clearSearchParams"
+            />
+            <PrimaryButton
+              id="search-action"
+              :disabled="!isValidSearchForm || !searchEnabled"
+              :loading="searchLoading && searchEnabled"
+              class="mr-0 mb-3"
+              text="Search"
+              :click-action="search"
+            />
+          </v-sheet>
+        </v-col>
 
-              <PrimaryButton id="refine-action" class="mr-2 mb-3" secondary text="Clear" :click-action="clearSearchParams"></PrimaryButton>
-              <PrimaryButton id="search-action" :disabled="!isValidSearchForm || !searchEnabled"
-                             :loading="searchLoading && searchEnabled" class="mr-0 mb-3" text="Search"
-                             :click-action="search"></PrimaryButton>
-            </v-sheet>
-          </v-col>
-
-          <v-col cols="3" xl="4" class="pa-0 d-flex justify-end align-end">
-            <v-menu offset-y>
-              <template #activator="{ on }">
-                <PrimaryButton id="view-action" :loading="loadingRequestIDs" :disabled="!filesSelected" :on="on" text="View" icon="mdi-chevron-down" largeIcon></PrimaryButton>
-              </template>
-              <v-list>
-                <v-list-item id="view-list-action" :click-action="clickViewList" link>
-                  <v-list-item-title>View List</v-list-item-title>
-                </v-list-item>
-                <v-list-item id="view-details-action" :click-action="clickViewDetails" link>
-                  <v-list-item-title>View Details</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-            <PrimaryButton id="view-list-action" class="ml-2" :disabled="!filesSelected" text="Unarchive"
-                           :loading="unarchiving" :click-action="unarchive"></PrimaryButton>
-          </v-col>
-
-        </v-row>
-      </v-form>
-        <v-row no-gutters class="py-2" style="background-color:white;">
-          <ArchivedRequestBatchList
-            :searchParams="searchParams"
-            :reloading="!unarchiving"
-            @table-load="searchLoading=false"
-          ></ArchivedRequestBatchList>
-        </v-row>
-    </v-container>
+        <v-col
+          cols="3"
+          xl="4"
+          class="pa-0 d-flex justify-end align-end"
+        >
+          <v-menu offset-y>
+            <template #activator="{ on }">
+              <PrimaryButton
+                id="view-action"
+                :loading="loadingRequestIDs"
+                :disabled="!filesSelected"
+                :on="on"
+                text="View"
+                icon="mdi-chevron-down"
+                large-icon
+              />
+            </template>
+            <v-list>
+              <v-list-item
+                id="view-list-action"
+                :click-action="clickViewList"
+                link
+              >
+                <v-list-item-title>View List</v-list-item-title>
+              </v-list-item>
+              <v-list-item
+                id="view-details-action"
+                :click-action="clickViewDetails"
+                link
+              >
+                <v-list-item-title>View Details</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+          <PrimaryButton
+            id="view-list-action"
+            class="ml-2"
+            :disabled="!filesSelected"
+            text="Unarchive"
+            :loading="unarchiving"
+            :click-action="unarchive"
+          />
+        </v-col>
+      </v-row>
+    </v-form>
+    <v-row
+      no-gutters
+      class="py-2"
+      style="background-color:white;"
+    >
+      <ArchivedRequestBatchList
+        :search-params="searchParams"
+        :reloading="!unarchiving"
+        @table-load="searchLoading=false"
+      />
+    </v-row>
+  </v-container>
 </template>
 
 <script>

@@ -1,59 +1,144 @@
 <template>
-  <v-container class="containerSetup" fluid>
+  <v-container
+    class="containerSetup"
+    fluid
+  >
     <v-col class="mt-1 d-flex justify-start">
-      <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
-      <a class="ml-1" @click="backButtonClick">Return to District List</a>
+      <v-icon
+        small
+        color="#1976d2"
+      >
+        mdi-arrow-left
+      </v-icon>
+      <a
+        class="ml-1"
+        @click="backButtonClick"
+      >Return to District List</a>
     </v-col>
     <v-row v-if="loading">
       <v-col class="d-flex justify-center">
         <v-progress-circular
-            class="mt-16"
-            :size="70"
-            :width="7"
-            color="primary"
-            indeterminate
-            :active="loading"
-        ></v-progress-circular>
+          class="mt-16"
+          :size="70"
+          :width="7"
+          color="primary"
+          indeterminate
+          :active="loading"
+        />
       </v-col>
     </v-row>
     <template v-if="!loading">
       <v-row>
-        <v-col cols="12" class="d-flex justify-start">
+        <v-col
+          cols="12"
+          class="d-flex justify-start"
+        >
           <v-row no-gutters>
             <v-col cols="12">
-              <h2 class="subjectHeading">{{districtDetails.districtNumber}} - {{districtDetails.displayName}}</h2>
+              <h2 class="subjectHeading">
+                {{
+                  districtDetails.districtNumber
+                }} - {{
+                  districtDetails.displayName
+                }}
+              </h2>
             </v-col>
           </v-row>
         </v-col>
       </v-row>
       <v-row cols="2">
         <v-col class="d-flex justify-start">
-          <v-chip class="mr-3" color="#A9D18E">Active</v-chip>
-          <v-chip class="mr-3" color="#9DC3E6">Pending Start Date</v-chip>
-          <v-chip color="#F4B183">Pending End Date</v-chip>
+          <v-chip
+            class="mr-3"
+            color="#A9D18E"
+          >
+            Active
+          </v-chip>
+          <v-chip
+            class="mr-3"
+            color="#9DC3E6"
+          >
+            Pending Start Date
+          </v-chip>
+          <v-chip color="#F4B183">
+            Pending End Date
+          </v-chip>
         </v-col>
         <v-col class="d-flex justify-end">
-          <PrimaryButton id="viewDistrictDetailsButton" class="mr-2" secondary icon-left icon="mdi-domain" :to="`/district/${districtID}`" text="View District Details" ></PrimaryButton>
-          <PrimaryButton v-if="canEditDistrictContact" icon-left width="11em" icon="mdi-plus-thick" text="New Contact" :click-action="newContactSheet = !newContactSheet"></PrimaryButton>
+          <PrimaryButton
+            id="viewDistrictDetailsButton"
+            class="mr-2"
+            secondary
+            icon-left
+            icon="mdi-domain"
+            :to="`/district/${districtID}`"
+            text="View District Details"
+          />
+          <PrimaryButton
+            v-if="canEditDistrictContact"
+            icon-left
+            width="11em"
+            icon="mdi-plus-thick"
+            text="New Contact"
+            :click-action="showNewContactSheet"
+          />
         </v-col>
       </v-row>
-      <div v-for="districtContactType in districtContactTypes" :key="districtContactType.code">
-        <v-row>
+      <div
+        v-for="districtContactType in districtContactTypes"
+        :key="districtContactType.code"
+        class="mt-5"
+      >
+        <v-row
+          class="mb-1"
+          no-gutters
+        >
           <v-col>
-            <h2 style="color:#1A5A96">{{districtContactType.label}}</h2>
+            <h2 style="color:#1A5A96">
+              {{
+                districtContactType.label
+              }}
+            </h2>
           </v-col>
         </v-row>
         <v-row v-if="!districtContactType.publiclyAvailable">
           <v-col>
-            <v-alert color="#003366" density="compact" text type="info">Contacts of this type are only available to the ministry and not available to public.</v-alert>
+            <v-alert
+              style="background-color: #003366"
+              color="white"
+              density="compact"
+              variant="text"
+              type="info"
+            >
+              Contacts of this type are only available to the
+              ministry and not available to public.
+            </v-alert>
           </v-col>
         </v-row>
-        <v-row cols="2" v-if="districtContacts.has(districtContactType.districtContactTypeCode)">
-          <v-col cols="5" lg="4" v-for="contact in districtContacts.get(districtContactType.districtContactTypeCode)" :key="contact.schoolId">
-            <DistrictContact :contact="contact" @editDistrictContact:doShowEditDistrictContactForm="showDistrictEditForm(contact)" @removeSchoolContact:showConfirmationPrompt="removeContact" :canEditDistrictContact="canEditDistrictContact" />
+        <v-row
+          v-if="districtContacts.has(districtContactType.districtContactTypeCode)"
+          class="mt-0 mb-0"
+          cols="2"
+        >
+          <v-col
+            v-for="contact in districtContacts.get(districtContactType.districtContactTypeCode)"
+            :key="contact.schoolId"
+            cols="5"
+            lg="4"
+          >
+            <DistrictContact
+              :contact="contact"
+              :can-edit-district-contact="canEditDistrictContact"
+              @editDistrictContact:doShowEditDistrictContactForm="showDistrictEditForm(contact)"
+              @removeSchoolContact:showConfirmationPrompt="removeContact"
+            />
           </v-col>
         </v-row>
-        <v-row cols="2" v-else>
+        <v-row
+          v-else
+          no-gutters
+          cols="2"
+        >
           <v-col>
             <p>No contacts of this type have been listed.</p>
           </v-col>
@@ -69,29 +154,29 @@
     >
       <NewDistrictContactPage
         v-if="newContactSheet"
-        :districtContactTypes="this.districtContactTypes"
-        :districtID="this.$route.params.districtID"
+        :district-contact-types="districtContactTypes"
+        :district-i-d="$route.params.districtID"
         @newDistrictContact:closeNewDistrictContactPage="newContactSheet = !newContactSheet"
         @newDistrictContact:addNewDistrictContact="newDistrictContactAdded"
       />
     </v-bottom-sheet>
     <v-bottom-sheet
-        v-model="editContactSheet"
-        inset
-        no-click-animation
-        scrollable
-        persistent
+      v-model="editContactSheet"
+      inset
+      no-click-animation
+      scrollable
+      persistent
     >
       <EditDistrictContactPage
-          v-if="editContactSheet"
-          :contact="editContact"
-          :districtContactTypes="this.districtContactTypes"
-          :districtID="this.$route.params.districtID"
-          @editDistrictContact:cancelEditDistrictContactPage="editContactSheet = !editContactSheet"
-          @editDistrictContact:editDistrictContactSuccess="contactEditSuccess"
+        v-if="editContactSheet"
+        :contact="editContact"
+        :district-contact-types="districtContactTypes"
+        :district-i-d="$route.params.districtID"
+        @editDistrictContact:cancelEditDistrictContactPage="editContactSheet = !editContactSheet"
+        @editDistrictContact:editDistrictContactSuccess="contactEditSuccess"
       />
     </v-bottom-sheet>
-    <ConfirmationDialog ref="confirmationDialog"/>
+    <ConfirmationDialog ref="confirmationDialog" />
   </v-container>
 </template>
 
@@ -105,14 +190,13 @@ import NewDistrictContactPage from '@/components/institute/NewDistrictContactPag
 import EditDistrictContactPage from '@/components/institute/EditDistrictContactPage.vue';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import alertMixin from '@/mixins/alertMixin';
-import { mapState } from 'pinia';
+import {mapState} from 'pinia';
 import {sortBy} from 'lodash';
 import {isExpired} from '@/utils/institute/status';
 import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'DistrictContactsPage',
-  mixins: [alertMixin],
   components: {
     NewDistrictContactPage,
     EditDistrictContactPage,
@@ -120,6 +204,7 @@ export default {
     PrimaryButton,
     ConfirmationDialog,
   },
+  mixins: [alertMixin],
   props: {
     districtID: {
       type: String,
@@ -138,7 +223,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated','userInfo', 'DISTRICT_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'DISTRICT_ADMIN_ROLE']),
     loading() {
       return this.loadingCount !== 0;
     },
@@ -156,7 +241,7 @@ export default {
       ApiService.apiAxios.get(Routes.cache.DISTRICT_CONTACT_TYPE_CODES + '?active=true')
         .then(response => {
           this.districtContactTypes = response.data;
-          this.districtContactTypes.sort((a,b) => a.displayOrder - b.displayOrder);
+          this.districtContactTypes.sort((a, b) => a.displayOrder - b.displayOrder);
         })
         .catch(error => {
           console.error(error);
@@ -165,9 +250,9 @@ export default {
           this.loadingCount -= 1;
         });
     },
-    getThisDistrictsContacts(){
+    getThisDistrictsContacts() {
       this.loadingCount += 1;
-      let searchDistrictID = this.districtID ? this.districtID: this.userInfo.activeInstituteIdentifier;
+      let searchDistrictID = this.districtID ? this.districtID : this.userInfo.activeInstituteIdentifier;
 
       ApiService.apiAxios.get(`${Routes.institute.DISTRICT_DATA_URL}/${searchDistrictID}`)
         .then(response => {
@@ -175,7 +260,7 @@ export default {
           this.districtContacts = new Map();
           response.data.contacts = sortBy(response.data.contacts, ['firstName']);
           response.data.contacts.forEach(contact => {
-            if(!isExpired(contact.expiryDate)) {
+            if (!isExpired(contact.expiryDate)) {
               if (!this.districtContacts.has(contact.districtContactTypeCode)) {
                 this.districtContacts.set(contact.districtContactTypeCode, [contact]);
                 return;
@@ -189,6 +274,9 @@ export default {
         }).finally(() => {
           this.loadingCount -= 1;
         });
+    },
+    showNewContactSheet() {
+      this.newContactSheet = !this.newContactSheet;
     },
     backButtonClick() {
       this.$router.push({name: 'instituteDistrict'});
@@ -209,10 +297,12 @@ export default {
       const opts = {
         color: '#003366',
         dense: false,
+        dark: true,
+        width: 400,
         titleBold: true,
         resolveText: 'Remove'
       };
-      this.$refs.confirmationDialog.open('Please Confirm', 'Are you sure you want to remove this contact?',opts)
+      this.$refs.confirmationDialog.open('Please Confirm', 'Are you sure you want to remove this contact?', opts)
         .then((result) => {
           if (result) { // the component returns true only when user confirms the dialog.
             this.loadingCount += 1;
@@ -235,32 +325,32 @@ export default {
 <style scoped>
 
 .v-dialog__content /deep/ .v-bottom-sheet {
-  width: 30% !important;
+    width: 30% !important;
 }
 
-@media screen and (max-width: 950px){
-  .v-dialog__content /deep/ .v-bottom-sheet {
-    width: 60% !important;
-  }
+@media screen and (max-width: 950px) {
+    .v-dialog__content /deep/ .v-bottom-sheet {
+        width: 60% !important;
+    }
 }
 
-.containerSetup{
-  padding-right: 32em !important;
-  padding-left: 32em !important;
+.containerSetup {
+    padding-right: 32em !important;
+    padding-left: 32em !important;
 }
 
 @media screen and (max-width: 1950px) {
-  .containerSetup{
-    padding-right: 20em !important;
-    padding-left: 20em !important;
-  }
+    .containerSetup {
+        padding-right: 20em !important;
+        padding-left: 20em !important;
+    }
 }
 
 @media screen and (max-width: 1200px) {
-  .containerSetup{
-    padding-right: 4em !important;
-    padding-left: 4em !important;
-  }
+    .containerSetup {
+        padding-right: 4em !important;
+        padding-left: 4em !important;
+    }
 }
 
 </style>

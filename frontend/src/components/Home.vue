@@ -1,61 +1,110 @@
 <template>
   <div>
     <v-row class="pb-6">
-      <v-col cols="8" v-if="VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE">
-        <DashboardTable v-if="!isLoadingBatch" title="School Requests" colour="#CED6E2"
-                        :tableData="penRequestData"
-        ></DashboardTable>
-        <v-container v-else-if="isLoadingBatch" class="full-height" fluid>
-          <article id="pen-display-container" class="top-banner full-height">
-            <v-row align="center" justify="center">
+      <v-col
+        v-if="VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE"
+        cols="8"
+      >
+        <DashboardTable
+          v-if="!isLoadingBatch"
+          title="School Requests"
+          colour="#CED6E2"
+          :table-data="penRequestData"
+        />
+        <v-container
+          v-else-if="isLoadingBatch"
+          class="full-height"
+          fluid
+        >
+          <article
+            id="pen-display-container"
+            class="top-banner full-height"
+          >
+            <v-row
+              align="center"
+              justify="center"
+            >
               <v-progress-circular
                 :size="70"
                 :width="7"
                 color="primary"
                 indeterminate
-              ></v-progress-circular>
+              />
             </v-row>
           </article>
         </v-container>
       </v-col>
-      <v-col cols="4" v-if="ADVANCED_SEARCH_ROLE || VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE">
-        <v-card flat color="#F2F2F2" class="mt-2" height="100%">
+      <v-col
+        v-if="ADVANCED_SEARCH_ROLE || VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE"
+        cols="4"
+      >
+        <v-card
+          flat
+          color="#F2F2F2"
+          class="mt-2"
+          height="100%"
+        >
           <template v-if="VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE">
             <v-row class="pt-6 px-8">
-              <v-card-title class="pa-0"><h3>Archived Requests Search</h3></v-card-title>
+              <v-card-title class="pa-0">
+                <h3>Archived Requests Search</h3>
+              </v-card-title>
             </v-row>
             <v-row class="pt-4 px-8">
-              <v-col cols="5" class="pa-0">
+              <v-col
+                cols="5"
+                class="pa-0"
+              >
                 <v-text-field
                   id="requestsMincodeField"
+                  v-model="mincode"
                   background-color="white"
                   density="compact"
                   label="Enter district or mincode"
                   maxlength="8"
-                  v-model="mincode"
                   variant="outlined"
                   :rules="mincodeRules"
                   @keyup.enter="enterPushedForRequests()"
-                ></v-text-field>
+                />
               </v-col>
-              <v-col cols="2" class="py-0 px-2">
-                <PrimaryButton id="requestsSearchBtn" :disabled="!isValidRequestsSearchInput" text="Search" width="100%"
-                               :click-action="searchRequests" minheight="40px"
-                ></PrimaryButton>
+              <v-col
+                cols="2"
+                class="py-0 px-2"
+              >
+                <PrimaryButton
+                  id="requestsSearchBtn"
+                  :disabled="!isValidRequestsSearchInput"
+                  text="Search"
+                  width="100%"
+                  :click-action="searchRequests"
+                  minheight="40px"
+                />
               </v-col>
-              <v-col class="py-0 px-2" cols="5">
-                <PrimaryButton class="advanceSearchButtonStyle" id="advanceSearchBtn" text="Advanced Archive Search"
-                               :click-action="archiveSearch" minheight="40px"
-                ></PrimaryButton>
+              <v-col
+                class="py-0 px-2"
+                cols="5"
+              >
+                <PrimaryButton
+                  id="advanceSearchBtn"
+                  class="advanceSearchButtonStyle"
+                  text="Advanced Archive Search"
+                  :click-action="archiveSearch"
+                  minheight="40px"
+                />
               </v-col>
             </v-row>
           </template>
           <template v-if="ADVANCED_SEARCH_ROLE">
             <v-row class="pt-4 px-8">
-              <v-card-title class="pa-0"><h3>Student Search</h3></v-card-title>
+              <v-card-title class="pa-0">
+                <h3>Student Search</h3>
+              </v-card-title>
             </v-row>
             <v-row class="pt-4 px-8">
-              <v-col cols="5" class="pa-0">
+              <v-col
+                cols="5"
+                class="pa-0"
+              >
                 <v-text-field
                   id="penTextField"
                   v-model="pen"
@@ -66,77 +115,153 @@
                   maxlength="9"
                   variant="outlined"
                   @keyup.enter="enterPushed()"
-                >
-                </v-text-field>
+                />
               </v-col>
-              <v-col cols="2" class="py-0 px-2">
-                <PrimaryButton id="quickSearchBtn" :disabled="!isValidPEN" text="Search" width="100%" minheight="40px"
-                               :click-action="quickSearch"
-                ></PrimaryButton>
+              <v-col
+                cols="2"
+                class="py-0 px-2"
+              >
+                <PrimaryButton
+                  id="quickSearchBtn"
+                  :disabled="!isValidPEN"
+                  text="Search"
+                  width="100%"
+                  minheight="40px"
+                  :click-action="quickSearch"
+                />
               </v-col>
-              <v-col class="py-0 px-2" cols="5">
-                <PrimaryButton id="advanceSearchBtn" text="Advanced Student Search"
-                               :click-action="advanceSearch" minheight="40px"
-                ></PrimaryButton>
+              <v-col
+                class="py-0 px-2"
+                cols="5"
+              >
+                <PrimaryButton
+                  id="advanceSearchBtn"
+                  text="Advanced Student Search"
+                  :click-action="advanceSearch"
+                  minheight="40px"
+                />
               </v-col>
             </v-row>
           </template>
         </v-card>
       </v-col>
-      <v-col cols="8" v-if="(VIEW_GMP_REQUESTS_ROLE || VIEW_UMP_REQUESTS_ROLE)">
-        <DashboardTable v-if="!isLoadingGmpUmp" title="Student Requests" colour="#F2F2F2" :tableData="studentData"
-        ></DashboardTable>
-        <v-container fluid class="full-height" v-else-if="isLoadingGmpUmp">
-          <article id="pen-display-container" class="top-banner full-height">
-            <v-row align="center" justify="center">
+      <v-col
+        v-if="(VIEW_GMP_REQUESTS_ROLE || VIEW_UMP_REQUESTS_ROLE)"
+        cols="8"
+      >
+        <DashboardTable
+          v-if="!isLoadingGmpUmp"
+          title="Student Requests"
+          colour="#F2F2F2"
+          :table-data="studentData"
+        />
+        <v-container
+          v-else-if="isLoadingGmpUmp"
+          fluid
+          class="full-height"
+        >
+          <article
+            id="pen-display-container"
+            class="top-banner full-height"
+          >
+            <v-row
+              align="center"
+              justify="center"
+            >
               <v-progress-circular
                 :size="70"
                 :width="7"
                 color="primary"
                 indeterminate
-              ></v-progress-circular>
+              />
             </v-row>
           </article>
         </v-container>
       </v-col>
-      <v-col cols="4" v-if="HAS_STATS_ROLE">
-        <v-card flat color="#F2F2F2" class="mt-2" height="100%">
+      <v-col
+        v-if="HAS_STATS_ROLE"
+        cols="4"
+      >
+        <v-card
+          flat
+          color="#F2F2F2"
+          class="mt-2"
+          height="100%"
+        >
           <v-row class="py-4 px-8">
             <v-col class="py-0">
               <v-row>
                 <router-link :to="{name: 'stats-dashboard'}">
-                  <v-card-title class="pa-0"><h3>Student and System Analytics</h3></v-card-title>
+                  <v-card-title class="pa-0">
+                    <h3>Student and System Analytics</h3>
+                  </v-card-title>
                 </router-link>
               </v-row>
-              <router-link v-if="STUDENT_ANALYTICS_STUDENT_PROFILE" :to="{name: 'analytics-gmp-stats'}">
-                <v-row class="pt-2">Get My PEN</v-row>
+              <router-link
+                v-if="STUDENT_ANALYTICS_STUDENT_PROFILE"
+                :to="{name: 'analytics-gmp-stats'}"
+              >
+                <v-row class="pt-2">
+                  Get My PEN
+                </v-row>
               </router-link>
-              <router-link v-if="STUDENT_ANALYTICS_STUDENT_PROFILE" :to="{name: 'analytics-ump-stats'}">
-                <v-row class="pt-2">Update My PEN</v-row>
+              <router-link
+                v-if="STUDENT_ANALYTICS_STUDENT_PROFILE"
+                :to="{name: 'analytics-ump-stats'}"
+              >
+                <v-row class="pt-2">
+                  Update My PEN
+                </v-row>
               </router-link>
-              <router-link v-if="STUDENT_ANALYTICS_BATCH" :to="{name: 'new-pens'}">
-                <v-row class="pt-2">New PENs</v-row>
+              <router-link
+                v-if="STUDENT_ANALYTICS_BATCH"
+                :to="{name: 'new-pens'}"
+              >
+                <v-row class="pt-2">
+                  New PENs
+                </v-row>
               </router-link>
-              <router-link v-if="STUDENT_ANALYTICS_BATCH" :to="{name: 'merges'}">
-                <v-row class="pt-2">Merges</v-row>
+              <router-link
+                v-if="STUDENT_ANALYTICS_BATCH"
+                :to="{name: 'merges'}"
+              >
+                <v-row class="pt-2">
+                  Merges
+                </v-row>
               </router-link>
             </v-col>
           </v-row>
         </v-card>
       </v-col>
-      <v-col cols="8" v-if="EXCHANGE_ROLE && hasAuthorizedExchangeData">
-        <DashboardTable v-if="!isLoadingExchange" title="Secure Messaging Inbox" colour="#CED6E2"
-                        :tableData="authorizedExchangeData"
-        ></DashboardTable>
-        <v-container v-else-if="isLoadingExchange" class="full-height" fluid>
-          <article class="top-banner full-height">
-            <v-row align="center" justify="center">
+      <v-col
+        v-if="EXCHANGE_ROLE && hasAuthorizedExchangeData"
+        cols="8"
+      >
+        <DashboardTable
+          v-if="!isLoadingExchange"
+          title="Secure Messaging Inbox"
+          colour="#CED6E2"
+          :table-data="authorizedExchangeData"
+        />
+        <v-container
+          v-else-if="isLoadingExchange"
+          class="full-height"
+          fluid
+        >
+          <article
+            id="exchange-display-container"
+            class="top-banner full-height"
+          >
+            <v-row
+              align="center"
+              justify="center"
+            >
               <v-progress-circular
                 :size="70"
                 :width="7"
                 color="primary"
                 indeterminate
-              ></v-progress-circular>
+              />
             </v-row>
           </article>
         </v-container>
@@ -158,7 +283,7 @@ import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
 
 export default {
-  name: 'home',
+  name: 'Home',
   components: {
     PrimaryButton,
     DashboardTable

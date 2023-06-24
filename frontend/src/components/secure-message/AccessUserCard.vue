@@ -9,110 +9,168 @@
                 <v-col cols="10">
                   <strong class="name">{{ `${user.firstName} ${user.lastName}` }}</strong>
                 </v-col>
-                <v-col cols="2" class="d-flex justify-end">
-                  <v-btn :id="`user-edit-button-${user.firstName}-${user.lastName}`"
-                         title="Edit"
-                         color="white"
-                         width="0.5em"
-                         min-width="0.5em"
-                         depressed
-                         @click="clickEditButton"
-                         small
-                         class="mr-2"
+                <v-col
+                  cols="2"
+                  class="d-flex justify-end"
+                >
+                  <v-btn
+                    :id="`user-edit-button-${user.firstName}-${user.lastName}`"
+                    title="Edit"
+                    color="white"
+                    width="0.5em"
+                    min-width="0.5em"
+                    depressed
+                    small
+                    class="mr-2"
+                    @click="clickEditButton"
                   >
-                    <v-icon size="x-large" color="#003366" dark>mdi-pencil</v-icon>
+                    <v-icon
+                      size="x-large"
+                      color="#003366"
+                      dark
+                    >
+                      mdi-pencil
+                    </v-icon>
                   </v-btn>
-                  <v-btn :id="`user-remove-button-${user.firstName}-${user.lastName}`"
-                         title="Remove"
-                         color="white"
-                         width="0.5em"
-                         min-width="0.5em"
-                         depressed
-                         @click="clickDeleteButton"
-                         small
-                         class="mr-2"
+                  <v-btn
+                    :id="`user-remove-button-${user.firstName}-${user.lastName}`"
+                    title="Remove"
+                    color="white"
+                    width="0.5em"
+                    min-width="0.5em"
+                    depressed
+                    small
+                    class="mr-2"
+                    @click="clickDeleteButton"
                   >
-                    <v-icon size="x-large" color="#003366" dark>mdi-delete</v-icon>
+                    <v-icon
+                      size="x-large"
+                      color="#003366"
+                      dark
+                    >
+                      mdi-delete
+                    </v-icon>
                   </v-btn>
-                  <v-btn :id="`user-relink-button-${user.firstName}-${user.lastName}`"
-                         title="Re-Link"
-                         color="white"
-                         width="0.5em"
-                         min-width="0.5em"
-                         depressed
-                         @click="clickRelinkButton"
-                         small
+                  <v-btn
+                    :id="`user-relink-button-${user.firstName}-${user.lastName}`"
+                    title="Re-Link"
+                    color="white"
+                    width="0.5em"
+                    min-width="0.5em"
+                    depressed
+                    small
+                    @click="clickRelinkButton"
                   >
-                    <v-icon size="x-large" color="#003366" dark>mdi-backup-restore</v-icon>
+                    <v-icon
+                      size="x-large"
+                      color="#003366"
+                      dark
+                    >
+                      mdi-backup-restore
+                    </v-icon>
                   </v-btn>
                 </v-col>
               </v-row>
               <v-row no-gutters>
-                <v-col cols="12" class="pt-1">
+                <v-col
+                  cols="12"
+                  class="pt-1"
+                >
                   <span>{{ user.email }}</span>
                 </v-col>
               </v-row>
               <v-row no-gutters>
-                <v-col cols="12" class="pt-1">
-                </v-col>
+                <v-col
+                  cols="12"
+                  class="pt-1"
+                />
               </v-row>
             </v-col>
           </v-row>
         </v-card-title>
-        <v-card-text class="pt-2"
-                     :style="[editState ? {'background-color': '#e7ebf0'} : {'background-color': 'white'}]">
+        <v-card-text
+          class="pt-2"
+          :style="[editState ? {'background-color': '#e7ebf0'} : {'background-color': 'white'}]"
+        >
           <v-chip-group v-if="!editState">
-            <v-chip v-for="role in userRoles"
-                    :key="role.edxRoleCode" disabled>
+            <v-chip
+              v-for="role in userRoles"
+              :key="role.edxRoleCode"
+              disabled
+            >
               {{ getRoleLabel(role) }}
             </v-chip>
           </v-chip-group>
           <v-list-item-group
-              v-model="selectedRoles"
-              @update:model-value="selectedRolesChanged"
-              v-else
-              multiple
+            v-else
+            v-model="selectedRoles"
+            multiple
+            @update:model-value="selectedRolesChanged"
           >
-            <v-list-item :disabled="roleDisabled(newrole)" v-for="newrole in instituteRoles" :key="newrole.edxRoleCode"
-                         :value="newrole.edxRoleCode">
-              <template v-slot="{ active, }">
+            <v-list-item
+              v-for="newrole in instituteRoles"
+              :key="newrole.edxRoleCode"
+              :disabled="roleDisabled(newrole)"
+              :value="newrole.edxRoleCode"
+            >
+              <template #default="{ active, }">
                 <v-list-item-action class="mt-0 mb-2 mr-3">
                   <v-checkbox
-                      :disabled="roleDisabled(newrole)"
-                      :input-value="active"
-                      color="primary"
-                  ></v-checkbox>
+                    :disabled="roleDisabled(newrole)"
+                    :input-value="active"
+                    color="primary"
+                  />
                 </v-list-item-action>
 
                 <v-list-item>
                   <v-list-item-title>{{ newrole.label }}</v-list-item-title>
-                  <div style="color: black; font-weight: bold" v-if="isEDXInstituteAdminSelected && newrole.edxRoleCode === edxInstituteAdminRole">EDX {{ instituteTypeLabel }} Admin users will be set up with all {{ instituteTypeLabel.toLowerCase() }} roles.</div>
+                  <div
+                    v-if="isEDXInstituteAdminSelected && newrole.edxRoleCode === edxInstituteAdminRole"
+                    style="color: black; font-weight: bold"
+                  >
+                    EDX {{ instituteTypeLabel }} Admin users will be set up with all {{ instituteTypeLabel.toLowerCase() }} roles.
+                  </div>
                 </v-list-item>
               </template>
             </v-list-item>
           </v-list-item-group>
         </v-card-text>
         <Transition name="bounce">
-          <v-card-text style="background-color: #e7ebf0;" v-if="deleteState">
+          <v-card-text
+            v-if="deleteState"
+            style="background-color: #e7ebf0;"
+          >
             <v-row no-gutters>
               <v-col class="d-flex justify-center">
                 <span style="font-size: medium; font-weight: bold; color: black">Are you sure you want to remove this users access for the {{
-                    instituteTypeLabel.toLowerCase()
-                  }}?</span>
+                  instituteTypeLabel.toLowerCase()
+                }}?</span>
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col class="mt-0 d-flex justify-end">
-                <PrimaryButton width="5em" :id="`user-cancel-remove-button-${user.firstName}-${user.lastName}`"
-                               text="Cancel" class="mr-2" secondary :on="{click: clickDeleteButton}"></PrimaryButton>
-                <PrimaryButton :id="`user-remove-action-button-${user.firstName}-${user.lastName}`" text="Remove"
-                               :click-action="clickRemoveButton(user)"></PrimaryButton>
+                <PrimaryButton
+                  :id="`user-cancel-remove-button-${user.firstName}-${user.lastName}`"
+                  width="5em"
+                  text="Cancel"
+                  class="mr-2"
+                  secondary
+                  :on="{click: clickDeleteButton}"
+                />
+                <PrimaryButton
+                  :id="`user-remove-action-button-${user.firstName}-${user.lastName}`"
+                  text="Remove"
+                  :click-action="clickRemoveButton(user)"
+                />
               </v-col>
             </v-row>
           </v-card-text>
         </Transition>
         <Transition name="bounce">
-          <v-card-text style="background-color: #e7ebf0;" v-if="relinkState">
+          <v-card-text
+            v-if="relinkState"
+            style="background-color: #e7ebf0;"
+          >
             <v-row no-gutters>
               <v-col class="d-flex justify-center">
                 <span style="font-size: medium; font-weight: bold; color: black">Re-linking an account will remove the current user and resend the activation code so that the user can set up EDX access with their new credential.</span>
@@ -125,27 +183,58 @@
             </v-row>
             <v-row no-gutters>
               <v-col class="mt-3 d-flex justify-end">
-                <PrimaryButton width="5em" :id="`user-cancel-relink-button-${user.firstName}-${user.lastName}`"
-                               text="Cancel" class="mr-2" secondary :on="{click: clickRelinkButton}" :disabled="isRelinking"></PrimaryButton>
-                <PrimaryButton :id="`user-relink-action-button-${user.firstName}-${user.lastName}`" text="Re-Link"
-                               :click-action="clickActionRelinkButton(user)" :disabled="isRelinking" :loading="isRelinking"></PrimaryButton>
+                <PrimaryButton
+                  :id="`user-cancel-relink-button-${user.firstName}-${user.lastName}`"
+                  width="5em"
+                  text="Cancel"
+                  class="mr-2"
+                  secondary
+                  :on="{click: clickRelinkButton}"
+                  :disabled="isRelinking"
+                />
+                <PrimaryButton
+                  :id="`user-relink-action-button-${user.firstName}-${user.lastName}`"
+                  text="Re-Link"
+                  :click-action="clickActionRelinkButton(user)"
+                  :disabled="isRelinking"
+                  :loading="isRelinking"
+                />
               </v-col>
             </v-row>
           </v-card-text>
         </Transition>
         <Transition name="bounce">
-          <v-card-text class="pt-0" style="background-color: #e7ebf0;" v-if="editState">
-            <v-row v-if="!minimumRolesSelected" no-gutters>
+          <v-card-text
+            v-if="editState"
+            class="pt-0"
+            style="background-color: #e7ebf0;"
+          >
+            <v-row
+              v-if="!minimumRolesSelected"
+              no-gutters
+            >
               <v-col class="mt-0 d-flex justify-start">
-                <p style="font-weight: bolder;color: black;">Please select at least one role for {{ user.firstName }}.</p>
+                <p style="font-weight: bolder;color: black;">
+                  Please select at least one role for {{ user.firstName }}.
+                </p>
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col class="mt-0 d-flex justify-end">
-                <PrimaryButton width="5em" :id="`user-cancel-edit-button-${user.firstName}-${user.lastName}`"
-                               text="Cancel" class="mr-2" secondary :on="{click: clickEditButton}"></PrimaryButton>
-                <PrimaryButton :id="`user-save-action-button-${user.firstName}-${user.lastName}`" text="Save"
-                               :disabled="!minimumRolesSelected" :on="{click: clickSaveButton}"></PrimaryButton>
+                <PrimaryButton
+                  :id="`user-cancel-edit-button-${user.firstName}-${user.lastName}`"
+                  width="5em"
+                  text="Cancel"
+                  class="mr-2"
+                  secondary
+                  :on="{click: clickEditButton}"
+                />
+                <PrimaryButton
+                  :id="`user-save-action-button-${user.firstName}-${user.lastName}`"
+                  text="Save"
+                  :disabled="!minimumRolesSelected"
+                  :on="{click: clickSaveButton}"
+                />
               </v-col>
             </v-row>
           </v-card-text>
@@ -163,8 +252,8 @@ import alertMixin from '@/mixins/alertMixin';
 
 export default {
   name: 'AccessUserCard',
-  mixins: [alertMixin],
   components: {PrimaryButton},
+  mixins: [alertMixin],
   props: {
     user: {
       type: Object,
@@ -199,6 +288,20 @@ export default {
       isRelinking: false,
       selectedRoles: []
     };
+  },
+  computed: {
+    isEDXInstituteAdminSelected() {
+      return this.selectedRoles.includes(this.edxInstituteAdminRole);
+    },
+    minimumRolesSelected() {
+      return this.selectedRoles.length > 0;
+    },
+    edxInstituteAdminRole() {
+      if (this.instituteTypeCode === 'SCHOOL') {
+        return 'EDX_SCHOOL_ADMIN';
+      }
+      return 'EDX_DISTRICT_ADMIN';
+    }
   },
   methods: {
     roleDisabled(role) {
@@ -332,20 +435,6 @@ export default {
       });
 
       this.selectedRoles = [...mySelection];
-    }
-  },
-  computed: {
-    isEDXInstituteAdminSelected() {
-      return this.selectedRoles.includes(this.edxInstituteAdminRole);
-    },
-    minimumRolesSelected() {
-      return this.selectedRoles.length > 0;
-    },
-    edxInstituteAdminRole() {
-      if (this.instituteTypeCode === 'SCHOOL') {
-        return 'EDX_SCHOOL_ADMIN';
-      }
-      return 'EDX_DISTRICT_ADMIN';
     }
   }
 };

@@ -1,122 +1,181 @@
 <template>
-  <v-container class="containerSetup" fluid>
+  <v-container
+    class="containerSetup"
+    fluid
+  >
     <v-row class="pt-0">
       <v-col class="pt-0">
-        <v-row no-gutters class='pt-2 d-flex justify-end'>
-          <v-col class='d-flex justify-start'>
-            <h1 id="ministryTeamInboxTitle">{{ ministryTeamName }} Inbox</h1>
+        <v-row
+          no-gutters
+          class="pt-2 d-flex justify-end"
+        >
+          <v-col class="d-flex justify-start">
+            <h1 id="ministryTeamInboxTitle">
+              {{ ministryTeamName }} Inbox
+            </h1>
           </v-col>
         </v-row>
         <v-row class="pt-0">
           <v-col class="mt-1 d-flex justify-start">
-            <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
-            <a class="ml-1" @click="backButtonClick">Return to Dashboard</a>
+            <v-icon
+              small
+              color="#1976d2"
+            >
+              mdi-arrow-left
+            </v-icon>
+            <a
+              class="ml-1"
+              @click="backButtonClick"
+            >Return to Dashboard</a>
           </v-col>
-          <v-col class='d-flex justify-end'>
+          <v-col class="d-flex justify-end">
             <PrimaryButton
-              :iconLeft=true
-              :large-icon=true
-              icon="mdi-account-check-outline"
               id="claimBTN"
+              :icon-left="true"
+              :large-icon="true"
+              icon="mdi-account-check-outline"
               text="Claim"
               class="mr-2"
               :disabled="isClaimDisabled"
               :click-action="claimExchanges"
-            ></PrimaryButton>
+            />
             <PrimaryButton
-              :iconLeft=true
-              :large-icon=true
-              icon="mdi-plus"
               id="newMessageBtn"
+              :icon-left="true"
+              :large-icon="true"
+              icon="mdi-plus"
               text="New Message"
               :click-action="openNewMessageSheet"
-            ></PrimaryButton>
+            />
           </v-col>
         </v-row>
-        <v-expansion-panels flat style="border-radius: 6px">
-          <v-expansion-panel @click="onExpansionPanelClick" style="background: #ebedef">
-            <v-expansion-panel-title color="#ebedef" class="pt-0 pb-0" disable-icon-rotate>
+        <v-expansion-panels
+          flat
+          style="border-radius: 6px"
+        >
+          <v-expansion-panel
+            style="background: #ebedef"
+            @click="onExpansionPanelClick"
+          >
+            <v-expansion-panel-title
+              color="#ebedef"
+              class="pt-0 pb-0"
+              disable-icon-rotate
+            >
               <v-radio-group
-                @click.stop.prevent
-                color="#003366"
                 v-model="statusRadioGroup"
+                color="#003366"
                 :disabled="!statusRadioGroupEnabled"
                 row
                 class="pt-0 pb-0 mt-0 mb-0"
+                @click.stop.prevent
               >
-                <v-radio class="mt-2 radio-blue-text"
-                         label="My Active Messages"
-                         color="#003366"
-                         value="statusFilterActive"
-                         :click-action="statusFilterActiveClicked"
-                ><template #label>
-                  <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">My Active Messages</span>
-                </template></v-radio>
-                <v-radio class="mt-2 radio-blue-text"
-                         label="All Active Messages"
-                         color="#003366"
-                         value="statusFilterAllActive"
-                         :click-action="statusFilterAllActiveClicked"
-                ><template #label>
-                  <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">All Active Messages</span>
-                </template></v-radio>
-                <v-radio class="mt-2 radio-blue-text"
-                         label="All Active Messages"
-                         color="#003366"
-                         value="statusFilterAll"
-                         :click-action="filterExchanges"
-                ><template #label>
-                  <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">All Messages</span>
-                </template></v-radio>
+                <v-radio
+                  class="mt-2 radio-blue-text"
+                  label="My Active Messages"
+                  color="#003366"
+                  value="statusFilterActive"
+                  :click-action="statusFilterActiveClicked"
+                >
+                  <template #label>
+                    <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">My Active Messages</span>
+                  </template>
+                </v-radio>
+                <v-radio
+                  class="mt-2 radio-blue-text"
+                  label="All Active Messages"
+                  color="#003366"
+                  value="statusFilterAllActive"
+                  :click-action="statusFilterAllActiveClicked"
+                >
+                  <template #label>
+                    <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">All Active Messages</span>
+                  </template>
+                </v-radio>
+                <v-radio
+                  class="mt-2 radio-blue-text"
+                  label="All Active Messages"
+                  color="#003366"
+                  value="statusFilterAll"
+                  :click-action="filterExchanges"
+                >
+                  <template #label>
+                    <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">All Messages</span>
+                  </template>
+                </v-radio>
               </v-radio-group>
               <template #actions>
-                <v-btn id="filterid"
-                       title="filter"
-                       color="#003366"
-                       outlined
-                       class="mt-0 pt-0 filterButton"
+                <v-btn
+                  id="filterid"
+                  title="filter"
+                  color="#003366"
+                  outlined
+                  class="mt-0 pt-0 filterButton"
                 >
-                  <v-icon color="#003366" class="ml-n1" :nudge-down="4" right dark>mdi-filter-outline</v-icon>
+                  <v-icon
+                    color="#003366"
+                    class="ml-n1"
+                    :nudge-down="4"
+                    right
+                    dark
+                  >
+                    mdi-filter-outline
+                  </v-icon>
                   <span class="ml-1">{{ filterText }}</span>
                 </v-btn>
               </template>
             </v-expansion-panel-title>
             <v-expansion-panel-text>
               <v-row>
-                <v-col cols="12" md="4" class="pt-0">
+                <v-col
+                  cols="12"
+                  md="4"
+                  class="pt-0"
+                >
                   <v-autocomplete
-                    id='schoolName'
+                    id="schoolName"
+                    v-model="contactNameFilter"
                     class="pt-0 mt-0"
                     prepend-inner-icon="mdi-account-box-outline"
-                    v-model="contactNameFilter"
                     :items="contacts"
                     label="Contact"
                     clearable
                   >
                     <template #item="data">
                       <v-list-item-title>
-                        <v-icon v-if="data.item.mincode">mdi-school</v-icon>
-                        <v-icon v-if="data.item.districtNumber">mdi-domain</v-icon>
+                        <v-icon v-if="data.item.mincode">
+                          mdi-school
+                        </v-icon>
+                        <v-icon v-if="data.item.districtNumber">
+                          mdi-domain
+                        </v-icon>
                       </v-list-item-title>
                       <v-list-item>
                         {{ data.item.text }}
                       </v-list-item>
                     </template>         
-                </v-autocomplete>
-
+                  </v-autocomplete>
                 </v-col>
-                <v-col cols="12" md="4" class="pt-0">
+                <v-col
+                  cols="12"
+                  md="4"
+                  class="pt-0"
+                >
                   <v-text-field
-                    class="pt-0 mt-0 pl-9"
                     id="subject-text-field"
                     v-model="subjectFilter"
+                    class="pt-0 mt-0 pl-9"
                     label="Subject"
                     prepend-inner-icon="mdi-book-open-variant"
                     clearable
                     @keyup.enter="enterPushed()"
-                  ></v-text-field>
+                  />
                 </v-col>
-                <v-col cols="12" md="4" class="pt-0 pl-12 pr-12">
+                <v-col
+                  cols="12"
+                  md="4"
+                  class="pt-0 pl-12 pr-12"
+                >
                   <v-menu
                     id="messageDate"
                     ref="messageDateFilter"
@@ -134,11 +193,11 @@
                         class="pt-0 mt-0"
                         variant="underlined"
                         label="Message Date"
-                        @keyup.enter="filterRequests()"
                         prepend-icon="mdi-calendar"
                         clearable
                         readonly
                         v-bind="attrs"
+                        @keyup.enter="filterRequests()"
                         @click="openMessageDatePicker"
                       />
                     </template>
@@ -153,12 +212,16 @@
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="12" md="4" class="pt-0">
+                <v-col
+                  cols="12"
+                  md="4"
+                  class="pt-0"
+                >
                   <v-select
+                    id="statusSelector"
                     v-model="statusSelectFilter"
                     :items="secureExchangeStatusCodes"
-                    id="statusSelector"
-                    item-text="label"
+                    item-title="label"
                     variant="underlined"
                     class="pt-0 mt-0"
                     item-value="secureExchangeStatusCode"
@@ -169,7 +232,10 @@
                   >
                     <template #item="{ item }">
                       <v-row>
-                        <v-col cols="12" class="pr-0">
+                        <v-col
+                          cols="12"
+                          class="pr-0"
+                        >
                           <v-icon :color="getStatusColor(item.label)">
                             mdi-circle-medium
                           </v-icon>
@@ -179,47 +245,76 @@
                     </template>
                   </v-select>
                 </v-col>
-                <v-col cols="12" md="4" class="pt-0">
+                <v-col
+                  cols="12"
+                  md="4"
+                  class="pt-0"
+                >
                   <v-text-field
-                    class="pt-0 mt-0 pl-9"
                     id="claimed-by-text-field"
                     v-model="claimedByFilter"
+                    class="pt-0 mt-0 pl-9"
                     label="Claimed By"
                     prepend-inner-icon="mdi-account-check-outline"
                     clearable
                     @keyup.enter="enterPushed()"
-                  ></v-text-field>
+                  />
                 </v-col>
-                <v-col cols="12" md="4" class="pt-0">
+                <v-col
+                  cols="12"
+                  md="4"
+                  class="pt-0"
+                >
                   <v-text-field
-                    class="pt-0 mt-0 pl-9 pr-9"
                     v-model="messageIDFilter"
+                    class="pt-0 mt-0 pl-9 pr-9"
                     label="Message ID"
                     prepend-inner-icon="mdi-pound"
                     clearable
                     @keyup.enter="enterPushed()"
-                  ></v-text-field>
+                  />
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="12" md="4" class="pt-0">
+                <v-col
+                  cols="12"
+                  md="4"
+                  class="pt-0"
+                >
                   <v-text-field
-                    class="pt-0 mt-0"
                     v-model="studentIDFilter"
+                    class="pt-0 mt-0"
                     label="Student PEN"
                     prepend-inner-icon="mdi-account"
                     maxlength="9"
                     counter="9"
                     clearable
                     @keyup.enter="enterPushed()"
-                  ></v-text-field>
+                  />
                 </v-col>
               </v-row>
-              <v-row no-gutters class="justify-end mt-n2">
-                <v-col cols="12" class="d-flex justify-end">
-                  <PrimaryButton class="mr-3" id="search-clear" :secondary="true" :click-action="clearSearch()"
-                                 text="Clear"></PrimaryButton>
-                  <PrimaryButton :click-action="filterExchanges()" id="searchButton" :loading="loadingTable" :disabled="!searchEnabled" text="Search"></PrimaryButton>
+              <v-row
+                no-gutters
+                class="justify-end mt-n2"
+              >
+                <v-col
+                  cols="12"
+                  class="d-flex justify-end"
+                >
+                  <PrimaryButton
+                    id="search-clear"
+                    class="mr-3"
+                    :secondary="true"
+                    :click-action="clearSearch()"
+                    text="Clear"
+                  />
+                  <PrimaryButton
+                    id="searchButton"
+                    :click-action="filterExchanges()"
+                    :loading="loadingTable"
+                    :disabled="!searchEnabled"
+                    text="Search"
+                  />
                 </v-col>
               </v-row>
             </v-expansion-panel-text>
@@ -249,27 +344,62 @@
                 </v-row>
               </template>
               <template #item="{ item, index }">
-                <v-row class="ml-n6" style="cursor: pointer;">
-                  <v-col cols="6" lg="7" xl="7" class="pb-0 pt-0" @click="openExchange(item.secureExchangeID)">
+                <v-row
+                  class="ml-n6"
+                  style="cursor: pointer;"
+                >
+                  <v-col
+                    cols="6"
+                    lg="7"
+                    xl="7"
+                    class="pb-0 pt-0"
+                    @click="openExchange(item.secureExchangeID)"
+                  >
                     <v-row class="mb-n4">
-                      <v-col cols="12" class="pb-2 pt-2 pr-0">
-                        <span class="subjectHeading" :style="{color: item.raw.isReadByMinistry ? 'black': '#1f7cef'}">{{ getSubject(item.raw.subject) }}</span><span style="color: gray"> - {{ getLatestComment(item.raw) }}</span>
+                      <v-col
+                        cols="12"
+                        class="pb-2 pt-2 pr-0"
+                      >
+                        <span
+                          class="subjectHeading"
+                          :style="{color: item.raw.isReadByMinistry ? 'black': '#1f7cef'}"
+                        >{{ getSubject(item.raw.subject) }}</span><span style="color: gray"> - {{ getLatestComment(item.raw) }}</span>
                       </v-col>
                     </v-row>
                     <v-row>
-                      <v-col cols="12" class="pb-1 pr-0">
-                        <span class="ministryLine" >{{ getContactLineItem(item.raw) }}</span>
+                      <v-col
+                        cols="12"
+                        class="pb-1 pr-0"
+                      >
+                        <span class="ministryLine">{{ getContactLineItem(item.raw) }}</span>
                       </v-col>
                     </v-row>
                   </v-col>
-                  <v-col cols="6" lg="5" xl="5" style="text-align: end" class="pb-0 pt-0" @click="openExchange(item.raw.secureExchangeID)">
+                  <v-col
+                    cols="6"
+                    lg="5"
+                    xl="5"
+                    style="text-align: end"
+                    class="pb-0 pt-0"
+                    @click="openExchange(item.raw.secureExchangeID)"
+                  >
                     <v-row class="d-flex justify-end">
                       <v-col cols="2">
                         <v-row no-gutters>
                           <v-col cols="6">
-                            <v-icon  color="grey darken-3" right size="medium" dark>mdi-pound</v-icon>
+                            <v-icon
+                              color="grey darken-3"
+                              right
+                              size="medium"
+                              dark
+                            >
+                              mdi-pound
+                            </v-icon>
                           </v-col>
-                          <v-col class="statusCodeLabel" cols="6">
+                          <v-col
+                            class="statusCodeLabel"
+                            cols="6"
+                          >
                             <span>{{ item.raw.sequenceNumber }}</span>
                           </v-col>
                         </v-row>
@@ -277,29 +407,66 @@
                       <v-col cols="2">
                         <v-row no-gutters>
                           <v-col cols="6">
-                            <v-icon class="pb-1" :color="getStatusColor(item.raw.secureExchangeStatusCode)" right dark>mdi-circle-medium</v-icon>
+                            <v-icon
+                              class="pb-1"
+                              :color="getStatusColor(item.raw.secureExchangeStatusCode)"
+                              right
+                              dark
+                            >
+                              mdi-circle-medium
+                            </v-icon>
                           </v-col>
-                          <v-col class="statusCodeLabel" cols="6">
+                          <v-col
+                            class="statusCodeLabel"
+                            cols="6"
+                          >
                             <span>{{ item.raw.secureExchangeStatusCode }}</span>
                           </v-col>
                         </v-row>
                       </v-col>
-                      <v-col cols="3" class="pr-0">
+                      <v-col
+                        cols="3"
+                        class="pr-0"
+                      >
                         <v-row no-gutters>
                           <v-col cols="6">
-                            <v-icon style="margin-bottom: 0.2em" color="grey darken-3" right dark>mdi-account-outline</v-icon>
+                            <v-icon
+                              style="margin-bottom: 0.2em"
+                              color="grey darken-3"
+                              right
+                              dark
+                            >
+                              mdi-account-outline
+                            </v-icon>
                           </v-col>
-                          <v-col class="statusCodeLabel" cols="6">
+                          <v-col
+                            class="statusCodeLabel"
+                            cols="6"
+                          >
                             <span>{{ getReviewer(item.raw.reviewer) }}</span>
                           </v-col>
                         </v-row>
                       </v-col>
-                      <v-col cols="4" class="pl-0 pr-0">
+                      <v-col
+                        cols="4"
+                        class="pl-0 pr-0"
+                      >
                         <v-row no-gutters>
                           <v-col cols="6">
-                            <v-icon class="pr-1" style="margin-bottom: 0.2em" color="grey darken-3" right dark>mdi-clock-outline</v-icon>
+                            <v-icon
+                              class="pr-1"
+                              style="margin-bottom: 0.2em"
+                              color="grey darken-3"
+                              right
+                              dark
+                            >
+                              mdi-clock-outline
+                            </v-icon>
                           </v-col>
-                          <v-col class="statusCodeLabel" cols="4">
+                          <v-col
+                            class="statusCodeLabel"
+                            cols="4"
+                          >
                             <span>{{ getNumberOfDays(item.raw.createDate) }}</span>
                           </v-col>
                         </v-row>
@@ -323,15 +490,17 @@
     >
       <v-card
         v-if="newMessageSheet"
-        class="information-window-v-card">
-        <v-card-title class="sheetHeader pt-1 pb-1">New Message</v-card-title>
-        <v-divider></v-divider>
+        class="information-window-v-card"
+      >
+        <v-card-title class="sheetHeader pt-1 pb-1">
+          New Message
+        </v-card-title>
+        <v-divider />
         <v-card-text>
           <NewMessagePage
             @secure-exchange:messageSent="messageSent"
             @secure-exchange:cancelMessage="newMessageSheet = false"
-          >
-          </NewMessagePage>
+          />
         </v-card-text>
       </v-card>
     </v-bottom-sheet>
@@ -357,17 +526,17 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 
 export default {
   name: 'ExchangeInbox',
+  components: {
+    PrimaryButton,
+    NewMessagePage,
+    VueDatePicker
+  },
   mixins: [alertMixin],
   props: {
     ministryOwnershipGroupRoleID: {
       type: String,
       required: true
     },
-  },
-  components: {
-    PrimaryButton,
-    NewMessagePage,
-    VueDatePicker
   },
   data() {
     return {
@@ -451,6 +620,14 @@ export default {
     loadingTable() {
       return this.loadingTableCount !== 0;
     },
+  },
+  watch: {
+    pageSize() {
+      this.getExchanges();
+    },
+    pageNumber() {
+      this.getExchanges();
+    }
   },
   created() {
     appStore().getCodes();
@@ -662,14 +839,6 @@ export default {
     },
     openExchange(exchangeID) {
       router.push({name: 'viewExchange', params: {secureExchangeID: exchangeID, ministryOwnershipGroupRoleID: this.ministryOwnershipGroupRoleID, ministryOwnershipTeamName: this.ministryTeamName}});
-    }
-  },
-  watch: {
-    pageSize() {
-      this.getExchanges();
-    },
-    pageNumber() {
-      this.getExchanges();
     }
   }
 };

@@ -1,22 +1,22 @@
 <template>
   <v-text-field
-      :disabled="disabled"
-      :outlined="outlined"
-      :dense="dense"
-      :filled="filled"
-      :id="id"
-      :readonly="readonly"
-      :rules="rules"
-      :maxlength="maxlength"
-      :clearable="clearable"
-      :tabindex="tabindex"
-      :error-messages="asyncMessages"
-      :label="label"
-      v-bind:class="classes"
-      v-model="data"
-      @focus="[isActive = true, $emit('focus')]"
-      @blur="[isActive = false, $emit('blur')]">
-  </v-text-field>
+    :id="id"
+    :disabled="disabled"
+    :outlined="outlined"
+    :dense="dense"
+    :filled="filled"
+    v-model="data"
+    :readonly="readonly"
+    :rules="rules"
+    :maxlength="maxlength"
+    :clearable="clearable"
+    :tabindex="tabindex"
+    :error-messages="asyncMessages"
+    :label="label"
+    :class="classes"
+    @focus="[isActive = true, $emit('focus')]"
+    @blur="[isActive = false, $emit('blur')]"
+  />
 </template>
 
 <script>

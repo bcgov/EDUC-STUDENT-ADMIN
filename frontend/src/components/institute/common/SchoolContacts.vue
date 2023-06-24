@@ -9,32 +9,75 @@
           color="primary"
           indeterminate
           :active="loading"
-        ></v-progress-circular>
+        />
       </v-col>
     </v-row>
     <template v-if="!loading">
       <v-row cols="2">
         <v-col class="d-flex justify-start">
-          <v-chip class="mr-3" color="#A9D18E">Active</v-chip>
-          <v-chip class="mr-3" color="#9DC3E6">Pending Start Date</v-chip>
-          <v-chip color="#F4B183">Pending End Date</v-chip>
+          <v-chip
+            class="mr-3"
+            color="#A9D18E"
+          >
+            Active
+          </v-chip>
+          <v-chip
+            class="mr-3"
+            color="#9DC3E6"
+          >
+            Pending Start Date
+          </v-chip>
+          <v-chip color="#F4B183">
+            Pending End Date
+          </v-chip>
         </v-col>
         <v-col class="d-flex justify-end">
-          <PrimaryButton v-if="canAddEditSchoolContact" id="addSchoolContactBtn" icon-left width="11em" icon="mdi-plus-thick" text="New Contact" :click-action="newContactSheet = !newContactSheet"></PrimaryButton>
+          <PrimaryButton
+            v-if="canAddEditSchoolContact"
+            id="addSchoolContactBtn"
+            icon-left
+            width="11em"
+            icon="mdi-plus-thick"
+            text="New Contact"
+            :click-action="openNewContactSheet"
+          />
         </v-col>
       </v-row>
-      <div v-for="schoolContactType in schoolContactTypes" :key="schoolContactType.code">
+      <div
+        v-for="schoolContactType in schoolContactTypes"
+        :key="schoolContactType.code"
+      >
         <v-row>
           <v-col>
-            <h2 style="color:#1A5A96">{{schoolContactType.label}}</h2>
+            <h2 style="color:#1A5A96">
+              {{
+                schoolContactType.label
+              }}
+            </h2>
           </v-col>
         </v-row>
-        <v-row cols="2" v-if="schoolContacts.has(schoolContactType.schoolContactTypeCode)">
-          <v-col cols="5" lg="4" v-for="contact in schoolContacts.get(schoolContactType.schoolContactTypeCode)" :key="contact.schoolId">
-            <SchoolContact :contact="contact" @editSchoolContact:doShowEditSchoolContactForm="showContactEditForm(contact)" @removeSchoolContact:showConfirmationPrompt="removeContact" :canEditSchoolContact="canAddEditSchoolContact"/>
+        <v-row
+          v-if="schoolContacts.has(schoolContactType.schoolContactTypeCode)"
+          cols="2"
+        >
+          <v-col
+            v-for="contact in schoolContacts.get(schoolContactType.schoolContactTypeCode)"
+            :key="contact.schoolId"
+            cols="5"
+            lg="4"
+          >
+            <SchoolContact
+              :contact="contact"
+              :can-edit-school-contact="canAddEditSchoolContact"
+              @editSchoolContact:doShowEditSchoolContactForm="showContactEditForm(contact)"
+              @removeSchoolContact:showConfirmationPrompt="removeContact"
+            />
           </v-col>
         </v-row>
-        <v-row cols="2" v-else>
+        <v-row
+          v-else
+          cols="2"
+        >
           <v-col>
             <p>No contacts of this type have been listed.</p>
           </v-col>
@@ -43,37 +86,37 @@
     </template>
     <!--    new contact sheet -->
     <v-bottom-sheet
-        v-model="newContactSheet"
-        inset
-        no-click-animation
-        scrollable
-        persistent
+      v-model="newContactSheet"
+      inset
+      no-click-animation
+      scrollable
+      persistent
     >
       <NewSchoolContactPage
-          v-if="newContactSheet"
-          :schoolContactTypes="this.schoolContactTypes"
-          :schoolID="this.$route.params.schoolID"
-          @newSchoolContact:closeNewSchoolContactPage="newContactSheet = !newContactSheet"
-          @newSchoolContact:addNewSchoolContact="newSchoolContactAdded"
+        v-if="newContactSheet"
+        :school-contact-types="schoolContactTypes"
+        :school-i-d="$route.params.schoolID"
+        @newSchoolContact:closeNewSchoolContactPage="newContactSheet = !newContactSheet"
+        @newSchoolContact:addNewSchoolContact="newSchoolContactAdded"
       />
     </v-bottom-sheet>
     <v-bottom-sheet
-        v-model="editContactSheet"
-        inset
-        no-click-animation
-        scrollable
-        persistent
+      v-model="editContactSheet"
+      inset
+      no-click-animation
+      scrollable
+      persistent
     >
       <EditSchoolContactPage
-          v-if="editContactSheet"
-          :contact="editContact"
-          :schoolContactTypes="this.schoolContactTypes"
-          :schoolID="this.$route.params.schoolID"
-          @editSchoolContact:cancelEditSchoolContactPage="editContactSheet = !editContactSheet"
-          @editSchoolContact:editSchoolContactSuccess="contactEditSuccess"
+        v-if="editContactSheet"
+        :contact="editContact"
+        :school-contact-types="schoolContactTypes"
+        :school-i-d="$route.params.schoolID"
+        @editSchoolContact:cancelEditSchoolContactPage="editContactSheet = !editContactSheet"
+        @editSchoolContact:editSchoolContactSuccess="contactEditSuccess"
       />
     </v-bottom-sheet>
-    <ConfirmationDialog ref="confirmationDialog"/>
+    <ConfirmationDialog ref="confirmationDialog" />
   </v-container>
 </template>
 
@@ -87,17 +130,17 @@ import NewSchoolContactPage from './NewSchoolContactPage.vue';
 import EditSchoolContactPage from './EditSchoolContactPage.vue';
 import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import alertMixin from '@/mixins/alertMixin';
-import { mapState } from 'pinia';
+import {mapState} from 'pinia';
 import {isExpired} from '@/utils/institute/status';
-import { sortBy } from 'lodash';
+import {sortBy} from 'lodash';
 import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'SchoolContacts',
-  mixins: [alertMixin],
   components: {
     PrimaryButton, SchoolContact, NewSchoolContactPage, EditSchoolContactPage, ConfirmationDialog
   },
+  mixins: [alertMixin],
   props: {
     schoolID: {
       type: String,
@@ -117,12 +160,12 @@ export default {
     };
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated','userInfo', 'SCHOOL_INDEPENDENT_ADMIN_ROLE', 'SCHOOL_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'SCHOOL_INDEPENDENT_ADMIN_ROLE', 'SCHOOL_ADMIN_ROLE']),
     loading() {
       return this.loadingCount !== 0;
     },
     canAddEditSchoolContact() {
-      if(this.school.schoolCategoryCode && this.independentArray.includes(this.school.schoolCategoryCode)){
+      if (this.school.schoolCategoryCode && this.independentArray.includes(this.school.schoolCategoryCode)) {
         return this.SCHOOL_INDEPENDENT_ADMIN_ROLE || this.SCHOOL_ADMIN_ROLE;
       }
       return this.SCHOOL_ADMIN_ROLE;
@@ -146,7 +189,7 @@ export default {
           this.loadingCount -= 1;
         });
     },
-    getThisSchoolsContacts(){
+    getThisSchoolsContacts() {
       this.loadingCount += 1;
       let searchSchoolID = this.schoolID;
 
@@ -178,6 +221,9 @@ export default {
       this.editContact = contact;
       this.editContactSheet = true;
     },
+    openNewContactSheet() {
+      this.newContactSheet = !this.newContactSheet;
+    },
     contactEditSuccess() {
       this.editContactSheet = false;
       this.getThisSchoolsContacts();
@@ -190,10 +236,12 @@ export default {
       const opts = {
         color: '#003366',
         dense: false,
+        width: 400,
+        dark: true,
         titleBold: true,
         resolveText: 'Remove'
       };
-      this.$refs.confirmationDialog.open('Please Confirm', 'Are you sure you want to remove this contact?',opts)
+      this.$refs.confirmationDialog.open('Please Confirm', 'Are you sure you want to remove this contact?', opts)
         .then((result) => {
           if (result) { // the component returns true only when user confirms the dialog.
 
@@ -218,32 +266,13 @@ export default {
 <style scoped>
 
 .v-dialog__content /deep/ .v-bottom-sheet {
-  width: 30% !important;
+    width: 30% !important;
 }
 
-@media screen and (max-width: 950px){
-  .v-dialog__content /deep/ .v-bottom-sheet {
-    width: 60% !important;
-  }
+.containerSetup {
+    padding-right: 32em !important;
+    padding-left: 32em !important;
 }
 
-.containerSetup{
-  padding-right: 32em !important;
-  padding-left: 32em !important;
-}
-
-@media screen and (max-width: 1950px) {
-  .containerSetup{
-    padding-right: 20em !important;
-    padding-left: 20em !important;
-  }
-}
-
-@media screen and (max-width: 1200px) {
-  .containerSetup{
-    padding-right: 4em !important;
-    padding-left: 4em !important;
-  }
-}
 
 </style>

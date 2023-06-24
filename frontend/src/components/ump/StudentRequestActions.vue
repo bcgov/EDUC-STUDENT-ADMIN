@@ -1,8 +1,17 @@
 <template>
-  <v-tabs direction="vertical" :model-value="activeTab">
-    <v-tab id="complete-tab">Send Update</v-tab>
-    <v-tab id="return-tab">Request Info</v-tab>
-    <v-tab id="reject-tab">Reject</v-tab>
+  <v-tabs
+    direction="vertical"
+    :model-value="activeTab"
+  >
+    <v-tab id="complete-tab">
+      Send Update
+    </v-tab>
+    <v-tab id="return-tab">
+      Request Info
+    </v-tab>
+    <v-tab id="reject-tab">
+      Reject
+    </v-tab>
     <v-tab-item>
       <StudentRequestComplete
         :request="request"
@@ -11,7 +20,7 @@
         :before-submit="beforeSubmit"
         :submitted="submitted"
         :switch-loading="switchLoading"
-      ></StudentRequestComplete>
+      />
     </v-tab-item>
     <v-tab-item>
       <RequestReturn
@@ -20,7 +29,7 @@
         :prep-put="prepPut"
         :before-submit="beforeSubmit"
         :submitted="submitted"
-      ></RequestReturn>
+      />
     </v-tab-item>
     <v-tab-item>
       <RequestReject
@@ -29,7 +38,7 @@
         :prep-put="prepPut"
         :before-submit="beforeSubmit"
         :submitted="submitted"
-      ></RequestReject>
+      />
     </v-tab-item>
   </v-tabs>
 </template>
@@ -40,7 +49,7 @@ import RequestReject from '../RequestReject.vue';
 import RequestReturn  from '../RequestReturn.vue';
 
 export default {
-  name: 'studentRequestActions',
+  name: 'StudentRequestActions',
   components: {
     RequestReject,
     RequestReturn,

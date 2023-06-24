@@ -1,84 +1,192 @@
 <template>
   <div>
-    <v-card flat :disabled="!isProvidePenEnabledForUser">
+    <v-card
+      flat
+      :disabled="!isProvidePenEnabledForUser"
+    >
       <v-row class="mx-0">
-        <v-col cols="12" xl="6" lg="6" class="py-0">
-          <v-row class="mx-0" justify="space-between">
+        <v-col
+          cols="12"
+          xl="6"
+          lg="6"
+          class="py-0"
+        >
+          <v-row
+            class="mx-0"
+            justify="space-between"
+          >
             <v-col class="my-0 pl-0 py-0">
               <v-text-field
-                      id="pen-search-text-field"
-                      v-model="penSearchId"
-                      label="PEN:"
-                      disabled
-                      clearable
-                      class="pt-0"
-              ></v-text-field>
+                id="pen-search-text-field"
+                v-model="penSearchId"
+                label="PEN:"
+                disabled
+                clearable
+                class="pt-0"
+              />
             </v-col>
             <v-col class="my-0 mr-0 pr-0 py-0">
-              <v-row justify="end" class="ma-0 pt-3">
-                <PrimaryButton id="refresh-student-info" text="Refresh Student Info" :disabled="isRefreshStudInfoDisabled || !isProvidePenEnabledForUser" :click-action="refreshStudentInfo"></PrimaryButton>
+              <v-row
+                justify="end"
+                class="ma-0 pt-3"
+              >
+                <PrimaryButton
+                  id="refresh-student-info"
+                  text="Refresh Student Info"
+                  :disabled="isRefreshStudInfoDisabled || !isProvidePenEnabledForUser"
+                  :click-action="refreshStudentInfo"
+                />
               </v-row>
             </v-col>
           </v-row>
           <v-row class="pr-3">
-            <v-card class="ml-3" width="100%">
-            <v-row no-gutters class="pt-2 px-2">
-              <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                <p class="mb-2">First:</p>
-              </v-col>
-              <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                <p class="mb-2"><strong>{{ this.demographics.legalFirst || ''}}</strong></p>
-              </v-col>
-            </v-row>
-            <v-row no-gutters class="pt-2 px-2">
-              <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                <p class="mb-2">Middle:</p>
-              </v-col>
-              <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                <p class="mb-2"><strong>{{ this.demographics.legalMiddle || ''}}</strong></p>
-              </v-col>
-            </v-row>
-            <v-row no-gutters class="pt-2 px-2">
-              <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                <p class="mb-2">Last:</p>
-              </v-col>
-              <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                <p class="mb-2"><strong>{{ this.demographics.legalLast || ''}}</strong></p>
-              </v-col>
-            </v-row>
-            <v-row no-gutters class="pt-2 px-2">
-              <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                <p class="mb-2">DOB:</p>
-              </v-col>
-              <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                <p class="mb-2"><strong>{{ formatDob(this.demographics.dob,'uuuu-MM-dd', 'uuuu/MM/dd') }}</strong></p>
-              </v-col>
-            </v-row>
-          </v-card>
+            <v-card
+              class="ml-3"
+              width="100%"
+            >
+              <v-row
+                no-gutters
+                class="pt-2 px-2"
+              >
+                <v-col
+                  cols="12"
+                  xl="3"
+                  lg="3"
+                  md="3"
+                  sm="3"
+                >
+                  <p class="mb-2">
+                    First:
+                  </p>
+                </v-col>
+                <v-col
+                  cols="12"
+                  xl="9"
+                  lg="9"
+                  md="9"
+                  sm="9"
+                >
+                  <p class="mb-2">
+                    <strong>{{ demographics.legalFirst || '' }}</strong>
+                  </p>
+                </v-col>
+              </v-row>
+              <v-row
+                no-gutters
+                class="pt-2 px-2"
+              >
+                <v-col
+                  cols="12"
+                  xl="3"
+                  lg="3"
+                  md="3"
+                  sm="3"
+                >
+                  <p class="mb-2">
+                    Middle:
+                  </p>
+                </v-col>
+                <v-col
+                  cols="12"
+                  xl="9"
+                  lg="9"
+                  md="9"
+                  sm="9"
+                >
+                  <p class="mb-2">
+                    <strong>{{ demographics.legalMiddle || '' }}</strong>
+                  </p>
+                </v-col>
+              </v-row>
+              <v-row
+                no-gutters
+                class="pt-2 px-2"
+              >
+                <v-col
+                  cols="12"
+                  xl="3"
+                  lg="3"
+                  md="3"
+                  sm="3"
+                >
+                  <p class="mb-2">
+                    Last:
+                  </p>
+                </v-col>
+                <v-col
+                  cols="12"
+                  xl="9"
+                  lg="9"
+                  md="9"
+                  sm="9"
+                >
+                  <p class="mb-2">
+                    <strong>{{ demographics.legalLast || '' }}</strong>
+                  </p>
+                </v-col>
+              </v-row>
+              <v-row
+                no-gutters
+                class="pt-2 px-2"
+              >
+                <v-col
+                  cols="12"
+                  xl="3"
+                  lg="3"
+                  md="3"
+                  sm="3"
+                >
+                  <p class="mb-2">
+                    DOB:
+                  </p>
+                </v-col>
+                <v-col
+                  cols="12"
+                  xl="9"
+                  lg="9"
+                  md="9"
+                  sm="9"
+                >
+                  <p class="mb-2">
+                    <strong>{{ formatDob(demographics.dob,'uuuu-MM-dd', 'uuuu/MM/dd') }}</strong>
+                  </p>
+                </v-col>
+              </v-row>
+            </v-card>
           </v-row>
         </v-col>
-        <v-col cols="12" xl="6" lg="6" class="py-0 pl-0">
+        <v-col
+          cols="12"
+          xl="6"
+          lg="6"
+          class="py-0 pl-0"
+        >
           <v-row class="pr-3 pt-3 d-flex justify-space-between">
             <MacroMenu
               :macros="completeMacros"
               @select="insertMacroText"
             />
-            <PrimaryButton id="send-changes-to-student" text="Send Changes to Student" :disabled="isCompleteDisabled || !isProvidePenEnabledForUser" :click-action="sendChanges"></PrimaryButton>
+            <PrimaryButton
+              id="send-changes-to-student"
+              text="Send Changes to Student"
+              :disabled="isCompleteDisabled || !isProvidePenEnabledForUser"
+              :click-action="sendChanges"
+            />
           </v-row>
           <v-form ref="completeForm">
             <v-textarea
-                    id="complete-comment-textarea"
-                    name="description"
-                    label="Enter comment"
-                    v-model="request.completeComment"
-                    :rules="completedRules"
-                    filled
-                    clearable
-                    @input="replaceCompleteMacro"
-                    class="pt-5"
-                    rows="6"
-                    ref="completeCommentTextarea"
-            ></v-textarea>
+              id="complete-comment-textarea"
+              v-model="request.completeComment"
+              name="description"
+              ref="completeCommentTextarea"
+              label="Enter comment"
+              :rules="completedRules"
+              filled
+              clearable
+              class="pt-5"
+              rows="6"
+              @input="replaceCompleteMacro"
+            />
           </v-form>
         </v-col>
       </v-row>
@@ -88,16 +196,23 @@
       max-width="400"
     >
       <v-card>
-        <v-card-title class="px-0 pb-0 pt-5">
-        </v-card-title>
+        <v-card-title class="px-0 pb-0 pt-5" />
         <div class="px-4">
           <p>Changes to student demographics do not match request.</p>
         </div>
 
         <v-card-actions>
-          <v-spacer></v-spacer>
-          <PrimaryButton id="confirm-request-changes" text="Confirm" :click-action="confirmChanges"></PrimaryButton>
-          <PrimaryButton id="confirm-request-changes" text="Cancel" :click-action="dialog = false"></PrimaryButton>
+          <v-spacer />
+          <PrimaryButton
+            id="confirm-request-changes"
+            text="Confirm"
+            :click-action="confirmChanges"
+          />
+          <PrimaryButton
+            id="confirm-request-changes"
+            text="Cancel"
+            :click-action="dialog = false"
+          />
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -120,7 +235,7 @@ import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
 
 export default {
-  name: 'studentRequestComplete',
+  name: 'StudentRequestComplete',
   components: {
     PrimaryButton,
     MacroMenu

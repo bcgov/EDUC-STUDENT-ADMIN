@@ -1,45 +1,67 @@
 <!--Depracated -->
 <template>
-  <v-container fluid class="my-10 px-16">
+  <v-container
+    fluid
+    class="my-10 px-16"
+  >
     <v-tabs
       selected-class="active-display"
       :model-value="tab"
     >
-      <v-tab  :disabled="!isValidGMPUser" :href="`#${requestTypes.penRequest.name}`">PEN Retrieval Requests</v-tab>
-      <v-tab :disabled="!isValidUMPUser" :href="`#${requestTypes.studentRequest.name}`">UMP Requests</v-tab>
-      <v-tab :disabled="!isValidStudentSearchUser" :href="`#${requestTypes.studentSearch.name}`">Student Search</v-tab>
-      <v-tab :disabled="!isValidStudentSearchUser" :href="`#${requestTypes.penRequestBatch.name}`">PEN Request Files</v-tab>
+      <v-tab
+        :disabled="!isValidGMPUser"
+        :href="`#${requestTypes.penRequest.name}`"
+      >
+        PEN Retrieval Requests
+      </v-tab>
+      <v-tab
+        :disabled="!isValidUMPUser"
+        :href="`#${requestTypes.studentRequest.name}`"
+      >
+        UMP Requests
+      </v-tab>
+      <v-tab
+        :disabled="!isValidStudentSearchUser"
+        :href="`#${requestTypes.studentSearch.name}`"
+      >
+        Student Search
+      </v-tab>
+      <v-tab
+        :disabled="!isValidStudentSearchUser"
+        :href="`#${requestTypes.penRequestBatch.name}`"
+      >
+        PEN Request Files
+      </v-tab>
 
       <v-tab-item
         :model-value="requestTypes.penRequest.name"
       >
         <RequestsDisplay
-          :requestType="requestTypes.penRequest.name"
+          :request-type="requestTypes.penRequest.name"
           label="Select PEN request statuses to view"
-        ></RequestsDisplay>
+        />
       </v-tab-item>
       <v-tab-item
         :value="requestTypes.studentRequest.name"
       >
         <RequestsDisplay
-          :requestType="requestTypes.studentRequest.name"
+          :request-type="requestTypes.studentRequest.name"
           label="Select UMP request statuses to view"
-          penName="recordedPen"
-        ></RequestsDisplay>
+          pen-name="recordedPen"
+        />
       </v-tab-item>
       <v-tab-item
         :model-value="requestTypes.studentSearch.name"
       >
         <StudentSearchDisplay
-          :requestType="requestTypes.studentSearch.name"
-          penName="recordedPen"
-        ></StudentSearchDisplay>
+          :request-type="requestTypes.studentSearch.name"
+          pen-name="recordedPen"
+        />
       </v-tab-item>
       <v-tab-item
         :model-value="requestTypes.penRequestBatch.name"
       >
-        <PenRequestBatchDisplay
-        ></PenRequestBatchDisplay>
+        <PenRequestBatchDisplay />
       </v-tab-item>
     </v-tabs>
   </v-container>
@@ -54,7 +76,7 @@ import PenRequestBatchDisplay from './penreg/penrequest-batch/PenRequestBatchDis
 import {authStore} from '@/store/modules/auth';
 import {appStore} from '@/store/modules/app';
 export default {
-  name: 'requestsPage',
+  name: 'RequestsPage',
   components: {
     RequestsDisplay,
     StudentSearchDisplay,
@@ -86,13 +108,13 @@ export default {
       return REQUEST_TYPES;
     }
   },
-  mounted() {
-    this.tab = this.requestType;
-  },
   watch: {
     tab(val) {
       val && this.setRequestType(val);
     }
+  },
+  mounted() {
+    this.tab = this.requestType;
   },
   methods: {
     ...mapActions(appStore, ['setRequestType']),

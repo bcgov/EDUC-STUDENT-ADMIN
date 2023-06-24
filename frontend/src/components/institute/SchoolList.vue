@@ -1,37 +1,69 @@
 <template>
-  <v-container class="containerSetup" fluid>
-    <v-form ref="schoolForm" v-model="isFormValid">
-      <Spinner flat v-if="loadingSchools"/>
+  <v-container
+    class="containerSetup"
+    fluid
+  >
+    <v-form
+      ref="schoolForm"
+      v-model="isFormValid"
+    >
+      <Spinner
+        v-if="loadingSchools"
+        flat
+      />
       <div v-else>
         <v-row>
           <v-col class="mt-1 d-flex justify-start">
-            <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
-            <a class="ml-1" @click="backButtonClick">Return to Dashboard</a>
+            <v-icon
+              small
+              color="#1976d2"
+            >
+              mdi-arrow-left
+            </v-icon>
+            <a
+              class="ml-1"
+              @click="backButtonClick"
+            >Return to Dashboard</a>
           </v-col>
           <v-col class="d-flex justify-end">
-            <PrimaryButton v-if="canAddSchool()" id="addSchoolBtn" icon-left width="11em" icon="mdi-plus-thick"
-                           text="New School" :click-action="openNewSchoolSheet"
-            ></PrimaryButton>
+            <PrimaryButton
+              v-if="canAddSchool()"
+              id="addSchoolBtn"
+              icon-left
+              width="11em"
+              icon="mdi-plus-thick"
+              text="New School"
+              :click-action="openNewSchoolSheet"
+            />
           </v-col>
         </v-row>
-        <v-row style="background: rgb(235, 237, 239);border-radius: 8px;" class="pt-3 px-3 elevation-2">
+        <v-row
+          style="background: rgb(235, 237, 239);border-radius: 8px;"
+          class="pt-3 px-3 elevation-2"
+        >
           <v-col class="pt-0">
             <v-row>
-              <v-col cols="12" md="4" class="d-flex justify-start">
+              <v-col
+                cols="12"
+                md="4"
+                class="d-flex justify-start"
+              >
                 <v-autocomplete
                   id="name-text-field"
+                  v-model="schoolCodeNameFilter"
                   label="School Code & Name"
                   item-value="schoolID"
                   item-title="schoolCodeName"
                   variant="underlined"
                   :items="schoolSearchNames"
-                  v-model="schoolCodeNameFilter"
                   :menu-props="{closeOnContentClick:true}"
-                  @update:model-value="searchButtonClick"
                   clearable
+                  @update:model-value="searchButtonClick"
                 >
                   <template #selection="{ item, index }">
-                    {{ item.raw.schoolCodeName }}
+                    {{
+                      item.raw.schoolCodeName
+                    }}
                   </template>
                   <template #item="{ props, item }">
                     <v-list-item
@@ -39,20 +71,26 @@
                       prepend-icon="mdi-circle-medium"
                       :base-color="getStatusColorAuthorityOrSchool(item.raw.status)"
                       title=""
-                      >
+                    >
                       <v-list-item-title style="color: black !important;">
-                        {{ item.raw.schoolCodeName }}
+                        {{
+                          item.raw.schoolCodeName
+                        }}
                       </v-list-item-title>
                     </v-list-item>
                   </template>
                 </v-autocomplete>
               </v-col>
-              <v-col cols="12" md="2" class="d-flex justify-start">
+              <v-col
+                cols="12"
+                md="2"
+                class="d-flex justify-start"
+              >
                 <v-select
                   id="status-select-field"
+                  v-model="schoolStatusFilter"
                   clearable
                   :items="schoolStatus"
-                  v-model="schoolStatusFilter"
                   item-title="name"
                   variant="underlined"
                   item-value="code"
@@ -60,7 +98,9 @@
                   label="Status"
                 >
                   <template #selection="{ item, index }">
-                    {{ item.raw.name }}
+                    {{
+                      item.raw.name
+                    }}
                   </template>
                   <template #item="{ props, item }">
                     <v-list-item
@@ -68,57 +108,72 @@
                       prepend-icon="mdi-circle-medium"
                       :base-color="getStatusColorAuthorityOrSchool(item.raw.code)"
                       title=""
-                      >
+                    >
                       <v-list-item-title style="color: black !important;">
-                        {{ item.raw.name }}
+                        {{
+                          item.raw.name
+                        }}
                       </v-list-item-title>
                     </v-list-item>
                   </template>
                 </v-select>
               </v-col>
-              <v-col cols="12" md="3" class="d-flex justify-start">
+              <v-col
+                cols="12"
+                md="3"
+                class="d-flex justify-start"
+              >
                 <v-select
                   id="category-select-field"
+                  v-model="schoolCategoryTypeFilter"
                   clearable
                   :items="activeSchoolCategoryTypes"
-                  v-model="schoolCategoryTypeFilter"
                   variant="underlined"
                   item-title="label"
                   item-value="schoolCategoryCode"
-                  @update:model-value="schoolCategoryChanged"
                   label="School Category"
-                >
-                </v-select>
+                  @update:model-value="schoolCategoryChanged"
+                />
               </v-col>
-              <v-col cols="12" md="3" class="d-flex justify-start">
+              <v-col
+                cols="12"
+                md="3"
+                class="d-flex justify-start"
+              >
                 <v-select
                   id="facility-select-field"
+                  v-model="schoolFacilityTypeFilter"
                   clearable
                   :items="schoolFacilityTypes"
-                  v-model="schoolFacilityTypeFilter"
                   variant="underlined"
                   item-title="label"
                   item-value="facilityTypeCode"
                   label="Facility Type"
-                ></v-select>
+                />
               </v-col>
             </v-row>
             <v-row class="mt-n6">
-              <v-col cols="12" md="4" class="d-flex justify-start">
+              <v-col
+                cols="12"
+                md="4"
+                class="d-flex justify-start"
+              >
                 <v-autocomplete
                   id="district-text-field"
+                  v-model="districtCodeNameFilter"
                   clearable
                   :items="districtSearchNames"
-                  v-model="districtCodeNameFilter"
                   item-title="districtNumberName"
                   variant="underlined"
                   item-value="districtId"
                   :menu-props="{closeOnContentClick:true}"
-                  @update:model-value="searchButtonClick"
                   label="District Number & Name"
+                  @update:model-value="searchButtonClick"
                 >
                   <template #selection="{ item, index }">
-                    {{ item.raw.districtNumberName }}
+                    {{
+                      item.raw.districtNumberName
+                    }}
                   </template>
                   <template #item="{ props, item }">
                     <v-list-item
@@ -126,29 +181,37 @@
                       prepend-icon="mdi-circle-medium"
                       :base-color="getDistrictStatusColor(item.raw.status)"
                       title=""
-                      >
+                    >
                       <v-list-item-title style="color: black !important;">
-                        {{ item.raw.districtNumberName }}
+                        {{
+                          item.raw.districtNumberName
+                        }}
                       </v-list-item-title>
                     </v-list-item>
                   </template>
                 </v-autocomplete>
               </v-col>
-              <v-col cols="12" md="4" class="d-flex justify-start">
+              <v-col
+                cols="12"
+                md="4"
+                class="d-flex justify-start"
+              >
                 <v-autocomplete
                   id="authority-text-field"
+                  v-model="authorityCodeNameFilter"
                   label="Authority Code & Name"
                   item-value="authorityID"
                   item-title="authorityCodeName"
                   variant="underlined"
                   :items="authoritySearchNames"
-                  v-model="authorityCodeNameFilter"
                   :menu-props="{closeOnContentClick:true}"
-                  @update:model-value="searchButtonClick"
                   clearable
+                  @update:model-value="searchButtonClick"
                 >
                   <template #selection="{ item, index }">
-                    {{ item.raw.authorityCodeName }}
+                    {{
+                      item.raw.authorityCodeName
+                    }}
                   </template>
                   <template #item="{ props, item }">
                     <v-list-item
@@ -156,33 +219,47 @@
                       prepend-icon="mdi-circle-medium"
                       :base-color="getStatusColorAuthorityOrSchool(item.raw.status)"
                       title=""
-                      >
+                    >
                       <v-list-item-title style="color: black !important;">
-                        {{ item.raw.authorityCodeName }}
+                        {{
+                          item.raw.authorityCodeName
+                        }}
                       </v-list-item-title>
                     </v-list-item>
                   </template>
                 </v-autocomplete>
               </v-col>
-              <v-col cols="12" md="4" class="d-flex justify-start">
+              <v-col
+                cols="12"
+                md="4"
+                class="d-flex justify-start"
+              >
                 <v-autocomplete
                   id="reporting-requirement-text-field"
+                  v-model="schoolReportingRequirementCodeFilter"
                   label="Reporting Requirement"
                   item-value="schoolReportingRequirementCode"
                   variant="underlined"
                   item-title="label"
                   :items="schoolReportingRequirementTypeCodes"
-                  v-model="schoolReportingRequirementCodeFilter"
-                  @update:model-value="searchButtonClick"
                   clearable
-                >
-                </v-autocomplete>
+                  @update:model-value="searchButtonClick"
+                />
               </v-col>
               <v-col class="d-flex justify-end">
-                <PrimaryButton id="user-search-button" text="Clear" secondary :click-action="clearButtonClick"/>
-                <PrimaryButton class="ml-3" width="8em" id="user-clear-button" text="Search"
-                               :click-action="searchButtonClick"
-                               :disabled="!searchEnabled()"
+                <PrimaryButton
+                  id="user-search-button"
+                  text="Clear"
+                  secondary
+                  :click-action="clearButtonClick"
+                />
+                <PrimaryButton
+                  id="user-clear-button"
+                  class="ml-3"
+                  width="8em"
+                  text="Search"
+                  :click-action="searchButtonClick"
+                  :disabled="!searchEnabled()"
                 />
               </v-col>
             </v-row>
@@ -223,7 +300,11 @@
                       class="mb-n1"
                     >
                       <v-col cols="6">
-                        <span class="subjectHeading">{{ item.raw.mincode }} - {{ item.raw.displayName }}</span>
+                        <span class="subjectHeading">{{
+                          item.raw.mincode
+                        }} - {{
+                          item.raw.displayName
+                        }}</span>
                       </v-col>
                       <v-col
                         cols="2"
@@ -236,7 +317,9 @@
                         >
                           mdi-circle-medium
                         </v-icon>
-                        <span class="statusCodeLabel">{{ item.raw.status }}</span>
+                        <span class="statusCodeLabel">{{
+                          item.raw.status
+                        }}</span>
                       </v-col>
                       <v-col class="d-flex">
                         <v-icon
@@ -248,17 +331,21 @@
                         <span
                           class="principalName statusCodeLabel"
                           style="color: black"
-                        >{{ item.raw.principalsName }}</span>
+                        >{{
+                          item.raw.principalsName
+                        }}</span>
                       </v-col>
                     </v-row>
                     <v-row no-gutters>
                       <v-col cols="6">
-                      <span
-                        class="ministryLine"
-                        style="color: black"
-                      >{{
+                        <span
+                          class="ministryLine"
+                          style="color: black"
+                        >{{
                           item.raw.schoolCategory
-                        }} | {{ item.raw.facilityType }}</span>
+                        }} | {{
+                          item.raw.facilityType
+                        }}</span>
                       </v-col>
                       <v-col
                         cols="2"
@@ -269,7 +356,9 @@
                         >
                           mdi-phone-outline
                         </v-icon>
-                        <span class="statusCodeLabel">{{ formatPhoneNumber(item.raw.phoneNumber) }}</span>
+                        <span class="statusCodeLabel">{{
+                          formatPhoneNumber(item.raw.phoneNumber)
+                        }}</span>
                       </v-col>
                       <v-col
                         cols="4"
@@ -281,7 +370,9 @@
                         >
                           mdi-at
                         </v-icon>
-                        <span class="statusCodeLabel centerSpan">{{ item.raw.email }}</span>
+                        <span class="statusCodeLabel centerSpan">{{
+                          item.raw.email
+                        }}</span>
                       </v-col>
                     </v-row>
                   </v-col>
@@ -302,13 +393,12 @@
     >
       <NewSchoolPage
         v-if="newSchoolSheet"
-        :districtNames="this.activeDistricts"
-        :authorityNames="this.activeAuthorities"
+        :district-names="activeDistricts"
+        :authority-names="activeAuthorities"
         @newSchool:closeNewSchoolPage="newSchoolSheet = !newSchoolSheet"
       />
     </v-bottom-sheet>
   </v-container>
-
 </template>
 
 <script>
@@ -333,12 +423,12 @@ import {instituteStore} from '@/store/modules/institute';
 
 export default {
   name: 'SchoolListPage',
-  mixins: [alertMixin],
   components: {
     PrimaryButton,
     Spinner,
     NewSchoolPage
   },
+  mixins: [alertMixin],
   data() {
     return {
       statusRadioGroup: 'statusFilterActive',
@@ -764,19 +854,19 @@ export default {
 }
 
 .hoverTable {
-  border-bottom-style: groove;
-  border-left-style: groove;
-  border-right-style: groove;
-  border-color: rgb(255 255 255 / 45%);
+    border-bottom-style: groove;
+    border-left-style: groove;
+    border-right-style: groove;
+    border-color: rgb(255 255 255 / 45%);
 }
 
 .hoverTable:nth-child(1) {
-  border-top-style: groove;
+    border-top-style: groove;
 }
 
-.hoverTable:hover{
-  background-color: #e8e8e8;
-  cursor: pointer;
+.hoverTable:hover {
+    background-color: #e8e8e8;
+    cursor: pointer;
 }
 
 </style>

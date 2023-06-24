@@ -969,7 +969,7 @@ async function getSchoolHistoryPaginated(req, res) {
 
     let parsedParams = '';
     if (req.query.searchParams) {
-      parsedParams = JSON.parse(req.query.searchParams);
+      parsedParams = req.query.searchParams;
     }
 
     const historySearchCriteria = [{

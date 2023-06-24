@@ -1,5 +1,8 @@
 <template>
-  <v-container class="containerSetup" fluid>
+  <v-container
+    class="containerSetup"
+    fluid
+  >
     <v-row v-if="loading">
       <v-col class="d-flex justify-center">
         <v-progress-circular
@@ -9,48 +12,123 @@
           color="primary"
           indeterminate
           :active="loading"
-        ></v-progress-circular>
+        />
       </v-col>
     </v-row>
     <template v-if="!loading">
       <v-row>
         <v-col class="mt-1 d-flex justify-start">
-          <v-icon class="mt-1" small color="#1976d2">mdi-arrow-left</v-icon>
-          <a class="ml-1 mt-1" @click="backButtonClick">Return to Authority List</a>
+          <v-icon
+            class="mt-1"
+            small
+            color="#1976d2"
+          >
+            mdi-arrow-left
+          </v-icon>
+          <a
+            class="ml-1 mt-1"
+            @click="backButtonClick"
+          >Return to Authority List</a>
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="12" class="d-flex justify-start">
+        <v-col
+          cols="12"
+          class="d-flex justify-start"
+        >
           <v-row no-gutters>
             <v-col cols="12">
-              <h2 id="authorityNameAndNumber" class="subjectHeading">{{authority.authorityNumber}} - {{authority.displayName}}</h2>
+              <h2
+                id="authorityNameAndNumber"
+                class="subjectHeading"
+              >
+                {{
+                  authority.authorityNumber
+                }} -
+                {{
+                  authority.displayName
+                }}
+              </h2>
             </v-col>
           </v-row>
         </v-col>
       </v-row>
       <v-row cols="2">
         <v-col class="d-flex justify-start">
-          <v-chip class="mr-3" color="#A9D18E">Active</v-chip>
-          <v-chip class="mr-3" color="#9DC3E6">Pending Start Date</v-chip>
-          <v-chip color="#F4B183">Pending End Date</v-chip>
+          <v-chip
+            class="mr-3"
+            color="#A9D18E"
+          >
+            Active
+          </v-chip>
+          <v-chip
+            class="mr-3"
+            color="#9DC3E6"
+          >
+            Pending Start Date
+          </v-chip>
+          <v-chip color="#F4B183">
+            Pending End Date
+          </v-chip>
         </v-col>
         <v-col class="d-flex justify-end">
-          <PrimaryButton id="viewAuthorityDetailsButton" class="mr-2" secondary icon-left icon="mdi-domain" :to="`/authority/${authorityID}`" text="View Authority Details"></PrimaryButton>
-          <PrimaryButton icon-left width="11em" icon="mdi-plus-thick" text="New Contact" v-if="canEditAuthorityContact"  :click-action="newContactSheet = !newContactSheet"></PrimaryButton>
+          <PrimaryButton
+            id="viewAuthorityDetailsButton"
+            class="mr-2"
+            secondary
+            icon-left
+            icon="mdi-domain"
+            :to="`/authority/${authorityID}`"
+            text="View Authority Details"
+          />
+          <PrimaryButton
+            v-if="canEditAuthorityContact"
+            icon-left
+            width="11em"
+            icon="mdi-plus-thick"
+            text="New Contact"
+            :click-action="openNewContactSheet"
+          />
         </v-col>
       </v-row>
-      <div v-for="authorityContactType in authorityContactTypes" :key="authorityContactType.code">
+      <div
+        v-for="authorityContactType in authorityContactTypes"
+        :key="authorityContactType.code"
+      >
         <v-row>
           <v-col>
-            <h2 id="authorityTypeLabel" style="color:#1A5A96">{{authorityContactType.label}}</h2>
+            <h2
+              id="authorityTypeLabel"
+              style="color:#1A5A96"
+            >
+              {{
+                authorityContactType.label
+              }}
+            </h2>
           </v-col>
         </v-row>
-        <v-row cols="2" v-if="authorityContacts.has(authorityContactType.authorityContactTypeCode)">
-          <v-col cols="5" lg="4" v-for="contact in authorityContacts.get(authorityContactType.authorityContactTypeCode)" :key="contact.independentAuthorityId">
-            <AuthorityContact :contact="contact" @editAuthorityContact:doShowEditAuthorityContactForm="showContactEditForm(contact)" @removeAuthorityContact:showConfirmationPrompt="removeContact" :canEditAuthorityContact="canEditAuthorityContact"/>
+        <v-row
+          v-if="authorityContacts.has(authorityContactType.authorityContactTypeCode)"
+          cols="2"
+        >
+          <v-col
+            v-for="contact in authorityContacts.get(authorityContactType.authorityContactTypeCode)"
+            :key="contact.independentAuthorityId"
+            cols="5"
+            lg="4"
+          >
+            <AuthorityContact
+              :contact="contact"
+              :can-edit-authority-contact="canEditAuthorityContact"
+              @editAuthorityContact:doShowEditAuthorityContactForm="showContactEditForm(contact)"
+              @removeAuthorityContact:showConfirmationPrompt="removeContact"
+            />
           </v-col>
         </v-row>
-        <v-row cols="2" v-else>
+        <v-row
+          v-else
+          cols="2"
+        >
           <v-col>
             <p>No contacts of this type have been listed.</p>
           </v-col>
@@ -59,37 +137,37 @@
     </template>
     <!--    new contact sheet -->
     <v-bottom-sheet
-        v-model="newContactSheet"
-        inset
-        no-click-animation
-        scrollable
-        persistent
+      v-model="newContactSheet"
+      inset
+      no-click-animation
+      scrollable
+      persistent
     >
       <NewAuthorityContactPage
-          v-if="newContactSheet"
-          :authorityContactTypes="this.authorityContactTypes"
-          :authorityID="this.$route.params.authorityID"
-          @newAuthorityContact:closeNewAuthorityContactPage="newContactSheet = !newContactSheet"
-          @newAuthorityContact:addNewAuthorityContact="newAuthorityContactAdded"
+        v-if="newContactSheet"
+        :authority-contact-types="authorityContactTypes"
+        :authority-i-d="$route.params.authorityID"
+        @newAuthorityContact:closeNewAuthorityContactPage="newContactSheet = !newContactSheet"
+        @newAuthorityContact:addNewAuthorityContact="newAuthorityContactAdded"
       />
     </v-bottom-sheet>
-      <v-bottom-sheet
-        v-model="editContactSheet"
-        inset
-        no-click-animation
-        scrollable
-        persistent
-      >
-        <EditAuthorityContactPage
-          v-if="editContactSheet"
-          :contact="editContact"
-          :authorityContactTypes="this.authorityContactTypes"
-          :authorityID="this.$route.params.authorityID"
-          @editAuthorityContact:cancelEditAuthorityContactPage="editContactSheet = !editContactSheet"
-          @editAuthorityContact:editAuthorityContactSuccess="contactEditSuccess"
-        />
+    <v-bottom-sheet
+      v-model="editContactSheet"
+      inset
+      no-click-animation
+      scrollable
+      persistent
+    >
+      <EditAuthorityContactPage
+        v-if="editContactSheet"
+        :contact="editContact"
+        :authority-contact-types="authorityContactTypes"
+        :authority-i-d="$route.params.authorityID"
+        @editAuthorityContact:cancelEditAuthorityContactPage="editContactSheet = !editContactSheet"
+        @editAuthorityContact:editAuthorityContactSuccess="contactEditSuccess"
+      />
     </v-bottom-sheet>
-    <ConfirmationDialog ref="confirmationDialog"/>
+    <ConfirmationDialog ref="confirmationDialog" />
   </v-container>
 </template>
 
@@ -100,7 +178,7 @@ import {Routes} from '@/utils/constants';
 import PrimaryButton from '../util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
 import {isExpired} from '@/utils/institute/status';
-import { mapState } from 'pinia';
+import {mapState} from 'pinia';
 import AuthorityContact from '@/components/institute/AuthorityContact.vue';
 import NewAuthorityContactPage from '@/components/institute/NewAuthorityContactPage.vue';
 import {sortBy} from 'lodash';
@@ -110,7 +188,6 @@ import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'AuthorityContactPage',
-  mixins: [alertMixin],
   components: {
     EditAuthorityContactPage,
     PrimaryButton,
@@ -118,6 +195,7 @@ export default {
     NewAuthorityContactPage,
     ConfirmationDialog
   },
+  mixins: [alertMixin],
   props: {
     authorityID: {
       type: String,
@@ -139,7 +217,7 @@ export default {
     this.getAuthorityContactTypeCodes();
   },
   computed: {
-    ...mapState(authStore, ['isAuthenticated','INDEPENDENT_AUTHORITY_ADMIN_ROLE']),
+    ...mapState(authStore, ['isAuthenticated', 'INDEPENDENT_AUTHORITY_ADMIN_ROLE']),
     loading() {
       return this.loadingCount !== 0;
     },
@@ -203,14 +281,19 @@ export default {
       this.editContact = contact;
       this.editContactSheet = true;
     },
+    openNewContactSheet() {
+      this.newContactSheet = !this.newContactSheet;
+    },
     removeContact(independentAuthorityId, authorityContactId) {
       const opts = {
         color: '#003366',
         dense: false,
+        width: 400,
+        dark: true,
         titleBold: true,
         resolveText: 'Remove'
       };
-      this.$refs.confirmationDialog.open('Please Confirm', 'Are you sure you want to remove this contact?',opts)
+      this.$refs.confirmationDialog.open('Please Confirm', 'Are you sure you want to remove this contact?', opts)
         .then((result) => {
           if (result) { // the component returns true only when user confirms the dialog.
             this.loadingCount += 1;
@@ -233,28 +316,31 @@ export default {
 <style scoped>
 
 .v-dialog__content /deep/ .v-bottom-sheet {
-  width: 30% !important;
+    width: 30% !important;
 }
 
-@media screen and (max-width: 950px){
-  .v-dialog__content /deep/ .v-bottom-sheet {
-    width: 60% !important;
-  }
+@media screen and (max-width: 950px) {
+    .v-dialog__content /deep/ .v-bottom-sheet {
+        width: 60% !important;
+    }
 }
-.containerSetup{
-  padding-right: 32em !important;
-  padding-left: 32em !important;
+
+.containerSetup {
+    padding-right: 32em !important;
+    padding-left: 32em !important;
 }
+
 @media screen and (max-width: 1950px) {
-  .containerSetup{
-    padding-right: 20em !important;
-    padding-left: 20em !important;
-  }
+    .containerSetup {
+        padding-right: 20em !important;
+        padding-left: 20em !important;
+    }
 }
+
 @media screen and (max-width: 1200px) {
-  .containerSetup{
-    padding-right: 4em !important;
-    padding-left: 4em !important;
-  }
+    .containerSetup {
+        padding-right: 4em !important;
+        padding-left: 4em !important;
+    }
 }
 </style>

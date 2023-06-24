@@ -1,67 +1,127 @@
 <template>
-    <v-form ref="studentDetailForm" id="detailStudentForm"
-            v-model="validForm" class="fill-height"
+  <v-form
+    id="detailStudentForm"
+    ref="studentDetailForm"
+    v-model="validForm"
+    class="fill-height"
+  >
+    <v-container
+      fluid
+      class="fill-height ma-0 pa-2 studentDetail"
     >
-      <v-container fluid class="fill-height ma-0 pa-2 studentDetail">
-
-        <v-col cols="12" class="fill-height ma-0 pa-0">
-          <v-row>
-            <v-tabs selected-class="active-display" class="pa-0 ma-0 " :model-value="tab">
-              <v-tab key="Demographics" class="student-details-tabs-style"><strong>Demographics</strong></v-tab>
-              <v-tab key="SLD" v-if="VIEW_SLD_HISTORY_ROLE" class="student-details-tabs-style"><strong>SLD History</strong></v-tab>
-              <v-tab key="Audit" v-if="VIEW_AUDIT_HISTORY_ROLE" class="student-details-tabs-style"><strong>Audit History</strong></v-tab>
-            </v-tabs>
-          </v-row>
-          <v-tabs-items v-if="!isLoading">
-            <StudentDetailCommon
-                :studentID="studentID"
-                :studentDetails="studentDetails"
-                :validForm="validForm"
-                :parentRefs="this.$refs"
-                :fullReadOnly="hasSagaInProgress || !EDIT_STUDENT_RECORDS_ROLE"
-                @update:student="v => studentDetails.student = v"
-                @isStudentUpdated="v=> isStudentDataUpdated = v"
-                @refresh="refreshStudent"
-                v-if="tab===0"
+      <v-col
+        cols="12"
+        class="fill-height ma-0 pa-0"
+      >
+        <v-row>
+          <v-tabs
+            selected-class="active-display"
+            class="pa-0 ma-0 "
+            :model-value="tab"
+          >
+            <v-tab
+              key="Demographics"
+              class="student-details-tabs-style"
             >
-              <template #buttonbar="{ isAdvancedSearch, hasAnyEdits, saveStudent, REQUEST_TYPES, disableDemerge, demerge, saveStudentLoading }">
-                <v-row>
-                  <v-col cols="12">
-                    <v-card-actions style="float: right;">
-                      <router-link
-                        :to="`${isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`">
-                        <PrimaryButton :secondary="true" class="mx-1" text="Cancel"></PrimaryButton>
-                      </router-link>
-                      <PrimaryButton v-if="studentDetails.student.statusCode === 'M'"
-                                     :disabled="disableDemerge()" text="Demerge"
-                                     :click-action="demerge()"></PrimaryButton>
-                      <PrimaryButton :disabled="!hasAnyEdits() || !validForm" text="Save" :loading="saveStudentLoading"
-                                     :click-action="saveStudent()"></PrimaryButton>
-                    </v-card-actions>
-                  </v-col>
-                </v-row>
-              </template>
-            </StudentDetailCommon>
-            <StudentSLDHistory v-else-if="tab===1 && VIEW_SLD_HISTORY_ROLE" :student="studentDetails.student" @refresh="refreshStudent"  @isStudentUpdated="v=> isStudentDataUpdated = v"/>
-            <StudentAuditHistory v-else-if="tab===2 && VIEW_AUDIT_HISTORY_ROLE" :student="studentDetails.student" @refresh="refreshStudent"  @isStudentUpdated="v=> isStudentDataUpdated = v"/>
-          </v-tabs-items>
-          <v-row v-else>
-          <v-row fluid class="full-height align-center justify-center" >
-            <article id="pen-display-container" class="top-banner full-height">
-              <v-row align="center" justify="center">
+              <strong>Demographics</strong>
+            </v-tab>
+            <v-tab
+              v-if="VIEW_SLD_HISTORY_ROLE"
+              key="SLD"
+              class="student-details-tabs-style"
+            >
+              <strong>SLD History</strong>
+            </v-tab>
+            <v-tab
+              v-if="VIEW_AUDIT_HISTORY_ROLE"
+              key="Audit"
+              class="student-details-tabs-style"
+            >
+              <strong>Audit History</strong>
+            </v-tab>
+          </v-tabs>
+        </v-row>
+        <v-tabs-items v-if="!isLoading">
+          <StudentDetailCommon
+            v-if="tab===0"
+            :student-i-d="studentID"
+            :student-details="studentDetails"
+            :valid-form="validForm"
+            :parent-refs="$refs"
+            :full-read-only="hasSagaInProgress || !EDIT_STUDENT_RECORDS_ROLE"
+            @update:student="v => studentDetails.student = v"
+            @isStudentUpdated="v=> isStudentDataUpdated = v"
+            @refresh="refreshStudent"
+          >
+            <template #buttonbar="{ isAdvancedSearch, hasAnyEdits, saveStudent, REQUEST_TYPES, disableDemerge, demerge, saveStudentLoading }">
+              <v-row>
+                <v-col cols="12">
+                  <v-card-actions style="float: right;">
+                    <router-link
+                      :to="`${isAdvancedSearch?REQUEST_TYPES.studentSearch.path.advanced:REQUEST_TYPES.studentSearch.path.basic}`"
+                    >
+                      <PrimaryButton
+                        :secondary="true"
+                        class="mx-1"
+                        text="Cancel"
+                      />
+                    </router-link>
+                    <PrimaryButton
+                      v-if="studentDetails.student.statusCode === 'M'"
+                      :disabled="disableDemerge()"
+                      text="Demerge"
+                      :click-action="demerge()"
+                    />
+                    <PrimaryButton
+                      :disabled="!hasAnyEdits() || !validForm"
+                      text="Save"
+                      :loading="saveStudentLoading"
+                      :click-action="saveStudent()"
+                    />
+                  </v-card-actions>
+                </v-col>
+              </v-row>
+            </template>
+          </StudentDetailCommon>
+          <StudentSLDHistory
+            v-else-if="tab===1 && VIEW_SLD_HISTORY_ROLE"
+            :student="studentDetails.student"
+            @refresh="refreshStudent"
+            @isStudentUpdated="v=> isStudentDataUpdated = v"
+          />
+          <StudentAuditHistory
+            v-else-if="tab===2 && VIEW_AUDIT_HISTORY_ROLE"
+            :student="studentDetails.student"
+            @refresh="refreshStudent"
+            @isStudentUpdated="v=> isStudentDataUpdated = v"
+          />
+        </v-tabs-items>
+        <v-row v-else>
+          <v-row
+            fluid
+            class="full-height align-center justify-center"
+          >
+            <article
+              id="pen-display-container"
+              class="top-banner full-height"
+            >
+              <v-row
+                align="center"
+                justify="center"
+              >
                 <v-progress-circular
-                    :size="70"
-                    :width="7"
-                    color="primary"
-                    indeterminate
-                ></v-progress-circular>
+                  :size="70"
+                  :width="7"
+                  color="primary"
+                  indeterminate
+                />
               </v-row>
             </article>
           </v-row>
-          </v-row>
-        </v-col>
-      </v-container>
-    </v-form>
+        </v-row>
+      </v-col>
+    </v-container>
+  </v-form>
 </template>
 
 <script>
@@ -78,19 +138,19 @@ import {studentStore} from '@/store/modules/student';
 import {authStore} from '@/store/modules/auth';
 
 export default {
-  name: 'studentDetail',
+  name: 'StudentDetail',
+  components: {
+    StudentSLDHistory,
+    PrimaryButton,
+    StudentDetailCommon,
+    StudentAuditHistory
+  },
   mixins: [alertMixin, staleStudentRecordMixin],
   props: {
     studentID: {
       type: String,
       required: true
     }
-  },
-  components: {
-    StudentSLDHistory,
-    PrimaryButton,
-    StudentDetailCommon,
-    StudentAuditHistory
   },
   data() {
     return {
@@ -109,14 +169,14 @@ export default {
       return this.studentDetails && (this.studentDetails.sagaInProgress || this.studentsInProcess.has(this.studentDetails.studentID));
     },
   },
-  mounted() {
-    studentStore().getCodes();
-    this.refreshStudent();
-  },
   watch: {
     studentID() {
       this.refreshStudent();
     }
+  },
+  mounted() {
+    studentStore().getCodes();
+    this.refreshStudent();
   },
   methods: {
     refreshStudent() {

@@ -1,39 +1,70 @@
 <template>
-  <div id="file-list" class="px-3" style="width: 100%" :overlay="false">
+  <div
+    id="file-list"
+    class="px-3"
+    style="width: 100%"
+    :overlay="false"
+  >
     <v-data-table
       id="dataTable"
+      v-model:page="pageNumber"
       :class="[{'filterable-table': hasFilterHeader}, 'batch-file-table']"
       :headers="headers"
       :items="penRequestBatchResponse.content"
-      :page.sync="pageNumber"
       :items-per-page="penRequestBatchResponse.pageable.pageSize"
       hide-default-footer
       item-key="penRequestBatchID"
       :loading="loadingTable"
       @page-count="penRequestBatchResponse.pageable.pageNumber = $event"
     >
-      <template v-for="h in headers" #[`header.${h.value}`]="{ header }">
-        <span :title="header.tooltip"  :key="h.id" :class="{'file-column' : !header.countable}">
+      <template
+        v-for="h in headers"
+        #[`header.${h.value}`]="{ header }"
+      >
+        <span
+          :key="h.id"
+          :title="header.tooltip"
+          :class="{'file-column' : !header.countable}"
+        >
           {{ header.text }}
         </span>
         <template v-if="hasFilterHeader">
-          <br :key="h.id" />
-          <span :key="h.id" :class="header.countable ? 'countable-column-header' : 'file-column'">
+          <br :key="h.id">
+          <span
+            :key="h.id"
+            :class="header.countable ? 'countable-column-header' : 'file-column'"
+          >
             <v-checkbox
               v-if="header.filterName"
+              v-model="header.isFiltered"
               class="file-checkbox filter-checkbox"
               color="#606060"
-              v-model="header.isFiltered"
               @update:model-value="selectFilter(header)"
-            ></v-checkbox>
+            />
           </span>
         </template>
       </template>
       <template #item="props">
-        <tr :class="{'selected-file': props.item.isSelected}" @click="clickItem(props.item)">
-          <td v-for="header in props.headers" :key="header.id" :class="{[header.value]: true, 'select-column': header.type}">
-            <v-checkbox v-if="header.type" class="file-checkbox" color="#606060" v-model="props.item.isSelected" @click.stop="selectFile(props.item)"></v-checkbox>
-            <div v-else :class="{'countable-column-div': header.countable}">
+        <tr
+          :class="{'selected-file': props.item.isSelected}"
+          @click="clickItem(props.item)"
+        >
+          <td
+            v-for="header in props.headers"
+            :key="header.id"
+            :class="{[header.value]: true, 'select-column': header.type}"
+          >
+            <v-checkbox
+              v-if="header.type"
+              v-model="props.item.isSelected"
+              class="file-checkbox"
+              color="#606060"
+              @click.stop="selectFile(props.item)"
+            />
+            <div
+              v-else
+              :class="{'countable-column-div': header.countable}"
+            >
               <span :class="{'countable-column-data': header.countable}">{{ props.item[header.value] || '' }}</span>
             </div>
           </td>
@@ -42,8 +73,8 @@
     </v-data-table>
     <Pagination
       v-model="pageNumber"
-      :dataResponse="penRequestBatchResponse"
-      pageCommands
+      :data-response="penRequestBatchResponse"
+      page-commands
     />
   </div>
 </template>
@@ -57,10 +88,10 @@ import alertMixin from '../../../mixins/alertMixin';
 
 export default {
   name: 'HeldRequestBatchList',
-  mixins: [alertMixin, filtersMixin],
   components: {
     Pagination,
   },
+  mixins: [alertMixin, filtersMixin],
   props: {
     schoolGroup: {
       type: String,
@@ -100,6 +131,25 @@ export default {
       defaultStatuses: [PEN_REQ_BATCH_STATUS_CODES.HOLD_SIZE, PEN_REQ_BATCH_STATUS_CODES.DUPLICATE].join()
     };
   },
+  computed: {
+    hasFilterHeader() {
+      return this.headers.some(header => header.filterName);
+    },
+    countableHeaders() {
+      return this.headers.filter(header => header.countable);
+    },
+    searchCriteria() {
+      const statusCriteriaList = this.filteredStatuses.length <= 0 ? this.defaultStatuses : this.filteredStatuses.join();
+      return [
+        {
+          searchCriteriaList: [
+            {key: 'schoolGroupCode', operation: 'eq', value: this.schoolGroup, valueType: 'STRING'},
+            {key: 'penRequestBatchStatusCode', operation: 'in', value: statusCriteriaList, valueType: 'STRING', condition: 'AND'}
+          ]
+        }
+      ];
+    },
+  },
   watch: {
     pageNumber: {
       handler() {
@@ -123,25 +173,6 @@ export default {
         }
       }
     }
-  },
-  computed: {
-    hasFilterHeader() {
-      return this.headers.some(header => header.filterName);
-    },
-    countableHeaders() {
-      return this.headers.filter(header => header.countable);
-    },
-    searchCriteria() {
-      const statusCriteriaList = this.filteredStatuses.length <= 0 ? this.defaultStatuses : this.filteredStatuses.join();
-      return [
-        {
-          searchCriteriaList: [
-            {key: 'schoolGroupCode', operation: 'eq', value: this.schoolGroup, valueType: 'STRING'},
-            {key: 'penRequestBatchStatusCode', operation: 'in', value: statusCriteriaList, valueType: 'STRING', condition: 'AND'}
-          ]
-        }
-      ];
-    },
   },
   created(){
     this.pagination();

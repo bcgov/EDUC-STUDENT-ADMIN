@@ -1,7 +1,8 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="createNewPenDialog"
-              max-width="75%"
+    <v-dialog
+      v-model="createNewPenDialog"
+      max-width="75%"
     >
       <v-card>
         <v-card-title class="px-0 pb-0 pt-5">
@@ -14,147 +15,249 @@
               </slot>
             </v-list-item>
             <v-list-item-icon class="my-0">
-              <v-btn id="closeCreateNewPenModalBtn" text icon @click="createNewPenDialog=false">
-                <v-icon large color="#38598A">mdi-close</v-icon>
+              <v-btn
+                id="closeCreateNewPenModalBtn"
+                text
+                icon
+                @click="createNewPenDialog=false"
+              >
+                <v-icon
+                  large
+                  color="#38598A"
+                >
+                  mdi-close
+                </v-icon>
               </v-btn>
             </v-list-item-icon>
           </v-list-item>
         </v-card-title>
-        <v-spacer/>
+        <v-spacer />
         <v-card-text>
-          <v-form ref="createNewPenForm" v-model="isValidForm">
+          <v-form
+            ref="createNewPenForm"
+            v-model="isValidForm"
+          >
             <v-row>
               <v-col cols="12">
-                <v-row density="compact" no-gutters>
-                  <v-col cols="3"><Strong>Legal Surname</Strong></v-col>
-                  <v-spacer/>
-                  <v-col cols="3"><strong>Legal Given</strong></v-col>
-                  <v-spacer/>
-                  <v-col cols="3"><strong>Legal Middle</strong></v-col>
-                  <v-spacer/>
+                <v-row
+                  density="compact"
+                  no-gutters
+                >
+                  <v-col cols="3">
+                    <Strong>Legal Surname</Strong>
+                  </v-col>
+                  <v-spacer />
+                  <v-col cols="3">
+                    <strong>Legal Given</strong>
+                  </v-col>
+                  <v-spacer />
+                  <v-col cols="3">
+                    <strong>Legal Middle</strong>
+                  </v-col>
+                  <v-spacer />
                 </v-row>
                 <v-row density="compact">
-                  <v-col cols="3">
-                    <v-text-field id="createNewPenFormLegalLastName" outlined density="compact" filled readonly required
-                                  tabindex="1" maxlength="25"
-                                  :rules="validateNameFields(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
-                                  :error-messages="err.legalLastNameError"
-                                  v-model="student.legalLastName"></v-text-field>
-                  </v-col>
-                  <v-spacer/>
-                  <v-col cols="3">
-                    <v-text-field outlined density="compact" filled
-                                  id="createNewPenFormLegalFirstName"
-                                  readonly required tabindex="2" maxlength="25"
-                                  :rules="validateNameFields(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
-                                  :error-messages="err.legalFirstNameError"
-                                  v-model="student.legalFirstName"></v-text-field>
-                  </v-col>
-                  <v-spacer/>
-                  <v-col cols="3">
-                    <v-text-field outlined density="compact" filled
-                                  id="createNewPenFormLegalMiddleNames"
-                                  tabindex="3" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
-                                  :rules="validateNameFields(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
-                                  clearable maxlength="25"
-                                  @input="clearError('legalMiddleNamesError')"
-                                  :error-messages="err.legalMiddleNamesError"
-                                  v-model="student.legalMiddleNames"></v-text-field>
-                  </v-col>
-                  <v-spacer/>
-                </v-row>
-                <v-row density="compact" no-gutters>
-                  <v-col cols="3"><Strong>Usual Surname </Strong></v-col>
-                  <v-spacer/>
-                  <v-col cols="3"><strong>Usual Given</strong></v-col>
-                  <v-spacer/>
-                  <v-col cols="3"><strong>Usual Middle</strong></v-col>
-                  <v-spacer/>
-                </v-row>
-                <v-row density="compact">
-                  <v-col cols="3">
-                    <v-text-field outlined density="compact" filled
-                                  id="createNewPenFormUsualLastName"
-                                  tabindex="4" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
-                                  :rules="validateNameFields(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
-                                  clearable maxlength="25"
-                                  :error-messages="err.usualLastNameError"
-                                  @input="clearError('usualLastNameError')"
-                                  v-model="student.usualLastName"></v-text-field>
-                  </v-col>
-                  <v-spacer/>
-                  <v-col cols="3">
-                    <v-text-field outlined density="compact" filled
-                                  id="createNewPenFormUsualFirstName"
-                                  tabindex="5" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
-                                  :rules="validateNameFields(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
-                                  clearable maxlength="25"
-                                  :error-messages="err.usualFirstNameError"
-                                  @input="clearError('usualFirstNameError')"
-                                  v-model="student.usualFirstName"></v-text-field>
-                  </v-col>
-                  <v-spacer/>
-                  <v-col cols="3">
-                    <v-text-field outlined density="compact" filled
-                                  id="createNewPenFormUsualMiddleNames"
-                                  tabindex="6" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
-                                  :rules="validateNameFields(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
-                                  clearable maxlength="25"
-                                  :error-messages="err.usualMiddleNamesError"
-                                  @input="clearError('usualMiddleNamesError')"
-                                  v-model="student.usualMiddleNames"></v-text-field>
-                  </v-col>
-                  <v-spacer/>
-                </v-row>
-                <v-row density="compact" no-gutters>
-                  <v-col cols="3"><Strong>Gender</Strong></v-col>
-                  <v-spacer/>
-                  <v-col cols="3"><strong>Birth Date
-                    <v-btn icon x-small title="YYYYMMDD">
-                      <v-icon color="#2196f3">
-                        info
-                      </v-icon>
-                    </v-btn>
-                  </strong></v-col>
-                  <v-spacer/>
-                  <v-col cols="3"><strong>Local ID</strong></v-col>
-                  <v-spacer/>
-                </v-row>
-                <v-row density="compact">
-                  <v-col cols="3">
-                    <v-text-field outlined density="compact" filled readonly
-                                  id="createNewPenFormGender"
-                                  maxlength="1"
-                                  tabindex="7"
-                                  v-model="student.genderCode"></v-text-field>
-                  </v-col>
-                  <v-spacer/>
                   <v-col cols="3">
                     <v-text-field
-                      id="createNewPenFormDOB" readonly outlined density="compact" filled
-                      :error-messages="err.birthDateError"  tabindex="8"
-                      v-model="student.dob"></v-text-field>
+                      id="createNewPenFormLegalLastName"
+                      outlined
+                      v-model="student.legalLastName"
+                      density="compact"
+                      filled
+                      readonly
+                      required
+                      tabindex="1"
+                      maxlength="25"
+                      :rules="validateNameFields(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
+                      :error-messages="err.legalLastNameError"
+                    />
                   </v-col>
-                  <v-spacer/>
+                  <v-spacer />
                   <v-col cols="3">
-                    <v-text-field outlined density="compact" filled
-                                  id="createNewPenFormLocalID"
-                                  tabindex="9"
-                                  clearable maxlength="12"
-                                  v-model="student.localID"></v-text-field>
+                    <v-text-field
+                      id="createNewPenFormLegalFirstName"
+                      outlined
+                      v-model="student.legalFirstName"
+                      density="compact"
+                      filled
+                      readonly
+                      required
+                      tabindex="2"
+                      maxlength="25"
+                      :rules="validateNameFields(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
+                      :error-messages="err.legalFirstNameError"
+                    />
                   </v-col>
-                  <v-spacer/>
+                  <v-spacer />
+                  <v-col cols="3">
+                    <v-text-field
+                      id="createNewPenFormLegalMiddleNames"
+                      outlined
+                      density="compact"
+                      v-model="student.legalMiddleNames"
+                      filled
+                      tabindex="3"
+                      :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
+                      :rules="validateNameFields(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
+                      clearable
+                      maxlength="25"
+                      :error-messages="err.legalMiddleNamesError"
+                      @input="clearError('legalMiddleNamesError')"
+                    />
+                  </v-col>
+                  <v-spacer />
+                </v-row>
+                <v-row
+                  density="compact"
+                  no-gutters
+                >
+                  <v-col cols="3">
+                    <Strong>Usual Surname </Strong>
+                  </v-col>
+                  <v-spacer />
+                  <v-col cols="3">
+                    <strong>Usual Given</strong>
+                  </v-col>
+                  <v-spacer />
+                  <v-col cols="3">
+                    <strong>Usual Middle</strong>
+                  </v-col>
+                  <v-spacer />
+                </v-row>
+                <v-row density="compact">
+                  <v-col cols="3">
+                    <v-text-field
+                      id="createNewPenFormUsualLastName"
+                      outlined
+                      v-model="student.usualLastName"
+                      density="compact"
+                      filled
+                      tabindex="4"
+                      :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
+                      :rules="validateNameFields(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
+                      clearable
+                      maxlength="25"
+                      :error-messages="err.usualLastNameError"
+                      @input="clearError('usualLastNameError')"
+                    />
+                  </v-col>
+                  <v-spacer />
+                  <v-col cols="3">
+                    <v-text-field
+                      id="createNewPenFormUsualFirstName"
+                      outlined
+                      v-model="student.usualFirstName"
+                      density="compact"
+                      filled
+                      tabindex="5"
+                      :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
+                      :rules="validateNameFields(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
+                      clearable
+                      maxlength="25"
+                      :error-messages="err.usualFirstNameError"
+                      @input="clearError('usualFirstNameError')"
+                    />
+                  </v-col>
+                  <v-spacer />
+                  <v-col cols="3">
+                    <v-text-field
+                      id="createNewPenFormUsualMiddleNames"
+                      outlined
+                      v-model="student.usualMiddleNames"
+                      density="compact"
+                      filled
+                      tabindex="6"
+                      :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
+                      :rules="validateNameFields(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
+                      clearable
+                      maxlength="25"
+                      :error-messages="err.usualMiddleNamesError"
+                      @input="clearError('usualMiddleNamesError')"
+                    />
+                  </v-col>
+                  <v-spacer />
+                </v-row>
+                <v-row
+                  density="compact"
+                  no-gutters
+                >
+                  <v-col cols="3">
+                    <Strong>Gender</Strong>
+                  </v-col>
+                  <v-spacer />
+                  <v-col cols="3">
+                    <strong>Birth Date
+                      <v-btn
+                        icon
+                        x-small
+                        title="YYYYMMDD"
+                      >
+                        <v-icon color="#2196f3">
+                          info
+                        </v-icon>
+                      </v-btn>
+                    </strong>
+                  </v-col>
+                  <v-spacer />
+                  <v-col cols="3">
+                    <strong>Local ID</strong>
+                  </v-col>
+                  <v-spacer />
+                </v-row>
+                <v-row density="compact">
+                  <v-col cols="3">
+                    <v-text-field
+                      id="createNewPenFormGender"
+                      v-model="student.genderCode"
+                      outlined
+                      density="compact"
+                      filled
+                      readonly
+                      maxlength="1"
+                      tabindex="7"
+                    />
+                  </v-col>
+                  <v-spacer />
+                  <v-col cols="3">
+                    <v-text-field
+                      id="createNewPenFormDOB"
+                      v-model="student.dob"
+                      readonly
+                      outlined
+                      density="compact"
+                      filled
+                      :error-messages="err.birthDateError"
+                      tabindex="8"
+                    />
+                  </v-col>
+                  <v-spacer />
+                  <v-col cols="3">
+                    <v-text-field
+                      id="createNewPenFormLocalID"
+                      v-model="student.localID"
+                      outlined
+                      density="compact"
+                      filled
+                      tabindex="9"
+                      clearable
+                      maxlength="12"
+                    />
+                  </v-col>
+                  <v-spacer />
                 </v-row>
               </v-col>
             </v-row>
           </v-form>
-          <v-divider class="subheader-divider"/>
+          <v-divider class="subheader-divider" />
         </v-card-text>
 
         <v-card-actions class="mr-4 pb-6">
-          <v-spacer/>
-          <slot name="actions" :createNewPenLoading="isLoading" :isFormValid="isFormValid">
-          </slot>
+          <v-spacer />
+          <slot
+            name="actions"
+            :create-new-pen-loading="isLoading"
+            :is-form-valid="isFormValid"
+          />
         </v-card-actions>
       </v-card>
     </v-dialog>

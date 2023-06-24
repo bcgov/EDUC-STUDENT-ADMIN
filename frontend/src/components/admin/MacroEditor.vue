@@ -1,15 +1,15 @@
 <template>
   <div>
     <v-textarea
+      v-model="macro.macroText"
       density="compact"
       outlined
-      v-model="macro.macroText"
       :disabled="loading || disabled"
       :rules="validateMaxLength()"
       :rows="rows"
-    ></v-textarea>
+    />
     <v-card-actions class="pt-0">
-      <v-spacer></v-spacer>
+      <v-spacer />
       <PrimaryButton
         id="cancel-action"
         class="mr-2"
@@ -18,7 +18,7 @@
         text="Cancel"
         :disabled="loading || disabled"
         :click-action="$emit('cancel')"
-      ></PrimaryButton>
+      />
       <PrimaryButton
         id="save-action"
         :short="short"
@@ -26,7 +26,7 @@
         :disabled="!isValidForm || loading || disabled"
         :loading="loading"
         :click-action="$emit('save', macro)"
-      ></PrimaryButton>
+      />
     </v-card-actions>
   </div>
 </template>

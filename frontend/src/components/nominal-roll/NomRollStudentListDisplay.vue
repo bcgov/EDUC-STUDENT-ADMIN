@@ -1,33 +1,57 @@
 <template>
-  <v-container fluid class="full-height px-0 mb-4">
-    <v-form ref="studentSearchForm" id="studentSearchForm"
+  <v-container
+    fluid
+    class="full-height px-0 mb-4"
+  >
+    <v-form
+      id="studentSearchForm"
+      ref="studentSearchForm"
       v-model="validForm"
     >
-      <v-container fluid class="fill-height px-0">
+      <v-container
+        fluid
+        class="fill-height px-0"
+      >
         <v-row no-gutters>
-          <v-card elevation="0" height="100%" width="100%" style="background-color:white;">
+          <v-card
+            elevation="0"
+            height="100%"
+            width="100%"
+            style="background-color:white;"
+          >
             <PenRequestSearchPanel
-              :searchParams="nomRollStudentSearchParams"
+              :search-params="nomRollStudentSearchParams"
               :loading="searchLoading"
               :disabled="!searchEnabled"
               :fields="searchFields"
               @searchByPen="searchPenRequestsByPen"
               @search="searchPenRequests"
-            ></PenRequestSearchPanel>
+            />
             <v-progress-linear
               indeterminate
               color="blue"
               :active="searchLoading && !nomRollStudentSearchResponse"
-            ></v-progress-linear>
-            <v-row v-if="nomRollStudentSearchResponse" no-gutters class="py-2" style="background-color:white;">
-              <v-divider class="mx-3 header-divider"/>
+            />
+            <v-row
+              v-if="nomRollStudentSearchResponse"
+              no-gutters
+              class="py-2"
+              style="background-color:white;"
+            >
+              <v-divider class="mx-3 header-divider" />
             </v-row>
-            <v-row v-if="nomRollStudentSearchResponse" id="resultsRow" no-gutters class="py-2" style="background-color:white;">
+            <v-row
+              v-if="nomRollStudentSearchResponse"
+              id="resultsRow"
+              no-gutters
+              class="py-2"
+              style="background-color:white;"
+            >
               <NomRollStudentSearchResults
-                @addFedProvCode="searchPenRequests(true)"
+                v-model:is-posted="isPosted"
                 :loading="searchLoading"
-                :isPosted.sync="isPosted"
-              ></NomRollStudentSearchResults>
+                @addFedProvCode="searchPenRequests(true)"
+              />
             </v-row>
           </v-card>
         </v-row>

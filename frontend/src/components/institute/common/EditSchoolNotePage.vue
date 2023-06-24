@@ -1,30 +1,50 @@
 <template>
   <v-card
-      id="editNoteSheet"
-      class="information-window-v-card">
-    <v-card-title class="sheetHeader pt-1 pb-1">Edit Note</v-card-title>
-    <v-divider></v-divider>
+    id="editNoteSheet"
+    class="information-window-v-card"
+  >
+    <v-card-title class="sheetHeader pt-1 pb-1">
+      Edit Note
+    </v-card-title>
+    <v-divider />
     <v-card-text>
-      <v-form ref="editSchoolNoteForm" v-model="isFormValid">
+      <v-form
+        ref="editSchoolNoteForm"
+        v-model="isFormValid"
+      >
         <v-row>
           <v-col>
             <v-textarea
-                id="editNoteTextArea"
-                v-model="editSchoolNote.content"
-                rows="8"
-                label="Note"
-                autofocus
-                no-resize
-                maxlength="4000"
-                class="pt-0"
-                ref="editNoteTextArea"
-                hide-details="auto">
-            </v-textarea>
+              id="editNoteTextArea"
+              ref="editNoteTextArea"
+              v-model="editSchoolNote.content"
+              rows="8"
+              label="Note"
+              autofocus
+              variant="underlined"
+              no-resize
+              maxlength="4000"
+              class="pt-0"
+              hide-details="auto"
+            />
           </v-col>
         </v-row>
         <v-row class="py-4 pr-2 justify-end">
-          <PrimaryButton id="cancelNote" secondary text="Cancel" :click-action="closeEditSchoolNotePage"></PrimaryButton>
-          <PrimaryButton id="saveNote" text="Save" width="7rem" :click-action="saveChangesToSchoolNote" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
+          <PrimaryButton
+            id="cancelNote"
+            secondary
+            text="Cancel"
+            :click-action="closeEditSchoolNotePage"
+          />
+          <PrimaryButton
+            id="saveNote"
+            text="Save"
+            width="7rem"
+            class="ml-2"
+            :click-action="saveChangesToSchoolNote"
+            :disabled="!isFormValid"
+            :loading="processing"
+          />
         </v-row>
       </v-form>
     </v-card-text>
@@ -36,13 +56,14 @@ import PrimaryButton from '../../util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
+import _ from 'lodash';
 
 export default {
   name: 'EditSchoolNotePage',
-  mixins: [alertMixin],
   components: {
     PrimaryButton
   },
+  mixins: [alertMixin],
   props: {
     schoolId: {
       type: String,
@@ -91,7 +112,8 @@ export default {
       this.$refs.editSchoolNoteForm.reset();
     },
     validateForm() {
-      this.isFormValid = this.$refs.editSchoolNoteForm.validate();
+      const isValid = this.$refs.editSchoolNoteForm.validate();
+      this.isFormValid = isValid.valid;
     },
   }
 };
@@ -99,9 +121,9 @@ export default {
 
 <style scoped>
 .sheetHeader {
-  background-color: #003366;
-  color: white;
-  font-size: medium !important;
-  font-weight: bolder !important;
+    background-color: #003366;
+    color: white;
+    font-size: medium !important;
+    font-weight: bolder !important;
 }
 </style>

@@ -1,34 +1,64 @@
 <template>
   <v-dialog
-          id="compareModal"
-          v-model="compareModalOpen"
-          max-width="80%"
-          :disabled="disabled"
+    id="compareModal"
+    v-model="compareModalOpen"
+    max-width="80%"
+    :disabled="disabled"
   >
     <template #activator="{ on, attrs }">
       <TertiaryButton
-              id="studentSearchCompareButton"
-              class="ma-0"
-              text="Compare"
-              icon="mdi-content-copy"
-              :disabled="disabled"
-              :click-action="compare"
-              :bind="attrs"
-              :on="on">
-      </TertiaryButton>
+        id="studentSearchCompareButton"
+        class="ma-0"
+        text="Compare"
+        icon="mdi-content-copy"
+        :disabled="disabled"
+        :click-action="compare"
+        :bind="attrs"
+        :on="on"
+      />
     </template>
     <v-card id="requestInfoDialogCard">
       <CompareDemographicsCommon
         v-if="compareModalOpen"
-        :selectedRecords.sync="studentRecords"
+        v-model:selected-records="studentRecords"
         title="Compare/View"
-        :closeCompareModal="closeCompareModal">
+        :close-compare-modal="closeCompareModal"
+      >
         <template #actions="{clearError, validateAction, disableMerge, disableDemerge, disableMoveSld, twin, merge, demerge, moveSldRecords}">
-          <PrimaryButton id="compareModalCancelBtn" text="Cancel" secondary :click-action="[closeCompareModal(), clearError()]"></PrimaryButton>
-          <PrimaryButton id="moveSldBtn" text="Move Sld Record" primary :disabled="disableMoveSld()" :click-action="moveSldRecords()"></PrimaryButton>
-          <PrimaryButton id="twinBtn" text="Twin" primary :disabled="validateAction()" :click-action="twin()"></PrimaryButton>
-          <PrimaryButton id="demergeBtn" text="Demerge" primary :disabled="disableDemerge()" :click-action="demerge()"></PrimaryButton>
-          <PrimaryButton id="mergeBtn" text="Merge PENs" primary :disabled="disableMerge()" :click-action="merge()"></PrimaryButton>
+          <PrimaryButton
+            id="compareModalCancelBtn"
+            text="Cancel"
+            secondary
+            :click-action="[closeCompareModal(), clearError()]"
+          />
+          <PrimaryButton
+            id="moveSldBtn"
+            text="Move Sld Record"
+            primary
+            :disabled="disableMoveSld()"
+            :click-action="moveSldRecords()"
+          />
+          <PrimaryButton
+            id="twinBtn"
+            text="Twin"
+            primary
+            :disabled="validateAction()"
+            :click-action="twin()"
+          />
+          <PrimaryButton
+            id="demergeBtn"
+            text="Demerge"
+            primary
+            :disabled="disableDemerge()"
+            :click-action="demerge()"
+          />
+          <PrimaryButton
+            id="mergeBtn"
+            text="Merge PENs"
+            primary
+            :disabled="disableMerge()"
+            :click-action="merge()"
+          />
         </template>
       </CompareDemographicsCommon>
     </v-card>
@@ -45,12 +75,12 @@ import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
 
 export default {
   name: 'CompareDemographicModal',
-  mixins: [alertMixin, staleStudentRecordMixin],
   components: {
     CompareDemographicsCommon,
     PrimaryButton,
     TertiaryButton
   },
+  mixins: [alertMixin, staleStudentRecordMixin],
   props: {
     disabled: {
       type: Boolean,
@@ -71,9 +101,6 @@ export default {
       initialSelectedRecord: []
     };
   },
-  created() {
-    this.initialSelectedRecord = deepCloneObject(this.studentRecords);
-  },
   computed: {
     studentRecords: {
       get: function() {
@@ -83,6 +110,9 @@ export default {
         this.$emit('update:selectedRecords', value);
       }
     }
+  },
+  created() {
+    this.initialSelectedRecord = deepCloneObject(this.studentRecords);
   },
   methods: {
     closeCompareModal() {

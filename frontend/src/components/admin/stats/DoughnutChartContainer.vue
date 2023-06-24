@@ -1,25 +1,45 @@
 <template>
   <div>
-    <v-card v-show="!loading && !loadFailed" class="mx-auto pa-4">
-      <doughnut-chart ref='chart' :chartData="data" :options="options" :style="styles"></doughnut-chart>
+    <v-card
+      v-show="!loading && !loadFailed"
+      class="mx-auto pa-4"
+    >
+      <doughnut-chart
+        ref="chart"
+        :chart-data="data"
+        :options="options"
+        :style="styles"
+      />
       <v-card-text class="v-card-text--offset py-0">
         <div class="text-h6 font-weight-light mb-2">
           {{ dataType }}
         </div>
-        <v-divider class="my-2"></v-divider>
+        <v-divider class="my-2" />
 
-        <span v-if="spanContent" class="text-caption grey&#45;&#45;text font-weight-light">{{ spanContent }}</span>
-        <span v-else class="text-caption grey&#45;&#45;text font-weight-light">{{ total }} total {{ dataType }} requests completed</span>
+        <span
+          v-if="spanContent"
+          class="text-caption grey&#45;&#45;text font-weight-light"
+        >{{ spanContent }}</span>
+        <span
+          v-else
+          class="text-caption grey&#45;&#45;text font-weight-light"
+        >{{ total }} total {{ dataType }} requests completed</span>
       </v-card-text>
     </v-card>
-    <v-card v-show="loading" class="mx-auto pa-4">
-      <v-row align="center" justify="center">
+    <v-card
+      v-show="loading"
+      class="mx-auto pa-4"
+    >
+      <v-row
+        align="center"
+        justify="center"
+      >
         <v-progress-circular
           :size="70"
           :width="7"
           color="primary"
           indeterminate
-        ></v-progress-circular>
+        />
       </v-row>
     </v-card>
   </div>

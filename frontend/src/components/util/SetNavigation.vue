@@ -1,23 +1,27 @@
 <template>
   <div v-if="total > 0">
-    <span class="mr-8 nav-title">{{title}}</span>
+    <span class="mr-8 nav-title">{{ title }}</span>
     <v-btn 
-      class="mr-3"
       id="preRecord"
+      class="mr-3"
       icon
       small
       :disabled="preDisabled"
       @click="clickBtn(preRoute)"
     >
-      <v-icon large>fa-arrow-alt-circle-left</v-icon>
-    </v-btn >
+      <v-icon large>
+        fa-arrow-alt-circle-left
+      </v-icon>
+    </v-btn>
     <v-btn 
       id="nextRecord"
       icon
       :disabled="nextDisabled"
       @click="clickBtn(nextRoute)"
     >
-      <v-icon large>fa-arrow-alt-circle-right</v-icon>
+      <v-icon large>
+        fa-arrow-alt-circle-right
+      </v-icon>
     </v-btn>
   </div>
 </template>

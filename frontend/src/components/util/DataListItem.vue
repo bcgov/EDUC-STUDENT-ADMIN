@@ -1,11 +1,19 @@
 <template>
-  <v-row no-gutters :class="[{'py-1': !breakLine}, 'data-list-item']">
-    <br v-if="breakLine" />
+  <v-row
+    no-gutters
+    :class="[{'py-1': !breakLine}, 'data-list-item']"
+  >
+    <br v-if="breakLine">
     <template>
       <v-col :cols="labelSpan">
-        <p class="mb-0">{{ this.label }}</p>
+        <p class="mb-0">
+          {{ label }}
+        </p>
       </v-col>
-      <v-col :cols="colspan" :id="name">
+      <v-col
+        :id="name"
+        :cols="colspan"
+      >
         <v-progress-circular
           v-if="loading"
           color="primary"
@@ -13,8 +21,13 @@
           :size="18"
           :width="2"
           class="ml-3"
-        ></v-progress-circular>
-        <p v-else class="mb-0">{{ this.value }}</p>
+        />
+        <p
+          v-else
+          class="mb-0"
+        >
+          {{ value }}
+        </p>
       </v-col>
     </template>
   </v-row>

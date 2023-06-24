@@ -1,13 +1,20 @@
 <template>
-  <v-container fluid class="fill-height my-10 px-16">
+  <v-container
+    fluid
+    class="fill-height my-10 px-16"
+  >
     <v-row no-gutters>
-      <v-card height="100%" width="100%" style="background-color:#38598a;">
+      <v-card
+        height="100%"
+        width="100%"
+        style="background-color:#38598a;"
+      >
         <v-combobox
           id="status-dropdown"
           :key="comboboxKey"
+          v-model="selectedStatuses"
           :mandatory="false"
           :items="statusCodes"
-          v-model="selectedStatuses"
           :label="label"
           multiple
           small-chips
@@ -18,21 +25,26 @@
           class="mx-6 mt-6 pa-0"
         >
           <template #selection="{ attrs, item, select, selected }">
-            <FilterTag :id="item + 'tag'" :text="item" :close="remove" :item="item"></FilterTag>
+            <FilterTag
+              :id="item + 'tag'"
+              :text="item"
+              :close="remove"
+              :item="item"
+            />
           </template>
         </v-combobox>
         <v-data-table
+          v-model:items="requests"
+          v-model:items-per-page="pageSize"
+          v-model:page="pageNumber"
           :headers="headers"
-          :items.sync="requests"
-          :items-per-page.sync="pageSize"
-          :page.sync="pageNumber"
           :footer-props="{
             'items-per-page-options':itemsPerPageOptions
           }"
           :server-items-length="totalRequests"
           :loading="loadingTable"
-          @click:row="viewRequestDetails"
           class="fill-height"
+          @click:row="viewRequestDetails"
         >
           <template #[requestStatusHeaderSlotName]="{ header }">
             <th
@@ -43,7 +55,7 @@
               {{ header.text }}
               <em
                 :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
-              ></em>
+              />
             </th>
           </template>
           <template #header.initialSubmitDate="{ header }">
@@ -55,7 +67,7 @@
               {{ header.text }}
               <em
                 :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
-              ></em>
+              />
             </th>
             <v-menu
               ref="dateMenu"
@@ -73,10 +85,10 @@
                   outlined
                   density="compact"
                   readonly
-                  @click:clear="headerSearchParams.initialSubmitDate = []"
                   clearable
                   class="header-text"
-                ></v-text-field>
+                  @click:clear="headerSearchParams.initialSubmitDate = []"
+                />
               </template>
               <v-date-picker
                 id="date-picker"
@@ -84,8 +96,12 @@
                 no-title
                 range
               >
-                <v-spacer></v-spacer>
-                <PrimaryButton id="date-picker-ok-button" text="OK" :click-action="dateMenu=false"> </PrimaryButton>
+                <v-spacer />
+                <PrimaryButton
+                  id="date-picker-ok-button"
+                  text="OK"
+                  :click-action="dateMenu=false"
+                />
               </v-date-picker>
             </v-menu>
           </template>
@@ -98,7 +114,7 @@
               {{ header.text }}
               <em
                 :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
-              ></em>
+              />
             </th>
             <v-text-field
               id="pen-text-field"
@@ -107,7 +123,7 @@
               outlined
               density="compact"
               clearable
-            ></v-text-field>
+            />
           </template>
           <template #header.legalLastName="{ header }">
             <th
@@ -118,7 +134,7 @@
               {{ header.text }}
               <em
                 :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
-              ></em>
+              />
             </th>
             <v-text-field
               id="last-name-text-field"
@@ -127,7 +143,7 @@
               outlined
               density="compact"
               clearable
-            ></v-text-field>
+            />
           </template>
           <template #header.legalFirstName="{ header }">
             <th
@@ -138,7 +154,7 @@
               {{ header.text }}
               <em
                 :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
-              ></em>
+              />
             </th>
             <v-text-field
               id="first-name-text-field"
@@ -147,7 +163,7 @@
               outlined
               density="compact"
               clearable
-            ></v-text-field>
+            />
           </template>
           <template #header.reviewer="{ header }">
             <th
@@ -158,7 +174,7 @@
               {{ header.text }}
               <em
                 :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
-              ></em>
+              />
             </th>
             <v-text-field
               id="review-text-field"
@@ -167,20 +183,29 @@
               outlined
               density="compact"
               clearable
-            ></v-text-field>
+            />
           </template>
-          <template #no-data>There are no requests with the selected statuses.</template>
+          <template #no-data>
+            There are no requests with the selected statuses.
+          </template>
           <template #item="{ item }">
-            <tr :class="item.sagaInProgress? 'blue-grey lighten-3 tableRow' :'tableRow'" @click="viewRequestDetails(item)">
-              <td>{{item[`${requestType}StatusCode`].label}}</td>
-              <td>{{item.initialSubmitDate?moment(item.initialSubmitDate).format('YYYY/MM/DD LT'):'' }}</td>
+            <tr
+              :class="item.sagaInProgress? 'blue-grey lighten-3 tableRow' :'tableRow'"
+              @click="viewRequestDetails(item)"
+            >
+              <td>{{ item[`${requestType}StatusCode`].label }}</td>
+              <td>{{ item.initialSubmitDate?moment(item.initialSubmitDate).format('YYYY/MM/DD LT'):'' }}</td>
               <td>
-                {{item[`${penName}`]}}
-                <ClipboardButton v-if="item[`${penName}`]" :copyText="item[`${penName}`]" icon='$copy'/>
+                {{ item[`${penName}`] }}
+                <ClipboardButton
+                  v-if="item[`${penName}`]"
+                  :copy-text="item[`${penName}`]"
+                  icon="$copy"
+                />
               </td>
-              <td>{{item.legalLastName}}</td>
-              <td>{{item.legalFirstName}}</td>
-              <td>{{item.reviewer}}</td>
+              <td>{{ item.legalLastName }}</td>
+              <td>{{ item.legalFirstName }}</td>
+              <td>{{ item.reviewer }}</td>
             </tr>
           </template>
         </v-data-table>
@@ -202,7 +227,7 @@ import {appStore} from '@/store/modules/app';
 import {requestStore} from '@/store/modules/request';
 
 export default {
-  name: 'requestsDisplay',
+  name: 'RequestsDisplay',
   components: {FilterTag, PrimaryButton, ClipboardButton},
   props: {
     requestType: {

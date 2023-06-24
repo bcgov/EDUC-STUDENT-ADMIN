@@ -9,40 +9,76 @@
           color="primary"
           indeterminate
           :active="loadingUsers"
-        ></v-progress-circular>
+        />
       </v-col>
     </v-row>
-    <v-row v-else no-gutters>
+    <v-row
+      v-else
+      no-gutters
+    >
       <v-col>
         <v-row>
           <v-col class="pb-0">
             <h2>
               <strong>
-                {{ districtName + ' (' + districtNumber + ')'}}
+                {{ districtName + ' (' + districtNumber + ')' }}
               </strong>
             </h2>
           </v-col>
         </v-row>
         <v-row>
           <v-col class="mt-1 d-flex justify-start">
-            <v-icon class="mt-1" small color="#1976d2">mdi-arrow-left</v-icon>
-            <a class="ml-1 mt-1" @click="backButtonClick">Return to EDX District Access</a>
+            <v-icon
+              class="mt-1"
+              small
+              color="#1976d2"
+            >
+              mdi-arrow-left
+            </v-icon>
+            <a
+              class="ml-1 mt-1"
+              @click="backButtonClick"
+            >Return to EDX District Access</a>
           </v-col>
           <v-col class="d-flex justify-end">
-            <v-chip id="primaryEdxActivationCode" :color="getChipColor()">
+            <v-chip
+              id="primaryEdxActivationCode"
+              :color="getChipColor()"
+            >
               <v-icon left>
                 mdi-shield-key-outline
               </v-icon>Primary Activation Code:
-              {{ this.primaryEdxActivationCode ? this.primaryEdxActivationCode.activationCode : `Code Not Found` }}
+              {{ primaryEdxActivationCode ? primaryEdxActivationCode.activationCode : `Code Not Found` }}
             </v-chip>
-            <ClipboardButton id="copyPrimaryEdxActivationCodeButton" v-if="this.primaryEdxActivationCode" :copyText="this.primaryEdxActivationCode.activationCode" icon="$copy"></ClipboardButton>
-            <PrimaryButton id="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibilityButton" short secondary icon="mdi-sync" style="margin-top: 0.2em" class="ml-2 pl-2 pr-2" :click-action="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibility">Generate</PrimaryButton>
+            <ClipboardButton
+              v-if="primaryEdxActivationCode"
+              id="copyPrimaryEdxActivationCodeButton"
+              :copy-text="primaryEdxActivationCode.activationCode"
+              icon="$copy"
+            />
+            <PrimaryButton
+              id="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibilityButton"
+              short
+              secondary
+              icon="mdi-sync"
+              style="margin-top: 0.2em"
+              class="ml-2 pl-2 pr-2"
+              :click-action="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibility"
+            >
+              Generate
+            </PrimaryButton>
           </v-col>
         </v-row>
         <v-expand-transition>
-          <v-row :class="['d-sm-flex', 'align-center', 'searchBox']" class="px-2 mb-4" style="margin-right: 14em;margin-left: 14em;" id="generateNewPrimaryEdxActivationCodeDialog" v-if="this.doShowGenerateNewPrimaryEdxActivationCodeDialog">
+          <v-row
+            v-if="doShowGenerateNewPrimaryEdxActivationCodeDialog"
+            id="generateNewPrimaryEdxActivationCodeDialog"
+            :class="['d-sm-flex', 'align-center', 'searchBox']"
+            class="px-2 mb-4"
+            style="margin-right: 14em;margin-left: 14em;"
+          >
             <v-col>
-              <v-row no-gutters >
+              <v-row no-gutters>
                 <v-col>
                   <span>Generating a new Primary Activation Code for a district will replace the existing code for the district.</span>
                 </v-col>
@@ -54,48 +90,126 @@
               </v-row>
               <v-row no-gutters>
                 <v-col class="d-flex justify-end">
-                  <PrimaryButton id="closeGenerateNewPrimaryEdxActivationCodeDialogButton" secondary class="ml-2" :click-action="closeGenerateNewPrimaryEdxActivationCodeDialog">No</PrimaryButton>
-                  <PrimaryButton id="doGeneratePrimaryEdxActivationCodeButton" class="ml-2" :click-action="doGeneratePrimaryEdxActivationCode">Yes</PrimaryButton>
+                  <PrimaryButton
+                    id="closeGenerateNewPrimaryEdxActivationCodeDialogButton"
+                    secondary
+                    class="ml-2"
+                    :click-action="closeGenerateNewPrimaryEdxActivationCodeDialog"
+                  >
+                    No
+                  </PrimaryButton>
+                  <PrimaryButton
+                    id="doGeneratePrimaryEdxActivationCodeButton"
+                    class="ml-2"
+                    :click-action="doGeneratePrimaryEdxActivationCode"
+                  >
+                    Yes
+                  </PrimaryButton>
                 </v-col>
               </v-row>
             </v-col>
           </v-row>
         </v-expand-transition>
-        <v-divider class="divider"></v-divider>
+        <v-divider class="divider" />
 
         <!--    search filter -->
         <v-row :class="['d-sm-flex', 'align-center', 'searchBox', 'mt-4']">
-          <v-col cols="12" md="4">
-            <v-text-field id="name-text-field" label="Name" v-model="searchFilter.name" clearable @keyup.enter="enterPushed()"></v-text-field>
+          <v-col
+            cols="12"
+            md="4"
+          >
+            <v-text-field
+              id="name-text-field"
+              v-model="searchFilter.name"
+              label="Name"
+              clearable
+              @keyup.enter="enterPushed()"
+            />
           </v-col>
-          <v-col cols="12" md="4">
-            <v-select id="roleName-select-field" variant="underlined" clearable :items="districtRoles" v-model="searchFilter.roleName" item-text="label" item-value="edxRoleCode" label="Role"></v-select>
+          <v-col
+            cols="12"
+            md="4"
+          >
+            <v-select
+              id="roleName-select-field"
+              v-model="searchFilter.roleName"
+              variant="underlined"
+              clearable
+              :items="districtRoles"
+              item-title="label"
+              item-value="edxRoleCode"
+              label="Role"
+            />
           </v-col>
-          <v-col cols="12" md="4" :class="['text-right']">
-            <PrimaryButton id="user-clear-button" secondary :click-action="clearButtonClick">Clear</PrimaryButton>
-            <PrimaryButton id="user-search-button" class="ml-2" :click-action="searchButtonClick" :disabled="searchEnabled()">Search</PrimaryButton>
+          <v-col
+            cols="12"
+            md="4"
+            :class="['text-right']"
+          >
+            <PrimaryButton
+              id="user-clear-button"
+              secondary
+              :click-action="clearButtonClick"
+            >
+              Clear
+            </PrimaryButton>
+            <PrimaryButton
+              id="user-search-button"
+              class="ml-2"
+              :click-action="searchButtonClick"
+              :disabled="searchEnabled()"
+            >
+              Search
+            </PrimaryButton>
           </v-col>
         </v-row>
         <!-- user info -->
-        <Spinner v-if="loadingUsers"/>
-        <v-row class="d-flex align-stretch" v-else>
-          <v-col xl="4" cols="6" class="pb-0" v-for="user in filteredUsers" :key="user.digitalID">
-            <AccessUserCard @refresh="getUsersData" :userRoles="user.edxUserDistricts[0].edxUserDistrictRoles" :user="user" :institute-code="districtId" :institute-roles="districtRoles" institute-type-code="DISTRICT" institute-type-label="District"></AccessUserCard>
+        <Spinner v-if="loadingUsers" />
+        <v-row
+          v-else
+          class="d-flex align-stretch"
+        >
+          <v-col
+            v-for="user in filteredUsers"
+            :key="user.digitalID"
+            xl="4"
+            cols="6"
+            class="pb-0"
+          >
+            <AccessUserCard
+              :user-roles="user.edxUserDistricts[0].edxUserDistrictRoles"
+              :user="user"
+              :institute-code="districtId"
+              :institute-roles="districtRoles"
+              institute-type-code="DISTRICT"
+              institute-type-label="District"
+              @refresh="getUsersData"
+            />
           </v-col>
-          <v-col xl="4" cols="6" class="pb-0">
+          <v-col
+            xl="4"
+            cols="6"
+            class="pb-0"
+          >
             <v-row style="height: 100%;">
               <v-col style="min-height: 184px">
                 <v-card class="h-100 add-new-user">
-                  <v-row class="add-new-user" align="center" justify="center">
+                  <v-row
+                    class="add-new-user"
+                    align="center"
+                    justify="center"
+                  >
                     <v-col class="d-flex justify-center">
-                    <PrimaryButton icon="mdi-plus"
-                                     :large-icon=true
-                                     id="new-user-button"
-                                     secondary
-                                     :disabled="!primaryEdxActivationCode"
-                                     icon-left
-                                     text="Add New User"
-                                     :click-action="newUserInviteSheet = !newUserInviteSheet"/>
+                      <PrimaryButton
+                        id="new-user-button"
+                        icon="mdi-plus"
+                        :large-icon="true"
+                        secondary
+                        :disabled="!primaryEdxActivationCode"
+                        icon-left
+                        text="Add New User"
+                        :click-action="newUserInviteSheet = !newUserInviteSheet"
+                      />
                     </v-col>
                   </v-row>
                   <v-row v-if="!primaryEdxActivationCode">
@@ -120,36 +234,40 @@
       </v-col>
     </v-row>
     <v-bottom-sheet
-        v-model="newUserInviteSheet"
-        inset
-        no-click-animation
-        scrollable
-        persistent
+      v-model="newUserInviteSheet"
+      inset
+      no-click-animation
+      scrollable
+      persistent
     >
       <v-card
-          id="newUserInviteVCard"
-          v-if="newUserInviteSheet"
-          class="information-window-v-card">
-        <v-card-title id="newUserInviteVCardTitle" class="sheetHeader pt-1 pb-1">New User</v-card-title>
-        <v-divider></v-divider>
+        v-if="newUserInviteSheet"
+        id="newUserInviteVCard"
+        class="information-window-v-card"
+      >
+        <v-card-title
+          id="newUserInviteVCardTitle"
+          class="sheetHeader pt-1 pb-1"
+        >
+          New User
+        </v-card-title>
+        <v-divider />
         <v-card-text>
           <InviteUserPage
-              :userRoles="districtRoles"
-              :institute-code="districtId"
-               institute-type-code="DISTRICT"
-              instituteTypeLabel="District"
-              :districtName="districtName"
-              :districtNumber="districtNumber"
-              @access-user:messageSent="messageSent"
-              @access-user:updateRoles="updateUserRoles"
-              @access-user:cancelMessage="closeNewUserModal"
-          >
-          </InviteUserPage>
+            :user-roles="districtRoles"
+            :institute-code="districtId"
+            institute-type-code="DISTRICT"
+            institute-type-label="District"
+            :district-name="districtName"
+            :district-number="districtNumber"
+            @access-user:messageSent="messageSent"
+            @access-user:updateRoles="updateUserRoles"
+            @access-user:cancelMessage="closeNewUserModal"
+          />
         </v-card-text>
       </v-card>
     </v-bottom-sheet>
   </v-container>
-
 </template>
 
 <script>
@@ -170,7 +288,6 @@ import {edxStore} from '@/store/modules/edx';
 
 export default {
   name: 'AccessDistrictUsersPage',
-  mixins: [ alertMixin ],
   components: {
     AccessUserCard,
     ClipboardButton,
@@ -178,6 +295,7 @@ export default {
     PrimaryButton,
     Spinner
   },
+  mixins: [ alertMixin ],
   props: {
     districtId: {
       type: String,

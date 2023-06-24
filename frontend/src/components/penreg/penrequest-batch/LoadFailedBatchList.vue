@@ -1,76 +1,143 @@
 <template>
-    <v-container fluid class="fill-height px-0 mb-4">
-        <v-row no-gutters class="list-actions py-2 px-4 d-flex justify-end" style="background-color:white;">
-          <v-col class="d-flex justify-end">
-            <PrimaryButton id="review-file-action" class="ml-2" :disabled="!fileChecked()" text="Review" :loading="isProcessing" :click-action="reviewFile"></PrimaryButton>
-            <PrimaryButton id="delete-file-action" class="ml-2" :disabled="!fileChecked()" text="Delete" :loading="isDeleting" :click-action="deleteFile"></PrimaryButton>
-          </v-col>
-        </v-row>
-        <v-row no-gutters class="py-1" style="background-color:white;">
-          <div id="load-failed-file-list" class="px-4" style="width: 100%" :overlay="false">
-            <v-data-table
-                id="dataTable"
-                :headers="headers"
-                :items="prbResponse.content"
-                :page.sync="pageNumber"
-                :items-per-page="prbResponse.pageable.pageSize"
-                hide-default-footer
-                item-key="penRequestBatchID"
-                :loading="loadingTable"
-                @page-count="prbResponse.pageable.pageNumber = $event"
-            >
-              <template v-for="h in headers" #[`header.${h.value}`]="{ header }">
-                <span :title="header.tooltip" :key="h.id" :class="{'file-column' : !header.countable}">
-                  {{ header.text }}
-                </span>
-              </template>
-              <template #item="props">
-                <tr @click="showFile(props.item)">
-                  <td v-for="header in props.headers" :key="header.id" :class="{[header.value]: true, 'select-column': header.type}">
-                    <v-checkbox v-if="header.type" class="file-checkbox" color="#606060" v-model="props.item.isChecked" @click.stop="handleFileCheckBoxClicked(props.item)"></v-checkbox>
-                    <div v-else :class="{'countable-column-div': header.countable}">
-                      <span v-if="header.countable" class="countable-column-data">{{ props.item[header.value] || '' }}</span>
-                      <span v-else>{{formatTableColumn(header.format, props.item[header.value]) }}</span>
-                    </div>
-                  </td>
-                </tr>
-              </template>
-            </v-data-table>
-            <v-row class="pt-2" justify="end">
-              <v-col cols="4">
-                <v-btn id="page-commands" text color="#38598a" v-if="pageCommands">
-                  Showing page commands
-                  <v-icon>
-                    mdi-chevron-down
-                  </v-icon>
-                </v-btn>
-              </v-col>
-              <v-col cols="4">
-                <v-pagination color="#38598A" v-model="pageNumber" :length="prbResponse.totalPages"></v-pagination>
-              </v-col>
-              <v-col cols="4" id="currentItemsDisplay">
-                Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ (prbResponse.totalElements || 0) }}
-              </v-col>
-            </v-row>
-          </div>
-        </v-row>
-      <PrbFileModal
-          v-if="openFileViewer"
-          :open-dialog="openFileViewer"
-          :submission-number="submissionNumber"
-          @closeDialog="closeFileViewer"
+  <v-container
+    fluid
+    class="fill-height px-0 mb-4"
+  >
+    <v-row
+      no-gutters
+      class="list-actions py-2 px-4 d-flex justify-end"
+      style="background-color:white;"
+    >
+      <v-col class="d-flex justify-end">
+        <PrimaryButton
+          id="review-file-action"
+          class="ml-2"
+          :disabled="!fileChecked()"
+          text="Review"
+          :loading="isProcessing"
+          :click-action="reviewFile"
+        />
+        <PrimaryButton
+          id="delete-file-action"
+          class="ml-2"
+          :disabled="!fileChecked()"
+          text="Delete"
+          :loading="isDeleting"
+          :click-action="deleteFile"
+        />
+      </v-col>
+    </v-row>
+    <v-row
+      no-gutters
+      class="py-1"
+      style="background-color:white;"
+    >
+      <div
+        id="load-failed-file-list"
+        class="px-4"
+        style="width: 100%"
+        :overlay="false"
       >
-      </PrbFileModal>
-      <ConfirmationDialog ref="confirmationDialog">
-        <template #message>
-          <v-col class="mt-n6">
-            <v-row class="mt-n2 mb-3">
-              <span>Are you sure you want to <strong>Delete</strong> submission <strong>{{submissionNumber}}</strong>?</span>
-            </v-row>
+        <v-data-table
+          id="dataTable"
+          v-model:page="pageNumber"
+          :headers="headers"
+          :items="prbResponse.content"
+          :items-per-page="prbResponse.pageable.pageSize"
+          hide-default-footer
+          item-key="penRequestBatchID"
+          :loading="loadingTable"
+          @page-count="prbResponse.pageable.pageNumber = $event"
+        >
+          <template
+            v-for="h in headers"
+            #[`header.${h.value}`]="{ header }"
+          >
+            <span
+              :key="h.id"
+              :title="header.tooltip"
+              :class="{'file-column' : !header.countable}"
+            >
+              {{ header.text }}
+            </span>
+          </template>
+          <template #item="props">
+            <tr @click="showFile(props.item)">
+              <td
+                v-for="header in props.headers"
+                :key="header.id"
+                :class="{[header.value]: true, 'select-column': header.type}"
+              >
+                <v-checkbox
+                  v-if="header.type"
+                  v-model="props.item.isChecked"
+                  class="file-checkbox"
+                  color="#606060"
+                  @click.stop="handleFileCheckBoxClicked(props.item)"
+                />
+                <div
+                  v-else
+                  :class="{'countable-column-div': header.countable}"
+                >
+                  <span
+                    v-if="header.countable"
+                    class="countable-column-data"
+                  >{{ props.item[header.value] || '' }}</span>
+                  <span v-else>{{ formatTableColumn(header.format, props.item[header.value]) }}</span>
+                </div>
+              </td>
+            </tr>
+          </template>
+        </v-data-table>
+        <v-row
+          class="pt-2"
+          justify="end"
+        >
+          <v-col cols="4">
+            <v-btn
+              v-if="pageCommands"
+              id="page-commands"
+              text
+              color="#38598a"
+            >
+              Showing page commands
+              <v-icon>
+                mdi-chevron-down
+              </v-icon>
+            </v-btn>
           </v-col>
-        </template>
-      </ConfirmationDialog>
-    </v-container>
+          <v-col cols="4">
+            <v-pagination
+              v-model="pageNumber"
+              color="#38598A"
+              :length="prbResponse.totalPages"
+            />
+          </v-col>
+          <v-col
+            id="currentItemsDisplay"
+            cols="4"
+          >
+            Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ (prbResponse.totalElements || 0) }}
+          </v-col>
+        </v-row>
+      </div>
+    </v-row>
+    <PrbFileModal
+      v-if="openFileViewer"
+      :open-dialog="openFileViewer"
+      :submission-number="submissionNumber"
+      @closeDialog="closeFileViewer"
+    />
+    <ConfirmationDialog ref="confirmationDialog">
+      <template #message>
+        <v-col class="mt-n6">
+          <v-row class="mt-n2 mb-3">
+            <span>Are you sure you want to <strong>Delete</strong> submission <strong>{{ submissionNumber }}</strong>?</span>
+          </v-row>
+        </v-col>
+      </template>
+    </ConfirmationDialog>
+  </v-container>
 </template>
 
 <script>
@@ -91,20 +158,6 @@ export default {
     ConfirmationDialog
   },
   mixins: [alertMixin],
-  watch: {
-    pageNumber: {
-      handler() {
-        this.pagination();
-      }
-    },
-    reloading: {
-      handler(v) {
-        if (v) {
-          this.pagination();
-        }
-      }
-    },
-  },
   data() {
     return {
       pageNumber: 1,
@@ -159,6 +212,20 @@ export default {
         }
       ];
     }
+  },
+  watch: {
+    pageNumber: {
+      handler() {
+        this.pagination();
+      }
+    },
+    reloading: {
+      handler(v) {
+        if (v) {
+          this.pagination();
+        }
+      }
+    },
   },
   mounted() {
     this.pagination();

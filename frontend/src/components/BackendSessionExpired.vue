@@ -1,6 +1,9 @@
 <template>
   <div style="display: none">
-    <a id="logout_href" :href='link'/>
+    <a
+      id="logout_href"
+      :href="link"
+    />
   </div>
 </template>
 
