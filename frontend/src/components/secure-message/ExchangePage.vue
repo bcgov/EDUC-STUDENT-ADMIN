@@ -18,7 +18,7 @@
         <v-row class="pt-0 mb-0">
           <v-col class="mt-1 d-flex justify-start">
             <v-icon
-              small
+              size="small"
               color="#1976d2"
             >
               mdi-arrow-left
@@ -54,14 +54,13 @@
           style="border-radius: 6px"
         >
           <v-expansion-panel
-            style="background: #ebedef;border-radius: 6px"
-            flat
+            style="background: #ebedef;"
           >
             <v-expansion-panel-title
               color="#ebedef"
               class="pt-0 pb-0"
               disable-icon-rotate
-              @click="onExpansionPanelClick"
+              @click.prevent.stop="onExpansionPanelClick"
             >
               <v-radio-group
                 v-model="statusRadioGroup"
@@ -70,14 +69,13 @@
                 direction="horizontal"
                 inline
                 class="pt-0 pb-0 mt-2 mb-0"
-                @click.stop.prevent
               >
                 <v-radio
                   class="mt-2 radio-blue-text"
                   label="My Active Messages"
                   color="#003366"
                   value="statusFilterActive"
-                  :click-action="statusFilterActiveClicked"
+                  @click.prevent.stop="statusFilterActiveClicked"
                 >
                   <template #label>
                     <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">My Active Messages</span>
@@ -88,7 +86,7 @@
                   label="All Active Messages"
                   color="#003366"
                   value="statusFilterAllActive"
-                  :click-action="statusFilterAllActiveClicked"
+                  @click.prevent.stop="statusFilterAllActiveClicked"
                 >
                   <template #label>
                     <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">All Active Messages</span>
@@ -99,7 +97,7 @@
                   label="All Active Messages"
                   color="#003366"
                   value="statusFilterAll"
-                  :click-action="filterExchanges"
+                  @click.prevent.stop="filterExchanges"
                 >
                   <template #label>
                     <span :class="{ 'activeRadio' : statusRadioGroupEnabled }">All Messages</span>
@@ -128,7 +126,7 @@
               </template>
             </v-expansion-panel-title>
             <v-expansion-panel-text>
-              <v-row>
+              <v-row class="mt-3">
                 <v-col
                   cols="12"
                   md="4"
@@ -137,23 +135,23 @@
                   <v-autocomplete
                     id="schoolName"
                     v-model="contactNameFilter"
-                    class="pt-0 mt-0"
-                    prepend-inner-icon="mdi-account-box-outline"
-                    :items="contacts"
                     label="Contact"
+                    class="pt-0 mt-0"
+                    item-value="value"
+                    item-title="text"
+                    variant="underlined"
+                    return-object
                     clearable
+                    :items="contacts"
                   >
-                    <template #item="data">
-                      <v-list-item-title>
-                        <v-icon v-if="data.item.mincode">
-                          mdi-school
-                        </v-icon>
-                        <v-icon v-if="data.item.districtNumber">
-                          mdi-domain
-                        </v-icon>
-                      </v-list-item-title>
-                      <v-list-item>
-                        {{ data.item.text }}
+                    <template #selection="{ item }">
+                      <span> {{ item.title }} </span>
+                    </template>
+                    <template #item="{props, item}">
+                      <v-list-item
+                        v-bind="props"
+                        :prepend-icon="item.raw.districtNumber ? 'mdi-domain' : 'mdi-school'"
+                      >
                       </v-list-item>
                     </template>
                   </v-autocomplete>
@@ -167,6 +165,7 @@
                     id="subject-text-field"
                     v-model="subjectFilter"
                     class="pt-0 mt-0 pl-9"
+                    variant="underlined"
                     label="Subject"
                     prepend-inner-icon="mdi-book-open-variant"
                     clearable
@@ -182,17 +181,15 @@
                     id="messageDate"
                     ref="messageDateFilter"
                     v-model="messageDateFilter"
+                    variant="underlined"
                     :close-on-content-click="false"
                     transition="scale-transition"
-                    offset-y
                     min-width="auto"
                   >
                     <template #activator="{ on, attrs }">
                       <v-text-field
                         id="messageDateTextField"
                         v-model="messageDateMoment"
-                        density="compact"
-                        class="pt-0 mt-0"
                         variant="underlined"
                         label="Message Date"
                         prepend-icon="mdi-calendar"
@@ -222,28 +219,34 @@
                   <v-select
                     id="statusSelector"
                     v-model="statusSelectFilter"
+                    clearable
                     :items="secureExchangeStatusCodes"
                     item-title="label"
                     variant="underlined"
-                    class="pt-0 mt-0"
                     item-value="secureExchangeStatusCode"
                     prepend-inner-icon="mdi-circle-medium"
+                    class="pt-0 mt-0"
+                    :menu-props="{closeOnContentClick:true}"
                     label="Status"
-                    single-line
-                    clearable
                   >
-                    <template #item="{ item }">
-                      <v-row>
-                        <v-col
-                          cols="12"
-                          class="pr-0"
-                        >
-                          <v-icon :color="getStatusColor(item.label)">
-                            mdi-circle-medium
-                          </v-icon>
-                          <span class="body-2">{{ item.label }}</span>
-                        </v-col>
-                      </v-row>
+                    <template #selection="{ item, index }">
+                      {{
+                        item.raw.label
+                      }}
+                    </template>
+                    <template #item="{ props, item }">
+                      <v-list-item
+                        v-bind="props"
+                        prepend-icon="mdi-circle-medium"
+                        :base-color="getStatusColor(item.raw.label)"
+                        title=""
+                      >
+                        <v-list-item-title style="color: black !important;">
+                          {{
+                            item.raw.label
+                          }}
+                        </v-list-item-title>
+                      </v-list-item>
                     </template>
                   </v-select>
                 </v-col>
@@ -257,6 +260,7 @@
                     v-model="claimedByFilter"
                     class="pt-0 mt-0 pl-9"
                     label="Claimed By"
+                    variant="underlined"
                     prepend-inner-icon="mdi-account-check-outline"
                     clearable
                     @keyup.enter="enterPushed()"
@@ -271,6 +275,7 @@
                     v-model="messageIDFilter"
                     class="pt-0 mt-0 pl-9 pr-9"
                     label="Message ID"
+                    variant="underlined"
                     prepend-inner-icon="mdi-pound"
                     clearable
                     @keyup.enter="enterPushed()"
@@ -287,6 +292,7 @@
                     v-model="studentIDFilter"
                     class="pt-0 mt-0"
                     label="Student PEN"
+                    variant="underlined"
                     prepend-inner-icon="mdi-account"
                     maxlength="9"
                     counter="9"
@@ -307,12 +313,12 @@
                     id="search-clear"
                     class="mr-3"
                     :secondary="true"
-                    :click-action="clearSearch()"
+                    :click-action="clearSearch"
                     text="Clear"
                   />
                   <PrimaryButton
                     id="searchButton"
-                    :click-action="filterExchanges()"
+                    :click-action="filterExchanges"
                     :loading="loadingTable"
                     :disabled="!searchEnabled"
                     text="Search"
@@ -360,7 +366,7 @@
                     cols="6"
                     lg="7"
                     xl="7"
-                    @click="openExchange(item.secureExchangeID)"
+                    @click="openExchange(item.raw.secureExchangeID)"
                   >
                     <v-row no-gutters>
                       <v-col
@@ -386,7 +392,9 @@
                     style="text-align: end"
                     @click="openExchange(item.raw.secureExchangeID)"
                   >
-                    <v-row no-gutters class="d-flex justify-end">
+                    <v-row no-gutters
+                           class="d-flex justify-end"
+                    >
                       <v-col cols="2">
                         <v-row no-gutters>
                           <v-col cols="6">
@@ -489,7 +497,6 @@
       no-click-animation
       scrollable
       persistent
-      width="30%"
     >
       <v-card
         v-if="newMessageSheet"
@@ -526,6 +533,7 @@ import {edxStore} from '@/store/modules/edx';
 import {appStore} from '@/store/modules/app';
 import {authStore} from '@/store/modules/auth';
 import VueDatePicker from '@vuepic/vue-datepicker';
+import moment from 'moment/moment';
 
 export default {
   name: 'ExchangeInbox',
@@ -550,6 +558,7 @@ export default {
       messageDateFilter: false,
       activeMessageDatePicker: null,
       messageDate: null,
+      messageDateMoment: null,
       subjectFilter: '',
       messageIDFilter: '',
       studentIDFilter: '',
@@ -705,11 +714,13 @@ export default {
       this.setFilterStatusActive();
       this.resetPageNumber();
       this.getExchanges();
+      this.statusRadioGroup = 'statusFilterActive';
     },
     statusFilterAllActiveClicked() {
       this.setFilterStatusAllActive();
       this.resetPageNumber();
       this.getExchanges();
+      this.statusRadioGroup = 'statusFilterAllActive';
     },
     resetPageNumber() {
       this.pageNumber = 1;
@@ -718,22 +729,24 @@ export default {
       this.newMessageSheet = !this.newMessageSheet;
     },
     clearSearch(runSearch = true) {
-      this.subjectFilter = '';
-      this.messageIDFilter = '';
-      this.studentIDFilter = '';
-      this.claimedByFilter = '';
-      this.contactNameFilter = '';
+      this.subjectFilter = null;
+      this.messageIDFilter = null;
+      this.studentIDFilter = null;
+      this.claimedByFilter = null;
+      this.contactNameFilter = null;
       this.messageDate = null;
+      this.messageDateMoment = null;
       this.messageDateFilter = null;
-      this.statusSelectFilter = '';
+      this.statusSelectFilter = null;
       if (runSearch) {
         this.resetPageNumber();
         this.setFilterStatusAll();
         this.getExchanges();
       }
     },
-    onExpansionPanelClick(event) {
-      if (event.currentTarget.classList.contains('v-expansion-panel-header--active')) {
+    onExpansionPanelClick() {
+      console.log('Panel Click');
+      if (this.filterText !== 'More Filters') {
         this.filterText = 'More Filters';
         this.statusRadioGroupEnabled = true;
         this.statusRadioGroup = 'statusFilterAllActive';
@@ -750,8 +763,8 @@ export default {
       }
 
     },
-    saveMessageDate(date) {
-      this.$refs.messageDateFilter.save(date);
+    saveMessageDate() {
+      this.messageDateMoment = moment(this.messageDate).format('YYYY-MM-DD').toString();
     },
     getStatusColor(status) {
       if (status === 'Open') {
@@ -783,6 +796,7 @@ export default {
       this.setFilterStatusAll();
       this.resetPageNumber();
       this.getExchanges();
+      this.statusRadioGroup = 'statusFilterAll';
     },
     claimExchanges() {
       this.loadingTableCount += 1;
@@ -810,6 +824,10 @@ export default {
       const sort = {
         createDate: 'DESC'
       };
+
+      if (this.messageDateMoment) {
+        this.messageDate = this.messageDateMoment;
+      }
 
       this.headerSearchParams.subject = this.subjectFilter;
       this.headerSearchParams.contactIdentifier = this.contactNameFilter;
@@ -952,6 +970,14 @@ export default {
 .containerSetup {
     padding-right: 32em !important;
     padding-left: 32em !important;
+}
+
+:deep(.dp__input) {
+    display: none;
+}
+
+:deep(.dp__icon) {
+    display: none;
 }
 
 

@@ -27,16 +27,16 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col class="mt-1 d-flex justify-start">
+          <v-col class="mt-1 mb-2 d-flex justify-start">
             <v-icon
               class="mt-1"
-              small
+              size="small"
               color="#1976d2"
             >
               mdi-arrow-left
             </v-icon>
             <a
-              class="ml-1 mt-1"
+              class="ml-1"
               @click="backButtonClick"
             >Return to EDX District Access</a>
           </v-col>
@@ -47,14 +47,16 @@
             >
               <v-icon left>
                 mdi-shield-key-outline
-              </v-icon>Primary Activation Code:
+              </v-icon>
+              Primary Activation Code:
               {{ primaryEdxActivationCode ? primaryEdxActivationCode.activationCode : `Code Not Found` }}
             </v-chip>
             <ClipboardButton
               v-if="primaryEdxActivationCode"
               id="copyPrimaryEdxActivationCodeButton"
               :copy-text="primaryEdxActivationCode.activationCode"
-              icon="$copy"
+              icon="mdi-content-copy"
+              style="color: white"
             />
             <PrimaryButton
               id="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibilityButton"
@@ -62,10 +64,10 @@
               secondary
               icon="mdi-sync"
               style="margin-top: 0.2em"
+              text="Generate"
               class="ml-2 pl-2 pr-2"
               :click-action="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibility"
             >
-              Generate
             </PrimaryButton>
           </v-col>
         </v-row>
@@ -94,23 +96,23 @@
                     id="closeGenerateNewPrimaryEdxActivationCodeDialogButton"
                     secondary
                     class="ml-2"
+                    text="No"
                     :click-action="closeGenerateNewPrimaryEdxActivationCodeDialog"
                   >
-                    No
                   </PrimaryButton>
                   <PrimaryButton
                     id="doGeneratePrimaryEdxActivationCodeButton"
                     class="ml-2"
+                    text="Yes"
                     :click-action="doGeneratePrimaryEdxActivationCode"
                   >
-                    Yes
                   </PrimaryButton>
                 </v-col>
               </v-row>
             </v-col>
           </v-row>
         </v-expand-transition>
-        <v-divider class="divider" />
+        <v-divider class="divider"/>
 
         <!--    search filter -->
         <v-row :class="['d-sm-flex', 'align-center', 'searchBox', 'mt-4']">
@@ -122,6 +124,7 @@
               id="name-text-field"
               v-model="searchFilter.name"
               label="Name"
+              variant="underlined"
               clearable
               @keyup.enter="enterPushed()"
             />
@@ -149,22 +152,22 @@
             <PrimaryButton
               id="user-clear-button"
               secondary
+              text="Clear"
               :click-action="clearButtonClick"
             >
-              Clear
             </PrimaryButton>
             <PrimaryButton
               id="user-search-button"
               class="ml-2"
+              text="Search"
               :click-action="searchButtonClick"
               :disabled="searchEnabled()"
             >
-              Search
             </PrimaryButton>
           </v-col>
         </v-row>
         <!-- user info -->
-        <Spinner v-if="loadingUsers" />
+        <Spinner v-if="loadingUsers"/>
         <v-row
           v-else
           class="d-flex align-stretch"
@@ -192,7 +195,7 @@
             class="pb-0"
           >
             <v-row style="height: 100%;">
-              <v-col style="min-height: 184px">
+              <v-col style="min-height: 150px">
                 <v-card class="h-100 add-new-user">
                   <v-row
                     class="add-new-user"
@@ -204,16 +207,16 @@
                         id="new-user-button"
                         icon="mdi-plus"
                         :large-icon="true"
-                        secondary
+                        :secondary="!!primaryEdxActivationCode"
                         :disabled="!primaryEdxActivationCode"
                         icon-left
                         text="Add New User"
-                        :click-action="newUserInviteSheet = !newUserInviteSheet"
+                        :click-action="openNewUserInviteSheet"
                       />
                     </v-col>
                   </v-row>
                   <v-row v-if="!primaryEdxActivationCode">
-                    <v-col class="mx-3">
+                    <v-col class="mx-3 mb-3">
                       <v-alert
                         density="compact"
                         style="background-color: #E9EBEF !important;"
@@ -251,7 +254,7 @@
         >
           New User
         </v-card-title>
-        <v-divider />
+        <v-divider/>
         <v-card-text>
           <InviteUserPage
             :user-roles="districtRoles"
@@ -295,7 +298,7 @@ export default {
     PrimaryButton,
     Spinner
   },
-  mixins: [ alertMixin ],
+  mixins: [alertMixin],
   props: {
     districtId: {
       type: String,
@@ -313,8 +316,8 @@ export default {
       filteredUsers: [],
       loadingUsers: true,
       searchFilter: {
-        name: '',
-        roleName: '',
+        name: null,
+        roleName: null,
       },
       doShowGenerateNewPrimaryEdxActivationCodeDialog: false
     };
@@ -335,7 +338,7 @@ export default {
         this.searchButtonClick();
       }
     },
-    sortUserData(users){
+    sortUserData(users) {
       return users.sort((a, b) => {
         if (a.firstName > b.firstName) {
           return 1;
@@ -343,7 +346,7 @@ export default {
           return -1;
         }
         return 0;
-      } );
+      });
     },
     getUsersData() {
       this.loadingUsers = true;
@@ -369,8 +372,8 @@ export default {
       ApiService.apiAxios.post(`${Routes.edx.PRIMARY_ACTIVATION_CODE_URL}/district/${this.districtId}`)
         .then(response => {
           this.primaryEdxActivationCode = response.data;
-          this.setSuccessAlert(`The new Primary Activation Code is ${ this.primaryEdxActivationCode.activationCode }.`);
-        }).catch (e => {
+          this.setSuccessAlert(`The new Primary Activation Code is ${this.primaryEdxActivationCode.activationCode}.`);
+        }).catch(e => {
           this.primaryEdxActivationCode = null;
           this.setFailureAlert('There was an error generating the Primary Activation code. Please try again.',);
           console.log(e);
@@ -386,7 +389,7 @@ export default {
       this.generateOrRegeneratePrimaryEdxActivationCode();
       this.closeGenerateNewPrimaryEdxActivationCodeDialog();
     },
-    getDistrictName(){
+    getDistrictName() {
       this.district = '';
       ApiService.apiAxios.get(`${Routes.cache.DISTRICT_DATA_URL}/${this.districtId}`)
         .then(response => {
@@ -427,85 +430,90 @@ export default {
     searchEnabled() {
       return !isNotEmptyInputParams(this.searchFilter);
     },
+    openNewUserInviteSheet() {
+      this.newUserInviteSheet = !this.newUserInviteSheet;
+    },
     messageSent() {
       this.newUserInviteSheet = !this.newUserInviteSheet;
     },
-    updateUserRoles(newValue){
+    updateUserRoles(newValue) {
       const eStore = edxStore();
       eStore.setDistrictRoles(newValue);
     },
     backButtonClick() {
       router.push({name: 'exchangeDistrictAccess'});
     },
-    getChipColor(){
-      if(this.primaryEdxActivationCode){
+    getChipColor() {
+      if (this.primaryEdxActivationCode) {
         return 'success';
       }
       return 'secondary';
     },
-    closeNewUserModal(){
+    closeNewUserModal() {
       const eStore = edxStore();
       eStore.setDistrictRoles(JSON.parse(JSON.stringify(this.districtRolesCopy)));
       this.newUserInviteSheet = false; // close the modal window.
     },
-    getDistrictNameForUserInvite(){
+    getDistrictNameForUserInvite() {
       return this.district.name;
     }
   },
   computed: {
-    ...mapState(edxStore, ['districtRoles','districtRolesCopy']),
+    ...mapState(edxStore, ['districtRoles', 'districtRolesCopy']),
   }
 };
 </script>
 
 <style scoped>
-.sheetHeader{
-  background-color: #003366;
-  color: white;
-  font-size: medium !important;
-  font-weight: bolder !important;
+.sheetHeader {
+    background-color: #003366;
+    color: white;
+    font-size: medium !important;
+    font-weight: bolder !important;
 }
 
 .divider {
-  border-color: #FCBA19;
-  border-width: medium;
+    border-color: #FCBA19;
+    border-width: 2px;
+    opacity: unset;
 }
 
 #generateNewPrimaryEdxActivationCodeDialog {
-  border-radius: 5px;
-  background-color: #e7ebf0;
+    border-radius: 5px;
+    background-color: #e7ebf0;
 }
 
 .searchBox {
-  padding-left: 1em;
-  padding-right: 1em;
-  margin-left: 0;
-  margin-right: 0;
-  border-radius: 5px;
-  background-color: #F2F2F2;
+    padding-left: 1em;
+    padding-right: 1em;
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: 5px;
+    background-color: #F2F2F2;
 }
 
 .card-hint {
-  color: #000 !important;
-  font-size: 1rem;
-}
-.v-dialog__content >>> .v-bottom-sheet {
-  width: 30% !important;
+    color: #000 !important;
+    font-size: 1rem;
 }
 
-@media screen and (max-width: 950px){
-  .v-dialog__content /deep/ .v-bottom-sheet {
-    width: 60% !important;
-  }
+.v-dialog__content >>> .v-bottom-sheet {
+    width: 30% !important;
+}
+
+@media screen and (max-width: 950px) {
+    .v-dialog__content /deep/ .v-bottom-sheet {
+        width: 60% !important;
+    }
 }
 
 .add-new-user {
-  min-height: 184px;
+    min-height: 150px;
 }
 
-.containerSetup{
-  padding-right: 10em !important;
-  padding-left: 10em !important;
+.containerSetup {
+    padding-right: 10em !important;
+    padding-left: 10em !important;
 }
 
 </style>

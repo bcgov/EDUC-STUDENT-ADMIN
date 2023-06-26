@@ -2,10 +2,11 @@
   <v-container class="containerSetup">
     <div v-if="instituteArray.length >=1">
       <v-row>
-        <v-col class="mt-1 d-flex justify-start">
+        <v-col class="mb-1 d-flex justify-start">
           <v-icon
-            small
+            size="small"
             color="#1976d2"
+            class="mt-1"
           >
             mdi-arrow-left
           </v-icon>
@@ -30,11 +31,13 @@
                 justify="center"
                 no-gutters
               >
-                <v-col cols="9">
+                <v-col cols="8">
                   <v-autocomplete
                     id="selectInstituteName"
                     v-model="instituteCode"
+                    variant="underlined"
                     class="pt-0 mt-n1"
+                    item-title="text"
                     prepend-inner-icon="mdi-account-box-outline"
                     :items="instituteArray"
                     color="#003366"
@@ -43,15 +46,15 @@
                   />
                 </v-col>
                 <v-col
-                  class="pl-4"
-                  cols="3"
+                  class="pl-4 mt-3"
+                  cols="4"
                 >
                   <PrimaryButton
                     id="manageInstituteButton"
                     :to="`/edx/exchange/access/${instituteTypeLabel.toLowerCase()}/${instituteCode}`"
                     :disabled="!instituteCode"
+                    :text="'Manage ' + instituteTypeLabel + ' Access'"
                   >
-                    Manage {{ instituteTypeLabel }} Access
                   </PrimaryButton>
                 </v-col>
               </v-row>

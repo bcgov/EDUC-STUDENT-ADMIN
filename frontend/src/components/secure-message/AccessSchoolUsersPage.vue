@@ -10,16 +10,16 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col class="mt-1 d-flex justify-start">
+      <v-col class="mt-1 mb-1 d-flex justify-start">
         <v-icon
           class="mt-1"
-          small
+          size="small"
           color="#1976d2"
         >
           mdi-arrow-left
         </v-icon>
         <a
-          class="ml-1 mt-1"
+          class="ml-1"
           @click="backButtonClick"
         >Return to EDX School Access</a>
       </v-col>
@@ -37,7 +37,8 @@
           v-if="primaryEdxActivationCode"
           id="copyPrimaryEdxActivationCodeButton"
           :copy-text="primaryEdxActivationCode.activationCode"
-          icon="$copy"
+          icon="mdi-content-copy"
+          style="color: white"
         />
         <PrimaryButton
           id="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibilityButton"
@@ -45,10 +46,10 @@
           secondary
           icon="mdi-sync"
           style="margin-top: 0.2em"
+          text="Generate"
           class="ml-2 pl-2 pr-2"
           :click-action="toggleGenerateNewPrimaryEdxActivationCodeDialogVisibility"
         >
-          Generate
         </PrimaryButton>
       </v-col>
     </v-row>
@@ -77,16 +78,16 @@
                 id="closeGenerateNewPrimaryEdxActivationCodeDialogButton"
                 secondary
                 class="ml-2"
+                text="No"
                 :click-action="closeGenerateNewPrimaryEdxActivationCodeDialog"
               >
-                No
               </PrimaryButton>
               <PrimaryButton
                 id="doGeneratePrimaryEdxActivationCodeButton"
                 class="ml-2"
+                text="Yes"
                 :click-action="doGeneratePrimaryEdxActivationCode"
               >
-                Yes
               </PrimaryButton>
             </v-col>
           </v-row>
@@ -104,6 +105,7 @@
         <v-text-field
           id="name-text-field"
           v-model="searchFilter.name"
+          variant="underlined"
           label="Name"
           clearable
           @keyup.enter="enterPushed()"
@@ -132,17 +134,17 @@
         <PrimaryButton
           id="user-clear-button"
           secondary
+          text="Clear"
           :click-action="clearButtonClick"
         >
-          Clear
         </PrimaryButton>
         <PrimaryButton
           id="user-search-button"
           class="ml-2"
+          text="Search"
           :click-action="searchButtonClick"
           :disabled="searchEnabled()"
         >
-          Search
         </PrimaryButton>
       </v-col>
     </v-row>
@@ -175,7 +177,7 @@
         class="pb-0"
       >
         <v-row style="height: 100%;">
-          <v-col style="min-height: 184px">
+          <v-col style="min-height: 150px">
             <v-card class="h-100 add-new-user">
               <v-row
                 class="add-new-user"
@@ -187,16 +189,16 @@
                     id="new-user-button"
                     icon="mdi-plus"
                     :large-icon="true"
-                    secondary
+                    :secondary="!!primaryEdxActivationCode"
                     icon-left
                     :disabled="!primaryEdxActivationCode"
                     text="Add New User"
-                    :click-action="newUserInviteSheet = !newUserInviteSheet"
+                    :click-action="openNewUserInviteSheet"
                   />
                 </v-col>
               </v-row>
               <v-row v-if="!primaryEdxActivationCode">
-                <v-col class="mx-3">
+                <v-col class="mx-3 mb-3">
                   <v-alert
                     density="compact"
                     style="background-color: #E9EBEF !important;"
@@ -291,8 +293,8 @@ export default {
       filteredUsers: [],
       loadingUsers: true,
       searchFilter: {
-        name: '',
-        roleName: '',
+        name: null,
+        roleName: null,
       },
       doShowGenerateNewPrimaryEdxActivationCodeDialog: false
     };
@@ -401,6 +403,9 @@ export default {
 
       return true;
     },
+    openNewUserInviteSheet(){
+      this.newUserInviteSheet = !this.newUserInviteSheet;
+    },
     backButtonClick() {
       router.push({name: 'exchangeAccess'});
     },
@@ -436,8 +441,9 @@ export default {
 }
 
 .divider {
-  border-color: #FCBA19;
-  border-width: medium;
+    border-color: #FCBA19;
+    border-width: 2px;
+    opacity: unset;
 }
 
 #generateNewPrimaryEdxActivationCodeDialog {
@@ -455,7 +461,7 @@ export default {
 }
 
 .add-new-user {
-    min-height: 184px;
+  min-height: 150px;
 }
 
 .card-hint {

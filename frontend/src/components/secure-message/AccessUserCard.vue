@@ -20,7 +20,7 @@
                     width="0.5em"
                     min-width="0.5em"
                     depressed
-                    small
+                    size="small"
                     class="mr-2"
                     @click="clickEditButton"
                   >
@@ -39,7 +39,7 @@
                     width="0.5em"
                     min-width="0.5em"
                     depressed
-                    small
+                    size="small"
                     class="mr-2"
                     @click="clickDeleteButton"
                   >
@@ -58,7 +58,7 @@
                     width="0.5em"
                     min-width="0.5em"
                     depressed
-                    small
+                    size="small"
                     @click="clickRelinkButton"
                   >
                     <v-icon
@@ -101,39 +101,42 @@
               {{ getRoleLabel(role) }}
             </v-chip>
           </v-chip-group>
-          <v-list-item-group
+          <v-list
             v-else
-            v-model="selectedRoles"
-            multiple
-            @update:model-value="selectedRolesChanged"
+            v-model:selected="selectedRoles"
+            lines="two"
+            return-object
+            select-strategy="classic"
+            style="background-color: #e7ebf0"
+            @update:selected="selectedRolesChanged"
           >
-            <v-list-item
+            <div
               v-for="newrole in instituteRoles"
               :key="newrole.edxRoleCode"
-              :disabled="roleDisabled(newrole)"
               :value="newrole.edxRoleCode"
             >
-              <template #default="{ active, }">
-                <v-list-item-action class="mt-0 mb-2 mr-3">
-                  <v-checkbox
-                    :disabled="roleDisabled(newrole)"
-                    :input-value="active"
-                    color="primary"
-                  />
-                </v-list-item-action>
+              <v-list-item
+                :disabled="roleDisabled(newrole)"
+                :value="newrole.edxRoleCode"
+              >
+                <template #prepend="{ isActive }">
+                  <v-list-item-action>
+                    <v-checkbox-btn :model-value="isActive"/>
+                  </v-list-item-action>
+                </template>
 
-                <v-list-item>
-                  <v-list-item-title>{{ newrole.label }}</v-list-item-title>
-                  <div
-                    v-if="isEDXInstituteAdminSelected && newrole.edxRoleCode === edxInstituteAdminRole"
-                    style="color: black; font-weight: bold"
-                  >
-                    EDX {{ instituteTypeLabel }} Admin users will be set up with all {{ instituteTypeLabel.toLowerCase() }} roles.
-                  </div>
-                </v-list-item>
-              </template>
-            </v-list-item>
-          </v-list-item-group>
+                <v-list-item-title>{{ newrole.label }}</v-list-item-title>
+
+                <v-list-item-subtitle v-if="newrole.edxRoleCode === edxInstituteAdminRole">
+                  EDX {{ instituteTypeLabel }} Admin users will be set up with all
+                  {{ instituteTypeLabel.toLowerCase() }} roles.
+                </v-list-item-subtitle>
+                <v-list-item-subtitle v-else>
+                  {{ newrole.roleDescription }}
+                </v-list-item-subtitle>
+              </v-list-item>
+            </div>
+          </v-list>
         </v-card-text>
         <Transition name="bounce">
           <v-card-text
@@ -143,8 +146,8 @@
             <v-row no-gutters>
               <v-col class="d-flex justify-center">
                 <span style="font-size: medium; font-weight: bold; color: black">Are you sure you want to remove this users access for the {{
-                  instituteTypeLabel.toLowerCase()
-                }}?</span>
+                    instituteTypeLabel.toLowerCase()
+                  }}?</span>
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -155,12 +158,12 @@
                   text="Cancel"
                   class="mr-2"
                   secondary
-                  :on="{click: clickDeleteButton}"
+                  :click-action="clickDeleteButton"
                 />
                 <PrimaryButton
                   :id="`user-remove-action-button-${user.firstName}-${user.lastName}`"
                   text="Remove"
-                  :click-action="clickRemoveButton(user)"
+                  :click-action="clickRemoveButton"
                 />
               </v-col>
             </v-row>
@@ -189,13 +192,13 @@
                   text="Cancel"
                   class="mr-2"
                   secondary
-                  :on="{click: clickRelinkButton}"
+                  :click-action="clickRelinkButton"
                   :disabled="isRelinking"
                 />
                 <PrimaryButton
                   :id="`user-relink-action-button-${user.firstName}-${user.lastName}`"
                   text="Re-Link"
-                  :click-action="clickActionRelinkButton(user)"
+                  :click-action="clickActionRelinkButton"
                   :disabled="isRelinking"
                   :loading="isRelinking"
                 />
@@ -213,7 +216,7 @@
               v-if="!minimumRolesSelected"
               no-gutters
             >
-              <v-col class="mt-0 d-flex justify-start">
+              <v-col class="mt-0 mb-5 d-flex justify-start">
                 <p style="font-weight: bolder;color: black;">
                   Please select at least one role for {{ user.firstName }}.
                 </p>
@@ -227,13 +230,13 @@
                   text="Cancel"
                   class="mr-2"
                   secondary
-                  :on="{click: clickEditButton}"
+                  :click-action="clickEditButton"
                 />
                 <PrimaryButton
                   :id="`user-save-action-button-${user.firstName}-${user.lastName}`"
                   text="Save"
                   :disabled="!minimumRolesSelected"
-                  :on="{click: clickSaveButton}"
+                  :click-action="clickSaveButton"
                 />
               </v-col>
             </v-row>
@@ -341,19 +344,19 @@ export default {
       this.deleteState = false;
       this.relinkState = !this.relinkState;
     },
-    clickActionRelinkButton(userToRelink) {
+    clickActionRelinkButton() {
       this.isRelinking = true;
       const payload = {
-        params:{
-          userToRelink: userToRelink.edxUserID,
+        params: {
+          userToRelink: this.user.edxUserID,
         }
       };
       if (this.instituteTypeCode === 'SCHOOL') {
-        const userSchool = userToRelink.edxUserSchools.find(school => school.schoolID === this.instituteCode);
+        const userSchool = this.user.edxUserSchools.find(school => school.schoolID === this.instituteCode);
         payload.params.schoolID = this.instituteCode;
         payload.params.userSchoolID = userSchool.edxUserSchoolID;
       } else {
-        const userDistrict = userToRelink.edxUserDistricts.find(district => district.districtID === this.instituteCode);
+        const userDistrict = this.user.edxUserDistricts.find(district => district.districtID === this.instituteCode);
         payload.params.districtID = this.instituteCode;
         payload.params.edxUserDistrictID = userDistrict.edxUserDistrictID;
       }
@@ -364,20 +367,22 @@ export default {
           this.setFailureAlert('An error occurred while re-linking a user. Please try again later.');
           console.log(error);
         }).finally(() => {
-          setTimeout(() => { this.$emit('refresh'); }, EDX_SAGA_REQUEST_DELAY_MILLISECONDS);
+          setTimeout(() => {
+            this.$emit('refresh');
+          }, EDX_SAGA_REQUEST_DELAY_MILLISECONDS);
         });
     },
-    clickRemoveButton(userToRemove) {
+    clickRemoveButton() {
       const payload = {
-        params:{
-          userToRemove: userToRemove.edxUserID,
+        params: {
+          userToRemove: this.user.edxUserID,
         }
       };
       if (this.instituteTypeCode === 'SCHOOL') {
-        const userSchool = userToRemove.edxUserSchools.find(school => school.schoolID === this.instituteCode);
+        const userSchool = this.user.edxUserSchools.find(school => school.schoolID === this.instituteCode);
         payload.params.userSchoolID = userSchool.edxUserSchoolID;
       } else {
-        const userDistrict = userToRemove.edxUserDistricts.find(district => district.districtID === this.instituteCode);
+        const userDistrict = this.user.edxUserDistricts.find(district => district.districtID === this.instituteCode);
         payload.params.districtID = this.instituteCode;
         payload.params.edxUserDistrictID = userDistrict.edxUserDistrictID;
       }
@@ -415,11 +420,11 @@ export default {
         .then(() => {
           this.setSuccessAlert('User roles have been updated.');
         }).catch(error => {
-          this.setFailureAlert('An error occurred while updating user roles. Please try again later.');
-          console.log(error);
-        }).finally(() => {
-          this.$emit('refresh');
-        });
+        this.setFailureAlert('An error occurred while updating user roles. Please try again later.');
+        console.log(error);
+      }).finally(() => {
+        this.$emit('refresh');
+      });
     },
     setUserRolesAsSelected() {
       let mySelection = [];
@@ -443,26 +448,27 @@ export default {
 <style scoped>
 
 .name {
-  word-break: break-word;
+    word-break: break-word;
 }
+
 .bounce-enter-active {
-  animation: bounce-in 0.2s;
+    animation: bounce-in 0.2s;
 }
 
 .bounce-leave-active {
-  animation: bounce-in 0.1s reverse;
+    animation: bounce-in 0.1s reverse;
 }
 
 @keyframes bounce-in {
-  0% {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-  }
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 </style>
 

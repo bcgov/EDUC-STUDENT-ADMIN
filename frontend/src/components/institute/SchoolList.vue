@@ -671,7 +671,6 @@ export default {
         this.headerSearchParams.schoolID = '';
       }
 
-      console.log(this.districtCodeNameFilter);
       if (this.districtCodeNameFilter !== null && this.districtCodeNameFilter !== '') {
         this.headerSearchParams.districtID = this.districtCodeNameFilter;
       } else {

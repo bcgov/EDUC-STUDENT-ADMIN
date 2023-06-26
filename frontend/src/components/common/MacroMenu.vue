@@ -10,7 +10,7 @@
         <PrimaryButton
           :id="id"
           :text="text"
-          icon="fa-angle-down"
+          icon="mdi-chevron-down"
           secondary
           :bind="attrs"
           :on="on"

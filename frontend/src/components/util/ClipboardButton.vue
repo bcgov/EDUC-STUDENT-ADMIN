@@ -2,6 +2,7 @@
   <v-tooltip
     v-model="showTooltip"
     right
+    :open-on-hover="false"
   >
     <template #activator="{ on, attrs }">
       <v-btn
@@ -10,20 +11,23 @@
         :disabled="disabled"
         :dark="!disabled"
         icon
+        size="x-small"
+        class="ml-1"
         v-bind="attrs"
-        :click-action.stop="copy(copyText)"
-        :title="`copy ${copyText} to clipboard`"
+        @click.prevent.stop="copy(copyText)"
+        :title="`Copy ${copyText} to clipboard`"
       >
         <v-icon
           v-if="icon"
-          :class="iconStyle"
-          small
+          color="white"
+          :class="iconStyle ? iconStyle : undefined"
+          size="large"
         >
           {{ icon }}
         </v-icon>
       </v-btn>
     </template>
-    <span>{{ 'copied ' + copyText }}</span>
+    <span>{{ 'Copied ' + copyText }}</span>
   </v-tooltip>
 </template>
 

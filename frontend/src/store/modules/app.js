@@ -56,6 +56,7 @@ export const appStore = defineStore('app', {
     async setMincodeSchoolNameAndDistrictCodes(mincodeSchoolNameList) {
       this.mincodeSchoolNames = new Map();
       this.schoolMap = new Map();
+      this.notClosedSchools = [];
       mincodeSchoolNameList.forEach(element => {
         this.mincodeSchoolNames.set(element.mincode, element.schoolName);
         this.schoolMap.set(element.schoolID, {...element});

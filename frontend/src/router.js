@@ -38,7 +38,7 @@ import GUMPStatsLanding from '@/components/admin/stats/GUMPStatsLanding.vue';
 import Merges from '@/components/admin/stats/Merges.vue';
 import NewMessagePage from '@/components/secure-message/NewMessagePage.vue';
 import MessageDisplay from '@/components/secure-message/MessageDisplay.vue';
-import AccessUsersPage from '@/components/secure-message/AccessUsersPage.vue';
+import AccessUsersPage from '@/components/secure-message/AccessSchoolUsersPage.vue';
 import AccessDistrictUsersPage from '@/components/secure-message/AccessDistrictUsersPage.vue';
 import InstituteAccessPage from '@/components/secure-message/InstituteAccessPage.vue';
 import DistrictList from '@/components/institute/DistrictList.vue';

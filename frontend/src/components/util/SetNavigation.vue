@@ -5,7 +5,7 @@
       id="preRecord"
       class="mr-3"
       icon
-      small
+      size="small"
       :disabled="preDisabled"
       @click="clickBtn(preRoute)"
     >

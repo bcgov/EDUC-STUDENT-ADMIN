@@ -6,7 +6,7 @@
       :class="[(hover && !disabled) ? secondary ? this.class + ' button-hover white--text': this.class + ' button-hover': this.class + '']"
       :color="disabled ? '' : '#003366'"
       :variant="secondary ? 'outlined' : 'elevated'"
-      :small="short"
+      :size="short ? 'small': undefined"
       :disabled="disabled"
       :dark="!disabled"
       :to="to"

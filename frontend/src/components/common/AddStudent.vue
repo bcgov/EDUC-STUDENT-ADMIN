@@ -16,6 +16,7 @@
       row
       d-flex
       nowrap
+      style="min-width: 30em"
       align="center"
       justify="center"
       class="px-2"
@@ -25,6 +26,7 @@
         v-model="penNumber"
         class="pr-5"
         clearable
+        variant="underlined"
         placeholder="Enter a Student's PEN"
         :rules="penRules"
         maxlength="9"
