@@ -1,5 +1,5 @@
 <template>
-  <v-row>
+  <v-row no-gutters>
     <v-col :cols="showRecordDetail ? 6 : 12">
       <v-data-table
         id="schoolHistoryTable"
@@ -23,20 +23,17 @@
             </v-col>
           </v-row>
         </template>
-        <!--        <template #item="{ item, index }">-->
-        <!--          <tr :class="tableRowClass(item.raw)" @click="selectHistoryItem(item.raw)">-->
-        <!--            {{-->
-        <!--              item-->
-        <!--            }}-->
-        <!--            <td v-for="header in item.raw.headers" :key="header.id" :class="header.id">-->
-        <!--              <div class="table-cell">-->
-        <!--                  <span :class="{ 'diff-value': item.raw[`${header.value}_diff`] }">{{-->
-        <!--                      formatTableColumn(header.format, item.raw[header.value])-->
-        <!--                    }}</span>-->
-        <!--              </div>-->
-        <!--            </td>-->
-        <!--          </tr>-->
-        <!--        </template>-->
+        <template #item="{ item, index }">
+          <tr no-gutters :class="tableRowClass(item.raw)" @click="selectHistoryItem(item.raw)">
+            <td v-for="header in getHeaders()" :key="header" :class="header">
+              <div class="table-cell">
+                  <span :class="{ 'diff-value': item.raw[`${header}_diff`] }">{{
+                      formatTableColumn(header.format, item.columns[header.key])
+                    }}</span>
+              </div>
+            </td>
+          </tr>
+        </template>
       </v-data-table>
       <v-row
         class="pt-2"
@@ -63,13 +60,13 @@
         </v-col>
       </v-row>
     </v-col>
-    <v-col v-if="showRecordDetail">
+    <v-col cols="6" v-if="showRecordDetail">
       <SchoolHistoryDetailPanel
         :next-school-history="nextSchoolHistory"
         :school-history="schoolHistory"
         :school-history-id="selectedSchoolHistoryId"
-        @close="showRecordDetail = false"
-        @update="setSelectedSchoolHistoryId"
+        @close-panel="setShowRecordDetailFalse"
+        @update-panel="setSelectedSchoolHistoryId"
       />
     </v-col>
   </v-row>
@@ -121,24 +118,24 @@ export default {
         schoolID: '',
       },
       headers: [
-        {text: 'Date', sortable: false, value: 'updateDate', format: this.formatDate, tooltip: 'Activity Date'},
-        {text: 'Changed by', sortable: false, value: 'updateUser', tooltip: 'Changed By'},
-        {text: 'Status', sortable: false, value: 'status', tooltip: 'Status'},
-        {text: 'District Number', sortable: false, value: 'districtNumber', tooltip: 'District Code'},
-        {text: 'Authority Number', sortable: false, value: 'authorityNumber', tooltip: 'Authority Code'},
-        {text: 'School Number', sortable: false, value: 'schoolNumber', tooltip: 'School Code'},
-        {text: 'Name', sortable: false, value: 'displayName', tooltip: 'Name'},
-        {text: 'Facility Type', sortable: false, value: 'facilityTypeValue', tooltip: 'Facility Type'},
-        {text: 'School Category', sortable: false, value: 'schoolCategoryValue', tooltip: 'School Category'},
-        {text: 'Contact Information', sortable: false, value: 'contactUpdatedFlag', tooltip: 'Contact Information'},
-        {text: 'Grades Offered', sortable: false, value: 'gradeValue', tooltip: 'Grades Offered'}
+        {title: 'Date', sortable: false, key: 'updateDate', format: this.formatDate, tooltip: 'Activity Date'},
+        {title: 'Changed by', sortable: false, key: 'updateUser', tooltip: 'Changed By'},
+        {title: 'Status', sortable: false, key: 'status', tooltip: 'Status'},
+        {title: 'District Number', sortable: false, key: 'districtNumber', tooltip: 'District Code'},
+        {title: 'Authority Number', sortable: false, key: 'authorityNumber', tooltip: 'Authority Code'},
+        {title: 'School Number', sortable: false, key: 'schoolNumber', tooltip: 'School Code'},
+        {title: 'Name', sortable: false, key: 'displayName', tooltip: 'Name'},
+        {title: 'Facility Type', sortable: false, key: 'facilityTypeValue', tooltip: 'Facility Type'},
+        {title: 'School Category', sortable: false, key: 'schoolCategoryValue', tooltip: 'School Category'},
+        {title: 'Contact Information', sortable: false, key: 'contactUpdatedFlag', tooltip: 'Contact Information'},
+        {title: 'Grades Offered', sortable: false, key: 'gradeValue', tooltip: 'Grades Offered'}
       ],
       shortHeaders: [
-        {text: 'Date', sortable: false, value: 'updateDate', format: this.formatDate, tooltip: 'Activity Date'},
-        {text: 'Changed by', sortable: false, value: 'updateUser', tooltip: 'Changed By'},
-        {text: 'Status', sortable: false, value: 'status', tooltip: 'Status'},
-        {text: 'Name', sortable: false, value: 'displayName', tooltip: 'Name'},
-        {text: 'Contact Information', sortable: false, value: 'contactUpdatedFlag', tooltip: 'Contact Information'}
+        {title: 'Date', sortable: false, key: 'updateDate', format: this.formatDate, tooltip: 'Activity Date'},
+        {title: 'Changed by', sortable: false, key: 'updateUser', tooltip: 'Changed By'},
+        {title: 'Status', sortable: false, key: 'status', tooltip: 'Status'},
+        {title: 'Name', sortable: false, key: 'displayName', tooltip: 'Name'},
+        {title: 'Contact Information', sortable: false, key: 'contactUpdatedFlag', tooltip: 'Contact Information'}
       ],
     };
   },
@@ -192,8 +189,11 @@ export default {
       return rowClass;
     },
     selectHistoryItem(props) {
-      this.setSelectedSchoolHistoryId(props.item.schoolHistoryId);
+      console.log('Selecting ' + props.schoolHistoryId );
+      console.log('showRecordDetail1 ' + this.showRecordDetail );
+      this.setSelectedSchoolHistoryId(props.schoolHistoryId);
       this.showRecordDetail = true;
+      console.log('showRecordDetail ' + this.showRecordDetail );
     },
     getHeaders() {
       if (this.showRecordDetail) {
@@ -258,6 +258,9 @@ export default {
           console.log(error);
         })
         .finally(() => this.loading = false);
+    },
+    setShowRecordDetailFalse(){
+      this.showRecordDetail = false;
     },
     checkForDifferences(preHistory, history, key) {
       if (key === 'mailingAddress') {
@@ -413,6 +416,23 @@ export default {
 
 .diff-value {
     font-weight: bold;
+}
+
+
+.hoverTable {
+    border-bottom-style: groove;
+    border-left-style: groove;
+    border-right-style: groove;
+    border-color: rgb(255 255 255 / 45%);
+}
+
+.hoverTable:nth-child(1) {
+    border-top-style: groove;
+}
+
+.hoverTable:hover {
+    background-color: #e8e8e8;
+    cursor: pointer;
 }
 
 .divider {

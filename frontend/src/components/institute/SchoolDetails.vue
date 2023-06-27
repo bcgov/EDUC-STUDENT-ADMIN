@@ -102,7 +102,6 @@
         <v-row no-gutters class="mt-1 d-flex justify-start">
           <v-col class="d-flex">
             <v-icon
-              class="ml-n1 pr-3"
               :color="getStatusColorAuthorityOrSchool(school.status)"
               dark
             >
