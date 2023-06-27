@@ -112,6 +112,7 @@
                 <v-icon
                   size="small"
                   color="#1976d2"
+                  class="mt-1"
                 >
                   mdi-arrow-left
                 </v-icon>
@@ -820,15 +821,12 @@ export default {
     ministryOwnershipGroupRoleID: {
       type: String,
       required: true
-    },
-    ministryOwnershipTeamName: {
-      type: String,
-      required: true
     }
   },
   data() {
     return {
       loadingCount: 0,
+      ministryOwnershipTeamName: null,
       secureExchange: null,
       loadingReadStatus: false,
       editOptionsOpen: false,
@@ -858,7 +856,7 @@ export default {
   },
   computed: {
     ...mapState(authStore, ['userInfo']),
-    ...mapState(edxStore, ['messageMacros']),
+    ...mapState(edxStore, ['messageMacros', 'ministryTeams']),
     ...mapState(appStore, ['schoolMap']),
     loading() {
       return this.loadingCount !== 0;
@@ -870,6 +868,9 @@ export default {
   created() {
     this.getExchange(true);
     this.getMacros();
+    edxStore().getMinistryTeams().then(() => {
+      this.getMinistryTeamNameByGroupRoleID();
+    });
   },
   methods: {
     ...mapActions(edxStore, ['getMacros']),
@@ -902,6 +903,9 @@ export default {
     },
     shouldShowDistrictWarning(studentActivity) {
       return this.secureExchange?.secureExchangeContactTypeCode === 'DISTRICT' && this.secureExchange.contactIdentifier !== this.schoolMap.get(studentActivity.schoolID)?.districtID;
+    },
+    getMinistryTeamNameByGroupRoleID() {
+      this.ministryTeamName = this.ministryTeams.find(item => item.groupRoleIdentifier === this.ministryOwnershipGroupRoleID).teamName;
     },
     hideNewMessagePanel() {
       this.isNewMessageDisplayed = false;

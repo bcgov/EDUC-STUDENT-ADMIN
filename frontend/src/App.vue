@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { mapState } from 'pinia';
+import {mapActions, mapState} from 'pinia';
 import Header from '@/components/Header.vue';
 import Footer from '@/components/Footer.vue';
 import ModalIdle from '@/components/ModalIdle.vue';
@@ -72,13 +72,17 @@ export default {
     this.deactivateMultipleDraggableDialog = activateMultipleDraggableDialog();
     this.handleWebSocket();
   },
+  async created() {
+    await this.getConfig();
+  },
   methods:{
     authStore,
+    ...mapActions(appStore, ['getConfig']),
     handleWebSocket() {
       if(this.isAuthenticated && (this.isValidPenRequestBatchUser || this.isValidGMPUser || this.isValidUMPUser)) {
-        //this.$webSocketsConnect();
+        this.$webSocketsConnect();
       } else {
-        //this.$webSocketsDisconnect();
+        this.$webSocketsDisconnect();
       }
     },
     onScroll(e) {

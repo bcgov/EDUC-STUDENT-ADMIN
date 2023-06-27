@@ -812,7 +812,6 @@ export default {
       this.isFormValid = validate.valid;
     },
     searchButtonClick() {
-      console.log('Here');
       this.resetPageNumber();
       this.getSchoolList();
     },

@@ -25,9 +25,13 @@ export const appStore = defineStore('app', {
     independentAuthorityMap: new Map(),
     alertNotificationText: '',
     alertNotificationQueue: [],
-    alertNotification: false
+    alertNotification: false,
+    config: ''
   }),
   actions: {
+    async setConfig(config){
+      this.config = config;
+    },
     async setRequest(request) {
       this.request = request || {};
     },
@@ -130,6 +134,10 @@ export const appStore = defineStore('app', {
           await this.setSchoolApiMincodeSchoolNameAndDistrictCodes(response.data);
         }
       }
+    },
+    async getConfig() {
+      const response = await ApiService.getConfig();
+      await this.setConfig(response.data);
     },
     async refreshEntities() {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.

@@ -400,7 +400,7 @@ const router = createRouter({
           }
         },
         {
-          path: 'exchange/:secureExchangeID',
+          path: 'exchange/:secureExchangeID/:ministryOwnershipGroupRoleID',
           name: 'viewExchange',
           component: MessageDisplay,
           props: true,

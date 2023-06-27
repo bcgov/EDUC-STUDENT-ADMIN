@@ -282,22 +282,13 @@ oc -n $PEN_NAMESPACE-$envValue set env --from=configmap/$APP_NAME-backend-config
 ###########################################################
 #Setup for student-admin-frontend-config-map
 ###########################################################
-vueIdleTimeout="1800000"
-if [ "$envValue" == "test" ]; then
-  vueIdleTimeout="3600000"
-fi
 
-regConfigStaff="var studentAdminConfig = (function() {
-  return {
-    \"VUE_APP_IDLE_TIMEOUT_IN_MILLIS\" : $vueIdleTimeout,
-    \"BANNER_ENVIRONMENT\" : \"$bannerEnvironment\",
-    \"BANNER_COLOR\" : \"$bannerColor\",
-    \"WEB_SOCKET_URL\":\"wss://$SERVER_FRONTEND/api/socket\"
-  };
-})();"
+BANNER_ENVIRONMENT="$bannerEnvironment"
+BANNER_COLOR="$bannerColor"
+WEB_SOCKET_URL="wss://$SERVER_FRONTEND/api/socket"
 
 echo Creating config map $APP_NAME-frontend-config-map
-oc create -n $PEN_NAMESPACE-$envValue configmap $APP_NAME-frontend-config-map --from-literal=TZ=$TZVALUE --from-literal=HOST_ROUTE=$BACKEND_ROOT --from-literal=BACKEND_ROOT=https://$BACKEND_ROOT --from-literal=config.js="$regConfigStaff" --dry-run -o yaml | oc apply -f -
+oc create -n $PEN_NAMESPACE-$envValue configmap $APP_NAME-frontend-config-map --from-literal=TZ=$TZVALUE --from-literal=HOST_ROUTE=$BACKEND_ROOT --from-literal=BACKEND_ROOT=https://$BACKEND_ROOT --from-literal=WEB_SOCKET_URL="$WEB_SOCKET_URL" --from-literal=BANNER_COLOR="$BANNER_COLOR" --from-literal=BANNER_ENVIRONMENT="$BANNER_ENVIRONMENT" --dry-run -o yaml | oc apply -f -
 echo
 echo Setting environment variables for $APP_NAME-frontend-$SOAM_KC_REALM_ID application
 oc -n $PEN_NAMESPACE-$envValue set env --from=configmap/$APP_NAME-frontend-config-map dc/$APP_NAME-frontend-$SOAM_KC_REALM_ID

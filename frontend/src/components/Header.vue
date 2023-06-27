@@ -83,7 +83,7 @@ export default {
   data() {
     return {
       appTitle: import.meta.env.VITE_VUE_APP_TITLE,
-      secureAppTitle: import.meta.env.VITE_VUE_APP_SECURED_TITLE,
+      secureAppTitle: import.meta.env.VITE_VUE_APP_TITLE,
       routes: Routes
     };
   },

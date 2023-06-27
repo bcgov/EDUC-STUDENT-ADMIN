@@ -20,6 +20,7 @@
             <v-icon
               size="small"
               color="#1976d2"
+              class="mt-1"
             >
               mdi-arrow-left
             </v-icon>
@@ -871,8 +872,7 @@ export default {
         name: 'viewExchange',
         params: {
           secureExchangeID: exchangeID,
-          ministryOwnershipGroupRoleID: this.ministryOwnershipGroupRoleID,
-          ministryOwnershipTeamName: this.ministryTeamName
+          ministryOwnershipGroupRoleID: this.ministryOwnershipGroupRoleID
         }
       });
     }

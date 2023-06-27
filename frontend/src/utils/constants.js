@@ -25,6 +25,7 @@ let object = {
   TOKEN: authRoot + '/token',
   USER: authRoot + '/user',
   SESSION_REMAINING_TIME: authRoot + '/user-session-remaining-time',
+  CONFIG: baseRoot + '/config',
 
   digitalIdentity: {
     ROOT_ENDPOINT: digitalIDRoot,

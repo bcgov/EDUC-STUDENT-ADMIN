@@ -6,7 +6,7 @@ webSocketsService.install = function (Vue, options) {
   let ws = null;
   let reconnectInterval = options.reconnectInterval || 1000;
 
-  Vue.prototype.$webSocketsConnect = () => {
+  Vue.config.globalProperties.$webSocketsConnect = () => {
     const token =localStorage.getItem('jwtToken');
     if(!token){
       return;
@@ -36,7 +36,7 @@ webSocketsService.install = function (Vue, options) {
               // Reconnect interval can't be > x seconds
               reconnectInterval += 1000;
             }
-            Vue.prototype.$webSocketsConnect();
+            Vue.config.globalProperties.$webSocketsConnect();
           }, reconnectInterval);
         }
       }
@@ -48,12 +48,12 @@ webSocketsService.install = function (Vue, options) {
     };
   };
 
-  Vue.prototype.$webSocketsDisconnect = () => {
+  Vue.config.globalProperties.$webSocketsDisconnect = () => {
     // Our custom disconnect event
     ws?.close();
   };
 
-  Vue.prototype.$webSocketsSend = (data) => {
+  Vue.config.globalProperties.$webSocketsSend = (data) => {
     // Send data to the backend - use JSON.stringify(data)
     ws.send(JSON.stringify(data));
   };
