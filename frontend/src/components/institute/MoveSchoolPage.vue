@@ -3,7 +3,7 @@
     <v-card-title class="sheetHeader pt-1 pb-1">
       Move School
     </v-card-title>
-    <v-divider />
+    <v-divider/>
     <v-card-text>
       <v-row class="move-description">
         <v-col>
@@ -28,6 +28,7 @@
                   v-model="moveSchoolObject.displayName"
                   :rules="[rules.required(), rules.noSpecialCharactersSchDisAuthName()]"
                   class="pt-0"
+                  variant="underlined"
                   :maxlength="255"
                   label="School Name"
                 />
@@ -37,6 +38,7 @@
                   id="newSchoolSafeNameInput"
                   v-model="moveSchoolObject.displayNameNoSpecialChars"
                   :rules="[rules.noSpecialCharactersSchDisAuthName()]"
+                  variant="underlined"
                   class="pt-0"
                   :maxlength="255"
                   label="Legacy Safe School Name"
@@ -60,6 +62,7 @@
                       :rules="[rules.required(), rules.dateIsAfterOrEqualTo(moveSchoolObject.moveDate, school.openedDate, true, `The move date must occur on or after ${schoolOpenDateFormatted}.`)]"
                       class="pt-0"
                       label="Move Date"
+                      variant="underlined"
                       prepend-inner-icon="mdi-calendar"
                       clearable
                       readonly
@@ -82,6 +85,7 @@
                   item-value="districtId"
                   item-title="districtNumberName"
                   :items="activeDistricts"
+                  variant="underlined"
                   class="pt-0"
                   clearable
                   @update:model-value="schoolDistrictChanged"
@@ -128,6 +132,7 @@
                   item-value="authorityID"
                   item-title="authorityCodeName"
                   :items="activeAuthorities"
+                  variant="underlined"
                   :disabled="authorityDisabled"
                   :rules="[authorityRule]"
                   class="pt-0"
@@ -210,6 +215,7 @@
                   v-model="moveSchoolObject.phoneNumber"
                   :rules="[rules.phoneNumber()]"
                   class="pt-0"
+                  variant="underlined"
                   :maxlength="10"
                   label="Phone"
                   @keypress="isNumber($event)"
@@ -221,6 +227,7 @@
                   v-model="moveSchoolObject.faxNumber"
                   :rules="[rules.phoneNumber()]"
                   class="pt-0"
+                  variant="underlined"
                   :maxlength="10"
                   label="Fax"
                   @keypress="isNumber($event)"
@@ -232,6 +239,7 @@
                   v-model="moveSchoolObject.email"
                   :rules="[rules.email()]"
                   :maxlength="255"
+                  variant="underlined"
                   class="pt-0"
                   label="Email"
                 />
@@ -240,10 +248,11 @@
             <v-row>
               <v-col cols="4">
                 <v-text-field
-                  id="newContactAltPhoneNumberInput"
+                  id="newContactWebsiteInput"
                   v-model="moveSchoolObject.website"
                   :rules="[rules.website()]"
                   :maxlength="255"
+                  variant="underlined"
                   class="pt-0"
                   label="Website"
                 />
@@ -260,13 +269,14 @@
                     <h3>Mailing Address</h3>
                   </v-col>
                 </v-row>
-                <v-row>
+                <v-row class="mt-0">
                   <v-col cols="4">
                     <v-text-field
                       id="newSchoolMailingAddressLine1Input"
                       v-model="moveSchoolObject.mailingAddrLine1"
                       :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                       class="pt-0"
+                      variant="underlined"
                       :maxlength="255"
                       label="Line 1"
                     />
@@ -277,6 +287,7 @@
                       v-model="moveSchoolObject.mailingAddrLine2"
                       :rules="[rules.noSpecialCharactersAddress()]"
                       class="pt-0"
+                      variant="underlined"
                       :maxlength="255"
                       label="Line 2"
                     />
@@ -287,6 +298,7 @@
                       v-model="moveSchoolObject.mailingAddrCity"
                       :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
                       class="pt-0"
+                      variant="underlined"
                       :maxlength="255"
                       label="City"
                     />
@@ -299,6 +311,7 @@
                       v-model="moveSchoolObject.mailingAddrProvince"
                       :rules="[rules.required()]"
                       class="pt-0"
+                      variant="underlined"
                       label="Province"
                       :items="provincialCodes"
                       item-title="label"
@@ -311,6 +324,7 @@
                       v-model="moveSchoolObject.mailingAddrCountry"
                       :rules="[rules.required()]"
                       class="pt-0"
+                      variant="underlined"
                       label="Country"
                       :items="countryCodes"
                       item-title="label"
@@ -323,6 +337,7 @@
                       v-model="moveSchoolObject.mailingAddrPostal"
                       :rules="[rules.required(), rules.postalCode()]"
                       class="pt-0"
+                      variant="underlined"
                       :maxlength="6"
                       label="Postal Code"
                     />
@@ -353,81 +368,89 @@
                         density="compact"
                         label="Same as Mailing Address"
                         class="mt-n3 pt-0"
-                        @click="fireFormValidate"
+                        @update:model-value="fireFormValidate"
                       />
                     </v-row>
                     <v-row
                       v-else
                       no-gutters
                     >
-                      <v-row>
-                        <v-col cols="4">
-                          <v-text-field
-                            id="newSchoolPhysicalAddressLine1Input"
-                            v-model="moveSchoolObject.physicalAddrLine1"
-                            :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                            class="pt-0"
-                            :maxlength="255"
-                            label="Line 1"
-                          />
-                        </v-col>
-                        <v-col cols="4">
-                          <v-text-field
-                            id="newSchoolPhysicalAddressLine2Input"
-                            v-model="moveSchoolObject.physicalAddrLine2"
-                            :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                            class="pt-0"
-                            :maxlength="255"
-                            label="Line 2"
-                          />
-                        </v-col>
-                        <v-col cols="4">
-                          <v-text-field
-                            id="newContactPhysicalAddressCityInput"
-                            v-model="moveSchoolObject.physicalAddrCity"
-                            :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                            class="pt-0"
-                            :maxlength="255"
-                            label="City"
-                          />
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col cols="4">
-                          <v-autocomplete
-                            id="newSchoolPhysicalAddressProvinceInput"
-                            v-model="moveSchoolObject.physicalAddrProvince"
-                            :rules="[rules.required()]"
-                            class="pt-0"
-                            label="Province"
-                            :items="provincialCodes"
-                            item-title="label"
-                            item-value="provinceCode"
-                          />
-                        </v-col>
-                        <v-col cols="4">
-                          <v-autocomplete
-                            id="newSchoolPhysicalAddressCountryInput"
-                            v-model="moveSchoolObject.physicalAddrCountry"
-                            :rules="[rules.required()]"
-                            class="pt-0"
-                            label="Country"
-                            :items="countryCodes"
-                            item-title="label"
-                            item-value="countryCode"
-                          />
-                        </v-col>
-                        <v-col cols="4">
-                          <v-text-field
-                            id="newContactPhysicalAddressPostalCodeInput"
-                            v-model="moveSchoolObject.physicalAddrPostal"
-                            :rules="[rules.required(), rules.postalCode()]"
-                            class="pt-0"
-                            :maxlength="6"
-                            label="Postal Code"
-                          />
-                        </v-col>
-                      </v-row>
+                      <v-col>
+                        <v-row>
+                          <v-col cols="4">
+                            <v-text-field
+                              id="newSchoolPhysicalAddressLine1Input"
+                              v-model="moveSchoolObject.physicalAddrLine1"
+                              :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
+                              class="pt-0"
+                              variant="underlined"
+                              :maxlength="255"
+                              label="Line 1"
+                            />
+                          </v-col>
+                          <v-col cols="4">
+                            <v-text-field
+                              id="newSchoolPhysicalAddressLine2Input"
+                              v-model="moveSchoolObject.physicalAddrLine2"
+                              :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
+                              class="pt-0"
+                              variant="underlined"
+                              :maxlength="255"
+                              label="Line 2"
+                            />
+                          </v-col>
+                          <v-col cols="4">
+                            <v-text-field
+                              id="newContactPhysicalAddressCityInput"
+                              v-model="moveSchoolObject.physicalAddrCity"
+                              :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
+                              class="pt-0"
+                              variant="underlined"
+                              :maxlength="255"
+                              label="City"
+                            />
+                          </v-col>
+                        </v-row>
+                        <v-row>
+                          <v-col cols="4">
+                            <v-autocomplete
+                              id="newSchoolPhysicalAddressProvinceInput"
+                              v-model="moveSchoolObject.physicalAddrProvince"
+                              :rules="[rules.required()]"
+                              class="pt-0"
+                              variant="underlined"
+                              label="Province"
+                              :items="provincialCodes"
+                              item-title="label"
+                              item-value="provinceCode"
+                            />
+                          </v-col>
+                          <v-col cols="4">
+                            <v-autocomplete
+                              id="newSchoolPhysicalAddressCountryInput"
+                              v-model="moveSchoolObject.physicalAddrCountry"
+                              :rules="[rules.required()]"
+                              class="pt-0"
+                              variant="underlined"
+                              label="Country"
+                              :items="countryCodes"
+                              item-title="label"
+                              item-value="countryCode"
+                            />
+                          </v-col>
+                          <v-col cols="4">
+                            <v-text-field
+                              id="newContactPhysicalAddressPostalCodeInput"
+                              v-model="moveSchoolObject.physicalAddrPostal"
+                              :rules="[rules.required(), rules.postalCode()]"
+                              class="pt-0"
+                              variant="underlined"
+                              :maxlength="6"
+                              label="Postal Code"
+                            />
+                          </v-col>
+                        </v-row>
+                      </v-col>
                     </v-row>
                     <v-row
                       v-if="!sameAsMailingCheckbox"
@@ -441,7 +464,7 @@
                           density="compact"
                           label="Same as Mailing Address"
                           class="mt-n3 pt-0"
-                          @click="fireFormValidate"
+                          @update:model-value="fireFormValidate"
                         />
                       </v-col>
                     </v-row>
@@ -714,7 +737,6 @@ export default {
       this.$refs.moveDateFilter.save(date);
     },
     closeMoveSchoolPage() {
-      this.resetForm();
       this.$emit('moveSchool:closeMoveSchoolPage');
     },
     moveSchool() {

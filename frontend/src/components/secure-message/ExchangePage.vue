@@ -69,7 +69,7 @@
                 :disabled="!statusRadioGroupEnabled"
                 direction="horizontal"
                 inline
-                class="pt-0 pb-0 mt-2 mb-0"
+                class="pt-1 pb-3 mb-0"
               >
                 <v-radio
                   class="mt-2 radio-blue-text"
@@ -335,7 +335,6 @@
               v-model:items-per-page="pageSize"
               v-model:page="pageNumber"
               v-model:items="exchanges"
-              v-model="selectedExchanges"
               v-model:items-length="totalRequests"
               :headers="headers"
               show-select
@@ -345,7 +344,7 @@
                 'items-per-page-options': itemsPerPageOptions
               }"
               :loading="loadingTable"
-              class="elevation-1"
+              class="elevation-1 mt-2"
               mobile-breakpoint="0"
             >
               <template #no-data>
@@ -363,10 +362,15 @@
                   style="cursor: pointer;"
                   no-gutters
                 >
+                  <v-col cols="auto">
+                    <v-checkbox
+                      v-model="selectedExchanges"
+                      :value="item.raw"
+                    >
+                    </v-checkbox>
+                  </v-col>
                   <v-col
-                    cols="6"
-                    lg="7"
-                    xl="7"
+                    cols="7"
                     @click="openExchange(item.raw.secureExchangeID)"
                   >
                     <v-row no-gutters>
@@ -389,8 +393,8 @@
                     </v-row>
                   </v-col>
                   <v-col
-                    cols="5"
                     style="text-align: end"
+                    class="d-flex justify-end"
                     @click="openExchange(item.raw.secureExchangeID)"
                   >
                     <v-row no-gutters
@@ -977,6 +981,10 @@ export default {
 }
 
 :deep(.dp__icon) {
+    display: none;
+}
+
+:deep(.v-input__details){
     display: none;
 }
 

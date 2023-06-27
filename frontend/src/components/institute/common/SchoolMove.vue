@@ -41,8 +41,7 @@
           :items="schoolMoveDataFormatted"
           :loading="loading"
           class="elevation-1"
-          item-key="schoolMoveId"
-          hide-default-footer
+          item-value="schoolMoveId"
         />
       </v-col>
     </v-row>
@@ -53,7 +52,6 @@
       no-click-animation
       scrollable
       persistent
-      width="50% !important"
     >
       <MoveSchoolPage
         v-if="moveSchoolSheet"
@@ -102,14 +100,14 @@ export default {
       school: '',
       district: '',
       headers: [
-        {text: 'Date', sortable: false, value: 'moveDate'},
-        {text: 'Moved By', sortable: false, value: 'createUser'},
-        {text: 'From District', sortable: false, value: 'fromDistrict'},
-        {text: 'To District', sortable: false, value: 'toDistrict'},
-        {text: 'From Authority', sortable: false, value: 'fromAuthority'},
-        {text: 'To Authority', sortable: false, value: 'toAuthority'},
-        {text: 'Old School Number', sortable: false, value: 'fromSchoolNumber'},
-        {text: 'New School Number', sortable: false, value: 'toSchoolNumber'},
+        {title: 'Date', sortable: false, key: 'moveDate'},
+        {title: 'Moved By', sortable: false, key: 'createUser'},
+        {title: 'From District', sortable: false, key: 'fromDistrict'},
+        {title: 'To District', sortable: false, key: 'toDistrict'},
+        {title: 'From Authority', sortable: false, key: 'fromAuthority'},
+        {title: 'To Authority', sortable: false, key: 'toAuthority'},
+        {title: 'Old School Number', sortable: false, key: 'fromSchoolNumber'},
+        {title: 'New School Number', sortable: false, key: 'toSchoolNumber'},
       ],
     };
   },
@@ -215,3 +213,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+  :deep(.v-data-table-footer) {
+    display: none;
+  }
+</style>
+

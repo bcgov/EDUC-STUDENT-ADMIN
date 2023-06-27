@@ -1142,7 +1142,6 @@ import {getStatusColorAuthorityOrSchool, getStatusAuthorityOrSchool} from '@/uti
 import router from '@/router';
 import {sanitizeUrl} from '@braintree/sanitize-url';
 import {deepCloneObject} from '@/utils/common';
-import {DateTimeFormatter, LocalDateTime} from '@js-joda/core';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
 import SchoolStatus from '@/components/institute/SchoolStatus.vue';
@@ -1320,14 +1319,13 @@ export default {
           if (this.school.independentAuthorityId) {
             this.getAuthorityDetails(this.school.independentAuthorityId);
           }
-          this.sortNotes();
           this.setHasSamePhysicalFlag();
         }).catch(error => {
-        console.error(error);
-        this.setFailureAlert(error.response?.data?.message || error.message);
-      }).finally(() => {
-        this.loading = false;
-      });
+          console.error(error);
+          this.setFailureAlert(error.response?.data?.message || error.message);
+        }).finally(() => {
+          this.loading = false;
+        });
     },
     sortGrades() {
       const gradeList = [];
@@ -1341,19 +1339,6 @@ export default {
     },
     sortNLC() {
       this.schoolDetailsCopy.neighborhoodLearning = sortBy(this.schoolDetailsCopy.neighborhoodLearning, ['neighborhoodLearningTypeCode']);
-    },
-    sortNotes() {
-      this.school.notes = this.school.notes.sort(function (a, b) {
-        const aCreateDate = new LocalDateTime.parse(a.createDate.substring(0, 19), DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
-        const bCreateDate = new LocalDateTime.parse(b.createDate.substring(0, 19), DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
-        if (aCreateDate < bCreateDate) {
-          return 1;
-        }
-        if (aCreateDate > bCreateDate) {
-          return -1;
-        }
-        return 0;
-      });
     },
     saveNewSchoolNote() {
       this.loading = true;
@@ -1381,11 +1366,11 @@ export default {
         .then(response => {
           this.district = response.data;
         }).catch(error => {
-        console.error(error);
-        this.setFailureAlert(error.response?.data?.message || error.message);
-      }).finally(() => {
-        this.loading = false;
-      });
+          console.error(error);
+          this.setFailureAlert(error.response?.data?.message || error.message);
+        }).finally(() => {
+          this.loading = false;
+        });
     },
     getAuthorityDetails(authorityId) {
       this.authority = '';
@@ -1394,11 +1379,11 @@ export default {
           this.authority = response.data;
           this.populateExtraAuthorityFields(this.authority);
         }).catch(error => {
-        console.error(error);
-        this.setFailureAlert(error.response?.data?.message || error.message);
-      }).finally(() => {
-        this.loading = false;
-      });
+          console.error(error);
+          this.setFailureAlert(error.response?.data?.message || error.message);
+        }).finally(() => {
+          this.loading = false;
+        });
     },
     populateExtraAuthorityFields(authority) {
       authority.status = getStatusAuthorityOrSchool(authority);

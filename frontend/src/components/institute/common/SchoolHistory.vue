@@ -13,7 +13,7 @@
           'items-per-page-options': itemsPerPageOptions
         }"
         :loading="loading"
-        class="elevation-1 batch-file-table"
+        class="batch-file-table"
         mobile-breakpoint="0"
       >
         <template #no-data>
@@ -24,13 +24,11 @@
           </v-row>
         </template>
         <template #item="{ item, index }">
-          <tr no-gutters :class="tableRowClass(item.raw)" @click="selectHistoryItem(item.raw)">
+          <tr no-gutters class="hoverTable" :class="tableRowClass(item.raw)" @click="selectHistoryItem(item.raw)">
             <td v-for="header in getHeaders()" :key="header" :class="header">
-              <div class="table-cell">
                   <span :class="{ 'diff-value': item.raw[`${header}_diff`] }">{{
                       formatTableColumn(header.format, item.columns[header.key])
                     }}</span>
-              </div>
             </td>
           </tr>
         </template>
@@ -189,11 +187,8 @@ export default {
       return rowClass;
     },
     selectHistoryItem(props) {
-      console.log('Selecting ' + props.schoolHistoryId );
-      console.log('showRecordDetail1 ' + this.showRecordDetail );
       this.setSelectedSchoolHistoryId(props.schoolHistoryId);
       this.showRecordDetail = true;
-      console.log('showRecordDetail ' + this.showRecordDetail );
     },
     getHeaders() {
       if (this.showRecordDetail) {
@@ -433,6 +428,22 @@ export default {
 .hoverTable:hover {
     background-color: #e8e8e8;
     cursor: pointer;
+}
+
+.hoverTable:hover td {
+    background-color: transparent; /* or #000 */
+}
+
+.selected-record{
+   background-color: #E1F5FE !important;
+}
+
+.selected-record td{
+   background-color:  #E1F5FE !important;
+}
+
+:deep(.v-data-table-footer) {
+  display: none;
 }
 
 .divider {

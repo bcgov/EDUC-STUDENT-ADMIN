@@ -110,7 +110,7 @@
                             color="#003366"
                             dark
                           >
-                            mdi-delete-forever-outline
+                            mdi-delete
                           </v-icon>
                         </v-btn>
                       </v-col>
