@@ -21,7 +21,7 @@
               id="closePanel"
               class="mx-1"
               text="Close"
-              :click-action="$emit('close-panel')"
+              :click-action="closePanel"
             />
           </v-card-actions>
         </SchoolHistoryDetail>
@@ -98,6 +98,9 @@ export default {
         this.currentSelectedHistory = this.schoolHistory?.content[this.rowNumber];
         this.$emit('update-panel', this.currentSelectedHistory?.schoolHistoryId);
       }
+    },
+    closePanel(){
+      this.$emit('close-panel');
     },
     clickNext() {
       if (this.rowNumber < this.schoolHistory?.content?.length - 1) {
