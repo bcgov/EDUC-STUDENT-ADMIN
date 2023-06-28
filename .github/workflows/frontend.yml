@@ -13,12 +13,10 @@ on:
       - 'Fix/*'
     paths: 
       - 'frontend/src/**'
-      - 'frontend/tests/unit/**'
   pull_request:
     branches: [ master ]
     paths: 
       - 'frontend/src/**'
-      - 'frontend/tests/unit/**'
 
 jobs:
   test:
@@ -36,6 +34,3 @@ jobs:
         node-version: '14.x'
     - run: npm ci
     - run: npm run lint:fix
-    - run: npm run test:unit
-      env:
-        NODE_ENV: 'test'

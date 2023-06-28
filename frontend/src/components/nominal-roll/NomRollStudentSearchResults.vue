@@ -450,29 +450,6 @@ export default {
       sagaId: null,
     };
   },
-  watch: {
-    dateMenu(val) {
-      val && setTimeout(() => (this.activePicker = 'YEAR'));
-    },
-    editedRecord: {
-      handler() {
-        this.validateRecord();
-      },
-      deep: true
-    },
-    notification(val) {
-      if (val) {
-        const notificationData = val;
-        if (this.sagaId && notificationData && this.sagaId === notificationData.sagaId && notificationData.sagaStatus === 'COMPLETED') {
-          if (notificationData.sagaName === 'NOMINAL_ROLL_POST_DATA_SAGA') {
-            this.setSuccessAlert('Success! Your request to post nominal roll data is completed.');
-            this.$emit('update:isPosted', true);
-          }
-          this.processing = false;
-        }
-      }
-    },
-  },
   async beforeMount() {
     if (!this.gradeCodeObjects || !this.genders) {
       studentStore().getCodes();
@@ -897,6 +874,29 @@ export default {
           console.log(error);
           throw error;
         });
+    },
+  },
+  watch: {
+    dateMenu(val) {
+      val && setTimeout(() => (this.activePicker = 'YEAR'));
+    },
+    editedRecord: {
+      handler() {
+        this.validateRecord();
+      },
+      deep: true
+    },
+    notification(val) {
+      if (val) {
+        const notificationData = val;
+        if (this.sagaId && notificationData && this.sagaId === notificationData.sagaId && notificationData.sagaStatus === 'COMPLETED') {
+          if (notificationData.sagaName === 'NOMINAL_ROLL_POST_DATA_SAGA') {
+            this.setSuccessAlert('Success! Your request to post nominal roll data is completed.');
+            this.$emit('update:isPosted', true);
+          }
+          this.processing = false;
+        }
+      }
     },
   }
 };
