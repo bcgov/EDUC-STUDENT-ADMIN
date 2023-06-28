@@ -1,18 +1,18 @@
 <template>
   <PenRequestBatchDataTable
+    v-model:batch-page-number="pageNumber"
     :headers="headers"
-    :penRequestBatchResponse="penRequestBatchResponse"
-    :batchPageNumber.sync="pageNumber"
-    :loadingTable="loadingTable || loadingFiles"
-    pageCommands
+    :pen-request-batch-response="penRequestBatchResponse"
+    :loading-table="loadingTable || loadingFiles"
+    page-commands
+    :in-progress-saga-i-ds="inProgressSagaIDs"
     @select-filter="selectFilter"
-    :inProgressSagaIDs="inProgressSagaIDs"
-  ></PenRequestBatchDataTable>
+  />
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex';
-import PenRequestBatchDataTable from './PenRequestBatchDataTable';
+import { mapActions, mapState } from 'pinia';
+import PenRequestBatchDataTable from './PenRequestBatchDataTable.vue';
 import ApiService from '../../../common/apiService';
 import {Routes, PEN_REQ_BATCH_STATUS_CODES} from '@/utils/constants';
 import filtersMixin from '@/mixins/filtersMixin';
@@ -20,13 +20,15 @@ import alertMixin from '../../../mixins/alertMixin';
 import {getSearchParam} from '@/utils/penrequest-batch/search';
 import {deepCloneObject} from '@/utils/common';
 import {formatDateTime} from '@/utils/format';
+import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
+import _ from 'lodash';
 
 export default {
   name: 'PenRequestBatchList',
-  mixins: [alertMixin, filtersMixin],
   components: {
     PenRequestBatchDataTable,
   },
+  mixins: [alertMixin, filtersMixin],
   props: {
     schoolGroup: {
       type: String,
@@ -108,13 +110,14 @@ export default {
     }
   },
   computed: {
-    ...mapState('penRequestBatch', ['prbStudentStatusFilters', 'selectedFiles', 'penRequestBatchResponse']),
+    ...mapState(penRequestBatchStore, ['prbStudentStatusFilters', 'selectedFiles', 'penRequestBatchResponse']),
     pageNumber: {
       get(){
-        return this.$store.state['penRequestBatch'].pageNumber;
+        return penRequestBatchStore().pageNumber;
       },
       set(newPage){
-        return this.$store.state['penRequestBatch'].pageNumber = newPage;
+        penRequestBatchStore().pageNumber = newPage;
+        return newPage;
       }
     },
     countableHeaders() {
@@ -146,7 +149,7 @@ export default {
     this.initializeFilters();
   },
   methods: {
-    ...mapMutations('penRequestBatch', ['setSelectedFiles', 'setPrbStudentStatusFilters', 'setPenRequestBatchResponse', 'setCurrentBatchFileSearchParams']),
+    ...mapActions(penRequestBatchStore, ['setSelectedFiles', 'setPrbStudentStatusFilters', 'setPenRequestBatchResponse', 'setCurrentBatchFileSearchParams']),
     initializeFilters() {
       if(this.prbStudentStatusFilters?.length > 0) {
         const filterNames = this.prbStudentStatusFilters.map(filter => this.headers.find(header => header.value === filter)?.filterName);

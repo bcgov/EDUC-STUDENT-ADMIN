@@ -1,8 +1,9 @@
-import ApiService from '../../common/apiService';
-import {Routes} from '../../utils/constants';
+import ApiService from '@/common/apiService';
+import {Routes} from '@/utils/constants';
 import {groupBy} from 'lodash';
+import {defineStore} from 'pinia';
 
-export default {
+export const requestStore = defineStore('request', {
   namespaced: true,
   state: () => ({
     pageSize: 15,
@@ -24,35 +25,25 @@ export default {
     completeMacros: null,
     documentTypes: [],
   }),
-  getters: {
-    returnMacros: state => state.returnMacros,
-    rejectMacros: state => state.rejectMacros,
-    completeMacros: state => state.completeMacros
-  },
-  mutations: {
-    setReturnMacros: (state, macros) => {
-      state.returnMacros = macros;
-    },
-    setRejectMacros: (state, macros) => {
-      state.rejectMacros = macros;
-    },
-    setCompleteMacros: (state, macros) => {
-      state.completeMacros = macros;
-    }
-  },
   actions: {
-    getMacros(context, requestType) {
-      ApiService.apiAxios
-        .get(Routes[requestType].MACRO_URL)
-        .then(response => {
-          const macros = groupBy(response.data, 'macroTypeCode');
-          context.commit('setReturnMacros', macros.MOREINFO);
-          context.commit('setRejectMacros', macros.REJECT);
-          context.commit('setCompleteMacros', macros.COMPLETE);
-        })
-        .catch(error => {
-          console.log(error);
-        });
+    async setSelectedStatuses(selectedStatuses){
+      this.selectedStatuses = selectedStatuses;
+    },
+    async setReturnMacros(macros){
+      this.returnMacros = macros;
+    },
+    async setRejectMacros(macros){
+      this.rejectMacros = macros;
+    },
+    async setCompleteMacros(macros){
+      this.completeMacros = macros;
+    },
+    async getMacros(requestType) {
+      const response = await ApiService.apiAxios.get(Routes[requestType].MACRO_URL);
+      const macros = groupBy(response.data, 'macroTypeCode');
+      await this.setReturnMacros(macros.MOREINFO);
+      await this.setRejectMacros(macros.REJECT);
+      await this.setCompleteMacros(macros.COMPLETE);
     }
   }
-};
+});

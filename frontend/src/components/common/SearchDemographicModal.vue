@@ -1,219 +1,373 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="searchDemographicDialog"
-              max-width="55%"
+    <v-dialog
+      v-model="searchDemographicDialog"
+      max-width="55%"
     >
-
       <v-card>
         <v-card-title class="px-0 pb-0 pt-5">
           <v-list-item>
-            <v-list-item-content class="pt-0 pl-2">
+            <v-list-item class="pt-0 pl-2">
               <slot name="headLine">
                 <v-list-item-title class="headline">
                   Modify Query
                 </v-list-item-title>
                 <v-list-item-subtitle><em>Modifying the search parameters will not change the request.</em></v-list-item-subtitle>
               </slot>
-            </v-list-item-content>
+            </v-list-item>
             <v-list-item-icon class="my-0">
-              <v-btn id="closeSearchDemographicModalBtn" text icon @click="searchDemographicDialog=false">
-                <v-icon large color="#38598A">mdi-close</v-icon>
+              <v-btn
+                id="closeSearchDemographicModalBtn"
+                text
+                icon
+                @click="searchDemographicDialog=false"
+              >
+                <v-icon
+                  large
+                  color="#38598A"
+                >
+                  mdi-close
+                </v-icon>
               </v-btn>
             </v-list-item-icon>
           </v-list-item>
         </v-card-title>
-        <v-spacer/>
+        <v-spacer />
         <v-card-text>
-          <v-form ref="searchDemographicModalForm" v-model="isValidForm">
-            <v-row dense no-gutters class="py-3">
+          <v-form
+            ref="searchDemographicModalForm"
+            v-model="isValidForm"
+          >
+            <v-row
+              density="compact"
+              no-gutters
+              class="py-3"
+            >
               <v-col cols="4">
-                <v-row dense no-gutters>
+                <v-row
+                  density="compact"
+                  no-gutters
+                >
                   <strong>Legal Surname</strong>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row
+                  density="compact"
+                  no-gutters
+                >
                   <v-col cols="11">
-                    <v-text-field id="searchDemogModalLegalLastNameTxtField" outlined dense filled
-                                  :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
-                                  :rules="validateLegalLastName()"
-                                  :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
-                                  required tabindex="1"
-                                  clearable
-                                  v-model="student.legalLastName"></v-text-field>
+                    <v-text-field
+                      id="searchDemogModalLegalLastNameTxtField"
+                      v-model="student.legalLastName"
+                      outlined
+                      density="compact"
+                      filled
+                      :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
+                      :rules="validateLegalLastName()"
+                      :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_LAST_NAME)"
+                      required
+                      tabindex="1"
+                      clearable
+                    />
                   </v-col>
                 </v-row>
               </v-col>
               <v-col cols="4">
-                <v-row dense no-gutters>
+                <v-row
+                  density="compact"
+                  no-gutters
+                >
                   <strong>Legal Given</strong>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row
+                  density="compact"
+                  no-gutters
+                >
                   <v-col cols="11">
-                    <v-text-field outlined dense filled
-                                  id="searchDemogModalLegalFirstNameTxtField"
-                                  :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
-                                  :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
-                                  tabindex="2"
-                                  clearable
-                                  v-model="student.legalFirstName"></v-text-field>
+                    <v-text-field
+                      id="searchDemogModalLegalFirstNameTxtField"
+                      v-model="student.legalFirstName"
+                      outlined
+                      density="compact"
+                      filled
+                      :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
+                      :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_FIRST_NAME)"
+                      tabindex="2"
+                      clearable
+                    />
                   </v-col>
                 </v-row>
               </v-col>
-              <v-col v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)" cols="4">
-                <v-row dense no-gutters>
+              <v-col
+                v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
+                cols="4"
+              >
+                <v-row
+                  density="compact"
+                  no-gutters
+                >
                   <strong>Legal Middle</strong>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row
+                  density="compact"
+                  no-gutters
+                >
                   <v-col cols="11">
-                    <v-text-field outlined dense filled
-                                  id="searchDemogModalLegalMiddleNameTxtField"
-                                  :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
-                                  tabindex="3" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
-                                  clearable
-                                  v-model="student.legalMiddleNames"></v-text-field>
+                    <v-text-field
+                      id="searchDemogModalLegalMiddleNameTxtField"
+                      v-model="student.legalMiddleNames"
+                      outlined
+                      density="compact"
+                      filled
+                      :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
+                      tabindex="3"
+                      :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.LEGAL_MIDDLE_NAMES)"
+                      clearable
+                    />
                   </v-col>
                 </v-row>
               </v-col>
-              <v-col v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)" cols="4">
-                <v-row dense no-gutters>
+              <v-col
+                v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
+                cols="4"
+              >
+                <v-row
+                  density="compact"
+                  no-gutters
+                >
                   <strong>Usual Surname</strong>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row
+                  density="compact"
+                  no-gutters
+                >
                   <v-col cols="11">
-                    <v-text-field outlined dense filled
-                                  id="searchDemogModalUsualLastNameTxtField"
-                                  :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
-                                  tabindex="4" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
-                                  clearable
-                                  v-model="student.usualLastName"></v-text-field>
+                    <v-text-field
+                      id="searchDemogModalUsualLastNameTxtField"
+                      v-model="student.usualLastName"
+                      outlined
+                      density="compact"
+                      filled
+                      :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
+                      tabindex="4"
+                      :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_LAST_NAME)"
+                      clearable
+                    />
                   </v-col>
                 </v-row>
               </v-col>
-              <v-col v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)" cols="4">
-                <v-row dense no-gutters>
+              <v-col
+                v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
+                cols="4"
+              >
+                <v-row
+                  density="compact"
+                  no-gutters
+                >
                   <strong>Usual Given</strong>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row
+                  density="compact"
+                  no-gutters
+                >
                   <v-col cols="11">
-                    <v-text-field outlined dense filled
-                                  id="searchDemogModalUsualFirstNameTxtField"
-                                  :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
-                                  tabindex="5" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
-                                  clearable
-                                  v-model="student.usualFirstName"></v-text-field>
+                    <v-text-field
+                      id="searchDemogModalUsualFirstNameTxtField"
+                      v-model="student.usualFirstName"
+                      outlined
+                      density="compact"
+                      filled
+                      :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
+                      tabindex="5"
+                      :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_FIRST_NAME)"
+                      clearable
+                    />
                   </v-col>
                 </v-row>
               </v-col>
-              <v-col v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)" cols="4">
-                <v-row dense no-gutters>
+              <v-col
+                v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
+                cols="4"
+              >
+                <v-row
+                  density="compact"
+                  no-gutters
+                >
                   <strong>Usual Middle</strong>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row
+                  density="compact"
+                  no-gutters
+                >
                   <v-col cols="11">
-                    <v-text-field outlined dense filled
-                                  id="searchDemogModalUsualMiddleNameTxtField"
-                                  :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
-                                  tabindex="6" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
-                                  clearable
-                                  v-model="student.usualMiddleNames"></v-text-field>
+                    <v-text-field
+                      id="searchDemogModalUsualMiddleNameTxtField"
+                      v-model="student.usualMiddleNames"
+                      outlined
+                      density="compact"
+                      filled
+                      :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
+                      tabindex="6"
+                      :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.USUAL_MIDDLE_NAMES)"
+                      clearable
+                    />
                   </v-col>
                 </v-row>
               </v-col>
               <v-col cols="4">
-                <v-row dense no-gutters>
+                <v-row
+                  dense
+                  no-gutters
+                >
                   <strong>Gender</strong>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row
+                  dense
+                  no-gutters
+                >
                   <v-col cols="11">
-                    <v-text-field outlined dense filled
-                                  id="searchDemogModalGenderTxtField"
-                                  :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
-                                  :rules="validateGender()" maxlength="1"
-                                  tabindex="7" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
-                                  clearable
-                                  v-model="student.genderCode"></v-text-field>
+                    <v-text-field
+                      id="searchDemogModalGenderTxtField"
+                      v-model="student.genderCode"
+                      outlined
+                      dense
+                      filled
+                      :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
+                      :rules="validateGender()"
+                      maxlength="1"
+                      tabindex="7"
+                      :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.GENDER_CODE)"
+                      clearable
+                    />
                   </v-col>
                 </v-row>
               </v-col>
               <v-col cols="4">
-                <v-row dense no-gutters>
+                <v-row
+                  dense
+                  no-gutters
+                >
                   <strong>Birth Date</strong>
-                  <v-btn icon x-small title="YYYYMMDD">
+                  <v-btn
+                    icon
+                    x-small
+                    title="YYYYMMDD"
+                  >
                     <v-icon color="#2196f3">
                       info
                     </v-icon>
                   </v-btn>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row
+                  dense
+                  no-gutters
+                >
                   <v-col cols="11">
                     <FormattedTextField
-                            id="searchDemogModalDobTxtField"
-                            :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.DOB)"
-                            :rules="validateDOB()" maxlength="8"
-                            tabindex="8"
-                            :format="formatDob"
-                            v-model="student.dob"></FormattedTextField>
+                      id="searchDemogModalDobTxtField"
+                      v-model="student.dob"
+                      :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.DOB)"
+                      :rules="validateDOB()"
+                      maxlength="8"
+                      tabindex="8"
+                      :format="formatDob"
+                    />
                   </v-col>
                 </v-row>
               </v-col>
               <v-col cols="4">
-                <v-row dense no-gutters>
+                <v-row
+                  dense
+                  no-gutters
+                >
                   <strong>Grade</strong>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row
+                  dense
+                  no-gutters
+                >
                   <v-col cols="11">
-                    <v-text-field outlined dense filled
-                                  id="searchDemogModalGradeTxtField"
-                                  :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
-                                  :rules="validateGradeCode()" maxlength="2"
-                                  tabindex="9" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
-                                  clearable
-                                  v-model="student.gradeCode"></v-text-field>
+                    <v-text-field
+                      id="searchDemogModalGradeTxtField"
+                      v-model="student.gradeCode"
+                      outlined
+                      dense
+                      filled
+                      :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
+                      :rules="validateGradeCode()"
+                      maxlength="2"
+                      tabindex="9"
+                      :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.GRADE_CODE)"
+                      clearable
+                    />
                   </v-col>
                 </v-row>
               </v-col>
-              <v-col v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.POSTAL_CODE)" cols="4">
-                <v-row dense no-gutters>
+              <v-col
+                v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
+                cols="4"
+              >
+                <v-row
+                  dense
+                  no-gutters
+                >
                   <strong>Postal Code</strong>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row
+                  dense
+                  no-gutters
+                >
                   <v-col cols="11">
                     <FormattedTextField
-                            id="searchDemogModalPostalCodeTxtField"
-                            :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
-                            maxlength="7"
-                            tabindex="10" :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
-                            :format="formatPostalCode"
-                            v-model="student.postalCode">
-                    </FormattedTextField>
+                      id="searchDemogModalPostalCodeTxtField"
+                      v-model="student.postalCode"
+                      :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
+                      maxlength="7"
+                      tabindex="10"
+                      :onkeyup="upperCaseInput(STUDENT_DETAILS_FIELDS.POSTAL_CODE)"
+                      :format="formatPostalCode"
+                    />
                   </v-col>
                 </v-row>
               </v-col>
-              <v-col v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.MINCODE)" cols="4">
-                <v-row dense no-gutters>
+              <v-col
+                v-if="!hiddenFields.includes(STUDENT_DETAILS_FIELDS.MINCODE)"
+                cols="4"
+              >
+                <v-row
+                  dense
+                  no-gutters
+                >
                   <strong>Mincode</strong>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row
+                  dense
+                  no-gutters
+                >
                   <v-col cols="11">
                     <FormattedTextField
-                            id="searchDemogModalMincodeTxtField"
-                            :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.MINCODE)"
-                            :rules="validateMincode()" maxlength="8"
-                            :async-messages="mincodeErrors"
-                            tabindex="11"
-                            :format="formatMincode"
-                            v-model="student.mincode"></FormattedTextField>
+                      id="searchDemogModalMincodeTxtField"
+                      v-model="student.mincode"
+                      :readonly="isFieldReadOnly(STUDENT_DETAILS_FIELDS.MINCODE)"
+                      :rules="validateMincode()"
+                      maxlength="8"
+                      :async-messages="mincodeErrors"
+                      tabindex="11"
+                      :format="formatMincode"
+                    />
                   </v-col>
                 </v-row>
               </v-col>
             </v-row>
           </v-form>
-          <v-divider class="subheader-divider"/>
+          <v-divider class="subheader-divider" />
         </v-card-text>
 
         <v-card-actions class="mr-4 pb-6">
-          <v-spacer/>
-          <slot name="actions" :isFormValid="isFormValid">
-          </slot>
+          <v-spacer />
+          <slot
+            name="actions"
+            :is-form-valid="isFormValid"
+          />
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -223,15 +377,16 @@
 <script>
 import {STUDENT_DETAILS_FIELDS} from '@/utils/constants';
 import {isValidMincode, isValidPostalCode, isValidDOBAndAfter1900} from '@/utils/validation';
-import {mapGetters} from 'vuex';
-import FormattedTextField from '../util/FormattedTextField';
+import { mapState } from 'pinia';
+import FormattedTextField from '../util/FormattedTextField.vue';
 import {formatPostalCode, formatDob, formatMincode} from '@/utils/format';
 import schoolMixin from '../../mixins/schoolMixin';
+import {studentStore} from '@/store/modules/student';
 
 export default {
   name: 'SearchDemographicModal',
-  mixins: [schoolMixin],
   components: {FormattedTextField},
+  mixins: [schoolMixin],
   props: {
     dialog: {
       type: Boolean,
@@ -262,7 +417,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('student', ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects']),
+    ...mapState(studentStore, ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects']),
   },
   watch: {
     dialog(newValue) {

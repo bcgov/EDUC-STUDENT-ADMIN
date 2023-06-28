@@ -1,34 +1,45 @@
 <template>
-  <v-container fluid class="px-0 mb-4">
-    <v-toolbar flat dense>
-      <v-toolbar-title><strong>{{title}}</strong></v-toolbar-title>
-      <v-spacer/>
-      <PrimaryButton id="add-macro" text="Add Macro" short :disabled="!this.selected || loading || processing" @click.native="clickAddBtn"></PrimaryButton>
+  <v-container
+    fluid
+    class="px-0 mb-4"
+  >
+    <v-toolbar
+      flat
+      density="compact"
+    >
+      <v-toolbar-title><strong>{{ title }}</strong></v-toolbar-title>
+      <v-spacer />
+      <PrimaryButton
+        id="add-macro"
+        text="Add Macro"
+        short
+        :disabled="!selected || loading || processing"
+        :click-action="clickAddBtn"
+      />
     </v-toolbar>
-    <v-divider></v-divider>
+    <v-divider />
     <v-progress-linear
       indeterminate
       color="blue"
       :active="loading || processing"
-    ></v-progress-linear>
+    />
     <v-row>
       <v-col>
         <v-card-text>
           <v-treeview
-            :active.sync="active"
+            v-model:active="active"
             :items="items"
             :load-children="loadMacros"
             open-on-click
             transition
             activatable
             return-object
-            @click.native="clickTreeView"
-          >
-          </v-treeview>
+            :click-action="clickTreeView"
+          />
         </v-card-text>
       </v-col>
 
-      <v-divider vertical></v-divider>
+      <v-divider vertical />
 
       <v-col
         cols="8"
@@ -36,11 +47,19 @@
       >
         <v-scroll-y-transition mode="out-in">
           <v-simple-table class="macro-list">
-            <template v-slot:default>
+            <template #default>
               <tbody>
-                <tr v-for="macro in macros" :key="macro.macroCode">
-                  <td class="py-3">{{ macro.macroCode }}</td>
-                  <td class="py-3" v-if="macro.editable">
+                <tr
+                  v-for="macro in macros"
+                  :key="macro.macroCode"
+                >
+                  <td class="py-3">
+                    {{ macro.macroCode }}
+                  </td>
+                  <td
+                    v-if="macro.editable"
+                    class="py-3"
+                  >
                     <MacroEditor
                       :macro="macro"
                       short
@@ -50,7 +69,11 @@
                       @save="updateMacro"
                     />
                   </td>
-                  <td class="py-3" v-else @click="clickMacroText(macro)">
+                  <td
+                    v-else
+                    class="py-3"
+                    @click="clickMacroText(macro)"
+                  >
                     {{ macro.macroText }}
                   </td>
                 </tr>
@@ -66,10 +89,20 @@
       max-width="50%"
     >
       <v-card>
-        <v-toolbar dense flat>
-          <v-spacer/>
-          <v-btn id="closeMacroDialog" text icon @click.stop="macroDialogOpen=false">
-            <v-icon color="#38598A">mdi-close</v-icon>
+        <v-toolbar
+          density="compact"
+          flat
+        >
+          <v-spacer />
+          <v-btn
+            id="closeMacroDialog"
+            text
+            icon
+            @click.stop="macroDialogOpen=false"
+          >
+            <v-icon color="#38598A">
+              mdi-close
+            </v-icon>
           </v-btn>
         </v-toolbar>
         <MacroEditor
@@ -83,7 +116,7 @@
       </v-card>
     </v-dialog>
     <ConfirmationDialog ref="confirmationDialog">
-      <template v-slot:message>
+      <template #message>
         <v-col class="mt-n6">
           <v-row class="mt-n2 mb-0">
             You have unsaved changes. Do you wish to proceed and cancel changes?
@@ -95,14 +128,16 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex';
+import { mapState } from 'pinia';
 import {Routes} from '@/utils/constants';
-import PrimaryButton from '../util/PrimaryButton';
+import PrimaryButton from '../util/PrimaryButton.vue';
 import ApiService from '../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import {deepCloneObject} from '@/utils/common';
-import ConfirmationDialog from '../util/ConfirmationDialog';
-import MacroEditor from './MacroEditor';
+import ConfirmationDialog from '../util/ConfirmationDialog.vue';
+import MacroEditor from './MacroEditor.vue';
+import _ from 'lodash';
+import {notificationsStore} from '@/store/modules/notifications';
 
 export default {
   name: 'MacrosDisplay',
@@ -130,7 +165,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('notifications', ['notification']),
+    ...mapState(notificationsStore, ['notification']),
     items () {
       return [
         {

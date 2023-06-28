@@ -1,33 +1,47 @@
 <template>
-  <v-menu id="chooseMessageMenu" max-height="30%" offset-y :max-width="menuMaxWidth">
-    <template v-slot:activator="{ on, attrs }">
+  <v-menu
+    id="chooseMessageMenu"
+    max-height="30%"
+    offset-y
+    :max-width="menuMaxWidth"
+  >
+    <template #activator="{ on, attrs }">
       <div :class="[margin, padding]">
         <PrimaryButton
           :id="id"
           :text="text"
-          icon="fa-angle-down"
+          icon="mdi-chevron-down"
           secondary
           :bind="attrs"
           :on="on"
           icon-left
           width="13em"
           :disabled="disabled"
-        >
-        </PrimaryButton>
+        />
       </div>
     </template>
     <v-list class="py-0 overflow-y-auto">
       <v-list-item
         v-for="(item, index) in macros"
         :key="index"
-        dense
+        density="compact"
         class="macroListItem"
         @click="clickMacroItem(item.macroText)"
       >
         <v-list-item-title>
           <v-row class="macroRow">
-            <v-col :cols="small ? '2' : '1'" class="py-2 pr-0"><strong>{{ item.macroCode }}</strong></v-col>
-            <v-col :cols="small ? '10' : '11'" class="text-wrap py-2 pl-0">{{ item.macroText }}</v-col>
+            <v-col
+              :cols="small ? '2' : '1'"
+              class="py-2 pr-0"
+            >
+              <strong>{{ item.macroCode }}</strong>
+            </v-col>
+            <v-col
+              :cols="small ? '10' : '11'"
+              class="text-wrap py-2 pl-0"
+            >
+              {{ item.macroText }}
+            </v-col>
           </v-row>
         </v-list-item-title>
       </v-list-item>
@@ -36,11 +50,11 @@
 </template>
 
 <script>
-import PrimaryButton from '../util/PrimaryButton';
+import PrimaryButton from '../util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
 
 export default {
-  name: 'macroMenu',
+  name: 'MacroMenu',
   components: {PrimaryButton},
   mixins: [alertMixin],
   props: {

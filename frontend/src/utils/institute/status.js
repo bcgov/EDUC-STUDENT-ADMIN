@@ -15,11 +15,11 @@ const getContactStatus = function (contact) {
     parsedExpiryDate = new LocalDateTime.parse(expiryDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
   }
 
-  if (parsedExpiryDate === null && parsedEffectiveDate < currentDate) {
+  if (parsedExpiryDate === null && parsedEffectiveDate.isBefore(currentDate)) {
     status = 'Active';
-  } else if (parsedEffectiveDate > currentDate) {
+  } else if (parsedEffectiveDate.isAfter(currentDate)) {
     status = 'Pending Start Date';
-  } else if (parsedExpiryDate > currentDate) {
+  } else if (parsedExpiryDate.isAfter(currentDate)) {
     status = 'Pending End Date';
   }
   return status;
@@ -57,7 +57,7 @@ export function isExpired(expiryDate) {
     parsedExpiryDate = new LocalDateTime.parse(expiryDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
   }
 
-  if (expiryDate !== null && parsedExpiryDate < currentDate) {
+  if (expiryDate !== null && parsedExpiryDate.isBefore(currentDate)) {
     expired = true;
   }
 
@@ -73,10 +73,10 @@ export function isContactCurrent(contact) {
   const currentTimestamp = LocalDateTime.now();
   const parsedEffectiveDate = new LocalDateTime.parse(contact.effectiveDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
   const parsedExpiryDate = contact.expiryDate ? new LocalDateTime.parse(contact.expiryDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss')) : null;
-  if (parsedEffectiveDate > currentTimestamp) {
+  if (parsedEffectiveDate.isAfter(currentTimestamp)) {
     return false;
   }
-  return parsedExpiryDate == null || parsedExpiryDate > currentTimestamp;
+  return parsedExpiryDate == null || parsedEffectiveDate.isAfter(currentTimestamp);
 }
 
 /**
@@ -102,11 +102,11 @@ export function getStatusAuthorityOrSchool(authorityOrSchool) {
     parsedCloseDate = new LocalDateTime.parse(closedDate, DateTimeFormatter.ofPattern('uuuu-MM-dd\'T\'HH:mm:ss'));
   }
 
-  if (parsedOpenDate <= currentDate && parsedCloseDate === null) {
+  if (parsedOpenDate.isBefore(currentDate) && parsedCloseDate === null) {
     return 'Open';
-  } else if (parsedOpenDate > currentDate) {
+  } else if (parsedOpenDate.isAfter(currentDate)) {
     return 'Opening';
-  } else if (parsedOpenDate <= currentDate && parsedCloseDate > currentDate) {
+  } else if (parsedOpenDate.isBefore(currentDate) && parsedCloseDate.isAfter(currentDate)) {
     return 'Closing';
   }
 

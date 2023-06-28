@@ -1,23 +1,34 @@
 <template>
-    <div :class="comment.color">
-      <v-row class="mr-0">
-          <v-col class="pa-0 iconCol" md="auto">
-            <v-icon class="pl-3" :size="iconSize">{{ comment.icon }}</v-icon>
-          </v-col>
-          <v-col class="pa-0 header-col">
-            <p class="username mb-0" href="#">
-              <strong>{{ comment.name }}</strong> at {{ comment.timestamp}}
-            </p>
-          </v-col>
-      </v-row>
-      <v-row class="ml-6 ml-sm-7 mr-1">
-        <v-col class="content-col">
+  <div :class="comment.color">
+    <v-row class="mr-0">
+      <v-col
+        class="pa-0 iconCol"
+        md="auto"
+      >
+        <v-icon
+          class="pl-3"
+          :size="iconSize"
+        >
+          {{ comment.icon }}
+        </v-icon>
+      </v-col>
+      <v-col class="pa-0 header-col">
+        <p
+          class="username mb-0"
+          href="#"
+        >
+          <strong>{{ comment.name }}</strong> at {{ comment.timestamp }}
+        </p>
+      </v-col>
+    </v-row>
+    <v-row class="ml-6 ml-sm-7 mr-1">
+      <v-col class="content-col">
         <v-row class="mb-1">
           <span :class="{commentContent: comment.content && comment.content.length > 0}">{{ comment.content }}</span>
         </v-row>
-        </v-col>
-      </v-row>
-    </div>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <script>
@@ -35,14 +46,7 @@ export default {
   },
   computed: {
     iconSize() {
-      switch (this.$vuetify.breakpoint.name) {
-      case 'xs': return '22px';
-      case 'sm': return '25px';
-      case 'md': return '25px';
-      case 'lg': return '28px';
-      case 'xl': return '28px';
-      default: return '25px';
-      }
+      return '25px';
     }
   },
 };

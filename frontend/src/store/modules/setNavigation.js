@@ -1,47 +1,49 @@
-const getDefaultState = () => {
-  return {
+import {defineStore} from 'pinia';
+
+export const navigationStore = defineStore('navigation', {
+  namespaced: true,
+  state: () => ({
     selectedIDs: [],
     currentRequest: 0,
     archived: false,
     requestType: 'penRequestBatch',
     multiFiles: true,
-  };
-};
-
-export default {
-  namespaced: true,
-  state: getDefaultState,
+  }),
   getters: {
-    title: state => {
+    title: () => {
       let files = '';
-      if(state.multiFiles) {
-        let numberOfSelectedFiles = [...new Set(state.selectedIDs?.map(item => item[`${state.requestType}ID`]))]?.length;
+      if(this.multiFiles) {
+        let numberOfSelectedFiles = [...new Set(this.selectedIDs?.map(item => item[`${this.requestType}ID`]))]?.length;
         files = `(${numberOfSelectedFiles} ${numberOfSelectedFiles > 1 ? 'files' : 'file'} selected)`;
       }
-      return `Record ${state.currentRequest + 1} of ${Object.keys(state.selectedIDs)?.length} ${files}`;
+      return `Record ${this.currentRequest + 1} of ${Object.keys(this.selectedIDs)?.length} ${files}`;
     },
   },
-  mutations: {
+  actions: {
     /**
      * call the clearNavigation in the beforeDestroy method of a component to hide SetNavigation component
      */
-    clearNavigation: (state) => {
-      Object.assign(state, getDefaultState());
+    async clearNavigation() {
+      this.selectedIDs = [];
+      this.currentRequest = 0;
+      this.archived = false;
+      this.requestType = 'penRequestBatch';
+      this.multiFiles = true;
     },
-    setSelectedIDs: (state, selectedIDs) => {
-      state.selectedIDs = selectedIDs;
+    async setSelectedIDs(selectedIDs) {
+      this.selectedIDs = selectedIDs;
     },
-    setCurrentRequest: (state, currentRequest) => {
-      state.currentRequest = currentRequest;
+    async setCurrentRequest(currentRequest) {
+      this.currentRequest = currentRequest;
     },
-    setArchived: (state, archived) => {
-      state.archived = archived;
+    async setArchived(archived) {
+      this.archived = archived;
     },
-    setRequestType: (state, requestType) => {
-      state.requestType = requestType;
+    async setRequestType(requestType) {
+      this.requestType = requestType;
     },
-    setMultiFiles: (state, multiFiles) => {
-      state.multiFiles = multiFiles;
+    async setMultiFiles(multiFiles) {
+      this.multiFiles = multiFiles;
     }
   },
-};
+});

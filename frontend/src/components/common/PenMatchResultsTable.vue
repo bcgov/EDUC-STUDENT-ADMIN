@@ -1,80 +1,137 @@
 <template>
-
-  <v-card id="searchResults" elevation="0" tile width="100%" class="px-8">
-    <v-row no-gutters justify="space-between" class="sticky" :style="{top: `${stickyInfoPanelHeight}px`}">
+  <v-card
+    id="searchResults"
+    elevation="0"
+    tile
+    width="100%"
+    class="px-8"
+  >
+    <v-row
+      no-gutters
+      justify="space-between"
+      class="sticky"
+      :style="{top: `${stickyInfoPanelHeight}px`}"
+    >
       <v-col>
         <v-card-title>
-          <span id="numberMatches" class="px-4"><strong>{{ title }}</strong><v-btn
-              @click="matchesExpanded=!matchesExpanded" icon><v-icon nudge-bottom="4"
-                                                                     color="#003366">{{
-              !matchesExpanded ? 'fa-angle-up' : 'fa-angle-down'
-            }}</v-icon></v-btn></span>
+          <span
+            id="numberMatches"
+            class="px-4"
+          ><strong>{{ title }}</strong><v-btn
+            icon
+            @click="matchesExpanded=!matchesExpanded"
+          ><v-icon
+            nudge-bottom="4"
+            color="#003366"
+          >{{
+            !matchesExpanded ? 'fa-angle-up' : 'fa-angle-down'
+          }}</v-icon></v-btn></span>
         </v-card-title>
       </v-col>
       <v-col align-self="center">
-        <v-row justify="end" class="mx-3" v-if="isComparisonRequired || isRefreshRequired">
-          <CompareDemographicModal :disabled="selectedRecords.length<2 || selectedRecords.length>3"
-                                   :selectedRecords.sync="selectedRecords"></CompareDemographicModal>
-          <TertiaryButton v-if="isRefreshRequired" id="refreshButton" :disabled="disableRefresh" class="ma-0"
-                          icon="mdi-cached"
-                          iconStyle="mdi-flip-h" text="Refresh"
-                          @click.native="$emit('refresh-match-results')"></TertiaryButton>
+        <v-row
+          v-if="isComparisonRequired || isRefreshRequired"
+          justify="end"
+          class="mx-3"
+        >
+          <CompareDemographicModal
+            v-model:selected-records="selectedRecords"
+            :disabled="selectedRecords.length<2 || selectedRecords.length>3"
+          />
+          <TertiaryButton
+            v-if="isRefreshRequired"
+            id="refreshButton"
+            :disabled="disableRefresh"
+            class="ma-0"
+            icon="mdi-cached"
+            icon-style="mdi-flip-h"
+            text="Refresh"
+            :click-action="$emit('refresh-match-results')"
+          />
         </v-row>
       </v-col>
     </v-row>
-    <v-row no-gutters >
+    <v-row no-gutters>
       <v-slide-y-transition>
-        <v-col key="results" v-if="matchesExpanded" class="pa-0">
-          <v-divider></v-divider>
+        <v-col
+          v-if="matchesExpanded"
+          key="results"
+          class="pa-0"
+        >
+          <v-divider />
           <v-data-table
-              id="penMatchResultsDataTable"
-              v-model="selectedRecords"
-              :headers="headers"
-              hide-default-header
-              hide-default-footer
-              disable-pagination
-              item-key="studentID"
-              :items="studentPossibleMatches">
-            <template v-slot:item="props">
-              <tr :key="props.index"
-                  @mouseover="enableMatchOrUnMatch(props.item)"
-                  @mouseleave="disableMatchOrUnMatch(props.item)"
-                  :class="['resultsTableRow',
-                    hoveredOveredRowStudentID === props.item.studentID?'hovered-record-match-unmatch':'' ,
-                    props.isSelected?'selected-record':'',
-                    isMatchedToStudent(props.item)?'matchedStudentRow':'',
-                    grayoutPossibleMatches(props.item) ? 'grayout':'']">
-                <td v-for="header in props.headers" :key="header.id" :class="header.id">
+            id="penMatchResultsDataTable"
+            v-model="selectedRecords"
+            :headers="headers"
+            hide-default-header
+            hide-default-footer
+            disable-pagination
+            item-key="studentID"
+            :items="studentPossibleMatches"
+          >
+            <template #item="props">
+              <tr
+                :key="props.index"
+                :class="['resultsTableRow',
+                         hoveredOveredRowStudentID === props.item.studentID?'hovered-record-match-unmatch':'' ,
+                         props.isSelected?'selected-record':'',
+                         isMatchedToStudent(props.item)?'matchedStudentRow':'',
+                         grayoutPossibleMatches(props.item) ? 'grayout':'']"
+                @mouseover="enableMatchOrUnMatch(props.item)"
+                @mouseleave="disableMatchOrUnMatch(props.item)"
+              >
+                <td
+                  v-for="header in props.headers"
+                  :key="header.id"
+                  :class="header.id"
+                >
                   <div :class="[props.item[header.doubleValue] ? 'value-half-width':'','tableCell']">
                     <span v-if="header.type">
                       <v-checkbox
-                              :class="['checkbox', 'pl-3']"
-                              color="#606060"
-                              :input-value="props.isSelected"
-                              dense
-                              @change="props.select($event)"></v-checkbox>
+                        :class="['checkbox', 'pl-3']"
+                        color="#606060"
+                        :input-value="props.isSelected"
+                        density="compact"
+                        @update:model-value="props.select($event)"
+                      />
                       <v-icon
-                              :class="['checkboxIcon', 'pl-3', ]"
-                              v-if="header.bottomValue==='icon' && props.item['iconValue']"
-                              color="#606060">
+                        v-if="header.bottomValue==='icon' && props.item['iconValue']"
+                        :class="['checkboxIcon', 'pl-3', ]"
+                        color="#606060"
+                      >
                         {{ props.item['iconValue'] }}
                       </v-icon>
-                      <span v-else class="bottom-column-item"> </span>
+                      <span
+                        v-else
+                        class="bottom-column-item"
+                      />
                     </span>
                     <span v-else>
                       <span v-if="header.topValue==='pen'">
-                        <a class="pen-link" @click="popStudentDialog(props.item['studentID'])" v-if="isPenLink">
+                        <a
+                          v-if="isPenLink"
+                          class="pen-link"
+                          @click="popStudentDialog(props.item['studentID'])"
+                        >
                           <span
-                              :class="['top-column-item', 'pen-link', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
+                            :class="['top-column-item', 'pen-link', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']"
+                          >
                             {{ formatPen(props.item[header.topValue]) }}
                           </span>
                         </a>
-                        <span v-else :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
+                        <span
+                          v-else
+                          :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']"
+                        >
                           {{ formatPen(props.item[header.topValue]) }}
                         </span>
-                        <v-tooltip top max-width="40vw" v-if="props.item['memo']">
-                          <template v-slot:activator="{ on }">
-                            <v-icon class="mx-1" v-on="on">
+                        <v-tooltip
+                          v-if="props.item['memo']"
+                          top
+                          max-width="40vw"
+                        >
+                          <template #activator="{ on }">
+                            <v-icon class="mx-1">
                               sticky_note_2
                             </v-icon>
                           </template>
@@ -83,36 +140,51 @@
                           </span>
                         </v-tooltip>
                       </span>
-                      <span v-else-if="header.topValue==='mincode'"
-                            :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
-                          {{ formatMincode(props.item[header.topValue]) }}
-                      </span>
-                      <span v-else-if="header.topValue==='dob'"
-                            :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
-                          {{ formatDob(props.item[header.topValue], 'uuuu-MM-dd') }}
-                      </span>
-                      <span v-else
-                            :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']">
-                          {{ props.item[header.topValue] }}
+                      <span
+                        v-else-if="header.topValue==='mincode'"
+                        :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']"
+                      >
+                        {{ formatMincode(props.item[header.topValue]) }}
                       </span>
                       <span
-                          :class="['double-column-item', props.item[header.doubleValue] && demogValuesMatch(header.doubleValue, props.item[header.doubleValue])? 'font-weight-bold':'']">
+                        v-else-if="header.topValue==='dob'"
+                        :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']"
+                      >
+                        {{ formatDob(props.item[header.topValue], 'uuuu-MM-dd') }}
+                      </span>
+                      <span
+                        v-else
+                        :class="['top-column-item', props.item[header.topValue] && demogValuesMatch(header.topValue, props.item[header.topValue])?'font-weight-bold':'']"
+                      >
+                        {{ props.item[header.topValue] }}
+                      </span>
+                      <span
+                        :class="['double-column-item', props.item[header.doubleValue] && demogValuesMatch(header.doubleValue, props.item[header.doubleValue])? 'font-weight-bold':'']"
+                      >
                         {{ props.item[header.doubleValue] }}
                       </span>
                       <br>
                       <span v-if="!!isMatchUnMatch && header.bottomValue==='button' && hoveredOveredRowStudentID === props.item.studentID">
-                        <PrimaryButton :short="true" id="matchUnMatchButton" :text="matchUnMatchButtonText"
-                                       :width="'6.5em'"
-                                       :disabled="disableMatchUnmatch"
-                                       @click.native="$emit('match-unmatch-student', props.item, matchUnMatchButtonText)"></PrimaryButton>
+                        <PrimaryButton
+                          id="matchUnMatchButton"
+                          :short="true"
+                          :text="matchUnMatchButtonText"
+                          :width="'6.5em'"
+                          :disabled="disableMatchUnmatch"
+                          :click-action="$emit('match-unmatch-student', props.item, matchUnMatchButtonText)"
+                        />
                       </span>
-                      <span v-else-if="header.bottomValue==='postalCode'"
-                            :class="['bottom-column-item', props.item[header.bottomValue] && demogValuesMatch(header.bottomValue, props.item[header.bottomValue])? 'font-weight-bold':'']">
+                      <span
+                        v-else-if="header.bottomValue==='postalCode'"
+                        :class="['bottom-column-item', props.item[header.bottomValue] && demogValuesMatch(header.bottomValue, props.item[header.bottomValue])? 'font-weight-bold':'']"
+                      >
                         {{ formatPostalCode(props.item[header.bottomValue]) }}
                       </span>
 
                       <!-- if top and bottom value are the same, do not display the bottom value -->
-                      <span v-else :class="['bottom-column-item', props.item[header.bottomValue] && demogValuesMatch(header.bottomValue, props.item[header.bottomValue])? 'font-weight-bold':'']"
+                      <span
+                        v-else
+                        :class="['bottom-column-item', props.item[header.bottomValue] && demogValuesMatch(header.bottomValue, props.item[header.bottomValue])? 'font-weight-bold':'']"
                       >{{ props.item[header.bottomValue] !== props.item[header.topValue] ? props.item[header.bottomValue]: '' }}</span>
                     </span>
                   </div>
@@ -124,21 +196,22 @@
       </v-slide-y-transition>
     </v-row>
     <StudentDetailModal
-        :studentID="currentStudentID"
-        :openDialog="openStudentDialog"
-        @closeDialog="closeDialog"
-    ></StudentDetailModal>
+      :student-i-d="currentStudentID"
+      :open-dialog="openStudentDialog"
+      @closeDialog="closeDialog"
+    />
   </v-card>
 </template>
 
 <script>
 
-import CompareDemographicModal from './CompareDemographicModal';
-import TertiaryButton from '../util/TertiaryButton';
-import StudentDetailModal from '../penreg/student/StudentDetailModal';
+import CompareDemographicModal from './CompareDemographicsCommon.vue';
+import TertiaryButton from '../util/TertiaryButton.vue';
+import StudentDetailModal from '../penreg/student/StudentDetailModal.vue';
 import {formatDob, formatMincode, formatPen, formatPostalCode} from '@/utils/format';
-import {mapState} from 'vuex';
-import PrimaryButton from '@/components/util/PrimaryButton';
+import {mapState} from 'pinia';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
+import {appStore} from '@/store/modules/app';
 
 export default {
   name: 'PenMatchResultsTable',
@@ -272,16 +345,16 @@ export default {
       matchUnMatchButtonText: null,
     };
   },
-  mounted() {
-    this.studentPossibleMatches = this.possibleMatch;
-  },
   watch: {
     possibleMatch(newValue) {
       this.studentPossibleMatches = newValue;
     },
   },
+  mounted() {
+    this.studentPossibleMatches = this.possibleMatch;
+  },
   computed: {
-    ...mapState('app', ['stickyInfoPanelHeight']),
+    ...mapState(appStore, ['stickyInfoPanelHeight']),
     isMatchedToStudent(){
       return item => !!item?.matchedToStudent;
     },

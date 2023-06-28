@@ -3,22 +3,20 @@
     title="UpdateMyPENInfo Request Details"
     :prep-put="prepPut"
     :request-completed="requestCompleted"
-    :requestId="requestId"
-    :requestType="requestType"
+    :request-id="requestId"
+    :request-type="requestType"
   >
-    <template v-slot:demographics="{ request }">
+    <template #demographics="{ request }">
       <StudentDemographicsCard
         :request="request"
-      >
-      </StudentDemographicsCard>
+      />
     </template>
-    <template v-slot:request="{ request }">
+    <template #request="{ request }">
       <StudentRequestCard
         :request="request"
-      >
-      </StudentRequestCard>
+      />
     </template>
-    <template v-slot:actions="{ activeTab, request, enableActions, beforeSubmit, submitted, switchLoading}">
+    <template #actions="{ activeTab, request, enableActions, beforeSubmit, submitted, switchLoading}">
       <StudentRequestActions
         :active-tab="activeTab"
         :request="request"
@@ -27,32 +25,31 @@
         :before-submit="beforeSubmit"
         :submitted="submitted"
         :switch-loading="switchLoading"
-      >
-      </StudentRequestActions>
+      />
     </template>
   </RequestDetail>
 </template>
 
 <script>
-import RequestDetail from '../RequestDetail';
-import StudentDemographicsCard from './StudentDemographicsCard';
-import StudentRequestCard from './StudentRequestCard';
-import StudentRequestActions from './StudentRequestActions';
+import RequestDetail from '../RequestDetail.vue';
+import StudentDemographicsCard from './StudentDemographicsCard.vue';
+import StudentRequestCard from './StudentRequestCard.vue';
+import StudentRequestActions from './StudentRequestActions.vue';
 import { REQUEST_TYPES } from '../../utils/constants';
 
 export default {
-  name: 'studentRequestDetail',
-  props: {
-    requestId: {
-      type: String,
-      required: true
-    }
-  },
+  name: 'StudentRequestDetail',
   components: {
     RequestDetail,
     StudentDemographicsCard,
     StudentRequestCard,
     StudentRequestActions,
+  },
+  props: {
+    requestId: {
+      type: String,
+      required: true
+    }
   },
   data () {
     return {

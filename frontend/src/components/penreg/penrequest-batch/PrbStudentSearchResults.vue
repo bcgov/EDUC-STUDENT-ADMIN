@@ -1,88 +1,181 @@
 <template>
-  <div id="searchResults" class="px-3" style="width: 100%" :overlay=false>
-    <v-row no-gutters class="d-flex align-start">
-      <h3 id="numberResults" class="px-2 pb-2"><strong>{{ prbStudentSearchResponse.totalElements }} Records</strong> ({{selectedFiles.length}} files selected)</h3>
-      <v-icon class="mt-1" color="#2E8540" v-if="archived">mdi-package-up</v-icon>
-      <v-spacer/>
+  <div
+    id="searchResults"
+    class="px-3"
+    style="width: 100%"
+    :overlay="false"
+  >
+    <v-row
+      no-gutters
+      class="d-flex align-start"
+    >
+      <h3
+        id="numberResults"
+        class="px-2 pb-2"
+      >
+        <strong>{{ prbStudentSearchResponse.totalElements }} Records</strong> ({{ selectedFiles.length }} files selected)
+      </h3>
+      <v-icon
+        v-if="archived"
+        class="mt-1"
+        color="#2E8540"
+      >
+        mdi-package-up
+      </v-icon>
+      <v-spacer />
       <v-flex class="select mr-n10">
-        <v-checkbox id="showSamePENAssignedCheckbox" class="ma-0 pa-0" height="100%" label="Same PEN Assigned" color="#606060" v-model="showSamePENAssigned"></v-checkbox>
+        <v-checkbox
+          id="showSamePENAssignedCheckbox"
+          v-model="showSamePENAssigned"
+          class="ma-0 pa-0"
+          height="100%"
+          label="Same PEN Assigned"
+          color="#606060"
+        />
       </v-flex>
       <v-flex class="select mr-1">
         <v-select
           id="selectStatus"
-          :items="studentStatuses"
           v-model="selectedStudentStatus"
+          :items="studentStatuses"
           dense
-          outlined
+          variant="outlined"
           placeholder="Filter by status"
           color="#38598a"
           append-icon="mdi-chevron-down"
           :menu-props="{ offsetY: true }"
           clearable
-        ></v-select>
+        />
       </v-flex>
-      <PrimaryButton id="viewSelected" v-if="selected" :disabled="!viewEnabled" @click.native="clickViewSelected" text="View Selected"></PrimaryButton>
-      <PrimaryButton id="viewDetails" v-else :loading="loadingRequestIDs" :disabled="!viewEnabled" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
+      <PrimaryButton
+        v-if="selected"
+        id="viewSelected"
+        :disabled="!viewEnabled"
+        :click-action="clickViewSelected"
+        text="View Selected"
+      />
+      <PrimaryButton
+        v-else
+        id="viewDetails"
+        :loading="loadingRequestIDs"
+        :disabled="!viewEnabled"
+        :click-action="clickViewDetails"
+        text="View Details"
+      />
     </v-row>
-    <v-divider class="mb-1 subheader-divider"/>
+    <v-divider class="mb-1 subheader-divider" />
     <v-data-table
       id="dataTable"
       v-model="selectedRecords"
+      v-model:page="pageNumber"
       :headers="headers"
       :items="prbStudentSearchResponse.content"
-      :page.sync="pageNumber"
       :items-per-page="prbStudentSearchResponse.pageable.pageSize"
       hide-default-footer
       item-key="penRequestBatchStudentID"
       :loading="loading"
       @page-count="prbStudentSearchResponse.pageable.pageNumber = $event"
     >
-      <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-        <span :title="header.topTooltip" :key="h.id" class="top-column-item">
+      <template
+        v-for="h in headers"
+        :key="h.id"
+        #[`header.${h.value}`]="{ header }"
+      >
+        <span
+          :title="header.topTooltip"
+          class="top-column-item"
+        >
           {{ header.topText }}
         </span>
-        <span :title="header.doubleTooltip" :key="h.id" class="double-column-item">{{header.doubleText}}</span>
-        <br :key="h.id" />
-        <span :title="header.bottomTooltip" :key="h.id" class="bottom-column-item">{{ header.bottomText }}</span>
+        <span
+          :title="header.doubleTooltip"
+          class="double-column-item"
+        >{{ header.doubleText }}</span>
+        <br :key="h.id">
+        <span
+          :title="header.bottomTooltip"
+          class="bottom-column-item"
+        >{{ header.bottomText }}</span>
       </template>
-      <template v-slot:item="props">
-        <tr :class="{'selected-record' : props.item.isSelected}" @click="selectItem(props.item)">
-          <td v-for="header in props.headers" :key="header.id" :class="header.id">
-            <v-checkbox v-if="header.type" class="record-checkbox header-checkbox" color="#606060" v-model="props.item.isSelected" @click.stop="handleRecordCheckBoxClicked(props.item)"></v-checkbox>
-            <div v-else class="table-cell">
+      <template #item="props">
+        <tr
+          :class="{'selected-record' : props.item.isSelected}"
+          @click="selectItem(props.item)"
+        >
+          <td
+            v-for="header in props.headers"
+            :key="header.id"
+            :class="header.id"
+          >
+            <v-checkbox
+              v-if="header.type"
+              v-model="props.item.isSelected"
+              class="record-checkbox header-checkbox"
+              color="#606060"
+              @click.stop="handleRecordCheckBoxClicked(props.item)"
+            />
+            <div
+              v-else
+              class="table-cell"
+            >
               <span class="top-column-item">
-                <a v-if="header.topValue === 'submissionNumber'" class="submission" @click.stop="handleSubmissionNumberClicked(props.item[header.topValue])">{{props.item[header.topValue] }}</a>
-                <v-tooltip v-else-if="header.topValue === 'mincode'" right>
-                  <template v-slot:activator="{ on }">
-                    <span v-on="on">{{ props.item[header.topValue] }}</span>
+                <a
+                  v-if="header.topValue === 'submissionNumber'"
+                  class="submission"
+                  @click.stop="handleSubmissionNumberClicked(props.item[header.topValue])"
+                >{{ props.item[header.topValue] }}</a>
+                <v-tooltip
+                  v-else-if="header.topValue === 'mincode'"
+                  right
+                >
+                  <template #activator="{ on }">
+                    <span>{{ props.item[header.topValue] }}</span>
                   </template>
-                  <span>{{getSchoolName(props.item) }}</span>
+                  <span>{{ getSchoolName(props.item) }}</span>
                 </v-tooltip>
-                <span v-else :class="[{'mark-field-value-errored':isFieldValueErrored(header.topValue, props.item)}]">{{ props.item[header.topValue] }}</span>
+                <span
+                  v-else
+                  :class="[{'mark-field-value-errored':isFieldValueErrored(header.topValue, props.item)}]"
+                >{{ props.item[header.topValue] }}</span>
               </span>
-              <span :class="['double-column-item', {'mark-field-value-errored':isFieldValueErrored(header.doubleValue, props.item)}]">{{props.item[header.doubleValue]}}</span>
+              <span :class="['double-column-item', {'mark-field-value-errored':isFieldValueErrored(header.doubleValue, props.item)}]">{{ props.item[header.doubleValue] }}</span>
               <br>
               <span class="bottom-column-item mt-1">
                 <PrbStudentStatusChip 
                   v-if="header.bottomValue === 'penRequestBatchStudentStatusCode'" 
-                  :prbStudent="props.item"
-                ></PrbStudentStatusChip>
-                <span v-else-if="header.bottomValue === 'submittedPen'"
-                  class="bottom-column-item">
-                  {{props.item[header.bottomValue]}}
+                  :prb-student="props.item"
+                />
+                <span
+                  v-else-if="header.bottomValue === 'submittedPen'"
+                  class="bottom-column-item"
+                >
+                  {{ props.item[header.bottomValue] }}
                 </span>
-                <span v-else :class="['bottom-column-item', {'mark-field-value-errored':isFieldValueErrored(header.bottomValue, props.item)}]">{{ props.item[header.bottomValue] !== props.item[header.topValue] ? props.item[header.bottomValue]: '' }}</span>
+                <span
+                  v-else
+                  :class="['bottom-column-item', {'mark-field-value-errored':isFieldValueErrored(header.bottomValue, props.item)}]"
+                >{{ props.item[header.bottomValue] !== props.item[header.topValue] ? props.item[header.bottomValue]: '' }}</span>
               </span>
             </div>
           </td>
         </tr>
       </template>
     </v-data-table>
-    <v-row class="pt-2" justify="end">
+    <v-row
+      class="pt-2"
+      justify="end"
+    >
       <v-col cols="4">
-        <v-pagination color="#38598A" v-model="pageNumber" :length="prbStudentSearchResponse.totalPages"></v-pagination>
+        <v-pagination
+          v-model="pageNumber"
+          color="#38598A"
+          :length="prbStudentSearchResponse.totalPages"
+        />
       </v-col>
-      <v-col cols="4" id="currentItemsDisplay">
+      <v-col
+        id="currentItemsDisplay"
+        cols="4"
+      >
         Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ prbStudentSearchResponse.totalElements || 0 }}
       </v-col>
     </v-row>
@@ -90,9 +183,9 @@
 </template>
 
 <script>
-import {mapMutations, mapState} from 'vuex';
-import PrimaryButton from '../../util/PrimaryButton';
-import PrbStudentStatusChip from './PrbStudentStatusChip';
+import {mapActions, mapState} from 'pinia';
+import PrimaryButton from '../../util/PrimaryButton.vue';
+import PrbStudentStatusChip from './PrbStudentStatusChip.vue';
 import {sortBy, uniqBy, values} from 'lodash';
 import router from '../../../router';
 import {
@@ -100,6 +193,11 @@ import {
   Routes
 } from '../../../utils/constants';
 import ApiService from '@/common/apiService';
+import {penRequestBatchStudentSearchStore} from '@/store/modules/prbStudentSearch';
+import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
+import {navigationStore} from '@/store/modules/setNavigation';
+import {appStore} from '@/store/modules/app';
+import {archivedRequestBatchStore} from '@/store/modules/archivedRequestBatch';
 
 export default {
   name: 'PrbStudentSearchResults',
@@ -135,25 +233,25 @@ export default {
     };
   },
   async beforeMount() {
-    await this.$store.dispatch('app/getCodes');
+    await appStore().getCodes();
   },
   computed: {
-    ...mapState('prbStudentSearch', ['prbStudentSearchResponse', 'prbStudentSearchCriteria', 'currentPrbStudentSearchParams']),
-    ...mapState('penRequestBatch', ['prbStudentStatuses']),
+    ...mapState(penRequestBatchStudentSearchStore, ['prbStudentSearchResponse', 'prbStudentSearchCriteria', 'currentPrbStudentSearchParams']),
+    ...mapState(penRequestBatchStore, ['prbStudentStatuses']),
     pageNumber: {
       get(){
-        return this.$store.state['prbStudentSearch'].pageNumber;
+        return penRequestBatchStudentSearchStore().pageNumber;
       },
       set(newPage){
-        return this.$store.state['prbStudentSearch'].pageNumber = newPage;
+        return penRequestBatchStudentSearchStore().setPageNumber(newPage);
       }
     },
     selectedRecords: {
       get(){
-        return this.$store.state['prbStudentSearch'].selectedRecords;
+        return penRequestBatchStudentSearchStore().selectedRecords;
       },
       set(newRecords){
-        return this.$store.state['prbStudentSearch'].selectedRecords = newRecords;
+        return penRequestBatchStudentSearchStore().setSelectedRecords(newRecords);
       }
     },
     showingFirstNumber() {
@@ -170,18 +268,18 @@ export default {
     },
     selectedStudentStatus: {
       get(){
-        return this.$store.state['prbStudentSearch'].selectedStudentStatus;
+        return penRequestBatchStudentSearchStore().selectedStudentStatus;
       },
       set(status){
-        return this.$store.state['prbStudentSearch'].selectedStudentStatus = status;
+        return penRequestBatchStudentSearchStore().setSelectedStudentStatus(status);
       }
     },
     showSamePENAssigned: {
       get(){
-        return this.$store.state['prbStudentSearch'].showSamePENAssigned;
+        return penRequestBatchStudentSearchStore().showSamePENAssigned;
       },
       set(status){
-        return this.$store.state['prbStudentSearch'].showSamePENAssigned = status;
+        return penRequestBatchStudentSearchStore().setShowSamePENAssigned(status);
       }
     },
     selected() {
@@ -191,15 +289,18 @@ export default {
       return this.prbStudentSearchResponse.totalElements > 0 && !this.loading;
     },
     selectedFiles() {
-      const store = this.archived ? 'archivedRequestBatch' : 'penRequestBatch';
-      return this.$store.state[store].selectedFiles;
+      if(this.archived){
+        return archivedRequestBatchStore().selectedFiles;
+      }else{
+        return penRequestBatchStore().selectedFiles;
+      }
     }
   },
   methods: {
-    ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse']),
-    ...mapMutations('setNavigation', ['setSelectedIDs', 'setArchived']),
+    ...mapActions(penRequestBatchStudentSearchStore, ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse']),
+    ...mapActions(navigationStore, ['setSelectedIDs', 'setArchived']),
     getSchoolName(request) {
-      return this.$store.state['app'].schoolApiMincodeSchoolNames.get(request?.mincode?.replace(' ',''));
+      return appStore().schoolApiMincodeSchoolNames.get(request?.mincode?.replace(' ',''));
     },
     clickViewSelected() {
       if(this.selectedRecords?.length > 0) {

@@ -1,9 +1,10 @@
-import ApiService from '../../common/apiService';
-import {Routes} from '../../utils/constants';
+import ApiService from '@/common/apiService';
+import {Routes} from '@/utils/constants';
+import {defineStore} from 'pinia';
 
-export default {
+export const studentStore = defineStore('student', {
   namespaced: true,
-  state: {
+  state: () => ({
     genders: null,
     demogCodeObjects: null,
     statusCodeObjects: null,
@@ -14,119 +15,98 @@ export default {
     staleStudentRecordsMap: new Map(),// this stores the studentID as key and the message as value
     mergeMacros: [],
     documentTypeCodes: []
-  },
-  getters: {
-    selectedStudent: state => state.selectedStudent,
-    genders: state => state.genders?.sort((a,b) => a.displayOrder > b.displayOrder ? 1 : -1),
-    demogCodeObjects: state => state.demogCodeObjects,
-    statusCodeObjects: state => state.statusCodeObjects,
-    gradeCodeObjects: state => state.gradeCodeObjects?.sort((a,b) => a.displayOrder > b.displayOrder ? 1 : -1),
-    possibleMatchReasons: state => state.possibleMatchReasons,
-    historyActivityCodes: state => state.historyActivityCodes,
-    studentsInProcess: state => state.studentsInProcess,
-    staleStudentRecordsMap: (state) => state.staleStudentRecordsMap,
-    documentTypeCodes: state => state.documentTypeCodes
-  },
-  mutations: {
-    setGenders: (state, genders) => {
-      state.genders = genders;
+  }),
+  actions: {
+    async setGenders(genders){
+      this.genders = genders;
     },
-    setDemogCodeObjects: (state, demogCodeObjects) => {
-      state.demogCodeObjects = demogCodeObjects;
+    async setDemogCodeObjects(demogCodeObjects){
+      this.demogCodeObjects = demogCodeObjects;
     },
-    setStatusCodeObjects: (state, statusCodeObjects) => {
-      state.statusCodeObjects = statusCodeObjects;
+    async setStatusCodeObjects(statusCodeObjects){
+      this.statusCodeObjects = statusCodeObjects;
     },
-    setGradeCodeObjects: (state, gradeCodeObjects) => {
-      state.gradeCodeObjects = gradeCodeObjects;
+    async setGradeCodeObjects(gradeCodeObjects){
+      this.gradeCodeObjects = gradeCodeObjects;
     },
-    setPossibleMatchReasons: (state, possibleMatchReasons) => {
-      state.possibleMatchReasons = possibleMatchReasons;
+    async setPossibleMatchReasons(possibleMatchReasons){
+      this.possibleMatchReasons = possibleMatchReasons;
     },
-    setHistoryActivityCodes: (state, historyActivityCodes) => {
-      state.historyActivityCodes = historyActivityCodes;
+    async setHistoryActivityCodes(historyActivityCodes){
+      this.historyActivityCodes = historyActivityCodes;
     },
-    setStudentInProcessStatus: (state, studentID) => {
-      state.studentsInProcess = new Map(state.studentsInProcess.set(studentID, 1)); //reassign a new Map because Vue2 does not support reactivity on Map data types
+    async setStudentInProcessStatus(studentID){
+      this.studentsInProcess = new Map(this.studentsInProcess.set(studentID, 1)); //reassign a new Map because Vue2 does not support reactivity on Map data types
     },
-    setStudentInProcessStatusWithCount: (state, {studentID, sagaCount}) => {
-      state.studentsInProcess = new Map(state.studentsInProcess.set(studentID, sagaCount));
+    async setStudentInProcessStatusWithCount({studentID, sagaCount}){
+      this.studentsInProcess = new Map(this.studentsInProcess.set(studentID, sagaCount));
     },
-    resetStudentInProcessStatus: (state, studentID) => {
-      const sagaCount = state.studentsInProcess.get(studentID);
+    async resetStudentInProcessStatus(studentID){
+      const sagaCount = this.studentsInProcess.get(studentID);
       if(sagaCount) {
         if(sagaCount > 1) {
-          state.studentsInProcess.set(studentID, sagaCount - 1);
+          this.studentsInProcess.set(studentID, sagaCount - 1);
         } else {
-          state.studentsInProcess.delete(studentID);
+          this.studentsInProcess.delete(studentID);
         }
-        state.studentsInProcess = new Map(state.studentsInProcess);
+        this.studentsInProcess = new Map(this.studentsInProcess);
       }
     },
-    clearStudentInProcessStatus: (state, studentID) => {
-      if(state.studentsInProcess.delete(studentID)) {
-        state.studentsInProcess = new Map(state.studentsInProcess);
+    async clearStudentInProcessStatus(studentID){
+      if(this.studentsInProcess.delete(studentID)) {
+        this.studentsInProcess = new Map(this.studentsInProcess);
       }
     },
-    clearStaleData: (state) => {
-      state.staleStudentRecordsMap = new Map();
+    async clearStaleData(){
+      this.staleStudentRecordsMap = new Map();
     },
-    addStaleDataToMap: (state, {studentID, warningMessage}) => {
-      state.staleStudentRecordsMap.set(studentID, warningMessage);
+    async addStaleDataToMap({studentID, warningMessage}){
+      this.staleStudentRecordsMap.set(studentID, warningMessage);
     },
-    removeStaleDataFromMap: (state, studentID) => {
-      state.staleStudentRecordsMap.delete(studentID);
+    async removeStaleDataFromMap(studentID){
+      this.staleStudentRecordsMap.delete(studentID);
     },
-    setMergeMacros: (state, macros) => {
-      state.mergeMacros = macros;
+    async setMergeMacros(macros){
+      this.mergeMacros = macros;
     },
-    setDocumentTypeCodes: (state, codes) => {
-      state.documentTypeCodes = codes;
-    }
-  },
-  actions: {
-    async getCodes({commit, state, dispatch}) {
+    async setDocumentTypeCodes(codes){
+      this.documentTypeCodes = codes;
+    },
+    async getCodes() {
       if (localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        if (!state.genders) {
-          ApiService.getGenderCodes().then(responseGender => commit('setGenders', responseGender.data));
+        if (!this.genders) {
+          const responseGender = await ApiService.getGenderCodes();
+          await this.setGenders(responseGender.data);
         }
-        if (!state.demogCodeObjects) {
-          ApiService.getDemogCodes().then(responseDemog => commit('setDemogCodeObjects', responseDemog.data));
+        if (!this.demogCodeObjects) {
+          const responseDemog = await ApiService.getDemogCodes();
+          await this.setDemogCodeObjects(responseDemog.data);
         }
-        if (!state.statusCodeObjects) {
-          ApiService.getStatusCodes().then(responseStatus => commit('setStatusCodeObjects', responseStatus.data));
+        if (!this.statusCodeObjects) {
+          const responseStatus = await ApiService.getStatusCodes();
+          await this.setStatusCodeObjects(responseStatus.data);
         }
-        if (!state.gradeCodeObjects) {
-          ApiService.getGradeCodes().then(responseGrade => commit('setGradeCodeObjects', responseGrade.data));
+        if (!this.gradeCodeObjects) {
+          const responseGrade = await ApiService.getGradeCodes();
+          await this.setGradeCodeObjects(responseGrade.data);
         }
-        if (!state.possibleMatchReasons) {
-          dispatch('getPossibleMatchReasonCodes');
+        if (!this.possibleMatchReasons) {
+          const response = await ApiService.getPossibleMatchReasonCodes();
+          await this.setPossibleMatchReasons(response.data);
         }
-        if (state.documentTypeCodes.length === 0) {
-          ApiService.getDocumentTypeCodesFromStudentApi().then(res => commit('setDocumentTypeCodes', res.data));
+        if (this.documentTypeCodes.length === 0) {
+          const res = await ApiService.getDocumentTypeCodesFromStudentApi();
+          await this.setDocumentTypeCodes(res.data);
+        }
+        if (!this.historyActivityCodes) {
+          const res = await ApiService.getHistoryActivityCodes();
+          await this.setHistoryActivityCodes(res.data);
         }
       }
     },
-
-    async getPossibleMatchReasonCodes({commit}) {
-      if (localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        ApiService.getPossibleMatchReasonCodes().then(response => commit('setPossibleMatchReasons', response.data));
-      }
-    },
-    async getHistoryActivityCodes({commit}) {
-      if (localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        ApiService.getHistoryActivityCodes().then(response => commit('setHistoryActivityCodes', response.data));
-      }
-    },
-    getMacros({commit}) {
-      ApiService.apiAxios
-        .get(Routes.penServices.MACRO_URL)
-        .then(response => {
-          commit('setMergeMacros', response.data);
-        })
-        .catch(error => {
-          console.log(error);
-        });
+    async getMacros() {
+      const response = ApiService.apiAxios.get(Routes.penServices.MACRO_URL);
+      await this.setMergeMacros(response.data);
     }
   }
-};
+});

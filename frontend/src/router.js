@@ -1,62 +1,58 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
+import {createRouter, createWebHistory} from 'vue-router';
+import Home from '@/components/Home.vue';
+import Login from '@/components/Login.vue';
+import Logout from '@/components/Logout.vue';
+import SessionExpired from '@/components/SessionExpired.vue';
+import RequestsDisplay from '@/components/RequestsDisplay.vue';
+import StudentDetail from '@/components/penreg/student/StudentDetail.vue';
+import StudentSearchDisplay from '@/components/penreg/student-search/StudentSearchDisplay.vue';
+import PenRequestDetail from '@/components/gmp/PenRequestDetail.vue';
+import StudentRequestDetail from '@/components/ump/StudentRequestDetail.vue';
+import PenRequestBatchDisplay from '@/components/penreg/penrequest-batch/PenRequestBatchDisplay.vue';
+import PrbStudentListDisplay from '@/components/penreg/penrequest-batch/PrbStudentListDisplay.vue';
+import PrbStudentDetailsDisplay from '@/components/penreg/penrequest-batch/PrbStudentDetailsDisplay.vue';
+import ArchivedRequestBatchDisplay from '@/components/penreg/penrequest-batch/ArchivedRequestBatchDisplay.vue';
+import LoadFailedBatchList from '@/components/penreg/penrequest-batch/LoadFailedBatchList.vue';
+import HeldRequestBatchDisplay from '@/components/penreg/penrequest-batch/HeldRequestBatchDisplay.vue';
+import ExchangePage from '@/components/secure-message/ExchangePage.vue';
+import UnAuthorized from '@/components/UnAuthorized.vue';
+import { REQUEST_TYPES, PAGE_TITLES } from '@/utils/constants';
+import {authStore} from './store/modules/auth';
+import {studentSearchStore} from './store/modules/studentSearch';
+import {appStore} from './store/modules/app';
+import {penRequestBatchStore} from './store/modules/penRequestBatch';
+import {archivedRequestBatchStore} from './store/modules/archivedRequestBatch';
+import ErrorPage from '@/components/ErrorPage.vue';
+import RouterView from '@/components/RouterView.vue';
+import BackendSessionExpired from '@/components/BackendSessionExpired.vue';
+import UnAuthorizedPage from '@/components/UnAuthorizedPage.vue';
+import CompareStudents from '@/components/CompareStudents.vue';
+import PenCoordinatorsDisplay from '@/components/penreg/coordinator/PenCoordinatorsDisplay.vue';
+import MacrosDisplay from '@/components/admin/MacrosDisplay.vue';
+import NominalRoll from '@/components/nominal-roll/NominalRoll.vue';
+import NomRollStudentListDisplay from '@/components/nominal-roll/NomRollStudentListDisplay.vue';
+import NomRollStudentDetailsDisplay from '@/components/nominal-roll/NomRollStudentDetailsDisplay.vue';
+import StatsDashboard from '@/components/admin/stats/StatsDashboard.vue';
+import NewPENs from '@/components/admin/stats/NewPENs.vue';
+import GUMPStatsLanding from '@/components/admin/stats/GUMPStatsLanding.vue';
+import Merges from '@/components/admin/stats/Merges.vue';
+import NewMessagePage from '@/components/secure-message/NewMessagePage.vue';
+import MessageDisplay from '@/components/secure-message/MessageDisplay.vue';
+import AccessUsersPage from '@/components/secure-message/AccessSchoolUsersPage.vue';
+import AccessDistrictUsersPage from '@/components/secure-message/AccessDistrictUsersPage.vue';
+import InstituteAccessPage from '@/components/secure-message/InstituteAccessPage.vue';
+import DistrictList from '@/components/institute/DistrictList.vue';
+import DistrictDetailsPage from '@/components/institute/DistrictDetails.vue';
+import DistrictContactsPage from '@/components/institute/DistrictContacts.vue';
+import SchoolListPage from '@/components/institute/SchoolList.vue';
+import SchoolDetails from '@/components/institute/SchoolDetails.vue';
+import AuthoritiesListPage from '@/components/institute/AuthoritiesList.vue';
+import AuthorityDetailsPage from '@/components/institute/AuthorityDetails.vue';
+import AuthorityContactsPage from '@/components/institute/AuthoritiesContacts.vue';
 
-import Home from './components/Home.vue';
-import moment from 'moment';
-import Login from './components/Login';
-import Logout from './components/Logout';
-import SessionExpired from './components/SessionExpired';
-import RequestsDisplay from './components/RequestsDisplay';
-import StudentDetail from './components/penreg/student/StudentDetail';
-import StudentSearchDisplay from './components/penreg/student-search/StudentSearchDisplay';
-import PenRequestDetail from './components/gmp/PenRequestDetail';
-import StudentRequestDetail from './components/ump/StudentRequestDetail';
-import PenRequestBatchDisplay from './components/penreg/penrequest-batch/PenRequestBatchDisplay';
-import PrbStudentListDisplay from './components/penreg/penrequest-batch/PrbStudentListDisplay';
-import PrbStudentDetailsDisplay from './components/penreg/penrequest-batch/PrbStudentDetailsDisplay';
-import ArchivedRequestBatchDisplay from './components/penreg/penrequest-batch/ArchivedRequestBatchDisplay';
-import LoadFailedBatchList from './components/penreg/penrequest-batch/LoadFailedBatchList';
-import HeldRequestBatchDisplay from './components/penreg/penrequest-batch/HeldRequestBatchDisplay';
-import ExchangePage from './components/secure-message/ExchangePage';
-import UnAuthorized from './components/UnAuthorized';
-import { REQUEST_TYPES, PAGE_TITLES } from './utils/constants';
-import authStore from './store/modules/auth';
-import ErrorPage from './components/ErrorPage';
-import store from './store/index';
-import RouterView from './components/RouterView';
-import BackendSessionExpired from '@/components/BackendSessionExpired';
-import UnAuthorizedPage from './components/UnAuthorizedPage';
-import CompareStudents from './components/CompareStudents';
-import PenCoordinatorsDisplay from './components/penreg/coordinator/PenCoordinatorsDisplay';
-import MacrosDisplay from './components/admin/MacrosDisplay';
-import NominalRoll from './components/nominal-roll/NominalRoll';
-import NomRollStudentListDisplay from './components/nominal-roll/NomRollStudentListDisplay';
-import NomRollStudentDetailsDisplay from './components/nominal-roll/NomRollStudentDetailsDisplay';
-import StatsDashboard from './components/admin/stats/StatsDashboard';
-import NewPENs from './components/admin/stats/NewPENs';
-import GUMPStatsLanding from '@/components/admin/stats/GUMPStatsLanding';
-import Merges from '@/components/admin/stats/Merges';
-import NewMessagePage from '@/components/secure-message/NewMessagePage';
-import MessageDisplay from '@/components/secure-message/MessageDisplay';
-import AccessUsersPage from '@/components/secure-message/AccessUsersPage';
-import AccessDistrictUsersPage from '@/components/secure-message/AccessDistrictUsersPage';
-import InstituteAccessPage from '@/components/secure-message/InstituteAccessPage';
-import DistrictList from '@/components/institute/DistrictList';
-import DistrictDetailsPage from '@/components/institute/DistrictDetails';
-import DistrictContactsPage from '@/components/institute/DistrictContacts';
-import SchoolListPage from '@/components/institute/SchoolList';
-import SchoolDetails from '@/components/institute/SchoolDetails';
-import AuthoritiesListPage from '@/components/institute/AuthoritiesList';
-import AuthorityDetailsPage from '@/components/institute/AuthorityDetails';
-import AuthorityContactsPage from '@/components/institute/AuthoritiesContacts';
-
-Vue.prototype.moment = moment;
-
-Vue.use(VueRouter);
-
-const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
+const router = createRouter({
+  history: createWebHistory(),
+  base: import.meta.env.BASE_URL,
   routes: [
     {
       path: '/',
@@ -108,7 +104,8 @@ const router = new VueRouter({
         },
       ],
       beforeEnter(_to, _from, next) {
-        store.commit('app/setRequestType',REQUEST_TYPES.penRequest.name);
+        const apStore = appStore();
+        apStore.setRequestType(REQUEST_TYPES.penRequest.name);
         next();
       }
     },
@@ -144,7 +141,8 @@ const router = new VueRouter({
         }
       ],
       beforeEnter(_to, _from, next) {
-        store.commit('app/setRequestType',REQUEST_TYPES.studentRequest.name);
+        const apStore = appStore();
+        apStore.setRequestType(REQUEST_TYPES.studentRequest.name);
         next();
       }
     },
@@ -184,7 +182,8 @@ const router = new VueRouter({
       },
       beforeEnter(_to, from, next) {
         if(!from.path.includes('/prb')) {
-          store.commit('penRequestBatch/clearPenRequestBatchState');
+          const batchStore = penRequestBatchStore();
+          batchStore.clearPenRequestBatchState();
         }
         next();
       }
@@ -226,7 +225,8 @@ const router = new VueRouter({
       },
       beforeEnter(_to, from, next) {
         if(!from.path.includes('/archivedPrb') && !from.path.includes('/prb')) {
-          store.commit('archivedRequestBatch/clearPenRequestBatchState');
+          const batchStore = archivedRequestBatchStore();
+          batchStore.clearPenRequestBatchState();
         }
         next();
       }
@@ -400,7 +400,7 @@ const router = new VueRouter({
           }
         },
         {
-          path: 'exchange/:secureExchangeID',
+          path: 'exchange/:secureExchangeID/:ministryOwnershipGroupRoleID',
           name: 'viewExchange',
           component: MessageDisplay,
           props: true,
@@ -556,12 +556,12 @@ const router = new VueRouter({
       }
     },
     {
-      path: '*',
+      path: '/:catchAll(.*)',
       name: 'notfound',
       redirect: '/',
       meta: {
         requiresAuth: true
-      },
+      }
     },
     {
       path: '/token-expired',
@@ -634,50 +634,63 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, _from, next) => {
-  function validateAndExecute(nextRouteInError) {
-    store.dispatch('auth/getJwtToken').then(() => {
-      if (!authStore.state.isAuthenticated) {
-        next(nextRouteInError);
-      } else {
-        store.dispatch('auth/getUserInfo').then(() => {
-          if (!authStore.state.isAuthorizedUser) {
-            next('unauthorized');
-          } else if (to.meta.role && !store.getters[`auth/${to.meta.role}`]) {
-            next('unauthorized-page');
-          } else {
-            next();
-          }
-        }).catch(() => {
-          console.log('Unable to get user info');
-          next('error');
-        });
-      }
-    }).catch(() => {
-      console.log('Unable to get token');
-      next(nextRouteInError);
-    });
-  }
   // this section is to set page title in vue store
   if (to && to.meta) {
-    store.commit('app/setPageTitle',to.meta.pageTitle);
+    const apStore = appStore();
+    apStore.setPageTitle(to.meta.pageTitle);
   } else {
-    store.commit('app/setPageTitle','');
+    const apStore = appStore();
+    apStore.setPageTitle('');
   }
 
   // This section is to clear the search results when users are not on a search page
   if (!to.meta.saveSearch){
-    store.commit('studentSearch/clearStudentSearchParams');
-    store.commit('studentSearch/clearStudentSearchResults');
+    const studSearchStore = studentSearchStore();
+    studSearchStore.clearStudentSearchParams();
+    studSearchStore.clearStudentSearchResults();
   }
 
+  const aStore = authStore();
   // this section is to handle the backend session expiry, where frontend vue session is still valid.
-  if (to.meta.requiresAuth && authStore.state.isAuthenticated) {
-    validateAndExecute('/token-expired');
+  if (to.meta.requiresAuth && aStore.isAuthenticated) {
+    validateAndExecute('/token-expired', to);
   }else if (to.meta.requiresAuth) {
-    validateAndExecute('login');
+    validateAndExecute('login', to);
   }
   else{
     next();
+  }
+
+  function validateAndExecute(nextRouteInError, to) {
+    const aStore = authStore();
+    aStore.getJwtToken().then(() => {
+      if (!aStore.isAuthenticated) {
+        next(nextRouteInError);
+        return;
+      }
+      if (!to.meta.role) {
+        next();
+        return;
+      }
+      aStore.getUserInfo().then(() => {
+        if (!aStore.isAuthorizedUser) {
+          next('unauthorized');
+          return;
+        }
+        const hasRole = Object.prototype.hasOwnProperty.call(aStore, to.meta.role) && aStore[to.meta.role];
+        if (!hasRole) {
+          next('unauthorized-page');
+          return;
+        }
+        next();
+      }).catch((e) => {
+        console.log('Unable to get user info: ' + e);
+        next('error');
+      });
+    }).catch(() => {
+      console.log('Unable to get token');
+      next(nextRouteInError);
+    });
   }
 });
 

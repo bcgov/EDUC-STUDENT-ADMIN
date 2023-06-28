@@ -1,186 +1,242 @@
 <template>
-  <v-row no-gutters class="py-2 search-inputs" style="background-color:white;">
-    <v-col cols="1" order="1" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
+  <v-row
+    no-gutters
+    class="py-2 search-inputs"
+    style="background-color:white;"
+  >
+    <v-col
+      cols="1"
+      order="1"
+      class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
+    >
       <v-text-field
-        id='mincode'
+        id="mincode"
         v-model="searchParams.mincode"
         tabindex="1"
         color="#003366"
         label="Mincode"
         maxlength="8"
-        minLength="8"
-        @keyup.enter="enterPushed()"
-        v-on:input="searchHasValues"
+        min-length="8"
         :rules="validateField(searchParams.mincode, isValidMincode, mincodeHint)"
-        dense
+        density="compact"
         autofocus
-      ></v-text-field>
+        @keyup.enter="enterPushed()"
+        @input="searchHasValues"
+      />
     </v-col>
-    <v-col order="1" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
+    <v-col
+      order="1"
+      class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input"
+    >
       <v-text-field
-        id='legalLastName'
+        id="legalLastName"
         v-model.trim="searchParams.legalLastName"
         color="#003366"
         label="Legal Surname"
-        @keyup.enter="enterPushed()"
-        v-on:input="[searchHasValues(),upperCaseInput('legalLastName')]"
         maxlength="255"
         tabindex="2"
-        dense
-      ></v-text-field>
+        density="compact"
+        @keyup.enter="enterPushed()"
+        @input="[searchHasValues(),upperCaseInput('legalLastName')]"
+      />
     </v-col>
-    <v-col order="1" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
+    <v-col
+      order="1"
+      class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input"
+    >
       <v-text-field
-        id='legalFirstName'
+        id="legalFirstName"
         v-model.trim="searchParams.legalFirstName"
         tabindex="3"
         color="#003366"
         label="Legal Given"
-        @keyup.enter="enterPushed()"
-        v-on:input="[searchHasValues(),upperCaseInput('legalFirstName')]"
         maxlength="255"
-        dense
-      ></v-text-field>
+        density="compact"
+        @keyup.enter="enterPushed()"
+        @input="[searchHasValues(),upperCaseInput('legalFirstName')]"
+      />
     </v-col>
-    <v-col order="1" v-if="!(fields.legalMiddleNames && fields.legalMiddleNames.hidden)" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
+    <v-col
+      v-if="!(fields.legalMiddleNames && fields.legalMiddleNames.hidden)"
+      order="1"
+      class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input"
+    >
       <v-text-field
-        id='legalMiddleNames'
+        id="legalMiddleNames"
         v-model.trim="searchParams.legalMiddleNames"
         color="#003366"
         label="Legal Middle"
-        v-on:input="[searchHasValues(),upperCaseInput('legalMiddleNames')]"
-        @keyup.enter="enterPushed()"
         tabindex="4"
         maxlength="255"
-        dense
-      ></v-text-field>
+        density="compact"
+        @input="[searchHasValues(),upperCaseInput('legalMiddleNames')]"
+        @keyup.enter="enterPushed()"
+      />
     </v-col>
-    <v-col order="1" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
+    <v-col
+      order="1"
+      class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input"
+    >
       <v-text-field
-        id='genderCode'
+        id="genderCode"
         v-model="searchParams.genderCode"
         tabindex="5"
         color="#003366"
         label="Gender"
         maxlength="1"
-        @keyup.enter="enterPushed()"
-        v-on:input="[searchHasValues(),upperCaseInput('genderCode')]"
         :rules="validateField(searchParams.genderCode, isValidGender, genderHint)"
-        dense
-      ></v-text-field>
+        density="compact"
+        @keyup.enter="enterPushed()"
+        @input="[searchHasValues(),upperCaseInput('genderCode')]"
+      />
     </v-col>
-    <v-col order="1" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
+    <v-col
+      order="1"
+      class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input"
+    >
       <v-text-field
-        id='dob'
+        id="dob"
         v-model="searchParams.dob"
         tabindex="6"
         color="#003366"
         label="Birth Date"
         :rules="validateField(searchParams.dob, isValidDob, dobHint)"
         maxlength="10"
-        minLength="10"
+        min-length="10"
+        density="compact"
         @keyup.enter="enterPushed()"
-        v-on:input="searchHasValues"
-        dense
-      ></v-text-field>
+        @input="searchHasValues"
+      />
     </v-col>
-    <v-col order="1" v-if="!(fields.bestMatchPEN && fields.bestMatchPEN.hidden)" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
+    <v-col
+      v-if="!(fields.bestMatchPEN && fields.bestMatchPEN.hidden)"
+      order="1"
+      class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input"
+    >
       <v-text-field
-        id='bestMatchPEN'
+        id="bestMatchPEN"
         v-model="searchParams.bestMatchPEN"
         color="#003366"
         label="Suggested PEN"
         maxlength="9"
         minlength="9"
-        @keyup.enter="enterPushed()"
-        v-on:input="[searchHasValues(),runPENSearchIfPossible('bestMatchPEN')]"
         tabindex="7"
-        dense
+        density="compact"
         :rules="validatePen(searchParams.bestMatchPEN)"
-      ></v-text-field>
+        @keyup.enter="enterPushed()"
+        @input="[searchHasValues(),runPENSearchIfPossible('bestMatchPEN')]"
+      />
     </v-col>
-    <v-col :cols="fields.assignedPEN && fields.assignedPEN.cols !== undefined || 2" :order="fields.assignedPEN && fields.assignedPEN.order || 2" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
+    <v-col
+      :cols="fields.assignedPEN && fields.assignedPEN.cols !== undefined || 2"
+      :order="fields.assignedPEN && fields.assignedPEN.order || 2"
+      class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input"
+    >
       <v-text-field
-        id='assignedPEN'
+        id="assignedPEN"
         v-model="searchParams.assignedPEN"
         color="#003366"
         label="Assigned PEN"
         maxlength="9"
         minlength="9"
-        @keyup.enter="enterPushed()"
-        v-on:input="searchHasValues"
         :tabindex="fields.assignedPEN && fields.assignedPEN.tabindex || 8"
-        dense
+        density="compact"
         :rules="validatePen(searchParams.assignedPEN)"
-      ></v-text-field>
+        @keyup.enter="enterPushed()"
+        @input="searchHasValues"
+      />
     </v-col>
-    <v-col cols="1" order="2" v-if="!(fields.localID && fields.localID.hidden)" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
+    <v-col
+      v-if="!(fields.localID && fields.localID.hidden)"
+      cols="1"
+      order="2"
+      class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
+    >
       <v-text-field
-        id='localID'
+        id="localID"
         v-model="searchParams.localID"
         color="#003366"
         tabindex="9"
         label="Local ID"
         maxlength="12"
-        @keyup.enter="enterPushed()"
-        v-on:input="searchHasValues"
         :rules="validateField(searchParams.localID)"
-        dense
-      ></v-text-field>
+        density="compact"
+        @keyup.enter="enterPushed()"
+        @input="searchHasValues"
+      />
     </v-col>
-    <v-col order="2" v-if="!(fields.usualLastName && fields.usualLastName.hidden)" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
+    <v-col
+      v-if="!(fields.usualLastName && fields.usualLastName.hidden)"
+      order="2"
+      class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input"
+    >
       <v-text-field
-        id='usualLastName'
+        id="usualLastName"
         v-model.trim="searchParams.usualLastName"
         color="#003366"
         label="Usual Surname"
-        @keyup.enter="enterPushed()"
-        v-on:input="[searchHasValues(),upperCaseInput('usualLastName')]"
         tabindex="10"
         maxlength="255"
-        dense
-      ></v-text-field>
+        density="compact"
+        @keyup.enter="enterPushed()"
+        @input="[searchHasValues(),upperCaseInput('usualLastName')]"
+      />
     </v-col>
-    <v-col order="2" v-if="!(fields.usualFirstName && fields.usualFirstName.hidden)" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
+    <v-col
+      v-if="!(fields.usualFirstName && fields.usualFirstName.hidden)"
+      order="2"
+      class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input"
+    >
       <v-text-field
-        id='usualFirstName'
+        id="usualFirstName"
         v-model.trim="searchParams.usualFirstName"
         color="#003366"
         label="Usual Given"
-        @keyup.enter="enterPushed()"
-        v-on:input="[searchHasValues(),upperCaseInput('usualFirstName')]"
         tabindex="11"
         maxlength="255"
-        dense
-        ></v-text-field>
+        density="compact"
+        @keyup.enter="enterPushed()"
+        @input="[searchHasValues(),upperCaseInput('usualFirstName')]"
+      />
     </v-col>
-    <v-col order="2" v-if="!(fields.usualMiddleNames && fields.usualMiddleNames.hidden)" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
+    <v-col
+      v-if="!(fields.usualMiddleNames && fields.usualMiddleNames.hidden)"
+      order="2"
+      class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input"
+    >
       <v-text-field
-        id='usualMiddleNames'
+        id="usualMiddleNames"
         v-model.trim="searchParams.usualMiddleNames"
         color="#003366"
         label="Usual Middle"
-        @keyup.enter="enterPushed()"
-        v-on:input="[searchHasValues(),upperCaseInput('usualMiddleNames')]"
         tabindex="12"
         maxlength="255"
-        dense
-      ></v-text-field>
+        density="compact"
+        @keyup.enter="enterPushed()"
+        @input="[searchHasValues(),upperCaseInput('usualMiddleNames')]"
+      />
     </v-col>
-    <v-col order="2" v-if="!(fields.postalCode && fields.postalCode.hidden)" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
+    <v-col
+      v-if="!(fields.postalCode && fields.postalCode.hidden)"
+      order="2"
+      class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input"
+    >
       <v-text-field
-        id='postalCode'
+        id="postalCode"
         v-model="searchParams.postalCode"
         tabindex="13"
         color="#003366"
         label="Postal Code"
-        v-on:input="[searchHasValues(),upperCaseInput('postalCode')]"
         maxlength="7"
+        density="compact"
+        @input="[searchHasValues(),upperCaseInput('postalCode')]"
         @keyup.enter="enterPushed()"
-        dense
-      ></v-text-field>
+      />
     </v-col>
-    <v-col order="2" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
+    <v-col
+      order="2"
+      class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input"
+    >
       <v-text-field
         id="gradeCode"
         v-model="searchParams.gradeCode"
@@ -188,41 +244,61 @@
         label="Grade"
         tabindex="14"
         maxlength="2"
-        @keyup.enter="enterPushed()"
-        v-on:input="[searchHasValues(), upperCaseInput('gradeCode')]"
         :rules="validateField(searchParams.gradeCode, isValidGradeCode, gradeHint)"
-        minLength="1"
-        dense
-      ></v-text-field>
+        min-length="1"
+        density="compact"
+        @keyup.enter="enterPushed()"
+        @input="[searchHasValues(), upperCaseInput('gradeCode')]"
+      />
     </v-col>
-    <v-col order="2" v-if="!(fields.submittedPen && fields.submittedPen.hidden)" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input">
+    <v-col
+      v-if="!(fields.submittedPen && fields.submittedPen.hidden)"
+      order="2"
+      class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 search-input"
+    >
       <v-text-field
-        id='submittedPen'
+        id="submittedPen"
         v-model="searchParams.submittedPen"
         color="#003366"
         label="Submitted PEN"
         maxlength="9"
         minlength="9"
-        @keyup.enter="enterPushed()"
-        v-on:input="[searchHasValues(),runPENSearchIfPossible('submittedPen')]"
         tabindex="15"
-        dense
+        density="compact"
         :rules="validatePen(searchParams.submittedPen)"
-      ></v-text-field>
+        @keyup.enter="enterPushed()"
+        @input="[searchHasValues(),runPENSearchIfPossible('submittedPen')]"
+      />
     </v-col>
-    <v-col cols="2" order="4" class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3">
+    <v-col
+      cols="2"
+      order="4"
+      class="py-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
+    >
       <div class="d-flex justify-end pt-2">
-        <PrimaryButton id="clear-search" class="mr-2" :secondary="true" @click.native="clearSearch" text="Clear"></PrimaryButton>
-        <PrimaryButton id="perform-search" :disabled="!searchEnabled" :loading="loading && searchEnabled" @click.native="searchPenRequests" text="Search"></PrimaryButton>
+        <PrimaryButton
+          id="clear-search"
+          class="mr-2"
+          :secondary="true"
+          :click-action="clearSearch"
+          text="Clear"
+        />
+        <PrimaryButton
+          id="perform-search"
+          :disabled="!searchEnabled"
+          :loading="loading && searchEnabled"
+          :click-action="searchPenRequests"
+          text="Search"
+        />
       </div>
     </v-col>
   </v-row>
-            
 </template>
 <script>
-import {mapGetters, mapState} from 'vuex';
-import PrimaryButton from '@/components/util/PrimaryButton';
+import { mapState } from 'pinia';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import {isValidAlphanumericValue, isValidDob, isValidMincode, isValidPEN} from '@/utils/validation';
+import {studentStore} from '@/store/modules/student';
 
 export default {
   name: 'PenRequestSearchPanel',
@@ -259,8 +335,7 @@ export default {
     };
   },
   computed:{
-    ...mapGetters('student', ['gradeCodeObjects']),
-    ...mapState('student', ['genders']),
+    ...mapState(studentStore, ['gradeCodeObjects', 'genders']),
     genderCodes() {
       return this.genders ? this.genders.map(a => a.genderCode):[];
     },

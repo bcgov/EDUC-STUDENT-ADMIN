@@ -1,22 +1,29 @@
 <template>
   <v-container class="pa-0">
-    <v-card height="100%" width="100%">
-      <v-toolbar flat color="#036" class="white--text">
+    <v-card
+      height="100%"
+      width="100%"
+    >
+      <v-toolbar
+        flat
+        color="#036"
+        class="white--text"
+      >
         <v-toolbar-title><h2>Discussion</h2></v-toolbar-title>
       </v-toolbar>
       <v-card id="chat-box">
         <v-progress-linear
-                indeterminate
-                absolute
-                top
-                color="indigo darken-2"
-                v-if="loading"
-        ></v-progress-linear>
+          v-if="loading"
+          indeterminate
+          absolute
+          top
+          color="indigo darken-2"
+        />
         <SingleComment
-                v-for="comment in comments"
-                :comment="comment"
-                :key="comment.id"
-        ></SingleComment>
+          v-for="comment in comments"
+          :key="comment.id"
+          :comment="comment"
+        />
       </v-card>
     </v-card>
   </v-container>
@@ -24,10 +31,15 @@
 <script>
 import SingleComment from './Single-comment.vue';
 import ApiService from '../common/apiService';
-import {mapGetters, mapMutations} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import {Routes} from '../utils/constants';
+import {authStore} from '@/store/modules/auth';
+import {appStore} from '@/store/modules/app';
 
 export default {
+  components: {
+    SingleComment
+  },
   props: {
     requestType: {
       type: String,
@@ -38,9 +50,6 @@ export default {
       required: true
     }
   },
-  components: {
-    SingleComment
-  },
   data() {
     return {
       toLoad: [],
@@ -48,8 +57,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo']),
-    ...mapGetters('app', ['messages']),
+    ...mapState(authStore, ['userInfo']),
+    ...mapState(appStore, ['messages']),
     myself() {
       return { name: this.userInfo.userName, id: this.userInfo.userGuid };
     },
@@ -75,8 +84,7 @@ export default {
       });
   },
   methods: {
-    ...mapMutations('app', ['setMessages']),
-    ...mapMutations('app', ['setParticipants'])
+    ...mapActions(appStore, ['setMessages', 'setParticipants'])
   }
 };
 </script>

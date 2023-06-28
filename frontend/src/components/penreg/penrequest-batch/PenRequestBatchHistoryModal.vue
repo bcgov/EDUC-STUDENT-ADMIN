@@ -4,9 +4,12 @@
     v-model="modalOpen"
     max-width="65%"
   >
-    <v-card fluid class="px-6 pt-2" elevation="0">
-      <v-card-title class="px-0 pb-0 pt-5">
-      </v-card-title>
+    <v-card
+      fluid
+      class="px-6 pt-2"
+      elevation="0"
+    >
+      <v-card-title class="px-0 pb-0 pt-5" />
       <v-row>
         <div class="flex-grow-1 pt-0 px-3">
           <DataListItem
@@ -16,12 +19,29 @@
             :label="item.label"
             :value="item.value"
             :loading="loadingPenCoord && item.type === 'coord'"
-          ></DataListItem>
+          />
         </div>
         <div class="pt-0 d-flex justify-end">
-          <PrimaryButton id="repostBtn" class="mr-5" text="Repost Reports" @click.native="repostReports" :disabled="batchFile.sagaInProgress" :loading="isProcessing"></PrimaryButton>
-          <v-btn id="closeModalBtn" text icon @click="modalOpen=false">
-            <v-icon large color="#38598A">mdi-close</v-icon>
+          <PrimaryButton
+            id="repostBtn"
+            class="mr-5"
+            text="Repost Reports"
+            :click-action="repostReports"
+            :disabled="batchFile.sagaInProgress"
+            :loading="isProcessing"
+          />
+          <v-btn
+            id="closeModalBtn"
+            text
+            icon
+            @click="modalOpen=false"
+          >
+            <v-icon
+              large
+              color="#38598A"
+            >
+              mdi-close
+            </v-icon>
           </v-btn>
         </div>     
       </v-row>
@@ -34,15 +54,25 @@
         :loading="loadingTable"
         :items-per-page="1000"
       >
-        <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-          <span :title="header.tooltip" :key="h.id" :class="{'file-column' : !header.countable}">
+        <template
+          v-for="h in headers"
+          :key="h.id"
+          #[`header.${h.value}`]="{ header }"
+        >
+          <span
+            :title="header.tooltip"
+            :class="{'file-column' : !header.countable}"
+          >
             {{ header.text }}
           </span>
         </template>
-        <template v-slot:item="props">
+        <template #item="props">
           <tr>
-            <td v-for="header in props.headers" :key="header.id">
-              <span>{{formatTableColumn(header.format, props.item[header.value]) }}</span>
+            <td
+              v-for="header in props.headers"
+              :key="header.id"
+            >
+              <span>{{ formatTableColumn(header.format, props.item[header.value]) }}</span>
             </td>
           </tr>
         </template>
@@ -52,21 +82,23 @@
 </template>
 
 <script>
-import PrimaryButton from '@/components/util/PrimaryButton';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
-import DataListItem from '@/components/util/DataListItem';
+import DataListItem from '@/components/util/DataListItem.vue';
 import ApiService from '@/common/apiService';
 import { Routes } from '@/utils/constants';
 import { formatTableColumn, formatDateTime } from '@/utils/format';
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
+import {notificationsStore} from '@/store/modules/notifications';
+import _ from 'lodash';
 
 export default {
   name: 'PenRequestBatchHistoryModal',
-  mixins: [alertMixin],
   components: {
     PrimaryButton,
     DataListItem,
   },
+  mixins: [alertMixin],
   props: {
     value: {
       type: Boolean,
@@ -95,7 +127,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('notifications', ['notification']),
+    ...mapState(notificationsStore, ['notification']),
     fileItems() {
       return [
         { name: 'district', label: this.districtFieldLabel, value: this.districtName },
@@ -133,11 +165,6 @@ export default {
       return `${sentDate} at ${sentTime}`;
     }
   },
-  created() {
-    this.modalOpen = this.value;
-    this.loadPenCoord();
-    this.loadPenWebBlobs();
-  },
   watch: {
     value: {
       handler(v) {
@@ -159,6 +186,11 @@ export default {
         }
       }
     },
+  },
+  created() {
+    this.modalOpen = this.value;
+    this.loadPenCoord();
+    this.loadPenWebBlobs();
   },
   methods: {
     formatTableColumn,

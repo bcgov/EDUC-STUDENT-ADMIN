@@ -1,54 +1,57 @@
 <template>
-
   <v-app id="app">
-    <Header/>
-    <SnackBar></SnackBar>
-    <NavBar v-if="pageTitle && isAuthenticated" :title="pageTitle"></NavBar>
+    <Header />
+    <SnackBar />
+    <NavBar
+      v-if="pageTitle && authStore().isAuthenticated"
+      :title="pageTitle"
+    />
     <v-btn
-            v-scroll="onScroll"
-            id="toTopBtn"
-            v-show="showToTopBtn"
-            fab
-            tile
-            x-small
-            dark
-            fixed
-            bottom
-            right
-            color="#606060"
-            class="rounded"
-            @click="toTop"
+      v-show="showToTopBtn"
+      id="toTopBtn"
+      v-scroll="onScroll"
+      fab
+      tile
+      x-small
+      dark
+      fixed
+      bottom
+      right
+      color="#606060"
+      class="rounded"
+      @click="toTop"
     >
       <v-icon>
         mdi-format-vertical-align-top
       </v-icon>
     </v-btn>
-    <v-main fluid class="align-start">
-      <v-app-bar v-if="bannerColor !== ''"
-          style="color:white;"
-          :color="bannerColor"
-          sticky
-          dense
-      ><div><h3>{{ bannerEnvironment }} Environment</h3></div></v-app-bar>
-      <ModalIdle class="align-start px-8 mb-0" v-if="isAuthenticated"/>
-      <router-view class="align-start px-8 mb-0"/>
+    <v-main
+      fluid
+      class="align-start"
+    >
+      <ModalIdle
+        v-if="authStore().isAuthenticated"
+        class="align-start px-8 mb-0"
+      />
+      <router-view class="align-start px-8 mb-0" />
     </v-main>
-    <Footer/>
+    <Footer />
   </v-app>
 </template>
 
 <script>
-import {mapActions, mapGetters, mapState} from 'vuex';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import ModalIdle from './components/ModalIdle';
-import NavBar from './components/util/NavBar';
-import SnackBar from './components/util/SnackBar';
-import StaticConfig from './common/staticConfig';
+import {mapActions, mapState} from 'pinia';
+import Header from '@/components/Header.vue';
+import Footer from '@/components/Footer.vue';
+import ModalIdle from '@/components/ModalIdle.vue';
+import NavBar from '@/components/util/NavBar.vue';
+import SnackBar from '@/components/util/SnackBar.vue';
 import {activateMultipleDraggableDialog} from '@/utils/draggable';
+import {appStore} from '@/store/modules/app';
+import {authStore} from '@/store/modules/auth';
 
 export default {
-  name: 'app',
+  name: 'App',
   components: {
     SnackBar,
     NavBar,
@@ -59,30 +62,31 @@ export default {
   data() {
     return {
       showToTopBtn: false,
-      bannerEnvironment: StaticConfig.BANNER_ENVIRONMENT,
-      bannerColor: StaticConfig.BANNER_COLOR,
       deactivateMultipleDraggableDialog: null,
     };
   },
   computed: {
-    ...mapGetters('auth', ['jwtToken', 'isAuthenticated', 'userInfo']),
-    ...mapState('auth', ['isValidGMPUser', 'isValidUMPUser', 'isValidPenRequestBatchUser']),
-    ...mapState('app', ['pageTitle']),
+    ...mapState(authStore, ['jwtToken', 'isAuthenticated', 'userInfo', 'isValidGMPUser', 'isValidUMPUser', 'isValidPenRequestBatchUser']),
+    ...mapState(appStore, ['pageTitle']),
   },
   watch: {
     isAuthenticated()  {
       this.handleWebSocket();
     }
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.deactivateMultipleDraggableDialog && this.deactivateMultipleDraggableDialog();
   },
   mounted() {
     this.deactivateMultipleDraggableDialog = activateMultipleDraggableDialog();
     this.handleWebSocket();
   },
+  async created() {
+    await this.getConfig();
+  },
   methods:{
-    ...mapActions('student', ['getCodes']),
+    authStore,
+    ...mapActions(appStore, ['getConfig']),
     handleWebSocket() {
       if(this.isAuthenticated && (this.isValidPenRequestBatchUser || this.isValidGMPUser || this.isValidUMPUser)) {
         this.$webSocketsConnect();
@@ -143,6 +147,66 @@ export default {
   }
   .full-height {
     height: 100%;
+  }
+
+  a{
+    color: #1976d2;
+  }
+
+  a:hover {
+    cursor: pointer;
+  }
+
+  .envBanner {
+    font-size: 0.8rem;
+  }
+
+  .theme--light.application{
+    background: #f1f1f1;
+  }
+
+  h1 {
+    font-size: 1.25rem;
+  }
+
+  .v-toolbar__title{
+    font-size: 1rem;
+  }
+
+  .v-btn {
+      text-transform: none !important;
+  }
+
+  .v-alert .v-icon {
+      padding-left: 0;
+  }
+
+  .v-alert.bootstrap-success {
+    color: #234720;
+    background-color: #d9e7d8 !important;
+    border-color: #accbaa !important;
+  }
+
+  .v-alert.bootstrap-info {
+    color: #4e6478;
+    background-color: #eaf2fa !important;
+    border-color: #b8d4ee !important;
+  }
+
+  .v-alert.bootstrap-warning {
+    color: #81692c;
+    background-color: #fef4dd !important;
+    border-color: #fbdb8b !important;
+  }
+
+  .v-alert.bootstrap-error {
+    color: #712024;
+    background-color: #f7d8da !important;
+    border-color: #eeaaad !important;
+  }
+
+  .theme--light.v-btn.v-btn--disabled:not(.v-btn--text):not(.v-btn--outlined) {
+    background-color: rgba(0,0,0,.12)!important;
   }
 
 </style>

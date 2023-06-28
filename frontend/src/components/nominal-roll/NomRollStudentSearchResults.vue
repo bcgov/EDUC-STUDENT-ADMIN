@@ -1,83 +1,168 @@
 <template>
-  <div id="searchResults" class="px-3" style="width: 100%" :overlay=false>
-    <v-row no-gutters class="d-flex align-start">
-      <h3 id="numberResults" class="px-2 pb-2"><strong>{{ nomRollStudentSearchResponse.totalElements }} Records</strong></h3>
-      <v-spacer/>
+  <div
+    id="searchResults"
+    class="px-3"
+    style="width: 100%"
+    :overlay="false"
+  >
+    <v-row
+      no-gutters
+      class="d-flex align-start"
+    >
+      <h3
+        id="numberResults"
+        class="px-2 pb-2"
+      >
+        <strong>{{ nomRollStudentSearchResponse.totalElements }} Records</strong>
+      </h3>
+      <v-spacer />
       <v-flex class="select ml-3 mr-1">
         <v-select
           id="selectStatus"
-          :items="studentStatuses"
           v-model="selectedStudentStatus"
+          :items="studentStatuses"
           dense
-          outlined
+          variant="outlined"
           placeholder="Filter by status"
           color="#38598a"
           append-icon="mdi-chevron-down"
           :menu-props="{ offsetY: true }"
           clearable
-        ></v-select>
+        />
       </v-flex>
       <div v-if="!hasReadOnlyRoleAccess()">
-        <PrimaryButton id="unignoreRecord" v-if="!canIgnore" :disabled="!canRecover || isPosted" @click.native="clickRecover" text="Recover Record"></PrimaryButton>
-        <PrimaryButton id="ignoreRecord" v-else :disabled="!canIgnore || isPosted" @click.native="clickIgnore" text="Ignore Record"></PrimaryButton>
-        <PrimaryButton id="viewSelected" class="ml-1" v-if="selected" :disabled="!viewSelectionEnabled || isPosted" @click.native="clickViewSelected" text="View Selected"></PrimaryButton>
-        <PrimaryButton id="viewDetails" class="ml-1" v-else :loading="loadingRequestIDs" :disabled="!viewDetailsEnabled || hasReadOnlyRoleAccess() || isPosted" @click.native="clickViewDetails" text="View Details"></PrimaryButton>
-        <PrimaryButton id="postRecords" class="ml-1" :loading="processing" :disabled="isPosted || hasReadOnlyRoleAccess()" @click.native="clickPostRecords" text="Post"></PrimaryButton>
-        <PrimaryButton id="exportIgnored" class="ml-1" :loading="processing" :disabled="hasReadOnlyRoleAccess() || !hasFilterOnlyIgnored()" @click.native="retrieveAndDownloadIgnoredPenRequests" text="Export Ignored"></PrimaryButton>
+        <PrimaryButton
+          v-if="!canIgnore"
+          id="unignoreRecord"
+          :disabled="!canRecover || isPosted"
+          :click-action="clickRecover"
+          text="Recover Record"
+        />
+        <PrimaryButton
+          v-else
+          id="ignoreRecord"
+          :disabled="!canIgnore || isPosted"
+          :click-action="clickIgnore"
+          text="Ignore Record"
+        />
+        <PrimaryButton
+          v-if="selected"
+          id="viewSelected"
+          class="ml-1"
+          :disabled="!viewSelectionEnabled || isPosted"
+          :click-action="clickViewSelected"
+          text="View Selected"
+        />
+        <PrimaryButton
+          v-else
+          id="viewDetails"
+          class="ml-1"
+          :loading="loadingRequestIDs"
+          :disabled="!viewDetailsEnabled || hasReadOnlyRoleAccess() || isPosted"
+          :click-action="clickViewDetails"
+          text="View Details"
+        />
+        <PrimaryButton
+          id="postRecords"
+          class="ml-1"
+          :loading="processing"
+          :disabled="isPosted || hasReadOnlyRoleAccess()"
+          :click-action="clickPostRecords"
+          text="Post"
+        />
+        <PrimaryButton
+          id="exportIgnored"
+          class="ml-1"
+          :loading="processing"
+          :disabled="hasReadOnlyRoleAccess() || !hasFilterOnlyIgnored()"
+          :click-action="retrieveAndDownloadIgnoredPenRequests"
+          text="Export Ignored"
+        />
       </div>
     </v-row>
-    <v-divider class="mb-1 subheader-divider"/>
+    <v-divider class="mb-1 subheader-divider" />
     <v-data-table
       id="dataTable"
       v-model="selectedRecords"
+      v-model:page="pageNumber"
       :headers="headers"
       :items="nomRollStudentSearchResponse.content"
-      :page.sync="pageNumber"
       :items-per-page="nomRollStudentSearchResponse.pageable.pageSize"
       hide-default-footer
       item-key="nominalRollStudentID"
       :loading="loading"
-      @page-count="nomRollStudentSearchResponse.pageable.pageNumber = $event"
       :expanded="expanded"
+      @page-count="nomRollStudentSearchResponse.pageable.pageNumber = $event"
     >
-      <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-        <span :title="header.tooltip" :key="h.id" class="column-item">
+      <template
+        v-for="h in headers"
+        :key="h.id"
+        #[`header.${h.value}`]="{ header }"
+      >
+        <span
+          :title="header.tooltip"
+          class="column-item"
+        >
           {{ header.text }}
         </span>
       </template>
-      <template v-slot:item="props">
-        <tr :class="{'selected-record' : props.item.isSelected}" @click="selectItem(props.item)">
-          <td v-for="header in props.headers" :key="header.id" :class="header.id">
-            <v-checkbox v-if="header.type && !hasReadOnlyRoleAccess()" class="record-checkbox header-checkbox" color="#606060" v-model="props.item.isSelected" @click.stop="handleRecordCheckBoxClicked(props.item)"></v-checkbox>
-            <div v-else class="table-cell">
-              <span class="column-item" style="text-align: left;">
-                <v-tooltip v-if="header.value === 'mincode'" right>
-                  <template v-slot:activator="{ on }">
-                    <span v-on="on">{{ props.item[header.value] }}</span>
+      <template #item="props">
+        <tr
+          :class="{'selected-record' : props.item.isSelected}"
+          @click="selectItem(props.item)"
+        >
+          <td
+            v-for="header in props.headers"
+            :key="header.id"
+            :class="header.id"
+          >
+            <v-checkbox
+              v-if="header.type && !hasReadOnlyRoleAccess()"
+              v-model="props.item.isSelected"
+              class="record-checkbox header-checkbox"
+              color="#606060"
+              @click.stop="handleRecordCheckBoxClicked(props.item)"
+            />
+            <div
+              v-else
+              class="table-cell"
+            >
+              <span
+                class="column-item"
+                style="text-align: left;"
+              >
+                <v-tooltip
+                  v-if="header.value === 'mincode'"
+                  right
+                >
+                  <template #activator="{ on }">
+                    <span>{{ props.item[header.value] }}</span>
                   </template>
-                  <span>{{getSchoolName(props.item) }}</span>
+                  <span>{{ getSchoolName(props.item) }}</span>
                 </v-tooltip>
                 <span v-else-if="header.value === 'status'">
                   <NomRollStudentStatusChip
-                    :statusCode="props.item[header.value]"
-                  ></NomRollStudentStatusChip>
+                    :status-code="props.item[header.value]"
+                  />
                   <v-icon
                     v-if="!isEmpty(props.item.validationErrors) && props.item.status !== 'IGNORED' && !hasReadOnlyRoleAccess()"
-                    @click.native="toggleRow(props.item)"
+                    :click-action="toggleRow(props.item)"
                   >{{ rowExpandedIcon }}</v-icon>
                 </span>
-                <span v-else-if="props.item.validationErrors[header.text] && props.item.status !== 'IGNORED'" style="color: red">
+                <span
+                  v-else-if="props.item.validationErrors[header.text] && props.item.status !== 'IGNORED'"
+                  style="color: red"
+                >
                   {{ formatTableColumn(header.format, props.item[header.value]) }}
                   <v-tooltip bottom>
-                    <template v-slot:activator="{ on, attrs }">
+                    <template #activator="{ on, attrs }">
                       <v-icon
                         color="red"
                         small
                         v-bind="attrs"
-                        v-on="on"
                       >mdi-alert</v-icon>
                     </template>
-                    {{props.item.validationErrors[header.text]}}
+                    {{ props.item.validationErrors[header.text] }}
                   </v-tooltip>
                 </span>
                 <span v-else>{{ formatTableColumn(header.format, props.item[header.value]) || '' }}</span>
@@ -86,143 +171,197 @@
           </td>
         </tr>
       </template>
-      <template v-slot:expanded-item="{ headers, item }">
-        <td style="border-bottom: 1px solid #ececec;" :colspan="headers.length">
-          <v-form v-model="validForm" ref="form" lazy-validation>
+      <template #expanded-item="{ headers, item }">
+        <td
+          style="border-bottom: 1px solid #ececec;"
+          :colspan="headers.length"
+        >
+          <v-form
+            ref="form"
+            v-model="validForm"
+            lazy-validation
+          >
             <v-row class="px-4">
               <v-col class="pb-0 pt-7">
-                <v-autocomplete v-model="editedRecord.schoolDistrictNumber"
-                                :disabled="!item.validationErrors['School District'] && !validationErrors['School District'] || hasReadOnlyRoleAccess()"
-                                outlined dense name="1" label="School District"
-                                :items="schoolApiDistrictCodesObjectSorted"
-                                :rules="[!validationErrors['School District'] || validationErrors['School District']]"
-                ></v-autocomplete>
+                <v-autocomplete
+                  v-model="editedRecord.schoolDistrictNumber"
+                  :disabled="!item.validationErrors['School District'] && !validationErrors['School District'] || hasReadOnlyRoleAccess()"
+                  outlined
+                  dense
+                  name="1"
+                  label="School District"
+                  :items="schoolApiDistrictCodesObjectSorted"
+                  :rules="[!validationErrors['School District'] || validationErrors['School District']]"
+                />
               </v-col>
               <v-col class="pb-0 pt-7">
                 <v-row>
-                  <v-col class="pa-0" :cols="item.validationErrors['School Number'] || validationErrors['School Number'] ? 10 : 12">
-                    <v-text-field v-model="editedRecord.schoolNumber"
-                                  :disabled="!item.validationErrors['School Number'] && !validationErrors['School Number'] || hasReadOnlyRoleAccess()"
-                                  outlined dense name="2" label="School Number"
-                                  :rules="[!validationErrors['School Number'] || validationErrors['School Number']]"
-                    ></v-text-field>
+                  <v-col
+                    class="pa-0"
+                    :cols="item.validationErrors['School Number'] || validationErrors['School Number'] ? 10 : 12"
+                  >
+                    <v-text-field
+                      v-model="editedRecord.schoolNumber"
+                      :disabled="!item.validationErrors['School Number'] && !validationErrors['School Number'] || hasReadOnlyRoleAccess()"
+                      outlined
+                      dense
+                      name="2"
+                      label="School Number"
+                      :rules="[!validationErrors['School Number'] || validationErrors['School Number']]"
+                    />
                   </v-col>
-                  <v-col v-if="item.validationErrors['School Number'] || validationErrors['School Number']" class="pa-0">
-                    <MapSchoolCodeModal :fedCode="editedRecord.schoolNumber" @addFedProvCode='addFedProvCode(editedRecord)'/>
+                  <v-col
+                    v-if="item.validationErrors['School Number'] || validationErrors['School Number']"
+                    class="pa-0"
+                  >
+                    <MapSchoolCodeModal
+                      :fed-code="editedRecord.schoolNumber"
+                      @addFedProvCode="addFedProvCode(editedRecord)"
+                    />
                   </v-col>
                 </v-row>
               </v-col>
               <v-col class="pb-0 pt-7">
-                <v-autocomplete v-model="editedRecord.schoolName"
-                                :disabled="!item.validationErrors['School Name'] && !validationErrors['School Name']  || hasNoEditRoleAccess()"
-                                outlined dense name="3" label="School Name"
-                                :items="schoolApiMincodeSchoolNamesObjectSorted"
-                                :rules="[!validationErrors['School Name'] || validationErrors['School Name']]"
-                ></v-autocomplete>
+                <v-autocomplete
+                  v-model="editedRecord.schoolName"
+                  :disabled="!item.validationErrors['School Name'] && !validationErrors['School Name'] || hasNoEditRoleAccess()"
+                  outlined
+                  dense
+                  name="3"
+                  label="School Name"
+                  :items="schoolApiMincodeSchoolNamesObjectSorted"
+                  :rules="[!validationErrors['School Name'] || validationErrors['School Name']]"
+                />
               </v-col>
               <v-col class="pb-0 pt-7">
-                <v-autocomplete v-model="editedRecord.leaProvincial"
-                                :disabled="!item.validationErrors['LEA/Provincial'] && !validationErrors['LEA/Provincial']  || hasNoEditRoleAccess()"
-                                outlined dense name="4" label="LEA/Provincial"
-                                :items="leaProvincialItems"
-                                :rules="[!validationErrors['LEA/Provincial'] || validationErrors['LEA/Provincial']]"
-                ></v-autocomplete>
+                <v-autocomplete
+                  v-model="editedRecord.leaProvincial"
+                  :disabled="!item.validationErrors['LEA/Provincial'] && !validationErrors['LEA/Provincial'] || hasNoEditRoleAccess()"
+                  outlined
+                  dense
+                  name="4"
+                  label="LEA/Provincial"
+                  :items="leaProvincialItems"
+                  :rules="[!validationErrors['LEA/Provincial'] || validationErrors['LEA/Provincial']]"
+                />
               </v-col>
               <v-col class="pb-0 pt-7">
-                <v-text-field v-model="editedRecord.recipientNumber"
-                              :disabled="!item.validationErrors['Recipient Number'] && !validationErrors['Recipient Number'] || hasNoEditRoleAccess()"
-                              outlined dense name="5" label="Recipient Number"
-                              :rules="[!validationErrors['Recipient Number'] || validationErrors['Recipient Number']]"
-                ></v-text-field>
+                <v-text-field
+                  v-model="editedRecord.recipientNumber"
+                  :disabled="!item.validationErrors['Recipient Number'] && !validationErrors['Recipient Number'] || hasNoEditRoleAccess()"
+                  outlined
+                  dense
+                  name="5"
+                  label="Recipient Number"
+                  :rules="[!validationErrors['Recipient Number'] || validationErrors['Recipient Number']]"
+                />
               </v-col>
               <v-col class="pb-0 pt-7">
-                <v-text-field v-model="editedRecord.fte"
-                              :disabled="!item.validationErrors['FTE'] && !validationErrors['FTE'] || hasNoEditRoleAccess()"
-                              outlined dense name="51" label="FTE"
-                              :rules="[!validationErrors['FTE'] || validationErrors['FTE']]"
-                ></v-text-field></v-col>
-              <v-col class="pb-0 pt-7">
-                <v-text-field v-model="editedRecord.surname"
-                              :disabled="!item.validationErrors['Surname'] && !validationErrors['Surname'] || hasNoEditRoleAccess()"
-                              outlined dense name="52" label="Surname"
-                              :rules="[!validationErrors['Surname'] || validationErrors['Surname']]"
-                ></v-text-field></v-col>
-              <v-col class="pb-0 pt-7">
-                <v-autocomplete v-model="editedRecord.gender"
-                                :disabled="!item.validationErrors['Gender'] && !validationErrors['Gender'] || hasNoEditRoleAccess()"
-                                outlined dense name="4" label="Gender"
-                                :items="genders"
-                                item-text="label"
-                                item-value="genderCode"
-                                :rules="[!validationErrors['Gender'] || validationErrors['Gender']]"
-                ></v-autocomplete>
+                <v-text-field
+                  v-model="editedRecord.fte"
+                  :disabled="!item.validationErrors['FTE'] && !validationErrors['FTE'] || hasNoEditRoleAccess()"
+                  outlined
+                  dense
+                  name="51"
+                  label="FTE"
+                  :rules="[!validationErrors['FTE'] || validationErrors['FTE']]"
+                />
               </v-col>
               <v-col class="pb-0 pt-7">
-                <v-menu
-                  v-model="dateMenu"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                >
-                  <template v-slot:activator="{ on }">
-                    <v-text-field
-                      id="date-picker-text-field"
-                      :value="editedRecord.birthDate"
-                      outlined
-                      dense
-                      readonly
-                      v-on="on"
-                      :disabled="!item.validationErrors['Birth Date'] && !validationErrors['Birth Date'] || hasNoEditRoleAccess()"
-                      :rules="[!validationErrors['Birth Date'] || validationErrors['Birth Date']]"
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker
-                    id="date-picker"
-                    v-model="editedRecord.birthDate"
-                    no-title
-                  >
-                    <v-spacer></v-spacer>
-                    <PrimaryButton id="date-picker-ok-button" text="OK" @click.native="dateMenu=false"> </PrimaryButton>
-                  </v-date-picker>
-                </v-menu>
+                <v-text-field
+                  v-model="editedRecord.surname"
+                  :disabled="!item.validationErrors['Surname'] && !validationErrors['Surname'] || hasNoEditRoleAccess()"
+                  outlined
+                  dense
+                  name="52"
+                  label="Surname"
+                  :rules="[!validationErrors['Surname'] || validationErrors['Surname']]"
+                />
               </v-col>
               <v-col class="pb-0 pt-7">
-                <v-autocomplete v-model="editedRecord.grade"
-                                :disabled="!item.validationErrors['Grade'] && !validationErrors['Grade'] || hasNoEditRoleAccess()"
-                                outlined dense name="4" label="Grade"
-                                :items="gradeCodeObjects"
-                                item-text="label"
-                                item-value="gradeCode"
-                                :rules="[!validationErrors['Grade'] || validationErrors['Grade']]"
-                ></v-autocomplete>
+                <v-autocomplete
+                  v-model="editedRecord.gender"
+                  :disabled="!item.validationErrors['Gender'] && !validationErrors['Gender'] || hasNoEditRoleAccess()"
+                  outlined
+                  dense
+                  name="4"
+                  label="Gender"
+                  :items="genders"
+                  item-title="label"
+                  item-value="genderCode"
+                  :rules="[!validationErrors['Gender'] || validationErrors['Gender']]"
+                />
               </v-col>
               <v-col class="pb-0 pt-7">
-                <PrimaryButton width="100%" text="Save" :disabled="!validForm" @click.native="updateRequest(item)" :loading="updating"></PrimaryButton>
+                <v-text-field
+                  id="date-picker-text-field"
+                  :value="editedRecord.birthDate"
+                  variant="underlined"
+                  dense
+                  :disabled="!item.validationErrors['Birth Date'] && !validationErrors['Birth Date'] || hasNoEditRoleAccess()"
+                  :rules="[!validationErrors['Birth Date'] || validationErrors['Birth Date']]"
+                  type="date"
+                  clearable
+                  @update:model-value="validateForm"
+                />
+              </v-col>
+              <v-col class="pb-0 pt-7">
+                <v-autocomplete
+                  v-model="editedRecord.grade"
+                  :disabled="!item.validationErrors['Grade'] && !validationErrors['Grade'] || hasNoEditRoleAccess()"
+                  outlined
+                  dense
+                  name="4"
+                  label="Grade"
+                  :items="gradeCodeObjects"
+                  item-title="label"
+                  item-value="gradeCode"
+                  :rules="[!validationErrors['Grade'] || validationErrors['Grade']]"
+                />
+              </v-col>
+              <v-col class="pb-0 pt-7">
+                <PrimaryButton
+                  width="100%"
+                  text="Save"
+                  :disabled="!validForm"
+                  :click-action="updateRequest(item)"
+                  :loading="updating"
+                />
               </v-col>
             </v-row>
           </v-form>
         </td>
       </template>
     </v-data-table>
-    <v-row class="pt-2" justify="end">
+    <v-row
+      class="pt-2"
+      justify="end"
+    >
       <v-col cols="4">
-        <v-pagination color="#38598A" v-model="pageNumber" :length="nomRollStudentSearchResponse.totalPages"></v-pagination>
+        <v-pagination
+          v-model="pageNumber"
+          color="#38598A"
+          :length="nomRollStudentSearchResponse.totalPages"
+        />
       </v-col>
-      <v-col cols="4" id="currentItemsDisplay">
-        Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ nomRollStudentSearchResponse.totalElements || 0 }}
+      <v-col
+        id="currentItemsDisplay"
+        cols="4"
+      >
+        Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ nomRollStudentSearchResponse.totalElements || 0
+        }}
       </v-col>
     </v-row>
     <ConfirmationDialog ref="confirmationDialogIgnore">
-      <template v-slot:message>
-      </template>
+      <template #message />
     </ConfirmationDialog>
   </div>
 </template>
 
 <script>
-import {mapGetters, mapMutations, mapState} from 'vuex';
-import PrimaryButton from '../util/PrimaryButton';
-import NomRollStudentStatusChip from './NomRollStudentStatusChip';
+import {mapActions, mapState} from 'pinia';
+import PrimaryButton from '../util/PrimaryButton.vue';
+import NomRollStudentStatusChip from './NomRollStudentStatusChip.vue';
 import {uniqBy, values, partialRight} from 'lodash';
 import router from '../../router';
 import {
@@ -235,19 +374,26 @@ import ApiService from '@/common/apiService';
 import {formatDob, formatPen, formatGrade, formatDistrictNumber} from '@/utils/format';
 import {constructPenMatchObjectFromNominalRollStudent, deepCloneObject, getPossibleMatches} from '../../utils/common';
 import alertMixin from '@/mixins/alertMixin';
-import MapSchoolCodeModal from './MapSchoolCodeModal';
-import ConfirmationDialog from '@/components/util/ConfirmationDialog';
+import MapSchoolCodeModal from './MapSchoolCodeModal.vue';
+import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import {LocalDate} from '@js-joda/core';
+import {notificationsStore} from '@/store/modules/notifications';
+import {nominalRollStore} from '@/store/modules/nominalRoll';
+import {authStore} from '@/store/modules/auth';
+import {appStore} from '@/store/modules/app';
+import {studentStore} from '@/store/modules/student';
+import {nominalRollStudentSearchStore} from '@/store/modules/nomRollStudentSearch';
+import {navigationStore} from '@/store/modules/setNavigation';
 
 export default {
   name: 'NomRollStudentSearchResults',
-  mixins: [alertMixin],
   components: {
     PrimaryButton,
     NomRollStudentStatusChip,
     MapSchoolCodeModal,
     ConfirmationDialog
   },
+  mixins: [alertMixin],
   props: {
     loading: {
       type: Boolean,
@@ -258,39 +404,22 @@ export default {
       required: true
     },
   },
-  watch: {
-    dateMenu (val) {
-      val && setTimeout(() => (this.activePicker = 'YEAR'));
-    },
-    editedRecord: {
-      handler() {
-        this.validateRecord();
-      },
-      deep: true
-    },
-    notification(val) {
-      if (val) {
-        const notificationData = val;
-        if (this.sagaId && notificationData && this.sagaId === notificationData.sagaId  && notificationData.sagaStatus === 'COMPLETED') {
-          if (notificationData.sagaName === 'NOMINAL_ROLL_POST_DATA_SAGA') {
-            this.setSuccessAlert('Success! Your request to post nominal roll data is completed.');
-            this.$emit('update:isPosted', true);
-          }
-          this.processing = false;
-        }
-      }
-    },
-  },
-  data () {
+  data() {
     return {
       dateMenu: false,
       expanded: [],
       editedRecord: {},
       itemsPerPage: 10,
       headers: [
-        {id: 'table-checkbox', type: 'select', sortable: false },
-        {text: 'Mincode', align: 'start', sortable: false, value: 'mincode', tooltip: 'Mincode' },
-        {text: 'School District', value: 'schoolDistrictNumber', sortable: false, tooltip: 'School District', format: formatDistrictNumber},
+        {id: 'table-checkbox', type: 'select', sortable: false},
+        {text: 'Mincode', align: 'start', sortable: false, value: 'mincode', tooltip: 'Mincode'},
+        {
+          text: 'School District',
+          value: 'schoolDistrictNumber',
+          sortable: false,
+          tooltip: 'School District',
+          format: formatDistrictNumber
+        },
         {text: 'School Number', value: 'schoolNumber', sortable: false, tooltip: 'School Number'},
         {text: 'School Name', value: 'schoolName', sortable: false, tooltip: 'School Name'},
         {text: 'LEA/Provincial', value: 'leaProvincial', sortable: false, tooltip: 'LEA/Provincial'},
@@ -300,14 +429,20 @@ export default {
         {text: 'Surname', value: 'surname', sortable: false, tooltip: 'Legal Surname'},
         {text: 'Given Name(s)', value: 'givenNames', sortable: false, tooltip: 'Legal Given Name'},
         {text: 'Gender', value: 'gender', sortable: false, tooltip: 'Gender'},
-        {text: 'Birth Date', value: 'birthDate', sortable: false, tooltip: 'Birth Date', format: partialRight(formatDob,'uuuu-MM-dd','uuuu/MM/dd')},
+        {
+          text: 'Birth Date',
+          value: 'birthDate',
+          sortable: false,
+          tooltip: 'Birth Date',
+          format: partialRight(formatDob, 'uuuu-MM-dd', 'uuuu/MM/dd')
+        },
         {text: 'Grade', value: 'grade', sortable: false, tooltip: 'Grade Code', format: formatGrade},
-        { text: 'Assigned PEN', value: 'assignedPEN', sortable: false, tooltip: 'Suggested PEN', format: formatPen },
-        { text: 'Status', value: 'status', sortable: false, tooltip: 'Status' }
+        {text: 'Assigned PEN', value: 'assignedPEN', sortable: false, tooltip: 'Suggested PEN', format: formatPen},
+        {text: 'Status', value: 'status', sortable: false, tooltip: 'Status'}
       ],
       leaProvincialItems: ['LEA', 'PROVINCIAL'],
       loadingRequestIDs: false,
-      sysMatchedStatuses: ['AA','B1','C1','D1'],
+      sysMatchedStatuses: ['AA', 'B1', 'C1', 'D1'],
       updating: false,
       validationErrors: {},
       validForm: true,
@@ -316,52 +451,51 @@ export default {
     };
   },
   async beforeMount() {
-    if(!this.gradeCodeObjects || !this.genders) {
-      this.$store.dispatch('student/getCodes');
+    if (!this.gradeCodeObjects || !this.genders) {
+      studentStore().getCodes();
     }
-    if(this.isEmpty(this.schoolApiMincodeSchoolNamesObjectSorted) || this.isEmpty(this.schoolApiDistrictCodesObjectSorted)) {
-      this.$store.dispatch('app/getCodes');
+    if (this.isEmpty(this.schoolApiMincodeSchoolNamesObjectSorted) || this.isEmpty(this.schoolApiDistrictCodesObjectSorted)) {
+      appStore().getCodes();
     }
   },
   computed: {
-    ...mapState('nomRollStudentSearch', ['nomRollStudentSearchResponse', 'nomRollStudentSearchCriteria', 'currentNomRollStudentSearchParams']),
-    ...mapGetters('student', ['genders','gradeCodeObjects']),
-    ...mapState('app', ['schoolApiMincodeSchoolNames', 'schoolApiDistrictCodes']),
-    ...mapGetters('app', ['schoolApiMincodeSchoolNamesObjectSorted', 'schoolApiDistrictCodesObjectSorted']),
-    ...mapGetters('auth', ['EDIT_NOMINAL_ROLL_ROLE','NOMINAL_ROLL_READ_ONLY_ROLE']),
-    ...mapState('nominalRoll', ['fedProvSchoolCodes']),
-    ...mapGetters('notifications', ['notification']),
+    ...mapState(nominalRollStudentSearchStore, ['nomRollStudentSearchResponse', 'nomRollStudentSearchCriteria', 'currentNomRollStudentSearchParams']),
+    ...mapState(studentStore, ['genders', 'gradeCodeObjects']),
+    ...mapState(appStore, ['schoolApiMincodeSchoolNames', 'schoolApiDistrictCodes', 'schoolApiMincodeSchoolNamesObjectSorted', 'schoolApiDistrictCodesObjectSorted']),
+    ...mapState(authStore, ['EDIT_NOMINAL_ROLL_ROLE', 'NOMINAL_ROLL_READ_ONLY_ROLE']),
+    ...mapState(nominalRollStore, ['fedProvSchoolCodes']),
+    ...mapState(notificationsStore, ['notification']),
     pageNumber: {
-      get(){
-        return this.$store.state['nomRollStudentSearch'].pageNumber;
+      get() {
+        return nominalRollStudentSearchStore().pageNumber;
       },
-      set(newPage){
-        this.$store.state['nomRollStudentSearch'].pageNumber = newPage;
+      set(newPage) {
+        nominalRollStudentSearchStore().setPageNumber(newPage);
       }
     },
     selectedRecords: {
-      get(){
-        return this.$store.state['nomRollStudentSearch'].selectedRecords;
+      get() {
+        return nominalRollStudentSearchStore().selectedRecords;
       },
-      set(newRecords){
-        this.$store.state['nomRollStudentSearch'].selectedRecords = newRecords;
+      set(newRecords) {
+        nominalRollStudentSearchStore().setSelectedRecords(newRecords);
       }
     },
     showingFirstNumber() {
-      return ((this.pageNumber-1) * (this.nomRollStudentSearchResponse.pageable.pageSize || 0) + ((this.nomRollStudentSearchResponse.numberOfElements || 0) > 0 ? 1 : 0));
+      return ((this.pageNumber - 1) * (this.nomRollStudentSearchResponse.pageable.pageSize || 0) + ((this.nomRollStudentSearchResponse.numberOfElements || 0) > 0 ? 1 : 0));
     },
     showingEndNumber() {
-      return ((this.pageNumber-1) * (this.nomRollStudentSearchResponse.pageable.pageSize || 0) + (this.nomRollStudentSearchResponse.numberOfElements || 0));
+      return ((this.pageNumber - 1) * (this.nomRollStudentSearchResponse.pageable.pageSize || 0) + (this.nomRollStudentSearchResponse.numberOfElements || 0));
     },
     studentStatuses() {
       return NOMINAL_ROLL_STUDENT_STATUSES.filter(status => status.value !== 'LOADED');
     },
     selectedStudentStatus: {
-      get(){
-        return this.$store.state['nomRollStudentSearch'].selectedStudentStatus;
+      get() {
+        return nominalRollStudentSearchStore().selectedStudentStatus;
       },
-      set(status){
-        this.$store.state['nomRollStudentSearch'].selectedStudentStatus = status;
+      set(status) {
+        nominalRollStudentSearchStore().setSelectedStudentStatus(status);
       }
     },
     selected() {
@@ -380,17 +514,17 @@ export default {
       return this.nomRollStudentSearchResponse.totalElements > 0 && !this.loading && !this.hasErrorRecordsSelected() && !this.hasIgnoreRecordsSelected() && !this.hasFilterOnlyIgnored();
     },
     rowExpandedIcon() {
-      return !this.isEmpty(this.expanded)?'mdi-chevron-up':'mdi-chevron-down';
+      return !this.isEmpty(this.expanded) ? 'mdi-chevron-up' : 'mdi-chevron-down';
     }
   },
   methods: {
-    ...mapMutations('nomRollStudentSearch', ['setSelectedRecords']),
-    ...mapMutations('setNavigation', ['setSelectedIDs', 'setRequestType', 'setMultiFiles']),
+    ...mapActions(nominalRollStudentSearchStore, ['setSelectedRecords']),
+    ...mapActions(navigationStore, ['setSelectedIDs', 'setRequestType', 'setMultiFiles']),
     formatTableColumn(format, column) {
       return (format && column) ? format(column) : (column || ' ');
     },
     getSchoolName(request) {
-      return this.$store.state['app'].schoolApiMincodeSchoolNames.get(request?.mincode?.replace(' ',''));
+      return appStore().schoolApiMincodeSchoolNames.get(request?.mincode?.replace(' ', ''));
     },
     hasNoEditRoleAccess() {
       return this.EDIT_NOMINAL_ROLL_ROLE === false || this.hasReadOnlyRoleAccess();
@@ -401,43 +535,32 @@ export default {
     hasFilterOnlyIgnored() {
       return this.selectedStudentStatus === 'IGNORED';
     },
-    hasErrorRecordsSelected(){
-      let filteredError = this.selectedRecords.filter(record =>  record.status === 'ERROR');
-      if(filteredError.length > 0) {
-        return true;
-      }
-      return false;
+    hasErrorRecordsSelected() {
+      let filteredError = this.selectedRecords.filter(record => record.status === 'ERROR');
+      return filteredError.length > 0;
     },
-    hasIgnoreRecordsSelected(){
-      let filteredError = this.selectedRecords.filter(record =>  record.status === 'IGNORED');
-      if(filteredError.length > 0) {
-        return true;
-      }
-      return false;
+    hasIgnoreRecordsSelected() {
+      let filteredError = this.selectedRecords.filter(record => record.status === 'IGNORED');
+      return filteredError.length > 0;
     },
-    hasCanIgnoreRecordsSelectedOnly(){
-      let filteredError = this.selectedRecords.filter(record =>  record.status === 'FIXABLE' || record.status === 'ERROR');
-      if(filteredError.length > 0 && filteredError.length === this.selectedRecords.length) {
-        return true;
-      }
-      return false;
+    hasCanIgnoreRecordsSelectedOnly() {
+      let filteredError = this.selectedRecords.filter(record => record.status === 'FIXABLE' || record.status === 'ERROR');
+      return (filteredError.length > 0 && filteredError.length === this.selectedRecords.length);
     },
-    hasRecoverOnlyRecordsSelected(){
-      let filteredError = this.selectedRecords.filter(record =>  record.status === 'IGNORED');
-      if(filteredError.length > 0 && filteredError.length === this.selectedRecords.length) {
-        return true;
-      }
-      return false;
+    hasRecoverOnlyRecordsSelected() {
+      let filteredError = this.selectedRecords.filter(record => record.status === 'IGNORED');
+      return (filteredError.length > 0 && filteredError.length === this.selectedRecords.length);
     },
-    hasOnlyErrorRecordsInList(){
-      let filteredError = this.nomRollStudentSearchResponse.content.filter(record =>  record.status === 'ERROR');
-      if(filteredError.length === this.nomRollStudentSearchResponse.content.length) {
-        return true;
-      }
-      return false;
+    hasOnlyErrorRecordsInList() {
+      let filteredError = this.nomRollStudentSearchResponse.content.filter(record => record.status === 'ERROR');
+      return (filteredError.length === this.nomRollStudentSearchResponse.content.length);
+    },
+    async validateForm() {
+      const isValid = await this.$refs.form.validate();
+      this.validForm = isValid.valid;
     },
     async clickIgnore() {
-      if(this.selectedRecords?.length > 0) {
+      if (this.selectedRecords?.length > 0) {
         const result = await this.confirmToProceedIgnore();
         if (!result) {
           return;
@@ -448,7 +571,7 @@ export default {
       }
     },
     async clickRecover() {
-      if(this.selectedRecords?.length > 0) {
+      if (this.selectedRecords?.length > 0) {
         this.selectedRecords.forEach(obj => {
           this.recoverStudent(obj);
         });
@@ -488,7 +611,7 @@ export default {
     async recoverStudent(student) {
       let payload;
 
-      if(!this.isEmpty(student.validationErrors)) {
+      if (!this.isEmpty(student.validationErrors)) {
         payload = {
           ...student,
           status: NOMINAL_ROLL_STUDENT_STATUS_CODES.ERROR,
@@ -528,7 +651,7 @@ export default {
       return result;
     },
     clickViewSelected() {
-      if(this.selectedRecords?.length > 0) {
+      if (this.selectedRecords?.length > 0) {
         this.setSelectedIDs(this.selectedRecords);
         this.setRequestType('nominalRoll');
         this.setMultiFiles(false);
@@ -545,7 +668,7 @@ export default {
       this.nomRollStudentSearchCriteria[0].searchCriteriaList.forEach(obj => {
         switch (obj.key) {
         case ('status'):
-          if(obj.operation === 'neq') { //default search criteria for archived files is a not equals, so we have to account for that
+          if (obj.operation === 'neq') { //default search criteria for archived files is a not equals, so we have to account for that
             statusCodes = Object.values(NOMINAL_ROLL_STUDENT_STATUS_CODES).filter(code => code !== obj.value && code !== 'ERROR').join(',');
           } else {
             statusCodes = obj.value;
@@ -616,7 +739,7 @@ export default {
       if (index === -1) {
         this.validationErrors = item?.validationErrors || {};
         this.editedRecord = deepCloneObject(item);
-        if(this.editedRecord.schoolDistrictNumber) {
+        if (this.editedRecord.schoolDistrictNumber) {
           this.editedRecord.schoolDistrictNumber = formatDistrictNumber(this.editedRecord.schoolDistrictNumber);
         }
         this.editedRecord.grade = formatGrade(this.editedRecord.grade);
@@ -633,7 +756,7 @@ export default {
     async updateRequest(item) {
       this.updating = true;
       try {
-        if(!this.isEmpty(this.validationErrors)) {
+        if (!this.isEmpty(this.validationErrors)) {
           this.setWarningAlert('Cannot update record due to validation errors. Please fix and try again.');
         } else {
           const matchResult = await getPossibleMatches(constructPenMatchObjectFromNominalRollStudent(this.editedRecord));
@@ -660,7 +783,7 @@ export default {
               this.setFailureAlert('Failed to update record. Please try again later.');
             });
         }
-      } catch(e) {
+      } catch (e) {
         console.log(e);
         this.setFailureAlert('Failed to update record. There was an error during pen match. Please try again later.');
       }
@@ -700,8 +823,20 @@ export default {
     },
     retrieveAndDownloadIgnoredPenRequests() {
       let optionalCriteriaList = [];
-      optionalCriteriaList.push({key: 'status', operation: SEARCH_FILTER_OPERATION.EQUAL, value: 'IGNORED', valueType: SEARCH_VALUE_TYPE.STRING, condition: SEARCH_CONDITION.AND});
-      optionalCriteriaList.push({key: 'processingYear', operation: SEARCH_FILTER_OPERATION.EQUAL, value: '' + LocalDate.now().year(), valueType: SEARCH_VALUE_TYPE.STRING, condition: SEARCH_CONDITION.AND});
+      optionalCriteriaList.push({
+        key: 'status',
+        operation: SEARCH_FILTER_OPERATION.EQUAL,
+        value: 'IGNORED',
+        valueType: SEARCH_VALUE_TYPE.STRING,
+        condition: SEARCH_CONDITION.AND
+      });
+      optionalCriteriaList.push({
+        key: 'processingYear',
+        operation: SEARCH_FILTER_OPERATION.EQUAL,
+        value: '' + LocalDate.now().year(),
+        valueType: SEARCH_VALUE_TYPE.STRING,
+        condition: SEARCH_CONDITION.AND
+      });
       const params = {
         params: {
           pageNumber: 0,
@@ -713,7 +848,7 @@ export default {
             surname: 'ASC',
             givenNames: 'ASC',
           },
-          searchQueries:  [{searchCriteriaList: [...optionalCriteriaList]}],
+          searchQueries: [{searchCriteriaList: [...optionalCriteriaList]}],
         }
       };
       return ApiService.apiAxios
@@ -723,8 +858,8 @@ export default {
             'Recipient Name,FTE,Surname,Given Name(s),Gender,Birth Date,Grade,Band of Residence\n';
           response.data.content.forEach((s) => {
             csv += s.schoolDistrictNumber + ',' + s.schoolNumber + ','
-              + s.schoolName+ ',' + s.leaProvincial + ',' + s.recipientNumber + ','
-              + s.recipientName + ',' + s.fte + ',' + s.surname+ ',' + s.givenNames
+              + s.schoolName + ',' + s.leaProvincial + ',' + s.recipientNumber + ','
+              + s.recipientName + ',' + s.fte + ',' + s.surname + ',' + s.givenNames
               + ',' + s.gender + ',' + s.birthDate + ',' + s.grade + ',' + s.bandOfResidence;
             csv += '\n';
           });
@@ -740,76 +875,107 @@ export default {
           throw error;
         });
     },
+  },
+  watch: {
+    dateMenu(val) {
+      val && setTimeout(() => (this.activePicker = 'YEAR'));
+    },
+    editedRecord: {
+      handler() {
+        this.validateRecord();
+      },
+      deep: true
+    },
+    notification(val) {
+      if (val) {
+        const notificationData = val;
+        if (this.sagaId && notificationData && this.sagaId === notificationData.sagaId && notificationData.sagaStatus === 'COMPLETED') {
+          if (notificationData.sagaName === 'NOMINAL_ROLL_POST_DATA_SAGA') {
+            this.setSuccessAlert('Success! Your request to post nominal roll data is completed.');
+            this.$emit('update:isPosted', true);
+          }
+          this.processing = false;
+        }
+      }
+    },
   }
 };
 </script>
 
 <style scoped>
-  #currentItemsDisplay {
+#currentItemsDisplay {
     text-align: right;
     font-size: 0.875rem;
-  }
-  .column-item {
+}
+
+.column-item {
     float: left;
-  }
-  .table-checkbox {
+}
+
+.table-checkbox {
     margin-top: 0;
     padding-top: 0;
     padding-left: 0.5rem !important;
     padding-right: 0.5rem !important;
-  }
-  .table-checkbox /deep/ .v-input__slot {
+}
+
+.table-checkbox /deep/ .v-input__slot {
     padding-top: 0;
-  }
-  .table-cell {
+}
+
+.table-cell {
     cursor: pointer;
-  }
+}
 
-  #searchResults /deep/ .v-pagination__navigation > i {
+#searchResults /deep/ .v-pagination__navigation > i {
     padding-left: 0;
-  }
+}
 
-  .subheader-divider {
+.subheader-divider {
     border-width: 0.25ex 0 0 0;
-  }
+}
 
-  #dataTable /deep/ table th{
+#dataTable /deep/ table th {
     font-size: 0.875rem;
-  }
-  #dataTable /deep/ table tr.selected-record,
-  #dataTable /deep/ table tbody tr:hover {
+}
+
+#dataTable /deep/ table tr.selected-record,
+#dataTable /deep/ table tbody tr:hover {
     background-color: #E1F5FE
-  }
+}
 
-  #dataTable /deep/ table {
+#dataTable /deep/ table {
     border-bottom: thin solid #d7d7d7;
-  }
+}
 
-  #dataTable /deep/ table tr td{
+#dataTable /deep/ table tr td {
     text-align: center !important;
     vertical-align: top;
     padding-top: 0.5rem;
     padding-bottom: 0.3rem;
-  }
+}
 
-  .record-checkbox {
+.record-checkbox {
     margin-top: 0;
-  }
-  .record-checkbox /deep/ .v-input__slot {
+}
+
+.record-checkbox /deep/ .v-input__slot {
     margin-bottom: 0;
-  }
-  .record-checkbox /deep/ .v-input__slot .v-input--selection-controls__input {
+}
+
+.record-checkbox /deep/ .v-input__slot .v-input--selection-controls__input {
     margin-right: 0;
-  }
+}
 
-  .header-checkbox {
+.header-checkbox {
     padding-top: 0;
-  }
-  .header-checkbox /deep/ .v-input__slot {
-    padding-top: 0;
-  }
+}
 
-  .select {
+.header-checkbox /deep/ .v-input__slot {
+    padding-top: 0;
+}
+
+.select {
     max-width: 245px;
-  }
+}
 </style>

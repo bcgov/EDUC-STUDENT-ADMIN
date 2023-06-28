@@ -1,30 +1,50 @@
 <template>
   <v-card
-      id="newNoteSheet"
-      class="information-window-v-card">
-    <v-card-title class="sheetHeader pt-1 pb-1">New Note</v-card-title>
-    <v-divider></v-divider>
+    id="newNoteSheet"
+    class="information-window-v-card"
+  >
+    <v-card-title class="sheetHeader pt-1 pb-1">
+      New Note
+    </v-card-title>
+    <v-divider />
     <v-card-text>
-      <v-form ref="newSchoolNoteForm" v-model="isFormValid">
+      <v-form
+        ref="newSchoolNoteForm"
+        v-model="isFormValid"
+      >
         <v-row>
           <v-col>
             <v-textarea
-                id="newNoteTextArea"
-                v-model="newNoteText"
-                rows="8"
-                label="Note"
-                autofocus
-                no-resize
-                maxlength="4000"
-                class="pt-0"
-                ref="newNoteTextArea"
-                hide-details="auto">
-            </v-textarea>
+              id="newNoteTextArea"
+              ref="newNoteTextArea"
+              v-model="newNoteText"
+              rows="8"
+              label="Note"
+              autofocus
+              variant="underlined"
+              no-resize
+              maxlength="4000"
+              class="pt-0"
+              hide-details="auto"
+            />
           </v-col>
         </v-row>
         <v-row class="py-4 pr-2 justify-end">
-          <PrimaryButton id="cancelNote" secondary text="Cancel" @click.native="closeNewSchoolNotePage"></PrimaryButton>
-          <PrimaryButton id="saveNote" text="Save" width="7rem" @click.native="addNewSchoolNote" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
+          <PrimaryButton
+            id="cancelNote"
+            secondary
+            text="Cancel"
+            class="mr-2"
+            :click-action="closeNewSchoolNotePage"
+          />
+          <PrimaryButton
+            id="saveNote"
+            text="Save"
+            width="7rem"
+            :click-action="addNewSchoolNote"
+            :disabled="!isFormValid"
+            :loading="processing"
+          />
         </v-row>
       </v-form>
     </v-card-text>
@@ -32,17 +52,17 @@
 </template>
 
 <script>
-import PrimaryButton from '../../util/PrimaryButton';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
 
 export default {
   name: 'NewSchoolNotePage',
-  mixins: [alertMixin],
   components: {
     PrimaryButton
   },
+  mixins: [alertMixin],
   props: {
     schoolID: {
       type: String,
@@ -85,7 +105,8 @@ export default {
       this.$refs.newSchoolNoteForm.reset();
     },
     validateForm() {
-      this.isFormValid = this.$refs.newSchoolNoteForm.validate();
+      const isValid = this.$refs.newSchoolNoteForm.validate();
+      this.isFormValid = isValid.valid;
     },
   }
 };
@@ -93,9 +114,9 @@ export default {
 
 <style scoped>
 .sheetHeader {
-  background-color: #003366;
-  color: white;
-  font-size: medium !important;
-  font-weight: bolder !important;
+    background-color: #003366;
+    color: white;
+    font-size: medium !important;
+    font-weight: bolder !important;
 }
 </style>

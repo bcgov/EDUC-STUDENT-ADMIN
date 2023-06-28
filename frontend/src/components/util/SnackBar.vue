@@ -1,19 +1,20 @@
 <template>
   <div
     @mouseover="pause = true"
-    @mouseleave="pause = false">
+    @mouseleave="pause = false"
+  >
     <v-snackbar
       v-model="showSnackBar"
       :timeout="timeout"
       elevation="24"
-      top
+      location="top"
       centered
       :color="colour"
       transition="slide-y-transition"
       class="snackbar"
     >
-      <div v-html="alertNotificationText"></div>
-      <template v-slot:action="{ attrs }">
+      <div v-html="alertNotificationText" />
+      <template #action="{ attrs }">
         <v-btn
           text
           color="white"
@@ -29,8 +30,9 @@
 
 <script>
 
-import {mapMutations, mapState} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import {ALERT_NOTIFICATION_TYPES} from '../../utils/constants/AlertNotificationTypes';
+import {appStore} from '@/store/modules/app';
 
 export default {
   name: 'SnackBar',
@@ -43,38 +45,37 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['alertNotificationText', 'alertNotificationQueue', 'alertNotification']),
+    ...mapState(appStore, ['alertNotificationText', 'alertNotificationQueue', 'alertNotification']),
     hasNotificationsPending() {
       return this.alertNotificationQueue.length > 0;
     },
     showSnackBar: {
-      get(){
+      get() {
         return this.alertNotification;
       },
-      set(val){
+      set(val) {
         this.setAlertNotification(val);
       }
     }
   },
   watch: {
     showSnackBar() {
-      if(!this.showSnackBar && this.hasNotificationsPending) {
+      if (!this.showSnackBar && this.hasNotificationsPending) {
         this.$nextTick(() => this.showSnackBar = true);
       } else if (this.showSnackBar && this.hasNotificationsPending) {
         this.setupSnackBar();
-      }
-      else {
+      } else {
         this.teardownSnackBar();
       }
     },
   },
   methods: {
-    ...mapMutations('app', ['setAlertNotificationText', 'setAlertNotification']),
+    ...mapActions(appStore, ['setAlertNotificationText', 'setAlertNotification']),
     setAlertType(alertType) {
-      if(!alertType) {
+      if (!alertType) {
         alertType = '';
       }
-      switch(alertType.toLowerCase()) {
+      switch (alertType.toLowerCase()) {
       case(ALERT_NOTIFICATION_TYPES.ERROR):
         this.colour = ALERT_NOTIFICATION_TYPES.ERROR;
         break;
@@ -112,7 +113,7 @@ export default {
     },
     timeoutCounter() {
       this.polling = setInterval(() => {
-        if(this.pause) {
+        if (this.pause) {
           this.timeout += 1;
         }
       }, 1000);
@@ -122,8 +123,8 @@ export default {
 </script>
 
 <style>
-  .snackbar {
+.snackbar {
     padding: 0 !important;
-  }
+}
 </style>
 

@@ -1,55 +1,95 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="mapSchoolCodeDialog"
-              max-width="60%"
+    <v-dialog
+      v-model="mapSchoolCodeDialog"
+      max-width="60%"
     >
-      <template v-slot:activator="{ on, attrs }">
-        <TertiaryButton id="add-school-code"
-                        icon="$plus"
-                        short
-                        class="mx-0 mt-1 pl-2 pr-0"
-                        min-width="20px"
-                        :bind="attrs"
-                        :on="on"
-        ></TertiaryButton>
+      <template #activator="{ on, attrs }">
+        <TertiaryButton
+          id="add-school-code"
+          icon="$plus"
+          short
+          class="mx-0 mt-1 pl-2 pr-0"
+          min-width="20px"
+          :bind="attrs"
+          :on="on"
+        />
       </template>
       <v-card fluid>
         <v-card-title>
           <span> Map school code </span>
-          <v-spacer/>
-          <v-btn id="mapSchoolCodeDialogCloseBtn" text icon
-                 @click="mapSchoolCodeDialog = false"
+          <v-spacer />
+          <v-btn
+            id="mapSchoolCodeDialogCloseBtn"
+            text
+            icon
+            @click="mapSchoolCodeDialog = false"
           >
-            <v-icon large color="#38598A">mdi-close</v-icon>
+            <v-icon
+              large
+              color="#38598A"
+            >
+              mdi-close
+            </v-icon>
           </v-btn>
         </v-card-title>
-        <v-spacer/>
+        <v-spacer />
         <v-card-text>
-          <v-form ref="addSchoolCodeForm" v-model="isValidForm">
-            <v-row dense no-gutters class="py-3">
-              <v-col cols="6" class="pt-2">
-                <v-row dense no-gutters>
+          <v-form
+            ref="addSchoolCodeForm"
+            v-model="isValidForm"
+          >
+            <v-row
+              dense
+              no-gutters
+              class="py-3"
+            >
+              <v-col
+                cols="6"
+                class="pt-2"
+              >
+                <v-row
+                  dense
+                  no-gutters
+                >
                   <strong>Federal School Code</strong>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row
+                  dense
+                  no-gutters
+                >
                   <v-col cols="10">
-                    <v-text-field id="federalCodeTxtField" outlined dense filled
-                                  :rules="requiredRules"
-                                  required tabindex="1"
-                                  disabled
-                                  v-model="federalCode"
-                    ></v-text-field>
+                    <v-text-field
+                      id="federalCodeTxtField"
+                      v-model="federalCode"
+                      outlined
+                      dense
+                      filled
+                      :rules="requiredRules"
+                      required
+                      tabindex="1"
+                      disabled
+                    />
                   </v-col>
                 </v-row>
               </v-col>
-              <v-col cols="6" class="pt-2">
-                <v-row dense no-gutters>
+              <v-col
+                cols="6"
+                class="pt-2"
+              >
+                <v-row
+                  dense
+                  no-gutters
+                >
                   <strong>Mincode</strong>
                 </v-row>
-                <v-row dense no-gutters>
+                <v-row
+                  dense
+                  no-gutters
+                >
                   <v-col cols="10">
                     <v-autocomplete
-                      id='schoolNameTxtField'
+                      id="schoolNameTxtField"
                       v-model="mincode"
                       :items="schools"
                       :messages="mincode && schoolApiMincodeSchoolNames.get(mincode)"
@@ -60,7 +100,7 @@
                       outlined
                       dense
                     >
-                      <template v-slot:selection="{ item }">
+                      <template #selection="{ item }">
                         <span> {{ item.value }} </span>
                       </template>
                     </v-autocomplete>
@@ -72,9 +112,20 @@
         </v-card-text>
 
         <v-card-actions class="mr-4 pb-6">
-          <v-spacer/>
-          <PrimaryButton id="mapSchoolCodeDialogCancelBtn" text="Cancel" secondary @click.native="mapSchoolCodeDialog = false"></PrimaryButton>
-          <PrimaryButton id="mapSchoolCodeDialogAddBtn" text="Add" :disabled="!isValidForm" :loading="processing" @click.native="createFedProvSchoolCode"></PrimaryButton>
+          <v-spacer />
+          <PrimaryButton
+            id="mapSchoolCodeDialogCancelBtn"
+            text="Cancel"
+            secondary
+            :click-action="mapSchoolCodeDialog = false"
+          />
+          <PrimaryButton
+            id="mapSchoolCodeDialogAddBtn"
+            text="Add"
+            :disabled="!isValidForm"
+            :loading="processing"
+            :click-action="createFedProvSchoolCode"
+          />
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -82,20 +133,23 @@
 </template>
 
 <script>
-import {mapState} from 'vuex';
-import TertiaryButton from '../util/TertiaryButton';
-import PrimaryButton from '../util/PrimaryButton';
+import {mapState} from 'pinia';
+import TertiaryButton from '../util/TertiaryButton.vue';
+import PrimaryButton from '../util/PrimaryButton.vue';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
+import {appStore} from '@/store/modules/app';
+import {nominalRollStore} from '@/store/modules/nominalRoll';
+import _ from 'lodash';
 
 export default {
   name: 'MapSchoolCodeModal',
-  mixins: [alertMixin],
   components: {
     TertiaryButton,
     PrimaryButton
   },
+  mixins: [alertMixin],
   props: {
     fedCode: {
       type: String,
@@ -113,8 +167,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['schoolApiMincodeSchoolNames']),
-    ...mapState('nominalRoll', ['fedProvSchoolCodes']),
+    ...mapState(appStore, ['schoolApiMincodeSchoolNames']),
+    ...mapState(nominalRollStore, ['fedProvSchoolCodes']),
     schools() {
       return _.sortBy(Array.from(this.schoolApiMincodeSchoolNames.entries()).map(school => ({ text: `${school[0]} - ${school[1]}`, value: school[0]})), ['value']);
     },

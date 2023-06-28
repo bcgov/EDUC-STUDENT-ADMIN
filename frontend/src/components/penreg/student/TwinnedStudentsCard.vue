@@ -2,71 +2,110 @@
   <v-card height="100%">
     <v-card-title class="px-0 pb-0 pt-5">
       <v-list-item>
-        <v-list-item-content class="pt-0">
-          <v-list-item-title class="headline">Twinned Students</v-list-item-title>
-        </v-list-item-content>
+        <v-list-item class="pt-0">
+          <v-list-item-title class="headline">
+            Twinned Students
+          </v-list-item-title>
+        </v-list-item>
         <v-list-item-icon class="my-0">
-          <v-btn text icon @click="$emit('close')">
-            <v-icon color="#38598A" class="px-0">mdi-close</v-icon>
+          <v-btn
+            text
+            icon
+            @click="$emit('close')"
+          >
+            <v-icon
+              color="#38598A"
+              class="px-0"
+            >
+              mdi-close
+            </v-icon>
           </v-btn>
         </v-list-item-icon>
       </v-list-item>
     </v-card-title>
     <v-card-text class="px-3 py-2 text--primary">
       <v-row no-gutters>
-        <v-col no-gutters cols="9">
+        <v-col
+          no-gutters
+          cols="9"
+        >
           <v-data-table
-              id="top-table"
-              :headers="topTableHeaders"
-              :items="[currentStudent]"
-              hide-default-footer
-              dense
-          ></v-data-table>
+            id="top-table"
+            :headers="topTableHeaders"
+            :items="[currentStudent]"
+            hide-default-footer
+            dense
+          />
         </v-col>
       </v-row>
-      <v-divider class="mt-2"></v-divider>
-      <v-row no-gutters justify="end">
+      <v-divider class="mt-2" />
+      <v-row
+        no-gutters
+        justify="end"
+      >
         <v-col class="mt-4">
-          <span id="twins-number" class="px-4"><strong>{{ possibleMatches.length }} Twins</strong></span>
+          <span
+            id="twins-number"
+            class="px-4"
+          ><strong>{{ possibleMatches.length }} Twins</strong></span>
         </v-col>
         <v-col class="mt-2">
-          <v-row justify="end" class="mx-3">
-            <TertiaryButton :disabled="selectedTwins.length < 1 || !ADVANCED_SEARCH_ROLE" id="deleteButton" class="ma-0" text="Delete"
-                            icon="mdi-delete" @click.native="deleteTwinStudent"></TertiaryButton>
+          <v-row
+            justify="end"
+            class="mx-3"
+          >
+            <TertiaryButton
+              id="deleteButton"
+              :disabled="selectedTwins.length < 1 || !ADVANCED_SEARCH_ROLE"
+              class="ma-0"
+              text="Delete"
+              icon="mdi-delete"
+              :click-action="deleteTwinStudent"
+            />
           </v-row>
         </v-col>
       </v-row>
       <v-data-table
-          id="details-table"
-          :headers="headers"
-          :items="possibleMatchItems"
-          :page.sync="pageNumber"
-          :items-per-page="itemsPerPage"
-          show-select
-          hide-default-footer
-          item-key="possibleMatchID"
-          v-model="selectedTwins"
+        id="details-table"
+        v-model:page="pageNumber"
+        v-model="selectedTwins"
+        :headers="headers"
+        :items="possibleMatchItems"
+        :items-per-page="itemsPerPage"
+        show-select
+        hide-default-footer
+        item-key="possibleMatchID"
       >
-        <template v-slot:[`item.pen`]="props">
+        <template #[`item.pen`]="props">
           <a @click="viewStudentDetails(props.item.matchedStudentID)">
             {{ props.value }}
           </a>
         </template>
-        <template v-slot:[`item.matchedReason`]="props">
+        <template #[`item.matchedReason`]="props">
           <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <span v-on="on">{{ props.value }}</span>
+            <template #activator="{ on }">
+              <span>{{ props.value }}</span>
             </template>
             <span>{{ matchReasonLabel(props.value) }}</span>
           </v-tooltip>
         </template>
       </v-data-table>
-      <v-row class="pt-2" justify="end">
+      <v-row
+        class="pt-2"
+        justify="end"
+      >
         <v-col cols="4">
-          <v-pagination color="#38598A" v-model="pageNumber" :length="totalPages"
-                        class="twins-pagination"></v-pagination>
+          <v-pagination
+            v-model="pageNumber"
+            color="#38598A"
+            :length="totalPages"
+            class="twins-pagination"
+          />
         </v-col>
-        <v-col cols="4" id="currentItemsDisplay">
+        <v-col
+          id="currentItemsDisplay"
+          cols="4"
+        >
           Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ possibleMatches.length }}
         </v-col>
       </v-row>
@@ -75,8 +114,8 @@
 </template>
 
 <script>
-import TertiaryButton from '../../util/TertiaryButton';
-import {mapActions, mapGetters} from 'vuex';
+import TertiaryButton from '../../util/TertiaryButton.vue';
+import {mapState, mapActions} from 'pinia';
 import moment from 'moment';
 import {sortBy} from 'lodash';
 import ApiService from '../../../common/apiService';
@@ -84,13 +123,15 @@ import {REQUEST_TYPES, Routes} from '@/utils/constants';
 import {formatPen} from '@/utils/format';
 import router from '@/router';
 import alertMixin from '@/mixins/alertMixin';
+import {studentStore} from '@/store/modules/student';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   name: 'TwinnedStudentsCard',
-  mixins: [alertMixin],
   components: {
     TertiaryButton: TertiaryButton
   },
+  mixins: [alertMixin],
   props: {
     student: {
       type: Object,
@@ -118,8 +159,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('student', ['possibleMatchReasons']),
-    ...mapGetters('auth', ['ADVANCED_SEARCH_ROLE']),
+    ...mapState(studentStore, ['possibleMatchReasons']),
+    ...mapActions(authStore, ['ADVANCED_SEARCH_ROLE']),
     topTableHeaders() {
       return this.headers.filter(header => header.topTable);
     },
@@ -154,7 +195,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('student', ['getPossibleMatchReasonCodes']),
+    ...mapActions(studentStore, ['getPossibleMatchReasonCodes']),
     formatDateTime(date) {
       return moment(JSON.stringify(date), 'YYYY-MM-DDTHH:mm:ss').format('YYYY/MM/DD');
     },

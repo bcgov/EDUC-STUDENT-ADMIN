@@ -1,56 +1,85 @@
 <template>
   <v-dialog           
-          id="studentDetailDialog"
-          v-model="isDialogOpen"
-          content-class="studentDialog">
+    id="studentDetailDialog"
+    v-model="isDialogOpen"
+    content-class="studentDialog"
+  >
     <v-card class="studentDetailDialogCard fill-height ma-0 px-4 pb-4">
-        <v-card-title class="px-0 pb-0 pt-5">
-          <v-list-item>
-            <v-list-item-content style="padding-bottom: 0px; padding-top: 0px">
-              <v-list-item-title class="headline">Student Details</v-list-item-title>
-            </v-list-item-content>
-            <v-list-item-icon style="margin: 0px;">
-              <v-btn text icon @click="isDialogOpen=false">
-                <v-icon large color="#38598A">mdi-close</v-icon>
-              </v-btn>
-            </v-list-item-icon>
+      <v-card-title class="px-0 pb-0 pt-5">
+        <v-list-item>
+          <v-list-item style="padding-bottom: 0px; padding-top: 0px">
+            <v-list-item-title class="headline">
+              Student Details
+            </v-list-item-title>
           </v-list-item>
-        </v-card-title>
-        <v-col>
-          <StudentDetailCommon 
-            class="mx-3"
-            :studentID="studentID"
-            :fullReadOnly="true"
-          >
-            <template v-slot:buttonbar>
-              <v-row>
-                <v-col class="subheader-divider-col">
-                  <v-divider class="subheader-divider"/>
-                </v-col>
-                <v-col cols="12">
-                  <v-card-actions style="float: right;">
-                    <PrimaryButton @click.native="$emit('closeDialog')" :secondary="true" class="mx-1" text="Cancel"></PrimaryButton>
-                    <PrimaryButton class="mx-1" text="Go to Record" @click.native="viewStudentDetails"></PrimaryButton>
-                    <PrimaryButton class="mx-1" text="Open in new window" @click.native="openStudentDetails"></PrimaryButton>
-                  </v-card-actions>
-                </v-col>
-              </v-row>
-            </template>
-          </StudentDetailCommon>
-        </v-col>
+          <v-list-item-icon style="margin: 0px;">
+            <v-btn
+              text
+              icon
+              @click="isDialogOpen=false"
+            >
+              <v-icon
+                large
+                color="#38598A"
+              >
+                mdi-close
+              </v-icon>
+            </v-btn>
+          </v-list-item-icon>
+        </v-list-item>
+      </v-card-title>
+      <v-col>
+        <StudentDetailCommon 
+          class="mx-3"
+          :student-i-d="studentID"
+          :full-read-only="true"
+        >
+          <template #buttonbar>
+            <v-row>
+              <v-col class="subheader-divider-col">
+                <v-divider class="subheader-divider" />
+              </v-col>
+              <v-col cols="12">
+                <v-card-actions style="float: right;">
+                  <PrimaryButton
+                    :click-action="$emit('closeDialog')"
+                    :secondary="true"
+                    class="mx-1"
+                    text="Cancel"
+                  />
+                  <PrimaryButton
+                    class="mx-1"
+                    text="Go to Record"
+                    :click-action="viewStudentDetails"
+                  />
+                  <PrimaryButton
+                    class="mx-1"
+                    text="Open in new window"
+                    :click-action="openStudentDetails"
+                  />
+                </v-card-actions>
+              </v-col>
+            </v-row>
+          </template>
+        </StudentDetailCommon>
+      </v-col>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import StudentDetailCommon from '../../common/StudentDetailCommon';
-import PrimaryButton from '../../util/PrimaryButton';
+import StudentDetailCommon from '../../common/StudentDetailCommon.vue';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import router from '../../../router';
 import {REQUEST_TYPES} from '@/utils/constants';
 import alertMixin from '../../../mixins/alertMixin';
 
 export default {
-  name: 'studentDetailModal',
+  name: 'StudentDetailModal',
+  components: {
+    PrimaryButton,
+    StudentDetailCommon
+  },
   mixins: [alertMixin],
   props: {
     studentID: {
@@ -61,19 +90,6 @@ export default {
       type: Boolean,
       required: true
     }
-  },
-  methods: {
-    viewStudentDetails() {
-      router.push({ name: REQUEST_TYPES.student.label, params: {studentID: this.studentID}});
-    },
-    openStudentDetails() {
-      const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: this.studentID}});
-      window.open(route.href, '_blank');
-    },
-  },
-  components: {
-    PrimaryButton,
-    StudentDetailCommon
   },
   data() {
     return {
@@ -88,6 +104,15 @@ export default {
       if(!newValue && this.openDialog) {
         this.$emit('closeDialog');
       }
+    },
+  },
+  methods: {
+    viewStudentDetails() {
+      router.push({ name: REQUEST_TYPES.student.label, params: {studentID: this.studentID}});
+    },
+    openStudentDetails() {
+      const route = router.resolve({ name: REQUEST_TYPES.student.label, params: {studentID: this.studentID}});
+      window.open(route.href, '_blank');
     },
   }
 };

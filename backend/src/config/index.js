@@ -172,6 +172,11 @@ nconf.defaults({
     schedulerCronStaleSagaRecordRedis: process.env.SCHEDULER_CRON_STALE_SAGA_RECORD_REDIS,
     minTimeBeforeSagaIsStaleInSeconds: process.env.MIN_TIME_BEFORE_SAGA_IS_STALE_IN_SECONDS,
     schedulerCronDocTypeMigration: process.env.SCHEDULER_CRON_DOC_TYPE_MIGRATION
-  }
+  },
+  frontendConfig: {
+    bannerEnvironment: process.env.BANNER_ENVIRONMENT,
+    bannerColor: process.env.BANNER_COLOR,
+    webSocketURL: process.env.WEB_SOCKET_URL
+  },
 });
 module.exports = nconf;

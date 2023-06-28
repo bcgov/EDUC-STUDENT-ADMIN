@@ -1,13 +1,20 @@
 <template>
-  <v-container fluid class="fill-height my-10 px-16">
+  <v-container
+    fluid
+    class="fill-height my-10 px-16"
+  >
     <v-row no-gutters>
-      <v-card height="100%" width="100%" style="background-color:#38598a;">
+      <v-card
+        height="100%"
+        width="100%"
+        style="background-color:#38598a;"
+      >
         <v-combobox
           id="status-dropdown"
           :key="comboboxKey"
+          v-model="selectedStatuses"
           :mandatory="false"
           :items="statusCodes"
-          v-model="selectedStatuses"
           :label="label"
           multiple
           small-chips
@@ -17,24 +24,29 @@
           :loading="loadingSelect"
           class="mx-6 mt-6 pa-0"
         >
-          <template v-slot:selection="{ attrs, item, select, selected }">
-            <FilterTag :id="item + 'tag'" :text="item" :close="remove" :item="item"></FilterTag>
+          <template #selection="{ attrs, item, select, selected }">
+            <FilterTag
+              :id="item + 'tag'"
+              :text="item"
+              :close="remove"
+              :item="item"
+            />
           </template>
         </v-combobox>
         <v-data-table
+          v-model:items="requests"
+          v-model:items-per-page="pageSize"
+          v-model:page="pageNumber"
           :headers="headers"
-          :items.sync="requests"
-          :items-per-page.sync="pageSize"
-          :page.sync="pageNumber"
           :footer-props="{
             'items-per-page-options':itemsPerPageOptions
           }"
           :server-items-length="totalRequests"
           :loading="loadingTable"
-          @click:row="viewRequestDetails"
           class="fill-height"
+          @click:row="viewRequestDetails"
         >
-          <template v-slot:[requestStatusHeaderSlotName]="{ header }">
+          <template #[requestStatusHeaderSlotName]="{ header }">
             <th
               id="status-header"
               :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
@@ -43,10 +55,10 @@
               {{ header.text }}
               <em
                 :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
-              ></em>
+              />
             </th>
           </template>
-          <template v-slot:header.initialSubmitDate="{ header }">
+          <template #header.initialSubmitDate="{ header }">
             <th
               id="submit-date-header"
               :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
@@ -55,42 +67,21 @@
               {{ header.text }}
               <em
                 :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
-              ></em>
+              />
             </th>
-            <v-menu
-              ref="dateMenu"
-              v-model="dateMenu"
-              :close-on-content-click="false"
-              :nudge-right="40"
-              transition="scale-transition"
-              offset-y
-              min-width="290px"
-            >
-              <template v-slot:activator="{ on }">
-                <v-text-field
-                  id="date-picker-text-field"
-                  :value="headerSearchParams.initialSubmitDate? headerSearchParams.initialSubmitDate.join(): ''"
-                  outlined
-                  dense
-                  readonly
-                  v-on="on"
-                  @click:clear="headerSearchParams.initialSubmitDate = []"
-                  clearable
-                  class="header-text"
-                ></v-text-field>
-              </template>
-              <v-date-picker
-                id="date-picker"
-                v-model="headerSearchParams.initialSubmitDate"
-                no-title
-                range
-              >
-                <v-spacer></v-spacer>
-                <PrimaryButton id="date-picker-ok-button" text="OK" @click.native="dateMenu=false"> </PrimaryButton>
-              </v-date-picker>
-            </v-menu>
+            <v-text-field
+              id="date-picker-text-field"
+              :value="headerSearchParams.initialSubmitDate"
+              outlined
+              density="compact"
+              clearable
+              class="header-text"
+              type="date"
+              @click:clear="headerSearchParams.initialSubmitDate = []"
+              @update:model-value="validateForm"
+            />
           </template>
-          <template v-slot:[penSlotName]="{ header }">
+          <template #[penSlotName]="{ header }">
             <th
               id="pen-header"
               :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
@@ -99,18 +90,18 @@
               {{ header.text }}
               <em
                 :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
-              ></em>
+              />
             </th>
             <v-text-field
               id="pen-text-field"
               v-model.trim="headerSearchParams[penName]"
               class="header-text"
               outlined
-              dense
+              density="compact"
               clearable
-            ></v-text-field>
+            />
           </template>
-          <template v-slot:header.legalLastName="{ header }">
+          <template #header.legalLastName="{ header }">
             <th
               id="last-name-header"
               :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
@@ -119,18 +110,18 @@
               {{ header.text }}
               <em
                 :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
-              ></em>
+              />
             </th>
             <v-text-field
               id="last-name-text-field"
               v-model.trim="headerSearchParams.legalLastName"
               class="header-text"
               outlined
-              dense
+              density="compact"
               clearable
-            ></v-text-field>
+            />
           </template>
-          <template v-slot:header.legalFirstName="{ header }">
+          <template #header.legalFirstName="{ header }">
             <th
               id="first-name-header"
               :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
@@ -139,18 +130,18 @@
               {{ header.text }}
               <em
                 :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
-              ></em>
+              />
             </th>
             <v-text-field
               id="first-name-text-field"
               v-model.trim="headerSearchParams.legalFirstName"
               class="header-text"
               outlined
-              dense
+              density="compact"
               clearable
-            ></v-text-field>
+            />
           </template>
-          <template v-slot:header.reviewer="{ header }">
+          <template #header.reviewer="{ header }">
             <th
               id="reviewer-header"
               :class="['table-header ', header.value === headerSortParams.currentSort ? 'active' : '']"
@@ -159,29 +150,38 @@
               {{ header.text }}
               <em
                 :class="['v-icon v-data-table-header__icon fas ', headerSortParams.currentSortDir ? 'fa-sort-down' : 'fa-sort-up', header.value === headerSortParams.currentSort ? 'active' : '']"
-              ></em>
+              />
             </th>
             <v-text-field
               id="review-text-field"
               v-model.trim="headerSearchParams.reviewer"
               class="header-text"
               outlined
-              dense
+              density="compact"
               clearable
-            ></v-text-field>
+            />
           </template>
-          <template v-slot:no-data>There are no requests with the selected statuses.</template>
-          <template v-slot:item="{ item }">
-            <tr :class="item.sagaInProgress? 'blue-grey lighten-3 tableRow' :'tableRow'" @click="viewRequestDetails(item)">
-              <td>{{item[`${requestType}StatusCode`].label}}</td>
-              <td>{{item.initialSubmitDate?moment(item.initialSubmitDate).format('YYYY/MM/DD LT'):'' }}</td>
+          <template #no-data>
+            There are no requests with the selected statuses.
+          </template>
+          <template #item="{ item }">
+            <tr
+              :class="item.sagaInProgress? 'blue-grey lighten-3 tableRow' :'tableRow'"
+              @click="viewRequestDetails(item)"
+            >
+              <td>{{ item[`${requestType}StatusCode`].label }}</td>
+              <td>{{ item.initialSubmitDate ? moment(item.initialSubmitDate).format('YYYY/MM/DD LT') : '' }}</td>
               <td>
-                {{item[`${penName}`]}}
-                <ClipboardButton v-if="item[`${penName}`]" :copyText="item[`${penName}`]" icon='$copy'/>
+                {{ item[`${penName}`] }}
+                <ClipboardButton
+                  v-if="item[`${penName}`]"
+                  :copy-text="item[`${penName}`]"
+                  icon="$copy"
+                />
               </td>
-              <td>{{item.legalLastName}}</td>
-              <td>{{item.legalFirstName}}</td>
-              <td>{{item.reviewer}}</td>
+              <td>{{ item.legalLastName }}</td>
+              <td>{{ item.legalFirstName }}</td>
+              <td>{{ item.reviewer }}</td>
             </tr>
           </template>
         </v-data-table>
@@ -191,17 +191,19 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import ApiService from '../common/apiService';
 import {REQUEST_TYPES, Routes} from '@/utils/constants';
 import router from '../router';
-import PrimaryButton from './util/PrimaryButton';
-import ClipboardButton from './util/ClipboardButton';
-import FilterTag from './util/FilterTag';
+import ClipboardButton from './util/ClipboardButton.vue';
+import FilterTag from './util/FilterTag.vue';
+import {notificationsStore} from '@/store/modules/notifications';
+import {appStore} from '@/store/modules/app';
+import {requestStore} from '@/store/modules/request';
 
 export default {
-  name: 'requestsDisplay',
-  components: {FilterTag, PrimaryButton, ClipboardButton},
+  name: 'RequestsDisplay',
+  components: {FilterTag, ClipboardButton},
   props: {
     requestType: {
       type: String,
@@ -239,7 +241,7 @@ export default {
     this.runInit();
   },
   computed: {
-    ...mapGetters('notifications', ['notification']),
+    ...mapState(notificationsStore, ['notification']),
     filteredResults() {
       if (
         !Array.isArray(this.selectedStatuses) ||
@@ -271,15 +273,15 @@ export default {
           value: this.requestStatusHeaderName,
           sortable: false
         },
-        { text: 'Submitted Time', value: 'initialSubmitDate', sortable: false },
+        {text: 'Submitted Time', value: 'initialSubmitDate', sortable: false},
         {
           text: 'PEN',
           value: this.penName,
           sortable: false
         },
-        { text: 'Last Name', value: 'legalLastName', sortable: false },
-        { text: 'First Name', value: 'legalFirstName', sortable: false },
-        { text: 'Reviewer', value: 'reviewer', sortable: false }
+        {text: 'Last Name', value: 'legalLastName', sortable: false},
+        {text: 'First Name', value: 'legalFirstName', sortable: false},
+        {text: 'Reviewer', value: 'reviewer', sortable: false}
       ];
     },
     penSlotName() {
@@ -297,7 +299,7 @@ export default {
     },
     pageNumber: {
       handler() {
-        this.$store.state[this.requestType].pageNumber = this.pageNumber;
+        requestStore().pageNumber = this.pageNumber;
         if (!this.initialLoad) {
           //stop watch from sending multiple getPenRequests calls on initial page load
           this.getRequests();
@@ -306,7 +308,7 @@ export default {
     },
     pageSize: {
       handler() {
-        this.$store.state[this.requestType].pageSize = this.pageSize;
+        requestStore().pageSize = this.pageSize;
         if (!this.initialLoad) {
           //stop watch from sending multiple getPenRequests calls on initial page load
           this.getRequests();
@@ -324,9 +326,7 @@ export default {
     },
     selectedStatuses: {
       handler() {
-        this.$store.state[
-          this.requestType
-        ].selectedStatuses = this.selectedStatuses;
+        requestStore().setSelectedStatuses(this.selectedStatuses);
         if (!this.initialLoad) {
           //stop watch from sending multiple getRequests calls on initial page load
           this.getRequests();
@@ -362,7 +362,7 @@ export default {
             break;
           }
         }
-        if(sagaCompletedForThisRequest && elementOfRequests){
+        if (sagaCompletedForThisRequest && elementOfRequests) {
           ApiService.apiAxios
             .get(Routes[this.requestType].ROOT_ENDPOINT + '/' + elementOfRequests[`${this.requestType}ID`])
             .then(response => {
@@ -383,22 +383,22 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('app', ['setSelectedRequest', 'setRequest']),
+    ...mapActions(appStore, ['setSelectedRequest', 'setRequest']),
     remove(item) {
       this.selectedStatuses.splice(this.selectedStatuses.indexOf(item), 1);
       this.selectedStatuses = [...this.selectedStatuses];
     },
+    async validateForm() {
+      const isValid = await this.$refs.form.validate();
+      this.validForm = isValid.valid;
+    },
     runInit() {
       this.requests = [];
       this.initialLoad = true; //stop watch from sending multiple getRequests calls on initial page load
-      this.headerSearchParams = this.$store.state[
-        this.requestType
-      ].headerSearchParams;
-      this.headerSortParams = this.$store.state[
-        this.requestType
-      ].headerSortParams;
-      this.pageSize = this.$store.state[this.requestType].pageSize;
-      this.pageNumber = this.$store.state[this.requestType].pageNumber;
+      this.headerSearchParams = requestStore().headerSearchParams;
+      this.headerSortParams = requestStore().headerSortParams;
+      this.pageSize = requestStore().pageSize;
+      this.pageNumber = requestStore().pageNumber;
       ApiService.apiAxios
         .get(Routes[this.requestType].STATUSES_URL)
         .then(response => {
@@ -406,9 +406,7 @@ export default {
             status => status[`${this.requestType}StatusCode`] !== 'AUTO'
           );
           this.statusCodes = this.getStatusCodes();
-          this.selectedStatuses = this.$store.state[
-            this.requestType
-          ].selectedStatuses;
+          this.selectedStatuses = requestStore().selectedStatuses;
           this.comboboxKey += 1; //force component to re-render
         })
         .catch(error => {
@@ -471,7 +469,10 @@ export default {
     viewRequestDetails(request) {
       this.setSelectedRequest(request[this.requestIdName]);
       this.setRequest();
-      router.push({ name: REQUEST_TYPES[this.requestType].detailName, params: { requestId: request[this.requestType + 'ID'] } });
+      router.push({
+        name: REQUEST_TYPES[this.requestType].detailName,
+        params: {requestId: request[this.requestType + 'ID']}
+      });
     },
     sort(sortHeader) {
       if (sortHeader === this.headerSortParams.currentSort) {
@@ -485,7 +486,7 @@ export default {
         .get(Routes[this.requestType].DOCUMENT_TYPES_URL)
         .then(response => {
           if (response && response.data) {
-            this.$store.state[this.requestType].documentTypes = response.data;
+            requestStore().documentTypes = response.data;
           }
         })
         .catch(error => {
@@ -496,70 +497,71 @@ export default {
 };
 </script>
 <style scoped>
-  .header {
+.header {
     background-color: #96c0e6;
     top: -24px;
-  }
+}
 
-  .v-input {
+.v-input {
     padding-bottom: 15px;
     padding-top: 20px;
-  }
+}
 
-  .v-data-table /deep/ .v-text-field__details {
+.v-data-table /deep/ .v-text-field__details {
     display: none;
-  }
+}
 
-  label {
+label {
     color: white;
-  }
+}
 
-  .v-card {
+.v-card {
     background-color: #fafafa;
-  }
+}
 
-  .v-combobox {
+.v-combobox {
     background-color: #5475a7 !important;
-  }
+}
 
-  .theme--light .v-label {
+.theme--light .v-label {
     color: white;
-  }
+}
 
-  .saga-in-progress {
+.saga-in-progress {
     color: dimgrey;
-  }
+}
 
-  .header-text {
+.header-text {
     padding-top: 0;
-  }
+}
 
-  th {
+th {
     border: none !important;
     padding-bottom: 0;
     padding-left: 0;
     padding-right: 0;
-  }
+}
 
-  /deep/ th.text-start:nth-child(1) {
+/deep/ th.text-start:nth-child(1) {
     vertical-align: sub;
     padding-top: 10px;
-  }
+}
 
-  .active {
+.active {
     color: rgba(0, 0, 0, 0.87) !important;
-  }
+}
 
-  .table-header {
+.table-header {
     cursor: pointer;
     padding-top: 10px;
     margin-bottom: 0;
-  }
+}
 
-  .v-icon {
+.v-icon {
     font-size: 18px;
-  }
-  .tableRow {
+}
+
+.tableRow {
     cursor: pointer;
-  }
+}
 </style>

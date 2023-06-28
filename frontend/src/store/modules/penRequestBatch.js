@@ -1,7 +1,10 @@
-import ApiService from '../../common/apiService';
+import ApiService from '@/common/apiService';
+import { studentStore } from '@/store/modules/student';
+import {defineStore} from 'pinia';
 
-const getDefaultState = () => {
-  return {
+export const penRequestBatchStore = defineStore('penRequestBatch', {
+  namespaced: true,
+  state: () => ({
     pageNumber: 1,
     selectedFiles: [],
     penRequestBatchResponse: {
@@ -19,75 +22,89 @@ const getDefaultState = () => {
       submissionNumber: null,
       mincode: null,
       schoolName: null,
-    },
-  };
-};
-
-export default {
-  namespaced: true,
-  state: getDefaultState,
-  mutations: {
-    setPageNumber: (state, pageNumber) => {
-      state.pageNumber = pageNumber;
-    },
-    setSelectedFiles: (state, selectedFiles) => {
-      state.selectedFiles = selectedFiles || [];
-    },
-    setPenRequestBatchResponse: (state, penRequestBatchResponse) => {
-      state.penRequestBatchResponse = penRequestBatchResponse;
-    },
-    setPrbStudentStatusFilters: (state, prbStudentStatusFilters) => {
-      state.prbStudentStatusFilters = prbStudentStatusFilters;
-    },
-    setPrbStudentStatuses: (state, prbStudentStatuses) => {
-      state.prbStudentStatuses = prbStudentStatuses;
-    },
-    setSelectedSchoolGroup: (state, selectedSchoolGroup) => {
-      state.selectedSchoolGroup = selectedSchoolGroup;
-    },
-    clearPenRequestBatchState: (state) => {
-      Object.assign(state, {...getDefaultState(), prbStudentStatuses: state.prbStudentStatuses});
-    },
-    setStudentInfoMacros: (state, studentInfoMacros) => {
-      state.studentInfoMacros = studentInfoMacros;
-    },
-    setPrbValidationFieldCodes: (state, prbValidationFieldCodes) => {
-      state.prbValidationFieldCodes = prbValidationFieldCodes;
-    },
-    setPrbValidationIssueSeverityCodes: (state, prbValidationIssueSeverityCodes) => {
-      state.prbValidationIssueSeverityCodes = prbValidationIssueSeverityCodes;
-    },
-    setPrbValidationIssueTypeCodes: (state, prbValidationIssueTypeCodes) => {
-      state.prbValidationIssueTypeCodes = prbValidationIssueTypeCodes;
-    },
-    setCurrentBatchFileSearchParams: (state, batchFileSearchParams) => {
-      state.currentBatchFileSearchParams = batchFileSearchParams;
     }
-  },
+  }),
   actions: {
-    async getCodes({ commit, state, dispatch}) {
+    async setPageNumber(pageNumber){
+      this.pageNumber = pageNumber;
+    },
+    async setSelectedFiles(selectedFiles){
+      this.selectedFiles = selectedFiles || [];
+    },
+    async setPenRequestBatchResponse(penRequestBatchResponse){
+      this.penRequestBatchResponse = penRequestBatchResponse;
+    },
+    async setPrbStudentStatusFilters(prbStudentStatusFilters){
+      this.prbStudentStatusFilters = prbStudentStatusFilters;
+    },
+    async setPrbStudentStatuses(prbStudentStatuses){
+      this.prbStudentStatuses = prbStudentStatuses;
+    },
+    async setSelectedSchoolGroup(selectedSchoolGroup){
+      this.selectedSchoolGroup = selectedSchoolGroup;
+    },
+    async clearPenRequestBatchState(){
+      this.pageNumber = 1;
+      this.selectedFiles = [];
+      this.penRequestBatchResponse = {
+        content: [],
+        pageable: {}
+      };
+      this.prbStudentStatusFilters = null;
+      this.selectedSchoolGroup = null;
+      this.studentInfoMacros = [];
+      this.prbValidationFieldCodes = [];
+      this.prbValidationIssueSeverityCodes = [];
+      this.prbValidationIssueTypeCodes = [];
+      this.currentBatchFileSearchParams = {
+        submissionNumber: null,
+        mincode: null,
+        schoolName: null,
+      };
+    },
+    async setStudentInfoMacros(studentInfoMacros){
+      this.studentInfoMacros = studentInfoMacros;
+    },
+    async setPrbValidationFieldCodes(prbValidationFieldCodes){
+      this.prbValidationFieldCodes = prbValidationFieldCodes;
+    },
+    async setPrbValidationIssueSeverityCodes(prbValidationIssueSeverityCodes){
+      this.prbValidationIssueSeverityCodes = prbValidationIssueSeverityCodes;
+    },
+    async setPrbValidationIssueTypeCodes(prbValidationIssueTypeCodes){
+      this.prbValidationIssueTypeCodes = prbValidationIssueTypeCodes;
+    },
+    async setCurrentBatchFileSearchParams(batchFileSearchParams){
+      this.currentBatchFileSearchParams = batchFileSearchParams;
+    },
+    async getCodes() {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        dispatch('student/getCodes', null, { root: true });
-        if(state.prbStudentStatuses?.length === 0) {
-          ApiService.getPenRequestBatchStudentStatusCodes().then(response => commit('setPrbStudentStatuses', response.data));
+        await studentStore().getCodes();
+        if(this.prbStudentStatuses?.length === 0) {
+          const response = await ApiService.getPenRequestBatchStudentStatusCodes();
+          await this.setPrbStudentStatuses(response.data);
         }
-        if(state.prbValidationFieldCodes?.length === 0) {
-          ApiService.getPrbValidationFieldCodes().then(response => commit('setPrbValidationFieldCodes', response.data));
+        if(this.prbValidationFieldCodes?.length === 0) {
+          const response = await ApiService.getPrbValidationFieldCodes();
+          await this.setPrbValidationFieldCodes(response.data);
         }
-        if(state.prbValidationIssueSeverityCodes?.length === 0) {
-          ApiService.getPrbValidationIssueSeverityCodes().then(response => commit('setPrbValidationIssueSeverityCodes', response.data));
+        if(this.prbValidationIssueSeverityCodes?.length === 0) {
+          const response = await ApiService.getPrbValidationIssueSeverityCodes();
+          await this.setPrbValidationIssueSeverityCodes(response.data);
         }
-        if(state.prbValidationIssueTypeCodes?.length === 0) {
-          ApiService.getPrbValidationIssueTypeCodes().then(response => commit('setPrbValidationIssueTypeCodes', response.data));
+        if(this.prbValidationIssueTypeCodes?.length === 0) {
+          const response = await ApiService.getPrbValidationIssueTypeCodes();
+          await this.setPrbValidationIssueTypeCodes(response.data);
         }
       }
     },
-    async getMacros({ commit, state }) {
+    async getMacros() {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        if (state.studentInfoMacros?.length === 0) {
-          ApiService.getPenRequestBatchStudentInfoMacroCodes().then(response => commit('setStudentInfoMacros', response.data));
+        if (this.studentInfoMacros?.length === 0) {
+          const response = await ApiService.getPenRequestBatchStudentInfoMacroCodes();
+          await this.setStudentInfoMacros(response.data);
         }
       }
     }
   }
-};
+});

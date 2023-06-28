@@ -1,49 +1,68 @@
 <template>
-  <v-card class="document-upload" max-width="640px">
-
+  <v-card
+    class="document-upload"
+    max-width="640px"
+    min-width="40em"
+  >
     <v-card-title><h3>Document Upload</h3></v-card-title>
     <v-card-text>
       <v-form
-          ref="form"
-          v-model="validForm"
+        ref="form"
+        v-model="validForm"
       >
         <v-file-input
-            color="#003366"
-            :accept="fileAccept"
-            :rules="fileRules"
-            :disabled="hasReadOnlyRoleAccess()"
-            placeholder="Select your file"
-            :error-messages="fileInputError"
-            class="pt-0"
-            @change="selectFile"
-            id="selectFileInput"
-        ></v-file-input>
+          id="selectFileInput"
+          color="#003366"
+          :accept="fileAccept"
+          :rules="fileRules"
+          variant="underlined"
+          :disabled="hasReadOnlyRoleAccess()"
+          placeholder="Select your file"
+          :error-messages="fileInputError"
+          class="pt-0"
+          @update:model-value="selectFile"
+        />
       </v-form>
       <v-alert
-          dense
-          outlined
-          dismissible
-          color="#712024"
-          style="background-color: #f7d8da !important;"
-          v-model="alert"
-          :class="alertType"
-          class="mb-3"
+        v-model="alert"
+        density="compact"
+        outlined
+        dismissible
+        color="#712024"
+        style="background-color: #f7d8da !important;"
+        :class="alertType"
+        class="mb-3"
       >
         {{ alertMessage }}
       </v-alert>
     </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <PrimaryButton id="cancelUploadButton" secondary text="Cancel" @click.native="closeForm"></PrimaryButton>
-        <PrimaryButton :key="buttonKey" :loading="active" :disabled="!dataReady" id="upload_form" text="Upload" width="7rem" @click.native="submitRequest"></PrimaryButton>
-      </v-card-actions>
+    <v-card-actions>
+      <v-spacer />
+      <PrimaryButton
+        id="cancelUploadButton"
+        secondary
+        text="Cancel"
+        :click-action="closeForm"
+      />
+      <PrimaryButton
+        id="upload_form"
+        :key="buttonKey"
+        :loading="active"
+        :disabled="!dataReady"
+        text="Upload"
+        width="7rem"
+        :click-action="submitRequest"
+      />
+    </v-card-actions>
   </v-card>
 </template>
 
 <script>
 import {humanFileSize, getFileExtensionWithDot, getFileNameWithMaxNameLength} from '@/utils/file';
-import {mapGetters, mapState} from 'vuex';
-import PrimaryButton from '../util/PrimaryButton';
+import { mapState } from 'pinia';
+import PrimaryButton from '../util/PrimaryButton.vue';
+import {authStore} from '@/store/modules/auth';
+import {edxStore} from '@/store/modules/edx';
 
 export default {
   components: {PrimaryButton},
@@ -72,35 +91,12 @@ export default {
       file: null,
       active: false,
       buttonKey: 0,
-
+      uploadFileValue: null,
       alert: false,
       alertMessage: null,
       alertType: null
 
     };
-  },
-  created() {
-    this.$store.dispatch('edx/getFileRequirements').then(() => {
-      const fileRequirements = this.fileRequirements;
-      const maxSize = fileRequirements.maxSize;
-
-      if(this.checkFileRules){
-        this.fileRules = [
-          value => !value || value.size < maxSize || `File size should not be larger than ${humanFileSize(maxSize)}!`,
-          value => !value || fileRequirements.extensions.includes(value.type) || `File formats should be ${this.fileFormats}.`,
-        ];
-        this.fileAccept = fileRequirements.extensions.join();
-      }else{
-        this.fileRules = [
-          value => !value || value.size < maxSize || `File size should not be larger than ${humanFileSize(maxSize)}!`
-        ];
-      }
-
-      this.fileFormats = this.makefileFormatList(fileRequirements.extensions);
-    }).catch(e => {
-      console.log(e);
-      this.setErrorAlert('Sorry, an unexpected error seems to have occurred. You can upload files later.');
-    });
   },
   watch: {
     dataReady() {
@@ -108,11 +104,15 @@ export default {
       this.buttonKey += 1;
     },
   },
+  async created() {
+    await edxStore().getFileRequirements();
+    await this.getFileRules();
+  },
   computed: {
-    ...mapGetters('auth', ['NOMINAL_ROLL_READ_ONLY_ROLE']),
-    ...mapState('edx', ['fileRequirements']),
+    ...mapState(authStore, ['NOMINAL_ROLL_READ_ONLY_ROLE']),
+    ...mapState(edxStore, ['fileRequirements']),
     dataReady () {
-      return this.validForm && this.file;
+      return this.validForm && this.uploadFileValue;
     },
   },
   methods: {
@@ -150,8 +150,8 @@ export default {
       this.alert = true;
     },
     selectFile(file) {
-      this.file = file;
-      if(!this.file && !this.active) {
+      this.uploadFileValue = file;
+      if(!this.uploadFileValue && !this.active) {
         this.fileInputError = 'Required';
       } else {
         this.fileInputError = [];
@@ -164,13 +164,13 @@ export default {
     submitRequest() {
       if(this.dataReady){
         try {
-          if(this.file.name && this.file.name.match('^[\\u0080-\\uFFFF\\w,\\s-_]+\\.[A-Za-z]{3,4}$')){
+          if(this.uploadFileValue[0].name && this.uploadFileValue[0].name.match('^[\\u0080-\\uFFFF\\w,\\s-_]+\\.[A-Za-z]{3,4}$')){
             this.active = true;
             const reader = new FileReader();
             reader.onload = this.uploadFile;
             reader.onabort = this.handleFileReadErr;
             reader.onerror = this.handleFileReadErr;
-            reader.readAsBinaryString(this.file);
+            reader.readAsBinaryString(this.uploadFileValue[0]);
           }else{
             this.active = false;
             this.setErrorAlert('Please remove spaces and special characters from file name and try uploading again.');
@@ -181,6 +181,25 @@ export default {
         }
       }
     },
+    getFileRules() {
+      const maxSize = this.fileRequirements.maxSize;
+      this.fileRules = [
+        value => {
+          if(value){
+            return true;
+          }
+          return 'Required';
+        },
+        value => {
+          return !value || !value.length || value[0].size < maxSize || `File size should not be larger than ${humanFileSize(maxSize)}!`;
+        },
+        value => {
+          return !value || !value.length || this.fileRequirements.extensions.includes(value[0].type) || `File formats should be ${this.fileFormats}.`;
+        }
+      ];
+      this.fileAccept = this.fileRequirements.extensions.join();
+      this.fileFormats = this.makefileFormatList(this.fileRequirements.extensions);
+    },
     handleFileReadErr() {
       this.active = false;
       this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
@@ -188,15 +207,15 @@ export default {
     async uploadFile(env) {
       let fileExtensionValue;
       if(this.smallFileExtension){
-        fileExtensionValue = getFileExtensionWithDot(this.file.name);
+        fileExtensionValue = getFileExtensionWithDot(this.uploadFileValue[0].name);
       }else{
-        fileExtensionValue = this.file.type;
+        fileExtensionValue = this.uploadFileValue[0].type;
       }
 
       let document = {
-        fileName: getFileNameWithMaxNameLength(this.file.name),
+        fileName: getFileNameWithMaxNameLength(this.uploadFileValue[0].name),
         fileExtension: fileExtensionValue,
-        fileSize: this.file.size,
+        fileSize: this.uploadFileValue[0].size,
         documentData: btoa(env.target.result)
       };
       this.$emit('upload', document);

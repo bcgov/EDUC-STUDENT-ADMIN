@@ -1,33 +1,57 @@
 <template>
-  <v-container fluid class="full-height px-0 mb-4">
-    <v-form ref="studentSearchForm" id="studentSearchForm"
+  <v-container
+    fluid
+    class="full-height px-0 mb-4"
+  >
+    <v-form
+      id="studentSearchForm"
+      ref="studentSearchForm"
       v-model="validForm"
     >
-      <v-container fluid class="fill-height px-0">
+      <v-container
+        fluid
+        class="fill-height px-0"
+      >
         <v-row no-gutters>
-          <v-card elevation="0" height="100%" width="100%" style="background-color:white;">
+          <v-card
+            elevation="0"
+            height="100%"
+            width="100%"
+            style="background-color:white;"
+          >
             <PenRequestSearchPanel
-              :searchParams="nomRollStudentSearchParams"
+              :search-params="nomRollStudentSearchParams"
               :loading="searchLoading"
               :disabled="!searchEnabled"
               :fields="searchFields"
               @searchByPen="searchPenRequestsByPen"
               @search="searchPenRequests"
-            ></PenRequestSearchPanel>
+            />
             <v-progress-linear
               indeterminate
               color="blue"
               :active="searchLoading && !nomRollStudentSearchResponse"
-            ></v-progress-linear>
-            <v-row v-if="nomRollStudentSearchResponse" no-gutters class="py-2" style="background-color:white;">
-              <v-divider class="mx-3 header-divider"/>
+            />
+            <v-row
+              v-if="nomRollStudentSearchResponse"
+              no-gutters
+              class="py-2"
+              style="background-color:white;"
+            >
+              <v-divider class="mx-3 header-divider" />
             </v-row>
-            <v-row v-if="nomRollStudentSearchResponse" id="resultsRow" no-gutters class="py-2" style="background-color:white;">
+            <v-row
+              v-if="nomRollStudentSearchResponse"
+              id="resultsRow"
+              no-gutters
+              class="py-2"
+              style="background-color:white;"
+            >
               <NomRollStudentSearchResults
-                @addFedProvCode="searchPenRequests(true)"
+                v-model:is-posted="isPosted"
                 :loading="searchLoading"
-                :isPosted.sync="isPosted"
-              ></NomRollStudentSearchResults>
+                @addFedProvCode="searchPenRequests(true)"
+              />
             </v-row>
           </v-card>
         </v-row>
@@ -45,14 +69,17 @@ import {
   SEARCH_FILTER_OPERATION,
   SEARCH_VALUE_TYPE
 } from '@/utils/constants';
-import {mapMutations, mapState} from 'vuex';
-import NomRollStudentSearchResults from './NomRollStudentSearchResults';
+import {mapActions, mapState} from 'pinia';
+import NomRollStudentSearchResults from './NomRollStudentSearchResults.vue';
 import alertMixin from '../../mixins/alertMixin';
 import Mousetrap from 'mousetrap';
 import router from '@/router';
-import PenRequestSearchPanel from '@/components/common/PenRequestSearchPanel';
+import PenRequestSearchPanel from '@/components/common/PenRequestSearchPanel.vue';
 import {LocalDate} from '@js-joda/core';
 import {formatDob} from '@/utils/format';
+import {nominalRollStudentSearchStore} from '@/store/modules/nomRollStudentSearch';
+import {nominalRollStore} from '@/store/modules/nominalRoll';
+import {studentStore} from '@/store/modules/student';
 
 export default {
   name: 'NomRollStudentListDisplay',
@@ -108,14 +135,14 @@ export default {
     };
   },
   computed:{
-    ...mapState('nomRollStudentSearch', ['pageNumber', 'selectedRecords', 'nomRollStudentSearchResponse', 'selectedStudentStatus', 'currentNomRollStudentSearchParams', 'nomRollStudentSearchCriteria']),
-    ...mapState('nominalRoll', ['fedProvSchoolCodes']),
+    ...mapState(nominalRollStudentSearchStore, ['pageNumber', 'selectedRecords', 'nomRollStudentSearchResponse', 'selectedStudentStatus', 'currentNomRollStudentSearchParams', 'nomRollStudentSearchCriteria']),
+    ...mapState(nominalRollStore, ['fedProvSchoolCodes']),
     nomRollStudentSearchParams: {
       get(){
-        return this.$store.state['nomRollStudentSearch'].nomRollStudentSearchParams;
+        return nominalRollStudentSearchStore().nomRollStudentSearchParams;
       },
       set(newPage){
-        this.$store.state['nomRollStudentSearch'].nomRollStudentSearchParams = newPage;
+        nominalRollStudentSearchStore().setNomRollStudentSearchParams(newPage);
       }
     },
     nomRollStudentStatusSearchCriteria() {
@@ -162,13 +189,13 @@ export default {
       router.push({name: 'nominal-roll'});
       return false;
     });
-    this.$store.dispatch('student/getCodes');
+    studentStore().getCodes();
     this.setSelectedRecords();
     this.initialSearch();
   },
   methods: {
-    ...mapMutations('nomRollStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setNomRollStudentSearchResponse', 'clearNomRollStudentSearchParams', 'setCurrentNomRollStudentSearchParams', 'setNomRollStudentSearchCriteria']),
-    ...mapMutations('nominalRoll', ['setFedProvSchoolCodes']),
+    ...mapActions(nominalRollStudentSearchStore, ['setPageNumber', 'setSelectedRecords', 'setNomRollStudentSearchResponse', 'clearNomRollStudentSearchParams', 'setCurrentNomRollStudentSearchParams', 'setNomRollStudentSearchCriteria']),
+    ...mapActions(nominalRollStore, ['setFedProvSchoolCodes']),
     searchPenRequestsByPen([field, pen]){
       this.clearNomRollStudentSearchParams();
       this.nomRollStudentSearchParams[field] = pen;

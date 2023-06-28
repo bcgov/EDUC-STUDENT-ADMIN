@@ -1,23 +1,58 @@
-import Vue from 'vue';
-import vuetify from './plugins/vuetify';
-import App from './App';
-import router from './router';
-import store from './store';
-import webSocketService from './services/web-socket-service';
-import StaticConfig from './common/staticConfig';
+import { createApp } from 'vue';
+import { createVuetify } from 'vuetify/dist/vuetify';
+import { createMetaManager } from 'vue-meta';
+import App from '@/App.vue';
+import router from '@/router';
+import 'regenerator-runtime/runtime';
+import {createPinia} from 'pinia';
+import moment from 'moment';
+import * as colors from 'vuetify/lib/util/colors';
+import styles from 'vuetify/styles';
+import * as labs from 'vuetify/labs/components';
+import * as components from 'vuetify/components';
+import * as directives from 'vuetify/directives';
+import '@mdi/font/css/materialdesignicons.css';
+import 'viewerjs/dist/viewer.css';
+import component from 'v-viewer';
+import ApiService from '@/common/apiService';
 import VueClipboard from 'vue-clipboard2';
+import webSocketService from '@/services/web-socket-service';
 
-VueClipboard.config.autoSetContainer = true; // add this line
-Vue.use(VueClipboard);
+const myCustomLightTheme = {
+  dark: false,
+  colors: {
+    primary: '#003366'
+  }
+};
 
-Vue.config.productionTip = false;
-Vue.use(webSocketService, {
-  store,
-  url: StaticConfig?.WEB_SOCKET_URL || 'wss://'+window.location.hostname+'/api/socket'
+const vuetify = createVuetify({
+  icons: {
+    defaultSet: 'mdi'
+  },
+  theme: {
+    defaultTheme: 'myCustomLightTheme',
+    themes: {
+      myCustomLightTheme,
+    }
+  },
+  components: {
+    ...labs,
+    ...components,
+    ...directives,
+    ...styles,
+    ...colors
+  },
 });
-new Vue({
-  vuetify,
-  router,
-  store,
-  render: h => h(App)
-}).$mount('#app');
+const pinia = createPinia();
+
+const newApp = createApp(App);
+VueClipboard.config.autoSetContainer = true; // add this line
+
+const config = await ApiService.getConfig();
+
+newApp.provide('$moment', moment);
+newApp.use(router).use(webSocketService, {
+  newApp,
+  url: config.data.WEB_SOCKET_URL || 'wss://'+window.location.hostname+'/api/socket'
+}).use(VueClipboard).use(createMetaManager()).use(pinia).use(vuetify).use(component).mount('#app');
+

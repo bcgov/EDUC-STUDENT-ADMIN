@@ -1,234 +1,215 @@
 <template>
   <div>
-      <v-card v-if="!isSchoolStatusUpdateAllowed">
-        <v-card-title class="sheetHeader pt-1 pb-1">Update School Status</v-card-title>
-        <v-divider></v-divider>
+    <v-card v-if="!isSchoolStatusUpdateAllowed">
+      <v-card-title class="sheetHeader pt-1 pb-1">
+        Update School Status
+      </v-card-title>
+      <v-divider />
+      <v-card-text>
+        <v-row class="d-flex justify-start">
+          <v-col>
+            <p>The status of this school cannot be updated.</p>
+            <p>The school is under an Independent School Authority that is closing or closed.</p>
+          </v-col>
+        </v-row>
+      </v-card-text>
+      <v-card-actions class="justify-end">
+        <PrimaryButton
+          id="newContactPostBtn"
+          text="Okay"
+          :click-action="cancel"
+        />
+      </v-card-actions>
+    </v-card>
+
+    <v-card
+      v-else
+      id="schoolStatusVCard"
+    >
+      <v-form
+        ref="schoolStatusForm"
+        v-model="isFormValid"
+      >
+        <v-card-title class="sheetHeader pt-1 pb-1">
+          Update School Status
+        </v-card-title>
+        <v-divider />
         <v-card-text>
-          <v-row class="d-flex justify-start">
-            <v-col>  
-              <p>The status of this school cannot be updated.</p>
-              <p>The school is under an Independent School Authority that is closing or closed.</p>
+          <v-row class="pl-3 pr-3 d-flex justify-center">
+            <v-col>
+              <v-row class="d-flex justify-start">
+                <h3>How would you like to update the status?</h3>
+              </v-row>
+              <v-row class="d-flex justify-start">
+                <v-radio-group v-model="action">
+                  <span v-if="displayOptionsForOpeningSchoolStatus">
+                    <v-radio
+                      label="Cancel Opening"
+                      value="cancelOpening"
+                    />
+                    <v-radio
+                      label="Update Open Date"
+                      value="updateOpenDate"
+                    />
+                  </span>
+                  <span v-if="displayOptionsForOpenSchoolStatus">
+                    <v-radio
+                      label="Close the School"
+                      value="setCloseDate"
+                    />
+                  </span>
+                  <span v-if="displayOptionsForClosingSchoolStatus">
+                    <v-radio
+                      label="Open the School"
+                      value="setOpenDate"
+                    />
+                    <v-radio
+                      label="Update Closing Date"
+                      value="updateCloseDate"
+                    />
+                  </span>
+                  <span v-if="displayOptionsForClosedSchoolStatus || displayOptionsForNeverOpenedSchoolStatus">
+                    <v-radio
+                      label="Open the School"
+                      value="setOpenDate"
+                    />
+                  </span>
+                </v-radio-group>
+              </v-row>
+              <v-row class="d-flex justify-start">
+                <v-divider class="mt-1" />
+              </v-row>
+              <v-row
+                v-if="action === 'cancelOpening'"
+                class="pb-0 pt-2"
+              >
+                <span>Cancelling the school's opening will remove the schools open date.</span>
+              </v-row>
+              <v-row
+                v-if="action === 'setOpenDate'"
+                class="d-flex justify-start"
+              >
+                <v-col>
+                  <v-row class="d-flex justify-start">
+                    <h3>Select the open date</h3>
+                  </v-row>
+                  <v-row>
+                    <v-col>
+                      <v-text-field
+                        id="newOpenDateTextField"
+                        v-model="newOpenDate"
+                        :rules="[rules.required()]"
+                        class="pt-0 mt-0"
+                        label="Open Date"
+                        variant="underlined"
+                        clearable
+                        type="date"
+                        @update:model-value="validateForm"
+                      />
+                    </v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+              <v-row
+                v-if="action === 'updateOpenDate'"
+                class="d-flex justify-start"
+              >
+                <v-col>
+                  <v-row class="d-flex justify-start">
+                    <h3>Select the open date</h3>
+                  </v-row>
+                  <v-row>
+                    <v-col>
+                      <v-text-field
+                        id="updatedOpenDateTextField"
+                        v-model="updatedOpenDate"
+                        :rules="[rules.required()]"
+                        class="pt-0 mt-0"
+                        label="Open Date"
+                        variant="underlined"
+                        clearable
+                        type="date"
+                        @update:model-value="validateForm"
+                      />
+                    </v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+              <v-row
+                v-if="action === 'setCloseDate'"
+                class="d-flex justify-start"
+              >
+                <v-col>
+                  <v-row class="d-flex justify-start">
+                    <h3>Select the closure date</h3>
+                  </v-row>
+                  <v-row>
+                    <v-col>
+                      <v-text-field
+                        id="newCloseDateTextField"
+                        v-model="newCloseDate"
+                        :rules="[rules.required(), rules.dateIsAfterOrEqualTo(newCloseDate, schoolOpenDate, true, `The closure date must occur on or after ${openDateFormatted}.`)]"
+                        class="pt-0 mt-0"
+                        variant="underlined"
+                        label="Close Date"
+                        type="date"
+                        clearable
+                        @update:model-value="validateForm"
+                      />
+                    </v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+              <v-row
+                v-if="action === 'updateCloseDate'"
+                class="d-flex justify-start"
+              >
+                <v-col>
+                  <v-row class="d-flex justify-start">
+                    <h3>Select the new closing date</h3>
+                  </v-row>
+                  <v-row>
+                    <v-col>
+                      <v-text-field
+                        id="updatedCloseDateTextField"
+                        v-model="updatedCloseDate"
+                        :rules="[rules.required(), rules.dateIsAfterOrEqualTo(updatedCloseDate, schoolOpenDate, true, `The closure date must occur on or after ${openDateFormatted}.`)]"
+                        class="pt-0 mt-0"
+                        label="Close Date"
+                        type="date"
+                        clearable
+                        @update:model-value="validateForm"
+                      />
+                    </v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
             </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions class="justify-end">
-          <PrimaryButton id="newContactPostBtn" text="Okay" @click.native="cancel"></PrimaryButton>
+          <PrimaryButton
+            id="cancelNewContactBtn"
+            secondary
+            text="Cancel"
+            :click-action="closeEditSchoolStatus"
+          />
+          <PrimaryButton
+            id="newContactPostBtn"
+            text="Okay"
+            width="7rem"
+            :click-action="updateSchoolDates"
+            :disabled="!isFormValid"
+            :loading="processing"
+          />
         </v-card-actions>
-     </v-card>
-
-    <v-card v-else
-      id="schoolStatusVCard">
-    <v-form ref="schoolStatusForm" v-model="isFormValid">
-    <v-card-title class="sheetHeader pt-1 pb-1">Update School Status</v-card-title>
-    <v-divider></v-divider>
-    <v-card-text>
-        <v-row class="pl-3 pr-3 d-flex justify-center">
-          <v-col >
-            <v-row class="d-flex justify-start">
-              <h3>How would you like to update the status?</h3>
-            </v-row>
-            <v-row  class="d-flex justify-start">
-              <v-radio-group v-model="action">
-                <span v-if="displayOptionsForOpeningSchoolStatus">
-                  <v-radio label="Cancel Opening"
-                           value="cancelOpening">
-                  </v-radio>
-                  <v-radio label="Update Open Date"
-                           value="updateOpenDate">
-                  </v-radio>
-                </span>
-                <span v-if="displayOptionsForOpenSchoolStatus">
-                  <v-radio label="Close the School"
-                           value="setCloseDate">
-                  </v-radio>
-                </span>
-                <span v-if="displayOptionsForClosingSchoolStatus">
-                  <v-radio label="Open the School"
-                           value="setOpenDate">
-                  </v-radio>
-                  <v-radio label="Update Closing Date"
-                           value="updateCloseDate">
-                  </v-radio>
-                </span>
-                <span v-if="displayOptionsForClosedSchoolStatus || displayOptionsForNeverOpenedSchoolStatus">
-                  <v-radio label="Open the School"
-                           value="setOpenDate">
-                  </v-radio>
-                </span>
-              </v-radio-group>
-            </v-row>
-            <v-row class="d-flex justify-start">
-              <v-divider class="mt-1"></v-divider>
-            </v-row>
-            <v-row  v-if="action === 'cancelOpening'"  class="pb-0 pt-2">
-              <span>Cancelling the school's opening will remove the schools open date.</span>
-            </v-row>
-            <v-row class="d-flex justify-start" v-if="action === 'setOpenDate'">
-              <v-col>
-                <v-row class="d-flex justify-start">
-                  <h3>Select the open date</h3>
-                </v-row>
-                <v-row>
-                  <v-col>
-                    <v-menu
-                        id="newOpenDatePicker"
-                        ref="newOpenDateFilter"
-                        :close-on-content-click="false"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="auto"
-                    >
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-text-field
-                            id="newOpenDateTextField"
-                            :rules="[rules.required()]"
-                            class="pt-0 mt-0"
-                            v-model="newOpenDateFormatted"
-                            label="Open Date"
-                            prepend-inner-icon="mdi-calendar"
-                            clearable
-                            readonly
-                            v-bind="attrs"
-                            v-on="on"
-                        ></v-text-field>
-                      </template>
-                      <v-date-picker
-                          v-model="newOpenDate"
-                          @change="saveNewOpenDate"
-                      ></v-date-picker>
-                    </v-menu>
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
-            <v-row class="d-flex justify-start" v-if="action === 'updateOpenDate'">
-              <v-col>
-                <v-row class="d-flex justify-start">
-                  <h3>Select the open date</h3>
-                </v-row>
-                <v-row>
-                  <v-col>
-                    <v-menu
-                        id="updatedOpenDatePicker"
-                        ref="updatedOpenDateFilter"
-                        :close-on-content-click="false"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="auto"
-                    >
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-text-field
-                            id="updatedOpenDateTextField"
-                            :rules="[rules.required()]"
-                            class="pt-0 mt-0"
-                            v-model="updatedOpenDateFormatted"
-                            label="Open Date"
-                            prepend-inner-icon="mdi-calendar"
-                            clearable
-                            readonly
-                            v-bind="attrs"
-                            v-on="on"
-                        ></v-text-field>
-                      </template>
-                      <v-date-picker
-                          v-model="updatedOpenDate"
-                          @change="saveUpdatedOpenDate"
-                      ></v-date-picker>
-                    </v-menu>
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
-            <v-row class="d-flex justify-start" v-if="action === 'setCloseDate'">
-              <v-col>
-                <v-row class="d-flex justify-start">
-                  <h3>Select the closure date</h3>
-                </v-row>
-                <v-row>
-                  <v-col>
-                    <v-menu
-                        id="newCloseDatePicker"
-                        ref="newCloseDateFilter"
-                        :close-on-content-click="false"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="auto"
-                    >
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-text-field
-                            id="newCloseDateTextField"
-                            :rules="[rules.required(), rules.dateIsAfterOrEqualTo(newCloseDate, schoolOpenDate, true, `The closure date must occur on or after ${openDateFormatted}.`)]"
-                            class="pt-0 mt-0"
-                            v-model="newCloseDateFormatted"
-                            label="Close Date"
-                            prepend-inner-icon="mdi-calendar"
-                            clearable
-                            readonly
-                            v-bind="attrs"
-                            v-on="on"
-                        ></v-text-field>
-                      </template>
-                      <v-date-picker
-                          v-model="newCloseDate"
-                          @change="saveNewCloseDate"
-                      ></v-date-picker>
-                    </v-menu>
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
-            <v-row class="d-flex justify-start" v-if="action === 'updateCloseDate'">
-              <v-col>
-                <v-row class="d-flex justify-start">
-                  <h3>Select the new closing date</h3>
-                </v-row>
-                <v-row>
-                  <v-col>
-                    <v-menu
-                        id="updatedCloseDatePicker"
-                        ref="updatedCloseDateFilter"
-                        :close-on-content-click="false"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="auto"
-                    >
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-text-field
-                            id="updatedCloseDateTextField"
-                            :rules="[rules.required(), rules.dateIsAfterOrEqualTo(updatedCloseDate, schoolOpenDate, true, `The closure date must occur on or after ${openDateFormatted}.`)]"
-                            class="pt-0 mt-0"
-                            v-model="updatedCloseDateFormatted"
-                            label="Close Date"
-                            prepend-inner-icon="mdi-calendar"
-                            clearable
-                            readonly
-                            v-bind="attrs"
-                            v-on="on"
-                        ></v-text-field>
-                      </template>
-                      <v-date-picker
-                          v-model="updatedCloseDate"
-                          @change="saveUpdatedCloseDate"
-                      ></v-date-picker>
-                    </v-menu>
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
-    </v-card-text>
-    <v-card-actions class="justify-end">
-      <PrimaryButton id="cancelNewContactBtn" secondary text="Cancel" @click.native="closeEditSchoolStatus"></PrimaryButton>
-      <PrimaryButton id="newContactPostBtn" text="Okay" width="7rem" @click.native="updateSchoolDates" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
-    </v-card-actions>
-    </v-form>
-  </v-card>
-</div>
+      </v-form>
+    </v-card>
+  </div>
 </template>
 
 <script>
-import PrimaryButton from '../util/PrimaryButton';
+import PrimaryButton from '../util/PrimaryButton.vue';
 import alertMixin from '@/mixins/alertMixin';
 import * as Rules from '@/utils/institute/formRules';
 import {formatDate, formatDisplayDate} from '@/utils/format';
@@ -236,6 +217,9 @@ import {findUpcomingDate, parseDate} from '@/utils/dateHelpers';
 
 export default {
   name: 'SchoolStatus',
+  components: {
+    PrimaryButton,
+  },
   mixins: [alertMixin],
   props: {
     schoolOpenDate: {
@@ -253,14 +237,6 @@ export default {
     isSchoolStatusUpdateAllowed: {
       type: Boolean,
       required: true
-    }
-  },
-  components: {
-    PrimaryButton,
-  },
-  mounted() {
-    if(this.isSchoolStatusUpdateAllowed) {
-      this.validateForm();
     }
   },
   data() {
@@ -328,6 +304,34 @@ export default {
         return '';
       }
       return this.formatDate(this.schoolOpenDate);
+    }
+  },
+  watch: {
+    //watching effective date to valid form because we need to cross validate expiry and effective date fields
+    'newOpenDate': {
+      handler() {
+        this.validateForm();
+      }
+    },
+    'updatedOpenDate': {
+      handler() {
+        this.validateForm();
+      }
+    },
+    'newCloseDate': {
+      handler() {
+        this.validateForm();
+      }
+    },
+    'updatedCloseDate': {
+      handler() {
+        this.validateForm();
+      }
+    }
+  },
+  mounted() {
+    if (this.isSchoolStatusUpdateAllowed) {
+      this.validateForm();
     }
   },
   methods: {
@@ -407,44 +411,22 @@ export default {
     resetForm() {
       this.$refs.schoolStatusForm.reset();
     },
-    validateForm() {
-      this.isFormValid = this.$refs.schoolStatusForm.validate();
+    async validateForm() {
+      const isValid = await this.$refs.schoolStatusForm.validate();
+      this.isFormValid = isValid.valid;
     },
     formatDate,
     formatDisplayDate,
     parseDate
-  },
-  watch: {
-    //watching effective date to valid form because we need to cross validate expiry and effective date fields
-    'newOpenDate': {
-      handler() {
-        this.validateForm();
-      }
-    },
-    'updatedOpenDate': {
-      handler() {
-        this.validateForm();
-      }
-    },
-    'newCloseDate': {
-      handler() {
-        this.validateForm();
-      }
-    },
-    'updatedCloseDate': {
-      handler() {
-        this.validateForm();
-      }
-    }
   }
 };
 </script>
 
 <style scoped>
-.sheetHeader{
-  background-color: #003366;
-  color: white;
-  font-size: medium !important;
-  font-weight: bolder !important;
+.sheetHeader {
+    background-color: #003366;
+    color: white;
+    font-size: medium !important;
+    font-weight: bolder !important;
 }
 </style>

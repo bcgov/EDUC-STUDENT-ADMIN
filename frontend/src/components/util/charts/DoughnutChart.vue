@@ -1,14 +1,17 @@
+<template>
+  <div>Marco</div>
+  <Doughnut
+    :data="chartData"
+  />
+</template>
+
 <script>
-import { Doughnut, mixins } from 'vue-chartjs';
-import ChartJsPluginDataLabels from 'chartjs-plugin-datalabels';
+import {Doughnut} from 'vue-chartjs';
+
 export default {
-  extends: Doughnut,
-  mixins: [mixins.reactiveProp],
-  props: ['chartData', 'options'],
-  components: {ChartJsPluginDataLabels},
-  mounted () {
-    this.addPlugin(ChartJsPluginDataLabels);
-    this.renderChart(this.chartdata, this.options);
-  }
+  name: 'DoughnutChart',
+  components: {Doughnut},
+  props: ['chartData', 'options']
 };
+
 </script>

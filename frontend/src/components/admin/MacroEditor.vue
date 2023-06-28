@@ -1,15 +1,15 @@
 <template>
   <div>
     <v-textarea
-      dense
-      outlined
       v-model="macro.macroText"
+      density="compact"
+      outlined
       :disabled="loading || disabled"
       :rules="validateMaxLength()"
       :rows="rows"
-    ></v-textarea>
+    />
     <v-card-actions class="pt-0">
-      <v-spacer></v-spacer>
+      <v-spacer />
       <PrimaryButton
         id="cancel-action"
         class="mr-2"
@@ -17,22 +17,22 @@
         secondary
         text="Cancel"
         :disabled="loading || disabled"
-        @click.native="$emit('cancel')"
-      ></PrimaryButton>
+        :click-action="$emit('cancel')"
+      />
       <PrimaryButton
         id="save-action"
         :short="short"
         text="Save"
         :disabled="!isValidForm || loading || disabled"
         :loading="loading"
-        @click.native="$emit('save', macro)"
-      ></PrimaryButton>
+        :click-action="$emit('save', macro)"
+      />
     </v-card-actions>
   </div>
 </template>
 
 <script>
-import PrimaryButton from '../util/PrimaryButton';
+import PrimaryButton from '../util/PrimaryButton.vue';
 
 export default {
   name: 'MacroEditor',

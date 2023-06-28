@@ -1,81 +1,115 @@
 <template>
-  <v-container fluid class="full-height px-0 pt-0">
-    <v-form ref="newUserForm" v-model="isValidForm">
+  <v-container
+    fluid
+    class="full-height px-0 pt-0"
+  >
+    <v-form
+      ref="newUserForm"
+      v-model="isValidForm"
+    >
       <v-row class="d-flex justify-center">
-
-        <v-col class="pt-0" cols="11">
+        <v-col
+          class="pt-0"
+          cols="11"
+        >
           <v-row>
             <v-col class="pr-0 pb-0">
               <v-row>
                 <v-col>
-                  <v-card id="newUserCard" flat outlined>
+                  <v-card
+                    id="newUserCard"
+                    flat
+                    outlined
+                  >
                     <v-row>
-                      <v-col class="pb-0">
-                        <v-card-text id="newUserCardText" class="pb-0 pt-0">
-
-                          <v-text-field id="newUserFirstName"
-                                        label="First Name"
-                                        v-model.trim="firstName"
-                                        class="pt-0"
-                                        maxlength="255"
-                                        :rules="requiredRules"
-                          ></v-text-field>
-                          <v-text-field id="newUserLastName"
-                                        label="Last Name"
-                                        v-model.trim="lastName"
-                                        maxlength="255"
-                                        :rules="requiredRules"
-                          ></v-text-field>
-                          <v-text-field id="newUserEmail"
-                                        label="Email"
-                                        v-model.trim="email"
-                                        class="pt-0"
-                                        :rules="emailRules"
-                                        maxlength="255"
-                                        :hint="emailHint"
-                          ></v-text-field>
-                          <v-text-field id="newUserInstituteType"
-                                        :label="instituteTypeLabel"
-                                        v-model="instituteNameAndCode"
-                                        :disabled=true
-                                        class="pt-0"
-                                        :rules="requiredRules"
-                          ></v-text-field>
+                      <v-col class="pb-0 mb-5">
+                        <v-card-text
+                          id="newUserCardText"
+                          class="pb-0 pt-0"
+                        >
+                          <v-text-field
+                            id="newUserFirstName"
+                            v-model.trim="firstName"
+                            label="First Name"
+                            variant="underlined"
+                            class="pt-0"
+                            maxlength="255"
+                            :rules="requiredRules"
+                          />
+                          <v-text-field
+                            id="newUserLastName"
+                            v-model.trim="lastName"
+                            label="Last Name"
+                            variant="underlined"
+                            maxlength="255"
+                            :rules="requiredRules"
+                          />
+                          <v-text-field
+                            id="newUserEmail"
+                            v-model.trim="email"
+                            label="Email"
+                            class="pt-0"
+                            variant="underlined"
+                            :rules="emailRules"
+                            maxlength="255"
+                            :hint="emailHint"
+                          />
+                          <v-text-field
+                            id="newUserInstituteType"
+                            v-model="instituteNameAndCode"
+                            :label="instituteTypeLabel"
+                            variant="underlined"
+                            :disabled="true"
+                            class="pt-0"
+                            :rules="requiredRules"
+                          />
                           <v-select
-                              id="instituteNewUserRolesSelect"
-                              :items="userRoles"
-                              item-value='edxRoleCode'
-                              item-text='label'
-                              item-disabled="disabled"
-                              v-model='edxActivationRoleCodes'
-                              :menu-props="{ maxHeight: '400' }"
-                              label="Roles"
-                              multiple
-                              :hint="rolesHint"
-                              persistent-hint
-                              class="pt-0"
-                              @input="disableRoles"
-                              required
-                              :rules="requireRoleRules"
+                            id="instituteNewUserRolesSelect"
+                            v-model="edxActivationRoleCodes"
+                            variant="underlined"
+                            label="Role(s)"
+                            :hint="rolesHint"
+                            persistent-hint
+                            required
+                            :rules="requireRoleRules"
+                            class="mb-3 mt-0 pt-0"
                           >
-                            <template v-slot:message="{ message, key }">
-                              <span :style="edxAdminUserCodeSelected ? 'color: black; font-weight: bold' : ''">{{ message }}</span>
+                            <template #no-data />
+                            <template #selection="{item, index}">
+                              {{ getRoleNameFromCode(item, index) }}
                             </template>
-                            <template v-slot:item="{ item, on, attrs }">
-                              <v-list-item :disabled="item.disabled" @input="disableRoles" :value="item.edxRoleCode" v-bind="attrs" v-on="on">
-                                <template v-slot:default="{ active }">
-                                  <v-list-item-action class="mt-0 mb-2 mr-3">
-                                    <v-checkbox
-                                        :disabled="item.disabled"
-                                        :input-value="active"
-                                        color="primary"
-                                    ></v-checkbox>
-                                  </v-list-item-action>
-                                  <v-list-item-content>
-                                    <v-list-item-title>{{ item.label }}</v-list-item-title>
-                                  </v-list-item-content>
-                                </template>
-                              </v-list-item>
+                            <template #append-item>
+                              <v-list
+                                id="instituteNewUserRolesListBox"
+                                v-model:selected="edxActivationRoleCodes"
+                                lines="two"
+                                return-object
+                                select-strategy="classic"
+                                @update:selected="disableRoles"
+                              >
+                                <div
+                                  v-for="newrole in userRoles"
+                                  :key="newrole.edxRoleCode"
+                                  :value="newrole.edxRoleCode"
+                                >
+                                  <v-list-item
+                                    :disabled="newrole.disabled"
+                                    :value="newrole.edxRoleCode"
+                                  >
+                                    <template #prepend="{ isActive }">
+                                      <v-list-item-action>
+                                        <v-checkbox-btn :model-value="isActive" />
+                                      </v-list-item-action>
+                                    </template>
+
+                                    <v-list-item-title>{{ newrole.label }}</v-list-item-title>
+
+                                    <v-list-item-subtitle>
+                                      {{ newrole.roleDescription }}
+                                    </v-list-item-subtitle>
+                                  </v-list-item>
+                                </div>
+                              </v-list>
                             </template>
                           </v-select>
                         </v-card-text>
@@ -85,69 +119,77 @@
                 </v-col>
               </v-row>
               <v-row class="py-4 justify-end">
-                <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2"
-                               @click.native="navigateToList"></PrimaryButton>
-                <PrimaryButton id="newUserInvitePostBtn" text="Invite" width="8rem" :disabled="!isValidForm"
-                               :loading="processing"
-                               @click.native="sendNewUserInvite"></PrimaryButton>
+                <PrimaryButton
+                  id="cancelMessage"
+                  secondary
+                  text="Cancel"
+                  class="mr-2"
+                  :click-action="navigateToList"
+                />
+                <PrimaryButton
+                  id="newUserInvitePostBtn"
+                  text="Invite"
+                  width="8rem"
+                  :disabled="!isValidForm"
+                  :loading="processing"
+                  :click-action="sendNewUserInvite"
+                />
               </v-row>
             </v-col>
           </v-row>
         </v-col>
       </v-row>
-      <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>
+      <ConfirmationDialog ref="confirmationDialog" />
     </v-form>
   </v-container>
 </template>
 
 <script>
-import PrimaryButton from '@/components/util/PrimaryButton';
-import ConfirmationDialog from '@/components/util/ConfirmationDialog';
+import PrimaryButton from '@/components/util/PrimaryButton.vue';
+import ConfirmationDialog from '@/components/util/ConfirmationDialog.vue';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
-
 import {Routes} from '@/utils/constants';
-import {mapGetters, mapState} from 'vuex';
+import {mapState} from 'pinia';
+import {authStore} from '@/store/modules/auth';
+import {appStore} from '@/store/modules/app';
 
 export default {
   name: 'InviteUserPage',
-  mixins: [alertMixin],
   components: {
     PrimaryButton,
     ConfirmationDialog,
   },
+  mixins: [alertMixin],
   props: {
     userRoles: {
       type: Array,
       required: true
     },
-    instituteCode:{
+    instituteCode: {
       type: String,
-      required:true
+      required: true
     },
-    schoolName:{
-      type:String,
-      required:false
+    schoolName: {
+      type: String,
+      required: false
     },
-    districtName:{
-      type:String,
-      required:false
+    districtName: {
+      type: String,
+      required: false
     },
-    districtNumber:{
-      type:String,
-      required:false
+    districtNumber: {
+      type: String,
+      required: false
     },
-    instituteTypeLabel:{
-      type:String,
-      required:true
+    instituteTypeLabel: {
+      type: String,
+      required: true
     },
-    instituteTypeCode:{
-      type:String,
-      required:true
+    instituteTypeCode: {
+      type: String,
+      required: true
     }
-  },
-  mounted() {
-    this.validateForm();
   },
   data() {
 
@@ -166,9 +208,12 @@ export default {
       emailHint: 'Valid Email Required'
     };
   },
+  mounted() {
+    this.validateForm();
+  },
   computed: {
-    ...mapGetters('auth', ['userInfo']),
-    ...mapState('app', ['schoolMap']),
+    ...mapState(authStore, ['userInfo']),
+    ...mapState(appStore, ['schoolMap']),
     emailRules() {
       return [
         v => !!v || this.emailHint,
@@ -181,9 +226,9 @@ export default {
   },
   created() {
     if (!this.instituteNameAndCode) {
-      if(this.instituteTypeCode=== 'SCHOOL'){
+      if (this.instituteTypeCode === 'SCHOOL') {
         this.instituteNameAndCode = this.schoolName + ' (' + this.schoolMap.get(this.instituteCode)?.mincode + ')';
-      }else{
+      } else {
         this.instituteNameAndCode = this.districtName + ' (' + this.districtNumber + ')';
       }
     }
@@ -192,11 +237,17 @@ export default {
     navigateToList() {
       this.$emit('access-user:cancelMessage');
     },
+    getRoleNameFromCode(role, index){
+      if(index != 0){
+        return ', ' + this.userRoles.filter(userRole => userRole.edxRoleCode === role.value)[0].label;
+      }
+      return this.userRoles.filter(userRole => userRole.edxRoleCode === role.value)[0].label;
+    },
     disableRoles() {
       if (this.edxAdminUserCode === '') {
         for (const element of this.userRoles) {
           if ((this.instituteTypeCode === 'SCHOOL' && element.edxRoleCode === 'EDX_SCHOOL_ADMIN')
-              || (this.instituteTypeCode === 'DISTRICT' && element.edxRoleCode === 'EDX_DISTRICT_ADMIN')) {
+            || (this.instituteTypeCode === 'DISTRICT' && element.edxRoleCode === 'EDX_DISTRICT_ADMIN')) {
             this.edxAdminUserCode = element.edxRoleCode;
             break;
           }
@@ -236,11 +287,11 @@ export default {
         edxActivationRoleCodes: this.edxActivationRoleCodes
       };
       let url = null;
-      if(this.instituteTypeCode === 'SCHOOL') {
+      if (this.instituteTypeCode === 'SCHOOL') {
         payload.schoolID = this.instituteCode;
         payload.schoolName = this.schoolName;
         url = `${Routes.edx.NEW_SCHOOL_USER_ACTIVATION_INVITE}`;
-      }else {
+      } else {
         payload.districtName = this.districtName;
         payload.districtCode = this.districtNumber;
         payload.districtID = this.instituteCode;
@@ -260,7 +311,8 @@ export default {
         });
     },
     validateForm() {
-      this.isValidForm = this.$refs.newUserForm.validate();
+      const isValid = this.$refs.newUserForm.validate();
+      this.isValidForm = isValid.valid;
     },
   }
 };
@@ -268,9 +320,9 @@ export default {
 
 <style scoped>
 .addButton.v-btn--outlined {
-  border: thin solid #FFFFFF;
-  text-transform: none;
-  font-weight: bolder;
+    border: thin solid #FFFFFF;
+    text-transform: none;
+    font-weight: bolder;
 }
 
 </style>

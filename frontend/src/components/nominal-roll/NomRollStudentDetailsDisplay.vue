@@ -1,113 +1,164 @@
-  <template>
-  <v-container fluid class="fill-height pa-0 mb-4">
-
-    <div style="width: 100%;" :overlay=false>
+<template>
+  <v-container
+    fluid
+    class="fill-height pa-0 mb-4"
+  >
+    <div
+      style="width: 100%;"
+      :overlay="false"
+    >
       <div class="full-width">
         <v-row class="pt-0">
           <v-col cols="12 pt-0">
             <v-progress-linear
-                absolute
-                top
-                indeterminate
-                color="blue"
-                :active="loading"
-            ></v-progress-linear>
-            <div v-if="!loading && nomRollStudent" style="width: 100%;" :overlay=false>
-
+              absolute
+              top
+              indeterminate
+              color="blue"
+              :active="loading"
+            />
+            <div
+              v-if="!loading && nomRollStudent"
+              style="width: 100%;"
+              :overlay="false"
+            >
               <StudentDetailsInfoPanel
-                  :student.sync="modalStudent"
-                  key="info-panel"
-                  :studentDetailsCopy="nomRollStudentCopy"
-                  :validationErrorFields="validationErrorFields"
-                  :hiddenSearchFields="hiddenSearchFields"
-                  :isFixableOrErrorStatus="isFixableOrErrorStatus"
-                  @modifySearchParams="modifySearchParams"
+                key="info-panel"
+                v-model:student="modalStudent"
+                :student-details-copy="nomRollStudentCopy"
+                :validation-error-fields="validationErrorFields"
+                :hidden-search-fields="hiddenSearchFields"
+                :is-fixable-or-error-status="isFixableOrErrorStatus"
+                @modifySearchParams="modifySearchParams"
               >                  
-                <template v-slot:headerPanel="{ openSearchDemographicsModal }">
-                  <v-row no-gutters
-                         class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center"
-                         style="background-color:white;">
+                <template #headerPanel="{ openSearchDemographicsModal }">
+                  <v-row
+                    no-gutters
+                    class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center"
+                    style="background-color:white;"
+                  >
                     <span class="mr-4 batch-title">
                       <strong>{{ seqNumber }} of {{
-                          totalNumber
-                        }} filtered</strong>
+                        totalNumber
+                      }} filtered</strong>
                     </span>
                     <NomRollStudentStatusChip
-                        :statusCode="nomRollStudent.status"
-                    ></NomRollStudentStatusChip>
-                    <v-spacer></v-spacer>
-                    <PrimaryButton v-if="isIgnoredStatus" id="recover-item-action" class="mx-2"
-                                   :disabled="!isIgnoredStatus"
-                                   text="Recover Record"
-                                   @click.native="recoverStudent"></PrimaryButton>
-                    <PrimaryButton v-else id="ignore-item-action" class="mx-2"
-                                   :disabled="disableActionButtons"
-                                   text="Ignore Record"
-                                   @click.native="ignoreStudent"></PrimaryButton>
-                    <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2"
-                                   :disabled="disableActionButtons" text="Modify search"
-                                   @click.native="openSearchDemographicsModal"></PrimaryButton>
+                      :status-code="nomRollStudent.status"
+                    />
+                    <v-spacer />
+                    <PrimaryButton
+                      v-if="isIgnoredStatus"
+                      id="recover-item-action"
+                      class="mx-2"
+                      :disabled="!isIgnoredStatus"
+                      text="Recover Record"
+                      :click-action="recoverStudent"
+                    />
+                    <PrimaryButton
+                      v-else
+                      id="ignore-item-action"
+                      class="mx-2"
+                      :disabled="disableActionButtons"
+                      text="Ignore Record"
+                      :click-action="ignoreStudent"
+                    />
+                    <PrimaryButton
+                      id="modify-search-action"
+                      :secondary="true"
+                      class="mx-2"
+                      :disabled="disableActionButtons"
+                      text="Modify search"
+                      :click-action="openSearchDemographicsModal"
+                    />
                   </v-row>
-                  <v-row no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
+                  <v-row
+                    no-gutters
+                    class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
+                    style="background-color:white;"
+                  >
                     <span>
                       <strong>{{ mincode }} {{ nomRollStudent.schoolName }}</strong>
                     </span>
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                     <span>
                       <span class="mr-3">Assigned PEN</span>
                       <span
-                          :class="{'pen-placeholder': !nomRollStudent.assignedPEN}"><strong>{{
-                          formatPen(nomRollStudent.assignedPEN)
-                        }}</strong></span>
+                        :class="{'pen-placeholder': !nomRollStudent.assignedPEN}"
+                      ><strong>{{
+                        formatPen(nomRollStudent.assignedPEN)
+                      }}</strong></span>
                     </span>
                   </v-row>
                 </template>
               </StudentDetailsInfoPanel>
               <v-row v-if="isLoadingMatches">
-                <v-container fluid class="full-height">
-                  <article id="match-results-container" class="top-banner full-height">
-                    <v-row align="center" justify="center">
+                <v-container
+                  fluid
+                  class="full-height"
+                >
+                  <article
+                    id="match-results-container"
+                    class="top-banner full-height"
+                  >
+                    <v-row
+                      align="center"
+                      justify="center"
+                    >
                       <v-progress-circular
-                          :size="70"
-                          :width="7"
-                          color="primary"
-                          indeterminate
-                      ></v-progress-circular>
+                        :size="70"
+                        :width="7"
+                        color="primary"
+                        indeterminate
+                      />
                     </v-row>
                   </article>
                 </v-container>
               </v-row>
-              <v-row class="full-width" v-if="showPossibleMatch && !hasValidationIssues">
-                <PenMatchResultsTable :student="modalStudent" :is-comparison-required="true"
-                                      :is-pen-link="true"
-                                      :is-refresh-required="true"
-                                      :is-match-un-match="true"
-                                      :disableMatchUnmatch="disableMatchUnmatch"
-                                      :disableRefresh="disableRefresh"
-                                      :demogValidationResult="demogValidationResult"
-                                      :title="penMatchResultTitle"
-                                      :showMatchButton="showMatchButton"
-                                      :showUnmatchButton="showUnmatchButton"
-                                      :grayoutPossibleMatches="grayoutPossibleMatches"
-                                      @match-unmatch-student="matchUnmatchStudentToNomRollStudent"
-                                      @refresh-match-results="refreshMatchResults"
-                                      :possible-match="possibleMatches"></PenMatchResultsTable>
+              <v-row
+                v-if="showPossibleMatch && !hasValidationIssues"
+                class="full-width"
+              >
+                <PenMatchResultsTable
+                  :student="modalStudent"
+                  :is-comparison-required="true"
+                  :is-pen-link="true"
+                  :is-refresh-required="true"
+                  :is-match-un-match="true"
+                  :disable-match-unmatch="disableMatchUnmatch"
+                  :disable-refresh="disableRefresh"
+                  :demog-validation-result="demogValidationResult"
+                  :title="penMatchResultTitle"
+                  :show-match-button="showMatchButton"
+                  :show-unmatch-button="showUnmatchButton"
+                  :grayout-possible-matches="grayoutPossibleMatches"
+                  :possible-match="possibleMatches"
+                  @match-unmatch-student="matchUnmatchStudentToNomRollStudent"
+                  @refresh-match-results="refreshMatchResults"
+                />
               </v-row>
             </div>
           </v-col>
         </v-row>
       </div>
       <ConfirmationDialog ref="confirmationDialog">
-        <template v-slot:message>
+        <template #message>
           <v-col class="pt-0">
-            <v-row class="mb-3">There is <strong class="mx-1">{{ demogValidationResult.length }}</strong> questionable
+            <v-row class="mb-3">
+              There is <strong class="mx-1">{{ demogValidationResult.length }}</strong> questionable
               {{ `error${demogValidationResult.length > 1 ? 's' : ''}` }} with this PEN request:
             </v-row>
-            <v-row v-for="warning in demogValidationResult" :key="warning.description">
+            <v-row
+              v-for="warning in demogValidationResult"
+              :key="warning.description"
+            >
               <v-col class="pb-0">
                 <v-row>
                   <strong>{{ warning.uiFieldName }}</strong>
-                  <v-icon small color="#FCBA19" class="ml-2">
+                  <v-icon
+                    small
+                    color="#FCBA19"
+                    class="ml-2"
+                  >
                     fa-exclamation-circle
                   </v-icon>
                 </v-row>
@@ -118,19 +169,18 @@
         </template>
       </ConfirmationDialog>
       <ConfirmationDialog ref="confirmationDialogIgnore">
-        <template v-slot:message>
-        </template>
+        <template #message />
       </ConfirmationDialog>
     </div>
   </v-container>
 </template>
 
 <script>
-import {mapMutations, mapState} from 'vuex';
-import PrimaryButton from '../util/PrimaryButton';
-import NomRollStudentStatusChip from './NomRollStudentStatusChip';
+import {mapActions, mapState} from 'pinia';
+import PrimaryButton from '../util/PrimaryButton.vue';
+import NomRollStudentStatusChip from './NomRollStudentStatusChip.vue';
 import ApiService from '../../common/apiService';
-import StudentDetailsInfoPanel from '../common/StudentDetailsInfoPanel';
+import StudentDetailsInfoPanel from '../common/StudentDetailsInfoPanel.vue';
 import {
   NOMINAL_ROLL_STUDENT_STATUS_CODES,
   Routes,
@@ -141,7 +191,7 @@ import {
   STUDENT_DETAILS_FIELDS
 } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin';
-import PenMatchResultsTable from '@/components/common/PenMatchResultsTable';
+import PenMatchResultsTable from '@/components/common/PenMatchResultsTable.vue';
 import {
   constructPenMatchObjectFromStudent,
   deepCloneObject,
@@ -149,9 +199,14 @@ import {
   getPossibleMatches,
 } from '@/utils/common';
 import {formatPen, formatDob, formatGrade} from '@/utils/format';
-import ConfirmationDialog from '../util/ConfirmationDialog';
+import ConfirmationDialog from '../util/ConfirmationDialog.vue';
 import router from '../../router';
 import Mousetrap from 'mousetrap';
+import {navigationStore} from '@/store/modules/setNavigation';
+import {notificationsStore} from '@/store/modules/notifications';
+import {nominalRollStore} from '@/store/modules/nominalRoll';
+import {studentStore} from '@/store/modules/student';
+import _ from 'lodash';
 
 export default {
   name: 'NomRollStudentDetailsDisplay',
@@ -239,9 +294,9 @@ export default {
     }
   },
   computed: {
-    ...mapState('setNavigation', ['selectedIDs']),
-    ...mapState('notifications', ['notification']),
-    ...mapState('nominalRoll', ['fedProvSchoolCodes']),
+    ...mapState(navigationStore, ['selectedIDs']),
+    ...mapState(notificationsStore, ['notification']),
+    ...mapState(nominalRollStore, ['fedProvSchoolCodes']),
     disableRefresh() {
       return this.isMatchingToStudentRecord
           || NOMINAL_ROLL_STUDENT_STATUS_CODES.FIXABLE !== this.nomRollStudent?.status;
@@ -283,13 +338,13 @@ export default {
   created() {
     //Go back to Files page if refresh button is pressed
     if(Object.keys(this.selectedIDs).length > 0) {
-      this.$store.dispatch('student/getCodes');
+      studentStore().getCodes();
       this.initializeDetails();
     } else {
       router.push({name: 'nominal-roll-list'});
     }
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.clearNavigation();
   },
   mounted() {
@@ -299,8 +354,8 @@ export default {
     });
   },
   methods: {
-    ...mapMutations('setNavigation', ['clearNavigation']),
-    ...mapMutations('nominalRoll', ['setFedProvSchoolCodes']),
+    ...mapActions(navigationStore, ['clearNavigation']),
+    ...mapActions(nominalRollStore, ['setFedProvSchoolCodes']),
     formatPen,
     async initializeDetails() {
       this.resetValidationResult(); // reset the validation results, on clicking next or previous

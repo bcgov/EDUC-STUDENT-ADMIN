@@ -1,5 +1,8 @@
 <template>
-  <v-container class="containerSetup" fluid>
+  <v-container
+    class="containerSetup"
+    fluid
+  >
     <v-row v-if="loading">
       <v-col class="d-flex justify-center">
         <v-progress-circular
@@ -9,31 +12,56 @@
           color="primary"
           indeterminate
           :active="loading"
-        ></v-progress-circular>
+        />
       </v-col>
     </v-row>
-    <div style="width: 100%;" :overlay=false>
-      <v-row class="pt-0"
-             :class="{'mr-0 ml-0': $vuetify.breakpoint.smAndDown, 'mr-3 ml-3': $vuetify.breakpoint.mdAndUp}">
+    <div
+      style="width: 100%;"
+      class="pt-7"
+      :overlay="false"
+    >
+      <v-row class="pt-0 mr-3 ml-3">
         <v-col cols="12 pt-0">
           <div v-if="!loading && secureExchange">
             <v-row>
               <v-col class="pb-0 pt-0 d-flex justify-start">
-                <v-row >
-                  <v-col cols="12" class="pb-2 pt-2 pr-0" style="text-align: left">
-                    <h2 class="subjectHeading">{{ secureExchange.subject }}</h2>
-                    <div class="ministryOwnershipTeamName" style="color: black">{{ secureExchange.contactName }}</div>
-                    <div class="createDate" style="color: black">{{ secureExchange.createDate }}</div>
+                <v-row>
+                  <v-col
+                    cols="12"
+                    class="pb-2 pt-2 pr-0"
+                    style="text-align: left"
+                  >
+                    <h2 class="subjectHeading">
+                      {{ secureExchange.subject }}
+                    </h2>
+                    <div
+                      class="ministryOwnershipTeamName"
+                      style="color: black"
+                    >
+                      {{ secureExchange.contactName }}
+                    </div>
+                    <div
+                      class="createDate"
+                      style="color: black"
+                    >
+                      {{ secureExchange.createDate }}
+                    </div>
                   </v-col>
                 </v-row>
               </v-col>
               <v-col class="pb-0 pt-0 d-flex justify-end">
                 <v-row>
                   <v-col class="d-flex justify-end">
-                    <v-card outlined color="transparent" class="mr-5">
+                    <div
+                      class="mr-5"
+                    >
                       <v-row>
                         <v-col>
-                          <v-icon class="ml-n1" :color="getStatusColor(secureExchange.secureExchangeStatusCode)" dark>
+                          <v-icon
+                            class="ml-n1"
+                            :color="getStatusColor(secureExchange.secureExchangeStatusCode)"
+                            dark
+                          >
                             mdi-circle-medium
                           </v-icon>
                           <span class="ml-n1">{{ secureExchange.secureExchangeStatusCode }}</span>
@@ -41,389 +69,715 @@
                       </v-row>
                       <v-row no-gutters>
                         <v-col>
-                          <v-icon color="grey darken-3" size="medium" dark>
+                          <v-icon
+                            color="grey darken-3"
+                            size="medium"
+                            dark
+                          >
                             mdi-pound
                           </v-icon>
                           <span>{{ secureExchange.sequenceNumber }}</span>
                         </v-col>
                       </v-row>
-                    </v-card>
-                    <v-card outlined color="transparent">
+                    </div>
+                    <div
+                      class="mr-5"
+                    >
                       <v-row>
                         <v-col>
-                          <v-icon>{{ secureExchange.reviewer ? 'mdi-account-outline' : 'mdi-account-off-outline' }}</v-icon>
+                          <v-icon>
+                            {{ secureExchange.reviewer ? 'mdi-account-outline' : 'mdi-account-off-outline' }}
+                          </v-icon>
                           <span>{{ secureExchange.reviewer ? secureExchange.reviewer : 'Unclaimed' }}</span>
                         </v-col>
                       </v-row>
                       <v-row no-gutters>
                         <v-col>
-                          <v-icon class="pr-1" color="grey darken-3" dark>mdi-clock-outline</v-icon>
-                          <span class="mr-2">{{getNumberOfDays(secureExchange.createDate)}}</span>
+                          <v-icon
+                            class="pr-1"
+                            color="grey darken-3"
+                            dark
+                          >
+                            mdi-clock-outline
+                          </v-icon>
+                          <span class="mr-2">{{ getNumberOfDays(secureExchange.createDate) }}</span>
                         </v-col>
                       </v-row>
-                    </v-card>
+                    </div>
                   </v-col>
                 </v-row>
               </v-col>
             </v-row>
             <v-row>
               <v-col class="mt-1 d-flex justify-start">
-                <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
-                <a class="pt-1 ml-1" @click="backButtonClick">Return to {{ this.secureExchange.ministryOwnershipTeamName }} Inbox</a>
+                <v-icon
+                  size="small"
+                  color="#1976d2"
+                  class="mt-1"
+                >
+                  mdi-arrow-left
+                </v-icon>
+                <a
+                  class="ml-1"
+                  @click="backButtonClick"
+                >Return to {{ secureExchange.ministryOwnershipTeamName }} Inbox</a>
               </v-col>
               <v-col class="d-flex justify-end">
-                <v-btn :disabled="!isEditable()"   id="markAsButton" v-on:click="clickMarkAsButton" :loading="loadingReadStatus">
-                  <v-icon v-if="secureExchange.isReadByExchangeContact">mdi-email-outline</v-icon>
-                  <v-icon v-else>mdi-email-open-outline</v-icon>
-                  <span class="ml-1 markAsSpan">{{`Mark As ${secureExchange.isReadByMinistry ? 'Unread' : 'Read'}` }}</span>
+                <v-btn
+                  id="markAsButton"
+                  :disabled="!isEditable()"
+                  :loading="loadingReadStatus"
+                  @click="clickMarkAsButton"
+                >
+                  <v-icon v-if="secureExchange.isReadByExchangeContact">
+                    mdi-email-outline
+                  </v-icon>
+                  <v-icon v-else>
+                    mdi-email-open-outline
+                  </v-icon>
+                  <span class="ml-1 markAsSpan">{{ `Mark As ${secureExchange.isReadByMinistry ? 'Unread' : 'Read'}`
+                  }}</span>
                 </v-btn>
-                <v-btn id="claimAsButton" class="mx-2" v-on:click="clickClaimMsgButton" :disabled="!isEditable()" :loading="loadingReadStatus">
+                <v-btn
+                  id="claimAsButton"
+                  class="mx-2"
+                  :disabled="!isEditable()"
+                  :loading="loadingReadStatus"
+                  @click="clickClaimMsgButton"
+                >
                   <v-icon>{{ !isClaimable() ? 'mdi-account-off-outline' : 'mdi-account-check-outline' }}</v-icon>
                   <span class="ml-1">{{ isClaimable() ? 'Claim' : 'Unclaim' }}</span>
                 </v-btn>
-                <v-btn id="changeStatusButton" v-on:click="clickMarkAsStatus(secureExchange.secureExchangeStatusCode === 'Closed' ? 'open' : 'closed')" :loading="loadingReadStatus">
+                <v-btn
+                  id="changeStatusButton"
+                  :loading="loadingReadStatus"
+                  @click="clickMarkAsStatus(secureExchange.secureExchangeStatusCode === 'Closed' ? 'open' : 'closed')"
+                >
                   <span>{{ secureExchange.secureExchangeStatusCode === 'Closed' ? 'OPEN' : 'CLOSE' }}</span>
                 </v-btn>
               </v-col>
             </v-row>
-            <v-row no-gutters>
+            <v-row
+              no-gutters
+              class="mt-2"
+            >
               <v-col>
-                <v-divider class="divider"></v-divider>
+                <v-divider class="divider" />
               </v-col>
             </v-row>
             <v-row>
-              <v-speed-dial id="editOptionsMenu" v-if="isEditable() && shouldDisplaySpeedDial" v-model="editOptionsOpen" top left direction="right">
-                <template v-slot:activator>
-                  <v-btn id="editOptionsMenuBtn" class="ml-4" fab dark color="#003366">
-                    <v-icon v-if="editOptionsOpen" dark large>mdi-close</v-icon>
-                    <v-icon v-else dark large>mdi-plus</v-icon>
-                  </v-btn>
+              <v-menu
+                v-if="shouldDisplaySpeedDial && isEditable()"
+                v-model="editOptionsOpen"
+                transition="fab-transition"
+                location="end"
+                offset="10"
+              >
+                <template #activator="{ props }">
+                  <v-btn
+                    id="editOptionsMenu"
+                    dark
+                    color="primary"
+                    class="ml-6"
+                    :icon="editOptionsOpen ? 'mdi-close' : 'mdi-plus'"
+                    v-bind="props"
+                  />
                 </template>
-                <v-card>
-                  <v-btn id="newMessageToConvBtn" small @click="displayMessagePanel">
-                    <v-icon color="#003366">mdi-email-outline</v-icon>
-                    <span style="color: #003366; text-transform: none!important;" class="ml-1">Message</span>
-                  </v-btn>
-                  <v-btn small id="addAttachmentConvButton" @click="displayAttachmentPanel">
-                    <v-icon color="#003366">mdi-paperclip</v-icon>
-                    <span style="color: #003366; text-transform: none!important;" class="ml-1">Attachment</span>
-                  </v-btn>
-                  <v-btn small id="addStudentConvButton" @click="displayStudentPanel">
-                    <v-icon color="#003366">mdi-emoticon-happy-outline</v-icon>
-                    <span style="color: #003366; text-transform: none!important;" class="ml-1">Student</span>
-                  </v-btn>
-                  <v-btn small id="addNoteConvButton" @click="displayNotePanel">
-                    <v-icon color="#003366">mdi-text</v-icon>
-                    <span style="color: #003366; text-transform: none!important;" class="ml-1">Note</span>
-                  </v-btn>
-                </v-card>
-              </v-speed-dial>
+                <v-list>
+                  <v-list-item
+                    id="newMessageToConvBtn"
+                    @click="displayMessagePanel"
+                  >
+                    <v-icon
+                      color="#003366"
+                      class="pr-1 mb-1"
+                    >
+                      mdi-email-outline
+                    </v-icon>
+                    <span>Message</span>
+                  </v-list-item>
+                  <v-list-item
+                    id="addAttachmentConvButton"
+                    @click="displayAttachmentPanel"
+                  >
+                    <v-icon
+                      color="#003366"
+                      class="pr-1 mb-1"
+                    >
+                      mdi-paperclip
+                    </v-icon>
+                    <span>Attachment</span>
+                  </v-list-item>
+                  <v-list-item
+                    id="addStudentConvButton"
+                    @click="displayStudentPanel"
+                  >
+                    <v-icon
+                      color="#003366"
+                      class="pr-1 mb-1"
+                    >
+                      mdi-emoticon-happy-outline
+                    </v-icon>
+                    <span>Student</span>
+                  </v-list-item>
+                  <v-list-item
+                    id="addNoteConvButton"
+                    @click="displayNotePanel"
+                  >
+                    <v-icon
+                      color="#003366"
+                      class="pr-1 mb-1"
+                    >
+                      mdi-text
+                    </v-icon>
+                    <span>Note</span>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
             </v-row>
             <v-expand-transition>
               <v-row v-if="isNewMessageDisplayed">
-                <v-card-text id="newMessageCardText" class="pb-0 pt-5 pl-16 ml-10 pr-16 mr-10">
-                  <v-textarea id="newMessageToConvTextArea"
-                              outlined
-                              solo
-                              label="New Message..."
-                              auto-grow
-                              v-model="newMessage"
-                              rows="8"
-                              maxlength="4000"
-                              class="pt-0"
-                              ref="newMessageToConvTextArea"
-                              @input="replaceMessageMacro"
+                <v-col>
+                  <v-row>
+                    <v-col>
+                      <v-card-text
+                        id="newMessageCardText"
+                        class="pb-0 pt-5 px-16 ml-10 mr-10"
+                      >
+                        <v-textarea
+                          id="newMessageToConvTextArea"
+                          ref="newMessageToConvTextArea"
+                          v-model="newMessage"
+                          variant="solo"
+                          solo
+                          label="New Message..."
+                          auto-grow
+                          rows="8"
+                          maxlength="4000"
+                          class="pt-0"
+                          @input="replaceMessageMacro"
+                        />
+                      </v-card-text>
+                    </v-col>
+                  </v-row>
+                  <v-row
+                    no-gutters
+                    class="pl-8"
                   >
-                  </v-textarea>
-                </v-card-text>
-                <v-row class="py-4 justify-end pt-0 pr-16 mr-10 ml-7 pl-16">
-                  <MacroMenu id="newMessageMacroSelector"  small :macros="messageMacros" menuMaxWidth="25%" @select="insertMacroMessage" />
-                  <v-spacer></v-spacer>
-                  <PrimaryButton id="cancelMessage" secondary text="Cancel" class="mr-2" @click.native="hideNewMessagePanel"></PrimaryButton>
-                  <PrimaryButton id="newMessagePostBtn" text="Send" width="8rem" :disabled="!newMessage" :loading="loading" @click.native="sendNewExchangeComment"></PrimaryButton>
-                </v-row>
+                    <v-col class="d-flex justify-start px-16">
+                      <MacroMenu
+                        id="newMessageMacroSelector"
+                        small
+                        :macros="messageMacros"
+                        menu-max-width="25%"
+                        @select="insertMacroMessage"
+                      />
+                    </v-col>
+                    <v-spacer />
+                    <v-col class="d-flex justify-start">
+                      <PrimaryButton
+                        id="cancelMessage"
+                        secondary
+                        text="Cancel"
+                        class="mr-2"
+                        :click-action="hideNewMessagePanel"
+                      />
+                      <PrimaryButton
+                        id="newMessagePostBtn"
+                        text="Send"
+                        width="8rem"
+                        :disabled="!newMessage"
+                        :loading="loading"
+                        :click-action="sendNewExchangeComment"
+                      />
+                    </v-col>
+                  </v-row>
+                </v-col>
               </v-row>
             </v-expand-transition>
             <v-expand-transition>
               <v-row v-if="isNewNoteDisplayed">
-                <v-card-text id="newNoteCardText" class="pb-0 pt-5 pl-16 ml-10 pr-16 mr-10">
-                  <v-textarea id="newNoteToConvTextArea"
-                              outlined
-                              solo
-                              label="New Note..."
-                              auto-grow
-                              v-model="newNote"
-                              rows="8"
-                              maxlength="4000"
-                              class="pt-0"
-                              ref="newNoteToConvTextArea"
+                <v-col>
+                  <v-row>
+                    <v-col>
+                      <v-card-text
+                        id="newNoteCardText"
+                        class="pb-0 pt-5 pl-16 ml-10 pr-16 mr-10"
+                      >
+                        <v-textarea
+                          id="newNoteToConvTextArea"
+                          ref="newNoteToConvTextArea"
+                          v-model="newNote"
+                          variant="solo"
+                          label="New Note..."
+                          auto-grow
+                          rows="8"
+                          maxlength="4000"
+                          class="pt-0"
+                        />
+                      </v-card-text>
+                    </v-col>
+                  </v-row>
+                  <v-row
+                    no-gutters
+                    class="pr-10"
                   >
-                  </v-textarea>
-                </v-card-text>
-                <v-row class="py-4 justify-end pt-0 pr-16 mr-10">
-                  <PrimaryButton id="cancelNote" secondary text="Cancel" class="mr-2" @click.native="hideNewNotePanel"></PrimaryButton>
-                  <PrimaryButton id="newNotePostBtn" text="Save" width="8rem" :disabled="!newNote" :loading="loading" @click.native="sendNewExchangeNote"></PrimaryButton>
-                </v-row>
+                    <v-col class="d-flex justify-end pr-16">
+                      <PrimaryButton
+                        id="cancelNote"
+                        secondary
+                        text="Cancel"
+                        class="mr-2"
+                        :click-action="hideNewNotePanel"
+                      />
+                      <PrimaryButton
+                        id="newNotePostBtn"
+                        text="Save"
+                        width="8rem"
+                        :disabled="!newNote"
+                        :loading="loading"
+                        :click-action="sendNewExchangeNote"
+                      />
+                    </v-col>
+                  </v-row>
+                </v-col>
               </v-row>
             </v-expand-transition>
             <v-row no-gutters>
               <v-col class="d-flex justify-center">
                 <v-expand-transition>
                   <DocumentUpload
-                      style="min-width: 40em"
-                      :small-file-extension="false"
-                      :check-file-rules="true"
-                      v-show="isNewAttachmentDisplayed"
-                      @close:form="hideAttachmentPanel"
-                      class="mt-4"
-                      @upload="upload">
-                  </DocumentUpload>
+                    v-show="isNewAttachmentDisplayed"
+                    style="min-width: 40em"
+                    :small-file-extension="false"
+                    :check-file-rules="true"
+                    class="mt-4"
+                    @close:form="hideAttachmentPanel"
+                    @upload="upload"
+                  />
                 </v-expand-transition>
               </v-col>
             </v-row>
             <v-expand-transition>
               <v-row v-if="isNewStudentDisplayed">
                 <v-col class="d-flex justify-center">
-                    <AddStudent
-                        style="min-width: 35em"
-                        @addStudent="sendNewSecureExchangeStudent"
-                        @close:form="hideStudentPanel"
-                        :instituteTypeValue="getInstituteValue()"
-                        :additionalStudentAddWarning="addStudentWarningMessage"
-                        @updateAdditionalStudentAddWarning="updateAddStudentWarningMessage">
-                    </AddStudent>
+                  <AddStudent
+                    style="min-width: 35em"
+                    :institute-type-value="getInstituteValue()"
+                    :additional-student-add-warning="addStudentWarningMessage"
+                    @addStudent="sendNewSecureExchangeStudent"
+                    @close:form="hideStudentPanel"
+                    @updateAdditionalStudentAddWarning="updateAddStudentWarningMessage"
+                  />
                 </v-col>
               </v-row>
             </v-expand-transition>
-            <v-row>
+            <v-row class="mb-5">
               <v-col>
-                <v-timeline v-if="secureExchange.activities.length > 0">
-                  <div v-for="(activity, index) in secureExchange.activities"
-                       :key="activity.secureExchangeCommentID">
-                    <v-timeline-item :left="activity.isSchool" icon-color="#003366" large color="white" :icon="getActivityIcon(activity)">
-                      <v-card v-if="activity.type === 'message'">
-                        <v-card-title>
-                          <div class="activityTitle">{{ activity.title }}</div>
-                          <v-spacer></v-spacer>
-                          <div class="activityDisplayDate">{{ activity.displayDate }}</div>
-                        </v-card-title>
-                        <v-card-text class="activityContent">{{ activity.content }}</v-card-text>
-                      </v-card>
-                      <v-card v-if="activity.type === 'student'">
-                        <v-card-title>
-                          <div class="activityTitle">{{ activity.title }}</div>
-                          <v-spacer></v-spacer>
-                          <div class="activityDisplayDate">{{ activity.displayDate }}</div>
-                        </v-card-title>
+                <v-timeline
+                  v-if="secureExchange.activities.length > 0"
+                  side="end"
+                  truncate-line="both"
+                  class="mr-8"
+                >
+                  <v-timeline-item
+                    v-for="(activity, index) in secureExchange.activities"
+                    :key="activity.secureExchangeCommentID"
+                    :left="activity.isSchool"
+                    icon-color="#003366"
+                    color="white"
+                    dot-color="white"
+                    fill-dot
+                    elevation="1"
+                    :icon="getActivityIcon(activity)"
+                    size="large"
+                    width="100%"
+                  >
+                    <v-card v-if="activity.type === 'message'">
+                      <v-card-title>
+                        <div class="activityTitle">
+                          {{ activity.title }}
+                        </div>
+                        <v-spacer />
+                        <div class="activityDisplayDate">
+                          {{ activity.displayDate }}
+                        </div>
+                      </v-card-title>
+                      <v-card-text class="activityContent">
+                        {{ activity.content }}
+                      </v-card-text>
+                    </v-card>
+                    <v-card v-if="activity.type === 'student'">
+                      <v-card-title>
+                        <div class="activityTitle">
+                          {{ activity.title }}
+                        </div>
+                        <v-spacer />
+                        <div class="activityDisplayDate">
+                          {{ activity.displayDate }}
+                        </div>
+                      </v-card-title>
 
-                        <v-card-text class="">
-                          <v-row v-if="activity.studentPEN !== null">
-                            <v-col class="pt-0" cols="3">
-                              <span>PEN: </span>
-                            </v-col>
-                            <v-col class="pt-0" cols="9" >
-                              <a @click="openStudentDetail(activity)">{{ activity.studentPEN }}</a>
-                            </v-col>
-                          </v-row>
-                          <v-row v-if="activity.studentLocalID !== null">
-                            <v-col class="pt-0" cols="3">
-                              <span>Local ID: </span>
-                            </v-col>
-                            <v-col class="pt-0" cols="9">
-                              <span>{{ activity.studentLocalID }}</span>
-                            </v-col>
-                          </v-row>
-                          <v-row v-if="activity.studentSurname !== null">
-                            <v-col class="pt-0" cols="3">
-                              <span>Surname: </span>
-                            </v-col>
-                            <v-col class="pt-0" cols="9">
-                              <span>{{ activity.studentSurname }}</span>
-                            </v-col>
-                          </v-row>
-                          <v-row v-if="activity.studentGiven !== null">
-                            <v-col class="pt-0" cols="3">
-                              <span>Given Name: </span>
-                            </v-col>
-                            <v-col class="pt-0" cols="9">
-                              <span>{{ activity.studentGiven }}</span>
-                            </v-col>
-                          </v-row>
-                          <v-row v-if="activity.studentMiddle !== null">
-                            <v-col class="pt-0" cols="3">
-                              <span>Middle Name: </span>
-                            </v-col>
-                            <v-col class="pt-0" cols="9">
-                              <span>{{ activity.studentMiddle }}</span>
-                            </v-col>
-                          </v-row>
-                          <v-row v-if="activity.studentDOB !== null">
-                            <v-col class="pt-0" cols="3">
-                              <span>Birth Date: </span>
-                            </v-col>
-                            <v-col class="pt-0" cols="9">
-                              <span>{{ activity.studentDOB }}</span>
-                            </v-col>
-                          </v-row>
-                          <v-row v-if="activity.studentGender !== null">
-                            <v-col class="pt-0" cols="3">
-                              <span>Gender: </span>
-                            </v-col>
-                            <v-col class="pt-0" cols="9">
-                              <span>{{ activity.studentGender }}</span>
-                            </v-col>
-                          </v-row>
-                          <v-row v-if="shouldShowMincodeWarning(activity)">
-                            <v-col class="pt-0" cols="12">
-                              <v-alert
-                                  id="studentNotFromMincode"
-                                  dense
-                                  outlined
-                                  class="mb-3 bootstrap-info"
-                              >
-                                Student's mincode does not match the school the student has on file. As such, the school cannot see the student details.
-                              </v-alert>
-                            </v-col>
-                          </v-row>
-                          <v-row v-if="shouldShowDistrictWarning(activity)">
-                            <v-col class="pt-0" cols="12">
-                              <v-alert
-                                  id="studentNotFromMincode"
-                                  dense
-                                  outlined
-                                  class="mb-3 bootstrap-info"
-                              >
-                                Student's mincode is not a part of the district. As such, the district cannot see the student details.
-                              </v-alert>
-                            </v-col>
-                          </v-row>
-                          
-                        </v-card-text>
-                          <v-row>
-                            <v-btn class="mb-1 mr-1 ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveStudent(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="!isEditable()">
-                              <v-icon color="#003366">mdi-delete</v-icon>
-                            </v-btn>
-                          </v-row>
-                          <v-expand-transition>
-                            <div v-show="isOpenStudentIndex === index" class="greyBackground">
-                              <v-divider></v-divider>
-                              <v-card-text style="background-color: #e7ebf0;">
-                                <v-row no-gutters>
-                                  <v-col class="d-flex justify-start">
-                                    <span style="font-size: medium; font-weight: bold; color: black">Removing the student will remove it for all users.</span>
-                                  </v-col>
-                                </v-row>
-                                <v-row no-gutters>
-                                  <v-col class="pt-3 d-flex justify-start">
-                                    <span style="font-size: medium; font-weight: bold; color: black">Are you sure you want to remove the student?</span>
-                                  </v-col>
-                                </v-row>
-                                <v-row no-gutters>
-                                  <v-col class="mt-3 d-flex justify-end">
-                                    <v-btn class="mr-2" outlined @click="closeStudentIndex()">
-                                      No
-                                    </v-btn>
-                                    <v-btn dark color="#003366" @click="removeStudent(activity.secureExchangeStudentId)">
-                                      Yes
-                                    </v-btn>
-                                  </v-col>
-                                </v-row>
-                              </v-card-text>
-                            </div>
-                          </v-expand-transition>
-                      </v-card>
-                      <v-card v-if="activity.type === 'document'">
-                        <v-card-title>
-                          <div class="activityTitle">{{ activity.title }}</div>
-                          <v-spacer></v-spacer>
-                          <div class="activityDisplayDate">{{ activity.displayDate }}</div>
-                        </v-card-title>
-                        <v-row no-gutters>
-                          <v-card-text
-                            class="mt-n2 pt-0 pb-0"
-                            :class="{
-                              'pb-0': activity.documentType.label !== 'Other',
-                              'pb-3': activity.documentType.label === 'Other'
-                            }">
-                            <router-link
-                              v-if="isPdf(activity)"
-                              :class="disabledAnchorDocumentName"
-                              :to="{
-                                path: documentUrl(activity)
-                              }" target="_blank">
-                              {{ activity.fileName }}
-                            </router-link>
-                            <a v-else
-                              @click="showDocModal(activity)"
-                              :class="disabledAnchorDocumentName">
-                              {{ activity.fileName }}
-                            </a>
-                          </v-card-text>
-                          <v-card-text v-if="activity.documentType.label !== 'Other'" class="pt-0 pb-3">{{ activity.documentType.label }}</v-card-text>
-                          <v-btn class="mb-1 mr-1 ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveDoc(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="!isEditable()">
-                            <v-icon color="#003366">mdi-delete</v-icon>
-                          </v-btn>
+                      <v-card-text class="">
+                        <v-row v-if="activity.studentPEN !== null">
+                          <v-col
+                            class="pt-0"
+                            cols="3"
+                          >
+                            <span>PEN: </span>
+                          </v-col>
+                          <v-col
+                            class="pt-0"
+                            cols="9"
+                          >
+                            <a @click="openStudentDetail(activity)">{{ activity.studentPEN }}</a>
+                          </v-col>
                         </v-row>
-                        <v-expand-transition>
-                          <div v-show="isOpenDocIndex === index" class="greyBackground">
-                            <v-divider></v-divider>
-                            <v-card-text style="background-color: #e7ebf0;">
-                              <v-row no-gutters>
-                                <v-col class="d-flex justify-start">
-                                  <span style="font-size: medium; font-weight: bold; color: black">Removing the attachment will remove it for all users.</span>
-                                </v-col>
-                              </v-row>
-                              <v-row no-gutters>
-                                <v-col class="pt-3 d-flex justify-start">
-                                  <span style="font-size: medium; font-weight: bold; color: black">Are you sure you want to remove the attachment?</span>
-                                </v-col>
-                              </v-row>
-                              <v-row no-gutters>
-                                <v-col class="mt-3 d-flex justify-end">
-                                  <v-btn class="mr-2" outlined @click="closeDocIndex()">No</v-btn>
-                                  <v-btn dark color="#003366" @click="removeAttachment(activity.documentID)">Yes</v-btn>
-                                </v-col>
-                              </v-row>
-                            </v-card-text>
-                          </div>
-                        </v-expand-transition>
-                      </v-card>
-                      <v-card v-if="activity.type === 'note'">
-                        <v-card-title>
-                          <div class="activityTitle">{{ activity.title }}</div>
-                          <v-spacer></v-spacer>
-                          <div class="activityDisplayDate">{{ activity.displayDate }}</div>
-                        </v-card-title>
-                        <v-card-text class="activityContent">{{ activity.content }}</v-card-text>
-                        <v-btn class="mb-1 mr-1 ml-12 pl-0 pr-0 plainBtn" bottom right absolute elevation="0" @click="toggleRemoveNote(index)" v-show="isHideIndex === false || isHideIndex !== index" :disabled="(!isEditable()) || (activity.staffUserIdentifier !== userInfo.userName)">
-                          <v-icon color="#003366">mdi-delete</v-icon>
-                        </v-btn>
-                        <v-expand-transition>
-                          <div v-show="isOpenNoteIndex === index" class="greyBackground">
-                            <v-divider></v-divider>
-                            <v-card-text style="background-color: #e7ebf0;">
-                              <v-row no-gutters>
-                                <v-col class="d-flex justify-start">
-                                  <span style="font-size: medium; font-weight: bold; color: black">Removing the note will remove it for all users.</span>
-                                </v-col>
-                              </v-row>
-                              <v-row no-gutters>
-                                <v-col class="pt-3 d-flex justify-start">
-                                  <span style="font-size: medium; font-weight: bold; color: black">Are you sure you want to remove the note?</span>
-                                </v-col>
-                              </v-row>
-                              <v-row no-gutters>
-                                <v-col class="mt-3 d-flex justify-end">
-                                  <v-btn class="mr-2" outlined @click="closeNoteIndex()">No</v-btn>
-                                  <v-btn dark color="#003366" @click="removeNote(activity)">Yes</v-btn>
-                                </v-col>
-                              </v-row>
-                            </v-card-text>
-                          </div>
-                        </v-expand-transition>
-                      </v-card>
-                    </v-timeline-item>
-                  </div>
+                        <v-row v-if="activity.studentLocalID !== null">
+                          <v-col
+                            class="pt-0"
+                            cols="3"
+                          >
+                            <span>Local ID: </span>
+                          </v-col>
+                          <v-col
+                            class="pt-0"
+                            cols="9"
+                          >
+                            <span>{{ activity.studentLocalID }}</span>
+                          </v-col>
+                        </v-row>
+                        <v-row v-if="activity.studentSurname !== null">
+                          <v-col
+                            class="pt-0"
+                            cols="3"
+                          >
+                            <span>Surname: </span>
+                          </v-col>
+                          <v-col
+                            class="pt-0"
+                            cols="9"
+                          >
+                            <span>{{ activity.studentSurname }}</span>
+                          </v-col>
+                        </v-row>
+                        <v-row v-if="activity.studentGiven !== null">
+                          <v-col
+                            class="pt-0"
+                            cols="3"
+                          >
+                            <span>Given Name: </span>
+                          </v-col>
+                          <v-col
+                            class="pt-0"
+                            cols="9"
+                          >
+                            <span>{{ activity.studentGiven }}</span>
+                          </v-col>
+                        </v-row>
+                        <v-row v-if="activity.studentMiddle !== null">
+                          <v-col
+                            class="pt-0"
+                            cols="3"
+                          >
+                            <span>Middle Name: </span>
+                          </v-col>
+                          <v-col
+                            class="pt-0"
+                            cols="9"
+                          >
+                            <span>{{ activity.studentMiddle }}</span>
+                          </v-col>
+                        </v-row>
+                        <v-row v-if="activity.studentDOB !== null">
+                          <v-col
+                            class="pt-0"
+                            cols="3"
+                          >
+                            <span>Birth Date: </span>
+                          </v-col>
+                          <v-col
+                            class="pt-0"
+                            cols="9"
+                          >
+                            <span>{{ activity.studentDOB }}</span>
+                          </v-col>
+                        </v-row>
+                        <v-row v-if="activity.studentGender !== null">
+                          <v-col
+                            class="pt-0"
+                            cols="3"
+                          >
+                            <span>Gender: </span>
+                          </v-col>
+                          <v-col
+                            class="pt-0"
+                            cols="9"
+                          >
+                            <span>{{ activity.studentGender }}</span>
+                          </v-col>
+                        </v-row>
+                        <v-row v-if="shouldShowMincodeWarning(activity)">
+                          <v-col
+                            class="pt-0"
+                            cols="12"
+                          >
+                            <v-alert
+                              id="studentNotFromMincode"
+                              dense
+                              outlined
+                              class="mb-3 bootstrap-info"
+                            >
+                              Student's mincode does not match the school the student has on file. As such, the school
+                              cannot see the student details.
+                            </v-alert>
+                          </v-col>
+                        </v-row>
+                        <v-row v-if="shouldShowDistrictWarning(activity)">
+                          <v-col
+                            class="pt-0"
+                            cols="12"
+                          >
+                            <v-alert
+                              id="studentNotFromMincode"
+                              dense
+                              outlined
+                              class="mb-3 bootstrap-info"
+                            >
+                              Student's mincode is not a part of the district. As such, the district cannot see the
+                              student details.
+                            </v-alert>
+                          </v-col>
+                        </v-row>
+                      </v-card-text>
+                      <v-row>
+                        <v-col class="d-flex justify-end">
+                          <v-btn
+                            v-show="isHideIndex === false || isHideIndex !== index"
+                            class="mb-1 mr-1 ml-12 pl-0 pr-0 plainBtn"
+                            bottom
+                            right
+                            absolute
+                            elevation="0"
+                            :disabled="!isEditable()"
+                            @click="toggleRemoveStudent(index)"
+                          >
+                            <v-icon color="#003366">
+                              mdi-delete
+                            </v-icon>
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                      <v-expand-transition>
+                        <div
+                          v-show="isOpenStudentIndex === index"
+                          class="greyBackground"
+                        >
+                          <v-divider />
+                          <v-card-text style="background-color: #e7ebf0;">
+                            <v-row no-gutters>
+                              <v-col class="d-flex justify-start">
+                                <span style="font-size: medium; font-weight: bold; color: black">Removing the student will remove it for all users.</span>
+                              </v-col>
+                            </v-row>
+                            <v-row no-gutters>
+                              <v-col class="pt-3 d-flex justify-start">
+                                <span style="font-size: medium; font-weight: bold; color: black">Are you sure you want to remove the student?</span>
+                              </v-col>
+                            </v-row>
+                            <v-row no-gutters>
+                              <v-col class="mt-3 d-flex justify-end">
+                                <v-btn
+                                  class="mr-2"
+                                  outlined
+                                  @click="closeStudentIndex()"
+                                >
+                                  No
+                                </v-btn>
+                                <v-btn
+                                  dark
+                                  color="#003366"
+                                  @click="removeStudent(activity.secureExchangeStudentId)"
+                                >
+                                  <span style="color: white">Yes</span>
+                                </v-btn>
+                              </v-col>
+                            </v-row>
+                          </v-card-text>
+                        </div>
+                      </v-expand-transition>
+                    </v-card>
+                    <v-card v-if="activity.type === 'document'">
+                      <v-card-title>
+                        <div class="activityTitle">
+                          {{ activity.title }}
+                        </div>
+                        <v-spacer />
+                        <div class="activityDisplayDate">
+                          {{ activity.displayDate }}
+                        </div>
+                      </v-card-title>
+                      <v-row no-gutters>
+                        <v-card-text
+                          class="mt-n2 pt-0 pb-0"
+                          :class="{
+                            'pb-0': activity.documentType.label !== 'Other',
+                            'pb-3': activity.documentType.label === 'Other'
+                          }"
+                        >
+                          <router-link
+                            v-if="isPdf(activity)"
+                            :class="disabledAnchorDocumentName"
+                            :to="{
+                              path: documentUrl(activity)
+                            }"
+                            target="_blank"
+                          >
+                            {{ activity.fileName }}
+                          </router-link>
+                          <a
+                            v-else
+                            :class="disabledAnchorDocumentName"
+                            @click="showDocModal(activity)"
+                          >
+                            {{ activity.fileName }}
+                          </a>
+                        </v-card-text>
+                        <v-card-text
+                          v-if="activity.documentType.label !== 'Other'"
+                          class="pt-0 pb-3"
+                        >
+                          {{ activity.documentType.label }}
+                        </v-card-text>
+                        <v-row>
+                          <v-col class="d-flex justify-end">
+                            <v-btn
+                              v-show="isHideIndex === false || isHideIndex !== index"
+                              class="mb-1 mr-1 ml-12 pl-0 pr-0 plainBtn"
+                              bottom
+                              right
+                              absolute
+                              elevation="0"
+                              :disabled="!isEditable()"
+                              @click="toggleRemoveDoc(index)"
+                            >
+                              <v-icon color="#003366">
+                                mdi-delete
+                              </v-icon>
+                            </v-btn>
+                          </v-col>
+                        </v-row>
+                      </v-row>
+                      <v-expand-transition>
+                        <div
+                          v-show="isOpenDocIndex === index"
+                          class="greyBackground"
+                        >
+                          <v-divider />
+                          <v-card-text style="background-color: #e7ebf0;">
+                            <v-row no-gutters>
+                              <v-col class="d-flex justify-start">
+                                <span style="font-size: medium; font-weight: bold; color: black">Removing the attachment will remove it for all users.</span>
+                              </v-col>
+                            </v-row>
+                            <v-row no-gutters>
+                              <v-col class="pt-3 d-flex justify-start">
+                                <span style="font-size: medium; font-weight: bold; color: black">Are you sure you want to remove the attachment?</span>
+                              </v-col>
+                            </v-row>
+                            <v-row no-gutters>
+                              <v-col class="mt-3 d-flex justify-end">
+                                <v-btn
+                                  class="mr-2"
+                                  outlined
+                                  @click="closeDocIndex()"
+                                >
+                                  No
+                                </v-btn>
+                                <v-btn
+                                  dark
+                                  color="#003366"
+                                  @click="removeAttachment(activity.documentID)"
+                                >
+                                  <span style="color: white">Yes</span>
+                                </v-btn>
+                              </v-col>
+                            </v-row>
+                          </v-card-text>
+                        </div>
+                      </v-expand-transition>
+                    </v-card>
+                    <v-card v-if="activity.type === 'note'">
+                      <v-card-title>
+                        <div class="activityTitle">
+                          {{ activity.title }}
+                        </div>
+                        <v-spacer />
+                        <div class="activityDisplayDate">
+                          {{ activity.displayDate }}
+                        </div>
+                      </v-card-title>
+                      <v-card-text class="activityContent">
+                        {{ activity.content }}
+                      </v-card-text>
+                      <v-row>
+                        <v-col class="d-flex justify-end">
+                          <v-btn
+                            v-show="isHideIndex === false || isHideIndex !== index"
+                            class="mb-1 mr-1 ml-12 pl-0 pr-0 plainBtn"
+                            bottom
+                            right
+                            absolute
+                            elevation="0"
+                            :disabled="(!isEditable()) || (activity.staffUserIdentifier !== userInfo.userName)"
+                            @click="toggleRemoveNote(index)"
+                          >
+                            <v-icon color="#003366">
+                              mdi-delete
+                            </v-icon>
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                      <v-expand-transition>
+                        <div
+                          v-show="isOpenNoteIndex === index"
+                          class="greyBackground"
+                        >
+                          <v-divider />
+                          <v-card-text style="background-color: #e7ebf0;">
+                            <v-row no-gutters>
+                              <v-col class="d-flex justify-start">
+                                <span style="font-size: medium; font-weight: bold; color: black">Removing the note will remove it for all users.</span>
+                              </v-col>
+                            </v-row>
+                            <v-row no-gutters>
+                              <v-col class="pt-3 d-flex justify-start">
+                                <span style="font-size: medium; font-weight: bold; color: black">Are you sure you want to remove the note?</span>
+                              </v-col>
+                            </v-row>
+                            <v-row no-gutters>
+                              <v-col class="mt-3 d-flex justify-end">
+                                <v-btn
+                                  class="mr-2"
+                                  outlined
+                                  @click="closeNoteIndex()"
+                                >
+                                  No
+                                </v-btn>
+                                <v-btn
+                                  dark
+                                  color="#003366"
+                                  @click="removeNote(activity)"
+                                >
+                                  <span style="color: white">Yes</span>
+                                </v-btn>
+                              </v-col>
+                            </v-row>
+                          </v-card-text>
+                        </div>
+                      </v-expand-transition>
+                    </v-card>
+                  </v-timeline-item>
                 </v-timeline>
               </v-col>
             </v-row>
@@ -431,7 +785,13 @@
         </v-col>
       </v-row>
     </div>
-    <ImageRenderer :route="this.documentRoute" :dialog="imageRendererDialog" @closeDialog="closeDialog" :request-id="this.secureExchangeID" :image-id="this.imageId"></ImageRenderer>
+    <ImageRenderer
+      :route="documentRoute"
+      :dialog="imageRendererDialog"
+      :request-id="secureExchangeID"
+      :image-id="imageId"
+      @closeDialog="closeDialog"
+    />
   </v-container>
 </template>
 
@@ -439,7 +799,7 @@
 import ApiService from '@/common/apiService';
 import {EDX_SAGA_REQUEST_DELAY_MILLISECONDS, Routes} from '@/utils/constants';
 import router from '@/router';
-import {mapState, mapActions, mapGetters} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import {isPdf} from '@/utils/file';
 import {replaceMacro, insertMacro} from '@/utils/macro';
 import {ChronoUnit, DateTimeFormatter, LocalDate} from '@js-joda/core';
@@ -450,12 +810,15 @@ import DocumentUpload from '@/components/common/DocumentUpload.vue';
 import ImageRenderer from '@/components/common/ImageRenderer.vue';
 import AddStudent from '@/components/common/AddStudent.vue';
 import MacroMenu from '../common/MacroMenu.vue';
+import {appStore} from '@/store/modules/app';
+import {edxStore} from '@/store/modules/edx';
+import {authStore} from '@/store/modules/auth';
 
 
 export default {
   name: 'MessageDisplay',
-  mixins: [alertMixin],
   components: {DocumentUpload, AddStudent, PrimaryButton, ImageRenderer, MacroMenu},
+  mixins: [alertMixin],
   props: {
     secureExchangeID: {
       type: String,
@@ -464,15 +827,12 @@ export default {
     ministryOwnershipGroupRoleID: {
       type: String,
       required: true
-    },
-    ministryOwnershipTeamName: {
-      type: String,
-      required: true
     }
   },
   data() {
     return {
       loadingCount: 0,
+      ministryOwnershipTeamName: null,
       secureExchange: null,
       loadingReadStatus: false,
       editOptionsOpen: false,
@@ -484,7 +844,7 @@ export default {
       isNewNoteDisplayed: false,
       newMessageBtnDisplayed: false,
       shouldDisplaySpeedDial: true,
-      newMessage:'',
+      newMessage: '',
       mincode: null,
       isOpenDocIndex: false,
       isOpenStudentIndex: false,
@@ -501,9 +861,9 @@ export default {
     };
   },
   computed: {
-    ...mapState('auth', ['userInfo']),
-    ...mapGetters('edx', ['messageMacros']),
-    ...mapGetters('app', ['schoolMap']),
+    ...mapState(authStore, ['userInfo']),
+    ...mapState(edxStore, ['messageMacros', 'ministryTeams']),
+    ...mapState(appStore, ['schoolMap']),
     loading() {
       return this.loadingCount !== 0;
     },
@@ -514,9 +874,12 @@ export default {
   created() {
     this.getExchange(true);
     this.getMacros();
+    edxStore().getMinistryTeams().then(() => {
+      this.getMinistryTeamNameByGroupRoleID();
+    });
   },
   methods: {
-    ...mapActions('edx', ['getMacros']),
+    ...mapActions(edxStore, ['getMacros']),
     async upload(document) {
       try {
         this.loadingCount += 1;
@@ -541,13 +904,16 @@ export default {
       this.closeAllPanels();
       this.isNewMessageDisplayed = true;
     },
-    shouldShowMincodeWarning(studentActivity){
+    shouldShowMincodeWarning(studentActivity) {
       return this.secureExchange?.secureExchangeContactTypeCode === 'SCHOOL' && this.secureExchange.contactIdentifier !== studentActivity.schoolID;
     },
-    shouldShowDistrictWarning(studentActivity){
+    shouldShowDistrictWarning(studentActivity) {
       return this.secureExchange?.secureExchangeContactTypeCode === 'DISTRICT' && this.secureExchange.contactIdentifier !== this.schoolMap.get(studentActivity.schoolID)?.districtID;
     },
-    hideNewMessagePanel(){
+    getMinistryTeamNameByGroupRoleID() {
+      this.ministryTeamName = this.ministryTeams.find(item => item.groupRoleIdentifier === this.ministryOwnershipGroupRoleID).teamName;
+    },
+    hideNewMessagePanel() {
       this.isNewMessageDisplayed = false;
       this.shouldDisplaySpeedDial = true;
       this.resetNewMessageForm();
@@ -556,7 +922,7 @@ export default {
       this.closeAllPanels();
       this.isNewAttachmentDisplayed = true;
     },
-    hideAttachmentPanel(){
+    hideAttachmentPanel() {
       this.isNewAttachmentDisplayed = false;
       this.shouldDisplaySpeedDial = true;
     },
@@ -637,7 +1003,7 @@ export default {
       this.shouldDisplaySpeedDial = true;
       this.newMessage = '';
     },
-    messageSent(){
+    messageSent() {
       this.subject = '';
       this.assignedMinistryTeam = null;
       this.newMessage = '';
@@ -648,11 +1014,11 @@ export default {
         content: this.newMessage,
         secureExchangeContactTypeCode: this.secureExchange.secureExchangeContactTypeCode,
         contactIdentifier: this.secureExchange.contactIdentifier,
-        schoolName:this.secureExchange.schoolName,
-        districtName:this.secureExchange.districtName,
+        schoolName: this.secureExchange.schoolName,
+        districtName: this.secureExchange.districtName,
         sequenceNumber: this.secureExchange.sequenceNumber,
-        ministryTeamName:this.secureExchange.ministryOwnershipTeamName,
-        secureExchangeId:this.secureExchangeID,
+        ministryTeamName: this.secureExchange.ministryOwnershipTeamName,
+        secureExchangeId: this.secureExchangeID,
       };
       ApiService.apiAxios.post(this.documentRoute + `/${this.secureExchangeID}/comments`, payload)
         .then(() => {
@@ -669,7 +1035,9 @@ export default {
         })
         .finally(() => {
           this.resetNewMessageForm();
-          setTimeout(() => { this.loadingCount -= 1; }, EDX_SAGA_REQUEST_DELAY_MILLISECONDS);
+          setTimeout(() => {
+            this.loadingCount -= 1;
+          }, EDX_SAGA_REQUEST_DELAY_MILLISECONDS);
         });
     },
     clickMarkAsStatus(status) {
@@ -691,7 +1059,7 @@ export default {
           this.loadingReadStatus = false;
         });
     },
-    isClaimable(){
+    isClaimable() {
       return this.secureExchange.reviewer === '' ||
         this.secureExchange.reviewer !== this.userInfo.userName;
     },
@@ -707,9 +1075,9 @@ export default {
       ApiService.apiAxios.post(Routes.edx.CLAIM_ONE_URL, payload)
         .then((response) => {
           this.getExchange();
-          if(response.data.reviewer){
+          if (response.data.reviewer) {
             this.setSuccessAlert('Success! The message has been claimed.');
-          } else{
+          } else {
             this.setSuccessAlert('Success! The message has been un-claimed.');
           }
         })
@@ -724,7 +1092,7 @@ export default {
           this.loadingReadStatus = false;
         });
     },
-    closeAllIndexes(){
+    closeAllIndexes() {
       this.closeDocIndex();
       this.closeStudentIndex();
       this.closeNoteIndex();
@@ -732,8 +1100,8 @@ export default {
     toggleRemoveDoc(index) {
       this.closeAllIndexes();
       this.isHideIndex = index;
-      if( this.isOpenDocIndex !== null ){
-        this.isOpenDocIndex = ( this.isOpenDocIndex === index ) ? null : index;
+      if (this.isOpenDocIndex !== null) {
+        this.isOpenDocIndex = (this.isOpenDocIndex === index) ? null : index;
       } else {
         this.isOpenDocIndex = index;
       }
@@ -745,8 +1113,8 @@ export default {
     toggleRemoveStudent(index) {
       this.closeAllIndexes();
       this.isHideIndex = index;
-      if( this.isOpenStudentIndex !== null ){
-        this.isOpenStudentIndex = ( this.isOpenStudentIndex === index ) ? null : index;
+      if (this.isOpenStudentIndex !== null) {
+        this.isOpenStudentIndex = (this.isOpenStudentIndex === index) ? null : index;
       } else {
         this.isOpenStudentIndex = index;
       }
@@ -758,8 +1126,8 @@ export default {
     toggleRemoveNote(index) {
       this.closeAllIndexes();
       this.isHideIndex = index;
-      if( this.isOpenNoteIndex !== null ){
-        this.isOpenNoteIndex = ( this.isOpenNoteIndex === index ) ? null : index;
+      if (this.isOpenNoteIndex !== null) {
+        this.isOpenNoteIndex = (this.isOpenNoteIndex === index) ? null : index;
       } else {
         this.isOpenNoteIndex = index;
       }
@@ -779,7 +1147,7 @@ export default {
     updateAddStudentWarningMessage(newValue) {
       this.addStudentWarningMessage = newValue;
     },
-    openStudentDetail(student){
+    openStudentDetail(student) {
       router.push(`/student/${student.studentID}`);
     },
     sendNewSecureExchangeStudent(student) {
@@ -810,9 +1178,9 @@ export default {
       ApiService.apiAxios.put(this.documentRoute + `/${this.secureExchangeID}/removeDoc/${documentID}`)
         .then((response) => {
           this.getExchange();
-          if(response.status === 200){
+          if (response.status === 200) {
             this.setSuccessAlert('Success! The document has been removed.');
-          } else{
+          } else {
             this.setFailureAlert('Error! The document was not removed.');
           }
           this.closeDocIndex();
@@ -833,9 +1201,9 @@ export default {
       ApiService.apiAxios.put(`${Routes.edx.EXCHANGE_URL}/${this.secureExchangeID}/removeStudent/${studentID}`)
         .then((response) => {
           this.getExchange();
-          if(response.status === 200){
+          if (response.status === 200) {
             this.setSuccessAlert('Success! The student has been removed.');
-          } else{
+          } else {
             this.setFailureAlert('Error! The student was not removed.');
           }
           this.closeStudentIndex();
@@ -879,8 +1247,8 @@ export default {
           this.loadingCount -= 1;
         });
     },
-    showDocModal(document){
-      if(this.isEditable()){
+    showDocModal(document) {
+      if (this.isEditable()) {
         this.imageId = document.documentID;
         this.imageRendererDialog = true;
       }
@@ -946,13 +1314,13 @@ export default {
       );
     },
     getInstituteValue() {
-      if(this.secureExchange?.secureExchangeContactTypeCode === 'SCHOOL') {
+      if (this.secureExchange?.secureExchangeContactTypeCode === 'SCHOOL') {
         return {
           'type': 'SCHOOL',
           'value': this.schoolMap.get(this.secureExchange?.contactIdentifier)?.mincode
         };
       } else {
-        return  {
+        return {
           'type': 'DISTRICT',
           'value': this.secureExchange?.contactIdentifier
         };
@@ -964,67 +1332,74 @@ export default {
 
 <style scoped>
 .subjectHeading {
-  overflow-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
-.document-upload{
-  padding: 1.1rem;
-  max-width: 50rem;
-  min-width: 10rem;
+.document-upload {
+    padding: 1.1rem;
+    max-width: 50rem;
+    min-width: 10rem;
 }
 
-.activityDisplayDate{
-  font-size: medium;
+.activityDisplayDate {
+    font-size: medium;
 }
 
 .activityContent {
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  max-width: 100%;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-width: 100%;
 }
 
-.containerSetup{
-  padding-right: 30em !important;
-  padding-left: 30em !important;
+.containerSetup {
+    padding-right: 30em !important;
+    padding-left: 30em !important;
 }
 
 @media screen and (max-width: 1900px) {
-  .containerSetup{
-    padding-right: 20em !important;
-    padding-left: 20em !important;
-  }
+    .containerSetup {
+        padding-right: 20em !important;
+        padding-left: 20em !important;
+    }
 }
 
 @media screen and (max-width: 1200px) {
-  .containerSetup{
-    padding-right: 10em !important;
-    padding-left: 10em !important;
-  }
+    .containerSetup {
+        padding-right: 10em !important;
+        padding-left: 10em !important;
+    }
 }
 
 @media screen and (max-width: 801px) {
-  .subjectHeading {
-    font-size: medium;
-  }
+    .subjectHeading {
+        font-size: medium;
+    }
 }
 
 .divider {
-  border-color: #FCBA19;
-  border-width: medium;
+    border-color: #FCBA19;
+    border-width: 2px;
+    opacity: unset;
+}
+
+.v-timeline--vertical.v-timeline--justify-auto {
+    grid-template-columns: minmax(min-content, 0em) min-content auto;
 }
 
 .plainBtn {
-  background-color: white !important;
-  height: 2em !important;
-  min-width: 1em !important;
-  bottom: 0;
-  right: 0;
+    background-color: white !important;
+    height: 2em !important;
+    min-width: 1em !important;
+    bottom: 0;
+    right: 0;
 }
+
 .greyBackground {
-  background-color: #f5f5f5;
+    background-color: #f5f5f5;
 }
+
 .disabled-anchor {
-  cursor: not-allowed;
-  color: gray
+    cursor: not-allowed;
+    color: gray
 }
 </style>

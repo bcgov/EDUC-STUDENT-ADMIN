@@ -1,257 +1,281 @@
 <template>
   <v-card id="newAuthorityVCard">
-    <v-card-title class="sheetHeader pt-1 pb-1">New Authority</v-card-title>
-    <v-divider></v-divider>
+    <v-card-title class="sheetHeader pt-1 pb-1">
+      New Authority
+    </v-card-title>
+    <v-divider />
     <v-card-text>
-      <v-form ref="newAuthorityForm" v-model="isFormValid">
+      <v-form
+        ref="newAuthorityForm"
+        v-model="isFormValid"
+      >
         <v-row class="d-flex justify-center">
           <v-col>
             <v-text-field
-                id='newAuthorityNameInput'
-                v-model="newAuthority.authorityName"
-                class="pt-0"
-                :maxlength="255"
-                :rules="[rules.required(), rules.noSpecialCharactersSchDisAuthName()]"
-                label="Authority Name"
+              id="newAuthorityNameInput"
+              v-model="newAuthority.authorityName"
+              class="pt-0"
+              variant="underlined"
+              :maxlength="255"
+              :rules="[rules.required(), rules.noSpecialCharactersSchDisAuthName()]"
+              label="Authority Name"
             />
             <v-row>
               <v-col cols="6">
                 <v-select
-                    id="authority-text-field"
-                    label="Authority Type"
-                    item-value="authorityTypeCode"
-                    item-text="label"
-                    :items="authorityTypes"
-                    :rules="[rules.required()]"
-                    v-model="newAuthority.authorityTypeCode"
-                    clearable>
-                </v-select>
+                  id="authority-text-field"
+                  v-model="newAuthority.authorityTypeCode"
+                  label="Authority Type"
+                  item-value="authorityTypeCode"
+                  item-title="label"
+                  variant="underlined"
+                  :items="authorityTypes"
+                  :rules="[rules.required()]"
+                  clearable
+                />
               </v-col>
               <v-col cols="6">
-                <v-menu
-                    id="newAuthorityOpenDatePicker"
-                    ref="newAuthorityOpenDateFilter"
-                    :close-on-content-click="false"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                        id="newAuthorityOpenDateTextField"
-                        :rules="[rules.required()]"
-                        class="pt-4 mt-0"
-                        v-model="newAuthority.openDate"
-                        label="Open Date"
-                        prepend-inner-icon="mdi-calendar"
-                        clearable
-                        readonly
-                        v-bind="attrs"
-                        v-on="on"
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker
-                      v-model="newAuthority.openDate"
-                      :active-picker.sync="newAuthorityOpenDatePicker"
-                      @change="saveNewAuthorityOpenDate"
-                      :max="new Date(this.localDate.now().toString()).toISOString().substr(0, 10)"
-                  ></v-date-picker>
-                </v-menu>
+                <v-text-field
+                  id="newAuthorityOpenDateTextField"
+                  v-model="newAuthority.openDate"
+                  :rules="[rules.required()]"
+                  class="mt-0"
+                  variant="underlined"
+                  label="Open Date"
+                  :max="new Date(localDate.now().toString()).toISOString().substr(0, 10)"
+                  type="date"
+                  clearable
+                  @update:model-value="validateForm"
+                />
               </v-col>
             </v-row>
             <v-row>
               <v-col>
                 <v-text-field
-                    id='newAuthorityEmailInput'
-                    :rules="[rules.required(), rules.email()]"
-                    v-model="newAuthority.email"
-                    class="pt-0"
-                    :maxlength="255"
-                    label="Email"
+                  id="newAuthorityEmailInput"
+                  v-model="newAuthority.email"
+                  :rules="[rules.required(), rules.email()]"
+                  variant="underlined"
+                  class="pt-0"
+                  :maxlength="255"
+                  label="Email"
                 />
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="6">
                 <v-text-field
-                    id='newAuthorityPhoneNumberInput'
-                    :rules="[rules.required(), rules.phoneNumber()]"
-                    v-model="newAuthority.phoneNumber"
-                    class="pt-0"
-                    :maxlength="10"
-                    label="Phone"
-                    @keypress="isNumber($event)"
+                  id="newAuthorityPhoneNumberInput"
+                  v-model="newAuthority.phoneNumber"
+                  :rules="[rules.required(), rules.phoneNumber()]"
+                  class="pt-0"
+                  variant="underlined"
+                  :maxlength="10"
+                  label="Phone"
+                  @keypress="isNumber($event)"
                 />
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                    id='newAuthorityFaxNumberInput'
-                    :rules="[rules.phoneNumber('Fax number must be valid')]"
-                    v-model="newAuthority.faxNumber"
-                    class="pt-0"
-                    :maxlength="10"
-                    label="Fax"
-                    @keypress="isNumber($event)"
+                  id="newAuthorityFaxNumberInput"
+                  v-model="newAuthority.faxNumber"
+                  :rules="[rules.phoneNumber('Fax number must be valid')]"
+                  class="pt-0"
+                  variant="underlined"
+                  :maxlength="10"
+                  label="Fax"
+                  @keypress="isNumber($event)"
                 />
               </v-col>
             </v-row>
             <v-row>
-            <v-col cols="6">
+              <v-col cols="6">
                 <h3>Mailing Address</h3>
 
                 <v-text-field
-                    id='newAuthorityMailingAddressLine1Input'
-                    :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                    v-model="newAuthority.mailingAddrLine1"
-                    class="pt-0"
-                    :maxlength="255"
-                    label="Line 1"
+                  id="newAuthorityMailingAddressLine1Input"
+                  v-model="newAuthority.mailingAddrLine1"
+                  :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
+                  class="pt-0"
+                  variant="underlined"
+                  :maxlength="255"
+                  label="Line 1"
                 />
                 <v-text-field
-                    id='newAuthorityMailingAddressLine2Input'
-                    :rules="[rules.noSpecialCharactersAddress()]"
-                    v-model="newAuthority.mailingAddrLine2"
-                    class="pt-0"
-                    :maxlength="255"
-                    label="Line 2"
+                  id="newAuthorityMailingAddressLine2Input"
+                  v-model="newAuthority.mailingAddrLine2"
+                  :rules="[rules.noSpecialCharactersAddress()]"
+                  class="pt-0"
+                  variant="underlined"
+                  :maxlength="255"
+                  label="Line 2"
                 />
                 <v-text-field
-                    id='newContactMailingAddressCityInput'
-                    :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                    v-model="newAuthority.mailingAddrCity"
-                    class="pt-0"
-                    :maxlength="255"
-                    label="City"
+                  id="newContactMailingAddressCityInput"
+                  v-model="newAuthority.mailingAddrCity"
+                  :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
+                  class="pt-0"
+                  variant="underlined"
+                  :maxlength="255"
+                  label="City"
                 />
                 <v-autocomplete
-                    id='newAuthorityMailingAddressProvinceInput'
-                    :rules="[rules.required()]"
-                    v-model="newAuthority.mailingAddrProvince"
-                    class="pt-0"
-                    label="Province"
-                    :items="this.provinceCodeValues"
-                    item-text="label"
-                    item-value="provinceCode"
+                  id="newAuthorityMailingAddressProvinceInput"
+                  v-model="newAuthority.mailingAddrProvince"
+                  :rules="[rules.required()]"
+                  class="pt-0"
+                  label="Province"
+                  variant="underlined"
+                  :items="provinceCodeValues"
+                  item-title="label"
+                  item-value="provinceCode"
                 />
                 <v-autocomplete
-                    id='newAuthorityMailingAddressCountryInput'
-                    :rules="[rules.required()]"
-                    v-model="newAuthority.mailingAddrCountry"
-                    class="pt-0"
-                    label="Country"
-                    :items="this.countryCodeValues"
-                    item-text="label"
-                    item-value="countryCode"
+                  id="newAuthorityMailingAddressCountryInput"
+                  v-model="newAuthority.mailingAddrCountry"
+                  :rules="[rules.required()]"
+                  class="pt-0"
+                  label="Country"
+                  variant="underlined"
+                  :items="countryCodeValues"
+                  item-title="label"
+                  item-value="countryCode"
                 />
                 <v-text-field
-                    id='newContactMailingAddressPostalCodeInput'
-                    :rules="[rules.required(), rules.postalCode()]"
-                    v-model="newAuthority.mailingAddrPostal"
-                    class="pt-0"
-                    :maxlength="7"
-                    label="Postal Code"
+                  id="newContactMailingAddressPostalCodeInput"
+                  v-model="newAuthority.mailingAddrPostal"
+                  :rules="[rules.required(), rules.postalCode()]"
+                  class="pt-0"
+                  variant="underlined"
+                  :maxlength="7"
+                  label="Postal Code"
                 />
-            </v-col>
-            <v-col v-if="showPhysicalAddress" cols="6">
+              </v-col>
+              <v-col
+                v-if="showPhysicalAddress"
+                cols="6"
+              >
                 <v-row class="ml-lg-1">
                   <h3>Physical Address</h3>
                 </v-row>
-              <v-row class="ml-lg-1" v-if="!sameAsMailingCheckbox">
+                <v-row
+                  v-if="!sameAsMailingCheckbox"
+                  class="ml-lg-1"
+                >
+                  <v-col>
                     <v-text-field
-                        id='newAuthorityPhysicalAddressLine1Input'
-                        :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                        v-model="newAuthority.physicalAddrLine1"
-                        class="pt-0"
-                        :maxlength="255"
-                        label="Line 1"
+                      id="newAuthorityPhysicalAddressLine1Input"
+                      v-model="newAuthority.physicalAddrLine1"
+                      :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
+                      variant="underlined"
+                      class="pt-0"
+                      :maxlength="255"
+                      label="Line 1"
                     />
                     <v-text-field
-                        id='newAuthorityPhysicalAddressLine2Input'
-                        :rules="[rules.noSpecialCharactersAddress()]"
-                        v-model="newAuthority.physicalAddrLine2"
-                        class="pt-0"
-                        :maxlength="255"
-                        label="Line 2"
+                      id="newAuthorityPhysicalAddressLine2Input"
+                      v-model="newAuthority.physicalAddrLine2"
+                      :rules="[rules.noSpecialCharactersAddress()]"
+                      class="pt-0"
+                      variant="underlined"
+                      :maxlength="255"
+                      label="Line 2"
                     />
                     <v-text-field
-                        id='newContactPhysicalAddressCityInput'
-                        :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                        v-model="newAuthority.physicalAddrCity"
-                        class="pt-0"
-                        :maxlength="255"
-                        label="City"
+                      id="newContactPhysicalAddressCityInput"
+                      v-model="newAuthority.physicalAddrCity"
+                      :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
+                      class="pt-0"
+                      variant="underlined"
+                      :maxlength="255"
+                      label="City"
                     />
                     <v-autocomplete
-                        id='newAuthorityPhysicalAddressProvinceInput'
-                        :rules="[rules.required()]"
-                        v-model="newAuthority.physicalAddrProvince"
-                        class="pt-0"
-                        label="Province"
-                        :items="this.provinceCodeValues"
-                        item-text="label"
-                        item-value="provinceCode"
+                      id="newAuthorityPhysicalAddressProvinceInput"
+                      v-model="newAuthority.physicalAddrProvince"
+                      :rules="[rules.required()]"
+                      class="pt-0"
+                      label="Province"
+                      variant="underlined"
+                      :items="provinceCodeValues"
+                      item-title="label"
+                      item-value="provinceCode"
                     />
                     <v-autocomplete
-                        id='newAuthorityPhysicalAddressCountryInput'
-                        :rules="[rules.required()]"
-                        v-model="newAuthority.physicalAddrCountry"
-                        class="pt-0"
-                        label="Country"
-                        :items="this.countryCodeValues"
-                        item-text="label"
-                        item-value="countryCode"
+                      id="newAuthorityPhysicalAddressCountryInput"
+                      v-model="newAuthority.physicalAddrCountry"
+                      :rules="[rules.required()]"
+                      class="pt-0"
+                      label="Country"
+                      variant="underlined"
+                      :items="countryCodeValues"
+                      item-title="label"
+                      item-value="countryCode"
                     />
                     <v-text-field
-                        id='newContactPhysicalAddressPostalCodeInput'
-                        :rules="[rules.required(), rules.postalCode()]"
-                        v-model="newAuthority.physicalAddrPostal"
-                        class="pt-0"
-                        :maxlength="7"
-                        label="Postal Code"
+                      id="newContactPhysicalAddressPostalCodeInput"
+                      v-model="newAuthority.physicalAddrPostal"
+                      :rules="[rules.required(), rules.postalCode()]"
+                      class="pt-0"
+                      variant="underlined"
+                      :maxlength="7"
+                      label="Postal Code"
                     />
+                  </v-col>
                 </v-row>
                 <v-row class="ml-lg-1 pt-4">
                   <v-checkbox
-                      dense
-                      id="sameAsMailingCheckbox"
-                      @click.native="clickSameAsAddressButton"
-                      v-model="sameAsMailingCheckbox"
-                      label="Same as Mailing Address"
-                      class="mt-n3 pt-0"
-                  ></v-checkbox>
-              </v-row>
+                    id="sameAsMailingCheckbox"
+                    v-model="sameAsMailingCheckbox"
+                    dense
+                    label="Same as Mailing Address"
+                    class="mt-n3 pt-0"
+                    @update:model-value="clickSameAsAddressButton"
+                  />
+                </v-row>
+              </v-col>
+            </v-row>
           </v-col>
         </v-row>
-          </v-col>
-       </v-row>
       </v-form>
     </v-card-text>
     <v-card-actions class="justify-end">
-      <PrimaryButton id="cancelNewAuthorityBtn" secondary text="Cancel" @click.native="closeNewAuthorityPage"></PrimaryButton>
-      <PrimaryButton id="newAuthorityPostBtn" text="Save" width="7rem" @click.native="addNewAuthority" :disabled="!isFormValid" :loading="processing"></PrimaryButton>
+      <PrimaryButton
+        id="cancelNewAuthorityBtn"
+        secondary
+        text="Cancel"
+        :click-action="closeNewAuthorityPage"
+      />
+      <PrimaryButton
+        id="newAuthorityPostBtn"
+        text="Save"
+        width="7rem"
+        :click-action="addNewAuthority"
+        :disabled="!isFormValid"
+        :loading="processing"
+      />
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
-import PrimaryButton from '../util/PrimaryButton';
-import {mapGetters, mapState} from 'vuex';
+import PrimaryButton from '../util/PrimaryButton.vue';
+import {mapState} from 'pinia';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
 import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
 import {LocalDate} from '@js-joda/core';
+import {authStore} from '@/store/modules/auth';
+import {instituteStore} from '@/store/modules/institute';
 
 export default {
   name: 'NewAuthorityPage',
-  mixins: [alertMixin],
   components: {
-    PrimaryButton,
+    PrimaryButton
   },
-  mounted() {
-    this.validateForm();
-  },
+  mixins: [alertMixin],
   data() {
     return {
       isFormValid: false,
@@ -293,21 +317,25 @@ export default {
       ],
     };
   },
+  mounted() {
+    this.validateForm();
+  },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','userInfo']),
-    ...mapState('institute', ['authorityTypeCodes', 'provinceCodes', 'countryCodes']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo']),
+    ...mapState(instituteStore, ['authorityTypeCodes', 'provinceCodes', 'countryCodes']),
     showPhysicalAddress() {
       return !this.excludeShowingPhysicalAddressesForAuthoritiesOfType.includes(this.newAuthority.authorityTypeCode);
     }
   },
   created() {
-    this.$store.dispatch('institute/getAllAuthorityTypeCodes').then(() => {
+    const instStore = instituteStore();
+    instStore.getAllAuthorityTypeCodes().then(() => {
       this.authorityTypes = this.authorityTypeCodes;
     });
-    this.$store.dispatch('institute/getAllProvinceCodes').then(() => {
-      this.provinceCodeValues = this.provinceCodes.filter(province =>  province.provinceCode === 'BC' || province.provinceCode === 'YT');
+    instStore.getAllProvinceCodes().then(() => {
+      this.provinceCodeValues = this.provinceCodes.filter(province => province.provinceCode === 'BC' || province.provinceCode === 'YT');
     });
-    this.$store.dispatch('institute/getAllCountryCodes').then(() => {
+    instStore.getAllCountryCodes().then(() => {
       this.countryCodeValues = this.countryCodes;
     });
   },
@@ -315,8 +343,8 @@ export default {
     calculateDefaultOpenDate() {
       return LocalDate.now().toString();
     },
-    saveNewAuthorityOpenDate(date) {
-      this.$refs.newAuthorityOpenDateFilter.save(date);
+    openDatePicker() {
+      this.$refs.newAuthorityDatePicker.openMenu();
     },
     closeNewAuthorityPage() {
       this.resetForm();
@@ -339,18 +367,21 @@ export default {
           this.processing = false;
         });
     },
-    async clickSameAsAddressButton(){
+    async clickSameAsAddressButton() {
       await this.$nextTick();
-      this.validateForm();
+      await this.validateForm();
     },
-    openAuthority(authorityId){
+    openAuthority(authorityId) {
       this.$router.push({name: 'authorityDetails', params: {authorityID: authorityId}});
     },
     resetForm() {
       this.$refs.newAuthorityForm.reset();
     },
-    validateForm() {
-      this.isFormValid = this.$refs.newAuthorityForm.validate();
+    async validateForm() {
+      if (this.$refs.newAuthorityForm) {
+        const valid = await this.$refs.newAuthorityForm.validate();
+        this.isFormValid = valid.valid;
+      }
     },
     isNumber,
   },
@@ -358,11 +389,19 @@ export default {
 </script>
 
 <style scoped>
-.sheetHeader{
-  background-color: #003366;
-  color: white;
-  font-size: medium !important;
-  font-weight: bolder !important;
+.sheetHeader {
+    background-color: #003366;
+    color: white;
+    font-size: medium !important;
+    font-weight: bolder !important;
+}
+
+:deep(.dp__input) {
+    display: none;
+}
+
+:deep(.dp__icon) {
+    display: none;
 }
 
 </style>

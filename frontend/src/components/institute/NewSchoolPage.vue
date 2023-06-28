@@ -1,177 +1,178 @@
 <template>
   <v-card id="newSchoolVCard">
-    <v-card-title class="sheetHeader pt-1 pb-1">New School</v-card-title>
-    <v-divider></v-divider>
+    <v-card-title class="sheetHeader pt-1 pb-1">
+      New School
+    </v-card-title>
+    <v-divider />
     <v-card-text>
-      <v-form ref="newSchoolForm" v-model="isFormValid">
+      <v-form
+        ref="newSchoolForm"
+        v-model="isFormValid"
+      >
         <v-row class="d-flex justify-center">
           <v-col>
             <v-row>
               <v-col cols="6">
                 <v-text-field
-                    id='newSchoolNameInput'
-                    :rules="[rules.required(), rules.noSpecialCharactersSchDisAuthName()]"
-                    v-model="newSchool.displayName"
-                    class="pt-0"
-                    :maxlength="255"
-                    label="School Name"
+                  id="newSchoolNameInput"
+                  v-model="newSchool.displayName"
+                  :rules="[rules.required(), rules.noSpecialCharactersSchDisAuthName()]"
+                  class="pt-0"
+                  variant="underlined"
+                  :maxlength="255"
+                  label="School Name"
                 />
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                    id='legacySafeSchoolNameInput'
-                    :rules="[rules.noSpecialCharactersSchDisAuthName()]"
-                    v-model="newSchool.displayNameNoSpecialChars"
-                    class="pt-0"
-                    :maxlength="255"
-                    label="Legacy Safe School Name"
+                  id="legacySafeSchoolNameInput"
+                  v-model="newSchool.displayNameNoSpecialChars"
+                  :rules="[rules.noSpecialCharactersSchDisAuthName()]"
+                  class="pt-0"
+                  variant="underlined"
+                  :maxlength="255"
+                  label="Legacy Safe School Name"
                 />
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="4">
                 <v-autocomplete
-                    id="district-text-field"
-                    label="District"
-                    :rules="[rules.required()]"
-                    item-value="districtId"
-                    item-text="districtNumberName"
-                    :items="districtNames"
-                    v-model="newSchool.districtID"
-                    @change="schoolDistrictChanged"
-                    clearable>
-                </v-autocomplete>
+                  id="district-text-field"
+                  v-model="newSchool.districtID"
+                  label="District"
+                  :rules="[rules.required()]"
+                  item-value="districtId"
+                  item-title="districtNumberName"
+                  variant="underlined"
+                  :items="districtNames"
+                  clearable
+                  @update:model-value="schoolDistrictChanged"
+                />
               </v-col>
               <v-col cols="4">
                 <v-autocomplete
-                    id="authority-text-field"
-                    label="Authority"
-                    item-value="authorityID"
-                    item-text="authorityCodeName"
-                    :items="authorityNames"
-                    :disabled="authorityDisabled"
-                    :rules="[authorityRule]"
-                    v-model="newSchool.independentAuthorityId"
-                    clearable>
-                </v-autocomplete>
+                  id="authority-text-field"
+                  v-model="newSchool.independentAuthorityId"
+                  label="Authority"
+                  item-value="authorityID"
+                  item-title="authorityCodeName"
+                  variant="underlined"
+                  :items="authorityNames"
+                  :disabled="authorityDisabled"
+                  :rules="[authorityRule]"
+                  clearable
+                />
               </v-col>
               <v-col cols="4">
-                <v-menu
-                    id="newSchoolOpenDatePicker"
-                    ref="newSchoolOpenDateFilter"
-                    :close-on-content-click="false"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                        id="newSchoolOpenDateTextField"
-                        :rules="[rules.required()]"
-                        class="pt-4 mt-0"
-                        v-model="newSchool.openedDate"
-                        label="Open Date"
-                        prepend-inner-icon="mdi-calendar"
-                        clearable
-                        readonly
-                        v-bind="attrs"
-                        v-on="on"
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker
-                      v-model="newSchool.openedDate"
-                      :active-picker.sync="newSchoolOpenDatePicker"
-                      @change="saveNewSchoolOpenDate"
-                  ></v-date-picker>
-                </v-menu>
+                <v-text-field
+                  id="newSchoolOpenDateTextField"
+                  v-model="newSchool.openedDate"
+                  :rules="[rules.required()]"
+                  class="pt-0 mt-0"
+                  label="Open Date"
+                  variant="underlined"
+                  type="date"
+                  clearable
+                  @update:model-value="validateForm"
+                />
               </v-col>
             </v-row>
             <!-- -->
             <v-row>
               <v-col cols="4">
                 <v-select
-                    id='newSchoolCategoryInput'
-                    :rules="[rules.required()]"
-                    v-model="newSchool.schoolCategoryCode"
-                    :items="schoolCategoryTypeCodes"
-                    item-value="schoolCategoryCode"
-                    item-text="label"
-                    class="pt-0"
-                    @change="schoolCategoryChanged"
-                    label="School Category"
-                    :disabled="schoolCategoryDisabled"
+                  id="newSchoolCategoryInput"
+                  v-model="newSchool.schoolCategoryCode"
+                  :rules="[rules.required()]"
+                  :items="schoolCategoryTypeCodes"
+                  item-value="schoolCategoryCode"
+                  item-title="label"
+                  variant="underlined"
+                  class="pt-0"
+                  label="School Category"
+                  :disabled="schoolCategoryDisabled"
+                  @update:model-value="schoolCategoryChanged"
                 />
               </v-col>
               <v-col cols="4">
                 <v-select
-                    id='newSchoolFacilityTypeInput'
-                    :rules="[rules.required()]"
-                    v-model="newSchool.facilityTypeCode"
-                    :items="allowedFacilityTypeCodesForSchoolCategoryCode"
-                    item-value="facilityTypeCode"
-                    item-text="label"
-                    :disabled="isFacilityTypeDisabled"
-                    class="pt-0"
-                    label="Facility Type"
+                  id="newSchoolFacilityTypeInput"
+                  v-model="newSchool.facilityTypeCode"
+                  :rules="[rules.required()]"
+                  :items="allowedFacilityTypeCodesForSchoolCategoryCode"
+                  item-value="facilityTypeCode"
+                  item-title="label"
+                  variant="underlined"
+                  :disabled="isFacilityTypeDisabled"
+                  class="pt-0"
+                  label="Facility Type"
                 />
               </v-col>
               <v-col cols="4">
                 <v-select
-                    id='newSchoolOrganizationCodeInput'
-                    :rules="[rules.required()]"
-                    v-model="newSchool.schoolOrganizationCode"
-                    :items="schoolOrganizationTypeCodes"
-                    item-value="schoolOrganizationCode"
-                    item-text="label"
-                    class="pt-0"
-                    label="School Organization"
+                  id="newSchoolOrganizationCodeInput"
+                  v-model="newSchool.schoolOrganizationCode"
+                  :rules="[rules.required()]"
+                  :items="schoolOrganizationTypeCodes"
+                  item-value="schoolOrganizationCode"
+                  item-title="label"
+                  variant="underlined"
+                  class="pt-0"
+                  label="School Organization"
                 />
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="4">
                 <v-select
-                    id='newSchoolGradesOfferedInput'
-                    v-model="newSchool.grades"
-                    :items="gradeCodes"
-                    item-value="schoolGradeCode"
-                    item-text="label"
-                    @input="sortGrades"
-                    :disabled="isGradeOfferedDisabled"
-                    class="pt-0"
-                    multiple
-                    return-object
-                    label="Grades Offered"
+                  id="newSchoolGradesOfferedInput"
+                  v-model="newSchool.grades"
+                  :items="gradeCodes"
+                  item-value="schoolGradeCode"
+                  item-title="label"
+                  :disabled="isGradeOfferedDisabled"
+                  class="pt-0"
+                  multiple
+                  variant="underlined"
+                  return-object
+                  label="Grades Offered"
+                  @input="sortGrades"
                 />
               </v-col>
               <v-col cols="4">
                 <v-select
-                    id='newSchoolNLCActivityInput'
-                    v-model="newSchool.neighborhoodLearning"
-                    :items="schoolNeighborhoodLearningCodes"
-                    item-value="neighborhoodLearningTypeCode"
-                    item-text="label"
-                    class="pt-0"
-                    multiple
-                    @input="sortNLC"
-                    return-object
-                    label="NLC Activity"
+                  id="newSchoolNLCActivityInput"
+                  v-model="newSchool.neighborhoodLearning"
+                  :items="schoolNeighborhoodLearningCodes"
+                  item-value="neighborhoodLearningTypeCode"
+                  item-title="label"
+                  class="pt-0"
+                  multiple
+                  variant="underlined"
+                  return-object
+                  label="NLC Activity"
+                  @input="sortNLC"
                 />
               </v-col>
               <v-col cols="4">
                 <v-select
-                    id='newSchoolReportingRequirementInput'
-                    :rules="[rules.required()]"
-                    v-model="newSchool.schoolReportingRequirementCode"
-                    :items="schoolReportingRequirementCodes"
-                    item-value="schoolReportingRequirementCode"
-                    item-text="label"
-                    class="pt-0"
-                    label="Reporting Requirement"
+                  id="newSchoolReportingRequirementInput"
+                  v-model="newSchool.schoolReportingRequirementCode"
+                  :rules="[rules.required()]"
+                  :items="schoolReportingRequirementCodes"
+                  item-value="schoolReportingRequirementCode"
+                  item-title="label"
+                  variant="underlined"
+                  class="pt-0"
+                  label="Reporting Requirement"
                 />
               </v-col>
             </v-row>
-            <v-row no-gutters class="mt-5">
+            <v-row
+              no-gutters
+              class="mt-5"
+            >
               <v-col cols="4">
                 <h3>Contact Information</h3>
               </v-col>
@@ -179,60 +180,82 @@
             <v-row>
               <v-col cols="4">
                 <v-text-field
-                    id='newSchoolPhoneNumberInput'
-                    :rules="[rules.phoneNumber()]"
-                    v-model="newSchool.phoneNumber"
-                    class="pt-0"
-                    :maxlength="10"
-                    label="Phone"
-                    @keypress="isNumber($event)"
+                  id="newSchoolPhoneNumberInput"
+                  v-model="newSchool.phoneNumber"
+                  :rules="[rules.phoneNumber()]"
+                  class="pt-0"
+                  :maxlength="10"
+                  variant="underlined"
+                  label="Phone"
+                  @keypress="isNumber($event)"
                 />
               </v-col>
               <v-col cols="4">
                 <v-text-field
-                    id='newSchoolFaxNumberInput'
-                    :rules="[rules.phoneNumber()]"
-                    v-model="newSchool.faxNumber"
-                    class="pt-0"
-                    :maxlength="10"
-                    label="Fax"
-                    @keypress="isNumber($event)"
+                  id="newSchoolFaxNumberInput"
+                  v-model="newSchool.faxNumber"
+                  :rules="[rules.phoneNumber()]"
+                  class="pt-0"
+                  :maxlength="10"
+                  variant="underlined"
+                  label="Fax"
+                  @keypress="isNumber($event)"
                 />
               </v-col>
               <v-col cols="4">
                 <v-text-field
-                    id='newContactAltPhoneNumberInput'
-                    :rules="[rules.email()]"
-                    v-model="newSchool.email"
-                    :maxlength="255"
-                    class="pt-0"
-                    label="Email"
+                  id="newContactEmailInput"
+                  v-model="newSchool.email"
+                  :rules="[rules.email()]"
+                  :maxlength="255"
+                  variant="underlined"
+                  class="pt-0"
+                  label="Email"
                 />
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="4">
+              <v-col
+                class="pt-0"
+                cols="4"
+              >
                 <v-text-field
-                    id='newContactAltPhoneNumberInput'
-                    :rules="[rules.website()]"
-                    v-model="newSchool.website"
-                    :maxlength="255"
-                    class="pt-0"
-                    label="Website"
+                  id="newContactAltPhoneNumberInput"
+                  v-model="newSchool.website"
+                  :rules="[rules.website()]"
+                  :maxlength="255"
+                  variant="underlined"
+                  class="pt-0"
+                  label="Website"
                 />
               </v-col>
             </v-row>
 
-            <v-row no-gutters class="mt-5">
+            <v-row
+              no-gutters
+              class="mt-5"
+            >
               <v-col class="mt-1 d-flex justify-start">
-                <v-icon color="#1976d2">{{ addressButton.icon }}</v-icon>
-                <a class="ml-1 toggle" @click="toggleAddressForm">{{ addressButton.label }}</a>
+                <v-icon color="#1976d2">
+                  {{
+                    addressButton.icon
+                  }}
+                </v-icon>
+                <a
+                  class="ml-1 toggle"
+                  @click="toggleAddressForm"
+                >{{
+                  addressButton.label
+                }}</a>
               </v-col>
             </v-row>
 
             <v-row v-if="showAddress">
               <v-col>
-                <v-row no-gutters class="mt-5">
+                <v-row
+                  no-gutters
+                  class="mt-5"
+                >
                   <v-col cols="4">
                     <h3>Mailing Address</h3>
                   </v-col>
@@ -240,118 +263,196 @@
                 <v-row>
                   <v-col cols="4">
                     <v-text-field
-                        id='newSchoolMailingAddressLine1Input'
-                        class="pt-0"
-                        :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                        v-model="newSchool.mailingAddrLine1"
-                        :maxlength="255"
-                        label="Line 1"
+                      id="newSchoolMailingAddressLine1Input"
+                      v-model="newSchool.mailingAddrLine1"
+                      class="pt-0"
+                      :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
+                      :maxlength="255"
+                      variant="underlined"
+                      label="Line 1"
                     />
                   </v-col>
                   <v-col cols="4">
                     <v-text-field
-                        id='newSchoolMailingAddressLine2Input'
-                        class="pt-0"
-                        :rules="[rules.noSpecialCharactersAddress()]"
-                        v-model="newSchool.mailingAddrLine2"
-                        :maxlength="255"
-                        label="Line 2"
+                      id="newSchoolMailingAddressLine2Input"
+                      v-model="newSchool.mailingAddrLine2"
+                      class="pt-0"
+                      :rules="[rules.noSpecialCharactersAddress()]"
+                      :maxlength="255"
+                      variant="underlined"
+                      label="Line 2"
                     />
                   </v-col>
                   <v-col cols="4">
                     <v-text-field
-                        id='newContactMailingAddressCityInput'
-                        class="pt-0"
-                        label="City"
-                        :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                        v-model="newSchool.mailingAddrCity"
-                        :maxlength="255"
+                      id="newContactMailingAddressCityInput"
+                      v-model="newSchool.mailingAddrCity"
+                      class="pt-0"
+                      label="City"
+                      :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
+                      :maxlength="255"
+                      variant="underlined"
                     />
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col cols="4">
-                    <v-autocomplete id='newSchoolMailingAddressProvinceInput' :rules="[rules.required()]"
-                                    v-model="newSchool.mailingAddrProvince" class="pt-0" label="Province"
-                                    :items="provincialCodes"
-                                    item-text="label" item-value="provinceCode"/>
+                    <v-autocomplete
+                      id="newSchoolMailingAddressProvinceInput"
+                      v-model="newSchool.mailingAddrProvince"
+                      :rules="[rules.required()]"
+                      class="pt-0"
+                      label="Province"
+                      :items="provincialCodes"
+                      variant="underlined"
+                      item-title="label"
+                      item-value="provinceCode"
+                    />
                   </v-col>
                   <v-col cols="4">
-                    <v-autocomplete id='newSchoolMailingAddressCountryInput' :rules="[rules.required()]"
-                                    v-model="newSchool.mailingAddrCountry" class="pt-0" label="Country"
-                                    :items="countryCodes" item-text="label"
-                                    item-value="countryCode"/>
+                    <v-autocomplete
+                      id="newSchoolMailingAddressCountryInput"
+                      v-model="newSchool.mailingAddrCountry"
+                      :rules="[rules.required()]"
+                      class="pt-0"
+                      label="Country"
+                      :items="countryCodes"
+                      item-title="label"
+                      variant="underlined"
+                      item-value="countryCode"
+                    />
                   </v-col>
                   <v-col cols="4">
-                    <v-text-field id='newContactMailingAddressPostalCodeInput'
-                                  :rules="[rules.required(), rules.postalCode()]"
-                                  v-model="newSchool.mailingAddrPostal" class="pt-0" :maxlength="6"
-                                  label="Postal Code"/>
+                    <v-text-field
+                      id="newContactMailingAddressPostalCodeInput"
+                      v-model="newSchool.mailingAddrPostal"
+                      :rules="[rules.required(), rules.postalCode()]"
+                      variant="underlined"
+                      class="pt-0"
+                      :maxlength="6"
+                      label="Postal Code"
+                    />
                   </v-col>
                 </v-row>
-
-                <v-row v-if="displayPhysicalAddress" no-gutters>
+                <v-row
+                  v-if="displayPhysicalAddress"
+                  no-gutters
+                >
                   <v-col>
-                    <v-row no-gutters class="mt-5">
+                    <v-row
+                      no-gutters
+                      class="mt-5"
+                    >
                       <v-col cols="4">
                         <h3>Physical Address</h3>
                       </v-col>
                     </v-row>
-                    <v-row no-gutters v-if="sameAsMailingCheckbox" class="pt-4">
-                      <v-checkbox dense id="sameAsMailingCheckbox" @click="fireFormValidate"
-                                  v-model="sameAsMailingCheckbox"
-                                  label="Same as Mailing Address" class="mt-n3 pt-0"></v-checkbox>
+                    <v-row
+                      v-if="sameAsMailingCheckbox"
+                      no-gutters
+                      class="pt-4"
+                    >
+                      <v-checkbox
+                        id="sameAsMailingCheckbox"
+                        v-model="sameAsMailingCheckbox"
+                        dense
+                        label="Same as Mailing Address"
+                        class="mt-n3 pt-0"
+                        @update:model-value="validateForm"
+                      />
                     </v-row>
-                    <v-row no-gutters v-else>
+                    <div v-else>
                       <v-row>
                         <v-col cols="4">
-                          <v-text-field id='newSchoolPhysicalAddressLine1Input'
-                                        :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                                        v-model="newSchool.physicalAddrLine1" class="pt-0"
-                                        :maxlength="255"
-                                        label="Line 1"
+                          <v-text-field
+                            id="newSchoolPhysicalAddressLine1Input"
+                            v-model="newSchool.physicalAddrLine1"
+                            :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
+                            class="pt-0"
+                            :maxlength="255"
+                            variant="underlined"
+                            label="Line 1"
                           />
                         </v-col>
                         <v-col cols="4">
-                          <v-text-field id='newSchoolPhysicalAddressLine2Input' v-model="newSchool.physicalAddrLine2"
-                          :rules="[rules.noSpecialCharactersAddress()]"
-                                        class="pt-0"
-                                        :maxlength="255" label="Line 2"/>
+                          <v-text-field
+                            id="newSchoolPhysicalAddressLine2Input"
+                            v-model="newSchool.physicalAddrLine2"
+                            :rules="[rules.noSpecialCharactersAddress()]"
+                            class="pt-0"
+                            variant="underlined"
+                            :maxlength="255"
+                            label="Line 2"
+                          />
                         </v-col>
                         <v-col cols="4">
-                          <v-text-field id='newContactPhysicalAddressCityInput' :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
-                                        v-model="newSchool.physicalAddrCity" class="pt-0" :maxlength="255"
-                                        label="City"/>
+                          <v-text-field
+                            id="newContactPhysicalAddressCityInput"
+                            v-model="newSchool.physicalAddrCity"
+                            :rules="[rules.required(), rules.noSpecialCharactersAddress()]"
+                            class="pt-0"
+                            :maxlength="255"
+                            label="City"
+                            variant="underlined"
+                          />
                         </v-col>
                       </v-row>
                       <v-row>
                         <v-col cols="4">
-                          <v-autocomplete id='newSchoolPhysicalAddressProvinceInput' :rules="[rules.required()]"
-                                          v-model="newSchool.physicalAddrProvince" class="pt-0" label="Province"
-                                          :items="provincialCodes"
-                                          item-text="label" item-value="provinceCode"/>
+                          <v-autocomplete
+                            id="newSchoolPhysicalAddressProvinceInput"
+                            v-model="newSchool.physicalAddrProvince"
+                            :rules="[rules.required()]"
+                            class="pt-0"
+                            label="Province"
+                            :items="provincialCodes"
+                            variant="underlined"
+                            item-title="label"
+                            item-value="provinceCode"
+                          />
                         </v-col>
                         <v-col cols="4">
-                          <v-autocomplete id='newSchoolPhysicalAddressCountryInput' :rules="[rules.required()]"
-                                          v-model="newSchool.physicalAddrCountry" class="pt-0" label="Country"
-                                          :items="countryCodes"
-                                          item-text="label" item-value="countryCode"/>
+                          <v-autocomplete
+                            id="newSchoolPhysicalAddressCountryInput"
+                            v-model="newSchool.physicalAddrCountry"
+                            :rules="[rules.required()]"
+                            class="pt-0"
+                            label="Country"
+                            :items="countryCodes"
+                            variant="underlined"
+                            item-title="label"
+                            item-value="countryCode"
+                          />
                         </v-col>
                         <v-col cols="4">
-                          <v-text-field id='newContactPhysicalAddressPostalCodeInput'
-                                        :rules="[rules.required(), rules.postalCode()]"
-                                        v-model="newSchool.physicalAddrPostal" class="pt-0"
-                                        :maxlength="6" label="Postal Code"/>
+                          <v-text-field
+                            id="newContactPhysicalAddressPostalCodeInput"
+                            v-model="newSchool.physicalAddrPostal"
+                            :rules="[rules.required(), rules.postalCode()]"
+                            variant="underlined"
+                            class="pt-0"
+                            :maxlength="6"
+                            label="Postal Code"
+                          />
                         </v-col>
                       </v-row>
-                    </v-row>
-                    <v-row no-gutters v-if="!sameAsMailingCheckbox" class="pt-4">
-                      <v-col>
-                        <v-checkbox dense id="sameAsMailingCheckbox" @click="fireFormValidate"
-                                    v-model="sameAsMailingCheckbox" label="Same as Mailing Address"
-                                    class="mt-n3 pt-0"></v-checkbox>
-                      </v-col>
-                    </v-row>
+                      <v-row
+                        v-if="!sameAsMailingCheckbox"
+                        no-gutters
+                        class="pt-4"
+                      >
+                        <v-col>
+                          <v-checkbox
+                            id="sameAsMailingCheckbox"
+                            v-model="sameAsMailingCheckbox"
+                            dense
+                            label="Same as Mailing Address"
+                            class="mt-n3 pt-0"
+                            @update:model-value="validateForm"
+                          />
+                        </v-col>
+                      </v-row>
+                    </div>
                   </v-col>
                 </v-row>
               </v-col>
@@ -361,16 +462,27 @@
       </v-form>
     </v-card-text>
     <v-card-actions class="justify-end">
-      <PrimaryButton id="cancelNewSchoolBtn" secondary text="Cancel" @click.native="closeNewSchoolPage"></PrimaryButton>
-      <PrimaryButton id="newSchoolPostBtn" text="Save" width="7rem" @click.native="addNewSchool"
-                     :disabled="!isFormValid" :loading="processing"></PrimaryButton>
+      <PrimaryButton
+        id="cancelNewSchoolBtn"
+        secondary
+        text="Cancel"
+        :click-action="closeNewSchoolPage"
+      />
+      <PrimaryButton
+        id="newSchoolPostBtn"
+        text="Save"
+        width="7rem"
+        :click-action="addNewSchool"
+        :disabled="!isFormValid"
+        :loading="processing"
+      />
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
-import PrimaryButton from '../util/PrimaryButton';
-import {mapGetters, mapState} from 'vuex';
+import PrimaryButton from '../util/PrimaryButton.vue';
+import {mapState} from 'pinia';
 import alertMixin from '@/mixins/alertMixin';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
@@ -378,9 +490,14 @@ import * as Rules from '@/utils/institute/formRules';
 import {isNumber} from '@/utils/institute/formInput';
 import {findUpcomingDate} from '@/utils/dateHelpers';
 import {sortBy} from 'lodash';
+import {authStore} from '@/store/modules/auth';
+import {instituteStore} from '@/store/modules/institute';
 
 export default {
   name: 'NewSchoolPage',
+  components: {
+    PrimaryButton
+  },
   mixins: [alertMixin],
   props: {
     districtNames: {
@@ -391,16 +508,6 @@ export default {
       type: Array,
       required: true
     },
-  },
-  components: {
-    PrimaryButton,
-  },
-  mounted() {
-    this.validateForm();
-    this.addressButton = {
-      icon: 'mdi-plus-thick',
-      label: 'Add Address'
-    };
   },
   data() {
     return {
@@ -457,18 +564,16 @@ export default {
       }
     };
   },
+  mounted() {
+    this.validateForm();
+    this.addressButton = {
+      icon: 'mdi-plus-thick',
+      label: 'Add Address'
+    };
+  },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated', 'userInfo', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
-    ...mapState('institute', ['activeFacilityTypeCodes']),
-    ...mapState('institute', ['activeSchoolCategoryTypeCodes']),
-    ...mapState('institute', ['activeSchoolOrganizationTypeCodes']),
-    ...mapState('institute', ['schoolReportingRequirementTypeCodes']),
-    ...mapState('institute', ['activeSchoolNeighborhoodLearningCodes']),
-    ...mapState('institute', ['activeGradeCodes']),
-    ...mapState('institute', ['activeProvinceCodes']),
-    ...mapState('institute', ['activeCountryCodes']),
-    ...mapState('institute', ['schoolCategoryFacilityTypesMap']),
-    ...mapState('institute', ['schoolReportingRequirementTypeCodes']),
+    ...mapState(authStore, ['isAuthenticated', 'userInfo', 'SCHOOL_INDEPENDENT_ADMIN_ROLE']),
+    ...mapState(instituteStore, ['activeFacilityTypeCodes', 'activeSchoolCategoryTypeCodes', 'activeSchoolOrganizationTypeCodes', 'schoolReportingRequirementTypeCodes', 'activeSchoolNeighborhoodLearningCodes', 'activeGradeCodes', 'activeProvinceCodes', 'activeCountryCodes', 'schoolCategoryFacilityTypesMap', 'schoolReportingRequirementTypeCodes']),
 
     allowedFacilityTypeCodesForSchoolCategoryCode() {
       if (!this.activeFacilityTypeCodes || !this.newSchool?.schoolCategoryCode) {
@@ -512,15 +617,16 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('institute/getAllActiveFacilityTypeCodes');
-    this.$store.dispatch('institute/getAllActiveSchoolCategoryTypeCodes');
-    this.$store.dispatch('institute/getAllActiveSchoolOrganizationTypeCodes');
-    this.$store.dispatch('institute/getAllActiveGradeCodes');
-    this.$store.dispatch('institute/getAllActiveSchoolNeighborhoodLearningCodes');
-    this.$store.dispatch('institute/getAllActiveProvinceCodes');
-    this.$store.dispatch('institute/getAllActiveCountryCodes');
-    this.$store.dispatch('institute/getSchoolCategoryFacilityTypesMap');
-    this.$store.dispatch('institute/getSchoolReportingRequirementTypeCodes');
+    const instStore = instituteStore();
+    instStore.getAllActiveFacilityTypeCodes();
+    instStore.getAllActiveSchoolCategoryTypeCodes();
+    instStore.getAllActiveSchoolOrganizationTypeCodes();
+    instStore.getAllActiveGradeCodes();
+    instStore.getAllActiveSchoolNeighborhoodLearningCodes();
+    instStore.getAllActiveProvinceCodes();
+    instStore.getAllActiveCountryCodes();
+    instStore.getSchoolCategoryFacilityTypesMap();
+    instStore.getSchoolReportingRequirementTypeCodes();
   },
   methods: {
     enableOrDisableFacilityType(facilityTypes) {
@@ -531,7 +637,10 @@ export default {
         this.newSchool.facilityTypeCode = null;
       }
 
-      this.fireFormValidate();
+      this.validateForm();
+    },
+    openEffectiveDatePicker() {
+      this.$refs.newSchoolDatePicker.openMenu();
     },
     constrainSchoolCategoryByDistrict(districtRegionCode) {
       const schoolCategory = this.districtSchoolCategoryConstraints.find(c => c.districtRegionCode === districtRegionCode)?.schoolCategory;
@@ -554,15 +663,13 @@ export default {
     calculateDefaultOpenDate() {
       return findUpcomingDate(7, 1).toString();
     },
-    saveNewSchoolOpenDate(date) {
-      this.$refs.newSchoolOpenDateFilter.save(date);
-    },
     closeNewSchoolPage() {
       this.resetForm();
       this.$emit('newSchool:closeNewSchoolPage');
     },
     addNewSchool() {
       this.processing = true;
+
       ApiService.apiAxios.post(`${Routes.institute.SCHOOL_DATA_URL}`, this.newSchool)
         .then((response) => {
           this.setSuccessAlert('Success! The school has been created.');
@@ -604,11 +711,7 @@ export default {
       } else {
         this.isGradeOfferedDisabled = false;
       }
-      await this.fireFormValidate();
-    },
-    async fireFormValidate() {
-      await this.$nextTick();
-      this.validateForm();
+      await this.validateForm();
     },
     resetForm() {
       this.$refs.newSchoolForm.reset();
@@ -619,8 +722,11 @@ export default {
     sortNLC() {
       this.newSchool.neighborhoodLearning = sortBy(this.newSchool.neighborhoodLearning, ['neighborhoodLearningTypeCode']);
     },
-    validateForm() {
-      this.isFormValid = this.$refs.newSchoolForm.validate();
+    async validateForm() {
+      if (this.$refs.newSchoolForm) {
+        const valid = await this.$refs.newSchoolForm.validate();
+        this.isFormValid = valid.valid;
+      }
     },
     async toggleAddressForm() {
       this.showAddress = !this.showAddress;
@@ -629,7 +735,7 @@ export default {
         label: !this.showAddress ? 'Add Address' : 'Remove Address'
       };
       this.resetAddressForms();
-      await this.fireFormValidate();
+      await this.validateForm();
     },
     resetAddressForms() {
       this.newSchool.mailingAddrLine1 = null;
@@ -652,13 +758,25 @@ export default {
 
 <style scoped>
 .sheetHeader {
-  background-color: #003366;
-  color: white;
-  font-size: medium !important;
-  font-weight: bolder !important;
+    background-color: #003366;
+    color: white;
+    font-size: medium !important;
+    font-weight: bolder !important;
+}
+
+#newSchoolVCard {
+    border-radius: 5px;
+}
+
+:deep(.dp__input) {
+    display: none;
+}
+
+:deep(.dp__icon) {
+    display: none;
 }
 
 .toggle {
-  font-size: 15px;
+    font-size: 15px;
 }
 </style>

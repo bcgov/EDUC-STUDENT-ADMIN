@@ -1,7 +1,8 @@
 import {mapValues} from 'lodash';
-
-const getDefaultState = () => {
-  return {
+import {defineStore} from 'pinia';
+export const nominalRollStudentSearchStore = defineStore('nominalRollStudentSearch', {
+  namespaced: true,
+  state: () => ({
     pageNumber: 1,
     selectedRecords: [],
     nomRollStudentSearchParams: {
@@ -17,39 +18,47 @@ const getDefaultState = () => {
     selectedStudentStatus: null,
     currentNomRollStudentSearchParams: null,
     nomRollStudentSearchCriteria: null,
-  };
-};
-
-export default {
-  namespaced: true,
-  state: getDefaultState,
-  mutations: {
-    setPageNumber: (state, pageNumber) => {
-      state.pageNumber = pageNumber;
+  }),
+  actions: {
+    async setPageNumber(pageNumber) {
+      this.pageNumber = pageNumber;
     },
-    setSelectedRecords: (state, selectedRecords) => {
-      state.selectedRecords = selectedRecords || [];
+    async setSelectedRecords(selectedRecords){
+      this.selectedRecords = selectedRecords || [];
     },
-    setNomRollStudentSearchResponse: (state, nomRollStudentSearchResponse) => {
-      state.nomRollStudentSearchResponse = nomRollStudentSearchResponse;
+    async setNomRollStudentSearchResponse(nomRollStudentSearchResponse) {
+      this.nomRollStudentSearchResponse = nomRollStudentSearchResponse;
     },
-    setNomRollStudentSearchParams: (state, nomRollStudentSearchParams) => {
-      state.nomRollStudentSearchParams = nomRollStudentSearchParams;
+    async setNomRollStudentSearchParams(nomRollStudentSearchParams) {
+      this.nomRollStudentSearchParams = nomRollStudentSearchParams;
     },
-    clearNomRollStudentSearchParams: (state) => {
-      state.nomRollStudentSearchParams = mapValues(state.nomRollStudentSearchParams, () => null);
+    async clearNomRollStudentSearchParam() {
+      this.nomRollStudentSearchParams = mapValues(this.nomRollStudentSearchParams, () => null);
     },
-    setSelectedStudentStatus: (state, selectedStudentStatus) => {
-      state.selectedStudentStatus = selectedStudentStatus;
+    async setSelectedStudentStatus(selectedStudentStatus) {
+      this.selectedStudentStatus = selectedStudentStatus;
     },
-    clearNomRollStudentSearchState: (state) => {
-      Object.assign(state, getDefaultState());
+    async clearNomRollStudentSearchState()  {
+      this.selectedRecords = [];
+      this.nomRollStudentSearchParams = {
+        assignedPEN: null,
+        legalLastName: null,
+        legalFirstName: null,
+        genderCode: null,
+        dob: null,
+        mincode: null,
+        gradeCode: null
+      };
+      this.nomRollStudentSearchResponse = null;
+      this.selectedStudentStatus = null;
+      this.currentNomRollStudentSearchParams = null;
+      this.nomRollStudentSearchCriteria = null;
     },
-    setCurrentNomRollStudentSearchParams: (state, currentNomRollStudentSearchParams) => {
-      state.currentNomRollStudentSearchParams = currentNomRollStudentSearchParams;
+    async setCurrentNomRollStudentSearchParams(currentNomRollStudentSearchParams) {
+      this.currentNomRollStudentSearchParams = currentNomRollStudentSearchParams;
     },
-    setNomRollStudentSearchCriteria: (state, nomRollStudentSearchCriteria) => {
-      state.nomRollStudentSearchCriteria = nomRollStudentSearchCriteria;
+    async setNomRollStudentSearchCriteria(nomRollStudentSearchCriteria) {
+      this.nomRollStudentSearchCriteria = nomRollStudentSearchCriteria;
     },
   },
-};
+});

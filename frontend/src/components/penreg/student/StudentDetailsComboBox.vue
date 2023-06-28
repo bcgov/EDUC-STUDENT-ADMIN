@@ -1,48 +1,72 @@
 <template>
   <div>
-    <v-row cols="1" no-gutters>
+    <v-row
+      cols="1"
+      no-gutters
+    >
       <v-col>
-        <p class="ma-0">{{ this.fieldLabel }}</p>
+        <p class="ma-0">
+          {{ fieldLabel }}
+        </p>
       </v-col>
     </v-row>
-    <v-row :cols="colspan" no-gutters>
-      <v-col :id="(name==='statusCode' && [STUDENT_CODES.DECEASED,STUDENT_CODES.DELETED].includes(fieldModel))?'chipSelected':''"
-             v-on:mouseover="fieldDisabled?hovering=false:hovering = true" class="sideCardField"
-             v-on:mouseout="editing ? hovering = true : hovering = false">
+    <v-row
+      :cols="colspan"
+      no-gutters
+    >
+      <v-col
+        :id="(name==='statusCode' && [STUDENT_CODES.DECEASED,STUDENT_CODES.DELETED].includes(fieldModel))?'chipSelected':''"
+        class="sideCardField"
+        @mouseover="fieldDisabled?hovering=false:hovering = true"
+        @mouseout="editing ? hovering = true : hovering = false"
+      >
         <v-select
-            :id="name"
-            :tabindex="tabIndex"
-            v-on:keyup.tab="[editing = true, hovering = true]"
-            v-on:change="[editing = false, hovering = false, $emit('changeStudentObjectValue', name, fieldModel)]"
-            class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
-            :class="{darkBackgound: hovering || hasEdits(name)}"
-            color="#FFFFFF"
-            v-model="fieldModel"
-            :items="items"
-            :outlined="hovering || editing || hasEdits(name)"
-            dense
-            type="solo"
-            :disabled="fieldDisabled"
-            :rules="rules"
-
-        ><template #selection="{ item }">
-          <v-chip v-if="name==='statusCode' && [STUDENT_CODES.DECEASED,STUDENT_CODES.DELETED].includes(fieldModel)" small dark color="#003366">{{ item.text }}</v-chip>
-          <div v-else>{{ item.text }}</div>
-        </template></v-select>
+          :id="name"
+          v-model="fieldModel"
+          :tabindex="tabIndex"
+          class="onhoverEdit bolder mb-0 customNoBorder py-0 my-0"
+          :class="{darkBackgound: hovering || hasEdits(name)}"
+          color="#FFFFFF"
+          :items="items"
+          :outlined="hovering || editing || hasEdits(name)"
+          dense
+          type="solo"
+          :disabled="fieldDisabled"
+          :rules="rules"
+          @keyup.tab="[editing = true, hovering = true]"
+          @change="[editing = false, hovering = false, $emit('changeStudentObjectValue', name, fieldModel)]"
+        >
+          <template #selection="{ item }">
+            <v-chip
+              v-if="name==='statusCode' && [STUDENT_CODES.DECEASED,STUDENT_CODES.DELETED].includes(fieldModel)"
+              small
+              dark
+              color="#003366"
+            >
+              {{ item.text }}
+            </v-chip>
+            <div v-else>
+              {{ item.text }}
+            </div>
+          </template>
+        </v-select>
       </v-col>
     </v-row>
     <v-row>
-      <v-col class="py-0" style="margin-top: -0.5em;">
+      <v-col
+        class="py-0"
+        style="margin-top: -0.5em;"
+      >
         <v-text-field
-            :id="revertId"
-            v-on:click="revertField(name)"
-            class="my-0 onhoverEdit revert customNoBorder ml-3"
-            readonly
-            v-if="hasEdits(name)"
-            value="Revert"
-            dense
-            tabindex="-1"
-        ></v-text-field>
+          v-if="hasEdits(name)"
+          :id="revertId"
+          class="my-0 onhoverEdit revert customNoBorder ml-3"
+          readonly
+          value="Revert"
+          dense
+          tabindex="-1"
+          @click="revertField(name)"
+        />
       </v-col>
     </v-row>
   </div>
@@ -112,11 +136,6 @@ export default {
       STUDENT_CODES: STUDENT_CODES
     };
   },
-  beforeMount() {
-    this.fieldModel = this.model;
-    this.fieldLabel = this.label;
-    this.fieldDisabled = this.disabled;
-  },
   watch: {
     model(newValue) {
       this.fieldModel = newValue;
@@ -124,6 +143,11 @@ export default {
     disabled(newValue){
       this.fieldDisabled = newValue;
     }
+  },
+  beforeMount() {
+    this.fieldModel = this.model;
+    this.fieldLabel = this.label;
+    this.fieldDisabled = this.disabled;
   },
 };
 </script>

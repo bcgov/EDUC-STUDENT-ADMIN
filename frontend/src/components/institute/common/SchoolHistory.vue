@@ -1,66 +1,105 @@
 <template>
-    <v-row>
-      <v-col :cols="showRecordDetail ? 6 : 12">
-        <v-data-table id="schoolHistoryTable"
-          :headers="getHeaders()"
-          :items="schoolHistory.content"
-          :items-per-page="schoolHistory.pageable.pageSize"
-          :page.sync="pageNumber"
-          :loading="loading"
-          :key="selectedSchoolHistoryId"
-          v-model="selectedSchoolHistory" 
-          item-key="schoolHistoryId"
-          @page-count="schoolHistory.pageable.pageNumber = $event" 
-          class="batch-file-table"
-          hide-default-footer>
-          <template v-slot:item="props">
-            <tr :class="tableRowClass(props.item)" @click="selectHistoryItem(props)">
-              <td v-for="header in props.headers" :key="header.id" :class="header.id">
-                <div class="table-cell">
-                  <span :class="{ 'diff-value': props.item[`${header.value}_diff`] }">{{
-                      formatTableColumn(header.format, props.item[header.value])
-                  }}</span>
-                </div>
-              </td>
-            </tr>
-          </template>
-        </v-data-table>
-        <v-row class="pt-2" justify="end">
-          <v-col cols="4">
-            <v-pagination color="#38598A" v-model="pageNumber" :length="schoolHistory.totalPages"></v-pagination>
-          </v-col>
-          <v-col cols="4" id="currentItemsDisplay">
-            Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ schoolHistory.totalElements || 0 }}
-          </v-col>
-        </v-row>
-      </v-col>
-      <v-col v-if="showRecordDetail">
-        <SchoolHistoryDetailPanel 
-          :nextSchoolHistory="nextSchoolHistory" 
-          :schoolHistory="schoolHistory"
-          :schoolHistoryId="selectedSchoolHistoryId" 
-          @close="showRecordDetail = false" 
-          @update="setSelectedSchoolHistoryId">
-        </SchoolHistoryDetailPanel>
-      </v-col>
-    </v-row>
+  <v-row no-gutters>
+    <v-col :cols="showRecordDetail ? 6 : 12">
+      <v-data-table
+        id="schoolHistoryTable"
+        v-model:items-per-page="schoolHistory.pageable.pageSize"
+        v-model:page="pageNumber"
+        v-model:items="schoolHistory.content"
+        v-model="selectedSchoolHistory"
+        :items-length="5"
+        :headers="getHeaders()"
+        :footer-props="{
+          'items-per-page-options': itemsPerPageOptions
+        }"
+        :loading="loading"
+        class="batch-file-table"
+        mobile-breakpoint="0"
+      >
+        <template #no-data>
+          <v-row no-gutters>
+            <v-col class="d-flex justify-center">
+              There is no history.
+            </v-col>
+          </v-row>
+        </template>
+        <template #item="{ item, index }">
+          <tr
+            no-gutters
+            class="hoverTable"
+            :class="tableRowClass(item.raw)"
+            @click="selectHistoryItem(item.raw)"
+          >
+            <td
+              v-for="header in getHeaders()"
+              :key="header"
+              :class="header"
+            >
+              <span :class="{ 'diff-value': item.raw[`${header}_diff`] }">{{
+                formatTableColumn(header.format, item.columns[header.key])
+              }}</span>
+            </td>
+          </tr>
+        </template>
+      </v-data-table>
+      <v-row
+        class="pt-2"
+        justify="end"
+      >
+        <v-col cols="4">
+          <v-pagination
+            v-model="pageNumber"
+            color="#38598A"
+            :length="schoolHistory.totalPages"
+          />
+        </v-col>
+        <v-col
+          id="currentItemsDisplay"
+          cols="4"
+        >
+          Showing {{
+            showingFirstNumber
+          }} to {{
+            showingEndNumber
+          }} of {{
+            schoolHistory.totalElements || 0
+          }}
+        </v-col>
+      </v-row>
+    </v-col>
+    <v-col
+      v-if="showRecordDetail"
+      cols="6"
+    >
+      <SchoolHistoryDetailPanel
+        :next-school-history="nextSchoolHistory"
+        :school-history="schoolHistory"
+        :school-history-id="selectedSchoolHistoryId"
+        @close-panel="setShowRecordDetailFalse"
+        @update-panel="setSelectedSchoolHistoryId"
+      />
+    </v-col>
+  </v-row>
 </template>
-  
+
 <script>
-import { Routes } from '@/utils/constants';
+import {Routes} from '@/utils/constants';
 import ApiService from '../../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import router from '@/router';
 import {formatDob} from '@/utils/format';
-import {mapState} from 'vuex';
+import {mapState} from 'pinia';
 import {getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import SchoolHistoryDetailPanel from './SchoolHistoryDetailPanel.vue';
+import {instituteStore} from '@/store/modules/institute';
+import {appStore} from '@/store/modules/app';
+
 export default {
   name: 'SchoolHistory',
-  mixins: [alertMixin],
   components: {
     SchoolHistoryDetailPanel
   },
+  mixins: [alertMixin],
   props: {
     schoolID: {
       type: String,
@@ -80,56 +119,45 @@ export default {
       loading: true,
       pageNumber: 1,
       pageSize: 15,
+      itemsPerPageOptions: [15],
       nextSchoolHistory: [],
-      selectedSchoolHistory:[],
-      allAuthority:[],
-      selectedSchoolHistoryId:null,
+      selectedSchoolHistory: [],
+      allAuthority: [],
+      selectedSchoolHistoryId: null,
       searchParams: {
         schoolID: '',
       },
       headers: [
-        {text: 'Date', sortable: false, value: 'updateDate', format: this.formatDate, tooltip: 'Activity Date'},
-        {text: 'Changed by', sortable: false, value: 'updateUser', tooltip: 'Changed By'},
-        {text: 'Status', sortable: false, value: 'status', tooltip: 'Status'},
-        {text: 'District Number', sortable: false, value: 'districtNumber', tooltip: 'District Code'},
-        {text: 'Authority Number', sortable: false, value: 'authorityNumber', tooltip: 'Authority Code'},
-        {text: 'School Number', sortable: false, value: 'schoolNumber', tooltip: 'School Code'},
-        {text: 'Name', sortable: false, value: 'displayName', tooltip: 'Name'},
-        {text: 'Facility Type', sortable: false, value: 'facilityTypeValue', tooltip: 'Facility Type'},
-        {text: 'School Category', sortable: false, value: 'schoolCategoryValue', tooltip: 'School Category'},
-        {text: 'Contact Information', sortable: false, value: 'contactUpdatedFlag', tooltip: 'Contact Information'},
-        {text: 'Grades Offered', sortable: false, value: 'gradeValue', tooltip: 'Grades Offered'}
+        {title: 'Date', sortable: false, key: 'updateDate', format: this.formatDate, tooltip: 'Activity Date'},
+        {title: 'Changed by', sortable: false, key: 'updateUser', tooltip: 'Changed By'},
+        {title: 'Status', sortable: false, key: 'status', tooltip: 'Status'},
+        {title: 'District Number', sortable: false, key: 'districtNumber', tooltip: 'District Code'},
+        {title: 'Authority Number', sortable: false, key: 'authorityNumber', tooltip: 'Authority Code'},
+        {title: 'School Number', sortable: false, key: 'schoolNumber', tooltip: 'School Code'},
+        {title: 'Name', sortable: false, key: 'displayName', tooltip: 'Name'},
+        {title: 'Facility Type', sortable: false, key: 'facilityTypeValue', tooltip: 'Facility Type'},
+        {title: 'School Category', sortable: false, key: 'schoolCategoryValue', tooltip: 'School Category'},
+        {title: 'Contact Information', sortable: false, key: 'contactUpdatedFlag', tooltip: 'Contact Information'},
+        {title: 'Grades Offered', sortable: false, key: 'gradeValue', tooltip: 'Grades Offered'}
       ],
       shortHeaders: [
-        {text: 'Date', sortable: false, value: 'updateDate', format: this.formatDate, tooltip: 'Activity Date'},
-        {text: 'Changed by', sortable: false, value: 'updateUser', tooltip: 'Changed By'},
-        {text: 'Status', sortable: false, value: 'status', tooltip: 'Status'},
-        {text: 'Name', sortable: false, value: 'displayName', tooltip: 'Name'},
-        {text: 'Contact Information', sortable: false, value: 'contactUpdatedFlag', tooltip: 'Contact Information'}
+        {title: 'Date', sortable: false, key: 'updateDate', format: this.formatDate, tooltip: 'Activity Date'},
+        {title: 'Changed by', sortable: false, key: 'updateUser', tooltip: 'Changed By'},
+        {title: 'Status', sortable: false, key: 'status', tooltip: 'Status'},
+        {title: 'Name', sortable: false, key: 'displayName', tooltip: 'Name'},
+        {title: 'Contact Information', sortable: false, key: 'contactUpdatedFlag', tooltip: 'Contact Information'}
       ],
     };
   },
   computed: {
-    ...mapState('institute', ['facilityTypeCodes']),
-    ...mapState('institute', ['schoolCategoryTypeCodes']),
-    ...mapState('institute', ['gradeCodes']),
-    ...mapState('institute', ['schoolNeighborhoodLearningCodes']),
-    ...mapState('institute', ['schoolOrganizationTypeCodes']),
-    ...mapState('institute', ['schoolReportingRequirementTypeCodes']),
-    ...mapState('app', ['schoolMap', 'districtMap']),
+    ...mapState(instituteStore, ['facilityTypeCodes', 'schoolCategoryTypeCodes', 'gradeCodes', 'schoolNeighborhoodLearningCodes', 'schoolOrganizationTypeCodes', 'schoolReportingRequirementTypeCodes']),
+    ...mapState(appStore, ['schoolMap', 'districtMap']),
     showingFirstNumber() {
       return ((this.pageNumber - 1) * (this.schoolHistory.pageable.pageSize || 0) + ((this.schoolHistory.numberOfElements || 0) > 0 ? 1 : 0));
     },
     showingEndNumber() {
       return ((this.pageNumber - 1) * (this.schoolHistory.pageable.pageSize || 0) + (this.schoolHistory.numberOfElements || 0));
     },
-  },
-  async beforeMount() {
-    await this.$store.dispatch('app/getCodes');
-  },
-  mounted() {
-    this.getSchoolHistory();
-    this.showRecordDetail = false;
   },
   watch: {
     pageNumber: {
@@ -138,19 +166,27 @@ export default {
       }
     },
   },
+  async beforeMount() {
+    await appStore().getCodes();
+  },
+  mounted() {
+    this.getSchoolHistory();
+    this.showRecordDetail = false;
+  },
   created() {
     this.getAuthority();
-    this.$store.dispatch('institute/getAllFacilityTypeCodes');
-    this.$store.dispatch('institute/getAllSchoolCategoryTypeCodes');
-    this.$store.dispatch('institute/getAllGradeCodes');
-    this.$store.dispatch('institute/getAllSchoolNeighborhoodLearningCodes');
-    this.$store.dispatch('institute/getAllSchoolOrganizationTypeCodes');
-    this.$store.dispatch('institute/getSchoolReportingRequirementTypeCodes');
+    const instStore = instituteStore();
+    instStore.getAllFacilityTypeCodes();
+    instStore.getAllSchoolCategoryTypeCodes();
+    instStore.getAllGradeCodes();
+    instStore.getAllSchoolNeighborhoodLearningCodes();
+    instStore.getAllSchoolOrganizationTypeCodes();
+    instStore.getSchoolReportingRequirementTypeCodes();
   },
   methods: {
     getPageHeading() {
       let school = this.schoolMap?.get(this.schoolID);
-      if(school) {
+      if (school) {
         return school?.mincode + ' - ' + school?.schoolName;
       }
     },
@@ -163,7 +199,7 @@ export default {
       return rowClass;
     },
     selectHistoryItem(props) {
-      this.setSelectedSchoolHistoryId(props.item.schoolHistoryId);
+      this.setSelectedSchoolHistoryId(props.schoolHistoryId);
       this.showRecordDetail = true;
     },
     getHeaders() {
@@ -230,11 +266,14 @@ export default {
         })
         .finally(() => this.loading = false);
     },
+    setShowRecordDetailFalse(){
+      this.showRecordDetail = false;
+    },
     checkForDifferences(preHistory, history, key) {
-      if(key === 'mailingAddress') {
+      if (key === 'mailingAddress') {
         history['mailingAddress_diff'] = !this.compareAddress(preHistory.mailingAddress, history.mailingAddress);
         return history;
-      } else if(key === 'physicalAddress') {
+      } else if (key === 'physicalAddress') {
         history['physicalAddress_diff'] = !this.compareAddress(preHistory.physicalAddress, history.physicalAddress);
         return history;
       } else if (history[key] !== preHistory[key] && !['createDate', 'createUser', 'addresses'].includes(key)) {
@@ -277,7 +316,7 @@ export default {
       this.nextSchoolHistory = nextPageData.content;
     },
     formatSchoolHistory(history) {
-      history.facilityTypeValue =  this.mapFacilityCode(history.facilityTypeCode);
+      history.facilityTypeValue = this.mapFacilityCode(history.facilityTypeCode);
       history.schoolCategoryValue = this.mapSchoolCategoryCode(history.schoolCategoryCode);
       history.schoolReportingRequirementCodeValue =
         this.mapSchoolReportingRequirementCode(history.schoolReportingRequirementCode);
@@ -295,9 +334,9 @@ export default {
     checkContactUpdates(currentPageData, nextPageData) {
       [...currentPageData.content, ...nextPageData.content].forEach(history => {
         if (history) {
-          if(history.phoneNumber_diff || history.email_diff || history.faxNumber_diff || history.website_diff || history.mailingAddress_diff || history.physicalAddress_diff) {
-            history.contactUpdatedFlag =  'Changed';
-            history.contactUpdatedFlag_diff=true;
+          if (history.phoneNumber_diff || history.email_diff || history.faxNumber_diff || history.website_diff || history.mailingAddress_diff || history.physicalAddress_diff) {
+            history.contactUpdatedFlag = 'Changed';
+            history.contactUpdatedFlag_diff = true;
           } else {
             history.contactUpdatedFlag = 'Unchanged';
           }
@@ -305,14 +344,14 @@ export default {
       });
     },
     mapFacilityCode(facilityCode) {
-      return this.facilityTypeCodes.find(code =>code?.facilityTypeCode === facilityCode)?.description;
+      return this.facilityTypeCodes.find(code => code?.facilityTypeCode === facilityCode)?.description;
     },
     mapSchoolReportingRequirementCode(requirementCode) {
       return this.schoolReportingRequirementTypeCodes
         .find(c => c.schoolReportingRequirementCode === requirementCode).label;
     },
     mapSchoolCategoryCode(categoryCode) {
-      return this.schoolCategoryTypeCodes.find(code =>code?.schoolCategoryCode === categoryCode)?.description;
+      return this.schoolCategoryTypeCodes.find(code => code?.schoolCategoryCode === categoryCode)?.description;
     },
     mapNLCActivity(neighbourhoodLearnings) {
       let nLCActivityList = [];
@@ -322,7 +361,7 @@ export default {
           nLCActivityList.push(schoolNeighborhoodLearningType?.label);
         }
       }
-      nLCActivityList.sort((a,b) => a.localeCompare(b));
+      nLCActivityList.sort((a, b) => a.localeCompare(b));
       return nLCActivityList.toString().replace(/,/g, ', ');
     },
     mapSchoolOrganization(schoolOrganizationCode) {
@@ -338,13 +377,13 @@ export default {
       }
       let onlyNumbers = gradeList.filter(Number);
       let onlyLetters = gradeList.filter(x => !onlyNumbers.includes(x));
-      onlyLetters.sort((a,b) => a.localeCompare(b));
+      onlyLetters.sort((a, b) => a.localeCompare(b));
 
-      onlyNumbers = onlyNumbers.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+      onlyNumbers = onlyNumbers.sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
       gradeList = onlyNumbers.concat(onlyLetters);
       return gradeList.toString().replace(/,/g, ', ');
     },
-    getAuthority(){
+    getAuthority() {
       ApiService.apiAxios.get(`${Routes.cache.AUTHORITY_DATA_URL}`)
         .then(response => {
           this.allAuthority = response?.data;
@@ -358,36 +397,70 @@ export default {
   },
 };
 </script>
-  
+
 <style scoped>
 #auditHistory /deep/ .v-pagination__navigation > i {
-  padding-left: 0;
+    padding-left: 0;
 }
 
 #schoolHistoryTable /deep/ table {
-  border-spacing: 0 0.25rem;
-  border-bottom: thin solid #d7d7d7;
+    border-spacing: 0 0.25rem;
+    border-bottom: thin solid #d7d7d7;
 }
 
 #schoolHistoryTable /deep/ table th {
-  font-size: 0.875rem;
+    font-size: 0.875rem;
 }
 
 #schoolHistoryTable /deep/ table td {
-  border-bottom: none !important;
+    border-bottom: none !important;
 }
 
 #schoolHistoryTable /deep/ table tr.selected-record,
 #schoolHistoryTable /deep/ table tbody tr:hover {
-  background-color: #E1F5FE !important;
+    background-color: #E1F5FE !important;
 }
+
 .diff-value {
-  font-weight: bold;
+    font-weight: bold;
+}
+
+
+.hoverTable {
+    border-bottom-style: groove;
+    border-left-style: groove;
+    border-right-style: groove;
+    border-color: rgb(255 255 255 / 45%);
+}
+
+.hoverTable:nth-child(1) {
+    border-top-style: groove;
+}
+
+.hoverTable:hover {
+    background-color: #e8e8e8;
+    cursor: pointer;
+}
+
+.hoverTable:hover td {
+    background-color: transparent; /* or #000 */
+}
+
+.selected-record{
+   background-color: #E1F5FE !important;
+}
+
+.selected-record td{
+   background-color:  #E1F5FE !important;
+}
+
+:deep(.v-data-table-footer) {
+  display: none;
 }
 
 .divider {
-  border-color: #FCBA19;
-  border-width: unset;
+    border-color: #FCBA19;
+    border-width: unset;
 }
 </style>
   

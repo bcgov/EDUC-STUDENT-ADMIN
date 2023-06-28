@@ -1,30 +1,48 @@
 <template>
   <div>
-    <v-card flat class="pa-3" :disabled="!isRequestMoreInfoEnabledForUser">
+    <v-card
+      flat
+      class="pa-3"
+      :disabled="!isRequestMoreInfoEnabledForUser"
+    >
       <v-form ref="returnForm">
         <v-card-text class="pa-0">
           <v-row class="ma-0">
             <v-textarea
               id="return-comment-textarea"
+              ref="returnCommentTextarea"
+              v-model="returnComment"
               name="description"
               label="Enter return reason"
-              v-model="returnComment"
               :rules="requiredRules"
               filled
               clearable
               auto-grow
-              @input="replaceReturnMacro"
               class="pa-0 ma-0"
-              ref="returnCommentTextarea"
-            ></v-textarea>
+              @input="replaceReturnMacro"
+            />
           </v-row>
           <v-row class="d-flex justify-space-between">
             <MacroMenu
               :macros="returnMacros"
               @select="insertMacroText"
             />
-            <v-col cols="12" xl="3" lg="5" md="5" class="py-0" justify="end" align-content="end">
-              <PrimaryButton id="return-to-student" text="Return to Student" :disabled="isReturnToStudentDisabled || !isRequestMoreInfoEnabledForUser" width="100%" @click.native="returnToStudent"></PrimaryButton>
+            <v-col
+              cols="12"
+              xl="3"
+              lg="5"
+              md="5"
+              class="py-0"
+              justify="end"
+              align-content="end"
+            >
+              <PrimaryButton
+                id="return-to-student"
+                text="Return to Student"
+                :disabled="isReturnToStudentDisabled || !isRequestMoreInfoEnabledForUser"
+                width="100%"
+                :click-action="returnToStudent"
+              />
             </v-col>
           </v-row>
         </v-card-text>
@@ -37,18 +55,22 @@
 import ApiService from '../common/apiService';
 import {REQUEST_TYPES, Routes, Statuses} from '../utils/constants';
 import { replaceMacro, insertMacro } from '../utils/macro';
-import { mapGetters, mapMutations } from 'vuex';
-import PrimaryButton from './util/PrimaryButton';
+import {mapActions, mapState} from 'pinia';
+import PrimaryButton from './util/PrimaryButton.vue';
 import alertMixin from '../mixins/alertMixin';
 import {isValidLength} from '../utils/validation';
-import MacroMenu from './common/MacroMenu';
+import MacroMenu from './common/MacroMenu.vue';
+import {notificationsStore} from '@/store/modules/notifications';
+import {appStore} from '@/store/modules/app';
+import {authStore} from '@/store/modules/auth';
 
 export default {
-  name: 'requestReturn',
+  name: 'RequestReturn',
   components: {
     PrimaryButton,
     MacroMenu
   },
+  mixins: [alertMixin],
   props: {
     request: {
       type: Object,
@@ -72,7 +94,6 @@ export default {
     },
     
   },
-  mixins: [alertMixin],
   data () {
     return {
       validForm: false,
@@ -82,9 +103,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo', 'ACTION_GMP_REQUESTS_ROLE', 'ACTION_UMP_REQUESTS_ROLE']),
-    ...mapGetters('app', ['selectedRequest', 'requestType', 'requestTypeLabel']),
-    ...mapGetters('notifications', ['notification']),
+    ...mapState(authStore, ['userInfo', 'ACTION_GMP_REQUESTS_ROLE', 'ACTION_UMP_REQUESTS_ROLE']),
+    ...mapState(appStore, ['selectedRequest', 'requestType', 'requestTypeLabel']),
+    ...mapState(notificationsStore, ['notification']),
     requestStatusCodeName() {
       return `${this.requestType}StatusCode`;
     },
@@ -127,8 +148,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('app', ['setRequest']),
-    ...mapMutations('app', ['pushMessage','setMessages','setParticipants']),
+    ...mapActions(appStore, ['setRequest', 'pushMessage','setMessages','setParticipants']),
     replaceReturnMacro() {
       this.returnComment = replaceMacro(this.returnComment, this.returnMacros);
     },

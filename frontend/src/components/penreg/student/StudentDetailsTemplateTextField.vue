@@ -1,12 +1,17 @@
 <template>
-  <v-row no-gutters class="py-1">
+  <v-row
+    no-gutters
+    class="py-1"
+  >
     <v-col cols="2">
-      <p class="labelField">{{ this.label }}</p>
+      <p class="labelField">
+        {{ label }}
+      </p>
     </v-col>
     <v-col :cols="colspan">
       <div class="bolder onhoverPad textField">
         <div :class="{'fieldText': true, 'disabled': disabled}">
-          <slot></slot>
+          <slot />
         </div>
       </div>
     </v-col>

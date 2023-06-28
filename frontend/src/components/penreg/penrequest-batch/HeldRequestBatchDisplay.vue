@@ -1,7 +1,13 @@
 <template>
-  <v-container fluid class="fill-height px-0 mb-4">
-    <v-row no-gutters class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
-           style="background-color:white;">
+  <v-container
+    fluid
+    class="fill-height px-0 mb-4"
+  >
+    <v-row
+      no-gutters
+      class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
+      style="background-color:white;"
+    >
       <v-col cols="1">
         <v-text-field
           class="readonly-text-field"
@@ -9,57 +15,77 @@
           value="PSI"
           readonly
           dense
-        ></v-text-field>
+        />
       </v-col>
       <v-sheet
-          v-if="filters && filters.length > 0"
-          class="mx-4 px-2 py-1 d-flex flex-row flex-grow-1 align-center align-self-start"
-          color="rgba(0, 0, 0, 0.06)"
-          outlined
-          rounded
+        v-if="filters && filters.length > 0"
+        class="mx-4 px-2 py-1 d-flex flex-row flex-grow-1 align-center align-self-start"
+        color="rgba(0, 0, 0, 0.06)"
+        outlined
+        rounded
       >
         <span class="mr-4"><strong>Filtered by</strong></span>
         <FilterTag
-            v-for="(filter, index) in filters"
-            :key="index"
-            :id="index + 'tag'"
-            :text="filter"
-            class="mr-2"
-            :close="removeFilter"
-            :item="index"
-        >
-        </FilterTag>
+          v-for="(filter, index) in filters"
+          :id="index + 'tag'"
+          :key="index"
+          :text="filter"
+          class="mr-2"
+          :close="removeFilter"
+          :item="index"
+        />
       </v-sheet>
-      <v-spacer v-else></v-spacer>
-      <PrimaryButton id="review-action" class="mr-2" :disabled="!filesSelected || isActioned" text="Review" @click.native="clickReview"></PrimaryButton>
-      <PrimaryButton id="process-action" class="mx-2" :disabled="!filesSelected || isActioned" text="Process" :loading="isProcessing"
-                     @click.native="markRecordForProcessing"></PrimaryButton>
-      <PrimaryButton id="delete-action" class="mx-2" :disabled="!filesSelected || isActioned" text="Delete" :loading="isDeleting"
-                     @click.native="deleteFile"></PrimaryButton>
+      <v-spacer v-else />
+      <PrimaryButton
+        id="review-action"
+        class="mr-2"
+        :disabled="!filesSelected || isActioned"
+        text="Review"
+        :click-action="clickReview"
+      />
+      <PrimaryButton
+        id="process-action"
+        class="mx-2"
+        :disabled="!filesSelected || isActioned"
+        text="Process"
+        :loading="isProcessing"
+        :click-action="markRecordForProcessing"
+      />
+      <PrimaryButton
+        id="delete-action"
+        class="mx-2"
+        :disabled="!filesSelected || isActioned"
+        text="Delete"
+        :loading="isDeleting"
+        :click-action="deleteFile"
+      />
     </v-row>
-    <v-row no-gutters class="py-2" style="background-color:white;">
+    <v-row
+      no-gutters
+      class="py-2"
+      style="background-color:white;"
+    >
       <HeldRequestBatchList
-          :key="heldRequestBatchListKey"
-          :schoolGroup="schoolGroup"
-          :filters.sync="filters"
-          :loadingFiles="loadingFiles"
-          :selectedFile.sync="selectedFile"
-          @file-click="clickFile"
-      ></HeldRequestBatchList>
+        :key="heldRequestBatchListKey"
+        v-model:filters="filters"
+        v-model:selected-file="selectedFile"
+        :school-group="schoolGroup"
+        :loading-files="loadingFiles"
+        @file-click="clickFile"
+      />
     </v-row>
     <PrbFileModal
-        v-if="openFileViewer"
-        :open-dialog="openFileViewer"
-        :submission-number="submissionNumber"
-        @closeDialog="closeFileViewer"
-    >
-    </PrbFileModal>
+      v-if="openFileViewer"
+      :open-dialog="openFileViewer"
+      :submission-number="submissionNumber"
+      @closeDialog="closeFileViewer"
+    />
     <ConfirmationDialog ref="confirmationDialog">
-      <template v-slot:message>
+      <template #message>
         <v-col class="mt-n6">
           <v-row class="mt-n2 mb-3">
             <span>Are you sure you want
-            to <strong>{{ operation }}</strong> submission <strong>{{ submissionNumber }}</strong>?</span>
+              to <strong>{{ operation }}</strong> submission <strong>{{ submissionNumber }}</strong>?</span>
           </v-row>
         </v-col>
       </template>
@@ -68,14 +94,14 @@
 </template>
 
 <script>
-import HeldRequestBatchList from './HeldRequestBatchList';
-import FilterTag from '../../util/FilterTag';
-import PrimaryButton from '../../util/PrimaryButton';
+import HeldRequestBatchList from './HeldRequestBatchList.vue';
+import FilterTag from '../../util/FilterTag.vue';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import alertMixin from '../../../mixins/alertMixin';
-import ConfirmationDialog from '../../util/ConfirmationDialog';
+import ConfirmationDialog from '../../util/ConfirmationDialog.vue';
 import ApiService from '@/common/apiService';
 import {Routes} from '@/utils/constants';
-import PrbFileModal from '@/components/penreg/penrequest-batch/PrbFileModal';
+import PrbFileModal from '@/components/penreg/penrequest-batch/PrbFileModal.vue';
 
 export default {
   name: 'HeldRequestBatchDisplay',

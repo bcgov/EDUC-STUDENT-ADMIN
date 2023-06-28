@@ -1,30 +1,51 @@
 <template>
   <div>
-    <v-card flat class="pa-3" :disabled="!isRejectEnabledForUser">
-      <v-form ref="form" v-model="validForm">
+    <v-card
+      flat
+      class="pa-3"
+      :disabled="!isRejectEnabledForUser"
+    >
+      <v-form
+        ref="form"
+        v-model="validForm"
+      >
         <v-card-text class="pa-0">
           <v-row class="ma-0">
             <v-textarea
               id="reject-comment-textarea"
+              ref="rejectCommentTextarea"
+              v-model="rejectComment"
               name="description"
               label="Enter reject reason"
-              v-model="rejectComment"
               :rules="requiredRules"
               filled
               clearable
               auto-grow
-              @input="replaceRejectMacro"
               class="pa-0 ma-0"
-              ref="rejectCommentTextarea"
-            ></v-textarea>
+              @input="replaceRejectMacro"
+            />
           </v-row>
           <v-row class="d-flex justify-space-between">
             <MacroMenu
               :macros="rejectMacros"
               @select="insertMacroText"
             />
-            <v-col cols="12" xl="3" lg="5" md="5" class="py-0" justify="end" align-content="end">
-              <PrimaryButton id="reject-request" text="Reject" :disabled="isRejectDisabled || !isRejectEnabledForUser" width="100%" @click.native="submitReject"></PrimaryButton>
+            <v-col
+              cols="12"
+              xl="3"
+              lg="5"
+              md="5"
+              class="py-0"
+              justify="end"
+              align-content="end"
+            >
+              <PrimaryButton
+                id="reject-request"
+                text="Reject"
+                :disabled="isRejectDisabled || !isRejectEnabledForUser"
+                width="100%"
+                :click-action="submitReject"
+              />
             </v-col>
           </v-row>
         </v-card-text>
@@ -37,18 +58,22 @@
 import ApiService from '../common/apiService';
 import {REQUEST_TYPES, Routes, Statuses} from '../utils/constants';
 import { replaceMacro, insertMacro } from '../utils/macro';
-import {mapGetters, mapMutations} from 'vuex';
-import PrimaryButton from './util/PrimaryButton';
+import {mapActions, mapState} from 'pinia';
+import PrimaryButton from './util/PrimaryButton.vue';
 import alertMixin from '../mixins/alertMixin';
 import {isValidLength} from '../utils/validation';
-import MacroMenu from './common/MacroMenu';
+import MacroMenu from './common/MacroMenu.vue';
+import {notificationsStore} from '@/store/modules/notifications';
+import {appStore} from '@/store/modules/app';
+import {authStore} from '@/store/modules/auth';
 
 export default {
-  name: 'requestReject',
+  name: 'RequestReject',
   components: {
     PrimaryButton,
     MacroMenu
   },
+  mixins: [alertMixin],
   props: {
     request: {
       type: Object,
@@ -71,7 +96,6 @@ export default {
       required: true
     },
   },
-  mixins: [alertMixin],
   data () {
     return {
       validForm: false,
@@ -81,9 +105,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo', 'ACTION_GMP_REQUESTS_ROLE', 'ACTION_UMP_REQUESTS_ROLE']),
-    ...mapGetters('app', ['selectedRequest', 'requestType', 'requestTypeLabel']),
-    ...mapGetters('notifications', ['notification']),
+    ...mapState(authStore, ['userInfo', 'ACTION_GMP_REQUESTS_ROLE', 'ACTION_UMP_REQUESTS_ROLE']),
+    ...mapState(appStore, ['selectedRequest', 'requestType', 'requestTypeLabel']),
+    ...mapState(notificationsStore, ['notification']),
     requestStatusCodeName() {
       return `${this.requestType}StatusCode`;
     },
@@ -129,7 +153,7 @@ export default {
     this.rejectComment = this.request.failureReason;
   },
   methods: {
-    ...mapMutations('app', ['setRequest']),
+    ...mapActions(appStore, ['setRequest']),
     replaceRejectMacro() {
       this.rejectComment = replaceMacro(this.rejectComment, this.rejectMacros);
     },

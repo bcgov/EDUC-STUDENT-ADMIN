@@ -1,22 +1,33 @@
 <template>
-  <v-tooltip v-model="showTooltip" right>
-    <template v-slot:activator="{ on, attrs }">
+  <v-tooltip
+    v-model="showTooltip"
+    right
+    :open-on-hover="false"
+  >
+    <template #activator="{ on, attrs }">
       <v-btn
-          :id="id"
-          color="#38598A"
-          :disabled="disabled"
-          :dark="!disabled"
-          icon
-          v-bind="attrs"
-          @click.native.stop="copy(copyText)"
-          :title="`copy ${copyText} to clipboard`"
+        :id="id"
+        color="#38598A"
+        :disabled="disabled"
+        :dark="!disabled"
+        icon
+        size="x-small"
+        class="ml-1"
+        v-bind="attrs"
+        :title="`Copy ${copyText} to clipboard`"
+        @click.prevent.stop="copy(copyText)"
       >
-        <v-icon v-if="icon" :class="iconStyle" small>
+        <v-icon
+          v-if="icon"
+          color="white"
+          :class="iconStyle ? iconStyle : undefined"
+          size="large"
+        >
           {{ icon }}
         </v-icon>
       </v-btn>
     </template>
-    <span>{{ 'copied ' + copyText}}</span>
+    <span>{{ 'Copied ' + copyText }}</span>
   </v-tooltip>
 </template>
 

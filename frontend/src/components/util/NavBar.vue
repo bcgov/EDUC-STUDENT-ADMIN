@@ -1,81 +1,148 @@
 <template>
-<div class="mb-1">
-
-  <v-navigation-drawer
-          v-model="drawer"
-          clipped
-          app
-          color="#E9EBEF"
-          :style="`padding-top: ${$vuetify.application.top + $vuetify.application.bar}px`"
-          width="15%"
-          temporary>
-    <v-list>
-      <div v-for="(item) in items.filter(obj => obj.authorized)" v-bind:key="item.title">
-      <v-list-item v-if="!item.items"
+  <div class="mb-1">
+    <v-navigation-drawer
+      v-model="drawer"
+      clipped
+      app
+      color="#E9EBEF"
+      width="15%"
+      temporary
+    >
+      <v-list>
+        <div
+          v-for="(item) in items.filter(obj => obj.authorized)"
+          :key="item.title"
+        >
+          <v-list-item
+            v-if="!item.items"
+            :id="stripWhitespace(item.title + `MenuBtn`)"
             :key="item.title+`1`"
             class="menuRow"
-            :id="stripWhitespace(item.title + `MenuBtn`)">
-          <router-link :to="{ name: item.link }"  :target="item.newTab ? '_blank' : '_self'" class="router">
-            <v-list-item-content>
-              <v-list-item-title v-if="item.link === $route.name" class="menuItem"><strong>{{item.title}}</strong></v-list-item-title>
-              <v-list-item-title v-else class="menuItem">{{item.title}}</v-list-item-title>
-            </v-list-item-content>
-          </router-link>
-      </v-list-item>
-      <v-list-group
-              v-else
-              :key="item.title"
-              no-action
-              active-class="active"
-              class="groupMenu"
-              :id="stripWhitespace(item.title) + `MenuBtn`"
-              append-icon=""
-              @click="setActive(item)"
-      >
-        <template v-slot:activator>
-          <v-list-item-content>
-            <v-list-item-title v-text="item.title" class="menuItem"></v-list-item-title>
-          </v-list-item-content>
-          <v-icon color="#003366" v-if="!item.active">$plus</v-icon>
-          <v-icon color="#003366" v-else>$minus</v-icon>
-        </template>
-
-        <v-list-item
+          >
+            <router-link
+              :to="{ name: item.link }"
+              :target="item.newTab ? '_blank' : '_self'"
+              class="router"
+            >
+              <v-list-item>
+                <v-list-item-title
+                  v-if="item.link === $route.name"
+                  class="menuItem"
+                >
+                  <strong>{{ item.title }}</strong>
+                </v-list-item-title>
+                <v-list-item-title
+                  v-else
+                  class="menuItem"
+                >
+                  {{ item.title }}
+                </v-list-item-title>
+              </v-list-item>
+            </router-link>
+          </v-list-item>
+          <v-list-group
+            v-else
+            :id="stripWhitespace(item.title) + `MenuBtn`"
+            :key="item.title"
+            no-action
+            active-class="active"
+            class="groupMenu"
+            append-icon=""
+            @click="setActive(item)"
+          >
+            <template #activator>
+              <v-list-item>
+                <v-list-item-title
+                  class="menuItem ml-4"
+                  v-text="item.title"
+                />
+              </v-list-item>
+              <v-list-item
                 v-for="subItem in item.items.filter(obj => obj.authorized)"
+                :id="stripWhitespace(subItem.title) + `MenuBtn`"
                 :key="subItem.title"
                 class="subMenuRow pl-9"
-                :id="stripWhitespace(subItem.title) + `MenuBtn`"
-        >
-          <router-link :to="{ name: subItem.link }" :target="subItem.newTab ? '_blank' : '_self'" class="router">
-            <v-list-item-content>
-              <v-list-item-title v-if="subItem.link === $route.name" class="menuItem"><strong>{{ subItem.title }}</strong></v-list-item-title>
-              <v-list-item-title v-else v-text="subItem.title" class="menuItem"></v-list-item-title>
-            </v-list-item-content>
-          </router-link>
-        </v-list-item>
-      </v-list-group>
+              >
+                <router-link
+                  :to="{ name: subItem.link }"
+                  :target="subItem.newTab ? '_blank' : '_self'"
+                  class="router"
+                >
+                  <v-list-item>
+                    <v-list-item-title
+                      v-if="subItem.link === $route.name"
+                      class="menuItem"
+                    >
+                      <strong>{{ subItem.title }}</strong>
+                    </v-list-item-title>
+                    <v-list-item-title
+                      v-else
+                      class="menuItem"
+                      v-text="subItem.title"
+                    />
+                  </v-list-item>
+                </router-link>
+              </v-list-item>
+            </template>
+          </v-list-group>
+        </div>
+      </v-list>
+    </v-navigation-drawer>
+    <v-app-bar
+      id="navBar"
+      absolute
+      elevation="0"
+      color="#38598A"
+      style="z-index: 1001;"
+      :dark="true"
+      class="pl-12 pr-8"
+    >
+      <v-app-bar-nav-icon
+        id="menuBtn"
+        style="color: white"
+        @click="drawer=true"
+      >
+        <v-icon v-if="!drawer">
+          $menu
+        </v-icon>
+        <v-icon v-else>
+          $close
+        </v-icon>
+        <p class="ma-0 pl-3 pr-2">
+          Menu
+        </p>
+      </v-app-bar-nav-icon>
+      <v-toolbar-title class="ml-4 nav-title pl-4">
+        {{ title }}
+      </v-toolbar-title>
+      <v-spacer />
+      <SetNavigation />
+    </v-app-bar>
+    <v-app-bar
+      v-if="bannerColor !== ''"
+      style="color: white; z-index: 1000;"
+      :color="bannerColor"
+      absolute
+      density="compact"
+    >
+      <div>
+        <h3 class="envBanner pl-5">
+          {{ bannerEnvironment }} Environment
+        </h3>
       </div>
-    </v-list>
-  </v-navigation-drawer>
-  <v-app-bar app absolute elevation="0" color="#38598A" :dark="true" id="navBar" class="pl-16 pr-8">
-    <v-app-bar-nav-icon id="menuBtn" @click="drawer=true">
-      <v-icon v-if="!drawer">$menu</v-icon>
-      <v-icon v-else>$close</v-icon>
-      <p class="ma-0 pl-4 pr-2">Menu</p>
-    </v-app-bar-nav-icon>
-    <v-toolbar-title class="ml-4 nav-title">{{ title }}</v-toolbar-title>
-    <v-spacer></v-spacer>
-    <SetNavigation/>
-  </v-app-bar>
-</div>
+    </v-app-bar>
+  </div>
 </template>
 
 <script>
 import {PAGE_TITLES, REQUEST_TYPES} from '../../utils/constants';
-import { mapGetters, mapState } from 'vuex';
-import SetNavigation from './SetNavigation';
+import {mapState} from 'pinia';
+import SetNavigation from './SetNavigation.vue';
+import {authStore} from '@/store/modules/auth';
+import {appStore} from '@/store/modules/app';
+
 export default {
-  name: 'navBar',
+  name: 'NavBar',
   components: {
     SetNavigation,
   },
@@ -88,157 +155,164 @@ export default {
   data() {
     return {
       drawer: null,
-      items: []
+      bannerEnvironment: null,
+      bannerColor: null
     };
   },
-  mounted() {
-    this.items = [
-      {
-        title: PAGE_TITLES.DASHBOARD,
-        link: 'home',
-        authorized: this.isAuthorizedUser
-      },
-      {
-        title: PAGE_TITLES.STUDENT_REQUESTS,
-        authorized: (this.VIEW_GMP_REQUESTS_ROLE || this.VIEW_UMP_REQUESTS_ROLE),
-        items: [
-          {
-            title: PAGE_TITLES.GMP,
-            link: REQUEST_TYPES.penRequest.label,
-            authorized: this.VIEW_GMP_REQUESTS_ROLE
-          },
-          {
-            title: PAGE_TITLES.UMP,
-            link: REQUEST_TYPES.studentRequest.label,
-            authorized: this.VIEW_UMP_REQUESTS_ROLE
-          }
-        ],
-      },
-      {
-        title: PAGE_TITLES.STUDENT_SEARCH,
-        link: 'basicSearch',
-        authorized: this.ADVANCED_SEARCH_ROLE
-      },
-      {
-        title: PAGE_TITLES.COMPARE_PENS,
-        link: 'compare',
-        authorized: this.PROCESS_STUDENT_ROLE
-      },
-      {
-        title: PAGE_TITLES.PEN_REQ_FILES,
-        link: 'penRequestBatch',
-        authorized: this.VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE
-      },
-      {
-        title: PAGE_TITLES.ARCHIVED_REQ_FILES,
-        link: 'archivedRequestBatch',
-        authorized: this.VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE
-      },
-      {
-        title: PAGE_TITLES.PEN_COORDINATORS,
-        link: 'penCoordinators',
-        newTab: true,
-        authorized: this.VIEW_PEN_COORDINATOR_INFO_ROLE
-      },
-      {
-        title: PAGE_TITLES.EXCHANGE,
-        authorized: this.EXCHANGE_ROLE,
-        items: [
-          {
-            title: 'PEN Team Inbox',
-            link: 'exchange_inbox_PEN_TEAM_ROLE',
-            authorized: this.PEN_TEAM_ROLE
-          }
-        ]
-      },
-      {
-        title: PAGE_TITLES.ADMINISTRATION,
-        authorized: this.STAFF_ADMINISTRATION_ADMIN,
-        items: [
-          {
-            title: 'Macro Management',
-            link: 'macros',
-            authorized: this.EDIT_MACROS_ROLE
-          },
-          {
-            title: 'EDX School Access',
-            link: 'exchangeAccess',
-            authorized: this.EXCHANGE_ACCESS_ROLE
-          },
-          {
-            title: 'EDX District Access',
-            link: 'exchangeDistrictAccess',
-            authorized: this.EXCHANGE_ACCESS_ROLE
-          }
-        ],
-      },
-      {
-        title: 'Institutions',
-        authorized: this.isAuthorizedUser,
-        items: [
-          {
-            title: 'Schools',
-            link: 'instituteSchoolList',
-            authorized: this.isAuthorizedUser
-          },
-          {
-            title: 'Districts',
-            link: 'instituteDistrict',
-            authorized: this.isAuthorizedUser
-          },
-          {
-            title: 'Authorities',
-            link: 'instituteAuthoritiesList',
-            authorized: this.isAuthorizedUser
-          }
-        ],
-      },
-      {
-        title: 'Nominal Roll',
-        link: 'nominal-roll',
-        authorized: this.NOMINAL_ROLL_ROLE
-      },
-      {
-        title: PAGE_TITLES.ANALYTICS,
-        authorized: this.HAS_STATS_ROLE,
-        items: [
-          {
-            title: 'Dashboard',
-            link: 'stats-dashboard',
-            authorized: this.HAS_STATS_ROLE
-          },
-          {
-            title: 'Get My PEN',
-            link: 'analytics-gmp-stats',
-            authorized: this.STUDENT_ANALYTICS_STUDENT_PROFILE
-          },
-          {
-            title: 'Update My PEN',
-            link: 'analytics-ump-stats',
-            authorized: this.STUDENT_ANALYTICS_STUDENT_PROFILE
-          },
-          {
-            title: 'New PENs',
-            link: 'new-pens',
-            authorized: this.STUDENT_ANALYTICS_BATCH
-          },
-          {
-            title: 'Merges',
-            link: 'merges',
-            authorized: this.STUDENT_ANALYTICS_BATCH
-          }
-        ],
-      }
-    ];
+  async created() {
+    appStore().getConfig().then(() => {
+      this.bannerEnvironment = this.config.BANNER_ENVIRONMENT;
+      this.bannerColor = this.config.BANNER_COLOR;
+    });
   },
   computed: {
-    ...mapState('auth', ['isAuthorizedUser']),
-    ...mapGetters('auth', ['ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE', 'STAFF_ADMINISTRATION_ADMIN', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ROLE', 'EXCHANGE_ACCESS_ROLE', 'PEN_TEAM_ROLE'])
+    ...mapState(appStore, ['config']),
+    ...mapState(authStore, ['isAuthorizedUser', 'ADVANCED_SEARCH_ROLE', 'VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE', 'EDIT_MACROS_ROLE', 'VIEW_GMP_REQUESTS_ROLE', 'VIEW_UMP_REQUESTS_ROLE', 'PROCESS_STUDENT_ROLE', 'VIEW_PEN_COORDINATOR_INFO_ROLE', 'NOMINAL_ROLL_ROLE', 'STAFF_ADMINISTRATION_ADMIN', 'HAS_STATS_ROLE', 'STUDENT_ANALYTICS_STUDENT_PROFILE', 'STUDENT_ANALYTICS_BATCH', 'EXCHANGE_ROLE', 'EXCHANGE_ACCESS_ROLE', 'PEN_TEAM_ROLE']),
+    items() {
+      return [
+        {
+          title: PAGE_TITLES.DASHBOARD,
+          link: 'home',
+          authorized: this.isAuthorizedUser
+        },
+        {
+          title: PAGE_TITLES.STUDENT_REQUESTS,
+          authorized: (this.VIEW_GMP_REQUESTS_ROLE || this.VIEW_UMP_REQUESTS_ROLE),
+          items: [
+            {
+              title: PAGE_TITLES.GMP,
+              link: REQUEST_TYPES.penRequest.label,
+              authorized: this.VIEW_GMP_REQUESTS_ROLE
+            },
+            {
+              title: PAGE_TITLES.UMP,
+              link: REQUEST_TYPES.studentRequest.label,
+              authorized: this.VIEW_UMP_REQUESTS_ROLE
+            }
+          ],
+        },
+        {
+          title: PAGE_TITLES.STUDENT_SEARCH,
+          link: 'basicSearch',
+          authorized: this.ADVANCED_SEARCH_ROLE
+        },
+        {
+          title: PAGE_TITLES.COMPARE_PENS,
+          link: 'compare',
+          authorized: this.PROCESS_STUDENT_ROLE
+        },
+        {
+          title: PAGE_TITLES.PEN_REQ_FILES,
+          link: 'penRequestBatch',
+          authorized: this.VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE
+        },
+        {
+          title: PAGE_TITLES.ARCHIVED_REQ_FILES,
+          link: 'archivedRequestBatch',
+          authorized: this.VIEW_EDIT_PEN_REQUEST_BATCH_FILES_ROLE
+        },
+        {
+          title: PAGE_TITLES.PEN_COORDINATORS,
+          link: 'penCoordinators',
+          newTab: true,
+          authorized: this.VIEW_PEN_COORDINATOR_INFO_ROLE
+        },
+        {
+          title: PAGE_TITLES.EXCHANGE,
+          authorized: this.EXCHANGE_ROLE,
+          items: [
+            {
+              title: 'PEN Team Inbox',
+              link: 'exchange_inbox_PEN_TEAM_ROLE',
+              authorized: this.PEN_TEAM_ROLE
+            }
+          ]
+        },
+        {
+          title: PAGE_TITLES.ADMINISTRATION,
+          authorized: this.STAFF_ADMINISTRATION_ADMIN,
+          items: [
+            {
+              title: 'Macro Management',
+              link: 'macros',
+              authorized: this.EDIT_MACROS_ROLE
+            },
+            {
+              title: 'EDX School Access',
+              link: 'exchangeAccess',
+              authorized: this.EXCHANGE_ACCESS_ROLE
+            },
+            {
+              title: 'EDX District Access',
+              link: 'exchangeDistrictAccess',
+              authorized: this.EXCHANGE_ACCESS_ROLE
+            }
+          ],
+        },
+        {
+          title: 'Institutions',
+          authorized: this.isAuthorizedUser,
+          items: [
+            {
+              title: 'Schools',
+              link: 'instituteSchoolList',
+              authorized: this.isAuthorizedUser
+            },
+            {
+              title: 'Districts',
+              link: 'instituteDistrict',
+              authorized: this.isAuthorizedUser
+            },
+            {
+              title: 'Authorities',
+              link: 'instituteAuthoritiesList',
+              authorized: this.isAuthorizedUser
+            }
+          ],
+        },
+        {
+          title: 'Nominal Roll',
+          link: 'nominal-roll',
+          authorized: this.NOMINAL_ROLL_ROLE
+        },
+        {
+          title: PAGE_TITLES.ANALYTICS,
+          authorized: this.HAS_STATS_ROLE,
+          items: [
+            {
+              title: 'Dashboard',
+              link: 'stats-dashboard',
+              authorized: this.HAS_STATS_ROLE
+            },
+            {
+              title: 'Get My PEN',
+              link: 'analytics-gmp-stats',
+              authorized: this.STUDENT_ANALYTICS_STUDENT_PROFILE
+            },
+            {
+              title: 'Update My PEN',
+              link: 'analytics-ump-stats',
+              authorized: this.STUDENT_ANALYTICS_STUDENT_PROFILE
+            },
+            {
+              title: 'New PENs',
+              link: 'new-pens',
+              authorized: this.STUDENT_ANALYTICS_BATCH
+            },
+            {
+              title: 'Merges',
+              link: 'merges',
+              authorized: this.STUDENT_ANALYTICS_BATCH
+            }
+          ],
+        }
+      ];
+    }
   },
   methods: {
     setActive(item) {
       let index = this.items.findIndex(obj => obj.title === item.title);
-      if(item.active) {
+      if (item.active) {
         this.items[index].active = false;
       } else {
         this.items.filter(obj => obj.items && obj.active).forEach(obj => obj.active = !obj.active);
@@ -252,41 +326,59 @@ export default {
 };
 </script>
 <style scoped>
-  #navBar {
+#navBar {
     z-index: 7;
-  }
-  .router {
+}
+
+.router {
     width: 100%;
-  }
-  .menuItem {
+}
+
+.menuItem {
     color: #003366;
-  }
-  .menuRow, .groupMenu {
+}
+
+.menuRow, .groupMenu {
     border-bottom: 2px solid #d2d2d2;
-  }
-  .router:hover .v-list-item__content, /deep/.v-list-group__header:hover .v-list-item__content, .router-link-exact-active {
+}
+
+.router:hover .v-list-item__content, /deep/ .v-list-group__header:hover .v-list-item__content, .router-link-exact-active {
     text-decoration: underline #003366;
-  }
-  .subMenuRow {
+}
+
+.subMenuRow {
     border-top: 2px solid #d2d2d2;
     border-left: 4px solid #FCBA19;
     background-color: white;
-  }
-  .menuRow /deep/ i {
+}
+
+.menuRow /deep/ i {
     color: #003366;
-  }
-  /deep/ .active {
+}
+
+/deep/ .active {
     border-left: 4px solid #FCBA19;
     background-color: white;
-  }
-  header /deep/ .v-toolbar__content {
-    padding-left: 0 !important;
-  }
-  /deep/ .v-list-group__header:before {
-    background-color: #E9EBEF;
-  }
+}
 
-  .nav-title {
+header /deep/ .v-toolbar__content {
+    padding-left: 0 !important;
+}
+
+/deep/ .v-list-group__header:before {
+    background-color: #E9EBEF;
+}
+
+:deep(.subMenuRow > div.v-list-item__append > i) {
+    display: none;
+}
+
+:deep(.subMenuRow > div.v-list-item__content > a > div > div.v-list-item__append > i) {
+    display: none;
+}
+
+.nav-title {
     font-size: 1.4rem;
-  }
+    color: white;
+}
 </style>

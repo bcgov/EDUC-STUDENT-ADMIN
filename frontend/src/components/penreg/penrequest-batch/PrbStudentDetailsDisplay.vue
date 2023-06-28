@@ -1,85 +1,128 @@
-  <template>
-  <v-container fluid class="fill-height pa-0 mb-4">
-
-    <div style="width: 100%;" :overlay=false>
+<template>
+  <v-container
+    fluid
+    class="fill-height pa-0 mb-4"
+  >
+    <div
+      style="width: 100%;"
+      :overlay="false"
+    >
       <div class="full-width">
         <v-row class="pt-0">
           <v-col cols="12 pt-0">
             <v-progress-linear
-                absolute
-                top
-                indeterminate
-                color="blue"
-                :active="loading"
-            ></v-progress-linear>
-            <div v-if="!loading && prbStudent" style="width: 100%;" :overlay=false>
-
+              absolute
+              top
+              indeterminate
+              color="blue"
+              :active="loading"
+            />
+            <div
+              v-if="!loading && prbStudent"
+              style="width: 100%;"
+              :overlay="false"
+            >
               <StudentDetailsInfoPanel
-                  :student.sync="prbStudent"
-                  key="info-panel"
-                  :studentDetailsCopy="prbStudentCopy"
-                  :validationWarningFields="validationWarningFields"
-                  :validationErrorFields="validationErrorFields"
-                  :hiddenSearchFields="hiddenSearchFields"
-                  :isFixableOrErrorStatus="isFixableOrErrorStatus"
-                  @modifySearchParams="modifySearchParams"
+                key="info-panel"
+                v-model:student="prbStudent"
+                :student-details-copy="prbStudentCopy"
+                :validation-warning-fields="validationWarningFields"
+                :validation-error-fields="validationErrorFields"
+                :hidden-search-fields="hiddenSearchFields"
+                :is-fixable-or-error-status="isFixableOrErrorStatus"
+                @modifySearchParams="modifySearchParams"
               >
-                <template v-slot:headerPanel="{ openSearchDemographicsModal }">
-                  <v-row no-gutters
-                         class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center"
-                         style="background-color:white;">
-                    <v-icon v-if="isUnarchived || isArchived" :dense="isUnarchived" color="#2E8540" class="mr-1">
+                <template #headerPanel="{ openSearchDemographicsModal }">
+                  <v-row
+                    no-gutters
+                    class="list-actions pt-4 pb-4 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3 d-flex align-center"
+                    style="background-color:white;"
+                  >
+                    <v-icon
+                      v-if="isUnarchived || isArchived"
+                      :dense="isUnarchived"
+                      color="#2E8540"
+                      class="mr-1"
+                    >
                       {{ isUnarchived ? 'fa-unlock' : 'mdi-package-up' }}
                     </v-icon>
                     <span class="mr-4 batch-title">
                       <strong>{{ seqNumberInBatch }} of {{
-                          totalNumberInBatch
-                        }} filtered</strong> | {{ title }}
+                        totalNumberInBatch
+                      }} filtered</strong> | {{ title }}
                     </span>
                     <PrbStudentStatusChip
-                        :prbStudent="prbStudent"
-                    ></PrbStudentStatusChip>
-                    <v-spacer></v-spacer>
-                    <PrimaryButton id="modify-search-action" :secondary="true" class="mx-2"
-                                   :disabled="disableModifySearch" text="Modify search"
-                                   @click.native="modifySearchDialog = true; openSearchDemographicsModal()"></PrimaryButton>
-                    <PrimaryButton id="issue-pen-action" class="mr-2" :disabled="disableIssueNewPen"
-                                   :loading="isIssuingNewPen" text="Issue new PEN"
-                                   @click.native="issueNewPen"></PrimaryButton>
+                      :prb-student="prbStudent"
+                    />
+                    <v-spacer />
+                    <PrimaryButton
+                      id="modify-search-action"
+                      :secondary="true"
+                      class="mx-2"
+                      :disabled="disableModifySearch"
+                      text="Modify search"
+                      :click-action="clickOpenSearch"
+                    />
+                    <PrimaryButton
+                      id="issue-pen-action"
+                      class="mr-2"
+                      :disabled="disableIssueNewPen"
+                      :loading="isIssuingNewPen"
+                      text="Issue new PEN"
+                      :click-action="issueNewPen"
+                    />
                     <InfoDialog
-                        :disabled="disableInfoReqBtn"
-                        @updateInfoRequested="updateInfoRequested"
-                        :text="prbStudent.infoRequest"
-                    ></InfoDialog>
+                      :disabled="disableInfoReqBtn"
+                      :text="prbStudent.infoRequest"
+                      @updateInfoRequested="updateInfoRequested"
+                    />
                   </v-row>
-                  <v-row no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white">
+                  <v-row
+                    no-gutters
+                    class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
+                    style="background-color:white"
+                  >
                     <span style="font-size: 1.25rem">
                       <strong>{{ prbStudent.mincode }} {{ batchFile.schoolName }}</strong>
                     </span>
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                     <span class="mr-6">
                       <span class="mr-3">Submitted PEN</span>
                       <span
-                          :class="{'pen-placeholder': !prbStudent.submittedPen}"><strong>{{
-                          formatPen(prbStudent.submittedPen)
-                        }}</strong></span>
+                        :class="{'pen-placeholder': !prbStudent.submittedPen}"
+                      ><strong>{{
+                        formatPen(prbStudent.submittedPen)
+                      }}</strong></span>
                     </span>
                     <span>
                       <span class="mr-3">Assigned PEN</span>
                       <span
-                          :class="{'pen-placeholder': !prbStudent.assignedPEN}"><strong>{{
-                          formatPen(prbStudent.assignedPEN)
-                        }}</strong></span>
+                        :class="{'pen-placeholder': !prbStudent.assignedPEN}"
+                      ><strong>{{
+                        formatPen(prbStudent.assignedPEN)
+                      }}</strong></span>
                     </span>
                   </v-row>
                 </template>
-                <template v-slot:footerPanel>
-                  <v-row v-if="prbStudent.infoRequest" no-gutters class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
-                         style="background-color:white;">
+                <template #footerPanel>
+                  <v-row
+                    v-if="prbStudent.infoRequest"
+                    no-gutters
+                    class="py-2 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
+                    style="background-color:white;"
+                  >
                     <v-col cols="12">
-                      <v-row no-gutters class="d-flex align-center">
+                      <v-row
+                        no-gutters
+                        class="d-flex align-center"
+                      >
                         <span class="mr-3"><strong>Info requested</strong></span>
-                        <v-btn id="clear-info-requested" icon color="#003366" @click="updateInfoRequested()">
+                        <v-btn
+                          id="clear-info-requested"
+                          icon
+                          color="#003366"
+                          @click="updateInfoRequested()"
+                        >
                           <v-icon>fa-times-circle</v-icon>
                         </v-btn>
                       </v-row>
@@ -91,40 +134,55 @@
                 </template>
               </StudentDetailsInfoPanel>
               <v-row v-if="isLoadingMatches">
-                <v-container fluid class="full-height">
-                  <article id="match-results-container" class="top-banner full-height">
-                    <v-row align="center" justify="center">
+                <v-container
+                  fluid
+                  class="full-height"
+                >
+                  <article
+                    id="match-results-container"
+                    class="top-banner full-height"
+                  >
+                    <v-row
+                      align="center"
+                      justify="center"
+                    >
                       <v-progress-circular
-                          :size="70"
-                          :width="7"
-                          color="primary"
-                          indeterminate
-                      ></v-progress-circular>
+                        :size="70"
+                        :width="7"
+                        color="primary"
+                        indeterminate
+                      />
                     </v-row>
                   </article>
                 </v-container>
               </v-row>
-              <v-row class="full-width" v-if="showPossibleMatch && !hasValidationIssues">
-                <PenMatchResultsTable :student="prbStudent" :is-comparison-required="true"
-                                      :is-pen-link="true"
-                                      :is-refresh-required="true"
-                                      :is-match-un-match="true"
-                                      :disableMatchUnmatch="disableMatchUnmatch"
-                                      :disableRefresh="disableRefresh"
-                                      :title="penMatchResultTitle"
-                                      :showMatchButton="showMatchButton"
-                                      :showUnmatchButton="showUnmatchButton"
-                                      :grayoutPossibleMatches="grayoutPossibleMatches"
-                                      @match-unmatch-student="matchUnmatchStudentToPRBStudent"
-                                      @refresh-match-results="refreshMatchResults"
-                                      :possible-match="possibleMatches"></PenMatchResultsTable>
+              <v-row
+                v-if="showPossibleMatch && !hasValidationIssues"
+                class="full-width"
+              >
+                <PenMatchResultsTable
+                  :student="prbStudent"
+                  :is-comparison-required="true"
+                  :is-pen-link="true"
+                  :is-refresh-required="true"
+                  :is-match-un-match="true"
+                  :disable-match-unmatch="disableMatchUnmatch"
+                  :disable-refresh="disableRefresh"
+                  :title="penMatchResultTitle"
+                  :show-match-button="showMatchButton"
+                  :show-unmatch-button="showUnmatchButton"
+                  :grayout-possible-matches="grayoutPossibleMatches"
+                  :possible-match="possibleMatches"
+                  @match-unmatch-student="matchUnmatchStudentToPRBStudent"
+                  @refresh-match-results="refreshMatchResults"
+                />
               </v-row>
             </div>
           </v-col>
         </v-row>
       </div>
       <ConfirmationDialog ref="confirmedStudentUnlinkConfirmationDialog">
-        <template v-slot:message>
+        <template #message>
           <v-col class="mt-n6">
             <v-row class="mb-3">
               This PEN must be merged to another PEN. Are you sure you want to unmatch this student?
@@ -132,17 +190,28 @@
           </v-col>
         </template>
       </ConfirmationDialog>
-      <ConfirmationDialog ref="confirmationDialog" contentClass="match-confirmation-dialog">
-        <template v-slot:message>
+      <ConfirmationDialog
+        ref="confirmationDialog"
+        content-class="match-confirmation-dialog"
+      >
+        <template #message>
           <v-col class="pt-0">
-            <v-row class="mb-3">There is <strong class="mx-1">{{ demogValidationResult.length }}</strong> questionable
+            <v-row class="mb-3">
+              There is <strong class="mx-1">{{ demogValidationResult.length }}</strong> questionable
               {{ `error${demogValidationResult.length > 1 ? 's' : ''}` }} with this PEN request:
             </v-row>
-            <v-row v-for="warning in demogValidationResult" :key="warning.description">
+            <v-row
+              v-for="warning in demogValidationResult"
+              :key="warning.description"
+            >
               <v-col class="pb-0">
                 <v-row>
                   <strong>{{ warning.uiFieldName }}</strong>
-                  <v-icon small color="#FCBA19" class="ml-2">
+                  <v-icon
+                    small
+                    color="#FCBA19"
+                    class="ml-2"
+                  >
                     fa-exclamation-circle
                   </v-icon>
                 </v-row>
@@ -157,12 +226,12 @@
 </template>
 
 <script>
-import {mapGetters, mapMutations, mapState} from 'vuex';
-import PrimaryButton from '../../util/PrimaryButton';
-import PrbStudentStatusChip from './PrbStudentStatusChip';
-import InfoDialog from './prb-student-details/InfoDialog';
+import {mapActions, mapState} from 'pinia';
+import PrimaryButton from '../../util/PrimaryButton.vue';
+import PrbStudentStatusChip from './PrbStudentStatusChip.vue';
+import InfoDialog from './prb-student-details/InfoDialog.vue';
 import ApiService from '../../../common/apiService';
-import StudentDetailsInfoPanel from '../../common/StudentDetailsInfoPanel';
+import StudentDetailsInfoPanel from '../../common/StudentDetailsInfoPanel.vue';
 import {
   PEN_REQ_BATCH_STUDENT_REQUEST_CODES,
   PRB_SAGA_NAMES,
@@ -174,7 +243,7 @@ import {
   PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER
 } from '@/utils/constants';
 import alertMixin from '../../../mixins/alertMixin';
-import PenMatchResultsTable from '@/components/common/PenMatchResultsTable';
+import PenMatchResultsTable from '@/components/common/PenMatchResultsTable.vue';
 import {
   constructPenMatchObjectFromStudent,
   deepCloneObject,
@@ -183,9 +252,14 @@ import {
   getDemogValidationResults, abbreviateCamelCase
 } from '@/utils/common';
 import {formatPen} from '@/utils/format';
-import ConfirmationDialog from '../../util/ConfirmationDialog';
+import ConfirmationDialog from '../../util/ConfirmationDialog.vue';
 import router from '../../../router';
 import Mousetrap from 'mousetrap';
+import {navigationStore} from '@/store/modules/setNavigation';
+import {notificationsStore} from '@/store/modules/notifications';
+import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
+import {penRequestBatchStudentSearchStore} from '@/store/modules/prbStudentSearch';
+import _ from 'lodash';
 
 export default {
   name: 'PrbStudentDetailsDisplay',
@@ -264,10 +338,9 @@ export default {
     }
   },
   computed: {
-    ...mapState('setNavigation', ['selectedIDs', 'currentRequest', 'requestType']),
-    ...mapGetters('setNavigation', ['title']),
-    ...mapState('notifications', ['notification']),
-    ...mapState('penRequestBatch', ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
+    ...mapState(navigationStore, ['selectedIDs', 'currentRequest', 'requestType', 'title']),
+    ...mapState(notificationsStore, ['notification']),
+    ...mapState(penRequestBatchStore, ['prbValidationFieldCodes', 'prbValidationIssueTypeCodes']),
     nextRoute() {
       return this.currentRequest >= this.total - 1 ? this.currentRequest : this.currentRequest + 1;
     },
@@ -346,7 +419,7 @@ export default {
   created() {
     //Go back to Files page if refresh button is pressed
     if(Object.keys(this.selectedIDs).length > 0) {
-      this.$store.dispatch('penRequestBatch/getCodes');
+      penRequestBatchStore().getCodes();
       this.initializeDetails();
     } else if(this.archived) {
       router.push({name: 'archivedRequestBatch'});
@@ -355,7 +428,7 @@ export default {
     }
 
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.clearNavigation();
   },
   mounted() {
@@ -369,9 +442,8 @@ export default {
     });
   },
   methods: {
-    ...mapMutations('setNavigation', ['clearNavigation']),
-    ...mapMutations('prbStudentSearch', ['setSelectedRecords']),
-    ...mapMutations('setNavigation', ['setCurrentRequest']),
+    ...mapActions(navigationStore, ['clearNavigation', 'setCurrentRequest']),
+    ...mapActions(penRequestBatchStudentSearchStore, ['setSelectedRecords']),
     clickNextBtn() {
       let route = this.nextRoute;
       this.setCurrentRequest(route);
@@ -426,11 +498,11 @@ export default {
       }
     },
     async retrieveBatchFile() {
-      const selectedFiles = this.$store.state[this.penRequestBatchStore].selectedFiles;
+      const selectedFiles = penRequestBatchStore().selectedFiles;
       if (!selectedFiles || selectedFiles.length === 0) {
         await this.retrieveSelectedFiles();
       }
-      this.batchFile = this.$store.state[this.penRequestBatchStore].selectedFiles.find(file => file.penRequestBatchID === this.prbStudent.penRequestBatchID);
+      this.batchFile = penRequestBatchStore().selectedFiles.find(file => file.penRequestBatchID === this.prbStudent.penRequestBatchID);
     },
     retrieveSelectedFiles() {
       const searchQueries = [
@@ -453,8 +525,13 @@ export default {
       };
       return ApiService.apiAxios.get(Routes['penRequestBatch'].FILES_URL, params)
         .then(response => {
-          response.data && this.$store.commit(`${this.penRequestBatchStore}/setSelectedFiles`, response.data.content);
+          const auStore = penRequestBatchStore();
+          response.data && auStore.setSelectedFiles(response.data.content);
         });
+    },
+    clickOpenSearch(){
+      this.modifySearchDialog = true;
+      this.openSearchDemographicsModal();
     },
     updateInfoRequested(infoRequest) {
       this.loading = true;

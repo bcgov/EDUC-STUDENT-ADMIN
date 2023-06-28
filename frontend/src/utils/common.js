@@ -5,8 +5,7 @@ import {filter, isPlainObject, sortBy} from 'lodash';
 import {getDateFormatter} from '@/utils/format';
 import ApiService from '../common/apiService';
 import {DateTimeFormatter, LocalDate} from '@js-joda/core';
-
-const clone = require('rfdc')();
+import rfdc from 'rfdc/default';
 
 export function constructPenMatchObjectFromStudent(student) {
   return {
@@ -82,7 +81,8 @@ function orderStudentsAccordingToPenMatch(array, order) {
 }
 
 export function deepCloneObject(objectToBeCloned) {
-  return clone(objectToBeCloned);
+  const cloned = rfdc(objectToBeCloned);
+  return cloned;
 }
 
 export function getDemogValidationResults(student) {

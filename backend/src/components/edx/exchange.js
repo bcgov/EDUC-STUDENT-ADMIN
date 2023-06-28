@@ -109,6 +109,7 @@ async function getExchangesPaginated(req, res) {
     });
   }
 
+  console.log('req.query' + JSON.stringify(req.query));
   let parsedParams = JSON.parse(req.query.searchParams);
 
   if (req.query.searchParams) {

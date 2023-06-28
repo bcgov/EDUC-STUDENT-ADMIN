@@ -117,5 +117,13 @@ export default {
   getAllActiveInstituteGradeCodes: getCodes(`${Routes.cache.GRADE_TYPES_URL}?active=true`),
   getAllActiveInstituteProvinceCodes: getCodes(`${Routes.cache.PROVINCES_URL}?active=true`),
   getAllActiveInstituteCountryCodes: getCodes(`${Routes.cache.COUNTRIES_URL}?active=true`),
-
+  async getConfig() {
+    try {
+      const response = await apiAxios.get(Routes.CONFIG);
+      return response;
+    } catch (e) {
+      console.log(`Failed to do get from Nodejs getConfig API - ${e}`);
+      throw e;
+    }
+  },
 };

@@ -1,23 +1,22 @@
 import ApiService from '@/common/apiService';
+import {defineStore} from 'pinia';
 
-export default {
+export const nominalRollStore = defineStore('nominalRoll', {
   namespaced: true,
-  state: {
+  state: () => ({
     fedProvSchoolCodes: [],
-  },
-  mutations: {
-    setFedProvSchoolCodes(state, payload) {
-      state.fedProvSchoolCodes = payload;
-    }
-  },
+  }),
   actions: {
-    async getCodes({ commit, state}) {
+    async setFedProvSchoolCodes(payload) {
+      this.fedProvSchoolCodes = payload;
+    },
+    async getCodes() {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        if(state.fedProvSchoolCodes.length === 0) {
+        if(this.fedProvSchoolCodes.length === 0) {
           const response = await ApiService.getFedProvSchoolCodes();
-          commit('setFedProvSchoolCodes', response.data);
+          await this.setFedProvSchoolCodes(response.data);
         }
       }
     },
   },
-};
+});

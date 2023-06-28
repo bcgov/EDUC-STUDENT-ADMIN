@@ -1,144 +1,210 @@
 <template>
-    <v-container fluid class="fill-height px-0 mb-4">
-        <v-row no-gutters class="list-actions pt-4 pb-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3" style="background-color:white;">
-          <v-col cols="1" class="mt-1">
-            <v-select
-              id="select-school-group"
-              :items="schoolGroups"
-              v-model="selectedSchoolGroup"
-              outlined
-              dense
-              color="#38598a"
-              append-icon="mdi-chevron-down"
-            ></v-select>
-          </v-col>
-          <v-col>
-            <v-form v-model="isValidSearchForm">
-              <v-sheet
-                class="mx-4 px-2 py-0 mb-2 d-flex flex-row flex-grow-1 align-center align-self-start"
-                color="rgba(0, 0, 0, 0.06)"
-                outlined
-                rounded
+  <v-container
+    fluid
+    class="fill-height px-0 mb-4"
+  >
+    <v-row
+      no-gutters
+      class="list-actions pt-4 pb-0 px-2 px-sm-2 px-md-3 px-lg-3 px-xl-3"
+      style="background-color:white;"
+    >
+      <v-col
+        cols="1"
+        class="mt-1"
+      >
+        <v-select
+          id="select-school-group"
+          v-model="selectedSchoolGroup"
+          :items="schoolGroups"
+          variant="outlined"
+          dense
+          color="#38598a"
+          append-icon="mdi-chevron-down"
+        />
+      </v-col>
+      <v-col>
+        <v-form v-model="isValidSearchForm">
+          <v-sheet
+            class="mx-4 px-2 py-0 mb-2 d-flex flex-row flex-grow-1 align-center align-self-start"
+            color="rgba(0, 0, 0, 0.06)"
+            outlined
+            rounded
+          >
+            <v-col class="pa-0">
+              <v-row
+                no-gutters
+                class="pa-0"
               >
-                <v-col class="pa-0">
-                    <v-row no-gutters class="pa-0">
-                      <v-col cols="3" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                        <v-text-field
-                            id='submissionNumber'
-                            v-model="searchInputParams.submissionNumber"
-                            tabindex="1"
-                            color="#003366"
-                            label="Submission #"
-                            maxlength="8"
-                            @keyup.enter="enterPushed()"
-                            v-on:input="searchHasValues"
-                            dense
-                            autofocus
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="3" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                        <v-text-field
-                            id='minCode'
-                            v-model="searchInputParams.mincode"
-                            tabindex="2"
-                            color="#003366"
-                            label="Mincode"
-                            maxlength="8"
-                            @keyup.enter="enterPushed()"
-                            v-on:input="searchHasValues"
-                            :rules="validateField(searchInputParams.minCode, isValidMincode, minCodeHint)"
-                            dense
-                            autofocus
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="3" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
-                        <v-text-field
-                            id='schoolName'
-                            v-model="searchInputParams.schoolName"
-                            tabindex="3"
-                            color="#003366"
-                            label="School Name"
-                            @keyup.enter="enterPushed()"
-                            v-on:input="searchHasValues"
-                            dense
-                        ></v-text-field>
-                      </v-col>
-                    </v-row>
-                  </v-col>
+                <v-col
+                  cols="3"
+                  class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3"
+                >
+                  <v-text-field
+                    id="submissionNumber"
+                    v-model="searchInputParams.submissionNumber"
+                    tabindex="1"
+                    color="#003366"
+                    label="Submission #"
+                    maxlength="8"
+                    dense
+                    autofocus
+                    @keyup.enter="enterPushed()"
+                    @input="searchHasValues"
+                  />
+                </v-col>
+                <v-col
+                  cols="3"
+                  class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3"
+                >
+                  <v-text-field
+                    id="minCode"
+                    v-model="searchInputParams.mincode"
+                    tabindex="2"
+                    color="#003366"
+                    label="Mincode"
+                    maxlength="8"
+                    :rules="validateField(searchInputParams.minCode, isValidMincode, minCodeHint)"
+                    dense
+                    autofocus
+                    @keyup.enter="enterPushed()"
+                    @input="searchHasValues"
+                  />
+                </v-col>
+                <v-col
+                  cols="3"
+                  class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3"
+                >
+                  <v-text-field
+                    id="schoolName"
+                    v-model="searchInputParams.schoolName"
+                    tabindex="3"
+                    color="#003366"
+                    label="School Name"
+                    dense
+                    @keyup.enter="enterPushed()"
+                    @input="searchHasValues"
+                  />
+                </v-col>
+              </v-row>
+            </v-col>
   
-                  <PrimaryButton id="refine-action" class="mr-2 mb-3" secondary text="Clear" @click.native="clearSearchParams"></PrimaryButton>
-                  <PrimaryButton id="search-action" :disabled="!isValidSearchForm || !searchEnabled"
-                                 :loading="searchLoading && searchEnabled" class="mr-0 mb-3" text="Search"
-                                 @click.native="search"></PrimaryButton>
-              </v-sheet> 
-            </v-form>
-          </v-col>
+            <PrimaryButton
+              id="refine-action"
+              class="mr-2 mb-3"
+              secondary
+              text="Clear"
+              :click-action="clearSearchParams"
+            />
+            <PrimaryButton
+              id="search-action"
+              :disabled="!isValidSearchForm || !searchEnabled"
+              :loading="searchLoading && searchEnabled"
+              class="mr-0 mb-3"
+              text="Search"
+              :click-action="search"
+            />
+          </v-sheet> 
+        </v-form>
+      </v-col>
           
-          <PrimaryButton id="view-list-action" class="mr-2 mt-1" :disabled="!filesSelected" @click.native="clickViewList" text="View List"></PrimaryButton>
-          <PrimaryButton id="view-details-action"
-                         class="mx-2 mt-1"
-                         :disabled="!filesSelected"
-                         :loading="loadingRequestIDs"
-                         @click.native="clickViewDetails"
-                         text="View Details"></PrimaryButton>
-          <v-menu offset-y>
-            <template v-slot:activator="{ on }">
-              <PrimaryButton id="archive-action" class="mt-1" :disabled="!filesSelected || loadingFiles" :on="on" text="Finish Submission" icon="mdi-chevron-down" largeIcon>
-              </PrimaryButton>
-            </template>
-            <v-list>
-              <v-list-item @click="archiveAndReturnFixedOnly">
-                <v-list-item-title>Return Except Fix</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="archiveAndReturnAll">
-                <v-list-item-title>Return With Fix</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="archiveOnly">
-                <v-list-item-title>Archive Only</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+      <PrimaryButton
+        id="view-list-action"
+        class="mr-2 mt-1"
+        :disabled="!filesSelected"
+        :click-action="clickViewList"
+        text="View List"
+      />
+      <PrimaryButton
+        id="view-details-action"
+        class="mx-2 mt-1"
+        :disabled="!filesSelected"
+        :loading="loadingRequestIDs"
+        :click-action="clickViewDetails"
+        text="View Details"
+      />
+      <v-menu offset-y>
+        <template #activator="{ on }">
+          <PrimaryButton
+            id="archive-action"
+            class="mt-1"
+            :disabled="!filesSelected || loadingFiles"
+            :on="on"
+            text="Finish Submission"
+            icon="mdi-chevron-down"
+            large-icon
+          />
+        </template>
+        <v-list>
+          <v-list-item @click="archiveAndReturnFixedOnly">
+            <v-list-item-title>Return Except Fix</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="archiveAndReturnAll">
+            <v-list-item-title>Return With Fix</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="archiveOnly">
+            <v-list-item-title>Archive Only</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </v-row>
+    <v-row
+      no-gutters
+      class="py-2"
+      style="background-color:white;"
+    >
+      <PenRequestBatchList
+        v-model:filters="filters"
+        :school-group="selectedSchoolGroup"
+        :search-params="searchParams"
+        :loading-files="loadingFiles"
+        :in-progress-saga-i-ds="inProgressSagaIDs"
+        @table-load="searchLoading=false"
+      />
+    </v-row>
+    <ConfirmationDialog ref="fixableConfirmationDialog">
+      <template #title="{cancel}">
+        <v-row
+          justify="space-between"
+          no-gutters
+        >
+          <v-col class="pl-4 pt-4">
+            {{ archiveAndReturnMessage }}<br><br>
+            {{ archiveAndReturnSubtext }}
+          </v-col>
+          <v-btn
+            id="closeBtn"
+            text
+            icon
+            :click-action="cancel"
+          >
+            <v-icon color="#38598A">
+              mdi-close
+            </v-icon>
+          </v-btn>
         </v-row>
-        <v-row no-gutters class="py-2" style="background-color:white;">
-          <PenRequestBatchList
-            :schoolGroup="selectedSchoolGroup"
-            :searchParams="searchParams"
-            :filters.sync="filters"
-            :loadingFiles="loadingFiles"
-            :inProgressSagaIDs="inProgressSagaIDs"
-            @table-load="searchLoading=false"
-          ></PenRequestBatchList>
-        </v-row>
-      <ConfirmationDialog ref="fixableConfirmationDialog">
-          <template v-slot:title="{cancel}">
-            <v-row justify="space-between" no-gutters>
-              <v-col class="pl-4 pt-4">
-                {{ archiveAndReturnMessage }}<br><br>
-                {{ archiveAndReturnSubtext }}
-              </v-col>
-              <v-btn id="closeBtn" text icon @click.native="cancel">
-                <v-icon color="#38598A">mdi-close</v-icon>
-              </v-btn>
-            </v-row>
-          </template>
-        </ConfirmationDialog>
-      <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>
-    </v-container>
+      </template>
+    </ConfirmationDialog>
+    <ConfirmationDialog ref="confirmationDialog" />
+  </v-container>
 </template>
 
 <script>
 import { PEN_REQ_BATCH_STUDENT_REQUEST_CODES, Routes } from '@/utils/constants';
-import { mapState, mapMutations } from 'vuex';
-import PenRequestBatchList from './PenRequestBatchList';
-import PrimaryButton from '../../util/PrimaryButton';
+import { mapState, mapActions } from 'pinia';
+import PenRequestBatchList from './PenRequestBatchList.vue';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import router from '../../../router';
 import alertMixin from '../../../mixins/alertMixin';
-import ConfirmationDialog from '../../util/ConfirmationDialog';
+import ConfirmationDialog from '../../util/ConfirmationDialog.vue';
 import pluralize from 'pluralize';
 import ApiService from '@/common/apiService';
 import Mousetrap from 'mousetrap';
 import {deepCloneObject} from '@/utils/common';
 import searchMixin from '@/mixins/searchMixin';
+import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
+import {appStore} from '@/store/modules/app';
+import {penRequestBatchStudentSearchStore} from '@/store/modules/prbStudentSearch';
+import {navigationStore} from '@/store/modules/setNavigation';
 
 export default {
   name: 'PenRequestBatchDisplay',
@@ -166,14 +232,14 @@ export default {
     };
   },
   computed: {
-    ...mapState('penRequestBatch', ['selectedFiles', 'prbStudentStatusFilters', 'currentBatchFileSearchParams']),
-    ...mapState('app', ['schoolApiMincodeSchoolNames']),
+    ...mapState(penRequestBatchStore, ['selectedFiles', 'prbStudentStatusFilters', 'currentBatchFileSearchParams']),
+    ...mapState(appStore, ['schoolApiMincodeSchoolNames']),
     selectedSchoolGroup: {
       get(){
-        return this.$store.state['penRequestBatch'].selectedSchoolGroup;
+        return penRequestBatchStore().selectedSchoolGroup;
       },
       set(newSchoolGroup){
-        return this.$store.state['penRequestBatch'].selectedSchoolGroup = newSchoolGroup;
+        return penRequestBatchStore().setSelectedSchoolGroup(newSchoolGroup);
       }
     },
     filesSelected() {
@@ -205,9 +271,9 @@ export default {
     Mousetrap.reset();
   },
   methods: {
-    ...mapMutations('prbStudentSearch', ['clearPrbStudentSearchState']),
-    ...mapMutations('penRequestBatch', ['setSelectedFiles']),
-    ...mapMutations('setNavigation', ['setSelectedIDs', 'setCurrentRequest']),
+    ...mapActions(penRequestBatchStudentSearchStore, ['clearPrbStudentSearchState']),
+    ...mapActions(penRequestBatchStore, ['setSelectedFiles']),
+    ...mapActions(navigationStore, ['setSelectedIDs', 'setCurrentRequest']),
     removeFilter(index) {
       this.filters.splice(index, 1);
     },

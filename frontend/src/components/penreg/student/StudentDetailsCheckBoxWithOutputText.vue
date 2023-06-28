@@ -2,39 +2,42 @@
   <v-row no-gutters>
     <v-col :cols="checkBoxSpan">
       <v-checkbox
-          :disabled="!fieldModel || disabled"
-          style="margin-top: -0.4em"
-          dense
-          color="#606060"
-          v-model="checkedFieldModel"
-          @change="handleOnChange"
-      ></v-checkbox>
+        v-model="checkedFieldModel"
+        :disabled="!fieldModel || disabled"
+        style="margin-top: -0.4em"
+        dense
+        color="#606060"
+        @update:model-value="handleOnChange"
+      />
     </v-col>
-    <v-col class="textFieldColumn" :cols="colspan">
+    <v-col
+      class="textFieldColumn"
+      :cols="colspan"
+    >
       <v-text-field
-          style="margin-top: 0.2em"
-          v-if="!isTextArea"
-          :disabled="!fieldModel || disabled"
-          :value="fieldModel"
-          :class="['onhoverEdit', 'customNoBorder', 'onhoverPad']"
-          :id="name"
-          dense
-          readonly
-      ></v-text-field>
+        v-if="!isTextArea"
+        :id="name"
+        style="margin-top: 0.2em"
+        :disabled="!fieldModel || disabled"
+        :value="fieldModel"
+        :class="['onhoverEdit', 'customNoBorder', 'onhoverPad']"
+        dense
+        readonly
+      />
       <v-textarea
-          v-if="isTextArea"
-          :disabled="!fieldModel || disabled"
-          :value="fieldModel"
-          :id="name"
-          style="margin-top: 0.2em"
-          :class="['onhoverEdit', 'customNoBorder', 'onhoverPad']"
-          color="#000000"
-          maxlength="4000"
-          dense
-          readonly
-          rows="3"
-          no-resize
-      ></v-textarea>
+        v-if="isTextArea"
+        :id="name"
+        :disabled="!fieldModel || disabled"
+        :value="fieldModel"
+        style="margin-top: 0.2em"
+        :class="['onhoverEdit', 'customNoBorder', 'onhoverPad']"
+        color="#000000"
+        maxlength="4000"
+        dense
+        readonly
+        rows="3"
+        no-resize
+      />
     </v-col>
   </v-row>
 </template>
@@ -82,11 +85,6 @@ export default {
       STUDENT_MERGE_FIELD_PREFIX
     };
   },
-  beforeMount() {
-    this.fieldModel = this.model;
-    this.checkedFieldModel = this.checked;
-    this.fieldDisabled = this.disabled;
-  },
   watch: {
     model(newValue) {
       this.fieldModel = newValue;
@@ -94,6 +92,11 @@ export default {
     checked(newValue) {
       this.checkedFieldModel = newValue;
     },
+  },
+  beforeMount() {
+    this.fieldModel = this.model;
+    this.checkedFieldModel = this.checked;
+    this.fieldDisabled = this.disabled;
   },
   methods: {
     handleOnChange(checked) {

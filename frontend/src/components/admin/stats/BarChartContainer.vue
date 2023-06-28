@@ -1,12 +1,20 @@
 <template>
   <div>
-    <v-card v-if="chartData && labels" class="mx-auto px-4 pt-4">
-      <bar-chart ref='chart' :chartData="data" :options="options" :styles="styles"></bar-chart>
+    <v-card
+      v-if="chartData && labels"
+      class="mx-auto px-4 pt-4"
+    >
+      <bar-chart
+        ref="chart"
+        :chart-data="data"
+        :options="options"
+        :styles="styles"
+      />
       <v-card-text class="v-card-text--offset pt-0">
         <div class="text-h6 font-weight-light mb-2">
           {{ title }}
         </div>
-        <v-divider class="my-2"></v-divider>
+        <v-divider class="my-2" />
         <v-icon
           class="mr-2"
           small
@@ -20,7 +28,8 @@
 </template>
 
 <script>
-import BarChart from '../../util/charts/BarChart';
+import BarChart from '../../util/charts/BarChart.vue';
+
 export default {
   name: 'BarChartContainer',
   components: {
@@ -61,27 +70,31 @@ export default {
   data: () => ({
     data: null,
     options: {
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
       maintainAspectRatio: false,
       scales: {
-        yAxes: [{
+        y: {
+          beginAtZero: true,
           ticks: {
-            beginAtZero: true
+            max: 1
           },
           gridLines: {
             display: true
           }
-        }],
-        xAxes: [{
+        },
+        x: {
+          beginAtZero: true,
           ticks: {
-            beginAtZero: true
+            max: 1
           },
           gridLines: {
             display: false
           }
-        }]
-      },
-      legend: {
-        display: false,
+        }
       },
     },
     styles: {
@@ -91,29 +104,20 @@ export default {
   }),
   computed: {
     average() {
-      return Math.round(this.chartData.reduce((partial_sum, a) => partial_sum + a,0) / this.chartData.length);
+      return Math.round(this.chartData.reduce((partial_sum, a) => partial_sum + a, 0) / this.chartData.length);
     },
     total() {
-      return this.chartData.slice(-12).reduce((partial_sum, a) => partial_sum + a,0);
+      return this.chartData.slice(-12).reduce((partial_sum, a) => partial_sum + a, 0);
     },
     description() {
       let desc = `There are ${this.average} ${this.title.toLowerCase()} on average`;
-      if(this.annualTotal) {
+      if (this.annualTotal) {
         desc += ` and a total of ${this.total} ${this.dataType.toLowerCase()} in the last 12 months`;
       }
       return desc;
     }
   },
-  methods: {
-    setHeightAndScale() {
-      this.styles.height = this.heightValue;
-      this.styles.position = 'relative';
-      let max = Math.max(...this.chartData);
-      this.options.scales.yAxes[0].ticks.max = max + (max * 0.2);
-      this.options.scales.yAxes[0].display = this.displayYAxis;
-    }
-  },
-  mounted() {
+  created() {
     this.data = {
       labels: this.labels,
       datasets: [
@@ -136,6 +140,15 @@ export default {
       ]
     };
     this.setHeightAndScale();
+  },
+  methods: {
+    setHeightAndScale() {
+      this.styles.height = this.heightValue;
+      this.styles.position = 'relative';
+      let max = Math.max(...this.chartData);
+      this.options.scales.y.ticks.max = max + (max * 0.2);
+      this.options.scales.y.display = this.displayYAxis;
+    }
   }
 };
 </script>

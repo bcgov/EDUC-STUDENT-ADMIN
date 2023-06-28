@@ -1,10 +1,10 @@
 <template>
   <div class="flex">
     <v-progress-linear
-            indeterminate
-            color="blue"
-            :active="loadingDemographics"
-    ></v-progress-linear>
+      indeterminate
+      color="blue"
+      :active="loadingDemographics"
+    />
     <v-alert
       :value="showDemographics"
       width="100%"
@@ -12,44 +12,154 @@
       transition="scale-transition"
       class="bootstrap-success"
     >
-      <v-row no-gutters class="px-2">
-        <v-col cols="12" xl="1" lg="1" md="1" sm="1">
-          <p class="mb-0">PEN:</p>
+      <v-row
+        no-gutters
+        class="px-2"
+      >
+        <v-col
+          cols="12"
+          xl="1"
+          lg="1"
+          md="1"
+          sm="1"
+        >
+          <p class="mb-0">
+            PEN:
+          </p>
         </v-col>
-        <v-col cols="12" xl="11" lg="11" md="11" sm="11">
-          <p id="recordedPEN" class="mb-0"><strong>{{ this.request.recordedPen }}</strong></p>
-        </v-col>
-      </v-row>
-      <v-row no-gutters class="px-2">
-        <v-col cols="12" xl="1" lg="1" md="1" sm="1">
-          <p class="mb-0">First:</p>
-        </v-col>
-        <v-col cols="12" xl="11" lg="11" md="11" sm="11">
-          <p id="legalFirstName" class="mb-0"><strong>{{ this.student.legalFirstName || ''}}</strong></p>
-        </v-col>
-      </v-row>
-      <v-row no-gutters class="px-2">
-        <v-col cols="12" xl="1" lg="1" md="1" sm="1">
-          <p class="mb-0">Middle:</p>
-        </v-col>
-        <v-col cols="12" xl="11" lg="11" md="11" sm="11">
-          <p id="legalMiddleName" class="mb-0"><strong>{{ this.student.legalMiddleNames || ''}}</strong></p>
-        </v-col>
-      </v-row>
-        <v-row no-gutters class="px-2">
-        <v-col cols="12" xl="1" lg="1" md="1" sm="1">
-          <p class="mb-0">Last:</p>
-        </v-col>
-        <v-col cols="12" xl="11" lg="11" md="11" sm="11">
-          <p id="legalLastName" class="mb-0"><strong>{{ this.student.legalLastName || ''}}</strong></p>
+        <v-col
+          cols="12"
+          xl="11"
+          lg="11"
+          md="11"
+          sm="11"
+        >
+          <p
+            id="recordedPEN"
+            class="mb-0"
+          >
+            <strong>{{ request.recordedPen }}</strong>
+          </p>
         </v-col>
       </v-row>
-      <v-row no-gutters class="px-2">
-        <v-col cols="12" xl="1" lg="1" md="1" sm="1">
-          <p class="mb-0">DOB:</p>
+      <v-row
+        no-gutters
+        class="px-2"
+      >
+        <v-col
+          cols="12"
+          xl="1"
+          lg="1"
+          md="1"
+          sm="1"
+        >
+          <p class="mb-0">
+            First:
+          </p>
         </v-col>
-        <v-col cols="12" xl="11" lg="11" md="11" sm="11">
-          <p id="studentDOB" class="mb-0"><strong>{{ formatDob(this.student.dob,'uuuu-MM-dd', 'uuuu/MM/dd') }}</strong></p>
+        <v-col
+          cols="12"
+          xl="11"
+          lg="11"
+          md="11"
+          sm="11"
+        >
+          <p
+            id="legalFirstName"
+            class="mb-0"
+          >
+            <strong>{{ student.legalFirstName || '' }}</strong>
+          </p>
+        </v-col>
+      </v-row>
+      <v-row
+        no-gutters
+        class="px-2"
+      >
+        <v-col
+          cols="12"
+          xl="1"
+          lg="1"
+          md="1"
+          sm="1"
+        >
+          <p class="mb-0">
+            Middle:
+          </p>
+        </v-col>
+        <v-col
+          cols="12"
+          xl="11"
+          lg="11"
+          md="11"
+          sm="11"
+        >
+          <p
+            id="legalMiddleName"
+            class="mb-0"
+          >
+            <strong>{{ student.legalMiddleNames || '' }}</strong>
+          </p>
+        </v-col>
+      </v-row>
+      <v-row
+        no-gutters
+        class="px-2"
+      >
+        <v-col
+          cols="12"
+          xl="1"
+          lg="1"
+          md="1"
+          sm="1"
+        >
+          <p class="mb-0">
+            Last:
+          </p>
+        </v-col>
+        <v-col
+          cols="12"
+          xl="11"
+          lg="11"
+          md="11"
+          sm="11"
+        >
+          <p
+            id="legalLastName"
+            class="mb-0"
+          >
+            <strong>{{ student.legalLastName || '' }}</strong>
+          </p>
+        </v-col>
+      </v-row>
+      <v-row
+        no-gutters
+        class="px-2"
+      >
+        <v-col
+          cols="12"
+          xl="1"
+          lg="1"
+          md="1"
+          sm="1"
+        >
+          <p class="mb-0">
+            DOB:
+          </p>
+        </v-col>
+        <v-col
+          cols="12"
+          xl="11"
+          lg="11"
+          md="11"
+          sm="11"
+        >
+          <p
+            id="studentDOB"
+            class="mb-0"
+          >
+            <strong>{{ formatDob(student.dob,'uuuu-MM-dd', 'uuuu/MM/dd') }}</strong>
+          </p>
         </v-col>
       </v-row>
     </v-alert>
@@ -61,7 +171,7 @@ import ApiService from '../../common/apiService';
 import { Routes, Statuses } from '../../utils/constants';
 import {formatDob} from '@/utils/format';
 export default {
-  name: 'studentDemographicsCard',
+  name: 'StudentDemographicsCard',
   props: {
     request: {
       type: Object,
@@ -84,9 +194,6 @@ export default {
         genderCode: null
       },
     };
-  },
-  methods: {
-    formatDob
   },
   computed: {
     statusCodes() {
@@ -113,6 +220,9 @@ export default {
         this.loadingDemographics = false;
       }
     }
+  },
+  methods: {
+    formatDob
   }
 };
 </script>

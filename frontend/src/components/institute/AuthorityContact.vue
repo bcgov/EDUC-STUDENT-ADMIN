@@ -5,54 +5,112 @@
         <v-row no-gutters>
           <v-col>
             <v-row no-gutters>
-              <v-col cols="8" class="justify-start">
-                <v-icon class="pb-1" small :color="getStatusColor(contact)" left dark>
+              <v-col cols="10">
+                <v-icon
+                  class="pb-1"
+                  size="x-small"
+                  :color="getStatusColor(contact)"
+                  left
+                  dark
+                >
                   mdi-circle
                 </v-icon>
-                <strong style="word-break: break-word;" id="authorityContactName">{{ formatContactName(contact) }}</strong>
+                <strong
+                  id="authorityContactName"
+                  style="word-break: break-word;"
+                >{{
+                  formatContactName(contact)
+                }}</strong>
               </v-col>
-              <v-col cols="4" class="d-flex justify-end">
-                <v-btn id="editContactButton"
-                       title="Edit"
-                       color="white"
-                       width="0.5em"
-                       min-width="0.5em"
-                       depressed
-                       v-if="canEditAuthorityContact"
-                       @click="callDoShowEditAuthorityContactForm()"
-                       small
-                       class="mr-2"
+              <v-col
+                cols="2"
+                class="d-flex justify-end"
+              >
+                <v-btn
+                  v-if="canEditAuthorityContact"
+                  id="editContactButton"
+                  title="Edit"
+                  color="white"
+                  width="0.5em"
+                  variant="flat"
+                  min-width="0.5em"
+                  small
+                  class="mr-2"
+                  @click="callDoShowEditAuthorityContactForm()"
                 >
-                  <v-icon size="x-large" color="#003366" dark>mdi-pencil</v-icon>
+                  <v-icon
+                    size="x-large"
+                    color="#003366"
+                    dark
+                  >mdi-pencil</v-icon>
                 </v-btn>
-                <v-btn id="removeContactButton"
-                       title="Remove"
-                       color="white"
-                       width="0.5em"
-                       min-width="0.5em"
-                       depressed
-                       v-if="canEditAuthorityContact"
-                       @click="callShowRemoveContactConfirmation"
-                       small
-                       class="mr-2"
+                <v-btn
+                  v-if="canEditAuthorityContact"
+                  id="removeContactButton"
+                  title="Remove"
+                  color="white"
+                  width="0.5em"
+                  variant="flat"
+                  min-width="0.5em"
+                  small
+                  class="mr-2"
+                  @click="callShowRemoveContactConfirmation"
                 >
-                  <v-icon size="x-large" color="#003366" dark>mdi-trash-can-outline</v-icon>
+                  <v-icon
+                    size="x-large"
+                    color="#003366"
+                    dark
+                  >mdi-trash-can-outline</v-icon>
                 </v-btn>
               </v-col>
             </v-row>
             <v-row no-gutters>
-              <v-col v-if="!contact.email && !contact.phoneNumber" cols="12" class="pt-1">
-                <p class="missing-highlight"><v-icon size="x-large" color="#ff5252" dark>mdi-alert</v-icon> Missing contact details</p>
-                <a class="editField" @click="callDoShowEditAuthorityContactForm()" v-if="canEditAuthorityContact">+ email or phone</a>
+              <v-col
+                v-if="!contact.email && !contact.phoneNumber"
+                cols="12"
+                class="pt-1"
+              >
+                <p class="missing-highlight"><v-icon
+                  size="x-large"
+                  color="#ff5252"
+                  dark
+                >mdi-alert</v-icon> Missing contact details</p>
+                <a
+                  v-if="canEditAuthorityContact"
+                  class="editField"
+                  @click="callDoShowEditAuthorityContactForm()"
+                >+ email or phone</a>
               </v-col>
-              <v-col v-if="contact.email" cols="12" class="pt-1">
-                <span id="contactEmail"> {{ contact.email }}</span>
+              <v-col
+                v-if="contact.email"
+                cols="12"
+                class="pt-1"
+              >
+                <span id="contactEmail"> {{
+                  contact.email
+                }}</span>
               </v-col>
-              <v-col v-if="contact.phoneNumber" cols="12" class="pt-1">
-                <span id="contactPhoneNumber">{{ formatPhoneNumber(contact.phoneNumber) }}</span><span v-if="contact.phoneExtension"> ext. {{contact.phoneExtension}}</span>
+              <v-col
+                v-if="contact.phoneNumber"
+                cols="12"
+                class="pt-1"
+              >
+                <span id="contactPhoneNumber">{{
+                  formatPhoneNumber(contact.phoneNumber)
+                }}</span><span v-if="contact.phoneExtension"> ext. {{
+                  contact.phoneExtension
+                }}</span>
               </v-col>
-              <v-col cols="12" class="pt-1" v-if="contact.alternatePhoneNumber">
-                <span id="contactAlternatePhoneNumber">{{ formatPhoneNumber(contact.alternatePhoneNumber) }} (alt.)</span> <span v-if="contact.alternatePhoneExtension"> ext. {{contact.alternatePhoneExtension}}</span>
+              <v-col
+                v-if="contact.alternatePhoneNumber"
+                cols="12"
+                class="pt-1"
+              >
+                <span id="contactAlternatePhoneNumber">{{
+                  formatPhoneNumber(contact.alternatePhoneNumber)
+                }} (alt.)</span> <span v-if="contact.alternatePhoneExtension"> ext. {{
+                  contact.alternatePhoneExtension
+                }}</span>
               </v-col>
             </v-row>
           </v-col>
@@ -60,17 +118,31 @@
       </v-card-title>
       <v-card-text class="pt-2">
         <v-row no-gutters>
-          <v-col cols="12" class="pt-1" v-if="contact.expiryDate">
+          <v-col
+            v-if="contact.expiryDate"
+            cols="12"
+            class="pt-1"
+          >
             <v-icon aria-hidden="false">
               mdi-calendar-today
             </v-icon>
-            <span id="contactEffectiveAndExpiryDate"> {{ formatDate(contact.effectiveDate) }} - {{ formatDate(contact.expiryDate)}}</span>
+            <span id="contactEffectiveAndExpiryDate"> {{
+              formatDate(contact.effectiveDate)
+            }} - {{
+              formatDate(contact.expiryDate)
+            }}</span>
           </v-col>
-          <v-col cols="12" class="pt-1" v-else>
+          <v-col
+            v-else
+            cols="12"
+            class="pt-1"
+          >
             <v-icon aria-hidden="false">
               mdi-calendar-today
             </v-icon>
-            <span id="contactEffectiveDate"> {{ formatDate(contact.effectiveDate) }}</span>
+            <span id="contactEffectiveDate"> {{
+              formatDate(contact.effectiveDate)
+            }}</span>
           </v-col>
         </v-row>
       </v-card-text>
@@ -111,18 +183,17 @@ export default {
 </script>
 <style scoped>
 .editField {
-  font-size: 16px;
-  color: rgb(0, 51, 102);
-  vertical-align: super;
+    font-size: 16px;
+    color: rgb(0, 51, 102);
 }
 
 .editField:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .missing-highlight {
-  color: #ff5252;
-  word-break: break-word;
-  font-size: 16px;
+    color: #ff5252;
+    word-break: break-word;
+    font-size: 16px;
 }
 </style>

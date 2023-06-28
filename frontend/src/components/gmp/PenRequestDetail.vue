@@ -3,22 +3,20 @@
     title="GetMyPen Request Details"
     :prep-put="prepPut"
     :request-completed="requestCompleted"
-    :requestId="requestId"
-    :requestType="requestType"
+    :request-id="requestId"
+    :request-type="requestType"
   >
-    <template v-slot:demographics="{ request }">
+    <template #demographics="{ request }">
       <PenDemographicsCard
         :request="request"
-      >
-      </PenDemographicsCard>
+      />
     </template>
-    <template v-slot:request="{ request }">
+    <template #request="{ request }">
       <PenRequestCard
         :request="request"
-      >
-      </PenRequestCard>
+      />
     </template>
-    <template v-slot:actions="{ activeTab, request, enableActions, beforeSubmit, submitted, switchLoading}">
+    <template #actions="{ activeTab, request, enableActions, beforeSubmit, submitted, switchLoading}">
       <PenRequestActions
         :active-tab="activeTab"
         :request="request"
@@ -27,32 +25,31 @@
         :before-submit="beforeSubmit"
         :submitted="submitted"
         :switch-loading="switchLoading"
-      >
-      </PenRequestActions>
+      />
     </template>
   </RequestDetail>
 </template>
 
 <script>
-import RequestDetail from '../RequestDetail';
-import PenDemographicsCard from './PenDemographicsCard';
-import PenRequestCard from './PenRequestCard';
-import PenRequestActions from './PenRequestActions';
+import RequestDetail from '../RequestDetail.vue';
+import PenDemographicsCard from './PenDemographicsCard.vue';
+import PenRequestCard from './PenRequestCard.vue';
+import PenRequestActions from './PenRequestActions.vue';
 import { REQUEST_TYPES } from '../../utils/constants';
 
 export default {
-  name: 'penRequestDetail',
-  props: {
-    requestId: {
-      type: String,
-      required: true
-    }
-  },
+  name: 'PenRequestDetail',
   components: {
     RequestDetail,
     PenDemographicsCard,
     PenRequestCard,
     PenRequestActions,
+  },
+  props: {
+    requestId: {
+      type: String,
+      required: true
+    }
   },
   data () {
     return {

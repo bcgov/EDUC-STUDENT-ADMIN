@@ -1,71 +1,268 @@
 <template>
-  <v-container fluid class="fill-height mb-10 px-16">
-    <v-col cols="12" class="fill-height pb-0">
-      <ImageRenderer  :request-type="requestType" :dialog="imageRendererDialog" @closeDialog="closeDialog" :request-id="requestId" :image-id="imageId"></ImageRenderer>
+  <v-container
+    fluid
+    class="fill-height mb-10 px-16"
+  >
+    <v-col
+      cols="12"
+      class="fill-height pb-0"
+    >
+      <ImageRenderer
+        :request-type="requestType"
+        :dialog="imageRendererDialog"
+        :request-id="requestId"
+        :image-id="imageId"
+        @closeDialog="closeDialog"
+      />
       <v-row class="flex-grow-0 pb-5">
-        <v-card height="100%" width="100%" elevation=0>
-          <v-card-title class="pb-0 px-0">{{title}}</v-card-title>
-          <v-divider/>
+        <v-card
+          height="100%"
+          width="100%"
+          elevation="0"
+        >
+          <v-card-title class="pb-0 px-0">
+            {{ title }}
+          </v-card-title>
+          <v-divider />
           <v-progress-linear
-                  indeterminate
-                  color="blue"
-                  :active="loadingPen || loadingClaimAction"
-          ></v-progress-linear>
+            indeterminate
+            color="blue"
+            :active="loadingPen || loadingClaimAction"
+          />
         </v-card>
       </v-row>
       <v-row>
-        <v-col cols="12" xl="6" lg="6" md="6" sm="6" class="py-0 pl-0">
-          <v-card height="100%" width="100%" elevation=0>
+        <v-col
+          cols="12"
+          xl="6"
+          lg="6"
+          md="6"
+          sm="6"
+          class="py-0 pl-0"
+        >
+          <v-card
+            height="100%"
+            width="100%"
+            elevation="0"
+          >
             <v-row no-gutters>
-              <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                <p class="mb-2">Status:</p>
+              <v-col
+                cols="12"
+                xl="3"
+                lg="3"
+                md="3"
+                sm="3"
+              >
+                <p class="mb-2">
+                  Status:
+                </p>
               </v-col>
-              <v-col v-if="this.request[requestStatusCodeName] === this.statusCodes.FIRST_REVIEW || this.request[requestStatusCodeName] === this.statusCodes.SECOND_REVIEW" cols="12" xl="9" lg="9" md="9" sm="9">
-                <p id="requestStatus" class="mb-2 green--text"><strong>{{this.request[requestStatusCodeLabelName]}}</strong></p>
+              <v-col
+                v-if="request[requestStatusCodeName] === statusCodes.FIRST_REVIEW || request[requestStatusCodeName] === statusCodes.SECOND_REVIEW"
+                cols="12"
+                xl="9"
+                lg="9"
+                md="9"
+                sm="9"
+              >
+                <p
+                  id="requestStatus"
+                  class="mb-2 green--text"
+                >
+                  <strong>{{ request[requestStatusCodeLabelName] }}</strong>
+                </p>
               </v-col>
-              <v-col v-else-if="this.request[requestStatusCodeName] === this.statusCodes.RETURNED" cols="12" xl="9" lg="9" md="9" sm="9">
-                <p id="requestStatus" class="mb-2 orange--text"><strong>{{this.request[requestStatusCodeLabelName]}}</strong></p>
+              <v-col
+                v-else-if="request[requestStatusCodeName] === statusCodes.RETURNED"
+                cols="12"
+                xl="9"
+                lg="9"
+                md="9"
+                sm="9"
+              >
+                <p
+                  id="requestStatus"
+                  class="mb-2 orange--text"
+                >
+                  <strong>{{ request[requestStatusCodeLabelName] }}</strong>
+                </p>
               </v-col>
-              <v-col v-else cols="12" xl="9" lg="9" md="9" sm="9">
-                <p id="requestStatus" class="mb-2 grey--text text--darken-1"><strong>{{this.request[requestStatusCodeLabelName]}}</strong></p>
+              <v-col
+                v-else
+                cols="12"
+                xl="9"
+                lg="9"
+                md="9"
+                sm="9"
+              >
+                <p
+                  id="requestStatus"
+                  class="mb-2 grey--text text--darken-1"
+                >
+                  <strong>{{ request[requestStatusCodeLabelName] }}</strong>
+                </p>
               </v-col>
             </v-row>
             <v-row no-gutters>
-              <v-col cols="12" xl="3" lg="3" md="3" sm="3">
-                <p class="mb-2">As of:</p>
+              <v-col
+                cols="12"
+                xl="3"
+                lg="3"
+                md="3"
+                sm="3"
+              >
+                <p class="mb-2">
+                  As of:
+                </p>
               </v-col>
-              <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                <p id="asOfDate" v-if="this.request['statusUpdateDate'] == null" class="mb-2"></p>
-                <p id="asOfDate" v-else class="mb-2"><strong>{{ this.request['statusUpdateDate'] ? moment(this.request['statusUpdateDate']).fromNow():'' }}</strong>, at {{ this.request['statusUpdateDate'] ? moment(this.request['statusUpdateDate']).format('YYYY/MM/DD LT'):'' }}</p>
+              <v-col
+                cols="12"
+                xl="9"
+                lg="9"
+                md="9"
+                sm="9"
+              >
+                <p
+                  v-if="request['statusUpdateDate'] == null"
+                  id="asOfDate"
+                  class="mb-2"
+                />
+                <p
+                  v-else
+                  id="asOfDate"
+                  class="mb-2"
+                >
+                  <strong>{{ request['statusUpdateDate'] ? moment(request['statusUpdateDate']).fromNow():'' }}</strong>, at {{ request['statusUpdateDate'] ? moment(request['statusUpdateDate']).format('YYYY/MM/DD LT'):'' }}
+                </p>
               </v-col>
             </v-row>
             <v-row no-gutters>
-              <v-col cols="12" xl="3" lg="3" md="3" sm="3">
+              <v-col
+                cols="12"
+                xl="3"
+                lg="3"
+                md="3"
+                sm="3"
+              >
                 <p>Submitted:</p>
               </v-col>
-              <v-col cols="12" xl="9" lg="9" md="9" sm="9">
-                <p id="submittedDate" v-if="this.request.initialSubmitDate == null" class="mb-2"></p>
-                <p id="submittedDate" v-else><strong>{{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).fromNow():'' }}</strong>, at {{ this.request.initialSubmitDate ? moment(this.request.initialSubmitDate).format('YYYY/MM/DD LT'):'' }}</p>
+              <v-col
+                cols="12"
+                xl="9"
+                lg="9"
+                md="9"
+                sm="9"
+              >
+                <p
+                  v-if="request.initialSubmitDate == null"
+                  id="submittedDate"
+                  class="mb-2"
+                />
+                <p
+                  v-else
+                  id="submittedDate"
+                >
+                  <strong>{{ request.initialSubmitDate ? moment(request.initialSubmitDate).fromNow():'' }}</strong>, at {{ request.initialSubmitDate ? moment(request.initialSubmitDate).format('YYYY/MM/DD LT'):'' }}
+                </p>
               </v-col>
             </v-row>
           </v-card>
         </v-col>
-        <v-col cols="12" xl="6" lg="6" md="6" sm="6" class="pa-0">
-          <v-card height="100%" width="100%" elevation=0>
-            <v-row v-if="this.request.reviewer === this.myself.name" no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
-              <p v-if="this.isRequestCompleted" class="grey--text text--darken-1"><strong>{{ this.request.reviewer }} completed this request</strong></p>
-              <p v-if="!this.isRequestCompleted" class="green--text"><strong>You are working on this request</strong></p>
-              <PrimaryButton id="release-request" class="ml-2" :disabled="isReleaseDisabled" :short="true" @click.native="claimRequest" text="Release"></PrimaryButton>
+        <v-col
+          cols="12"
+          xl="6"
+          lg="6"
+          md="6"
+          sm="6"
+          class="pa-0"
+        >
+          <v-card
+            height="100%"
+            width="100%"
+            elevation="0"
+          >
+            <v-row
+              v-if="request.reviewer === myself.name"
+              no-gutters
+              justify-xl="end"
+              justify-lg="end"
+              justify-md="end"
+              justify-sm="end"
+            >
+              <p
+                v-if="isRequestCompleted"
+                class="grey--text text--darken-1"
+              >
+                <strong>{{ request.reviewer }} completed this request</strong>
+              </p>
+              <p
+                v-if="!isRequestCompleted"
+                class="green--text"
+              >
+                <strong>You are working on this request</strong>
+              </p>
+              <PrimaryButton
+                id="release-request"
+                class="ml-2"
+                :disabled="isReleaseDisabled"
+                :short="true"
+                :click-action="claimRequest"
+                text="Release"
+              />
             </v-row>
-            <v-row v-else no-gutters justify-xl="end" justify-lg="end" justify-md="end" justify-sm="end">
-              <p v-if="!this.request.reviewer && this.isRequestCompleted" class="grey--text text--darken-1"><strong>This request has been completed</strong></p>
-              <p v-if="this.request.reviewer && this.isRequestCompleted" class="grey--text text--darken-1"><strong>{{ this.request.reviewer }} completed this request</strong></p>
-              <p v-if="!this.request.reviewer && !this.isRequestCompleted" class="blue--text"><strong>No one is working on this request</strong></p>
-              <p v-if="this.request.reviewer && !this.isRequestCompleted" class="orange--text"><strong>{{ this.request.reviewer }} is working on this request</strong></p>
-              <PrimaryButton id="claim-pen-request" class="ml-2" :disabled="isClaimDisabled" :short="true" @click.native="claimRequest" text="Claim"></PrimaryButton>
+            <v-row
+              v-else
+              no-gutters
+              justify-xl="end"
+              justify-lg="end"
+              justify-md="end"
+              justify-sm="end"
+            >
+              <p
+                v-if="!request.reviewer && isRequestCompleted"
+                class="grey--text text--darken-1"
+              >
+                <strong>This request has been completed</strong>
+              </p>
+              <p
+                v-if="request.reviewer && isRequestCompleted"
+                class="grey--text text--darken-1"
+              >
+                <strong>{{ request.reviewer }} completed this request</strong>
+              </p>
+              <p
+                v-if="!request.reviewer && !isRequestCompleted"
+                class="blue--text"
+              >
+                <strong>No one is working on this request</strong>
+              </p>
+              <p
+                v-if="request.reviewer && !isRequestCompleted"
+                class="orange--text"
+              >
+                <strong>{{ request.reviewer }} is working on this request</strong>
+              </p>
+              <PrimaryButton
+                id="claim-pen-request"
+                class="ml-2"
+                :disabled="isClaimDisabled"
+                :short="true"
+                :click-action="claimRequest"
+                text="Claim"
+              />
             </v-row>
-            <v-row no-gutters justify="end" class="pb-5">
-              <PrimaryButton id="back-to-list" class="ml-2" :short="true" @click.native="backToList" text="Back to List"></PrimaryButton>
+            <v-row
+              no-gutters
+              justify="end"
+              class="pb-5"
+            >
+              <PrimaryButton
+                id="back-to-list"
+                class="ml-2"
+                :short="true"
+                :click-action="backToList"
+                text="Back to List"
+              />
             </v-row>
           </v-card>
         </v-col>
@@ -74,74 +271,117 @@
         <slot
           name="demographics"
           :request="request"
-        ></slot>
+        />
       </v-row>
       <v-row>
-        <v-col cols="12" xl="6" lg="6" md="6" class="pa-0">
-          <v-card height="100%" width="99%">
-            <v-toolbar flat color="#036" class="panel-header white--text">
-              <v-toolbar-title><h2>{{requestTypeLabel}} Data</h2></v-toolbar-title>
+        <v-col
+          cols="12"
+          xl="6"
+          lg="6"
+          md="6"
+          class="pa-0"
+        >
+          <v-card
+            height="100%"
+            width="99%"
+          >
+            <v-toolbar
+              flat
+              color="#036"
+              class="panel-header white--text"
+            >
+              <v-toolbar-title><h2>{{ requestTypeLabel }} Data</h2></v-toolbar-title>
             </v-toolbar>
             <v-progress-linear
-                    indeterminate
-                    color="blue"
-                    :active="loadingPen"
-            ></v-progress-linear>
+              indeterminate
+              color="blue"
+              :active="loadingPen"
+            />
             <slot
               name="request"
               :request="request"
-            ></slot>
+            />
           </v-card>
         </v-col>
-        <v-col cols="12" xl="6" lg="6" md="6" class="pa-0">
-          <Chat :requestId="requestId" :requestType="requestType"></Chat>
+        <v-col
+          cols="12"
+          xl="6"
+          lg="6"
+          md="6"
+          class="pa-0"
+        >
+          <Chat
+            :request-id="requestId"
+            :request-type="requestType"
+          />
         </v-col>
       </v-row>
       <v-row>
-        <v-col col="12" class="px-0">
+        <v-col
+          col="12"
+          class="px-0"
+        >
           <v-card>
-            <v-toolbar flat color="#036" class="panel-header white--text">
+            <v-toolbar
+              flat
+              color="#036"
+              class="panel-header white--text"
+            >
               <v-toolbar-title><h2>Documents</h2></v-toolbar-title>
             </v-toolbar>
             <v-progress-linear
-                    indeterminate
-                    color="blue"
-                    :active="loadingPen"
-            ></v-progress-linear>
+              indeterminate
+              color="blue"
+              :active="loadingPen"
+            />
             <v-data-table
               :headers="headers"
               :items="filteredResults"
               :items-per-page="15"
               :sort-by="['createDate']"
-              class="fill-height">
-              <template v-slot:item.createDate="{ item }">
+              class="fill-height"
+            >
+              <template #item.createDate="{ item }">
                 <span>{{ item.createDate.toString().replace(/T/, ', ').replace(/\..+/, '') }}</span>
               </template>
-              <template v-slot:item.fileName="{item: document}">
-                <router-link v-if="document.fileSize && actionsEnabled && isPdf(document)" :to="{ path: documentUrl(requestId, document) }" target="_blank">{{ document.fileName }}</router-link>
-                <a @click="showDocModal(requestId, document)" v-else-if="document.fileSize && actionsEnabled">
+              <template #item.fileName="{item: document}">
+                <router-link
+                  v-if="document.fileSize && actionsEnabled && isPdf(document)"
+                  :to="{ path: documentUrl(requestId, document) }"
+                  target="_blank"
+                >
+                  {{ document.fileName }}
+                </router-link>
+                <a
+                  v-else-if="document.fileSize && actionsEnabled"
+                  @click="showDocModal(requestId, document)"
+                >
                   {{ document.fileName }}
                 </a>
                 <span v-else>{{ document.fileName }}</span>
               </template>
-              <template v-slot:item.fileSize="{ item }">
+              <template #item.fileSize="{ item }">
                 <span v-if="item.fileSize">{{ item.fileSize }}</span>
               </template>
-              <template v-if="actionsEnabled" v-slot:item.documentTypeLabel="{item: document}">
+              <template
+                v-if="actionsEnabled"
+                #item.documentTypeLabel="{item: document}"
+              >
                 <v-edit-dialog
-                  :return-value.sync="document.documentTypeCode"
+                  v-model:return-value="document.documentTypeCode"
                   large
                   persistent
                   @open="oldDocumentTypeCode=document.documentTypeCode"
                   @save="saveDocumentType(document)"
                 >
                   <div>{{ document.documentTypeLabel }}</div>
-                  <template v-slot:input>
+                  <template #input>
                     <v-select
                       v-model="document.documentTypeCode"
+                      variant="underlined"
                       style="max-width: 20em;"
                       :items="documentTypes"
-                    ></v-select>
+                    />
                   </template>
                 </v-edit-dialog>
               </template>
@@ -150,15 +390,22 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-card width="100%" >
-          <v-toolbar flat color="#036" dark class="panel-header tester">
-            <v-toolbar-title class="pa-0"><h2>Actions</h2></v-toolbar-title>
+        <v-card width="100%">
+          <v-toolbar
+            flat
+            color="#036"
+            dark
+            class="panel-header tester"
+          >
+            <v-toolbar-title class="pa-0">
+              <h2>Actions</h2>
+            </v-toolbar-title>
           </v-toolbar>
           <v-progress-linear
-                  indeterminate
-                  color="blue"
-                  :active="loadingActionResults"
-          ></v-progress-linear>
+            indeterminate
+            color="blue"
+            :active="loadingActionResults"
+          />
           <slot
             name="actions"
             :active-tab="activeTab"
@@ -167,27 +414,37 @@
             :before-submit="beforeSubmit"
             :submitted="submitted"
             :switch-loading="switchLoading"
-          ></slot>
+          />
         </v-card>
       </v-row>
     </v-col>
   </v-container>
 </template>
 <script>
-import Chat from './Chat';
+import Chat from './Chat.vue';
 import ApiService from '../common/apiService';
 import {REQUEST_TYPES, Routes, Statuses} from '../utils/constants';
-import {mapGetters, mapMutations} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import {humanFileSize, isPdf} from '../utils/file';
 import router from '../router';
-import PrimaryButton from './util/PrimaryButton';
+import PrimaryButton from './util/PrimaryButton.vue';
 import alertMixin from '../mixins/alertMixin';
 import Mousetrap from 'mousetrap';
 import 'mousetrap/plugins/global-bind/mousetrap-global-bind';
-import ImageRenderer from '@/components/common/ImageRenderer';
+import ImageRenderer from '@/components/common/ImageRenderer.vue';
+import {notificationsStore} from '@/store/modules/notifications';
+import {appStore} from '@/store/modules/app';
+import {authStore} from '@/store/modules/auth';
+import {requestStore} from '@/store/modules/request';
 
 export default {
-  name: 'requestDetail',
+  name: 'RequestDetail',
+  components: {
+    ImageRenderer,
+    PrimaryButton,
+    Chat
+  },
+  mixins: [alertMixin],
   props: {
     title: {
       type: String,
@@ -210,12 +467,6 @@ export default {
       required: true
     }
   },
-  components: {
-    ImageRenderer,
-    PrimaryButton,
-    Chat
-  },
-  mixins: [alertMixin],
   data () {
     return {
       headers: [
@@ -250,10 +501,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo', 'ACTION_GMP_REQUESTS_ROLE', 'ACTION_UMP_REQUESTS_ROLE']),
-    ...mapGetters('app', ['requestTypeLabel']),
-    ...mapGetters('app', ['request']),
-    ...mapGetters('notifications', ['notification']),
+    ...mapState(authStore, ['userInfo', 'ACTION_GMP_REQUESTS_ROLE', 'ACTION_UMP_REQUESTS_ROLE']),
+    ...mapState(appStore, ['requestTypeLabel', 'request']),
+    ...mapState(notificationsStore, ['notification']),
     isRequestCompleted() {
       return this.requestCompleted(this.request, this.statusCodes);
     },
@@ -295,7 +545,7 @@ export default {
       }
     }
   },
-  beforeDestroy() {
+  beforeUnmount() {
     Mousetrap.reset();
   },
   mounted() {
@@ -309,9 +559,9 @@ export default {
     this.myself.name = this.userInfo.userName;
     this.myself.id = this.userInfo.userGuid;
     if(!this.returnMacros || ! this.rejectMacros) {
-      this.$store.dispatch(`${this.requestType}/getMacros`, this.requestType);
+      requestStore().getMacros(this.requestType);
     }
-    this.documentTypes = this.$store.state[this.requestType].documentTypes
+    this.documentTypes = requestStore().documentTypes
       .sort((a, b) => a.displayOrder - b.displayOrder)
       .map(code => ({text: code.label, value: code.documentTypeCode}));
 
@@ -346,9 +596,7 @@ export default {
       });
   },
   methods: {
-    ...mapMutations('app', ['setRequest']),
-    ...mapMutations('app', ['setMessages']),
-    ...mapMutations('app', ['setParticipants']),
+    ...mapActions(appStore, ['setRequest','setMessages','setParticipants']),
     documentUrl(requestId, document) {
       return `${Routes[this.requestType].ROOT_ENDPOINT}/${requestId}/documents/${document.documentID}`;
     },
@@ -407,7 +655,7 @@ export default {
       this.setFailureAlert(this.documentErrorMessage);
     },
     setDocumentTypeLabel(document) {
-      const documentTypeInfo = this.$store.state[this.requestType].documentTypes.find(typeInfo =>
+      const documentTypeInfo = requestStore().documentTypes.find(typeInfo =>
         typeInfo.documentTypeCode === document.documentTypeCode
       );
       document.documentTypeLabel = documentTypeInfo ? documentTypeInfo.label : document.documentTypeCode;

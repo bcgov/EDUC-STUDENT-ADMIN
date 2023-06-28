@@ -1,5 +1,8 @@
 <template>
-  <v-container fluid class="px-0 mb-4">
+  <v-container
+    fluid
+    class="px-0 mb-4"
+  >
     <v-form v-model="isValidSearchForm">
       <v-sheet
         class="my-4 mx-2 mx-sm-2 mx-md-3 mx-lg-3 mx-xl-3 px-2 d-flex align-end align-self-start"
@@ -7,24 +10,30 @@
         outlined
         rounded
       >
-        <v-col cols="3" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
+        <v-col
+          cols="3"
+          class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3"
+        >
           <v-text-field
-            id='minCode'
+            id="minCode"
             v-model="searchParams.mincode"
             tabindex="1"
             color="#003366"
             label="District or Mincode"
             maxlength="8"
-            @keyup.enter="enterPushed()"
-            v-on:input="searchHasValues"
             :rules="mincodeRules"
             dense
             autofocus
-          ></v-text-field>
+            @keyup.enter="enterPushed()"
+            @input="searchHasValues"
+          />
         </v-col>
-        <v-col cols="3" class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3">
+        <v-col
+          cols="3"
+          class="py-0 px-1 px-sm-1 px-md-2 px-lg-2 px-xl-3"
+        >
           <v-autocomplete
-            id='schoolName'
+            id="schoolName"
             v-model="searchParams.schoolName"
             :items="schools"
             tabindex="2"
@@ -32,115 +41,143 @@
             label="School Name"
             clearable
             clear-icon="clear"
-            @keyup.enter="enterPushed()"
-            v-on:input="searchHasValues"
             dense
-          ></v-autocomplete>
+            @keyup.enter="enterPushed()"
+            @input="searchHasValues"
+          />
         </v-col>
         <v-col class="d-flex justify-end align-end">
-          <PrimaryButton id="clear-action" class="mr-2" secondary text="Clear" @click.native="clearSearchParams"></PrimaryButton>
-          <PrimaryButton id="search-action" :disabled="!isValidSearchForm || !searchEnabled"
-                        class="mr-0" text="Search"
-                        @click.native="searchPenCoordinators"></PrimaryButton>
+          <PrimaryButton
+            id="clear-action"
+            class="mr-2"
+            secondary
+            text="Clear"
+            :click-action="clearSearchParams"
+          />
+          <PrimaryButton
+            id="search-action"
+            :disabled="!isValidSearchForm || !searchEnabled"
+            class="mr-0"
+            text="Search"
+            :click-action="searchPenCoordinators"
+          />
         </v-col>
       </v-sheet>
     </v-form>
-      <v-row no-gutters class="py-2" style="background-color:white;">
-        <div id="pen-coordinator-list" class="px-3" style="width: 100%" :overlay="false">
-          <v-form v-model="isValidPenCoordForm">
-            <v-data-table
-              id="dataTable"
-              class="pen-coordinator-table"
-              :headers="headers"
-              :items="searchResult"
-              :page.sync="pageNumber"
-              :items-per-page="itemsPerPage"
-              hide-default-footer
-              item-key="penRequestBatchID"
-              :loading="dataLoading"
-              @page-count="pageCount = $event"
-              @current-items="setCurrentItems"
-            >
-              <template v-slot:item="props">
-                <tr @mouseover="enableActions(props.item)" @mouseleave="disableActions()" @click="clickCoordinatorText(props.item)">
-                  <td v-for="header in props.headers" :key="header.id" @mouseover="enableEdit(header)" @mouseleave="disableEdit()">
-                    <v-row
-                      no-gutters
-                      v-if="header.editable && hoveredOveredRowID === props.item.mincode && ((hoveredOveredHeader === header.value && !dataLoading) || hasEdits(header.value))"
-                    >
-                      <v-col cols="9">
-                        <v-text-field
-                          dense
-                          outlined
-                          v-model="props.item[header.value]"
-                          :maxlength="header.maxLength"
-                          :rules="header.rules"
-                          :disabled="dataLoading"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="2">
-                        <TertiaryButton
-                          :id="`revert-${header.value}`"
-                          :class="[{'revert-action': !hasEdits(header.value) || dataLoading}, 'ml-3', 'mt-2']"
-                          short
-                          text="Revert"
-                          @click.native="revertField(header.value)"
-                        ></TertiaryButton>
-                      </v-col>
-                    </v-row>
-                    <div v-else-if="header.value === 'actions'">
-                      <PrimaryButton
-                        id="cancel-action"
-                        class="mr-2"
-                        short 
-                        secondary
-                        text="Cancel"
-                        :disabled="!hasAnyEdits() || dataLoading"
-                        @click.native="clickCancel"
-                        v-if="hoveredOveredRowID === props.item.mincode"
-                      ></PrimaryButton>
-                      <PrimaryButton
-                        id="save-action"
-                        short 
-                        text="Save"
-                        :disabled="!hasAnyEdits() || !isValidPenCoordForm || dataLoading"
-                        :loading="dataLoading"
-                        @click.native="clickSave"
-                        v-if="hoveredOveredRowID === props.item.mincode"
-                      ></PrimaryButton>
-                    </div>
-                    <span v-else>{{props.item[header.value]}}</span>
-                  </td>
-                </tr>
-              </template>
-            </v-data-table>
-          </v-form>
-          <Pagination
-            :value="pageNumber"
-            :dataResponse="penCoordinatorPage"
-            @input="changePage"
-          />
-        </div>
-      </v-row>
-      <ConfirmationDialog ref="confirmationDialog">
-        <template v-slot:message>
-          <v-col class="mt-n6">
-            <v-row class="mt-n2 mb-0">
-              You have unsaved changes. Do you wish to proceed and cancel changes?
-            </v-row>
-          </v-col>
-        </template>
-      </ConfirmationDialog>
+    <v-row
+      no-gutters
+      class="py-2"
+      style="background-color:white;"
+    >
+      <div
+        id="pen-coordinator-list"
+        class="px-3"
+        style="width: 100%"
+        :overlay="false"
+      >
+        <v-form v-model="isValidPenCoordForm">
+          <v-data-table
+            id="dataTable"
+            v-model:page="pageNumber"
+            class="pen-coordinator-table"
+            :headers="headers"
+            :items="searchResult"
+            :items-per-page="itemsPerPage"
+            hide-default-footer
+            item-key="penRequestBatchID"
+            :loading="dataLoading"
+            @page-count="pageCount = $event"
+            @current-items="setCurrentItems"
+          >
+            <template #item="props">
+              <tr
+                @mouseover="enableActions(props.item)"
+                @mouseleave="disableActions()"
+                @click="clickCoordinatorText(props.item)"
+              >
+                <td
+                  v-for="header in props.headers"
+                  :key="header.id"
+                  @mouseover="enableEdit(header)"
+                  @mouseleave="disableEdit()"
+                >
+                  <v-row
+                    v-if="header.editable && hoveredOveredRowID === props.item.mincode && ((hoveredOveredHeader === header.value && !dataLoading) || hasEdits(header.value))"
+                    no-gutters
+                  >
+                    <v-col cols="9">
+                      <v-text-field
+                        v-model="props.item[header.value]"
+                        dense
+                        outlined
+                        :maxlength="header.maxLength"
+                        :rules="header.rules"
+                        :disabled="dataLoading"
+                      />
+                    </v-col>
+                    <v-col cols="2">
+                      <TertiaryButton
+                        :id="`revert-${header.value}`"
+                        :class="[{'revert-action': !hasEdits(header.value) || dataLoading}, 'ml-3', 'mt-2']"
+                        short
+                        text="Revert"
+                        :click-action="revertField(header.value)"
+                      />
+                    </v-col>
+                  </v-row>
+                  <div v-else-if="header.value === 'actions'">
+                    <PrimaryButton
+                      v-if="hoveredOveredRowID === props.item.mincode"
+                      id="cancel-action"
+                      class="mr-2" 
+                      short
+                      secondary
+                      text="Cancel"
+                      :disabled="!hasAnyEdits() || dataLoading"
+                      :click-action="clickCancel"
+                    />
+                    <PrimaryButton
+                      v-if="hoveredOveredRowID === props.item.mincode"
+                      id="save-action" 
+                      short
+                      text="Save"
+                      :disabled="!hasAnyEdits() || !isValidPenCoordForm || dataLoading"
+                      :loading="dataLoading"
+                      :click-action="clickSave"
+                    />
+                  </div>
+                  <span v-else>{{ props.item[header.value] }}</span>
+                </td>
+              </tr>
+            </template>
+          </v-data-table>
+        </v-form>
+        <Pagination
+          :value="pageNumber"
+          :data-response="penCoordinatorPage"
+          @input="changePage"
+        />
+      </div>
+    </v-row>
+    <ConfirmationDialog ref="confirmationDialog">
+      <template #message>
+        <v-col class="mt-n6">
+          <v-row class="mt-n2 mb-0">
+            You have unsaved changes. Do you wish to proceed and cancel changes?
+          </v-row>
+        </v-col>
+      </template>
+    </ConfirmationDialog>
   </v-container>
 </template>
 
 <script>
 import {Routes} from '@/utils/constants';
-import {mapState, mapGetters} from 'vuex';
-import PrimaryButton from '../../util/PrimaryButton';
-import TertiaryButton from '../../util/TertiaryButton';
-import ConfirmationDialog from '../../util/ConfirmationDialog';
-import Pagination from '@/components/util/Pagination';
+import { mapState } from 'pinia';
+import PrimaryButton from '../../util/PrimaryButton.vue';
+import TertiaryButton from '../../util/TertiaryButton.vue';
+import ConfirmationDialog from '../../util/ConfirmationDialog.vue';
+import Pagination from '@/components/util/Pagination.vue';
 import ApiService from '../../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import {
@@ -149,6 +186,9 @@ import {
   isValidEmail,
 } from '@/utils/validation';
 import {deepCloneObject, setEmptyInputParams} from '@/utils/common';
+import {authStore} from '@/store/modules/auth';
+import {appStore} from '@/store/modules/app';
+import _ from 'lodash';
 
 export default {
   name: 'PenCoordinatorsDisplay',
@@ -192,8 +232,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('app', ['schoolApiMincodeSchoolNames']),
-    ...mapGetters('auth', ['EDIT_PEN_COORDINATOR_INFO_ROLE']),
+    ...mapState(appStore, ['schoolApiMincodeSchoolNames']),
+    ...mapState(authStore, ['EDIT_PEN_COORDINATOR_INFO_ROLE']),
     schools() {
       return _.sortedUniq([...this.schoolApiMincodeSchoolNames.values()].sort());
     },
@@ -212,7 +252,7 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('app/getCodes');
+    appStore().getCodes();
   },
   mounted() {
     this.loadPenCoords();

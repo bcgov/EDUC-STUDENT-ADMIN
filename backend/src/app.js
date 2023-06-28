@@ -23,6 +23,7 @@ require('./schedulers/cache-service-scheduler');
 require('./schedulers/doc-type-migration-scheduler');
 const apiRouter = express.Router();
 const authRouter = require('./routes/auth');
+const configRouter = require('./routes/config');
 const penRequestRouter = require('./routes/penRequest');
 const penRequestBatchRouter = require('./routes/penRequestBatch');
 const penMatchesRouter = require('./routes/penMatches');
@@ -163,6 +164,7 @@ app.use(morgan(config.get('server:morganFormat'), {'stream': logStream}));
 //set up routing to auth and main API
 app.use(/(\/api)?/, apiRouter);
 apiRouter.use('/auth', authRouter);
+apiRouter.use('/config', configRouter);
 apiRouter.use('/penRequest', penRequestRouter);
 apiRouter.use('/penRequestBatch', penRequestBatchRouter);
 apiRouter.use('/penMatches', penMatchesRouter);

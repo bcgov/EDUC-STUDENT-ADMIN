@@ -1,15 +1,17 @@
 //this mixin has helper functions to convert codes to Minteam names and School names.
 
-import {mapState} from 'vuex';
+import {mapState} from 'pinia';
+import {edxStore} from '@/store/modules/edx';
+import {appStore} from '@/store/modules/app';
 
 export default {
   mounted() {
-    this.$store.dispatch('app/getCodes');
-    this.$store.dispatch('edx/getCodes');
+    appStore().getCodes();
+    edxStore().getCodes();
   },
   computed: {
-    ...mapState('edx', ['ministryTeams']),
-    ...mapState('app', ['mincodeSchoolNames']),
+    ...mapState(edxStore, ['ministryTeams']),
+    ...mapState(appStore, ['mincodeSchoolNames']),
   },
   methods: {
     getContactName(secureExchange) {

@@ -1,5 +1,9 @@
 <template>
-  <div id="schoolMove" class="px-0 pt-3 ma-0" style="width: 100%;">
+  <div
+    id="schoolMove"
+    class="px-0 pt-3 ma-0"
+    style="width: 100%;"
+  >
     <v-row v-if="loading">
       <v-col class="d-flex justify-center">
         <v-progress-circular
@@ -9,10 +13,13 @@
           color="primary"
           indeterminate
           :active="loading"
-        ></v-progress-circular>
+        />
       </v-col>
     </v-row>
-    <v-row v-else no-gutters>
+    <v-row
+      v-else
+      no-gutters
+    >
       <v-col>
         <v-row>
           <v-col class="d-flex justify-end">
@@ -23,9 +30,9 @@
               secondary
               icon-left
               icon="mdi-arrow-left-right"
-              @click.native="moveSchool"
-              text="Move School">
-            </PrimaryButton>
+              :click-action="moveSchool"
+              text="Move School"
+            />
           </v-col>
         </v-row>
 
@@ -34,10 +41,8 @@
           :items="schoolMoveDataFormatted"
           :loading="loading"
           class="elevation-1"
-          item-key="schoolMoveId"
-          hide-default-footer
-        >
-        </v-data-table>
+          item-value="schoolMoveId"
+        />
       </v-col>
     </v-row>
 
@@ -47,7 +52,6 @@
       no-click-animation
       scrollable
       persistent
-      width="50% !important"
     >
       <MoveSchoolPage
         v-if="moveSchoolSheet"
@@ -59,23 +63,25 @@
 </template>
 
 <script>
-import { Routes } from '@/utils/constants';
+import {Routes} from '@/utils/constants';
 import ApiService from '../../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import router from '@/router';
 import {formatDob} from '@/utils/format';
-import {mapState, mapMutations} from 'vuex';
+import {mapState, mapActions} from 'pinia';
 import MoveSchoolPage from '../../institute/MoveSchoolPage.vue';
-import PrimaryButton from '../../util/PrimaryButton';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import {getStatusAuthorityOrSchool} from '@/utils/institute/status';
+import {appStore} from '@/store/modules/app';
+import {instituteStore} from '@/store/modules/institute';
 
 export default {
   name: 'SchoolMove',
-  mixins: [alertMixin],
   components: {
     MoveSchoolPage,
     PrimaryButton
   },
+  mixins: [alertMixin],
   props: {
     schoolID: {
       type: String,
@@ -94,22 +100,19 @@ export default {
       school: '',
       district: '',
       headers: [
-        {text: 'Date', sortable: false, value: 'moveDate'},
-        {text: 'Moved By', sortable: false, value: 'createUser'},
-        {text: 'From District', sortable: false, value: 'fromDistrict'},
-        {text: 'To District', sortable: false, value: 'toDistrict'},
-        {text: 'From Authority', sortable: false, value: 'fromAuthority'},
-        {text: 'To Authority', sortable: false, value: 'toAuthority'},
-        {text: 'Old School Number', sortable: false, value: 'fromSchoolNumber'},
-        {text: 'New School Number', sortable: false, value: 'toSchoolNumber'},
+        {title: 'Date', sortable: false, key: 'moveDate'},
+        {title: 'Moved By', sortable: false, key: 'createUser'},
+        {title: 'From District', sortable: false, key: 'fromDistrict'},
+        {title: 'To District', sortable: false, key: 'toDistrict'},
+        {title: 'From Authority', sortable: false, key: 'fromAuthority'},
+        {title: 'To Authority', sortable: false, key: 'toAuthority'},
+        {title: 'Old School Number', sortable: false, key: 'fromSchoolNumber'},
+        {title: 'New School Number', sortable: false, key: 'toSchoolNumber'},
       ],
     };
   },
   computed: {
-    ...mapState('app', ['schoolMap', 'districtMap', 'independentAuthorityMap']),
-  },
-  created() {
-    this.$store.dispatch('app/getCodes').then(() => this.getSchoolDetails());
+    ...mapState(appStore, ['schoolMap', 'districtMap', 'independentAuthorityMap']),
   },
   watch: {
     notification(notificationData) {
@@ -128,11 +131,14 @@ export default {
       }
     },
   },
+  created() {
+    appStore().getCodes().then(() => this.getSchoolDetails());
+  },
   methods: {
-    ...mapMutations('institute', ['schoolMovedNotification']),
+    ...mapActions(instituteStore, ['schoolMovedNotification']),
     getPageHeading() {
       let school = this.schoolMap?.get(this.schoolID);
-      if(school) {
+      if (school) {
         return school?.mincode + ' - ' + school?.schoolName;
       }
     },
@@ -175,9 +181,9 @@ export default {
       }
 
       return {
-        [`${moveDirection}District`] : districtName,
-        [`${moveDirection}Authority`] : authorityName,
-        [`${moveDirection}SchoolNumber`] : school.schoolNumber
+        [`${moveDirection}District`]: districtName,
+        [`${moveDirection}Authority`]: authorityName,
+        [`${moveDirection}SchoolNumber`]: school.schoolNumber
       };
     },
     back() {
@@ -192,7 +198,7 @@ export default {
     moveSchool() {
       this.moveSchoolSheet = !this.moveSchoolSheet;
     },
-    getDistrictDetails(districtId){
+    getDistrictDetails(districtId) {
       this.district = '';
       ApiService.apiAxios.get(`${Routes.cache.DISTRICT_DATA_URL}/${districtId}`)
         .then(response => {
@@ -207,3 +213,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+  :deep(.v-data-table-footer) {
+    display: none;
+  }
+</style>
+

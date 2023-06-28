@@ -1,157 +1,263 @@
 <template>
-  <v-container class="containerSetup" fluid>
-    <Spinner flat v-if="loadingAuthorities" />
+  <v-container
+    class="containerSetup"
+    fluid
+  >
+    <Spinner
+      v-if="loadingAuthorities"
+      flat
+    />
     <div v-else>
       <v-row>
         <v-col class="mt-1 d-flex justify-start">
-          <v-icon small color="#1976d2">mdi-arrow-left</v-icon>
-          <a class="ml-1" @click="backButtonClick">Return to Dashboard</a>
+          <v-icon
+            small
+            color="#1976d2"
+          >
+            mdi-arrow-left
+          </v-icon>
+          <a
+            class="ml-1"
+            @click="backButtonClick"
+          >Return to Dashboard</a>
         </v-col>
         <v-col class="d-flex justify-end">
-          <PrimaryButton v-if="canAddAuthority()" id="addAuthorityBtn" icon-left width="12em" icon="mdi-plus-thick" text="New Authority" @click.native="newAuthoritySheet = !newAuthoritySheet"></PrimaryButton>
+          <PrimaryButton
+            v-if="canAddAuthority()"
+            id="addAuthorityBtn"
+            icon-left
+            width="12em"
+            icon="mdi-plus-thick"
+            text="New Authority"
+            :click-action="openNewAuthoritySheet"
+          />
         </v-col>
       </v-row>
-      <v-row style="background: rgb(235, 237, 239);border-radius: 8px;" class="px-3 elevation-2">
+      <v-row
+        style="background: rgb(235, 237, 239);border-radius: 8px;"
+        class="px-3 elevation-2"
+      >
         <v-col>
           <v-row>
-            <v-col cols="5" class="d-flex justify-start">
+            <v-col
+              cols="5"
+              class="d-flex justify-start"
+            >
               <v-autocomplete
                 id="authority-text-field"
+                v-model="authorityCodeNameFilter"
                 label="Authority Code & Name"
                 item-value="authorityID"
-                item-text="authorityCodeName"
+                item-title="authorityCodeName"
+                variant="underlined"
                 :items="authoritySearchNames"
-                v-model="authorityCodeNameFilter"
-                @change="searchButtonClick()"
-                clearable>
-                <template v-slot:item="data">
-                  <v-icon :color="getStatusColorAuthorityOrSchool(data.item.status)">
-                    mdi-circle-medium
-                  </v-icon>
-                  <span>{{ data.item.authorityCodeName }}</span>
+                :menu-props="{closeOnContentClick:true}"
+                clearable
+                @update:model-value="searchButtonClick"
+              >
+                <template #selection="{ item, index }">
+                  {{
+                    item.raw.authorityCodeName
+                  }}
+                </template>
+                <template #item="{ props, item }">
+                  <v-list-item
+                    v-bind="props"
+                    prepend-icon="mdi-circle-medium"
+                    :base-color="getStatusColorAuthorityOrSchool(item.raw.status)"
+                    title=""
+                  >
+                    <v-list-item-title style="color: black !important;">
+                      {{
+                        item.raw.authorityCodeName
+                      }}
+                    </v-list-item-title>
+                  </v-list-item>
                 </template>
               </v-autocomplete>
             </v-col>
             <v-col class="d-flex justify-start">
               <v-select
                 id="status-select-field"
+                v-model="authorityStatusFilter"
                 clearable
                 :items="authorityStatus"
-                v-model="authorityStatusFilter"
-                item-text="name"
+                item-title="name"
+                variant="underlined"
                 item-value="code"
-                label="Status">
-                <template v-slot:item="{ item }">
-                  <v-row>
-                    <v-col cols="12" class="pr-0">
-                      <v-icon :color="getStatusColorAuthorityOrSchool(item.name)">
-                        mdi-circle-medium
-                      </v-icon>
-                      <span class="body-2">{{ item.name }}</span>
-                    </v-col>
-                  </v-row>
+                :menu-props="{closeOnContentClick:true}"
+                label="Status"
+              >
+                <template #selection="{ item, index }">
+                  {{
+                    item.raw.name
+                  }}
+                </template>
+                <template #item="{ props, item }">
+                  <v-list-item
+                    v-bind="props"
+                    prepend-icon="mdi-circle-medium"
+                    :base-color="getStatusColorAuthorityOrSchool(item.raw.code)"
+                    title=""
+                  >
+                    <v-list-item-title style="color: black !important;">
+                      {{
+                        item.raw.name
+                      }}
+                    </v-list-item-title>
+                  </v-list-item>
                 </template>
               </v-select>
             </v-col>
             <v-col class="d-flex justify-start">
               <v-select
                 id="authoritytype-select-field"
-                clearable
-                :items="authorityTypes"
                 v-model="authorityTypeFilter"
-                item-text="label"
-                item-value="authorityTypeCode" label="Authority Type"></v-select>
+                clearable
+                variant="underlined"
+                :items="authorityTypes"
+                item-title="label"
+                item-value="authorityTypeCode"
+                label="Authority Type"
+              />
             </v-col>
-            <v-col class="d-flex justify-end mt-6">
-              <PrimaryButton id="user-clear-button" text="Clear" secondary @click.native="clearButtonClick"/>
-              <PrimaryButton class="ml-3"  id="user-search-button" text="Search" @click.native="searchButtonClick"
-                             :disabled="!searchEnabled()"/>
+            <v-col class="d-flex justify-end mt-5">
+              <PrimaryButton
+                id="user-clear-button"
+                text="Clear"
+                secondary
+                :click-action="clearButtonClick"
+              />
+              <PrimaryButton
+                id="user-search-button"
+                class="ml-3"
+                text="Search"
+                :click-action="searchButtonClick"
+                :disabled="!searchEnabled()"
+              />
             </v-col>
           </v-row>
         </v-col>
       </v-row>
       <v-row>
         <v-col class="px-0">
-          <v-data-table
-              :items-per-page.sync="pageSize"
-              :page.sync="pageNumber"
-              :headers="headers"
-              :footer-props="{
-                    'items-per-page-options': itemsPerPageOptions
-                  }"
-              :items="authorities"
-              :loading="loadingTable"
-              :server-items-length="totalAuthorities"
-              class="elevation-2"
-              hide-default-header
-              mobile-breakpoint="0"
+          <v-data-table-server
+            id="schoolListTable"
+            v-model:items-per-page="pageSize"
+            v-model:page="pageNumber"
+            v-model:items="authorities"
+            v-model:items-length="totalAuthorities"
+            :footer-props="{
+              'items-per-page-options': itemsPerPageOptions
+            }"
+            :loading="loadingTable"
+            class="elevation-1"
+            hide-default-header
+            mobile-breakpoint="0"
           >
-
-            <template v-slot:item.secureExchangeStatusCode="{ item }">
-                <v-row align="center" justify="center" id="authorityDetailsSelect" style="cursor: pointer;" @click="openAuthority(item.independentAuthorityId)">
-                  <v-col cols="7" class="pb-0 pt-0">
-                    <v-row class="mb-n4">
-                      <v-col class="pb-2 pt-2 pr-0">
-                        <span class="subjectHeading">{{ item.authorityNumber }} - {{ item.displayName }}</span>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col class="pb-2 pt-2 pr-0">
-                        <span class="ministryLine" style="color: black">{{ item.type }}</span>
-                      </v-col>
-                    </v-row>
-                  </v-col>
-                  <v-col class="d-flex justify-start">
-                    <v-icon class="ml-0" :color="getStatusColorAuthorityOrSchool(item.status)" right dark>
-                      mdi-circle-medium
-                    </v-icon>
-                    <span class="ml-0 statusCodeLabel">{{ item.status }}</span>
-                  </v-col>
-                  <v-col cols="2" class="d-flex justify-start">
-                    <v-icon aria-hidden="false">
-                      mdi-phone-outline
-                    </v-icon>
-                    <span class="statusCodeLabel"> {{ formatPhoneNumber(item.phoneNumber) }}</span>
-                  </v-col>
-                  <v-col class="d-flex justify-end">
-                    <v-tooltip bottom>
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn id="authorityContacts"
-                               color="#003366"
-                               outlined
-                               @click.native.stop="openAuthorityContacts(item.independentAuthorityId)"
-                               class="mt-0 pt-0 filterButton ml-2"
-                               style="text-transform: initial"
-                               v-on="on"
+            <template #item="{ item }">
+              <v-row
+                id="authorityDetailsSelect"
+                no-gutters
+                align="center"
+                class="hoverTable px-2"
+                justify="center"
+                style="cursor: pointer;"
+                @click="openAuthority(item.raw.independentAuthorityId)"
+              >
+                <v-col
+                  cols="7"
+                  class="pb-0 pt-0"
+                >
+                  <v-row no-gutters>
+                    <v-col class="pt-2 pr-0">
+                      <span class="subjectHeading">{{
+                        item.raw.authorityNumber
+                      }} - {{
+                        item.raw.displayName
+                      }}</span>
+                    </v-col>
+                  </v-row>
+                  <v-row no-gutters>
+                    <v-col class="pb-2 pr-0">
+                      <span
+                        class="ministryLine"
+                        style="color: black"
+                      >{{
+                        item.raw.type
+                      }}</span>
+                    </v-col>
+                  </v-row>
+                </v-col>
+                <v-col class="d-flex justify-start">
+                  <v-icon
+                    class="ml-0"
+                    :color="getStatusColorAuthorityOrSchool(item.raw.status)"
+                    right
+                    dark
+                  >
+                    mdi-circle-medium
+                  </v-icon>
+                  <span class="ml-0 statusCodeLabel">{{
+                    item.raw.status
+                  }}</span>
+                </v-col>
+                <v-col
+                  cols="2"
+                  class="d-flex justify-start"
+                >
+                  <v-icon aria-hidden="false">
+                    mdi-phone-outline
+                  </v-icon>
+                  <span class="statusCodeLabel"> {{
+                    formatPhoneNumber(item.raw.phoneNumber)
+                  }}</span>
+                </v-col>
+                <v-col class="d-flex justify-end">
+                  <v-tooltip bottom>
+                    <template #activator="{ on, attrs }">
+                      <v-btn
+                        id="authorityContacts"
+                        color="#003366"
+                        outlined
+                        class="mt-0 pt-0 filterButton ml-2"
+                        style="text-transform: initial"
+                        @click.stop.prevent="openAuthorityContacts(item.raw.independentAuthorityId)"
+                      >
+                        <v-icon
+                          color="white"
+                          style="margin-top: 0.07em"
+                          dark
                         >
-                          <v-icon color="#003366" style="margin-top: 0.07em" dark>mdi-account-multiple-outline</v-icon>
-                        </v-btn>
-                      </template>
-                      <span>View Contacts</span>
-                    </v-tooltip>
-                  </v-col>
-                </v-row>
+                          mdi-account-multiple-outline
+                        </v-icon>
+                      </v-btn>
+                    </template>
+                    <span>View Contacts</span>
+                  </v-tooltip>
+                </v-col>
+              </v-row>
             </template>
 
-            <template v-slot:no-data>There are no authorities.</template>
-
-          </v-data-table>
+            <template #no-data>
+              There are no authorities.
+            </template>
+          </v-data-table-server>
         </v-col>
       </v-row>
     </div>
     <!--    new authority sheet -->
     <v-bottom-sheet
-        v-model="newAuthoritySheet"
-        inset
-        no-click-animation
-        scrollable
-        persistent
-        width="30% !important"
+      v-model="newAuthoritySheet"
+      inset
+      no-click-animation
+      scrollable
+      persistent
     >
       <NewAuthorityPage
-          v-if="newAuthoritySheet"
-          @newAuthority:closeNewAuthorityPage="newAuthoritySheet = !newAuthoritySheet"
-          @newAuthority:addNewAuthority="newAuthorityAdded"
+        v-if="newAuthoritySheet"
+        @newAuthority:closeNewAuthorityPage="newAuthoritySheet = !newAuthoritySheet"
+        @newAuthority:addNewAuthority="newAuthorityAdded"
       />
     </v-bottom-sheet>
   </v-container>
@@ -161,22 +267,24 @@
 
 import ApiService from '../../common/apiService';
 import {Routes} from '@/utils/constants';
-import PrimaryButton from '../util/PrimaryButton';
-import Spinner from '@/components/common/Spinner';
-import {mapGetters, mapState} from 'vuex';
+import PrimaryButton from '../util/PrimaryButton.vue';
+import Spinner from '@/components/common/Spinner.vue';
+import {mapState} from 'pinia';
 import {isEmpty, omitBy} from 'lodash';
 import alertMixin from '@/mixins/alertMixin';
 import {formatPhoneNumber} from '@/utils/format';
-import {getStatusColorAuthorityOrSchool,getStatusAuthorityOrSchool} from '@/utils/institute/status';
+import {getStatusColorAuthorityOrSchool, getStatusAuthorityOrSchool} from '@/utils/institute/status';
 import router from '@/router';
-import NewAuthorityPage from './NewAuthorityPage';
+import NewAuthorityPage from './NewAuthorityPage.vue';
+import {authStore} from '@/store/modules/auth';
+import {instituteStore} from '@/store/modules/institute';
 
 export default {
   name: 'AuthoritiesListPage',
-  mixins: [alertMixin],
   components: {
     PrimaryButton, Spinner, NewAuthorityPage
   },
+  mixins: [alertMixin],
   data() {
     return {
       statusSelectFilter: null,
@@ -208,30 +316,32 @@ export default {
       authorities: [],
       authoritySearchNames: [],
       authorityStatus: [],
-      authorityCodeNameFilter: '',
+      authorityCodeNameFilter: null,
       authorityStatusFilter: 'Open',
-      authorityTypeFilter: '',
+      authorityTypeFilter: null,
       authorityTypes: [],
       loadingAuthorities: true,
       newAuthoritySheet: false,
     };
   },
   computed: {
-    ...mapGetters('auth', ['userInfo', 'INDEPENDENT_AUTHORITY_ADMIN_ROLE']),
-    ...mapState('institute', ['authorityTypeCodes']),
+    ...mapState(authStore, ['userInfo', 'INDEPENDENT_AUTHORITY_ADMIN_ROLE']),
+    ...mapState(instituteStore, ['authorityTypeCodes']),
 
-    getSheetWidth(){
-      switch (this.$vuetify.breakpoint.name) {
-      case 'xs':
-      case 'sm':
-        return 60;
-      default:
-        return 30;
-      }
+    getSheetWidth() {
+      return 30;
     },
   },
+  watch: {
+    pageSize() {
+      this.getAuthorityList();
+    },
+    pageNumber() {
+      this.getAuthorityList();
+    }
+  },
   created() {
-    this.$store.dispatch('institute/getAllAuthorityTypeCodes').then(() => {
+    instituteStore().getAllAuthorityTypeCodes().then(() => {
       this.authorityTypes = this.authorityTypeCodes;
     });
 
@@ -241,13 +351,16 @@ export default {
   },
   methods: {
     setAuthorityStatuses() {
-      this.authorityStatus = [{name: 'Open', code: 'Open'}, {name: 'Closing', code: 'Closing'}, {name: 'Closed', code: 'Closed'}];
+      this.authorityStatus = [{name: 'Open', code: 'Open'}, {name: 'Closing', code: 'Closing'}, {
+        name: 'Closed',
+        code: 'Closed'
+      }];
     },
-    getAuthorityDropDownItems(){
+    getAuthorityDropDownItems() {
       this.loadingAuthorities = true;
       ApiService.getAuthorities().then((response) => {
         let authorityList = response.data;
-        for(const authority of authorityList){
+        for (const authority of authorityList) {
           let authorityItem = {
             authorityCodeName: authority.authorityNumber + ' - ' + authority.name,
             authorityNumber: authority.authorityNumber,
@@ -256,7 +369,7 @@ export default {
           };
           this.authoritySearchNames.push(authorityItem);
         }
-        this.authoritySearchNames = this.authoritySearchNames.sort(function(a, b) {
+        this.authoritySearchNames = this.authoritySearchNames.sort(function (a, b) {
           let numA = parseInt(a.authorityNumber);
           let numB = parseInt(b.authorityNumber);
           if (numA > numB) {
@@ -278,9 +391,9 @@ export default {
       this.requests = [];
       this.authorities = [];
 
-      if(this.authorityCodeNameFilter !== null && this.authorityCodeNameFilter!== '') {
+      if (this.authorityCodeNameFilter !== null && this.authorityCodeNameFilter !== '') {
         this.headerSearchParams.authorityID = this.authorityCodeNameFilter;
-      }else{
+      } else {
         this.headerSearchParams.authorityID = '';
       }
 
@@ -299,7 +412,7 @@ export default {
       }).then(response => {
         let authorityList = response.data.content;
         this.authorities = [];
-        for(const authority of authorityList){
+        for (const authority of authorityList) {
           this.populateExtraAuthorityFields(authority);
           this.authorities.push(authority);
         }
@@ -312,40 +425,43 @@ export default {
       });
 
     },
-    populateExtraAuthorityFields(authority){
+    populateExtraAuthorityFields(authority) {
       authority.status = getStatusAuthorityOrSchool(authority);
       authority.type = this.getAuthorityType(authority);
     },
-    getAuthorityType(authority){
+    getAuthorityType(authority) {
       return this.authorityTypes.find((auth) => auth.authorityTypeCode === authority.authorityTypeCode).label;
     },
     formatPhoneNumber,
     getStatusColorAuthorityOrSchool,
-    openAuthority(authorityId){
+    openAuthority(authorityId) {
       this.$router.push({name: 'authorityDetails', params: {authorityID: authorityId}});
     },
-    openAuthorityContacts(authorityId){
+    openAuthorityContacts(authorityId) {
       this.$router.push({name: 'authorityContacts', params: {authorityID: authorityId}});
     },
-    resetPageNumber(){
+    resetPageNumber() {
       this.pageNumber = 1;
     },
-    searchEnabled(){
+    searchEnabled() {
       return (this.authorityStatusFilter !== '' && this.authorityStatusFilter !== null)
-          || (this.authorityTypeFilter !== '' && this.authorityTypeFilter !== null)
-          || (this.authorityCodeNameFilter !== '' && this.authorityCodeNameFilter !== null);
+        || (this.authorityTypeFilter !== '' && this.authorityTypeFilter !== null)
+        || (this.authorityCodeNameFilter !== '' && this.authorityCodeNameFilter !== null);
     },
     backButtonClick() {
       router.push({name: 'home'});
     },
+    openNewAuthoritySheet() {
+      this.newAuthoritySheet = !this.newAuthoritySheet;
+    },
     clearButtonClick() {
-      this.authorityCodeNameFilter = '';
-      this.authorityStatusFilter = '';
-      this.authorityTypeFilter = '';
+      this.authorityCodeNameFilter = null;
+      this.authorityStatusFilter = null;
+      this.authorityTypeFilter = null;
 
-      this.headerSearchParams.authorityID = '';
-      this.headerSearchParams.status = '';
-      this.headerSearchParams.type = '';
+      this.headerSearchParams.authorityID = null;
+      this.headerSearchParams.status = null;
+      this.headerSearchParams.type = null;
 
       this.getAuthorityList();
     },
@@ -353,117 +469,92 @@ export default {
       this.resetPageNumber();
       this.getAuthorityList();
     },
-    canAddAuthority(){
+    canAddAuthority() {
       return this.INDEPENDENT_AUTHORITY_ADMIN_ROLE;
     },
     newAuthorityAdded() {
       this.newAuthoritySheet = !this.newAuthoritySheet;
       this.getAuthorityList();
     },
-  },
-  watch: {
-    pageSize() {
-      this.getAuthorityList();
-    },
-    pageNumber() {
-      this.getAuthorityList();
-    }
   }
 };
 </script>
 
 <style scoped>
 
-.sheetHeader{
-  background-color: #003366;
-  color: white;
-  font-size: medium !important;
-  font-weight: bolder !important;
+.sheetHeader {
+    background-color: #003366;
+    color: white;
+    font-size: medium !important;
+    font-weight: bolder !important;
 }
 
 .tableRow {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .unread {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .v-data-table >>> .v-data-table__wrapper {
-  overflow-x: hidden;
+    overflow-x: hidden;
 }
 
 .filterButton.v-btn--outlined {
-  border: thin solid #003366 !important;
+    border: thin solid #003366 !important;
 }
 
 .v-radio >>> .v-icon {
-  color: #003366;
+    color: #003366;
 }
 
 .activeRadio {
-  color: #003366;
+    color: #003366;
 }
 
 .subjectHeading {
-  font-size: large;
-  cursor: pointer;
-  font-weight: bold;
+    font-size: large;
+    cursor: pointer;
+    font-weight: bold;
 }
 
 .ministryLine {
-  color: black;
-  font-size: medium;
+    color: black;
+    font-size: medium;
 }
 
 .statusCodeLabel {
-  font-size: large;
+    font-size: large;
 }
 
 .v-dialog__content >>> .v-bottom-sheet {
-  width: 30% !important;
+    width: 30% !important;
 }
 
 .v-expansion-panel-header:not(.v-expansion-panel-header--mousedown):focus::before {
-  display: none;
+    display: none;
 }
 
-@media screen and (max-width: 801px){
-  .subjectHeading {
-    font-size: medium;
-  }
-
-  .statusCodeLabel{
-    font-size: inherit;
-  }
-
-  .ministryLine{
-    font-size: inherit;
-  }
-}
-@media screen and (max-width: 950px){
-  .v-dialog__content /deep/ .v-bottom-sheet {
-    width: 60% !important;
-  }
+.hoverTable {
+    border-bottom-style: groove;
+    border-left-style: groove;
+    border-right-style: groove;
+    border-color: rgb(255 255 255 / 45%);
 }
 
-.containerSetup{
-  padding-right: 30em !important;
-  padding-left: 30em !important;
+.hoverTable:nth-child(1) {
+    border-top-style: groove;
 }
 
-@media screen and (max-width: 1950px) {
-  .containerSetup{
-    padding-right: 25em !important;
-    padding-left: 25em !important;
-  }
+.hoverTable:hover {
+    background-color: #e8e8e8;
+    cursor: pointer;
 }
 
-@media screen and (max-width: 1200px) {
-  .containerSetup{
-    padding-right: 4em !important;
-    padding-left: 4em !important;
-  }
+.containerSetup {
+    padding-right: 30em !important;
+    padding-left: 30em !important;
 }
 
 </style>

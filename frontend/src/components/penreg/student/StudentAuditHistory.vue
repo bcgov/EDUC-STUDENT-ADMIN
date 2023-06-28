@@ -1,45 +1,71 @@
 <template>
-  <div id="auditHistory" class="px-0 pt-3 ma-0" style="width: 100%;">
+  <div
+    id="auditHistory"
+    class="px-0 pt-3 ma-0"
+    style="width: 100%;"
+  >
     <v-progress-linear
-        indeterminate
-        color="blue"
-        :active="hasSagaInProgress && !loading"
-    ></v-progress-linear>
+      indeterminate
+      color="blue"
+      :active="hasSagaInProgress && !loading"
+    />
     <v-row no-gutters>
-      <div id="studentInfo" class="px-1 pt-2 pb-5"><strong class="pr-3">{{ formatPen(student.pen) }}</strong>
+      <div
+        id="studentInfo"
+        class="px-1 pt-2 pb-5"
+      >
+        <strong class="pr-3">{{ formatPen(student.pen) }}</strong>
         {{ getStudentName(student) }}
       </div>
     </v-row>
     <v-row>
-      <v-col :cols="this.listDetailMode? 6 : 12">
+      <v-col :cols="listDetailMode? 6 : 12">
         <v-data-table
-            id="dataTable"
-            class="batch-file-table"
-            :key="selectedStudentHistoryId"
-            v-model="selectedRecords"
-            :headers="getHeaders()"
-            :items="studentHistoryResp.content"
-            :items-per-page="studentHistoryResp.pageable.pageSize"
-            :loading="loading"
-            :page.sync="pageNumber"
-            hide-default-footer
-            item-key="studentHistoryID"
-            @page-count="studentHistoryResp.pageable.pageNumber = $event"
+          id="dataTable"
+          :key="selectedStudentHistoryId"
+          v-model="selectedRecords"
+          v-model:page="pageNumber"
+          class="batch-file-table"
+          :headers="getHeaders()"
+          :items="studentHistoryResp.content"
+          :items-per-page="studentHistoryResp.pageable.pageSize"
+          :loading="loading"
+          hide-default-footer
+          item-key="studentHistoryID"
+          @page-count="studentHistoryResp.pageable.pageNumber = $event"
         >
-          <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-              <span :title="header.tooltip" :key="h.id" :class="{'file-column' : !header.countable}">
-                {{ header.text }}
-              </span>
+          <template
+            v-for="h in headers"
+            :key="h.id"
+            #[`header.${h.value}`]="{ header }"
+          >
+            <span
+              :title="header.tooltip"
+              :class="{'file-column' : !header.countable}"
+            >
+              {{ header.text }}
+            </span>
           </template>
-          <template v-slot:item="props">
-            <tr :class="tableRowClass(props.item)" @click="selectItem(props)">
-              <td v-for="header in props.headers" :key="header.id" :class="header.id">
+          <template #item="props">
+            <tr
+              :class="tableRowClass(props.item)"
+              @click="selectItem(props)"
+            >
+              <td
+                v-for="header in props.headers"
+                :key="header.id"
+                :class="header.id"
+              >
                 <div class="table-cell">
                   <span :class="{'diff-value': props.item[`${header.value}_diff`]}">{{
-                      formatTableColumn(header.format, props.item[header.value])
-                    }}</span>
-                  <v-btn v-if="header.value === 'createDate' && props.item.expandable" class="ml-1" color="#38598a"
-                         icon>
+                    formatTableColumn(header.format, props.item[header.value])
+                  }}</span>
+                  <v-btn
+                    v-if="header.value === 'createDate' && props.item.expandable"
+                    class="ml-1"
+                    color="#38598a"
+                    icon
+                  >
                     <v-icon @click.stop="expandRow(props.item)">
                       {{ props.item.expanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
                     </v-icon>
@@ -49,56 +75,68 @@
             </tr>
           </template>
         </v-data-table>
-        <v-row class="pt-2" justify="end">
+        <v-row
+          class="pt-2"
+          justify="end"
+        >
           <v-col cols="4">
-            <v-pagination color="#38598A" v-model="pageNumber" :length="studentHistoryResp.totalPages"></v-pagination>
+            <v-pagination
+              v-model="pageNumber"
+              color="#38598A"
+              :length="studentHistoryResp.totalPages"
+            />
           </v-col>
-          <v-col cols="4" id="currentItemsDisplay">
+          <v-col
+            id="currentItemsDisplay"
+            cols="4"
+          >
             Showing {{ showingFirstNumber }} to {{ showingEndNumber }} of {{ studentHistoryResp.totalElements || 0 }}
           </v-col>
         </v-row>
       </v-col>
       <v-col v-if="listDetailMode">
         <StudentAuditHistoryDetail
-            :key="studentAuditHistoryDetailKey"
-            :student="student"
-            :nextStudentHistoryContent="nextStudentHistoryContent"
-            :studentHistory="studentHistoryResp"
-            :studentHistoryId="selectedStudentHistoryId"
-            @close="listDetailMode=false"
-            :is-reverting-student="isRevertingStudent"
-            @revert="revertStudentToSelectedHistoryRecord"
-            @update="updateSelectedStudentHistoryId"
-            @split="split"
-            :is-student-updated="isStudentUpdated"
-        ></StudentAuditHistoryDetail>
+          :key="studentAuditHistoryDetailKey"
+          :student="student"
+          :next-student-history-content="nextStudentHistoryContent"
+          :student-history="studentHistoryResp"
+          :student-history-id="selectedStudentHistoryId"
+          :is-reverting-student="isRevertingStudent"
+          :is-student-updated="isStudentUpdated"
+          @close="listDetailMode=false"
+          @revert="revertStudentToSelectedHistoryRecord"
+          @update="updateSelectedStudentHistoryId"
+          @split="split"
+        />
       </v-col>
     </v-row>
   </div>
 </template>
 
 <script>
-import {mapActions, mapGetters, mapState} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import {REQUEST_TYPES, Routes} from '@/utils/constants';
-import StudentAuditHistoryDetail from '../student/StudentAuditHistoryDetailPanel';
+import StudentAuditHistoryDetail from '../student/StudentAuditHistoryDetailPanel.vue';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
 import {formatDob, formatPen} from '@/utils/format';
-import {groupBy, mapValues} from 'lodash';
+import _,{groupBy, mapValues} from 'lodash';
 import router from '@/router';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
+import {studentStore} from '@/store/modules/student';
+import {notificationsStore} from '@/store/modules/notifications';
 
 export default {
   name: 'StudentAuditHistory',
+  components: {
+    StudentAuditHistoryDetail,
+  },
   mixins: [alertMixin, staleStudentRecordMixin],
   props: {
     student: {
       type: Object,
       required: true
     }
-  },
-  components: {
-    StudentAuditHistoryDetail,
   },
   data() {
     return {
@@ -144,9 +182,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('student', ['historyActivityCodes']),
-    ...mapGetters('notifications', ['notification']),
-    ...mapState('student', ['studentsInProcess']),
+    ...mapState(studentStore, ['historyActivityCodes', 'studentsInProcess']),
+    ...mapState(notificationsStore, ['notification']),
     showingFirstNumber() {
       return ((this.pageNumber - 1) * (this.studentHistoryResp.pageable.pageSize || 0) + ((this.studentHistoryResp.numberOfElements || 0) > 0 ? 1 : 0));
     },
@@ -156,13 +193,6 @@ export default {
     hasSagaInProgress() {
       return this.student && (this.student.sagaInProgress || this.studentsInProcess.has(this.student.studentID));
     },
-  },
-  mounted() {
-    if (!this.historyActivityCodes) {
-      this.getHistoryActivityCodes();
-    }
-    this.retrieveStudentHistory();
-    this.listDetailMode = false;
   },
   watch: {
     pageNumber: {
@@ -192,8 +222,15 @@ export default {
       }
     },
   },
+  mounted() {
+    if (!this.historyActivityCodes) {
+      this.getHistoryActivityCodes();
+    }
+    this.retrieveStudentHistory();
+    this.listDetailMode = false;
+  },
   methods: {
-    ...mapActions('student', ['getHistoryActivityCodes']),
+    ...mapActions(studentStore, ['getHistoryActivityCodes']),
     formatPen,
     selectItem(props) {
       this.updateSelectedStudentHistoryId(props.item.studentHistoryID);

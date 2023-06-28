@@ -7,51 +7,81 @@
     disable-sort
     :item-class="itemRowBackground"
     :footer-props="{
-    'items-per-page-options': [12]
-  }"
+      'items-per-page-options': [12]
+    }"
     :items-per-page="12"
   >
-    <template v-for="h in headers" v-slot:[`header.${h.value}`]="{ header }">
-        <span :key="h.id" class="top-column-item" :title="header.topTooltip">
-          {{ header.topText }}
-        </span>
-      <span :key="h.id">
-
-        </span>
-      <span :key="h.id" class="double-column-item" :title="header.doubleTooltip">{{ header.doubleText }}</span>
-      <br :key="h.id"/>
-      <span :key="h.id" class="bottom-column-item" :title="header.bottomTooltip">{{ header.bottomText }}</span>
+    <template
+      v-for="h in headers"
+      :key="h.id"
+      #[`header.${h.value}`]="{ header }"
+    >
+      <span
+        class="top-column-item"
+        :title="header.topTooltip"
+      >
+        {{ header.topText }}
+      </span>
+      <span/>
+      <span
+        class="double-column-item"
+        :title="header.doubleTooltip"
+      >{{ header.doubleText }}</span>
+      <br>
+      <span
+        class="bottom-column-item"
+        :title="header.bottomTooltip"
+      >{{ header.bottomText }}</span>
     </template>
-    <template v-slot:item="props">
+    <template #item="props">
       <tr :class="itemRowBackground(props.item)">
-        <td :class="isAPair(props.item)?'even-row':'odd-row'" v-for="header in props.headers" :key="header.id">
-          <div @click="viewStudentDetails(props.item.studentID)" class="tableCell">
-              <span v-if="header.topValue === 'dob'" class="top-column-item">{{
-                  formatDob(props.item[header.topValue], 'uuuu-MM-dd', 'uuuu/MM/dd')
-                }}</span>
-            <span v-else class="top-column-item">{{ props.item[header.topValue] }}</span>
+        <td
+          v-for="header in props.headers"
+          :key="header.id"
+          :class="isAPair(props.item)?'even-row':'odd-row'"
+        >
+          <div
+            class="tableCell"
+            @click="viewStudentDetails(props.item.studentID)"
+          >
+            <span
+              v-if="header.topValue === 'dob'"
+              class="top-column-item"
+            >{{
+              formatDob(props.item[header.topValue], 'uuuu-MM-dd', 'uuuu/MM/dd')
+            }}</span>
+            <span
+              v-else
+              class="top-column-item"
+            >{{ props.item[header.topValue] }}</span>
             <span class="double-column-item">{{ props.item[header.doubleValue] }}</span>
             <br>
             <!-- if top and bottom value are the same, do not display the bottom value -->
-            <v-tooltip v-if="header.bottomValue === 'memo'" bottom>
-              <template v-slot:activator="{ on }">
-                  <span v-on="on" class="bottom-column-item">{{
-                      firstMemoChars(props.item[header.bottomValue])
-                    }}</span>
+            <v-tooltip
+              v-if="header.bottomValue === 'memo'"
+              bottom
+            >
+              <template #activator="{ on }">
+                <span class="bottom-column-item">{{
+                  firstMemoChars(props.item[header.bottomValue])
+                }}</span>
               </template>
               <span>{{ props.item[header.bottomValue] }}</span>
             </v-tooltip>
-            <span v-else-if="['usualLastName','usualFirstName','usualMiddleNames'].includes(header.bottomValue)"
-                  class="bottom-column-item">{{
-                getUsualName(props.item[header.bottomValue], props.item[header.topValue])
-              }}</span>
-            <span v-else class="bottom-column-item">{{ props.item[header.bottomValue] }}</span>
+            <span
+              v-else-if="['usualLastName','usualFirstName','usualMiddleNames'].includes(header.bottomValue)"
+              class="bottom-column-item"
+            >{{
+              getUsualName(props.item[header.bottomValue], props.item[header.topValue])
+            }}</span>
+            <span
+              v-else
+              class="bottom-column-item"
+            >{{ props.item[header.bottomValue] }}</span>
           </div>
         </td>
       </tr>
-
     </template>
-
   </v-data-table>
 </template>
 
@@ -89,24 +119,6 @@ export default {
     },
   },
   data: () => ({}),
-  watch: {
-    penSearch(newValue) {
-      this.penSearch = newValue;
-    },
-    mincodeSearch(newValue) {
-      this.mincodeSearch = newValue;
-    },
-    legalSurnameSearch(newValue) {
-      this.legalSurnameSearch = newValue;
-    },
-    legalGivenNameSearch(newValue) {
-      this.legalGivenNameSearch = newValue;
-    },
-    legalMiddleNameSearch(newValue) {
-      this.legalMiddleNameSearch = newValue;
-    },
-
-  },
   computed: {
     headers() {
       return [
@@ -192,6 +204,24 @@ export default {
         },
       ];
     }
+  },
+  watch: {
+    penSearch(newValue) {
+      this.penSearch = newValue;
+    },
+    mincodeSearch(newValue) {
+      this.mincodeSearch = newValue;
+    },
+    legalSurnameSearch(newValue) {
+      this.legalSurnameSearch = newValue;
+    },
+    legalGivenNameSearch(newValue) {
+      this.legalGivenNameSearch = newValue;
+    },
+    legalMiddleNameSearch(newValue) {
+      this.legalMiddleNameSearch = newValue;
+    },
+
   },
   methods: {
     formatDob,

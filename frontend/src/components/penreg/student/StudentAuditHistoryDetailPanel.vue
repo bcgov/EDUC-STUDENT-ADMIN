@@ -1,78 +1,98 @@
 <template>
   <div class="full-width mt-n15">
-
     <v-row>
-
-      <v-col cols="11" class="ml-10">
-        <div id="auditHistoryDetailHeader" class="pt-4 pl-2">
+      <v-col
+        cols="11"
+        class="ml-10"
+      >
+        <div
+          id="auditHistoryDetailHeader"
+          class="pt-4 pl-2"
+        >
           <span id="headerLabel">Changed by</span>
           <span id="headerUser">{{ studentHistoryDetail.updateUser }}</span>
           <span id="headerUpdateDate">{{ frontEndDateFormat(studentHistoryDetail.updateDate) }}</span>
           <span id="headerUpdateTime">at {{ frontEndTimeFormat(studentHistoryDetail.updateDate) }}</span>
           <span class="float-right mt-n2">
             <v-btn
-                id="previousHistoryDetail"
-                :disabled="previousDisabled"
-                class="mr-3"
-                dark
-                icon
-                small
-                @click="clickPrevious"
+              id="previousHistoryDetail"
+              :disabled="previousDisabled"
+              class="mr-3"
+              dark
+              icon
+              small
+              @click="clickPrevious"
             >
               <v-icon large>fa-arrow-alt-circle-left</v-icon>
             </v-btn>
             <v-btn
-                id="nextHistoryDetail"
-                :disabled="nextDisabled"
-                class="mr-2"
-                dark
-                icon
-                @click="clickNext"
+              id="nextHistoryDetail"
+              :disabled="nextDisabled"
+              class="mr-2"
+              dark
+              icon
+              @click="clickNext"
             >
               <v-icon large>fa-arrow-alt-circle-right</v-icon>
             </v-btn>
           </span>
         </div>
 
-        <StudentAuditHistoryDetailCard :studentHistoryDetail="studentHistoryDetail">
+        <StudentAuditHistoryDetailCard :student-history-detail="studentHistoryDetail">
           <v-card-actions class="pb-2">
-            <v-spacer></v-spacer>
-            <PrimaryButton id="closePanel" :secondary="true" class="mx-1" text="Close" @click.native="$emit('close')"></PrimaryButton>
+            <v-spacer />
+            <PrimaryButton
+              id="closePanel"
+              :secondary="true"
+              class="mx-1"
+              text="Close"
+              :click-action="$emit('close')"
+            />
             <SplitPenModal
               :disabled="isSplitPenDisabled"
-              :currentStudentDetail="student"
-              :studentDetailForRevert="studentDetailForRevert"
-              :newStudentDetail="studentHistoryDetail"
-              :isStudentUpdated="isStudentUpdated"
+              :current-student-detail="student"
+              :student-detail-for-revert="studentDetailForRevert"
+              :new-student-detail="studentHistoryDetail"
+              :is-student-updated="isStudentUpdated"
               @split="split"
-            ></SplitPenModal>
-            <PrimaryButton id="revertData" :disabled="isRevertDisabled" :loading="isRevertingStudent" class="mx-1"
-                           text="Revert"
-                           @click.native="revertStudentDataFromStudentHistory()"></PrimaryButton>
+            />
+            <PrimaryButton
+              id="revertData"
+              :disabled="isRevertDisabled"
+              :loading="isRevertingStudent"
+              class="mx-1"
+              text="Revert"
+              :click-action="revertStudentDataFromStudentHistory()"
+            />
           </v-card-actions>
-
         </StudentAuditHistoryDetailCard>
       </v-col>
-
     </v-row>
-    <ConfirmationDialog ref="confirmationDialog"></ConfirmationDialog>
+    <ConfirmationDialog ref="confirmationDialog" />
   </div>
 </template>
 
 <script>
-import {mapGetters, mapState} from 'vuex';
+import {mapState} from 'pinia';
 import moment from 'moment';
 import {STUDENT_CODES, STUDENT_DEMOG_CODES, STUDENT_DETAILS_FIELDS} from '@/utils/constants';
-import PrimaryButton from '../../util/PrimaryButton';
+import PrimaryButton from '../../util/PrimaryButton.vue';
 import {formatPen, formatPostalCode} from '@/utils/format';
 import alertMixin from '../../../mixins/alertMixin';
-import ConfirmationDialog from '../../util/ConfirmationDialog';
-import SplitPenModal from './SplitPenModal';
-import StudentAuditHistoryDetailCard from './StudentAuditHistoryDetailCard';
+import ConfirmationDialog from '../../util/ConfirmationDialog.vue';
+import SplitPenModal from './SplitPenModal.vue';
+import StudentAuditHistoryDetailCard from './StudentAuditHistoryDetailCard.vue';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
+import {studentStore} from '@/store/modules/student';
 
 export default {
   name: 'StudentAuditHistoryDetailPanel',
+  components: {
+    PrimaryButton,
+    ConfirmationDialog,
+    SplitPenModal,
+    StudentAuditHistoryDetailCard,
+  },
   mixins: [alertMixin, staleStudentRecordMixin],
   props: {
     student: {
@@ -100,26 +120,12 @@ export default {
       defaultValue: false
     }
   },
-  components: {
-    PrimaryButton,
-    ConfirmationDialog,
-    SplitPenModal,
-    StudentAuditHistoryDetailCard,
-  },
   data() {
     return {
       studentHistoryDetail: null,
       rowNumber: 0,
       STUDENT_DETAILS_FIELDS: STUDENT_DETAILS_FIELDS,
     };
-  },
-  created() {
-    this.studentHistory.content.forEach((item, idx) => {
-      if (item.studentHistoryID === this.studentHistoryId) {
-        this.studentHistoryDetail = item;
-        this.rowNumber = idx;
-      }
-    });
   },
   watch: {
     studentHistoryId(newValue) {
@@ -131,9 +137,16 @@ export default {
       });
     }
   },
+  created() {
+    this.studentHistory.content.forEach((item, idx) => {
+      if (item.studentHistoryID === this.studentHistoryId) {
+        this.studentHistoryDetail = item;
+        this.rowNumber = idx;
+      }
+    });
+  },
   computed: {
-    ...mapGetters('student', ['genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects']),
-    ...mapState('student', ['studentsInProcess']),
+    ...mapState(studentStore, ['studentsInProcess', 'genders', 'demogCodeObjects', 'statusCodeObjects', 'gradeCodeObjects']),
     previousDisabled() {
       return this.rowNumber <= 0;
     },

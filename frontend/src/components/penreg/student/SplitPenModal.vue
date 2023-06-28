@@ -5,88 +5,129 @@
     max-width="80%"
     :disabled="disabled"
   >
-    <template v-slot:activator="{ on, attrs }">
+    <template #activator="{ on, attrs }">
       <PrimaryButton
         id="splitPen"
         class="mx-1"
         text="Split PEN"
         :disabled="disabled"
-        @click.native="openModal"
+        :click-action="openModal"
         :bind="attrs"
         :on="on"
-      ></PrimaryButton>
+      />
     </template>
-    <v-card fluid class="px-4">
-      <v-card-title class="px-0 pb-0 pt-5">
-      </v-card-title>
+    <v-card
+      fluid
+      class="px-4"
+    >
+      <v-card-title class="px-0 pb-0 pt-5" />
       <v-row>
-        <v-col cols="6" class="pt-0">
+        <v-col
+          cols="6"
+          class="pt-0"
+        >
           <v-row no-gutters>
-            <v-col cols="4" class="title pt-0">
+            <v-col
+              cols="4"
+              class="title pt-0"
+            >
               <h4>Current PEN</h4>
             </v-col>
             <v-col class="pt-0">
               <v-checkbox
                 id="revertCheckbox"
+                v-model="revertCurrentStudent"
                 class="split-checkbox ma-0 pa-0 ml-4 mt-1"
                 height="100%"
                 label="Revert"
                 color="#606060"
                 dense
-                v-model="revertCurrentStudent"
                 :disabled="!studentDetailForRevert"
-              ></v-checkbox>
+              />
             </v-col>
           </v-row>
           <StudentAuditHistoryDetailCard
-            :studentHistoryDetail="studentDetail"
-            :highlightDiff="false"
-            idPrefix="current"
-          ></StudentAuditHistoryDetailCard>
+            :student-history-detail="studentDetail"
+            :highlight-diff="false"
+            id-prefix="current"
+          />
         </v-col>
-        <v-col cols="6" class="pt-0">
+        <v-col
+          cols="6"
+          class="pt-0"
+        >
           <div class="title d-flex justify-space-between pt-0">
             <h4>New PEN</h4>
-            <v-btn id="closeModalBtn" text icon @click="closeModal">
-              <v-icon large color="#38598A">mdi-close</v-icon>
+            <v-btn
+              id="closeModalBtn"
+              text
+              icon
+              @click="closeModal"
+            >
+              <v-icon
+                large
+                color="#38598A"
+              >
+                mdi-close
+              </v-icon>
             </v-btn>
           </div>
           <StudentAuditHistoryDetailCard
-            :studentHistoryDetail="newStudentDetail"
-            :highlightDiff="false"
-            idPrefix="new"
-            :showPEN=false
-          ></StudentAuditHistoryDetailCard>
+            :student-history-detail="newStudentDetail"
+            :highlight-diff="false"
+            id-prefix="new"
+            :show-p-e-n="false"
+          />
         </v-col>
       </v-row>
       <v-card-actions class="pt-0 pr-0">
-        <v-spacer></v-spacer>
-        <PrimaryButton id="closeSplitPenModal" class="mx-1" text="Cancel" secondary @click.native="closeModal"></PrimaryButton>
-        <PrimaryButton id="acceptSplitPen" :disabled="hasSagaInProgress" :loading="isProcessing" class="mx-1"
-                       text="Accept" @click.native="splitPen"></PrimaryButton>
-        <PrimaryButton id="searchPen" class="ml-1" text="Search" @click.native="searchPen"></PrimaryButton>
+        <v-spacer />
+        <PrimaryButton
+          id="closeSplitPenModal"
+          class="mx-1"
+          text="Cancel"
+          secondary
+          :click-action="closeModal"
+        />
+        <PrimaryButton
+          id="acceptSplitPen"
+          :disabled="hasSagaInProgress"
+          :loading="isProcessing"
+          class="mx-1"
+          text="Accept"
+          :click-action="splitPen"
+        />
+        <PrimaryButton
+          id="searchPen"
+          class="ml-1"
+          text="Search"
+          :click-action="searchPen"
+        />
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import PrimaryButton from '../../util/PrimaryButton';
-import StudentAuditHistoryDetailCard from './StudentAuditHistoryDetailCard';
+import PrimaryButton from '../../util/PrimaryButton.vue';
+import StudentAuditHistoryDetailCard from './StudentAuditHistoryDetailCard.vue';
 import router from '../../../router';
 import {Routes} from '@/utils/constants';
 import ApiService from '../../../common/apiService';
 import alertMixin from '../../../mixins/alertMixin';
-import {mapGetters, mapMutations, mapState} from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import staleStudentRecordMixin from '@/mixins/staleStudentRecordMixin';
+import {notificationsStore} from '@/store/modules/notifications';
+import {studentStore} from '@/store/modules/student';
+import _ from 'lodash';
 
 export default {
   name: 'SplitPenModal',
-  mixins: [alertMixin, staleStudentRecordMixin],
   components: {
     StudentAuditHistoryDetailCard,
     PrimaryButton,
   },
+  mixins: [alertMixin, staleStudentRecordMixin],
   props: {
     disabled: {
       type: Boolean,
@@ -118,14 +159,11 @@ export default {
     };
   },
   computed: {
-    ...mapState('student', ['studentsInProcess']),
-    ...mapGetters('notifications', ['notification']),
+    ...mapState(studentStore, ['studentsInProcess']),
+    ...mapState(notificationsStore, ['notification']),
     hasSagaInProgress() {
       return this.studentDetail && (this.studentDetail.sagaInProgress || this.studentsInProcess.has(this.studentDetail.studentID));
     },
-  },
-  created() {
-    this.studentDetail = this.currentStudentDetail;
   },
   watch: {
     revertCurrentStudent(newValue) {
@@ -155,8 +193,11 @@ export default {
       }
     },
   },
+  created() {
+    this.studentDetail = this.currentStudentDetail;
+  },
   methods: {
-    ...mapMutations('student', ['setStudentInProcessStatus', 'resetStudentInProcessStatus']),
+    ...mapActions(studentStore, ['setStudentInProcessStatus', 'resetStudentInProcessStatus']),
     openModal() {
       this.modalOpen = true;
     },

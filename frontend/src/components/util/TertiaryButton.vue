@@ -1,19 +1,25 @@
 <template>
-  <v-hover v-slot:default="{ hover }">
-    <v-btn :id="id"
-           :class="[hover ? 'button-hover':'']"
-           color="#38598A"
-           :small="short"
-           :disabled="disabled"
-           :dark="!disabled"
-           :to="to"
-           :width="width"
-           :text="true"
-           :min-width="minWidth"
-           v-bind="bind"
-           v-on="on"
+  <v-hover v-slot="{ hover }">
+    <v-btn
+      :id="id"
+      :class="[hover ? 'button-hover':'']"
+      color="#38598A"
+      :small="short"
+      :disabled="disabled"
+      :dark="!disabled"
+      :to="to"
+      :width="width"
+      :text="true"
+      :min-width="minWidth"
+      v-bind="bind"
     >
-      <v-icon v-if="icon" :class="[iconStyle, 'mr-1']" left>{{ icon }}</v-icon>
+      <v-icon
+        v-if="icon"
+        :class="[iconStyle, 'mr-1']"
+        left
+      >
+        {{ icon }}
+      </v-icon>
       <strong>{{ text }}</strong>
     </v-btn>
   </v-hover>
@@ -21,7 +27,7 @@
 
 <script>
 export default {
-  name: 'tertiaryButton',
+  name: 'TertiaryButton',
   props: {
     id: {
       type: String

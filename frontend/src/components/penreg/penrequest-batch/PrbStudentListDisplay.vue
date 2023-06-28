@@ -1,31 +1,55 @@
 <template>
-  <v-container fluid class="full-height px-0 mb-4">
-    <v-form ref="prbStudentSearchForm" id="prbStudentSearchForm"
+  <v-container
+    fluid
+    class="full-height px-0 mb-4"
+  >
+    <v-form
+      id="prbStudentSearchForm"
+      ref="prbStudentSearchForm"
       v-model="validForm"
     >
-      <v-container fluid class="fill-height px-0">
+      <v-container
+        fluid
+        class="fill-height px-0"
+      >
         <v-row no-gutters>
-          <v-card elevation="0" height="100%" width="100%" style="background-color:white;">
+          <v-card
+            elevation="0"
+            height="100%"
+            width="100%"
+            style="background-color:white;"
+          >
             <PenRequestSearchPanel
-              :searchParams="prbStudentSearchParams"
+              :search-params="prbStudentSearchParams"
               :loading="searchLoading"
               :disabled="!searchEnabled"
               @searchByPen="searchPenRequestsByPen"
               @search="searchPenRequests"
-            ></PenRequestSearchPanel>
+            />
             <v-progress-linear
               indeterminate
               color="blue"
               :active="searchLoading && !prbStudentSearchResponse"
-            ></v-progress-linear>
-            <v-row v-if="prbStudentSearchResponse" no-gutters class="py-2" style="background-color:white;">
-              <v-divider class="mx-3 header-divider"/>
+            />
+            <v-row
+              v-if="prbStudentSearchResponse"
+              no-gutters
+              class="py-2"
+              style="background-color:white;"
+            >
+              <v-divider class="mx-3 header-divider" />
             </v-row>
-            <v-row v-if="prbStudentSearchResponse" id="resultsRow" no-gutters class="py-2" style="background-color:white;">
+            <v-row
+              v-if="prbStudentSearchResponse"
+              id="resultsRow"
+              no-gutters
+              class="py-2"
+              style="background-color:white;"
+            >
               <PrbStudentSearchResults
                 :loading="searchLoading"
                 :archived="archived"
-              ></PrbStudentSearchResults>
+              />
             </v-row>
           </v-card>
         </v-row>
@@ -43,14 +67,16 @@ import {
   SEARCH_VALUE_TYPE,
   PEN_REQUEST_STUDENT_VALIDATION_FIELD_CODES_TO_STUDENT_DETAILS_FIELDS_MAPPER
 } from '@/utils/constants';
-import {mapMutations, mapState} from 'vuex';
-import PrbStudentSearchResults from './PrbStudentSearchResults';
+import {mapActions, mapState} from 'pinia';
+import PrbStudentSearchResults from './PrbStudentSearchResults.vue';
 import {formatPrbStudents} from '@/utils/penrequest-batch/format';
 import alertMixin from '../../../mixins/alertMixin';
 import _, {difference} from 'lodash';
 import Mousetrap from 'mousetrap';
 import router from '@/router';
-import PenRequestSearchPanel from '@/components/common/PenRequestSearchPanel';
+import PenRequestSearchPanel from '@/components/common/PenRequestSearchPanel.vue';
+import {penRequestBatchStudentSearchStore} from '@/store/modules/prbStudentSearch';
+import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
 
 export default {
   components: {
@@ -82,13 +108,13 @@ export default {
     };
   },
   computed:{
-    ...mapState('prbStudentSearch', ['pageNumber', 'selectedRecords', 'prbStudentSearchResponse', 'selectedStudentStatus', 'currentPrbStudentSearchParams', 'prbStudentSearchCriteria', 'showSamePENAssigned']),
+    ...mapState(penRequestBatchStudentSearchStore, ['pageNumber', 'selectedRecords', 'prbStudentSearchResponse', 'selectedStudentStatus', 'currentPrbStudentSearchParams', 'prbStudentSearchCriteria', 'showSamePENAssigned']),
     prbStudentSearchParams: {
       get(){
-        return this.$store.state['prbStudentSearch'].prbStudentSearchParams;
+        return penRequestBatchStudentSearchStore().prbStudentSearchParams;
       },
       set(newPage){
-        return this.$store.state['prbStudentSearch'].prbStudentSearchParams = newPage;
+        return penRequestBatchStudentSearchStore().setPrbStudentSearchParams(newPage);
       }
     },
     prbStudentStatusSearchCriteria() {
@@ -140,12 +166,12 @@ export default {
       }
       return false;
     });
-    this.$store.dispatch('penRequestBatch/getCodes');
+    penRequestBatchStore().getCodes();
     this.setSelectedRecords();
     this.initialSearch();
   },
   methods: {
-    ...mapMutations('prbStudentSearch', ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse', 'clearPrbStudentSearchParams', 'setCurrentPrbStudentSearchParams', 'setPrbStudentSearchCriteria']),
+    ...mapActions(penRequestBatchStudentSearchStore, ['setPageNumber', 'setSelectedRecords', 'setPrbStudentSearchResponse', 'clearPrbStudentSearchParams', 'setCurrentPrbStudentSearchParams', 'setPrbStudentSearchCriteria']),
     searchPenRequestsByPen([field, pen]){
       this.clearPrbStudentSearchParams();
       this.prbStudentSearchParams[field] = pen;
@@ -199,7 +225,7 @@ export default {
             this.disablePageHandler = false;
           });
 
-        const selectedFiles = this.$store.state[this.penRequestBatchStore].selectedFiles;
+        const selectedFiles = penRequestBatchStore().selectedFiles;
         if(!selectedFiles || difference(this.batchIDs.split(','), selectedFiles.map(file => file.penRequestBatchID)).length > 0) {
           this.retrieveSelectedFiles();
         }
@@ -355,7 +381,8 @@ export default {
 
       return ApiService.apiAxios.get(Routes['penRequestBatch'].FILES_URL, params)
         .then(response => {
-          response.data && this.$store.commit(`${this.penRequestBatchStore}/setSelectedFiles`, response.data.content);
+          const auStore = penRequestBatchStore();
+          response.data && auStore.setSelectedFiles(response.data.content);
         });
     },
   }

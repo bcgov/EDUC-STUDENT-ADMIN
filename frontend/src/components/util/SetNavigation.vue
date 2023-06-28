@@ -1,37 +1,41 @@
 <template>
   <div v-if="total > 0">
-    <span class="mr-8 nav-title">{{title}}</span>
+    <span class="mr-8 nav-title">{{ title }}</span>
     <v-btn 
-      class="mr-3"
       id="preRecord"
+      class="mr-3"
       icon
-      small
+      size="small"
       :disabled="preDisabled"
       @click="clickBtn(preRoute)"
     >
-      <v-icon large>fa-arrow-alt-circle-left</v-icon>
-    </v-btn >
+      <v-icon large>
+        fa-arrow-alt-circle-left
+      </v-icon>
+    </v-btn>
     <v-btn 
       id="nextRecord"
       icon
       :disabled="nextDisabled"
       @click="clickBtn(nextRoute)"
     >
-      <v-icon large>fa-arrow-alt-circle-right</v-icon>
+      <v-icon large>
+        fa-arrow-alt-circle-right
+      </v-icon>
     </v-btn>
   </div>
 </template>
 
 <script>
-import { mapState, mapMutations, mapGetters } from 'vuex';
+import {mapActions, mapState} from 'pinia';
 import router from '../../router';
 import { abbreviateCamelCase } from '@/utils/common';
+import {navigationStore} from '@/store/modules/setNavigation';
 
 export default {
   name: 'SetNavigation',
   computed:{
-    ...mapState('setNavigation', ['selectedIDs', 'currentRequest', 'archived', 'requestType']),
-    ...mapGetters('setNavigation', ['title']),
+    ...mapState(navigationStore, ['title', 'selectedIDs', 'currentRequest', 'archived', 'requestType']),
     preDisabled() {
       return this.currentRequest <= 0;
     },
@@ -49,7 +53,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('setNavigation', ['setCurrentRequest']),
+    ...mapActions(navigationStore, ['setCurrentRequest']),
     clickBtn(route) {
       this.setCurrentRequest(route);
       const requestTypeAbbrev = abbreviateCamelCase(this.requestType);

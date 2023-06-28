@@ -1,13 +1,17 @@
 <template>
   <div style="display: none">
-    <a id="logout_href" :href='routes.SESSION_EXPIRED'/>
+    <a
+      id="logout_href"
+      :href="routes.SESSION_EXPIRED"
+    />
   </div>
 </template>
 
 <script>
 import {Routes} from '@/utils/constants';
 import ApiService from '@/common/apiService';
-import {mapGetters} from 'vuex';
+import { mapState } from 'pinia';
+import {authStore} from '@/store/modules/auth';
 
 export default {
   data() {
@@ -20,7 +24,7 @@ export default {
 
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated']),
+    ...mapState(authStore, ['isAuthenticated']),
   },
   methods: {
 

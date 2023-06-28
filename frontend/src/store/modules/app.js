@@ -1,10 +1,10 @@
 import { REQUEST_TYPES } from '@/utils/constants';
 import ApiService from '@/common/apiService';
+import {defineStore} from 'pinia';
 import {DateTimeFormatter, LocalDate} from '@js-joda/core';
-
-export default {
+export const appStore = defineStore('app', {
   namespaced: true,
-  state: {
+  state: () => ({
     request: {},
     selectedRequest: null,
     messages:[],
@@ -25,154 +25,143 @@ export default {
     independentAuthorityMap: new Map(),
     alertNotificationText: '',
     alertNotificationQueue: [],
-    alertNotification: false
-  },
-  getters: {
-    request: state => state.request,
-    selectedRequest: state => state.selectedRequest,
-    schoolApiDistrictCodesObjectSorted: state => Array.from(state.schoolApiDistrictCodes).sort(),
-    schoolApiMincodeSchoolNamesObjectSorted: state => Object.values(Object.fromEntries(state.schoolApiMincodeSchoolNames)).map(v => v.toUpperCase()).sort(),
-    districtCodesObjectSorted: state => Array.from(state.districtCodes).sort(),
-    mincodeSchoolNamesObjectSorted: state => Object.values(Object.fromEntries(state.mincodeSchoolNames)).map(v => v.toUpperCase()).sort(),
-    districtsObjectSorted: state => Object.values(Object.fromEntries(state.districts)).map(v => v.toUpperCase()).sort(),
-    messages: state => state.messages,
-    participants: state => state.participants,
-    requestType: state => state.requestType,
-    requestTypeLabel: state => state.requestTypeLabel,
-    schoolMap: state => state.schoolMap,
-    districtMap: state => state.districtMap,
-    notClosedSchools: state => state.notClosedSchools,
-    activeSchools: state => state.activeSchools,
-    activeDistricts: state => state.activeDistricts,
-  },
-  mutations: {
-    setRequest: (state, request) => {
-      state.request = request || {};
-    },
-    setSelectedRequest: (state, selectedRequest) => {
-      state.selectedRequest = selectedRequest;
-    },
-    pushMessage: (state, message) => {
-      state.messages.push(message);
-    },
-    setMessages: (state, messages) => {
-      state.messages = messages || [];
-    },
-    setParticipants: (state, participants) => {
-      state.participants = participants || [];
-    },
-    setRequestType: (state, requestType) => {
-      state.requestType = requestType;
-      state.requestTypeLabel = REQUEST_TYPES[requestType].label;
-    },
-    setPageTitle: (state, pageTitle) => {
-      state.pageTitle = pageTitle;
-    },
-    setStickyInfoPanelHeight: (state, stickyInfoPanelHeight) => {
-      state.stickyInfoPanelHeight = stickyInfoPanelHeight;
-    },
-    setMincodeSchoolNameAndDistrictCodes(state, mincodeSchoolNameList) {
-      state.mincodeSchoolNames = new Map();
-      state.schoolMap = new Map();
-      mincodeSchoolNameList.forEach(element => {
-        state.mincodeSchoolNames.set(element.mincode, element.schoolName);
-        state.schoolMap.set(element.schoolID, {...element});
-        if(isSchoolActive(element)){
-          state.notClosedSchools.push(element);
-        }
-        state.districtCodes.add(element.mincode?.substring(0, 3));
-      });
-    },
-    setActiveSchools(state, activeSchools) {
-      state.activeSchools = activeSchools;
-    },
-    setActiveDistricts(state, activeDistricts) {
-      state.activeDistricts = activeDistricts;
-    },
-    setDistricts(state, districtList) {
-      state.districtMap = new Map();
-      districtList.forEach(element => {
-        state.districtMap.set(element.districtId, element);
-      });
-    },
-    setIndependentAuthorities(state, independentAuthorityList) {
-      state.independentAuthorityMap = new Map();
-      independentAuthorityList.forEach(element => {
-        state.independentAuthorityMap.set(element.authorityID, element);
-      });
-    },
-    setAlertNotificationText: (state, alertNotificationText) => {
-      state.alertNotificationText = alertNotificationText;
-    },
-    setAlertNotification: (state, alertNotification) => {
-      state.alertNotification = alertNotification;
-    },
-    addAlertNotification(state, text) {
-      state.alertNotificationQueue.push(text);
-      if (!state.alertNotification) {
-        state.alertNotification = true;
-      }
-    },
-    setSchoolApiMincodeSchoolNameAndDistrictCodes(state, schoolApiMincodeSchoolNameList) {
-      state.schoolApiMincodeSchoolNames = new Map();
-      schoolApiMincodeSchoolNameList.forEach(element => {
-        state.schoolApiMincodeSchoolNames.set(element.mincode, element.schoolName);
-        state.schoolApiDistrictCodes.add(element.mincode?.substring(0, 3));
-      });
-    }
-  },
+    alertNotification: false,
+    config: ''
+  }),
   actions: {
-    async getCodes({ commit, state}) {
+    async setConfig(config){
+      this.config = config;
+    },
+    async setRequest(request) {
+      this.request = request || {};
+    },
+    async setSelectedRequest(selectedRequest) {
+      this.selectedRequest = selectedRequest;
+    },
+    async pushMessage(message) {
+      this.messages.push(message);
+    },
+    async setMessages(messages) {
+      this.messages = messages || [];
+    },
+    async setParticipants(participants) {
+      this.participants = participants || [];
+    },
+    async setRequestType(requestType) {
+      this.requestType = requestType;
+      this.requestTypeLabel = REQUEST_TYPES[requestType].label;
+    },
+    async setPageTitle(pageTitle) {
+      this.pageTitle = pageTitle;
+    },
+    async setStickyInfoPanelHeight(stickyInfoPanelHeight) {
+      this.stickyInfoPanelHeight = stickyInfoPanelHeight;
+    },
+    async setMincodeSchoolNameAndDistrictCodes(mincodeSchoolNameList) {
+      this.mincodeSchoolNames = new Map();
+      this.schoolMap = new Map();
+      this.notClosedSchools = [];
+      mincodeSchoolNameList.forEach(element => {
+        this.mincodeSchoolNames.set(element.mincode, element.schoolName);
+        this.schoolMap.set(element.schoolID, {...element});
+        if(isSchoolActive(element)){
+          this.notClosedSchools.push(element);
+        }
+        this.districtCodes.add(element.mincode?.substring(0, 3));
+      });
+    },
+    async setActiveSchools(activeSchools) {
+      this.activeSchools = activeSchools;
+    },
+    async setActiveDistricts(activeDistricts) {
+      this.activeDistricts = activeDistricts;
+    },
+    async setDistricts(districtList) {
+      this.districtMap = new Map();
+      districtList.forEach(element => {
+        this.districtMap.set(element.districtId, element);
+      });
+    },
+    async setIndependentAuthorities(independentAuthorityList) {
+      this.independentAuthorityMap = new Map();
+      independentAuthorityList.forEach(element => {
+        this.independentAuthorityMap.set(element.authorityID, element);
+      });
+    },
+    async setAlertNotificationText(alertNotificationText) {
+      this.alertNotificationText = alertNotificationText;
+    },
+    async setAlertNotification(alertNotification) {
+      this.alertNotification = alertNotification;
+    },
+    async addAlertNotification(text) {
+      this.alertNotificationQueue.push(text);
+      if (!this.alertNotification) {
+        this.alertNotification = true;
+      }
+    },
+    async setSchoolApiMincodeSchoolNameAndDistrictCodes(schoolApiMincodeSchoolNameList) {
+      this.schoolApiMincodeSchoolNames = new Map();
+      schoolApiMincodeSchoolNameList.forEach(element => {
+        this.schoolApiMincodeSchoolNames.set(element.mincode, element.schoolName);
+        this.schoolApiDistrictCodes.add(element.mincode?.substring(0, 3));
+      });
+    },
+    async getCodes() {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
-        if(state.mincodeSchoolNames.size === 0) {
+        if(this.mincodeSchoolNames.size === 0) {
           const response = await ApiService.getMincodeSchoolNames();
-          commit('setMincodeSchoolNameAndDistrictCodes', response.data);
+          await this.setMincodeSchoolNameAndDistrictCodes(response.data);
         }
-        if (state.activeSchools.length === 0) {
+        if (this.activeSchools.length === 0) {
           const response = await ApiService.getActiveSchools();
-          commit('setActiveSchools', response.data);
+          await this.setActiveSchools(response.data);
         }
-        if(state.districtMap.size === 0) {
+        if(this.districtMap.size === 0) {
           const response = await ApiService.getDistricts();
-          commit('setDistricts', response.data);
+          await this.setDistricts(response.data);
         }
-        if (state.activeDistricts.length === 0) {
+        if (this.activeDistricts.length === 0) {
           const response = await ApiService.getActiveDistricts();
-          commit('setActiveDistricts', response.data);
+          await this.setActiveDistricts(response.data);
         }
-        if(state.independentAuthorityMap.size === 0) {
+        if(this.independentAuthorityMap.size === 0) {
           const response = await ApiService.getAuthorities();
-          commit('setIndependentAuthorities', response.data);
+          await this.setIndependentAuthorities(response.data);
         }
-        if(state.schoolApiMincodeSchoolNames.size === 0) {
+        if(this.schoolApiMincodeSchoolNames.size === 0) {
           const response = await ApiService.getSchoolApiMincodeSchoolNames();
-          commit('setSchoolApiMincodeSchoolNameAndDistrictCodes', response.data);
+          await this.setSchoolApiMincodeSchoolNameAndDistrictCodes(response.data);
         }
       }
     },
-    async refreshEntities({ commit }) {
+    async getConfig() {
+      const response = await ApiService.getConfig();
+      await this.setConfig(response.data);
+    },
+    async refreshEntities() {
       if(localStorage.getItem('jwtToken')) { // DONT Call api if there is not token.
         const responseMinSchool = await ApiService.getMincodeSchoolNames();
-        commit('setMincodeSchoolNameAndDistrictCodes', responseMinSchool.data);
+        await this.setMincodeSchoolNameAndDistrictCodes(responseMinSchool.data);
 
         const responseActiveSchools = await ApiService.getActiveSchools();
-        commit('setActiveSchools', responseActiveSchools.data);
+        await this.setActiveSchools(responseActiveSchools.data);
 
         const responseDistricts = await ApiService.getDistricts();
-        commit('setDistricts', responseDistricts.data);
+        await this.setDistricts(responseDistricts.data);
 
         const responseActiveDistricts = await ApiService.getActiveDistricts();
-        commit('setActiveDistricts', responseActiveDistricts.data);
+        await this.setActiveDistricts(responseActiveDistricts.data);
 
         const response = await ApiService.getAuthorities();
-        commit('setIndependentAuthorities', response.data);
+        await this.setIndependentAuthorities(response.data);
 
         const responseSchoolApiMin = await ApiService.getSchoolApiMincodeSchoolNames();
-        commit('setSchoolApiMincodeSchoolNameAndDistrictCodes', responseSchoolApiMin.data);
+        await this.setSchoolApiMincodeSchoolNameAndDistrictCodes(responseSchoolApiMin.data);
       }
     },
   },
-};
+});
 
 function isSchoolActive(school) {
   const currentTime = LocalDate.now();

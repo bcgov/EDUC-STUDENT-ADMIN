@@ -1,16 +1,16 @@
 <template>
   <PenRequestBatchDataTable
+    v-model:batch-page-number="pageNumber"
     :headers="headers"
-    :penRequestBatchResponse="penRequestBatchResponse"
-    :batchPageNumber.sync="pageNumber"
-    :loadingTable="loadingTable"
+    :pen-request-batch-response="penRequestBatchResponse"
+    :loading-table="loadingTable"
     archived
-  ></PenRequestBatchDataTable>
+  />
 </template>
 
 <script>
-import {mapGetters, mapMutations, mapState} from 'vuex';
-import PenRequestBatchDataTable from './PenRequestBatchDataTable';
+import {mapActions, mapState} from 'pinia';
+import PenRequestBatchDataTable from './PenRequestBatchDataTable.vue';
 import ApiService from '../../../common/apiService';
 import alertMixin from '@/mixins/alertMixin';
 import {
@@ -23,13 +23,15 @@ import {deepCloneObject} from '@/utils/common';
 import Mousetrap from 'mousetrap';
 import router from '@/router';
 import {getSearchParam} from '@/utils/penrequest-batch/search';
+import {notificationsStore} from '@/store/modules/notifications';
+import {archivedRequestBatchStore} from '@/store/modules/archivedRequestBatch';
 
 export default {
   name: 'ArchivedRequestBatchList',
-  mixins: [alertMixin],
   components: {
     PenRequestBatchDataTable,
   },
+  mixins: [alertMixin],
   props: {
     searchParams: {
       type: Object,
@@ -68,12 +70,6 @@ export default {
       isFilterOperation: false,
     };
   },
-  mounted() {
-    Mousetrap.bind('ctrl+b', () => {
-      router.push({name: 'archivedRequestBatch'});
-      return false;
-    });
-  },
   watch: {
     pageNumber: {
       handler() {
@@ -106,15 +102,21 @@ export default {
       }
     },
   },
+  mounted() {
+    Mousetrap.bind('ctrl+b', () => {
+      router.push({name: 'archivedRequestBatch'});
+      return false;
+    });
+  },
   computed: {
-    ...mapState('archivedRequestBatch', ['selectedFiles', 'penRequestBatchResponse']),
-    ...mapGetters('notifications', ['notification']),
+    ...mapState(archivedRequestBatchStore, ['selectedFiles', 'penRequestBatchResponse']),
+    ...mapState(notificationsStore, ['notification']),
     pageNumber: {
       get(){
-        return this.$store.state['archivedRequestBatch'].pageNumber;
+        return archivedRequestBatchStore().pageNumber;
       },
       set(newPage){
-        return this.$store.state['archivedRequestBatch'].pageNumber = newPage;
+        return archivedRequestBatchStore().setPageNumber(newPage);
       }
     },
     countableHeaders() {
@@ -145,7 +147,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('archivedRequestBatch', ['setSelectedFiles', 'setPenRequestBatchResponse', 'setCurrentBatchFileSearchParams']),
+    ...mapActions(archivedRequestBatchStore, ['setSelectedFiles', 'setPenRequestBatchResponse', 'setCurrentBatchFileSearchParams']),
     initializeFiles(files) {
       if (this.isFilterOperation) {
         // reset
