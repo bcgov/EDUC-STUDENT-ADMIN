@@ -1,4 +1,5 @@
 <template>
+  <div>Marco</div>
   <Doughnut
     :data="chartData"
   />

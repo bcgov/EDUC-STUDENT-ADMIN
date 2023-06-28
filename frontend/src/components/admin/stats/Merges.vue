@@ -46,7 +46,7 @@
           >
             <v-expansion-panels focusable>
               <v-expansion-panel>
-                <v-expansion-panel-header
+                <v-expansion-panel-title
                   style="border-bottom-left-radius: 4px;border-bottom-right-radius: 4px;color: #FFFFFF;background-color: rgb(0, 51, 102);border-color: rgb(0, 51, 102);"
                 >
                   <template #actions>
@@ -55,8 +55,8 @@
                     </v-icon>
                   </template>
                   Refine Results
-                </v-expansion-panel-header>
-                <v-expansion-panel-content>
+                </v-expansion-panel-title>
+                <v-expansion-panel-text>
                   <v-row
                     no-gutters
                     class="mt-4"
@@ -192,7 +192,7 @@
                       />
                     </v-col>
                   </v-row>
-                </v-expansion-panel-content>
+                </v-expansion-panel-text>
               </v-expansion-panel>
             </v-expansion-panels>
           </v-col>
