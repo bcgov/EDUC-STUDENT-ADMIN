@@ -71,7 +71,7 @@ export const penRequestBatchStudentSearchStore = defineStore('penRequestBatchStu
         usualMiddleNames: null,
         localID: null,
         gradeCode: null
-      },
+      };
       this.prbStudentSearchResponse = null;
       this.selectedStudentStatus = null;
       this.currentPrbStudentSearchParams = null;

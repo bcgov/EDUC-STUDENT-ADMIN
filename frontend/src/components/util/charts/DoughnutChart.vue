@@ -7,7 +7,6 @@
 
 <script>
 import {Doughnut} from 'vue-chartjs';
-// import ChartJsPluginDataLabels from 'chartjs-plugin-datalabels';
 
 export default {
   name: 'DoughnutChart',

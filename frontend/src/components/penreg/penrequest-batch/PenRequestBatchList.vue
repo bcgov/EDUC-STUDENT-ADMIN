@@ -116,7 +116,8 @@ export default {
         return penRequestBatchStore().pageNumber;
       },
       set(newPage){
-        return penRequestBatchStore().pageNumber = newPage;
+        penRequestBatchStore().pageNumber = newPage;
+        return newPage;
       }
     },
     countableHeaders() {

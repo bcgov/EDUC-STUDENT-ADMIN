@@ -125,12 +125,11 @@ import PrimaryButton from '../../util/PrimaryButton.vue';
 import {checkDigit, isValidMincode, isValidPEN, isValidPostalCode} from '@/utils/validation';
 import alertMixin from '@/mixins/alertMixin';
 import CreateNewPenModal from '@/components/common/CreateNewPenModal.vue';
-import {cloneDeep, pick} from 'lodash';
+import _,{cloneDeep, pick} from 'lodash';
 import {studentStore} from '@/store/modules/student';
 import {studentSearchStore} from '@/store/modules/studentSearch';
 import {authStore} from '@/store/modules/auth';
 import {penRequestBatchStore} from '@/store/modules/penRequestBatch';
-import _ from 'lodash';
 
 export default {
   components: {

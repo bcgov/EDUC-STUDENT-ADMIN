@@ -16,7 +16,6 @@ import 'viewerjs/dist/viewer.css';
 import component from 'v-viewer';
 import ApiService from '@/common/apiService';
 import VueClipboard from 'vue-clipboard2';
-import apiService from '@/common/apiService';
 import webSocketService from '@/services/web-socket-service';
 
 const myCustomLightTheme = {

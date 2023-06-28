@@ -13,7 +13,6 @@ import {CategoryScale} from 'chart.js';
 import Chart from 'chart.js/auto';
 
 Chart.register(CategoryScale);
-// import ChartJsPluginDataLabels from 'chartjs-plugin-datalabels';
 
 export default {
   name: 'BarChart',
