@@ -5,7 +5,7 @@ const CONSTANTS = require('../../util/constants');
 const redis = require('../../util/redis/redis-client');
 const redisUtil = require('../../util/redis/redis-utils');
 const NATS = require('../../messaging/message-pub-sub');
-const safeStringify = require('fast-safe-stringify');
+const safeStringify = require('fast-safe-stringify').default;
 const {AckPolicy, DeliverPolicy, StringCodec} = require('nats');
 /**
  * this function will process the choreographed event of student update, remove the record from redis if it is locked and publish the message to websocket

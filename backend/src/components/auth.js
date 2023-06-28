@@ -1,12 +1,12 @@
 'use strict';
 
-const axios = require('axios');
+const axios = require('axios').default;
 const config = require('../config/index');
 const log = require('./logger');
 const jsonwebtoken = require('jsonwebtoken');
 const qs = require('querystring');
 const utils = require('./utils');
-const safeStringify = require('fast-safe-stringify');
+const safeStringify = require('fast-safe-stringify').default;
 const userRoles = require('./roles');
 const {partial, fromPairs} = require('lodash');
 const HttpStatus = require('http-status-codes');

@@ -1,7 +1,7 @@
 'use strict';
 const Redis = require('./redis-client');
 const log = require('../../components/logger');
-const safeStringify = require('fast-safe-stringify');
+const safeStringify = require('fast-safe-stringify').default;
 const RedLock = require('redlock');
 const {LocalDateTime} = require('@js-joda/core');
 let redLock;
